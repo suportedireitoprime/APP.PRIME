@@ -3,25 +3,16 @@
 <plist version="1.0">
 <dict>
     <key>method</key>
-    <string>app-store</string>
+    <string>app-store-connect</string>
     <key>teamID</key>
     <string>DKVT35Y3W5</string>
     <key>signingStyle</key>
-    <string>manual</string>
-    <key>uploadBitcode</key>
-    <false/>
+    <string>automatic</string>
     <key>uploadSymbols</key>
     <true/>
-    <key>compileBitcode</key>
-    <false/>
     <key>stripSwiftSymbols</key>
     <true/>
     <key>destination</key>
     <string>export</string>
-    <key>provisioningProfiles</key>
-    <dict>
-        <key>br.com.vacatio.app</key>
-        <string>Estudos Juridicos App Store</string>
-    </dict>
 </dict>
 </plist>
