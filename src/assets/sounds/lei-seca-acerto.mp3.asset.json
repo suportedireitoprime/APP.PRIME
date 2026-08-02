@@ -1,0 +1,12 @@
+{
+  "asset_id": "fdd42d59-a9b6-4378-91ff-868ca197d989",
+  "cdn": "cloudflare-r2",
+  "content_type": "audio/mpeg",
+  "created_at": "2026-07-10T16:18:00Z",
+  "original_filename": "lei-seca-acerto.mp3",
+  "project_id": "2c1cf980-4564-40ef-bd93-5b4d2e0f89da",
+  "r2_key": "a/v1/2c1cf980-4564-40ef-bd93-5b4d2e0f89da/fdd42d59-a9b6-4378-91ff-868ca197d989/lei-seca-acerto.mp3",
+  "size": 19680,
+  "url": "https://pub-429461ed78b34c0e91affbfd87e83011.r2.dev/fdd42d59-a9b6-4378-91ff-868ca197d989/lei-seca-acerto.mp3",
+  "version": 1
+}

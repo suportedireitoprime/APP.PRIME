@@ -1,0 +1,759 @@
+import { useState } from "react";
+import { createPortal } from "react-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import {
+  Layers, AlertTriangle, Workflow, NotebookPen, Scale, ListChecks,
+  X, Loader2, Sparkles, ChevronLeft, ChevronRight, CheckCircle2,
+  FileText, Lightbulb, ListTree, Bookmark, Table as TableIcon, BookOpenText,
+  Brackets, KeyRound, BookA, Lock,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useVideoaulaAcao, type AulaAcaoTipo, type AulaCtxInput } from "@/hooks/useVideoaulaAcao";
+import { useSubscription } from "@/hooks/useSubscription";
+import { toast } from "sonner";
+import FlashcardEleganteViewer from "@/components/flashcards/FlashcardEleganteViewer";
+
+
+const TITULOS: Record<AulaAcaoTipo, string> = {
+  flashcards: "Flashcards",
+  lacunas: "Flashcards — Lacunas",
+  conceito: "Flashcards — Conceitos",
+  pegadinhas: "Pegadinhas",
+  mapa: "Mapa mental",
+  cornell: "Resumo Cornell",
+  feynman: "Resumo Feynman",
+  topicos: "Resumo por tópicos",
+  tradicional: "Resumo tradicional",
+  fichamento: "Fichamento",
+  comparativa: "Tabela comparativa",
+  lei: "Lei seca",
+  questoes: "Questões",
+  termos: "Termos da aula",
+};
+
+type MetodoResumo = {
+  id: Extract<AulaAcaoTipo, "cornell" | "feynman" | "mapa" | "topicos" | "tradicional" | "fichamento" | "comparativa">;
+  label: string;
+  desc: string;
+  icon: any;
+};
+
+const METODOS_RESUMO: MetodoResumo[] = [
+  { id: "cornell", label: "Cornell", desc: "Notas + perguntas-chave + síntese", icon: NotebookPen },
+  { id: "feynman", label: "Feynman", desc: "Explica como se fosse um leigo", icon: Lightbulb },
+  { id: "mapa", label: "Mapa Mental", desc: "Hierarquia visual de conceitos", icon: Workflow },
+  { id: "topicos", label: "Por tópicos", desc: "Estrutura em tópicos organizados", icon: ListTree },
+  { id: "tradicional", label: "Resumo tradicional", desc: "Texto corrido e fluido", icon: FileText },
+  { id: "fichamento", label: "Fichamento", desc: "Referências, citações e análise", icon: Bookmark },
+  { id: "comparativa", label: "Tabela comparativa", desc: "Elementos lado a lado", icon: TableIcon },
+];
+
+type TipoFlash = Extract<AulaAcaoTipo, "flashcards" | "lacunas" | "conceito">;
+const TIPOS_FLASH: Array<{ id: TipoFlash; label: string; desc: string; icon: any }> = [
+  { id: "flashcards", label: "Tradicional", desc: "Pergunta → resposta", icon: Layers },
+  { id: "lacunas", label: "Lacunas", desc: "Frase com palavra-chave oculta", icon: Brackets },
+  { id: "conceito", label: "Conceito-chave", desc: "Termo → definição curta", icon: KeyRound },
+];
+
+interface Props {
+  input: AulaCtxInput | null;
+  gridLayout?: boolean;
+  extras?: React.ReactNode;
+  /** Esconde o botão "Questões" da barra. */
+  hideQuestoes?: boolean;
+  /** Número de colunas quando gridLayout (default 4). */
+  gridCols?: 4 | 5 | 6;
+}
+
+type SeletorTipo = "resumos" | "flash" | null;
+
+export default function VideoaulaAcoesBar({ input, gridLayout, extras, hideQuestoes, gridCols = 4 }: Props) {
+  const [aba, setAba] = useState<AulaAcaoTipo | null>(null);
+  const [seletor, setSeletor] = useState<SeletorTipo>(null);
+
+  const navigate = useNavigate();
+  const { isPremium, loading: loadingPlano } = useSubscription();
+  // Neste projeto não há trial expirável: liberado enquanto carrega ou se premium.
+  const bloqueado = false && !isPremium && !loadingPlano;
+
+  const guard = (fn: () => void) => () => {
+    if (bloqueado) {
+      toast.info("Seu teste gratuito acabou. Assine para continuar.");
+      navigate("/assinatura");
+      return;
+    }
+    fn();
+  };
+
+  const RailBtn = ({
+    icon: Icon, label, onClick,
+  }: { icon: any; label: string; onClick: () => void }) => (
+    <button
+      type="button"
+      onClick={guard(onClick)}
+      className={cn(
+        "group relative flex flex-col items-center justify-center gap-1.5 py-2.5 px-1.5 rounded-xl transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/40",
+        gridLayout ? "w-full" : "shrink-0 min-w-[72px] snap-start",
+      )}
+    >
+      {bloqueado && (
+        <span className="absolute top-1 right-1 grid place-items-center h-3.5 w-3.5 rounded-full bg-brand-amber/20 text-brand-amber">
+          <Lock className="h-2.5 w-2.5" strokeWidth={2.5} />
+        </span>
+      )}
+      <Icon className={cn("h-6 w-6", bloqueado && "opacity-60")} strokeWidth={2} />
+      <span className={cn("text-[12px] font-medium leading-none text-center", bloqueado && "opacity-60")}>{label}</span>
+    </button>
+  );
+
+  const gridColsClass = gridCols === 5 ? "grid-cols-5" : gridCols === 6 ? "grid-cols-6" : "grid-cols-4";
+
+  return (
+    <>
+      <div
+        className={cn(
+          gridLayout
+            ? cn("grid gap-1 w-full", gridColsClass)
+            : "flex items-stretch gap-1 w-full overflow-x-auto snap-x snap-mandatory scrollbar-none",
+        )}
+      >
+        <RailBtn icon={Layers} label="Flashcards" onClick={() => setSeletor("flash")} />
+        <RailBtn icon={AlertTriangle} label="Pegadinhas" onClick={() => setAba("pegadinhas")} />
+        <RailBtn icon={BookOpenText} label="Resumos" onClick={() => setSeletor("resumos")} />
+        <RailBtn icon={Scale} label="Lei seca" onClick={() => setAba("lei")} />
+        <RailBtn icon={BookA} label="Termos" onClick={() => setAba("termos")} />
+        {!hideQuestoes && <RailBtn icon={ListChecks} label="Questões" onClick={() => setAba("questoes")} />}
+        {extras}
+      </div>
+
+
+
+      {typeof document !== "undefined" && createPortal(
+        <AnimatePresence>
+          {seletor === "resumos" && (
+            <SeletorOverlay
+              key="sel-resumos"
+              titulo="Método de resumo"
+              opcoes={METODOS_RESUMO}
+              onClose={() => setSeletor(null)}
+              onPick={(id) => { setSeletor(null); setAba(id); }}
+            />
+          )}
+          {seletor === "flash" && (
+            <SeletorOverlay
+              key="sel-flash"
+              titulo="Tipo de flashcard"
+              opcoes={TIPOS_FLASH}
+              onClose={() => setSeletor(null)}
+              onPick={(id) => { setSeletor(null); setAba(id as AulaAcaoTipo); }}
+            />
+          )}
+          {aba && (
+            <PainelOverlay
+              key="painel"
+              input={input}
+              tipo={aba}
+              onClose={() => setAba(null)}
+            />
+          )}
+        </AnimatePresence>,
+        document.body,
+      )}
+    </>
+  );
+}
+
+function SeletorOverlay<T extends string>({
+  titulo, opcoes, onClose, onPick,
+}: {
+  titulo: string;
+  opcoes: Array<{ id: T; label: string; desc: string; icon: any }>;
+  onClose: () => void;
+  onPick: (id: T) => void;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="fixed inset-0 z-[80] bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ y: 60, opacity: 0, scale: 0.98 }}
+        animate={{ y: 0, opacity: 1, scale: 1 }}
+        exit={{ y: 60, opacity: 0, scale: 0.98 }}
+        transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full sm:max-w-lg max-h-[92vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border border-border bg-card shadow-2xl"
+      >
+        <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-3 bg-card/95 backdrop-blur border-b border-border">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-primary font-semibold inline-flex items-center gap-1.5">
+            <Sparkles className="h-3 w-3" /> {titulo}
+          </p>
+          <button onClick={onClose} className="h-8 w-8 grid place-items-center rounded-full hover:bg-muted">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+        <div className="p-3 flex flex-col gap-2">
+          {opcoes.map((opt) => {
+            const Icon = opt.icon;
+            return (
+              <button
+                key={opt.id}
+                onClick={() => onPick(opt.id)}
+                className="text-left rounded-2xl border border-border bg-background hover:border-primary/50 hover:bg-muted/40 transition-colors p-3.5 flex items-center gap-3"
+              >
+                <div className="h-10 w-10 shrink-0 rounded-xl bg-primary/10 grid place-items-center">
+                  <Icon className="h-5 w-5 text-primary" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold leading-tight">{opt.label}</p>
+                  <p className="text-[12px] text-muted-foreground leading-snug mt-0.5">{opt.desc}</p>
+                </div>
+                <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+              </button>
+            );
+          })}
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function PainelOverlay({ input, tipo, onClose }: { input: AulaCtxInput | null; tipo: AulaAcaoTipo; onClose: () => void }) {
+  const { data, isLoading, error, refetch } = useVideoaulaAcao(input, tipo, true);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="fixed inset-0 z-[80] bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ y: 60, opacity: 0, scale: 0.98 }}
+        animate={{ y: 0, opacity: 1, scale: 1 }}
+        exit={{ y: 60, opacity: 0, scale: 0.98 }}
+        transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full sm:max-w-lg max-h-[92vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border border-border bg-card shadow-2xl"
+      >
+        <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-3 bg-card/95 backdrop-blur border-b border-border">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-red-400 font-semibold inline-flex items-center gap-1.5">
+            <Sparkles className="h-3 w-3" /> {TITULOS[tipo]}
+          </p>
+          <button onClick={onClose} className="h-8 w-8 grid place-items-center rounded-full hover:bg-muted">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="p-4 md:p-5">
+          {isLoading && (
+            <div className="py-12 flex flex-col items-center gap-3">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <p className="text-sm text-muted-foreground text-center">
+                Gerando {TITULOS[tipo].toLowerCase()} com base na aula…
+              </p>
+            </div>
+          )}
+          {error && (
+            <div className="py-8 flex flex-col items-center gap-3 text-center">
+              <p className="text-sm text-destructive">Não foi possível gerar o conteúdo.</p>
+              <button onClick={() => refetch()} className="text-xs underline text-primary">
+                Tentar de novo
+              </button>
+            </div>
+          )}
+          {data && !isLoading && !error && <PainelConteudo tipo={tipo} data={data} />}
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function PainelConteudo({ tipo, data }: { tipo: AulaAcaoTipo; data: any }) {
+  if (tipo === "flashcards" || tipo === "lacunas" || tipo === "conceito")
+    return <FlashcardsPanel cards={data.cards ?? []} />;
+  if (tipo === "pegadinhas") return <PegadinhasPanel itens={data.pegadinhas ?? []} />;
+  if (tipo === "mapa") return <MapaMentalPanel raiz={data.raiz ?? ""} ramos={data.ramos ?? []} />;
+  if (tipo === "cornell") return <CornellPanel data={data} />;
+  if (tipo === "feynman") return <FeynmanPanel data={data} />;
+  if (tipo === "topicos") return <TopicosPanel data={data} />;
+  if (tipo === "tradicional") return <TradicionalPanel data={data} />;
+  if (tipo === "fichamento") return <FichamentoPanel data={data} />;
+  if (tipo === "comparativa") return <ComparativaPanel data={data} />;
+  if (tipo === "lei") return <LeiSecaPanel leis={data.leis ?? []} />;
+  if (tipo === "questoes") return <QuestoesPanel questoes={data.questoes ?? []} />;
+  if (tipo === "termos") return <TermosPanel termos={data.termos ?? []} />;
+  return null;
+}
+
+function FeynmanPanel({ data }: { data: any }) {
+  return (
+    <div className="space-y-3">
+      {data.titulo && <h3 className="font-display text-lg font-bold">{data.titulo}</h3>}
+      {data.explicacao_simples && (
+        <div className="rounded-xl border border-border bg-background p-4">
+          <p className="text-[10px] uppercase tracking-wider text-amber-400 font-semibold mb-2 inline-flex items-center gap-1.5">
+            <Lightbulb className="h-3 w-3" /> Explicação simples
+          </p>
+          <p className="text-sm leading-relaxed whitespace-pre-line text-foreground/90">{data.explicacao_simples}</p>
+        </div>
+      )}
+      {data.analogia && (
+        <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4">
+          <p className="text-[10px] uppercase tracking-wider text-amber-500 font-semibold mb-1.5">Analogia</p>
+          <p className="text-sm italic leading-relaxed text-foreground/90">{data.analogia}</p>
+        </div>
+      )}
+      {Array.isArray(data.pontos_dificeis) && data.pontos_dificeis.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Pontos difíceis</p>
+          {data.pontos_dificeis.map((p: any, i: number) => (
+            <div key={i} className="rounded-xl border border-border bg-background p-3">
+              <p className="text-sm font-semibold mb-1">{p.conceito}</p>
+              <p className="text-sm text-foreground/85 leading-relaxed">{p.explicacao_facil}</p>
+            </div>
+          ))}
+        </div>
+      )}
+      {data.resumo_uma_frase && (
+        <div className="rounded-xl border border-primary/30 bg-primary/5 p-4">
+          <p className="text-[10px] uppercase tracking-wider text-primary font-semibold mb-1.5">Em uma frase</p>
+          <p className="text-sm font-medium leading-relaxed">{data.resumo_uma_frase}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function TopicosPanel({ data }: { data: any }) {
+  return (
+    <div className="space-y-3">
+      {data.titulo && <h3 className="font-display text-lg font-bold">{data.titulo}</h3>}
+      {(data.topicos ?? []).map((t: any, i: number) => (
+        <div key={i} className="rounded-xl border border-border bg-background overflow-hidden">
+          <div className="bg-primary/10 px-3 py-2 border-b border-border">
+            <p className="text-sm font-bold inline-flex items-center gap-2">
+              <span className="h-5 w-5 rounded-full bg-primary text-primary-foreground text-[11px] grid place-items-center font-bold">{i + 1}</span>
+              {t.titulo}
+            </p>
+          </div>
+          <div className="p-3 space-y-2">
+            {(t.subtopicos ?? []).map((s: any, j: number) => (
+              <div key={j} className="border-l-2 border-primary/40 pl-3">
+                <p className="text-sm font-semibold">{s.titulo}</p>
+                <p className="text-sm text-foreground/85 leading-relaxed mt-0.5">{s.conteudo}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function TradicionalPanel({ data }: { data: any }) {
+  return (
+    <div className="space-y-3">
+      {data.titulo && <h3 className="font-display text-lg font-bold">{data.titulo}</h3>}
+      {data.introducao && (
+        <p className="text-sm leading-relaxed text-foreground/90 italic whitespace-pre-line">{data.introducao}</p>
+      )}
+      {data.desenvolvimento && (
+        <div className="rounded-xl border border-border bg-background p-4">
+          <p className="text-sm leading-relaxed text-foreground whitespace-pre-line">{data.desenvolvimento}</p>
+        </div>
+      )}
+      {data.conclusao && (
+        <div className="rounded-xl border border-primary/30 bg-primary/5 p-4">
+          <p className="text-[10px] uppercase tracking-wider text-primary font-semibold mb-1.5">Conclusão</p>
+          <p className="text-sm leading-relaxed text-foreground/90 whitespace-pre-line">{data.conclusao}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function FichamentoPanel({ data }: { data: any }) {
+  return (
+    <div className="space-y-3">
+      {data.titulo && <h3 className="font-display text-lg font-bold">{data.titulo}</h3>}
+      {data.referencia_principal && (
+        <p className="text-xs text-muted-foreground italic">Referência: {data.referencia_principal}</p>
+      )}
+      {Array.isArray(data.citacoes) && data.citacoes.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Citações</p>
+          {data.citacoes.map((c: any, i: number) => (
+            <div key={i} className="rounded-xl border-l-4 border-primary bg-muted/30 p-3">
+              <p className="text-sm italic leading-relaxed text-foreground/90">"{c.trecho}"</p>
+              {c.fonte && <p className="text-[11px] text-muted-foreground mt-1.5">— {c.fonte}</p>}
+            </div>
+          ))}
+        </div>
+      )}
+      {data.analise && (
+        <div className="rounded-xl border border-border bg-background p-4">
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2">Análise</p>
+          <p className="text-sm leading-relaxed text-foreground/90 whitespace-pre-line">{data.analise}</p>
+        </div>
+      )}
+      {Array.isArray(data.conceitos_chave) && data.conceitos_chave.length > 0 && (
+        <div className="flex flex-wrap gap-1.5">
+          {data.conceitos_chave.map((k: string, i: number) => (
+            <span key={i} className="text-[11px] px-2 py-1 rounded-full bg-primary/10 text-primary font-medium">{k}</span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ComparativaPanel({ data }: { data: any }) {
+  const criterios: string[] = data.criterios ?? [];
+  const itens: Array<{ nome: string; valores: string[] }> = data.itens ?? [];
+  return (
+    <div className="space-y-3">
+      {data.titulo && <h3 className="font-display text-lg font-bold">{data.titulo}</h3>}
+      <div className="rounded-xl border border-border overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead className="bg-muted/50">
+            <tr>
+              <th className="text-left p-2.5 font-semibold border-b border-border">Critério</th>
+              {itens.map((it, i) => (
+                <th key={i} className="text-left p-2.5 font-semibold border-b border-border min-w-[120px]">{it.nome}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {criterios.map((c, ci) => (
+              <tr key={ci} className="border-b border-border last:border-0">
+                <td className="p-2.5 font-medium text-foreground/90 bg-muted/20">{c}</td>
+                {itens.map((it, ii) => (
+                  <td key={ii} className="p-2.5 align-top text-foreground/85">{it.valores?.[ci] ?? "—"}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+
+function FlashcardsPanel({
+  cards,
+}: {
+  cards: Array<{ frente: string; verso: string }>;
+}) {
+  if (!cards.length) return <p className="text-sm text-muted-foreground">Sem flashcards.</p>;
+  const mapped = cards.map((c) => ({
+    pergunta: c.frente,
+    resposta: c.verso,
+    explicacao: null,
+    exemplo: null,
+    dica: null,
+    tema: null,
+  }));
+  return <FlashcardEleganteViewer cards={mapped} />;
+}
+
+function PegadinhasPanel({ itens }: { itens: Array<{ titulo: string; descricao: string; exemplo?: string }> }) {
+  if (!itens.length) return <p className="text-sm text-muted-foreground">Sem pegadinhas.</p>;
+  return (
+    <div className="space-y-3">
+      <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3">
+        <p className="text-[10px] uppercase tracking-wider text-amber-500 font-semibold inline-flex items-center gap-1.5">
+          <AlertTriangle className="h-3 w-3" /> Atenção da banca
+        </p>
+      </div>
+      {itens.map((p, i) => (
+        <div key={i} className="rounded-xl border border-border bg-background p-4">
+          <div className="flex items-start gap-3">
+            <div className="h-8 w-8 shrink-0 rounded-lg bg-amber-500/15 text-amber-500 grid place-items-center font-semibold text-sm tabular-nums">
+              {String(i + 1).padStart(2, "0")}
+            </div>
+            <div className="flex-1 min-w-0">
+              <h4 className="font-semibold text-sm leading-snug mb-1">{p.titulo}</h4>
+              <p className="text-sm text-foreground/85 leading-relaxed">{p.descricao}</p>
+              {p.exemplo && (
+                <div className="mt-2.5 rounded-lg bg-muted/50 border-l-2 border-amber-500 px-3 py-2">
+                  <p className="text-[10px] uppercase tracking-wider text-amber-500 font-semibold mb-0.5">Exemplo</p>
+                  <p className="text-sm italic text-foreground/80 leading-relaxed">{p.exemplo}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function MapaMentalPanel({ raiz, ramos }: { raiz: string; ramos: Array<{ titulo: string; itens: string[]; exemplo?: string }> }) {
+  if (!ramos.length) return <p className="text-sm text-muted-foreground">Sem mapa mental.</p>;
+  return (
+    <div className="space-y-5">
+      <div className="flex justify-center">
+        <div className="inline-flex items-center gap-2 rounded-2xl border border-red-400/50 bg-red-400/10 px-4 py-2.5 shadow-lg shadow-red-400/15">
+          <Workflow className="h-4 w-4 text-red-400" />
+          <div>
+            <p className="text-[9px] uppercase tracking-[0.22em] text-red-400 font-semibold leading-none mb-1">Tema</p>
+            <p className="font-display text-sm md:text-base font-bold leading-tight">{raiz}</p>
+          </div>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {ramos.map((r, i) => (
+          <div key={i} className="rounded-xl border border-red-400/30 bg-card overflow-hidden">
+            <div className="bg-red-400/10 px-3 py-2 border-b border-red-400/20">
+              <p className="font-semibold text-sm">{r.titulo}</p>
+            </div>
+            <ul className="p-3 space-y-1.5">
+              {(r.itens ?? []).map((it, j) => (
+                <li key={j} className="text-sm text-foreground/85 leading-snug flex gap-2">
+                  <span className="text-red-400">•</span><span>{it}</span>
+                </li>
+              ))}
+            </ul>
+            {r.exemplo && (
+              <div className="mx-3 mb-3 rounded-lg bg-amber-500/10 border-l-2 border-amber-500/70 px-3 py-2">
+                <p className="text-[10px] uppercase tracking-wider text-amber-400 font-semibold mb-0.5 inline-flex items-center gap-1">
+                  <Sparkles className="h-3 w-3" /> Exemplo
+                </p>
+                <p className="text-xs italic text-foreground/85 leading-relaxed">{r.exemplo}</p>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function CornellPanel({ data }: { data: { palavras_chave?: string[]; notas?: string; sintese?: string } }) {
+  return (
+    <div className="space-y-3">
+      <div className="grid grid-cols-[110px_1fr] gap-3">
+        <div className="rounded-xl border border-border bg-muted/30 p-3">
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2">Palavras-chave</p>
+          <ul className="space-y-1.5">
+            {(data.palavras_chave ?? []).map((p, i) => (
+              <li key={i} className="text-xs font-medium text-foreground/90">{p}</li>
+            ))}
+          </ul>
+        </div>
+        <div className="rounded-xl border border-border bg-background p-3">
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2">Notas</p>
+          <p className="text-sm leading-relaxed whitespace-pre-line text-foreground/90">{data.notas}</p>
+        </div>
+      </div>
+      <div className="rounded-xl border border-primary/30 bg-primary/5 p-4">
+        <p className="text-[10px] uppercase tracking-wider text-primary font-semibold mb-2">Síntese</p>
+        <p className="text-sm leading-relaxed text-foreground">{data.sintese}</p>
+      </div>
+    </div>
+  );
+}
+
+type LeiCitada = {
+  lei?: string;
+  codigo?: string;
+  artigo?: string;
+  texto?: string;
+  trecho_relevante?: string;
+};
+
+function LeiSecaPanel({ leis }: { leis: LeiCitada[] }) {
+  if (!leis.length) {
+    return <p className="text-sm text-muted-foreground py-6 text-center">Nenhum dispositivo identificado.</p>;
+  }
+  return (
+    <div className="space-y-3">
+      <p className="text-[10px] uppercase tracking-[0.2em] text-primary font-semibold inline-flex items-center gap-1.5">
+        <Scale className="h-3 w-3" /> Dispositivos da aula
+      </p>
+      {leis.map((item, i) => {
+        const sigla = (item.codigo || "LEI").toUpperCase();
+        return (
+          <div key={i} className="rounded-xl border border-border bg-background p-3.5">
+            <div className="flex items-start gap-3 mb-2">
+              <span className="shrink-0 h-9 px-2.5 min-w-[44px] grid place-items-center rounded-lg bg-primary/15 text-primary text-[11px] font-bold tracking-wider">
+                {sigla}
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-bold leading-tight">Art. {item.artigo}</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">{item.lei || ""}</p>
+              </div>
+            </div>
+            {item.texto && (
+              <p className="text-xs leading-relaxed text-foreground/85 whitespace-pre-line">
+                {item.trecho_relevante && item.texto.includes(item.trecho_relevante) ? (
+                  item.texto.split(item.trecho_relevante).flatMap((part, idx, arr) =>
+                    idx < arr.length - 1
+                      ? [<span key={`p${idx}`}>{part}</span>, <mark key={`m${idx}`} className="bg-amber-500/30 text-amber-100 rounded px-1 py-0.5 font-medium">{item.trecho_relevante}</mark>]
+                      : [<span key={`p${idx}`}>{part}</span>]
+                  )
+                ) : (
+                  item.texto
+                )}
+              </p>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+type QuestaoIA = {
+  enunciado: string;
+  a?: string; b?: string; c?: string; d?: string;
+  gabarito?: string;
+  comentario?: string;
+};
+
+function QuestoesPanel({ questoes }: { questoes: QuestaoIA[] }) {
+  const [i, setI] = useState(0);
+  const [resposta, setResposta] = useState<string | null>(null);
+  const [mostrarGabarito, setMostrarGabarito] = useState(false);
+  if (!questoes.length) return <p className="text-sm text-muted-foreground">Sem questões.</p>;
+  const q = questoes[i];
+  const gab = (q.gabarito || "").trim().toUpperCase();
+  const alternativas: Array<[string, string | undefined]> = [
+    ["A", q.a], ["B", q.b], ["C", q.c], ["D", q.d],
+  ];
+
+  const acertou = mostrarGabarito && resposta === gab;
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+          Questão {i + 1} de {questoes.length}
+        </span>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => { setI(Math.max(0, i - 1)); setResposta(null); setMostrarGabarito(false); }}
+            disabled={i === 0}
+            className="h-8 w-8 grid place-items-center rounded-full border border-border disabled:opacity-40 hover:bg-muted"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => { setI(Math.min(questoes.length - 1, i + 1)); setResposta(null); setMostrarGabarito(false); }}
+            disabled={i + 1 >= questoes.length}
+            className="h-8 w-8 grid place-items-center rounded-full border border-border disabled:opacity-40 hover:bg-muted"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-border bg-background p-4">
+        <p className="text-sm leading-relaxed text-foreground whitespace-pre-line">{q.enunciado}</p>
+      </div>
+
+      <div className="space-y-2">
+        {alternativas.map(([letra, texto]) => {
+          if (!texto) return null;
+          const selecionada = resposta === letra;
+          const isCorreta = mostrarGabarito && letra === gab;
+          const isErrada = mostrarGabarito && selecionada && letra !== gab;
+          return (
+            <button
+              key={letra}
+              onClick={() => !mostrarGabarito && setResposta(letra)}
+              disabled={mostrarGabarito}
+              className={cn(
+                "w-full text-left rounded-xl border p-3 flex items-start gap-3 transition-colors",
+                isCorreta && "border-emerald-500/50 bg-emerald-500/10",
+                isErrada && "border-red-500/50 bg-red-500/10",
+                !mostrarGabarito && selecionada && "border-primary bg-primary/10",
+                !mostrarGabarito && !selecionada && "border-border bg-background hover:border-primary/40",
+                mostrarGabarito && !isCorreta && !isErrada && "border-border bg-background opacity-70",
+              )}
+            >
+              <span className={cn(
+                "h-7 w-7 shrink-0 rounded-full grid place-items-center text-xs font-bold",
+                isCorreta ? "bg-emerald-500 text-white" :
+                isErrada ? "bg-red-500 text-white" :
+                selecionada ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
+              )}>
+                {letra}
+              </span>
+              <span className="text-sm leading-relaxed text-foreground/90 flex-1">{texto}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {!mostrarGabarito && (
+        <button
+          onClick={() => setMostrarGabarito(true)}
+          disabled={!resposta}
+          className="w-full h-11 rounded-xl bg-primary text-primary-foreground text-sm font-semibold disabled:opacity-40 hover:opacity-90 transition-opacity"
+        >
+          Confirmar resposta
+        </button>
+      )}
+
+      {mostrarGabarito && (
+        <div className="space-y-3">
+          <div className={cn(
+            "rounded-xl border p-3 flex items-center gap-2",
+            acertou ? "border-emerald-500/40 bg-emerald-500/10" : "border-red-500/40 bg-red-500/10",
+          )}>
+            <CheckCircle2 className={cn("h-5 w-5", acertou ? "text-emerald-400" : "text-red-400")} />
+            <p className="text-sm font-semibold">
+              {acertou ? "Você acertou!" : `Resposta correta: ${gab}`}
+            </p>
+          </div>
+          {q.comentario && (
+            <div className="rounded-xl border border-border bg-background p-4">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2 inline-flex items-center gap-1.5">
+                <Sparkles className="h-3 w-3" /> Comentário
+              </p>
+              <p className="text-sm leading-relaxed text-foreground/90 whitespace-pre-line">{q.comentario}</p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function TermosPanel({ termos }: { termos: Array<{ termo: string; definicao: string; exemplo?: string }> }) {
+  if (!termos.length) {
+    return <p className="text-sm text-muted-foreground py-6 text-center">Nenhum termo identificado nesta aula.</p>;
+  }
+  return (
+    <div className="space-y-3">
+      <p className="text-[10px] uppercase tracking-[0.2em] text-primary font-semibold inline-flex items-center gap-1.5">
+        <Sparkles className="h-3 w-3" /> Glossário da aula
+      </p>
+      {termos.map((t, i) => (
+        <div key={i} className="rounded-xl border border-border bg-background p-3.5">
+          <div className="flex items-start gap-3">
+            <span className="shrink-0 h-8 w-8 grid place-items-center rounded-lg bg-primary/15 text-primary text-[12px] font-bold tabular-nums">
+              {String(i + 1).padStart(2, "0")}
+            </span>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold leading-tight">{t.termo}</p>
+              <p className="text-sm text-foreground/85 leading-relaxed mt-1">{t.definicao}</p>
+              {t.exemplo && (
+                <div className="mt-2 rounded-lg bg-muted/40 border-l-2 border-primary/60 px-3 py-2">
+                  <p className="text-[10px] uppercase tracking-wider text-primary font-semibold mb-0.5">Exemplo</p>
+                  <p className="text-xs italic text-foreground/80 leading-relaxed">{t.exemplo}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}

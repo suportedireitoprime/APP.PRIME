@@ -1,0 +1,1 @@
+delete from public.boletins_juridicos where id = '08a57b1b-a291-4fef-98b4-453b2eefe924';

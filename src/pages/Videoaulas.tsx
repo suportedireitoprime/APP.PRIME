@@ -1,0 +1,300 @@
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ChevronRight, History, Play, Video } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { PageHeader } from '@/components/vademecum/PageHeader';
+import ThumbImg from '@/components/videoaulas/ThumbImg';
+import VideoaulasBottomNav from '@/components/videoaulas/VideoaulasBottomNav';
+import { areaIconFor } from '@/lib/areasDireitoIcons';
+import { limparTitulo, simplificarNomeArea, ytThumb } from '@/lib/videoaulasCatalogos';
+import {
+  carregarResumoVideoaulas,
+  RESUMO_VAZIO,
+  resumoVideoaulasSincrono,
+  type ResumoVideoaulas,
+} from '@/lib/videoaulasResumo';
+import {
+  prefetchCatalogo,
+  subscribeVideoaulas,
+  warmVideoaulasCache,
+} from '@/lib/videoaulasStore';
+import { haptic } from '@/lib/nativeHaptics';
+
+const Videoaulas = () => {
+  const navigate = useNavigate();
+  // Render instantâneo: se o cache em memória já tem os catálogos, pinta na hora.
+  const [data, setData] = useState<ResumoVideoaulas>(() => resumoVideoaulasSincrono() ?? RESUMO_VAZIO);
+  const [loading, setLoading] = useState(() => !resumoVideoaulasSincrono());
+  const [filtro, setFiltro] = useState<'todas' | 'andamento'>('todas');
+
+  useEffect(() => {
+    let alive = true;
+    const atualizar = () => {
+      carregarResumoVideoaulas().then((r) => {
+        if (!alive) return;
+        setData(r);
+        setLoading(false);
+      });
+    };
+    atualizar();
+    warmVideoaulasCache();
+    // Quando o cache é revalidado em background, a tela se atualiza sozinha.
+    const off = subscribeVideoaulas(() => {
+      const sync = resumoVideoaulasSincrono();
+      if (alive && sync) {
+        setData(sync);
+        setLoading(false);
+      }
+    });
+    return () => {
+      alive = false;
+      off();
+    };
+  }, []);
+
+
+
+  // No início: as áreas do Direito (Penal, Civil, etc.).
+  const areasDireito = useMemo(
+    () => data.areas.filter((a) => a.catalogo === 'areas'),
+    [data.areas],
+  );
+
+  const emAndamentoCount = useMemo(
+    () => areasDireito.filter((a) => a.pct > 0).length,
+    [areasDireito],
+  );
+
+  const lista = useMemo(() => {
+    const l = [...areasDireito].sort((a, b) => {
+      const ai = a.pct > 0 ? 0 : 1;
+      const bi = b.pct > 0 ? 0 : 1;
+      if (ai !== bi) return ai - bi;
+      if (ai === 0 && b.pct !== a.pct) return b.pct - a.pct;
+      return a.area.localeCompare(b.area, 'pt-BR');
+    });
+    return filtro === 'andamento' ? l.filter((a) => a.pct > 0) : l;
+  }, [areasDireito, filtro]);
+
+  const pct = data.pctGeral;
+  const size = 72;
+  const stroke = 7;
+  const r = (size - stroke) / 2;
+  const c = 2 * Math.PI * r;
+  const dash = c - (pct / 100) * c;
+
+  return (
+    <div className="min-h-screen bg-background">
+      <PageHeader title="Videoaulas" onBack={() => navigate('/')} />
+
+      <div className="mx-auto w-full max-w-3xl pb-32">
+        {/* Painel — mesmo do Aprender */}
+        <section
+          className="bg-hero-yellow relative isolate overflow-hidden border-b border-black/10"
+          aria-label="Seu progresso em videoaulas"
+        >
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.25),transparent_60%)]" />
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.18),transparent_65%)]" />
+
+          <div className="relative p-4 sm:p-5">
+            <div className="flex items-start gap-3">
+              <div className="relative shrink-0" style={{ width: size, height: size }}>
+                <svg width={size} height={size} className="-rotate-90">
+                  <circle cx={size / 2} cy={size / 2} r={r} stroke="rgba(255,255,255,0.2)" strokeWidth={stroke} fill="none" />
+                  <circle
+                    cx={size / 2}
+                    cy={size / 2}
+                    r={r}
+                    stroke="#fff"
+                    strokeWidth={stroke}
+                    strokeLinecap="round"
+                    fill="none"
+                    strokeDasharray={c}
+                    strokeDashoffset={dash}
+                    style={{ transition: 'stroke-dashoffset 600ms ease' }}
+                  />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="font-display text-base font-black leading-none text-white">{pct}%</span>
+                  <span className="mt-0.5 text-[8px] font-bold uppercase tracking-wider text-white/70">
+                    Assistido
+                  </span>
+                </div>
+              </div>
+
+              <div className="min-w-0 max-w-[58%] lg:max-w-[70%]">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-white/75">Sua trilha</p>
+                <h1 className="mt-0.5 font-display text-[22px] font-black leading-tight text-white sm:text-[28px]">
+                  Videoaulas
+                  <span className="ml-2 font-display text-[15px] font-semibold italic text-white/80 sm:text-[20px]">
+                    em trilhas
+                  </span>
+                </h1>
+                <p
+                  className="mt-0.5 text-[12px] leading-snug text-white/80 sm:text-[13px]"
+                  style={{ fontFamily: "'Barlow', system-ui, sans-serif" }}
+                >
+                  Aulas em vídeo com ferramentas de estudo por área.
+                </p>
+              </div>
+            </div>
+
+
+            <div className="relative mt-3 rounded-xl bg-black/85 text-white ring-1 ring-black/20 shadow-lg">
+              <div className="grid grid-cols-3 divide-x divide-white/10">
+                <div className="flex flex-col items-center justify-center px-2 py-2">
+                  <span className="text-[9px] font-bold uppercase tracking-wider text-white/60">Áreas</span>
+                  <span className="mt-0.5 font-display text-base font-black leading-none">{areasDireito.length}</span>
+                </div>
+                <div className="flex flex-col items-center justify-center px-2 py-2">
+                  <span className="text-[9px] font-bold uppercase tracking-wider text-white/60">Aulas</span>
+                  <span className="mt-0.5 font-display text-base font-black leading-none">{data.totalAulas}</span>
+                </div>
+                <div className="flex flex-col items-center justify-center px-2 py-2">
+                  <span className="text-[9px] font-bold uppercase tracking-wider text-white/60">Assistidas</span>
+                  <span className="mt-0.5 font-display text-base font-black leading-none text-[hsl(var(--aprender-accent))]">
+                    {data.totalConcluidas}
+                    <span className="text-white/50">/{data.totalAulas}</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div className="space-y-5 px-4 pt-5 sm:px-6">
+          {/* Continue assistindo */}
+          {data.recentes.length > 0 && (
+            <div>
+              <div className="mb-2 flex items-center gap-1.5">
+                <History className="h-3.5 w-3.5 text-primary" />
+                <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                  Continue assistindo
+                </p>
+              </div>
+              <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
+                {data.recentes.map((r, i) => (
+                  <button
+                    key={r.rota}
+                    onClick={() => navigate(r.rota)}
+                    className="w-40 shrink-0 overflow-hidden rounded-2xl border border-border bg-card text-left transition-transform active:scale-[0.98]"
+                  >
+                    <div className="relative aspect-video bg-muted">
+                      <ThumbImg
+                        src={ytThumb(r.videoId, 'mq')}
+                        alt={r.titulo}
+                        priority={i < 3}
+                        fallback={<Play className="h-6 w-6 text-primary/50" />}
+                      />
+                      <span
+                        className="absolute bottom-0 left-0 h-1 bg-primary"
+                        style={{ width: `${r.percentual}%` }}
+                      />
+                    </div>
+                    <p className="line-clamp-2 px-2 pt-1.5 text-[11.5px] font-semibold leading-snug text-foreground">
+                      {limparTitulo(r.titulo)}
+                    </p>
+                    <p className="px-2 pb-1.5 pt-0.5 text-[10.5px] text-muted-foreground">
+                      {Math.round(r.percentual)}% assistido
+                    </p>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Áreas do Direito */}
+          <div>
+            <div className="mb-2 flex items-center justify-between gap-2">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                Áreas do Direito
+              </p>
+              {emAndamentoCount > 0 && (
+                <div className="flex items-center gap-1 rounded-full bg-muted p-0.5">
+                  {(['todas', 'andamento'] as const).map((f) => (
+                    <button
+                      key={f}
+                      onClick={() => setFiltro(f)}
+                      className={[
+                        'rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors',
+                        filtro === f
+                          ? 'bg-[hsl(var(--aprender-accent))] text-[hsl(var(--aprender-accent-foreground))]'
+                          : 'text-muted-foreground hover:text-foreground',
+                      ].join(' ')}
+                    >
+                      {f === 'todas' ? 'Todas' : `Em andamento (${emAndamentoCount})`}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              {loading && !lista.length
+                ? [...Array(6)].map((_, i) => (
+                    <div key={i} className="h-[84px] animate-pulse rounded-2xl bg-muted" />
+                  ))
+                : lista.map((a) => {
+                    const { Icon, color } = areaIconFor(a.area);
+                    return (
+                      <button
+                        key={`${a.catalogo}-${a.slug}`}
+                        onPointerDown={() => prefetchCatalogo('areas')}
+                        onClick={() => {
+                          haptic.selection();
+                          navigate(`/videoaulas/areas/${a.slug}`);
+                        }}
+
+                        className="group flex w-full items-center gap-3 rounded-2xl border border-border bg-card p-3 text-left transition-all hover:border-primary/40 hover:shadow-sm active:scale-[0.995] sm:p-3.5"
+                      >
+                        <div className="relative flex h-14 w-14 shrink-0 items-center justify-center sm:h-16 sm:w-16 aprender-icon-shine">
+                          <Icon className="h-9 w-9 sm:h-10 sm:w-10" strokeWidth={1.9} style={{ color }} />
+                        </div>
+
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2">
+                            <p
+                              className="min-w-0 flex-1 truncate text-[15px] font-semibold text-foreground sm:text-[16px]"
+                              style={{ fontFamily: "'Barlow', system-ui, sans-serif" }}
+                            >
+                              {simplificarNomeArea(a.area)}
+                            </p>
+                            <span
+                              className={[
+                                'shrink-0 rounded-full px-2 py-0.5 text-[11px] font-bold tabular-nums',
+                                a.pct > 0
+                                  ? 'bg-[hsl(var(--aprender-accent)/0.18)] text-[hsl(var(--aprender-accent))]'
+                                  : 'bg-muted text-muted-foreground',
+                              ].join(' ')}
+                            >
+                              {a.pct}%
+                            </span>
+                          </div>
+                          <p className="mt-0.5 flex items-center gap-1 text-[12px] text-muted-foreground sm:text-[13px]">
+                            <Video className="h-3 w-3" />
+                            {a.total} {a.total === 1 ? 'aula' : 'aulas'}
+                            {a.concluidas > 0 && ` · ${a.concluidas} assistida${a.concluidas === 1 ? '' : 's'}`}
+                          </p>
+                          <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                            <div
+                              className="h-full rounded-full bg-[hsl(var(--aprender-accent))] transition-all"
+                              style={{ width: `${a.pct}%` }}
+                            />
+                          </div>
+                        </div>
+
+                        <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+                      </button>
+                    );
+                  })}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <VideoaulasBottomNav />
+    </div>
+  );
+};
+
+export default Videoaulas;

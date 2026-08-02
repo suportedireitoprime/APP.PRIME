@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "temp_anon_upload_audios" ON storage.objects;
