@@ -69,9 +69,8 @@ type Payload = {
 // Preços vigentes (BRL) — usados para estimar MRR/ARR/receita acumulada
 // Ajuste aqui se mudar o preço no Play Console.
 const PRICE_TABLE: Record<string, { monthly: number; sticker: number; period: 'mensal' | 'anual' | 'semestral' }> = {
-  vade_mecum_mensal: { monthly: 21.9, sticker: 21.9, period: 'mensal' },
-  vade_mecum_anual: { monthly: 119.9 / 12, sticker: 119.9, period: 'anual' },
-  vade_mecum_semestral: { monthly: 59.9 / 6, sticker: 59.9, period: 'semestral' },
+  prime_premium_mensal: { monthly: 29.9, sticker: 29.9, period: 'mensal' },
+  prime_premium_anual: { monthly: 199.9 / 12, sticker: 199.9, period: 'anual' },
 };
 
 const priceFor = (productId: string | null) => {
@@ -290,7 +289,7 @@ const AdminAssinantes = () => {
             <RevenueCard label="Bruto acumulado" value={fmtBRL(grossAccumulated)} hint="ciclos vendidos" accent="from-purple-500 to-fuchsia-500" />
           </div>
           <p className="text-[10px] text-muted-foreground mt-3">
-            * Estimativa a partir dos preços de tabela (R$ 21,90 mensal · R$ 119,90 anual). Não inclui impostos nem taxa do Google (15/30%).
+            * Estimativa a partir dos preços de tabela (R$ 29,90 mensal · R$ 199,90 anual). Não inclui impostos nem taxa do Google (15/30%).
           </p>
         </section>
 

@@ -1,22 +1,14 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useSearchParams, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Capacitor } from '@capacitor/core';
-import { Crown, Zap, Check, Shield, BookOpen, Brain, CreditCard, Copy, CheckCircle2, Loader2, Smartphone, RotateCw, Monitor, TrendingUp, Sparkles, Star, MessageCircle, Headphones, FileText, Library, Scale, Briefcase } from "lucide-react";
-import { AppHeader } from '@/components/layout/AppHeader';
+import { Zap, Check, Shield, Brain, Loader2, Smartphone, RotateCw, Monitor, Sparkles, Star, MessageCircle, Headphones, FileText, Library, Scale, Briefcase } from "lucide-react";
 import { PageHeader } from '@/components/vademecum/PageHeader';
-import logoVacatio from '@/assets/logo-vacatio-v2.png';
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { isBillingAvailable, initBilling, getProducts, purchase as playPurchase, restorePurchases, PRODUCT_IDS, PlayProduct } from "@/lib/billing";
+import { isBillingAvailable, initBilling, getProducts, purchase as playPurchase, restorePurchases, PRODUCT_IDS, type PlanId, type PlayProduct } from "@/lib/billing";
 import { useSubscription } from "@/hooks/useSubscription";
 import WelcomePremiumOverlay from "@/components/planos/WelcomePremiumOverlay";
 import { TrialTimelineSheet } from "@/components/planos/TrialTimelineSheet";
@@ -26,41 +18,6 @@ import { isAdminEmail } from "@/lib/adminEmails";
 import { maybeRequestAfterPurchase } from "@/lib/inAppReview";
 import { track } from "@/lib/analyticsEvents";
 import { useTrackArea } from "@/hooks/useTrackArea";
-
-const benefits = [
-  { icon: BookOpen, text: "Acesso a todas as legislações" },
-  { icon: Brain, text: "Questões ilimitadas com IA" },
-  { icon: Monitor, text: "Acesso pelo desktop e +20 recursos" },
-  { icon: Shield, text: "Radar Legislativo em tempo real" },
-];
-
-// ── Masks ──
-const maskCard = (v: string) => v.replace(/\D/g, '').slice(0, 16).replace(/(\d{4})(?=\d)/g, '$1 ');
-const maskCpf = (v: string) => {
-  const d = v.replace(/\D/g, '').slice(0, 11);
-  if (d.length <= 3) return d;
-  if (d.length <= 6) return `${d.slice(0,3)}.${d.slice(3)}`;
-  if (d.length <= 9) return `${d.slice(0,3)}.${d.slice(3,6)}.${d.slice(6)}`;
-  return `${d.slice(0,3)}.${d.slice(3,6)}.${d.slice(6,9)}-${d.slice(9)}`;
-};
-const maskCep = (v: string) => {
-  const d = v.replace(/\D/g, '').slice(0, 8);
-  if (d.length <= 5) return d;
-  return `${d.slice(0,5)}-${d.slice(5)}`;
-};
-const maskExpiry = (v: string) => {
-  const d = v.replace(/\D/g, '').slice(0, 4);
-  if (d.length <= 2) return d;
-  return `${d.slice(0,2)}/${d.slice(2)}`;
-};
-const maskPhone = (v: string) => {
-  const d = v.replace(/\D/g, '').slice(0, 11);
-  if (d.length <= 2) return `(${d}`;
-  if (d.length <= 7) return `(${d.slice(0,2)}) ${d.slice(2)}`;
-  return `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`;
-};
-
-type Plano = "mensal" | "anual";
 
 export default function Assinatura() {
   useTrackArea("assinatura_aberta");
@@ -88,8 +45,7 @@ export default function Assinatura() {
   };
 
   // ── View state ──
-  const [view, setView] = useState<"plans" | "checkout">("plans");
-  const [selectedPlano, setSelectedPlano] = useState<Plano>("anual");
+  const view = "plans" as const;
 
   // Funil de receita: visualização da lista de planos.
   useEffect(() => {
@@ -115,7 +71,7 @@ export default function Assinatura() {
     })();
   }, [nativeBilling, navigate, refreshSubscription]);
 
-  const handlePlayPurchase = async (planKey: 'mensal' | 'anual' | 'anual_parcelado') => {
+  const handlePlayPurchase = async (planKey: PlanId) => {
     if (!session) { toast.error('Faça login para assinar'); return; }
     setPlayLoading(true);
     try {
@@ -145,168 +101,8 @@ export default function Assinatura() {
     else toast.error(r.error ?? 'Falha ao restaurar');
   };
 
-  // ── Card form ──
-  const [cardNumber, setCardNumber] = useState("");
-  const [cardName, setCardName] = useState("");
-  const [cardExpiry, setCardExpiry] = useState("");
-  const [cardCvv, setCardCvv] = useState("");
-  const [cpf, setCpf] = useState("");
-  const [cep, setCep] = useState("");
-  const [phone, setPhone] = useState("");
-  const [addressNumber, setAddressNumber] = useState("");
-  const [addressData, setAddressData] = useState<{ logradouro?: string; bairro?: string; localidade?: string; uf?: string } | null>(null);
-  const [installments, setInstallments] = useState("1");
-
-  // ── PIX state ──
-  const [pixQrImage, setPixQrImage] = useState<string | null>(null);
-  const [pixPayload, setPixPayload] = useState<string | null>(null);
-  const [pixPaymentId, setPixPaymentId] = useState<string | null>(null);
-  const [pixCopied, setPixCopied] = useState(false);
-  const [pixConfirmed, setPixConfirmed] = useState(false);
-
-  // ── Loading ──
-  const [processing, setProcessing] = useState(false);
-
-  // ── CEP lookup ──
-  useEffect(() => {
-    const raw = cep.replace(/\D/g, '');
-    if (raw.length === 8) {
-      fetch(`https://viacep.com.br/ws/${raw}/json/`)
-        .then(r => r.json())
-        .then(d => { if (!d.erro) setAddressData(d); })
-        .catch(() => {});
-    } else {
-      setAddressData(null);
-    }
-  }, [cep]);
-
-  // ── PIX polling ──
-  useEffect(() => {
-    if (!pixPaymentId || pixConfirmed) return;
-    const interval = setInterval(async () => {
-      try {
-        const { data, error } = await supabase.functions.invoke("processar-pagamento", {
-          body: { action: "check-pix-status", paymentId: pixPaymentId },
-        });
-        if (!error && (data?.status === 'RECEIVED' || data?.status === 'CONFIRMED')) {
-          setPixConfirmed(true);
-          toast.success("Pagamento PIX confirmado! 🎉");
-          clearInterval(interval);
-        }
-      } catch {}
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [pixPaymentId, pixConfirmed]);
-
-  // ── Get remote IP ──
-  const getRemoteIp = useCallback(async () => {
-    try {
-      const r = await fetch('https://api.ipify.org?format=json');
-      const d = await r.json();
-      return d.ip;
-    } catch { return '0.0.0.0'; }
-  }, []);
-
-  // ── Handle select plan ──
-  const handleSelectPlan = (plano: Plano) => {
-    if (!session) { toast.error("Faça login para assinar"); return; }
-    setSelectedPlano(plano);
-    setView("checkout");
-  };
-
-  // ── Handle card payment ──
-  const handleCardPayment = async () => {
-    if (!cardNumber || !cardName || !cardExpiry || !cardCvv || !cpf || !cep) {
-      toast.error("Preencha todos os campos");
-      return;
-    }
-    track('subscription_payment_started', { plano: selectedPlano, metodo: 'cartao', parcelas: selectedPlano === 'anual' ? parseInt(installments) : 1 });
-    setProcessing(true);
-    try {
-      const [month, year] = cardExpiry.split('/');
-      const remoteIp = await getRemoteIp();
-
-      const { data, error } = await supabase.functions.invoke("processar-pagamento", {
-        body: {
-          plano: selectedPlano,
-          metodo: 'cartao',
-          cpf,
-          cep,
-          numero_endereco: addressNumber || 'S/N',
-          telefone: phone,
-          remoteIp,
-          installments: selectedPlano === 'anual' ? parseInt(installments) : 1,
-          creditCard: {
-            holderName: cardName,
-            number: cardNumber,
-            expiryMonth: month,
-            expiryYear: `20${year}`,
-            ccv: cardCvv,
-          },
-        },
-      });
-      if (error) throw error;
-      if (data?.success) {
-        track('subscription_completed', { plano: selectedPlano, metodo: 'cartao', valor });
-        toast.success("Pagamento processado com sucesso! 🎉");
-        refreshSubscription();
-        navigate("/assinatura?welcome=1", { replace: true });
-      } else {
-        track('subscription_payment_failed', { plano: selectedPlano, metodo: 'cartao', erro: data?.error ?? 'unknown' });
-        toast.error(data?.error || "Erro no pagamento");
-      }
-    } catch (err: any) {
-      console.error(err);
-      track('subscription_payment_failed', { plano: selectedPlano, metodo: 'cartao', erro: err?.message ?? 'exception' });
-      const details = err?.message || '';
-      toast.error(`Erro ao processar pagamento. ${details}`);
-    } finally {
-      setProcessing(false);
-    }
-  };
-
-  // ── Handle PIX ──
-  const handlePixPayment = async () => {
-    if (!cpf || !cep) { toast.error("Preencha CPF e CEP"); return; }
-    track('subscription_payment_started', { plano: 'anual', metodo: 'pix' });
-    setProcessing(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("processar-pagamento", {
-        body: { plano: 'anual', metodo: 'pix', cpf, cep, numero_endereco: addressNumber || 'S/N', telefone: phone },
-      });
-      if (error) throw error;
-      if (data?.success) {
-        track('subscription_payment_initiated', { plano: 'anual', metodo: 'pix', payment_id: data.paymentId });
-        setPixQrImage(data.qrCodeImage);
-        setPixPayload(data.qrCodePayload);
-        setPixPaymentId(data.paymentId);
-      } else {
-        track('subscription_payment_failed', { plano: 'anual', metodo: 'pix', erro: data?.error ?? 'unknown' });
-        toast.error(data?.error || "Erro ao gerar PIX");
-      }
-    } catch (err: any) {
-      console.error(err);
-      track('subscription_payment_failed', { plano: 'anual', metodo: 'pix', erro: err?.message ?? 'exception' });
-      toast.error("Erro ao gerar PIX");
-    } finally {
-      setProcessing(false);
-    }
-  };
-
-  const copyPix = () => {
-    if (pixPayload) {
-      navigator.clipboard.writeText(pixPayload);
-      setPixCopied(true);
-      toast.success("Código PIX copiado!");
-      setTimeout(() => setPixCopied(false), 3000);
-    }
-  };
-
-  const valor = selectedPlano === 'mensal' ? 25.99 : 189.90;
-  const valorParcela = selectedPlano === 'anual' ? (189.90 / parseInt(installments)).toFixed(2) : null;
-
   // ── PLANS VIEW (tabbed: Mensal / Anual) ──
-  type PlanoTab = 'mensal' | 'anual' | 'anual_parcelado';
+  type PlanoTab = PlanId;
   const nativePlatform = useMemo(() => Capacitor.getPlatform(), []);
   const showDevToggle = isAdminEmail(session?.user?.email);
   const [platformOverride, setPlatformOverride] = useState<'ios' | 'android' | null>(() => {
@@ -322,8 +118,7 @@ export default function Assinatura() {
     else window.localStorage.removeItem('assinatura_platform_override');
     setDevSheetOpen(false);
   };
-  const [tab, setTab] = useState<PlanoTab>(isIOS ? 'anual' : 'anual_parcelado');
-  useEffect(() => { setTab(isIOS ? 'anual' : 'anual_parcelado'); }, [isIOS]);
+  const [tab, setTab] = useState<PlanoTab>('anual');
 
   const PRO_FEATURES = [
     { icon: Scale, text: 'Vade Mecum completo — todas as leis em vigor, sempre atualizadas' },
@@ -350,9 +145,8 @@ export default function Assinatura() {
         appEvents.assinaturaIniciada({ plano, metodo: nativeBilling ? 'play' : 'web' });
       })
       .catch(() => {});
-    // Antes de abrir o checkout, mostra a linha do tempo do teste grátis.
-    const trialPlan: TrialPlan = plano === 'mensal' ? 'mensal' : 'anual_parcelado';
-    setTrialSheetPlan(trialPlan);
+    // Antes de abrir a loja, mostra a linha do tempo do teste grátis.
+    setTrialSheetPlan(plano);
   };
 
   const confirmTrialAndBuy = async () => {
@@ -362,14 +156,16 @@ export default function Assinatura() {
         appEvents.trialIniciado({ plano: trialSheetPlan, dias: trialSheetPlan === 'mensal' ? 3 : 7 })
       )
       .catch(() => {});
-    // Agenda lembrete (WhatsApp via cron + push local) e abre checkout real.
+    // Agenda lembrete (WhatsApp via cron + push local) e abre a loja.
     await scheduleTrialReminder(trialSheetPlan);
     const plano = trialSheetPlan;
     setTrialSheetPlan(null);
     if (nativeBilling) {
       handlePlayPurchase(plano);
     } else {
-      handleSelectPlan(plano === 'mensal' ? 'mensal' : 'anual');
+      toast.info('Assinatura disponível no app', {
+        description: 'Baixe o Direito Prime no Google Play ou na App Store para assinar.',
+      });
     }
   };
 
@@ -392,7 +188,7 @@ export default function Assinatura() {
         <TrialTimelineSheet
           open={!!trialSheetPlan}
           onOpenChange={(v) => { if (!v) setTrialSheetPlan(null); }}
-          plan={trialSheetPlan ?? 'anual_parcelado'}
+          plan={trialSheetPlan ?? 'anual'}
           onConfirm={confirmTrialAndBuy}
           loading={playLoading}
         />
@@ -445,64 +241,40 @@ export default function Assinatura() {
 
           {/* Plan carousel — equal-size cards, snap scroll, anual peeks on the side */}
           <div
-            className="flex sm:grid sm:grid-cols-2 gap-3 overflow-x-auto sm:overflow-visible snap-x snap-mandatory sm:snap-none pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none"
+            className="flex sm:grid sm:grid-cols-3 gap-3 overflow-x-auto sm:overflow-visible snap-x snap-mandatory sm:snap-none pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none"
             style={{ scrollPaddingLeft: '1rem', scrollPaddingRight: '1rem' }}
           >
             {([
-              isIOS
-              ? {
-                  id: 'mensal' as const,
-                  label: 'Mensal',
-                  price: 'R$ 29,90',
-                  priceSuffix: '/mês',
-                  subtitle: 'Cobrado mensalmente',
-                  trial: '3 dias grátis',
-                  highlights: ['Acesso total ao Vade Mecum', 'Acesso ao desktop', 'Uso offline', 'Horus 24h no WhatsApp'],
-                  badge: null,
-                }
-              : {
-                  id: 'mensal' as const,
-                  label: 'Mensal',
-                  price: 'R$ 25,99',
-                  priceSuffix: '/mês',
-                  subtitle: 'Cobrado mensalmente',
-                  trial: '3 dias grátis',
-                  highlights: ['Acesso total ao Vade Mecum', 'Acesso ao desktop', 'Uso offline', 'Horus 24h no WhatsApp'],
-                  badge: null,
-                },
-              ...(isIOS ? [
-                {
-                  id: 'anual' as const,
-                  label: 'Anual',
-                  price: 'R$ 249,90',
-                  priceSuffix: '/ano',
-                  subtitle: 'Pagamento anual à vista · 7 dias grátis',
-                  trial: '7 dias grátis',
-                  highlights: ['Acesso total ao Vade Mecum', 'Acesso ao desktop', 'Uso offline', 'Horus 24h no WhatsApp'],
-                  badge: 'MAIS POPULAR',
-                },
-                {
-                  id: 'anual_parcelado' as const,
-                  label: 'Anual 12x',
-                  price: 'R$ 24,90',
-                  priceSuffix: '/mês',
-                  subtitle: '12 meses de compromisso · 7 dias grátis',
-                  trial: '7 dias grátis',
-                  highlights: ['Acesso total ao Vade Mecum', 'Acesso ao desktop', 'Uso offline', 'Horus 24h no WhatsApp'],
-                  badge: null,
-                },
-              ] : [
-                {
-                  id: 'anual_parcelado' as const,
-                  label: 'Anual',
-                  price: 'R$ 15,83',
-                  priceSuffix: '/mês',
-                  subtitle: '12x sem juros · R$ 189,90/ano · economize 39%',
-                  trial: '7 dias grátis',
-                  highlights: ['Acesso total ao Vade Mecum', 'Acesso ao desktop', 'Uso offline', 'Horus 24h no WhatsApp'],
-                  badge: '-39%',
-                },
-              ]),
+              {
+                id: 'mensal' as const,
+                label: 'Mensal',
+                price: 'R$ 29,90',
+                priceSuffix: '/mês',
+                subtitle: 'Cobrado mensalmente · renove ou cancele quando quiser',
+                trial: '3 dias grátis',
+                highlights: ['Acesso total ao Vade Mecum', 'Acesso ao desktop', 'Uso offline', 'Horus 24h no WhatsApp'],
+                badge: null as string | null,
+              },
+              {
+                id: 'anual' as const,
+                label: 'Anual',
+                price: 'R$ 199,90',
+                priceSuffix: '/ano',
+                subtitle: 'Equivale a R$ 16,66/mês · economize 44%',
+                trial: '7 dias grátis',
+                highlights: ['Acesso total ao Vade Mecum', 'Acesso ao desktop', 'Uso offline', 'Horus 24h no WhatsApp'],
+                badge: '-44%' as string | null,
+              },
+              ...(isIOS ? [] : [{
+                id: 'anual_parcelado' as const,
+                label: 'Anual 12x',
+                price: 'R$ 16,66',
+                priceSuffix: '/mês',
+                subtitle: 'Plano anual pago em 12 parcelas mensais · total R$ 199,90',
+                trial: '7 dias grátis',
+                highlights: ['Acesso total ao Vade Mecum', 'Acesso ao desktop', 'Uso offline', 'Horus 24h no WhatsApp'],
+                badge: '12x' as string | null,
+              }]),
             ]).map((plan) => {
               const isActive = tab === plan.id;
               return (
@@ -723,175 +495,5 @@ export default function Assinatura() {
     );
   }
 
-
-
-
-  // ── CHECKOUT VIEW ──
-  return (
-    <div className="min-h-dvh bg-background">
-      <AppHeader
-        onBack={() => { setView("plans"); setPixQrImage(null); setPixPaymentId(null); }}
-        title={
-          <span className="flex items-center gap-1.5">
-            <CreditCard className="w-4 h-4 text-primary" />
-            Checkout
-          </span>
-        }
-        right={<Badge variant="secondary" className="text-xs mr-2">{selectedPlano === 'mensal' ? 'Mensal' : 'Anual'}</Badge>}
-      />
-
-
-      <div className="px-4 py-6 max-w-lg mx-auto space-y-5">
-        {/* PIX confirmed */}
-        {pixConfirmed && (
-          <div className="text-center space-y-4 py-8">
-            <CheckCircle2 className="w-16 h-16 text-emerald-500 mx-auto" />
-            <h2 className="text-xl font-bold text-foreground">Pagamento confirmado!</h2>
-            <p className="text-sm text-muted-foreground">Seu plano Premium já está ativo.</p>
-            <Button onClick={() => navigate("/")} className="rounded-xl">Voltar ao app</Button>
-          </div>
-        )}
-
-        {!pixConfirmed && (
-          <Tabs defaultValue="cartao" className="w-full">
-            <TabsList className="w-full">
-              <TabsTrigger value="cartao" className="flex-1 gap-1.5"><CreditCard className="w-4 h-4" /> Cartão</TabsTrigger>
-              {selectedPlano === 'anual' && (
-                <TabsTrigger value="pix" className="flex-1 gap-1.5">
-                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M17.66 6.34l-3.54 3.54a2 2 0 01-2.83 0L7.76 6.34a2 2 0 00-2.83 0L2.1 9.17a2 2 0 000 2.83l2.83 2.83a2 2 0 000 2.83l2.83 2.83a2 2 0 002.83 0l3.54-3.54a2 2 0 012.83 0l3.54 3.54a2 2 0 002.83 0l2.83-2.83a2 2 0 000-2.83l-2.83-2.83a2 2 0 010-2.83l2.83-2.83a2 2 0 000-2.83L20.49 6.34a2 2 0 00-2.83 0z"/></svg>
-                  PIX
-                </TabsTrigger>
-              )}
-            </TabsList>
-
-            {/* ── CARTÃO TAB ── */}
-            <TabsContent value="cartao" className="space-y-4 mt-4">
-              <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">Número do cartão</Label>
-                <Input placeholder="0000 0000 0000 0000" value={cardNumber} onChange={e => setCardNumber(maskCard(e.target.value))} className="rounded-xl h-11" />
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">Nome no cartão</Label>
-                <Input placeholder="Nome como está no cartão" value={cardName} onChange={e => setCardName(e.target.value.toUpperCase())} className="rounded-xl h-11" />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">Validade</Label>
-                  <Input placeholder="MM/AA" value={cardExpiry} onChange={e => setCardExpiry(maskExpiry(e.target.value))} className="rounded-xl h-11" />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">CVV</Label>
-                  <Input placeholder="000" maxLength={4} value={cardCvv} onChange={e => setCardCvv(e.target.value.replace(/\D/g, '').slice(0, 4))} className="rounded-xl h-11" />
-                </div>
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">CPF do titular</Label>
-                <Input placeholder="000.000.000-00" value={cpf} onChange={e => setCpf(maskCpf(e.target.value))} className="rounded-xl h-11" />
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">Telefone</Label>
-                <Input placeholder="(00) 00000-0000" value={phone} onChange={e => setPhone(maskPhone(e.target.value))} className="rounded-xl h-11" />
-              </div>
-              <div className="grid grid-cols-3 gap-3">
-                <div className="col-span-2 space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">CEP</Label>
-                  <Input placeholder="00000-000" value={cep} onChange={e => setCep(maskCep(e.target.value))} className="rounded-xl h-11" />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">Nº</Label>
-                  <Input placeholder="Nº" value={addressNumber} onChange={e => setAddressNumber(e.target.value)} className="rounded-xl h-11" />
-                </div>
-              </div>
-              {addressData && (
-                <div className="rounded-xl bg-muted/50 p-3 text-xs text-muted-foreground space-y-0.5">
-                  <p>{addressData.logradouro}</p>
-                  <p>{addressData.bairro} - {addressData.localidade}/{addressData.uf}</p>
-                </div>
-              )}
-
-              {selectedPlano === 'anual' && (
-                <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">Parcelas</Label>
-                  <Select value={installments} onValueChange={setInstallments}>
-                    <SelectTrigger className="rounded-xl h-11">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Array.from({ length: 12 }, (_, i) => i + 1).map(n => (
-                        <SelectItem key={n} value={String(n)}>
-                          {n}x de R$ {(119.90 / n).toFixed(2)} {n === 1 ? '(à vista)' : 'sem juros'}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-
-              <Button onClick={handleCardPayment} disabled={processing} className="w-full h-12 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-semibold text-base mt-2">
-                {processing ? (
-                  <span className="flex items-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> Processando...</span>
-                ) : (
-                  `Pagar R$ ${selectedPlano === 'anual' && parseInt(installments) > 1 ? `${parseInt(installments)}x de R$ ${valorParcela}` : valor.toFixed(2).replace('.', ',')}`
-                )}
-              </Button>
-            </TabsContent>
-
-            {/* ── PIX TAB ── */}
-            {selectedPlano === 'anual' && (
-              <TabsContent value="pix" className="space-y-4 mt-4">
-                {!pixQrImage ? (
-                  <>
-                    <div className="space-y-1.5">
-                      <Label className="text-xs text-muted-foreground">CPF</Label>
-                      <Input placeholder="000.000.000-00" value={cpf} onChange={e => setCpf(maskCpf(e.target.value))} className="rounded-xl h-11" />
-                    </div>
-                    <div className="grid grid-cols-3 gap-3">
-                      <div className="col-span-2 space-y-1.5">
-                        <Label className="text-xs text-muted-foreground">CEP</Label>
-                        <Input placeholder="00000-000" value={cep} onChange={e => setCep(maskCep(e.target.value))} className="rounded-xl h-11" />
-                      </div>
-                      <div className="space-y-1.5">
-                        <Label className="text-xs text-muted-foreground">Nº</Label>
-                        <Input placeholder="Nº" value={addressNumber} onChange={e => setAddressNumber(e.target.value)} className="rounded-xl h-11" />
-                      </div>
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label className="text-xs text-muted-foreground">Telefone</Label>
-                      <Input placeholder="(00) 00000-0000" value={phone} onChange={e => setPhone(maskPhone(e.target.value))} className="rounded-xl h-11" />
-                    </div>
-                    <Button onClick={handlePixPayment} disabled={processing} className="w-full h-12 rounded-xl font-semibold text-base">
-                      {processing ? (
-                        <span className="flex items-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> Gerando PIX...</span>
-                      ) : (
-                        `Gerar PIX — R$ 119,90`
-                      )}
-                    </Button>
-                  </>
-                ) : (
-                  <div className="text-center space-y-4">
-                    <p className="text-sm font-medium text-foreground">Escaneie o QR Code ou copie o código</p>
-                    <div className="inline-block p-4 bg-white rounded-2xl shadow-md">
-                      <img src={`data:image/png;base64,${pixQrImage}`} alt="QR Code PIX" className="w-52 h-52" />
-                    </div>
-                    <div className="relative">
-                      <Input readOnly value={pixPayload || ''} className="rounded-xl h-11 pr-12 text-xs font-mono" />
-                      <button onClick={copyPix} className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-lg hover:bg-muted/60 transition">
-                        {pixCopied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4 text-muted-foreground" />}
-                      </button>
-                    </div>
-                    <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-                      <Loader2 className="w-3 h-3 animate-spin" />
-                      Aguardando confirmação do pagamento...
-                    </div>
-                  </div>
-                )}
-              </TabsContent>
-            )}
-          </Tabs>
-        )}
-
-        <p className="text-center text-xs text-muted-foreground mt-4">🔒 Criptografia SSL · Processado por Asaas</p>
-      </div>
-    </div>
-  );
+  return null;
 }

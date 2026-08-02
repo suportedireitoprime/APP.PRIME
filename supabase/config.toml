@@ -1,1 +1,7 @@
 project_id = "dnjrgpldcwcpoywamorr"
+
+[functions.play-billing-webhook]
+verify_jwt = false
+
+[functions.apple-billing-webhook]
+verify_jwt = false

@@ -38,7 +38,7 @@ Deno.serve(async (req) => {
         const primeiroNome = (wa?.nome_preferido || "").split(" ")[0];
         const oi = primeiroNome ? `Oi ${primeiroNome}` : "Ei";
 
-        const planoLabel = row.plano === "anual_parcelado" ? "Anual (12x)" : "Mensal";
+        const planoLabel = row.plano === "anual" ? "Anual" : "Mensal";
         const msg =
 `${oi}! Aqui é o Horus 🦉
 

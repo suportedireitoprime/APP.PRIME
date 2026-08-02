@@ -16,7 +16,7 @@ interface Props {
   plano: string | null;
   expiresAt: string | null;
   startedAt?: string | null;
-  source: 'play' | 'apple' | 'asaas' | null;
+  source: 'play' | 'apple' | null;
   status?: string | null;
   isAdminOverride?: boolean;
 }
@@ -124,10 +124,8 @@ export default function MinhaAssinaturaView({ plano, expiresAt, startedAt, sourc
   const label = planoLabel(plano);
   const isAnual = /anual|year/i.test(plano ?? '');
   const isApple = source === 'apple';
-  const preco = isApple
-    ? (isAnual ? 'R$ 249,90/ano ou 12x R$ 24,90/mês' : 'R$ 29,90/mês')
-    : (isAnual ? 'R$ 189,90/ano' : 'R$ 25,99/mês');
-  const equivalente = isAnual && !isApple ? 'Equivalente a R$ 15,83/mês' : null;
+  const preco = isAnual ? 'R$ 199,90/ano' : 'R$ 29,90/mês';
+  const equivalente = isAnual ? 'Equivalente a R$ 16,66/mês' : null;
 
   const diasRestantes = useMemo(() => {
     if (!expiresAt) return null;
@@ -380,8 +378,7 @@ export default function MinhaAssinaturaView({ plano, expiresAt, startedAt, sourc
                 <InfoLine icon={CreditCard} label="Método" value={
                   isAdminOverride ? 'Concedido pela equipe' :
                   source === 'play' ? 'Google Play' :
-                  source === 'apple' ? 'App Store' :
-                  source === 'asaas' ? 'Cartão / PIX' : '—'
+                  source === 'apple' ? 'App Store' : '—'
                 } />
                 <InfoLine icon={Wallet} label={isAdminOverride ? 'Cobrança' : 'Próxima cobrança'} value={
                   isAdminOverride ? 'Não se aplica' : `${preco} em ${fmtDate(expiresAt)}`

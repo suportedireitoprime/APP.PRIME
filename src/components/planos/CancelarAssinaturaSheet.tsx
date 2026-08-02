@@ -88,10 +88,6 @@ export default function CancelarAssinaturaSheet({ open, onOpenChange, expiresAt,
         .from('assinatura_cancelamentos' as any)
         .upsert({ user_id: user.id, canceled_at: new Date().toISOString() });
       if (error) throw error;
-      // Também marcar assinaturas Asaas como canceladas para não-admins
-      if (!isAdminOverride) {
-        await supabase.from('assinaturas' as any).update({ status: 'canceled' }).eq('user_id', user.id);
-      }
       toast.success('Assinatura cancelada. Você voltou ao plano gratuito.');
       onOpenChange(false);
       // Recarrega para refletir o novo estado

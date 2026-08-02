@@ -309,9 +309,8 @@ export const TRANSFER_GROUPS: TransferGroup[] = [
       { key: 'android_package_name_secret', label: 'ANDROID_PACKAGE_NAME (secret Supabase)', atual: 'br.com.vacatio.app', kind: 'secret-supabase', obrigatorio: true, comoObter: 'Mesmo package novo — usado pela função validate-purchase para validar compras do Play.' },
       { key: 'play_service_account', label: 'GOOGLE_PLAY_SERVICE_ACCOUNT_JSON', atual: null, kind: 'secret-supabase', obrigatorio: true, comoObter: 'Google Cloud → conta de serviço com acesso à API do Play Developer + convite no Play Console.', naoSubstituivel: true },
       { key: 'play_pubsub_token', label: 'GOOGLE_PLAY_PUBSUB_VERIFICATION_TOKEN', atual: null, kind: 'secret-supabase', comoObter: 'Play Console → Monetização → Notificações em tempo real (token que você define).' },
-      { key: 'play_product_ids', label: 'IDs dos produtos/assinaturas do Play', atual: null, kind: 'painel-externo', obrigatorio: true, arquivos: ['supabase/functions/validate-purchase/index.ts', 'supabase/functions/processar-pagamento/index.ts'], comoObter: 'Play Console → Produtos → Assinaturas. Recrie os mesmos IDs no app novo ou ajuste no código.' },
+      { key: 'play_product_ids', label: 'IDs dos produtos/assinaturas do Play', atual: null, kind: 'painel-externo', obrigatorio: true, arquivos: ['supabase/functions/validate-purchase/index.ts'], comoObter: 'Play Console → Produtos → Assinaturas. IDs atuais: prime_premium_mensal (R$ 29,90/mês) e prime_premium_anual (R$ 199,90/ano).' },
       { key: 'apple_product_ids', label: 'IDs dos produtos in-app (Apple)', atual: null, kind: 'painel-externo', obrigatorio: true, comoObter: 'App Store Connect → Assinaturas. Precisam bater com os IDs validados no backend.' },
-      { key: 'asaas_api_key', label: 'ASAAS_API_KEY', atual: null, kind: 'secret-supabase', comoObter: 'Conta Asaas da nova empresa (cobrança fora das lojas).', naoSubstituivel: true },
     ],
   },
   {

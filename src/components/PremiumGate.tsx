@@ -137,15 +137,15 @@ const PremiumGate = ({
                 {/* Price highlight - before CTA (plano anual) */}
                 <div className="flex flex-col items-center mb-6">
                   <span className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">
-                    Plano anual — a partir de
+                    Plano anual
                   </span>
                   <div className="flex items-baseline gap-1">
                     <span className="text-muted-foreground text-sm font-medium">R$</span>
-                    <span className="text-foreground text-3xl font-bold tracking-tight">15,83</span>
-                    <span className="text-muted-foreground text-sm">/mês</span>
+                    <span className="text-foreground text-3xl font-bold tracking-tight">199,90</span>
+                    <span className="text-muted-foreground text-sm">/ano</span>
                   </div>
                   <span className="text-[10px] text-muted-foreground/80 mt-1">
-                    12x sem juros · R$ 189,90/ano
+                    Equivale a R$ 16,66/mês · 7 dias grátis
                   </span>
                 </div>
 

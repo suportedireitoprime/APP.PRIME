@@ -8,7 +8,7 @@ interface SubscriptionState {
   plano: string | null;
   expiresAt: string | null;
   startedAt: string | null;
-  source: 'play' | 'apple' | 'asaas' | null;
+  source: 'play' | 'apple' | null;
   status: string | null;
   isAdminOverride: boolean;
   refresh: () => void;
@@ -161,30 +161,6 @@ export function useSubscription(options: Options = {}): SubscriptionState {
           isPremium: true, loading: false,
           plano: apple.product_id, expiresAt: apple.expires_at, startedAt: apple.start_time, source: 'apple',
           status: apple.status as string,
-          isAdminOverride: false,
-        });
-        return true;
-      }
-
-      // 3) Fallback: assinaturas Asaas
-      const { data: asaas } = await supabase
-        .from('assinaturas' as any)
-        .select('plano, status')
-        .eq('user_id', user.id)
-        .eq('status', 'active')
-        .limit(1)
-        .maybeSingle();
-
-      if (cancelled) return true;
-      if (asaas) {
-        persist({
-          isPremium: true,
-          loading: false,
-          plano: (asaas as any).plano ?? null,
-          expiresAt: null,
-          startedAt: null,
-          source: 'asaas',
-          status: 'active',
           isAdminOverride: false,
         });
         return true;

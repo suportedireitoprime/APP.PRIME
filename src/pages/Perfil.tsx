@@ -10,10 +10,10 @@ import { AtuacaoCard } from '@/components/perfil/AtuacaoCard';
 import { InfoRow } from '@/components/perfil/InfoRow';
 import { ExcluirContaButton } from '@/components/perfil/ExcluirContaButton';
 
-const planoLabel = (plano: string | null, source: 'play' | 'apple' | 'asaas' | null) => {
+const planoLabel = (plano: string | null, source: 'play' | 'apple' | null) => {
   if (!plano) return { titulo: 'Gratuito', desc: 'Acesso limitado — 3 usos/mês em recursos premium.', tag: 'FREE' };
   const p = plano.toLowerCase();
-  const via = source === 'play' ? 'Google Play' : source === 'apple' ? 'App Store' : 'Asaas';
+  const via = source === 'play' ? 'Google Play' : 'App Store';
   if (p.includes('anual') || p.includes('year')) return { titulo: 'Premium Anual', desc: `Renovação anual via ${via}.`, tag: 'ANUAL' };
   if (p.includes('mensal') || p.includes('month')) return { titulo: 'Premium Mensal', desc: `Renovação mensal via ${via}.`, tag: 'MENSAL' };
   return { titulo: 'Premium', desc: `Ativa via ${via}.`, tag: 'PRO' };

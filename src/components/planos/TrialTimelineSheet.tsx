@@ -23,12 +23,8 @@ export function TrialTimelineSheet({ open, onOpenChange, plan, onConfirm, loadin
   const reminderDay = trialDays - Math.round(leadHours / 24);
   const isIOS = Capacitor.getPlatform() === 'ios';
   const storeLabel = isIOS ? 'App Store' : 'Google Play';
-  const planoLabel = plan === 'anual_parcelado'
-    ? (isIOS ? 'Anual' : 'Anual (12x sem juros)')
-    : 'Mensal';
-  const priceLabel = plan === 'anual_parcelado'
-    ? (isIOS ? 'R$ 249,90/ano' : 'R$ 15,83/mês (12x)')
-    : (isIOS ? 'R$ 29,90/mês' : 'R$ 25,99/mês');
+  const planoLabel = plan === 'anual' ? 'Anual' : 'Mensal';
+  const priceLabel = plan === 'anual' ? 'R$ 199,90/ano' : 'R$ 29,90/mês';
 
   const steps = [
     {

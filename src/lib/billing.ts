@@ -3,10 +3,12 @@ import { NativePurchases, PURCHASE_TYPE } from '@capgo/native-purchases';
 import { supabase } from '@/integrations/supabase/client';
 
 // ── IDs configurados no Google Play Console → Monetizar → Assinaturas ──
+// e no App Store Connect → Assinaturas
 export const PRODUCT_IDS = {
-  mensal: 'vade_mecum_mensal',
-  anual: 'vade_mecum_anual',
-  anual_parcelado: 'vade_mecum_anual',
+  mensal: 'prime_premium_mensal',
+  anual: 'prime_premium_anual',
+  // Mesmo produto anual, plano base com pagamento parcelado (só Google Play)
+  anual_parcelado: 'prime_premium_anual',
 } as const;
 
 // Base Plan IDs configurados dentro de cada assinatura no Play Console
@@ -55,7 +57,7 @@ export async function getProducts(): Promise<PlayProduct[]> {
   if (!isBillingAvailable()) return [];
   try {
     const { products } = await NativePurchases.getProducts({
-      productIdentifiers: Object.values(PRODUCT_IDS),
+      productIdentifiers: [...new Set(Object.values(PRODUCT_IDS))],
       productType: PURCHASE_TYPE.SUBS,
     });
     return (products ?? []).map((p) => ({

@@ -3,7 +3,7 @@
 import { Capacitor } from '@capacitor/core';
 import { supabase } from '@/integrations/supabase/client';
 
-export type TrialPlan = 'mensal' | 'anual_parcelado';
+export type TrialPlan = 'mensal' | 'anual' | 'anual_parcelado';
 
 export function trialDaysFor(plan: TrialPlan): number {
   return plan === 'mensal' ? 3 : 7;
@@ -47,12 +47,12 @@ export async function scheduleTrialReminder(plan: TrialPlan): Promise<void> {
           if (req.display !== 'granted') return;
         }
         const notifyId = 77000 + Math.floor(Math.random() * 10000);
-        const planoLabel = plan === 'anual_parcelado' ? 'Anual (12x)' : 'Mensal';
+        const planoLabel = plan === 'anual' ? 'Anual' : 'Mensal';
         await LocalNotifications.schedule({
           notifications: [{
             id: notifyId,
             title: 'Seu teste grátis está acabando',
-            body: `Plano ${planoLabel} — para não perder acesso, deixe seu método de pagamento OK no Google Play.`,
+            body: `Plano ${planoLabel} — para não perder acesso, deixe seu método de pagamento em dia na loja.`,
             schedule: { at: reminderAt, allowWhileIdle: true },
             smallIcon: 'ic_stat_icon_config_sample',
             iconColor: '#c94c4c',

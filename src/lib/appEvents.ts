@@ -23,8 +23,7 @@ export const CURRENCY = "BRL";
 /** Valor de referência (receita anualizada) de cada plano, em BRL. */
 export const PLAN_VALUE: Record<string, number> = {
   mensal: 29.9,
-  anual: 249.9,
-  anual_parcelado: 249.9,
+  anual: 199.9,
   vitalicio: 499.9,
 };
 
