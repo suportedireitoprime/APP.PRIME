@@ -2891,7 +2891,41 @@ jobs:
                   print('✅ variables.gradle alinhado (min=30, target=36, compile=36)')
               else:
                   print('ℹ️  variables.gradle sem literais para patchar')
+
+          # 5) android/build.gradle (root) — força compileSdk 36 em TODOS os
+          #    módulos (plugins Capacitor/Cordova como :send-intent trazem o
+          #    próprio compileSdk 35 e as AARs androidx 1.17/activity 1.11
+          #    exigem 36, o que quebrava :send-intent:checkReleaseAarMetadata).
+          root = Path('android/build.gradle')
+          if root.exists():
+              rs = root.read_text()
+              marker = '// LOVABLE_FORCE_COMPILE_SDK'
+              if marker not in rs:
+                  snippet = '\n'.join([
+                      '',
+                      marker,
+                      'subprojects { sub ->',
+                      '    sub.afterEvaluate {',
+                      "        if (sub.hasProperty('android')) {",
+                      '            sub.android.compileSdkVersion 36',
+                      "            if (sub.android.hasProperty('buildToolsVersion')) {",
+                      "                sub.android.buildToolsVersion '36.0.0'",
+                      '            }',
+                      '        }',
+                      '    }',
+                      '}',
+                      '',
+                  ])
+                  rs += '\n' + snippet
+
+                  root.write_text(rs)
+                  print('✅ android/build.gradle: compileSdk 36 forçado em todos os módulos')
+              else:
+                  print('ℹ️  android/build.gradle já tinha o override de compileSdk')
+          else:
+              print('⚠️  android/build.gradle não encontrado')
           PY
+
 
 
       - name: Validate Android minSdk
