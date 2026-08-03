@@ -1021,16 +1021,15 @@ jobs:
             exit 1
           fi
 
+          # Sem overrides de assinatura na linha de comando: eles vazam para os
+          # targets de SPM (Firebase, GoogleUtilities...) que não aceitam
+          # provisioning profile. A assinatura do target App já está no pbxproj.
           xcodebuild "${BUILD_CONTAINER[@]}" \
             -scheme App \
             -configuration Release \
             -sdk iphoneos \
             -destination 'generic/platform=iOS' \
             -archivePath "$RUNNER_TEMP/App.xcarchive" \
-            CODE_SIGN_STYLE=Manual \
-            CODE_SIGN_IDENTITY="Apple Distribution" \
-            PROVISIONING_PROFILE_SPECIFIER="$APPLE_PROFILE_NAME" \
-            DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
             clean archive
 
       - name: Verify AppIcon is embedded in archive
