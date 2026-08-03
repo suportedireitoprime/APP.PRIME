@@ -7,6 +7,7 @@ import { Capacitor } from '@capacitor/core';
 import { CheckCircle2, AlertTriangle, Loader2, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { getGeofenceStatus } from '@/lib/nativeGeofence';
+import { avisar } from '@/lib/nativo';
 
 interface Status {
   foreground: boolean;
@@ -41,7 +42,10 @@ export function GeofenceStatusCard() {
         void App; // mantém o import tree-shake-safe
       }
     } catch { /* segue para a orientação manual */ }
-    window.alert('Abra Ajustes > Apps > Direito Prime > Permissões > Localização e escolha "Permitir o tempo todo".');
+    await avisar(
+      'Abra Ajustes > Apps > Direito Prime > Permissões > Localização e escolha "Permitir o tempo todo".',
+      'Permissão de localização',
+    );
   };
 
   if (!status) {

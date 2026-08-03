@@ -6,6 +6,10 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { pdf, Document, Page, Text as PdfText, Image as PdfImage, View, StyleSheet } from '@react-pdf/renderer';
+import { baixarBlob } from '@/lib/nativo';
+import { copiarTexto } from '@/lib/nativo/copiar';
+import { abrirLink } from '@/lib/nativo';
+import { compartilharNativo, podeCompartilhar } from '@/lib/nativo/compartilhar';
 
 /* ────────────────────────────────────────────────────────── */
 /*  FLIP FLASHCARDS                                           */
@@ -319,9 +323,7 @@ export const MapaMentalCanvas = ({ data, onClose }: { data: MapaNode; onClose: (
   const exportPng = async () => {
     try {
       const blob = await svgToPng();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url; a.download = 'mapa-mental.png'; a.click();
-      URL.revokeObjectURL(url);
+      await baixarBlob(blob, 'mapa-mental.png', { titulo: 'Mapa mental', toastSucesso: false });
       toast.success('Imagem exportada');
     } catch (e) { toast.error('Erro ao exportar'); }
   };
@@ -346,9 +348,7 @@ export const MapaMentalCanvas = ({ data, onClose }: { data: MapaNode; onClose: (
         </Document>
       );
       const pdfBlob = await pdf(doc).toBlob();
-      const url = URL.createObjectURL(pdfBlob);
-      const a = document.createElement('a'); a.href = url; a.download = 'mapa-mental.pdf'; a.click();
-      URL.revokeObjectURL(url);
+      await baixarBlob(pdfBlob, 'mapa-mental.pdf', { titulo: 'Mapa mental', toastSucesso: false });
       toast.success('PDF exportado');
     } catch (e) { toast.error('Erro ao exportar'); }
   };
@@ -492,17 +492,17 @@ export const ShareSheet = ({ text, onClose }: { text: string; onClose: () => voi
 
   const nativeShare = async () => {
     try {
-      if (navigator.share) {
-        await navigator.share({ text });
+      if (podeCompartilhar()) {
+        await compartilharNativo({ text });
         onClose();
       } else {
-        window.open(waUrl, '_blank');
+        void abrirLink(waUrl);
       }
     } catch { /* cancel */ }
   };
 
   const copy = async () => {
-    try { await navigator.clipboard.writeText(text); toast.success('Copiado'); onClose(); }
+    try { await copiarTexto(text); toast.success('Copiado'); onClose(); }
     catch { toast.error('Erro ao copiar'); }
   };
 
@@ -520,11 +520,11 @@ export const ShareSheet = ({ text, onClose }: { text: string; onClose: () => voi
         <div className="w-10 h-1 bg-muted rounded-full mx-auto mb-4" />
         <h3 className="font-display text-lg font-bold text-foreground mb-4">Compartilhar</h3>
         <div className="grid grid-cols-4 gap-3">
-          <ShareBtn onClick={() => window.open(waUrl, '_blank')} label="WhatsApp"
+          <ShareBtn onClick={() => void abrirLink(waUrl)} label="WhatsApp"
             className="bg-emerald-500/15 text-emerald-500 border-emerald-500/30">
             <MessageCircle className="w-6 h-6" />
           </ShareBtn>
-          <ShareBtn onClick={() => window.open(tgUrl, '_blank')} label="Telegram"
+          <ShareBtn onClick={() => void abrirLink(tgUrl)} label="Telegram"
             className="bg-sky-500/15 text-sky-400 border-sky-500/30">
             <SendIcon className="w-6 h-6" />
           </ShareBtn>

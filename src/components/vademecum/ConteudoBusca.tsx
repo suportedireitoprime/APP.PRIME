@@ -1,20 +1,33 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sparkles } from 'lucide-react';
-import { useBuscaConteudo } from '@/hooks/useBuscaConteudo';
+import { useBuscaConteudo, type ConteudoGrupo } from '@/hooks/useBuscaConteudo';
+import { resolveRotaResultado } from '@/lib/buscaRotas';
 import CategoriaFiltroBar, { type CategoriaKey } from './CategoriaFiltroBar';
 import ResultadoConteudoCard from './ResultadoConteudoCard';
 import BuscaChecklist from './BuscaChecklist';
 import SugestoesAprendidas from './SugestoesAprendidas';
 import { useSugestoesBusca, registrarBuscaClick } from '@/hooks/useSugestoesBusca';
 
-const SUGESTOES = ['princípios', 'dolo', 'boa-fé', 'devido processo legal', 'contrato', 'posse', 'habeas corpus'];
+const SUGESTOES_CONTEUDO = ['princípios', 'dolo', 'boa-fé', 'devido processo legal', 'contrato', 'posse', 'habeas corpus'];
+const SUGESTOES_JURIS = ['dano moral', 'prescrição', 'usucapião', 'alimentos', 'improbidade', 'tráfico', 'execução fiscal'];
 
 export default function ConteudoBusca({
-  query, onNavigate,
-}: { query: string; onNavigate?: () => void }) {
+  query, onNavigate, grupo = 'conteudo',
+}: { query: string; onNavigate?: () => void; grupo?: ConteudoGrupo }) {
   const [categoria, setCategoria] = useState<CategoriaKey>('tudo');
-  const { resultados, loading } = useBuscaConteudo(query, 'tudo');
+  const { resultados: brutos, loading } = useBuscaConteudo(query, grupo);
+
+  // Remove resultados sem tela correspondente no app (ex.: artigo de lei
+  // que não está no catálogo) e já traduz a rota final.
+  const resultados = useMemo(
+    () => brutos
+      .map((r) => ({ ...r, route: resolveRotaResultado(r) || '' }))
+      .filter((r) => !!r.route),
+    [brutos],
+  );
+
+  const SUGESTOES = grupo === 'jurisprudencia' ? SUGESTOES_JURIS : SUGESTOES_CONTEUDO;
   const { sugestoes } = useSugestoesBusca(query, query.trim().length >= 2);
   const navigate = useNavigate();
 
@@ -29,6 +42,8 @@ export default function ConteudoBusca({
     [resultados, categoria],
   );
 
+  useEffect(() => { setCategoria('tudo'); }, [grupo]);
+
   const termoCurto = query.trim().length < 2;
 
   const irPara = (route: string) => {
@@ -39,7 +54,7 @@ export default function ConteudoBusca({
   return (
     <div className="space-y-3">
       {!termoCurto && (
-        <CategoriaFiltroBar ativo={categoria} counts={counts} onChange={setCategoria} />
+        <CategoriaFiltroBar ativo={categoria} counts={counts} onChange={setCategoria} grupo={grupo} />
       )}
 
       {!termoCurto && sugestoes.length > 0 && (
@@ -71,7 +86,9 @@ export default function ConteudoBusca({
               <Sparkles className="w-7 h-7 text-primary" />
             </div>
             <p className="text-sm text-muted-foreground">
-              Pesquise qualquer termo. Trazemos videoaulas, livros, blog, resumos, notícias e filmes que citam o assunto.
+              {grupo === 'jurisprudencia'
+                ? 'Pesquise qualquer termo. Trazemos súmulas do STF e do STJ, jurisprudência em teses, informativos e pesquisas prontas.'
+                : 'Pesquise qualquer termo. Trazemos artigos de lei, dicionário jurídico, videoaulas, livros, blog, resumos, notícias e filmes que citam o assunto.'}
             </p>
           </div>
           <div>

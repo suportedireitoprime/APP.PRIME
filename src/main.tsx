@@ -49,6 +49,19 @@ if (Capacitor.isNativePlatform()) {
 // notificação com o app fechado podia ser perdido antes de o hook montar.
 import('./lib/nativePush').then((m) => m.bootstrapNativePush()).catch(() => {});
 
+// Conectividade: usa o plugin Network no app nativo (navigator.onLine da WebView
+// é pouco confiável) e reemite online/offline para todo o app.
+import('./lib/nativo/rede').then((m) => m.iniciarMonitorRede()).catch(() => {});
+
+// Atalhos do ícone (long-press / Quick Actions), ações+badge das notificações
+// e sincronização em background. Todos no-op na web.
+import('./lib/nativo/atalhos').then((m) => m.registrarAtalhos()).catch(() => {});
+import('./lib/nativo/notificacaoAcoes').then((m) => m.registrarAcoesNotificacao()).catch(() => {});
+import('./lib/nativo/backgroundSync').then((m) => m.iniciarSyncBackground()).catch(() => {});
+// Widget de tela inicial: conteúdo do dia (uma vez por dia).
+import('./lib/nativo/widgetFeed').then((m) => m.atualizarWidgetDoDia()).catch(() => {});
+
+
 createRoot(document.getElementById("root")!).render(<App />);
 
 

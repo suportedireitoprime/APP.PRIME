@@ -246,10 +246,10 @@ jobs:
           }
           add_or_set NSPhotoLibraryUsageDescription "O app Estudos Jurídicos pode acessar sua biblioteca de fotos apenas se você optar por anexar imagens em comentários ou personalizar seu perfil."
           add_or_set NSPhotoLibraryAddUsageDescription "O app Estudos Jurídicos solicita permissão para salvar imagens (como trechos de legislação) na sua biblioteca de fotos quando você usa a função de exportar."
-          add_or_set NSCameraUsageDescription "O app Estudos Jurídicos pode usar a câmera apenas se você optar por tirar uma foto para anexar em comentários ou personalizar seu perfil."
+          add_or_set NSCameraUsageDescription "O app Estudos Jurídicos usa a câmera quando você abre o Me Explique para receber a explicação do conteúdo que está estudando, ou quando você opta por tirar uma foto para anexar em comentários e personalizar seu perfil."
           add_or_set NSLocationWhenInUseUsageDescription "O app Estudos Jurídicos pode usar sua localização apenas se você optar por filtrar conteúdos de legislação estadual pelo estado em que se encontra."
           add_or_set NSLocationAlwaysAndWhenInUseUsageDescription "O app Estudos Jurídicos pode usar sua localização apenas se você optar por filtrar conteúdos de legislação estadual pelo estado em que se encontra."
-          add_or_set NSMicrophoneUsageDescription "O app Estudos Jurídicos pode acessar o microfone apenas se você optar por gravar áudio em comentários."
+          add_or_set NSMicrophoneUsageDescription "O app Estudos Jurídicos usa o microfone quando você fala com o professor do Me Explique, grava aulas no Modo Aula ou opta por gravar áudio em comentários."
           # NSUserTrackingUsageDescription intentionally NOT set — o app não usa
           # AppTrackingTransparency / IDFA nem faz rastreamento cross-app. Declarar
           # essa chave sem uso real bloqueia o envio para revisão na App Store.
@@ -342,6 +342,9 @@ jobs:
           /usr/libexec/PlistBuddy -c "Delete :UIBackgroundModes" "$PLIST" 2>/dev/null || true
           /usr/libexec/PlistBuddy -c "Add :UIBackgroundModes array" "$PLIST"
           /usr/libexec/PlistBuddy -c "Add :UIBackgroundModes:0 string remote-notification" "$PLIST"
+          # audio: mantém narração / leis cantadas / audioaulas tocando em segundo
+          # plano e habilita os controles de mídia no lockscreen.
+          /usr/libexec/PlistBuddy -c "Add :UIBackgroundModes:1 string audio" "$PLIST"
           /usr/libexec/PlistBuddy -c "Print :UIBackgroundModes" "$PLIST"
 
           # Entitlements file com aps-environment production

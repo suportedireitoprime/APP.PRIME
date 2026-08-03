@@ -4,6 +4,7 @@ import { Download, Loader2, Lightbulb, MessageCircle, AlertTriangle, Sparkles, C
 import ReactMarkdown from 'react-markdown';
 import { Document, Page, Text, View, StyleSheet, pdf } from '@react-pdf/renderer';
 import { toast } from 'sonner';
+import { baixarBlob } from '@/lib/nativo';
 
 interface FeynmanData {
   titulo: string;
@@ -86,12 +87,10 @@ const ResumoFeynmanView = ({ data, leiNome, artigoNumero }: Props) => {
     setExporting(true);
     try {
       const blob = await pdf(<FeynmanPdfDoc data={data} />).toBlob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `feynman-${artigoNumero.replace(/\s+/g, '-')}.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
+      await baixarBlob(blob, `feynman-${artigoNumero.replace(/\s+/g, '-')}.pdf`, {
+        titulo: `Resumo Feynman — Art. ${artigoNumero}`,
+        toastSucesso: false,
+      });
       toast.success('PDF Feynman exportado!');
     } catch (e) {
       toast.error('Erro ao gerar PDF');

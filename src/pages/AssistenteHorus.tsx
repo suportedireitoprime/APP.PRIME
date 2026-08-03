@@ -30,6 +30,7 @@ import vacatioLogoBundled from '@/assets/bundled/logo-vacatio-v2.webp';
 import horusOwlAsset from '@/assets/horus/horus-owl.png.asset.json';
 import horusOwlBundled from '@/assets/horus/horus-owl.webp';
 import { useGoBack } from '@/hooks/useGoBack';
+import { abrirLink } from '@/lib/nativo';
 
 const vacatioLogo = pickAsset(vacatioLogoBundled, srcOf(vacatioLogoAsset));
 const horusOwl = pickAsset(horusOwlBundled, srcOf(horusOwlAsset));
@@ -235,7 +236,7 @@ const AssistenteHorus = () => {
   function openWhatsApp() {
     track('horus_whatsapp_redirect', { verified: isVerified, source: 'horus_page' });
     const url = `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(WHATSAPP_MSG)}`;
-    window.open(url, '_blank', 'noopener,noreferrer');
+    void abrirLink(url);
   }
   function handleWhatsAppClick() {
     haptic.light();

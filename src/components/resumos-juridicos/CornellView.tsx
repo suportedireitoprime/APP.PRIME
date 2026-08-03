@@ -1,6 +1,6 @@
 import { CornellContent, normalizePergunta } from "./metodologias";
 
-const ROSE = "hsl(350 82% 72%)";
+const ROSE = "hsl(351 74% 27%)";
 
 export default function CornellView({ conteudo }: { conteudo: CornellContent }) {
   if (!conteudo) return null;

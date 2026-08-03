@@ -2,7 +2,18 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { supabase } from '@/integrations/supabase/client';
-import { Headphones, Loader2, Play, Pause, ChevronRight, Clock } from 'lucide-react';
+import { Headphones, Loader2, Play, Pause, ChevronRight, Clock, Download, Check } from 'lucide-react';
+import { registrarMidia, clearMediaSession } from '@/lib/mediaSession';
+import { toast } from 'sonner';
+import { telaAcesa } from '@/lib/nativo/telaAcordada';
+import {
+  baixarAudioOffline,
+  removerAudioOffline,
+  estaBaixado,
+  fonteDeAudio,
+  suportaAudioOffline,
+  assinarAudioOffline,
+} from '@/lib/nativo/audioOffline';
 
 interface Aula {
   id: number;
@@ -14,10 +25,36 @@ interface Aula {
   url_audio: string | null;
 }
 
-function Player({ url }: { url: string }) {
+function Player({ id, url, titulo, subtitulo }: { id: string; url: string; titulo: string; subtitulo?: string }) {
   const ref = useRef<HTMLAudioElement | null>(null);
   const [tocando, setTocando] = useState(false);
   const [progresso, setProgresso] = useState(0);
+  const [baixado, setBaixado] = useState(false);
+  const [baixando, setBaixando] = useState(false);
+
+  // Mantém a tela acesa enquanto a aula toca.
+  useEffect(() => {
+    void telaAcesa(`audioaula-${id}`, tocando);
+    return () => { void telaAcesa(`audioaula-${id}`, false); };
+  }, [tocando, id]);
+
+  useEffect(() => {
+    const checar = () => { void estaBaixado(id).then(setBaixado); };
+    checar();
+    return assinarAudioOffline(checar);
+  }, [id]);
+
+  const alternarDownload = async () => {
+    if (baixado) {
+      await removerAudioOffline(id);
+      toast.success('Download removido');
+      return;
+    }
+    setBaixando(true);
+    const ok = await baixarAudioOffline({ id, url, titulo, subtitulo, categoria: 'audioaulas' });
+    setBaixando(false);
+    toast[ok ? 'success' : 'error'](ok ? 'Aula disponível offline' : 'Não foi possível baixar');
+  };
 
   return (
     <div className="mt-3 flex items-center gap-3 rounded-xl bg-secondary/50 border border-border/60 px-3 py-2">
@@ -25,13 +62,39 @@ function Player({ url }: { url: string }) {
         onClick={() => {
           const a = ref.current;
           if (!a) return;
-          if (a.paused) { a.play(); setTocando(true); } else { a.pause(); setTocando(false); }
+          if (a.paused) {
+            // Prefere o arquivo salvo no aparelho, se houver.
+            void fonteDeAudio(id, url).then((src) => {
+              if (a.src !== src) a.src = src;
+              a.play();
+            });
+            setTocando(true);
+            registrarMidia({
+              titulo,
+              subtitulo,
+              album: 'Audioaulas',
+              audio: a,
+              onStop: () => { a.pause(); setTocando(false); },
+            });
+          } else { a.pause(); setTocando(false); }
         }}
         className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center shrink-0"
         aria-label={tocando ? 'Pausar' : 'Tocar'}
       >
         {tocando ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
       </button>
+      {suportaAudioOffline() && (
+        <button
+          onClick={() => void alternarDownload()}
+          disabled={baixando}
+          aria-label={baixado ? 'Remover download' : 'Baixar aula'}
+          className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 border border-border/60 disabled:opacity-60 ${
+            baixado ? 'text-emerald-400' : 'text-muted-foreground'
+          }`}
+        >
+          {baixando ? <Loader2 className="w-4 h-4 animate-spin" /> : baixado ? <Check className="w-4 h-4" /> : <Download className="w-4 h-4" />}
+        </button>
+      )}
       <div className="flex-1 h-1.5 rounded-full bg-border overflow-hidden">
         <div className="h-full bg-primary transition-[width]" style={{ width: `${progresso}%` }} />
       </div>
@@ -43,7 +106,9 @@ function Player({ url }: { url: string }) {
           const a = e.currentTarget;
           setProgresso(a.duration ? (a.currentTime / a.duration) * 100 : 0);
         }}
-        onEnded={() => { setTocando(false); setProgresso(0); }}
+        onEnded={(e) => { setTocando(false); setProgresso(0); clearMediaSession(e.currentTarget); }}
+        onPause={() => setTocando(false)}
+        onPlay={() => setTocando(true)}
       />
     </div>
   );
@@ -128,7 +193,7 @@ const Audioaulas = () => {
                       </div>
                     </div>
                     {a.url_audio
-                      ? <Player url={a.url_audio} />
+                      ? <Player id={`audioaula-${a.id}`} url={a.url_audio} titulo={a.titulo} subtitulo={a.tema || a.area} />
                       : <p className="mt-2 text-[11px] text-muted-foreground">Áudio em breve</p>}
                   </div>
                 ))}

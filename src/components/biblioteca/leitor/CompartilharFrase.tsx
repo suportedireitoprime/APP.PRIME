@@ -5,6 +5,9 @@ import { X, Sparkles, Pencil, Download, Share2, Copy, RefreshCw, Check, Palette,
 import html2canvas from 'html2canvas';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { baixarBlob } from '@/lib/nativo';
+import { copiar } from '@/lib/nativo/copiar';
+import { compartilhar as compartilharComArquivo } from '@/lib/nativo/compartilhar';
 
 type Tema = { bg: string; fg: string; accent: string } | any;
 
@@ -242,44 +245,29 @@ export default function CompartilharFrase({
   const baixar = useCallback(async () => {
     const blob = await exportarImagem();
     if (!blob) { toast.error('Falha ao gerar imagem'); return; }
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `frase-${(livroTitulo || 'livro').toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 40)}.png`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    await baixarBlob(blob, `frase-${(livroTitulo || 'livro').toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 40)}.png`, {
+      titulo: livroTitulo || 'Frase',
+      toastSucesso: false,
+    });
     toast.success('Imagem baixada');
   }, [exportarImagem, livroTitulo]);
 
   const compartilhar = useCallback(async () => {
     const blob = await exportarImagem();
     if (!blob) { toast.error('Falha ao gerar imagem'); return; }
-    const file = new File([blob], 'frase.png', { type: 'image/png' });
     const shareText = `“${frase}”\n\n— ${livroTitulo}${autor ? `, ${autor}` : ''}`;
-    // @ts-ignore
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      try {
-        await (navigator as any).share({ files: [file], text: shareText, title: livroTitulo });
-        return;
-      } catch { /* usuário cancelou */ }
-    }
-    if ((navigator as any).share) {
-      try { await (navigator as any).share({ text: shareText, title: livroTitulo }); return; } catch {}
-    }
-    await baixar();
+    const ok = await compartilharComArquivo({
+      titulo: livroTitulo,
+      texto: shareText,
+      arquivo: { blob, nome: 'frase.png' },
+    });
+    if (!ok) await baixar();
   }, [exportarImagem, frase, livroTitulo, autor, baixar]);
 
   const copiarTexto = useCallback(async () => {
     if (!frase) return;
     const txt = `“${frase}”\n\n— ${livroTitulo}${autor ? `, ${autor}` : ''}`;
-    try {
-      await navigator.clipboard.writeText(txt);
-      toast.success('Texto copiado');
-    } catch {
-      toast.error('Não consegui copiar');
-    }
+    await copiar(txt, 'Texto copiado');
   }, [frase, livroTitulo, autor]);
 
   const fontSize = useMemo(() => {

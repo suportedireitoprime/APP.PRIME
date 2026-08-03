@@ -9,6 +9,7 @@ import { haptic } from "@/lib/nativeHaptics";
 import { pickAsset, srcOf } from "@/lib/assetUrl";
 import vacatioLogoAsset from "@/assets/logo-vacatio-v2.png.asset.json";
 import vacatioLogoBundled from "@/assets/bundled/logo-vacatio-v2.webp";
+import { confirmar } from '@/lib/nativo';
 
 const vacatioLogo = pickAsset(vacatioLogoBundled, srcOf(vacatioLogoAsset));
 
@@ -110,7 +111,7 @@ const MentorOverlay = ({ open, onClose }: MentorOverlayProps) => {
 
   const excluirConversa = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!confirm("Excluir esta conversa?")) return;
+    if (!(await confirmar({ titulo: "Excluir conversa", mensagem: "Excluir esta conversa?", okTexto: "Excluir" }))) return;
     await supabase.from("mentor_conversas").delete().eq("id", id);
     if (id === conversaId) novaConversa();
     setConversas((prev) => prev.filter((c) => c.id !== id));

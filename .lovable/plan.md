@@ -1,59 +1,46 @@
 ## Objetivo
 
-Deixar os visuais jurídicos (mapa mental, infográfico, fluxograma, diagrama) mais densos e bonitos, melhorar a navegação das listas (favoritos, recentes, busca por voz) e corrigir o download em PNG/PDF.
+Ao abrir o Me Explique, a câmera já liga (preview ao vivo). O botão "Me explique" só inicia o professor, ficando verde enquanto a sessão está ativa. A imagem passa a usar a qualidade real da câmera do aparelho, com toque para focar.
 
----
+## 1. Câmera liga ao entrar na tela
 
-## 1. Conteúdo mais detalhado (IA)
+- Separar em duas etapas: **preview** (só câmera, sem áudio nem WebSocket) e **sessão** (professor ao vivo).
+- Ao montar a página, pedir a permissão nativa de câmera e abrir o preview automaticamente. Se a permissão for negada, mostrar a mensagem atual com botão de tentar de novo.
+- O microfone continua sendo pedido apenas quando o usuário toca em "Me explique" (evita pedir microfone sem necessidade).
+- Ao iniciar a sessão, reaproveitar o stream de vídeo já aberto em vez de abrir a câmera de novo (hoje ela reabre e “pisca”).
+- Pausar/soltar a câmera ao sair da tela ou quando o app vai para segundo plano, e reabrir ao voltar.
 
-Ampliar os limites do contrato de conteúdo em `src/lib/visuaisJuridicos/types.ts` e no espelho `supabase/functions/visual-juridico-gerar/prompt.ts` (os dois precisam ficar idênticos):
+## 2. Botão verde indicando "funcionando"
 
-- Mapa mental: de 3–6 ramos para 4–7 ramos, 3–6 itens por ramo, item até ~70 caracteres, e um novo campo opcional `nota` por ramo (uma linha de destaque/pegadinha de prova).
-- Infográfico: 4–8 cartões, texto do cartão até ~200 caracteres, rodapé até ~180.
-- Fluxograma: 3–6 decisões, `seNao` até ~70, e campo opcional `base` por decisão (artigo que fundamenta a etapa).
-- Diagrama: 2–5 grupos, 3–6 itens por grupo, item até ~64.
-- Prompts reescritos para exigir profundidade: exemplo prático, base normativa por bloco, distinção de institutos parecidos e um alerta de prova — mantendo a proibição de inventar artigo/súmula.
+- Estado `inativo` → botão vermelho (primary) "Me explique".
+- Estados `conectando` → botão verde com spinner ("Conectando…").
+- Estados `ouvindo`/`falando` → botão verde com ponto pulsante ("Ao vivo"); toque nele (ou no botão Encerrar) finaliza.
+- Erro/encerrado → volta ao vermelho com "Tentar de novo".
+- Adicionar o verde como token semântico no CSS global (ex.: `--success`) para não usar cor fixa no componente.
 
-O motor de layout já mede o texto antes de posicionar, então mais texto continua sem sobrepor: as caixas crescem.
+## 3. Qualidade real da câmera
 
-## 2. Estética do visual (`src/lib/visuaisJuridicos/layout.ts`)
+Motivo da imagem ruim hoje: os constraints pedem 1280x720 “ideal”, o vídeo é exibido com `object-cover` (recorta), e o frame enviado é reduzido para 768 px com JPEG 0.7 — então tanto o preview quanto o que a IA vê ficam abaixo da capacidade do aparelho.
 
-- Cabeçalho: trocar a tag "MAPA MENTAL" por um **cérebro vazado** desenhado em vetor (contorno branco translúcido, grande, no canto direito do cabeçalho, sangrando parcialmente para fora) — ícone próprio por formato (cérebro, camadas, fluxo, rede), todos no mesmo estilo vazado.
-- Rodapé: **logo vetorial** centralizado — emblema desenhado + "DIREITO PRIME" e, abaixo, o traço "— Estudos Jurídicos". Rodapé fica mais alto para acomodar a marca, com a linha de fonte à esquerda.
-- Ajustes finos: mais respiro entre cartões, sombra mais suave, régua dourada e melhor hierarquia de tamanhos de fonte com o conteúdo maior.
+Ajustes:
+- Constraints em cascata pedindo a maior resolução suportada (4K → 1440p → 1080p → 720p → `video: true`), com `aspectRatio` livre e `frameRate: { ideal: 30 }`.
+- Aplicar `applyConstraints` após abrir, usando `getCapabilities()` para subir para o máximo real do sensor.
+- Ativar recursos avançados quando o aparelho suportar: `focusMode: "continuous"`, `exposureMode: "continuous"`, `whiteBalanceMode: "continuous"` (com fallback silencioso se não suportado).
+- **Toque para focar**: tocar no preview aplica `pointsOfInterest` + `focusMode: "single-shot"` no ponto tocado, com animação de anel de foco; volta a contínuo depois.
+- **Pinça para zoom** (quando `zoom` estiver nas capacidades) e botão de lanterna quando `torch` existir — útil para livro em ambiente escuro.
+- Preview em `object-contain` no modo de leitura (não recorta o texto da página) e overlay de mira alinhado ao quadro real.
 
-## 3. Altura do visualizador (`src/components/visuais/VisualViewer.tsx`)
+## 4. Qualidade do frame enviado à IA
 
-- A área do visual passa a ocupar toda a altura disponível, com o desenho ajustado por altura (não só por largura), de forma que o mapa apareça grande de cara e o zoom continue expandindo.
-- Zoom vai de 100% a 400%, com passo menor, e pan por arraste.
-
-## 4. Download em PNG/PDF (correção)
-
-O motivo mais provável da falha (a confirmar em teste) é o download por `data:`/`<a download>` não funcionar dentro do app nativo, e o SVG grande falhar ao virar imagem. Correções:
-
-- Rasterizar via `Blob` + `createImageBitmap`/`Image` com fontes embutidas como famílias genéricas (sem dependência de fonte externa), o que também evita texto sumido no PNG.
-- Em app nativo (Capacitor): salvar o arquivo com Filesystem e abrir a folha de compartilhamento; na web: manter o blob URL (não `data:`).
-- Mensagem de erro real no toast em vez de erro genérico, para diagnosticar caso persista.
-
-## 5. Listas: Todos / Favoritos / Recentes
-
-- Barra de alternância (mesmo padrão do Vade Mecum: Todos, Favoritos, Recentes) tanto na lista de leis/matérias/jurisprudência quanto dentro de uma lei (lista de artigos).
-- Novo `src/lib/visuaisJuridicos/prefs.ts` com favoritos e recentes sincronizados (mesma infraestrutura de `leisFavoritos`/`leisRecentes`), com favoritar por toque longo/ícone de coração no item e **tagzinha embaixo** do item favoritado.
-- Recentes registrados ao abrir/gerar um visual.
-
-## 6. Busca e voz
-
-- Barra de pesquisa mais alta (mesma altura da busca da home) e com botão de **microfone ao lado** usando o hook de ditado já existente (`useDictation`), preenchendo o campo com o que a pessoa falar.
-
-## 7. Limpeza da lista de artigos
-
-- Remover o item "Lei inteira" e as linhas estruturais (PARTE GERAL, TÍTULO, CAPÍTULO, SEÇÃO, DISPOSIÇÕES...).
-- Cada linha fica: "Art. 121" + caput curto em uma linha, altura uniforme.
-
----
+- Subir a captura para até 1280 px no lado maior com JPEG 0,85 (ainda dentro dos limites da Live API), mantendo 1 fps.
+- Enviar um frame de alta qualidade extra logo após o toque de foco e ao iniciar a sessão, para o reconhecimento inicial do material ser mais preciso.
+- Recortar o frame na área da mira quando o usuário estiver com o guia visível, para o modelo focar no texto e não no ambiente.
 
 ## Detalhes técnicos
 
-Arquivos afetados: `src/lib/visuaisJuridicos/{types,layout}.ts`, novo `prefs.ts`, `supabase/functions/visual-juridico-gerar/prompt.ts` (redeploy da função), `src/components/visuais/{VisuaisJuridicosSheet,VisualViewer,VisualScene}.tsx`.
-
-Visuais já gerados no cache continuam válidos (campos novos são opcionais); os próximos vêm mais completos.
+- `src/lib/meExplique/camera.ts` (novo): abrir/fechar stream, cascata de resoluções, `aplicarMelhorias()`, `focarEm(x, y)`, `definirZoom()`, `alternarLanterna()`. Tipos estendidos localmente, já que `MediaTrackCapabilities` do TS não cobre `focusMode`/`zoom`/`torch`.
+- `src/lib/meExplique/liveClient.ts`: aceitar um `MediaStream` já pronto por opção (sem abrir câmera própria), captura de frame com resolução/qualidade novas e recorte opcional.
+- `src/pages/MeExplique.tsx`: preview automático, gestos de foco/zoom, botão com estados de cor, lanterna, liberação da câmera em background.
+- `src/index.css`: token `--success` (e variante para o botão ao vivo).
+- Nenhuma mudança de backend; a edge function `me-explique-token` continua igual.
+- Depois do build nativo: `git pull` e `npx cap sync` antes de gerar o próximo APK/IPA.

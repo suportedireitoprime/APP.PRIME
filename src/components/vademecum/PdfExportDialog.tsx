@@ -4,6 +4,9 @@ import { X, Download, Loader2, FileText } from 'lucide-react';
 import { Document, Page, Text, View, StyleSheet, pdf, Font } from '@react-pdf/renderer';
 import { toast } from 'sonner';
 import type { ArtigoLei } from '@/data/mockData';
+import { menuAcoes } from '@/lib/nativo/menuAcoes';
+import { compartilhar } from '@/lib/nativo/compartilhar';
+import { baixarBlob } from '@/lib/nativo';
 
 const styles = StyleSheet.create({
   page: { padding: 40, fontFamily: 'Helvetica', fontSize: 11 },
@@ -52,13 +55,23 @@ const PdfExportDialog = ({ open, onClose, artigos, leiNome, highlights }: PdfExp
     setExporting(true);
     try {
       const blob = await pdf(<ArtigoPdfDoc artigos={artigos} leiNome={leiNome} highlights={highlights} />).toBlob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${leiNome.replace(/\s+/g, '_')}_DrLeis.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
-      toast.success('PDF exportado com sucesso!');
+      const nome = `${leiNome.replace(/\s+/g, '_')}_DrLeis.pdf`;
+      // No app nativo, oferece o menu do sistema (salvar ou compartilhar).
+      const salvar = async () => {
+        await baixarBlob(blob, nome, { titulo: `${leiNome} — PDF`, toastSucesso: false });
+        toast.success('PDF exportado com sucesso!');
+      };
+      const usouMenuNativo = await menuAcoes({
+        titulo: `${leiNome} — PDF`,
+        acoes: [
+          { titulo: 'Salvar no aparelho', onSelect: salvar },
+          {
+            titulo: 'Compartilhar',
+            onSelect: () => compartilhar({ titulo: `${leiNome} — PDF`, arquivo: { blob, nome } }).then(() => undefined),
+          },
+        ],
+      });
+      if (!usouMenuNativo) await salvar();
       onClose();
     } catch (e) {
       toast.error('Erro ao gerar PDF');

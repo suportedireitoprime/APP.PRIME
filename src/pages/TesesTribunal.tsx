@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, ChevronRight, ListChecks, Search, Loader2, Scale, Landmark, X, Copy, Check } from 'lucide-react';
 import { useGoBack } from '@/hooks/useGoBack';
 import {
@@ -7,6 +7,7 @@ import {
   fetchTesesItens, getTesesItensCached, subscribeTesesItens,
   type TeseEdicaoRow, type TeseItemRow,
 } from '@/services/tesesService';
+import { copiarTexto } from '@/lib/nativo/copiar';
 
 const TRIBUNAL_UI = {
   STJ: {
@@ -35,7 +36,7 @@ function TeseCard({ item, accent }: { item: TeseItemRow; accent: string }) {
 
   const copiar = async () => {
     try {
-      await navigator.clipboard.writeText(`${item.numero}. ${item.tese}`);
+      await copiarTexto(`${item.numero}. ${item.tese}`);
       setCopiado(true);
       setTimeout(() => setCopiado(false), 1500);
     } catch {}
@@ -153,8 +154,17 @@ function TesesTribunalInner({ tribunal }: { tribunal: 'STJ' | 'STF' }) {
   const cached = getTesesEdicoesCached(tribunal);
   const [edicoes, setEdicoes] = useState<TeseEdicaoRow[]>(cached ?? []);
   const [loading, setLoading] = useState(!(cached && cached.length > 0));
+  const [searchParams] = useSearchParams();
   const [aberta, setAberta] = useState<TeseEdicaoRow | null>(null);
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(searchParams.get('q') ?? '');
+
+  // Deep link da busca global: /jurisprudencia/teses-stj?edicao=210
+  const edicaoParam = searchParams.get('edicao');
+  useEffect(() => {
+    if (!edicaoParam || edicoes.length === 0) return;
+    const alvo = edicoes.find((e) => String(e.edicao) === edicaoParam);
+    if (alvo) setAberta(alvo);
+  }, [edicaoParam, edicoes]);
 
   useEffect(() => {
     let cancelled = false;

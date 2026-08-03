@@ -37,6 +37,7 @@ import bgLightJusticeAsset from '@/assets/carousel-bg/bg-light-justice.webp';
 const bgLightJustice = bgLightJusticeAsset;
 import bgLightCourthouseAsset from '@/assets/carousel-bg/bg-light-courthouse.webp';
 import { useGoBack } from '@/hooks/useGoBack';
+import { baixarBlob } from '@/lib/nativo';
 const bgLightCourthouse = bgLightCourthouseAsset;
 
 // ─── Types ───
@@ -431,12 +432,7 @@ const GeradorPost = () => {
     const canvas = await html2canvas(el, { scale: 1, useCORS: true, backgroundColor: null });
     canvas.toBlob((blob) => {
       if (!blob) return;
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `slide-${index + 1}.png`;
-      a.click();
-      URL.revokeObjectURL(url);
+      void baixarBlob(blob, `slide-${index + 1}.png`, { titulo: `Slide ${index + 1}` });
     }, 'image/png');
   };
 

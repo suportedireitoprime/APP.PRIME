@@ -3,6 +3,7 @@ import { X, BadgeCheck, Ban, ExternalLink, Copy, Check, Heart } from 'lucide-rea
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import type { Sumula } from '@/services/sumulasService';
+import { copiarTexto } from '@/lib/nativo/copiar';
 
 interface Props {
   sumula: Sumula;
@@ -93,7 +94,7 @@ export function SumulaVinculanteSheet({ sumula, isFavorita = false, onToggleFavo
 
   async function copyEnunciado() {
     try {
-      await navigator.clipboard.writeText(`Súmula Vinculante ${sumula.numero}\n\n${sumula.enunciado}`);
+      await copiarTexto(`Súmula Vinculante ${sumula.numero}\n\n${sumula.enunciado}`);
       setCopied(true);
       toast.success('Enunciado copiado');
       setTimeout(() => setCopied(false), 1500);

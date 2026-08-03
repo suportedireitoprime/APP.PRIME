@@ -1890,6 +1890,10 @@ jobs:
               'android.permission.FOREGROUND_SERVICE',
               'android.permission.POST_NOTIFICATIONS',
               'android.permission.RECEIVE_BOOT_COMPLETED',
+              'android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK',
+              'android.permission.WAKE_LOCK',
+              'android.permission.CAMERA',
+              'android.permission.READ_MEDIA_IMAGES',
           ]
           for perm in perms:
               if perm not in s:
@@ -2565,6 +2569,7 @@ jobs:
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          GOOGLE_WEB_CLIENT_ID: ${{ secrets.GOOGLE_WEB_CLIENT_ID }}
         run: |
           set -euo pipefail
           missing=0
@@ -2649,28 +2654,92 @@ jobs:
 
           # Formata com dois-pontos maiúsculos para comparação visual com Google Cloud
           release_sha1_formatted=$(echo "$release_sha1" | tr '[:lower:]' '[:upper:]' | sed 's/../&:/g;s/:$//')
-          echo ""
-          echo "════════════════════════════════════════════════════════════════"
-          echo "🔑 SHA-1 DO KEYSTORE DE RELEASE (o que assina este APK/AAB):"
-          echo ""
-          echo "   $release_sha1_formatted"
-          echo ""
-          echo "   Compare com o SHA-1 cadastrado no Google Cloud Console:"
-          echo "   → OAuth Android 'Vacatio Android' deve ter EXATAMENTE este valor."
-          echo "   → Esperado (o que você já tem no Google Cloud):"
-          echo "     59:96:8B:B9:5A:98:68:C9:8C:CC:83:88:DE:0D:56:8D:F5:76:B4:B6"
-          echo "════════════════════════════════════════════════════════════════"
-          echo ""
+          # ────────────────────────────────────────────────────────────────
+          # Guard Google Sign-In: o SHA-1 que assina o APK precisa ser o mesmo
+          # registrado no cliente OAuth Android do google-services.json, e o
+          # GOOGLE_WEB_CLIENT_ID usado no build precisa ser o cliente Web
+          # (client_type 3) do MESMO google-services.json. Qualquer divergência
+          # gera DEVELOPER_ERROR 10 no aparelho — então falhamos o build aqui.
+          # ────────────────────────────────────────────────────────────────
+          RELEASE_SHA1="$release_sha1" \
+          RELEASE_SHA1_FORMATTED="$release_sha1_formatted" \
+          GOOGLE_WEB_CLIENT_ID="${GOOGLE_WEB_CLIENT_ID:-}" \
+          python3 - <<'PY'
+          import json, os, sys
+          from pathlib import Path
 
-          expected_google_cloud="59968bb95a9868c98ccc8388de0d568df576b4b6"
-          if [ "$release_sha1" = "$expected_google_cloud" ]; then
-            echo "✅ SHA-1 do keystore BATE com o cadastrado no Google Cloud."
-          else
-            echo "::warning::⚠️ SHA-1 do keystore de release NÃO bate com o cadastrado no Google Cloud OAuth Android."
-            echo "::warning::Atual (keystore): $release_sha1_formatted"
-            echo "::warning::Cadastrado (Google Cloud): 59:96:8B:B9:5A:98:68:C9:8C:CC:83:88:DE:0D:56:8D:F5:76:B4:B6"
-            echo "::warning::AÇÃO: Vá em Google Cloud → APIs & Services → Credentials → 'Vacatio Android' e substitua o SHA-1 pelo valor atual acima. O login Google vai falhar até corrigir."
-          fi
+          sha1 = os.environ['RELEASE_SHA1'].lower()
+          sha1_fmt = os.environ['RELEASE_SHA1_FORMATTED']
+          web_from_env = (os.environ.get('GOOGLE_WEB_CLIENT_ID') or '').strip()
+          fallback_web = '1099228641135-ercuuds9lvrgel1ilgne82fssucltacv.apps.googleusercontent.com'
+          effective_web = web_from_env or fallback_web
+
+          gs_path = Path('android-config/google-services.json')
+          if not gs_path.exists():
+              print('::error::android-config/google-services.json não encontrado — impossível validar Google Sign-In.')
+              sys.exit(1)
+          gs = json.loads(gs_path.read_text())
+
+          android_clients, web_clients, packages = [], [], []
+          for client in gs.get('client', []):
+              packages.append(
+                  client.get('client_info', {}).get('android_client_info', {}).get('package_name')
+              )
+              for oc in client.get('oauth_client', []):
+                  if oc.get('client_type') == 1:
+                      android_clients.append(oc)
+                  elif oc.get('client_type') == 3:
+                      web_clients.append(oc.get('client_id'))
+
+          print('════════════════════════════════════════════════════════════════')
+          print('🔐 GOOGLE SIGN-IN — configuração efetiva deste build')
+          print(f'   package(s) no google-services.json : {", ".join(p for p in packages if p)}')
+          print(f'   SHA-1 do keystore de release       : {sha1_fmt}')
+          for oc in android_clients:
+              ch = (oc.get('android_info', {}).get('certificate_hash') or '').lower()
+              ch_fmt = ':'.join(ch[i:i+2] for i in range(0, len(ch), 2)).upper()
+              print(f'   OAuth Android {oc.get("client_id")}')
+              print(f'      package  : {oc.get("android_info", {}).get("package_name")}')
+              print(f'      SHA-1    : {ch_fmt}')
+          print(f'   OAuth Web (client_type 3)          : {", ".join(web_clients) or "(nenhum)"}')
+          print(f'   GOOGLE_WEB_CLIENT_ID usado no build: {effective_web}'
+                f'{"  (secret do GitHub)" if web_from_env else "  (fallback do capacitor.config.ts)"}')
+          print('════════════════════════════════════════════════════════════════')
+
+          fail = False
+
+          hashes = [
+              (oc.get('android_info', {}).get('certificate_hash') or '').lower()
+              for oc in android_clients
+          ]
+          if not hashes:
+              print('::error::google-services.json não tem cliente OAuth Android (client_type 1). '
+                    'Cadastre o app Android no Firebase com o package e o SHA-1 acima.')
+              fail = True
+          elif sha1 not in hashes:
+              print(f'::error::O SHA-1 do keystore ({sha1_fmt}) NÃO está registrado no cliente OAuth Android '
+                    'do google-services.json — isso é exatamente o DEVELOPER_ERROR 10 no login Google. '
+                    'AÇÃO: Firebase Console → Configurações do projeto → app Android → "Adicionar impressão digital" '
+                    'e cole o SHA-1 acima; depois baixe o google-services.json novo e substitua '
+                    'android-config/google-services.json.')
+              fail = True
+          else:
+              print('✅ SHA-1 do keystore confere com o cliente OAuth Android do google-services.json.')
+
+          if not web_clients:
+              print('::error::google-services.json não tem cliente OAuth Web (client_type 3). '
+                    'Habilite o Google Sign-In no Firebase Authentication e baixe o JSON novamente.')
+              fail = True
+          elif effective_web not in web_clients:
+              print(f'::error::GOOGLE_WEB_CLIENT_ID do build ({effective_web}) não é o cliente Web do '
+                    f'google-services.json ({", ".join(web_clients)}). Corrija o secret GOOGLE_WEB_CLIENT_ID '
+                    'no GitHub (ou remova-o para usar o fallback correto).')
+              fail = True
+          else:
+              print('✅ GOOGLE_WEB_CLIENT_ID do build confere com o cliente Web do google-services.json.')
+
+          sys.exit(1 if fail else 0)
+          PY
 
           # ────────────────────────────────────────────────────────────────
           # 🔑 Facebook Key Hash (Meta Developers → Configurações do app Android)

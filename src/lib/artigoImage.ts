@@ -1,6 +1,7 @@
 import html2canvas from 'html2canvas';
 import brasaoUrl from '@/assets/brasao-republica.webp';
 import type { ArtigoPdfInput, ArtigoPdfModo } from './artigoPdf';
+import { baixarBlob } from '@/lib/nativo';
 
 const APP_NAME = 'Direito Prime — Vade Mecum';
 const APP_URL = 'vacatio.com.br';
@@ -155,20 +156,14 @@ export async function gerarArtigoImage(data: ArtigoImageInput) {
       useCORS: true,
       logging: false,
     });
-    await new Promise<void>((resolve) => {
-      canvas.toBlob((blob) => {
-        if (!blob) return resolve();
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${slug(data.leiLabel)}-art-${slug(data.numero)}-${data.modo}.png`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        setTimeout(() => URL.revokeObjectURL(url), 1000);
-        resolve();
-      }, 'image/png');
+    const blob = await new Promise<Blob | null>((resolve) => {
+      canvas.toBlob((b) => resolve(b), 'image/png');
     });
+    if (blob) {
+      await baixarBlob(blob, `${slug(data.leiLabel)}-art-${slug(data.numero)}-${data.modo}.png`, {
+        titulo: `${data.leiLabel} — Art. ${data.numero}`,
+      });
+    }
   } finally {
     host.remove();
   }

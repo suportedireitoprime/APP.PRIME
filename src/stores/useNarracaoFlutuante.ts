@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type { ArtigoLei } from '@/data/mockData';
+import { registrarMidia, clearMediaSession } from '@/lib/mediaSession';
 
 interface AdoptPayload {
   audio: HTMLAudioElement;
@@ -56,6 +57,7 @@ export const useNarracaoFlutuante = create<State>((set, get) => ({
     audio.onpause = () => set({ isPlaying: !audio.ended && !audio.paused });
     audio.onended = () => {
       detach(audio);
+      clearMediaSession(audio);
       set({
         audio: null,
         artigo: null,
@@ -70,6 +72,14 @@ export const useNarracaoFlutuante = create<State>((set, get) => ({
       const d = audio.duration || 0;
       set({ progress: d > 0 ? audio.currentTime / d : 0 });
     };
+
+    registrarMidia({
+      titulo: `Art. ${artigo.numero ?? ''}`,
+      subtitulo: leiNome || tabelaNome,
+      album: 'Narração',
+      audio,
+      onStop: () => get().close(),
+    });
 
     set({
       audio,
@@ -103,6 +113,7 @@ export const useNarracaoFlutuante = create<State>((set, get) => ({
     if (a) {
       try { a.pause(); } catch {}
       detach(a);
+      clearMediaSession(a);
     }
     set({
       audio: null,
@@ -125,6 +136,7 @@ export const useNarracaoFlutuante = create<State>((set, get) => ({
     const { audio, artigo } = get();
     if (!audio || !artigo || artigo.id !== artigoId) return null;
     detach(audio);
+    clearMediaSession(audio);
     set({
       audio: null,
       artigo: null,

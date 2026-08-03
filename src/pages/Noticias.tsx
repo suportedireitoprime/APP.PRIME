@@ -24,6 +24,8 @@ import { Newspaper } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useGoBack } from '@/hooks/useGoBack';
+import { copiarTexto } from '@/lib/nativo/copiar';
+import { compartilharNativo, podeCompartilhar } from '@/lib/nativo/compartilhar';
 
 
 
@@ -208,10 +210,10 @@ const Noticias = () => {
       url: n.link,
     };
     try {
-      if (navigator.share) {
-        await navigator.share(shareData);
+      if (podeCompartilhar()) {
+        await compartilharNativo(shareData);
       } else {
-        await navigator.clipboard.writeText(`${n.titulo}\n${n.link}`);
+        await copiarTexto(`${n.titulo}\n${n.link}`);
         toast.success('Link copiado');
       }
     } catch {

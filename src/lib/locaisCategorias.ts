@@ -1,6 +1,6 @@
 import {
   Scale,
-  ScrollText,
+  Stamp,
   Siren,
   Building2,
   Landmark,
@@ -31,7 +31,7 @@ export const CATEGORIAS_LOCAIS: {
   fonteOsm: boolean;
 }[] = [
   { id: 'tribunais', label: 'Tribunais & Fóruns', icon: Scale, cor: 'bg-amber-500', fonteOsm: true },
-  { id: 'cartorios', label: 'Cartórios', icon: ScrollText, cor: 'bg-orange-500', fonteOsm: true },
+  { id: 'cartorios', label: 'Cartórios', icon: Stamp, cor: 'bg-orange-500', fonteOsm: true },
   { id: 'delegacias', label: 'Delegacias', icon: Siren, cor: 'bg-blue-500', fonteOsm: true },
   { id: 'presidios', label: 'Presídios', icon: Building2, cor: 'bg-zinc-500', fonteOsm: true },
   { id: 'museus', label: 'Museus', icon: Landmark, cor: 'bg-fuchsia-500', fonteOsm: true },

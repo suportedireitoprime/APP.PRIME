@@ -3,15 +3,15 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
-  Accessibility, Baby, Banknote, BellRing, BookA, BookMarked, Briefcase, BriefcaseBusiness, Building,
+  Accessibility, Baby, Banknote, BellRing, BookA, BookMarked, BookOpen, Briefcase, BriefcaseBusiness, Building,
   Brain, Headphones, Library, Video,
 
   Cannabis, Car, ChevronRight, CircleDollarSign, Clock, Columns3, Cross, Drama,
   Droplets, Factory, FileCheck, FileLock, FileText, FileWarning, Flame, Gavel,
   Globe, GraduationCap, HandCoins, Handshake, HeartPulse, Hospital, House, IdCard,
-  Landmark, LandPlot, LayoutGrid, Leaf, List, Map, Mic, MicOff, Network, NotebookPen,
+  Landmark, LandPlot, LayoutGrid, Leaf, List, Map, MapPin, Mic, MicOff, Network, NotebookPen,
   PiggyBank, Plane, PocketKnife, RadioTower, ReceiptText, Scale, Scroll, ScrollText, Search,
-  Shield, ShieldAlert, ShieldCheck, ShieldX, Ship, ShoppingCart, Sprout, Stamp, Store,
+  Shield, ShieldAlert, ShieldCheck, ShieldX, Ship, ShoppingCart, Siren, Award, Sprout, Stamp, Store,
   Tractor, TreePine, Users, Vote, Wallet, Wifi, X, type LucideIcon,
   Presentation,
 } from 'lucide-react';
@@ -48,7 +48,7 @@ const GRID_CATS: Cat[] = [
   { id: 'constituicao',    label: 'Constituição',    sublabel: 'CF/88',                     icon: Landmark,   color: '#FFD400' },
   { id: 'codigo',          label: 'Códigos',         sublabel: 'Civil, Penal, Processo…',   icon: Gavel,      color: '#FB923C' },
   { id: 'estatuto',        label: 'Estatutos',       sublabel: 'ECA, Idoso, OAB…',          icon: BookMarked, color: '#3B82F6' },
-  { id: 'jurisprudencia',  label: 'Jurisprudência',  sublabel: 'STF, STJ, Vinculantes',     icon: ScrollText, color: '#EC4899' },
+  { id: 'jurisprudencia',  label: 'Jurisprudência',  sublabel: 'STF, STJ, Vinculantes',     icon: Stamp, color: '#EC4899' },
   { id: 'lei-ordinaria',   label: 'Leis Ordinárias', sublabel: 'Federais complementares',   icon: Columns3,   color: '#38BDF8' },
   { id: 'lei-especial',    label: 'Penal Especial',  sublabel: 'Leis penais extravagantes', icon: Scale,      color: '#FB923C' },
 ];
@@ -57,7 +57,7 @@ const GRID_CATS: Cat[] = [
 type RadarCat = Cat & { radarTipo: string; normaSlug: string };
 const RADAR_CATS: RadarCat[] = [
   { id: 'radar-lei',       label: 'Leis Ordinárias',     sublabel: 'Leis ordinárias publicadas no DOU',   icon: Scroll,     color: 'hsl(348 78% 38%)', radarTipo: 'Lei',                normaSlug: 'leis' },
-  { id: 'radar-lc',        label: 'Leis Complementares', sublabel: 'Complementares à Constituição',       icon: ScrollText, color: '#DC2626', radarTipo: 'Lei Complementar',   normaSlug: 'leis-complementares' },
+  { id: 'radar-lc',        label: 'Leis Complementares', sublabel: 'Complementares à Constituição',       icon: Stamp, color: '#DC2626', radarTipo: 'Lei Complementar',   normaSlug: 'leis-complementares' },
   { id: 'radar-decreto',   label: 'Decretos',            sublabel: 'Regulamentos do Executivo',           icon: Stamp,      color: 'hsl(348 78% 38%)', radarTipo: 'Decreto',            normaSlug: 'decretos' },
   { id: 'radar-mp',        label: 'Medidas Provisórias', sublabel: 'Editadas pelo Presidente',            icon: FileWarning,color: '#FB923C', radarTipo: 'Medida Provisória',  normaSlug: 'medidas-provisorias' },
 ];
@@ -92,7 +92,7 @@ const AREA_CATS: AreaCat[] = [
 interface CategoriaFormal extends Cat { route?: string; leiIds?: string[]; }
 
 const CATEGORIA_CATS: CategoriaFormal[] = [
-  { id: 'cat-federais',      label: 'Leis Federais',      sublabel: 'Constituição, Códigos, Estatutos…', icon: ScrollText, color: 'hsl(348 78% 38%)', leiIds: LEIS_CATALOG.map(l => l.id) },
+  { id: 'cat-federais',      label: 'Leis Federais',      sublabel: 'Constituição, Códigos, Estatutos…', icon: Stamp, color: 'hsl(348 78% 38%)', leiIds: LEIS_CATALOG.map(l => l.id) },
   { id: 'cat-estadual',      label: 'Legislação Estadual', sublabel: '27 unidades federativas',           icon: Map,        color: '#38BDF8', route: '/legislacao-estadual' },
   { id: 'cat-jurisprudencia',label: 'Jurisprudência',      sublabel: 'STF, STJ, Súmulas Vinculantes',     icon: Gavel,      color: '#EC4899' },
   { id: 'cat-oab',           label: 'OAB',                 sublabel: 'Estatuto, ética e advocacia',       icon: Scale,      color: '#1D4ED8' },
@@ -108,6 +108,7 @@ const JURI_OPCOES = [
 // Aba "Em Alta" — funções de estudo (evita repetir o que já existe no Vade Mecum)
 type EmAltaCat = Cat & { route: string; emBreve?: boolean };
 const EMALTA_CATS: EmAltaCat[] = [
+  
   { id: 'ea-biblioteca',  label: 'Biblioteca',     sublabel: 'Livros, clássicos e coleções',   icon: Library,     color: '#FFD400', route: '/bibliotecas' },
   { id: 'ea-videoaulas',  label: 'Videoaulas',     sublabel: 'Aulas em vídeo por área',        icon: Video,       color: '#FF2D78', route: '/videoaulas' },
   { id: 'ea-resumos',     label: 'Resumos',        sublabel: 'Resumos jurídicos por tema',     icon: NotebookPen, color: '#22D3EE', route: '/resumos-juridicos' },
@@ -122,13 +123,28 @@ const EMALTA_CATS: EmAltaCat[] = [
 ];
 
 
-type Tab = 'categorias' | 'emalta' | 'areas';
+// Aba "Locais" — locais jurídicos (mesmas categorias da página /ferramentas/locais)
+type LocalCat = Cat;
+const LOCAIS_CATS: LocalCat[] = [
+  { id: 'tribunais',          label: 'Tribunais & Fóruns', sublabel: 'Fóruns, varas e tribunais',      icon: Scale,      color: '#FFD400' },
+  { id: 'cartorios',          label: 'Cartórios',          sublabel: 'Registros, notas e protestos',   icon: Stamp, color: '#FB923C' },
+  { id: 'delegacias',         label: 'Delegacias',         sublabel: 'Polícia Civil e especializadas', icon: Siren,      color: '#3B82F6' },
+  { id: 'oab',                label: 'OAB',                sublabel: 'Seccionais e subseções',         icon: Award,      color: 'hsl(348 78% 38%)' },
+  { id: 'defensoria',         label: 'Defensoria',         sublabel: 'Defensoria Pública',             icon: Shield,     color: '#14B8A6' },
+  { id: 'ministerio_publico', label: 'Ministério Público', sublabel: 'Promotorias e procuradorias',    icon: BookMarked, color: '#8B5CF6' },
+  { id: 'presidios',          label: 'Presídios',          sublabel: 'Unidades prisionais',            icon: Building,   color: '#64748B' },
+  { id: 'universidades',      label: 'Faculdades',         sublabel: 'Cursos de Direito',              icon: GraduationCap, color: '#22C55E' },
+  { id: 'museus',             label: 'Museus',             sublabel: 'Memória e cultura jurídica',     icon: Landmark,   color: '#EC4899' },
+];
+
+type Tab = 'locais' | 'estudos' | 'areas';
 
 const TABS: { id: Tab; label: string; icon: any }[] = [
-  { id: 'categorias', label: 'Categorias', icon: LayoutGrid },
-  { id: 'emalta',     label: 'Em Alta',    icon: Flame },
-  { id: 'areas',      label: 'Áreas',      icon: List },
+  { id: 'locais',  label: 'Locais',  icon: MapPin },
+  { id: 'estudos', label: 'Estudos', icon: GraduationCap },
+  { id: 'areas',   label: 'Áreas',   icon: List },
 ];
+
 
 
 const normalizeSearch = (value: string) =>
@@ -156,7 +172,7 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
   const [categoryOpen, setCategoryOpen] = useState<Cat | AreaCat | CategoriaFormal | null>(null);
   const [visuaisOpen, setVisuaisOpen] = useState(false);
   const [categorySearch, setCategorySearch] = useState('');
-  const [tab, setTab] = useState<Tab>('emalta');
+  const [tab, setTab] = useState<Tab>('estudos');
 
   const handleVoiceSearch = useCallback((text: string) => {
     setCategorySearch(text);
@@ -282,9 +298,9 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
       </div>
 
       <AnimatePresence mode="wait" initial={false}>
-        {tab === 'categorias' && (
+        {tab === 'locais' && (
           <motion.div
-            key="categorias"
+            key="locais"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
@@ -295,16 +311,16 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
               <div className="flex items-center gap-2">
                 <span className="w-1 h-5 rounded-full bg-primary" />
                 <h2 className="font-body text-foreground text-2xl sm:text-3xl font-bold tracking-tight">
-                  Categorias
+                  Locais
                 </h2>
               </div>
               <p className="font-body text-muted-foreground text-[13px] leading-snug mt-1 ml-3">
-                Filtros por natureza jurídica: federais, estaduais, jurisprudência, OAB e decretos.
+                Locais jurídicos perto de você: tribunais, cartórios, delegacias, OAB, Defensoria e mais.
               </p>
             </div>
             <div className="px-1 h-[1.5px] bg-border/70 w-full -mt-2" />
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4 px-1 pb-8">
-              {CATEGORIA_CATS.map((c, i) => (
+              {LOCAIS_CATS.map((c, i) => (
                 <HomeCard
                   key={c.id}
                   icon={c.icon}
@@ -312,37 +328,20 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
                   sublabel={c.sublabel}
                   color={c.color}
                   delay={i * 0.05}
-                  onClick={() => {
-                    if (c.id === 'cat-jurisprudencia') { navigate('/jurisprudencia'); return; }
-                    if (c.id === 'cat-oab') {
-                      const lei = LEIS_CATALOG.find(l => l.id === 'eoab');
-                      if (lei) navigate(leiPath(lei));
-                      return;
-                    }
-                    if (c.id === 'cat-estadual') {
-                      setCategorySearch('');
-                      setCategoryOpen(c);
-                      return;
-                    }
-                    if (c.leiIds) {
-                      setCategorySearch('');
-                      setCategoryOpen(c);
-                      return;
-                    }
-                    if (c.route) { navigate(c.route); return; }
-                  }}
+                  onClick={() => navigate(`/ferramentas/locais?categoria=${c.id}`)}
                   data-track="home_card_click"
                   data-track-name={c.label}
-                  data-track-section="categorias"
+                  data-track-section="locais"
                 />
               ))}
             </div>
           </motion.div>
         )}
 
-        {tab === 'emalta' && (
+        {tab === 'estudos' && (
           <motion.div
-            key="emalta"
+            key="estudos"
+
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
@@ -363,7 +362,7 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
                       onClick={() => { setCategorySearch(''); setCategoryOpen(c); }}
                       data-track="home_card_click"
                       data-track-name={c.label}
-                      data-track-section="emalta"
+                      data-track-section="estudos"
                     />
                   ))
                 : EMALTA_CATS.map((c, i) => (
@@ -386,7 +385,7 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
                       }}
                       data-track="home_card_click"
                       data-track-name={c.label}
-                      data-track-section="emalta"
+                      data-track-section="estudos"
                     />
                   ))}
             </div>
@@ -402,7 +401,7 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
       )}
 
       {/* Lembretes — central única */}
-      <div className="px-1 pb-24">
+      <div className="px-1 pb-6">
         <h3 className="font-display text-foreground text-[18px] font-bold mb-3 flex items-center gap-2">
           <span className="w-1 h-5 rounded-full bg-primary" />
           Lembretes
@@ -436,6 +435,51 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
           </button>
         </div>
       </div>
+
+      {/* Meus estudos — em lista */}
+      <div className="px-1 pb-24">
+        <h3 className="font-display text-foreground text-[18px] font-bold mb-3 flex items-center gap-2">
+          <span className="w-1 h-5 rounded-full bg-primary" />
+          Meus estudos
+        </h3>
+        <p className="font-body text-muted-foreground text-[12.5px] leading-snug mb-3 ml-3">
+          Continue de onde parou: aulas, leituras, resumos e videoaulas.
+        </p>
+        <div className="space-y-2.5">
+          {[
+            { id: 'modo-aula',   label: 'Modo Aula',        sub: 'Grave a aula e receba o material', icon: GraduationCap, color: '#8B1E3F', route: '/modo-aula' },
+            { id: 'leituras',    label: 'Minhas Leituras',  sub: 'Livros em andamento e progresso',  icon: BookOpen,      color: '#FFD400', route: '/minhas-leituras' },
+            { id: 'resumos',     label: 'Meus Resumos',     sub: 'Favoritos e abertos recentemente', icon: NotebookPen,   color: '#22D3EE', route: '/meus-resumos' },
+            { id: 'videoaulas',  label: 'Minhas Videoaulas',sub: 'Em andamento e favoritas',         icon: Video,         color: '#FF2D78', route: '/minhas-videoaulas' },
+          ].map((it) => (
+            <button
+              key={it.id}
+              onClick={() => navigate(it.route)}
+              data-track={`home_meus_estudos_${it.id}`}
+              className="w-full flex items-center gap-3 px-4 py-5 min-h-[76px] rounded-2xl bg-card border border-border/60 shadow-sm active:scale-[0.99] transition"
+            >
+              <it.icon
+                className="w-8 h-8 shrink-0"
+                style={{
+                  color: it.color,
+                  filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))',
+                }}
+                strokeWidth={1.15}
+              />
+              <div className="flex-1 min-w-0 text-left">
+                <p className="font-display text-foreground text-[15.5px] font-bold leading-tight truncate">
+                  {it.label}
+                </p>
+                <p className="font-body text-muted-foreground text-[12px] leading-tight truncate mt-0.5">
+                  {it.sub}
+                </p>
+              </div>
+              <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
+            </button>
+          ))}
+        </div>
+      </div>
+
 
 
           </motion.div>

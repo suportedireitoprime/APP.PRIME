@@ -27,6 +27,8 @@ import LembreteSheet from '@/components/lembretes/LembreteSheet';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 import { useNavigate } from 'react-router-dom';
 import { Library } from 'lucide-react';
+import { copiarTexto } from '@/lib/nativo/copiar';
+import { compartilharNativo, podeCompartilhar } from '@/lib/nativo/compartilhar';
 
 interface LivroDetailSheetProps {
   livro: LivroNormalizado | null;
@@ -166,10 +168,10 @@ const LivroDetailSheet = ({ livro, open, onClose }: LivroDetailSheetProps) => {
     if (modo === 'desktop') {
       const url = typeof window !== 'undefined' ? window.location.href : '';
       try {
-        if (navigator.share) {
-          await navigator.share({ title: livro.titulo, url });
+        if (podeCompartilhar()) {
+          await compartilharNativo({ title: livro.titulo, url });
         } else if (navigator.clipboard && url) {
-          await navigator.clipboard.writeText(url);
+          await copiarTexto(url);
           toast.success('Link copiado', { description: 'Cole no navegador do desktop para continuar lendo.' });
         }
       } catch { /* usuário cancelou */ }

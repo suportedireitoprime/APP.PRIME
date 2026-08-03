@@ -37,11 +37,9 @@ export async function share(opts: ShareOptions): Promise<{ ok: boolean; method: 
   }
 
   const clipboardText = [opts.text, opts.url].filter(Boolean).join('\n');
-  if (clipboardText && typeof navigator !== 'undefined' && navigator.clipboard) {
-    try {
-      await navigator.clipboard.writeText(clipboardText);
-      return { ok: true, method: 'clipboard' };
-    } catch {}
+  if (clipboardText) {
+    const { copiar } = await import('@/lib/nativo/copiar');
+    if (await copiar(clipboardText, '')) return { ok: true, method: 'clipboard' };
   }
 
   return { ok: false, method: 'none' };

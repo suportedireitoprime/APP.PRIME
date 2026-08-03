@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, ChevronRight, FileText, Search, Loader2, Scale, Landmark, X } from 'lucide-react';
 import { supabaseCloud } from '@/integrations/supabase/cloudClient';
 import { useGoBack } from '@/hooks/useGoBack';
@@ -276,8 +276,17 @@ function InformativosTribunalInner({ tribunal }: { tribunal: 'STJ' | 'STF' }) {
   const goBack = useGoBack();
   const cfg = TRIBUNAL_UI[tribunal];
   const { edicoes, loading, error } = useInformativos(tribunal);
+  const [searchParams] = useSearchParams();
   const [aberta, setAberta] = useState<Edicao | null>(null);
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(searchParams.get('q') ?? '');
+
+  // Deep link da busca global: /jurisprudencia/informativos-stj?edicao=812
+  const edicaoParam = searchParams.get('edicao');
+  useEffect(() => {
+    if (!edicaoParam || edicoes.length === 0) return;
+    const alvo = edicoes.find((e) => String(e.edicao) === edicaoParam);
+    if (alvo) setAberta(alvo);
+  }, [edicaoParam, edicoes]);
 
   const filtradas = useMemo(() => {
     const q = query.trim().toLowerCase();

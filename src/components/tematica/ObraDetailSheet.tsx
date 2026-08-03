@@ -70,18 +70,13 @@ interface Props {
 
 import { registrarEventoTematica } from "@/lib/tematicaMetricas";
 import { useEscapeKey } from '@/hooks/useEscapeKey';
+import { copiarTexto } from '@/lib/nativo/copiar';
+import { abrirLink as abrirNoNativo } from '@/lib/nativo';
+import { compartilharNativo, podeCompartilhar } from '@/lib/nativo/compartilhar';
 
 async function abrirLink(url: string, obraId?: string) {
   if (obraId) registrarEventoTematica(obraId, "click_provider");
-  try {
-    const cap = (window as any).Capacitor;
-    if (cap?.isNativePlatform?.()) {
-      const { Browser } = await import("@capacitor/browser");
-      await Browser.open({ url });
-      return;
-    }
-  } catch {}
-  window.open(url, "_blank", "noopener,noreferrer");
+  await abrirNoNativo(url);
 }
 
 export default function ObraDetailSheet({ obra, open, onClose }: Props) {
@@ -225,13 +220,13 @@ export default function ObraDetailSheet({ obra, open, onClose }: Props) {
     const url = obra.homepage || `https://www.themoviedb.org/${obra.tipo}/${obra.tmdb_id}`;
     const texto = `${obra.titulo}${obra.ano ? ` (${obra.ano})` : ""} — recomendação da Temática Jurídica`;
     try {
-      if (navigator.share) {
-        await navigator.share({ title: obra.titulo, text: texto, url });
+      if (podeCompartilhar()) {
+        await compartilharNativo({ title: obra.titulo, text: texto, url });
         return;
       }
     } catch {}
     try {
-      await navigator.clipboard.writeText(`${texto}\n${url}`);
+      await copiarTexto(`${texto}\n${url}`);
       toast.success("Link copiado");
     } catch {
       toast.error("Não foi possível compartilhar");

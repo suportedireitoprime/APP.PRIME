@@ -20,6 +20,7 @@ import {
   writeJurisCache,
   type JurisCategoriaCache,
 } from '@/lib/jurisprudenciaCache';
+import { copiarTexto } from '@/lib/nativo/copiar';
 
 interface JurisItem {
   id: number | string;
@@ -686,7 +687,7 @@ export default function JurisprudenciaArtigo() {
                                 tese && `TESE:\n${tese}`,
                                 ementa && `EMENTA:\n${ementa}`,
                               ].filter(Boolean).join('\n\n');
-                              navigator.clipboard.writeText(txt);
+                              copiarTexto(txt);
                               toast.success('Copiado');
                             }}
                           >
@@ -915,7 +916,7 @@ export default function JurisprudenciaArtigo() {
                         showTese && teseStr ? `TESE:\n${teseStr}` : '',
                         showEmenta && ementaStr ? `EMENTA:\n${ementaStr}` : '',
                       ].filter(Boolean).join('\n\n');
-                      navigator.clipboard.writeText(txt);
+                      copiarTexto(txt);
                       toast.success('Copiado');
                     }}
                   >

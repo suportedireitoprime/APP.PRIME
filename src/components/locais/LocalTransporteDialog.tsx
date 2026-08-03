@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Bus, Footprints, Loader2, Train, ExternalLink } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
+import { abrirLink } from '@/lib/nativo';
 
 interface Props {
   open: boolean;
@@ -86,7 +87,7 @@ export function LocalTransporteDialog({ open, onClose, origem, destino }: Props)
         {erro && (
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground">{erro}</p>
-            <Button variant="outline" className="w-full" onClick={() => window.open(gmapsFallback, '_blank')}>
+            <Button variant="outline" className="w-full" onClick={() => void abrirLink(gmapsFallback)}>
               Abrir no Google Maps <ExternalLink className="w-3.5 h-3.5 ml-1" />
             </Button>
           </div>
@@ -143,7 +144,7 @@ export function LocalTransporteDialog({ open, onClose, origem, destino }: Props)
               })}
             </ol>
 
-            <Button variant="outline" className="w-full" onClick={() => window.open(gmapsFallback, '_blank')}>
+            <Button variant="outline" className="w-full" onClick={() => void abrirLink(gmapsFallback)}>
               Abrir passo a passo no Google Maps <ExternalLink className="w-3.5 h-3.5 ml-1" />
             </Button>
           </div>

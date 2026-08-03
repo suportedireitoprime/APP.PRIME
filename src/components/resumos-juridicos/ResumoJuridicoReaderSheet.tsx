@@ -20,6 +20,9 @@ import { gerarResumoPdf, resumoParaTexto } from "@/lib/resumoPdf";
 import { supabase } from "@/integrations/supabase/client";
 import CornellView from "./CornellView";
 import FeynmanView from "./FeynmanView";
+import FichaEditorial from "./FichaEditorial";
+import { PALETA } from "@/lib/visuaisJuridicos/layout";
+
 import {
   CornellContent,
   FeynmanContent,
@@ -27,6 +30,9 @@ import {
   cornellParaMarkdown,
   feynmanParaMarkdown,
 } from "./metodologias";
+import { copiarTexto } from '@/lib/nativo/copiar';
+import { abrirLink } from '@/lib/nativo';
+import { compartilharNativo, podeCompartilhar } from '@/lib/nativo/compartilhar';
 
 export interface ResumoRow {
   id: string;
@@ -187,7 +193,7 @@ export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoC
   const copiar = async () => {
     if (!resumo) return;
     try {
-      await navigator.clipboard.writeText(textoAtivo());
+      await copiarTexto(textoAtivo());
       setCopiado(true);
       setTimeout(() => setCopiado(false), 1800);
     } catch {
@@ -195,10 +201,10 @@ export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoC
     }
   };
 
-  const baixarPdf = () => {
+  const baixarPdf = async () => {
     if (!resumo) return;
     if (metodo !== "conceitos" && markdownAtivo) {
-      gerarResumoPdf({
+      await gerarResumoPdf({
         area: resumo.area,
         tema: resumo.tema,
         subtema: `${resumo.subtema || resumo.tema} — Método ${
@@ -208,17 +214,17 @@ export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoC
       });
       return;
     }
-    gerarResumoPdf(resumo);
+    await gerarResumoPdf(resumo);
   };
 
   const share = async () => {
     if (!resumo) return;
     const text = textoAtivo();
     try {
-      if (navigator.share) {
-        await navigator.share({ title: resumo.subtema || resumo.tema, text });
+      if (podeCompartilhar()) {
+        await compartilharNativo({ title: resumo.subtema || resumo.tema, text });
       } else {
-        window.open(`https://wa.me/?text=${encodeURIComponent(text.slice(0, 1500))}`, "_blank");
+        void abrirLink(`https://wa.me/?text=${encodeURIComponent(text.slice(0, 1500))}`);
       }
     } catch {
       /* noop */
@@ -293,124 +299,152 @@ export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoC
               </div>
 
 
-              <div className="space-y-4 px-5 pt-5">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span
-                    className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md text-white uppercase tracking-wide"
-                    style={{ backgroundColor: RED }}
+              <div className="space-y-4 px-4 pt-5 md:px-5">
+                <FichaEditorial
+                  etiqueta="Resumo Jurídico"
+                  titulo={resumo.subtema || resumo.tema}
+                  subtitulo={`${resumo.area} — ${resumo.tema}`}
+                >
+                  {/* Métodos de estudo */}
+                  <div
+                    className="flex w-full rounded-xl p-1 gap-1"
+                    style={{ background: "rgba(122,18,32,0.07)" }}
                   >
-                    <NotebookText className="w-3 h-3" />
-                    Resumo
-                  </span>
-                  <span
-                    className="px-2 py-0.5 rounded-md text-[10px] font-bold"
-                    style={{ backgroundColor: "hsl(348 78% 45% / 0.15)", color: RED }}
-                  >
-                    {resumo.tema}
-                  </span>
-                </div>
-                <h2 className="font-display text-2xl md:text-3xl text-foreground leading-[1.15] font-bold tracking-tight">
-                  {resumo.subtema || resumo.tema}
-                </h2>
-
-                {/* Métodos de estudo */}
-                <div className="flex w-full rounded-xl bg-secondary p-1 gap-1">
-                  {METODOS.map((m) => {
-                    const ativo = metodo === m.id;
-                    return (
-                      <button
-                        key={m.id}
-                        onClick={() => setMetodo(m.id)}
-                        className="flex-1 py-2 rounded-lg text-sm font-body font-semibold transition-colors text-center"
-                        style={ativo ? { backgroundColor: RED, color: "#fff" } : undefined}
-                      >
-                        <span className={ativo ? "" : "text-muted-foreground"}>{m.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {metodo === "conceitos" && abas.length > 1 && (
-                  <div className="flex w-full border-b border-border">
-                    {abas.map((t) => {
-                      const label = t === "resumo" ? "Resumo" : t === "exemplos" ? "Exemplos" : "Termos";
-                      const ativo = tab === t;
+                    {METODOS.map((m) => {
+                      const ativo = metodo === m.id;
                       return (
                         <button
-                          key={t}
-                          onClick={() => setTab(t)}
-                          className="flex-1 py-2.5 text-sm font-body font-semibold transition-colors text-center"
-                          style={
-                            ativo
-                              ? { color: RED, borderBottom: `2px solid ${RED}`, marginBottom: -1 }
-                              : undefined
-                          }
+                          key={m.id}
+                          onClick={() => setMetodo(m.id)}
+                          className="relative flex-1 py-2 rounded-lg text-sm font-body font-semibold transition-colors text-center"
                         >
-                          <span className={ativo ? "" : "text-muted-foreground"}>{label}</span>
+                          {ativo && (
+                            <motion.span
+                              layoutId="ficha-metodo"
+                              transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                              className="absolute inset-0 rounded-lg"
+                              style={{ background: PALETA.wine }}
+                            />
+                          )}
+                          <span
+                            className="relative"
+                            style={{ color: ativo ? "#FFF9F0" : "hsl(var(--muted-foreground))" }}
+                          >
+                            {m.label}
+                          </span>
                         </button>
                       );
                     })}
                   </div>
-                )}
 
-                {metodo === "conceitos" ? (
-                  <article
-                    style={{ fontSize: `${fontScale}em` }}
-                    className="
-                      prose prose-sm md:prose-base max-w-none dark:prose-invert font-body
-                      prose-headings:font-display prose-headings:text-foreground prose-headings:mt-6 prose-headings:mb-3
-                      prose-h2:text-xl prose-h3:text-lg
-                      prose-p:text-foreground/90 prose-p:leading-[1.75] prose-p:my-4
-                      prose-a:text-primary prose-a:no-underline hover:prose-a:underline
-                      prose-strong:text-foreground
-                      prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-primary/5 prose-blockquote:py-1 prose-blockquote:px-3 prose-blockquote:rounded-r
-                      prose-ul:my-4 prose-li:my-1
-                    "
-                  >
-                    {content ? (
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
-                    ) : (
-                      <p className="text-muted-foreground">Sem conteúdo neste tópico.</p>
-                    )}
-                  </article>
-                ) : (metodo === "cornell" && cornell) || (metodo === "feynman" && feynman) ? (
-                  <div style={{ fontSize: `${fontScale}em` }}>
-                    {metodo === "cornell" ? (
-                      <CornellView conteudo={cornell!} />
-                    ) : (
-                      <FeynmanView conteudo={feynman!} />
-                    )}
-                  </div>
-                ) : (
-                  <div className="rounded-2xl border border-border p-6 text-center space-y-3">
-                    <p className="text-sm text-muted-foreground">
-                      {metodo === "cornell"
-                        ? "O Método Cornell organiza o conteúdo em palavras-chave, perguntas de revisão e anotações."
-                        : "O Método Feynman explica o conteúdo em 4 passos, com linguagem simples e analogias."}
-                    </p>
-                    {erroGerar && <p className="text-sm" style={{ color: RED }}>{erroGerar}</p>}
-                    <button
-                      onClick={() => gerarMetodologia(metodo)}
-                      disabled={!!gerando}
-                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-white text-sm font-semibold active:scale-95 transition disabled:opacity-60"
-                      style={{ backgroundColor: RED }}
+                  {metodo === "conceitos" && abas.length > 1 && (
+                    <div
+                      className="flex w-full mt-4 border-b"
+                      style={{ borderColor: "rgba(122,18,32,0.16)" }}
                     >
-                      {gerando === metodo ? (
-                        <>
-                          <Loader2 className="w-4 h-4 animate-spin" /> Gerando…
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles className="w-4 h-4" /> Gerar com IA
-                        </>
-                      )}
-                    </button>
-                  </div>
-                )}
+                      {abas.map((t) => {
+                        const label =
+                          t === "resumo" ? "Resumo" : t === "exemplos" ? "Exemplos" : "Termos";
+                        const ativo = tab === t;
+                        return (
+                          <button
+                            key={t}
+                            onClick={() => setTab(t)}
+                            className="relative flex-1 py-2.5 text-[13px] font-body font-semibold uppercase tracking-[0.08em] text-center"
+                            style={{ color: ativo ? PALETA.wine : "hsl(var(--muted-foreground))" }}
+                          >
+                            {label}
+                            {ativo && (
+                              <motion.span
+                                layoutId="ficha-aba"
+                                transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                                className="absolute left-3 right-3 -bottom-[1px] h-[2px] rounded-full"
+                                style={{ background: PALETA.gold }}
+                              />
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
 
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.div
+                      key={`${metodo}-${tab}`}
+                      initial={{ opacity: 0, x: 18 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -18 }}
+                      transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                      className="pt-2"
+                    >
+                      {metodo === "conceitos" ? (
+                        <article
+                          style={{ fontSize: `${fontScale}em` }}
+                          className="
+                            prose prose-sm md:prose-base max-w-none font-body
+                            prose-headings:font-display prose-headings:text-foreground prose-headings:mt-6 prose-headings:mb-3
+                            prose-h2:text-xl prose-h3:text-lg
+                            prose-p:text-foreground/90 prose-p:leading-[1.8] prose-p:my-4
+                            prose-a:text-primary prose-a:no-underline hover:prose-a:underline
+                            prose-strong:text-foreground
+                            prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-primary/5 prose-blockquote:py-1 prose-blockquote:px-3 prose-blockquote:rounded-r prose-blockquote:not-italic
+                            prose-ul:my-4 prose-li:my-1 prose-li:marker:text-primary
+                          "
+                        >
+                          {content ? (
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+                          ) : (
+                            <p className="text-muted-foreground">Sem conteúdo neste tópico.</p>
+                          )}
+                        </article>
+                      ) : (metodo === "cornell" && cornell) || (metodo === "feynman" && feynman) ? (
+                        <div style={{ fontSize: `${fontScale}em` }}>
+                          {metodo === "cornell" ? (
+                            <CornellView conteudo={cornell!} />
+                          ) : (
+                            <FeynmanView conteudo={feynman!} />
+                          )}
+                        </div>
+                      ) : (
+                        <div
+                          className="rounded-2xl border p-6 text-center space-y-3"
+                          style={{ borderColor: "rgba(122,18,32,0.18)" }}
+                        >
+                          <p className="text-sm text-muted-foreground">
+                            {metodo === "cornell"
+                              ? "O Método Cornell organiza o conteúdo em palavras-chave, perguntas de revisão e anotações."
+                              : "O Método Feynman explica o conteúdo em 4 passos, com linguagem simples e analogias."}
+                          </p>
+                          {erroGerar && (
+                            <p className="text-sm" style={{ color: RED }}>
+                              {erroGerar}
+                            </p>
+                          )}
+                          <button
+                            onClick={() => gerarMetodologia(metodo)}
+                            disabled={!!gerando}
+                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-white text-sm font-semibold active:scale-95 transition disabled:opacity-60"
+                            style={{ backgroundColor: PALETA.wine }}
+                          >
+                            {gerando === metodo ? (
+                              <>
+                                <Loader2 className="w-4 h-4 animate-spin" /> Gerando…
+                              </>
+                            ) : (
+                              <>
+                                <Sparkles className="w-4 h-4" /> Gerar com IA
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      )}
+                    </motion.div>
+                  </AnimatePresence>
+                </FichaEditorial>
 
                 <div className="h-28" />
               </div>
+
             </div>
 
             {/* Ações flutuantes */}

@@ -10,6 +10,7 @@ const swooshSrc = pickAsset(swooshBundled, srcOf(swooshAsset));
 
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { abrirLink } from '@/lib/nativo';
 
 export type BoletimScene = {
   kind: 'intro' | 'norma' | 'outro';
@@ -283,7 +284,7 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, onClose }
   };
 
   const abrirFonte = () => {
-    if (scene.url_fonte) window.open(scene.url_fonte, '_blank', 'noopener,noreferrer');
+    if (scene.url_fonte) void abrirLink(scene.url_fonte);
     else toast.info('Fonte não disponível para esta cena');
   };
 

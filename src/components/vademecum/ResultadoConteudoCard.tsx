@@ -1,5 +1,8 @@
 import { motion } from 'framer-motion';
-import { Play, BookOpen, Newspaper, FileText, Film, PenLine } from 'lucide-react';
+import {
+  Play, BookOpen, Newspaper, FileText, Film, PenLine,
+  BookMarked, Scale, Gavel, ListChecks, Stamp, Search,
+} from 'lucide-react';
 import type { ConteudoResultado, ConteudoTipo } from '@/hooks/useBuscaConteudo';
 
 const ICONS: Record<ConteudoTipo, React.ComponentType<{ className?: string }>> = {
@@ -9,6 +12,12 @@ const ICONS: Record<ConteudoTipo, React.ComponentType<{ className?: string }>> =
   resumo: FileText,
   noticia: Newspaper,
   obra: Film,
+  dicionario: BookMarked,
+  artigo: Scale,
+  sumula: Stamp,
+  tese: ListChecks,
+  informativo: Gavel,
+  pesquisa: Search,
 };
 
 const LABELS: Record<ConteudoTipo, string> = {
@@ -18,7 +27,14 @@ const LABELS: Record<ConteudoTipo, string> = {
   resumo: 'Resumo',
   noticia: 'Notícia',
   obra: 'Obra',
+  dicionario: 'Dicionário',
+  artigo: 'Artigo de lei',
+  sumula: 'Súmula',
+  tese: 'Tese',
+  informativo: 'Informativo',
+  pesquisa: 'Pesquisa pronta',
 };
+
 
 function highlight(text: string, termo: string) {
   if (!text || !termo) return text;

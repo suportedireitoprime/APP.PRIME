@@ -1,27 +1,39 @@
-import type { ConteudoTipo } from '@/hooks/useBuscaConteudo';
+import { TIPOS_CONTEUDO, TIPOS_JURISPRUDENCIA, type ConteudoTipo, type ConteudoGrupo } from '@/hooks/useBuscaConteudo';
 
 export type CategoriaKey = 'tudo' | ConteudoTipo;
 
-const ORDER: { key: CategoriaKey; label: string }[] = [
-  { key: 'tudo', label: 'Tudo' },
-  { key: 'videoaula', label: 'Videoaulas' },
-  { key: 'livro', label: 'Livros' },
-  { key: 'blog', label: 'Blog' },
-  { key: 'resumo', label: 'Resumos' },
-  { key: 'noticia', label: 'Notícias' },
-  { key: 'obra', label: 'Filmes' },
-];
+const LABELS: Record<ConteudoTipo, string> = {
+  videoaula: 'Videoaulas',
+  livro: 'Livros',
+  blog: 'Blog',
+  resumo: 'Resumos',
+  noticia: 'Notícias',
+  obra: 'Filmes',
+  dicionario: 'Dicionário',
+  artigo: 'Artigos de lei',
+  sumula: 'Súmulas',
+  tese: 'Teses',
+  informativo: 'Informativos',
+  pesquisa: 'Pesquisas prontas',
+};
 
 export default function CategoriaFiltroBar({
-  ativo, counts, onChange,
+  ativo, counts, onChange, grupo = 'conteudo',
 }: {
   ativo: CategoriaKey;
   counts: Record<string, number>;
   onChange: (k: CategoriaKey) => void;
+  grupo?: ConteudoGrupo;
 }) {
+  const tipos = grupo === 'jurisprudencia' ? TIPOS_JURISPRUDENCIA : TIPOS_CONTEUDO;
+  const order: { key: CategoriaKey; label: string }[] = [
+    { key: 'tudo', label: 'Tudo' },
+    ...tipos.map((t) => ({ key: t as CategoriaKey, label: LABELS[t] })),
+  ];
+
   return (
     <div className="flex gap-2 overflow-x-auto scrollbar-none px-4 pb-2 -mx-1">
-      {ORDER.map((c) => {
+      {order.map((c) => {
         const total = c.key === 'tudo'
           ? Object.values(counts).reduce((a, b) => a + b, 0)
           : counts[c.key] || 0;

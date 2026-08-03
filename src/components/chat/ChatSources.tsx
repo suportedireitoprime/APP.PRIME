@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { LEIS_CATALOG, type LeiCatalogItem } from '@/data/leisCatalog';
 import { leiToSlug, tipoToSlug } from '@/lib/legislacaoSlugs';
+import { abrirLink } from '@/lib/nativo';
 
 export interface ChatSource {
   n: number;
@@ -23,7 +24,7 @@ export function CitationChip({ n, source }: { n: number; source?: ChatSource }) 
   const openTarget = () => {
     if (!source) return;
     if (source.internal && source.url.startsWith('/')) navigate(source.url);
-    else window.open(source.url, '_blank', 'noopener,noreferrer');
+    else void abrirLink(source.url);
   };
   return (
     <Popover>

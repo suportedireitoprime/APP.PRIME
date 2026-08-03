@@ -5,6 +5,7 @@ import { Capacitor } from '@capacitor/core';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { logPdfEvent } from '@/lib/pdfTelemetry';
+import { copiarTexto } from '@/lib/nativo/copiar';
 
 interface InAppWebViewProps {
   url: string;
@@ -86,7 +87,7 @@ const InAppWebView = ({ url, titulo, onClose, autoFallback = false }: InAppWebVi
 
   const copyUrl = async () => {
     try {
-      await navigator.clipboard.writeText(url);
+      await copiarTexto(url);
       setCopied(true);
       toast.success('Link copiado');
       setTimeout(() => setCopied(false), 2000);

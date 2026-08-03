@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Download, Loader2, Key, HelpCircle, StickyNote, FileText, ChevronDown, BookOpen } from 'lucide-react';
 import { Document, Page, Text, View, StyleSheet, pdf } from '@react-pdf/renderer';
 import { toast } from 'sonner';
+import { baixarBlob } from '@/lib/nativo';
 
 interface CornellPergunta {
   pergunta: string;
@@ -98,12 +99,10 @@ const ResumoCornellView = ({ data, leiNome, artigoNumero }: Props) => {
     setExporting(true);
     try {
       const blob = await pdf(<CornellPdfDoc data={data} />).toBlob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `cornell-${artigoNumero.replace(/\s+/g, '-')}.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
+      await baixarBlob(blob, `cornell-${artigoNumero.replace(/\s+/g, '-')}.pdf`, {
+        titulo: `Resumo Cornell — Art. ${artigoNumero}`,
+        toastSucesso: false,
+      });
       toast.success('PDF Cornell exportado!');
     } catch (e) {
       toast.error('Erro ao gerar PDF');

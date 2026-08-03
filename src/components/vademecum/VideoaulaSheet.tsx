@@ -1,4 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { autoPip } from '@/lib/nativo/pip';
+import { telaAcesa } from '@/lib/nativo/telaAcordada';
+import { protegerTela, desprotegerTela } from '@/lib/nativo/protecaoTela';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Loader2, Play, RotateCcw, Check, X as XIcon, ChevronLeft, ChevronRight, MessageCircle, Download, Send, ThumbsUp, ThumbsDown, GraduationCap, Layers, Brain, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -7,6 +10,7 @@ import { Document, Page, Text, View, StyleSheet, pdf, Font, Image as PdfImage } 
 import { toast } from 'sonner';
 import logoAsset from '@/assets/logo-vacatio-v2.png.asset.json';
 import { srcOf } from '@/lib/assetUrl';
+import { baixarBlob } from '@/lib/nativo';
 
 /* ─── PDF fonts (same family the app uses) ─── */
 try {
@@ -281,6 +285,19 @@ const VideoaulaSheet = ({ open, onClose, video, tabelaNome, artigoNumero, artigo
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   const [pdfExporting, setPdfExporting] = useState(false);
+
+  /* ─── Nativo: PiP, tela acesa e proteção de tela ─── */
+  useEffect(() => {
+    const ativo = open && !!video;
+    void autoPip(ativo);            // minimiza em janelinha ao sair do app
+    void telaAcesa('videoaula', ativo);
+    void (ativo ? protegerTela('videoaula') : desprotegerTela('videoaula')); // conteúdo premium: sem print
+    return () => {
+      void autoPip(false);
+      void telaAcesa('videoaula', false);
+      void desprotegerTela('videoaula');
+    };
+  }, [open, video?.videoId]);
 
   /* ─── Effects ─── */
   useEffect(() => {
@@ -589,13 +606,11 @@ const VideoaulaSheet = ({ open, onClose, video, tabelaNome, artigoNumero, artigo
       );
 
       const blob = await pdf(doc).toBlob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
       const slug = (s: string) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40);
-      a.href = url;
-      a.download = `oab-na-risca-${slug(artigoNumero)}-${slug(video?.titulo || 'resumo')}.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
+      await baixarBlob(blob, `oab-na-risca-${slug(artigoNumero)}-${slug(video?.titulo || 'resumo')}.pdf`, {
+        titulo: video?.titulo || 'Resumo da videoaula',
+        toastSucesso: false,
+      });
       toast.success('PDF baixado com sucesso!');
     } catch (e) {
       console.error(e); toast.error('Erro ao gerar PDF');

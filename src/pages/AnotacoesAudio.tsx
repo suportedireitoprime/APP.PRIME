@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import { useRecording, formatHms } from '@/contexts/RecordingContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGoBack } from '@/hooks/useGoBack';
+import { baixarBlob } from '@/lib/nativo';
 
 // ─────────────────────────────────────────────────────────────
 // Tipos
@@ -576,7 +577,7 @@ function Lista({ soPendentes = false }: { soPendentes?: boolean }) {
     } finally { setWorking(null); }
   };
 
-  const download = (r: Recording, kind: 'txt' | 'md') => {
+  const download = async (r: Recording, kind: 'txt' | 'md') => {
     let content = ''; let filename = '';
     if (kind === 'txt') { content = r.transcript ?? ''; filename = `${r.title}.txt`; }
     else {
@@ -585,9 +586,7 @@ function Lista({ soPendentes = false }: { soPendentes?: boolean }) {
       filename = `${r.title} — resumo.md`;
     }
     const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob); a.download = filename; a.click();
-    URL.revokeObjectURL(a.href);
+    await baixarBlob(blob, filename, { titulo: filename });
   };
 
   if (loading) return <div className="flex justify-center py-10"><Loader2 className="animate-spin" /></div>;

@@ -90,6 +90,15 @@ const PessoalJurisprudencias = lazy(() => import("./pages/pessoal/Jurisprudencia
 const PessoalTematicas = lazy(() => import("./pages/pessoal/Tematicas.tsx"));
 import MeuEspaco from "./pages/MeuEspaco.tsx";
 
+const MeusDownloads = lazy(() => import("./pages/MeusDownloads.tsx"));
+const MinhasLeituras = lazy(() => import("./pages/MinhasLeituras.tsx"));
+const MeusResumos = lazy(() => import("./pages/MeusResumos.tsx"));
+const MinhasVideoaulas = lazy(() => import("./pages/MinhasVideoaulas.tsx"));
+
+const ModoAula = lazy(() => import("./pages/ModoAula.tsx"));
+const ModoAulaSessao = lazy(() => import("./pages/ModoAulaSessao.tsx"));
+const ModoAulaAula = lazy(() => import("./pages/ModoAulaAula.tsx"));
+const MeExplique = lazy(() => import("./pages/MeExplique.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 const Configuracoes = lazy(() => import("./pages/Configuracoes.tsx"));
 const RadarDeputados = lazy(() => import("./pages/RadarDeputados.tsx"));
@@ -246,6 +255,7 @@ const AdminAudioaulas = lazy(() => import("./pages/AdminAudioaulas.tsx"));
 const Audioaulas = lazy(routePrefetch.audioaulas);
 const LeisCantadas = lazy(() => import("./pages/LeisCantadas.tsx"));
 const AdminLeisCantadas = lazy(() => import("./pages/AdminLeisCantadas.tsx"));
+const AdminConteudoFila = lazy(() => import("./pages/AdminConteudoFila.tsx"));
 const Assinatura = lazy(() => import("./pages/Assinatura.tsx"));
 const PlanosAtivos = lazy(() => import("./pages/PlanosAtivos.tsx"));
 const DesktopPromo = lazy(routePrefetch.desktop);
@@ -523,11 +533,21 @@ function PushNavListener() {
       const detail = (e as CustomEvent).detail as { path?: string } | undefined;
       if (detail?.path) navigate(detail.path);
     };
+    // Atalhos do ícone do app (long-press / Quick Actions)
+    const atalhoHandler = (e: Event) => {
+      const detail = (e as CustomEvent).detail as { rota?: string } | undefined;
+      if (detail?.rota) navigate(detail.rota);
+    };
     window.addEventListener('vacatio:push-navigate', handler as EventListener);
-    return () => window.removeEventListener('vacatio:push-navigate', handler as EventListener);
+    window.addEventListener('app:atalho', atalhoHandler as EventListener);
+    return () => {
+      window.removeEventListener('vacatio:push-navigate', handler as EventListener);
+      window.removeEventListener('app:atalho', atalhoHandler as EventListener);
+    };
   }, [navigate]);
   return null;
 }
+
 
 function DeepLinkBootstrap() {
   const navigate = useNavigate();
@@ -668,7 +688,7 @@ function AnimatedRoutes() {
           <Route path="/legislacao-estadual/:uf/lei/:slug" element={<ProtectedRoute><PageTransition><LeiEstadualView /></PageTransition></ProtectedRoute>} />
           <Route path="/explicacao-lei" element={<ProtectedRoute><PageTransition><ExplicacaoLei /></PageTransition></ProtectedRoute>} />
           <Route path="/narracao" element={<ProtectedRoute><PageTransition><NarracaoLei /></PageTransition></ProtectedRoute>} />
-          <Route path="/visuais/:formato" element={<ProtectedRoute><VisualJuridico /></ProtectedRoute>} />
+          <Route path="/visuais/:formato/*" element={<ProtectedRoute><VisualJuridico /></ProtectedRoute>} />
           <Route path="/grafo-artigos" element={<ProtectedRoute><PageTransition><GrafoArtigos /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas" element={<ProtectedRoute><PageTransition><Ferramentas /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/locais" element={<ProtectedRoute><PageTransition><LocaisJuridicos /></PageTransition></ProtectedRoute>} />
@@ -823,8 +843,20 @@ function AnimatedRoutes() {
           <Route path="/admin-audioaulas" element={<ProtectedRoute><PageTransition><AdminAudioaulas /></PageTransition></ProtectedRoute>} />
           <Route path="/audioaulas" element={<ProtectedRoute><PageTransition><Audioaulas /></PageTransition></ProtectedRoute>} />
           <Route path="/audioaulas/:area" element={<ProtectedRoute><PageTransition><Audioaulas /></PageTransition></ProtectedRoute>} />
+          <Route path="/meus-downloads" element={<ProtectedRoute><PageTransition><MeusDownloads /></PageTransition></ProtectedRoute>} />
+          <Route path="/minhas-leituras" element={<ProtectedRoute><PageTransition><MinhasLeituras /></PageTransition></ProtectedRoute>} />
+          <Route path="/meus-resumos" element={<ProtectedRoute><PageTransition><MeusResumos /></PageTransition></ProtectedRoute>} />
+          <Route path="/minhas-videoaulas" element={<ProtectedRoute><PageTransition><MinhasVideoaulas /></PageTransition></ProtectedRoute>} />
+
+          <Route path="/modo-aula" element={<ProtectedRoute><PageTransition><ModoAula /></PageTransition></ProtectedRoute>} />
+          <Route path="/modo-aula/sessao" element={<ProtectedRoute><ModoAulaSessao /></ProtectedRoute>} />
+          <Route path="/modo-aula/aula/:id" element={<ProtectedRoute><PageTransition><ModoAulaAula /></PageTransition></ProtectedRoute>} />
+          <Route path="/modo-aula/disciplina/:id" element={<ProtectedRoute><PageTransition><ModoAula /></PageTransition></ProtectedRoute>} />
+          <Route path="/me-explique" element={<ProtectedRoute><MeExplique /></ProtectedRoute>} />
+          <Route path="/ferramentas/me-explique" element={<ProtectedRoute><MeExplique /></ProtectedRoute>} />
           <Route path="/leis-cantadas" element={<ProtectedRoute><PageTransition><LeisCantadas /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-leis-cantadas" element={<ProtectedRoute><PageTransition><AdminLeisCantadas /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin-conteudo-fila" element={<ProtectedRoute><PageTransition><AdminConteudoFila /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-radares-leis" element={<ProtectedRoute><PageTransition><AdminRadaresLeis /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-biblioteca-leis" element={<ProtectedRoute><PageTransition><AdminBibliotecaLeis /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-biblioteca-leis/estadual" element={<ProtectedRoute><PageTransition><AdminBibliotecaLeisEstaduais /></PageTransition></ProtectedRoute>} />

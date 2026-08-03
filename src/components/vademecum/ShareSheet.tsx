@@ -1,6 +1,8 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link2, Share2, X } from 'lucide-react';
 import { toast } from 'sonner';
+import { copiarTexto } from '@/lib/nativo/copiar';
+import { compartilharNativo, podeCompartilhar } from '@/lib/nativo/compartilhar';
 
 interface Props {
   open: boolean;
@@ -32,7 +34,7 @@ export default function ShareSheet({ open, onClose, title, text, url }: Props) {
 
   const copiar = async () => {
     try {
-      await navigator.clipboard.writeText(url);
+      await copiarTexto(url);
       toast.success('Link copiado');
       onClose();
     } catch {
@@ -42,8 +44,8 @@ export default function ShareSheet({ open, onClose, title, text, url }: Props) {
 
   const nativeShare = async () => {
     try {
-      if (navigator.share) {
-        await navigator.share({ title, text, url });
+      if (podeCompartilhar()) {
+        await compartilharNativo({ title, text, url });
         onClose();
       } else {
         copiar();

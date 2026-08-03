@@ -1,5 +1,5 @@
-import { useState, useMemo, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Search,
   BookOpenText,
@@ -66,7 +66,9 @@ const AREAS: { id: CategoriaId; icon: typeof Scale; color: string }[] = [
 const DicionarioJuridicoPage = () => {
   const navigate = useNavigate();
   const goBack = useGoBack();
-  const [query, setQuery] = useState('');
+  const [searchParams] = useSearchParams();
+  const termoParam = searchParams.get('termo');
+  const [query, setQuery] = useState(termoParam ?? '');
   const [categoria, setCategoria] = useState<CategoriaId>('todas');
   const [selected, setSelected] = useState<DicionarioTermo | null>(null);
   const [visible, setVisible] = useState(PAGE_SIZE);
@@ -74,6 +76,20 @@ const DicionarioJuridicoPage = () => {
   const [areaSel, setAreaSel] = useState<CategoriaId | null>(null);
 
   const { data: termos = [], isLoading } = useDicionarioJuridico();
+  const abertoPorLink = useRef(false);
+
+  // Deep link da busca global: /ferramentas/dicionario?termo=Dolo
+  useEffect(() => {
+    if (!termoParam || abertoPorLink.current || termos.length === 0) return;
+    const norm = (v: string) => v.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+    const alvo =
+      termos.find((t) => norm(t.palavra) === norm(termoParam)) ||
+      termos.find((t) => norm(t.palavra).startsWith(norm(termoParam)));
+    if (alvo) {
+      abertoPorLink.current = true;
+      setSelected(alvo);
+    }
+  }, [termoParam, termos]);
   const { data: stats = [] } = useDicionarioStats();
   const prefs = useDicionarioPrefs();
   const voice = useVoiceInput((text) => setQuery(text));

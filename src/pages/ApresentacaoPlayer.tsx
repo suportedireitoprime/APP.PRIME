@@ -7,6 +7,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import flipSoundAsset from '@/assets/flipcard.mp3.asset.json';
 import { srcOf } from '@/lib/assetUrl';
 import { useGoBack } from '@/hooks/useGoBack';
+import { copiarTexto } from '@/lib/nativo/copiar';
+import { compartilharNativo, podeCompartilhar } from '@/lib/nativo/compartilhar';
 
 type Slide = { slide_index: number; imagem_url: string | null; audio_url: string | null; roteiro: string | null };
 type Apres = { id: string; titulo: string; descricao: string | null; total_slides: number; livro_tabela: string; livro_id: string };
@@ -242,8 +244,8 @@ const ApresentacaoPlayer = () => {
   const compartilhar = async () => {
     const url = window.location.href;
     try {
-      if (navigator.share) await navigator.share({ title: apres?.titulo ?? 'Apresentação narrada', url });
-      else { await navigator.clipboard.writeText(url); toast.success('Link copiado'); }
+      if (podeCompartilhar()) await compartilharNativo({ title: apres?.titulo ?? 'Apresentação narrada', url });
+      else { await copiarTexto(url); toast.success('Link copiado'); }
     } catch { /* cancelado */ }
   };
 

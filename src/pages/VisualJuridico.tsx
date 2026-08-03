@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import VisuaisJuridicosSheet from '@/components/visuais/VisuaisJuridicosSheet';
 import { SLUG_TIPO } from '@/lib/visuaisJuridicos/rotas';
@@ -13,6 +14,19 @@ export default function VisualJuridico() {
     else navigate('/', { replace: true });
   };
 
+  // Espelha a navegação interna na URL: /visuais/mapa-mental/materias/direito-civil/lindb
+  const aoMudarRota = useCallback(
+    (segmentos: string[]) => {
+      if (!formato) return;
+      const destino = ['/visuais', formato, ...segmentos].join('/');
+      if (window.location.pathname !== destino) {
+        navigate(destino, { replace: true });
+      }
+    },
+    [formato, navigate],
+  );
+
+
   if (!tipo) {
     return (
       <div className="flex min-h-[100dvh] flex-col items-center justify-center gap-4 bg-background px-6 text-center">
@@ -27,5 +41,5 @@ export default function VisualJuridico() {
     );
   }
 
-  return <VisuaisJuridicosSheet open modo="page" tipoInicial={tipo} onClose={sair} />;
+  return <VisuaisJuridicosSheet open modo="page" tipoInicial={tipo} onClose={sair} onRotaChange={aoMudarRota} />;
 }

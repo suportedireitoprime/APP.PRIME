@@ -1,17 +1,16 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Search, Scale, BookOpen, Clock, Camera, Mic, MicOff, X, Loader2, Heart } from 'lucide-react';
+import { ArrowLeft, Search, Scale, BookOpen, Clock, Gavel, Mic, MicOff, X, Loader2, Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 
 import { useFuzzySearch } from '@/hooks/useFuzzySearch';
-import OcrScanner from './OcrScanner';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
 import { track } from '@/lib/analyticsEvents';
 
 import { LEIS_CATALOG } from '@/data/leisCatalog';
 import { getRecentes, getPopularLeiIds, bumpLeiSearch } from '@/lib/leisRecentes';
-import { getFavoritos, isFavorito, toggleFavorito, LEIS_FAVORITOS_EVENT, type LeiFavorita } from '@/lib/leisFavoritos';
+import { isFavorito, toggleFavorito, LEIS_FAVORITOS_EVENT } from '@/lib/leisFavoritos';
 import { useBuscaConteudo, type ConteudoTipo } from '@/hooks/useBuscaConteudo';
 import CategoriaFiltroBar, { type CategoriaKey } from './CategoriaFiltroBar';
 import ResultadoConteudoCard from './ResultadoConteudoCard';
@@ -23,7 +22,7 @@ interface SearchOverlayProps {
   onSelectLei: (lei: { tipo: string; leiId: string; nome: string; descricao: string; tabela_nome: string; artigoNumero?: string }) => void;
 }
 
-type SearchMode = 'leis' | 'conteudo' | 'favoritos';
+type SearchMode = 'conteudo' | 'leis' | 'jurisprudencia';
 
 // Prioridade padrão de relevância (fallback quando não há histórico de buscas)
 const DEFAULT_ORDER = ['cf88', 'cp', 'cc', 'cpc', 'cpp', 'ctn', 'cdc', 'clt', 'eca', 'ctb', 'ei', 'epd'];
@@ -76,8 +75,7 @@ const identificarLeiPorTexto = (text: string) => {
 
 const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
   const [query, setQuery] = useState('');
-  const [mode, setMode] = useState<SearchMode>('leis');
-  const [ocrOpen, setOcrOpen] = useState(false);
+  const [mode, setMode] = useState<SearchMode>('conteudo');
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const voice = useVoiceInput((text) => setQuery((prev) => (prev ? prev + ' ' : '') + text));
@@ -161,16 +159,14 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
     : [];
 
 
-  const favoritos: LeiFavorita[] = mode === 'favoritos' ? (favVersion >= 0 ? getFavoritos() : []) : [];
-
   const placeholder =
     voice.listening
       ? 'Ouvindo…'
       : mode === 'leis'
       ? 'Digite o nome ou nº da lei (ex.: CF, 8.078, art 5 CP)…'
       : mode === 'conteudo'
-      ? 'Pesquise qualquer termo (ex.: princípios, dolo, boa-fé)…'
-      : 'Buscar em favoritos…';
+      ? 'Pesquise qualquer termo (ex.: dolo, boa-fé, art. 5º)…'
+      : 'Pesquise súmulas, teses e informativos…';
 
   const emitSelect = (lei: typeof LEIS_CATALOG[number], artigoNumero?: string) => {
     bumpLeiSearch(lei.id);
@@ -228,19 +224,8 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
             <div className="w-12 shrink-0" />
           </div>
 
-          {/* Mode toggle: Nº do Artigo | Nº da Lei | Recentes */}
+          {/* Mode toggle: Conteúdo | Leis | Jurisprudência */}
           <div className="flex gap-2 px-4 py-3">
-            <button
-              onClick={() => { track('search_modo_trocado', { modo: 'leis' }); setMode('leis'); }}
-              data-track="search_modo_trocado"
-              data-modo="leis"
-              className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-semibold transition-all ${
-                mode === 'leis' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
-              }`}
-            >
-              <Scale className="w-5 h-5" />
-              <span className="whitespace-nowrap">Leis</span>
-            </button>
             <button
               onClick={() => { track('search_modo_trocado', { modo: 'conteudo' }); setMode('conteudo'); }}
               data-track="search_modo_trocado"
@@ -253,15 +238,26 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
               <span className="whitespace-nowrap">Conteúdo</span>
             </button>
             <button
-              onClick={() => { track('search_modo_trocado', { modo: 'favoritos' }); setMode('favoritos'); }}
+              onClick={() => { track('search_modo_trocado', { modo: 'leis' }); setMode('leis'); }}
               data-track="search_modo_trocado"
-              data-modo="favoritos"
+              data-modo="leis"
               className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-semibold transition-all ${
-                mode === 'favoritos' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
+                mode === 'leis' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
               }`}
             >
-              <Heart className={`w-5 h-5 ${mode === 'favoritos' ? 'fill-current' : ''}`} />
-              <span className="whitespace-nowrap">Favoritos</span>
+              <Scale className="w-5 h-5" />
+              <span className="whitespace-nowrap">Leis</span>
+            </button>
+            <button
+              onClick={() => { track('search_modo_trocado', { modo: 'jurisprudencia' }); setMode('jurisprudencia'); }}
+              data-track="search_modo_trocado"
+              data-modo="jurisprudencia"
+              className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-semibold transition-all ${
+                mode === 'jurisprudencia' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
+              }`}
+            >
+              <Gavel className="w-5 h-5" />
+              <span className="whitespace-nowrap">Jurisprudência</span>
             </button>
           </div>
 
@@ -417,74 +413,14 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
               <ConteudoBusca query={query} onNavigate={onClose} />
             )}
 
-            {mode === 'favoritos' && (
-              <div className="space-y-2">
-                {favoritos.length === 0 && (
-                  <div className="text-center text-muted-foreground text-base py-10 space-y-2">
-                    <Heart className="w-12 h-12 mx-auto opacity-40" />
-                    <p>Nenhuma lei favorita ainda.</p>
-                    <p className="text-xs">Toque no coração ao lado da lei para favoritar.</p>
-                  </div>
-                )}
-                {favoritos
-                  .filter((r) => !query || r.nome.toLowerCase().includes(query.toLowerCase()))
-                  .map((lei) => {
-                    const cat = LEIS_CATALOG.find((l) => l.id === lei.leiId) || {
-                      id: lei.leiId, tipo: lei.tipo, nome: lei.nome, descricao: lei.descricao,
-                      sigla: '', tabela_nome: lei.tabela_nome,
-                    } as typeof LEIS_CATALOG[number];
-                    return (
-                      <div
-                        key={lei.leiId + lei.favoritedAt}
-                        className="w-full flex items-center gap-3 p-4 rounded-xl bg-card border border-border hover:border-primary/40 transition-all text-left"
-                      >
-                        <button
-                          onClick={() => emitSelect(cat)}
-                          className="flex items-center gap-4 flex-1 min-w-0 text-left"
-                        >
-                          <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                            <span className="text-xs font-bold text-primary">{cat.sigla || 'LEI'}</span>
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-base font-semibold text-foreground truncate">{lei.nome}</p>
-                            <p className="text-sm text-muted-foreground truncate">{lei.descricao}</p>
-                          </div>
-                        </button>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); toggleFavorito({ tipo: cat.tipo, leiId: cat.id, nome: cat.nome, descricao: cat.descricao, tabela_nome: cat.tabela_nome }); }}
-                          aria-label="Remover dos favoritos"
-                          className="w-11 h-11 rounded-full flex items-center justify-center text-primary shrink-0 active:scale-90 transition-transform"
-                        >
-                          <Heart className="w-6 h-6 fill-current" />
-                        </button>
-                      </div>
-                    );
-                  })}
-              </div>
+            {mode === 'jurisprudencia' && (
+              <ConteudoBusca query={query} onNavigate={onClose} grupo="jurisprudencia" />
             )}
 
           </div>
 
-          {/* FAB flutuante: câmera OCR (Gemini) — fixado no canto inferior direito do sheet */}
-          <button
-            onClick={() => setOcrOpen(true)}
-            aria-label="Fotografar caderno ou lei (OCR)"
-            className="!absolute right-4 bottom-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] w-14 h-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-2xl shadow-primary/40 active:scale-95 transition-transform z-[60]"
-          >
-            <Camera className="w-6 h-6 relative z-[2]" />
-          </button>
-
         </motion.div>
 
-        <OcrScanner
-          open={ocrOpen}
-          onClose={() => setOcrOpen(false)}
-          onArtigoSelect={(numero) => {
-            setQuery(numero);
-            setMode('leis');
-            setOcrOpen(false);
-          }}
-        />
         </>
       )}
     </AnimatePresence>

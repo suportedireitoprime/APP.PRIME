@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Camera, X, Loader2, ImageIcon, History, ArrowRight, ChevronLeft, ScanLine } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { escolherFoto, temSeletorNativo } from '@/lib/nativo';
+import { escanearTexto, temOcrNativo } from '@/lib/nativo/ocr';
 
 export interface CitacaoIdentificada {
   numero_artigo: string | null;
@@ -99,6 +101,60 @@ const OcrScanner = ({ open, onClose, leiNome, leiSlug, onArtigoSelect }: OcrScan
     } catch (e: any) {
       console.error(e);
       toast.error('Falha ao analisar a imagem');
+    } finally {
+      setProcessing(false);
+    }
+  }, [leiNome, history, leiSlug]);
+
+  // Scanner de documentos nativo (ML Kit): recorte automático + OCR no aparelho.
+  // Funciona offline; se houver internet, o texto ainda passa pela IA para
+  // identificar as citações com mais precisão.
+  const handleScanNativo = useCallback(async () => {
+    setProcessing(true);
+    try {
+      const leitura = await escanearTexto({ paginas: 3 });
+      if (!leitura || !leitura.texto) {
+        setProcessing(false);
+        return;
+      }
+      let citacoes: CitacaoIdentificada[] = [];
+      try {
+        const { data, error } = await supabase.functions.invoke('identificar-artigos-foto', {
+          body: { textoOcr: leitura.texto, leiNome },
+        });
+        if (error) throw error;
+        citacoes = Array.isArray(data?.citacoes) ? data.citacoes : [];
+      } catch {
+        // Offline / IA indisponível: extrai os artigos citados do próprio texto.
+        const vistos = new Set<string>();
+        for (const m of leitura.texto.matchAll(/art(?:igo)?\.?\s*(\d+)(?:[º°]|\s*-?\s*[A-Z])?/gi)) {
+          const num = m[1];
+          if (vistos.has(num)) continue;
+          vistos.add(num);
+          const idx = m.index ?? 0;
+          citacoes.push({
+            numero_artigo: num,
+            titulo: `Art. ${num}`,
+            trecho: leitura.texto.slice(idx, idx + 180).trim(),
+            confianca: 'media',
+          });
+        }
+      }
+      if (citacoes.length === 0) {
+        toast.error('Nenhuma citação de artigo identificada');
+      } else {
+        toast.success(`${citacoes.length} citaç${citacoes.length === 1 ? 'ão identificada' : 'ões identificadas'}`);
+        saveHistory({
+          id: `${Date.now()}`,
+          createdAt: Date.now(),
+          thumbnail: leitura.imagem ?? '',
+          citacoes,
+        });
+      }
+      setResult({ citacoes, thumb: leitura.imagem ?? '' });
+    } catch (e) {
+      console.error(e);
+      toast.error('Falha ao escanear o documento');
     } finally {
       setProcessing(false);
     }
@@ -201,14 +257,30 @@ const OcrScanner = ({ open, onClose, leiNome, leiSlug, onArtigoSelect }: OcrScan
                     />
 
                     <div className="w-full flex flex-col gap-2.5">
+                      {temOcrNativo() && (
+                        <button
+                          onClick={() => void handleScanNativo()}
+                          className="w-full h-12 rounded-xl bg-primary text-primary-foreground font-semibold flex items-center justify-center gap-2 active:scale-[0.98] transition"
+                        >
+                          <ScanLine className="w-5 h-5" /> Escanear documento
+                        </button>
+                      )}
                       <button
-                        onClick={() => cameraRef.current?.click()}
-                        className="w-full h-12 rounded-xl bg-primary text-primary-foreground font-semibold flex items-center justify-center gap-2 active:scale-[0.98] transition"
+                        onClick={async () => {
+                          if (!temSeletorNativo()) { cameraRef.current?.click(); return; }
+                          const foto = await escolherFoto('camera');
+                          if (foto) void handleFile(new File([foto.blob], foto.nome, { type: foto.blob.type || 'image/jpeg' }));
+                        }}
+                        className={`w-full h-12 rounded-xl font-semibold flex items-center justify-center gap-2 active:scale-[0.98] transition ${temOcrNativo() ? 'bg-secondary text-foreground border border-border' : 'bg-primary text-primary-foreground'}`}
                       >
                         <Camera className="w-5 h-5" /> Tirar foto
                       </button>
                       <button
-                        onClick={() => fileRef.current?.click()}
+                        onClick={async () => {
+                          if (!temSeletorNativo()) { fileRef.current?.click(); return; }
+                          const foto = await escolherFoto('galeria');
+                          if (foto) void handleFile(new File([foto.blob], foto.nome, { type: foto.blob.type || 'image/jpeg' }));
+                        }}
                         className="w-full h-12 rounded-xl bg-secondary text-foreground font-semibold flex items-center justify-center gap-2 border border-border active:scale-[0.98] transition"
                       >
                         <ImageIcon className="w-5 h-5" /> Enviar arquivo

@@ -8,6 +8,7 @@ import { useSubscription } from '@/hooks/useSubscription';
 import { toast } from 'sonner';
 import { Capacitor } from '@capacitor/core';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
+import { escolherFoto, temSeletorNativo } from '@/lib/nativo';
 
 interface Props {
   open: boolean;
@@ -60,6 +61,22 @@ export default function OpiniaoSheet({ open, onClose }: Props) {
     const reader = new FileReader();
     reader.onload = () => setPhotoPreview(String(reader.result));
     reader.readAsDataURL(f);
+  };
+
+  /** Usa a câmera/galeria do sistema no app nativo; input de arquivo na web. */
+  const abrirSeletorFoto = async () => {
+    if (!temSeletorNativo()) {
+      fileRef.current?.click();
+      return;
+    }
+    const foto = await escolherFoto('galeria');
+    if (!foto) return;
+    if (foto.blob.size > 5 * 1024 * 1024) {
+      toast.error('Imagem muito grande (máx 5MB)');
+      return;
+    }
+    setPhotoFile(new File([foto.blob], foto.nome, { type: foto.blob.type || 'image/jpeg' }));
+    setPhotoPreview(foto.dataUrl);
   };
 
   const handleSubmit = async () => {
@@ -169,7 +186,7 @@ export default function OpiniaoSheet({ open, onClose }: Props) {
                   />
                   <button
                     type="button"
-                    onClick={() => fileRef.current?.click()}
+                    onClick={abrirSeletorFoto}
                     className="absolute bottom-3 right-3 w-9 h-9 rounded-full bg-primary/15 border border-primary/30 flex items-center justify-center text-primary hover:bg-primary/25"
                     aria-label="Anexar foto"
                   >

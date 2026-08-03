@@ -11,6 +11,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { format, differenceInDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import CancelarAssinaturaSheet from './CancelarAssinaturaSheet';
+import { abrirLink } from '@/lib/nativo';
 
 interface Props {
   plano: string | null;
@@ -109,9 +110,9 @@ export default function MinhaAssinaturaView({ plano, expiresAt, startedAt, sourc
 
   const openStore = () => {
     if (source === 'apple') {
-      window.open('https://apps.apple.com/account/subscriptions', '_blank');
+      void abrirLink('https://apps.apple.com/account/subscriptions');
     } else {
-      window.open('https://play.google.com/store/account/subscriptions', '_blank');
+      void abrirLink('https://play.google.com/store/account/subscriptions');
     }
   };
 

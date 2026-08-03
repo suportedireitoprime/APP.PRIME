@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Search, Sparkles, ExternalLink, Copy, Check } from 'lucide-react';
+import { ArrowLeft, Search, Sparkles, ExternalLink, Copy, Check, FileText } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { motion } from 'framer-motion';
 import { useGoBack } from '@/hooks/useGoBack';
+import { copiarTexto } from '@/lib/nativo/copiar';
 
 /**
  * Página que recebe conteúdo compartilhado com o Direito Prime de outros apps
@@ -39,9 +40,16 @@ export default function Compartilhado() {
     navigate(`/assistente?pergunta=${encodeURIComponent(conteudo.slice(0, 500))}`);
   };
 
+  // Gera um resumo do conteúdo recebido direto no assistente.
+  const gerarResumo = () => {
+    if (!conteudo) return;
+    const pedido = `Faça um resumo jurídico estruturado do conteúdo abaixo:\n\n${conteudo.slice(0, 4000)}`;
+    navigate(`/assistente?pergunta=${encodeURIComponent(pedido)}`);
+  };
+
   const copiar = async () => {
     try {
-      await navigator.clipboard.writeText(conteudo);
+      await copiarTexto(conteudo);
       setCopiado(true);
       setTimeout(() => setCopiado(false), 1500);
     } catch {}
@@ -114,6 +122,16 @@ export default function Compartilhado() {
                 <div>
                   <div className="font-semibold">Perguntar à IA</div>
                   <div className="text-xs text-muted-foreground">Análise jurídica com IA</div>
+                </div>
+              </button>
+              <button
+                onClick={gerarResumo}
+                className="flex items-center gap-3 p-4 rounded-2xl bg-card border border-border text-left sm:col-span-2"
+              >
+                <FileText className="w-5 h-5 text-primary" />
+                <div>
+                  <div className="font-semibold">Gerar resumo</div>
+                  <div className="text-xs text-muted-foreground">Resumo jurídico estruturado deste conteúdo</div>
                 </div>
               </button>
             </section>

@@ -1,6 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
 import { LEIS_SUPABASE_URL, LEIS_SUPABASE_ANON_KEY, LEIS_SUPABASE_PROJECT_ID } from "@/lib/legislacaoBackend";
 import { useLocation, useNavigate } from 'react-router-dom';
+import { registrarMidia, clearMediaSession } from '@/lib/mediaSession';
+import { toast } from 'sonner';
+import { speakNative } from '@/lib/nativeTts';
+import { telaAcesa } from '@/lib/nativo/telaAcordada';
 import { Mic, Loader2, Play, Pause, CheckCircle2 } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { Button } from '@/components/ui/button';
@@ -128,6 +132,9 @@ export default function NarracaoLei() {
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         console.error('Erro ao narrar:', err);
+        // Fallback: voz do próprio aparelho (TTS nativo / Web Speech), funciona offline.
+        const falou = await speakNative(artigo.caput, { lang: 'pt-BR' });
+        if (!falou) toast.error('Não foi possível narrar este artigo agora.');
         return;
       }
 
@@ -143,6 +150,8 @@ export default function NarracaoLei() {
   const togglePlay = (url: string) => {
     if (playingUrl === url && audioRef) {
       audioRef.pause();
+      clearMediaSession(audioRef);
+      void telaAcesa('narracao-lei', false);
       setPlayingUrl(null);
       setAudioRef(null);
       return;
@@ -154,7 +163,16 @@ export default function NarracaoLei() {
 
     const audio = new Audio(url);
     audio.play();
+    void telaAcesa('narracao-lei', true);
+    registrarMidia({
+      titulo: 'Narração',
+      subtitulo: selectedLei?.nome,
+      album: 'Narração de Artigos',
+      audio,
+    });
     audio.onended = () => {
+      clearMediaSession(audio);
+      void telaAcesa('narracao-lei', false);
       setPlayingUrl(null);
       setAudioRef(null);
     };

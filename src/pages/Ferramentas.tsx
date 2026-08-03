@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { BookOpenText, ScanEye, ChevronRight, Newspaper, Film, NotebookText, Clapperboard, MapPin, Radar, Layers, Monitor, Scale, FileSignature, Bot, Headphones, Video, Mic, Send, Library, BookOpen, WifiOff, Music } from 'lucide-react';
+import { BookOpenText, ScanEye, Camera, ChevronRight, Newspaper, Film, NotebookText, Clapperboard, MapPin, Radar, Layers, Monitor, Scale, FileSignature, Bot, Headphones, Video, Mic, Send, Library, BookOpen, WifiOff, Music } from 'lucide-react';
 
 import { motion } from 'framer-motion';
 import { lazy, Suspense, useState } from 'react';
@@ -12,6 +12,7 @@ import { DESKTOP_TOOL_GROUPS } from '@/config/desktopTools';
 
 const TOOLS = [
   { id: 'desktop', label: 'Desktop', desc: 'Versão para computador', icon: Monitor },
+  { id: 'me-explique', label: 'Me Explique', desc: 'Aponte a câmera para o livro e ouça a explicação ao vivo', icon: Camera },
   { id: 'peticao-inicial', label: 'Petição Inicial', desc: 'Gere petições com IA e jurisprudência real do STF/STJ', icon: FileSignature },
   { id: 'radar360', label: 'Radar 360', desc: 'Alterações recentes e projetos de lei', icon: ScanEye },
   { id: 'radares', label: 'Radares', desc: 'Alterações de leis e projetos monitorados', icon: Radar },
@@ -36,6 +37,7 @@ const Ferramentas = () => {
   const handleToolClick = (id: string) => {
     switch (id) {
       case 'desktop': navigate('/desktop'); break;
+      case 'me-explique': navigate('/me-explique'); break;
       case 'vade-mecum': navigate('/vade-mecum'); break;
       case 'peticao-inicial': navigate('/ferramentas/peticao-inicial'); break;
       case 'flashcards': navigate('/flashcards'); break;

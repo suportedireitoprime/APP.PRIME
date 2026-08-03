@@ -1,5 +1,8 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { fetchTodasLeisCantadas, registrarPlay, type LeiCantada } from "@/lib/leisCantadasApi";
+import { registrarMidia, clearMediaSession } from "@/lib/mediaSession";
+import { telaAcesa } from "@/lib/nativo/telaAcordada";
+import { fonteDeAudio } from "@/lib/nativo/audioOffline";
 
 interface LeisCantadasPlayerContextType {
   faixas: LeiCantada[];
@@ -63,6 +66,30 @@ export const LeisCantadasPlayerProvider: React.FC<{ children: React.ReactNode }>
   const atualIdx = useMemo(() => faixas.findIndex((f) => f.id === atualId), [faixas, atualId]);
   const atual = atualIdx >= 0 ? faixas[atualIdx] : null;
 
+  const pularRef = useRef<(dir: 1 | -1) => void>(() => {});
+
+  // Notificação de mídia do sistema (nativo/lockscreen) para a faixa atual.
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio || !atual) return;
+    registrarMidia({
+      titulo: atual.titulo || `Art. ${atual.numero_artigo ?? ""}`,
+      subtitulo: atual.lei_nome || "Leis Cantadas",
+      album: "Leis Cantadas",
+      audio,
+      onNext: atualIdx >= 0 && faixas[atualIdx + 1] ? () => pularRef.current(1) : undefined,
+      onPrev: atualIdx > 0 ? () => pularRef.current(-1) : undefined,
+      onStop: () => setTocando(false),
+      onSeek: (t) => setTempo(t),
+    });
+  }, [atual?.id, atualIdx, faixas.length]);
+
+  // Tela acesa enquanto o áudio está tocando (nativo + Wake Lock na web).
+  useEffect(() => {
+    void telaAcesa("leis-cantadas", tocando);
+    return () => { void telaAcesa("leis-cantadas", false); };
+  }, [tocando]);
+
   const tocar = (f: LeiCantada) => {
     if (atualId === f.id) {
       if (tocando) { audioRef.current?.pause(); setTocando(false); }
@@ -78,9 +105,11 @@ export const LeisCantadasPlayerProvider: React.FC<{ children: React.ReactNode }>
       playsRegistrados.current.add(f.id);
       registrarPlay(f.id).catch(() => {});
     }
-    setTimeout(() => {
-      if (audioRef.current) { audioRef.current.src = f.audio_url; audioRef.current.play().catch(() => {}); }
-    }, 0);
+    // Prefere a cópia offline do aparelho, se existir.
+    void (async () => {
+      const src = await fonteDeAudio(f.id, f.audio_url);
+      if (audioRef.current) { audioRef.current.src = src; audioRef.current.play().catch(() => {}); }
+    })();
   };
 
   const togglePlay = () => {
@@ -110,7 +139,10 @@ export const LeisCantadasPlayerProvider: React.FC<{ children: React.ReactNode }>
     setTempo(0);
     setDur(0);
     setAberto(false);
+    clearMediaSession(audioRef.current);
   };
+
+  pularRef.current = pular;
 
   const value: LeisCantadasPlayerContextType = {
     faixas, loading, atualId, atual, atualIdx, tocando, tempo, dur,

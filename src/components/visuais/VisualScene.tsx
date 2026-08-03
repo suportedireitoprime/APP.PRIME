@@ -192,12 +192,33 @@ export async function exportarPdf(content: VisualContent, estilo: VisualEstilo, 
   const h = canvas.height / 2;
   const pdf = new JsPDF({ orientation: w >= h ? 'landscape' : 'portrait', unit: 'pt', format: [w, h] });
   pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, w, h);
-  await entregarArquivo(pdf.output('datauristring'), `${nome}.pdf`, 'application/pdf');
+  const dataUrl = pdf.output('datauristring');
+  await entregarArquivo(dataUrl, `${nome}.pdf`, 'application/pdf');
+  void espelhar(content, dataUrl, 'application/pdf');
 }
 
 /** Exporta o visual em PNG de alta resolução. */
 export async function exportarPng(content: VisualContent, estilo: VisualEstilo, nome: string) {
   const { canvas } = await renderCanvas(content, estilo);
-  await entregarArquivo(canvas.toDataURL('image/png'), `${nome}.png`, 'image/png');
+  const dataUrl = canvas.toDataURL('image/png');
+  await entregarArquivo(dataUrl, `${nome}.png`, 'image/png');
+  void espelhar(content, dataUrl, 'image/png');
 }
+
+/** Envia uma cópia do arquivo para a pasta do Google Drive (best-effort). */
+async function espelhar(content: VisualContent, dataUrl: string, mime: string) {
+  const { espelharNoDrive } = await import('@/services/driveMirror');
+  const categoria = (['mapa_mental', 'infografico', 'fluxograma', 'diagrama'] as const).includes(
+    (content as any).tipo,
+  )
+    ? ((content as any).tipo as 'mapa_mental')
+    : 'outro';
+  await espelharNoDrive({
+    categoria,
+    titulo: content.titulo,
+    base64: dataUrl.slice(dataUrl.indexOf(',') + 1),
+    mime,
+  });
+}
+
 

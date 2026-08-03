@@ -12,6 +12,7 @@ import {
 } from "@/lib/dicionarioCategorias";
 import { supabase } from "@/integrations/supabase/client";
 import { limparMarkdown, RichTexto } from "@/lib/dicionarioTexto";
+import { copiarTexto } from '@/lib/nativo/copiar';
 
 interface Props {
   termo: DicionarioTermo | null;
@@ -41,7 +42,7 @@ export default function DicionarioTermoSheet({ termo, todos, onClose, onSelectRe
   const copy = async () => {
     if (!termo) return;
     try {
-      await navigator.clipboard.writeText(`${termo.palavra}\n\n${limparMarkdown(termo.significado)}`);
+      await copiarTexto(`${termo.palavra}\n\n${limparMarkdown(termo.significado)}`);
       toast.success("Copiado");
     } catch {
       toast.error("Não foi possível copiar");

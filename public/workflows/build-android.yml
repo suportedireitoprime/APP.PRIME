@@ -1890,6 +1890,10 @@ jobs:
               'android.permission.FOREGROUND_SERVICE',
               'android.permission.POST_NOTIFICATIONS',
               'android.permission.RECEIVE_BOOT_COMPLETED',
+              'android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK',
+              'android.permission.WAKE_LOCK',
+              'android.permission.CAMERA',
+              'android.permission.READ_MEDIA_IMAGES',
           ]
           for perm in perms:
               if perm not in s:

@@ -23,6 +23,7 @@ const desktopImg = desktopImgAsset;
 import vacatioLogoAsset from '@/assets/logo-vacatio-v2.png.asset.json';
 import vacatioLogoBundled from '@/assets/bundled/logo-vacatio-v2.webp';
 import { useGoBack } from '@/hooks/useGoBack';
+import { copiarTexto } from '@/lib/nativo/copiar';
 const vacatioLogo = pickAsset(vacatioLogoBundled, srcOf(vacatioLogoAsset));
 
 const SITE_URL = 'www.vacatio.com.br';
@@ -67,7 +68,7 @@ const DesktopPromo = () => {
 
   const copySite = async () => {
     try {
-      await navigator.clipboard.writeText(`https://${SITE_URL}`);
+      await copiarTexto(`https://${SITE_URL}`);
       setCopied(true);
       toast.success('Endereço copiado');
       setTimeout(() => setCopied(false), 1800);

@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/context-menu';
 import { recordActivity } from '@/lib/continuity';
 import { useGoBack } from '@/hooks/useGoBack';
+import { copiarTexto } from '@/lib/nativo/copiar';
 
 
 type BlogFilter = 'trending' | 'todos' | BlogTema;
@@ -254,7 +255,7 @@ const Blog = () => {
               };
               const shareUrl = `${window.location.origin}/blog?post=${post.id}`;
               const copyLink = async () => {
-                try { await navigator.clipboard.writeText(shareUrl); toast.success('Link copiado'); }
+                try { await copiarTexto(shareUrl); toast.success('Link copiado'); }
                 catch { toast.error('Não foi possível copiar'); }
               };
               const share = async () => {

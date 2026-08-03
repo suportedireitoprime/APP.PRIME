@@ -2,6 +2,7 @@ import { WhatsappShareButton, TelegramShareButton, WhatsappIcon, TelegramIcon } 
 import { Share2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { buildSmartLink } from '@/lib/nativeDeepLinks';
+import { copiarTexto } from '@/lib/nativo/copiar';
 
 interface ShareButtonsProps {
   artigoNumero: string;
@@ -32,7 +33,7 @@ const ShareButtons = ({ artigoNumero, artigoTexto, leiNome, leiSlug }: ShareButt
       } catch {/* user cancelled or unsupported */}
     }
     try {
-      await navigator.clipboard.writeText(`${text}\n${url}`);
+      await copiarTexto(`${text}\n${url}`);
       toast.success('Link copiado', { position: 'top-center' });
     } catch {
       toast.error('Compartilhamento indisponível', { position: 'top-center' });

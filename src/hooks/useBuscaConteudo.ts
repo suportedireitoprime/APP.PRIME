@@ -7,7 +7,24 @@ export type ConteudoTipo =
   | 'blog'
   | 'resumo'
   | 'noticia'
-  | 'obra';
+  | 'obra'
+  | 'dicionario'
+  | 'artigo'
+  | 'sumula'
+  | 'tese'
+  | 'informativo'
+  | 'pesquisa';
+
+/** Grupos de busca: abas "Conteúdo" e "Jurisprudência". */
+export type ConteudoGrupo = 'conteudo' | 'jurisprudencia';
+
+export const TIPOS_CONTEUDO: ConteudoTipo[] = [
+  'videoaula', 'livro', 'blog', 'resumo', 'noticia', 'obra', 'dicionario', 'artigo',
+];
+
+export const TIPOS_JURISPRUDENCIA: ConteudoTipo[] = [
+  'sumula', 'tese', 'informativo', 'pesquisa',
+];
 
 export interface ConteudoResultado {
   entity_type: ConteudoTipo;
@@ -21,7 +38,10 @@ export interface ConteudoResultado {
   score: number;
 }
 
-export function useBuscaConteudo(termo: string, tipo: ConteudoTipo | 'tudo' = 'tudo') {
+export function useBuscaConteudo(
+  termo: string,
+  tipo: ConteudoTipo | ConteudoGrupo | 'tudo' = 'tudo',
+) {
   const [resultados, setResultados] = useState<ConteudoResultado[]>([]);
   const [loading, setLoading] = useState(false);
 

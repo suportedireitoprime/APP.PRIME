@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Bus,
@@ -49,6 +49,8 @@ import { LocaisFiltroBar, type SortOption } from '@/components/locais/LocaisFilt
 import { LocaisCardSkeleton } from '@/components/locais/LocaisCardSkeleton';
 import { LocalSocialSection } from '@/components/locais/LocalSocialSection';
 import { LocalTransporteDialog } from '@/components/locais/LocalTransporteDialog';
+import { copiarTexto } from '@/lib/nativo/copiar';
+import { compartilharNativo, podeCompartilhar } from '@/lib/nativo/compartilhar';
 
 interface Local {
   id: string;
@@ -89,6 +91,7 @@ function formatKm(km?: number | null) {
 
 export default function LocaisJuridicos() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { location, loading: geoLoading, error: geoError, request } = useUserLocation(false);
   const [categoriaAtiva, setCategoriaAtiva] = useState<CategoriaLocal | null>(null);
   const [contagens, setContagens] = useState<Contagens>({});
@@ -265,6 +268,21 @@ export default function LocaisJuridicos() {
     carregarLocais(categoriaAtiva);
   }, [categoriaAtiva, carregarLocais]);
 
+  // Deep link: /ferramentas/locais?categoria=tribunais abre a categoria direto
+  const categoriaParamRef = useRef(false);
+  useEffect(() => {
+    if (categoriaParamRef.current || carregandoContagens) return;
+    const param = searchParams.get('categoria') as CategoriaLocal | null;
+    if (!param) return;
+    categoriaParamRef.current = true;
+    if (!CATEGORIAS_LOCAIS.some((c) => c.id === param)) return;
+    if ((contagens[param] ?? 0) <= 0) {
+      toast.info('Em breve: esta categoria ainda não foi populada.');
+      return;
+    }
+    setCategoriaAtiva(param);
+  }, [searchParams, carregandoContagens, contagens]);
+
   const abrirCategoria = (categoria: CategoriaLocal) => {
     const total = contagens[categoria] ?? 0;
     if (total <= 0) {
@@ -276,12 +294,12 @@ export default function LocaisJuridicos() {
 
   const compartilhar = async (local: Local) => {
     const texto = `${local.nome}\n${local.endereco ?? ''}\nhttps://www.google.com/maps?q=${local.lat},${local.lng}`;
-    if (navigator.share) {
+    if (podeCompartilhar()) {
       try {
-        await navigator.share({ title: local.nome, text: texto });
+        await compartilharNativo({ title: local.nome, text: texto });
       } catch { /* cancelado */ }
     } else {
-      await navigator.clipboard.writeText(texto);
+      await copiarTexto(texto);
       toast.success('Informações copiadas.');
     }
   };
@@ -291,6 +309,7 @@ export default function LocaisJuridicos() {
       setCategoriaAtiva(null);
       setLocais([]);
       setSelecionado(null);
+      if (searchParams.get('categoria')) setSearchParams({}, { replace: true });
       return;
     }
     navigate('/');
@@ -394,7 +413,7 @@ export default function LocaisJuridicos() {
     const url = photos[local.id]?.photo_url;
     const Icon = iconCategoria(local.categoria);
     const base = tamanho === 'hero'
-      ? 'aspect-[4/5] rounded-2xl'
+      ? 'aspect-[4/3] rounded-2xl'
       : 'w-20 h-20 rounded-xl';
     if (url) {
       return (
@@ -414,7 +433,7 @@ export default function LocaisJuridicos() {
     }
     return (
       <div className={`relative overflow-hidden ${base} bg-gradient-to-br from-primary/25 via-primary/10 to-muted flex items-center justify-center`}>
-        <Icon className={tamanho === 'hero' ? 'w-14 h-14 text-primary/70' : 'w-7 h-7 text-primary/70'} />
+        <Icon className={tamanho === 'hero' ? 'w-10 h-10 text-primary/70' : 'w-7 h-7 text-primary/70'} />
         {tamanho === 'hero' && (
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
         )}
@@ -489,7 +508,7 @@ export default function LocaisJuridicos() {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: idx * 0.04 }}
                   onClick={() => setSelecionado(local)}
-                  className="relative snap-start shrink-0 w-[82vw] max-w-[360px] text-left"
+                  className="relative snap-start shrink-0 w-[62vw] max-w-[280px] text-left"
                 >
                   {renderCapa(local, 'hero')}
                   {/* Badges no topo */}
@@ -504,8 +523,8 @@ export default function LocaisJuridicos() {
                     </span>
                   </div>
                   {/* Texto no rodapé */}
-                  <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <p className="font-display text-lg font-bold text-white leading-tight line-clamp-2 drop-shadow">
+                  <div className="absolute bottom-0 left-0 right-0 p-3">
+                    <p className="font-display text-[15px] font-bold text-white leading-tight line-clamp-2 drop-shadow">
                       {local.nome}
                     </p>
                     {(local.cidade || local.endereco) && (
@@ -534,29 +553,30 @@ export default function LocaisJuridicos() {
                 <button
                   key={local.id}
                   onClick={() => setSelecionado(local)}
-                  className="w-full px-4 py-3 flex items-center gap-3 text-left active:bg-muted/60 transition-colors"
+                  className="w-full px-4 py-3.5 min-h-[72px] flex items-center gap-3 text-left active:bg-muted/60 transition-colors"
                 >
                   {renderCapa(local, 'thumb')}
                   <div className="flex-1 min-w-0">
-                    <p className="font-display text-[15px] font-bold text-foreground leading-tight line-clamp-1">
+                    <p className="font-display text-[16px] font-bold text-foreground leading-tight line-clamp-2">
                       {local.nome}
                     </p>
-                    <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">
+                    <p className="text-[13px] text-muted-foreground mt-1 line-clamp-1">
                       {local.endereco || [local.cidade, local.uf].filter(Boolean).join(' / ')}
                     </p>
-                    <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                    <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                       {km && (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-primary">
-                          <Navigation className="w-3 h-3" /> {km}
+                        <span className="inline-flex items-center gap-1 text-[13px] font-semibold text-primary">
+                          <Navigation className="w-3.5 h-3.5" /> {km}
                         </span>
                       )}
                       {local.cidade && (
-                        <span className="text-[11px] text-muted-foreground">
-                          · {local.cidade}{local.uf ? `/${local.uf}` : ''}
+                        <span className="text-[13px] text-muted-foreground">
+                          {local.cidade}{local.uf ? `/${local.uf}` : ''}
                         </span>
                       )}
                     </div>
                   </div>
+
                   <button
                     onClick={(e) => { e.stopPropagation(); openInNewTab(googleMapsUrl(local)); }}
                     className="w-10 h-10 rounded-full bg-white border border-border flex items-center justify-center shrink-0 active:scale-95 transition-transform shadow-sm"
@@ -610,11 +630,13 @@ export default function LocaisJuridicos() {
             const ActionRow = ({
               icon,
               label,
+              descricao,
               onClick,
               variant = 'outline',
             }: {
               icon: React.ReactNode;
               label: string;
+              descricao?: string;
               onClick: () => void;
               variant?: 'default' | 'outline';
             }) => (
@@ -622,15 +644,34 @@ export default function LocaisJuridicos() {
                 onClick={onClick}
                 className={
                   variant === 'default'
-                    ? 'w-full min-h-12 rounded-xl bg-primary text-primary-foreground font-semibold flex items-center gap-3 px-4 active:scale-[0.99] transition'
-                    : 'w-full min-h-12 rounded-xl border border-border bg-card text-foreground font-semibold flex items-center gap-3 px-4 active:scale-[0.99] hover:border-primary/40 transition'
+                    ? 'w-full min-h-[56px] rounded-2xl bg-primary text-primary-foreground font-semibold flex items-center gap-3 px-4 py-3 active:scale-[0.99] transition'
+                    : 'w-full min-h-[56px] rounded-2xl border border-border bg-card text-foreground font-semibold flex items-center gap-3 px-4 py-3 active:scale-[0.99] hover:border-primary/40 transition'
                 }
               >
-                <span className="w-6 h-6 flex items-center justify-center shrink-0">{icon}</span>
-                <span className="flex-1 text-left text-sm">{label}</span>
-                <ChevronRight className="w-4 h-4 opacity-60" />
+                <span className="w-7 h-7 flex items-center justify-center shrink-0">{icon}</span>
+                <span className="flex-1 text-left min-w-0">
+                  <span className="block text-[15px] leading-tight">{label}</span>
+                  {descricao && (
+                    <span className={`block text-[13px] font-normal leading-snug mt-0.5 ${variant === 'default' ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>
+                      {descricao}
+                    </span>
+                  )}
+                </span>
+                <ChevronRight className="w-5 h-5 opacity-60 shrink-0" />
               </button>
             );
+
+            const Secao = ({ titulo, acao, children }: { titulo: string; acao?: React.ReactNode; children: React.ReactNode }) => (
+              <section>
+                <div className="flex items-center gap-3 mb-3">
+                  <h3 className="text-[13px] uppercase tracking-[0.12em] font-bold text-foreground/70">{titulo}</h3>
+                  <div className="flex-1 h-px bg-border" />
+                  {acao}
+                </div>
+                {children}
+              </section>
+            );
+
 
             return (
               <div className="flex-1 overflow-y-auto">
@@ -705,166 +746,52 @@ export default function LocaisJuridicos() {
 
 
                 {/* Cabeçalho */}
-                <div className="px-4 pt-4 pb-1 max-w-2xl mx-auto w-full">
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-                    {(() => { const I = iconCategoria(selecionado.categoria); return <I className="w-3.5 h-3.5" />; })()}
+                <div className="px-4 pt-5 pb-1 max-w-2xl mx-auto w-full">
+                  <div className="flex items-center gap-2 text-[13px] font-medium text-muted-foreground mb-1.5">
+                    {(() => { const I = iconCategoria(selecionado.categoria); return <I className="w-4 h-4" />; })()}
                     {labelCategoria(selecionado.categoria)}
                   </div>
-                  <SheetTitle className="text-left text-lg sm:text-xl leading-tight font-display">
+                  <SheetTitle className="text-left text-xl sm:text-2xl leading-tight font-display">
                     {selecionado.nome}
                   </SheetTitle>
                   {(selecionado.endereco || selecionado.cidade) && (
-                    <div className="flex items-start gap-2 mt-1">
-                      <p className="text-sm text-muted-foreground text-left flex-1">
+                    <div className="flex items-start gap-3 mt-2">
+                      <MapPin className="w-[18px] h-[18px] text-muted-foreground mt-0.5 shrink-0" />
+                      <p className="text-[15px] leading-snug text-muted-foreground text-left flex-1">
                         {selecionado.endereco || [selecionado.cidade, selecionado.uf].filter(Boolean).join(' / ')}
+                        {selecionado.endereco && selecionado.cidade && (
+                          <span className="block text-[13px] mt-0.5">
+                            {[selecionado.cidade, selecionado.uf].filter(Boolean).join(' / ')}
+                          </span>
+                        )}
                       </p>
                       <button
                         onClick={() => {
                           const texto = selecionado.endereco
                             ? `${selecionado.nome} — ${selecionado.endereco}`
                             : `${selecionado.nome} — ${[selecionado.cidade, selecionado.uf].filter(Boolean).join(' / ')}`;
-                          navigator.clipboard.writeText(texto).then(() => toast.success('Endereço copiado'));
+                          copiarTexto(texto).then(() => toast.success('Endereço copiado'));
                         }}
                         aria-label="Copiar endereço"
-                        className="w-8 h-8 rounded-full border border-border bg-card flex items-center justify-center active:scale-95 transition hover:border-primary/40 shrink-0"
+                        className="w-11 h-11 rounded-full border border-border bg-card flex items-center justify-center active:scale-95 transition hover:border-primary/40 shrink-0"
                       >
-                        <Copy className="w-4 h-4 text-foreground" />
+                        <Copy className="w-[18px] h-[18px] text-foreground" />
                       </button>
                     </div>
                   )}
                 </div>
 
-                <div className="px-4 pb-8 pt-2 space-y-5 max-w-2xl mx-auto w-full">
-                  {/* SOBRE */}
-                  <section>
-                    <div className="flex items-center gap-3 mb-3">
-                      <h3 className="text-[11px] uppercase tracking-[0.15em] font-bold text-muted-foreground">Sobre</h3>
-                      <div className="flex-1 h-px bg-border" />
-                    </div>
-                    {wikiLoading ? (
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Loader2 className="w-4 h-4 animate-spin" /> Buscando informações...
-                      </div>
-                    ) : wikiInfo ? (
-                      <div className="space-y-2">
-                        <p className="text-sm leading-relaxed text-foreground/90">{wikiInfo.extract}</p>
-                        {wikiInfo.url && (
-                          <button
-                            onClick={() => openInNewTab(wikiInfo.url!)}
-                            className="text-xs text-primary font-semibold inline-flex items-center gap-1"
-                          >
-                            Ver fonte <ExternalLink className="w-3 h-3" />
-                          </button>
-                        )}
-                      </div>
-                    ) : (
-                      <p className="text-sm leading-relaxed text-foreground/90">{descricaoBase}</p>
-                    )}
-                  </section>
-
-                  {/* Informações rápidas */}
-                  {(selecionado.telefone || selecionado.site || selecionado.horario?.raw) && (
-                    <div className="rounded-2xl border border-border bg-card divide-y divide-border overflow-hidden">
-                      {selecionado.telefone && (
-                        <a href={`tel:${selecionado.telefone}`} className="flex items-center gap-3 px-4 py-3">
-                          <Phone className="w-4 h-4 text-primary shrink-0" />
-                          <span className="text-sm font-medium flex-1 truncate">{selecionado.telefone}</span>
-                        </a>
-                      )}
-                      {selecionado.site && (
-                        <a
-                          href={selecionado.site.startsWith('http') ? selecionado.site : `https://${selecionado.site}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-3 px-4 py-3"
-                        >
-                          <Globe className="w-4 h-4 text-primary shrink-0" />
-                          <span className="text-sm font-medium truncate flex-1">{selecionado.site}</span>
-                          <ExternalLink className="w-3 h-3 text-muted-foreground shrink-0" />
-                        </a>
-                      )}
-                      {selecionado.horario?.raw && (
-                        <div className="px-4 py-3">
-                          <p className="text-[11px] uppercase tracking-wider text-muted-foreground mb-1">Horário</p>
-                          <p className="text-sm font-mono leading-snug">{selecionado.horario.raw}</p>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* AVALIAÇÕES */}
-                  <section>
-                    <div className="flex items-center gap-3 mb-3">
-                      <h3 className="text-[11px] uppercase tracking-[0.15em] font-bold text-muted-foreground">
-                        Avaliações {typeof rating === 'number' ? `· ${rating.toFixed(1)}★` : ''}
-                      </h3>
-                      <div className="flex-1 h-px bg-border" />
-                      {meta?.google_maps_uri && (
-                        <button
-                          onClick={() => openInNewTab(meta.google_maps_uri!)}
-                          className="text-[11px] text-primary font-semibold inline-flex items-center gap-1"
-                        >
-                          Ver todas <ExternalLink className="w-3 h-3" />
-                        </button>
-                      )}
-                    </div>
-                    {reviews && reviews.length > 0 ? (
-                      <div className="space-y-2">
-                        {reviews.slice(0, 3).map((r, idx) => {
-                          const author = r.authorAttribution?.displayName ?? 'Anônimo';
-                          const texto = r.text?.text ?? r.originalText?.text ?? '';
-                          return (
-                            <div key={idx} className="rounded-xl border border-border bg-card p-3">
-                              <div className="flex items-center gap-2 mb-1">
-                                <p className="text-sm font-semibold text-foreground truncate flex-1">{author}</p>
-                                {typeof r.rating === 'number' && (
-                                  <span className="inline-flex items-center gap-0.5 text-xs font-semibold">
-                                    <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                                    {r.rating}
-                                  </span>
-                                )}
-                              </div>
-                              {r.relativePublishTimeDescription && (
-                                <p className="text-[11px] text-muted-foreground mb-1">
-                                  {r.relativePublishTimeDescription}
-                                </p>
-                              )}
-                              {texto && (
-                                <p className="text-sm text-foreground/85 leading-relaxed line-clamp-4">
-                                  {texto}
-                                </p>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    ) : (
-                      <p className="text-sm text-muted-foreground">
-                        Ainda não há avaliações disponíveis para este local.
-                      </p>
-                    )}
-                  </section>
-
-                  {/* COMUNIDADE (Check-in + Avaliação + Comentários) */}
-                  <section>
-                    <div className="flex items-center gap-3 mb-3">
-                      <h3 className="text-[11px] uppercase tracking-[0.15em] font-bold text-muted-foreground">Comunidade</h3>
-                      <div className="flex-1 h-px bg-border" />
-                    </div>
-                    <LocalSocialSection localId={selecionado.id} />
-                  </section>
-
-                  {/* AÇÕES */}
-                  <section>
-                    <div className="flex items-center gap-3 mb-3">
-                      <h3 className="text-[11px] uppercase tracking-[0.15em] font-bold text-muted-foreground">Como chegar</h3>
-                      <div className="flex-1 h-px bg-border" />
-                    </div>
-                    <div className="space-y-2">
+                <div className="px-4 pb-10 pt-4 space-y-7 max-w-2xl mx-auto w-full">
+                  {/* COMO CHEGAR — ação principal primeiro */}
+                  <Secao titulo="Como chegar">
+                    <div className="space-y-2.5">
                       <ActionRow
                         variant="default"
                         icon={<img src={gmapsLogo} alt="" className="w-6 h-6" />}
                         label="Traçar rota no Google Maps"
+                        descricao={typeof selecionado.dist_km === 'number'
+                          ? `${formatKm(selecionado.dist_km)} de você · abre o app de mapas`
+                          : 'Abre no app de mapas do celular'}
                         onClick={async () => {
                           const { openMap } = await import('@/lib/nativeMapsLauncher');
                           await openMap({
@@ -874,53 +801,198 @@ export default function LocaisJuridicos() {
                           });
                         }}
                       />
-
                       <ActionRow
-                        icon={<Bus className="w-5 h-5 text-primary" />}
+                        icon={<Bus className="w-6 h-6 text-primary" />}
                         label="Transporte público"
+                        descricao="Ônibus, metrô e trem até o local"
                         onClick={() => setTransporteAberto(true)}
                       />
-                      <ActionRow
-                        icon={<img src={wazeLogo} alt="" className="w-6 h-6" />}
-                        label="Abrir no Waze"
-                        onClick={() => openInNewTab(wazeUrl(selecionado))}
-                      />
-                      <ActionRow
-                        icon={<img src={uberLogo} alt="" className="w-6 h-6" />}
-                        label="Chamar Uber"
-                        onClick={() => openInNewTab(uberUrl(selecionado))}
-                      />
-                      <ActionRow
-                        icon={<img src={nnLogo} alt="" className="w-6 h-6" />}
-                        label="Chamar 99"
-                        onClick={() => openInNewTab(noveNoveUrl(selecionado))}
-                      />
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                        <ActionRow
+                          icon={<img src={wazeLogo} alt="" className="w-6 h-6" />}
+                          label="Waze"
+                          onClick={() => openInNewTab(wazeUrl(selecionado))}
+                        />
+                        <ActionRow
+                          icon={<img src={uberLogo} alt="" className="w-6 h-6" />}
+                          label="Uber"
+                          onClick={() => openInNewTab(uberUrl(selecionado))}
+                        />
+                        <ActionRow
+                          icon={<img src={nnLogo} alt="" className="w-6 h-6" />}
+                          label="99"
+                          onClick={() => openInNewTab(noveNoveUrl(selecionado))}
+                        />
+                      </div>
                     </div>
-                  </section>
+                  </Secao>
 
-                  {/* MAPA (depois de compartilhar) */}
-                  <section>
-                    <div className="flex items-center gap-3 mb-3">
-                      <h3 className="text-[11px] uppercase tracking-[0.15em] font-bold text-muted-foreground">Localização</h3>
-                      <div className="flex-1 h-px bg-border" />
-                    </div>
+                  {/* MAPA */}
+                  <Secao
+                    titulo="No mapa"
+                    acao={(
+                      <button
+                        onClick={() => openInNewTab(gmapsUri)}
+                        className="text-[13px] text-primary font-semibold inline-flex items-center gap-1"
+                      >
+                        Ampliar <ExternalLink className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  >
                     <div className="rounded-2xl overflow-hidden border border-border bg-muted">
                       <iframe
                         title="Mapa do local"
                         src={embedSrc}
-                        className="w-full h-[240px] border-0 block"
+                        className="w-full h-[220px] sm:h-[280px] border-0 block"
                         loading="lazy"
                         referrerPolicy="no-referrer-when-downgrade"
                         allowFullScreen
                       />
                     </div>
-                  </section>
+                  </Secao>
+
+                  {/* CONTATO E HORÁRIO */}
+                  {(selecionado.telefone || selecionado.site || selecionado.horario?.raw) && (
+                    <Secao titulo="Contato e horário">
+                      <div className="rounded-2xl border border-border bg-card divide-y divide-border overflow-hidden">
+                        {selecionado.telefone && (
+                          <a href={`tel:${selecionado.telefone}`} className="flex items-center gap-3 px-4 min-h-[56px] py-3">
+                            <Phone className="w-5 h-5 text-primary shrink-0" />
+                            <span className="flex-1 min-w-0">
+                              <span className="block text-[13px] text-muted-foreground">Telefone</span>
+                              <span className="block text-[15px] font-semibold truncate">{selecionado.telefone}</span>
+                            </span>
+                            <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
+                          </a>
+                        )}
+                        {selecionado.site && (
+                          <a
+                            href={selecionado.site.startsWith('http') ? selecionado.site : `https://${selecionado.site}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-3 px-4 min-h-[56px] py-3"
+                          >
+                            <Globe className="w-5 h-5 text-primary shrink-0" />
+                            <span className="flex-1 min-w-0">
+                              <span className="block text-[13px] text-muted-foreground">Site oficial</span>
+                              <span className="block text-[15px] font-semibold truncate">{selecionado.site}</span>
+                            </span>
+                            <ExternalLink className="w-4 h-4 text-muted-foreground shrink-0" />
+                          </a>
+                        )}
+                        {selecionado.horario?.raw && (
+                          <div className="px-4 py-3.5">
+                            <p className="text-[13px] text-muted-foreground mb-1">Horário de funcionamento</p>
+                            <p className="text-[15px] leading-relaxed">{selecionado.horario.raw}</p>
+                          </div>
+                        )}
+                      </div>
+                    </Secao>
+                  )}
+
+                  {/* SOBRE */}
+                  <Secao
+                    titulo="Sobre este local"
+                    acao={wikiInfo?.url ? (
+                      <button
+                        onClick={() => openInNewTab(wikiInfo.url!)}
+                        className="text-[13px] text-primary font-semibold inline-flex items-center gap-1"
+                      >
+                        Fonte <ExternalLink className="w-3.5 h-3.5" />
+                      </button>
+                    ) : undefined}
+                  >
+                    <div className="rounded-2xl border border-border bg-card p-4">
+                      {wikiLoading ? (
+                        <div className="flex items-center gap-2 text-[15px] text-muted-foreground">
+                          <Loader2 className="w-4 h-4 animate-spin" /> Buscando informações…
+                        </div>
+                      ) : (
+                        <p className="text-[15px] leading-relaxed text-foreground/90">
+                          {wikiInfo?.extract ?? descricaoBase}
+                        </p>
+                      )}
+                      <div className="flex flex-wrap gap-2 mt-3">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/70 text-[13px] font-medium text-foreground/80">
+                          {(() => { const I = iconCategoria(selecionado.categoria); return <I className="w-3.5 h-3.5" />; })()}
+                          {labelCategoria(selecionado.categoria)}
+                        </span>
+                        {selecionado.cidade && (
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/70 text-[13px] font-medium text-foreground/80">
+                            <MapPin className="w-3.5 h-3.5" />
+                            {[selecionado.cidade, selecionado.uf].filter(Boolean).join(' / ')}
+                          </span>
+                        )}
+                        {typeof rating === 'number' && (
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/70 text-[13px] font-medium text-foreground/80">
+                            <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
+                            {rating.toFixed(1)}{totalRatings ? ` (${totalRatings})` : ''}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </Secao>
+
+                  {/* COMUNIDADE (Estive aqui + Avaliação + Comentários) */}
+                  <Secao titulo="Você e a comunidade">
+                    <LocalSocialSection localId={selecionado.id} />
+                  </Secao>
+
+                  {/* AVALIAÇÕES */}
+                  <Secao
+                    titulo={`Avaliações${typeof rating === 'number' ? ` · ${rating.toFixed(1)}★` : ''}`}
+                    acao={meta?.google_maps_uri ? (
+                      <button
+                        onClick={() => openInNewTab(meta.google_maps_uri!)}
+                        className="text-[13px] text-primary font-semibold inline-flex items-center gap-1"
+                      >
+                        Ver todas <ExternalLink className="w-3.5 h-3.5" />
+                      </button>
+                    ) : undefined}
+                  >
+                    {reviews && reviews.length > 0 ? (
+                      <div className="space-y-2.5">
+                        {reviews.slice(0, 3).map((r, idx) => {
+                          const author = r.authorAttribution?.displayName ?? 'Anônimo';
+                          const texto = r.text?.text ?? r.originalText?.text ?? '';
+                          return (
+                            <div key={idx} className="rounded-2xl border border-border bg-card p-4">
+                              <div className="flex items-center gap-2 mb-1">
+                                <p className="text-[15px] font-semibold text-foreground truncate flex-1">{author}</p>
+                                {typeof r.rating === 'number' && (
+                                  <span className="inline-flex items-center gap-1 text-[13px] font-semibold">
+                                    <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
+                                    {r.rating}
+                                  </span>
+                                )}
+                              </div>
+                              {r.relativePublishTimeDescription && (
+                                <p className="text-[13px] text-muted-foreground mb-1.5">
+                                  {r.relativePublishTimeDescription}
+                                </p>
+                              )}
+                              {texto && (
+                                <p className="text-[15px] text-foreground/85 leading-relaxed line-clamp-5">
+                                  {texto}
+                                </p>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <p className="text-[15px] text-muted-foreground">
+                        Ainda não há avaliações disponíveis para este local.
+                      </p>
+                    )}
+                  </Secao>
 
                   {meta?.photo_attribution && (
-                    <p className="text-[10px] text-muted-foreground text-center">
+                    <p className="text-[12px] text-muted-foreground text-center">
                       Foto: {meta.photo_attribution}
                     </p>
                   )}
+
                 </div>
               </div>
             );

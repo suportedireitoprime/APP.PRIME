@@ -63,6 +63,7 @@ import { useNarracaoFlutuante } from '@/stores/useNarracaoFlutuante';
 import { useLocation } from 'react-router-dom';
 
 import { LEIS_SUPABASE_URL, LEIS_SUPABASE_ANON_KEY, LEIS_SUPABASE_PROJECT_ID } from "@/lib/legislacaoBackend";
+import { copiarTexto } from '@/lib/nativo/copiar';
 const SB_URL = LEIS_SUPABASE_URL;
 const SB_KEY = LEIS_SUPABASE_ANON_KEY;
 const SB_PROJECT_ID = LEIS_SUPABASE_PROJECT_ID;
@@ -1499,11 +1500,11 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         const { Clipboard } = await import('@capacitor/clipboard');
         await Clipboard.write({ string: text });
       } else {
-        await navigator.clipboard.writeText(text);
+        await copiarTexto(text);
       }
       toast.success('Artigo copiado', { position: 'top-center' });
     } catch (e) {
-      try { await navigator.clipboard.writeText(text); toast.success('Artigo copiado', { position: 'top-center' }); }
+      try { await copiarTexto(text); toast.success('Artigo copiado', { position: 'top-center' }); }
       catch { toast.error('Não foi possível copiar', { position: 'top-center' }); }
     }
   };

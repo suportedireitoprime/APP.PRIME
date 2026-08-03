@@ -29,6 +29,7 @@ import { stripCitations } from '@/components/chat/ChatSources';
 import PremiumGate, { type PremiumFeatureKey } from '@/components/PremiumGate';
 import { useFeatureLimit } from '@/hooks/useFeatureLimit';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
+import { baixarBlob } from '@/lib/nativo';
 
 
 type ArtifactKind = 'flashcards' | 'questoes' | 'mapa' | 'termos';
@@ -307,9 +308,7 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
         </Document>
       );
       const blob = await pdf(doc).toBlob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url; a.download = 'chat-juridico.pdf'; a.click();
-      URL.revokeObjectURL(url);
+      await baixarBlob(blob, 'chat-juridico.pdf', { titulo: 'Chat jurídico', toastSucesso: false });
       toast.success('PDF exportado');
     } catch (e) { toast.error('Erro no PDF'); }
     finally { setGenOverlay(null); }

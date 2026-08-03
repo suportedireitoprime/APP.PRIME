@@ -6,6 +6,7 @@ import { supabaseCloud } from '@/integrations/supabase/cloudClient';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { toast } from 'sonner';
 import { useGoBack } from '@/hooks/useGoBack';
+import { copiarTexto } from '@/lib/nativo/copiar';
 
 interface Acordao {
   id?: string;
@@ -99,7 +100,7 @@ export default function PesquisasProntasTema() {
       return;
     }
     try {
-      await navigator.clipboard.writeText(text);
+      await copiarTexto(text);
       toast.success('Copiado para a área de transferência');
       setCopyOpen(false);
       setCopySel({ ementa: false, tema: false, tese: false });

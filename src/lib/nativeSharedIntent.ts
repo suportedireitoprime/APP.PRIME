@@ -18,10 +18,8 @@ function isSendIntentPayload(v: unknown): v is { title?: string; description?: s
 
 async function readCurrentIntent(): Promise<{ title?: string; description?: string; url?: string } | null> {
   try {
-    // Import dinâmico via variável para o Rollup não tentar resolver em build
-    // (o pacote `send-intent` foi removido por incompatibilidade com Capacitor 8).
-    const pkg = 'send-intent';
-    const mod: any = await import(/* @vite-ignore */ pkg).catch(() => null);
+    // `send-intent` está instalado: import dinâmico normal (code-split).
+    const mod: any = await import('send-intent').catch(() => null);
     if (!mod) return null;
     const SendIntent = mod?.SendIntent ?? mod?.default;
     if (!SendIntent?.checkSendIntentReceived) return null;
@@ -36,7 +34,9 @@ async function readCurrentIntent(): Promise<{ title?: string; description?: stri
 function buildTarget(payload: { title?: string; description?: string; url?: string }): string {
   // A prioridade é o texto compartilhado; URL entra como referência.
   const text = payload.description || payload.title || '';
-  const url = payload.url || '';
+  // URL pode ser um content:// (PDF/imagem compartilhada) — vai codificada
+  // para a tela decidir entre texto e arquivo.
+  const url = payload.url ? decodeURIComponent(payload.url) : '';
   const params = new URLSearchParams();
   if (text) params.set('texto', text);
   if (url) params.set('url', url);

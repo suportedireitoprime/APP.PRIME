@@ -27,6 +27,16 @@ import { srcOf } from "@/lib/assetUrl";
 import { VideoCapa, VIDEO_URL, POSTER_URL, usePrewarmVideo } from "@/components/leis-cantadas/VideoCapa";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import LeisCantadasBottomNav, { type LeisCantadasTab } from "@/components/leis-cantadas/LeisCantadasBottomNav";
+import { baixarBlob } from '@/lib/nativo';
+import { copiarTexto } from '@/lib/nativo/copiar';
+import { compartilharNativo, podeCompartilhar } from '@/lib/nativo/compartilhar';
+import {
+  baixarAudioOffline,
+  removerAudioOffline,
+  estaBaixado,
+  suportaAudioOffline,
+  assinarAudioOffline,
+} from '@/lib/nativo/audioOffline';
 
 const CAPA_PENAL = srcOf(capaPenal);
 
@@ -268,14 +278,47 @@ export default function LeisCantadasPage() {
     }
   };
 
+  // Download offline do áudio atual
+  const [baixado, setBaixado] = useState(false);
+  const [baixando, setBaixando] = useState(false);
+  useEffect(() => {
+    let vivo = true;
+    const checar = () => {
+      if (!atual) { setBaixado(false); return; }
+      void estaBaixado(atual.id).then((v) => { if (vivo) setBaixado(v); });
+    };
+    checar();
+    const off = assinarAudioOffline(checar);
+    return () => { vivo = false; off(); };
+  }, [atual?.id]);
+
+  const alternarDownload = async () => {
+    if (!atual) return;
+    if (baixado) {
+      await removerAudioOffline(atual.id);
+      toast.success("Download removido");
+      return;
+    }
+    setBaixando(true);
+    const ok = await baixarAudioOffline({
+      id: atual.id,
+      url: atual.audio_url,
+      titulo: atual.titulo || `Art. ${atual.numero_artigo}`,
+      subtitulo: atual.lei_nome,
+      categoria: "leis-cantadas",
+    });
+    setBaixando(false);
+    toast[ok ? "success" : "error"](ok ? "Áudio disponível offline" : "Não foi possível baixar");
+  };
+
   const compartilhar = async () => {
     if (!atual) return;
     const titulo = atual.titulo || `Art. ${atual.numero_artigo}`;
     try {
-      if (navigator.share) {
-        await navigator.share({ title: `${titulo} — Leis Cantadas`, text: `${titulo} (${atual.lei_nome})`, url: window.location.href });
+      if (podeCompartilhar()) {
+        await compartilharNativo({ title: `${titulo} — Leis Cantadas`, text: `${titulo} (${atual.lei_nome})`, url: window.location.href });
       } else {
-        await navigator.clipboard.writeText(window.location.href);
+        await copiarTexto(window.location.href);
         toast.success("Link copiado!");
       }
     } catch {
@@ -888,14 +931,7 @@ export default function LeisCantadasPage() {
                           onClick={() => {
                             const nome = `${(atual.titulo || "resumo").replace(/[^a-z0-9À-ÿ\- ]/gi, "").trim() || "resumo"}.md`;
                             const blob = new Blob([atual.resumo_texto || ""], { type: "text/markdown;charset=utf-8" });
-                            const url = URL.createObjectURL(blob);
-                            const a = document.createElement("a");
-                            a.href = url;
-                            a.download = nome;
-                            document.body.appendChild(a);
-                            a.click();
-                            document.body.removeChild(a);
-                            URL.revokeObjectURL(url);
+                            void baixarBlob(blob, nome, { titulo: atual.titulo || "Resumo" });
                           }}
                           aria-label="Baixar resumo"
                           title="Baixar resumo"
@@ -1080,6 +1116,18 @@ export default function LeisCantadasPage() {
                   <Share2 className="h-6 w-6" />
                   Compartilhar
                 </button>
+                {suportaAudioOffline() && (
+                  <button
+                    onClick={() => void alternarDownload()}
+                    disabled={baixando}
+                    className={`flex flex-col items-center gap-1 text-[11px] transition disabled:opacity-60 ${
+                      baixado ? "text-emerald-400" : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {baixando ? <Loader2 className="h-6 w-6 animate-spin" /> : baixado ? <Check className="h-6 w-6" /> : <Download className="h-6 w-6" />}
+                    {baixado ? "Baixado" : "Baixar"}
+                  </button>
+                )}
               </div>
             </div>
           )}

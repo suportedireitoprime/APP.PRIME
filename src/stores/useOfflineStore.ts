@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { conectado } from '@/lib/nativo/rede';
 
 interface OfflineState {
   isOnline: boolean;
@@ -10,7 +11,7 @@ interface OfflineState {
 }
 
 export const useOfflineStore = create<OfflineState>((set) => ({
-  isOnline: navigator.onLine,
+  isOnline: conectado(),
   downloadedLeis: new Set(),
   downloading: null,
   setOnline: (v) => set({ isOnline: v }),

@@ -19,7 +19,14 @@ import type { ArtigoLei } from '@/data/mockData';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { iconeDoItem } from '@/lib/visuaisJuridicos/icones';
-import { fetchAreasResumos, fetchTemasResumos, type TemaResumo } from '@/lib/visuaisJuridicos/materias';
+import {
+  fetchAreasResumos,
+  fetchTemasResumos,
+  fetchSubtemasResumos,
+  slugTema,
+  type TemaResumo,
+  type SubtemaResumo,
+} from '@/lib/visuaisJuridicos/materias';
 import { listarFavoritos, listarRecentes, registrarRecente, toggleFavorito } from '@/lib/visuaisJuridicos/prefs';
 import { useDictation } from '@/hooks/useDictation';
 
@@ -167,9 +174,11 @@ interface Props {
   modo?: 'sheet' | 'page';
   /** Chamado ao escolher um formato no passo 1 (usado para navegar para a rota do formato). */
   onEscolherTipo?: (tipo: VisualTipo) => void;
+  /** Espelha a navegação interna na URL (ex.: ['materias','direito-civil','lindb']). */
+  onRotaChange?: (segmentos: string[]) => void;
 }
 
-export default function VisuaisJuridicosSheet({ open, onClose, tipoInicial, modo = 'sheet', onEscolherTipo }: Props) {
+export default function VisuaisJuridicosSheet({ open, onClose, tipoInicial, modo = 'sheet', onEscolherTipo, onRotaChange }: Props) {
   const emPagina = modo === 'page';
   useBodyScrollLock(open && !emPagina);
   const { user } = useAuth();
@@ -188,6 +197,9 @@ export default function VisuaisJuridicosSheet({ open, onClose, tipoInicial, modo
   const [carregandoMaterias, setCarregandoMaterias] = useState(false);
   const [temas, setTemas] = useState<TemaResumo[]>([]);
   const [carregandoTemas, setCarregandoTemas] = useState(false);
+  const [tema, setTema] = useState<TemaResumo | null>(null);
+  const [subtemas, setSubtemas] = useState<SubtemaResumo[]>([]);
+  const [carregandoSubtemas, setCarregandoSubtemas] = useState(false);
 
   const [busca, setBusca] = useState('');
   const [prontos, setProntos] = useState<Record<string, VisualRecord>>({});
@@ -234,8 +246,20 @@ export default function VisuaisJuridicosSheet({ open, onClose, tipoInicial, modo
     setArtigos([]);
     setBuscaArtigo('');
     setTemas([]);
+    setTema(null);
+    setSubtemas([]);
     setFiltro('todos');
   }, [tipoInicial]);
+
+  // Espelha o passo atual na URL (…/visuais/mapa-mental/materias/direito-civil/lindb).
+  useEffect(() => {
+    if (!open || !onRotaChange) return;
+    const segs: string[] = [];
+    if (categoria) segs.push(categoria);
+    if (item) segs.push(slugTema(item.label));
+    if (tema) segs.push(slugTema(tema.tema));
+    onRotaChange(segs);
+  }, [open, categoria, item, tema, onRotaChange]);
 
 
   useEffect(() => {
@@ -297,11 +321,30 @@ export default function VisuaisJuridicosSheet({ open, onClose, tipoInicial, modo
     return () => { cancelado = true; };
   }, [categoria, item]);
 
+  // Subtemas do tópico escolhido.
+  useEffect(() => {
+    if (categoria !== 'materias' || !item || !tema) { setSubtemas([]); return; }
+    let cancelado = false;
+    setCarregandoSubtemas(true);
+    fetchSubtemasResumos(item.label, tema.tema)
+      .then((rows) => { if (!cancelado) setSubtemas(rows); })
+      .catch(() => { if (!cancelado) setSubtemas([]); })
+      .finally(() => { if (!cancelado) setCarregandoSubtemas(false); });
+    return () => { cancelado = true; };
+  }, [categoria, item, tema]);
+
   const temasFiltrados = useMemo(() => {
     const q = norm(buscaArtigo.trim());
     const base = q ? temas.filter((t) => norm(t.tema).includes(q)) : temas;
     return aplicarFiltro(base, (t) => chaveDe(item!, t.tema, 'tema'));
   }, [temas, buscaArtigo, aplicarFiltro, chaveDe, item]);
+
+  const subtemasFiltrados = useMemo(() => {
+    const q = norm(buscaArtigo.trim());
+    const base = q ? subtemas.filter((s) => norm(s.subtema).includes(q)) : subtemas;
+    return aplicarFiltro(base, (s) => chaveDe(item!, `${tema?.tema ?? ''} ${s.subtema}`, 'tema'));
+  }, [subtemas, buscaArtigo, aplicarFiltro, chaveDe, item, tema]);
+
 
   // Carrega os artigos da lei escolhida — reaproveita a tabela do Vade Mecum.
   useEffect(() => {
@@ -339,12 +382,12 @@ export default function VisuaisJuridicosSheet({ open, onClose, tipoInicial, modo
 
   const registroAtual = itemKey ? prontos[itemKey] : undefined;
 
-  const gerar = async (alvo?: CatalogoItem, sub?: string, kind: 'artigo' | 'tema' = 'artigo') => {
+  const gerar = async (alvo?: CatalogoItem, sub?: string, kind: 'artigo' | 'tema' = 'artigo', temaPai?: string) => {
     const base = alvo || item;
     if (!tipo || !categoria || !base) return;
     if (!podeGerar) { setGateOpen(true); return; }
     const valor = (sub ?? (alvo ? '' : artigo)).trim();
-    const chave = chaveDe(base, valor, kind);
+    const chave = chaveDe(base, temaPai ? `${temaPai} ${valor}` : valor, kind);
     const pronto = prontos[chave];
     if (pronto) { marcarRecente(chave); setAberto(pronto); return; }
 
@@ -353,12 +396,14 @@ export default function VisuaisJuridicosSheet({ open, onClose, tipoInicial, modo
     try {
       const rotulo = valor
         ? kind === 'tema'
-          ? `${base.label} — ${valor}`
+          ? `${base.label} — ${temaPai ? `${temaPai} · ${valor}` : valor}`
           : `${base.label} — Art. ${valor.replace(/^art\.?\s*/i, '')}`
         : base.label;
       const contexto = valor
         ? kind === 'tema'
-          ? `${base.contexto} Foque exclusivamente no tópico "${valor}" desta matéria.`
+          ? temaPai
+            ? `${base.contexto} Foque exclusivamente no subtópico "${valor}", dentro do tópico "${temaPai}" desta matéria.`
+            : `${base.contexto} Foque exclusivamente no tópico "${valor}" desta matéria.`
           : `${base.contexto} Foque exclusivamente no artigo ${valor}.`
         : base.contexto;
       const { data, error } = await supabase.functions.invoke('visual-juridico-gerar', {
@@ -382,7 +427,8 @@ export default function VisuaisJuridicosSheet({ open, onClose, tipoInicial, modo
   };
 
   const voltar = () => {
-    if (item) { setItem(null); setBuscaArtigo(''); }
+    if (tema) { setTema(null); setBuscaArtigo(''); }
+    else if (item) { setItem(null); setBuscaArtigo(''); }
     else if (categoria) { setCategoria(null); setBusca(''); }
     else if (tipo && !tipoInicial) setTipo(null);
     else onClose();
@@ -419,16 +465,27 @@ export default function VisuaisJuridicosSheet({ open, onClose, tipoInicial, modo
 
               {emPagina ? (
                 <PageHeader
-                  title={passo === 2 ? TIPO_INFO[tipo!].label : passo === 3 ? CATEGORIA_INFO[categoria!].label : item!.label}
+                  title={
+                    passo === 2
+                      ? TIPO_INFO[tipo!].label
+                      : passo === 3
+                        ? CATEGORIA_INFO[categoria!].label
+                        : tema
+                          ? tema.tema
+                          : item!.label
+                  }
                   subtitle={
                     passo === 2
                       ? 'De onde vem o conteúdo?'
                       : passo === 3
                         ? 'Escolha o tema — o que já está gerado abre na hora'
                         : categoria === 'materias'
-                          ? 'Escolha o tópico — ou a matéria inteira em panorama'
-                          : 'Escolha o artigo — ou a lei inteira em panorama'
+                          ? tema
+                            ? `Subtemas de ${tema.tema} — escolha um para gerar`
+                            : 'Escolha o tópico para ver os subtemas'
+                          : 'Escolha o artigo'
                   }
+
 
                   onBack={voltar}
                 />
@@ -643,57 +700,20 @@ export default function VisuaisJuridicosSheet({ open, onClose, tipoInicial, modo
                       <BarraBusca
                         valor={buscaArtigo}
                         onChange={setBuscaArtigo}
-                        placeholder={categoria === 'materias' ? 'Pesquisar tópico' : 'Pesquisar artigo (ex.: 121)'}
+                        placeholder={
+                          categoria === 'materias'
+                            ? tema
+                              ? 'Pesquisar subtema'
+                              : 'Pesquisar tópico'
+                            : 'Pesquisar artigo (ex.: 121)'
+                        }
                       />
                     </div>
 
 
 
-                    {categoria === 'materias' && (
+                    {categoria === 'materias' && !tema && (
                       <>
-                        {filtro === 'todos' && (() => {
-                          const chave = chaveDe(item!);
-                          const pronto = prontos[chave];
-                          const carregandoEste = gerandoKey === chave;
-                          const favorito = favoritos.includes(chave);
-                          const Icon = iconeDoItem(item!.key, item!.label, item!.sub);
-                          return (
-                            <div className="relative">
-                              <button
-                                onClick={() => gerar(item!)}
-                                disabled={gerando}
-                                className="w-full flex items-center gap-4 px-4 h-[84px] rounded-2xl bg-secondary/40 border border-border/50 active:scale-[0.99] transition disabled:opacity-70"
-                              >
-                                <div className="relative overflow-hidden rounded-xl shrink-0">
-                                  <Icon
-                                    className="w-8 h-8 relative"
-                                    style={{ color: CATEGORIA_COR.materias, filter: 'saturate(1.5) brightness(1.2) drop-shadow(0 2px 8px rgba(0,0,0,0.5))' }}
-                                    strokeWidth={1.3}
-                                  />
-                                </div>
-                                <div className="flex-1 min-w-0 text-left">
-                                  <p className="font-display text-foreground text-[16px] font-bold leading-tight line-clamp-1 uppercase tracking-[0.08em]">
-                                    Matéria inteira
-                                  </p>
-                                  <p className="font-body text-muted-foreground text-[12.5px] leading-snug mt-1 line-clamp-1">
-                                    Panorama geral de {item!.label}
-                                  </p>
-                                </div>
-                                <span className="mr-7 shrink-0">
-                                  {carregandoEste ? (
-                                    <Loader2 className="w-5 h-5 animate-spin text-primary" />
-                                  ) : pronto ? (
-                                    <span className="rounded-full bg-primary/15 px-2 py-0.5 font-display text-[10px] font-bold tracking-wider text-primary">PRONTO</span>
-                                  ) : (
-                                    <Sparkles className="w-5 h-5 text-muted-foreground" />
-                                  )}
-                                </span>
-                              </button>
-                              <EstrelaFavorito ativo={favorito} onToggle={() => alternarFavorito(chave)} />
-                            </div>
-                          );
-                        })()}
-
                         {carregandoTemas && (
                           <p className="flex items-center gap-2 px-1 py-2 text-xs text-muted-foreground">
                             <Loader2 className="h-3.5 w-3.5 animate-spin" /> Carregando tópicos…
@@ -703,14 +723,13 @@ export default function VisuaisJuridicosSheet({ open, onClose, tipoInicial, modo
                         {temasFiltrados.map((t, idx) => {
                           const chave = chaveDe(item!, t.tema, 'tema');
                           const pronto = prontos[chave];
-                          const carregandoEste = gerandoKey === chave;
                           const cor = ITEM_CORES[idx % ITEM_CORES.length];
                           const favorito = favoritos.includes(chave);
                           const Icon = iconeDoItem(`materia:${t.tema}`, t.tema);
                           return (
                             <div key={t.tema} className="relative">
                               <button
-                                onClick={() => gerar(item!, t.tema, 'tema')}
+                                onClick={() => { setTema(t); setBuscaArtigo(''); setFiltro('todos'); }}
                                 disabled={gerando}
                                 className="w-full flex items-center gap-4 px-4 h-[84px] rounded-2xl bg-secondary/40 border border-border/50 active:scale-[0.99] transition disabled:opacity-70"
                               >
@@ -726,7 +745,74 @@ export default function VisuaisJuridicosSheet({ open, onClose, tipoInicial, modo
                                     {t.tema}
                                   </p>
                                   <p className="font-body text-muted-foreground text-[12.5px] leading-snug mt-1 line-clamp-1">
-                                    {t.total} {t.total === 1 ? 'resumo' : 'resumos'} nesta matéria
+                                    {t.total} {t.total === 1 ? 'subtema' : 'subtemas'}
+                                  </p>
+                                  {favorito && (
+                                    <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-amber-400/15 px-1.5 py-0.5 font-display text-[9.5px] font-bold uppercase tracking-wider text-amber-500">
+                                      <Star className="h-2.5 w-2.5 fill-amber-500" /> Favorito
+                                    </span>
+                                  )}
+                                </div>
+                                <span className="mr-7 shrink-0">
+                                  {pronto ? (
+                                    <span className="rounded-full bg-primary/15 px-2 py-0.5 font-display text-[10px] font-bold tracking-wider text-primary">PRONTO</span>
+                                  ) : (
+                                    <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                                  )}
+                                </span>
+                              </button>
+                              <EstrelaFavorito ativo={favorito} onToggle={() => alternarFavorito(chave)} />
+                            </div>
+                          );
+                        })}
+
+                        {!carregandoTemas && !temasFiltrados.length && (
+                          <p className="py-8 text-center font-body text-sm text-muted-foreground">
+                            {filtro === 'favoritos'
+                              ? 'Nenhum tópico favoritado ainda.'
+                              : filtro === 'recentes'
+                                ? 'Nenhum tópico aberto recentemente.'
+                                : 'Nenhum tópico encontrado.'}
+                          </p>
+                        )}
+                      </>
+                    )}
+
+                    {categoria === 'materias' && tema && (
+                      <>
+                        {carregandoSubtemas && (
+                          <p className="flex items-center gap-2 px-1 py-2 text-xs text-muted-foreground">
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" /> Carregando subtemas…
+                          </p>
+                        )}
+
+                        {subtemasFiltrados.map((s, idx) => {
+                          const chave = chaveDe(item!, `${tema.tema} ${s.subtema}`, 'tema');
+                          const pronto = prontos[chave];
+                          const carregandoEste = gerandoKey === chave;
+                          const cor = ITEM_CORES[idx % ITEM_CORES.length];
+                          const favorito = favoritos.includes(chave);
+                          const Icon = iconeDoItem(`materia:${s.subtema}`, s.subtema);
+                          return (
+                            <div key={s.subtema} className="relative">
+                              <button
+                                onClick={() => gerar(item!, s.subtema, 'tema', tema.tema)}
+                                disabled={gerando}
+                                className="w-full flex items-center gap-4 px-4 h-[84px] rounded-2xl bg-secondary/40 border border-border/50 active:scale-[0.99] transition disabled:opacity-70"
+                              >
+                                <div className="relative overflow-hidden rounded-xl shrink-0">
+                                  <Icon
+                                    className="w-8 h-8 relative"
+                                    style={{ color: cor, filter: 'saturate(1.5) brightness(1.2) drop-shadow(0 2px 8px rgba(0,0,0,0.5))' }}
+                                    strokeWidth={1.3}
+                                  />
+                                </div>
+                                <div className="flex-1 min-w-0 text-left">
+                                  <p className="font-display text-foreground text-[16px] font-bold leading-tight line-clamp-1 uppercase tracking-[0.08em]">
+                                    {s.subtema}
+                                  </p>
+                                  <p className="font-body text-muted-foreground text-[12.5px] leading-snug mt-1 line-clamp-1">
+                                    {tema.tema}
                                   </p>
                                   {favorito && (
                                     <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-amber-400/15 px-1.5 py-0.5 font-display text-[9.5px] font-bold uppercase tracking-wider text-amber-500">
@@ -749,17 +835,57 @@ export default function VisuaisJuridicosSheet({ open, onClose, tipoInicial, modo
                           );
                         })}
 
-                        {!carregandoTemas && !temasFiltrados.length && (
+                        {!carregandoSubtemas && !subtemasFiltrados.length && filtro === 'todos' && (() => {
+                          const chave = chaveDe(item!, tema.tema, 'tema');
+                          const pronto = prontos[chave];
+                          const carregandoEste = gerandoKey === chave;
+                          const favorito = favoritos.includes(chave);
+                          const Icon = iconeDoItem(`materia:${tema.tema}`, tema.tema);
+                          return (
+                            <div className="relative">
+                              <button
+                                onClick={() => gerar(item!, tema.tema, 'tema')}
+                                disabled={gerando}
+                                className="w-full flex items-center gap-4 px-4 h-[84px] rounded-2xl bg-secondary/40 border border-border/50 active:scale-[0.99] transition disabled:opacity-70"
+                              >
+                                <div className="relative overflow-hidden rounded-xl shrink-0">
+                                  <Icon
+                                    className="w-8 h-8 relative"
+                                    style={{ color: CATEGORIA_COR.materias, filter: 'saturate(1.5) brightness(1.2) drop-shadow(0 2px 8px rgba(0,0,0,0.5))' }}
+                                    strokeWidth={1.3}
+                                  />
+                                </div>
+                                <div className="flex-1 min-w-0 text-left">
+                                  <p className="font-display text-foreground text-[16px] font-bold leading-tight line-clamp-1 uppercase tracking-[0.08em]">
+                                    {tema.tema}
+                                  </p>
+                                  <p className="font-body text-muted-foreground text-[12.5px] leading-snug mt-1 line-clamp-1">
+                                    Este tópico não tem subtemas — gerar direto
+                                  </p>
+                                </div>
+                                <span className="mr-7 shrink-0">
+                                  {carregandoEste ? (
+                                    <Loader2 className="w-5 h-5 animate-spin text-primary" />
+                                  ) : pronto ? (
+                                    <span className="rounded-full bg-primary/15 px-2 py-0.5 font-display text-[10px] font-bold tracking-wider text-primary">PRONTO</span>
+                                  ) : (
+                                    <Sparkles className="w-5 h-5 text-muted-foreground" />
+                                  )}
+                                </span>
+                              </button>
+                              <EstrelaFavorito ativo={favorito} onToggle={() => alternarFavorito(chave)} />
+                            </div>
+                          );
+                        })()}
+
+                        {!carregandoSubtemas && !subtemasFiltrados.length && filtro !== 'todos' && (
                           <p className="py-8 text-center font-body text-sm text-muted-foreground">
-                            {filtro === 'favoritos'
-                              ? 'Nenhum tópico favoritado ainda.'
-                              : filtro === 'recentes'
-                                ? 'Nenhum tópico aberto recentemente.'
-                                : 'Nenhum tópico encontrado.'}
+                            {filtro === 'favoritos' ? 'Nenhum subtema favoritado ainda.' : 'Nenhum subtema aberto recentemente.'}
                           </p>
                         )}
                       </>
                     )}
+
 
                     {categoria === 'leis' && (
                       <>

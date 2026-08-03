@@ -1,6 +1,6 @@
 import { FeynmanContent } from "./metodologias";
 
-const ROSE = "hsl(350 82% 72%)";
+const ROSE = "hsl(351 74% 27%)";
 
 function Passo({ num, titulo, children }: { num: number; titulo: string; children: React.ReactNode }) {
   return (

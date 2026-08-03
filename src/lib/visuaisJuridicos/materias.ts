@@ -85,3 +85,37 @@ export async function fetchTemasResumos(area: string): Promise<TemaResumo[]> {
 }
 
 export const slugTema = slug;
+
+export interface SubtemaResumo {
+  subtema: string;
+  total: number;
+}
+
+const subtemasCache = new Map<string, SubtemaResumo[]>();
+
+/** Subtemas de um tópico (tema) de uma matéria, na ordem dos resumos. */
+export async function fetchSubtemasResumos(area: string, tema: string): Promise<SubtemaResumo[]> {
+  const ck = `${area}||${tema}`;
+  const cache = subtemasCache.get(ck);
+  if (cache) return cache;
+  const rows = await lerResumos<{ area: string; tema: string; subtema: string | null; ordem_subtema: number | null }>(
+    'area, tema, subtema, ordem_subtema',
+    (q) => q.eq('area', area).eq('tema', tema),
+  );
+  const map = new Map<string, { total: number; ordem: number }>();
+  for (const r of rows) {
+    if (r.area !== area || r.tema !== tema) continue;
+    const nome = (r.subtema || '').trim();
+    if (!nome) continue;
+    const atual = map.get(nome);
+    map.set(nome, {
+      total: (atual?.total || 0) + 1,
+      ordem: atual?.ordem ?? (r.ordem_subtema ?? 9999),
+    });
+  }
+  const lista = [...map.entries()]
+    .sort((a, b) => a[1].ordem - b[1].ordem || a[0].localeCompare(b[0], 'pt-BR'))
+    .map(([subtema, v]) => ({ subtema, total: v.total }));
+  subtemasCache.set(ck, lista);
+  return lista;
+}

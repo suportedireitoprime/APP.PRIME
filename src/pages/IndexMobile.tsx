@@ -39,7 +39,7 @@ const IndexMobile = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [heroSearchOpen, setHeroSearchOpen] = useState(false);
-  const [homeTab, setHomeTab] = useState<'categorias' | 'emalta' | 'areas'>('emalta');
+  const [homeTab, setHomeTab] = useState<'locais' | 'estudos' | 'areas'>('estudos');
   const [newsOpen, setNewsOpen] = useState(false);
   const [assistenteOpen, setAssistenteOpen] = useState(false);
   const [personalizarOpen] = useState(false);
@@ -98,7 +98,7 @@ const IndexMobile = () => {
         <Suspense fallback={null}><FeatureDiscoveryCard /></Suspense>
         <MobileHomeSections onTabChange={setHomeTab} onNewsOpenChange={setNewsOpen} />
       </main>
-      {homeTab === 'emalta' && !personalizarOpen && !searchOpen && !heroSearchOpen && !newsOpen && !bottomNavHidden && <BottomNav />}
+      {homeTab === 'estudos' && !personalizarOpen && !searchOpen && !heroSearchOpen && !newsOpen && !bottomNavHidden && <BottomNav />}
       <Suspense fallback={null}>
         {menuOpen && (
           <SideMenu

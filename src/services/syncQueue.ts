@@ -9,6 +9,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { localDb } from './localDb';
+import { conectado } from '@/lib/nativo/rede';
 
 export type SyncOp =
   | { kind: 'table.update'; table: string; match: Record<string, any>; values: Record<string, any> }
@@ -34,7 +35,7 @@ async function ensureTable() {
 }
 
 function isOnline(): boolean {
-  return typeof navigator === 'undefined' ? true : navigator.onLine !== false;
+  return conectado();
 }
 
 async function applyOp(op: SyncOp): Promise<{ ok: true } | { ok: false; error: string; permanent?: boolean }> {
