@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ChevronLeft, ChevronRight, Loader2, Sparkles, Lightbulb } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, Loader2, Lightbulb } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { resolveSectionIndex, type AiSection } from '@/lib/artigoSegments';
@@ -16,6 +16,7 @@ type Props = {
   /** id da seção onde a leitura deve começar (ex.: 'inciso-ii', 'exemplo-2') */
   initialSectionId?: string | null;
   fontSize?: number;
+  portalContainer?: HTMLElement | null;
   onClose: () => void;
 };
 
@@ -32,6 +33,7 @@ const ArtigoIAFullscreen = ({
   loading,
   initialSectionId,
   fontSize = 16,
+  portalContainer,
   onClose,
 }: Props) => {
   const [index, setIndex] = useState(0);
@@ -79,33 +81,57 @@ const ArtigoIAFullscreen = ({
         <th className="border-b border-border px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground" {...props} />
       ),
       td: (props: any) => <td className="border-b border-border/60 px-3 py-2 align-top text-foreground/90" {...props} />,
-      code: ({ inline, children, ...rest }: any) =>
-        inline ? (
+      // react-markdown v9 não passa mais `inline`: consideramos bloco só quando há linguagem.
+      code: ({ inline, className, children, ...rest }: any) => {
+        const isBlock = inline === false || /language-/.test(className || '');
+        return isBlock ? (
+          <code className="block overflow-x-auto rounded-xl bg-secondary/60 p-3 text-[13px]" {...rest}>
+            {children}
+          </code>
+        ) : (
           <code
             className="rounded-md bg-amber-400/15 px-1.5 py-0.5 font-legal text-[0.95em] font-semibold text-amber-300 ring-1 ring-amber-400/25"
             {...rest}
           >
             {children}
           </code>
-        ) : (
-          <code className="block overflow-x-auto rounded-xl bg-secondary/60 p-3 text-[13px]" {...rest}>
-            {children}
-          </code>
-        ),
+        );
+      },
+
       blockquote: (props: any) => (
         <blockquote
           className="my-3 rounded-r-xl border-l-4 border-amber-400/70 bg-amber-400/5 px-4 py-2.5 font-legal italic text-foreground/85"
           {...props}
         />
       ),
-      ol: (props: any) => <ol className="my-2 list-decimal space-y-1.5 pl-5" {...props} />,
-      ul: (props: any) => <ul className="my-2 list-disc space-y-1.5 pl-5" {...props} />,
-      h2: (props: any) => <h2 className="mt-5 mb-2 font-heading text-base font-bold text-foreground" {...props} />,
-      h3: (props: any) => (
-        <h3 className="mt-4 mb-1.5 font-heading text-sm font-bold uppercase tracking-wide text-muted-foreground" {...props} />
-      ),
-      hr: () => <hr className="my-5 border-border" />,
-      p: (props: any) => <p className="my-2 leading-relaxed" {...props} />,
+      ol: (props: any) => <ol className="my-3 list-decimal space-y-2 pl-5 leading-[1.75]" {...props} />,
+      ul: (props: any) => <ul className="my-3 list-disc space-y-2 pl-5 leading-[1.75]" {...props} />,
+      li: (props: any) => <li className="pl-0.5 [&>p]:my-1" {...props} />,
+      h2: (props: any) => <h2 className="mt-7 mb-2.5 font-heading text-[1.05em] font-bold text-foreground" {...props} />,
+      h3: ({ children, ...rest }: any) => {
+        const label = String(
+          Array.isArray(children) ? children.join('') : (children ?? ''),
+        ).trim();
+        const key = label.toLowerCase();
+        const tone = key.startsWith('em uma frase')
+          ? 'bg-amber-400/12 text-amber-300 ring-amber-400/30'
+          : key.startsWith('exemplo')
+            ? 'bg-sky-400/12 text-sky-300 ring-sky-400/30'
+            : key.startsWith('pegadinha')
+              ? 'bg-rose-500/12 text-rose-300 ring-rose-500/30'
+              : 'bg-secondary/70 text-foreground/70 ring-border';
+        return (
+          <h3 className="mt-7 mb-3 first:mt-0" {...rest}>
+            <span
+              className={`inline-flex items-center rounded-full px-3 py-1.5 font-heading text-[0.68em] font-bold uppercase leading-none tracking-[0.14em] ring-1 ${tone}`}
+            >
+              {children}
+            </span>
+          </h3>
+        );
+      },
+      hr: () => <hr className="my-6 border-border" />,
+      p: (props: any) => <p className="my-3 leading-[1.8] tracking-[0.005em] text-foreground/90" {...props} />,
       strong: (props: any) => <strong className="font-bold text-foreground" {...props} />,
     }),
     [],
@@ -122,7 +148,8 @@ const ArtigoIAFullscreen = ({
           exit={{ opacity: 0, y: 24 }}
           transition={{ type: 'spring', damping: 30, stiffness: 300 }}
           style={{ pointerEvents: 'auto' }}
-          className="fixed inset-0 z-[10020] flex flex-col bg-[#0f0f0f]"
+          data-artigo-ia-fullscreen
+          className="absolute inset-0 z-[10020] flex min-h-0 flex-col bg-[#0f0f0f]"
           role="dialog"
           aria-modal="true"
           aria-label={isExemplo ? 'Exemplos práticos' : 'Explicação do artigo'}
@@ -130,9 +157,11 @@ const ArtigoIAFullscreen = ({
           {/* Cabeçalho */}
           <header className="shrink-0 border-b border-border bg-[#0f0f0f]/95 px-4 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-3 backdrop-blur-md">
             <div className="mx-auto flex w-full max-w-2xl items-center gap-3">
-              <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-secondary ${accent}`}>
-                {isExemplo ? <Lightbulb className="h-4.5 w-4.5" /> : <Sparkles className="h-[18px] w-[18px]" />}
-              </div>
+              {isExemplo ? (
+                <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-secondary ${accent}`}>
+                  <Lightbulb className="h-4.5 w-4.5" />
+                </div>
+              ) : null}
               <div className="min-w-0 flex-1">
                 <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                   {isExemplo ? 'Exemplos práticos' : 'Explicação'}
@@ -145,9 +174,9 @@ const ArtigoIAFullscreen = ({
               <button
                 onClick={onClose}
                 aria-label="Fechar"
-                className="flex h-9 w-9 items-center justify-center rounded-full text-foreground/70 hover:bg-secondary"
+                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-secondary/70 text-foreground/80 transition-colors hover:bg-secondary active:scale-95"
               >
-                <X className="h-5 w-5" />
+                <X className="h-6 w-6" />
               </button>
             </div>
 
@@ -155,7 +184,7 @@ const ArtigoIAFullscreen = ({
             {sections.length > 1 && (
               <div
                 ref={chipsRef}
-                className="mx-auto mt-3 flex w-full max-w-2xl gap-1.5 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                className="mx-auto mt-3 flex w-full max-w-2xl gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               >
                 {sections.map((s, i) => (
                   <button
@@ -163,7 +192,7 @@ const ArtigoIAFullscreen = ({
                     data-chip-idx={i}
                     onClick={() => setIndex(i)}
                     className={[
-                      'shrink-0 rounded-full px-3 py-1.5 text-[12px] font-bold transition-colors',
+                      'inline-flex min-h-[44px] shrink-0 items-center rounded-full px-4 text-[14px] font-bold transition-colors active:scale-95',
                       i === index
                         ? 'bg-primary text-primary-foreground'
                         : 'bg-secondary/70 text-muted-foreground hover:text-foreground',
@@ -174,12 +203,14 @@ const ArtigoIAFullscreen = ({
                 ))}
               </div>
             )}
+
           </header>
 
           {/* Corpo */}
           <div
             ref={bodyRef}
-            className="flex-1 overflow-y-auto overscroll-contain px-5 pb-[calc(6rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-5"
+            className="min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain px-5 pb-[calc(6rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-5"
+            style={{ WebkitOverflowScrolling: 'touch' }}
           >
             <div className="mx-auto w-full max-w-2xl">
               {loading && !sections.length ? (
@@ -196,18 +227,11 @@ const ArtigoIAFullscreen = ({
               ) : (
                 <motion.article
                   key={current.id}
-                  drag="x"
-                  dragConstraints={{ left: 0, right: 0 }}
-                  dragElastic={0.12}
-                  onDragEnd={(_, info) => {
-                    if (info.offset.x < -70) setIndex((i) => Math.min(i + 1, sections.length - 1));
-                    if (info.offset.x > 70) setIndex((i) => Math.max(i - 1, 0));
-                  }}
                   initial={{ opacity: 0, x: 12 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.18 }}
                   className="font-body text-foreground/90"
-                  style={{ fontSize: `${fontSize}px` }}
+                  style={{ fontSize: `${fontSize}px`, touchAction: 'pan-y' }}
                 >
                   <h1 className={`mb-3 font-heading text-xl font-black ${accent}`}>{current.title}</h1>
                   <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
@@ -225,29 +249,30 @@ const ArtigoIAFullscreen = ({
                 <button
                   onClick={() => setIndex((i) => Math.max(i - 1, 0))}
                   disabled={index === 0}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-4 py-2 text-[13px] font-semibold text-foreground disabled:opacity-35"
+                  className="inline-flex min-h-[48px] items-center gap-1.5 rounded-full bg-secondary px-5 text-[15px] font-semibold text-foreground active:scale-95 disabled:opacity-35"
                 >
-                  <ChevronLeft className="h-4 w-4" />
+                  <ChevronLeft className="h-5 w-5" />
                   Anterior
                 </button>
-                <span className="text-[11px] font-semibold tabular-nums text-muted-foreground">
+                <span className="text-[12px] font-semibold tabular-nums text-muted-foreground">
                   {index + 1} / {sections.length}
                 </span>
                 <button
                   onClick={() => setIndex((i) => Math.min(i + 1, sections.length - 1))}
                   disabled={index >= sections.length - 1}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-[13px] font-semibold text-primary-foreground disabled:opacity-35"
+                  className="inline-flex min-h-[48px] items-center gap-1.5 rounded-full bg-primary px-5 text-[15px] font-semibold text-primary-foreground active:scale-95 disabled:opacity-35"
                 >
                   Próximo
-                  <ChevronRight className="h-4 w-4" />
+                  <ChevronRight className="h-5 w-5" />
                 </button>
               </div>
             </footer>
+
           )}
         </motion.div>
       )}
     </AnimatePresence>,
-    document.body,
+    portalContainer ?? document.body,
   );
 };
 
