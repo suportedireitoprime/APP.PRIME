@@ -10,6 +10,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2, Star, Sparkles, Download, MessageCircle, CheckCircle2, XCircle, AlertTriangle, ShieldAlert, ThumbsUp } from 'lucide-react';
 import { toast } from 'sonner';
+import { useGoBack } from '@/hooks/useGoBack';
 
 interface Concorrente {
   id: string; nome: string; package_id: string; url: string; total_reviews: number; avg_rating: number | null; ultima_extracao_em: string | null;
@@ -24,6 +25,7 @@ interface Analise {
 export default function AdminConcorrenteDetalhe() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [search] = useSearchParams();
   const [tab, setTab] = useState<string>(search.get('tab') || 'reviews');
   const [conc, setConc] = useState<Concorrente | null>(null);
@@ -96,7 +98,7 @@ export default function AdminConcorrenteDetalhe() {
   if (loading || !conc) {
     return (
       <div className="min-h-dvh bg-background">
-        <PageHeader title="Carregando…" onBack={() => navigate(-1)} />
+        <PageHeader title="Carregando…" onBack={() => goBack()} />
         <div className="flex items-center justify-center py-24"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>
       </div>
     );

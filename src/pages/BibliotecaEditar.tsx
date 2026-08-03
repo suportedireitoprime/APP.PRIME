@@ -15,6 +15,7 @@ import { Label } from '@/components/ui/label';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { COLECOES, normalizeLivro, type LivroNormalizado } from '@/lib/bibliotecaColecoes';
 import LivroDetailSheet from '@/components/biblioteca/LivroDetailSheet';
+import { useGoBack } from '@/hooks/useGoBack';
 
 type Row = Record<string, any>;
 type Step = 'colecoes' | 'livros';
@@ -22,6 +23,7 @@ type SubSheet = null | 'sinopse' | 'analise' | 'curiosidades' | 'checklist';
 
 const BibliotecaEditar = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [step, setStep] = useState<Step>('colecoes');
   const [tabela, setTabela] = useState<string>('');
   const [livros, setLivros] = useState<Row[]>([]);
@@ -73,7 +75,7 @@ const BibliotecaEditar = () => {
     if (previewOpen) { setPreviewOpen(false); return; }
     if (sheetOpen) { setSheetOpen(false); return; }
     if (step === 'livros') { setStep('colecoes'); setTabela(''); setLivros([]); return; }
-    navigate(-1);
+    goBack();
   };
 
   const salvar = async () => {

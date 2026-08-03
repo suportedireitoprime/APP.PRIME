@@ -3,6 +3,7 @@ import { MapPin, ExternalLink } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { motion } from 'framer-motion';
 import { bandeiraUF } from '@/data/estadoFlags';
+import { useGoBack } from '@/hooks/useGoBack';
 
 
 export interface Estado {
@@ -55,13 +56,14 @@ const REGIOES = ['Norte', 'Nordeste', 'Centro-Oeste', 'Sudeste', 'Sul'];
 
 const LegislacaoEstadual = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
 
   return (
     <div className="min-h-dvh bg-background">
       <PageHeader
         title="Legislação Estadual"
         subtitle="27 unidades federativas"
-        onBack={() => navigate(-1)}
+        onBack={() => goBack()}
       />
 
 

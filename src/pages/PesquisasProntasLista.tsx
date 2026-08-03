@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Search, ChevronRight, Sparkles, Loader2, ChevronDown } from 'lucide-react';
+import { useGoBack } from '@/hooks/useGoBack';
 import {
   fetchPesquisasProntas,
   getPesquisasProntasCached,
@@ -23,6 +24,7 @@ const TRIBUNAL_META: Record<Tribunal, { label: string; sub: string }> = {
 
 export default function PesquisasProntasLista() {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const { tribunal: tribunalParam } = useParams<{ tribunal: string }>();
   const tribunal = (tribunalParam?.toUpperCase() as Tribunal) || 'STF';
   const meta = TRIBUNAL_META[tribunal] ?? TRIBUNAL_META.STF;
@@ -90,7 +92,7 @@ export default function PesquisasProntasLista() {
 
         <div className="relative flex items-center justify-between px-4 pt-[calc(env(safe-area-inset-top,0px)+12px)] pb-2">
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => goBack()}
             aria-label="Voltar"
             className="w-11 h-11 rounded-full bg-black/25 hover:bg-black/35 backdrop-blur-sm flex items-center justify-center transition-colors"
           >

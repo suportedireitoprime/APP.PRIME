@@ -10,6 +10,7 @@ import radarLeisAsset from '@/assets/radares/radar-leis.webp.asset.json';
 import radarLegislativoAsset from '@/assets/radares/radar-legislativo.webp.asset.json';
 import { useTrackArea } from "@/hooks/useTrackArea";
 import { srcOf } from '@/lib/assetUrl';
+import { useGoBack } from '@/hooks/useGoBack';
 
 type RadarKey = 'leis' | 'legislativo';
 
@@ -77,6 +78,7 @@ const RADARES: Record<RadarKey, {
 export default function Radares() {
   useTrackArea("radar_aberto");
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [active, setActive] = useState<RadarKey>('leis');
   const item = RADARES[active];
 
@@ -88,7 +90,7 @@ export default function Radares() {
           <PageHeader
             title="Radares"
             subtitle="Panorama legislativo em tempo real"
-            onBack={() => navigate(-1)}
+            onBack={() => goBack()}
           />
         </div>
 

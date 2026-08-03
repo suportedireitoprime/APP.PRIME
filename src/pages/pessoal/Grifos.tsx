@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { getLeiByTabela } from "@/data/leisCatalog";
 import { tipoToSlug, leiToSlug } from "@/lib/legislacaoSlugs";
+import { useGoBack } from '@/hooks/useGoBack';
 
 type Grifo = {
   id: string;
@@ -17,6 +18,7 @@ type Grifo = {
 
 const GrifosPage = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [grifos, setGrifos] = useState<Grifo[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -46,7 +48,7 @@ const GrifosPage = () => {
     <div className="min-h-dvh bg-background text-foreground pb-24">
       <PageHeader
         title="Meus grifos"
-        onBack={() => navigate(-1)}
+        onBack={() => goBack()}
         leading={
           <div className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center">
             <Highlighter className="w-5 h-5 text-primary" />

@@ -36,6 +36,7 @@ const bgLightPillars = bgLightPillarsAsset;
 import bgLightJusticeAsset from '@/assets/carousel-bg/bg-light-justice.webp';
 const bgLightJustice = bgLightJusticeAsset;
 import bgLightCourthouseAsset from '@/assets/carousel-bg/bg-light-courthouse.webp';
+import { useGoBack } from '@/hooks/useGoBack';
 const bgLightCourthouse = bgLightCourthouseAsset;
 
 // ─── Types ───
@@ -335,6 +336,7 @@ function SlideRenderer({ slide, index, useImages }: { slide: SlideData; index: n
 
 const GeradorPost = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [selectedLei, setSelectedLei] = useState('');
   const [artigos, setArtigos] = useState<{ numero: string; caput: string }[]>([]);
   const [selectedArtigo, setSelectedArtigo] = useState('');
@@ -457,7 +459,7 @@ const GeradorPost = () => {
       <PageHeader
         title="Gerador de Post"
         subtitle="Crie carrosséis profissionais para Instagram"
-        onBack={() => navigate(-1)}
+        onBack={() => goBack()}
         leading={
           <div className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center">
             <ImageIcon className="w-5 h-5 text-primary" />

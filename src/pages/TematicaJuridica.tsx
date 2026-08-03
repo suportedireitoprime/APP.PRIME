@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { buscarRankingEngajamento, type RankingRow } from "@/lib/tematicaMetricas";
 import { HABILIDADES, HABILIDADES_MAP, type HabilidadeId, isHabilidadeId } from "@/lib/tematicaHabilidades";
+import { useGoBack } from '@/hooks/useGoBack';
 
 import {
   getCachedObras,
@@ -41,6 +42,7 @@ const ATALHOS: { id: Atalho; label: string; icon: any }[] = [
 
 export default function TematicaJuridica() {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const cacheInicial = getCachedObras();
   const rankingInicial = getCachedRanking();
   const favoritosIniciais = getCachedFavoritosTematica();
@@ -196,7 +198,7 @@ export default function TematicaJuridica() {
     <PageHeader
       title="Temática Jurídica"
       subtitle="Filmes, séries e documentários para juristas"
-      onBack={() => navigate(-1)}
+      onBack={() => goBack()}
     />
   );
 

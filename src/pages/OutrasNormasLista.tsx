@@ -15,6 +15,7 @@ import coverLei from '@/assets/norma-cover-lei.jpg';
 import coverLC from '@/assets/norma-cover-lc.jpg';
 import coverDecreto from '@/assets/norma-cover-decreto.webp';
 import coverMP from '@/assets/norma-cover-mp.jpg';
+import { useGoBack } from '@/hooks/useGoBack';
 
 type SlugKey = 'leis' | 'leis-complementares' | 'decretos' | 'medidas-provisorias';
 
@@ -90,6 +91,7 @@ function formatData(iso?: string | null) {
 
 export default function OutrasNormasLista() {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const { slug } = useParams<{ slug: string }>();
   const meta = META[slug as SlugKey];
 
@@ -181,7 +183,7 @@ export default function OutrasNormasLista() {
   if (!meta) {
     return (
       <div className="min-h-dvh bg-background flex flex-col">
-        <PageHeader title="Não encontrado" onBack={() => navigate(-1)} />
+        <PageHeader title="Não encontrado" onBack={() => goBack()} />
         <div className="flex-1 flex items-center justify-center text-muted-foreground text-sm">
           Categoria inválida.
         </div>
@@ -202,7 +204,7 @@ export default function OutrasNormasLista() {
       <PageHeader
         title={meta.titulo}
         subtitle={meta.subtitulo}
-        onBack={() => navigate(-1)}
+        onBack={() => goBack()}
       />
 
       {/* Cover */}

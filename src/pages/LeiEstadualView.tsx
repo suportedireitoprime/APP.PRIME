@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { Loader2, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { useGoBack } from '@/hooks/useGoBack';
 
 interface Artigo {
   id: string;
@@ -24,6 +25,7 @@ interface Lei {
 const LeiEstadualView = () => {
   const { uf, slug } = useParams<{ uf: string; slug: string }>();
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [lei, setLei] = useState<Lei | null>(null);
   const [artigos, setArtigos] = useState<Artigo[]>([]);
   const [loading, setLoading] = useState(true);
@@ -65,7 +67,7 @@ const LeiEstadualView = () => {
           <PageHeader
             title={lei?.nome_curto || lei?.nome || 'Lei estadual'}
             subtitle={lei ? `${artigos.length} artigos${uf ? ' · ' + uf.toUpperCase() : ''}` : ''}
-            onBack={() => navigate(-1)}
+            onBack={() => goBack()}
           />
         </div>
       </div>

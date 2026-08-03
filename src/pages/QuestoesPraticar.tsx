@@ -5,9 +5,11 @@ import ResolverPadrao from '@/components/questoes/ResolverPadrao';
 import ContagemRegressiva from '@/components/questoes/ContagemRegressiva';
 import { useQuestoesSessao } from '@/hooks/useQuestoes';
 import { lerFiltroSalvo } from '@/components/questoes/QuestoesFiltroSheet';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const QuestoesPraticar = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [params] = useSearchParams();
   const area = params.get('area');
   const nivel = params.get('nivel');
@@ -29,7 +31,7 @@ const QuestoesPraticar = () => {
       <PageHeader
         title={area ?? (nivel === 'iniciante' ? 'Iniciante' : 'Praticar')}
         subtitle="Questões comentadas"
-        onBack={() => navigate(-1)}
+        onBack={() => goBack()}
       />
       <div className="mx-auto w-full max-w-3xl px-4 py-5 sm:px-6">
         <ResolverPadrao

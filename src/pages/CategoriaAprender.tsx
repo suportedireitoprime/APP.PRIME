@@ -7,6 +7,7 @@ const fundCover = fundCoverAsset;
 import histCoverAsset from '@/assets/covers/historia-da-legislacao.webp';
 const histCover = histCoverAsset;
 import estCoverAsset from '@/assets/covers/estrutura-do-estado.webp';
+import { useGoBack } from '@/hooks/useGoBack';
 const estCover = estCoverAsset;
 
 const COVER_MAP: Record<string, string> = {
@@ -18,6 +19,7 @@ const COVER_MAP: Record<string, string> = {
 const CategoriaAprender = () => {
   const { categoriaId } = useParams<{ categoriaId: string }>();
   const navigate = useNavigate();
+  const goBack = useGoBack();
 
   const categoria = CATEGORIAS_EDUCACIONAIS.find(c => c.id === categoriaId);
   if (!categoria) {
@@ -44,7 +46,7 @@ const CategoriaAprender = () => {
 
         {/* Back button */}
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => goBack()}
           className="absolute top-4 left-4 z-20 w-9 h-9 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center"
         >
           <ArrowLeft className="w-5 h-5 text-white" />

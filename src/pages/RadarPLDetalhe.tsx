@@ -5,10 +5,12 @@ import { PageHeader } from '@/components/vademecum/PageHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { fetchProposicaoDetalhe, fetchProposicaoTramitacoes } from '@/services/radarService';
 import { isOffline } from '@/lib/offlineFeatures';
+import { useGoBack } from '@/hooks/useGoBack';
 
 export default function RadarPLDetalhe() {
   const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const goBack = useGoBack();
 
   const [detalhe, setDetalhe] = useState<any | null>(null);
   const [tramitacoes, setTramitacoes] = useState<any[]>([]);
@@ -43,7 +45,7 @@ export default function RadarPLDetalhe() {
   return (
     <div className="min-h-dvh bg-background text-foreground">
       <div className="sticky top-0 z-50 bg-background/95 backdrop-blur-md">
-        <PageHeader title={titulo} subtitle="Radar Legislativo" onBack={() => navigate(-1)} />
+        <PageHeader title={titulo} subtitle="Radar Legislativo" onBack={() => goBack()} />
       </div>
 
       <main className="p-4 max-w-3xl mx-auto pb-24 space-y-4 lg:max-w-[1100px] lg:px-10 lg:pb-12">

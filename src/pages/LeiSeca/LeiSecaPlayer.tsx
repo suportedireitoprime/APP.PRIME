@@ -30,6 +30,7 @@ import {
 import { ExercicioRunner } from "@/components/lei-seca/ExercicioRunner";
 import { playFeedbackSound, playTransitionSound } from "@/hooks/useFeedbackSound";
 import leiSecaAcertoAsset from "@/assets/sounds/lei-seca-acerto.mp3.asset.json";
+import { useGoBack } from '@/hooks/useGoBack';
 
 let leiSecaAcertoAudio: HTMLAudioElement | null = null;
 function playLeiSecaAcerto() {
@@ -47,6 +48,7 @@ function playLeiSecaAcerto() {
 export default function LeiSecaPlayer() {
   const { id = "" } = useParams();
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const { user } = useAuth();
 
   const licaoQ = useQuery({ queryKey: ["lei-seca-licao", id], queryFn: () => getLicao(id), enabled: !!id });
@@ -172,7 +174,7 @@ export default function LeiSecaPlayer() {
         steps={["Lendo o texto da lei", "Criando os exercícios", "Salvando a lição", "Pronto"]}
         stepRanges={[[0, 25], [25, 85], [85, 99], [100, 100]]}
         estTotalSec={45}
-        onCancel={() => navigate(-1)}
+        onCancel={() => goBack()}
         cancelLabel="Cancelar"
       />
     );

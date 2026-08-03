@@ -12,16 +12,18 @@ import { isBillingAvailable, initBilling, getProducts, purchase as playPurchase,
 import { useSubscription } from "@/hooks/useSubscription";
 import WelcomePremiumOverlay from "@/components/planos/WelcomePremiumOverlay";
 import { TrialTimelineSheet } from "@/components/planos/TrialTimelineSheet";
-import { scheduleTrialReminder, type TrialPlan } from "@/lib/trialReminders";
+import { scheduleTrialReminder, trialDaysFor, type TrialPlan } from "@/lib/trialReminders";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { isAdminEmail } from "@/lib/adminEmails";
 import { maybeRequestAfterPurchase } from "@/lib/inAppReview";
 import { track } from "@/lib/analyticsEvents";
 import { useTrackArea } from "@/hooks/useTrackArea";
+import { useGoBack } from '@/hooks/useGoBack';
 
 export default function Assinatura() {
   useTrackArea("assinatura_aberta");
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const { session } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const welcomeFlag = searchParams.get('welcome') === '1';
@@ -111,7 +113,28 @@ export default function Assinatura() {
     return v === 'ios' || v === 'android' ? v : null;
   });
   const [devSheetOpen, setDevSheetOpen] = useState(false);
+  const [trialSheetPlan, setTrialSheetPlan] = useState<TrialPlan | null>(null);
   const isIOS = (platformOverride ?? nativePlatform) === 'ios';
+  // Voltar: no modo prévia de admin, volta direto pro painel do plano ativo.
+  // Fora disso usa o histórico interno e, se não houver, vai pro início.
+  const handleBack = () => {
+    setDevSheetOpen(false);
+    setTrialSheetPlan(null);
+    if (searchParams.get('preview') === 'plans') {
+      navigate('/planos/ativos', { replace: true });
+      return;
+    }
+    const hasHistory = typeof window !== 'undefined' && window.history.state?.idx > 0;
+    if (hasHistory) goBack();
+    else navigate('/', { replace: true });
+  };
+  // Radix às vezes deixa `pointer-events: none` no body depois de fechar o sheet,
+  // o que travava todos os cliques da tela (inclusive o botão de voltar).
+  useEffect(() => {
+    if (devSheetOpen) return;
+    const t = window.setTimeout(() => { document.body.style.pointerEvents = ''; }, 350);
+    return () => window.clearTimeout(t);
+  }, [devSheetOpen]);
   const applyPlatformOverride = (p: 'ios' | 'android' | null) => {
     setPlatformOverride(p);
     if (p) window.localStorage.setItem('assinatura_platform_override', p);
@@ -134,9 +157,6 @@ export default function Assinatura() {
     { icon: Zap, text: 'Sem anúncios · Suporte prioritário · Atualizações antecipadas' },
   ];
 
-
-  const [trialSheetPlan, setTrialSheetPlan] = useState<TrialPlan | null>(null);
-
   const startPurchase = (plano: PlanoTab) => {
     track('subscription_started', { plano, metodo: nativeBilling ? 'play' : 'web', source: 'planos_page' });
     import('@/lib/appEvents')
@@ -153,7 +173,7 @@ export default function Assinatura() {
     if (!trialSheetPlan) return;
     import('@/lib/appEvents')
       .then(({ appEvents }) =>
-        appEvents.trialIniciado({ plano: trialSheetPlan, dias: trialSheetPlan === 'mensal' ? 3 : 7 })
+        appEvents.trialIniciado({ plano: trialSheetPlan, dias: trialDaysFor(trialSheetPlan) })
       )
       .catch(() => {});
     // Agenda lembrete (WhatsApp via cron + push local) e abre a loja.
@@ -169,8 +189,11 @@ export default function Assinatura() {
     }
   };
 
+  // Admin pode forçar a visualização dos cards de planos mesmo sendo assinante (?preview=plans)
+  const previewPlans = showDevToggle && searchParams.get('preview') === 'plans';
+
   // Já assinante? Redireciona pro painel de plano ativo (mantém welcome overlay quando volta do checkout).
-  if (view === "plans" && !subLoading && isPremium && !showWelcome) {
+  if (view === "plans" && !subLoading && isPremium && !showWelcome && !previewPlans) {
     return <Navigate to="/planos/ativos" replace />;
   }
 
@@ -194,7 +217,7 @@ export default function Assinatura() {
         />
         <PageHeader
           title="Assinatura Premium"
-          onBack={() => navigate(-1)}
+          onBack={handleBack}
         />
 
         <div className="max-w-2xl mx-auto pt-6 space-y-7">
@@ -239,9 +262,12 @@ export default function Assinatura() {
 
           </motion.section>
 
+
+
+
           {/* Plan carousel — equal-size cards, snap scroll, anual peeks on the side */}
           <div
-            className="flex sm:grid sm:grid-cols-3 gap-3 overflow-x-auto sm:overflow-visible snap-x snap-mandatory sm:snap-none pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none"
+            className="flex sm:grid sm:grid-cols-2 gap-3 overflow-x-auto sm:overflow-visible snap-x snap-mandatory sm:snap-none pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none"
             style={{ scrollPaddingLeft: '1rem', scrollPaddingRight: '1rem' }}
           >
             {([
@@ -255,26 +281,27 @@ export default function Assinatura() {
                 highlights: ['Acesso total ao Vade Mecum', 'Acesso ao desktop', 'Uso offline', 'Horus 24h no WhatsApp'],
                 badge: null as string | null,
               },
-              {
-                id: 'anual' as const,
-                label: 'Anual',
-                price: 'R$ 199,90',
-                priceSuffix: '/ano',
-                subtitle: 'Equivale a R$ 16,66/mês · economize 44%',
-                trial: '7 dias grátis',
-                highlights: ['Acesso total ao Vade Mecum', 'Acesso ao desktop', 'Uso offline', 'Horus 24h no WhatsApp'],
-                badge: '-44%' as string | null,
-              },
-              ...(isIOS ? [] : [{
-                id: 'anual_parcelado' as const,
-                label: 'Anual 12x',
-                price: 'R$ 16,66',
-                priceSuffix: '/mês',
-                subtitle: 'Plano anual pago em 12 parcelas mensais · total R$ 199,90',
-                trial: '7 dias grátis',
-                highlights: ['Acesso total ao Vade Mecum', 'Acesso ao desktop', 'Uso offline', 'Horus 24h no WhatsApp'],
-                badge: '12x' as string | null,
-              }]),
+              isIOS
+                ? {
+                    id: 'anual' as const,
+                    label: 'Anual',
+                    price: 'R$ 19,90',
+                    priceSuffix: '/mês',
+                    subtitle: '12x de R$ 19,90 · total R$ 238,80 por ano · economize 33%',
+                    trial: '3 dias grátis',
+                    highlights: ['Acesso total ao Vade Mecum', 'Acesso ao desktop', 'Uso offline', 'Horus 24h no WhatsApp'],
+                    badge: '-33%' as string | null,
+                  }
+                : {
+                    id: 'anual_parcelado' as const,
+                    label: 'Anual',
+                    price: 'R$ 16,66',
+                    priceSuffix: '/mês',
+                    subtitle: '12x de R$ 16,66 · total R$ 199,90 por ano · economize 44%',
+                    trial: '3 dias grátis',
+                    highlights: ['Acesso total ao Vade Mecum', 'Acesso ao desktop', 'Uso offline', 'Horus 24h no WhatsApp'],
+                    badge: '-44%' as string | null,
+                  },
             ]).map((plan) => {
               const isActive = tab === plan.id;
               return (
@@ -400,7 +427,7 @@ export default function Assinatura() {
                   Como funciona o período grátis?
                 </AccordionTrigger>
                 <AccordionContent className="font-body text-sm text-muted-foreground leading-relaxed">
-                  No plano Mensal você testa 3 dias grátis; no Anual, 7 dias. Durante o teste, todas as funções Premium ficam liberadas. Cancele antes do fim para não ser cobrado.
+                  Você testa 3 dias grátis em qualquer um dos planos. Durante o teste, todas as funções Premium ficam liberadas. Cancele antes do fim para não ser cobrado.
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="pagamento" className="border-border">
@@ -435,20 +462,47 @@ export default function Assinatura() {
 
         {showDevToggle && (
           <>
-            <button
-              type="button"
-              onClick={() => setDevSheetOpen(true)}
-              className="fixed bottom-4 right-4 z-50 px-3 py-1.5 rounded-full bg-primary text-primary-foreground font-body text-[11px] font-bold shadow-lg border border-primary/50 flex items-center gap-1.5 hover:brightness-95"
-              aria-label="Alternar plataforma (só pra mim)"
-            >
-              <RotateCw className="w-3 h-3" />
-              só pra mim
-              {platformOverride && (
-                <span className="ml-1 px-1.5 py-0.5 rounded-full bg-primary-foreground/20 text-[9px] uppercase">
-                  {platformOverride}
+            <div className="px-4 mt-10 pt-6 border-t border-border/40 flex flex-col items-center gap-3">
+              <div className="flex items-center justify-center gap-2">
+                <span className="font-body text-[10px] uppercase tracking-wide text-muted-foreground">
+                  Prévia
                 </span>
-              )}
-            </button>
+                <div className="inline-flex rounded-full border border-border bg-muted/40 p-0.5">
+                  {(['android', 'ios'] as const).map((p) => {
+                    const active = (platformOverride ?? nativePlatform) === p;
+                    return (
+                      <button
+                        key={p}
+                        type="button"
+                        onClick={() => applyPlatformOverride(p)}
+                        className={`px-3 py-1 rounded-full font-body text-[11px] font-bold transition-colors ${
+                          active
+                            ? 'bg-primary text-primary-foreground'
+                            : 'text-muted-foreground hover:text-foreground'
+                        }`}
+                      >
+                        {p === 'ios' ? 'iOS' : 'Android'}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setDevSheetOpen(true)}
+                className="px-3 py-1.5 rounded-full bg-primary text-primary-foreground font-body text-[11px] font-bold border border-primary/50 flex items-center gap-1.5 hover:brightness-95"
+                aria-label="Alternar plataforma (só pra mim)"
+              >
+                <RotateCw className="w-3 h-3" />
+                só pra mim
+                {platformOverride && (
+                  <span className="ml-1 px-1.5 py-0.5 rounded-full bg-primary-foreground/20 text-[9px] uppercase">
+                    {platformOverride}
+                  </span>
+                )}
+              </button>
+            </div>
+
             <Sheet open={devSheetOpen} onOpenChange={setDevSheetOpen}>
               <SheetContent side="bottom" className="rounded-t-2xl">
                 <SheetHeader>
@@ -477,6 +531,15 @@ export default function Assinatura() {
                     <span className="text-[10px] opacity-70">App Store</span>
                   </Button>
                 </div>
+                {isPremium && (
+                  <Button
+                    variant="secondary"
+                    className="w-full mt-3 text-xs"
+                    onClick={() => { setDevSheetOpen(false); navigate('/planos/ativos'); }}
+                  >
+                    Ver tela do plano ativo
+                  </Button>
+                )}
                 {platformOverride && (
                   <Button
                     variant="ghost"

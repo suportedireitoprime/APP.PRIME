@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Search, Sparkles, ExternalLink, Copy, Check } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { motion } from 'framer-motion';
+import { useGoBack } from '@/hooks/useGoBack';
 
 /**
  * Página que recebe conteúdo compartilhado com o Direito Prime de outros apps
@@ -16,6 +17,7 @@ import { motion } from 'framer-motion';
  */
 export default function Compartilhado() {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [params] = useSearchParams();
   const texto = params.get('texto') ?? '';
   const url = params.get('url') ?? '';
@@ -47,7 +49,7 @@ export default function Compartilhado() {
 
   return (
     <div className="min-h-dvh bg-background pb-20">
-      <PageHeader title="Compartilhado" onBack={() => navigate(-1)} />
+      <PageHeader title="Compartilhado" onBack={() => goBack()} />
 
 
       <main className="px-4 py-6 max-w-2xl mx-auto space-y-6">

@@ -18,6 +18,7 @@ import { fetchMeuEspacoFeed, MEU_ESPACO_FEED_KEY, type MeuEspacoFeedItem } from 
 import { prefetchAllPessoal, prefetchPessoalByPath } from "@/services/pessoalPrefetch";
 import { track } from "@/lib/analyticsEvents";
 import { useTrackArea } from "@/hooks/useTrackArea";
+import { useGoBack } from '@/hooks/useGoBack';
 
 const PESSOAL_SNAP = "sheet_snapshot";
 const prefetchRoute = (path: string) => {
@@ -106,6 +107,7 @@ function formatEventLabel(ts: number) {
 const MeuEspaco = () => {
   useTrackArea("meu_espaco_aberto");
   const navigate = useNavigate();
+  const goBack = useGoBack('/');
   const { user } = useAuth();
   const qc = useQueryClient();
   const { data: summary } = useProfileSummary();
@@ -290,10 +292,9 @@ const MeuEspaco = () => {
     navigate(path);
   };
 
-  const goBack = () => {
+  const handleBack = () => {
     haptic.selection();
-    if (window.history.length > 1) navigate(-1);
-    else navigate('/');
+    goBack();
   };
 
   const QUICK = [
@@ -338,7 +339,7 @@ const MeuEspaco = () => {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-background" />
         <button
-          onClick={goBack}
+          onClick={handleBack}
           aria-label="Voltar"
           className="absolute top-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] left-3 w-11 h-11 rounded-full bg-black/55 backdrop-blur flex items-center justify-center text-white active:scale-95 transition"
         >

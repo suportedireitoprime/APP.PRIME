@@ -6,9 +6,11 @@ import { motion } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { isNativePushAvailable, registerNativePushToken } from '@/lib/nativePush';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const TestePush = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [title, setTitle] = useState('Direito Prime');
   const [body, setBody] = useState('Notificação de teste enviada com sucesso! 🚀');
   const [tokens, setTokens] = useState<{ token: string; platform: string; updated_at: string }[]>([]);
@@ -90,7 +92,7 @@ const TestePush = () => {
 
         <PageHeader
           title="Notificação Push"
-          onBack={() => navigate(-1)}
+          onBack={() => goBack()}
           leading={
             <div className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center">
               <BellRing className="w-5 h-5 text-primary" />

@@ -1,91 +1,59 @@
 ## Objetivo
 
-Assinatura 100% pelas lojas (Google Play + App Store), com preços **R$ 29,90/mês** e **R$ 199,90/ano**. Remover completamente Asaas/PIX/cartão e recriar os IDs de produto.
+Deixar os visuais jurídicos (mapa mental, infográfico, fluxograma, diagrama) mais densos e bonitos, melhorar a navegação das listas (favoritos, recentes, busca por voz) e corrigir o download em PNG/PDF.
 
 ---
 
-## Parte 1 — Novos IDs de produto
+## 1. Conteúdo mais detalhado (IA)
 
-Os atuais (`vade_mecum_mensal`, `vade_mecum_anual`, base plan `anual-parcelado`) são do projeto antigo. Proposta de nomenclatura nova, igual nas duas lojas:
+Ampliar os limites do contrato de conteúdo em `src/lib/visuaisJuridicos/types.ts` e no espelho `supabase/functions/visual-juridico-gerar/prompt.ts` (os dois precisam ficar idênticos):
 
-| Item | ID |
-|---|---|
-| Assinatura mensal | `prime_premium_mensal` |
-| Plano base mensal (Android) | `mensal` |
-| Assinatura anual | `prime_premium_anual` |
-| Plano base anual (Android) | `anual` |
+- Mapa mental: de 3–6 ramos para 4–7 ramos, 3–6 itens por ramo, item até ~70 caracteres, e um novo campo opcional `nota` por ramo (uma linha de destaque/pegadinha de prova).
+- Infográfico: 4–8 cartões, texto do cartão até ~200 caracteres, rodapé até ~180.
+- Fluxograma: 3–6 decisões, `seNao` até ~70, e campo opcional `base` por decisão (artigo que fundamenta a etapa).
+- Diagrama: 2–5 grupos, 3–6 itens por grupo, item até ~64.
+- Prompts reescritos para exigir profundidade: exemplo prático, base normativa por bloco, distinção de institutos parecidos e um alerta de prova — mantendo a proibição de inventar artigo/súmula.
 
-O plano `anual_parcelado` sai do código (Google não tem parcelamento por base plan da forma que estava, e Apple não tem o conceito).
+O motor de layout já mede o texto antes de posicionar, então mais texto continua sem sobrepor: as caixas crescem.
 
-Se você preferir outros nomes, é só me dizer antes de eu implementar — o resto do plano não muda.
+## 2. Estética do visual (`src/lib/visuaisJuridicos/layout.ts`)
 
----
+- Cabeçalho: trocar a tag "MAPA MENTAL" por um **cérebro vazado** desenhado em vetor (contorno branco translúcido, grande, no canto direito do cabeçalho, sangrando parcialmente para fora) — ícone próprio por formato (cérebro, camadas, fluxo, rede), todos no mesmo estilo vazado.
+- Rodapé: **logo vetorial** centralizado — emblema desenhado + "DIREITO PRIME" e, abaixo, o traço "— Estudos Jurídicos". Rodapé fica mais alto para acomodar a marca, com a linha de fonte à esquerda.
+- Ajustes finos: mais respiro entre cartões, sombra mais suave, régua dourada e melhor hierarquia de tamanhos de fonte com o conteúdo maior.
 
-## Parte 2 — Remoção do Asaas / PIX / cartão
+## 3. Altura do visualizador (`src/components/visuais/VisualViewer.tsx`)
 
-Confirmado por leitura do código, o Asaas aparece em:
+- A área do visual passa a ocupar toda a altura disponível, com o desenho ajustado por altura (não só por largura), de forma que o mapa apareça grande de cara e o zoom continue expandindo.
+- Zoom vai de 100% a 400%, com passo menor, e pan por arraste.
 
-**Backend (deletar as functions):**
-- `supabase/functions/criar-assinatura` — cria customer + subscription no Asaas
-- `supabase/functions/processar-pagamento` — gera PIX, cobra cartão, checa status
+## 4. Download em PNG/PDF (correção)
 
-**Frontend:**
-- `src/pages/Assinatura.tsx` — remover as abas de PIX e cartão, o formulário de CPF/CEP/telefone, o QR Code, o parcelamento e o rodapé "Processado por Asaas". A tela fica só com os dois planos + botão de compra nativa + "Restaurar compras".
-- `src/hooks/useSubscription.ts` — remover o fallback que lê assinaturas Asaas e o valor `'asaas'` do tipo `source` (fica `'play' | 'apple' | null`)
-- `src/components/planos/MinhaAssinaturaView.tsx` — remover "Cartão / PIX" do método de pagamento
-- `src/components/planos/CancelarAssinaturaSheet.tsx` — remover a etapa que cancela assinatura Asaas
-- `src/pages/Perfil.tsx` — remover o label "Asaas"
-- `src/data/transferenciaApp.ts` — remover a linha do secret `ASAAS_API_KEY` e atualizar a referência aos IDs do Play
+O motivo mais provável da falha (a confirmar em teste) é o download por `data:`/`<a download>` não funcionar dentro do app nativo, e o SVG grande falhar ao virar imagem. Correções:
 
-**Banco:** a tabela `assinaturas` (com `asaas_customer_id`, `asaas_subscription_id`) fica **intacta** — histórico de quem já pagou por lá. Só deixa de ser lida/escrita. Se você quiser, faço a limpeza depois, em separado.
+- Rasterizar via `Blob` + `createImageBitmap`/`Image` com fontes embutidas como famílias genéricas (sem dependência de fonte externa), o que também evita texto sumido no PNG.
+- Em app nativo (Capacitor): salvar o arquivo com Filesystem e abrir a folha de compartilhamento; na web: manter o blob URL (não `data:`).
+- Mensagem de erro real no toast em vez de erro genérico, para diagnosticar caso persista.
 
-**Secret:** `ASAAS_API_KEY` pode ser removido no final (você confirma).
+## 5. Listas: Todos / Favoritos / Recentes
 
----
+- Barra de alternância (mesmo padrão do Vade Mecum: Todos, Favoritos, Recentes) tanto na lista de leis/matérias/jurisprudência quanto dentro de uma lei (lista de artigos).
+- Novo `src/lib/visuaisJuridicos/prefs.ts` com favoritos e recentes sincronizados (mesma infraestrutura de `leisFavoritos`/`leisRecentes`), com favoritar por toque longo/ícone de coração no item e **tagzinha embaixo** do item favoritado.
+- Recentes registrados ao abrir/gerar um visual.
 
-## Parte 3 — Preços e código de billing
+## 6. Busca e voz
 
-- `src/lib/billing.ts` — novos `PRODUCT_IDS` / `PLAN_IDS`, remoção do `anual_parcelado`
-- `src/pages/Assinatura.tsx` — mensal **R$ 29,90**; anual **R$ 199,90** (≈ R$ 16,66/mês), badge de economia **44%** (199,90 vs 358,80)
-- Preço real exibido vindo do `getProducts()` da loja quando rodando no app nativo, com esses valores como fallback no navegador
+- Barra de pesquisa mais alta (mesma altura da busca da home) e com botão de **microfone ao lado** usando o hook de ditado já existente (`useDictation`), preenchendo o campo com o que a pessoa falar.
 
----
+## 7. Limpeza da lista de artigos
 
-## Parte 4 — Passo a passo seu no Google Play
-
-1. **Play Console → Monetizar → Produtos → Assinaturas → Criar**
-   - `prime_premium_mensal`: plano base `mensal`, recorrente automático, 1 mês, **R$ 29,90** → Ativar
-   - `prime_premium_anual`: plano base `anual`, recorrente automático, 1 ano, **R$ 199,90** → Ativar
-   - Sem ativar, `getProducts()` volta vazio e o botão não abre o checkout.
-2. **Conta de serviço (validação no servidor)**
-   - Google Cloud → IAM → Contas de serviço → criar → gerar chave JSON
-   - Play Console → Usuários e permissões → convidar essa conta → *Ver dados financeiros* + *Gerenciar pedidos e assinaturas*
-   - Play Console → Configuração → Acesso à API → vincular o projeto do Cloud e ativar a **Google Play Android Developer API**
-3. **Pub/Sub (renovação/cancelamento automáticos)**
-   - Cloud → Pub/Sub → criar tópico `play-billing`
-   - Subscrição tipo **Push** para `https://dnjrgpldcwcpoywamorr.supabase.co/functions/v1/play-billing-webhook`
-   - Dar role *Pub/Sub Publisher* a `google-play-developer-notifications@system.gserviceaccount.com` no tópico
-   - Play Console → Configuração de monetização → colar o nome completo do tópico
-4. **Confirmar o package name.** O `capacitor.config.ts` está com `br.com.app.gpu2675756.gpu0e7509bfb7bde52aef412888bb17a456`. Se o app novo no Play tiver outro, me passa que eu ajusto (e o secret `ANDROID_PACKAGE_NAME`).
-5. **Secrets que eu vou pedir pelo formulário seguro:** `ANDROID_PACKAGE_NAME`, `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`.
-6. **Teste:** Play Console → Testes de licença → seu e-mail. Instalar por faixa interna. Compra nativa não funciona no navegador nem em APK sideloaded.
+- Remover o item "Lei inteira" e as linhas estruturais (PARTE GERAL, TÍTULO, CAPÍTULO, SEÇÃO, DISPOSIÇÕES...).
+- Cada linha fica: "Art. 121" + caput curto em uma linha, altura uniforme.
 
 ---
 
-## Parte 5 — Apple (depois do Google validado)
+## Detalhes técnicos
 
-1. App Store Connect → Assinaturas → grupo "Premium": `prime_premium_mensal` (R$ 29,90/mês) e `prime_premium_anual` (R$ 199,90/ano), com nome de exibição, descrição e imagem de análise
-2. Gerar **In-App Purchase Key (.p8)**; anotar Key ID e Issuer ID
-3. **App Store Server Notifications V2** (produção e sandbox) → `https://dnjrgpldcwcpoywamorr.supabase.co/functions/v1/apple-billing-webhook`
-4. Eu completo o caminho iOS no `validate-purchase` (hoje só o Android está implementado com a Play Developer API) usando a App Store Server API; peço os secrets `APPLE_IAP_KEY_P8`, `APPLE_IAP_KEY_ID`, `APPLE_ISSUER_ID`, `APPLE_BUNDLE_ID`
-5. Testar com usuário Sandbox via TestFlight
+Arquivos afetados: `src/lib/visuaisJuridicos/{types,layout}.ts`, novo `prefs.ts`, `supabase/functions/visual-juridico-gerar/prompt.ts` (redeploy da função), `src/components/visuais/{VisuaisJuridicosSheet,VisualViewer,VisualScene}.tsx`.
 
----
-
-## Ordem de execução
-
-1. Remover Asaas/PIX do frontend e deletar as duas functions
-2. Novos IDs + preços em `billing.ts` e `Assinatura.tsx`
-3. Deploy de `validate-purchase` e `play-billing-webhook` + secrets do Google
-4. Você cria os produtos no Play e testa em faixa interna
-5. Só então partimos para a Apple
+Visuais já gerados no cache continuam válidos (campos novos são opcionais); os próximos vêm mais completos.

@@ -7,9 +7,11 @@ import DesafioLinha from '@/components/questoes/DesafioLinha';
 import DesafiosBottomNav from '@/components/questoes/DesafiosBottomNav';
 import { useDesafios, type DesafioStatus } from '@/hooks/useQuestoesExtras';
 import { cn } from '@/lib/utils';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const QuestoesDesafios = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [params, setParams] = useSearchParams();
   const trilhaAtiva = params.get('trilha') ?? 'pendentes';
   const { trilhas, pendentes, loading } = useDesafios();
@@ -34,7 +36,7 @@ const QuestoesDesafios = () => {
   return (
     <div className="theme-questoes min-h-screen bg-background pb-28">
       <div className="mx-auto w-full max-w-3xl">
-        <PageHeader title="Desafios" subtitle="Constância vale mais que pressa" onBack={() => navigate(-1)} />
+        <PageHeader title="Desafios" subtitle="Constância vale mais que pressa" onBack={() => goBack()} />
 
         {/* Menu de alternância das trilhas */}
         <div className="-mx-0 mt-1 flex gap-2 overflow-x-auto px-4 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">

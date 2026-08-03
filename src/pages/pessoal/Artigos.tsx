@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { getCache } from "@/lib/pessoalCache";
 import { fetchPessoalArtigos, PESSOAL_KEYS } from "@/services/pessoalPrefetch";
+import { useGoBack } from '@/hooks/useGoBack';
 
 type Fav = {
   id: string;
@@ -19,6 +20,7 @@ type Fav = {
 
 const ArtigosPage = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const { user } = useAuth();
   const initial = getCache<Fav[]>("artigos") ?? undefined;
   const { data: favs = [], isLoading } = useQuery({
@@ -45,7 +47,7 @@ const ArtigosPage = () => {
     <div className="min-h-dvh bg-background text-foreground pb-24">
       <PageHeader
         title="Meus artigos"
-        onBack={() => navigate(-1)}
+        onBack={() => goBack()}
         leading={
           <div className="w-10 h-10 rounded-full bg-rose-500/15 flex items-center justify-center">
             <Heart className="w-5 h-5 text-rose-500 fill-rose-500" />

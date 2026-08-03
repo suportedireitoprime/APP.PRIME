@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, FileText, Image as ImageIcon, Volume2, ShieldCheck } from 'lucide-react';
 import { ACTIVE_MODELS, FUNCTIONS_USAGE, RATE_LIMITS, type ModelKind } from '@/config/aiModelsUsage';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const KIND_META: Record<ModelKind, { icon: any; color: string; label: string }> = {
   text: { icon: FileText, color: 'text-blue-500', label: 'Texto' },
@@ -15,10 +16,11 @@ const KIND_META: Record<ModelKind, { icon: any; color: string; label: string }> 
 
 export default function AdminModelos() {
   const navigate = useNavigate();
+  const goBack = useGoBack();
 
   return (
     <DesktopPageLayout activeId="ferramentas" title="Modelos de Geração">
-      <PageHeader title="Modelos de Geração" onBack={() => navigate(-1)} />
+      <PageHeader title="Modelos de Geração" onBack={() => goBack()} />
 
       <div className="max-w-5xl mx-auto p-4 space-y-6">
         {/* Política */}

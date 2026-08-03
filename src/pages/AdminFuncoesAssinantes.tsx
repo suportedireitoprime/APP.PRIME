@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { invalidateFeatureLimits, type FeatureLimitConfig } from '@/hooks/useFeatureLimit';
 import { isAdminEmail } from '@/lib/adminEmails';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const CATEGORIES: Record<string, string> = {
   blog: 'Blog & Notícias',
@@ -26,6 +27,7 @@ const PERIOD_LABELS: Record<string, string> = {
 
 const AdminFuncoesAssinantes = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const { user } = useAuth();
   const isAdmin = isAdminEmail(user?.email);
   const [rows, setRows] = useState<FeatureLimitConfig[]>([]);
@@ -94,7 +96,7 @@ const AdminFuncoesAssinantes = () => {
       <PageHeader
         title="Funções Assinantes"
         subtitle="Limites free editáveis · Admin bypassa tudo"
-        onBack={() => navigate(-1)}
+        onBack={() => goBack()}
         rightAction={
           <div className="flex items-center gap-2">
             <button onClick={load} className="w-11 h-11 rounded-full bg-muted flex items-center justify-center" title="Recarregar">

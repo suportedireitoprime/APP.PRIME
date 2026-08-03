@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { PageHeader } from "@/components/vademecum/PageHeader";
 import { LucideIcon, WifiOff } from "lucide-react";
+import { useGoBack } from '@/hooks/useGoBack';
 
 interface Props {
   title: string;
@@ -25,12 +26,13 @@ export default function PessoalListLayout({
   loading,
 }: Props) {
   const navigate = useNavigate();
+  const goBack = useGoBack('/meu-espaco');
   return (
     <div className="min-h-dvh bg-background text-foreground pb-[calc(6rem+env(safe-area-inset-bottom,0px))]">
       <PageHeader
         title={title}
         subtitle={typeof count === "number" ? `${count} ${count === 1 ? "item" : "itens"}` : undefined}
-        onBack={() => navigate(-1)}
+        onBack={() => goBack()}
         leading={
           <div className={`w-10 h-10 rounded-full flex items-center justify-center ${accentClass}`}>
             <Icon className="w-5 h-5" />

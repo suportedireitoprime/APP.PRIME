@@ -4,6 +4,7 @@ import { ExternalLink, Github, KeyRound, PlayCircle, Download, Edit3, Check, Cop
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { motion } from 'framer-motion';
 import GithubBuildPanel from '@/components/admin/GithubBuildPanel';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const REPO_STORAGE_KEY = 'admin_github_repo';
 const DEFAULT_REPO = 'WN7CORP/lexi-guide';
@@ -30,6 +31,7 @@ type Step = {
 
 const AdminAtualizacao = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [repo, setRepo] = useState(DEFAULT_REPO);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(DEFAULT_REPO);
@@ -157,7 +159,7 @@ const AdminAtualizacao = () => {
 
   return (
     <div className="min-h-dvh bg-background pb-16">
-      <PageHeader title="Passo a passo — Atualização" onBack={() => navigate(-1)} />
+      <PageHeader title="Passo a passo — Atualização" onBack={() => goBack()} />
 
       {/* Repo config */}
       <div className="p-4">

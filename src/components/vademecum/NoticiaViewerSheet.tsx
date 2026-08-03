@@ -12,6 +12,7 @@ import { type Noticia, fetchNoticiaConteudo } from '@/services/noticiasService';
 import NoticiaComentarios from '@/components/vademecum/NoticiaComentarios';
 import ShareSheet from './ShareSheet';
 import { useFavoritoNoticia } from '@/hooks/useNoticiaTracking';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 function cleanMd(md: string): string {
   if (!md) return '';
@@ -29,6 +30,7 @@ interface Props {
 }
 
 export default function NoticiaViewerSheet({ noticia, onClose }: Props) {
+  useBodyScrollLock(!!noticia);
   const isDesktop = useIsDesktop();
   const [comentariosOpen, setComentariosOpen] = useState(false);
   const [comentariosCount, setComentariosCount] = useState(0);

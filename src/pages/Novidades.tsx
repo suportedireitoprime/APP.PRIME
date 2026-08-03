@@ -9,6 +9,7 @@ import LeiOrdinariaDetail from '@/components/vademecum/LeiOrdinariaDetail';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import type { LeiOrdinaria } from '@/services/legislacaoService';
 import brasaoImgAsset from '@/assets/brasao-republica.webp';
+import { useGoBack } from '@/hooks/useGoBack';
 const brasaoImg = brasaoImgAsset;
 
 
@@ -65,6 +66,7 @@ function toDateKey(d: Date): string {
 
 const Novidades = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [items, setItems] = useState<ResenhaItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -157,7 +159,7 @@ const Novidades = () => {
         <PageHeader
           title="Leis do Dia"
           subtitle="Novas leis publicadas no Diário Oficial"
-          onBack={() => navigate(-1)}
+          onBack={() => goBack()}
           rightAction={
             <button className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
               <Info className="w-4 h-4" />

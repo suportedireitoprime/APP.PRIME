@@ -8,6 +8,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Checkbox } from '@/components/ui/checkbox';
 import { explicacaoWorker, type WorkerState } from '@/services/explicacaoWorker';
 import { getLeisCatalog } from '@/services/legislacaoService';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const ALL_LAWS = (() => {
   const catalog = getLeisCatalog();
@@ -29,6 +30,7 @@ const GROUPS = [
 
 export default function ExplicacaoLei() {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const [state, setState] = useState<WorkerState>(explicacaoWorker.getState());
@@ -78,7 +80,7 @@ export default function ExplicacaoLei() {
       <PageHeader
         title="Gerar Explicações (IA)"
         subtitle="IA gera explicações artigo por artigo"
-        onBack={() => navigate(-1)}
+        onBack={() => goBack()}
       />
 
 

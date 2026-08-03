@@ -9,6 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { getLeisCatalog, fetchArtigosLei } from '@/services/legislacaoService';
 import type { ArtigoLei } from '@/data/mockData';
 import { supabase } from '@/integrations/supabase/client';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const ALL_LAWS = (() => {
   const catalog = getLeisCatalog();
@@ -32,6 +33,7 @@ type NarracaoCache = Record<string, string>; // artigo_numero -> audio_url
 
 export default function NarracaoLei() {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const location = useLocation();
   const [selectedLei, setSelectedLei] = useState<typeof ALL_LAWS[0] | null>(null);
   const [artigos, setArtigos] = useState<ArtigoLei[]>([]);
@@ -168,7 +170,7 @@ export default function NarracaoLei() {
       <PageHeader
         title={selectedLei ? selectedLei.nome : 'Narração de Artigos'}
         subtitle={selectedLei ? `${narradosCount} narrado${narradosCount !== 1 ? 's' : ''} de ${artigos.length}` : 'Ouça as leis com voz IA'}
-        onBack={() => (selectedLei ? setSelectedLei(null) : navigate(-1))}
+        onBack={() => (selectedLei ? setSelectedLei(null) : goBack())}
         rightAction={selectedLei ? <Mic className="w-5 h-5 text-primary" /> : undefined}
       />
 

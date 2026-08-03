@@ -4,16 +4,17 @@ import { ChevronLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { springSnap, tapPress } from "@/lib/motion";
+import { useGoBack } from '@/hooks/useGoBack';
 
 interface AppHeaderProps {
   title?: ReactNode;
-  /** Optional left action; defaults to a back button (navigate(-1)). */
+  /** Optional left action; defaults to a back button (goBack()). */
   left?: ReactNode;
   /** Optional right action(s). */
   right?: ReactNode;
   /** Hide the default back button (when `left` is not provided). */
   hideBack?: boolean;
-  /** Called instead of navigate(-1) when the default back button is tapped. */
+  /** Called instead of goBack() when the default back button is tapped. */
   onBack?: () => void;
   /** Label next to the back chevron ("Voltar" by default; pass "" to hide). */
   backLabel?: string;
@@ -41,6 +42,7 @@ export function AppHeader({
   translucent = true,
 }: AppHeaderProps) {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -55,7 +57,7 @@ export function AppHeader({
 
   const handleBack = () => {
     if (onBack) onBack();
-    else navigate(-1);
+    else goBack();
   };
 
   return (

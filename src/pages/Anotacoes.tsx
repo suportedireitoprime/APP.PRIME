@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { db, type OfflineHighlight } from '@/services/offlineDb';
 import { Input } from '@/components/ui/input';
 import { PageHeader } from '@/components/vademecum/PageHeader';
+import { useGoBack } from '@/hooks/useGoBack';
 
 
 interface NoteItem {
@@ -39,6 +40,7 @@ function parseHighlight(h: OfflineHighlight): NoteItem | null {
 
 const Anotacoes = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack('/meu-espaco');
   const [notes, setNotes] = useState<NoteItem[]>([]);
   const [q, setQ] = useState('');
   const [loading, setLoading] = useState(true);
@@ -78,7 +80,7 @@ const Anotacoes = () => {
         variant="dark"
         title="Anotações"
         subtitle={`${notes.length} ${notes.length === 1 ? 'grifo' : 'grifos'} salvos`}
-        onBack={() => navigate(-1)}
+        onBack={() => goBack()}
       />
 
 

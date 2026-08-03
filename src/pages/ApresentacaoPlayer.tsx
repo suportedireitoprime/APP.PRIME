@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import flipSoundAsset from '@/assets/flipcard.mp3.asset.json';
 import { srcOf } from '@/lib/assetUrl';
+import { useGoBack } from '@/hooks/useGoBack';
 
 type Slide = { slide_index: number; imagem_url: string | null; audio_url: string | null; roteiro: string | null };
 type Apres = { id: string; titulo: string; descricao: string | null; total_slides: number; livro_tabela: string; livro_id: string };
@@ -20,6 +21,7 @@ const formatarTempo = (seg: number): string => {
 const ApresentacaoPlayer = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const audioARef = useRef<HTMLAudioElement | null>(null);
   const audioBRef = useRef<HTMLAudioElement | null>(null);
   const [usaA, setUsaA] = useState(true);
@@ -267,7 +269,7 @@ const ApresentacaoPlayer = () => {
     return (
       <div className="min-h-dvh bg-black text-white flex flex-col items-center justify-center gap-4 p-6 text-center">
         <p className="font-body text-white/80">Apresentação indisponível.</p>
-        <button onClick={() => navigate(-1)} className="rounded-xl bg-white/10 px-4 py-2 text-sm">Voltar</button>
+        <button onClick={() => goBack()} className="rounded-xl bg-white/10 px-4 py-2 text-sm">Voltar</button>
       </div>
     );
   }
@@ -302,7 +304,7 @@ const ApresentacaoPlayer = () => {
       />
 
       <header className="flex items-center gap-3 p-3">
-        <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center"><ArrowLeft className="w-5 h-5" /></button>
+        <button onClick={() => goBack()} className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center"><ArrowLeft className="w-5 h-5" /></button>
         <div className="min-w-0 flex-1">
           <p className="font-heading font-bold text-sm truncate">{apres.titulo}</p>
           <p className="text-[11px] text-white/60 font-body">

@@ -90,7 +90,7 @@ export function useSubscription(options: Options = {}): SubscriptionState {
     let pollTimer: ReturnType<typeof setTimeout> | null = null;
     let attempts = 0;
 
-    const fetchOnce = async (): Promise<boolean> => {
+    const fetchOnce = async (skipStoreSync = false): Promise<boolean> => {
       try {
       // 0) Checagem de cancelamento — se o usuário cancelou, rebaixa para gratuito
       //    mesmo se for admin (permite o admin testar o fluxo de cancelamento).
@@ -166,6 +166,20 @@ export function useSubscription(options: Options = {}): SubscriptionState {
         return true;
       }
 
+      // 3) Nada no banco: antes de rebaixar para gratuito, revalida em silêncio
+      //    as compras que o aparelho possui na loja (cobre renovações cuja
+      //    notificação do Google/Apple não chegou a gravar).
+      if (!skipStoreSync) {
+        try {
+          const { isBillingAvailable, syncEntitlements } = await import('@/lib/billing');
+          if (isBillingAvailable()) {
+            const synced = await syncEntitlements();
+            if (cancelled) return true;
+            if (synced > 0) return fetchOnce(true);
+          }
+        } catch { /* ignore */ }
+      }
+
       persist({
         isPremium: false, loading: false, plano: null, expiresAt: null, startedAt: null,
         source: null, status: null, isAdminOverride: false,
@@ -204,9 +218,30 @@ export function useSubscription(options: Options = {}): SubscriptionState {
       .on('postgres_changes' as any, { event: '*', schema: 'public', table: 'apple_subscriptions', filter: `user_id=eq.${user.id}` }, () => { fetchOnce(); })
       .subscribe();
 
+    // Ao voltar do segundo plano: revalida com a loja e reconsulta. Cobre
+    // renovações e o caso de concluir a compra fora do app.
+    let removeAppListener: (() => void) | null = null;
+    (async () => {
+      try {
+        const { Capacitor } = await import('@capacitor/core');
+        if (!Capacitor.isNativePlatform()) return;
+        const { App } = await import('@capacitor/app');
+        const handle = await App.addListener('appStateChange', async ({ isActive }) => {
+          if (!isActive || cancelled) return;
+          try {
+            const { syncEntitlements } = await import('@/lib/billing');
+            await syncEntitlements();
+          } catch { /* ignore */ }
+          if (!cancelled) fetchOnce(true);
+        });
+        removeAppListener = () => { handle.remove(); };
+      } catch { /* plugin ausente: ignora */ }
+    })();
+
     return () => {
       cancelled = true;
       if (pollTimer) clearTimeout(pollTimer);
+      if (removeAppListener) removeAppListener();
       supabase.removeChannel(channel);
     };
   }, [user, nonce, pollOnMount]);

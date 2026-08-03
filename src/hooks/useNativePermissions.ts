@@ -66,16 +66,24 @@ export function useNativePermissions() {
         }).data;
       } catch (e) { console.warn('PushNotifications setup skipped', e); }
 
-      // 4. Android back button → history.back / exit at root
+      // 4. Android back button → volta no histórico interno; na raiz (ou quando
+      //    o app abriu direto por deep link/notificação) vai pro início e só
+      //    então permite sair.
       try {
         backListener = await CapApp.addListener('backButton', ({ canGoBack }) => {
-          if (canGoBack) {
+          const idx = (window.history.state as { idx?: number } | null)?.idx;
+          const hasInternalHistory = typeof idx === 'number' && idx > 0;
+          if (canGoBack && hasInternalHistory) {
             window.history.back();
+          } else if (window.location.pathname !== '/') {
+            window.history.replaceState({ idx: 0 }, '', '/');
+            window.dispatchEvent(new PopStateEvent('popstate'));
           } else {
             CapApp.exitApp();
           }
         });
       } catch {}
+
 
       // 5. Lock portrait orientation em celulares. Em tablets/foldables,
       //    seguimos a recomendação do Google e deixamos livre (o usuário

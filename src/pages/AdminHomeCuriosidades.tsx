@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { supabase } from '@/integrations/supabase/client';
 import type { HomeCuriosidade } from '@/hooks/useHomeCuriosidades';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const CORES = [
   'hsl(348 78% 38%)', '#FB923C', '#F87171', '#EC4899', '#A78BFA',
@@ -18,6 +19,7 @@ const CORES = [
 
 export default function AdminHomeCuriosidades() {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [items, setItems] = useState<HomeCuriosidade[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
@@ -109,7 +111,7 @@ export default function AdminHomeCuriosidades() {
       <PageHeader
         title="Curiosidades da Home"
         subtitle="Cards leves misturados com os stats do painel"
-        onBack={() => navigate(-1)}
+        onBack={() => goBack()}
         leading={<Lightbulb className="w-5 h-5 text-amber-500" />}
       />
 

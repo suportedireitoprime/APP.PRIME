@@ -17,6 +17,7 @@ import {
   type NativoPrefetchProgress,
 } from '@/services/leituraNativaPrefetch';
 import { listCachedPdfs, clearAllPdfs } from '@/services/bibliotecaPdfCache';
+import { useGoBack } from '@/hooks/useGoBack';
 
 function fmtBytes(n: number) {
   if (!n) return '0 B';
@@ -27,6 +28,7 @@ function fmtBytes(n: number) {
 
 const BibliotecaOffline = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const isNative = Capacitor.isNativePlatform();
   const [capas, setCapas] = useState<CapasPrefetchProgress>({ done: 0, total: 0, status: 'idle' });
   const [nativo, setNativo] = useState<NativoPrefetchProgress>({ done: 0, total: 0, status: 'idle' });
@@ -48,7 +50,7 @@ const BibliotecaOffline = () => {
 
   return (
     <div className="min-h-dvh bg-background pb-[calc(96px+var(--sai-bottom,0px))]">
-      <PageHeader title="Modo Offline" onBack={() => navigate(-1)} />
+      <PageHeader title="Modo Offline" onBack={() => goBack()} />
 
       <div className="max-w-3xl mx-auto w-full px-4 pt-4 space-y-4">
         {!isNative && (

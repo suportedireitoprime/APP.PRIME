@@ -44,6 +44,7 @@ import flipSoundAsset from '@/assets/flipcard.mp3.asset.json';
 import pageTurnSoundAsset from '@/assets/page-turn.mp3.asset.json';
 import { useTrackArea } from "@/hooks/useTrackArea";
 import { srcOf } from '@/lib/assetUrl';
+import { useGoBack } from '@/hooks/useGoBack';
 
 type TipoBloco =
   | 'texto' | 'leitura' | 'intro' | 'conceito' | 'exemplo' | 'conclusao'
@@ -143,6 +144,7 @@ const atoDoBloco = (b: { payload?: any }) => {
 const AprenderAula = () => {
   useTrackArea("aprender_aula_iniciada");
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const { aulaId } = useParams<{ aulaId: string }>();
   const { user } = useAuth();
   const [aula, setAula] = useState<Aula | null>(null);
@@ -357,7 +359,7 @@ const AprenderAula = () => {
         previa={previaFallback}
         progressoPct={pctProgresso}
         podeContinuar={continuarDe > 0 && pctProgresso < 100}
-        onVoltar={() => navigate(-1)}
+        onVoltar={() => goBack()}
         onComecar={() => { setIdx(0); startedAt.current = Date.now(); setMostrarPrevia(false); }}
         onContinuar={() => { setIdx(continuarDe); startedAt.current = Date.now(); setMostrarPrevia(false); }}
       />
@@ -431,7 +433,7 @@ const AprenderAula = () => {
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-[19rem] flex-col border-r border-border bg-card/40 lg:flex">
         <div className="border-b border-border px-5 py-5">
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => goBack()}
             className="mb-3 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="h-4 w-4" /> Aprender
@@ -507,7 +509,7 @@ const AprenderAula = () => {
           }}
         >
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => goBack()}
             aria-label="Voltar"
             className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-muted hover:bg-accent active:scale-95 transition-transform lg:hidden"
           >

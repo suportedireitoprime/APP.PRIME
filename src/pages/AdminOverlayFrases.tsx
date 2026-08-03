@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { Loader2, Play, Trash2, Plus, Volume2 } from "lucide-react";
 import { PageHeader } from "@/components/vademecum/PageHeader";
 import { useNavigate } from "react-router-dom";
+import { useGoBack } from '@/hooks/useGoBack';
 
 // Lista canônica de vozes (deve casar com a edge function narrar-frase)
 const VOZES = [
@@ -57,6 +58,7 @@ const TEXTO_PREVIEW =
 
 export default function AdminOverlayFrases() {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [tab, setTab] = useState<"frases" | "vozes">("frases");
   const [categoria, setCategoria] = useState<string>("filosofos");
   const [frases, setFrases] = useState<Frase[]>([]);
@@ -150,7 +152,7 @@ export default function AdminOverlayFrases() {
 
   return (
     <div className="min-h-dvh bg-background text-foreground pb-24">
-      <PageHeader title="Frases do Overlay" onBack={() => navigate(-1)} />
+      <PageHeader title="Frases do Overlay" onBack={() => goBack()} />
 
       <div className="max-w-4xl mx-auto px-4 py-4">
         <Tabs value={tab} onValueChange={(v) => setTab(v as any)}>

@@ -5,6 +5,7 @@ import { fetchPesquisaProntaBySlug, type PesquisaPronta } from '@/services/pesqu
 import { supabaseCloud } from '@/integrations/supabase/cloudClient';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { toast } from 'sonner';
+import { useGoBack } from '@/hooks/useGoBack';
 
 interface Acordao {
   id?: string;
@@ -69,6 +70,7 @@ function extractSections(a: Acordao | null): { ementa: string; tema: string; tes
 
 export default function PesquisasProntasTema() {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const { tribunal, slug } = useParams<{ tribunal: string; slug: string }>();
   const [loading, setLoading] = useState(true);
   const [item, setItem] = useState<PesquisaPronta | null>(null);
@@ -212,7 +214,7 @@ export default function PesquisasProntasTema() {
       >
         <div className="relative flex items-center justify-between px-4 pt-[calc(env(safe-area-inset-top,0px)+12px)] pb-2">
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => goBack()}
             aria-label="Voltar"
             className="w-11 h-11 rounded-full bg-black/25 hover:bg-black/35 backdrop-blur-sm flex items-center justify-center transition-colors"
           >

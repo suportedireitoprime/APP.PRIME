@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/vademecum/PageHeader";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useGoBack } from '@/hooks/useGoBack';
 
 type Aviso = {
   id: string;
@@ -24,6 +25,7 @@ const RECS = [
 
 const AvisosPage = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [avisos, setAvisos] = useState<Aviso[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -70,7 +72,7 @@ const AvisosPage = () => {
     <div className="min-h-dvh bg-background text-foreground pb-24">
       <PageHeader
         title="Meus avisos"
-        onBack={() => navigate(-1)}
+        onBack={() => goBack()}
         leading={
           <div className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center">
             <BellRing className="w-5 h-5 text-primary" />

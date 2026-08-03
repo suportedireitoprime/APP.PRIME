@@ -28,6 +28,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 import { ADMIN_EMAILS, isAdminEmail } from '@/lib/adminEmails';
+import { useGoBack } from '@/hooks/useGoBack';
 const ADMIN_EMAILS_LIST = `(${ADMIN_EMAILS.map((e) => `"${e}"`).join(',')})`;
 
 interface PresenceUser {
@@ -227,6 +228,7 @@ interface MetricCard {
 
 const AdminMonitorUsuarios = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [realtimeUsers, setRealtimeUsers] = useState<PresenceUser[]>([]);
   const [last5min, setLast5min] = useState<ActivityRow[]>([]);
   const [today, setToday] = useState<ActivityRow[]>([]);
@@ -603,10 +605,10 @@ const AdminMonitorUsuarios = () => {
       ? activeBlock?.title
       : '';
 
-  const goBack = () => {
+  const handleBack = () => {
     if (selectedUserDetail) setSelectedUserDetail(null);
     else if (selectedBlock) setSelectedBlock(null);
-    else navigate(-1);
+    else goBack();
   };
 
   const handleUserClick = (user: NormalizedUser) => fetchUserDetail(user);
@@ -618,7 +620,7 @@ const AdminMonitorUsuarios = () => {
     <div className="min-h-dvh bg-background">
       <PageHeader
         title={isDetail ? (detailTitle ?? 'Detalhe') : 'Usuários Online'}
-        onBack={goBack}
+        onBack={handleBack}
         leading={<Users className="w-5 h-5 text-primary" />}
       />
 

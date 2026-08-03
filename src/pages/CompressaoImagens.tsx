@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
+import { useGoBack } from '@/hooks/useGoBack';
 
 interface StorageFile {
   name: string;
@@ -61,6 +62,7 @@ function saveCachedResults(results: Map<string, CompressionResult>) {
 
 export default function CompressaoImagens() {
   const navigate = useNavigate();
+  const goBack = useGoBack();
 
   // Load cached data on mount
   const cachedFiles = useRef(loadCachedFiles());
@@ -197,7 +199,7 @@ export default function CompressaoImagens() {
       <PageHeader
         title="Compressão de Imagens"
         subtitle={`${files.length} imagens · ${formatBytes(totalSize)} total`}
-        onBack={() => navigate(-1)}
+        onBack={() => goBack()}
         leading={
           <div className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center">
             <Image className="w-5 h-5 text-primary" />

@@ -5,11 +5,13 @@ import { toast } from 'sonner';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const CONFIRMATION_WORD = 'EXCLUIR';
 
 const ExcluirConta = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const { user, signOut } = useAuth();
   const [confirm, setConfirm] = useState('');
   const [busy, setBusy] = useState(false);
@@ -75,7 +77,7 @@ const ExcluirConta = () => {
             </button>
 
             <button
-              onClick={() => navigate(-1)}
+              onClick={() => goBack()}
               className="w-full py-3 rounded-xl bg-secondary text-foreground font-body font-medium text-sm hover:bg-secondary/70 transition-colors"
             >
               Cancelar

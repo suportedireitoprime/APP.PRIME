@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import GrafoArtigos from '@/pages/GrafoArtigos';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 interface GrafoOverlayProps {
   open: boolean;
@@ -10,6 +11,7 @@ interface GrafoOverlayProps {
 }
 
 const GrafoOverlay = ({ open, onClose, tabelaNome, leiNome, artigoNumero }: GrafoOverlayProps) => {
+  useBodyScrollLock(open);
   return (
     <AnimatePresence>
       {open && (

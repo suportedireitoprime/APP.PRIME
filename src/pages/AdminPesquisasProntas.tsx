@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { ArrowLeft, RefreshCw, Play, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useGoBack } from '@/hooks/useGoBack';
 
 interface Counts {
   stf: number;
@@ -39,6 +40,7 @@ async function loadCounts(): Promise<Counts> {
 
 export default function AdminPesquisasProntas() {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [counts, setCounts] = useState<Counts | null>(null);
   const [loading, setLoading] = useState(false);
   const [phase, setPhase] = useState<null | "stf" | "stj" | "backfill">(null);
@@ -107,7 +109,7 @@ export default function AdminPesquisasProntas() {
     <div className="min-h-screen bg-background p-4 pb-24">
       <div className="mx-auto max-w-2xl space-y-4">
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+          <Button variant="ghost" size="icon" onClick={() => goBack()}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <h1 className="text-xl font-bold">Admin — Pesquisas Prontas</h1>

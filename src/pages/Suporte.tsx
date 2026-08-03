@@ -8,9 +8,11 @@ import { PageHeader } from '@/components/vademecum/PageHeader';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { useGoBack } from '@/hooks/useGoBack';
 
 export default function Suporte() {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const { user } = useAuth();
   const [assunto, setAssunto] = useState('');
   const [mensagem, setMensagem] = useState('');
@@ -33,7 +35,7 @@ export default function Suporte() {
       toast.success('Mensagem enviada! Responderemos em breve.');
       setAssunto('');
       setMensagem('');
-      navigate(-1);
+      goBack();
     } catch {
       toast.error('Erro ao enviar mensagem');
     } finally {
@@ -43,7 +45,7 @@ export default function Suporte() {
 
   return (
     <div className="min-h-dvh flex flex-col bg-background">
-      <PageHeader title="Fale com o Suporte" onBack={() => navigate(-1)} />
+      <PageHeader title="Fale com o Suporte" onBack={() => goBack()} />
       <div className="flex-1 overflow-y-auto p-4 space-y-4 max-w-2xl lg:max-w-3xl w-full mx-auto">
         <div>
           <label className="text-sm font-medium text-foreground font-body mb-1 block">Assunto</label>

@@ -10,6 +10,7 @@ import feat3 from '@/assets/assistente-feature-3.jpg';
 import AssistenteOverlay from '@/components/vademecum/AssistenteOverlay';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { track } from '@/lib/analyticsEvents';
+import { useGoBack } from '@/hooks/useGoBack';
 
 
 const STORAGE_KEY = 'assistente_phone_confirmado_v1';
@@ -45,6 +46,7 @@ function formatPhone(v: string) {
 
 const AssistenteApp = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [slide, setSlide] = useState(0);
   const [phone, setPhone] = useState('');
   const [confirmed, setConfirmed] = useState<boolean>(() => !!localStorage.getItem(STORAGE_KEY));
@@ -85,7 +87,7 @@ const AssistenteApp = () => {
       <PageHeader
         title="Assistente IA"
         subtitle="Sua parceira jurídica no app"
-        onBack={() => navigate(-1)}
+        onBack={() => goBack()}
         rightAction={
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg shadow-violet-500/30">
             <Bot className="w-5 h-5 text-white" />

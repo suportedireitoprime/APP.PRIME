@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import GcpMonitorWidget from '@/components/admin/GcpMonitorWidget';
+import { useGoBack } from '@/hooks/useGoBack';
 
 /* ── Types ── */
 
@@ -76,6 +77,7 @@ const tipoBadge = (tipo: string) => {
 
 const AdminMonitor = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [data, setData] = useState<MonitorData | null>(null);
   const [loading, setLoading] = useState(true);
   const [invoking, setInvoking] = useState<string | null>(null);
@@ -209,7 +211,7 @@ const AdminMonitor = () => {
       <PageHeader
         title="Monitoramento"
         subtitle={data ? `Atualizado: ${new Date(data.timestamp).toLocaleTimeString('pt-BR')}` : undefined}
-        onBack={() => navigate(-1)}
+        onBack={() => goBack()}
         rightAction={
           <Button variant="outline" size="sm" onClick={fetchData} disabled={loading}>
             <RefreshCw className={`w-4 h-4 mr-1 ${loading ? 'animate-spin' : ''}`} />

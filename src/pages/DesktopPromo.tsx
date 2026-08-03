@@ -22,6 +22,7 @@ import desktopImgAsset from '@/assets/desktop-promo-laptop.webp';
 const desktopImg = desktopImgAsset;
 import vacatioLogoAsset from '@/assets/logo-vacatio-v2.png.asset.json';
 import vacatioLogoBundled from '@/assets/bundled/logo-vacatio-v2.webp';
+import { useGoBack } from '@/hooks/useGoBack';
 const vacatioLogo = pickAsset(vacatioLogoBundled, srcOf(vacatioLogoAsset));
 
 const SITE_URL = 'www.vacatio.com.br';
@@ -60,6 +61,7 @@ const benefits = [
 
 const DesktopPromo = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [scanning, setScanning] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -107,7 +109,7 @@ const DesktopPromo = () => {
       <div className="sticky top-0 z-30">
         <PageHeader
           title="Versão Desktop"
-          onBack={() => navigate(-1)}
+          onBack={() => goBack()}
           leading={
             <div className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center">
               <Monitor className="w-5 h-5 text-primary" />

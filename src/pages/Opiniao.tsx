@@ -7,6 +7,7 @@ import { useSubscription } from '@/hooks/useSubscription';
 import { toast } from 'sonner';
 import { Capacitor } from '@capacitor/core';
 import { PageHeader } from '@/components/vademecum/PageHeader';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const TAGS = [
   { id: 'funcionalidade', label: 'Funcionalidade', icon: Sparkles, color: 'text-primary' },
@@ -17,6 +18,7 @@ const TAGS = [
 
 export default function Opiniao() {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const { user } = useAuth();
   const { isPremium } = useSubscription();
   const [comentario, setComentario] = useState('');
@@ -80,7 +82,7 @@ export default function Opiniao() {
       if (error) throw error;
 
       setSent(true);
-      setTimeout(() => navigate(-1), 1400);
+      setTimeout(() => goBack(), 1400);
     } catch (e: any) {
       console.error('[opiniao] erro', e);
       toast.error('Não foi possível enviar. Tente novamente.');
@@ -91,7 +93,7 @@ export default function Opiniao() {
 
   return (
     <div className="min-h-dvh flex flex-col bg-background">
-      <PageHeader title="Sua opinião" subtitle="Conte o que achou, sugira, critique ou reporte" onBack={() => navigate(-1)} />
+      <PageHeader title="Sua opinião" subtitle="Conte o que achou, sugira, critique ou reporte" onBack={() => goBack()} />
       {sent ? (
         <div className="flex-1 flex flex-col items-center justify-center gap-3 py-16">
           <CheckCircle2 className="w-16 h-16 text-primary" />

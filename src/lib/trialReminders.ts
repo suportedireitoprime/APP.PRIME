@@ -5,13 +5,14 @@ import { supabase } from '@/integrations/supabase/client';
 
 export type TrialPlan = 'mensal' | 'anual' | 'anual_parcelado';
 
-export function trialDaysFor(plan: TrialPlan): number {
-  return plan === 'mensal' ? 3 : 7;
+export function trialDaysFor(_plan: TrialPlan): number {
+  // 3 dias grátis em todos os planos (Google Play e App Store).
+  return 3;
 }
 
 /** Momento em que o lembrete "seu teste termina em breve" deve chegar. */
 export function computeReminderAt(startedAt: Date, trialDays: number): Date {
-  // 24h antes do fim para plano de 3 dias; 48h antes para 7 dias.
+  // 24h antes do fim do teste de 3 dias.
   const endsAt = new Date(startedAt.getTime() + trialDays * 86400_000);
   const leadHours = trialDays >= 7 ? 48 : 24;
   return new Date(endsAt.getTime() - leadHours * 3600_000);

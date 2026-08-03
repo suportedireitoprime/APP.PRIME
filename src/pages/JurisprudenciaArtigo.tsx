@@ -14,6 +14,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetClose } from '@/comp
 import { X } from 'lucide-react';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
 import { gerarJurisprudenciaPDF } from '@/lib/jurisPdf';
+import { useGoBack } from '@/hooks/useGoBack';
 import {
   readJurisCache,
   writeJurisCache,
@@ -82,10 +83,11 @@ const SB_URL = LEIS_SUPABASE_URL;
 
 export default function JurisprudenciaArtigo() {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const { slugLei, numeroArtigo } = useParams<{ slugLei: string; numeroArtigo: string }>();
   const handleBack = () => {
     if (window.history.length > 1) {
-      navigate(-1);
+      goBack();
     } else if (slugLei) {
       navigate(`/vademecum/${slugLei}`);
     } else {

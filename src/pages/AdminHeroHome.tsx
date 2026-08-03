@@ -19,9 +19,11 @@ import HeroImageCard from '@/components/admin/HeroImageCard';
 import HeroGenerateModal from '@/components/admin/HeroGenerateModal';
 import HeroMotifsSettings from '@/components/admin/HeroMotifsSettings';
 import type { HeroHomeImage } from '@/hooks/useHeroHomeImages';
+import { useGoBack } from '@/hooks/useGoBack';
 
 export default function AdminHeroHome() {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [images, setImages] = useState<HeroHomeImage[]>([]);
   const [loading, setLoading] = useState(true);
   const [genOpen, setGenOpen] = useState(false);
@@ -102,7 +104,7 @@ export default function AdminHeroHome() {
       <PageHeader
         title="Imagens do início do app"
         subtitle="Gerencie os personagens que aparecem no painel amarelo da home"
-        onBack={() => navigate(-1)}
+        onBack={() => goBack()}
         leading={<ImageIcon className="w-5 h-5 text-amber-500" />}
         rightAction={
           <Button onClick={() => setGenOpen(true)}>

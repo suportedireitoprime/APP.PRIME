@@ -12,6 +12,7 @@ import LeiOrdinariaDetail from '@/components/vademecum/LeiOrdinariaDetail';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import type { LeiOrdinaria } from '@/services/legislacaoService';
 import brasaoImgAsset from '@/assets/brasao-republica.webp';
+import { useGoBack } from '@/hooks/useGoBack';
 const brasaoImg = brasaoImgAsset;
 
 const TIPO_COLORS: Record<string, { badge: string; border: string; card: string }> = {
@@ -52,6 +53,7 @@ function cleanText(t: string | null): string | null {
 
 export default function Radar360() {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [searchParams, setSearchParams] = useSearchParams();
   const [items, setItems] = useState<ResenhaItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -230,7 +232,7 @@ export default function Radar360() {
         <PageHeader
           title="Radar de Leis"
           subtitle="Resenha diária do Planalto"
-          onBack={() => navigate(-1)}
+          onBack={() => goBack()}
           rightAction={
             <div className="flex items-center gap-2">
               <button

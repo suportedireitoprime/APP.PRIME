@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, ChevronRight, ListChecks, Search, Loader2, Scale, Landmark, X, Copy, Check } from 'lucide-react';
+import { useGoBack } from '@/hooks/useGoBack';
 import {
   fetchTesesEdicoes, getTesesEdicoesCached, subscribeTesesEdicoes,
   fetchTesesItens, getTesesItensCached, subscribeTesesItens,
@@ -147,6 +148,7 @@ function EdicaoSheet({ tribunal, edicao, onClose }: { tribunal: 'STJ' | 'STF'; e
 
 function TesesTribunalInner({ tribunal }: { tribunal: 'STJ' | 'STF' }) {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const cfg = TRIBUNAL_UI[tribunal];
   const cached = getTesesEdicoesCached(tribunal);
   const [edicoes, setEdicoes] = useState<TeseEdicaoRow[]>(cached ?? []);
@@ -191,7 +193,7 @@ function TesesTribunalInner({ tribunal }: { tribunal: 'STJ' | 'STF' }) {
         <div className="absolute -bottom-20 -left-10 w-64 h-64 rounded-full bg-white/10 blur-3xl pointer-events-none" />
         <div className="relative flex items-center justify-between px-4 pt-[calc(env(safe-area-inset-top,0px)+12px)] pb-2">
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => goBack()}
             aria-label="Voltar"
             className="w-11 h-11 rounded-full bg-black/25 hover:bg-black/35 backdrop-blur-sm flex items-center justify-center transition-colors"
           >

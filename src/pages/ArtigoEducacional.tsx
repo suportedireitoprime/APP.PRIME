@@ -8,6 +8,7 @@ import { CATEGORIAS_EDUCACIONAIS } from '@/data/artigosEducacionais';
 import { supabase } from '@/integrations/supabase/client';
 import { isOffline } from '@/lib/offlineFeatures';
 import { Button } from '@/components/ui/button';
+import { useGoBack } from '@/hooks/useGoBack';
 
 interface ArtigoPayload {
   conteudo_md: string;
@@ -28,6 +29,7 @@ function readCache(slug: string): ArtigoPayload | null {
 export default function ArtigoEducacional() {
   const { slug = '' } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const goBack = useGoBack();
 
   const artigo = useMemo(() => {
     for (const cat of CATEGORIAS_EDUCACIONAIS) {
@@ -96,7 +98,7 @@ export default function ArtigoEducacional() {
       <PageHeader
         title={artigo.titulo}
         subtitle={artigo.categoria}
-        onBack={() => navigate(-1)}
+        onBack={() => goBack()}
         rightAction={
           <button
             type="button"

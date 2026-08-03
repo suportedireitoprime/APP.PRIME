@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Clock, ChevronRight, Trash2, ScrollText } from 'lucide-react';
 import { getRecentes, clearRecentes, type LeiRecente } from '@/lib/leisRecentes';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 interface Props {
   open: boolean;
@@ -21,6 +22,7 @@ const formatTime = (ts: number) => {
 };
 
 const RecentesOverlay = ({ open, onClose, onSelectLei }: Props) => {
+  useBodyScrollLock(open);
   const [list, setList] = useState<LeiRecente[]>([]);
 
   useEffect(() => {

@@ -6,6 +6,7 @@ import { PageHeader } from '@/components/vademecum/PageHeader';
 import { useCadernos } from '@/hooks/useQuestoesExtras';
 import QuestoesFiltroSheet, { FILTRO_KEY, FILTRO_VAZIO, type QuestoesFiltro } from '@/components/questoes/QuestoesFiltroSheet';
 import { toast } from 'sonner';
+import { useGoBack } from '@/hooks/useGoBack';
 
 type Modelo = { nome: string; descricao: string; cor: string; filtros: Partial<QuestoesFiltro> };
 
@@ -19,6 +20,7 @@ const MODELOS: Modelo[] = [
 
 const QuestoesCadernos = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const { cadernos, loading, criar, remover } = useCadernos();
   const [filtroAberto, setFiltroAberto] = useState(false);
   const [nomeNovo, setNomeNovo] = useState('');
@@ -36,7 +38,7 @@ const QuestoesCadernos = () => {
   return (
     <div className="theme-questoes min-h-screen bg-background pb-24">
       <div className="mx-auto w-full max-w-3xl">
-        <PageHeader title="Cadernos" subtitle="Monte seus blocos de estudo" onBack={() => navigate(-1)} />
+        <PageHeader title="Cadernos" subtitle="Monte seus blocos de estudo" onBack={() => goBack()} />
 
         <div className="px-4 py-5">
           {/* Novo caderno */}

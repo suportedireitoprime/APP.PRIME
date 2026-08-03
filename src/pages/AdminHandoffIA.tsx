@@ -6,9 +6,11 @@ import remarkGfm from 'remark-gfm';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import handoffMd from '../../docs/HANDOFF_IA.md?raw';
+import { useGoBack } from '@/hooks/useGoBack';
 
 export default function AdminHandoffIA() {
   const navigate = useNavigate();
+  const goBack = useGoBack();
 
   const copy = async () => {
     try {
@@ -42,7 +44,7 @@ export default function AdminHandoffIA() {
       {/* Header */}
       <PageHeader
         title="Handoff para IA"
-        onBack={() => navigate(-1)}
+        onBack={() => goBack()}
         leading={<FileText className="h-5 w-5 text-primary" />}
       />
 

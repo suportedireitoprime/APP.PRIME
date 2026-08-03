@@ -24,11 +24,24 @@ export const CURRENCY = "BRL";
 export const PLAN_VALUE: Record<string, number> = {
   mensal: 29.9,
   anual: 199.9,
+  anual_parcelado: 199.9,
   vitalicio: 499.9,
+};
+
+/** Na App Store o plano anual é 12x R$ 19,90 (R$ 238,80/ano). */
+const PLAN_VALUE_IOS: Record<string, number> = {
+  anual: 238.8,
+  anual_parcelado: 238.8,
 };
 
 export function planValue(plano?: string | null): number {
   if (!plano) return 0;
+  try {
+    const isIOS =
+      typeof navigator !== "undefined" &&
+      /iPad|iPhone|iPod/.test(navigator.userAgent);
+    if (isIOS && PLAN_VALUE_IOS[plano] != null) return PLAN_VALUE_IOS[plano];
+  } catch { /* ignore */ }
   return PLAN_VALUE[plano] ?? 0;
 }
 

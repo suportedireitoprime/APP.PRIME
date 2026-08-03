@@ -24,6 +24,7 @@ import {
   ContextMenuTrigger,
 } from '@/components/ui/context-menu';
 import { recordActivity } from '@/lib/continuity';
+import { useGoBack } from '@/hooks/useGoBack';
 
 
 type BlogFilter = 'trending' | 'todos' | BlogTema;
@@ -42,6 +43,7 @@ function formatDate(iso: string) {
 
 const Blog = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const location = useLocation();
   const isDesktop = useIsDesktop();
   const [selectedFilter, setSelectedFilter] = useState<BlogFilter>('todos');
@@ -139,7 +141,7 @@ const Blog = () => {
           <PageHeader
             title="Blogger Jurídico"
             subtitle="Artigos, curiosidades e filosofia do Direito"
-            onBack={() => navigate(-1)}
+            onBack={() => goBack()}
             rightAction={
               <button
                 onClick={() => setInfoOpen((v) => !v)}

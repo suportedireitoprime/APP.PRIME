@@ -4,6 +4,7 @@ import { PageHeader } from '@/components/vademecum/PageHeader';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const CAMARA_API = 'https://dadosabertos.camara.leg.br/api/v2';
 
@@ -33,6 +34,7 @@ const COLORS = ['#f43f5e', '#f97316', '#a81f40', '#22c55e', '#06b6d4', '#8b5cf6'
 const RadarDeputadoDetalhe = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [deputado, setDeputado] = useState<DeputadoInfo | null>(null);
   const [despesas, setDespesas] = useState<Despesa[]>([]);
   const [loading, setLoading] = useState(true);
@@ -114,7 +116,7 @@ const RadarDeputadoDetalhe = () => {
         <PageHeader
           title={deputado?.nome || 'Carregando...'}
           subtitle={deputado ? `${deputado.siglaPartido}-${deputado.siglaUf}` : ''}
-          onBack={() => navigate(-1)}
+          onBack={() => goBack()}
         />
       </div>
 

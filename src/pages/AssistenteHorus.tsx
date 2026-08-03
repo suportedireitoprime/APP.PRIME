@@ -29,6 +29,7 @@ import vacatioLogoAsset from '@/assets/logo-vacatio-v2.png.asset.json';
 import vacatioLogoBundled from '@/assets/bundled/logo-vacatio-v2.webp';
 import horusOwlAsset from '@/assets/horus/horus-owl.png.asset.json';
 import horusOwlBundled from '@/assets/horus/horus-owl.webp';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const vacatioLogo = pickAsset(vacatioLogoBundled, srcOf(vacatioLogoAsset));
 const horusOwl = pickAsset(horusOwlBundled, srcOf(horusOwlAsset));
@@ -123,6 +124,7 @@ const NOTIF_ITEMS: Array<{ key: keyof NotifPrefs; icon: any; color: string; labe
 
 const AssistenteHorus = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const { loading: onbLoading, onboarded } = useHorusOnboarding();
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [tab, setTab] = useState<HorusTab>('main');
@@ -259,7 +261,7 @@ const AssistenteHorus = () => {
   const back = () => {
     haptic.selection();
     if (tab !== 'main') setTab('main');
-    else navigate(-1);
+    else goBack();
   };
 
   async function savePref(key: keyof NotifPrefs, value: boolean) {

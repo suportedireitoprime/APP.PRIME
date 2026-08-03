@@ -28,6 +28,7 @@ import { ChatFeedback } from '@/components/chat/ChatFeedback';
 import { stripCitations } from '@/components/chat/ChatSources';
 import PremiumGate, { type PremiumFeatureKey } from '@/components/PremiumGate';
 import { useFeatureLimit } from '@/hooks/useFeatureLimit';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 
 type ArtifactKind = 'flashcards' | 'questoes' | 'mapa' | 'termos';
@@ -90,6 +91,7 @@ function saveSessions(s: Session[]) { localStorage.setItem(HIST_KEY, JSON.string
 interface Props { open: boolean; onClose: () => void; }
 
 const AssistenteOverlay = ({ open, onClose }: Props) => {
+  useBodyScrollLock(open);
   const isDesktop = useIsDesktop();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');

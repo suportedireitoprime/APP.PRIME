@@ -2,10 +2,12 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Home } from "lucide-react";
+import { useGoBack } from '@/hooks/useGoBack';
 
 const NotFound = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const goBack = useGoBack();
 
   useEffect(() => {
     console.error("404 Error: rota inexistente:", location.pathname);
@@ -51,7 +53,7 @@ const NotFound = () => {
             Retornar ao início
           </Link>
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => goBack()}
             className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-secondary/60 px-5 py-3 font-body text-sm text-foreground/80 hover:bg-secondary hover:text-foreground transition-colors w-full sm:w-auto"
           >
             <ArrowLeft className="h-4 w-4" />

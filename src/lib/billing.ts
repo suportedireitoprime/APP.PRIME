@@ -131,6 +131,35 @@ export async function restorePurchases(): Promise<{ ok: boolean; restored: numbe
   }
 }
 
+/**
+ * Revalidação silenciosa das assinaturas que o aparelho já possui na loja.
+ * Usada automaticamente (sem toast e sem toque do usuário) quando o banco não
+ * mostra assinatura ativa e ao voltar do segundo plano — cobre renovações que
+ * não chegaram via notificação do Google/Apple.
+ */
+export async function syncEntitlements(): Promise<number> {
+  if (!isBillingAvailable()) return 0;
+  try {
+    const platform = currentPlatform();
+    const { purchases } = await NativePurchases.getPurchases({ productType: PURCHASE_TYPE.SUBS });
+    let synced = 0;
+    for (const p of purchases ?? []) {
+      const token =
+        p.purchaseToken ??
+        (p as any).transactionId ??
+        (p as any).transactionIdentifier ??
+        (p as any).receipt;
+      if (token && p.productIdentifier) {
+        const r = await validateWithServer(p.productIdentifier, token, platform);
+        if (r.ok) synced++;
+      }
+    }
+    return synced;
+  } catch {
+    return 0;
+  }
+}
+
 export async function openManageSubscriptions(): Promise<void> {
   if (!isBillingAvailable()) return;
   await NativePurchases.manageSubscriptions();

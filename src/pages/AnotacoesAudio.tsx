@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { useRecording, formatHms } from '@/contexts/RecordingContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useGoBack } from '@/hooks/useGoBack';
 
 // ─────────────────────────────────────────────────────────────
 // Tipos
@@ -50,6 +51,7 @@ const WHATSAPP_FILE_HINT = /^(PTT|AUD)-\d{8}-WA/i;
 
 export default function AnotacoesAudio() {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [searchParams, setSearchParams] = useSearchParams();
   const initialView = (searchParams.get('view') as View) || 'hub';
   const [view, setView] = useState<View>(initialView);
@@ -60,7 +62,7 @@ export default function AnotacoesAudio() {
     setSearchParams(v === 'hub' ? {} : { view: v });
   };
 
-  const back = () => (view === 'hub' ? navigate(-1) : goto('hub'));
+  const back = () => (view === 'hub' ? goBack() : goto('hub'));
 
   // Desktop drag-and-drop: quando um áudio é solto na janela, cai aqui.
   useEffect(() => {

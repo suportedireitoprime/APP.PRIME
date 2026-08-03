@@ -11,6 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Card } from '@/components/ui/card';
+import { useGoBack } from '@/hooks/useGoBack';
 
 type DesignPrompt = {
   id: string;
@@ -42,6 +43,7 @@ const emptyPreset = (): Partial<DesignPrompt> => ({
 
 export default function AdminDesignImagens() {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [presets, setPresets] = useState<DesignPrompt[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<Partial<DesignPrompt> | null>(null);
@@ -102,7 +104,7 @@ export default function AdminDesignImagens() {
     <div className="min-h-dvh bg-background pb-16">
       <PageHeader
         title="Design de Imagens"
-        onBack={() => navigate(-1)}
+        onBack={() => goBack()}
         leading={<Palette className="w-5 h-5 text-primary" />}
         rightAction={
           <Button size="sm" onClick={() => setEditing(emptyPreset())}>

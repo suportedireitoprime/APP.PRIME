@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo, memo } from 'react';
+import { useState, useEffect, useCallback, useMemo, memo, lazy, Suspense } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -30,6 +30,8 @@ import HomeCard from './HomeCard';
 import { toast } from '@/hooks/use-toast';
 import { useOutrasNormasCounts } from '@/hooks/useOutrasNormasCounts';
 import JurisprudenciaSheet from './JurisprudenciaSheet';
+const VisuaisJuridicosSheet = lazy(() => import('@/components/visuais/VisuaisJuridicosSheet'));
+import { TIPO_SLUG } from '@/lib/visuaisJuridicos/rotas';
 import { bandeiraUF } from '@/data/estadoFlags';
 
 
@@ -110,7 +112,7 @@ const EMALTA_CATS: EmAltaCat[] = [
   { id: 'ea-videoaulas',  label: 'Videoaulas',     sublabel: 'Aulas em vídeo por área',        icon: Video,       color: '#FF2D78', route: '/videoaulas' },
   { id: 'ea-resumos',     label: 'Resumos',        sublabel: 'Resumos jurídicos por tema',     icon: NotebookPen, color: '#22D3EE', route: '/resumos-juridicos' },
   { id: 'ea-audioaulas',  label: 'Audioaulas',     sublabel: 'Estude ouvindo, onde estiver',   icon: Headphones,  color: '#22C55E', route: '/audioaulas' },
-  { id: 'ea-mapas',       label: 'Mapas Mentais',  sublabel: 'Gere mapas com o assistente',    icon: Brain,       color: '#A855F7', route: '/assistente' },
+  { id: 'ea-mapas',       label: 'Mapas Mentais',  sublabel: 'Mapas, infográficos e fluxogramas',    icon: Brain,       color: '#A855F7', route: '/assistente' },
   { id: 'ea-dicionario',  label: 'Dicionário',     sublabel: 'Termos jurídicos explicados',    icon: BookA,       color: '#3B82F6', route: '/ferramentas/dicionario' },
   { id: 'ea-lei-seca',    label: 'Lei Seca',       sublabel: 'Treine o texto da lei por área',  icon: Scale,       color: '#F97316', route: '/lei-seca' },
   { id: 'ea-apresentacao', label: 'Apresentação',  sublabel: 'Em breve no aplicativo',          icon: Presentation, color: '#14B8A6', route: '', emBreve: true },
@@ -152,6 +154,7 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
   const navigate = useNavigate();
   const [juriOpen, setJuriOpen] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState<Cat | AreaCat | CategoriaFormal | null>(null);
+  const [visuaisOpen, setVisuaisOpen] = useState(false);
   const [categorySearch, setCategorySearch] = useState('');
   const [tab, setTab] = useState<Tab>('emalta');
 
@@ -161,6 +164,22 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
   const voiceSearch = useVoiceInput(handleVoiceSearch);
 
   useEffect(() => { onTabChange?.(tab); }, [tab, onTabChange]);
+
+  // Deixa os visuais jurídicos prontos assim que o app abre (chunk + dados),
+  // para o clique no card não ter delay de rede nem de carregamento.
+  useEffect(() => {
+    const aquecer = () => {
+      import('@/components/visuais/VisuaisJuridicosSheet');
+      import('@/lib/visuaisJuridicos/cache').then((m) => m.prefetchVisuais());
+    };
+    const w = window as any;
+    if (typeof w.requestIdleCallback === 'function') {
+      const id = w.requestIdleCallback(aquecer, { timeout: 2500 });
+      return () => w.cancelIdleCallback?.(id);
+    }
+    const t = setTimeout(aquecer, 1200);
+    return () => clearTimeout(t);
+  }, []);
 
   const { counts: radarCounts } = useOutrasNormasCounts();
 
@@ -362,6 +381,7 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
                           toast({ title: 'Em breve', description: 'Essa função está sendo preparada.' });
                           return;
                         }
+                        if (c.id === 'ea-mapas') { setVisuaisOpen(true); return; }
                         navigate(c.route);
                       }}
                       data-track="home_card_click"
@@ -664,6 +684,20 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
         )}
       </AnimatePresence>
 
+
+      {/* Visuais jurídicos (mapas mentais, infográficos, fluxogramas, diagramas) */}
+      {visuaisOpen && (
+        <Suspense fallback={null}>
+          <VisuaisJuridicosSheet
+            open={visuaisOpen}
+            onClose={() => setVisuaisOpen(false)}
+            onEscolherTipo={(t) => {
+              setVisuaisOpen(false);
+              navigate(`/visuais/${TIPO_SLUG[t]}`);
+            }}
+          />
+        </Suspense>
+      )}
 
       {/* Voice capture full-screen overlay (ChatGPT Live style) */}
       <VoiceCaptureOverlay

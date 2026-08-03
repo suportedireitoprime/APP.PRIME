@@ -5,15 +5,17 @@ import { PageHeader } from '@/components/vademecum/PageHeader';
 import DesafiosBottomNav from '@/components/questoes/DesafiosBottomNav';
 import { NIVEL_LABEL } from '@/components/questoes/DesafioLinha';
 import { useDesafios } from '@/hooks/useQuestoesExtras';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const QuestoesConquistas = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const { concluidos, loading } = useDesafios();
 
   return (
     <div className="theme-questoes min-h-screen bg-background pb-28">
       <div className="mx-auto w-full max-w-3xl">
-        <PageHeader title="Conquistas" subtitle="Desafios que você concluiu" onBack={() => navigate(-1)} />
+        <PageHeader title="Conquistas" subtitle="Desafios que você concluiu" onBack={() => goBack()} />
 
         <div className="px-4 py-5">
           {loading && <p className="text-sm text-muted-foreground">Carregando…</p>}

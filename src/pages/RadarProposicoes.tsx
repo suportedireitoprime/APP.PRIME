@@ -1,9 +1,11 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import ProposicoesPanel from '@/components/radar/ProposicoesPanel';
 import { PageHeader } from '@/components/vademecum/PageHeader';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const RadarProposicoes = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [searchParams] = useSearchParams();
   const dataInicial = searchParams.get('data') || undefined;
 
@@ -13,7 +15,7 @@ const RadarProposicoes = () => {
         <PageHeader
           title="Projetos de Lei"
           subtitle="Proposições legislativas da Câmara"
-          onBack={() => navigate(-1)}
+          onBack={() => goBack()}
         />
       </div>
 

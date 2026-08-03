@@ -23,6 +23,7 @@ import { LoadingState, EmptyState } from '@/components/ui/states';
 import { Newspaper } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { useGoBack } from '@/hooks/useGoBack';
 
 
 
@@ -73,6 +74,7 @@ function formatFullDate(date: Date): string {
 
 const Noticias = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const location = useLocation();
   const isMobile = useIsMobile();
   const isDesktop = useIsDesktop();
@@ -281,7 +283,7 @@ const Noticias = () => {
         <PageHeader
           title="Notícias Legislativas"
           subtitle="Últimas do mundo jurídico"
-          onBack={() => navigate(-1)}
+          onBack={() => goBack()}
           rightAction={
             <button
               onClick={() => setInfoOpen((v) => !v)}

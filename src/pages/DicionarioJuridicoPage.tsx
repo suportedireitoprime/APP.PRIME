@@ -44,6 +44,7 @@ import {
 import { limparMarkdown } from '@/lib/dicionarioTexto';
 import { buscarTermosDetalhado, sugerir } from '@/lib/dicionarioBusca';
 import { cn } from '@/lib/utils';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const PAGE_SIZE = 120;
 
@@ -64,6 +65,7 @@ const AREAS: { id: CategoriaId; icon: typeof Scale; color: string }[] = [
 
 const DicionarioJuridicoPage = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [query, setQuery] = useState('');
   const [categoria, setCategoria] = useState<CategoriaId>('todas');
   const [selected, setSelected] = useState<DicionarioTermo | null>(null);
@@ -205,7 +207,7 @@ const DicionarioJuridicoPage = () => {
       subtitle={
         termos.length ? `${termos.length.toLocaleString('pt-BR')} termos` : 'Consulte termos e definições'
       }
-      onBack={() => navigate(-1)}
+      onBack={() => goBack()}
     />
   );
 

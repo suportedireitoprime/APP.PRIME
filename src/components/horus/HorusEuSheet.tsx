@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 import { X, Loader2, User, Sparkles } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -44,6 +45,7 @@ export default function HorusEuSheet({
   open: boolean;
   onClose: () => void;
 }) {
+  useBodyScrollLock(open);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [perfil, setPerfil] = useState<PerfilPessoal>({});

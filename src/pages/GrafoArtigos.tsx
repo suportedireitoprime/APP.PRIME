@@ -14,6 +14,7 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { supabase } from '@/integrations/supabase/client';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const ART_REF_REGEX = /art(?:igo)?\.?\s*(\d+[\.\d]*(?:-[A-Z])?(?:º|°)?)/gi;
 
@@ -81,6 +82,7 @@ export interface GrafoArtigosProps {
 
 const GrafoArtigos = (props: GrafoArtigosProps) => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const location = useLocation();
   const tabelaNome = props.tabelaNome ?? (location.state as any)?.tabelaNome;
   const leiNome = props.leiNome ?? (location.state as any)?.leiNome;
@@ -239,7 +241,7 @@ const GrafoArtigos = (props: GrafoArtigosProps) => {
       <PageHeader
         title="Grafo de Conexões"
         subtitle={leiNome || 'Artigos conectados'}
-        onBack={() => (embedded && onClose ? onClose() : navigate(-1))}
+        onBack={() => (embedded && onClose ? onClose() : goBack())}
         rightAction={nodes.length > 0 ? (
           <span className="text-xs text-muted-foreground bg-secondary/60 px-2.5 py-1 rounded-full shrink-0">
             {nodes.length} arts · {edges.length} conexões

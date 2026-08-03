@@ -19,11 +19,13 @@ import { usePremiumUsage } from '@/hooks/usePremiumUsage';
 import PremiumGate from '@/components/PremiumGate';
 
 import { LEIS_COMPACTAS as LEIS } from '@/data/leisCatalog';
+import { useGoBack } from '@/hooks/useGoBack';
 
 type View = 'menu' | 'select-lei' | 'select-artigo' | 'questoes' | 'flashcards' | 'mapa_mental' | 'desempenho' | 'questoes-dashboard';
 
 const Estudar = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [searchParams] = useSearchParams();
   const [view, setView] = useState<View>('menu');
   const [selectedMode, setSelectedMode] = useState<'questoes' | 'flashcards' | 'mapa_mental'>('questoes');
@@ -101,7 +103,7 @@ const Estudar = () => {
       case 'mapa_mental': setView('select-artigo'); break;
       case 'desempenho': setView('menu'); break;
       case 'questoes-dashboard': setView('menu'); break;
-      default: navigate(-1);
+      default: goBack();
     }
   };
 
@@ -133,7 +135,7 @@ const Estudar = () => {
     <PageHeader
       title="Estudar"
       subtitle="Questões e flashcards por artigo"
-      onBack={() => navigate(-1)}
+      onBack={() => goBack()}
       leading={
         <div className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center">
           <GraduationCap className="w-5 h-5 text-primary" />

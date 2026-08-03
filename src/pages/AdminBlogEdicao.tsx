@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { TEMA_COLORS } from '@/data/blogPosts';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useGoBack } from '@/hooks/useGoBack';
 
 type Tema = {
   id: string;
@@ -74,6 +75,7 @@ const mesmoDia = (isoOrDate: string | Date | null | undefined) => {
 
 export default function AdminBlogEdicao() {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [tab, setTab] = useState<'biblioteca' | 'em_fila' | 'concluidos'>('em_fila');
   const [temas, setTemas] = useState<Tema[]>([]);
   const [config, setConfig] = useState<Config | null>(null);
@@ -439,7 +441,7 @@ export default function AdminBlogEdicao() {
     <div className="min-h-dvh bg-background pb-8">
       <PageHeader
         title="Blog Edição"
-        onBack={() => navigate(-1)}
+        onBack={() => goBack()}
         rightAction={
           <button onClick={() => setConfigOpen(true)} aria-label="Configurações" className="w-11 h-11 rounded-full bg-muted flex items-center justify-center">
             <Settings className="w-5 h-5" />
