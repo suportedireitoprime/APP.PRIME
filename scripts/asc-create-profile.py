@@ -48,6 +48,29 @@ if not bundles:
     sys.exit(1)
 bundle_ref = bundles[0]["id"]
 
+# 1b. garante as capabilities que o app usa (Sign In with Apple, Push, etc.)
+for cap in ("APPLE_ID_AUTH", "PUSH_NOTIFICATIONS", "ASSOCIATED_DOMAINS", "IN_APP_PURCHASE"):
+    rc = requests.post(
+        f"{API}/bundleIdCapabilities",
+        headers=H,
+        json={
+            "data": {
+                "type": "bundleIdCapabilities",
+                "attributes": {"capabilityType": cap},
+                "relationships": {"bundleId": {"data": {"type": "bundleIds", "id": bundle_ref}}},
+            }
+        },
+        timeout=60,
+    )
+    if rc.ok:
+        print(f"Capability habilitada: {cap}")
+    elif rc.status_code == 409:
+        print(f"Capability já ativa: {cap}")
+    else:
+        print(f"::warning::Não foi possível habilitar {cap} [{rc.status_code}]: {rc.text[:300]}")
+
+
+
 # 2. certificado de distribuição
 certs = [
     c
