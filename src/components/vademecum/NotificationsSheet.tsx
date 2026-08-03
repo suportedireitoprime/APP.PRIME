@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { X, Bell, CheckCheck, Scale, Newspaper, Video, BookOpen, ArrowRight, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { resenhaSelect } from '@/lib/resenhaBackend';
 import { useAuth } from '@/hooks/useAuth';
 import brasaoRepublica from '@/assets/brasao-republica.webp';
 
@@ -119,11 +120,12 @@ async function fetchTodayNotifications(): Promise<NotifItem[]> {
   const hojeLocal = new Date().toLocaleDateString('en-CA');
 
   const [diario, noticias, boletins, blog] = await Promise.all([
-    supabase.from('resenha_diaria' as any)
-      .select('id,tipo_ato,numero_ato,ementa,created_at,data_dou')
-      .eq('data_dou', hojeLocal)
-      .order('created_at', { ascending: false })
-      .limit(20),
+    resenhaSelect<any>({
+      select: 'id,tipo_ato,numero_ato,ementa,created_at,data_dou',
+      data_dou: `eq.${hojeLocal}`,
+      order: 'created_at.desc',
+      limit: '20',
+    }).then((data) => ({ data })),
     supabase.from('noticias_juridicas' as any)
       .select('id,titulo,resumo,imagem_url,created_at,fonte')
       .gte('created_at', since)

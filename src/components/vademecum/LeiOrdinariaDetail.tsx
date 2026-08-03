@@ -3,7 +3,7 @@ import { ExternalLink, FileText, ChevronRight, Scale, Sparkles, Loader2 } from '
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import ReactMarkdown from 'react-markdown';
 import { motion } from 'framer-motion';
-import { supabase } from '@/integrations/supabase/client';
+import { invokeResenhaFn, resenhaById } from '@/lib/resenhaBackend';
 import { toast } from 'sonner';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import brasaoImgAsset from '@/assets/brasao-republica.webp';
@@ -375,16 +375,9 @@ function ExplicacaoTab({ lei }: { lei: LeiOrdinaria }) {
     if (loading) return;
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('popular-texto-resenha', {
-        body: { id: lei.id, only_explicacao: true, force: true },
-      });
-      if (error) throw error;
-      const { data: row } = await supabase
-        .from('resenha_diaria' as any)
-        .select('explicacao')
-        .eq('id', lei.id)
-        .single();
-      const ex = (row as any)?.explicacao;
+      await invokeResenhaFn('popular-texto-resenha', { id: lei.id, only_explicacao: true, force: true });
+      const row = await resenhaById<{ explicacao: string | null }>(lei.id, 'explicacao');
+      const ex = row?.explicacao;
       if (ex) {
         setExplicacao(ex);
         toast.success('Explicação gerada!');

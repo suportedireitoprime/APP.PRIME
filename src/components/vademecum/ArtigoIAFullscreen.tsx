@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ChevronLeft, ChevronRight, Loader2, Lightbulb } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, Loader2, Lightbulb, Zap, AlertTriangle, ListTree } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { resolveSectionIndex, type AiSection } from '@/lib/artigoSegments';
@@ -113,23 +113,31 @@ const ArtigoIAFullscreen = ({
           Array.isArray(children) ? children.join('') : (children ?? ''),
         ).trim();
         const key = label.toLowerCase();
-        const tone = key.startsWith('em uma frase')
-          ? 'bg-amber-400/12 text-amber-300 ring-amber-400/30'
+        const meta = key.startsWith('em uma frase')
+          ? { icon: Zap, tone: 'text-amber-300', bar: 'bg-amber-400', wrap: 'bg-amber-400/[0.07]' }
           : key.startsWith('exemplo')
-            ? 'bg-sky-400/12 text-sky-300 ring-sky-400/30'
+            ? { icon: Lightbulb, tone: 'text-sky-300', bar: 'bg-sky-400', wrap: 'bg-sky-400/[0.07]' }
             : key.startsWith('pegadinha')
-              ? 'bg-rose-500/12 text-rose-300 ring-rose-500/30'
-              : 'bg-secondary/70 text-foreground/70 ring-border';
+              ? { icon: AlertTriangle, tone: 'text-rose-300', bar: 'bg-rose-400', wrap: 'bg-rose-400/[0.07]' }
+              : { icon: ListTree, tone: 'text-foreground/80', bar: 'bg-border', wrap: 'bg-secondary/40' };
+        const Icon = meta.icon;
         return (
-          <h3 className="mt-7 mb-3 first:mt-0" {...rest}>
+          <h3 className="mt-8 mb-3 first:mt-0" {...rest}>
             <span
-              className={`inline-flex items-center rounded-full px-3 py-1.5 font-heading text-[0.68em] font-bold uppercase leading-none tracking-[0.14em] ring-1 ${tone}`}
+              className={`flex items-center gap-2.5 overflow-hidden rounded-xl ${meta.wrap} py-2.5 pl-0 pr-3`}
             >
-              {children}
+              <span className={`h-6 w-1 shrink-0 rounded-r-full ${meta.bar}`} />
+              <Icon className={`h-4 w-4 shrink-0 ${meta.tone}`} />
+              <span
+                className={`font-heading text-[0.95em] font-bold leading-tight tracking-[0.01em] ${meta.tone}`}
+              >
+                {children}
+              </span>
             </span>
           </h3>
         );
       },
+
       hr: () => <hr className="my-6 border-border" />,
       p: (props: any) => <p className="my-3 leading-[1.8] tracking-[0.005em] text-foreground/90" {...props} />,
       strong: (props: any) => <strong className="font-bold text-foreground" {...props} />,

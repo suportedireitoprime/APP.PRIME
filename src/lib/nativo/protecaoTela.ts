@@ -1,42 +1,23 @@
 /**
- * Proteção de tela: bloqueia screenshot/gravação e esconde o conteúdo no
- * app switcher. Usado em conteúdo premium e no player de videoaulas.
- * Contagem de referências para várias telas simultâneas.
+ * Proteção de tela — DESATIVADA.
+ *
+ * A captura de tela e a gravação estão liberadas em todo o app (necessário
+ * para produzir as capturas exigidas pela Google Play e pela App Store).
+ * As funções seguem exportadas como no-op para não quebrar quem as chama.
  */
-import { Capacitor } from '@capacitor/core';
 import { useEffect } from 'react';
 
-const isNative = () => Capacitor.isNativePlatform();
-const donos = new Set<string>();
-
-async function aplicar() {
-  if (!isNative()) return;
-  try {
-    const { PrivacyScreen } = await import('@capacitor-community/privacy-screen');
-    if (donos.size > 0) await PrivacyScreen.enable();
-    else await PrivacyScreen.disable();
-  } catch {
-    /* noop */
-  }
+export async function protegerTela(_motivo: string): Promise<void> {
+  /* captura de tela liberada */
 }
 
-export async function protegerTela(motivo: string): Promise<void> {
-  donos.add(motivo);
-  await aplicar();
+export async function desprotegerTela(_motivo: string): Promise<void> {
+  /* captura de tela liberada */
 }
 
-export async function desprotegerTela(motivo: string): Promise<void> {
-  donos.delete(motivo);
-  await aplicar();
-}
-
-/** Hook: protege a tela enquanto o componente estiver montado e `ativo`. */
-export function useProtecaoTela(motivo: string, ativo = true): void {
+/** Hook mantido por compatibilidade — não aplica nenhuma restrição. */
+export function useProtecaoTela(_motivo: string, _ativo = true): void {
   useEffect(() => {
-    if (!ativo) return;
-    void protegerTela(motivo);
-    return () => {
-      void desprotegerTela(motivo);
-    };
-  }, [motivo, ativo]);
+    /* no-op */
+  }, []);
 }

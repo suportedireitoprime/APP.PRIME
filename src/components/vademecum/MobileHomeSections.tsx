@@ -13,8 +13,13 @@ import {
   PiggyBank, Plane, PocketKnife, RadioTower, ReceiptText, Scale, Scroll, ScrollText, Search,
   Shield, ShieldAlert, ShieldCheck, ShieldX, Ship, ShoppingCart, Siren, Award, Sprout, Stamp, Store,
   Tractor, TreePine, Users, Vote, Wallet, Wifi, X, type LucideIcon,
-  Presentation,
+  Presentation, FolderOpen, RefreshCw,
 } from 'lucide-react';
+import { estiloPasta } from '@/lib/documentosTipos';
+import { usePastasDocumentos } from '@/hooks/useDocumentosDrive';
+import DocumentosSheet from '@/components/documentos/DocumentosSheet';
+
+
 import { LEIS_CATALOG } from '@/data/leisCatalog';
 import { ESTADOS } from '@/pages/LegislacaoEstadual';
 import { LEI_ICON_MAP } from '@/lib/leiIcons';
@@ -116,7 +121,9 @@ const EMALTA_CATS: EmAltaCat[] = [
   { id: 'ea-mapas',       label: 'Mapas Mentais',  sublabel: 'Mapas, infográficos e fluxogramas',    icon: Brain,       color: '#A855F7', route: '/assistente' },
   { id: 'ea-dicionario',  label: 'Dicionário',     sublabel: 'Termos jurídicos explicados',    icon: BookA,       color: '#3B82F6', route: '/ferramentas/dicionario' },
   { id: 'ea-lei-seca',    label: 'Lei Seca',       sublabel: 'Treine o texto da lei por área',  icon: Scale,       color: '#F97316', route: '/lei-seca' },
+  
   { id: 'ea-apresentacao', label: 'Apresentação',  sublabel: 'Em breve no aplicativo',          icon: Presentation, color: '#14B8A6', route: '', emBreve: true },
+
 
 
 
@@ -137,13 +144,14 @@ const LOCAIS_CATS: LocalCat[] = [
   { id: 'museus',             label: 'Museus',             sublabel: 'Memória e cultura jurídica',     icon: Landmark,   color: '#EC4899' },
 ];
 
-type Tab = 'locais' | 'estudos' | 'areas';
+type Tab = 'locais' | 'estudos' | 'documentos';
 
 const TABS: { id: Tab; label: string; icon: any }[] = [
-  { id: 'locais',  label: 'Locais',  icon: MapPin },
-  { id: 'estudos', label: 'Estudos', icon: GraduationCap },
-  { id: 'areas',   label: 'Áreas',   icon: List },
+  { id: 'locais',     label: 'Locais',     icon: MapPin },
+  { id: 'estudos',    label: 'Estudos',    icon: GraduationCap },
+  { id: 'documentos', label: 'Documentos', icon: FolderOpen },
 ];
+
 
 
 
@@ -171,6 +179,11 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
   const [juriOpen, setJuriOpen] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState<Cat | AreaCat | CategoriaFormal | null>(null);
   const [visuaisOpen, setVisuaisOpen] = useState(false);
+  const [docPasta, setDocPasta] = useState<{ id: string; nome: string } | null>(null);
+  const docPastas = usePastasDocumentos();
+  const [areasOpen, setAreasOpen] = useState(false);
+
+
   const [categorySearch, setCategorySearch] = useState('');
   const [tab, setTab] = useState<Tab>('estudos');
 
@@ -381,6 +394,8 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
                           return;
                         }
                         if (c.id === 'ea-mapas') { setVisuaisOpen(true); return; }
+                        if (c.id === 'ea-areas') { setAreasOpen(true); return; }
+
                         navigate(c.route);
                       }}
                       data-track="home_card_click"
@@ -485,9 +500,9 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
           </motion.div>
         )}
 
-        {tab === 'areas' && (
+        {tab === 'documentos' && (
           <motion.div
-            key="areas"
+            key="documentos"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
@@ -498,35 +513,50 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
               <div className="flex items-center gap-2">
                 <span className="w-1 h-5 rounded-full bg-primary" />
                 <h2 className="font-body text-foreground text-2xl sm:text-3xl font-bold tracking-tight">
-                  Áreas
+                  Documentos
                 </h2>
               </div>
               <p className="font-body text-muted-foreground text-[13px] leading-snug mt-1 ml-3">
-                Todas as áreas do Direito. Escolha uma para ver as leis daquela área.
+                Modelos prontos para usar: petições, contestações, contratos, procurações e mais.
               </p>
             </div>
             <div className="h-[1.5px] bg-border/70 w-full mb-2" />
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-              {AREA_CATS.map((c, i) => (
-                <HomeCard
-                  key={c.id}
-                  icon={c.icon}
-                  label={c.label}
-                  sublabel={c.sublabel}
-                  color={c.color}
-                  delay={i * 0.05}
-                  onClick={() => {
-                    setCategorySearch('');
-                    setCategoryOpen(c);
-                  }}
-                  data-track="home_card_click"
-                  data-track-name={c.label}
-                  data-track-section="areas"
-                />
-              ))}
-            </div>
+            {docPastas.isLoading ? (
+
+              <div className="flex items-center justify-center gap-2 py-10 text-muted-foreground">
+                <RefreshCw className="h-4 w-4 animate-spin" />
+                <span className="font-body text-sm">Carregando categorias…</span>
+              </div>
+            ) : docPastas.isError ? (
+              <div className="rounded-2xl border border-border/60 bg-card p-5 text-center">
+                <p className="font-display text-[15px] font-bold text-foreground">Não consegui carregar os documentos</p>
+                <p className="mt-1 font-body text-[13px] text-muted-foreground">Tente novamente em instantes.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+                {docPastas.pastas.map((p, i) => {
+                  const est = estiloPasta(p.nome);
+                  return (
+                    <HomeCard
+                      key={p.id}
+                      icon={est.icon}
+                      label={est.label}
+                      sublabel="Modelos prontos"
+                      color={est.color}
+                      delay={Math.min(i * 0.04, 0.3)}
+                      onClick={() => setDocPasta({ id: p.id, nome: p.nome })}
+                      data-track="home_card_click"
+                      data-track-name={est.label}
+                      data-track-section="documentos"
+                    />
+                  );
+                })}
+              </div>
+            )}
+
           </motion.div>
         )}
+
       </AnimatePresence>
 
 
@@ -741,6 +771,53 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
             }}
           />
         </Suspense>
+      )}
+
+      {/* Documentos — modelos jurídicos vindos do Drive */}
+      <DocumentosSheet categoria={docPasta} open={!!docPasta} onClose={() => setDocPasta(null)} />
+
+      {/* Áreas do Direito — grade completa (aberta pela aba Estudos) */}
+      {areasOpen && createPortal(
+        <div className="fixed inset-0 z-[80] flex flex-col bg-background">
+          <div className="flex items-center gap-3 border-b border-border/60 px-3 pt-[calc(env(safe-area-inset-top)+10px)] pb-3">
+            <button
+              onClick={() => setAreasOpen(false)}
+              aria-label="Voltar"
+              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-border/60 bg-card active:scale-95 transition"
+            >
+              <ChevronRight className="h-6 w-6 rotate-180 text-foreground" />
+            </button>
+            <div className="min-w-0 flex-1">
+              <p className="truncate font-display text-[19px] font-bold leading-tight text-foreground">Áreas do Direito</p>
+              <p className="truncate font-body text-[12px] text-muted-foreground">
+                Escolha uma área para ver as leis daquela área
+              </p>
+            </div>
+          </div>
+          <div className="flex-1 overflow-y-auto px-4 pb-[calc(env(safe-area-inset-bottom)+24px)] pt-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+              {AREA_CATS.map((c, i) => (
+                <HomeCard
+                  key={c.id}
+                  icon={c.icon}
+                  label={c.label}
+                  sublabel={c.sublabel}
+                  color={c.color}
+                  delay={Math.min(i * 0.04, 0.3)}
+                  onClick={() => {
+                    setAreasOpen(false);
+                    setCategorySearch('');
+                    setCategoryOpen(c);
+                  }}
+                  data-track="home_card_click"
+                  data-track-name={c.label}
+                  data-track-section="areas"
+                />
+              ))}
+            </div>
+          </div>
+        </div>,
+        document.body,
       )}
 
       {/* Voice capture full-screen overlay (ChatGPT Live style) */}

@@ -82,7 +82,7 @@ const DesktopLinkConfirm = () => {
       <div className="flex items-center gap-3 px-4 pt-safe pt-4 pb-2">
         <button
           onClick={() => navigate('/')}
-          className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center"
+          className="w-12 h-12 rounded-full touch-manipulation bg-white/5 border border-white/10 flex items-center justify-center"
           aria-label="Voltar"
         >
           <ArrowLeft className="w-5 h-5" />

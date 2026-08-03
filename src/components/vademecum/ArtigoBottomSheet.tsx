@@ -2305,11 +2305,11 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
           }
           onInteractOutside={(e) => {
             const t = e.target as HTMLElement | null;
-            if (t && (t.closest('[data-artigo-rail]') || t.closest('[data-artigo-menu]'))) e.preventDefault();
+            if (iaFull || (t && (t.closest('[data-artigo-rail]') || t.closest('[data-artigo-menu]') || t.closest('[data-artigo-ia-fullscreen]')))) e.preventDefault();
           }}
           onPointerDownOutside={(e) => {
             const t = e.target as HTMLElement | null;
-            if (t && (t.closest('[data-artigo-rail]') || t.closest('[data-artigo-menu]'))) e.preventDefault();
+            if (iaFull || (t && (t.closest('[data-artigo-rail]') || t.closest('[data-artigo-menu]') || t.closest('[data-artigo-ia-fullscreen]')))) e.preventDefault();
           }}
         >
 
@@ -3805,6 +3805,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         loading={iaFull ? Boolean(aiLoading[iaFull.mode]) : false}
         initialSectionId={iaFull?.sectionId ?? null}
         fontSize={fontSize}
+        portalContainer={sheetNode}
         onClose={() => { setIaFull(null); setActiveTab('artigo'); }}
       />
 

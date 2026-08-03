@@ -6,9 +6,9 @@ import brasaoImg from '@/assets/brasao-republica.webp';
 import vm1 from '@/assets/vademecum-hero/vm-1.png.asset.json';
 import vm2 from '@/assets/vademecum-hero/vm-2.png.asset.json';
 import vm4 from '@/assets/vademecum-hero/vm-4.png.asset.json';
-import { srcOf } from '@/lib/assetUrl';
 
-const FIGURAS = [srcOf(vm1), srcOf(vm2), srcOf(vm4)];
+const FIGURAS = [vm1.url, vm2.url, vm4.url];
+
 const POSICOES = ['right', 'left', 'center'] as const;
 
 const SUBTITULOS = [
@@ -91,13 +91,10 @@ const VadeMecumHero = ({ onBuscar }: Props) => {
         <button
           onClick={() => navigate('/')}
           aria-label="Voltar"
-          className="w-11 h-11 rounded-full bg-black/40 border border-white/20 backdrop-blur-md flex items-center justify-center active:scale-95 transition"
+          className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-black/40 border border-white/20 backdrop-blur-md flex items-center justify-center active:scale-95 transition touch-manipulation"
         >
-          <ChevronLeft className="w-6 h-6 text-white" />
+          <ChevronLeft className="w-7 h-7 sm:w-8 sm:h-8 text-white" strokeWidth={2.4} />
         </button>
-        <p className="font-display text-white text-[15px] font-bold tracking-wide drop-shadow">
-          Vade Mecum
-        </p>
       </header>
 
       <div className="relative px-4 pt-4 pb-5 min-h-[240px] flex flex-col gap-4">

@@ -6,9 +6,9 @@ import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import LeiOrdinariaDetail from '@/components/vademecum/LeiOrdinariaDetail';
-import { supabase } from '@/integrations/supabase/client';
 import type { LeiOrdinaria } from '@/services/legislacaoService';
 import { getListSnapshot, setListSnapshot } from '@/services/offlineDb';
+import { resenhaSelect, RESENHA_SELECT, garantirTextoIntegral } from '@/lib/resenhaBackend';
 import { withOnlineGuard } from '@/lib/onlineGuard';
 import brasaoImgAsset from '@/assets/brasao-republica.webp';
 import coverLei from '@/assets/norma-cover-lei.jpg';
@@ -117,15 +117,15 @@ export default function OutrasNormasLista() {
         return;
       }
       // 2) Revalida online.
-      const { data, error } = await supabase
-        .from('resenha_diaria' as any)
-        .select('id,tipo_ato,numero_ato,ementa,url,data_publicacao,data_dou,texto_completo,explicacao')
-        .eq('tipo_ato', meta.tipo)
-        .order('data_dou', { ascending: false })
-        .limit(500);
+      const data = await resenhaSelect<ResenhaRow>({
+        select: RESENHA_SELECT,
+        tipo_ato: `eq.${meta.tipo}`,
+        order: 'data_dou.desc',
+        limit: '500',
+      });
       if (mounted) {
-        if (error && !cached) toast.error('Falha ao carregar normas');
-        const list = (data as unknown as ResenhaRow[]) || [];
+        const list = data;
+        if (!list.length && !cached) toast.error('Falha ao carregar normas');
         if (list.length) {
           setItems(list);
           setListSnapshot(snapKey, list).catch(() => {});
@@ -160,17 +160,12 @@ export default function OutrasNormasLista() {
       explicacao: e,
     });
     setDetail(buildLei(texto ?? null, explicacao ?? null));
-    if (!texto) {
+    if (!texto || texto.length < 200) {
       try {
-        await withOnlineGuard(
-          () => supabase.functions.invoke('popular-texto-resenha', { body: { id: item.id, force: true } }),
+        const data = await withOnlineGuard(
+          () => garantirTextoIntegral(item.id),
           { message: 'Sem internet — o texto completo desta norma será carregado quando você reconectar.' },
         );
-        const { data } = await supabase
-          .from('resenha_diaria' as any)
-          .select('texto_completo,explicacao')
-          .eq('id', item.id)
-          .maybeSingle();
         const novo = cleanText((data as any)?.texto_completo);
         if (novo) {
           explicacao = (data as any)?.explicacao ?? explicacao;

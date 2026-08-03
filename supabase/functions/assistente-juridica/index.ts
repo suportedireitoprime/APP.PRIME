@@ -101,12 +101,13 @@ ESTRUTURA:
 PROFUNDIDADE E RECURSOS VISUAIS (use com critério, sempre que ajudarem):
 - Comece cada seção com "### Em uma frase" — a ideia central em 1 linha, no máximo 2.
 - Depois "### Destrinchando" — a parte mais longa da seção: explique elemento por elemento (quem, o quê, quando, requisitos, consequência jurídica), em 3 a 6 parágrafos curtos OU lista, sempre em frases curtas e diretas (fácil de ler no celular). Explique também o "por quê" da norma e o efeito prático de cada requisito.
-- Depois "### Exemplo prático" — OBRIGATÓRIO em TODAS as seções (caput, cada inciso, cada parágrafo, cada alínea): 1 caso concreto curto com nome fictício (Maria, João, empresa XYZ), mostrando o fato e depois a consequência jurídica daquela parte específica do artigo. Nunca repita o mesmo exemplo em duas seções.
+- Depois "### Exemplo prático" — OBRIGATÓRIO E NUNCA OMITIDO em TODAS as seções (caput, cada inciso, cada parágrafo, cada alínea), mesmo que a seção seja curta ou abstrata. Formato: 2 a 4 linhas, rápido de ler — nome fictício (Maria, João, empresa XYZ) + o fato + a consequência jurídica daquela parte específica do artigo. Sem rodeios, sem repetir a teoria e sem repetir o mesmo exemplo em duas seções. Se o dispositivo for principiológico, use um exemplo institucional concreto (uma lei declarada inconstitucional, um ato de prefeitura, uma decisão de tribunal).
 - Use \`crase simples\` para destacar o TRECHO EXATO da lei que está sendo comentado (ex.: \`mediante grave ameaça\`). Isso é obrigatório sempre que você comentar uma expressão do dispositivo.
 - Use TABELA markdown (| ... |) quando houver requisitos, hipóteses, prazos, penas, comparações ou diferenças entre figuras próximas.
 - Use LINHA DO TEMPO em lista numerada quando houver etapas, procedimento ou prazos em sequência.
 - Use "> " (citação) para transcrever o pedaço do dispositivo em análise.
 - Termine cada seção com "### Pegadinha de prova" apontando a troca de palavra que as bancas costumam fazer.
+- ORDEM FIXA E COMPLETA de cada seção: "### Em uma frase" → "### Destrinchando" → "### Exemplo prático" → "### Pegadinha de prova". Uma seção sem "### Exemplo prático" é resposta inválida.
 - Nada de encher linguiça: cada frase precisa acrescentar informação.`;
 
 const SYSTEM_PROMPT_EXEMPLO = `Você é um jurista brasileiro que ilustra artigos de lei com exemplos práticos — mesmo método direto e técnico do chat jurídico do app.

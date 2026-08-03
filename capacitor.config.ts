@@ -5,6 +5,9 @@ const GOOGLE_WEB_CLIENT_ID = process.env.GOOGLE_WEB_CLIENT_ID || '1099228641135-
 // 833040915353-gkvhq1b2f4d1aou1mkd1nshhlubgvrdk.apps.googleusercontent.com
 
 const config: CapacitorConfig = {
+  // NÃO trocar: este appId é o applicationId do app publicado na Play Store.
+  // O bundle ID do iOS é sobrescrito no workflow via secret APPLE_BUNDLE_ID
+  // (br.com.direito.app), então mudar aqui quebraria a atualização no Android.
   appId: 'br.com.app.gpu2675756.gpu0e7509bfb7bde52aef412888bb17a456',
   appName: 'Estudos Jurídicos',
   webDir: 'dist',

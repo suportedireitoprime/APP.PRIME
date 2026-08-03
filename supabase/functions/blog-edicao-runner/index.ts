@@ -113,6 +113,55 @@ async function warmCdn(url: string) {
 }
 
 /**
+ * Parser tolerante para o JSON do artigo devolvido pela IA.
+ * Corrige os erros mais comuns: cercas de markdown, texto em volta do objeto,
+ * caracteres de controle crus dentro de strings, aspas curvas em chaves e
+ * vírgulas sobrando antes de } ou ].
+ */
+function parseArtigoJson(raw: string): any {
+  const tentativas: string[] = [];
+  const base = String(raw ?? "")
+    .replace(/^\uFEFF/, "")
+    .replace(/^```(?:json)?\s*/i, "")
+    .replace(/```\s*$/i, "")
+    .trim();
+  tentativas.push(base);
+
+  const m = base.match(/\{[\s\S]*\}/);
+  if (m) tentativas.push(m[0]);
+
+  for (const candidato of [...tentativas]) {
+    // escapa quebras de linha / tabs crus que estejam dentro de strings
+    let out = "";
+    let dentro = false;
+    let escapando = false;
+    for (const ch of candidato) {
+      if (escapando) { out += ch; escapando = false; continue; }
+      if (ch === "\\") { out += ch; escapando = true; continue; }
+      if (ch === '"') { dentro = !dentro; out += ch; continue; }
+      if (dentro) {
+        if (ch === "\n") { out += "\\n"; continue; }
+        if (ch === "\r") { out += "\\r"; continue; }
+        if (ch === "\t") { out += "\\t"; continue; }
+        const code = ch.charCodeAt(0);
+        if (code < 0x20) continue; // descarta outros caracteres de controle
+      }
+      out += ch;
+    }
+    out = out.replace(/,\s*([}\]])/g, "$1");
+    tentativas.push(out);
+  }
+
+  let ultimo: unknown = null;
+  for (const t of tentativas) {
+    if (!t) continue;
+    try { return JSON.parse(t); } catch (e) { ultimo = e; }
+  }
+  throw new Error(String((ultimo as Error)?.message || "JSON inválido"));
+}
+
+/**
+
  * Remove H1/H2 iniciais que apenas repetem o título do post.
  * Alguns retornos do Gemini começam com `## <título>` mesmo instruídos a não fazê-lo,
  * o que gera a sensação de "capa duplicada" logo abaixo da capa real.
@@ -328,20 +377,37 @@ Escreva um artigo COMPLETO, profundo e envolvente. Retorne APENAS JSON válido (
   "conteudo_md": "Artigo em Markdown puro, começando com uma introdução envolvente. Use ## para seções, ### para subseções, negrito, listas, citações relevantes. NÃO inclua H1 no início (o app renderiza o título). NÃO inclua imagem no markdown. Cite artigos, autores e casos quando pertinente. Português BR."
 }`;
 
-    const raw = await callGemini(geminiKey, artPrompt, cfg.modelo_texto || "gemini-2.5-flash-lite", 8192, {
-      functionName: "blog-edicao-runner",
-      triggerType: "auto",
-    });
-    const cleaned = raw.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
-    let art: any;
-    try { art = JSON.parse(cleaned); }
-    catch {
-      const m = cleaned.match(/\{[\s\S]*\}/);
-      art = m ? JSON.parse(m[0]) : null;
+    // Parser blindado: a IA às vezes devolve JSON com caracteres de controle,
+    // vírgulas sobrando ou texto em volta. Tenta várias estratégias e, se ainda
+    // falhar, refaz a geração uma vez antes de marcar o tema como falho.
+    let art: any = null;
+    let ultimoErro = "";
+    for (let tentativa = 1; tentativa <= 2 && !art; tentativa++) {
+      const raw = await callGemini(
+        geminiKey,
+        tentativa === 1
+          ? artPrompt
+          : `${artPrompt}\n\nATENÇÃO: a resposta anterior não era JSON válido (${ultimoErro}). Retorne SOMENTE o objeto JSON, sem markdown, sem comentários, com todas as quebras de linha escapadas como \\n.`,
+        cfg.modelo_texto || "gemini-2.5-flash-lite",
+        8192,
+        { functionName: "blog-edicao-runner", triggerType: "auto" },
+      );
+      try {
+        art = parseArtigoJson(raw);
+      } catch (e) {
+        ultimoErro = String((e as Error)?.message || e).slice(0, 200);
+        art = null;
+        console.error(`blog-runner: JSON inválido (tentativa ${tentativa}): ${ultimoErro}`);
+      }
+      if (art && (!art.titulo || !art.conteudo_md)) {
+        ultimoErro = "JSON sem titulo/conteudo_md";
+        art = null;
+      }
     }
-    if (!art?.titulo || !art?.conteudo_md) {
-      throw new Error("IA não retornou artigo válido");
+    if (!art) {
+      throw new Error(`IA não retornou artigo válido: ${ultimoErro}`);
     }
+
 
     // Sanitiza conteudo_md: remove H1/H2 iniciais que repetem o título (evita
     // aparência de "capa duplicada" logo abaixo da capa do post).

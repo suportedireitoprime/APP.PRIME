@@ -2814,19 +2814,19 @@ jobs:
           p = Path('android/app/build.gradle')
           s = p.read_text()
 
-          # 1) minSdkVersion → SEMPRE literal 30. Cobre 3 formas que o Capacitor pode gerar:
+          # 1) minSdkVersion → SEMPRE literal 29. Cobre 3 formas que o Capacitor pode gerar:
           #    a) `minSdkVersion 22`
           #    b) `minSdkVersion rootProject.ext.minSdkVersion`
           #    c) `minSdk 22` / `minSdk = 22` (AGP 8 DSL)
-          # Se qualquer forma existir, força para `minSdkVersion 30`. Sem isso, um
+          # Se qualquer forma existir, força para `minSdkVersion 29`. Sem isso, um
           # `rootProject.ext.minSdkVersion` deixado no arquivo vira null e explode
           # com "A problem occurred evaluating project ':app'  Value is null".
           before = s
-          s = re.sub(r'\bminSdkVersion\s+[A-Za-z0-9_.]+', 'minSdkVersion 30', s)
-          s = re.sub(r'\bminSdk\b\s*=?\s*[A-Za-z0-9_.]+', 'minSdkVersion 30', s)
+          s = re.sub(r'\bminSdkVersion\s+[A-Za-z0-9_.]+', 'minSdkVersion 29', s)
+          s = re.sub(r'\bminSdk\b\s*=?\s*[A-Za-z0-9_.]+', 'minSdkVersion 29', s)
           if s == before:
               # Não encontrou — injeta dentro de defaultConfig { }
-              s = re.sub(r'(defaultConfig\s*\{)', r'\1\n        minSdkVersion 30', s, count=1)
+              s = re.sub(r'(defaultConfig\s*\{)', r'\1\n        minSdkVersion 29', s, count=1)
           assert 'rootProject.ext.minSdkVersion' not in s, 'minSdkVersion patch falhou (referência a rootProject.ext.* ainda presente)'
 
           # 1b) targetSdkVersion — força para 36 (Android 16). Play Store exige API 34+ em 2025.
@@ -2873,14 +2873,14 @@ jobs:
               )
 
           p.write_text(s)
-          print('✅ minSdk=30, targetSdk=36, compileSdk=36, abiFilters=all4, bundle splits ajustados')
+          print('✅ minSdk=29, targetSdk=36, compileSdk=36, abiFilters=all4, bundle splits ajustados')
 
           # 4) variables.gradle — força valores mínimos consistentes.
           v = Path('android/variables.gradle')
           if v.exists():
               vs = v.read_text()
               new_vs = vs
-              new_vs = re.sub(r'minSdkVersion\s*=\s*\d+', 'minSdkVersion = 30', new_vs)
+              new_vs = re.sub(r'minSdkVersion\s*=\s*\d+', 'minSdkVersion = 29', new_vs)
               new_vs = re.sub(r'targetSdkVersion\s*=\s*\d+', 'targetSdkVersion = 36', new_vs)
               new_vs = re.sub(r'compileSdkVersion\s*=\s*\d+', 'compileSdkVersion = 36', new_vs)
               if new_vs != vs:
@@ -2907,20 +2907,20 @@ jobs:
               if not path.exists():
                   continue
               text = path.read_text()
-              # Bloqueia qualquer minSdkVersion menor que 30 (Android 10).
+              # Bloqueia qualquer minSdkVersion menor que 29 (Android 10).
               gradle_matches = re.findall(r'\bminSdkVersion\s*(?:=\s*)?(\d+)\b', text)
               manifest_matches = re.findall(r'android:minSdkVersion="(\d+)"', text)
               for v in gradle_matches + manifest_matches:
                   if int(v) < 29:
-                      print(f'❌ minSdkVersion {v} encontrado em {path} (mínimo exigido: 30 / Android 11)')
+                      print(f'❌ minSdkVersion {v} encontrado em {path} (mínimo exigido: 29 / Android 10)')
                       failed = True
               values = gradle_matches + manifest_matches
               if values:
                   print(f'→ {path}: minSdkVersion {", ".join(values)}')
 
           if failed:
-              raise SystemExit('minSdkVersion < 30 detectado; o app exige Android 11 (API 30) ou superior.')
-          print('✅ minSdk validado: todos os valores >= 30 (Android 11)')
+              raise SystemExit('minSdkVersion < 29 detectado; o app exige Android 10 (API 29) ou superior.')
+          print('✅ minSdk validado: todos os valores >= 29 (Android 10)')
 
           PY
 

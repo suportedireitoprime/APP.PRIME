@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { invokeResenhaFn, resenhaSelect } from '@/lib/resenhaBackend';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -49,10 +50,7 @@ export default function AdminRadaresLeis() {
     setRunning(true);
     toast.loading('Executando raspagem manual...', { id: 'run' });
     try {
-      const { data, error } = await supabase.functions.invoke('scrape-resenha-diaria', {
-        body: { origem: 'manual', notify: true },
-      });
-      if (error) throw error;
+      const data = await invokeResenhaFn('scrape-resenha-diaria', { origem: 'manual', notify: true });
       toast.success(`OK: ${(data as any)?.novos ?? 0} novidades`, { id: 'run' });
       await load();
     } catch (e: any) {
@@ -66,11 +64,11 @@ export default function AdminRadaresLeis() {
     if (expanded === run.id) { setExpanded(null); return; }
     setExpanded(run.id);
     if (run.atos_ids.length > 0 && !atosCache[run.id]) {
-      const { data } = await supabase
-        .from('resenha_diaria' as any)
-        .select('id,tipo_ato,numero_ato,ementa,url')
-        .in('id', run.atos_ids);
-      setAtosCache(prev => ({ ...prev, [run.id]: ((data as any[]) ?? []) as AtoInfo[] }));
+      const data = await resenhaSelect<AtoInfo>({
+        select: 'id,tipo_ato,numero_ato,ementa,url',
+        id: `in.(${run.atos_ids.join(',')})`,
+      });
+      setAtosCache(prev => ({ ...prev, [run.id]: data }));
     }
   };
 

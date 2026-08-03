@@ -74,8 +74,10 @@ Deno.serve(async (req) => {
       systemInstruction: { parts: [{ text: INSTRUCAO }] },
       inputAudioTranscription: {},
       outputAudioTranscription: {},
-      // Menor custo de tokens de vídeo/imagem (~66 tokens/frame em vez de ~256)
-      mediaResolution: "MEDIA_RESOLUTION_LOW",
+      // OBS: não enviar `mediaResolution` aqui — o schema de setup do
+      // BidiGenerateContent nesta versão rejeita o campo ("Unknown name
+      // mediaResolution at 'setup'"). A economia de vídeo vem do envio de
+      // 1 frame a cada 2s no cliente (liveClient.ts).
     };
 
 

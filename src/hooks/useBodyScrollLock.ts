@@ -1,35 +1,32 @@
 import { useEffect } from 'react';
 
 let lockCount = 0;
-let saved: { overflow: string; touchAction: string; overscroll: string } | null = null;
 
 const apply = () => {
+  if (lockCount !== 1) return;
   const b = document.body;
   const h = document.documentElement;
-  if (lockCount === 1) {
-    saved = {
-      overflow: b.style.overflow,
-      touchAction: b.style.touchAction,
-      overscroll: b.style.overscrollBehavior,
-    };
-    b.style.overflow = 'hidden';
-    b.style.touchAction = 'none';
-    b.style.overscrollBehavior = 'none';
-    h.style.overflow = 'hidden';
-  }
+  b.style.overflow = 'hidden';
+  b.style.touchAction = 'none';
+  b.style.overscrollBehavior = 'none';
+  h.style.overflow = 'hidden';
 };
 
+/**
+ * Ao liberar, limpamos os estilos inline em vez de restaurar um "valor
+ * anterior" — restaurar um snapshot antigo podia recolocar `overflow: hidden`
+ * quando duas folhas fechavam ao mesmo tempo, travando o app.
+ */
 const release = () => {
+  if (lockCount !== 0) return;
   const b = document.body;
   const h = document.documentElement;
-  if (lockCount === 0 && saved) {
-    b.style.overflow = saved.overflow;
-    b.style.touchAction = saved.touchAction;
-    b.style.overscrollBehavior = saved.overscroll;
-    h.style.overflow = '';
-    saved = null;
-  }
+  b.style.overflow = '';
+  b.style.touchAction = '';
+  b.style.overscrollBehavior = '';
+  h.style.overflow = '';
 };
+
 
 /**
  * Impede que o conteúdo por trás (home do app, listas, etc.) role ou receba

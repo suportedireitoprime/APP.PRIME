@@ -335,7 +335,7 @@ const BottomNav = () => {
               <button
                 onClick={() => setEstudosOpen(false)}
                 aria-label="Fechar estudos"
-                className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center"
+                className="w-12 h-12 rounded-full touch-manipulation bg-secondary flex items-center justify-center"
               >
                 <X className="w-4 h-4 text-foreground" aria-hidden="true" />
               </button>
@@ -407,7 +407,7 @@ const BottomNav = () => {
               <button
                 onClick={() => setFerramentasOpen(false)}
                 aria-label="Fechar ferramentas"
-                className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center"
+                className="w-12 h-12 rounded-full touch-manipulation bg-secondary flex items-center justify-center"
               >
                 <ChevronDown className="w-5 h-5 text-foreground" aria-hidden="true" />
               </button>
@@ -483,7 +483,7 @@ const BottomNav = () => {
                   <button
                     onClick={() => setHorusView(horusView === 'main' ? 'chooser' : 'main')}
                     aria-label="Voltar"
-                    className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center shrink-0"
+                    className="w-12 h-12 rounded-full touch-manipulation bg-secondary flex items-center justify-center shrink-0"
                   >
                     <ChevronRight className="w-5 h-5 text-foreground rotate-180" />
                   </button>
@@ -517,7 +517,7 @@ const BottomNav = () => {
               <button
                 onClick={() => { setAssistenteChooserOpen(false); setHorusView('chooser'); }}
                 aria-label="Fechar"
-                className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center shrink-0"
+                className="w-12 h-12 rounded-full touch-manipulation bg-secondary flex items-center justify-center shrink-0"
               >
                 <X className="w-5 h-5 text-foreground" aria-hidden="true" />
               </button>

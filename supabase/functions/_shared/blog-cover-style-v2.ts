@@ -35,52 +35,64 @@ export const THEME_ACCENTS: Record<string, Accent> = {
 
 const FALLBACK: Accent = { hex: "#F5C76A", name: "âmbar quente", hint: "cena editorial vintage com objetos jurídicos" };
 
-// Vocabulário de objetos da "cena vazada" (estilo gravura editorial vintage).
+// ---------------------------------------------------------------------------
+// Estilo "painel do Blogger Jurídico": exatamente o visual do hero vermelho do
+// app — fundo chapado na cor do tema, motivos jurídicos em linha (balança, §,
+// livro, coluna, pena) bem apagados por trás, e UMA figura vetorial "vazada"
+// (recortada, sem cenário) apoiada na base, num dos terços laterais.
+// ---------------------------------------------------------------------------
+
+// Figuras vazadas — mesmo espírito dos recortes usados no painel (Têmis,
+// professor, magistrado…). Uma por capa, sempre diferente da anterior.
+const FIGURE_POOL = [
+  "Lady Justice (Themis) standing, blindfolded, holding brass scales and a sword",
+  "elderly law professor in a dark suit and glasses, holding an open book, one finger raised",
+  "female judge in a black robe with a white jabot, holding a gavel",
+  "young law student with a backpack, hugging a thick code book",
+  "classical Greek philosopher in a toga, holding a rolled scroll",
+  "bearded 19th-century jurist in a frock coat, hand resting on a stack of books",
+  "female lawyer in a burgundy blazer, folder of case files under her arm",
+  "public prosecutor in a suit, sleeves rolled up, pointing at an open statute",
+  "court clerk with an armful of tied case files and a stamp",
+  "senator at a lectern with a microphone and the Constitution in hand",
+  "legal journalist holding a rolled newspaper and a recorder",
+  "seated thinker on a plain stool, chin on hand, book on the lap",
+];
+
+// Adereço extra (opcional) que acompanha a figura, sempre vazado junto.
 const PROP_POOL = [
-  "pilha de livros antigos", "pergaminho enrolado", "colunas gregas", "vela acesa",
-  "tinteiro", "pena de escrever", "balança da justiça", "relógio de bolso",
-  "lupa", "cartola", "martelo de juiz", "carimbo e almofada de tinta",
-  "diário oficial dobrado", "chave antiga", "globo terrestre", "ampulheta",
-  "correntes e algemas", "urna de votação", "cofre metálico", "engrenagens",
-  "mapa antigo", "coroa de louros", "tocha", "escrivaninha com papéis",
-  "estante embutida", "candelabro", "pasta de autos amarrada com barbante",
+  "stack of old leather-bound books beside the feet",
+  "brass scales of justice on a small pedestal",
+  "single ionic column cropped by the frame edge",
+  "quill and inkwell on a low stool",
+  "wooden gavel and sound block",
+  "rolled parchment leaning against the leg",
+  "hourglass on a low plinth",
+  "laurel wreath resting on a closed book",
+  "bundle of case files tied with string",
+  "antique key and padlock on the floor",
+  "hardwood lectern with an open code book",
+  "small strongbox with a coin on top",
 ];
 
-// Ângulos de câmera — sorteados a cada capa para nunca repetir enquadramento.
-const ANGLE_POOL = [
-  "low-angle hero shot looking up at the main subject",
-  "high-angle top-down view over a desk covered with the objects",
-  "eye-level three-quarter view with strong depth",
-  "wide establishing shot with the scene set inside an arched interior",
-  "extreme close-up of the main symbol with the rest of the scene behind it",
-  "dutch/tilted angle with dynamic diagonal composition",
-  "over-the-shoulder view from behind a character looking at the scene",
-  "side profile view, subject entering from one edge of the frame",
-  "symmetrical frontal composition with the subject centered under an arch",
-  "isometric-ish diagonal view of a layered stage of objects",
+// Lado / enquadramento da figura no painel.
+const SIDE_POOL = [
+  "figure anchored on the RIGHT third, facing slightly left, bottom-aligned",
+  "figure anchored on the LEFT third, facing slightly right, bottom-aligned",
+  "figure CENTERED and bottom-aligned, prop cropped on one side",
+  "figure on the RIGHT third seen in three-quarter view, prop on the far left",
+  "figure on the LEFT third in near-profile, prop on the far right",
 ];
 
-// Estruturas de composição — garantem variedade de layout.
-const LAYOUT_POOL = [
-  "main subject on the left third, secondary objects sweeping to the right",
-  "main subject on the right third, foreground props cropped by the left edge",
-  "central subject framed by an arch/columns, props radiating outward",
-  "diagonal composition running from bottom-left to top-right",
-  "layered horizontal bands: foreground props, mid subject, background architecture",
-  "circular composition, objects orbiting the central symbol",
+// Motivos de fundo (line art apagado, nunca protagonista).
+const MOTIF_POOL = [
+  "scales of justice, paragraph sign §, open book",
+  "paragraph sign §, ionic column, quill",
+  "open book, laurel wreath, scales of justice",
+  "gavel, paragraph sign §, ionic column",
+  "quill, scroll, scales of justice",
 ];
 
-// Ambientes coloridos — a capa DEVE preencher todo o quadro (sem fundo preto vazio).
-const SETTING_POOL = [
-  "old law library at golden hour, warm amber light pouring through tall windows",
-  "courtroom interior with deep teal shadows and brass highlights",
-  "night study with candlelight, deep indigo and ember tones",
-  "marble hall with cool blue-grey stone and warm sunlight patches",
-  "wooden magistrate's office with rich burgundy drapes",
-  "sunlit classic arcade with sand, terracotta and olive tones",
-  "archive room with dusty green shelves and warm lamp glow",
-  "stormy exterior of a neoclassical courthouse, dramatic sky",
-];
 
 export function getAccent(categoria?: string | null): Accent {
   if (!categoria) return FALLBACK;
@@ -94,8 +106,9 @@ export function getAccent(categoria?: string | null): Accent {
 }
 
 /**
- * Monta o prompt final da capa. `evitar` recebe títulos/adereços de capas
- * recentes para forçar variação de sujeito e adereço.
+ * Monta o prompt final da capa no padrão "painel do Blogger Jurídico":
+ * fundo chapado na cor do tema + motivos jurídicos apagados + figura vazada.
+ * `evitar` recebe títulos/figuras de capas recentes para forçar variação.
  */
 export function buildCoverPrompt(
   titulo: string,
@@ -105,50 +118,35 @@ export function buildCoverPrompt(
   const a = getAccent(categoria);
   const avoid = evitar.filter(Boolean).slice(0, 8);
   // Semente = título + categoria + aleatório, para que duas capas nunca caiam
-  // no mesmo ângulo/composição/ambiente mesmo com temas parecidos.
+  // na mesma figura/adereço/enquadramento mesmo com temas parecidos.
   const seed = Math.abs(
     [...`${titulo}|${categoria}`].reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 7) +
       Math.floor(Math.random() * 100000),
   );
   const pick = <T,>(pool: T[], offset: number): T => pool[(seed + offset) % pool.length];
-  const angle = pick(ANGLE_POOL, 3);
-  const layout = pick(LAYOUT_POOL, 11);
-  const setting = pick(SETTING_POOL, 23);
-  const picked: string[] = [];
-  for (let i = 0; picked.length < 9 && i < PROP_POOL.length * 2; i++) {
-    const p = PROP_POOL[(seed + i * 7) % PROP_POOL.length];
-    if (!picked.includes(p)) picked.push(p);
-  }
+  const figure = pick(FIGURE_POOL, 3);
+  const prop = pick(PROP_POOL, 11);
+  const side = pick(SIDE_POOL, 23);
+  const motifs = pick(MOTIF_POOL, 37);
 
-  return `Vintage editorial illustration for a Brazilian legal-education blog cover. 16:9 horizontal, FULL-BLEED.
+  return `Flat vector cover panel for a Brazilian legal-education blog ("Blogger Jurídico"). 16:9 horizontal, FULL-BLEED, no borders.
 
 THEME OF THIS COVER: "${titulo}" — category: ${categoria}. Interpretation direction: ${a.hint}.
 
-CAMERA ANGLE (must be respected, it is what makes this cover unique): ${angle}.
-COMPOSITION: ${layout}. Horizontal, asymmetric, clear hierarchy, objects overlapping naturally.
-SETTING (fills the entire frame): ${setting}.
+BACKGROUND (most important): one FLAT, SOLID, SATURATED colour panel filling 100% of the canvas — a smooth diagonal gradient of the category colour ${a.hex} (${a.name}): lighter and slightly warmer at the top-right, deeper and darker at the bottom-left. Absolutely NO scenery, NO room, NO landscape, NO photographic texture, NO black background, NO white or cream margins.
 
-SCENE (this is the most important part): build a RICH, DETAILED illustrated scene with MANY overlapping objects, in the spirit of a classic engraving-inspired editorial illustration. NOT a single sticker, NOT a lone portrait, NOT a generic bust. Use 7 to 11 distinct objects arranged in depth layers:
-- foreground: the main symbol of the theme, large and readable;
-- middle: supporting props overlapping each other (stacked old books, candle, inkwell, quill, pocket watch, scales of justice, rolled parchment, gavel, stamp, keys, hourglass, files tied with string);
-- background: architectural touches such as ionic/greek columns, shelves or an unfurled scroll, partially cropped by the frame.
-Suggested props for THIS cover (adapt freely to the theme, drop what doesn't fit): ${picked.join(", ")}.
+BACKGROUND MOTIFS: large legal line-art symbols drawn very faintly on the colour panel, in a darker shade of the same colour (about 12-20% contrast, thin uniform strokes, outline only, no fill): ${motifs}. Scatter 4 to 6 of them near the corners and edges, partially cropped by the frame, plus an even, very subtle fine dot grid over the whole panel. These motifs must read as a watermark pattern behind everything — never as the main subject.
 
-HUMAN FIGURE: optional. Include a single period character (19th-century scholar, jurist, magistrate, clerk) ONLY when the theme naturally calls for it, placed off-center (left or right third) and integrated into the scene. For abstract/normative themes (decrees, ordinances, hierarchy of norms, validity, procedure) prefer an OBJECT-LED scene with no person at all.
+MAIN SUBJECT — ONE CUT-OUT FIGURE: a single flat vector illustrated figure, ${figure}. ${side}. The figure is a clean CUT-OUT (knockout) illustration placed on top of the colour panel: no ground, no shadow scenery, no scene around it, only a soft drop shadow. It occupies roughly 55-70% of the frame height, feet/base touching the bottom edge, and is fully inside the frame (never cropped at the head or hands). Add a single supporting cut-out prop: ${prop}.
 
-BACKGROUND / EDGE-TO-EDGE FILL (critical): the illustration MUST fill 100% of the canvas, edge to edge, corner to corner. The chosen setting is painted behind the objects with real colour, depth and atmosphere. NEVER leave black, empty, flat or unpainted areas; no cutout floating on black, no white margins, no borders, no frame, no vignette bars. Every pixel is illustrated.
+STYLE: flat vector editorial illustration, thin-to-medium clean dark outlines (${BASE_PALETTE.outline}), flat 2-3 tone shading, no gradients on the figure, no cross-hatching, no photorealism, no 3D render, no watercolour.
 
-STYLE: vintage illustration meets editorial vector art, engraving-inspired linework, rich shading, clean medium-thickness dark outlines (${BASE_PALETTE.outline}), cartoon realism. Highly detailed, crisp, print-quality.
+FIGURE PALETTE: cream #EFE1BD, warm beige skin ${BASE_PALETTE.skin}, warm neutral ${BASE_PALETTE.neutralWarm}, dark brown ${BASE_PALETTE.brownDark}, burgundy #8C1220 and soft gold #C9A26A for cloth and metal details. The figure must clearly stand out against the ${a.name} panel.
 
-PALETTE: warm, saturated and colourful — built on the sepia/amber base (#C9B58A, #A18B63, #735346, #EFE1BD, #8D775D, #3A2A22, skin ${BASE_PALETTE.skin}) but ENRICHED with the ambient colours of the chosen setting (sky, walls, drapes, light shafts). The cover must look colourful, never washed out, never grey, never monochrome black-and-beige.
+TEXT: none at all. No title, no caption, no watermark, no logo, no letters (a single short serif word engraved on a book spine is the only tolerated exception).
 
-CATEGORY ACCENT: ${a.hex} (${a.name}). Make it clearly dominant in the lighting and in key elements (drapes, book spines, ribbons, glass, flame glow, wax seals), around 25-35% of the artwork, so the reader recognises the category at a glance.
+UNIQUENESS: the figure, the prop and the side of the frame must NOT repeat previous covers.${avoid.length ? ` Avoid repeating the subject/props of: ${avoid.join("; ")}.` : ""}
 
-LIGHTING: dramatic and atmospheric, coherent with the setting — light shafts, glow, coloured bounce light, visible depth.
-
-TEXT: allowed ONLY as a short serif title engraved on a book spine, banner or scroll (1-3 uppercase Latin words). No captions, no paragraphs, no watermark, no logo.
-
-UNIQUENESS: this scene must NOT repeat the camera angle, composition or props of previous covers.${avoid.length ? ` Avoid repeating the subject/props of: ${avoid.join("; ")}.` : ""}
-
-NEGATIVES: photorealistic, 3D render, blurry, neon colors, modern devices (laptops, smartphones), black or empty background, unpainted areas, borders/margins/frames, cutout sticker with a single object, generic corporate flat design, distorted hands, extra limbs, low quality.`;
+NEGATIVES: photorealistic, 3D render, painted scenery, interior/exterior environment, sepia vintage engraving, many overlapping objects, cluttered collage, black background, white or cream background, borders, frames, vignette, visible text or captions, modern devices (laptops, smartphones), distorted hands, extra limbs, low quality.`;
 }
+

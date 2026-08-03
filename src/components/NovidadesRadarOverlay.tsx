@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { X, ArrowRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { resenhaSelect } from '@/lib/resenhaBackend';
 import { useAuth } from '@/hooks/useAuth';
 import brasaoAsset from '@/assets/brasao-republica.webp';
 import horusAsset from '@/assets/horus/horus-owl.webp';
@@ -77,13 +78,12 @@ export default function NovidadesRadarOverlay() {
         try { return localStorage.getItem(LS_KEY) || new Date(Date.now() - 24 * 3600 * 1000).toISOString(); }
         catch { return new Date(Date.now() - 24 * 3600 * 1000).toISOString(); }
       })();
-      const { data } = await supabase
-        .from('resenha_diaria' as any)
-        .select('id,tipo_ato,numero_ato,ementa,data_dou,created_at')
-        .gt('created_at', lastSeen)
-        .order('created_at', { ascending: false })
-        .limit(8);
-      const raw = (data as any[] | null) ?? [];
+      const raw = await resenhaSelect<any>({
+        select: 'id,tipo_ato,numero_ato,ementa,data_dou,created_at',
+        created_at: `gt.${lastSeen}`,
+        order: 'created_at.desc',
+        limit: '8',
+      });
       const seen = new Set(readSeenIds());
       // Somente atos publicados HOJE no DOU (fuso America/Sao_Paulo)
       const todayISO = new Intl.DateTimeFormat('en-CA', {

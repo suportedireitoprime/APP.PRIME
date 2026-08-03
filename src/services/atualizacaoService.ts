@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { resenhaSelect, RESENHA_SELECT } from '@/lib/resenhaBackend';
 
 export interface ResenhaItem {
   id: string;
@@ -42,14 +42,14 @@ export async function prefetchResenha(): Promise<void> {
 
   fetchPromise = (async () => {
     // Traz já com texto_completo/explicacao para abertura instantânea.
-    const { data, error } = await supabase
-      .from('resenha_diaria' as any)
-      .select('id,tipo_ato,numero_ato,ementa,url,data_publicacao,data_dou,texto_completo,explicacao')
-      .order('data_dou', { ascending: false })
-      .limit(200);
+    const data = await resenhaSelect<ResenhaItem>({
+      select: RESENHA_SELECT,
+      order: 'data_dou.desc',
+      limit: '200',
+    });
 
-    if (!error && data) {
-      resenhaCache = data as unknown as ResenhaItem[];
+    if (data.length) {
+      resenhaCache = data;
     }
     fetchPromise = null;
   })();

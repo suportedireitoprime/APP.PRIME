@@ -13,6 +13,8 @@ import BlogCoverImage from '@/components/BlogCoverImage';
 import { blogHero } from '@/lib/blogImg';
 import { supabase } from '@/integrations/supabase/client';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
+
 
 interface Props {
   post: BlogPost | null;
@@ -61,14 +63,11 @@ export default function BlogPostSheet({ post, onClose, showGoTo = false, inline 
     return () => { cancelled = true; };
   }, [post?.id, post?.conteudo_md]);
 
-  // Trava scroll do fundo enquanto o painel estiver aberto — evita que
-  // toques/roladas vazem para a página atrás do sheet.
-  useEffect(() => {
-    if (!post || inline) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = prev; };
-  }, [post, inline]);
+  // Trava scroll do fundo enquanto o painel estiver aberto — usa o lock global
+  // (contador compartilhado) para não conflitar com sheets empilhados
+  // (comentários, compartilhar), que antes deixavam o body travado ao fechar.
+  useBodyScrollLock(!!post && !inline);
+
 
   // Registra visualização + carrega estado de curtida do usuário
   useEffect(() => {

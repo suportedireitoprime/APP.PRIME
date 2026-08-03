@@ -5,10 +5,10 @@ import { motion } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
 import { withOnlineGuard, assertOnline } from '@/lib/onlineGuard';
 import { getResenhaCache, prefetchResenha, getLatestDate, type ResenhaItem } from '@/services/atualizacaoService';
 import LeiOrdinariaDetail from '@/components/vademecum/LeiOrdinariaDetail';
+import { resenhaSelect, RESENHA_SELECT, garantirTextoIntegral, invokeResenhaFn } from '@/lib/resenhaBackend';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import type { LeiOrdinaria } from '@/services/legislacaoService';
 import brasaoImgAsset from '@/assets/brasao-republica.webp';
@@ -69,12 +69,12 @@ export default function Radar360() {
   const dayList = useMemo(() => getDayList(centerDate, 3), [centerDate]);
 
   const reload = useCallback(async () => {
-    const { data } = await supabase
-      .from('resenha_diaria' as any)
-      .select('id,tipo_ato,numero_ato,ementa,url,data_publicacao,data_dou,texto_completo,explicacao')
-      .order('data_dou', { ascending: false })
-      .limit(200);
-    if (data) setItems(data as unknown as ResenhaItem[]);
+    const data = await resenhaSelect<ResenhaItem>({
+      select: RESENHA_SELECT,
+      order: 'data_dou.desc',
+      limit: '200',
+    });
+    if (data.length) setItems(data);
   }, []);
 
   useEffect(() => {
@@ -124,17 +124,12 @@ export default function Radar360() {
     };
     setDetailItem(lei);
     // Fallback silencioso caso o texto ainda não esteja populado no cache
-    if (!texto) {
+    if (!texto || texto.length < 200) {
       try {
-        await withOnlineGuard(
-          () => supabase.functions.invoke('popular-texto-resenha', { body: { id: item.id, force: true } }),
+        const data = await withOnlineGuard(
+          () => garantirTextoIntegral(item.id),
           { message: 'Sem internet — o texto integral desta publicação será carregado quando você reconectar.' },
         );
-        const { data } = await supabase
-          .from('resenha_diaria' as any)
-          .select('texto_completo,explicacao')
-          .eq('id', item.id)
-          .single();
         const novoTexto = cleanText((data as any)?.texto_completo);
         if (novoTexto) {
           item.texto_completo = novoTexto;
@@ -151,10 +146,7 @@ export default function Radar360() {
     toast.loading('Buscando novas leis no Planalto...', { id: 'radar-scrape' });
     try {
       assertOnline('Você está offline. Conecte-se para buscar novas publicações.');
-      const { data, error } = await supabase.functions.invoke('scrape-resenha-diaria', {
-        body: { origem: 'manual', notify: false },
-      });
-      if (error) throw error;
+      const data = await invokeResenhaFn('scrape-resenha-diaria', { origem: 'manual', notify: false });
       const n = (data as any)?.novos ?? 0;
       toast.success(n > 0 ? `${n} nova(s) publicação(ões) encontrada(s)` : 'Nenhuma novidade agora', { id: 'radar-scrape' });
       await reload();
@@ -183,7 +175,7 @@ export default function Radar360() {
     let done = 0;
     for (const item of faltantes) {
       try {
-        await supabase.functions.invoke('popular-texto-resenha', { body: { id: item.id, force: true } });
+        await invokeResenhaFn('popular-texto-resenha', { id: item.id, force: true });
       } catch { /* segue */ }
       done += 1;
       if (!silent) toast.loading(`Reextraindo ${done} de ${faltantes.length}...`, { id: toastId });

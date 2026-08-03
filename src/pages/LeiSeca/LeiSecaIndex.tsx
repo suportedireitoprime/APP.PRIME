@@ -80,7 +80,7 @@ export default function LeiSecaIndex({ modo = "todos" }: { modo?: Filtro }) {
           <button
             onClick={() => navigate("/", { replace: true })}
             aria-label="Voltar"
-            className="w-10 h-10 rounded-full bg-white/15 ring-1 ring-white/25 backdrop-blur-sm flex items-center justify-center text-white mb-3 active:scale-95 transition"
+            className="w-12 h-12 rounded-full touch-manipulation bg-white/15 ring-1 ring-white/25 backdrop-blur-sm flex items-center justify-center text-white mb-3 active:scale-95 transition"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>

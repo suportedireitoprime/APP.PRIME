@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { resenhaSelect } from '@/lib/resenhaBackend';
 
 export type OutrasNormasCounts = Record<string, number>;
 
@@ -16,11 +16,11 @@ export function useOutrasNormasCounts() {
         const since = new Date();
         since.setDate(since.getDate() - 7);
         const sinceISO = since.toISOString().slice(0, 10);
-        const { data } = await supabase
-          .from('resenha_diaria' as any)
-          .select('tipo_ato,data_dou')
-          .gte('data_dou', sinceISO)
-          .limit(1000);
+        const data = await resenhaSelect<{ tipo_ato: string; data_dou: string }>({
+          select: 'tipo_ato,data_dou',
+          data_dou: `gte.${sinceISO}`,
+          limit: '1000',
+        });
         const acc: OutrasNormasCounts = {};
         TIPOS.forEach((t) => (acc[t] = 0));
         (data as any[] | null)?.forEach((r) => {

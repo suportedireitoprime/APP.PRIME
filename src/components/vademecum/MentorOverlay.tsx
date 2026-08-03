@@ -230,7 +230,7 @@ const MentorOverlay = ({ open, onClose }: MentorOverlayProps) => {
           <div className="flex items-center gap-3 px-4 py-3 border-b border-border bg-card/95 backdrop-blur-md">
             <button
               onClick={onClose}
-              className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center"
+              className="w-12 h-12 rounded-full touch-manipulation bg-secondary flex items-center justify-center"
               aria-label="Voltar"
             >
               <ArrowLeft className="w-5 h-5 text-foreground" />
@@ -246,7 +246,7 @@ const MentorOverlay = ({ open, onClose }: MentorOverlayProps) => {
             </div>
             <button
               onClick={() => setHistoryOpen(true)}
-              className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center hover:text-primary transition-colors"
+              className="w-12 h-12 rounded-full touch-manipulation bg-secondary flex items-center justify-center hover:text-primary transition-colors"
               aria-label="Histórico de conversas"
             >
               <History className="w-5 h-5 text-foreground" />
@@ -274,7 +274,7 @@ const MentorOverlay = ({ open, onClose }: MentorOverlayProps) => {
                   <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
                     <button
                       onClick={() => setHistoryOpen(false)}
-                      className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center"
+                      className="w-12 h-12 rounded-full touch-manipulation bg-secondary flex items-center justify-center"
                       aria-label="Fechar histórico"
                     >
                       <X className="w-5 h-5 text-foreground" />

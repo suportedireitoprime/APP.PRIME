@@ -10,10 +10,9 @@ import {pickAsset, srcOf } from '@/lib/assetUrl';
 
 import logoAsset from '@/assets/logo-vacatio-v2.png.asset.json';
 import logoBundled from '@/assets/bundled/logo-vacatio-v2.webp';
-import lourosDourados from '@/assets/louros-dourados.webp';
+import HeroTribunal from '@/components/landing/HeroTribunal';
+import AppShowcase from '@/components/landing/AppShowcase';
 const appLogo = pickAsset(logoBundled, srcOf(logoAsset));
-const welcomeHero = '/welcome-hero.webp';
-const welcomeHeroWide = '/welcome-hero-wide.jpg';
 
 const UNIVERSITIES = ['USP', 'UNICAMP', 'UFRJ', 'UFMG', 'UFRGS', 'UnB', 'UFSC', 'UFPR', 'PUC-RS', 'FGV Direito', 'Mackenzie', 'PUC-SP', 'UERJ', 'UFC', 'UFPE'];
 
@@ -21,7 +20,7 @@ const FEATURES = [
   { icon: GraduationCap, label: 'Aprovação na Faculdade', desc: 'Resumos, aulas e simulados para você tirar nota alta e nunca mais pegar DP.' },
   { icon: Scale, label: 'OAB 1ª Fase', desc: 'Questões comentadas, vade mecum atualizado e treino focado em aprovação.' },
   { icon: FileText, label: 'OAB 2ª Fase', desc: 'Peças práticas, recursos e tudo que você precisa para cruzar a linha de chegada.' },
-  { icon: Sparkles, label: 'Flashcards e Mapas Mentais', desc: 'Memorize o que importa com método ativo — sem decoreba, com fixação real.' },
+  { icon: Sparkles, label: 'Flashcards e Mapas Mentais', desc: 'Memorize o que importa com método ativo, sem decoreba e com fixação real.' },
   { icon: BookOpen, label: 'Biblioteca Jurídica Completa', desc: 'Códigos, leis, súmulas e doutrina em um só lugar, sempre atualizado.' },
 ];
 
@@ -30,12 +29,12 @@ const FAQ_ITEMS = [
   { q: 'Serve para faculdade e OAB?', a: 'Sim. O conteúdo cobre desde o básico da graduação até OAB 1ª e 2ª fase, com resumos, questões, videoaulas e simulados.' },
   { q: 'O conteúdo é atualizado?', a: 'Sim. A legislação vem direto do site oficial (Planalto) e nossos resumos, questões e súmulas são revisados constantemente pela nossa equipe.' },
   { q: 'Funciona no celular e no computador?', a: 'Sim. Você pode usar no navegador do celular, tablet ou computador. Também temos versão instalável (PWA) que funciona offline em muitos recursos.' },
-  { q: 'Como funciona a IA?', a: 'A assistente jurídica fica disponível 24h. Ela tira dúvidas, explica artigos, ajuda em trabalhos e prepara para provas — tudo com precisão e contexto.' },
+  { q: 'Como funciona a IA?', a: 'A assistente jurídica fica disponível 24h. Ela tira dúvidas, explica artigos, ajuda em trabalhos e prepara para provas, sempre com precisão e contexto.' },
   { q: 'Posso cancelar quando quiser?', a: 'Sim, o cancelamento é imediato e sem taxas. Você mantém acesso até o fim do período pago.' },
 ];
 
 const TESTIMONIALS = [
-  { nome: 'Marina Alves', papel: 'Estudante — 6º semestre', texto: 'Consegui organizar toda a minha rotina de estudos. Os resumos e flashcards mudaram minhas notas.' },
+  { nome: 'Marina Alves', papel: 'Estudante · 6º semestre', texto: 'Consegui organizar toda a minha rotina de estudos. Os resumos e flashcards mudaram minhas notas.' },
   { nome: 'Rafael Souza', papel: 'Aprovado OAB 1ª fase', texto: 'As questões comentadas e o vade mecum atualizado foram decisivos na minha aprovação.' },
   { nome: 'Camila Ferreira', papel: 'Concurseira', texto: 'Tudo em um só lugar. Não preciso mais abrir cinco sites diferentes para estudar.' },
   { nome: 'Thiago Lima', papel: 'Advogado', texto: 'Uso no dia a dia do escritório para consultar legislação comentada. Rápido e confiável.' },
@@ -88,192 +87,50 @@ const Landing = () => {
     navigate('/auth');
   }, [navigate]);
 
+  const handleConhecer = useCallback(() => {
+    document.getElementById('conhecer')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, []);
+
   return (
     <div className="min-h-[100dvh] w-full bg-background overflow-x-hidden relative">
       {/* ───── HERO ───── */}
-      <div className="relative min-h-[100dvh] flex flex-col">
-        {/* Background */}
-        <div className="absolute inset-0 overflow-hidden bg-background">
-          <div className="relative w-full lg:hidden">
-            <img
-              src={welcomeHero}
-              alt=""
-              width={1200}
-              height={1600}
-              loading="eager"
-              fetchPriority="high"
-              decoding="async"
-              className="w-full h-auto max-w-none object-cover object-top"
-              style={{
-                WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 70%, rgba(0,0,0,0.6) 88%, transparent 100%)',
-                maskImage: 'linear-gradient(to bottom, black 0%, black 70%, rgba(0,0,0,0.6) 88%, transparent 100%)',
-              }}
-            />
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-background" />
-          </div>
-          {/* Desktop: versão horizontal */}
-          <div className="relative w-full h-full hidden lg:block">
-            <img
-              src={welcomeHeroWide}
-              alt=""
-              width={1920}
-              height={1024}
-              loading="eager"
-              fetchPriority="high"
-              decoding="async"
-              className="w-full h-full object-cover object-center"
-              style={{
-                WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 72%, rgba(0,0,0,0.55) 90%, transparent 100%)',
-                maskImage: 'linear-gradient(to bottom, black 0%, black 72%, rgba(0,0,0,0.55) 90%, transparent 100%)',
-              }}
-            />
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-background" />
-          </div>
-          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/50 via-40% to-background" />
-        </div>
-
-        {/* Navbar */}
-        <nav className="relative z-20 px-4 lg:px-8 pt-6 pb-2">
+      <div className="relative">
+        {/* Navbar sobre o hero */}
+        <nav className="absolute top-0 inset-x-0 z-30 px-4 lg:px-8 pt-5">
           <div className="flex flex-row items-center justify-between gap-3 max-w-7xl mx-auto">
-            <Link to="/landing" className="flex items-center gap-3">
-              <div className="relative shine-effect rounded-full overflow-hidden bg-background/40 h-14 w-14 lg:h-16 lg:w-16 flex items-center justify-center">
-                <img src={appLogo} alt="Direito Prime" width={64} height={64} loading="eager" decoding="async" className="h-full w-full object-contain drop-shadow-2xl" />
+            <Link to="/landing" className="flex items-center gap-3 min-w-0">
+              <div className="relative shine-effect rounded-full overflow-hidden bg-background/40 h-14 w-14 sm:h-16 sm:w-16 lg:h-20 lg:w-20 shrink-0 flex items-center justify-center">
+                <img src={appLogo} alt="Direito Prime" width={80} height={80} loading="eager" decoding="async" className="h-full w-full object-contain drop-shadow-2xl" />
                 <div className="absolute inset-0 rounded-full" style={{ boxShadow: '0 0 30px hsl(var(--primary) / 0.3)' }} />
               </div>
               <div className="flex flex-col leading-tight min-w-0">
-                <span className="text-foreground font-semibold uppercase whitespace-nowrap text-[15px] sm:text-base lg:text-lg font-display" style={{ letterSpacing: '0.14em' }}>Direito Prime</span>
-                <span className="text-muted-foreground uppercase whitespace-nowrap text-[9px] sm:text-[10px] lg:text-[11px] font-medium" style={{ letterSpacing: '0.22em' }}>Estudos Jurídicos</span>
+                <span className="text-foreground font-semibold uppercase whitespace-nowrap text-[17px] sm:text-xl lg:text-2xl font-display" style={{ letterSpacing: '0.13em', textShadow: '0 2px 12px rgba(0,0,0,0.7)' }}>Direito Prime</span>
+                <span className="uppercase whitespace-nowrap text-[10px] sm:text-[12px] lg:text-[13px] font-medium text-foreground/70" style={{ letterSpacing: '0.2em', textShadow: '0 2px 10px rgba(0,0,0,0.7)' }}>Estudos Jurídicos</span>
               </div>
             </Link>
 
             <Link
               to="/suporte"
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-full text-sm font-semibold transition-all active:scale-[0.96] bg-card text-foreground border border-primary/40 hover:bg-secondary"
-              style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.25), 0 0 16px hsl(var(--primary) / 0.18)' }}
+              className="flex items-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-semibold transition-all active:scale-[0.96] shrink-0 backdrop-blur-md"
+              style={{
+                background: 'hsl(0 0% 100% / 0.14)',
+                border: '1px solid hsl(0 0% 100% / 0.28)',
+                color: 'hsl(40 25% 97%)',
+                boxShadow: '0 2px 14px rgba(0,0,0,0.28)',
+              }}
             >
-              <Headphones className="w-4 h-4 text-primary" />
+              <Headphones className="w-4 h-4" style={{ color: 'hsl(350 78% 62%)' }} />
               <span>Suporte</span>
             </Link>
+
           </div>
         </nav>
 
-        {/* Conteúdo do hero */}
-        <div className="relative z-10 flex-1 flex flex-col items-center px-6 md:px-10 lg:px-12 xl:px-16 pb-6 pt-16 sm:pt-20 max-w-[1100px] mx-auto w-full lg:py-12">
-          <div className="w-full mx-auto">
-            <div className="mb-6 text-center font-legal" style={{ letterSpacing: '-0.02em' }}>
-              <h1
-                className="text-[clamp(1.8rem,4.2vw,3.4rem)] font-black text-foreground leading-[1.1] mb-4"
-                style={{ textShadow: '0 2px 12px rgba(0,0,0,0.5)' }}
-              >
-                Tudo para você{' '}
-                <span className="inline text-primary" style={{ textShadow: '0 0 20px hsl(var(--primary) / 0.4)' }}>estudar Direito</span>{' '}
-                em um{' '}
-                <span className="inline text-primary" style={{ textShadow: '0 0 20px hsl(var(--primary) / 0.4)' }}>só lugar</span>.
-              </h1>
+        <HeroTribunal onAcessar={() => handleStart('hero')} onConhecer={handleConhecer} />
+      </div>
 
-              <p
-                className="text-foreground/85 text-center text-[clamp(0.95rem,2.2vw,1.15rem)] leading-relaxed mb-2 max-w-xl mx-auto font-legal"
-                style={{ letterSpacing: '0.01em', textShadow: '0 1px 6px rgba(0,0,0,0.4)' }}
-              >
-                Aulas, resumos, flashcards, questões, audioaulas, vade mecum e muito mais, tudo em um só lugar para você{' '}
-                <span className="font-bold text-primary">dominar o Direito</span>.
-              </p>
+      <div className="relative z-10 flex flex-col">
 
-              {/* CTA */}
-              <div className="flex flex-col items-center mt-5 mb-6">
-                <button
-                  onClick={() => handleStart('hero')}
-                  className="group relative flex items-center justify-center gap-2 px-8 py-3.5 rounded-full text-base font-bold text-primary-foreground transition-all active:scale-[0.97] overflow-hidden"
-                  style={{
-                    background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(0 72% 45%))',
-                    boxShadow: '0 0 20px hsl(var(--primary) / 0.4), 0 4px 16px rgba(0,0,0,0.4)',
-                  }}
-                >
-                  <span
-                    className="absolute inset-0 pointer-events-none"
-                    style={{
-                      background: 'linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.2) 45%, rgba(255,255,255,0.35) 50%, rgba(255,255,255,0.2) 55%, transparent 70%)',
-                      animation: 'shimmerSlide 3s ease-in-out infinite',
-                    }}
-                  />
-                  <span className="relative z-10 flex items-center gap-2">
-                    Iniciar jornada
-                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                  </span>
-                </button>
-                <p className="text-foreground text-xs mt-2.5 tracking-wide font-medium">
-                  ⭐ +10.000 alunos já estudam com a gente
-                </p>
-              </div>
-
-              {/* Louros + V */}
-              <div className="relative w-full max-w-[280px] md:max-w-[400px] lg:max-w-[420px] mx-auto my-2">
-                <img
-                  src={lourosDourados}
-                  alt=""
-                  width={400}
-                  height={200}
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full h-auto object-contain pointer-events-none select-none"
-                  style={{ filter: 'hue-rotate(-42deg) saturate(1.35) drop-shadow(0 0 12px hsl(var(--primary) / 0.35))' }}
-                />
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <div className="flex justify-between w-full -mt-2 px-1">
-                    {['Faculdade', 'Concursos'].map((word, i) => (
-                      <span
-                        key={word}
-                        className="text-[clamp(1rem,3.2vw,1.5rem)] font-black text-foreground uppercase whitespace-nowrap font-legal"
-                        style={{
-                          animation: `neonPulseText 3s ease-in-out ${i}s infinite`,
-                          textShadow: '0 0 20px hsl(var(--primary) / 0.5), 0 2px 8px rgba(0,0,0,0.6)',
-                        }}
-                      >
-                        {word}
-                      </span>
-                    ))}
-                  </div>
-
-                  <svg viewBox="0 0 400 36" className="w-[80%] h-8" preserveAspectRatio="none">
-                    <line x1="50" y1="0" x2="200" y2="32" stroke="url(#dpLine)" strokeWidth="3.5" style={{ animation: 'lineGlow 3s ease-in-out 0.5s infinite' }} />
-                    <line x1="350" y1="0" x2="200" y2="32" stroke="url(#dpLine)" strokeWidth="3.5" style={{ animation: 'lineGlow 3s ease-in-out 1.5s infinite' }} />
-                    <defs>
-                      <linearGradient id="dpLine" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="transparent" />
-                        <stop offset="50%" stopColor="hsl(var(--primary))" />
-                        <stop offset="100%" stopColor="transparent" />
-                      </linearGradient>
-                    </defs>
-                  </svg>
-
-                  <span
-                    className="text-[clamp(1.8rem,7vw,2.6rem)] font-black text-foreground uppercase font-legal"
-                    style={{
-                      animation: 'neonPulseText 3s ease-in-out 2s infinite',
-                      textShadow: '0 0 25px hsl(var(--primary) / 0.6), 0 0 50px hsl(var(--primary) / 0.2), 0 2px 8px rgba(0,0,0,0.6)',
-                    }}
-                  >
-                    OAB
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <p
-              className="relative text-center text-[clamp(1.1rem,3.5vw,1.4rem)] font-semibold tracking-wide mb-4 overflow-hidden font-legal text-foreground/90"
-              style={{ textShadow: '0 0 12px rgba(255,255,255,0.25)' }}
-            >
-              <span className="relative z-10">Alcance a excelência nos estudos jurídicos.</span>
-              <span
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                  background: 'linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.4) 45%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.4) 55%, transparent 70%)',
-                  animation: 'shimmerSlide 3s ease-in-out infinite',
-                }}
-              />
-            </p>
-          </div>
-        </div>
 
         {/* Marquee universidades */}
         <div className="relative z-10 bg-background/60 py-3">
@@ -324,8 +181,10 @@ const Landing = () => {
         </div>
       </div>
 
+      <AppShowcase onAcessar={() => handleStart('showcase')} />
+
       {/* ───── RECURSOS ───── */}
-      <section className="bg-background px-6 lg:px-12 pt-12 pb-4">
+      <section id="recursos" className="bg-background px-6 lg:px-12 pt-12 pb-4">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl font-black text-foreground text-center mb-2 font-legal">Feito para cada etapa da sua jornada</h2>
           <p className="text-center text-muted-foreground text-sm mb-8">Da graduação à aprovação</p>
@@ -429,7 +288,7 @@ const Landing = () => {
       <footer className="bg-background border-t border-border px-6 lg:px-12 py-8">
         <div className="max-w-4xl mx-auto flex flex-col items-center gap-3 text-center">
           <img src={appLogo} alt="Direito Prime" className="w-10 h-10 object-contain" />
-          <p className="text-muted-foreground text-xs">© 2026 Direito Prime — Estudos Jurídicos · Todos os direitos reservados</p>
+          <p className="text-muted-foreground text-xs">© 2026 Direito Prime · Estudos Jurídicos · Todos os direitos reservados</p>
           <div className="flex gap-4 text-xs text-muted-foreground">
             <Link to="/termos" className="hover:text-primary">Termos</Link>
             <Link to="/privacidade" className="hover:text-primary">Privacidade</Link>

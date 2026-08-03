@@ -121,7 +121,7 @@ const InAppWebView = ({ url, titulo, onClose, autoFallback = false }: InAppWebVi
           <button
             onClick={onClose}
             aria-label="Voltar"
-            className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-secondary transition"
+            className="w-12 h-12 rounded-full touch-manipulation flex items-center justify-center hover:bg-secondary transition"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
@@ -134,14 +134,14 @@ const InAppWebView = ({ url, titulo, onClose, autoFallback = false }: InAppWebVi
           <button
             onClick={retry}
             aria-label="Recarregar"
-            className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-secondary transition"
+            className="w-12 h-12 rounded-full touch-manipulation flex items-center justify-center hover:bg-secondary transition"
           >
             <RefreshCw className="w-5 h-5" />
           </button>
           <button
             onClick={() => openExternalFallback('user')}
             aria-label="Abrir no navegador"
-            className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-secondary transition"
+            className="w-12 h-12 rounded-full touch-manipulation flex items-center justify-center hover:bg-secondary transition"
           >
             <ExternalLink className="w-5 h-5" />
           </button>
