@@ -445,8 +445,10 @@ jobs:
 
           if [ "$PROFILE_APPID" != "$APPLE_TEAM_ID.$APPLE_BUNDLE_ID" ]; then
             echo "::warning::O perfil do secret é de $PROFILE_APPID, mas o app é $APPLE_TEAM_ID.$APPLE_BUNDLE_ID. Gerando perfil App Store via App Store Connect API..."
-            python3 -m pip install --quiet --disable-pip-version-check pyjwt cryptography requests
-            python3 "$GITHUB_WORKSPACE/scripts/asc-create-profile.py" "$RUNNER_TEMP/profile.mobileprovision"
+            python3 -m venv "$RUNNER_TEMP/ascvenv"
+            "$RUNNER_TEMP/ascvenv/bin/pip" install --quiet --disable-pip-version-check pyjwt cryptography requests
+            "$RUNNER_TEMP/ascvenv/bin/python" "$GITHUB_WORKSPACE/scripts/asc-create-profile.py" "$RUNNER_TEMP/profile.mobileprovision"
+
             security cms -D -i "$RUNNER_TEMP/profile.mobileprovision" > "$RUNNER_TEMP/profile.plist"
             PROFILE_APPID="$(/usr/libexec/PlistBuddy -c 'Print :Entitlements:application-identifier' "$RUNNER_TEMP/profile.plist")"
             if [ "$PROFILE_APPID" != "$APPLE_TEAM_ID.$APPLE_BUNDLE_ID" ]; then
