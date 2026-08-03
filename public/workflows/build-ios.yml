@@ -704,7 +704,7 @@ jobs:
           #if canImport(ActivityKit)
           import ActivityKit
 
-          @available(iOS 16.1, *)
+          @available(iOS 16.2, *)
           public struct LembreteActivityAttributes: ActivityAttributes {
               public struct ContentState: Codable, Hashable {
                   public var body: String
@@ -751,13 +751,13 @@ jobs:
               ]
 
               #if canImport(ActivityKit)
-              @available(iOS 16.1, *)
+              @available(iOS 16.2, *)
               private static var activities: [String: Activity<LembreteActivityAttributes>] = [:]
               #endif
 
               private func supported() -> Bool {
                   #if canImport(ActivityKit)
-                  if #available(iOS 16.1, *) {
+                  if #available(iOS 16.2, *) {
                       return ActivityAuthorizationInfo().areActivitiesEnabled
                   }
                   #endif
@@ -770,7 +770,7 @@ jobs:
 
               @objc func start(_ call: CAPPluginCall) {
                   #if canImport(ActivityKit)
-                  if #available(iOS 16.1, *) {
+                  if #available(iOS 16.2, *) {
                       guard ActivityAuthorizationInfo().areActivitiesEnabled else {
                           call.resolve(["started": false]); return
                       }
@@ -802,7 +802,7 @@ jobs:
 
               @objc func update(_ call: CAPPluginCall) {
                   #if canImport(ActivityKit)
-                  if #available(iOS 16.1, *) {
+                  if #available(iOS 16.2, *) {
                       let id = call.getString("id") ?? ""
                       guard let activity = LiveActivityPlugin.activities[id] else { call.resolve(); return }
                       let state = LembreteActivityAttributes.ContentState(
@@ -821,7 +821,7 @@ jobs:
 
               @objc func end(_ call: CAPPluginCall) {
                   #if canImport(ActivityKit)
-                  if #available(iOS 16.1, *) {
+                  if #available(iOS 16.2, *) {
                       let id = call.getString("id") ?? ""
                       guard let activity = LiveActivityPlugin.activities[id] else { call.resolve(); return }
                       LiveActivityPlugin.activities.removeValue(forKey: id)
@@ -845,14 +845,14 @@ jobs:
           import ActivityKit
 
           @main
-          @available(iOS 16.1, *)
+          @available(iOS 16.2, *)
           struct EstudosLiveActivityBundle: WidgetBundle {
               var body: some Widget {
                   LembreteLiveActivity()
               }
           }
 
-          @available(iOS 16.1, *)
+          @available(iOS 16.2, *)
           struct LembreteLiveActivity: Widget {
               var body: some WidgetConfiguration {
                   ActivityConfiguration(for: LembreteActivityAttributes.self) { context in
