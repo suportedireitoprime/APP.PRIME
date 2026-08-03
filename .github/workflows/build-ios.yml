@@ -21,7 +21,8 @@ jobs:
       # Identificadores Apple não são segredo. Mantemos fallback aqui para evitar
       # falso erro quando o GitHub não injeta esses 4 valores como secrets.
       APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID || 'DKVT35Y3W5' }}
-      APPLE_BUNDLE_ID: ${{ secrets.APPLE_BUNDLE_ID || 'br.com.direitoprime.app' }}
+      APPLE_BUNDLE_ID: ${{ secrets.APPLE_BUNDLE_ID || 'br.com.direito.app' }}
+      APPLE_APP_NAME: ${{ secrets.APPLE_APP_NAME || 'Estudos Jurídicos' }}
       APPLE_API_KEY_ID: ${{ secrets.APPLE_APP_STORE_CONNECT_KEY_ID || 'XR87K5FX25' }}
       APPLE_API_ISSUER_ID: ${{ secrets.APPLE_APP_STORE_CONNECT_ISSUER_ID || '1604c7ca-cdb0-49ec-aea1-058e12abdafe' }}
 
@@ -98,12 +99,14 @@ jobs:
           bunx cap add ios
           bunx cap sync ios
 
-      - name: Set version + build number
+      - name: Set version + build number + app name
         run: |
           PLIST="ios/App/App/Info.plist"
           RUN_NUM="${{ github.run_number }}"
-          # Marketing version legível: 1.0.<run_number>
-          VERSION="1.0.${RUN_NUM}"
+          # A versão publicada na App Store (br.com.direito.app) é 106.0.0, então
+          # a marketing version precisa ser MAIOR que ela, senão a Apple rejeita
+          # por versão duplicada/menor. Base 107 + run_number.
+          VERSION="${APPLE_MARKETING_VERSION:-107.0.${RUN_NUM}}"
           # CFBundleVersion precisa ser ESTRITAMENTE crescente entre todos os
           # uploads pra TestFlight (mesmo em versions diferentes) — usar
           # somente github.run_number quebra quando um upload anterior já
@@ -112,7 +115,10 @@ jobs:
           BUILD_NUM="$(date +%s)"
           /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" "$PLIST"
           /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $BUILD_NUM" "$PLIST"
-          echo "Version: $VERSION ($BUILD_NUM)"
+          # Nome exibido no ícone da home (atualiza só quando a build sobe).
+          /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName ${APPLE_APP_NAME}" "$PLIST" \
+            || /usr/libexec/PlistBuddy -c "Add :CFBundleDisplayName string ${APPLE_APP_NAME}" "$PLIST"
+          echo "Version: $VERSION ($BUILD_NUM) — name: ${APPLE_APP_NAME}"
 
       - name: Inject App Icon (full AppIcon.appiconset)
         run: |
@@ -435,17 +441,27 @@ jobs:
             exit 1
           fi
           security cms -D -i "$RUNNER_TEMP/profile.mobileprovision" > "$RUNNER_TEMP/profile.plist"
+          PROFILE_APPID="$(/usr/libexec/PlistBuddy -c 'Print :Entitlements:application-identifier' "$RUNNER_TEMP/profile.plist")"
+
+          if [ "$PROFILE_APPID" != "$APPLE_TEAM_ID.$APPLE_BUNDLE_ID" ]; then
+            echo "::warning::O perfil do secret é de $PROFILE_APPID, mas o app é $APPLE_TEAM_ID.$APPLE_BUNDLE_ID. Gerando perfil App Store via App Store Connect API..."
+            python3 -m pip install --quiet --disable-pip-version-check pyjwt cryptography requests
+            python3 "$GITHUB_WORKSPACE/scripts/asc-create-profile.py" "$RUNNER_TEMP/profile.mobileprovision"
+            security cms -D -i "$RUNNER_TEMP/profile.mobileprovision" > "$RUNNER_TEMP/profile.plist"
+            PROFILE_APPID="$(/usr/libexec/PlistBuddy -c 'Print :Entitlements:application-identifier' "$RUNNER_TEMP/profile.plist")"
+            if [ "$PROFILE_APPID" != "$APPLE_TEAM_ID.$APPLE_BUNDLE_ID" ]; then
+              echo "::error::Não foi possível obter um perfil App Store para $APPLE_TEAM_ID.$APPLE_BUNDLE_ID (recebido $PROFILE_APPID)."
+              exit 1
+            fi
+          fi
+
           PROFILE_UUID="$(/usr/libexec/PlistBuddy -c 'Print :UUID' "$RUNNER_TEMP/profile.plist")"
           PROFILE_NAME="$(/usr/libexec/PlistBuddy -c 'Print :Name' "$RUNNER_TEMP/profile.plist")"
-          PROFILE_APPID="$(/usr/libexec/PlistBuddy -c 'Print :Entitlements:application-identifier' "$RUNNER_TEMP/profile.plist")"
           cp "$RUNNER_TEMP/profile.mobileprovision" "$PROFILES/$PROFILE_UUID.mobileprovision"
           echo "Perfil instalado: $PROFILE_NAME ($PROFILE_UUID) para $PROFILE_APPID"
-          if [ "$PROFILE_APPID" != "$APPLE_TEAM_ID.$APPLE_BUNDLE_ID" ]; then
-            echo "::error::O perfil é de $PROFILE_APPID, mas o app é $APPLE_TEAM_ID.$APPLE_BUNDLE_ID. Gere um perfil App Store para o bundle correto."
-            exit 1
-          fi
           echo "APPLE_PROFILE_NAME=$PROFILE_NAME" >> "$GITHUB_ENV"
           echo "APPLE_PROFILE_UUID=$PROFILE_UUID" >> "$GITHUB_ENV"
+
 
       - name: Write export options (manual signing)
         run: |
