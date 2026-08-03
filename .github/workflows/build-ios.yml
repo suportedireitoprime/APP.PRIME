@@ -209,6 +209,35 @@ jobs:
           fi
           echo "Validated ios-marketing app icon: $MARKETING_ICON (${WIDTH}x${HEIGHT})"
 
+      - name: Inject Splash (Splash.imageset)
+        run: |
+          set -euo pipefail
+          SPLASH_SRC="build-assets/ios-splash.png"
+          IMAGESET="ios/App/App/Assets.xcassets/Splash.imageset"
+          if [ ! -f "$SPLASH_SRC" ]; then
+            echo "::error::Splash iOS não encontrada em $SPLASH_SRC"
+            exit 1
+          fi
+          rm -rf "$IMAGESET"
+          mkdir -p "$IMAGESET"
+          cp "$SPLASH_SRC" "$IMAGESET/splash-2732x2732.png"
+          cp "$SPLASH_SRC" "$IMAGESET/splash-2732x2732-1.png"
+          cp "$SPLASH_SRC" "$IMAGESET/splash-2732x2732-2.png"
+          cat > "$IMAGESET/Contents.json" <<'JSON'
+          {
+            "images": [
+              { "filename": "splash-2732x2732.png", "idiom": "universal", "scale": "1x" },
+              { "filename": "splash-2732x2732-1.png", "idiom": "universal", "scale": "2x" },
+              { "filename": "splash-2732x2732-2.png", "idiom": "universal", "scale": "3x" }
+            ],
+            "info": { "author": "xcode", "version": 1 }
+          }
+          JSON
+          echo "Splash.imageset atualizado:"
+          ls -la "$IMAGESET"
+
+
+
       - name: Ensure Info.plist references AppIcon (CFBundleIcons)
         run: |
           set -euo pipefail
