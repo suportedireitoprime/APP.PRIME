@@ -139,18 +139,24 @@ export default function BlogPostSheet({ post, onClose, showGoTo = false, inline 
               inline
                 ? 'relative h-full w-full bg-card border border-border rounded-2xl flex flex-col overflow-hidden shadow-xl'
                 : isDesktop
-                ? 'fixed z-50 inset-x-0 mx-auto top-[4vh] bottom-[4vh] bg-card border border-border rounded-2xl flex flex-col w-[880px] max-w-[92vw] shadow-2xl overflow-hidden'
+                ? 'fixed z-50 inset-x-0 mx-auto top-[4vh] bottom-0 bg-card border border-b-0 border-border rounded-t-2xl flex flex-col w-[1080px] max-w-[94vw] shadow-2xl overflow-hidden 2xl:w-[1200px]'
                 : 'fixed inset-x-0 bottom-0 z-50 h-[90vh] bg-card rounded-t-3xl flex flex-col overflow-hidden shadow-2xl mx-auto max-w-3xl'
             }
 
           >
             <div ref={scrollRef} className="flex-1 overflow-y-auto pb-8 relative">
-              <div className={`relative w-full ${isDesktop ? 'h-[38vh] max-h-[360px]' : 'h-[42vh] max-h-[420px] min-h-[260px]'}`}>
+              <div
+                className={`relative w-full overflow-hidden ${
+                  isDesktop
+                    ? 'aspect-[21/9] max-h-[46vh] min-h-[260px]'
+                    : 'aspect-[16/10] max-h-[420px] min-h-[240px]'
+                }`}
+              >
                 <BlogCoverImage
                   postId={post.id}
                   remoteUrl={blogHero(post.imagem_url)}
                   alt={post.titulo}
-                  className="w-full h-full object-cover object-center bg-black"
+                  className="absolute inset-0 h-full w-full object-cover object-top bg-black"
                   decoding="async"
                   fetchPriority="high"
                 />

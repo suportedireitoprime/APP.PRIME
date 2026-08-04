@@ -156,7 +156,7 @@ const FlashcardsEstudo = () => {
   }, [areaParam, temasParam, escolhendo]);
 
   return (
-    <div className="min-h-dvh bg-background pb-32">
+    <div className={`min-h-dvh bg-background ${escolhendo ? 'pb-32' : 'pb-10'}`}>
       <div className="mx-auto w-full max-w-3xl">
         <PageHeader
           title={titulo}
@@ -313,34 +313,64 @@ const FlashcardsEstudo = () => {
 
             {atual && (
               <>
-                {/* Carta com flip 3D e altura fixa */}
-                <div className="[perspective:1400px]">
+                {/* Carta com flip 3D — altura responsiva */}
+                <div className="[perspective:1600px]">
                   <button
                     onClick={virar}
                     aria-label={virado ? 'Ver pergunta' : 'Ver resposta'}
-                    className="relative block h-[420px] w-full text-left sm:h-[460px]"
+                    className="relative block h-[clamp(360px,58dvh,560px)] w-full text-left"
                   >
                     <div
-                      className="relative h-full w-full transition-transform duration-500 [transform-style:preserve-3d]"
-                      style={{ transform: virado ? 'rotateY(180deg)' : 'rotateY(0deg)' }}
+                      className="relative h-full w-full transition-transform duration-[600ms] [transform-style:preserve-3d]"
+                      style={{
+                        transform: virado ? 'rotateY(180deg)' : 'rotateY(0deg)',
+                        transitionTimingFunction: 'cubic-bezier(.22,1,.36,1)',
+                      }}
                     >
                       {/* Frente */}
-                      <div className="absolute inset-0 overflow-y-auto rounded-3xl border border-border bg-card p-6 [backface-visibility:hidden] [-webkit-backface-visibility:hidden]">
-                        <Tags card={atual} />
-                        <p className="whitespace-pre-wrap text-[17px] font-medium leading-relaxed text-foreground">
-                          {atual.pergunta}
-                        </p>
-                        <p className="mt-6 text-xs text-muted-foreground">Toque para virar</p>
+                      <div
+                        className="absolute inset-0 flex flex-col overflow-hidden rounded-[28px] border bg-card shadow-[0_18px_50px_-24px_rgba(0,0,0,0.65)] [backface-visibility:hidden] [-webkit-backface-visibility:hidden]"
+                        style={{ borderColor: `${getAreaVisual(atual.area).color}45` }}
+                      >
+                        <div
+                          className="h-1.5 w-full shrink-0"
+                          style={{
+                            background: `linear-gradient(90deg, ${getAreaVisual(atual.area).color}, ${getAreaVisual(atual.area).color}33)`,
+                          }}
+                        />
+                        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-5 py-5 sm:px-7 sm:py-6">
+                          <Tags card={atual} />
+                          <p
+                            className="mt-auto whitespace-pre-wrap text-[19px] font-semibold leading-[1.45] tracking-[-0.01em] text-foreground sm:text-[22px]"
+                            style={{ fontFamily: "'Barlow', system-ui, sans-serif" }}
+                          >
+                            {atual.pergunta}
+                          </p>
+                          <p className="mt-5 flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-widest text-muted-foreground">
+                            <RotateCcw className="h-3.5 w-3.5" /> Toque para virar
+                          </p>
+                        </div>
                       </div>
 
                       {/* Verso */}
                       <div
-                        className="absolute inset-0 overflow-y-auto rounded-3xl border border-primary/30 bg-card p-6 [backface-visibility:hidden] [-webkit-backface-visibility:hidden]"
-                        style={{ transform: 'rotateY(180deg)' }}
+                        className="absolute inset-0 flex flex-col overflow-hidden rounded-[28px] border bg-card shadow-[0_18px_50px_-24px_rgba(0,0,0,0.65)] [backface-visibility:hidden] [-webkit-backface-visibility:hidden]"
+                        style={{ transform: 'rotateY(180deg)', borderColor: `${getAreaVisual(atual.area).color}45` }}
                       >
-                        <Tags card={atual} />
-                        <div className="space-y-4">
-                          <p className="whitespace-pre-wrap text-[16px] leading-relaxed text-foreground">
+                        <div
+                          className="h-1.5 w-full shrink-0"
+                          style={{
+                            background: `linear-gradient(90deg, ${getAreaVisual(atual.area).color}33, ${getAreaVisual(atual.area).color})`,
+                          }}
+                        />
+                        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-5 py-5 sm:px-7 sm:py-6">
+                          <p
+                            className="text-[10px] font-bold uppercase tracking-[0.18em]"
+                            style={{ color: getAreaVisual(atual.area).color }}
+                          >
+                            Resposta
+                          </p>
+                          <p className="whitespace-pre-wrap text-[16px] leading-[1.6] text-foreground sm:text-[17px]">
                             {atual.resposta}
                           </p>
                           {atual.exemplo && <Bloco icon={BookOpen} titulo="Exemplo" texto={atual.exemplo} />}
@@ -352,16 +382,23 @@ const FlashcardsEstudo = () => {
                   </button>
                 </div>
 
-                <div className="mt-4 grid grid-cols-2 gap-3">
-                  <Button variant="outline" className="h-14 rounded-2xl" onClick={() => responder('revisar')}>
-                    <RotateCcw className="mr-2 h-4 w-4" /> Revisar
+                <div className="mt-5 grid grid-cols-2 gap-3">
+                  <Button
+                    variant="outline"
+                    className="h-14 rounded-2xl text-[15px] font-semibold sm:h-16"
+                    onClick={() => responder('revisar')}
+                  >
+                    <RotateCcw className="mr-2 h-[18px] w-[18px]" /> Revisar
                   </Button>
-                  <Button className="h-14 rounded-2xl" onClick={() => responder('compreendido')}>
-                    <CheckCircle2 className="mr-2 h-4 w-4" /> Compreendi
+                  <Button
+                    className="h-14 rounded-2xl text-[15px] font-semibold sm:h-16"
+                    onClick={() => responder('compreendido')}
+                  >
+                    <CheckCircle2 className="mr-2 h-[18px] w-[18px]" /> Compreendi
                   </Button>
                 </div>
 
-                <p className="mt-3 text-center text-xs text-muted-foreground">
+                <p className="mt-3 text-center text-xs font-medium tabular-nums text-muted-foreground">
                   {idx + 1} de {cards.length}
                 </p>
               </>
@@ -371,28 +408,36 @@ const FlashcardsEstudo = () => {
       </div>
 
       <AreaTemasSheet area={areaSheet} open={!!areaSheet} onOpenChange={(v) => !v && setAreaSheet(null)} />
-      <FlashcardsBottomNav />
+      {escolhendo && <FlashcardsBottomNav />}
     </div>
   );
 };
 
 function Tags({ card }: { card: Card }) {
+  const { icon: Icon, color } = getAreaVisual(card.area);
   return (
-    <div className="mb-3 flex flex-wrap items-center gap-2">
-      <span className="rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-medium text-primary">
+    <div className="mb-4 flex flex-wrap items-center gap-2">
+      <span
+        className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-bold"
+        style={{ backgroundColor: `${color}2e`, color, border: `1px solid ${color}66` }}
+      >
+        <Icon className="h-3.5 w-3.5" strokeWidth={2.2} />
         {card.area}
       </span>
       {card.tema && (
-        <span className="rounded-full bg-muted px-2.5 py-1 text-[11px] text-muted-foreground">{card.tema}</span>
+        <span className="rounded-full border border-border bg-muted/60 px-3 py-1.5 text-[12px] font-medium text-foreground/80">
+          {card.tema}
+        </span>
       )}
       {card.status && (
-        <span className="rounded-full bg-muted px-2.5 py-1 text-[11px] text-muted-foreground">
+        <span className="rounded-full bg-muted px-3 py-1.5 text-[12px] text-muted-foreground">
           {card.status === 'compreendido' ? 'Compreendido' : 'A revisar'}
         </span>
       )}
     </div>
   );
 }
+
 
 function Chip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
   return (

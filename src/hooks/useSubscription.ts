@@ -8,7 +8,7 @@ interface SubscriptionState {
   plano: string | null;
   expiresAt: string | null;
   startedAt: string | null;
-  source: 'play' | 'apple' | null;
+  source: 'play' | 'apple' | 'asaas' | null;
   status: string | null;
   isAdminOverride: boolean;
   refresh: () => void;
@@ -19,6 +19,9 @@ const ADMIN_EMAILS = new Set([
   'suporte.vacatio@gmail.com',
   'wn7juridico@gmail.com',
 ]);
+
+// Evita repetir o resgate de assinatura legada a cada montagem do hook.
+const claimedOnce = new Set<string>();
 
 const ACTIVE_STATUSES = [
   'SUBSCRIPTION_STATE_ACTIVE',
@@ -166,7 +169,40 @@ export function useSubscription(options: Options = {}): SubscriptionState {
         return true;
       }
 
-      // 3) Nada no banco: antes de rebaixar para gratuito, revalida em silêncio
+      // 3) Assinantes migrados do app antigo (vitalícios e mensais via Asaas)
+      const { data: legado } = await supabase
+        .from('asaas_subscriptions' as any)
+        .select('plano, status, expires_at, started_at')
+        .eq('user_id', user.id)
+        .in('status', ['ACTIVE', 'ACTIVE_GRACE'])
+        .or(`expires_at.is.null,expires_at.gt.${nowIso}`)
+        .limit(1)
+        .maybeSingle();
+
+      if (cancelled) return true;
+      if (legado) {
+        const l = legado as any;
+        persist({
+          isPremium: true, loading: false,
+          plano: l.plano, expiresAt: l.expires_at, startedAt: l.started_at, source: 'asaas',
+          status: l.status as string,
+          isAdminOverride: false,
+        });
+        return true;
+      }
+
+      // 4) Sem plano: tenta resgatar (1× por sessão) uma assinatura do app antigo
+      //    ligada a este e-mail e revalida.
+      if (!skipStoreSync && !claimedOnce.has(user.id)) {
+        claimedOnce.add(user.id);
+        try {
+          const { data: claimed } = await supabase.rpc('claim_my_legacy_subscription' as any);
+          if (cancelled) return true;
+          if (claimed === true) return fetchOnce(true);
+        } catch { /* ignore */ }
+      }
+
+      // 5) Nada no banco: antes de rebaixar para gratuito, revalida em silêncio
       //    as compras que o aparelho possui na loja (cobre renovações cuja
       //    notificação do Google/Apple não chegou a gravar).
       if (!skipStoreSync) {

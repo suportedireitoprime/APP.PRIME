@@ -149,6 +149,7 @@ const Flashcards = lazy(() => import("./pages/Flashcards.tsx"));
 const FlashcardsEstudo = lazy(() => import("./pages/FlashcardsEstudo.tsx"));
 const FlashcardsRevisar = lazy(() => import("./pages/FlashcardsRevisar.tsx"));
 const FlashcardsDecks = lazy(() => import("./pages/FlashcardsDecks.tsx"));
+const FlashcardsDesafios = lazy(() => import("./pages/FlashcardsDesafios.tsx"));
 const FlashcardsProgresso = lazy(() => import("./pages/FlashcardsProgresso.tsx"));
 const Videoaulas = lazy(routePrefetch.videoaulas);
 const VideoaulasCatalogo = lazy(routePrefetch.videoaulasCatalogo);
@@ -738,6 +739,7 @@ function AnimatedRoutes() {
           <Route path="/flashcards/estudar" element={<ProtectedRoute><PageTransition><FlashcardsEstudo /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/revisar" element={<ProtectedRoute><PageTransition><FlashcardsRevisar /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/progresso" element={<ProtectedRoute><PageTransition><FlashcardsProgresso /></PageTransition></ProtectedRoute>} />
+          <Route path="/flashcards/desafios" element={<ProtectedRoute><PageTransition><FlashcardsDesafios /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/decks" element={<ProtectedRoute><PageTransition><FlashcardsDecks /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas" element={<ProtectedRoute><PageTransition><Videoaulas /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/favoritos" element={<ProtectedRoute><PageTransition><VideoaulasLista modo="favoritos" /></PageTransition></ProtectedRoute>} />

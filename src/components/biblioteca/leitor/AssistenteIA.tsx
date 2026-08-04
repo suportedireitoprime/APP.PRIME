@@ -17,6 +17,8 @@ interface Props {
   livroId: string;
   tema: Tema;
   fonteFamily: string;
+  /** Desktop: abre como painel lateral (direita → esquerda) em vez de bottom sheet */
+  lateral?: boolean;
 }
 
 type Aba = 'termos' | 'resumo' | 'chat';
@@ -37,6 +39,7 @@ export default function AssistenteIA({
   livroId,
   tema,
   fonteFamily,
+  lateral = false,
 }: Props) {
   const [aba, setAba] = useState<Aba>('termos');
   const dark = tema.isDark;
@@ -64,30 +67,48 @@ export default function AssistenteIA({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[1400] bg-black/50 backdrop-blur-sm"
+            className={`fixed inset-0 z-[1400] ${lateral ? 'bg-black/25' : 'bg-black/50 backdrop-blur-sm'}`}
             onClick={onClose}
           />
           <motion.div
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '100%' }}
+            initial={lateral ? { opacity: 0, x: 48, scale: 0.97 } : { y: '100%' }}
+            animate={lateral ? { opacity: 1, x: 0, scale: 1 } : { y: 0 }}
+            exit={lateral ? { opacity: 0, x: 48, scale: 0.97 } : { y: '100%' }}
             transition={{ type: 'spring', damping: 32, stiffness: 320 }}
-            className="fixed inset-x-0 bottom-0 z-[1401] flex flex-col rounded-t-3xl shadow-2xl overflow-hidden"
-            style={{
-              background: tema.bg,
-              color: tema.text,
-              height: '88dvh',
-              maxHeight: '88dvh',
-              borderTop: `1px solid ${tema.border}`,
-            }}
+            className={
+              lateral
+                ? 'fixed z-[1401] flex flex-col rounded-3xl shadow-2xl overflow-hidden'
+                : 'fixed inset-x-0 bottom-0 z-[1401] flex flex-col rounded-t-3xl shadow-2xl overflow-hidden'
+            }
+            style={
+              lateral
+                ? {
+                    background: tema.bg,
+                    color: tema.text,
+                    right: 'max(16px, env(safe-area-inset-right, 0px))',
+                    top: 'calc(env(safe-area-inset-top, 0px) + 5.25rem)',
+                    bottom: 'calc(env(safe-area-inset-bottom, 0px) + 1.5rem)',
+                    width: 'min(440px, calc(100vw - 32px))',
+                    border: `1px solid ${tema.border}`,
+                  }
+                : {
+                    background: tema.bg,
+                    color: tema.text,
+                    height: '88dvh',
+                    maxHeight: '88dvh',
+                    borderTop: `1px solid ${tema.border}`,
+                  }
+            }
           >
-            {/* Handle */}
-            <div className="pt-2 pb-1 flex justify-center shrink-0">
-              <div
-                className="w-10 h-1 rounded-full"
-                style={{ background: dark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.18)' }}
-              />
-            </div>
+            {/* Handle (só bottom sheet) */}
+            {!lateral && (
+              <div className="pt-2 pb-1 flex justify-center shrink-0">
+                <div
+                  className="w-10 h-1 rounded-full"
+                  style={{ background: dark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.18)' }}
+                />
+              </div>
+            )}
 
             {/* Header */}
             <div

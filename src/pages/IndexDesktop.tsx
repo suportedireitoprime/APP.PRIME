@@ -19,9 +19,8 @@ import DesktopOnboardingOverlay from '@/components/desktop/DesktopOnboardingOver
 import DesktopBreadcrumb from '@/components/vademecum/DesktopBreadcrumb';
 import DesktopSidebar from '@/components/vademecum/DesktopSidebar';
 import AtualizacaoTab from '@/components/vademecum/AtualizacaoTab';
-import AtalhosCarousel from '@/components/vademecum/AtalhosCarousel';
+import DesktopEstudosGrid from '@/components/desktop/DesktopEstudosGrid';
 import HomeNoticiasCarousel from '@/components/vademecum/HomeNoticiasCarousel';
-import DesktopFunctionRow from '@/components/vademecum/DesktopFunctionRow';
 import ContinueBanner from '@/components/desktop/ContinueBanner';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
 import { leiPath, tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
@@ -32,6 +31,9 @@ const AssistenteOverlay = lazy(() => import('@/components/vademecum/AssistenteOv
 import { prefetchAllArtigos } from '@/services/legislacaoService';
 import { prefetchResenha } from '@/services/atualizacaoService';
 import { prefetchNoticias } from '@/services/noticiasService';
+import { useQueryClient } from '@tanstack/react-query';
+import { warmBiblioteca } from '@/services/bibliotecaWarmup';
+
 import { pushRecente } from '@/lib/leisRecentes';
 import { warmCoverCache } from '@/lib/coverLoader';
 import { DESKTOP_TOOL_GROUPS } from '@/config/desktopTools';
@@ -54,6 +56,8 @@ const DESKTOP_TABS: { id: string; label: string; icon: typeof Scale }[] = [
 
 const IndexDesktop = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
   const [activeTab, setActiveTab] = useState<Tab>('legislacao');
   const [searchQuery] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
@@ -99,6 +103,9 @@ const IndexDesktop = () => {
       prefetchAllArtigos(4);
       prefetchResenha();
       prefetchNoticias();
+      // Biblioteca já aquecida ao entrar no desktop (prioridade mais baixa).
+      window.setTimeout(() => warmBiblioteca(queryClient), 600);
+
     });
     return () => {
       const cic = (window as any).cancelIdleCallback;
@@ -162,19 +169,13 @@ const IndexDesktop = () => {
                   </div>
                   <div className="mb-6"><ContinueBanner /></div>
                   <div className="mb-8">
-                    <DesktopFunctionRow
-                      items={[
-                        { id: 'ferramentas', label: 'Ferramentas', description: 'Todos os recursos', icon: Wrench, onClick: () => setActiveTab('ferramentas') },
-                        { id: 'aprender', label: 'Aprender', description: 'Trilhas e aulas', icon: GraduationCap, onClick: () => navigate('/aprender') },
-                        { id: 'chat', label: 'Chat', description: 'Assistente IA', icon: MessageSquare, onClick: () => setAssistenteOpen(true) },
-                        { id: 'peticao', label: 'Petição Inicial', description: 'Monte peças com IA', icon: FileSignature, onClick: () => navigate('/ferramentas/peticao-inicial') },
-                        { id: 'blog', label: 'Blog', description: 'Artigos jurídicos', icon: Newspaper, onClick: () => navigate('/blog') },
-                        { id: 'meu-espaco', label: 'Meu Espaço', description: 'Salvos e grifos', icon: UserFn, onClick: () => navigate('/meu-espaco') },
-                      ]}
+                    <DesktopEstudosGrid
+                      onChatClick={() => setAssistenteOpen(true)}
+                      onFerramentasClick={() => setActiveTab('ferramentas')}
                     />
                   </div>
                   <div className="mb-10 -mx-8 2xl:-mx-14"><HomeNoticiasCarousel /></div>
-                  <div className="mb-8"><AtalhosCarousel /></div>
+
                 </>
               )}
 

@@ -126,14 +126,14 @@ const VideoaulasListSheet = ({ open, onClose, tabelaNome, artigoNumero, leiNome,
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[70]"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[10040]"
           />
           <motion.aside
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 26, stiffness: 260 }}
-            className="fixed bottom-0 left-0 right-0 z-[71] bg-card border-t border-border rounded-t-3xl shadow-2xl flex flex-col pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] max-h-[92vh] mx-auto max-w-lg md:left-1/2 md:right-auto md:-translate-x-1/2 md:bottom-6 md:top-auto md:w-[92vw] md:max-w-2xl md:rounded-3xl md:border md:border-border md:shadow-2xl"
+            className="fixed bottom-0 left-0 right-0 z-[10041] bg-card border-t border-border rounded-t-3xl shadow-2xl flex flex-col pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] max-h-[92vh] mx-auto max-w-lg md:left-auto md:right-0 md:top-0 md:bottom-0 md:h-full md:max-h-none md:w-[min(30rem,92vw)] md:max-w-none md:rounded-none md:rounded-l-3xl md:border-l md:border-t-0 md:shadow-2xl md:mx-0"
           >
             <div className="pt-3 pb-2 flex justify-center">
               <span className="w-10 h-1 rounded-full bg-border" />

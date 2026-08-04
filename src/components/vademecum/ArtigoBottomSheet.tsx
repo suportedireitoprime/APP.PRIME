@@ -3,12 +3,15 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Eye, EyeOff, Star, Heart, Highlighter, Copy, Plus, Minus, Type, MessageSquare, ChevronUp, ChevronDown, ChevronRight, ExternalLink, Volume2, Pause, Target, StickyNote, MessageCircle, Loader2, Share2, Network, BookOpen, Layers, Sparkles, GraduationCap, Play, Camera, Feather, History, LayoutGrid, Mic, Square, Bell, Scale, Download, Trash2 } from 'lucide-react';
 const LembretesArtigoSheet = lazy(() => import('./LembretesArtigoSheet'));
+const QuizView = lazy(() => import('@/components/estudar/QuizView'));
+const JurisprudenciaArtigoView = lazy(() => import('@/pages/JurisprudenciaArtigo'));
 const BaixarArtigoSheet = lazy(() => import('./BaixarArtigoSheet'));
 // Sheets/overlays pesados são carregados sob demanda: o chunk só desce
 // quando o usuário abre o painel. Reduz o bundle inicial que o
 // ArtigoBottomSheet arrasta para toda navegação do app.
 const GrifoFotoSheet = lazy(() => import('./GrifoFotoSheet'));
 const AnotacoesSheet = lazy(() => import('./AnotacoesSheet'));
+import ArtigoSidePanel from './ArtigoSidePanel';
 const PerguntarSheet = lazy(() => import('./PerguntarSheet'));
 const GrafoOverlay = lazy(() => import('./GrafoOverlay'));
 const GrifoEraseSheet = lazy(() => import('./GrifoEraseSheet'));
@@ -373,6 +376,8 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
   const [premiumGateFeature, setPremiumGateFeature] = useState<PremiumFeatureKey>('default');
   const [showTermosSheet, setShowTermosSheet] = useState(false);
   const [showLembretesLocal, setShowLembretesLocal] = useState(false);
+  const [showQuestoesPanel, setShowQuestoesPanel] = useState(false);
+  const [showJurisPanel, setShowJurisPanel] = useState(false);
   const [showBaixarSheet, setShowBaixarSheet] = useState(false);
   useEffect(() => { setShowLembretesLocal(false); }, [artigo?.numero, tabelaNome]);
   // Desktop: pílula flutuante Narrar/Grifar quando há seleção de texto no artigo
@@ -3489,7 +3494,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-black/50 z-[60]"
+                className="fixed inset-0 bg-black/50 z-[10040]"
                 onClick={() => setShowPraticarSheet(false)}
               />
               <motion.div
@@ -3497,7 +3502,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 animate={{ y: 0 }}
                 exit={{ y: '100%' }}
                 transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                className="fixed bottom-0 left-0 right-0 z-[61] bg-card rounded-t-3xl border-t border-border pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] h-[85vh] max-h-[85vh] overflow-y-auto mx-auto max-w-lg flex flex-col md:left-1/2 md:right-auto md:-translate-x-1/2 md:bottom-6 md:top-auto md:w-[92vw] md:max-w-2xl md:rounded-3xl md:border md:border-border md:shadow-2xl"
+                className="fixed bottom-0 left-0 right-0 z-[10041] bg-card rounded-t-3xl border-t border-border pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] h-[85vh] max-h-[85vh] overflow-y-auto mx-auto max-w-lg flex flex-col md:left-auto md:right-0 md:top-0 md:bottom-0 md:h-full md:max-h-none md:w-[min(30rem,92vw)] md:max-w-none md:rounded-none md:rounded-l-3xl md:border-l md:border-t-0 md:shadow-2xl md:mx-0"
               >
                 <div className="pt-3 pb-2 flex justify-center">
                   <span className="w-10 h-1 rounded-full bg-border" />
@@ -3518,7 +3523,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 <p className="px-5 pt-3 text-[12.5px] text-foreground/60">Art. {artigo?.numero} — Escolha o modo de estudo</p>
                 <div className="flex-1 py-2">
                   {[
-                    { icon: Target, label: 'Questões', desc: 'Múltipla escolha com comentários e exemplos', color: '#DC2626', onClick: () => { setShowPraticarSheet(false); navigate(`/estudos?mode=questoes&tabela=${tabelaNome}&artigo=${artigo?.numero}`); } },
+                    { icon: Target, label: 'Questões', desc: 'Múltipla escolha com comentários e exemplos', color: '#DC2626', onClick: () => { setShowPraticarSheet(false); if (isDesktop) { setShowQuestoesPanel(true); } else { navigate(`/estudos?mode=questoes&tabela=${tabelaNome}&artigo=${artigo?.numero}`); } } },
                     { icon: Layers, label: 'Flashcards', desc: 'Cards com flip animado e exemplos práticos', color: '#DC2626', onClick: () => { setShowPraticarSheet(false); navigate(`/estudos?mode=flashcards&tabela=${tabelaNome}&artigo=${artigo?.numero}`); } },
                   ].map((item, i, arr) => {
                     const Icon = item.icon;
@@ -3602,7 +3607,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
 
         {/* Termos jurídicos Sheet (aberto pelo menu Grifar) */}
         <Sheet open={showTermosSheet} onOpenChange={(open) => setShowTermosSheet(open)}>
-          <SheetContent side="bottom" className="h-[90vh] max-w-lg mx-auto rounded-t-3xl p-0 flex flex-col">
+          <SheetContent side="bottom" className="z-[10041] h-[90vh] max-w-lg mx-auto rounded-t-3xl p-0 flex flex-col md:left-auto md:right-0 md:top-0 md:bottom-0 md:h-full md:w-[min(30rem,92vw)] md:max-w-none md:rounded-none md:rounded-l-3xl md:border-l md:mx-0">
             <div className="flex items-center gap-2 px-5 py-4 border-b border-border">
               <BookOpen className="w-5 h-5 text-orange-400" />
               <h3 className="font-heading text-base font-semibold text-foreground flex-1">Termos jurídicos</h3>
@@ -3698,6 +3703,37 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         )}
       </Suspense>
 
+      {/* Desktop: Questões e Jurisprudência como painel lateral */}
+      {isDesktop && artigo && (
+        <>
+          <ArtigoSidePanel open={showQuestoesPanel} onClose={() => setShowQuestoesPanel(false)} widthClass="w-[min(40rem,94vw)]">
+            <Suspense fallback={<div className="flex justify-center py-10"><Loader2 className="w-5 h-5 animate-spin text-primary" /></div>}>
+              {showQuestoesPanel && (
+                <QuizView
+                  tabelaNome={tabelaNome || ''}
+                  artigoNumero={String(artigo.numero)}
+                  leiNome={tabelaNome || ''}
+                  onBack={() => setShowQuestoesPanel(false)}
+                />
+              )}
+            </Suspense>
+          </ArtigoSidePanel>
+
+          <ArtigoSidePanel open={showJurisPanel} onClose={() => setShowJurisPanel(false)} widthClass="w-[min(40rem,94vw)]">
+            <Suspense fallback={<div className="flex justify-center py-10"><Loader2 className="w-5 h-5 animate-spin text-primary" /></div>}>
+              {showJurisPanel && (
+                <JurisprudenciaArtigoView
+                  embedded
+                  slugLeiProp={tabelaNome || ''}
+                  numeroArtigoProp={encodeURIComponent(String(artigo.numero))}
+                  onBack={() => setShowJurisPanel(false)}
+                />
+              )}
+            </Suspense>
+          </ArtigoSidePanel>
+        </>
+      )}
+
       {/* Desktop: barras laterais com as funções (principais à esquerda) */}
       {isDesktop && artigo && (activeTab ?? 'artigo') === 'artigo' && createPortal(
         (() => {
@@ -3713,9 +3749,10 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
             { icon: Scale, label: 'Jurisprudência', color: '#D4AF37', onClick: () => {
               if (!requireOnline('Jurisprudência')) return;
               if (!tabelaNome || !artigo?.numero) { toast.error('Artigo não identificado'); return; }
-              gateFeature('jurisprudencia', 'jurisprudencia', 'Jurisprudência', () =>
-                navigate(`/jurisprudencia/${tabelaNome}/${encodeURIComponent(String(artigo.numero))}`),
-              );
+              gateFeature('jurisprudencia', 'jurisprudencia', 'Jurisprudência', () => {
+                if (isDesktop) setShowJurisPanel(true);
+                else navigate(`/jurisprudencia/${tabelaNome}/${encodeURIComponent(String(artigo.numero))}`);
+              });
             } },
             { icon: Play, label: 'Videoaulas', color: 'hsl(348 78% 38%)', onClick: () => { if (!requireOnline('Videoaulas')) return; gateFeature('videoaula', 'videoaula', 'Videoaulas', () => setShowVideoaulasListSheet(true)); } },
             { icon: BookOpen, label: 'Termos', color: '#F97316', onClick: () => { if (!requireOnline('Termos jurídicos')) return; gateFeature('termos', 'termos', 'Termos jurídicos', () => setShowTermosSheet(true)); } },
@@ -3727,13 +3764,16 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
             { icon: Share2, label: 'Compartilhar', color: '#06B6D4', onClick: () => setShowSharePanel(p => !p) },
             { icon: Type, label: 'Fonte', onClick: () => { setShowFontControls(v => !v); setShowCommentPanel(false); } },
           ];
+          const anyPanelOpen = showAnotacoesSheet || showPerguntarSheet || showPraticarSheet || showQuestoesPanel
+            || showJurisPanel || showVideoaulasListSheet || showVideoaulaSheet || showBaixarSheet
+            || showLembretesLocal || showTermosSheet || showGrafo || showGrifoFoto;
           const Rail = ({ items, side, title }: { items: RailItem[]; side: 'left' | 'right'; title: string }) => (
             <div
               data-artigo-rail
               aria-hidden={false}
-              style={{ pointerEvents: 'auto' }}
+              style={{ pointerEvents: anyPanelOpen ? 'none' : 'auto' }}
               onPointerDown={(e) => e.stopPropagation()}
-              className={`fixed ${side === 'left' ? 'left-4' : 'right-4'} top-1/2 -translate-y-1/2 z-[10000] w-[188px] flex flex-col gap-0.5 rounded-2xl bg-card/95 backdrop-blur-md border border-border p-2 shadow-xl shadow-black/40 max-h-[88vh] overflow-y-auto`}
+              className={`fixed ${side === 'left' ? 'left-4' : 'right-4'} top-1/2 -translate-y-1/2 z-[10000] w-[188px] ${anyPanelOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'} transition-opacity flex flex-col gap-0.5 rounded-2xl bg-card/95 backdrop-blur-md border border-border p-2 shadow-xl shadow-black/40 max-h-[88vh] overflow-y-auto`}
             >
               <p className="px-2 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{title}</p>
               {items.map((item, i) => {

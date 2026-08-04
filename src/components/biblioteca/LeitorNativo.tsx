@@ -1001,7 +1001,7 @@ const LeitorNativo = ({ livroId, livroTabela, pdfUrl, titulo, onClose, autor, an
         : null;
 
   const focoOn = isDesktop && modoFoco && status === 'pronto';
-  const tocRailW = focoOn ? 0 : tocItems.length > 0 ? (railExpanded ? 380 : 56) : 0;
+  const tocRailW = focoOn ? 0 : tocItems.length > 0 ? (railExpanded ? 300 : 56) : 0;
   const fnRailW = focoOn ? 0 : DESKTOP_FN_RAIL;
   const tocFiltrado = tocQuery.trim()
     ? tocItems.filter((s: any) =>
@@ -1077,7 +1077,7 @@ const LeitorNativo = ({ livroId, livroTabela, pdfUrl, titulo, onClose, autor, an
             }
           }}
           className="hidden md:flex md:flex-col fixed left-0 top-0 bottom-0 z-[1305] border-r transition-[width] duration-300 ease-out backdrop-blur-md pt-[3.75rem]"
-          style={{ width: railExpanded ? 380 : 56, background: `${tema.bg}f2`, borderColor: tema.border, color: tema.text }}
+          style={{ width: railExpanded ? 300 : 56, background: `${tema.bg}f2`, borderColor: tema.border, color: tema.text }}
         >
           <div
             className={`flex items-center gap-2 border-b shrink-0 ${railExpanded ? 'px-3 h-12' : 'px-2 h-12'}`}
@@ -1320,12 +1320,12 @@ const LeitorNativo = ({ livroId, livroTabela, pdfUrl, titulo, onClose, autor, an
 
       {/* Conteúdo */}
       <div
-        className="flex-1 min-h-0 relative overflow-hidden transition-[padding] duration-300 ease-out"
+        className="flex-1 min-h-0 relative overflow-hidden transition-[margin] duration-300 ease-out"
         style={{
-          // Centraliza a coluna de leitura na área útil ENTRE os dois rails:
-          // cada lado recebe a largura do seu rail + a mesma calha (gutter).
-          paddingLeft: isDesktop && status === 'pronto' ? tocRailW + 32 : 0,
-          paddingRight: isDesktop && status === 'pronto' ? fnRailW + 32 : 0,
+          // Usa MARGEM (não padding): os filhos são absolutos (inset-0) e ignorariam
+          // o padding, fazendo o texto passar por baixo do sumário lateral.
+          marginLeft: isDesktop && status === 'pronto' ? tocRailW + 32 : 0,
+          marginRight: isDesktop && status === 'pronto' ? fnRailW + 32 : 0,
         }}
       >
 
@@ -1836,20 +1836,42 @@ const LeitorNativo = ({ livroId, livroTabela, pdfUrl, titulo, onClose, autor, an
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[1324]"
+              className={`fixed inset-0 z-[1324] ${isDesktop ? 'bg-black/25' : 'bg-black/50 backdrop-blur-sm'}`}
               onClick={() => setShowBookmarks(false)}
             />
             <motion.div
-              initial={{ y: '100%' }}
-              animate={{ y: 0 }}
-              exit={{ y: '100%' }}
+              initial={isDesktop ? { opacity: 0, x: 48, scale: 0.97 } : { y: '100%' }}
+              animate={isDesktop ? { opacity: 1, x: 0, scale: 1 } : { y: 0 }}
+              exit={isDesktop ? { opacity: 0, x: 48, scale: 0.97 } : { y: '100%' }}
               transition={{ type: 'spring', stiffness: 320, damping: 34 }}
-              className="fixed inset-x-0 bottom-0 z-[1325] mx-auto w-full md:max-w-[720px] rounded-t-3xl shadow-2xl flex flex-col max-h-[80vh]"
-              style={{ background: tema.bg, color: tema.text, paddingBottom: 'var(--sai-bottom,env(safe-area-inset-bottom,0px))' }}
+              className={
+                isDesktop
+                  ? 'fixed z-[1325] rounded-3xl shadow-2xl flex flex-col overflow-hidden'
+                  : 'fixed inset-x-0 bottom-0 z-[1325] mx-auto w-full md:max-w-[720px] rounded-t-3xl shadow-2xl flex flex-col max-h-[80vh]'
+              }
+              style={
+                isDesktop
+                  ? {
+                      background: tema.bg,
+                      color: tema.text,
+                      right: 'max(16px, env(safe-area-inset-right, 0px))',
+                      top: 'calc(env(safe-area-inset-top, 0px) + 5.25rem)',
+                      bottom: 'calc(env(safe-area-inset-bottom, 0px) + 1.5rem)',
+                      width: 'min(400px, calc(100vw - 32px))',
+                      border: `1px solid ${tema.border}`,
+                    }
+                  : {
+                      background: tema.bg,
+                      color: tema.text,
+                      paddingBottom: 'var(--sai-bottom,env(safe-area-inset-bottom,0px))',
+                    }
+              }
             >
-              <div className="flex justify-center pt-3 pb-1">
-                <div className={`w-10 h-1 rounded-full ${dark ? 'bg-white/20' : 'bg-black/20'}`} />
-              </div>
+              {!isDesktop && (
+                <div className="flex justify-center pt-3 pb-1">
+                  <div className={`w-10 h-1 rounded-full ${dark ? 'bg-white/20' : 'bg-black/20'}`} />
+                </div>
+              )}
               <div className="px-5 pt-2 pb-3 flex items-center gap-3">
                 <p className="text-base font-semibold flex-1">Marcadores</p>
                 <button
@@ -2003,6 +2025,7 @@ const LeitorNativo = ({ livroId, livroTabela, pdfUrl, titulo, onClose, autor, an
           livroId={`${livroTabela}:${livroId}`}
           tema={tema}
           fonteFamily={fonte.family}
+          lateral={isDesktop}
         />
       )}
 
@@ -2020,6 +2043,7 @@ const LeitorNativo = ({ livroId, livroTabela, pdfUrl, titulo, onClose, autor, an
           livroTabela={livroTabela}
           livroId={livroId}
           tema={tema}
+          lateral={isDesktop}
         />
 
       )}

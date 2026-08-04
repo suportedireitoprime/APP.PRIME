@@ -1,14 +1,16 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { LayoutGrid, FolderPlus, RotateCcw, BarChart3 } from 'lucide-react';
+import { LayoutGrid, FolderPlus, RotateCcw, BarChart3, Trophy } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
 const TABS = [
   { id: 'categorias', label: 'Categorias', to: '/flashcards', icon: LayoutGrid, match: (p: string) => p === '/flashcards' },
+  { id: 'desafios', label: 'Desafios', to: '/flashcards/desafios', icon: Trophy, match: (p: string) => p.startsWith('/flashcards/desafios') },
   { id: 'decks', label: 'Decks', to: '/flashcards/decks', icon: FolderPlus, match: (p: string) => p.startsWith('/flashcards/decks') },
   { id: 'revisar', label: 'Revisar', to: '/flashcards/revisar', icon: RotateCcw, match: (p: string) => p.startsWith('/flashcards/revisar') },
   { id: 'progresso', label: 'Progresso', to: '/flashcards/progresso', icon: BarChart3, match: (p: string) => p.startsWith('/flashcards/progresso') },
 ];
+
 
 const FlashcardsBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
   const navigate = useNavigate();
@@ -23,7 +25,7 @@ const FlashcardsBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
       className="fixed bottom-0 left-0 right-0 z-50 md:bottom-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-auto"
     >
       <div className="bg-card/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-lg shadow-black/10 pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] md:border md:rounded-full md:shadow-2xl md:shadow-black/30 md:pb-0">
-        <div className="grid grid-cols-4 items-end px-1 pt-3.5 pb-3.5 max-w-lg mx-auto md:gap-1 md:px-3 md:py-2">
+        <div className="grid grid-cols-5 items-end px-1 pt-3.5 pb-3.5 max-w-lg mx-auto md:gap-1 md:px-3 md:py-2">
           {TABS.map((t) => {
             const active = t.match(pathname);
             const Icon = t.icon;
@@ -46,7 +48,7 @@ const FlashcardsBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
                     aria-hidden="true"
                   />
                 )}
-                <Icon className="relative w-7 h-7 sm:w-8 sm:h-8" strokeWidth={active ? 1.9 : 1.5} />
+                <Icon className="relative w-6 h-6 sm:w-7 sm:h-7" strokeWidth={active ? 1.9 : 1.5} />
                 <span className={`relative text-[10px] sm:text-[11px] leading-none ${active ? 'font-bold' : 'font-medium'}`}>
                   {t.label}
                 </span>

@@ -432,7 +432,7 @@ export default function LembretesArtigoSheet({ open, onClose, artigoRef, artigoT
     <Sheet open={open} onOpenChange={(v) => { if (!v) onClose(); }}>
       <SheetContent
         side="bottom"
-        className="z-[10001] h-[90vh] max-w-lg mx-auto rounded-t-3xl p-0 flex flex-col bg-card"
+        className="z-[10041] h-[90vh] max-w-lg mx-auto rounded-t-3xl p-0 flex flex-col bg-card md:left-auto md:right-0 md:top-0 md:bottom-0 md:h-full md:w-[min(30rem,92vw)] md:max-w-none md:rounded-none md:rounded-l-3xl md:border-l md:mx-0"
       >
         <div className="flex items-center justify-between px-5 py-4 border-b border-border shrink-0">
           <div className="flex items-center gap-2 min-w-0">

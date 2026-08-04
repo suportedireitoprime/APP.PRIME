@@ -2,10 +2,7 @@ import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Capacitor } from '@capacitor/core';
-
-const SUPABASE_URL = 'https://iftdrbxvekrhzstayjwp.supabase.co';
-const SUPABASE_ANON_KEY =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmdGRyYnh2ZWtyaHpzdGF5andwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4Mzc5OTksImV4cCI6MjA5OTQxMzk5OX0.7nyvQlO5IDI6E4dLYHl6yrqqaNd53RxJcDOTQ7yNh40';
+import { callDesktopLink } from '@/lib/desktopLinkApi';
 
 export const DESKTOP_SESSION_KEY = 'vacatio.desktop_session_id';
 
@@ -29,16 +26,7 @@ export function useDesktopSessionGuard(enabled: boolean) {
 
     const check = async () => {
       try {
-        const res = await fetch(`${SUPABASE_URL}/functions/v1/desktop-link`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            apikey: SUPABASE_ANON_KEY,
-            Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-          },
-          body: JSON.stringify({ action: 'session_status', session_id: sessionId }),
-        });
-        const j = await res.json();
+        const j = await callDesktopLink<any>({ action: 'session_status', session_id: sessionId });
         if (stopped) return;
         if (j?.status === 'revoked') {
           window.localStorage.removeItem(DESKTOP_SESSION_KEY);

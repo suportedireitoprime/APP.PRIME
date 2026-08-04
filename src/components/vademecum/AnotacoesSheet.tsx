@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { createPortal } from 'react-dom';
+import { useIsDesktop } from '@/hooks/use-desktop';
 import { ArrowLeft, Plus, Sparkles, Loader2, Trash2, Mic, Square, Play, Pause, FileText } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -133,6 +135,7 @@ function fmtDuration(ms: number | null) {
 }
 
 const AnotacoesSheet = ({ open, onClose, tabelaNome, artigoNumero, artigoTexto, onCountChange }: AnotacoesSheetProps) => {
+  const isDesktop = useIsDesktop();
   const [notas, setNotas] = useState<Anotacao[]>([]);
   const [novaTexto, setNovaTexto] = useState('');
   const [loading, setLoading] = useState(false);
@@ -343,12 +346,25 @@ const AnotacoesSheet = ({ open, onClose, tabelaNome, artigoNumero, artigoTexto, 
 
   if (!open) return null;
 
-  return (
+  const panel = (
     <AnimatePresence>
+      {isDesktop && (
+        <motion.div
+          key="anotacoes-backdrop"
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          onClick={onClose}
+          className="fixed inset-0 z-[10040] bg-black/55 backdrop-blur-sm"
+        />
+      )}
       <motion.div
         initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
         transition={{ type: 'spring', damping: 30, stiffness: 340 }}
-        className="fixed inset-0 z-[80] bg-background flex flex-col"
+        data-artigo-menu
+        className={
+          isDesktop
+            ? 'fixed right-0 top-0 bottom-0 z-[10041] w-[min(30rem,92vw)] border-l border-border bg-background shadow-2xl flex flex-col'
+            : 'fixed inset-0 z-[10041] bg-background flex flex-col'
+        }
       >
         <header className="pt-safe border-b border-border bg-card">
           <div className="h-16 px-4 flex items-center justify-between gap-3">
@@ -478,6 +494,8 @@ const AnotacoesSheet = ({ open, onClose, tabelaNome, artigoNumero, artigoTexto, 
       </motion.div>
     </AnimatePresence>
   );
+
+  return typeof document !== 'undefined' ? createPortal(panel, document.body) : panel;
 };
 
 export default AnotacoesSheet;

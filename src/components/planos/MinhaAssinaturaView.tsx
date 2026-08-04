@@ -17,7 +17,7 @@ interface Props {
   plano: string | null;
   expiresAt: string | null;
   startedAt?: string | null;
-  source: 'play' | 'apple' | null;
+  source: 'play' | 'apple' | 'asaas' | null;
   status?: string | null;
   isAdminOverride?: boolean;
 }
@@ -273,7 +273,7 @@ export default function MinhaAssinaturaView({ plano, expiresAt, startedAt, sourc
                 className="h-11 rounded-xl bg-black text-primary font-display font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-black/40 active:scale-[0.98] transition"
               >
                 <ExternalLink className="w-4 h-4" />
-                {source === 'apple' ? 'App Store' : 'Google Play'}
+                {source === 'apple' ? 'App Store' : source === 'asaas' ? 'Asaas' : 'Google Play'}
               </button>
             )}
             <button
@@ -379,7 +379,8 @@ export default function MinhaAssinaturaView({ plano, expiresAt, startedAt, sourc
                 <InfoLine icon={CreditCard} label="Método" value={
                   isAdminOverride ? 'Concedido pela equipe' :
                   source === 'play' ? 'Google Play' :
-                  source === 'apple' ? 'App Store' : '—'
+                  source === 'apple' ? 'App Store' :
+                  source === 'asaas' ? 'Asaas (assinatura anterior)' : '—'
                 } />
                 <InfoLine icon={Wallet} label={isAdminOverride ? 'Cobrança' : 'Próxima cobrança'} value={
                   isAdminOverride ? 'Não se aplica' : `${preco} em ${fmtDate(expiresAt)}`

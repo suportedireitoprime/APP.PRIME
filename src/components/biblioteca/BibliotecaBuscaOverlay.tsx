@@ -88,7 +88,9 @@ const BibliotecaBuscaOverlay = ({ open, onClose, onAbrirLivro }: Props) => {
     queries: colecoesVisiveis.map((colecao) => ({
       queryKey: ['biblioteca-colecao', colecao.id],
       staleTime: 10 * 60 * 1000,
+      placeholderData: (prev: any) => prev,
       enabled: open,
+
       queryFn: async () => {
         let q: any = supabase.from(colecao.table as any).select(colecao.select);
         if (colecao.orderBy) q = q.order(colecao.orderBy, { ascending: true, nullsFirst: false });

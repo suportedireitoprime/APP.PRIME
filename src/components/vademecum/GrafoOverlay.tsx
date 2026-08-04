@@ -20,7 +20,7 @@ const GrafoOverlay = ({ open, onClose, tabelaNome, leiNome, artigoNumero }: Graf
           animate={{ x: 0 }}
           exit={{ x: '100%' }}
           transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-          className="fixed inset-0 z-[60] bg-background"
+          className="fixed inset-0 z-[10041] bg-background md:left-auto md:right-0 md:w-[min(46rem,96vw)] md:border-l md:border-border md:shadow-2xl"
         >
           <GrafoArtigos
             embedded

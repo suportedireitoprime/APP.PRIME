@@ -10,7 +10,7 @@ import { useVisibleColecoes } from '@/hooks/useVisibleColecoes';
 import { supabase } from '@/integrations/supabase/client';
 import { startCapasPrefetch } from '@/services/bibliotecaCapasPrefetch';
 import { startLeituraNativaPrefetch } from '@/services/leituraNativaPrefetch';
-import { setPersistedColecao } from '@/services/offlineDb';
+import { scheduleWarmBiblioteca } from '@/services/bibliotecaWarmup';
 import { getAreaCover } from '@/lib/areasDireitoCovers';
 import { styleForArea, styleForPerformance } from '@/lib/bibliotecaIcons';
 import { directImg } from '@/lib/cdnImg';
@@ -91,67 +91,17 @@ const Bibliotecas = () => {
 
 
   useEffect(() => {
-    // Hidrata React Query com o cache persistente — abre carrosséis mesmo offline.
-    (async () => {
-      const { getPersistedColecao } = await import('@/services/offlineDb');
-      await Promise.all(
-        COLECOES.map(async (colecao) => {
-          const cached = await getPersistedColecao<LivroNormalizado>(colecao.id);
-          if (cached && cached.length) {
-            const existing = queryClient.getQueryData(['biblioteca-colecao', colecao.id]);
-            if (!existing) queryClient.setQueryData(['biblioteca-colecao', colecao.id], cached);
-          }
-        }),
-      );
-    })().catch(() => {});
+    // Mesma mecânica de aquecimento usada no desktop:
+    // hidrata cache persistente → prefetch de todas as coleções → capas.
+    const cancel = scheduleWarmBiblioteca(queryClient);
 
-    // Prefetch das listas + aquecimento de capas em idle — clique = instantâneo.
-    const prefetchColecoes = async () => {
-      await Promise.all(
-        COLECOES.map((colecao) =>
-          queryClient
-            .prefetchQuery({
-              queryKey: ['biblioteca-colecao', colecao.id],
-              staleTime: 10 * 60 * 1000,
-              queryFn: async () => {
-                let q: any = supabase.from(colecao.table as any).select(colecao.select);
-                if (colecao.orderBy) q = q.order(colecao.orderBy, { ascending: true, nullsFirst: false });
-                q = q.limit(2000);
-                const { data, error } = await q;
-                if (error) throw error;
-                const list = (data as any[]).map((r) => normalizeLivro(r, colecao));
-                setPersistedColecao(colecao.id, list).catch(() => {});
-                return list;
-              },
-            })
-            .catch(() => {})
-        )
-      );
-      // Aquece as primeiras capas de cada coleção no cache do browser/SW.
-      if (typeof window === 'undefined' || Capacitor.isNativePlatform()) return;
-      const { directImg } = await import('@/lib/cdnImg');
-      COLECOES.forEach((colecao) => {
-        const list = queryClient.getQueryData<LivroNormalizado[]>(['biblioteca-colecao', colecao.id]) || [];
-        list.slice(0, 12).forEach((l) => {
-          if (!l.capa) return;
-          const img = new Image();
-          img.decoding = 'async';
-          (img as any).fetchPriority = 'low';
-          img.src = directImg(l.capa, 300);
-        });
-      });
-    };
-    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-      (window as any).requestIdleCallback(prefetchColecoes, { timeout: 2000 });
-    } else {
-      setTimeout(prefetchColecoes, 300);
-    }
-
-    if (!Capacitor.isNativePlatform()) return;
+    if (!Capacitor.isNativePlatform()) return cancel;
     // Capas: qualquer rede — usuário quer instantâneo offline.
     startCapasPrefetch({ wifiOnly: false }).catch(() => {});
     startLeituraNativaPrefetch({ wifiOnly: true }).catch(() => {});
+    return cancel;
   }, [queryClient]);
+
 
   if (isDesktop) {
     return (

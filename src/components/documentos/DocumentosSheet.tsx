@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronLeft, ChevronRight, Search, Eye, Download, Share2, Loader2,
-  RefreshCw, FolderOpen, Folder,
+  RefreshCw, FolderOpen, Folder, X,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -34,6 +34,7 @@ const DocumentosSheet = ({ categoria, open, onClose }: Props) => {
   const [gateOpen, setGateOpen] = useState(false);
   const [ocupado, setOcupado] = useState<string | null>(null);
   const [visualizando, setVisualizando] = useState<{ doc: ItemDrive; blob: Blob } | null>(null);
+  const [acoesDoc, setAcoesDoc] = useState<ItemDrive | null>(null);
   const baixarBlobDoc = useDownloadDocumento();
 
   const atual = trilha[trilha.length - 1] ?? null;
@@ -47,6 +48,7 @@ const DocumentosSheet = ({ categoria, open, onClose }: Props) => {
       setBusca('');
       setBuscaDebounce('');
       setVisualizando(null);
+      setAcoesDoc(null);
     }
   }, [open, categoria?.id]);
 
@@ -241,56 +243,35 @@ const DocumentosSheet = ({ categoria, open, onClose }: Props) => {
 
               {/* Arquivos */}
               {arquivos.map((doc, i) => (
-                <motion.div
+                <motion.button
                   key={doc.id}
+                  type="button"
+                  onClick={() => setAcoesDoc(doc)}
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: Math.min(i * 0.015, 0.18) }}
-                  className="rounded-2xl border border-border/60 bg-card p-3.5"
+                  className="flex w-full items-center gap-3 rounded-2xl border border-border/60 bg-card p-3.5 text-left active:scale-[0.99] transition"
                 >
-                  <div className="flex items-start gap-3">
-                    <div
-                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
-                      style={{ backgroundColor: `${estilo.color}1f` }}
-                    >
+                  <div
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
+                    style={{ backgroundColor: `${estilo.color}1f` }}
+                  >
+                    {ocupado === doc.id ? (
+                      <Loader2 className="h-5 w-5 animate-spin" style={{ color: estilo.color }} />
+                    ) : (
                       <Icone className="h-5 w-5" style={{ color: estilo.color }} strokeWidth={1.5} />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="break-words font-display text-[15.5px] font-normal leading-snug text-foreground">
-                        {doc.nome.replace(/\.[a-z0-9]{2,5}$/i, '')}
-                      </p>
-                      <p className="mt-0.5 font-body text-[11.5px] text-muted-foreground">
-                        {[extensaoDe(doc.nome, doc.mime), formatarTamanho(doc.tamanho)].filter(Boolean).join(' · ')}
-                      </p>
-                    </div>
+                    )}
                   </div>
-                  <div className="mt-3 grid grid-cols-3 gap-2">
-                    <button
-                      onClick={() => ver(doc)}
-                      disabled={ocupado === doc.id}
-                      className="flex h-11 items-center justify-center gap-1.5 rounded-xl bg-primary text-primary-foreground font-body text-[13px] font-semibold active:scale-95 transition disabled:opacity-60"
-                    >
-                      {ocupado === doc.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Eye className="h-4 w-4" />}
-                      Ver
-                    </button>
-                    <button
-                      onClick={() => baixar(doc)}
-                      disabled={ocupado === doc.id}
-                      className="flex h-11 items-center justify-center gap-1.5 rounded-xl border border-border/60 bg-background font-body text-[13px] font-semibold text-foreground active:scale-95 transition disabled:opacity-60"
-                    >
-                      <Download className="h-4 w-4" />
-                      Baixar
-                    </button>
-                    <button
-                      onClick={() => enviar(doc)}
-                      disabled={ocupado === doc.id}
-                      className="flex h-11 items-center justify-center gap-1.5 rounded-xl border border-border/60 bg-background font-body text-[13px] font-semibold text-foreground active:scale-95 transition disabled:opacity-60"
-                    >
-                      <Share2 className="h-4 w-4" />
-                      Enviar
-                    </button>
+                  <div className="min-w-0 flex-1">
+                    <p className="break-words font-display text-[15.5px] font-normal leading-snug text-foreground">
+                      {doc.nome.replace(/\.[a-z0-9]{2,5}$/i, '')}
+                    </p>
+                    <p className="mt-0.5 font-body text-[11.5px] text-muted-foreground">
+                      {[extensaoDe(doc.nome, doc.mime), formatarTamanho(doc.tamanho)].filter(Boolean).join(' · ')}
+                    </p>
                   </div>
-                </motion.div>
+                  <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />
+                </motion.button>
               ))}
 
               {hasNextPage && (
@@ -306,6 +287,81 @@ const DocumentosSheet = ({ categoria, open, onClose }: Props) => {
             </div>
           )}
         </div>
+
+        {/* Card flutuante de ações do documento escolhido */}
+        <AnimatePresence>
+          {acoesDoc && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setAcoesDoc(null)}
+                className="absolute inset-0 z-[90] bg-black/60 backdrop-blur-[2px]"
+              />
+              <motion.div
+                initial={{ y: 40, opacity: 0, scale: 0.97 }}
+                animate={{ y: 0, opacity: 1, scale: 1 }}
+                exit={{ y: 30, opacity: 0, scale: 0.97 }}
+                transition={{ type: 'spring', damping: 26, stiffness: 300 }}
+                className="absolute inset-x-3 bottom-[calc(env(safe-area-inset-bottom)+14px)] z-[91] rounded-3xl border border-border/60 bg-card p-4 shadow-2xl sm:left-1/2 sm:right-auto sm:w-[420px] sm:-translate-x-1/2"
+              >
+                <div className="flex items-start gap-3">
+                  <div
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
+                    style={{ backgroundColor: `${estilo.color}1f` }}
+                  >
+                    <Icone className="h-5 w-5" style={{ color: estilo.color }} strokeWidth={1.5} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="break-words font-display text-[15.5px] font-normal leading-snug text-foreground">
+                      {acoesDoc.nome.replace(/\.[a-z0-9]{2,5}$/i, '')}
+                    </p>
+                    <p className="mt-0.5 font-body text-[11.5px] text-muted-foreground">
+                      {[extensaoDe(acoesDoc.nome, acoesDoc.mime), formatarTamanho(acoesDoc.tamanho)]
+                        .filter(Boolean)
+                        .join(' · ')}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setAcoesDoc(null)}
+                    aria-label="Fechar"
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-border/60 bg-background active:scale-95 transition"
+                  >
+                    <X className="h-5 w-5 text-muted-foreground" />
+                  </button>
+                </div>
+
+                <div className="mt-4 grid grid-cols-3 gap-2">
+                  <button
+                    onClick={() => { const d = acoesDoc; setAcoesDoc(null); ver(d); }}
+                    disabled={ocupado === acoesDoc.id}
+                    className="flex h-12 flex-col items-center justify-center gap-1 rounded-2xl bg-primary text-primary-foreground font-body text-[12.5px] font-semibold active:scale-95 transition disabled:opacity-60"
+                  >
+                    <Eye className="h-[18px] w-[18px]" />
+                    Ver
+                  </button>
+                  <button
+                    onClick={() => { const d = acoesDoc; setAcoesDoc(null); baixar(d); }}
+                    disabled={ocupado === acoesDoc.id}
+                    className="flex h-12 flex-col items-center justify-center gap-1 rounded-2xl border border-border/60 bg-background font-body text-[12.5px] font-semibold text-foreground active:scale-95 transition disabled:opacity-60"
+                  >
+                    <Download className="h-[18px] w-[18px]" />
+                    Baixar
+                  </button>
+                  <button
+                    onClick={() => { const d = acoesDoc; setAcoesDoc(null); enviar(d); }}
+                    disabled={ocupado === acoesDoc.id}
+                    className="flex h-12 flex-col items-center justify-center gap-1 rounded-2xl border border-border/60 bg-background font-body text-[12.5px] font-semibold text-foreground active:scale-95 transition disabled:opacity-60"
+                  >
+                    <Share2 className="h-[18px] w-[18px]" />
+                    Enviar
+                  </button>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
 
         {visualizando && (
           <DocumentoViewer

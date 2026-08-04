@@ -57,14 +57,14 @@ const JurisprudenciaSheet = ({ open, onClose }: Props) => {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={onClose}
-        className="fixed inset-0 z-[1400] bg-black/75 backdrop-blur-md"
+        className="fixed inset-0 z-[10040] bg-black/75 backdrop-blur-md"
       />
       <motion.div
         initial={{ y: '100%' }}
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        className="fixed bottom-0 left-0 right-0 z-[1401] bg-card border-t border-border rounded-t-3xl pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] h-[90dvh] flex flex-col overflow-hidden md:left-1/2 md:right-auto md:-translate-x-1/2 md:bottom-6 md:top-auto md:w-[92vw] md:max-w-2xl md:rounded-3xl md:border md:border-border md:shadow-2xl"
+        className="fixed bottom-0 left-0 right-0 z-[10041] bg-card border-t border-border rounded-t-3xl pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] h-[90dvh] flex flex-col overflow-hidden md:left-auto md:right-0 md:top-0 md:bottom-0 md:h-full md:max-h-none md:w-[min(30rem,92vw)] md:max-w-none md:rounded-none md:rounded-l-3xl md:border-l md:border-t-0 md:shadow-2xl md:mx-0"
       >
         {/* Cabeçalho fixo */}
         <div className="sticky top-0 z-10 bg-card backdrop-blur-xl border-b border-border/40 shrink-0">

@@ -23,6 +23,8 @@ interface Props {
   livroTabela?: string;
   livroId?: string;
   tema?: Tema;
+  /** Desktop: abre como painel lateral (direita → esquerda) em vez de bottom sheet */
+  lateral?: boolean;
 }
 
 type Modo = 'menu' | 'ia' | 'manual' | 'prontas';
@@ -113,6 +115,7 @@ export default function CompartilharFrase({
   paginaNum,
   livroTabela,
   livroId,
+  lateral = false,
 }: Props) {
   const [modo, setModo] = useState<Modo>('menu');
   const [frase, setFrase] = useState('');
@@ -315,22 +318,38 @@ export default function CompartilharFrase({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[1400] bg-black/70 backdrop-blur-sm"
+        className={`fixed inset-0 z-[1400] ${lateral ? 'bg-black/25' : 'bg-black/70 backdrop-blur-sm'}`}
         onClick={onClose}
       />
       <motion.div
         key="compartilhar-sheet"
-        initial={{ y: '100%' }}
-        animate={{ y: 0 }}
-        exit={{ y: '100%' }}
+        initial={lateral ? { opacity: 0, x: 48, scale: 0.97 } : { y: '100%' }}
+        animate={lateral ? { opacity: 1, x: 0, scale: 1 } : { y: 0 }}
+        exit={lateral ? { opacity: 0, x: 48, scale: 0.97 } : { y: '100%' }}
         transition={{ type: 'spring', damping: 28, stiffness: 260 }}
-        className="fixed inset-x-0 bottom-0 z-[1401] rounded-t-3xl overflow-hidden flex flex-col"
-        style={{
-          height: '92dvh',
-          background: 'hsl(var(--background))',
-          color: 'hsl(var(--foreground))',
-          boxShadow: '0 -20px 60px -20px rgba(0,0,0,0.4)',
-        }}
+        className={
+          lateral
+            ? 'fixed z-[1401] rounded-3xl overflow-hidden flex flex-col'
+            : 'fixed inset-x-0 bottom-0 z-[1401] rounded-t-3xl overflow-hidden flex flex-col'
+        }
+        style={
+          lateral
+            ? {
+                right: 'max(16px, env(safe-area-inset-right, 0px))',
+                top: 'calc(env(safe-area-inset-top, 0px) + 5.25rem)',
+                bottom: 'calc(env(safe-area-inset-bottom, 0px) + 1.5rem)',
+                width: 'min(440px, calc(100vw - 32px))',
+                background: 'hsl(var(--background))',
+                color: 'hsl(var(--foreground))',
+                boxShadow: '0 30px 80px -20px rgba(0,0,0,0.45), 0 0 0 1px hsl(var(--border))',
+              }
+            : {
+                height: '92dvh',
+                background: 'hsl(var(--background))',
+                color: 'hsl(var(--foreground))',
+                boxShadow: '0 -20px 60px -20px rgba(0,0,0,0.4)',
+              }
+        }
       >
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: 'hsl(var(--border))' }}>

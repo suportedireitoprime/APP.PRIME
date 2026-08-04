@@ -349,7 +349,7 @@ const Audioaulas = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-zinc-900 via-background to-background text-foreground pb-40">
       {/* Hero */}
-      <div className="relative px-5 pt-10 pb-6 overflow-hidden">
+      <div className="relative px-5 pt-10 pb-6 overflow-hidden lg:px-10 lg:pt-12 lg:pb-10">
         <div className="absolute inset-0 -z-10">
           <img
             src={areaAtual ? capaDaArea(areaAtual) : CAPA_HUB}
@@ -360,6 +360,7 @@ const Audioaulas = () => {
           <div className="absolute inset-0 bg-gradient-to-b from-primary/25 via-background/60 to-black" />
         </div>
 
+        <div className="mx-auto w-full max-w-[1400px] 2xl:max-w-[1600px]">
         <button
           onClick={() => (areaAtual ? navigate('/audioaulas') : navigate('/'))}
           aria-label="Voltar"
@@ -368,8 +369,8 @@ const Audioaulas = () => {
           <ArrowLeft className="h-6 w-6" />
         </button>
 
-        <div className="flex items-center gap-4">
-          <span className="relative h-28 w-28 sm:h-32 sm:w-32 shrink-0 rounded-2xl overflow-hidden shadow-2xl shadow-black/50">
+        <div className="flex items-center gap-4 lg:gap-8">
+          <span className="relative h-28 w-28 sm:h-32 sm:w-32 lg:h-44 lg:w-44 shrink-0 rounded-2xl overflow-hidden shadow-2xl shadow-black/50">
             <img
               src={areaAtual ? capaDaArea(areaAtual) : CAPA_HUB}
               alt=""
@@ -380,14 +381,15 @@ const Audioaulas = () => {
             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10 text-[11px] font-semibold uppercase tracking-widest mb-2">
               <Headphones className="h-3.5 w-3.5" /> {areaAtual ? 'Área' : 'Acervo'}
             </span>
-            <h1 className="text-3xl sm:text-4xl font-black tracking-tight leading-none">{heroTitulo}</h1>
-            <p className="text-sm text-muted-foreground mt-1.5">{heroSub}</p>
+            <h1 className="text-3xl sm:text-4xl lg:text-6xl font-black tracking-tight leading-none">{heroTitulo}</h1>
+            <p className="text-sm lg:text-base text-muted-foreground mt-1.5">{heroSub}</p>
             {!loading && (
               <p className="text-xs text-muted-foreground mt-1">
                 {areaAtual ? daArea.length : aulas.length} aula(s)
               </p>
             )}
           </div>
+        </div>
         </div>
       </div>
 
@@ -397,13 +399,13 @@ const Audioaulas = () => {
         </div>
       ) : areaAtual ? (
         /* ───────── LISTA DA ÁREA ───────── */
-        <div className="px-4 space-y-6 mt-2">
+        <div className="mx-auto w-full max-w-[1400px] px-4 space-y-6 mt-2 lg:grid lg:grid-cols-2 lg:items-start lg:gap-8 lg:space-y-0 lg:px-10 2xl:max-w-[1600px] 2xl:grid-cols-3">
           {temasDaArea.length === 0 && (
             <p className="py-16 text-center text-sm text-muted-foreground">Aulas em breve nesta área.</p>
           )}
           {temasDaArea.map(([tema, lista]) => (
             <section key={tema}>
-              <h2 className="text-lg font-bold mb-2">{tema}</h2>
+              <h2 className="text-lg lg:text-xl font-bold mb-2">{tema}</h2>
               <div className="rounded-2xl bg-white/[0.03] divide-y divide-white/[0.06] overflow-hidden">
                 {lista.map((a, i) => (
                   <LinhaAula key={a.id} a={a} indice={a.sequencia ?? i + 1} />
@@ -414,7 +416,7 @@ const Audioaulas = () => {
         </div>
       ) : aba === 'aulas' ? (
         /* ───────── HUB ───────── */
-        <div className="px-4 space-y-8 mt-2">
+        <div className="mx-auto w-full max-w-[1400px] px-4 space-y-8 mt-2 lg:px-10 2xl:max-w-[1600px]">
           {areas.length === 0 ? (
             <div className="rounded-2xl bg-white/[0.04] p-10 text-center">
               <Headphones className="w-10 h-10 text-primary mx-auto mb-3" />
@@ -423,12 +425,12 @@ const Audioaulas = () => {
           ) : (
             <section>
               <h2 className="text-lg font-bold mb-3">Áreas</h2>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-5 2xl:grid-cols-5">
                 {areas.map(([nome, total]) => (
                   <button
                     key={nome}
                     onClick={() => navigate(`/audioaulas/${encodeURIComponent(nome)}`)}
-                    className="group relative aspect-square rounded-2xl overflow-hidden text-left"
+                    className="group relative aspect-square rounded-2xl overflow-hidden text-left transition-transform hover:scale-[1.02] hover:shadow-2xl hover:shadow-black/50"
                   >
                     <img
                       src={capaDaArea(nome)}
@@ -460,7 +462,7 @@ const Audioaulas = () => {
         </div>
       ) : (
         /* ───────── ABAS: favoritas / baixadas / buscar ───────── */
-        <div className="px-4 space-y-4 mt-2">
+        <div className="mx-auto w-full max-w-[1400px] px-4 space-y-4 mt-2 lg:px-10 2xl:max-w-[1600px]">
           {aba === 'buscar' && (
             <div className="relative">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -498,7 +500,7 @@ const Audioaulas = () => {
                     : 'Digite para buscar uma aula.'}
             </p>
           ) : (
-            <div className="rounded-2xl bg-white/[0.03] divide-y divide-white/[0.06] overflow-hidden">
+            <div className="rounded-2xl bg-white/[0.03] divide-y divide-white/[0.06] overflow-hidden lg:grid lg:grid-cols-2 lg:divide-y-0 lg:gap-px 2xl:grid-cols-3">
               {listaAba.map((a) => (
                 <LinhaAula key={a.id} a={a} />
               ))}
@@ -566,7 +568,7 @@ const Audioaulas = () => {
             <div className="h-11 w-11" />
           </div>
 
-          <div className="flex-1 min-h-0 flex flex-col justify-center px-6 pb-10">
+          <div className="mx-auto w-full max-w-2xl flex-1 min-h-0 flex flex-col justify-center px-6 pb-10">
             <div className="relative flex items-center justify-center">
               <span className="h-44 w-44 sm:h-52 sm:w-52 rounded-2xl overflow-hidden shadow-2xl shadow-black/60">
                 <img src={capaDaArea(atual.area || '')} alt="" className="h-full w-full object-cover" />

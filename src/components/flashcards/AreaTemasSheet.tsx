@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Check, Layers, Search, Sparkles } from 'lucide-react';
+import { Check, Search } from 'lucide-react';
 import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -71,7 +71,7 @@ const AreaTemasSheet = ({ area, open, onOpenChange }: Props) => {
         </div>
 
         <div className="flex items-center gap-3 px-5 pb-3 pr-14 pt-3 sm:px-6 sm:pr-16">
-          <div className="aprender-icon-shine relative flex h-12 w-12 shrink-0 items-center justify-center">
+          <div className="relative flex h-12 w-12 shrink-0 items-center justify-center">
             <Icon className="h-8 w-8" strokeWidth={1.9} style={{ color }} />
           </div>
           <div className="min-w-0 flex-1">
@@ -104,16 +104,32 @@ const AreaTemasSheet = ({ area, open, onOpenChange }: Props) => {
               sel.length === 0 ? 'border-primary/50 bg-primary/10' : 'border-border bg-card hover:border-primary/30'
             }`}
           >
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/15">
-              <Sparkles className="h-5 w-5 text-primary" strokeWidth={1.9} />
+            <span
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+              style={{ background: `${color}26` }}
+            >
+              <Icon className="h-5 w-5" style={{ color }} strokeWidth={1.9} />
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block text-[15px] font-semibold text-foreground">Todas as matérias</span>
+              <span
+                className="block text-[15px] font-semibold text-foreground"
+                style={{ fontFamily: "'Barlow', system-ui, sans-serif" }}
+              >
+                Todas as matérias
+              </span>
               <span className="block text-[12px] text-muted-foreground">
-                {temas.reduce((s, t) => s + t.total, 0).toLocaleString('pt-BR')} cards
+                {temas.length} matérias · {temas.reduce((s, t) => s + t.total, 0).toLocaleString('pt-BR')} cards
               </span>
             </span>
-            {sel.length === 0 && <Check className="h-5 w-5 text-primary" />}
+            <span
+              className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 ${
+                sel.length === 0
+                  ? 'border-primary bg-primary text-primary-foreground'
+                  : 'border-muted-foreground/60 bg-muted-foreground/15'
+              }`}
+            >
+              {sel.length === 0 && <Check className="h-4 w-4" />}
+            </span>
           </button>
 
           {loading ? (
@@ -135,7 +151,7 @@ const AreaTemasSheet = ({ area, open, onOpenChange }: Props) => {
                     className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
                     style={{ background: `${color}26` }}
                   >
-                    <Layers className="h-5 w-5" style={{ color }} strokeWidth={1.9} />
+                    <Icon className="h-5 w-5" style={{ color }} strokeWidth={1.9} />
                   </span>
                   <span className="min-w-0 flex-1">
                     <span
@@ -149,8 +165,10 @@ const AreaTemasSheet = ({ area, open, onOpenChange }: Props) => {
                     </span>
                   </span>
                   <span
-                    className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border ${
-                      ativo ? 'border-primary bg-primary text-primary-foreground' : 'border-border'
+                    className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 ${
+                      ativo
+                        ? 'border-primary bg-primary text-primary-foreground'
+                        : 'border-muted-foreground/60 bg-muted-foreground/15'
                     }`}
                   >
                     {ativo && <Check className="h-4 w-4" />}
@@ -159,6 +177,7 @@ const AreaTemasSheet = ({ area, open, onOpenChange }: Props) => {
               );
             })
           )}
+
         </div>
 
         <div className="border-t border-border bg-background px-4 pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-3 sm:px-6">

@@ -647,11 +647,11 @@ const VideoaulaSheet = ({ open, onClose, video, tabelaNome, artigoNumero, artigo
     <AnimatePresence>
       {open && (
         <>
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/60 z-[70]" onClick={onClose} />
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/60 z-[10040]" onClick={onClose} />
           <motion.div
             initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-            className="fixed inset-0 z-[71] bg-background flex flex-col items-center"
+            className="fixed inset-0 z-[10041] bg-background flex flex-col items-center md:left-auto md:right-0 md:w-[min(46rem,96vw)] md:border-l md:border-border md:shadow-2xl"
           >
             <div className="w-full max-w-3xl h-full flex flex-col min-h-0 relative">
               {/* Header */}
@@ -843,12 +843,12 @@ const VideoaulaSheet = ({ open, onClose, video, tabelaNome, artigoNumero, artigo
                   <motion.div
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                     onClick={closePraticar}
-                    className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[75]"
+                    className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[10040]"
                   />
                   <motion.div
                     initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
                     transition={{ type: 'spring', damping: 26, stiffness: 260 }}
-                    className="fixed bottom-0 left-0 right-0 z-[76] bg-card border-t border-border rounded-t-3xl shadow-2xl pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] max-h-[92vh] mx-auto max-w-lg flex flex-col md:left-1/2 md:right-auto md:-translate-x-1/2 md:bottom-6 md:top-auto md:w-[92vw] md:max-w-2xl md:rounded-3xl md:border md:border-border md:shadow-2xl"
+                    className="fixed bottom-0 left-0 right-0 z-[10041] bg-card border-t border-border rounded-t-3xl shadow-2xl pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] max-h-[92vh] mx-auto max-w-lg flex flex-col md:left-auto md:right-0 md:top-0 md:bottom-0 md:h-full md:max-h-none md:w-[min(30rem,92vw)] md:max-w-none md:rounded-none md:rounded-l-3xl md:border-l md:border-t-0 md:shadow-2xl md:mx-0"
                   >
                     <div className="pt-3 pb-2 flex justify-center shrink-0">
                       <span className="w-10 h-1 rounded-full bg-border" />

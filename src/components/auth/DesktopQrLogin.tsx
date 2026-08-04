@@ -4,33 +4,29 @@ import { motion } from 'framer-motion';
 import { Loader2, RefreshCw, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { callDesktopLink } from '@/lib/desktopLinkApi';
 
-const SUPABASE_URL = 'https://iftdrbxvekrhzstayjwp.supabase.co';
-const SUPABASE_ANON_KEY =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmdGRyYnh2ZWtyaHpzdGF5andwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4Mzc5OTksImV4cCI6MjA5OTQxMzk5OX0.7nyvQlO5IDI6E4dLYHl6yrqqaNd53RxJcDOTQ7yNh40';
 
 // QR encoda uma URL universal — se o celular tiver o app Direito Prime instalado,
 // abre a rota /desktop-link/:token via deep link (Android App Links + intent
 // filter para vacatio://). Sem o app, abre a mesma rota no navegador e a
 // versão web mostra o mesmo botão "Confirmar login".
-const APP_LINK_BASE = 'https://simply-awesome-calc-80.lovable.app';
+const APP_LINK_FALLBACK = 'https://present-whisper-glow.lovable.app';
+
+/** Domínio que o celular vai abrir — usa a própria origem do desktop quando possível. */
+function appLinkBase(): string {
+  try {
+    const o = window.location.origin;
+    if (o.startsWith('https://')) return o;
+  } catch {
+    /* ignore */
+  }
+  return APP_LINK_FALLBACK;
+}
 
 type Status = 'loading' | 'pending' | 'claimed' | 'expired' | 'error';
 
 const QR_TTL_SECONDS = 60;
-
-async function callFn(path: string, body?: unknown, auth?: string) {
-  const res = await fetch(`${SUPABASE_URL}/functions/v1/${path}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      apikey: SUPABASE_ANON_KEY,
-      Authorization: auth ?? `Bearer ${SUPABASE_ANON_KEY}`,
-    },
-    body: body ? JSON.stringify(body) : undefined,
-  });
-  return res.json();
-}
 
 const DESKTOP_ID_KEY = 'vacatio.desktop_id';
 const DESKTOP_SESSION_KEY = 'vacatio.desktop_session_id';
@@ -65,12 +61,12 @@ const DesktopQrLogin = () => {
     setExpiresAt(0);
     setRemaining(60);
     try {
-      const r = await callFn('desktop-link', { action: 'create', desktop_id: getDesktopId() });
+      const r = await callDesktopLink<any>({ action: 'create', desktop_id: getDesktopId() });
       if (!r?.token) throw new Error(r?.error || 'sem_token');
       const ttlSeconds = Number.isFinite(Number(r.expires_in_seconds))
         ? Math.max(1, Number(r.expires_in_seconds))
         : QR_TTL_SECONDS;
-      const url = `${APP_LINK_BASE}/desktop-link/${r.token}`;
+      const url = `${appLinkBase()}/desktop-link/${r.token}`;
       const dataUrl = await QRCode.toDataURL(url, {
         margin: 1,
         width: 320,
@@ -120,7 +116,7 @@ const DesktopQrLogin = () => {
     pollRef.current = window.setInterval(async () => {
       if (claimingRef.current) return;
       try {
-        const r = await callFn('desktop-link', { action: 'poll', token });
+        const r = await callDesktopLink<any>({ action: 'poll', token });
         if (r?.status === 'claimed' && r?.token_hash) {
           claimingRef.current = true;
           if (pollRef.current) window.clearInterval(pollRef.current);

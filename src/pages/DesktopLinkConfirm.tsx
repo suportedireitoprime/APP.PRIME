@@ -4,10 +4,7 @@ import { motion } from 'framer-motion';
 import { Loader2, Monitor, CheckCircle2, AlertTriangle, ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-
-const SUPABASE_URL = 'https://iftdrbxvekrhzstayjwp.supabase.co';
-const SUPABASE_ANON_KEY =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmdGRyYnh2ZWtyaHpzdGF5andwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4Mzc5OTksImV4cCI6MjA5OTQxMzk5OX0.7nyvQlO5IDI6E4dLYHl6yrqqaNd53RxJcDOTQ7yNh40';
+import { callDesktopLink, mensagemErroDesktopLink } from '@/lib/desktopLinkApi';
 
 type Phase = 'idle' | 'checking' | 'ready' | 'confirming' | 'done' | 'error' | 'expired' | 'auth_required';
 
@@ -27,19 +24,13 @@ const DesktopLinkConfirm = () => {
     // Verifica se o token ainda está pendente antes de mostrar o botão.
     (async () => {
       try {
-        const res = await fetch(`${SUPABASE_URL}/functions/v1/desktop-link`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            apikey: SUPABASE_ANON_KEY,
-            Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-          },
-          body: JSON.stringify({ action: 'poll', token }),
-        });
-        const j = await res.json();
+        const j = await callDesktopLink<any>({ action: 'poll', token });
         if (j?.status === 'pending') setPhase('ready');
         else if (j?.status === 'expired' || j?.status === 'not_found') setPhase('expired');
-        else setPhase('error');
+        else {
+          setErrorMsg(mensagemErroDesktopLink(j?.error));
+          setPhase('error');
+        }
       } catch {
         setPhase('error');
       }
@@ -49,25 +40,22 @@ const DesktopLinkConfirm = () => {
   const confirm = async () => {
     setPhase('confirming');
     try {
-      const { data: sess } = await supabase.auth.getSession();
-      const accessToken = sess?.session?.access_token;
-      if (!accessToken) {
+      // Revalida a sessão do celular antes de confirmar (refresh se preciso).
+      const { data: u } = await supabase.auth.getUser();
+      if (!u?.user) {
         setPhase('auth_required');
         return;
       }
-      const res = await fetch(`${SUPABASE_URL}/functions/v1/desktop-link`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          apikey: SUPABASE_ANON_KEY,
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify({ action: 'claim', token }),
-      });
-      const j = await res.json();
-      if (!res.ok) {
-        setErrorMsg(j?.error || 'falha');
-        setPhase(j?.error === 'token_expired' ? 'expired' : 'error');
+      const j = await callDesktopLink<any>({ action: 'claim', token });
+      if (!j?.ok) {
+        setErrorMsg(mensagemErroDesktopLink(j?.error));
+        setPhase(
+          j?.error === 'token_expired'
+            ? 'expired'
+            : j?.error === 'invalid_session' || j?.error === 'missing_auth'
+            ? 'auth_required'
+            : 'error',
+        );
         return;
       }
       setPhase('done');

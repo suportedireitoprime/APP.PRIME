@@ -18,6 +18,7 @@ type Estado =
   | { tipo: 'pdf' }
   | { tipo: 'html'; html: string }
   | { tipo: 'texto'; texto: string }
+  | { tipo: 'paragrafos'; linhas: string[] }
   | { tipo: 'indisponivel'; motivo: string };
 
 const extensao = (nome: string) => (nome.split('.').pop() || '').toLowerCase();
@@ -75,17 +76,14 @@ const DocumentoViewer = ({ blob, nome, mime, onClose, onBaixar, baixando }: Prop
           return;
         }
 
-        if (ext === 'doc') {
-          // .doc é formato binário legado do Word: extraímos o texto legível.
-          const bruto = await blob.text();
-          const limpo = bruto
-            .replace(/[^\x09\x0A\x0D\x20-\x7E\u00A0-\u024F]+/g, ' ')
-            .replace(/\s{3,}/g, '\n\n')
-            .trim();
+        if (ext === 'doc' || mime === 'application/msword') {
+          // .doc é o formato binário legado do Word: extraímos o texto real do stream.
+          const { extrairTextoDoc } = await import('@/lib/documentos/docLegado');
+          const linhas = await extrairTextoDoc(blob);
           if (!cancelado) {
             setEstado(
-              limpo.length > 200
-                ? { tipo: 'texto', texto: limpo }
+              linhas && linhas.length > 0
+                ? { tipo: 'paragrafos', linhas }
                 : {
                     tipo: 'indisponivel',
                     motivo: 'Este modelo está no formato antigo do Word (.doc). Baixe para abrir no editor.',
@@ -224,6 +222,33 @@ const DocumentoViewer = ({ blob, nome, mime, onClose, onBaixar, baixando }: Prop
               className="doc-preview font-body text-[15px] leading-relaxed text-foreground"
               dangerouslySetInnerHTML={{ __html: estado.html }}
             />
+          </div>
+        )}
+
+        {estado.tipo === 'paragrafos' && (
+          <div className="mx-auto w-full max-w-[820px] rounded-2xl border border-border/60 bg-card px-5 py-7 sm:px-9 sm:py-10">
+            {estado.linhas.map((linha, i) => {
+              const semAcento = linha.replace(/[^A-Za-zÀ-ÿ]/g, '');
+              const titulo =
+                linha.length <= 120 &&
+                semAcento.length > 2 &&
+                semAcento === semAcento.toUpperCase();
+              return titulo ? (
+                <p
+                  key={i}
+                  className="mb-4 text-center font-display text-[15.5px] font-normal uppercase leading-snug tracking-wide text-foreground"
+                >
+                  {linha}
+                </p>
+              ) : (
+                <p
+                  key={i}
+                  className="mb-3.5 indent-8 text-justify font-body text-[15.5px] leading-[1.75] text-foreground/90"
+                >
+                  {linha}
+                </p>
+              );
+            })}
           </div>
         )}
 

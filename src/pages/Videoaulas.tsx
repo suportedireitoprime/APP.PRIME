@@ -87,17 +87,18 @@ const Videoaulas = () => {
     <div className="min-h-screen bg-background">
       <PageHeader title="Videoaulas" onBack={() => navigate('/')} />
 
-      <div className="mx-auto w-full max-w-3xl pb-32">
+      <div className="mx-auto w-full max-w-3xl pb-32 lg:max-w-[1400px] lg:px-10 lg:pt-6 2xl:max-w-[1600px]">
         {/* Painel — mesmo do Aprender */}
         <section
-          className="bg-hero-yellow relative isolate overflow-hidden border-b border-black/10"
+          className="bg-hero-yellow relative isolate overflow-hidden border-b border-black/10 lg:rounded-3xl lg:border lg:border-black/10 lg:shadow-xl"
           aria-label="Seu progresso em videoaulas"
         >
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.25),transparent_60%)]" />
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.18),transparent_65%)]" />
 
-          <div className="relative p-4 sm:p-5">
-            <div className="flex items-start gap-3">
+          <div className="relative p-4 sm:p-5 lg:flex lg:items-center lg:gap-10 lg:p-8">
+
+            <div className="flex items-start gap-3 lg:min-w-0 lg:flex-1 lg:items-center lg:gap-6">
               <div className="relative shrink-0" style={{ width: size, height: size }}>
                 <svg width={size} height={size} className="-rotate-90">
                   <circle cx={size / 2} cy={size / 2} r={r} stroke="rgba(255,255,255,0.2)" strokeWidth={stroke} fill="none" />
@@ -122,9 +123,9 @@ const Videoaulas = () => {
                 </div>
               </div>
 
-              <div className="min-w-0 max-w-[58%] lg:max-w-[70%]">
+              <div className="min-w-0 max-w-[58%] lg:max-w-none lg:flex-1">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-white/75">Sua trilha</p>
-                <h1 className="mt-0.5 font-display text-[22px] font-black leading-tight text-white sm:text-[28px]">
+                <h1 className="mt-0.5 font-display text-[22px] font-black leading-tight text-white sm:text-[28px] lg:text-[38px]">
                   Videoaulas
                   <span className="ml-2 font-display text-[15px] font-semibold italic text-white/80 sm:text-[20px]">
                     em trilhas
@@ -140,8 +141,8 @@ const Videoaulas = () => {
             </div>
 
 
-            <div className="relative mt-3 rounded-xl bg-black/85 text-white ring-1 ring-black/20 shadow-lg">
-              <div className="grid grid-cols-3 divide-x divide-white/10">
+            <div className="relative mt-3 rounded-xl lg:mt-0 lg:w-[440px] lg:shrink-0 bg-black/85 text-white ring-1 ring-black/20 shadow-lg">
+              <div className="grid grid-cols-3 divide-x divide-white/10 lg:py-2">
                 <div className="flex flex-col items-center justify-center px-2 py-2">
                   <span className="text-[9px] font-bold uppercase tracking-wider text-white/60">Áreas</span>
                   <span className="mt-0.5 font-display text-base font-black leading-none">{areasDireito.length}</span>
@@ -162,7 +163,7 @@ const Videoaulas = () => {
           </div>
         </section>
 
-        <div className="space-y-5 px-4 pt-5 sm:px-6">
+        <div className="space-y-5 px-4 pt-5 sm:px-6 lg:space-y-8 lg:px-0 lg:pt-8">
           {/* Continue assistindo */}
           {data.recentes.length > 0 && (
             <div>
@@ -172,12 +173,12 @@ const Videoaulas = () => {
                   Continue assistindo
                 </p>
               </div>
-              <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
+              <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none lg:grid lg:grid-cols-4 lg:gap-5 lg:overflow-visible lg:pb-0 xl:grid-cols-5 2xl:grid-cols-6">
                 {data.recentes.map((r, i) => (
                   <button
                     key={r.rota}
                     onClick={() => navigate(r.rota)}
-                    className="w-40 shrink-0 overflow-hidden rounded-2xl border border-border bg-card text-left transition-transform active:scale-[0.98]"
+                    className="w-40 shrink-0 overflow-hidden rounded-2xl border border-border bg-card text-left transition-all hover:border-primary/40 hover:shadow-lg active:scale-[0.98] lg:w-auto"
                   >
                     <div className="relative aspect-video bg-muted">
                       <ThumbImg
@@ -206,7 +207,7 @@ const Videoaulas = () => {
           {/* Áreas do Direito */}
           <div>
             <div className="mb-2 flex items-center justify-between gap-2">
-              <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground lg:text-[13px]">
                 Áreas do Direito
               </p>
               {emAndamentoCount > 0 && (
@@ -229,7 +230,7 @@ const Videoaulas = () => {
               )}
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0 2xl:grid-cols-3">
               {loading && !lista.length
                 ? [...Array(6)].map((_, i) => (
                     <div key={i} className="h-[84px] animate-pulse rounded-2xl bg-muted" />

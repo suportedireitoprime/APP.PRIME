@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
-import { COLECOES, normalizeLivro, type LivroNormalizado } from '@/lib/bibliotecaColecoes';
+import { type LivroNormalizado } from '@/lib/bibliotecaColecoes';
+import { scheduleWarmBiblioteca } from '@/services/bibliotecaWarmup';
 import { useVisibleColecoes } from '@/hooks/useVisibleColecoes';
-import { supabase } from '@/integrations/supabase/client';
+
+
 import BibliotecaSearchBar from '@/components/biblioteca/BibliotecaSearchBar';
 import BibliotecaAtalhosBar from '@/components/biblioteca/BibliotecaAtalhosBar';
 import LivroDetailSheet from '@/components/biblioteca/LivroDetailSheet';
@@ -27,33 +29,8 @@ const BibliotecasDesktop = () => {
   const [livroAberto, setLivroAberto] = useState<LivroNormalizado | null>(null);
   const colecoesVisiveis = useVisibleColecoes();
 
-  useEffect(() => {
-    const prefetch = async () => {
-      await Promise.all(
-        COLECOES.map((colecao) =>
-          queryClient
-            .prefetchQuery({
-              queryKey: ['biblioteca-colecao', colecao.id],
-              staleTime: 10 * 60 * 1000,
-              queryFn: async () => {
-                let q: any = supabase.from(colecao.table as any).select(colecao.select);
-                if (colecao.orderBy) q = q.order(colecao.orderBy, { ascending: true, nullsFirst: false });
-                q = q.limit(2000);
-                const { data, error } = await q;
-                if (error) throw error;
-                return (data as any[]).map((r) => normalizeLivro(r, colecao));
-              },
-            })
-            .catch(() => {})
-        )
-      );
-    };
-    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-      (window as any).requestIdleCallback(prefetch, { timeout: 2000 });
-    } else {
-      setTimeout(prefetch, 300);
-    }
-  }, [queryClient]);
+  useEffect(() => scheduleWarmBiblioteca(queryClient), [queryClient]);
+
 
   return (
     <div className="min-h-dvh bg-background flex flex-col">

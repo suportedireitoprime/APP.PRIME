@@ -82,12 +82,23 @@ function prettyLeiName(raw: string): string {
 
 const SB_URL = LEIS_SUPABASE_URL;
 
-export default function JurisprudenciaArtigo() {
+interface JurisprudenciaArtigoProps {
+  slugLeiProp?: string;
+  numeroArtigoProp?: string;
+  embedded?: boolean;
+  onBack?: () => void;
+}
+
+export default function JurisprudenciaArtigo({ slugLeiProp, numeroArtigoProp, embedded, onBack }: JurisprudenciaArtigoProps = {}) {
   const navigate = useNavigate();
   const goBack = useGoBack();
-  const { slugLei, numeroArtigo } = useParams<{ slugLei: string; numeroArtigo: string }>();
+  const params = useParams<{ slugLei: string; numeroArtigo: string }>();
+  const slugLei = slugLeiProp ?? params.slugLei;
+  const numeroArtigo = numeroArtigoProp ?? params.numeroArtigo;
   const handleBack = () => {
-    if (window.history.length > 1) {
+    if (onBack) {
+      onBack();
+    } else if (window.history.length > 1) {
       goBack();
     } else if (slugLei) {
       navigate(`/vademecum/${slugLei}`);
@@ -337,7 +348,7 @@ export default function JurisprudenciaArtigo() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className={embedded ? 'h-full bg-background flex flex-col' : 'min-h-screen bg-background flex flex-col'}>
       <GeracaoAnimacaoOverlay
         open={descobrindo}
         titulo="Localizando jurisprudência"
@@ -357,7 +368,9 @@ export default function JurisprudenciaArtigo() {
         }
       />
 
-      <div className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 pb-24 pt-4 lg:max-w-[1400px] lg:px-12 lg:pb-12 lg:pt-6 2xl:px-16">
+      <div className={embedded
+        ? 'flex-1 w-full overflow-y-auto px-4 pb-10 pt-4'
+        : 'flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 pb-24 pt-4 lg:max-w-[1400px] lg:px-12 lg:pb-12 lg:pt-6 2xl:px-16'}>
         {loading ? (
           <div className="flex items-center justify-center py-16 text-muted-foreground">
             <Loader2 className="w-6 h-6 animate-spin mr-2" /> Consultando Corpus927…

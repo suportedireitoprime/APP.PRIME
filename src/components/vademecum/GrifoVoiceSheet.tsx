@@ -185,7 +185,7 @@ const GrifoVoiceSheet = ({ open, onClose, linhas, onApplyPassages }: Props) => {
         onPointerDown={(e) => e.stopPropagation()}
         onPointerUp={(e) => { e.stopPropagation(); if (phase === 'idle') onClose(); }}
         onClick={(e) => { e.stopPropagation(); if (phase === 'idle') onClose(); }}
-        className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[10010] pointer-events-auto"
+        className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[10050] pointer-events-auto"
       />
       <motion.div
         key="grifo-voz-card"
@@ -196,7 +196,7 @@ const GrifoVoiceSheet = ({ open, onClose, linhas, onApplyPassages }: Props) => {
         onClick={(e) => e.stopPropagation()}
         onPointerDown={(e) => e.stopPropagation()}
         onPointerUp={(e) => e.stopPropagation()}
-        className="fixed left-1/2 top-1/2 z-[10011] w-[calc(100vw-2rem)] max-w-md bg-card border border-border rounded-3xl shadow-2xl p-6 pointer-events-auto"
+        className="fixed left-1/2 top-1/2 z-[10051] w-[calc(100vw-2rem)] max-w-md bg-card border border-border rounded-3xl shadow-2xl p-6 pointer-events-auto"
       >
 
         <div className="flex items-center justify-between mb-4">
