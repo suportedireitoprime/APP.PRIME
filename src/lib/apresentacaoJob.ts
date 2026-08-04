@@ -71,7 +71,10 @@ export async function iniciarApresJob(params: {
   apresentacaoExistente?: string | null;
   /** Gerar somente estes índices de slide (retomada dos que faltaram). */
   apenasIndices?: number[] | null;
+  /** Campos extras enviados ao criar (origem, área, tema, referência…). */
+  extra?: Record<string, unknown> | null;
 }): Promise<void> {
+
   if (estado?.ativo) return;
   parar = false;
 
@@ -120,9 +123,11 @@ export async function iniciarApresJob(params: {
         titulo: params.titulo,
         voz: params.voz,
         total_slides: params.slides.length,
+        ...(params.extra ?? {}),
       });
       apresentacao_id = criado.apresentacao_id as string;
     }
+
     estado.apresentacaoId = apresentacao_id;
     estado.ultimaMensagem = 'Gerando narração dos slides…';
     emitir();

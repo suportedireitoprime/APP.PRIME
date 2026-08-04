@@ -831,8 +831,12 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         setNarracaoStepIdx(1);
       }
 
+      // A função de narração vive no backend externo de legislação, que NÃO
+      // valida JWT deste projeto (projetos Supabase diferentes). Por isso o
+      // Authorization vai com a anon key desse backend e a identidade do
+      // usuário segue em `x-user-jwt` (usada apenas para telemetria/cache).
       const { data: sessionData } = await supabase.auth.getSession();
-      const authToken = sessionData.session?.access_token || SB_KEY;
+      const userJwt = sessionData.session?.access_token || null;
 
       const res = await fetch(
         `${SB_URL}/functions/v1/narrar-artigo`,
@@ -841,8 +845,10 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
           headers: {
             'Content-Type': 'application/json',
             apikey: SB_KEY,
-            Authorization: `Bearer ${authToken}`,
+            Authorization: `Bearer ${SB_KEY}`,
+            ...(userJwt ? { 'x-user-jwt': userJwt } : {}),
           },
+
           body: JSON.stringify((() => {
             const STRUCT_RE = /^(PARTE|LIVRO|T[IÍ]TULO|CAP[IÍ]TULO|SEÇ[AÃ]O|SUBSEÇ[AÃ]O)\b/i;
             const tituloIsEpig = artigo.titulo && !STRUCT_RE.test(artigo.titulo);
@@ -882,6 +888,15 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         return;
       }
       const errorBody = await res.text().catch(() => '');
+      // Assinante Premium (ou admin) nunca vê o card de assinatura: se o
+      // backend recusar, é falha técnica — mostra erro, não paywall.
+      if (isPremium) {
+        console.error(`Narração recusada para usuário Premium [${res.status}]:`, errorBody);
+        setNarracaoLoading(false);
+        setNarracaoStepIdx(0);
+        if (!silent) toast.error('Não consegui gerar a narração agora. Tente novamente.');
+        return;
+      }
       if (res.status === 402 || errorBody.includes('daily_narration_limit_reached')) {
         setNarracaoLoading(false);
         setNarracaoStepIdx(0);
@@ -894,6 +909,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         openPremiumGate('narracao', 'Entre na sua conta para usar as narrações gratuitas.');
         return;
       }
+
       console.error(`Erro ao gerar narração [${res.status}]:`, errorBody);
       if (!silent) toast.error('Não consegui gerar a narração agora. Tente novamente.');
     } catch (e) {
@@ -901,7 +917,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
       if (!silent) toast.error('Não consegui gerar a narração agora. Tente novamente.');
     }
     if (!silent) setNarracaoLoading(false);
-  }, [artigo, tabelaNome, breadcrumb?.tituloDesc, breadcrumb?.titulo, playNarracao, openPremiumGate]);
+  }, [artigo, tabelaNome, breadcrumb?.tituloDesc, breadcrumb?.titulo, playNarracao, openPremiumGate, isPremium]);
 
   const handleNarrar = async () => {
     if (!artigo || !tabelaNome) {
@@ -956,7 +972,12 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
       await handleNarrar();
     } catch (e) {
       console.error('Erro ao validar limite de narração:', e);
-      openPremiumGate('narracao', 'Não consegui validar seu limite gratuito agora. Assine para ouvir sem limite.');
+      if (isPremium) {
+        toast.error('Não consegui iniciar a narração agora. Tente novamente.');
+      } else {
+        openPremiumGate('narracao', 'Não consegui validar seu limite gratuito agora. Assine para ouvir sem limite.');
+      }
+
     } finally {
       narrarActionInFlightRef.current = false;
     }

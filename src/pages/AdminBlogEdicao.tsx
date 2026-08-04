@@ -261,6 +261,31 @@ export default function AdminBlogEdicao() {
     setRunning(false);
   };
 
+  // Refaz as capas dos últimos posts publicados com o novo padrão centralizado.
+  const regerarUltimasCapas = async (quantidade = 3) => {
+    const { data: ultimos } = await supabase
+      .from('blog_edicao_posts')
+      .select('id')
+      .order('created_at', { ascending: false })
+      .limit(quantidade);
+    const ids = (ultimos || []).map((p: any) => p.id);
+    if (!ids.length) { toast.error('Nenhum post encontrado'); return; }
+    setRunning(true);
+    let ok = 0;
+    for (const [i, id] of ids.entries()) {
+      toast.loading(`Regerando capa ${i + 1} de ${ids.length}...`, { id: 'covers' });
+      const { error } = await supabase.functions.invoke('blog-edicao-runner', {
+        body: { regenerate_cover_post_id: id },
+      });
+      if (!error) ok++;
+    }
+    if (ok === ids.length) toast.success(`${ok} capas regeradas!`, { id: 'covers' });
+    else toast.error(`${ok}/${ids.length} capas regeradas`, { id: 'covers' });
+    await load();
+    setRunning(false);
+  };
+
+
   const removerTema = async (id: string) => {
     if (!confirm('Remover este tema?')) return;
     await supabase.from('blog_edicao_temas').delete().eq('id', id);
@@ -777,6 +802,14 @@ export default function AdminBlogEdicao() {
                 >
                   <Play className="w-4 h-4" /> Gerar próximo artigo agora
                 </button>
+                <button
+                  onClick={async () => { await regerarUltimasCapas(3); }}
+                  disabled={running}
+                  className="w-full rounded-xl bg-amber-500/15 text-amber-300 font-semibold py-3.5 flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  <ImageIcon className="w-4 h-4" /> Refazer as 3 últimas capas
+                </button>
+
                 <div className="text-[11px] text-muted-foreground rounded-lg bg-secondary/40 p-2">
                   <strong className="text-foreground">Biblioteca:</strong> {biblioteca.length} temas · <strong className="text-foreground">Fila de hoje:</strong> {filaHoje.length} · <strong className="text-foreground">Publicados:</strong> {concluidos.length}
                 </div>

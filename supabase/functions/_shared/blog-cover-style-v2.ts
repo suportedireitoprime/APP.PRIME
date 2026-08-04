@@ -75,23 +75,42 @@ const PROP_POOL = [
   "small strongbox with a coin on top",
 ];
 
-// Lado / enquadramento da figura no painel.
+// Enquadramento: SEMPRE centralizado (padrão aprovado pela capa verde).
+// A variação acontece na pose/ângulo, nunca no lado do quadro.
 const SIDE_POOL = [
-  "figure anchored on the RIGHT third, facing slightly left, bottom-aligned",
-  "figure anchored on the LEFT third, facing slightly right, bottom-aligned",
-  "figure CENTERED and bottom-aligned, prop cropped on one side",
-  "figure on the RIGHT third seen in three-quarter view, prop on the far left",
-  "figure on the LEFT third in near-profile, prop on the far right",
+  "figure PERFECTLY CENTERED on the horizontal axis, front view, bottom-aligned, with the supporting props balanced symmetrically on both sides",
+  "figure PERFECTLY CENTERED on the horizontal axis, three-quarter view, bottom-aligned, one prop on the left and one on the right at similar visual weight",
+  "figure PERFECTLY CENTERED on the horizontal axis, slight contrapposto pose, bottom-aligned, props flanking both sides like a small stage",
+  "figure PERFECTLY CENTERED on the horizontal axis, near-frontal with head slightly turned, bottom-aligned, mirrored props on each side",
+];
+
+// Elementos secundários vazados que preenchem a cena ao redor da figura.
+const SECONDARY_POOL = [
+  "a low stack of leather-bound books on the left and a small ionic column on the right",
+  "an open code book on a small lectern on one side and a wooden gavel with sound block on the other",
+  "brass scales on a plinth on one side and a rolled parchment leaning on a stool on the other",
+  "a bundle of tied case files on one side and a quill with inkwell on a low pedestal on the other",
+  "an hourglass on a plinth on one side and a laurel wreath over a closed book on the other",
+  "a small strongbox with coins on one side and a stamp with an ink pad on the other",
+];
+
+// Detalhes flutuantes (ícones vazados leves) que dão densidade sem poluir.
+const FLOATING_POOL = [
+  "3 to 5 small flat vector legal icons floating in the upper area (tiny scales, paragraph sign §, gavel, quill, seal ribbon), same figure palette, evenly balanced left and right of the figure",
+  "a light arc of 4 small floating icons above the figure (open book, §, laurel leaf, key), symmetric on both sides",
+  "small floating cards/papers with a wax seal and a ribbon, 2 on each side of the figure at different heights",
+  "a subtle halo of thin concentric rings behind the figure's head plus 4 small floating legal icons, 2 per side",
 ];
 
 // Motivos de fundo (line art apagado, nunca protagonista).
 const MOTIF_POOL = [
-  "scales of justice, paragraph sign §, open book",
-  "paragraph sign §, ionic column, quill",
-  "open book, laurel wreath, scales of justice",
-  "gavel, paragraph sign §, ionic column",
-  "quill, scroll, scales of justice",
+  "scales of justice, paragraph sign §, open book, ionic column, quill",
+  "paragraph sign §, ionic column, quill, gavel, scroll",
+  "open book, laurel wreath, scales of justice, seal, column capital",
+  "gavel, paragraph sign §, ionic column, hourglass, tied case files",
+  "quill, scroll, scales of justice, open code book, wax seal",
 ];
+
 
 
 export function getAccent(categoria?: string | null): Accent {
@@ -128,6 +147,8 @@ export function buildCoverPrompt(
   const prop = pick(PROP_POOL, 11);
   const side = pick(SIDE_POOL, 23);
   const motifs = pick(MOTIF_POOL, 37);
+  const secondary = pick(SECONDARY_POOL, 53);
+  const floating = pick(FLOATING_POOL, 71);
 
   return `Flat vector cover panel for a Brazilian legal-education blog ("Blogger Jurídico"). 16:9 horizontal, FULL-BLEED, no borders.
 
@@ -135,9 +156,13 @@ THEME OF THIS COVER: "${titulo}" — category: ${categoria}. Interpretation dire
 
 BACKGROUND (most important): one FLAT, SOLID, SATURATED colour panel filling 100% of the canvas — a smooth diagonal gradient of the category colour ${a.hex} (${a.name}): lighter and slightly warmer at the top-right, deeper and darker at the bottom-left. Absolutely NO scenery, NO room, NO landscape, NO photographic texture, NO black background, NO white or cream margins.
 
-BACKGROUND MOTIFS: large legal line-art symbols drawn very faintly on the colour panel, in a darker shade of the same colour (about 12-20% contrast, thin uniform strokes, outline only, no fill): ${motifs}. Scatter 4 to 6 of them near the corners and edges, partially cropped by the frame, plus an even, very subtle fine dot grid over the whole panel. These motifs must read as a watermark pattern behind everything — never as the main subject.
+BACKGROUND MOTIFS: large legal line-art symbols drawn very faintly on the colour panel, in a darker shade of the same colour (about 12-20% contrast, thin uniform strokes, outline only, no fill): ${motifs}. Scatter 5 to 7 of them near the corners and edges, partially cropped by the frame, plus an even, very subtle fine dot grid over the whole panel. These motifs must read as a watermark pattern behind everything — never as the main subject.
 
-MAIN SUBJECT — ONE CUT-OUT FIGURE: a single flat vector illustrated figure, ${figure}. ${side}. The figure is a clean CUT-OUT (knockout) illustration placed on top of the colour panel: no ground, no shadow scenery, no scene around it, only a soft drop shadow. It occupies roughly 55-70% of the frame height, feet/base touching the bottom edge, and is fully inside the frame (never cropped at the head or hands). Add a single supporting cut-out prop: ${prop}.
+COMPOSITION (mandatory): CENTERED and SYMMETRICAL. The main figure sits exactly on the horizontal centre of the canvas, bottom-aligned, with supporting elements distributed evenly to its left and right so the two halves have similar visual weight. Never push the figure to a side third, never leave one half of the panel empty.
+
+MAIN SUBJECT — ONE CUT-OUT FIGURE: a single flat vector illustrated figure, ${figure}. ${side}. The figure is a clean CUT-OUT (knockout) illustration placed on top of the colour panel: no ground, no shadow scenery, no room around it, only a soft drop shadow. It occupies roughly 60-72% of the frame height, feet/base touching the bottom edge, and is fully inside the frame (never cropped at the head or hands).
+
+SUPPORTING ELEMENTS (fill the panel, keep it rich but tidy): ${prop}; plus ${secondary}; plus ${floating}. All of them are cut-out flat vector objects in the same palette and outline weight as the figure, bottom-aligned or floating, arranged so the composition stays balanced around the centre. Aim for a well-populated scene — roughly 6 to 9 distinct foreground elements in total — with clear breathing space between objects, no overlapping clutter, and nothing touching the frame edges except the ground line.
 
 STYLE: flat vector editorial illustration, thin-to-medium clean dark outlines (${BASE_PALETTE.outline}), flat 2-3 tone shading, no gradients on the figure, no cross-hatching, no photorealism, no 3D render, no watercolour.
 
@@ -145,8 +170,9 @@ FIGURE PALETTE: cream #EFE1BD, warm beige skin ${BASE_PALETTE.skin}, warm neutra
 
 TEXT: none at all. No title, no caption, no watermark, no logo, no letters (a single short serif word engraved on a book spine is the only tolerated exception).
 
-UNIQUENESS: the figure, the prop and the side of the frame must NOT repeat previous covers.${avoid.length ? ` Avoid repeating the subject/props of: ${avoid.join("; ")}.` : ""}
+UNIQUENESS: the figure and the supporting objects must NOT repeat previous covers — but the CENTERED framing is fixed and must always be respected.${avoid.length ? ` Avoid repeating the subject/props of: ${avoid.join("; ")}.` : ""}
 
-NEGATIVES: photorealistic, 3D render, painted scenery, interior/exterior environment, sepia vintage engraving, many overlapping objects, cluttered collage, black background, white or cream background, borders, frames, vignette, visible text or captions, modern devices (laptops, smartphones), distorted hands, extra limbs, low quality.`;
+NEGATIVES: off-centre or side-anchored figure, empty half of the panel, photorealistic, 3D render, painted scenery, interior/exterior environment, sepia vintage engraving, cluttered overlapping collage, black background, white or cream background, borders, frames, vignette, visible text or captions, modern devices (laptops, smartphones), distorted hands, extra limbs, low quality.`;
+
 }
 

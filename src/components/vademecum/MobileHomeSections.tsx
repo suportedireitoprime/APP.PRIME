@@ -122,7 +122,7 @@ const EMALTA_CATS: EmAltaCat[] = [
   { id: 'ea-dicionario',  label: 'Dicionário',     sublabel: 'Termos jurídicos explicados',    icon: BookA,       color: '#3B82F6', route: '/ferramentas/dicionario' },
   { id: 'ea-lei-seca',    label: 'Lei Seca',       sublabel: 'Treine o texto da lei por área',  icon: Scale,       color: '#F97316', route: '/lei-seca' },
   
-  { id: 'ea-apresentacao', label: 'Apresentação',  sublabel: 'Em breve no aplicativo',          icon: Presentation, color: '#14B8A6', route: '', emBreve: true },
+  { id: 'ea-apresentacao', label: 'Apresentação',  sublabel: 'Aulas narradas em slides',       icon: Presentation, color: '#14B8A6', route: '/apresentacoes' },
 
 
 

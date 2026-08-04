@@ -18,6 +18,7 @@ import { useIsDesktop } from "@/hooks/use-desktop";
 import { resumosLocal } from "@/lib/resumosLocal";
 import { gerarResumoPdf, resumoParaTexto } from "@/lib/resumoPdf";
 import { supabase } from "@/integrations/supabase/client";
+import { useGatedFeature } from "@/hooks/useGatedFeature";
 import CornellView from "./CornellView";
 import FeynmanView from "./FeynmanView";
 import FichaEditorial from "./FichaEditorial";
@@ -65,6 +66,8 @@ const METODOS: { id: Metodo; label: string }[] = [
 ];
 
 export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoChange, pregerarMetodos }: Props) {
+  const gateResumo = useGatedFeature('resumo_ver', 'resumo', { scope: resumo?.id ? String(resumo.id) : null });
+  const gateDownload = useGatedFeature('resumo_download', 'resumo_download');
   const isDesktop = useIsDesktop();
   const [fontScale, setFontScale] = useState(1.15);
   const [tab, setTab] = useState<Tab>("resumo");
@@ -77,6 +80,7 @@ export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoC
   const [copiado, setCopiado] = useState(false);
   const [fav, setFav] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [bloqueadoLeitura, setBloqueadoLeitura] = useState(false);
 
 
   useEffect(() => {
@@ -93,6 +97,18 @@ export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoC
       setFav(resumosLocal.isFavorito(resumo.id));
     }
   }, [resumo?.id]);
+
+  // Plano gratuito: 1 resumo por dia (o mesmo resumo não conta duas vezes).
+  useEffect(() => {
+    if (!resumo?.id || gateResumo.loading) return;
+    if (gateResumo.blocked) {
+      setBloqueadoLeitura(true);
+      gateResumo.openGate();
+    } else {
+      setBloqueadoLeitura(false);
+      void gateResumo.run();
+    }
+  }, [resumo?.id, gateResumo.loading, gateResumo.blocked]);
 
   // Carrega metodologias já geradas para este resumo
   useEffect(() => {
@@ -236,8 +252,18 @@ export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoC
   );
 
 
+  if (bloqueadoLeitura) {
+    return (
+      <>
+        {gateResumo.gateNode}
+      </>
+    );
+  }
+
   return (
     <AnimatePresence>
+      {gateResumo.gateNode}
+      {gateDownload.gateNode}
       {resumo && (
         <>
           <motion.div
@@ -494,7 +520,7 @@ export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoC
                   {copiado ? <Check className="w-5 h-5" style={{ color: RED }} /> : <Copy className="w-5 h-5" />}
                 </button>
                 <button
-                  onClick={baixarPdf}
+                  onClick={() => { if (gateDownload.blocked) { gateDownload.openGate(); return; } void baixarPdf(); }}
                   aria-label="Baixar em PDF"
                   className="w-11 h-11 flex items-center justify-center rounded-full bg-card/95 backdrop-blur-md border border-border shadow-xl text-foreground active:scale-95 transition"
                 >

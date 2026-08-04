@@ -29,6 +29,7 @@ import {
   assinarAudioOffline,
 } from '@/lib/nativo/audioOffline';
 import AudioaulasBottomNav, { type AudioaulasTab } from '@/components/audioaulas/AudioaulasBottomNav';
+import { useGatedFeature } from '@/hooks/useGatedFeature';
 import { srcOf } from '@/lib/assetUrl';
 import capaAudioaulas from '@/assets/atalho-audioaulas.webp.asset.json';
 import capaPenal from '@/assets/direito-penal.webp.asset.json';
@@ -259,6 +260,9 @@ const Audioaulas = () => {
     };
   }, [tocando]);
 
+  const gateDia = useGatedFeature('audioaula_dia', 'audioaula', { scope: null });
+  const gateMes = useGatedFeature('audioaula_mes', 'audioaula', { scope: null });
+
   const tocar = useCallback(
     async (a: Aula) => {
       const el = ref.current;
@@ -269,6 +273,10 @@ const Audioaulas = () => {
         setAberto(true);
         return;
       }
+      if (gateMes.blocked) { gateMes.openGate(); return; }
+      if (gateDia.blocked) { gateDia.openGate(); return; }
+      void gateDia.run();
+      void gateMes.run();
       setAtualId(a.id);
       setTempo(0);
       setDur(0);
@@ -287,7 +295,7 @@ const Audioaulas = () => {
         },
       });
     },
-    [atualId],
+    [atualId, gateDia, gateMes],
   );
 
   const pular = (delta: number) => {
@@ -348,6 +356,8 @@ const Audioaulas = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-zinc-900 via-background to-background text-foreground pb-40">
+      {gateDia.gateNode}
+      {gateMes.gateNode}
       {/* Hero */}
       <div className="relative px-5 pt-10 pb-6 overflow-hidden lg:px-10 lg:pt-12 lg:pb-10">
         <div className="absolute inset-0 -z-10">

@@ -408,13 +408,20 @@ function periodStart(period: string): string {
 }
 
 async function getUserIdFromRequest(supabase: any, req: Request): Promise<string | null> {
-  const authHeader = req.headers.get("Authorization") || "";
-  const token = authHeader.replace(/^Bearer\s+/i, "").trim();
-  if (!token) return null;
-  const { data, error } = await supabase.auth.getUser(token);
-  if (error || !data?.user?.id) return null;
-  return data.user.id;
+  // O app pode enviar o JWT do usuário em `x-user-jwt` (quando esta função roda
+  // em um projeto diferente do de autenticação, o Authorization carrega a anon key).
+  const candidates = [
+    req.headers.get("x-user-jwt") || "",
+    (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, ""),
+  ].map((t) => t.trim()).filter(Boolean);
+
+  for (const token of candidates) {
+    const { data, error } = await supabase.auth.getUser(token);
+    if (!error && data?.user?.id) return data.user.id;
+  }
+  return null;
 }
+
 
 async function isUserPremiumOrAdmin(supabase: any, userId: string): Promise<boolean> {
   const { data: isAdmin } = await supabase.rpc("is_admin_user", { _user_id: userId });
@@ -491,18 +498,19 @@ Deno.serve(async (req) => {
     );
 
     const userId = await getUserIdFromRequest(supabase, req);
-    if (!userId) {
-      return new Response(JSON.stringify({ error: "authentication_required" }), {
-        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+
+    // Quando a identidade não pode ser validada aqui (função hospedada em outro
+    // projeto Supabase), o limite gratuito continua sendo aplicado pelo app —
+    // nunca devolvemos 401/402, para não exibir paywall a quem já é assinante.
+    if (userId) {
+      const usageCheck = await consumeNarrationLimit(supabase, userId, `${tabela_nome}_${artigo_numero}`);
+      if (!usageCheck.ok && usageCheck.status !== 500) {
+        return new Response(JSON.stringify({ error: usageCheck.error || "daily_narration_limit_reached" }), {
+          status: usageCheck.status || 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
     }
 
-    const usageCheck = await consumeNarrationLimit(supabase, userId, `${tabela_nome}_${artigo_numero}`);
-    if (!usageCheck.ok) {
-      return new Response(JSON.stringify({ error: usageCheck.error || "daily_narration_limit_reached" }), {
-        status: usageCheck.status || 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
 
     // Converte "2º", "121", "3-A" em extenso ("segundo", "cento e vinte e um", "três A")
     const artigoNumStr = String(artigo_numero).trim();

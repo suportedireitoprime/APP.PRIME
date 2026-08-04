@@ -5,7 +5,7 @@ import {
   Crown, X, Volume2, Sparkles, BookOpen, MessageCircle, Scale, PlayCircle,
   Network, Bell, Download, StickyNote, Highlighter, FileText, Layers,
   HelpCircle, Map, Radar, Newspaper, Library, GraduationCap, Bot, ChevronLeft,
-  Gavel, Check, ShieldCheck,
+  Gavel, Check, ShieldCheck, NotebookPen,
   type LucideIcon,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -19,6 +19,8 @@ export type PremiumFeatureKey =
   | 'baixar' | 'anotacoes' | 'grifo' | 'flashcards' | 'questoes'
   | 'praticar' | 'favorito'
   | 'radar' | 'blog' | 'biblioteca' | 'aprender' | 'horus'
+  | 'audioaula' | 'resumo' | 'resumo_download' | 'lei_seca'
+  | 'questao_funcoes' | 'videoaula_funcoes'
   | 'chat_juridico' | 'chat_web' | 'chat_anexo' | 'default';
 
 
@@ -51,6 +53,12 @@ const FEATURES: Record<PremiumFeatureKey, FeatureInfo> = {
   chat_juridico: { title: 'Chat Jurídico ilimitado', description: 'No plano gratuito é 1 interação por dia.', pitch: 'Pesquise teses, estruture peças e tire dúvidas sem contar mensagens.', icon: MessageCircle },
   chat_web:      { title: 'Pesquisar na internet', description: 'Busca em tempo real dentro do Chat Jurídico.', pitch: 'Jurisprudência e notícias atualizadas no minuto em que você precisa.', icon: Sparkles },
   chat_anexo:    { title: 'Enviar áudio, PDF e fotos', description: 'Analise documentos e áudios no Chat Jurídico.', pitch: 'Suba o processo, o contrato ou a foto do edital e receba a análise pronta.', icon: FileText },
+  audioaula:     { title: 'Audioaulas sem limite', description: 'No plano gratuito é 1 por dia, até 5 no mês.', pitch: 'Transforme o deslocamento em hora de estudo: todo o acervo de aulas em áudio, sem contagem.', icon: Volume2 },
+  resumo:        { title: 'Resumos sem limite', description: 'No plano gratuito você abre 1 resumo por dia.', pitch: 'Cornell, Feynman e mapas mentais de qualquer matéria, quantas vezes precisar.', icon: NotebookPen },
+  resumo_download: { title: 'Baixar resumos', description: 'Exportar em PDF é exclusivo de assinantes.', pitch: 'Leve o resumo impresso para a audiência, para a prova e para o offline.', icon: Download },
+  lei_seca:      { title: 'Lei Seca sem limite', description: 'No plano gratuito é 1 prática por dia.', pitch: 'Percorra a trilha da lei inteira, artigo por artigo, sem parar no meio do caminho.', icon: Gavel },
+  questao_funcoes: { title: 'Funções da questão', description: 'Comentário, mini-aula, resumos, termos e pegadinhas.', pitch: 'Entenda por que errou: comentário da banca, teoria e pegadinhas em cada questão.', icon: MessageCircle },
+  videoaula_funcoes: { title: 'Funções da videoaula', description: 'Flashcards, resumos, lei seca, termos e questões da aula.', pitch: 'Cada aula vira material de estudo completo — sem assistir duas vezes para fixar.', icon: PlayCircle },
 
   default:       { title: 'Funcionalidade Premium', description: 'Recurso exclusivo para assinantes.', pitch: 'Libere o Direito Prime completo e estude sem nenhum limite.', icon: Crown },
 };

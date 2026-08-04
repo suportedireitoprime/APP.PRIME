@@ -31,6 +31,7 @@ import { ExercicioRunner } from "@/components/lei-seca/ExercicioRunner";
 import { playFeedbackSound, playTransitionSound } from "@/hooks/useFeedbackSound";
 import leiSecaAcertoAsset from "@/assets/sounds/lei-seca-acerto.mp3.asset.json";
 import { useGoBack } from '@/hooks/useGoBack';
+import { useGatedFeature } from '@/hooks/useGatedFeature';
 
 let leiSecaAcertoAudio: HTMLAudioElement | null = null;
 function playLeiSecaAcerto() {
@@ -61,6 +62,14 @@ export default function LeiSecaPlayer() {
   const [exercicios, setExercicios] = useState<Exercicio[] | null>(null);
   const [erroGerar, setErroGerar] = useState<string | null>(null);
   const [carregandoGen, setCarregandoGen] = useState(false);
+  const gateLeiSeca = useGatedFeature('lei_seca_praticar', 'lei_seca', { scope: id || null });
+
+  // Plano gratuito: 1 lição por dia (a mesma lição não conta duas vezes).
+  useEffect(() => {
+    if (!id || gateLeiSeca.loading) return;
+    if (gateLeiSeca.blocked) gateLeiSeca.openGate();
+    else void gateLeiSeca.run();
+  }, [id, gateLeiSeca.loading, gateLeiSeca.blocked]);
 
   useEffect(() => {
     if (!licaoQ.data) return;
@@ -147,6 +156,14 @@ export default function LeiSecaPlayer() {
     setAcertos(0);
     setRespostas([]);
     setAcabou(null);
+  }
+
+  if (gateLeiSeca.blocked) {
+    return (
+      <div className="min-h-screen bg-background">
+        {gateLeiSeca.gateNode}
+      </div>
+    );
   }
 
   if (licaoQ.isLoading) {

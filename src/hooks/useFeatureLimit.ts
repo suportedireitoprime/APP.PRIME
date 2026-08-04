@@ -27,11 +27,16 @@ async function loadLimits(force = false): Promise<FeatureLimitConfig[]> {
   const now = Date.now();
   if (!force && cachedLimits && now - cachedAt < CACHE_TTL) return cachedLimits;
   const { data } = await supabase.from('feature_limits' as any).select('*');
-  cachedLimits = (data || []) as any;
+  const { DEFAULT_FEATURE_LIMITS } = await import('@/lib/featureLimitDefaults');
+  const rows = ((data || []) as any as FeatureLimitConfig[]);
+  const keys = new Set(rows.map(r => r.feature_key));
+  // Defaults do código cobrem chaves que ainda não existem na tabela.
+  cachedLimits = [...rows, ...DEFAULT_FEATURE_LIMITS.filter(d => !keys.has(d.feature_key))];
   cachedAt = now;
   listeners.forEach(l => l(cachedLimits!));
   return cachedLimits!;
 }
+
 
 export function invalidateFeatureLimits() {
   cachedLimits = null;

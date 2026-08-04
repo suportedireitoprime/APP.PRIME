@@ -1,8 +1,11 @@
 {
-  "version": 3,
+  "version": 4,
   "reference": "src/assets/covers/cover-2.webp (figura vazada) sobre o painel do BlogHeroHeader",
   "aspect": "16:9",
-  "dimensions": { "width": 1536, "height": 864 },
+  "dimensions": {
+    "width": 1536,
+    "height": 864
+  },
   "background": "painel chapado na cor do tema (gradiente diagonal: mais claro no topo-direito, mais escuro no rodapé-esquerdo). Sem cenário, sem preto, sem bege.",
   "background_motifs": "símbolos jurídicos em line art muito apagados (12-20% de contraste, só contorno) — balança, §, livro aberto, coluna jônica, pena — espalhados pelos cantos e cortados pela moldura, mais um grid fino de pontos sobre todo o painel",
   "base_palette": {
@@ -15,30 +18,90 @@
     "outline": "#1A1004"
   },
   "style": "ilustração vetorial chapada (flat vector), contornos escuros finos/médios, sombreamento em 2-3 tons, sem gradiente na figura, sem hachura, sem foto, sem 3D, sem aquarela",
-  "composition": "UMA figura vazada (recortada, sem cenário) apoiada na base do quadro, em um dos terços laterais ou centralizada, ocupando 55-70% da altura, com um único adereço vazado ao lado",
+  "composition": "SEMPRE centralizada e simétrica: UMA figura vazada exatamente no eixo horizontal do quadro, apoiada na base, ocupando 60-72% da altura, com 6 a 9 elementos vazados de apoio distribuídos de forma equilibrada à esquerda e à direita (livros, coluna, balança, martelo, pena, selo) e alguns ícones flutuantes leves. Nunca deixar metade do painel vazia.",
   "lighting": "chapada; a figura recebe apenas uma sombra suave (drop shadow) sobre o painel",
   "text_in_image": "nenhum — exceto, no máximo, uma palavra curta em serifa na lombada de um livro",
   "uniqueness_rules": [
-    "NUNCA repetir figura, adereço ou lado do quadro de uma capa anterior",
+    "NUNCA repetir figura ou adereços de uma capa anterior — o enquadramento centralizado, porém, é fixo",
     "O acento de cor do tema define o painel de fundo inteiro",
     "A figura precisa contrastar com o painel — creme, bege, bordô e dourado no personagem"
   ],
   "theme_accents": {
-    "Iniciantes":               { "accent_hex": "#F5C76A", "accent_name": "âmbar quente",   "hint": "estudante jovem, expressão curiosa, livro didático" },
-    "Filosofia":                { "accent_hex": "#A78BFA", "accent_name": "violeta",         "hint": "pensador clássico, pergaminho ou tocha" },
-    "Clássicos":                { "accent_hex": "#FCA5A5", "accent_name": "vermelho terroso","hint": "figura togada, coroa de louros" },
-    "STF":                      { "accent_hex": "#60A5FA", "accent_name": "azul institucional","hint": "ministro togado, martelo, colunata austera" },
-    "Curiosidades":             { "accent_hex": "#5EEAD4", "accent_name": "verde-água",      "hint": "figura intrigada, lupa, ponto de interrogação" },
-    "Leis":                     { "accent_hex": "#A3B18A", "accent_name": "verde-oliva",     "hint": "legislador, código de leis fechado" },
-    "Direito Constitucional":   { "accent_hex": "#93C5FD", "accent_name": "azul-royal",      "hint": "figura séria segurando a Constituição" },
-    "Direito Penal":            { "accent_hex": "#EF4444", "accent_name": "vermelho sangue", "hint": "promotor severo, algemas ou martelo" },
-    "Direito Civil":            { "accent_hex": "#93C5FD", "accent_name": "azul frio",       "hint": "advogado civilista, contrato assinado" },
-    "Direito Administrativo":   { "accent_hex": "#D4D4D8", "accent_name": "cinza-aço",       "hint": "servidor público, carimbo" },
-    "Direito do Trabalho":      { "accent_hex": "#FBBF24", "accent_name": "amarelo trabalho","hint": "operário em traje formal, engrenagem" },
-    "Direito Processual":       { "accent_hex": "#C4B5FD", "accent_name": "violeta suave",   "hint": "escrivão, pilha de autos" },
-    "Direito Tributário":       { "accent_hex": "#6EE7B7", "accent_name": "verde-cofre",     "hint": "contador de terno, cofre" },
-    "Carreiras Jurídicas":      { "accent_hex": "#FCD34D", "accent_name": "ouro",            "hint": "concurseiro focado, medalha" },
-    "Atualidades Jurídicas":    { "accent_hex": "#7DD3FC", "accent_name": "azul jornal",     "hint": "jornalista jurídica, microfone" }
+    "Iniciantes": {
+      "accent_hex": "#F5C76A",
+      "accent_name": "âmbar quente",
+      "hint": "estudante jovem, expressão curiosa, livro didático"
+    },
+    "Filosofia": {
+      "accent_hex": "#A78BFA",
+      "accent_name": "violeta",
+      "hint": "pensador clássico, pergaminho ou tocha"
+    },
+    "Clássicos": {
+      "accent_hex": "#FCA5A5",
+      "accent_name": "vermelho terroso",
+      "hint": "figura togada, coroa de louros"
+    },
+    "STF": {
+      "accent_hex": "#60A5FA",
+      "accent_name": "azul institucional",
+      "hint": "ministro togado, martelo, colunata austera"
+    },
+    "Curiosidades": {
+      "accent_hex": "#5EEAD4",
+      "accent_name": "verde-água",
+      "hint": "figura intrigada, lupa, ponto de interrogação"
+    },
+    "Leis": {
+      "accent_hex": "#A3B18A",
+      "accent_name": "verde-oliva",
+      "hint": "legislador, código de leis fechado"
+    },
+    "Direito Constitucional": {
+      "accent_hex": "#93C5FD",
+      "accent_name": "azul-royal",
+      "hint": "figura séria segurando a Constituição"
+    },
+    "Direito Penal": {
+      "accent_hex": "#EF4444",
+      "accent_name": "vermelho sangue",
+      "hint": "promotor severo, algemas ou martelo"
+    },
+    "Direito Civil": {
+      "accent_hex": "#93C5FD",
+      "accent_name": "azul frio",
+      "hint": "advogado civilista, contrato assinado"
+    },
+    "Direito Administrativo": {
+      "accent_hex": "#D4D4D8",
+      "accent_name": "cinza-aço",
+      "hint": "servidor público, carimbo"
+    },
+    "Direito do Trabalho": {
+      "accent_hex": "#FBBF24",
+      "accent_name": "amarelo trabalho",
+      "hint": "operário em traje formal, engrenagem"
+    },
+    "Direito Processual": {
+      "accent_hex": "#C4B5FD",
+      "accent_name": "violeta suave",
+      "hint": "escrivão, pilha de autos"
+    },
+    "Direito Tributário": {
+      "accent_hex": "#6EE7B7",
+      "accent_name": "verde-cofre",
+      "hint": "contador de terno, cofre"
+    },
+    "Carreiras Jurídicas": {
+      "accent_hex": "#FCD34D",
+      "accent_name": "ouro",
+      "hint": "concurseiro focado, medalha"
+    },
+    "Atualidades Jurídicas": {
+      "accent_hex": "#7DD3FC",
+      "accent_name": "azul jornal",
+      "hint": "jornalista jurídica, microfone"
+    }
   },
   "negative": [
     "sem cenário pintado (sala, biblioteca, paisagem)",
@@ -47,7 +110,8 @@
     "sem colagem de muitos objetos",
     "sem moldura, borda ou vinheta",
     "sem texto, legenda ou logo",
-    "NÃO repetir figura, adereço ou enquadramento de capas anteriores"
+    "NÃO repetir figura, adereço ou enquadramento de capas anteriores",
+    "figura fora do centro ou encostada em um dos lados, metade do painel vazia"
   ],
-  "prompt_template": "Flat vector cover panel for a Brazilian legal-education blog. 16:9 horizontal, FULL-BLEED. BACKGROUND: one flat solid saturated colour panel filling the whole canvas — diagonal gradient of {ACCENT_HEX} ({ACCENT_NAME}), lighter top-right, darker bottom-left. No scenery, no black, no cream margins. BACKGROUND MOTIFS: large legal line-art symbols (scales of justice, paragraph sign §, open book, ionic column, quill) drawn very faintly in a darker shade of the same colour (12-20% contrast, outline only), 4-6 of them cropped by the edges, plus a very subtle fine dot grid. MAIN SUBJECT: one flat vector CUT-OUT figure — {SUJEITO} — bottom-aligned on the {LADO} third, 55-70% of the frame height, with a single cut-out prop: {ADORNO}. No ground, no scene, only a soft drop shadow. STYLE: flat vector, thin dark outlines (#1A1004), flat 2-3 tone shading, no gradients on the figure, no photorealism, no 3D. FIGURE PALETTE: cream #EFE1BD, skin #EFE0C4, warm neutral #C9A26A, dark brown #6B3F1D, burgundy #8C1220, soft gold. TEXT: none. The figure, prop and side must differ from every previous cover."
+  "prompt_template": "Flat vector cover panel for a Brazilian legal-education blog. 16:9 horizontal, FULL-BLEED. BACKGROUND: one flat solid saturated colour panel filling the whole canvas — diagonal gradient of {ACCENT_HEX} ({ACCENT_NAME}), lighter top-right, darker bottom-left. No scenery, no black, no cream margins. BACKGROUND MOTIFS: large legal line-art symbols (scales of justice, paragraph sign §, open book, ionic column, quill) drawn very faintly in a darker shade of the same colour (12-20% contrast, outline only), 4-6 of them cropped by the edges, plus a very subtle fine dot grid. MAIN SUBJECT: one flat vector CUT-OUT figure — {SUJEITO} — PERFECTLY CENTERED on the horizontal axis, bottom-aligned, 60-72% of the frame height, with 6-9 cut-out supporting elements balanced symmetrically on both sides: {ADORNO}. No ground, no scene, only a soft drop shadow. STYLE: flat vector, thin dark outlines (#1A1004), flat 2-3 tone shading, no gradients on the figure, no photorealism, no 3D. FIGURE PALETTE: cream #EFE1BD, skin #EFE0C4, warm neutral #C9A26A, dark brown #6B3F1D, burgundy #8C1220, soft gold. TEXT: none. The figure, prop and side must differ from every previous cover."
 }

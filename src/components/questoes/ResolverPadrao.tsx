@@ -12,6 +12,7 @@ import { haptic } from '@/lib/nativeHaptics';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { QuestaoAcoesBar, ComentarioSheet } from '@/components/questoes/QuestaoAcoesBar';
+import { useGatedFeature } from '@/hooks/useGatedFeature';
 
 const db = supabase as any;
 
@@ -42,6 +43,8 @@ const ResolverPadrao = ({
   const [favoritos, setFavoritos] = useState<Set<string>>(new Set());
   const [segundos, setSegundos] = useState(0);
   const topoRef = useRef<HTMLDivElement>(null);
+  const gateQuestoes = useGatedFeature('questoes', 'questoes');
+  const gateFuncoes = useGatedFeature('questao_funcoes', 'questao_funcoes');
 
   useEffect(() => {
     setIdx(0); setRespostas({}); setSelecao(null); setSegundos(0);
@@ -73,12 +76,15 @@ const ResolverPadrao = ({
 
   const responder = () => {
     if (!atual || !selecao || resp) return;
+    if (gateQuestoes.blocked) { gateQuestoes.openGate(); return; }
     const acertou = selecao === correta;
     haptic[acertou ? 'success' : 'warning']?.();
     setRespostas((p) => ({ ...p, [atual.id]: { escolha: selecao, acertou } }));
     onRegistrar(atual.id, selecao, acertou, contexto);
-    setComentarioAberto(true);
+    void gateQuestoes.run();
+    if (!gateFuncoes.blocked) setComentarioAberto(true);
   };
+
 
   const favoritar = async () => {
     if (!atual || !user) { toast.error('Entre na sua conta para salvar'); return; }
@@ -107,6 +113,8 @@ const ResolverPadrao = ({
 
   return (
     <div ref={topoRef} className={cn('flex flex-col gap-4', resp ? 'pb-52' : 'pb-28')}>
+      {gateQuestoes.gateNode}
+      {gateFuncoes.gateNode}
       {/* topo: contador, tempo, favorito */}
       <div className="flex items-center justify-between">
         <span className="text-[14px] font-bold tabular-nums text-foreground sm:text-[15px]">
@@ -247,7 +255,7 @@ const ResolverPadrao = ({
                   <ChevronLeft className="h-5 w-5" /> Anterior
                 </button>
                 <button
-                  onClick={() => setComentarioAberto(true)}
+                  onClick={() => { if (gateFuncoes.blocked) { gateFuncoes.openGate(); return; } setComentarioAberto(true); }}
                   className="inline-flex h-12 flex-1 items-center justify-center gap-1.5 rounded-xl border border-border bg-card text-[15px] font-semibold text-foreground"
                 >
                   <MessageSquare className="h-5 w-5" /> Comentário

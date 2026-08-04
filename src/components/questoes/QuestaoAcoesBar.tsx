@@ -12,6 +12,7 @@ import flipSoundAsset from '@/assets/flipcard.mp3.asset.json';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { useQuestaoAcao, type AcaoTipo, type QuestaoInline } from '@/hooks/useQuestaoAcao';
+import { useGatedFeature } from '@/hooks/useGatedFeature';
 import { srcOf } from '@/lib/assetUrl';
 
 type Fonte = string | QuestaoInline;
@@ -61,13 +62,14 @@ const OPCOES_RESUMOS: SeletorOpcao[] = [
 export function QuestaoAcoesBar({ source, chaveRevisao }: { source: Fonte; chaveRevisao: string }) {
   const [aba, setAba] = useState<Aba>(null);
   const [seletor, setSeletor] = useState<SeletorTipo>(null);
+  const gate = useGatedFeature('questao_funcoes', 'questao_funcoes');
 
   useEffect(() => { setAba(null); setSeletor(null); }, [chaveRevisao]);
 
   const RailBtn = ({ icon: Icon, label, onClick }: { icon: any; label: string; onClick: () => void }) => (
     <button
       type="button"
-      onClick={onClick}
+      onClick={() => { if (gate.blocked) { gate.openGate(); return; } onClick(); }}
       className="flex shrink-0 snap-start flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground min-w-[76px]"
     >
       <Icon className="h-8 w-8" strokeWidth={1.2} />
@@ -78,6 +80,8 @@ export function QuestaoAcoesBar({ source, chaveRevisao }: { source: Fonte; chave
 
   return (
     <>
+      {gate.gateNode}
+
       <div className="scrollbar-none -mx-1 flex w-full snap-x snap-mandatory items-stretch gap-1 overflow-x-auto px-1">
         <RailBtn icon={BookOpen} label="Aula" onClick={() => setAba('aula')} />
         <RailBtn icon={Layers} label="Flashcards" onClick={() => setAba('flashcards')} />

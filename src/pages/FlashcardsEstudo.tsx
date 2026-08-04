@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import { haptic } from '@/lib/nativeHaptics';
 import { playFlipSound } from '@/lib/flipSound';
 import { getAreaVisual } from '@/lib/flashcardsAreaVisual';
+import { useGatedFeature } from '@/hooks/useGatedFeature';
 
 export type Card = {
   id: string;
@@ -61,6 +62,7 @@ const FlashcardsEstudo = () => {
   const [feitos, setFeitos] = useState(0);
   const [areaSheet, setAreaSheet] = useState<string | null>(null);
   const salvando = useRef(false);
+  const gateFlashcards = useGatedFeature('flashcards', 'flashcards');
 
   const carregar = useCallback(async () => {
     if (escolhendo) { setCards([]); setLoading(false); return; }
@@ -115,6 +117,7 @@ const FlashcardsEstudo = () => {
 
   const responder = async (status: 'compreendido' | 'revisar') => {
     if (!atual || salvando.current) return;
+    if (gateFlashcards.blocked) { gateFlashcards.openGate(); return; }
     salvando.current = true;
     haptic.light();
     const { data: auth } = await supabase.auth.getUser();
@@ -132,6 +135,7 @@ const FlashcardsEstudo = () => {
       );
       if (error) toast.error('Não foi possível salvar o progresso');
     }
+    await gateFlashcards.run();
     setFeitos((f) => f + 1);
     setVirado(false);
     salvando.current = false;
@@ -142,6 +146,7 @@ const FlashcardsEstudo = () => {
       setIdx((i) => i + 1);
     }
   };
+
 
   const setParam = (k: string, v: string | null) => {
     const next = new URLSearchParams(params);
@@ -157,6 +162,7 @@ const FlashcardsEstudo = () => {
 
   return (
     <div className={`min-h-dvh bg-background ${escolhendo ? 'pb-32' : 'pb-10'}`}>
+      {gateFlashcards.gateNode}
       <div className="mx-auto w-full max-w-3xl">
         <PageHeader
           title={titulo}

@@ -365,6 +365,131 @@ function limitarAUmMinuto(texto: string): string {
   return (fim > 40 ? cortado.slice(0, fim + 1) : cortado.replace(/[,;:\s]+$/, "") + ".").trim();
 }
 
+/** Corta o roteiro no fim da última frase que couber no limite de palavras. */
+function limitarPalavras(texto: string, max: number): string {
+  const palavras = texto.split(/\s+/).filter(Boolean);
+  if (palavras.length <= max) return texto;
+  const cortado = palavras.slice(0, max).join(" ");
+  const fim = Math.max(cortado.lastIndexOf("."), cortado.lastIndexOf("!"), cortado.lastIndexOf("?"));
+  return (fim > 40 ? cortado.slice(0, fim + 1) : cortado.replace(/[,;:\s]+$/, "") + ".").trim();
+}
+
+/**
+ * Roteiro de apresentação vinculada a um resumo/artigo: apresentador humano,
+ * elegante e descontraído, com 30 a 40 segundos falados por slide.
+ */
+async function gerarRoteiroSlideTema(opts: {
+  titulo: string;
+  indice: number;
+  total: number;
+  texto: string;
+  contexto: string;
+}): Promise<string> {
+  const { titulo, indice, total, texto, contexto } = opts;
+  const posicao = indice === 0
+    ? "Slide de abertura: cumprimente rapidinho, diga o tema da apresentação e o que a pessoa vai aprender."
+    : total > 0 && indice === total - 1
+      ? "Slide final: feche com uma síntese curta do tema e uma despedida simpática."
+      : "Slide intermediário: apresente o ponto deste slide, explique com clareza e amarre ao tema geral.";
+  const prompt = [
+    `Você é um apresentador (professor) de Direito conduzindo uma apresentação em slides sobre "${titulo}".`,
+    `Slide ${indice + 1}${total ? ` de ${total}` : ""}. ${posicao}`,
+    "Escreva APENAS o texto falado, em português do Brasil, com voz humana, elegante e descontraída — como alguém que domina o assunto e conversa com a turma.",
+    "REGRA DE TEMPO (obrigatória): de 30 a 40 segundos falados — entre 80 e 105 palavras. Nunca passe disso.",
+    "Explique o conteúdo do slide usando o material de referência abaixo para dar precisão técnica; não leia o slide literalmente.",
+    "NUNCA descreva a imagem nem diga 'observe o slide', 'nesta tela', 'como você vê' — a pessoa já está vendo.",
+    "Sem markdown, sem listas, sem títulos, sem indicações de cena — só o texto a ser lido em voz alta.",
+    "",
+    "Material de referência (resumo/artigo do tema):",
+    (contexto || "(sem material extra)").slice(0, 6000),
+    "",
+    "Conteúdo deste slide (OCR):",
+    texto ? texto.slice(0, 4000) : "(slide majoritariamente visual — desenvolva a partir do material de referência)",
+  ].join("\n");
+  const roteiro = await gerarTextoIA(prompt);
+  const limpo = removerReferenciasVisuais(
+    roteiro.replace(/[*#`_>]/g, "").replace(/\s{2,}/g, " ").trim(),
+  );
+  return limitarPalavras(limpo, 105);
+}
+
+/** OCR de um PDF inteiro com o Mistral: devolve o texto de cada página. */
+async function ocrMistralPaginas(pdfBytes: Uint8Array, nome: string): Promise<string[]> {
+  // O segredo pode estar cadastrado com nomes diferentes entre ambientes.
+  const key = (
+    Deno.env.get("MISTRAL_API_KEY") ??
+    Deno.env.get("MISTRAL_OCR_API_KEY") ??
+    Object.entries(Deno.env.toObject()).find(([k]) => k.toUpperCase().includes("MISTRAL"))?.[1] ??
+    ""
+  ).trim();
+  if (!key) throw new Error("Chave do Mistral (MISTRAL_API_KEY) não configurada");
+
+  const form = new FormData();
+  form.append("purpose", "ocr");
+  form.append("file", new Blob([pdfBytes], { type: "application/pdf" }), `${nome.replace(/[^a-z0-9-_ ]/gi, "_").slice(0, 60) || "apresentacao"}.pdf`);
+
+  let fileId = "";
+  for (let t = 1; t <= 4; t++) {
+    const up = await fetch("https://api.mistral.ai/v1/files", {
+      method: "POST", headers: { Authorization: `Bearer ${key}` }, body: form,
+    });
+    if (up.ok) { fileId = (await up.json()).id; break; }
+    const txt = await up.text().catch(() => "");
+    if (up.status === 401 || up.status === 403) {
+      throw new Error(`A chave do Mistral está inválida ou expirada (${up.status}).`);
+    }
+    if (t === 4) throw new Error(`Mistral upload ${up.status}: ${txt.slice(0, 300)}`);
+    await new Promise((r) => setTimeout(r, 1500 * t));
+  }
+  if (!fileId) throw new Error("Mistral não retornou file id");
+
+  let documentUrl = "";
+  for (let t = 1; t <= 6; t++) {
+    const res = await fetch(`https://api.mistral.ai/v1/files/${fileId}/url?expiry=24`, {
+      headers: { Authorization: `Bearer ${key}` },
+    });
+    if (res.ok) { documentUrl = (await res.json()).url; break; }
+    await new Promise((r) => setTimeout(r, 1500 * t));
+  }
+  if (!documentUrl) throw new Error("Mistral não liberou a URL do arquivo");
+
+  const paginas: string[] = [];
+  let offset = 0;
+  while (true) {
+    const pages = Array.from({ length: 20 }, (_, k) => offset + k);
+    const res = await fetch("https://api.mistral.ai/v1/ocr", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
+      body: JSON.stringify({
+        model: "mistral-ocr-latest",
+        document: { type: "document_url", document_url: documentUrl },
+        include_image_base64: false,
+        pages,
+      }),
+    });
+    if (!res.ok) {
+      const txt = await res.text().catch(() => "");
+      if (offset > 0) break;
+      throw new Error(`Mistral OCR ${res.status}: ${txt.slice(0, 300)}`);
+    }
+    const data = await res.json();
+    const lote = (data?.pages ?? []) as any[];
+    for (const p of lote) {
+      const md = String(p?.markdown ?? "").replace(/!\[[^\]]*\]\([^)]*\)/g, "").replace(/[#*`_>|]/g, " ").replace(/\s{2,}/g, " ").trim();
+      paginas.push(md);
+    }
+    const total = Number(data?.usage_info?.pages_processed ?? 0);
+    if (lote.length < 20) break;
+    offset += 20;
+    if (offset > 200) break;
+    if (total && paginas.length >= total) break;
+  }
+  fetch(`https://api.mistral.ai/v1/files/${fileId}`, { method: "DELETE", headers: { Authorization: `Bearer ${key}` } }).catch(() => {});
+  return paginas;
+}
+
+
+
 // ---------- texto do livro ----------
 function limparParaNarracao(md: string): string {
   return md
@@ -763,11 +888,26 @@ export async function handleNarracaoConteudo(req: Request, body: any): Promise<R
       const { data: nova, error } = await admin.from("apresentacoes_narradas").insert({
         livro_tabela: livroTabela, livro_id: livroId, titulo,
         descricao: body.descricao ? String(body.descricao) : null,
+        origem: body.origem ? String(body.origem) : "livro",
+        area: body.area ? String(body.area) : null,
+        tema: body.tema ? String(body.tema) : null,
+        subtema: body.subtema ? String(body.subtema) : null,
+        referencia_id: body.referencia_id ? String(body.referencia_id) : null,
+        referencia_texto: body.referencia_texto ? String(body.referencia_texto).slice(0, 20000) : null,
         voz, total_slides: totalSlides, status: "processando", created_by: user.id,
       }).select("id").single();
       if (error) throw new Error(error.message);
       return json({ apresentacao_id: nova.id });
     }
+
+    if (acao === "apres-ocr") {
+      // OCR (Mistral) do PDF da apresentação — texto por página.
+      const pdfB64 = String(body.pdf_b64 || "").replace(/^data:[^,]+,/, "");
+      if (!pdfB64) return json({ error: "pdf_b64 obrigatório" }, 400);
+      const paginas = await ocrMistralPaginas(b64ToBytes(pdfB64), String(body.nome || "apresentacao"));
+      return json({ paginas, total: paginas.length });
+    }
+
 
     if (acao === "apres-slide") {
       const apresentacaoId = String(body.apresentacao_id || "");
@@ -777,7 +917,8 @@ export async function handleNarracaoConteudo(req: Request, body: any): Promise<R
       if (!apresentacaoId || Number.isNaN(index) || !imagemB64) return json({ error: "parâmetros inválidos" }, 400);
 
       const { data: apr } = await admin.from("apresentacoes_narradas")
-        .select("id, titulo, voz, total_slides, capa_url").eq("id", apresentacaoId).maybeSingle();
+        .select("id, titulo, voz, total_slides, capa_url, origem, referencia_texto, area, tema, subtema")
+        .eq("id", apresentacaoId).maybeSingle();
       if (!apr) return json({ error: "apresentação não encontrada" }, 404);
       const voz = String(apr.voz || "Charon");
 
@@ -789,13 +930,23 @@ export async function handleNarracaoConteudo(req: Request, body: any): Promise<R
       if (imgErr) throw new Error(`upload imagem: ${imgErr.message}`);
       const imgUrl = await assinar(admin, imgPath);
 
-      // roteiro do professor
-      const roteiro = await gerarRoteiroSlide({
-        titulo: String(apr.titulo),
-        indice: index,
-        total: Number(apr.total_slides || 0),
-        texto: textoSlide,
-      });
+      // roteiro: apresentação de tema/lei usa o material de referência (30-40s)
+      const origem = String((apr as any).origem || "livro");
+      const roteiro = origem === "livro"
+        ? await gerarRoteiroSlide({
+            titulo: String(apr.titulo),
+            indice: index,
+            total: Number(apr.total_slides || 0),
+            texto: textoSlide,
+          })
+        : await gerarRoteiroSlideTema({
+            titulo: String(apr.titulo),
+            indice: index,
+            total: Number(apr.total_slides || 0),
+            texto: textoSlide,
+            contexto: String((apr as any).referencia_texto || ""),
+          });
+
 
       // áudio
       const { wav, segundos } = await sintetizar(roteiro, voz, ESTILO_APRESENTACAO);

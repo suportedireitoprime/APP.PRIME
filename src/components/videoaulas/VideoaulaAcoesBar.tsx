@@ -11,6 +11,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useVideoaulaAcao, type AulaAcaoTipo, type AulaCtxInput } from "@/hooks/useVideoaulaAcao";
 import { useSubscription } from "@/hooks/useSubscription";
+import { useGatedFeature } from "@/hooks/useGatedFeature";
 import { toast } from "sonner";
 import FlashcardEleganteViewer from "@/components/flashcards/FlashcardEleganteViewer";
 
@@ -74,17 +75,18 @@ export default function VideoaulaAcoesBar({ input, gridLayout, extras, hideQuest
 
   const navigate = useNavigate();
   const { isPremium, loading: loadingPlano } = useSubscription();
-  // Neste projeto não há trial expirável: liberado enquanto carrega ou se premium.
-  const bloqueado = false && !isPremium && !loadingPlano;
+  const gate = useGatedFeature('videoaula_funcoes', 'videoaula_funcoes');
+  // Funções da aula são exclusivas de assinantes (limite editável no admin).
+  const bloqueado = !loadingPlano && !isPremium && gate.blocked;
 
   const guard = (fn: () => void) => () => {
     if (bloqueado) {
-      toast.info("Seu teste gratuito acabou. Assine para continuar.");
-      navigate("/assinatura");
+      gate.openGate();
       return;
     }
     fn();
   };
+
 
   const RailBtn = ({
     icon: Icon, label, onClick,
@@ -111,6 +113,7 @@ export default function VideoaulaAcoesBar({ input, gridLayout, extras, hideQuest
 
   return (
     <>
+      {gate.gateNode}
       <div
         className={cn(
           gridLayout
