@@ -410,7 +410,7 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
 
       {/* Aprenda sobre as Leis — carrossel infinito de posts do blog (categoria Leis) */}
       {!hideBlog && (
-        <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
+        <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 300px' }}>
           <NoticiasJuridicasCarousel />
         </div>
       )}

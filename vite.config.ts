@@ -6,9 +6,9 @@ import viteCompression from "vite-plugin-compression";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  // Base relativa apenas quando empacotando para Electron (file://).
-  // Deploy web da Lovable continua servindo em "/".
-  base: process.env.ELECTRON_BUILD === "1" ? "./" : "/",
+  // Base relativa ("./") permite empacotar para GitHub Pages (subpastas),
+  // Electron (file://), Capacitor nativo e servidores estáticos.
+  base: "./",
   server: {
     host: "::",
     port: 8080,

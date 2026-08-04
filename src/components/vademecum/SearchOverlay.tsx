@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Search, Scale, BookOpen, Clock, Gavel, Mic, MicOff, X, Loader2, Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
+import { useDebounce } from '@/hooks/useDebounce';
 
 import { useFuzzySearch } from '@/hooks/useFuzzySearch';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
@@ -75,6 +76,7 @@ const identificarLeiPorTexto = (text: string) => {
 
 const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
   const [query, setQuery] = useState('');
+  const debouncedQuery = useDebounce(query, 150);
   const [mode, setMode] = useState<SearchMode>('conteudo');
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
@@ -102,61 +104,77 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
     return () => window.removeEventListener('search:sugestao', handler);
   }, []);
 
-  // Fuzzy search por nome/sigla/descrição/tags — usado tanto em "Nº da Lei"
-  // quanto em "Nº do Artigo" (quando o usuário digita texto ao invés de número).
+  // Usamos query DIRETO (sem debounce) para busca no catálogo local (LEIS_CATALOG),
+  // garantindo resposta instantânea (0ms) ao digitar.
   const filteredByNumero = useFuzzySearch(LEIS_CATALOG, mode === 'leis' ? query : '', {
     keys: ['descricao', 'sigla', 'nome', 'tags'],
     threshold: 0.35,
     limit: 40,
   });
 
-  // Também casa por número puro/normalizado (ex.: "8078", "8.078", "8078/1990", "L8078")
-  const leiNumericResults = (() => {
+  // Casa por número puro ou sigla exata (ex.: "8078", "8.078", "8112", "CF", "CPC")
+  const leiNumericResults = useMemo(() => {
     if (mode !== 'leis') return [] as typeof LEIS_CATALOG;
     const raw = query.trim();
     if (!raw) return [];
+    
     const digits = raw.replace(/[^\d]/g, '');
-    if (digits.length < 3) return [];
+    const cleanRaw = raw.toLowerCase().replace(/[^\w]/g, '');
+    
     return LEIS_CATALOG.filter((l) => {
-      const desc = (l.descricao || '').replace(/[^\d]/g, '');
-      return desc.includes(digits);
+      const siglaClean = (l.sigla || '').toLowerCase().replace(/[^\w]/g, '');
+      if (cleanRaw.length >= 2 && siglaClean === cleanRaw) return true;
+      
+      if (digits.length >= 2) {
+        const descDigits = (l.descricao || '').replace(/[^\d]/g, '');
+        if (descDigits.includes(digits)) return true;
+      }
+      return false;
     });
-  })();
+  }, [mode, query]);
 
-  const leiResults = (() => {
+  const leiResults = useMemo(() => {
     if (mode !== 'leis' || !query.trim()) return [] as typeof LEIS_CATALOG;
     const seen = new Set<string>();
     const merged: typeof LEIS_CATALOG = [];
-    for (const l of [...leiNumericResults, ...filteredByNumero]) {
+    
+    // 1. Adiciona resultados por número ou sigla exata
+    for (const l of leiNumericResults) {
+      if (!seen.has(l.id)) { seen.add(l.id); merged.push(l); }
+    }
+    // 2. Adiciona resultados do fuzzy search
+    for (const l of filteredByNumero) {
       if (!seen.has(l.id)) { seen.add(l.id); merged.push(l); }
     }
     return merged.slice(0, 40);
-  })();
+  }, [mode, query, leiNumericResults, filteredByNumero]);
 
 
   // Modo artigo: extrai apenas o número, e o restante do texto para detectar o nome da lei
-  const artigoQueryDigits = (query.match(/\d+[-a-zA-Z]*/)?.[0] || '').replace(/^[a-zA-Z]+/, '');
-  const leiSearchTerm = query
+  const artigoQueryDigits = useMemo(() => (query.match(/\d+[-a-zA-Z]*/)?.[0] || '').replace(/^[a-zA-Z]+/, ''), [query]);
+  const leiSearchTerm = useMemo(() => query
     .toLowerCase()
     .replace(/\d+[-a-zA-Z]*/g, '')
     .replace(/art(?:igo)?\.?/gi, '')
     .replace(/\b(do|da|de|no|na|paragrafo|parágrafo)\b/gi, '')
-    .trim();
-  const baseArtigoLeis = sortByRelevance(
+    .trim(), [query]);
+
+  const baseArtigoLeis = useMemo(() => sortByRelevance(
     LEIS_CATALOG.filter((l) => l.tipo === 'constituicao' || l.tipo === 'codigo' || l.tipo === 'estatuto')
-  );
-  const artigoLeis = mode === 'leis' && artigoQueryDigits
-    ? (() => {
-        if (!leiSearchTerm) return baseArtigoLeis;
-        const matched = baseArtigoLeis.filter((l) =>
-          l.nome.toLowerCase().includes(leiSearchTerm) ||
-          l.descricao.toLowerCase().includes(leiSearchTerm) ||
-          leiSearchTerm.includes(l.sigla.toLowerCase()) ||
-          l.sigla.toLowerCase() === leiSearchTerm
-        );
-        return matched.length > 0 ? matched : baseArtigoLeis;
-      })()
-    : [];
+  ), []);
+
+  const artigoLeis = useMemo(() => {
+    if (mode !== 'leis' || !artigoQueryDigits) return [];
+    if (!leiSearchTerm) return baseArtigoLeis;
+    const matched = baseArtigoLeis.filter((l) =>
+      l.nome.toLowerCase().includes(leiSearchTerm) ||
+      l.descricao.toLowerCase().includes(leiSearchTerm) ||
+      leiSearchTerm.includes(l.sigla.toLowerCase()) ||
+      l.sigla.toLowerCase() === leiSearchTerm
+    );
+    return matched.length > 0 ? matched : baseArtigoLeis;
+  }, [mode, artigoQueryDigits, leiSearchTerm, baseArtigoLeis]);
+
 
 
   const placeholder =
@@ -175,7 +193,7 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
       lei_nome: lei.nome,
       modo: mode,
       artigo_numero: artigoNumero,
-      query: query.trim().slice(0, 80),
+      query: debouncedQuery.trim().slice(0, 80),
     });
     onSelectLei({
       tipo: lei.tipo,
@@ -274,6 +292,11 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
                 inputMode="text"
                 className="pl-11 pr-4 h-14 bg-muted border-none text-base rounded-xl"
               />
+              {query !== debouncedQuery && (
+                <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                  <Loader2 className="w-4 h-4 text-muted-foreground animate-spin" />
+                </div>
+              )}
             </div>
             <button
               onClick={voice.toggle}
@@ -292,7 +315,7 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
           <div className="flex-1 overflow-y-auto px-2 pb-6 relative">
             {mode === 'leis' && (() => {
               const temTextoSemNumero = !artigoQueryDigits && query.trim().length >= 1;
-              const leisPorTexto = temTextoSemNumero ? filteredByNumero.slice(0, 40) : [];
+              const leisPorTexto = temTextoSemNumero ? leiResults : [];
               return (
               <div className="space-y-2">
                 {!artigoQueryDigits && !temTextoSemNumero && (
@@ -410,11 +433,11 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
 
 
             {mode === 'conteudo' && (
-              <ConteudoBusca query={query} onNavigate={onClose} />
+              <ConteudoBusca query={debouncedQuery} onNavigate={onClose} />
             )}
 
             {mode === 'jurisprudencia' && (
-              <ConteudoBusca query={query} onNavigate={onClose} grupo="jurisprudencia" />
+              <ConteudoBusca query={debouncedQuery} onNavigate={onClose} grupo="jurisprudencia" />
             )}
 
           </div>

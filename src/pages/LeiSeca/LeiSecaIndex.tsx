@@ -69,18 +69,16 @@ export default function LeiSecaIndex({ modo = "todos" }: { modo?: Filtro }) {
   return (
     <div className="min-h-screen bg-background animate-ls-enter">
 
-
-
       {/* HERO PAINEL */}
       <section
-        className="w-full text-white px-4 pt-5 pb-6"
+        className="w-full text-white px-4 pt-[calc(1.25rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-6"
         style={{ background: "radial-gradient(120% 90% at 0% 0%, #4c1d95 0%, #2e1065 45%, #0f0a1f 100%)" }}
       >
         <div className="max-w-5xl mx-auto">
           <button
             onClick={() => navigate("/", { replace: true })}
             aria-label="Voltar"
-            className="w-12 h-12 rounded-full touch-manipulation bg-white/15 ring-1 ring-white/25 backdrop-blur-sm flex items-center justify-center text-white mb-3 active:scale-95 transition"
+            className="w-11 h-11 rounded-full touch-manipulation bg-white/15 ring-1 ring-white/25 backdrop-blur-sm flex items-center justify-center text-white mb-3 active:scale-95 transition"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
@@ -133,28 +131,54 @@ export default function LeiSecaIndex({ modo = "todos" }: { modo?: Filtro }) {
               <MiniStat label="Estrelas" valor={resumo?.totalEstrelas ?? 0} icon={<Star className="h-3 w-3 fill-amber-300 text-amber-300" />} />
             </div>
           </div>
+
+          {/* CONTINUAR ESTUDO - AÇÃO RÁPIDA */}
+          {listaRecentes[0] && (
+            <div className="mt-4 pt-3 border-t border-white/10">
+              <button
+                onClick={() => navigate(`/lei-seca/${listaRecentes[0].slug}`)}
+                className="w-full flex items-center justify-between gap-3 p-3 min-h-[52px] rounded-2xl bg-white/10 hover:bg-white/15 border border-white/20 active:scale-[0.99] transition text-left touch-manipulation"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="h-10 w-10 rounded-xl bg-violet-400/20 flex items-center justify-center text-amber-300 font-bold shrink-0">
+                    <BookOpen className="h-5 w-5 text-amber-300" />
+                  </div>
+                  <div className="min-w-0">
+                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-white/70">Continuar estudo</span>
+                    <p className="font-bold text-[14px] text-white truncate">{listaRecentes[0].nome}</p>
+                  </div>
+                </div>
+                <ChevronRight className="h-5 w-5 text-white/80 shrink-0" />
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
       {/* TEXTO PERSUASIVO */}
-      <div className="max-w-5xl mx-auto px-4 pt-7 pb-1">
+      <div className="max-w-5xl mx-auto px-4 pt-6 pb-2">
         <p className="text-center text-[13px] sm:text-sm text-muted-foreground leading-relaxed max-w-2xl mx-auto">
           A Lei Seca transforma cada artigo em desafios rápidos. Escolha uma matéria, abra as leis e ganhe estrelas a cada acerto.
         </p>
       </div>
 
-      {/* CONTEÚDO */}
-      <div className="max-w-5xl mx-auto px-4 py-5 pb-32">
+      {/* CONTEÚDO E FILTROS */}
+      <div className="max-w-5xl mx-auto px-4 py-3 pb-[calc(7rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
+        {/* NAVEGAÇÃO POR PILLS */}
+        <div className="flex items-center gap-2 p-1 rounded-2xl bg-muted/60 border border-border/60 mb-6 overflow-x-auto">
+          <FiltroPill ativo={filtro === "todos"} onClick={() => navigate("/lei-seca")} icon={<BookOpen className="h-4 w-4" />} label="Matérias" />
+          <FiltroPill ativo={filtro === "recentes"} onClick={() => navigate("/lei-seca/recentes")} icon={<Clock className="h-4 w-4" />} label="Recentes" badge={listaRecentes.length} />
+          <FiltroPill ativo={filtro === "favoritos"} onClick={() => navigate("/lei-seca/favoritos")} icon={<Heart className="h-4 w-4" />} label="Favoritos" badge={listaFavoritos.length} />
+        </div>
 
         {filtro === "todos" && (
           <>
             <SectionLabel icon={<BookOpen className="h-4 w-4 text-violet-500" />} label="Matérias" />
-            <div className="space-y-2.5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {isLoading && Array.from({ length: 8 }).map((_, i) => <Skeleton key={i} className="h-[78px] rounded-2xl" />)}
               {!isLoading &&
                 materias.map((m, idx) => {
                   const prefetchMateria = () => {
-                    // Prefetcha as primeiras 4 trilhas da matéria — suficiente p/ a sheet abrir cheia.
                     m.trilhas.slice(0, 4).forEach((s) => trilhasMap.has(s) && prefetchTrilha(qc, s));
                   };
                   return (
@@ -166,7 +190,7 @@ export default function LeiSecaIndex({ modo = "todos" }: { modo?: Filtro }) {
                       onFocus={prefetchMateria}
                       onClick={() => setMateriaAberta(m)}
                       style={{ animationDelay: `${Math.min(idx, 8) * 24}ms` }}
-                      className="w-full h-[78px] rounded-2xl bg-card border border-border/60 hover:border-violet-500/40 hover:bg-card/80 hover:shadow-md transition-all flex items-center gap-3 px-3.5 text-left group active:scale-[0.985] animate-stagger-in"
+                      className="w-full min-h-[78px] h-auto py-3.5 rounded-2xl bg-card border border-border/60 hover:border-violet-500/40 hover:bg-card/80 hover:shadow-md transition-all flex items-center gap-3 px-3.5 text-left group active:scale-[0.985] animate-stagger-in touch-manipulation"
                     >
                       <div className="h-12 w-12 grid place-items-center shrink-0" style={{ color: corIcone(m.cor), filter: "saturate(1.3) brightness(1.1)" }}>
                         <m.icone width={30} height={30} strokeWidth={1.9} />
@@ -174,16 +198,15 @@ export default function LeiSecaIndex({ modo = "todos" }: { modo?: Filtro }) {
 
                       <div className="flex-1 min-w-0">
                         <div className="font-bold text-[15px] leading-tight truncate text-foreground">{m.nome}</div>
-                        <p className="text-[11.5px] text-muted-foreground mt-0.5 truncate">{m.descricao}</p>
+                        <p className="text-[11.5px] text-muted-foreground mt-0.5 line-clamp-1">{m.descricao}</p>
                         <p className="text-[10px] font-extrabold uppercase tracking-wider text-violet-500/80 mt-1">
                           {m.disponiveis} {m.disponiveis === 1 ? "lei" : "leis"}
                         </p>
                       </div>
-                      <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-violet-500 group-hover:translate-x-0.5 transition-all" />
+                      <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-violet-500 group-hover:translate-x-0.5 transition-all shrink-0" />
                     </button>
                   );
                 })}
-
             </div>
           </>
         )}
@@ -303,7 +326,7 @@ function ListaLeis({
 }) {
   const qc = useQueryClient();
   return (
-    <div className="space-y-2.5">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
       {trilhas.map((t: any) => {
         const r = resumo?.porTrilha.get(t.slug);
         const pct = r?.pct ?? 0;
@@ -313,17 +336,17 @@ function ListaLeis({
         const materia = getMateriaByTrilha(t.slug);
         const handlers = prefetchHandlers(qc, t.slug);
         return (
-          <div key={t.id} className="h-[80px] rounded-2xl bg-card border border-border/60 hover:border-violet-500/40 transition-all flex items-center gap-3 px-3.5 group animate-stagger-in">
-            <button {...handlers} onClick={() => onOpen(t.slug)} className="flex-1 flex items-center gap-3 text-left min-w-0 active:scale-[0.99]">
+          <div key={t.id} className="min-h-[80px] h-auto py-3.5 rounded-2xl bg-card border border-border/60 hover:border-violet-500/40 transition-all flex items-center gap-3 px-3.5 group animate-stagger-in touch-manipulation">
+            <button {...handlers} onClick={() => onOpen(t.slug)} className="flex-1 flex items-center gap-3 text-left min-w-0 active:scale-[0.99] touch-manipulation">
 
               <div className="h-11 w-11 grid place-items-center shrink-0" style={{ color: corIcone(materia?.cor), filter: "saturate(1.3) brightness(1.1)" }}>
                 <Icon width={28} height={28} strokeWidth={1.9} />
               </div>
 
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 flex-wrap">
                   <span className="text-[10px] font-extrabold uppercase tracking-wider text-violet-500/90">{t.sigla}</span>
-                  {materia && <span className="text-[9.5px] text-muted-foreground/80 font-bold">· {materia.nome}</span>}
+                  {materia && <span className="text-[9.5px] text-muted-foreground/80 font-bold truncate">· {materia.nome}</span>}
                   {concluido && (
                     <span className="inline-flex items-center gap-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[9px] font-extrabold uppercase tracking-wider px-1.5 py-0.5">
                       <Check className="h-2.5 w-2.5" strokeWidth={4} /> Concluído
@@ -350,7 +373,7 @@ function ListaLeis({
                 e.stopPropagation();
                 toggle(t.slug);
               }}
-              className="h-9 w-9 rounded-full grid place-items-center hover:bg-rose-500/10 transition-colors shrink-0"
+              className="h-10 w-10 min-h-[40px] rounded-full grid place-items-center hover:bg-rose-500/10 active:scale-90 transition-all shrink-0 touch-manipulation"
               aria-label={fav ? "Desfavoritar" : "Favoritar"}
             >
               <Heart className={cn("h-[18px] w-[18px] transition-all", fav ? "fill-rose-500 text-rose-500 scale-110" : "text-muted-foreground/60")} />

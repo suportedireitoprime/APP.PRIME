@@ -170,11 +170,11 @@ export default function LeiSecaParte() {
           <div className="absolute inset-y-0 -left-1/3 w-1/2 bg-gradient-to-r from-transparent via-white/10 to-transparent rotate-[18deg] animate-pulse" />
         </div>
 
-        <div className="relative z-10 px-5 pt-5 pb-5">
+        <div className="relative z-10 px-5 pt-[calc(1.25rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-5">
           <button
             onClick={() => navigate("/lei-seca", { replace: true })}
             aria-label="Voltar"
-            className="w-12 h-12 rounded-full touch-manipulation bg-white/15 ring-1 ring-white/25 backdrop-blur-sm flex items-center justify-center text-white mb-3 active:scale-95 transition"
+            className="w-11 h-11 rounded-full touch-manipulation bg-white/15 ring-1 ring-white/25 backdrop-blur-sm flex items-center justify-center text-white mb-3 active:scale-95 transition"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
@@ -208,7 +208,7 @@ export default function LeiSecaParte() {
                     onTouchStart={() => prefetchParte(qc, slug, p.slug)}
                     onClick={() => navigate(`/lei-seca/${slug}/${p.slug}`, { replace: true })}
                     className={cn(
-                      "px-3.5 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider whitespace-nowrap transition-all active:scale-[0.97]",
+                      "px-3.5 py-1.5 min-h-[36px] rounded-full text-[11px] font-bold uppercase tracking-wider whitespace-nowrap transition-all active:scale-[0.97] touch-manipulation",
                       ativa ? "bg-white text-black shadow" : "text-white/75 hover:text-white",
                     )}
                   >
@@ -272,7 +272,7 @@ export default function LeiSecaParte() {
         </div>
       </section>
 
-      <div className="max-w-3xl mx-auto px-4 py-6">
+      <div className="max-w-5xl mx-auto px-4 py-6 pb-[calc(6rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
         {(licoesQ.isLoading || estruturando) && (
           <div className="text-center py-12 text-muted-foreground animate-fade-in">
             <Loader2 className="h-8 w-8 mx-auto mb-3 animate-spin" style={{ color: tema.solid }} />
@@ -303,7 +303,7 @@ export default function LeiSecaParte() {
                 />
               </div>
             )}
-            <ul className="flex flex-col gap-2">
+            <ul className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
               {items.map((l, li) => {
                 const idx = licoes.findIndex((x) => x.id === l.id);
                 const desbloq = isDesbloqueada(idx);

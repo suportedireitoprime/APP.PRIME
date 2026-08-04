@@ -264,12 +264,12 @@ export default function LeiSecaPlayer() {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#1a0612] via-brand-burgundy-deep to-[#120410]">
       {/* Header imersivo: X + progresso + vidas */}
-      <div className="sticky top-0 z-30 bg-[#160510]/85 backdrop-blur-md border-b border-white/5 pt-safe">
+      <div className="sticky top-0 z-30 bg-[#160510]/85 backdrop-blur-md border-b border-white/5 pt-[calc(0.5rem+var(--sai-top,env(safe-area-inset-top,0px)))]">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
           <button
             onClick={() => setConfirmarSair(true)}
             aria-label="Sair da lição"
-            className="h-11 w-11 min-h-[44px] min-w-[44px] -ml-1 grid place-items-center rounded-full bg-white/10 ring-1 ring-white/15 text-white/90 hover:text-white hover:bg-white/15 active:scale-95 transition"
+            className="h-11 w-11 min-h-[44px] min-w-[44px] -ml-1 grid place-items-center rounded-full bg-white/10 ring-1 ring-white/15 text-white/90 hover:text-white hover:bg-white/15 active:scale-95 transition touch-manipulation"
           >
             <X className="h-6 w-6" strokeWidth={2.4} />
           </button>
@@ -278,14 +278,14 @@ export default function LeiSecaPlayer() {
             value={progressoPct}
             className="flex-1 h-3 bg-white/10 [&>div]:bg-gradient-to-r [&>div]:from-pink-400 [&>div]:to-rose-500 [&>div]:shadow-[0_0_12px_rgba(244,63,94,0.5)]"
           />
-          <div className="flex items-center gap-1 font-bold text-white">
+          <div className="flex items-center gap-1 font-bold text-white shrink-0">
             <Heart className="h-5 w-5 text-rose-500 fill-rose-500 drop-shadow-[0_0_6px_rgba(244,63,94,0.6)]" />
             <span>{vidas}</span>
           </div>
         </div>
       </div>
 
-      <div className="flex-1 max-w-2xl w-full mx-auto px-4 py-6 pb-40">
+      <div className="flex-1 max-w-2xl w-full mx-auto px-4 py-6 pb-[calc(6rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
         {atual && (
           <ExercicioRunner
             key={indice}
@@ -298,7 +298,7 @@ export default function LeiSecaPlayer() {
       </div>
 
       {/* Footer fixo */}
-      <div className="fixed bottom-0 left-0 right-0 z-30 bg-[#160510]/85 backdrop-blur-md border-t border-white/5 pb-safe">
+      <div className="fixed bottom-0 left-0 right-0 z-30 bg-[#160510]/85 backdrop-blur-md border-t border-white/5 pb-[calc(0.75rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="text-xs text-white/60">
             Exercício {indice + 1} de {total}
@@ -308,7 +308,7 @@ export default function LeiSecaPlayer() {
             variant="outline"
             size="sm"
             onClick={() => setVerArtigo(true)}
-            className="border-white/15 bg-white/[0.05] text-white hover:bg-white/[0.1]"
+            className="border-white/15 bg-white/[0.05] text-white hover:bg-white/[0.1] h-10 px-4 rounded-xl touch-manipulation font-bold"
           >
             <BookOpen className="h-4 w-4 mr-2" /> Ver artigo
           </Button>
@@ -340,7 +340,7 @@ export default function LeiSecaPlayer() {
       </AlertDialog>
 
       <Sheet open={verArtigo} onOpenChange={setVerArtigo}>
-        <SheetContent side="bottom" className="h-[75vh] overflow-y-auto">
+        <SheetContent side="bottom" className="h-[75vh] overflow-y-auto pb-[calc(2rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
           <SheetHeader>
             <SheetTitle>{trilhaQ.data?.nome}</SheetTitle>
           </SheetHeader>
@@ -348,7 +348,7 @@ export default function LeiSecaPlayer() {
             {artigosQ.data?.map((a) => (
               <div key={a.num} className="border-l-4 border-pink-500 pl-4">
                 <div className="text-xs font-bold text-pink-400 mb-1">Art. {a.num}</div>
-                <p className="text-sm whitespace-pre-wrap leading-relaxed">{a.texto}</p>
+                <p className="text-sm whitespace-pre-wrap leading-relaxed text-foreground">{a.texto}</p>
               </div>
             ))}
           </div>

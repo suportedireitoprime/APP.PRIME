@@ -24,9 +24,10 @@ import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persi
 import { get as idbGet, set as idbSet, del as idbDel } from "idb-keyval";
 import { BrowserRouter, HashRouter, Route, Routes, Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 
-// Electron carrega o app via file:// — BrowserRouter quebra (404 em qualquer rota).
-// HashRouter usa /#/rota, funciona em file:// e mantém deep-links.
-const Router = typeof window !== "undefined" && (window as any).desktopApp?.isElectron
+// Electron e GitHub Pages (subpastas como /APP.PRIME/) usam HashRouter (/#/rota)
+// para evitar erro 404 em assets e rotas estáticas.
+const isStaticSubpath = typeof window !== "undefined" && window.location.hostname.endsWith("github.io");
+const Router = typeof window !== "undefined" && ((window as any).desktopApp?.isElectron || isStaticSubpath)
   ? HashRouter
   : BrowserRouter;
 

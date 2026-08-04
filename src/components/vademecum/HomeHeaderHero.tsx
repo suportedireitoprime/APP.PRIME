@@ -524,7 +524,7 @@ const HomeHeaderHero = ({ onSearchOpenChange }: { onSearchOpenChange?: (open: bo
                 loading="eager"
                 decoding="sync"
                 {...({ fetchpriority: 'high' } as any)}
-                className="w-full h-full object-contain object-center scale-[1.06]"
+                className="w-full h-full object-cover object-center scale-[1.38]"
               />
 
             </div>

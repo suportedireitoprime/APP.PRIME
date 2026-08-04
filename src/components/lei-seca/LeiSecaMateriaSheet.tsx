@@ -59,7 +59,7 @@ export function LeiSecaMateriaSheet({ materia, trilhas, resumo, open, onOpenChan
               </div>
             </SheetHeader>
 
-            <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2.5">
+            <div className="flex-1 overflow-y-auto px-4 py-4 pb-[calc(1.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] grid grid-cols-1 md:grid-cols-2 gap-3">
               {lista?.map((t, idx) => {
                 const r = resumo?.porTrilha.get(t.slug);
                 const pct = r?.pct ?? 0;
@@ -71,7 +71,7 @@ export function LeiSecaMateriaSheet({ materia, trilhas, resumo, open, onOpenChan
                   <div
                     key={t.id}
                     style={{ animationDelay: `${Math.min(idx, 6) * 28}ms` }}
-                    className="h-[80px] rounded-2xl bg-background border border-border/60 hover:border-violet-500/40 transition-all flex items-center gap-3 px-3.5 group animate-stagger-in"
+                    className="min-h-[80px] h-auto py-3.5 rounded-2xl bg-background border border-border/60 hover:border-violet-500/40 transition-all flex items-center gap-3 px-3.5 group animate-stagger-in touch-manipulation"
                   >
                     <button
                       {...handlers}
@@ -79,16 +79,14 @@ export function LeiSecaMateriaSheet({ materia, trilhas, resumo, open, onOpenChan
                         onOpenChange(false);
                         navigate(`/lei-seca/${t.slug}`);
                       }}
-                      className="flex-1 flex items-center gap-3 text-left min-w-0 active:scale-[0.99]"
-
+                      className="flex-1 flex items-center gap-3 text-left min-w-0 active:scale-[0.99] touch-manipulation"
                     >
                       <div className="h-11 w-11 grid place-items-center shrink-0" style={{ color: corIcone(materia.cor), filter: "saturate(1.3) brightness(1.1)" }}>
                         <Icon width={28} height={28} strokeWidth={1.9} />
-
                       </div>
 
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-1.5 flex-wrap">
                           <span className="text-[10px] font-extrabold uppercase tracking-wider text-violet-500/90">{t.sigla}</span>
                           {concluido && (
                             <span className="inline-flex items-center gap-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[9px] font-extrabold uppercase tracking-wider px-1.5 py-0.5">
@@ -122,7 +120,7 @@ export function LeiSecaMateriaSheet({ materia, trilhas, resumo, open, onOpenChan
                         e.stopPropagation();
                         toggle(t.slug);
                       }}
-                      className="h-9 w-9 rounded-full grid place-items-center hover:bg-rose-500/10 transition-colors shrink-0"
+                      className="h-10 w-10 min-h-[40px] rounded-full grid place-items-center hover:bg-rose-500/10 active:scale-90 transition-all shrink-0 touch-manipulation"
                       aria-label={fav ? "Desfavoritar" : "Favoritar"}
                     >
                       <Heart

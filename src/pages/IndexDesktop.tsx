@@ -70,6 +70,20 @@ const IndexDesktop = () => {
   useEffect(() => { warmCoverCache(); }, []);
 
   useEffect(() => {
+    const ric: (cb: () => void) => number = (window as any).requestIdleCallback
+      ? (cb) => (window as any).requestIdleCallback(cb, { timeout: 2000 })
+      : (cb) => window.setTimeout(cb, 500);
+    const id = ric(() => {
+      import('@/components/vademecum/SearchOverlay').catch(() => {});
+      import('@/components/vademecum/AssistenteOverlay').catch(() => {});
+    });
+    return () => {
+      const cic = (window as any).cancelIdleCallback;
+      if (cic) cic(id); else window.clearTimeout(id);
+    };
+  }, []);
+
+  useEffect(() => {
     const hints = ['Buscar lei...', 'Ler artigo...', 'Consultar código...', 'Pesquisar jurisprudência...'];
     let hintIndex = 0;
     let charIndex = 0;
