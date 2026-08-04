@@ -71,10 +71,11 @@ const IndexMobile = () => {
       prefetchAllArtigos(4);
       prefetchResenha();
       prefetchNoticias();
-      // Pre-warm overlays (SearchOverlay, SideMenu, AssistenteOverlay) for instant opening
+      // Pre-warm overlays e Biblioteca para exibição instantânea (0ms)
       import('@/components/vademecum/SearchOverlay').catch(() => {});
       import('@/components/vademecum/SideMenu').catch(() => {});
       import('@/components/vademecum/AssistenteOverlay').catch(() => {});
+      import('@/components/biblioteca/RecomendacoesCarousel').catch(() => {});
     });
     return () => {
       const cic = (window as any).cancelIdleCallback;

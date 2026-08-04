@@ -20,6 +20,64 @@ const shuffle = <T,>(arr: T[]): T[] => {
   return copy;
 };
 
+const FALLBACK_CLASSICOS: LivroNormalizado[] = [
+  {
+    id: 'kelsen-teoria-pura',
+    titulo: 'Teoria Pura do Direito',
+    autor: 'Hans Kelsen',
+    sobre: 'Obra fundamental da Teoria do Direito Positivo e do Normativismo Jurídico.',
+    capa: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=400&q=80',
+    link: null,
+    download: null,
+    area: 'Teoria do Direito',
+    colecaoId: 'classicos',
+  },
+  {
+    id: 'mill-sobre-liberdade',
+    titulo: 'Sobre a Liberdade',
+    autor: 'John Stuart Mill',
+    sobre: 'Ensaio clássico sobre os limites do poder da sociedade sobre o indivíduo.',
+    capa: 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&w=400&q=80',
+    link: null,
+    download: null,
+    area: 'Filosofia Política',
+    colecaoId: 'classicos',
+  },
+  {
+    id: 'ihering-luta-direito',
+    titulo: 'A Luta pelo Direito',
+    autor: 'Rudolf von Ihering',
+    sobre: 'Reflexão sobre a defesa ativa dos direitos como dever ético e social.',
+    capa: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=400&q=80',
+    link: null,
+    download: null,
+    area: 'Filosofia do Direito',
+    colecaoId: 'classicos',
+  },
+  {
+    id: 'beccaria-delitos-penas',
+    titulo: 'Dos Delitos e das Penas',
+    autor: 'Cesare Beccaria',
+    sobre: 'Marco inicial do Direito Penal moderno e do Garantismo.',
+    capa: 'https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&w=400&q=80',
+    link: null,
+    download: null,
+    area: 'Direito Penal',
+    colecaoId: 'classicos',
+  },
+  {
+    id: 'rousseau-contrato-social',
+    titulo: 'O Contrato Social',
+    autor: 'Jean-Jacques Rousseau',
+    sobre: 'Tratado sobre soberania popular, vontade geral e cidadania.',
+    capa: 'https://images.unsplash.com/photo-1476275466078-4007374efbbe?auto=format&fit=crop&w=400&q=80',
+    link: null,
+    download: null,
+    area: 'Filosofia Política',
+    colecaoId: 'classicos',
+  },
+];
+
 const useColecao = (id: string) => {
   const cfg = COLECOES.find((c) => c.id === id);
   const [seed, setSeed] = useState<LivroNormalizado[] | undefined>(undefined);
@@ -36,8 +94,8 @@ const useColecao = (id: string) => {
   return useQuery<LivroNormalizado[]>({
     queryKey: ['biblioteca-colecao', id],
     enabled: !!cfg,
-    staleTime: 10 * 60 * 1000,
-    initialData: seed,
+    staleTime: 30 * 60 * 1000,
+    initialData: seed ?? (id === 'classicos' ? FALLBACK_CLASSICOS : undefined),
     queryFn: async () => {
       if (!cfg) return [];
       try {
@@ -53,7 +111,7 @@ const useColecao = (id: string) => {
         // Falha de rede: devolve cache persistido para manter carrossel visível.
         const cached = await getPersistedColecao<LivroNormalizado>(id);
         if (cached && cached.length) return cached;
-        throw e;
+        return FALLBACK_CLASSICOS;
       }
     },
   });
