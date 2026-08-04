@@ -38,7 +38,7 @@ export default function ModoOfflineLivros() {
 
   return (
     <DesktopPageLayout activeId="ferramentas" title="Livros offline" subtitle="Biblioteca no aparelho" mobileHeader={mobileHeader}>
-      <div className="px-4 sm:px-6 py-4 lg:max-w-none lg:px-0 lg:py-0 space-y-5">
+      <div className="w-full max-w-full overflow-x-hidden px-4 sm:px-6 py-4 lg:px-0 lg:py-0 space-y-5">
 
         <section className="rounded-2xl border border-border bg-card p-4 space-y-3">
           <div className="flex items-center gap-3">
@@ -77,7 +77,7 @@ export default function ModoOfflineLivros() {
                     <BookOpen className="w-4 h-4 text-muted-foreground" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-foreground truncate">{p.name.replace(/\.pdf$/i, '')}</p>
+                    <p className="text-[13.5px] font-semibold leading-tight text-foreground break-words">{p.name.replace(/\.pdf$/i, '')}</p>
                     <p className="text-[11px] text-muted-foreground">{formatBytes(p.size || 0)}</p>
                   </div>
                 </div>

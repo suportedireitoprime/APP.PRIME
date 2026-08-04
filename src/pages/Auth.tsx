@@ -686,16 +686,16 @@ const AuthFormScreen = ({ onBack }: { onBack: () => void }) => {
 
             {/* Hierarquia principal */}
             <h1 className="font-display text-[clamp(2.5rem,4.4vw,3.75rem)] font-black text-primary leading-[0.9] tracking-tight drop-shadow-2xl">
-              VADE MECUM
+              ESTUDOS JURÍDICOS
             </h1>
             <h2 className="font-display text-[clamp(1rem,1.5vw,1.5rem)] font-semibold text-white/85 leading-tight mt-2 tracking-wide">
-              Jurídico Profissional
+              Estude Direito com método
             </h2>
 
             {/* Subheadline única, mais respiro */}
             <p className="mt-4 font-display text-[clamp(0.95rem,1.25vw,1.25rem)] font-medium text-white/90 leading-snug max-w-md">
-              Domine a legislação brasileira como um{' '}
-              <span className="text-primary font-bold">verdadeiro profissional do Direito</span>.
+              Legislação, resumos, mapas mentais e questões para você{' '}
+              <span className="text-primary font-bold">estudar todos os dias</span>.
             </p>
           </motion.div>
         </div>

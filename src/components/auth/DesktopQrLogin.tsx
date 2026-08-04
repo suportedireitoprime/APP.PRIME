@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import QRCode from 'qrcode';
 import { motion } from 'framer-motion';
-import { Loader2, RefreshCw, Smartphone, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { Loader2, RefreshCw, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -74,7 +74,7 @@ const DesktopQrLogin = () => {
       const dataUrl = await QRCode.toDataURL(url, {
         margin: 1,
         width: 320,
-        color: { dark: '#0b0b0f', light: 'hsl(348 78% 38%)' },
+        color: { dark: '#0b0b0f', light: '#ffffff' },
         errorCorrectionLevel: 'H',
       });
       setToken(r.token);
@@ -171,13 +171,6 @@ const DesktopQrLogin = () => {
 
   return (
     <div className="w-full max-w-md flex flex-col items-center text-center">
-      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/30 mb-4">
-        <Smartphone className="w-3.5 h-3.5 text-primary" />
-        <span className="text-[11px] font-body font-semibold text-primary tracking-wide uppercase">
-          Login pelo celular
-        </span>
-      </div>
-
       <h2 className="font-display text-xl xl:text-2xl font-black text-white leading-tight">
         Escaneie o QR-code com seu celular
       </h2>

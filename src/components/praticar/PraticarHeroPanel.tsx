@@ -20,7 +20,7 @@ export default function PraticarHeroPanel({
       className="relative isolate overflow-hidden border-b border-black/20"
       style={{
         background:
-          'linear-gradient(135deg, hsl(350 75% 30%) 0%, hsl(0 84% 55%) 55%, hsl(12 82% 48%) 100%)',
+          'linear-gradient(135deg, hsl(350 72% 34%) 0%, hsl(0 84% 55%) 55%, hsl(12 82% 48%) 100%)',
       }}
       aria-label="Painel Praticar"
     >

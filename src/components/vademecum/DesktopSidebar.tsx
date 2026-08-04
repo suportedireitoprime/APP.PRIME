@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import {pickAsset, srcOf } from '@/lib/assetUrl';
 import { Scale, BookOpen, FileText, Newspaper, Landmark, Shield, ScrollText, Gavel, Settings, PanelLeftClose, Radar, RefreshCw, Bell, Info, LogOut, BookMarked, HeartPulse, Lock, User as UserIcon, Clapperboard, Mail, Wrench, FileSignature, BookOpenText, Mic, CloudDownload, BellRing, CreditCard, LifeBuoy, MessageSquare } from 'lucide-react';
 import { tipoToSlug } from '@/lib/legislacaoSlugs';
+import { getLeisPorTipo } from '@/data/leisCatalog';
 import SuporteSheet from './SuporteSheet';
+import DesktopCategoriaSheet from './DesktopCategoriaSheet';
 import vacatioLogoAsset from '@/assets/logo-vacatio-v2.png.asset.json';
 import vacatioLogoBundled from '@/assets/bundled/logo-vacatio-v2.webp';
 const vacatioLogo = pickAsset(vacatioLogoBundled, srcOf(vacatioLogoAsset));
@@ -68,6 +70,7 @@ const DesktopSidebar = ({ activeTab, onTabChange }: DesktopSidebarProps) => {
   const isAdmin = isAdminEmail(user?.email);
   const [collapsed, setCollapsed] = useState(false);
   const [suporteOpen, setSuporteOpen] = useState(false);
+  const [catSheet, setCatSheet] = useState<{ tipo: string; label: string; color?: string } | null>(null);
   const [profile, setProfile] = useState<{ display_name?: string; perfil_tipos?: string[] } | null>(null);
   const [avatarBroken, setAvatarBroken] = useState(false);
 
@@ -291,9 +294,19 @@ const DesktopSidebar = ({ activeTab, onTabChange }: DesktopSidebarProps) => {
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  const target = `/legislacao/${tipoToSlug(cat.tipo)}`;
-                  console.log('[DesktopSidebar] categoria click', cat.label, '→', target);
-                  navigate(target);
+                  // Constituição é única no seu tipo → abre direto.
+                  if (cat.tipo === 'constituicao') {
+                    navigate(`/legislacao/${tipoToSlug(cat.tipo)}`);
+                    return;
+                  }
+                  // Categorias carregadas do banco (leis ordinárias, decretos,
+                  // súmulas) têm página própria; as demais abrem o painel.
+                  const doCatalogo = getLeisPorTipo(cat.tipo);
+                  if (doCatalogo.length === 0) {
+                    navigate(`/legislacao/${tipoToSlug(cat.tipo)}`);
+                    return;
+                  }
+                  setCatSheet({ tipo: cat.tipo, label: cat.label, color: cat.color });
                 }}
                 title={collapsed ? cat.label : undefined}
                 className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-[13px] font-body text-foreground/75 hover:bg-secondary hover:text-foreground transition-colors group`}
@@ -341,6 +354,13 @@ const DesktopSidebar = ({ activeTab, onTabChange }: DesktopSidebarProps) => {
     </aside>
 
     <SuporteSheet open={suporteOpen} onClose={() => setSuporteOpen(false)} />
+    <DesktopCategoriaSheet
+      open={!!catSheet}
+      tipo={catSheet?.tipo ?? null}
+      label={catSheet?.label ?? ''}
+      color={catSheet?.color}
+      onClose={() => setCatSheet(null)}
+    />
     </>
   );
 };

@@ -315,7 +315,7 @@ export default function ObraDetailSheet({ obra, open, onClose }: Props) {
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ type: "spring", stiffness: 260, damping: 30 }}
-            className="fixed inset-x-0 bottom-0 z-[201] h-[92vh] bg-background rounded-t-3xl overflow-hidden flex flex-col shadow-2xl mx-auto max-w-3xl"
+            className="fixed inset-x-0 bottom-0 z-[201] h-[92vh] bg-background rounded-t-3xl overflow-hidden flex flex-col shadow-2xl mx-auto max-w-3xl pb-safe"
           >
             {/* Backdrop hero */}
             <div className="relative w-full h-56 sm:h-72 shrink-0">

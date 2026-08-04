@@ -247,7 +247,7 @@ export default function LeiSecaPlayer() {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#1a0612] via-brand-burgundy-deep to-[#120410]">
       {/* Header imersivo: X + progresso + vidas */}
-      <div className="sticky top-0 z-30 bg-[#160510]/85 backdrop-blur-md border-b border-white/5">
+      <div className="sticky top-0 z-30 bg-[#160510]/85 backdrop-blur-md border-b border-white/5 pt-safe">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
           <button
             onClick={() => setConfirmarSair(true)}
@@ -281,7 +281,7 @@ export default function LeiSecaPlayer() {
       </div>
 
       {/* Footer fixo */}
-      <div className="fixed bottom-0 left-0 right-0 z-30 bg-[#160510]/85 backdrop-blur-md border-t border-white/5">
+      <div className="fixed bottom-0 left-0 right-0 z-30 bg-[#160510]/85 backdrop-blur-md border-t border-white/5 pb-safe">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="text-xs text-white/60">
             Exercício {indice + 1} de {total}

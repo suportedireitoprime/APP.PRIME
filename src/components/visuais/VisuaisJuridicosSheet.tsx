@@ -41,7 +41,7 @@ const TIPO_ICON: Record<VisualTipo, typeof Brain> = {
 };
 
 const TIPO_COR: Record<VisualTipo, string> = {
-  mapa_mental: '#ef4444',
+  mapa_mental: '#ef3a5d',
   infografico: '#f59e0b',
   fluxograma: '#22c55e',
   diagrama: '#8b5cf6',
@@ -55,11 +55,11 @@ const CATEGORIA_ICON: Record<VisualCategoria, typeof Brain> = {
 
 const CATEGORIA_COR: Record<VisualCategoria, string> = {
   materias: '#38bdf8',
-  leis: '#e11d48',
+  leis: '#e01f47',
   jurisprudencia: '#a78bfa',
 };
 
-const ITEM_CORES = ['#e11d48', '#38bdf8', '#f59e0b', '#22c55e', '#a78bfa', '#ec4899', '#14b8a6', '#f97316'];
+const ITEM_CORES = ['#e01f47', '#38bdf8', '#f59e0b', '#22c55e', '#a78bfa', '#ec4899', '#14b8a6', '#f97316'];
 
 const TIPOS: VisualTipo[] = ['mapa_mental', 'infografico', 'fluxograma', 'diagrama'];
 const CATEGORIAS: VisualCategoria[] = ['materias', 'leis', 'jurisprudencia'];

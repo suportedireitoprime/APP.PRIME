@@ -73,6 +73,11 @@ const PaginaConteudo = ({ pagina, tema, fonte, fontSize, lineHeight, alinhamento
     );
   }
 
+  // O vermelho da marca fica escuro demais sobre o fundo escuro do leitor:
+  // clareamos o realce dentro do texto conforme o tema.
+  const accent = dark ? 'hsl(348 92% 70%)' : 'hsl(348 72% 44%)';
+  const accentSoft = dark ? 'hsl(348 92% 70% / 0.14)' : 'hsl(348 72% 44% / 0.10)';
+
   return (
     <article
       data-reader-article
@@ -81,7 +86,7 @@ const PaginaConteudo = ({ pagina, tema, fonte, fontSize, lineHeight, alinhamento
           ? 'w-full max-w-none px-4 pt-3 pb-24 select-text box-border overflow-x-hidden break-words'
           : compact
             ? 'w-full max-w-none px-5 sm:px-6 pt-4 pb-24 select-text box-border overflow-x-hidden break-words'
-          : 'mx-auto max-w-2xl md:max-w-2xl lg:max-w-[68ch] xl:max-w-[72ch] px-6 md:px-10 lg:px-12 pt-6 pb-40 select-text'
+          : 'mx-auto max-w-2xl md:max-w-[74ch] lg:max-w-[82ch] xl:max-w-[88ch] px-6 md:px-8 lg:px-10 pt-4 pb-40 select-text'
       }
       style={{
         fontSize,
@@ -95,7 +100,7 @@ const PaginaConteudo = ({ pagina, tema, fonte, fontSize, lineHeight, alinhamento
         components={{
           h1: (p) => <h1 className="text-2xl font-bold mt-6 mb-3" {...p} />,
           h2: (p) => <h2 className="text-xl font-bold mt-5 mb-2" {...p} />,
-          h3: (p) => <h3 className="text-lg font-semibold mt-4 mb-2 text-primary" {...p} />,
+          h3: (p) => <h3 className="text-lg font-semibold mt-4 mb-2" style={{ color: accent }} {...p} />,
           p: ({ node, ...p }) => (
             <p
               className="mb-4 hyphens-auto break-words max-w-full"
@@ -109,17 +114,18 @@ const PaginaConteudo = ({ pagina, tema, fonte, fontSize, lineHeight, alinhamento
             return (
               <strong
                 {...rest}
-                className={
+                className="font-semibold"
+                style={
                   isCitacao
-                    ? 'font-semibold text-primary bg-primary/10 px-1 py-[1px] rounded-[3px]'
-                    : 'font-semibold'
+                    ? { color: accent, background: accentSoft, padding: '1px 4px', borderRadius: 3 }
+                    : undefined
                 }
               >
                 {children}
               </strong>
             );
           },
-          em: (p) => <em className="italic text-primary/90" {...p} />,
+          em: (p) => <em className="italic" style={{ color: accent }} {...p} />,
           img: (p) => (
             <img
               {...p}
@@ -129,12 +135,21 @@ const PaginaConteudo = ({ pagina, tema, fonte, fontSize, lineHeight, alinhamento
             />
           ),
           blockquote: (p) => (
-            <blockquote className="border-l-4 border-primary/60 pl-4 italic opacity-90 my-4" {...p} />
+            <blockquote
+              className="pl-4 italic opacity-90 my-4 border-l-4"
+              style={{ borderColor: accent }}
+              {...p}
+            />
           ),
           code: (p) => (
-            <code className="px-1.5 py-0.5 rounded bg-muted text-primary text-[0.9em]" {...p} />
+            <code
+              className="px-1.5 py-0.5 rounded bg-muted text-[0.9em]"
+              style={{ color: accent }}
+              {...p}
+            />
           ),
         }}
+
       >
         {pagina.md}
       </ReactMarkdown>

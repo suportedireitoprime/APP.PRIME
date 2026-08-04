@@ -23,7 +23,7 @@ function p(bg: string, fg: string, card: string, cardFg: string, primary: string
     '--sidebar-accent': muted, '--sidebar-accent-foreground': secondaryFg,
     '--sidebar-border': border, '--sidebar-ring': ring,
     '--copper': copper, '--copper-light': copperLight, '--copper-dark': copperDark,
-    '--gold-accent': '0 72% 52%',
+    '--gold-accent': '348 80% 50%',
   };
 }
 
@@ -32,7 +32,7 @@ const DARK_PALETTE: ThemePalette = {
   id: 'limao-antracite',
   name: 'Rubro & Antracite',
   description: 'Vermelho intenso com cinza antracite profundo',
-  colors: p('0 0% 5%','0 0% 98%','0 0% 12%','0 0% 98%','0 72% 52%','0 0% 100%','0 72% 62%','0 0% 18%','0 0% 96%','0 0% 14%','0 0% 62%','0 76% 52%','0 0% 100%','0 0% 20%','0 72% 52%','0 72% 52%','0 72% 62%','0 78% 42%'),
+  colors: p('0 0% 5%','0 0% 98%','0 0% 12%','0 0% 98%','348 80% 50%','0 0% 100%','348 80% 60%','0 0% 18%','0 0% 96%','0 0% 14%','0 0% 62%','0 76% 52%','0 0% 100%','0 0% 20%','348 80% 50%','348 80% 50%','348 80% 60%','0 78% 42%'),
 };
 
 // Paleta clara — Marfim & Grafite (papel quente, WCAG AA)
@@ -45,9 +45,9 @@ const LIGHT_PALETTE: ThemePalette = {
     '220 15% 15%',  // foreground — grafite
     '0 0% 100%',    // card — branco puro (elevação)
     '220 15% 15%',  // card-foreground
-    '0 72% 52%',    // primary — vermelho AA em fundo claro
+    '348 80% 50%',    // primary — vermelho AA em fundo claro
     '0 0% 100%',    // primary-foreground — branco
-    '0 72% 62%',    // primary-light
+    '348 80% 60%',    // primary-light
     '0 12% 92%',    // secondary
     '220 15% 20%',  // secondary-foreground
     '0 12% 92%',    // muted
@@ -55,9 +55,9 @@ const LIGHT_PALETTE: ThemePalette = {
     '0 76% 52%',    // accent
     '0 0% 100%',    // accent-foreground
     '0 8% 86%',     // border
-    '0 72% 52%',    // ring
+    '348 80% 50%',    // ring
     '0 78% 42%',    // copper
-    '0 72% 62%',    // copper-light
+    '348 80% 60%',    // copper-light
     '0 78% 32%',    // copper-dark
   ),
 };

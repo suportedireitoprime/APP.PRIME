@@ -189,7 +189,7 @@ const LembreteSheet = ({ open, onClose, reminderId, livroId, livroArea, livroTit
           <motion.div
             initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            className="fixed inset-x-0 bottom-0 z-[1401] h-[90dvh] mx-auto w-full md:max-w-[640px] bg-card border-t border-border md:border-x rounded-t-3xl flex flex-col overflow-hidden"
+            className="fixed inset-x-0 bottom-0 z-[1401] h-[90dvh] mx-auto w-full md:max-w-[640px] bg-card border-t border-border md:border-x rounded-t-3xl flex flex-col overflow-hidden pb-safe"
           >
             <div className="pt-2 pb-1 flex justify-center">
               <div className="w-10 h-1.5 rounded-full bg-muted-foreground/30" />

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ChevronLeft, ChevronRight, Loader2, Lightbulb, Zap, AlertTriangle, ListTree } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, Loader2, Lightbulb, Scale, AlertTriangle, ListTree } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { resolveSectionIndex, type AiSection } from '@/lib/artigoSegments';
@@ -114,7 +114,7 @@ const ArtigoIAFullscreen = ({
         ).trim();
         const key = label.toLowerCase();
         const meta = key.startsWith('em uma frase')
-          ? { icon: Zap, tone: 'text-amber-300', bar: 'bg-amber-400', wrap: 'bg-amber-400/[0.07]' }
+          ? { icon: Scale, tone: 'text-amber-300', bar: 'bg-amber-400', wrap: 'bg-amber-400/[0.07]' }
           : key.startsWith('exemplo')
             ? { icon: Lightbulb, tone: 'text-sky-300', bar: 'bg-sky-400', wrap: 'bg-sky-400/[0.07]' }
             : key.startsWith('pegadinha')

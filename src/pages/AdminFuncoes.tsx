@@ -94,7 +94,7 @@ const prefetchAllAdminRoutes = () => {
 /** Paleta de cores dos ícones — cada função ganha um tom próprio, sem fundo. */
 const ICON_HUES = [
   '0 72% 58%', '18 88% 58%', '36 92% 55%', '48 90% 55%', '84 60% 50%',
-  '150 60% 45%', '168 66% 45%', '190 72% 52%', '208 80% 58%', '224 76% 62%',
+  '150 60% 45%', '168 66% 45%', '19348 80% 50%', '208 80% 58%', '224 76% 62%',
   '258 70% 66%', '280 66% 64%', '310 66% 60%', '336 70% 58%',
 ];
 function iconColor(seed: string): string {

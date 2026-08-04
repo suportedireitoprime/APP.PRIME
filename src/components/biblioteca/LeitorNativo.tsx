@@ -1017,10 +1017,16 @@ const LeitorNativo = ({ livroId, livroTabela, pdfUrl, titulo, onClose, autor, an
 
       {/* Header */}
       <header
-        className="flex items-center gap-3 px-4 py-3.5 shrink-0 border-b backdrop-blur"
+        className="flex items-center gap-3 px-4 py-3.5 md:py-2 shrink-0 border-b backdrop-blur"
         style={{
-          paddingTop: 'calc(var(--sai-top, env(safe-area-inset-top, 0px)) + 0.875rem)',
-          minHeight: 'calc(5rem + var(--sai-top, env(safe-area-inset-top, 0px)))',
+          paddingTop: isDesktop
+            ? '0.5rem'
+            : 'calc(var(--sai-top, env(safe-area-inset-top, 0px)) + 0.875rem)',
+
+          minHeight: isDesktop
+            ? '3.5rem'
+            : 'calc(5rem + var(--sai-top, env(safe-area-inset-top, 0px)))',
+
           display: focoOn ? 'none' : undefined,
           paddingLeft:
             isDesktop && status === 'pronto' && tocRailW
@@ -1070,11 +1076,11 @@ const LeitorNativo = ({ livroId, livroTabela, pdfUrl, titulo, onClose, autor, an
               setRailExpanded(false);
             }
           }}
-          className="hidden md:flex md:flex-col fixed left-0 top-0 bottom-0 z-[1305] border-r transition-[width] duration-300 ease-out backdrop-blur-md pt-[calc(5rem+var(--sai-top,env(safe-area-inset-top,0px)))]"
+          className="hidden md:flex md:flex-col fixed left-0 top-0 bottom-0 z-[1305] border-r transition-[width] duration-300 ease-out backdrop-blur-md pt-[3.75rem]"
           style={{ width: railExpanded ? 380 : 56, background: `${tema.bg}f2`, borderColor: tema.border, color: tema.text }}
         >
           <div
-            className={`flex items-center gap-2 border-b shrink-0 ${railExpanded ? 'px-4 h-16' : 'px-2 h-12'}`}
+            className={`flex items-center gap-2 border-b shrink-0 ${railExpanded ? 'px-3 h-12' : 'px-2 h-12'}`}
             style={{ borderColor: `${tema.text}1a` }}
           >
             <button
@@ -1083,21 +1089,24 @@ const LeitorNativo = ({ livroId, livroTabela, pdfUrl, titulo, onClose, autor, an
                 setRailExpanded(next);
                 localStorage.setItem('leitura-nativa:rail-open', next ? '1' : '0');
               }}
-              className={`${railExpanded ? 'w-11 h-11' : 'w-10 h-10'} flex items-center justify-center rounded-lg transition ${dark ? 'hover:bg-white/10' : 'hover:bg-black/5'}`}
+              className="w-10 h-10 flex items-center justify-center rounded-lg transition shrink-0"
               aria-label={railExpanded ? 'Recolher sumário' : 'Expandir sumário'}
               title={railExpanded ? 'Recolher sumário' : 'Expandir sumário'}
             >
-              <List className={railExpanded ? 'w-6 h-6' : 'w-5 h-5'} />
+              <List className="w-5 h-5" />
             </button>
             {railExpanded && (
-              <div className="flex-1 min-w-0">
-                <p className="text-lg font-semibold truncate leading-tight">Sumário</p>
-                <p className="text-xs opacity-60 truncate">{tocItems.length} {tocItems.length === 1 ? 'capítulo' : 'capítulos'}</p>
+              <div className="flex-1 min-w-0 flex items-baseline gap-2">
+                <p className="text-[15px] font-semibold truncate leading-tight">Sumário</p>
+                <p className="text-[11px] opacity-55 truncate shrink-0">
+                  {tocItems.length} {tocItems.length === 1 ? 'cap.' : 'caps.'}
+                </p>
               </div>
             )}
           </div>
           {railExpanded && (
-            <div className="px-4 py-2 shrink-0">
+            <div className="px-3 pt-2 pb-1 shrink-0">
+
               <div
                 className="flex items-center gap-2 rounded-lg px-3 h-10 border"
                 style={{ borderColor: `${tema.text}1f`, background: dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)' }}
@@ -1195,7 +1204,7 @@ const LeitorNativo = ({ livroId, livroTabela, pdfUrl, titulo, onClose, autor, an
       {isDesktop && status === 'pronto' && currentPage && !focoOn && (
         <aside
           aria-label="Ferramentas de leitura"
-          className="hidden md:flex md:flex-col fixed right-0 top-0 bottom-0 z-[1305] border-l backdrop-blur-md pt-[calc(5rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-4"
+          className="hidden md:flex md:flex-col fixed right-0 top-0 bottom-0 z-[1305] border-l backdrop-blur-md pt-[3.75rem] pb-4"
           style={{ width: DESKTOP_FN_RAIL, background: `${tema.bg}f2`, borderColor: tema.border, color: tema.text }}
         >
           <div className="flex flex-col items-center gap-2 px-2 pt-3">

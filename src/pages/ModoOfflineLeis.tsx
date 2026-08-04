@@ -89,28 +89,24 @@ export default function ModoOfflineLeis() {
 
   const mobileHeader = (
     <PageHeader
-      title="Leis offline"
-      subtitle="Textos e narrações"
+      title="Leis e narrações"
+      subtitle="Textos e áudios offline"
       onBack={() => navigate('/modo-offline')}
-      leading={
-        <div className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center">
-          <Library className="w-5 h-5 text-primary" />
-        </div>
-      }
     />
   );
 
   return (
-    <DesktopPageLayout activeId="ferramentas" title="Leis offline" subtitle="Textos e narrações" mobileHeader={mobileHeader}>
-      <div className="px-4 sm:px-6 py-4 lg:max-w-none lg:px-0 lg:py-0 space-y-5">
+    <DesktopPageLayout activeId="ferramentas" title="Leis e narrações" subtitle="Textos e áudios offline" mobileHeader={mobileHeader}>
+      <div className="w-full max-w-full overflow-x-hidden px-4 sm:px-6 py-4 lg:px-0 lg:py-0 space-y-5">
 
-        <section className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-4 flex items-start gap-3">
-          <div className="w-11 h-11 rounded-xl bg-emerald-500/15 flex items-center justify-center shrink-0">
-            <CheckCircle2 className="w-6 h-6 text-emerald-500" />
-          </div>
+        <section
+          className="rounded-2xl border p-4 flex items-start gap-3"
+          style={{ borderColor: 'hsl(150 72% 45% / 0.35)', background: 'hsl(150 72% 45% / 0.07)' }}
+        >
+          <CheckCircle2 className="w-6 h-6 shrink-0 mt-0.5" style={{ color: 'hsl(150 72% 45%)' }} />
           <div className="flex-1 min-w-0">
-            <h2 className="font-display font-bold text-foreground">Todos os textos já estão offline</h2>
-            <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+            <h2 className="font-display font-bold text-[15px] leading-tight text-foreground">Todos os textos já estão offline</h2>
+            <p className="text-[11.5px] text-muted-foreground mt-1 leading-relaxed">
               Constituição, códigos, estatutos e súmulas. Escolha abaixo quais narrações quer baixar.
             </p>
           </div>
@@ -132,14 +128,12 @@ export default function ModoOfflineLeis() {
                   <button
                     key={lei.id}
                     onClick={() => setSelectedLei({ tabela: lei.tabela_nome, nome: lei.nome })}
-                    className="w-full flex items-center gap-3 rounded-xl border border-primary/40 bg-primary/5 p-3.5 hover:bg-primary/10 transition-colors"
+                    className="w-full min-h-[64px] flex items-center gap-3 rounded-xl border border-primary/40 bg-primary/5 p-3.5 hover:bg-primary/10 transition-colors"
                   >
-                    <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: (lei.iconColor || '#3b82f6') + '20' }}>
-                      <Volume2 className="w-5 h-5" style={{ color: lei.iconColor || '#3b82f6' }} />
-                    </div>
+                    <Volume2 className="w-5 h-5 shrink-0" style={{ color: lei.iconColor || 'hsl(var(--primary))' }} />
                     <div className="flex-1 min-w-0 text-left">
-                      <p className="font-display font-bold text-sm text-foreground truncate">{lei.nome}</p>
-                      <p className="text-[11px] text-muted-foreground">
+                      <p className="font-display font-bold text-[14px] leading-tight text-foreground break-words">{lei.nome}</p>
+                      <p className="text-[11px] text-muted-foreground mt-0.5">
                         {baixados > 0 ? `${baixados} baixados · ` : ''}{total} narrações disponíveis
                       </p>
                     </div>
@@ -179,18 +173,16 @@ export default function ModoOfflineLeis() {
                   <button
                     key={lei.id}
                     onClick={() => setSelectedLei({ tabela: lei.tabela_nome, nome: lei.nome })}
-                    className="w-full flex items-center gap-3 rounded-xl border border-border bg-card p-3 hover:bg-muted/40 transition-colors"
+                    className="w-full min-h-[60px] flex items-center gap-3 rounded-xl border border-border bg-card p-3 hover:bg-muted/40 transition-colors"
                   >
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: (lei.iconColor || '#3b82f6') + '18' }}>
-                      <Library className="w-4 h-4" style={{ color: lei.iconColor || '#3b82f6' }} />
-                    </div>
+                    <Library className="w-5 h-5 shrink-0" style={{ color: lei.iconColor || 'hsl(var(--primary))' }} />
                     <div className="flex-1 min-w-0 text-left">
-                      <p className="font-semibold text-sm text-foreground truncate">{lei.nome}</p>
-                      <p className="text-[11px] text-muted-foreground">
+                      <p className="font-semibold text-[13.5px] leading-tight text-foreground break-words">{lei.nome}</p>
+                      <p className="text-[11px] text-muted-foreground mt-0.5">
                         Texto offline · {total > 0 ? `${baixados}/${total} narrações` : 'sem narração gerada'}
                       </p>
                     </div>
-                    {done && <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />}
+                    {done && <CheckCircle2 className="w-4 h-4 shrink-0" style={{ color: 'hsl(150 72% 45%)' }} />}
                     <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
                   </button>
                 );

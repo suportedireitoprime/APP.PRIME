@@ -8,25 +8,24 @@ import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { useTrackArea } from "@/hooks/useTrackArea";
 import { DESKTOP_TOOL_GROUPS } from '@/config/desktopTools';
+import TematicaCarrossel from '@/components/ferramentas/TematicaCarrossel';
+
 
 
 const TOOLS = [
-  { id: 'desktop', label: 'Desktop', desc: 'Versão para computador', icon: Monitor },
-  { id: 'me-explique', label: 'Me Explique', desc: 'Aponte a câmera para o livro e ouça a explicação ao vivo', icon: Camera },
-  { id: 'peticao-inicial', label: 'Petição Inicial', desc: 'Gere petições com IA e jurisprudência real do STF/STJ', icon: FileSignature },
-  { id: 'radar360', label: 'Radar 360', desc: 'Alterações recentes e projetos de lei', icon: ScanEye },
-  { id: 'radares', label: 'Radares', desc: 'Alterações de leis e projetos monitorados', icon: Radar },
-  { id: 'locais', label: 'Locais Jurídicos', desc: 'Tribunais, cartórios, delegacias e museus perto de você', icon: MapPin },
-  { id: 'assistente', label: 'Assistente IA', desc: 'IA jurídica para tirar dúvidas', icon: Bot },
-  { id: 'audioaulas', label: 'Audioaulas', desc: 'Aulas em áudio por área do Direito', icon: Headphones },
-  { id: 'leis-cantadas', label: 'Leis Cantadas', desc: 'Aprenda a lei seca com música em vários estilos', icon: Music },
-  { id: 'videoaulas', label: 'Videoaulas', desc: 'Aulas em vídeo com flashcards, questões e lei seca por IA', icon: Video },
-  { id: 'gravar-aula', label: 'Gravar aula', desc: 'Grave aulas longas com resumo automático por IA', icon: Mic },
-  { id: 'tematica', label: 'Temática Jurídica', desc: 'Filmes, séries e documentários para juristas', icon: Film },
-  { id: 'boletins', label: 'Boletins Jurídicos', desc: 'Vídeo diário com as normas quentes de hoje', icon: Clapperboard },
-  { id: 'noticias', label: 'Notícias', desc: 'Notícias jurídicas e atualizações', icon: Newspaper },
-  { id: 'newsletter', label: 'Newsletter', desc: 'Receba um resumo jurídico diário no e-mail', icon: Send },
+  { id: 'desktop', label: 'Desktop', desc: 'Versão para computador', icon: Monitor, color: '#38BDF8' },
+  { id: 'me-explique', label: 'Me Explique', desc: 'Aponte a câmera e ouça a explicação', icon: Camera, color: '#22D3EE' },
+  { id: 'peticao-inicial', label: 'Petição Inicial', desc: 'Gere petições com IA e jurisprudência', icon: FileSignature, color: '#FFD400' },
+  { id: 'radar360', label: 'Radar 360', desc: 'Alterações de leis e projetos monitorados', icon: Radar, color: '#8B5CF6' },
+  { id: 'leis-cantadas', label: 'Leis Cantadas', desc: 'Aprenda a lei seca com música', icon: Music, color: '#22C55E' },
+  { id: 'gravar-aula', label: 'Gravar aula', desc: 'Grave aulas com resumo automático', icon: Mic, color: '#F97316' },
+  { id: 'tematica', label: 'Temática Jurídica', desc: 'Filmes, séries e documentários', icon: Film, color: '#FF2D78' },
+  { id: 'boletins', label: 'Boletins Jurídicos', desc: 'Vídeo diário com as normas de hoje', icon: Clapperboard, color: '#14B8A6' },
+  { id: 'noticias', label: 'Notícias', desc: 'Notícias jurídicas e atualizações', icon: Newspaper, color: '#6366F1' },
+  { id: 'newsletter', label: 'Newsletter', desc: 'Resumo jurídico diário no e-mail', icon: Send, color: '#EC4899' },
+
 ];
+
 
 
 const Ferramentas = () => {
@@ -42,12 +41,9 @@ const Ferramentas = () => {
       case 'peticao-inicial': navigate('/ferramentas/peticao-inicial'); break;
       case 'flashcards': navigate('/flashcards'); break;
       case 'dicionario': navigate('/ferramentas/dicionario'); break;
-      case 'radar360': navigate('/radar-360'); break;
+      case 'radar360': navigate('/radares'); break;
       case 'radares': navigate('/radares'); break;
-      case 'assistente': navigate('/assistente-horus'); break;
-      case 'audioaulas': navigate('/audioaulas'); break;
       case 'leis-cantadas': navigate('/leis-cantadas'); break;
-      case 'videoaulas': navigate('/videoaulas'); break;
       case 'gravar-aula': navigate('/anotacoes/audio'); break;
       case 'resumos-juridicos': navigate('/resumos-juridicos'); break;
       case 'boletins': navigate('/boletins'); break;
@@ -56,8 +52,8 @@ const Ferramentas = () => {
       case 'biblioteca': navigate('/biblioteca'); break;
       case 'aprender': navigate('/aprender'); break;
       case 'modo-offline': navigate('/modo-offline'); break;
-      case 'locais': navigate('/ferramentas/locais'); break;
       case 'tematica': navigate('/tematica-juridica'); break;
+
     }
   };
 
@@ -77,32 +73,44 @@ const Ferramentas = () => {
       {TOOLS.map((tool, i) => {
         const Icon = tool.icon;
         return (
-          <motion.button
-            key={tool.id}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.06 }}
-            onClick={() => handleToolClick(tool.id)}
-            data-track="ferramenta_abrir"
-            data-ferramenta-id={tool.id}
-            data-ferramenta-nome={tool.label}
-            className="flex items-center gap-4 p-5 min-h-[80px] rounded-xl bg-card border border-border hover:border-primary/40 transition-all group w-full"
-          >
-            <Icon className="w-6 h-6 text-primary stroke-[1.5] shrink-0" />
-            <div className="flex-1 text-left">
-              <p className="font-display text-base font-bold text-foreground group-hover:text-primary transition-colors">
-                {tool.label}
-              </p>
-              <p className="text-sm text-muted-foreground mt-0.5 leading-tight">
-                {tool.desc}
-              </p>
-            </div>
-            <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-          </motion.button>
+          <div key={tool.id} className="space-y-3">
+            <motion.button
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.06 }}
+              onClick={() => handleToolClick(tool.id)}
+              data-track="ferramenta_abrir"
+              data-ferramenta-id={tool.id}
+              data-ferramenta-nome={tool.label}
+              className="flex items-center gap-3 px-4 h-[76px] rounded-2xl bg-card border border-border/60 shadow-sm hover:border-primary/40 active:scale-[0.99] transition-all group w-full"
+            >
+              <Icon
+                className="w-8 h-8 shrink-0"
+                style={{
+                  color: tool.color,
+                  filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))',
+                }}
+                strokeWidth={1.15}
+              />
+              <div className="flex-1 min-w-0 text-left">
+                <p className="font-display text-foreground text-[15.5px] font-bold leading-tight truncate">
+                  {tool.label}
+                </p>
+                <p className="font-body text-muted-foreground text-[12px] leading-tight truncate mt-0.5">
+                  {tool.desc}
+                </p>
+              </div>
+
+              <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+            </motion.button>
+
+            {tool.id === 'me-explique' && <TematicaCarrossel />}
+          </div>
         );
       })}
     </div>
   );
+
 
   // Desktop: hub completo em grade, aproveitando toda a largura da tela.
   const desktopGrid = (

@@ -52,7 +52,7 @@ function tipoLabel(o: Obra): string {
 // Paleta por categoria — combina com o tema Wine/Ivory do app.
 // Filme → wine/bordô (primary do app). Série → índigo profundo. Documentário → verde-musgo.
 const OBRA_PALETTE: Record<string, { deep: string; mid: string; chipBg: string; chipText: string }> = {
-  Filme:         { deep: '#2a0a12', mid: '#4a1524', chipBg: '#e11d48', chipText: '#fff5f7' },
+  Filme:         { deep: '#2a0a12', mid: '#4a1524', chipBg: '#e01f47', chipText: '#fff5f7' },
   Série:         { deep: '#0d1230', mid: '#1e2757', chipBg: '#6366f1', chipText: '#f0f2ff' },
   Documentário:  { deep: '#0f1f14', mid: '#1e3a26', chipBg: '#10b981', chipText: '#ecfdf5' },
 };

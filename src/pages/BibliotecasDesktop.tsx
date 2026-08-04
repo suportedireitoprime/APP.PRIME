@@ -11,6 +11,8 @@ import LivroDetailSheet from '@/components/biblioteca/LivroDetailSheet';
 import FilosofosPanel from '@/components/biblioteca/FilosofosPanel';
 import RecomendacoesCarousel from '@/components/biblioteca/RecomendacoesCarousel';
 import ContinuarLeituraCarousel from '@/components/biblioteca/ContinuarLeituraCarousel';
+import BibliotecaColecoesSidebar from '@/components/biblioteca/BibliotecaColecoesSidebar';
+import BibliotecaAtividadeRail from '@/components/biblioteca/BibliotecaAtividadeRail';
 
 /**
  * Desktop-native Biblioteca layout. Not a shrunk-down mobile screen: it uses
@@ -58,32 +60,23 @@ const BibliotecasDesktop = () => {
       {/* Global header/breadcrumb já é renderizado por GlobalDesktopHeader
           no App shell — não duplicar aqui. */}
       <main className="flex-1 min-w-0">
-        {/* Hero panel: filósofos à esquerda ocupando ~60%, painel de destaque
-            à direita com CTA de busca — em vez de empilhar tudo em 1 coluna
-            estreita como no mobile. */}
-        <section className="max-w-[1400px] mx-auto w-full px-8 pt-6">
-          <div className="grid grid-cols-12 gap-6">
-            <div className="col-span-12 lg:col-span-8 rounded-3xl overflow-hidden">
-              <FilosofosPanel>
-                <div className="[&>div]:!px-0 [&>div]:!mb-0">
-                  <BibliotecaSearchBar onAbrirLivro={(l) => setLivroAberto(l)} />
-                </div>
-              </FilosofosPanel>
-            </div>
-            <aside className="col-span-12 lg:col-span-4 hidden lg:flex flex-col justify-between rounded-3xl border border-border/50 bg-card p-6">
-              <div>
-                <p className="text-[10px] uppercase tracking-[0.22em] text-primary/90 font-bold">
-                  Biblioteca
-                </p>
-                <h1 className="font-display text-3xl leading-tight mt-2 text-foreground">
-                  Todo o acervo jurídico, num só lugar.
-                </h1>
-                <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
-                  Clássicos, doutrina, súmulas comentadas e conteúdo próprio.
-                  Continue de onde parou ou explore por coleção.
-                </p>
+        <div className="max-w-[1600px] mx-auto w-full px-6 py-6 grid grid-cols-12 gap-6 items-start">
+          {/* ── Coluna esquerda: navegação por coleções ── */}
+          <aside className="hidden xl:block col-span-3 2xl:col-span-2">
+            <BibliotecaColecoesSidebar />
+          </aside>
+
+          {/* ── Centro: hero, atalhos, recomendações e acervo ── */}
+          <div className="col-span-12 xl:col-span-6 2xl:col-span-7 min-w-0 space-y-8">
+            <section>
+              <div className="rounded-3xl overflow-hidden">
+                <FilosofosPanel>
+                  <div className="[&>div]:!px-0 [&>div]:!mb-0">
+                    <BibliotecaSearchBar onAbrirLivro={(l) => setLivroAberto(l)} />
+                  </div>
+                </FilosofosPanel>
               </div>
-              <div className="mt-6 grid grid-cols-3 gap-3">
+              <div className="mt-4 grid grid-cols-3 gap-3">
                 <div className="rounded-xl bg-secondary/40 px-3 py-2">
                   <div className="text-xl font-bold text-foreground">{colecoesVisiveis.length}</div>
                   <div className="text-[10px] uppercase tracking-wider text-muted-foreground">coleções</div>
@@ -97,75 +90,77 @@ const BibliotecasDesktop = () => {
                   <div className="text-[10px] uppercase tracking-wider text-muted-foreground">offline</div>
                 </div>
               </div>
-            </aside>
-          </div>
-        </section>
+            </section>
 
-        <section className="max-w-[1400px] mx-auto w-full px-8 mt-8">
-          <BibliotecaAtalhosBar onAbrirLivro={(l) => setLivroAberto(l)} />
-        </section>
+            <section>
+              <BibliotecaAtalhosBar onAbrirLivro={(l) => setLivroAberto(l)} />
+            </section>
 
+            <section>
+              <ContinuarLeituraCarousel onAbrirLivro={(l) => setLivroAberto(l)} />
+              <RecomendacoesCarousel onAbrirLivro={(l) => setLivroAberto(l)} />
+            </section>
 
-        <section className="max-w-[1400px] mx-auto w-full px-8 mt-10">
-          <RecomendacoesCarousel onAbrirLivro={(l) => setLivroAberto(l)} />
-        </section>
-
-        <section className="max-w-[1400px] mx-auto w-full px-8 mt-12 mb-16">
-          <div className="flex items-end justify-between mb-5">
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.22em] text-primary/90 font-bold">
-                Acervo
-              </p>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="w-1 h-7 rounded-full bg-primary" />
-                <h2 className="font-display text-2xl text-foreground leading-tight">
-                  Explore todas as coleções
-                </h2>
+            <section className="pb-16">
+              <div className="flex items-end justify-between mb-5">
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.22em] text-primary/90 font-bold">
+                    Acervo
+                  </p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="w-1 h-7 rounded-full bg-primary" />
+                    <h2 className="font-display text-2xl text-foreground leading-tight">
+                      Explore todas as coleções
+                    </h2>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground hidden md:block">
+                  {colecoesVisiveis.length} coleções
+                </p>
               </div>
-            </div>
-            <p className="text-sm text-muted-foreground hidden md:block">
-              {colecoesVisiveis.length} coleções · atualizadas continuamente
-            </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {colecoesVisiveis.map((c) => (
+                  <button
+                    key={c.id}
+                    type="button"
+                    onClick={() => navigate(`/bibliotecas/${c.id}`)}
+                    className="group relative flex items-stretch h-[132px] overflow-hidden rounded-2xl border border-border/50 bg-card shadow-sm hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/10 hover:border-primary/40 transition-all text-left"
+                  >
+                    <div className="relative w-[130px] shrink-0 overflow-hidden">
+                      <img
+                        src={c.cover}
+                        alt=""
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-r from-transparent to-card pointer-events-none" />
+                    </div>
+                    <div className="flex-1 min-w-0 flex flex-col justify-center px-5 py-4">
+                      <p className="text-[10px] uppercase tracking-[0.22em] font-bold text-primary/90 truncate">
+                        {c.eyebrow}
+                      </p>
+                      <h3 className="text-base font-bold leading-tight mt-1 text-foreground truncate">
+                        {c.label}
+                      </h3>
+                      <p className="text-xs text-muted-foreground leading-snug mt-1.5 line-clamp-2">
+                        {c.subtitle}
+                      </p>
+                    </div>
+                    <div className="flex items-center pr-4 text-muted-foreground group-hover:text-primary transition-colors">
+                      <ChevronRight className="w-5 h-5" />
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </section>
           </div>
 
-          {/* Grid multi-coluna estilo bento — capa larga à esquerda, meta à
-              direita, altura fixa; se aproveita das margens laterais do
-              desktop em vez de empilhar cards estreitos. */}
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {colecoesVisiveis.map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => navigate(`/bibliotecas/${c.id}`)}
-                className="group relative flex items-stretch h-[140px] overflow-hidden rounded-2xl border border-border/50 bg-card shadow-sm hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/10 hover:border-primary/40 transition-all text-left"
-              >
-                <div className="relative w-[160px] shrink-0 overflow-hidden">
-                  <img
-                    src={c.cover}
-                    alt=""
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-r from-transparent to-card pointer-events-none" />
-                </div>
-                <div className="flex-1 min-w-0 flex flex-col justify-center px-5 py-4">
-                  <p className="text-[10px] uppercase tracking-[0.22em] font-bold text-primary/90">
-                    {c.eyebrow}
-                  </p>
-                  <h3 className="text-lg font-bold leading-tight mt-1 text-foreground truncate">
-                    {c.label}
-                  </h3>
-                  <p className="text-xs text-muted-foreground leading-snug mt-1.5 line-clamp-2">
-                    {c.subtitle}
-                  </p>
-                </div>
-                <div className="flex items-center pr-4 text-muted-foreground group-hover:text-primary transition-colors">
-                  <ChevronRight className="w-5 h-5" />
-                </div>
-              </button>
-            ))}
-          </div>
-        </section>
+          {/* ── Coluna direita: atividade do usuário ── */}
+          <aside className="hidden lg:block col-span-12 lg:col-span-4 xl:col-span-3">
+            <BibliotecaAtividadeRail onAbrirLivro={(l) => setLivroAberto(l)} />
+          </aside>
+        </div>
       </main>
 
       <LivroDetailSheet

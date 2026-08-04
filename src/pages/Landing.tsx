@@ -96,7 +96,10 @@ const Landing = () => {
       {/* ───── HERO ───── */}
       <div className="relative">
         {/* Navbar sobre o hero */}
-        <nav className="absolute top-0 inset-x-0 z-30 px-4 lg:px-8 pt-5">
+        <nav
+          className="absolute top-0 inset-x-0 z-30 px-4 lg:px-8"
+          style={{ paddingTop: 'max(var(--sai-top, env(safe-area-inset-top, 0px)), 1.25rem)' }}
+        >
           <div className="flex flex-row items-center justify-between gap-3 max-w-7xl mx-auto">
             <Link to="/landing" className="flex items-center gap-3 min-w-0">
               <div className="relative shine-effect rounded-full overflow-hidden bg-background/40 h-14 w-14 sm:h-16 sm:w-16 lg:h-20 lg:w-20 shrink-0 flex items-center justify-center">
@@ -285,7 +288,10 @@ const Landing = () => {
       </div>
 
       {/* Rodapé */}
-      <footer className="bg-background border-t border-border px-6 lg:px-12 py-8">
+      <footer
+        className="bg-background border-t border-border px-6 lg:px-12 pt-8"
+        style={{ paddingBottom: 'calc(2rem + var(--sai-bottom, env(safe-area-inset-bottom, 0px)))' }}
+      >
         <div className="max-w-4xl mx-auto flex flex-col items-center gap-3 text-center">
           <img src={appLogo} alt="Direito Prime" className="w-10 h-10 object-contain" />
           <p className="text-muted-foreground text-xs">© 2026 Direito Prime · Estudos Jurídicos · Todos os direitos reservados</p>

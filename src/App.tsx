@@ -272,6 +272,9 @@ import DesktopFileDropOverlay from "./components/desktop/DesktopFileDropOverlay"
 const ModoOffline = lazy(() => import("./pages/ModoOffline.tsx"));
 const ModoOfflineLeis = lazy(() => import("./pages/ModoOfflineLeis.tsx"));
 const ModoOfflineLivros = lazy(() => import("./pages/ModoOfflineLivros.tsx"));
+const ModoOfflineAudioaulas = lazy(() => import("./pages/ModoOfflineAudioaulas.tsx"));
+const ModoOfflineLeisCantadas = lazy(() => import("./pages/ModoOfflineLeisCantadas.tsx"));
+const ModoOfflineApresentacoes = lazy(() => import("./pages/ModoOfflineApresentacoes.tsx"));
 const AdminSecretsDownload = lazy(() => import("./pages/AdminSecretsDownload.tsx"));
 const AdminAppleCsr = lazy(() => import("./pages/AdminAppleCsr.tsx"));
 const AdminPassoAPassoLojas = lazy(() => import("./pages/AdminPassoAPassoLojas.tsx"));
@@ -290,6 +293,11 @@ const ExcluirContaPublico = lazy(() => import("./pages/ExcluirContaPublico.tsx")
 const Lembretes = lazy(() => import("./pages/Lembretes.tsx"));
 const CentralLembretes = lazy(() => import("./pages/CentralLembretes.tsx"));
 const MeusLembretes = lazy(() => import("./pages/MeusLembretes.tsx"));
+const LembretesMeus = lazy(() => import("./pages/lembretes/LembretesMeus.tsx"));
+const LembretesVideoaulas = lazy(() => import("./pages/lembretes/LembretesVideoaulas.tsx"));
+const LembretesResumos = lazy(() => import("./pages/lembretes/LembretesResumos.tsx"));
+const LembretesLeitura = lazy(() => import("./pages/lembretes/LembretesLeitura.tsx"));
+const LembretesQuestoesTab = lazy(() => import("./pages/lembretes/LembretesQuestoes.tsx"));
 const Suporte = lazy(() => import("./pages/Suporte.tsx"));
 const SuportePublico = lazy(() => import("./pages/SuportePublico.tsx"));
 const Opiniao = lazy(() => import("./pages/Opiniao.tsx"));
@@ -675,6 +683,11 @@ function AnimatedRoutes() {
           <Route path="/meus-lembretes" element={<ProtectedRoute><PageTransition><MeusLembretes /></PageTransition></ProtectedRoute>} />
           <Route path="/lembretes/local" element={<ProtectedRoute><PageTransition><LembretesLocal /></PageTransition></ProtectedRoute>} />
           <Route path="/lembretes/preferencias" element={<ProtectedRoute><PageTransition><PreferenciasLembretes /></PageTransition></ProtectedRoute>} />
+          <Route path="/lembretes/meus" element={<ProtectedRoute><PageTransition><LembretesMeus /></PageTransition></ProtectedRoute>} />
+          <Route path="/lembretes/videoaulas" element={<ProtectedRoute><PageTransition><LembretesVideoaulas /></PageTransition></ProtectedRoute>} />
+          <Route path="/lembretes/resumos" element={<ProtectedRoute><PageTransition><LembretesResumos /></PageTransition></ProtectedRoute>} />
+          <Route path="/lembretes/leitura" element={<ProtectedRoute><PageTransition><LembretesLeitura /></PageTransition></ProtectedRoute>} />
+          <Route path="/lembretes/questoes" element={<ProtectedRoute><PageTransition><LembretesQuestoesTab /></PageTransition></ProtectedRoute>} />
           <Route path="/anotacoes/audio" element={<ProtectedRoute><PageTransition><AnotacoesAudio /></PageTransition></ProtectedRoute>} />
           <Route path="/ajustes/excluir-conta" element={<ProtectedRoute><PageTransition><ExcluirConta /></PageTransition></ProtectedRoute>} />
           <Route path="/radar/deputados" element={<ProtectedRoute><PageTransition><RadarDeputados /></PageTransition></ProtectedRoute>} />
@@ -869,8 +882,12 @@ function AnimatedRoutes() {
 
           <Route path="/desktop" element={<PageTransition><DesktopPromo /></PageTransition>} />
           <Route path="/modo-offline" element={<ProtectedRoute><PageTransition><ModoOffline /></PageTransition></ProtectedRoute>} />
-          <Route path="/modo-offline/leis" element={<ProtectedRoute><PageTransition><ModoOfflineLeis /></PageTransition></ProtectedRoute>} />
+          <Route path="/modo-offline/leis-e-narracoes" element={<ProtectedRoute><PageTransition><ModoOfflineLeis /></PageTransition></ProtectedRoute>} />
+          <Route path="/modo-offline/leis" element={<Navigate to="/modo-offline/leis-e-narracoes" replace />} />
           <Route path="/modo-offline/livros" element={<ProtectedRoute><PageTransition><ModoOfflineLivros /></PageTransition></ProtectedRoute>} />
+          <Route path="/modo-offline/audioaulas" element={<ProtectedRoute><PageTransition><ModoOfflineAudioaulas /></PageTransition></ProtectedRoute>} />
+          <Route path="/modo-offline/leis-cantadas" element={<ProtectedRoute><PageTransition><ModoOfflineLeisCantadas /></PageTransition></ProtectedRoute>} />
+          <Route path="/modo-offline/apresentacoes" element={<ProtectedRoute><PageTransition><ModoOfflineApresentacoes /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-secrets" element={<ProtectedRoute><PageTransition><AdminSecretsDownload /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-apple-csr" element={<ProtectedRoute><PageTransition><AdminAppleCsr /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-passo-a-passo-lojas" element={<ProtectedRoute><PageTransition><AdminPassoAPassoLojas /></PageTransition></ProtectedRoute>} />

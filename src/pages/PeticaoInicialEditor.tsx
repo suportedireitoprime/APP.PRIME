@@ -182,7 +182,7 @@ export default function PeticaoInicialEditor() {
   return (
     <div className="min-h-screen bg-background pb-24">
       {/* Top bar */}
-      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur border-b border-border">
+      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur border-b border-border pt-safe">
         <div className="flex items-center gap-3 px-4 py-3">
           <button
             onClick={() => navigate('/ferramentas/peticao-inicial')}

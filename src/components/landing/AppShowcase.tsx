@@ -340,7 +340,7 @@ const AppShowcase = ({ onAcessar }: Props) => {
               onClick={onAcessar}
               className="group inline-flex items-center gap-2 rounded-full px-8 py-4 text-base font-bold text-primary-foreground transition-transform hover:scale-105 active:scale-95"
               style={{
-                background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(0 72% 42%))',
+                background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(348 80% 40%))',
                 boxShadow: '0 7px 0 hsl(0 72% 30%), 0 14px 32px hsl(var(--primary) / 0.35)',
               }}
             >

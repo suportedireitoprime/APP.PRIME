@@ -241,7 +241,7 @@ export default function SessaoRunner({ artigos, onSair, artigoIdFoco, leiId }: P
 
   return (
     <div className="pb-8">
-      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b border-border">
+      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b border-border pt-safe">
         <div className="max-w-2xl mx-auto px-4 py-3 space-y-2">
           <div className="flex items-center gap-3">
             <div className="min-w-0 flex-1">
