@@ -238,9 +238,10 @@ const NARRATION_CACHE_VERSION = "v4-cardinal-juridico";
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 async function criarSignedUrl(supabase: any, filePath: string): Promise<string> {
+  const fullPath = filePath.startsWith("narracoes/") ? filePath : `narracoes/${filePath}`;
   const { data: signed, error: signErr } = await supabase.storage
-    .from("narracoes")
-    .createSignedUrl(filePath, 60 * 60 * 24 * 365 * 5); // 5 anos
+    .from("audios")
+    .createSignedUrl(fullPath, 60 * 60 * 24 * 365 * 5); // 5 anos
   if (signErr || !signed?.signedUrl) {
     throw new Error(`Signed URL falhou: ${signErr?.message || "sem URL assinada"}`);
   }
@@ -604,7 +605,8 @@ Deno.serve(async (req) => {
     const wavBytes = pcmToWav(pcmConcatenado, 24000);
 
     // Upload
-    const { error: upErr } = await supabase.storage.from("narracoes").upload(filePath, wavBytes, {
+    const fullUploadPath = filePath.startsWith("narracoes/") ? filePath : `narracoes/${filePath}`;
+    const { error: upErr } = await supabase.storage.from("audios").upload(fullUploadPath, wavBytes, {
       contentType: "audio/wav", upsert: true, cacheControl: "31536000, immutable",
     });
     if (upErr) {

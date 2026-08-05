@@ -125,14 +125,17 @@ function formatArtigoNumeroExtenso(numStr: string): string {
 function formatTextoArtigoParaNarracao(artigo: any, breadcrumb: any): string {
   if (!artigo) return '';
   const STRUCT_RE = /^(PARTE|LIVRO|T[IÍ]TULO|CAP[IÍ]TULO|SEÇ[AÃ]O|SUBSEÇ[AÃ]O)\b/i;
-  const tituloIsEpig = artigo.titulo && !STRUCT_RE.test(artigo.titulo);
-  const breadcrumbTitle = breadcrumb?.tituloDesc || breadcrumb?.titulo || null;
-  const hier = breadcrumbTitle || artigo.capitulo || (!tituloIsEpig ? artigo.titulo : null) || null;
 
   const partes: string[] = [];
 
-  if (hier) {
-    partes.push(`${hier.trim()}.`);
+  if (breadcrumb?.parte) partes.push(`${breadcrumb.parte.trim()}.`);
+  if (breadcrumb?.titulo) partes.push(`${breadcrumb.titulo.trim()}.`);
+  if (breadcrumb?.tituloDesc) partes.push(`${breadcrumb.tituloDesc.trim()}.`);
+
+  if (partes.length === 0) {
+    const tituloIsEpig = artigo.titulo && !STRUCT_RE.test(artigo.titulo);
+    const hier = artigo.capitulo || (!tituloIsEpig ? artigo.titulo : null);
+    if (hier) partes.push(`${hier.trim()}.`);
   }
 
   const numExtenso = formatArtigoNumeroExtenso(artigo.numero);
@@ -148,6 +151,70 @@ function formatTextoArtigoParaNarracao(artigo: any, breadcrumb: any): string {
   partes.push(texto);
 
   return partes.filter(Boolean).join(' ');
+}
+
+async function saveGeneratedAudioToSupabase(
+  tabelaNome: string,
+  artigoNumero: string,
+  leiNome: string,
+  tituloArtigo: string | null,
+  audioUrlOrData: string,
+  wordTimings: any[] | null
+): Promise<string> {
+  let finalAudioUrl = audioUrlOrData;
+  try {
+    if (audioUrlOrData.startsWith('data:audio/')) {
+      const base64Data = audioUrlOrData.split(',')[1];
+      if (base64Data) {
+        const binaryStr = atob(base64Data);
+        const bytes = new Uint8Array(binaryStr.length);
+        for (let i = 0; i < binaryStr.length; i++) {
+          bytes[i] = binaryStr.charCodeAt(i);
+        }
+        const blob = new Blob([bytes], { type: 'audio/wav' });
+        const safeNum = String(artigoNumero).replace(/[^a-zA-Z0-9]/g, '_');
+        const filePath = `narracoes/${tabelaNome}/${safeNum}.wav`;
+
+        const { error: uploadErr } = await supabase.storage
+          .from('audios')
+          .upload(filePath, blob, { contentType: 'audio/wav', upsert: true });
+
+        if (!uploadErr) {
+          const { data: signed } = await supabase.storage
+            .from('audios')
+            .createSignedUrl(filePath, 60 * 60 * 24 * 365 * 5);
+          if (signed?.signedUrl) {
+            finalAudioUrl = signed.signedUrl;
+          }
+        } else {
+          console.warn('[ArtigoBottomSheet] Upload de áudio para Supabase falhou:', uploadErr);
+        }
+      }
+    }
+
+    const { error: dbErr } = await supabase
+      .from('narracoes_artigos')
+      .upsert(
+        {
+          tabela_nome: tabelaNome,
+          artigo_numero: artigoNumero,
+          lei_nome: leiNome,
+          titulo_artigo: tituloArtigo,
+          audio_url: finalAudioUrl,
+          word_timings: wordTimings || null,
+        },
+        { onConflict: 'tabela_nome,artigo_numero' }
+      );
+
+    if (dbErr) {
+      console.warn('[ArtigoBottomSheet] Salvar narração no Supabase DB falhou:', dbErr);
+    } else {
+      console.log('✅ Narração salva no Supabase (Storage + DB):', finalAudioUrl);
+    }
+  } catch (err) {
+    console.error('[ArtigoBottomSheet] Erro em saveGeneratedAudioToSupabase:', err);
+  }
+  return finalAudioUrl;
 }
 
 function isLineRevogado(line: string): boolean {
@@ -871,8 +938,10 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
       const STRUCT_RE = /^(PARTE|LIVRO|T[IÍ]TULO|CAP[IÍ]TULO|SEÇ[AÃ]O|SUBSEÇ[AÃ]O)\b/i;
       const tituloIsEpig = artigo.titulo && !STRUCT_RE.test(artigo.titulo);
       const epig = tituloIsEpig ? artigo.titulo : null;
-      const breadcrumbTitle = breadcrumb?.tituloDesc || breadcrumb?.titulo || null;
-      const hier = breadcrumbTitle || artigo.capitulo || (!tituloIsEpig ? artigo.titulo : null) || null;
+      const breadcrumbParts = [breadcrumb?.parte, breadcrumb?.titulo, breadcrumb?.tituloDesc].filter(Boolean);
+      const hier = breadcrumbParts.length > 0
+        ? breadcrumbParts.join('. ')
+        : (artigo.capitulo || (!tituloIsEpig ? artigo.titulo : null) || null);
 
       const payload = {
         tabela_nome: tabelaNome,
@@ -914,11 +983,20 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
               fn: 'blog_preview',
               voz: 'Kore',
               texto: textoFormatado,
+              estilo: 'Diga em português brasileiro com tom vibrante, animado e muito empolgante, como uma professora jovem apaixonada por Direito explicando aos seus alunos',
             },
           });
 
           if (!fnErr && fnData?.audio_data_url) {
-            audio_url = fnData.audio_data_url;
+            const savedUrl = await saveGeneratedAudioToSupabase(
+              tabelaNome,
+              String(artigo.numero),
+              lei?.nome || tabelaNome,
+              hier,
+              fnData.audio_data_url,
+              null
+            );
+            audio_url = savedUrl || fnData.audio_data_url;
           } else if (fnErr) {
             console.warn('[ArtigoBottomSheet] Edge function narracao error:', fnErr);
           }
@@ -3789,15 +3867,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         {showGrifoFoto && (
           <GrifoFotoSheet open={showGrifoFoto} onClose={() => setShowGrifoFoto(false)} />
         )}
-        {narracaoPlaying && !!narracaoAudioRef.current && (
-          <KaraokeOverlay
-            open={narracaoPlaying && !!narracaoAudioRef.current}
-            audio={narracaoAudioRef.current}
-            timings={narracaoWordTimings}
-            fullText={artigo?.caput || ''}
-            title={artigo ? `Art. ${artigo.numero}` : undefined}
-          />
-        )}
+
       </Suspense>
 
       {/* Desktop: Questões e Jurisprudência como painel lateral */}
