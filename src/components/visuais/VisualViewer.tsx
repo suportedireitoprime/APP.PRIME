@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Download, FileImage, FileText, Loader2, PenTool, Sparkles, Square, X } from 'lucide-react';
+import { Download, FileImage, FileText, Loader2, Sparkles, X } from 'lucide-react';
 import VisualScene, { exportarPdf, exportarPng } from './VisualScene';
 import type { VisualContent, VisualEstilo, VisualRecord } from '@/lib/visuaisJuridicos/types';
 import { TIPO_INFO } from '@/lib/visuaisJuridicos/types';
@@ -21,7 +21,7 @@ interface Props {
 /** Visualizador com zoom/pan por gesto, alternância de estilo e download em PNG ou PDF. */
 export default function VisualViewer({ registro, onClose }: Props) {
   useBodyScrollLock(true);
-  const [estilo, setEstilo] = useState<VisualEstilo>('limpo');
+  const estilo: VisualEstilo = 'limpo';
   const [zoom, setZoom] = useState(1);
   const [baixando, setBaixando] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -78,22 +78,16 @@ export default function VisualViewer({ registro, onClose }: Props) {
             {TIPO_INFO[registro.tipo].label} · {registro.item_label}
           </p>
         </div>
-        <button
-          onClick={() => setEstilo((e) => (e === 'limpo' ? 'rascunho' : 'limpo'))}
-          className="flex h-11 shrink-0 items-center gap-1.5 rounded-full border border-border px-3.5 text-xs font-semibold sm:text-sm"
-        >
-          {estilo === 'limpo' ? <Square className="h-3.5 w-3.5" /> : <PenTool className="h-3.5 w-3.5" />}
-          {estilo === 'limpo' ? 'Limpo' : 'Rascunho'}
-        </button>
       </header>
 
-      <div ref={wrapRef} className="flex-1 overflow-auto bg-muted/40 p-2 sm:p-3">
+      <div ref={wrapRef} className="flex-1 overflow-auto bg-muted/40">
         <div style={{ width: `${zoom * 100}%`, transition: 'width .18s ease' }} className="mx-auto">
-          <div className="overflow-hidden rounded-xl shadow-lg">
+          <div className="overflow-hidden">
             <VisualScene content={content} estilo={estilo} />
           </div>
         </div>
       </div>
+
 
       <footer className="flex items-center gap-2 border-t border-border px-3 py-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))]">
         <div className="flex items-center gap-1 rounded-full border border-border px-1">

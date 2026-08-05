@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
-  ChevronRight, Clock, GitBranch, Layers, Loader2, Mic, Network, Search, Sparkles, Star, X, Brain,
+  ChevronRight, ChevronLeft, Clock, GitBranch, Layers, Loader2, Mic, Network, Search, Sparkles, Star, X, Brain,
   BookOpen, Scale, Gavel,
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -11,7 +11,9 @@ import { isAdminEmail } from '@/lib/adminEmails';
 import { toast } from 'sonner';
 import PremiumGate from '@/components/PremiumGate';
 import VisualViewer from './VisualViewer';
-import { CATEGORIA_INFO, itensDaCategoria, type CatalogoItem } from '@/lib/visuaisJuridicos/catalogo';
+import GeracaoAnimacaoOverlay from '@/components/vademecum/GeracaoAnimacaoOverlay';
+import { CATEGORIA_INFO, itensDaCategoria, MATERIAS, type CatalogoItem } from '@/lib/visuaisJuridicos/catalogo';
+import { TIPO_SLUG } from '@/lib/visuaisJuridicos/rotas';
 import { TIPO_INFO, type VisualCategoria, type VisualRecord, type VisualTipo } from '@/lib/visuaisJuridicos/types';
 import { prefetchVisuais, registrarVisual, visuaisEmCache } from '@/lib/visuaisJuridicos/cache';
 import { fetchArtigosLei, getCachedArtigos } from '@/services/legislacaoService';
@@ -172,6 +174,8 @@ interface Props {
   tipoInicial?: VisualTipo;
   /** Categoria inicial quando aberta pela URL (ex.: 'materias' | 'leis' | 'jurisprudencia'). */
   categoriaInicial?: VisualCategoria;
+  itemSlugInicial?: string;
+  temaSlugInicial?: string;
   /** 'sheet' = folha de baixo pra cima (escolha do formato). 'page' = tela cheia dedicada. */
   modo?: 'sheet' | 'page';
   /** Chamado ao escolher um formato no passo 1 (usado para navegar para a rota do formato). */
@@ -185,6 +189,8 @@ export default function VisuaisJuridicosSheet({
   onClose,
   tipoInicial,
   categoriaInicial,
+  itemSlugInicial,
+  temaSlugInicial,
   modo = 'sheet',
   onEscolherTipo,
   onRotaChange,
@@ -219,6 +225,31 @@ export default function VisuaisJuridicosSheet({
   const [temas, setTemas] = useState<TemaResumo[]>([]);
   const [carregandoTemas, setCarregandoTemas] = useState(false);
   const [tema, setTema] = useState<TemaResumo | null>(null);
+
+  // Sincroniza o item a partir da URL se itemSlugInicial for fornecido
+  useEffect(() => {
+    if (!categoria || !itemSlugInicial) return;
+    const todos = categoria === 'materias' ? (areas.length ? areas : MATERIAS) : itensDaCategoria(categoria);
+    const hit = todos.find(
+      (i) =>
+        slugTema(i.label) === itemSlugInicial ||
+        i.key === itemSlugInicial ||
+        (i as any).leiId === itemSlugInicial ||
+        norm(i.label) === norm(itemSlugInicial.replace(/-/g, ' ')),
+    );
+    if (hit && hit.key !== item?.key) {
+      setItem(hit);
+    }
+  }, [categoria, itemSlugInicial, areas]);
+
+  // Sincroniza o tema a partir da URL se temaSlugInicial for fornecido
+  useEffect(() => {
+    if (!temaSlugInicial || !temas.length) return;
+    const hit = temas.find((t) => slugTema(t.tema) === temaSlugInicial);
+    if (hit && hit.tema !== tema?.tema) {
+      setTema(hit);
+    }
+  }, [temaSlugInicial, temas]);
   const [subtemas, setSubtemas] = useState<SubtemaResumo[]>([]);
   const [carregandoSubtemas, setCarregandoSubtemas] = useState(false);
 
@@ -231,6 +262,17 @@ export default function VisuaisJuridicosSheet({
   const [filtro, setFiltro] = useState<Filtro>('todos');
   const [favoritos, setFavoritos] = useState<string[]>(() => listarFavoritos());
   const [recentes, setRecentes] = useState<string[]>(() => listarRecentes());
+
+  const [limiteLista, setLimiteLista] = useState(30);
+  const [limiteDetalhe, setLimiteDetalhe] = useState(30);
+
+  useEffect(() => {
+    setLimiteLista(30);
+  }, [categoria, busca, filtro]);
+
+  useEffect(() => {
+    setLimiteDetalhe(30);
+  }, [item, tema, buscaArtigo, filtro]);
 
   const alternarFavorito = useCallback((key: string) => {
     toggleFavorito(key);
@@ -272,14 +314,22 @@ export default function VisuaisJuridicosSheet({
   }, [tipoInicial, categoriaInicial]);
 
   // Espelha o passo atual na URL (…/visuais/mapa-mental/materias/direito-civil/lindb).
+  const onRotaRef = useRef(onRotaChange);
+  onRotaRef.current = onRotaChange;
   useEffect(() => {
-    if (!open || !onRotaChange) return;
+    if (!open || !onRotaRef.current) return;
+    // Ao abrir uma URL profunda, aguarde o catálogo assíncrono restaurar o
+    // item/tema antes de espelhar o estado. Sem esta guarda, o primeiro efeito
+    // removia o slug da URL e devolvia o usuário imediatamente para a lista.
+    if (itemSlugInicial && !item) return;
+    if (temaSlugInicial && !tema) return;
     const segs: string[] = [];
+    if (tipo) segs.push(TIPO_SLUG[tipo]);
     if (categoria) segs.push(categoria);
     if (item) segs.push(slugTema(item.label));
     if (tema) segs.push(slugTema(tema.tema));
-    onRotaChange(segs);
-  }, [open, categoria, item, tema, onRotaChange]);
+    onRotaRef.current(segs);
+  }, [open, tipo, categoria, item, tema, itemSlugInicial, temaSlugInicial]);
 
 
   useEffect(() => {
@@ -430,15 +480,15 @@ export default function VisuaisJuridicosSheet({
         body: { tipo, categoria, item_key: chave, item_label: rotulo, contexto },
       });
       if (error) throw error;
-      const registro = (data as any)?.visual as VisualRecord | undefined;
+      const registro = (data as Record<string, unknown>)?.visual as VisualRecord | undefined;
       if (!registro) throw new Error('resposta vazia');
       registrarVisual(registro);
       setProntos((p) => ({ ...p, [registro.item_key]: registro }));
       marcarRecente(registro.item_key);
       setAberto(registro);
 
-    } catch (e: any) {
-      const msg = String(e?.message || '');
+    } catch (e: unknown) {
+      const msg = String((e as { message?: string })?.message || '');
       toast.error(msg.includes('429') ? 'Muitas gerações agora. Tente em alguns minutos.' : 'Não foi possível gerar o visual agora.');
     } finally {
       setGerando(false);
@@ -447,13 +497,65 @@ export default function VisuaisJuridicosSheet({
   };
 
   const voltar = () => {
-    if (tema) { setTema(null); setBuscaArtigo(''); }
-    else if (item) { setItem(null); setBuscaArtigo(''); }
-    else if (categoria) { setCategoria(null); setBusca(''); }
-    else if (tipo && !tipoInicial) setTipo(null);
-    else onClose();
+    if (tema) {
+      setTema(null);
+      setBuscaArtigo('');
+    } else if (item) {
+      setItem(null);
+      setBuscaArtigo('');
+    } else if (categoria) {
+      setCategoria(null);
+      setBusca('');
+    } else if (tipo) {
+      setTipo(null);
+    } else {
+      onClose();
+    }
   };
 
+
+  const getTitle = () => {
+    if (passo === 1 || !tipo) return 'Visuais jurídicos';
+    if (passo === 2 || !categoria) return TIPO_INFO[tipo]?.label ?? 'Visuais jurídicos';
+    if (passo === 3 || !item) return CATEGORIA_INFO[categoria]?.label ?? 'Categorias';
+    if (tema) return tema.tema;
+    return item?.label ?? '';
+  };
+
+  const getSubtitle = () => {
+    if (passo === 1 || !tipo) return 'Escolha o formato que combina com o seu estudo';
+    if (passo === 2 || !categoria) return 'De onde vem o conteúdo?';
+    if (passo === 3 || !item) return 'Escolha o tema — o que já está gerado abre na hora';
+    if (categoria === 'materias') {
+      return tema ? `Subtemas de ${tema.tema} — escolha um para gerar` : 'Escolha o tópico para ver os subtemas';
+    }
+    return 'Escolha o artigo';
+  };
+
+  const trilha = useMemo(() => {
+    const c: Array<{ label: string; onClick?: () => void }> = [
+      { label: 'Visuais', onClick: () => { setTema(null); setItem(null); setCategoria(null); setTipo(null); } },
+    ];
+    if (tipo) {
+      c.push({
+        label: TIPO_INFO[tipo]?.label ?? 'Visual',
+        onClick: () => { setTema(null); setItem(null); setCategoria(null); },
+      });
+    }
+    if (categoria) {
+      c.push({
+        label: CATEGORIA_INFO[categoria]?.label ?? 'Categoria',
+        onClick: () => { setTema(null); setItem(null); },
+      });
+    }
+    if (item) {
+      c.push({ label: item.label, onClick: () => setTema(null) });
+    }
+    if (tema) c.push({ label: tema.tema });
+    const last = c[c.length - 1];
+    if (last) last.onClick = undefined;
+    return c;
+  }, [tipo, categoria, item, tema]);
 
   return (
     <>
@@ -485,29 +587,9 @@ export default function VisuaisJuridicosSheet({
 
               {emPagina ? (
                 <PageHeader
-                  title={
-                    passo === 2
-                      ? TIPO_INFO[tipo!].label
-                      : passo === 3
-                        ? CATEGORIA_INFO[categoria!].label
-                        : tema
-                          ? tema.tema
-                          : item!.label
-                  }
-                  subtitle={
-                    passo === 2
-                      ? 'De onde vem o conteúdo?'
-                      : passo === 3
-                        ? 'Escolha o tema — o que já está gerado abre na hora'
-                        : categoria === 'materias'
-                          ? tema
-                            ? `Subtemas de ${tema.tema} — escolha um para gerar`
-                            : 'Escolha o tópico para ver os subtemas'
-                          : 'Escolha o artigo'
-                  }
-
-
-                  onBack={voltar}
+                  title={getTitle()}
+                  subtitle={getSubtitle()}
+                  onBack={onClose}
                 />
               ) : (
                 <>
@@ -515,12 +597,21 @@ export default function VisuaisJuridicosSheet({
                     <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
                   </div>
                   <div className="flex items-center justify-between gap-3 px-5 pb-3">
-                    <div className="min-w-0">
+                    {passo > 1 && (
+                      <button
+                        onClick={voltar}
+                        aria-label="Voltar"
+                        className="w-11 h-11 shrink-0 rounded-full bg-secondary/70 flex items-center justify-center active:scale-95 transition-transform"
+                      >
+                        <ChevronLeft className="w-6 h-6 text-foreground" strokeWidth={2.2} />
+                      </button>
+                    )}
+                    <div className="min-w-0 flex-1">
                       <h3 className="font-display text-xl font-bold uppercase tracking-[0.04em] leading-none text-foreground truncate">
-                        Visuais jurídicos
+                        {getTitle()}
                       </h3>
                       <p className="mt-1 font-body text-[12px] leading-tight text-muted-foreground truncate">
-                        Escolha o formato que combina com o seu estudo
+                        {getSubtitle()}
                       </p>
                     </div>
                     <button
@@ -532,6 +623,29 @@ export default function VisuaisJuridicosSheet({
                     </button>
                   </div>
                 </>
+              )}
+
+              {passo > 1 && (
+                <nav
+                  aria-label="Trilha de navegação"
+                  className="flex items-center gap-1 overflow-x-auto whitespace-nowrap px-5 pb-2 pt-1 text-[12px] font-body text-muted-foreground lg:mx-auto lg:w-full lg:max-w-[900px] lg:px-8"
+                >
+                  {trilha.map((c, i) => (
+                    <span key={`${c.label}-${i}`} className="flex items-center gap-1 shrink-0">
+                      {i > 0 && <ChevronRight className="h-3 w-3 opacity-50" />}
+                      {c.onClick ? (
+                        <button
+                          onClick={c.onClick}
+                          className="hover:text-foreground active:scale-95 transition"
+                        >
+                          {c.label}
+                        </button>
+                      ) : (
+                        <span className="text-foreground font-semibold">{c.label}</span>
+                      )}
+                    </span>
+                  ))}
+                </nav>
               )}
 
               <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-3 lg:mx-auto lg:w-full lg:max-w-[900px] lg:px-8">
@@ -631,7 +745,7 @@ export default function VisuaisJuridicosSheet({
                       </p>
                     )}
 
-                    {lista.map((i, idx) => {
+                    {lista.slice(0, limiteLista).map((i, idx) => {
                       const Icon = iconeDoItem(i.key, i.label, i.sub);
                       const cor = ITEM_CORES[idx % ITEM_CORES.length];
                       const favorito = favoritos.includes(i.key);
@@ -709,6 +823,16 @@ export default function VisuaisJuridicosSheet({
                       </p>
                     )}
 
+                    {lista.length > limiteLista && (
+                      <div className="pt-2 pb-6">
+                        <button
+                          onClick={() => setLimiteLista((l) => l + 30)}
+                          className="w-full py-3.5 rounded-xl bg-secondary/50 font-display text-sm font-bold text-primary active:scale-95 transition-transform"
+                        >
+                          Mostrar mais opções...
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -740,7 +864,7 @@ export default function VisuaisJuridicosSheet({
                           </p>
                         )}
 
-                        {temasFiltrados.map((t, idx) => {
+                        {temasFiltrados.slice(0, limiteDetalhe).map((t, idx) => {
                           const chave = chaveDe(item!, t.tema, 'tema');
                           const pronto = prontos[chave];
                           const cor = ITEM_CORES[idx % ITEM_CORES.length];
@@ -749,7 +873,15 @@ export default function VisuaisJuridicosSheet({
                           return (
                             <div key={t.tema} className="relative">
                               <button
-                                onClick={() => { setTema(t); setBuscaArtigo(''); setFiltro('todos'); }}
+                                onClick={() => {
+                                  if (t.total === 0) {
+                                    gerar(item!, t.tema, 'tema');
+                                  } else {
+                                    setTema(t);
+                                    setBuscaArtigo('');
+                                    setFiltro('todos');
+                                  }
+                                }}
                                 disabled={gerando}
                                 className="w-full flex items-center gap-4 px-4 h-[84px] rounded-2xl bg-secondary/40 border border-border/50 active:scale-[0.99] transition disabled:opacity-70"
                               >
@@ -774,8 +906,12 @@ export default function VisuaisJuridicosSheet({
                                   )}
                                 </div>
                                 <span className="mr-7 shrink-0">
-                                  {pronto ? (
+                                  {gerandoKey === chave ? (
+                                    <Loader2 className="w-5 h-5 animate-spin text-primary" />
+                                  ) : pronto ? (
                                     <span className="rounded-full bg-primary/15 px-2 py-0.5 font-display text-[10px] font-bold tracking-wider text-primary">PRONTO</span>
+                                  ) : t.total === 0 ? (
+                                    <Sparkles className="w-5 h-5 text-muted-foreground" />
                                   ) : (
                                     <ChevronRight className="w-5 h-5 text-muted-foreground" />
                                   )}
@@ -795,6 +931,17 @@ export default function VisuaisJuridicosSheet({
                                 : 'Nenhum tópico encontrado.'}
                           </p>
                         )}
+
+                        {temasFiltrados.length > limiteDetalhe && (
+                          <div className="pt-2 pb-6">
+                            <button
+                              onClick={() => setLimiteDetalhe((l) => l + 30)}
+                              className="w-full py-3.5 rounded-xl bg-secondary/50 font-display text-sm font-bold text-primary active:scale-95 transition-transform"
+                            >
+                              Mostrar mais tópicos...
+                            </button>
+                          </div>
+                        )}
                       </>
                     )}
 
@@ -806,7 +953,7 @@ export default function VisuaisJuridicosSheet({
                           </p>
                         )}
 
-                        {subtemasFiltrados.map((s, idx) => {
+                        {subtemasFiltrados.slice(0, limiteDetalhe).map((s, idx) => {
                           const chave = chaveDe(item!, `${tema.tema} ${s.subtema}`, 'tema');
                           const pronto = prontos[chave];
                           const carregandoEste = gerandoKey === chave;
@@ -903,6 +1050,17 @@ export default function VisuaisJuridicosSheet({
                             {filtro === 'favoritos' ? 'Nenhum subtema favoritado ainda.' : 'Nenhum subtema aberto recentemente.'}
                           </p>
                         )}
+
+                        {subtemasFiltrados.length > limiteDetalhe && (
+                          <div className="pt-2 pb-6">
+                            <button
+                              onClick={() => setLimiteDetalhe((l) => l + 30)}
+                              className="w-full py-3.5 rounded-xl bg-secondary/50 font-display text-sm font-bold text-primary active:scale-95 transition-transform"
+                            >
+                              Mostrar mais subtemas...
+                            </button>
+                          </div>
+                        )}
                       </>
                     )}
 
@@ -915,7 +1073,7 @@ export default function VisuaisJuridicosSheet({
                           </p>
                         )}
 
-                        {artigosFiltrados.slice(0, 400).map((a, idx) => {
+                        {artigosFiltrados.slice(0, limiteDetalhe).map((a, idx) => {
                           const chave = chaveDe(item!, a.numero);
                           const pronto = prontos[chave];
                           const carregandoEste = gerandoKey === chave;
@@ -972,6 +1130,17 @@ export default function VisuaisJuridicosSheet({
                                 : 'Nenhum artigo encontrado.'}
                           </p>
                         )}
+
+                        {artigosFiltrados.length > limiteDetalhe && (
+                          <div className="pt-2 pb-6">
+                            <button
+                              onClick={() => setLimiteDetalhe((l) => l + 50)}
+                              className="w-full py-3.5 rounded-xl bg-secondary/50 font-display text-sm font-bold text-primary active:scale-95 transition-transform"
+                            >
+                              Mostrar mais artigos...
+                            </button>
+                          </div>
+                        )}
                       </>
                     )}
 
@@ -983,6 +1152,19 @@ export default function VisuaisJuridicosSheet({
           </>
         )}
       </AnimatePresence>
+
+      <GeracaoAnimacaoOverlay
+        open={gerando}
+        titulo={tipo ? TIPO_INFO[tipo].label : 'Gerando visual'}
+        steps={[
+          'Lendo o conteúdo jurídico',
+          'Estruturando com IA',
+          'Montando o visual',
+          'Pronto',
+        ]}
+        stepRanges={[[0, 15], [15, 85], [85, 97], [100, 100]]}
+        estTotalSec={22}
+      />
 
       {aberto && <VisualViewer registro={aberto} onClose={() => setAberto(null)} />}
       <PremiumGate open={gateOpen} onClose={() => setGateOpen(false)} feature="mapa_mental" />

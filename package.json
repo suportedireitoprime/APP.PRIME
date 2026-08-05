@@ -5,7 +5,7 @@
   "type": "module",
   "main": "electron/main.cjs",
   "scripts": {
-    "postinstall": "mkdir -p public/assets && cp node_modules/sql.js/dist/sql-wasm.wasm public/assets/sql-wasm.wasm",
+    "postinstall": "node -e \"const fs=require('fs'); fs.mkdirSync('public/assets', {recursive: true}); if(fs.existsSync('node_modules/sql.js/dist/sql-wasm.wasm')) fs.copyFileSync('node_modules/sql.js/dist/sql-wasm.wasm', 'public/assets/sql-wasm.wasm');\"",
     "predev": "bun run postinstall && bunx tsx scripts/generate-sitemap.ts",
     "dev": "vite",
     "prebuild": "bun run postinstall && node scripts/copy-build-assets.mjs && bunx tsx scripts/generate-sitemap.ts",
@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@aparajita/capacitor-secure-storage": "^8.0.0",
+    "@capacitor-community/apple-sign-in": "^7.1.0",
     "@capacitor-community/background-geolocation": "^1.2.26",
     "@capacitor-community/file-opener": "^8.0.1",
     "@capacitor-community/in-app-review": "^8.0.0",

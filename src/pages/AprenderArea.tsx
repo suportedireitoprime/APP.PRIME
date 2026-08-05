@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -16,8 +16,16 @@ import {
   ModuloRow,
   getCachedAprenderArea,
   hydrateAprenderAreaCache,
+  invalidateAprenderArea,
   loadAprenderArea,
 } from '@/lib/aprenderAreaLoader';
+import GeracaoAnimacaoOverlay from '@/components/vademecum/GeracaoAnimacaoOverlay';
+import {
+  PASSOS_GERACAO,
+  RANGES_GERACAO,
+  useGerarAulaDemanda,
+} from '@/hooks/useGerarAulaDemanda';
+import { Sparkles, Lock } from 'lucide-react';
 import { useTrackArea } from "@/hooks/useTrackArea";
 
 
@@ -91,23 +99,54 @@ const AprenderArea = () => {
   const aulas = data?.aulas ?? [];
   const aulasPreparo = data?.aulasPreparo ?? {};
   const progresso = data?.progresso ?? {};
+  const pendentes = data?.pendentes ?? [];
 
   const aulaIds = useMemo(() => aulas.map((a) => a.id), [aulas]);
 
   const stats = useMemo(() => {
     const totalAulas = aulas.length;
     const concluidas = aulas.filter((a) => progresso[a.id]?.concluida).length;
-    const emPreparoTotal = Object.values(aulasPreparo).reduce((s, n) => s + n, 0);
+    const emPreparoTotal =
+      Object.values(aulasPreparo).reduce((s, n) => s + n, 0) + (data?.pendentes?.length ?? 0);
     const disponiveis = Math.max(0, totalAulas - concluidas);
     const somaPct = aulas.reduce((s, a) => s + (progresso[a.id]?.concluida ? 100 : progresso[a.id]?.pct || 0), 0);
     const progressoPct = totalAulas ? somaPct / totalAulas : 0;
     return { totalAulas, concluidas, disponiveis, emPreparo: emPreparoTotal, progressoPct };
-  }, [aulas, progresso, aulasPreparo]);
+  }, [aulas, progresso, aulasPreparo, data?.pendentes]);
 
   const modulosVisiveis = useMemo(
     () => modulos.filter((m) => aulas.some((a) => a.modulo_id === m.id) || (aulasPreparo[m.id] ?? 0) > 0),
     [modulos, aulas, aulasPreparo],
   );
+
+  const { gerar, gerando, passo, titulo: tituloGerando } = useGerarAulaDemanda();
+  const autoGerouRef = useRef(false);
+
+  const recarregarArea = async () => {
+    if (!slug) return;
+    invalidateAprenderArea(slug, user?.id ?? null);
+    const fresh = await loadAprenderArea(slug, user?.id ?? null);
+    setData(fresh);
+  };
+
+  const gerarAula = async (sumarioId: string, tituloAula: string) => {
+    if (!area) return;
+    const res = await gerar(sumarioId, area.id, tituloAula);
+    if (!res) return;
+    await recarregarArea();
+    navigate(`/aprender/aula/${res.aulaId}`);
+  };
+
+  // Ao entrar na matéria sem nenhuma aula pronta, gera a primeira automaticamente.
+  useEffect(() => {
+    if (!area || loading || gerando || autoGerouRef.current) return;
+    if (aulas.length > 0) return;
+    const primeira = pendentes[0];
+    if (!primeira) return;
+    autoGerouRef.current = true;
+    gerarAula(primeira.id, primeira.titulo);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [area?.id, loading, aulas.length, pendentes.length]);
 
   // Carrega flashcards + questões de todas as aulas da área quando abre aba de prática
   useEffect(() => {
@@ -265,6 +304,43 @@ const AprenderArea = () => {
                 )}
               </>
             )}
+            {tab === 'teoria' && pendentes.length > 0 && (
+              <div className="px-4 pb-8 sm:px-6">
+                <h2 className="mb-1 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                  Aulas a gerar
+                </h2>
+                <p className="mb-3 text-[12px] text-muted-foreground">
+                  Toque para gerar na hora — a aula fica salva com flashcards e questões.
+                </p>
+                <ul className="space-y-2.5">
+                  {pendentes.map((p, i) => (
+                    <li key={p.id}>
+                      <button
+                        type="button"
+                        disabled={gerando}
+                        onClick={() => gerarAula(p.id, p.titulo)}
+                        className="flex w-full items-start gap-3 rounded-2xl border border-dashed border-border bg-card/60 p-4 text-left transition-colors hover:bg-accent/40 disabled:opacity-60"
+                      >
+                        <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
+                          {gerando ? <Sparkles className="h-4 w-4" /> : <Lock className="h-4 w-4" />}
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                            Aula {String(aulas.length + i + 1).padStart(2, '0')}
+                          </span>
+                          <span className="mt-1 block line-clamp-2 text-[15px] leading-snug text-foreground">
+                            {p.titulo}
+                          </span>
+                        </span>
+                        <span className="shrink-0 self-center rounded-full bg-primary/15 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-primary">
+                          Gerar
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
             {tab === 'flashcards' && (
               <div className="px-4 py-5 sm:px-6">
                 <FlashcardsTab flashcards={flashcards} loading={loadingPraticas} />
@@ -300,6 +376,15 @@ const AprenderArea = () => {
         )}
       </div>
 
+
+      <GeracaoAnimacaoOverlay
+        open={gerando}
+        titulo={tituloGerando || 'Gerando sua aula'}
+        steps={PASSOS_GERACAO}
+        stepIdx={passo}
+        stepRanges={RANGES_GERACAO}
+        estTotalSec={120}
+      />
 
       {temaAberto && (
         <TemaAulasSheet

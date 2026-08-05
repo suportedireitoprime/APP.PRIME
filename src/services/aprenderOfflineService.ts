@@ -146,6 +146,7 @@ export async function downloadAprenderPack(
         modulos: mods.map((m) => ({ id: m.id, titulo: m.titulo, ordem: m.ordem, resumo: m.resumo })),
         aulas: areaAulas,
         aulasPreparo: {},
+        pendentes: [],
         progresso: {},
       };
       await setAprenderCache(`area:${area.slug}:${uid ?? 'anon'}`, 'area', snapshot);

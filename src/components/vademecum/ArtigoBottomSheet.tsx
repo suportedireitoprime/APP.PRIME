@@ -96,6 +96,9 @@ function stripRedacao(text: string): string {
   return text.replace(/\s*\((?:Redação|Incluído|Acrescido|Alterado|Vide|Regulamento|Vigência|Vetado)[^)]*\)/gi, '');
 }
 
+// Deve acompanhar NARRATION_CACHE_VERSION da edge function narrar-artigo
+const NARRACAO_CACHE_VERSION = 'v5-hierarquia-epigrafe';
+
 function normalizeNarracaoToken(text: string): string {
   return text
     .toLowerCase()
@@ -107,6 +110,83 @@ function normalizeNarracaoToken(text: string): string {
 function getWordTokens(text: string): string[] {
   return Array.from(text.matchAll(/[\p{L}\p{N}]+(?:[-–][\p{L}\p{N}]+)*/gu), match => match[0]);
 }
+
+/**
+ * Alinha os word_timings da narração (que incluem prefixo falado e números por extenso)
+ * com as palavras realmente exibidas, devolvendo um timing por palavra renderizada.
+ * Palavras sem correspondência são interpoladas entre as vizinhas encontradas.
+ */
+function alinharTimingsComTexto(
+  renderedTokens: string[],
+  timings: Array<{ word: string; start: number; end: number }>,
+  audioDuration: number,
+): Array<{ word: string; start: number; end: number }> | null {
+  if (!renderedTokens.length || !timings.length) return null;
+  const tTokens = timings.map(t => normalizeNarracaoToken(t.word));
+
+  // Descobre onde o texto do artigo começa dentro da fala (após o prefixo)
+  const amostra = renderedTokens.slice(0, Math.min(8, renderedTokens.length));
+  let melhorInicio = -1;
+  let melhorScore = 0;
+  for (let i = 0; i < tTokens.length; i++) {
+    if (tTokens[i] !== amostra[0]) continue;
+    let score = 0;
+    let j = i;
+    for (let k = 0; k < amostra.length && j < tTokens.length; k++) {
+      const janela = Math.min(tTokens.length, j + 4);
+      for (let p = j; p < janela; p++) {
+        if (tTokens[p] === amostra[k]) { score++; j = p + 1; break; }
+      }
+    }
+    if (score > melhorScore) { melhorScore = score; melhorInicio = i; }
+    if (score === amostra.length) break;
+  }
+  if (melhorInicio < 0) return null;
+
+  // Casamento guloso com janela de tolerância (pula palavras faladas a mais, ex.: "artigo trinta e um")
+  const mapeado: Array<{ start: number; end: number } | null> = new Array(renderedTokens.length).fill(null);
+  let cursor = melhorInicio;
+  for (let i = 0; i < renderedTokens.length; i++) {
+    const alvo = renderedTokens[i];
+    const limite = Math.min(tTokens.length, cursor + 6);
+    for (let p = cursor; p < limite; p++) {
+      if (tTokens[p] === alvo) {
+        mapeado[i] = { start: timings[p].start, end: timings[p].end };
+        cursor = p + 1;
+        break;
+      }
+    }
+  }
+
+  const primeiroConhecido = mapeado.findIndex(Boolean);
+  if (primeiroConhecido < 0) return null;
+
+  const fim = Number.isFinite(audioDuration) && audioDuration > 0
+    ? audioDuration
+    : timings[timings.length - 1].end;
+
+  // Interpola os buracos
+  const resultado: Array<{ word: string; start: number; end: number }> = [];
+  for (let i = 0; i < renderedTokens.length; i++) {
+    if (mapeado[i]) { resultado.push({ word: renderedTokens[i], ...mapeado[i]! }); continue; }
+    // busca âncoras anterior e posterior
+    let anteriorFim = i > 0 && resultado[i - 1] ? resultado[i - 1].end : timings[melhorInicio].start;
+    let proxIdx = -1;
+    for (let j = i + 1; j < renderedTokens.length; j++) {
+      if (mapeado[j]) { proxIdx = j; break; }
+    }
+    const proxInicio = proxIdx >= 0 ? mapeado[proxIdx]!.start : fim;
+    const vazios = (proxIdx >= 0 ? proxIdx : renderedTokens.length) - i;
+    const passo = Math.max(0.05, (proxInicio - anteriorFim) / Math.max(1, vazios));
+    resultado.push({
+      word: renderedTokens[i],
+      start: anteriorFim,
+      end: Math.min(proxInicio, anteriorFim + passo),
+    });
+  }
+  return resultado;
+}
+
 
 function formatArtigoNumeroExtenso(numStr: string): string {
   const clean = numStr.replace(/^[Aa]rt\.?\s*/, '').trim();
@@ -132,14 +212,19 @@ function formatTextoArtigoParaNarracao(artigo: any, breadcrumb: any): string {
   if (breadcrumb?.titulo) partes.push(`${breadcrumb.titulo.trim()}.`);
   if (breadcrumb?.tituloDesc) partes.push(`${breadcrumb.tituloDesc.trim()}.`);
 
+  const tituloIsEpigrafe = artigo.titulo && !STRUCT_RE.test(artigo.titulo);
+
   if (partes.length === 0) {
-    const tituloIsEpig = artigo.titulo && !STRUCT_RE.test(artigo.titulo);
-    const hier = artigo.capitulo || (!tituloIsEpig ? artigo.titulo : null);
+    const hier = artigo.capitulo || (!tituloIsEpigrafe ? artigo.titulo : null);
     if (hier) partes.push(`${hier.trim()}.`);
   }
 
+  // Epígrafe do artigo (ex.: "Casos de impunibilidade") vem antes do número
+  if (tituloIsEpigrafe) partes.push(`${String(artigo.titulo).trim().replace(/\.+$/, '')}.`);
+
   const numExtenso = formatArtigoNumeroExtenso(artigo.numero);
   partes.push(`Artigo ${numExtenso}.`);
+
 
   let texto = stripRedacao((artigo.caput || '').trim());
   // Remove prefixo do próprio caput se ele já trouxer "Art. 4º —" ou "Artigo 4º"
@@ -762,12 +847,12 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
 
         const row = rows?.[0];
         const hasTimings = Array.isArray(row?.word_timings) && row.word_timings.length > 0;
-        if (row?.audio_url) {
+        const versaoAtual = typeof row?.audio_url === 'string' && row.audio_url.includes(`/${NARRACAO_CACHE_VERSION}/`);
+        if (row?.audio_url && versaoAtual && hasTimings) {
           setNarracaoUrl(row.audio_url);
-          if (hasTimings) {
-            setNarracaoWordTimings(row.word_timings as any[]);
-          }
+          setNarracaoWordTimings(row.word_timings as any[]);
         }
+
       } catch (e) {
         console.error('Erro ao verificar narração no banco principal:', e);
       }
@@ -959,7 +1044,8 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
       let audio_url: string | null = null;
       let word_timings: any[] | null = null;
 
-      // 1ª Tentativa: Consulta o cache de áudio no banco da aplicação (narracoes_artigos)
+      // 1ª Tentativa: cache de áudio no banco (só reaproveita narrações da versão atual,
+      // que já leem hierarquia + epígrafe + número do artigo e trazem word_timings).
       try {
         const { data: rows } = await supabase
           .from('narracoes_artigos')
@@ -968,15 +1054,48 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
           .eq('artigo_numero', artigo.numero)
           .limit(1);
 
-        if (rows?.[0]?.audio_url) {
-          audio_url = rows[0].audio_url;
-          word_timings = rows[0].word_timings || null;
+        const cachedUrl = rows?.[0]?.audio_url || null;
+        const cachedTimings = Array.isArray(rows?.[0]?.word_timings) ? (rows![0].word_timings as any[]) : null;
+        const versaoAtual = typeof cachedUrl === 'string' && cachedUrl.includes(`/${NARRACAO_CACHE_VERSION}/`);
+        if (cachedUrl && versaoAtual && cachedTimings?.length) {
+          audio_url = cachedUrl;
+          word_timings = cachedTimings;
         }
       } catch (errDb) {
         console.warn('[ArtigoBottomSheet] Erro ao consultar narracoes_artigos:', errDb);
       }
 
-      // 2ª Tentativa: Gera em tempo real via Edge Function com o modelo Gemini 2.5 Flash TTS (gemini-2.5-flash-preview-tts / voz Kore)
+      // 2ª Tentativa: backend de legislação (narracao?fn=artigo) — é o único que devolve
+      // word_timings alinhados por segmento, necessários para o grifo acompanhar a fala.
+      if (!audio_url) {
+        try {
+          const { data: sessionData } = await supabase.auth.getSession();
+          const userJwt = sessionData.session?.access_token || null;
+          const res = await fetch(`${SB_URL}/functions/v1/narracao?fn=artigo`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              apikey: SB_KEY,
+              Authorization: `Bearer ${SB_KEY}`,
+              ...(userJwt ? { 'x-user-jwt': userJwt } : {}),
+            },
+            body: JSON.stringify({ ...payload, fn: 'artigo' }),
+          });
+
+          if (res.ok) {
+            const json = await res.json();
+            audio_url = json.audio_url || null;
+            word_timings = json.word_timings || null;
+          } else {
+            console.warn('[ArtigoBottomSheet] narracao?fn=artigo falhou:', res.status, await res.text().catch(() => ''));
+          }
+        } catch (fetchErr) {
+          console.warn('[ArtigoBottomSheet] Fetch direto narracao?fn=artigo falhou:', fetchErr);
+        }
+      }
+
+
+      // 3ª Tentativa: Gemini 2.5 Flash TTS direto (voz Kore), sem karaokê preciso
       if (!audio_url) {
         try {
           const textoFormatado = formatTextoArtigoParaNarracao(artigo, breadcrumb);
@@ -1007,31 +1126,6 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         }
       }
 
-      // 3ª Tentativa: Backend de legislação
-      if (!audio_url) {
-        try {
-          const { data: sessionData } = await supabase.auth.getSession();
-          const userJwt = sessionData.session?.access_token || null;
-          const res = await fetch(`${SB_URL}/functions/v1/narrar-artigo`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              apikey: SB_KEY,
-              Authorization: `Bearer ${SB_KEY}`,
-              ...(userJwt ? { 'x-user-jwt': userJwt } : {}),
-            },
-            body: JSON.stringify(payload),
-          });
-
-          if (res.ok) {
-            const json = await res.json();
-            audio_url = json.audio_url || null;
-            word_timings = json.word_timings || null;
-          }
-        } catch (fetchErr) {
-          console.warn('[ArtigoBottomSheet] Fetch direto narrar-artigo falhou:', fetchErr);
-        }
-      }
 
       // Se obtivemos o áudio gerado pelo Gemini 2.5 Flash TTS (Kore)
       if (audio_url) {
@@ -2123,50 +2217,19 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
     .flatMap(getWordTokens)
     .map(normalizeNarracaoToken)
     .filter(Boolean);
-  const timingTokens = (narracaoWordTimings || [])
-    .map(t => normalizeNarracaoToken(t.word))
-    .filter(Boolean);
-  const articleTimingStartIndex = (() => {
-    if (!renderedArticleTokens.length || !timingTokens.length) return -1;
-    const sample = renderedArticleTokens.slice(0, Math.min(5, renderedArticleTokens.length));
-    for (let i = 0; i <= timingTokens.length - sample.length; i++) {
-      if (sample.every((token, offset) => timingTokens[i + offset] === token)) return i;
-    }
-    const first = renderedArticleTokens[0];
-    return timingTokens.findIndex(token => token === first);
+
+  const duracaoAtual = narracaoDuration || narracaoAudioRef.current?.duration || 0;
+
+  // Alinha os timings reais da narração com as palavras exibidas (1 timing por palavra).
+  const alignedTimings = (() => {
+    if (!narracaoWordTimings?.length || !renderedArticleTokens.length) return null;
+    return alinharTimingsComTexto(renderedArticleTokens, narracaoWordTimings as any[], duracaoAtual);
   })();
 
-  // Cobertura: se faltam timings pro final do texto, distribui uniformemente entre
-  // o fim do último timing e a duração do áudio (fallback pra karaokê nunca parar antes do fim).
-  // Sem useMemo/useEffect aqui porque este trecho está depois de um early-return (linha 1047).
-  const effectiveTimings = (() => {
-    if (!narracaoWordTimings?.length) return narracaoWordTimings;
-    if (articleTimingStartIndex < 0) return narracaoWordTimings;
-    const coveredCount = timingTokens.length - articleTimingStartIndex;
-    const missing = renderedArticleTokens.length - coveredCount;
-    if (missing <= 0) return narracaoWordTimings;
-
-    const audioDur = narracaoAudioRef.current?.duration || 0;
-    const last = narracaoWordTimings[narracaoWordTimings.length - 1];
-    if (!last || audioDur <= last.end) return narracaoWordTimings;
-
-    const slice = (audioDur - last.end) / missing;
-    const startFrom = renderedArticleTokens.length - missing;
-    const extra = Array.from({ length: missing }, (_, i) => ({
-      word: renderedArticleTokens[startFrom + i] || '',
-      start: last.end + i * slice,
-      end: last.end + (i + 1) * slice,
-    }));
-    return [...narracaoWordTimings, ...extra];
-  })();
-
-  // Fallback de karaokê: se o TTS não devolveu word_timings (ou eles não casam com o texto
-  // renderizado), distribui as palavras proporcionalmente à duração do áudio para que o
-  // destaque acompanhe a narração mesmo assim.
+  // Fallback de karaokê: sem timings utilizáveis, distribui as palavras proporcionalmente.
   const syntheticTimings = (() => {
-    const precisaSintetico = !narracaoWordTimings?.length || articleTimingStartIndex < 0;
-    if (!precisaSintetico) return null;
-    const dur = narracaoDuration || narracaoAudioRef.current?.duration || 0;
+    if (alignedTimings?.length) return null;
+    const dur = duracaoAtual;
     if (!renderedArticleTokens.length || !Number.isFinite(dur) || dur <= 0) return null;
 
     const pesos = renderedArticleTokens.map(tok => tok.length + 1);
@@ -2180,8 +2243,9 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
     });
   })();
 
-  const timingsAtivos = syntheticTimings ?? effectiveTimings ?? null;
-  const startIndexAtivo = syntheticTimings ? 0 : articleTimingStartIndex;
+  const timingsAtivos = alignedTimings ?? syntheticTimings ?? null;
+  const startIndexAtivo = timingsAtivos ? 0 : -1;
+
 
   // Atualiza o ref usado pelo RAF direto no render (seguro — ref não dispara re-render)
   narracaoTimingsRef.current = timingsAtivos;

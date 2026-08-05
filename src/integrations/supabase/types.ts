@@ -719,6 +719,8 @@ export type Database = {
           aula_id: string | null
           capitulo_ref: Json | null
           created_at: string
+          gerado_em: string | null
+          gerado_por: string | null
           id: string
           livro_id: string
           ordem: number
@@ -733,6 +735,8 @@ export type Database = {
           aula_id?: string | null
           capitulo_ref?: Json | null
           created_at?: string
+          gerado_em?: string | null
+          gerado_por?: string | null
           id?: string
           livro_id: string
           ordem?: number
@@ -747,6 +751,8 @@ export type Database = {
           aula_id?: string | null
           capitulo_ref?: Json | null
           created_at?: string
+          gerado_em?: string | null
+          gerado_por?: string | null
           id?: string
           livro_id?: string
           ordem?: number
@@ -963,6 +969,7 @@ export type Database = {
       }
       apresentacoes_narradas: {
         Row: {
+          area: string | null
           capa_url: string | null
           created_at: string
           created_by: string | null
@@ -970,14 +977,20 @@ export type Database = {
           id: string
           livro_id: string
           livro_tabela: string
+          origem: string
           publicada: boolean
+          referencia_id: string | null
+          referencia_texto: string | null
           status: string
+          subtema: string | null
+          tema: string | null
           titulo: string
           total_slides: number
           updated_at: string
           voz: string
         }
         Insert: {
+          area?: string | null
           capa_url?: string | null
           created_at?: string
           created_by?: string | null
@@ -985,14 +998,20 @@ export type Database = {
           id?: string
           livro_id: string
           livro_tabela: string
+          origem?: string
           publicada?: boolean
+          referencia_id?: string | null
+          referencia_texto?: string | null
           status?: string
+          subtema?: string | null
+          tema?: string | null
           titulo: string
           total_slides?: number
           updated_at?: string
           voz?: string
         }
         Update: {
+          area?: string | null
           capa_url?: string | null
           created_at?: string
           created_by?: string | null
@@ -1000,8 +1019,13 @@ export type Database = {
           id?: string
           livro_id?: string
           livro_tabela?: string
+          origem?: string
           publicada?: boolean
+          referencia_id?: string | null
+          referencia_texto?: string | null
           status?: string
+          subtema?: string | null
+          tema?: string | null
           titulo?: string
           total_slides?: number
           updated_at?: string
@@ -1285,6 +1309,48 @@ export type Database = {
         }
         Relationships: []
       }
+      asaas_subscriptions: {
+        Row: {
+          asaas_customer_id: string | null
+          asaas_subscription_id: string | null
+          created_at: string
+          expires_at: string | null
+          id: string
+          origem: string
+          plano: string
+          started_at: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          asaas_customer_id?: string | null
+          asaas_subscription_id?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          origem?: string
+          plano?: string
+          started_at?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          asaas_customer_id?: string | null
+          asaas_subscription_id?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          origem?: string
+          plano?: string
+          started_at?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       assinatura_cancelamentos: {
         Row: {
           canceled_at: string
@@ -1528,6 +1594,270 @@ export type Database = {
             columns: ["audio_id"]
             isOneToOne: true
             referencedRelation: "audioaulas_acervo"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      aula_entidades: {
+        Row: {
+          aula_id: string
+          created_at: string
+          id: string
+          ref: string | null
+          segundo: number | null
+          tipo: string
+          user_id: string
+          valor: string
+        }
+        Insert: {
+          aula_id: string
+          created_at?: string
+          id?: string
+          ref?: string | null
+          segundo?: number | null
+          tipo: string
+          user_id: string
+          valor: string
+        }
+        Update: {
+          aula_id?: string
+          created_at?: string
+          id?: string
+          ref?: string | null
+          segundo?: number | null
+          tipo?: string
+          user_id?: string
+          valor?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aula_entidades_aula_id_fkey"
+            columns: ["aula_id"]
+            isOneToOne: false
+            referencedRelation: "aulas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      aula_marcadores: {
+        Row: {
+          aula_id: string
+          created_at: string
+          id: string
+          segundo: number
+          texto: string | null
+          tipo: string
+          user_id: string
+        }
+        Insert: {
+          aula_id: string
+          created_at?: string
+          id?: string
+          segundo?: number
+          texto?: string | null
+          tipo?: string
+          user_id: string
+        }
+        Update: {
+          aula_id?: string
+          created_at?: string
+          id?: string
+          segundo?: number
+          texto?: string | null
+          tipo?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aula_marcadores_aula_id_fkey"
+            columns: ["aula_id"]
+            isOneToOne: false
+            referencedRelation: "aulas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      aula_materiais: {
+        Row: {
+          aula_id: string
+          conteudo: Json
+          created_at: string
+          id: string
+          pdf_path: string | null
+          tipo: string
+          user_id: string
+        }
+        Insert: {
+          aula_id: string
+          conteudo?: Json
+          created_at?: string
+          id?: string
+          pdf_path?: string | null
+          tipo: string
+          user_id: string
+        }
+        Update: {
+          aula_id?: string
+          conteudo?: Json
+          created_at?: string
+          id?: string
+          pdf_path?: string | null
+          tipo?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aula_materiais_aula_id_fkey"
+            columns: ["aula_id"]
+            isOneToOne: false
+            referencedRelation: "aulas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      aula_midias: {
+        Row: {
+          aula_id: string
+          bytes: number | null
+          created_at: string
+          duracao_seg: number | null
+          id: string
+          mime: string | null
+          ocr_texto: string | null
+          ordem: number
+          storage_path: string | null
+          texto: string | null
+          tipo: string
+          user_id: string
+        }
+        Insert: {
+          aula_id: string
+          bytes?: number | null
+          created_at?: string
+          duracao_seg?: number | null
+          id?: string
+          mime?: string | null
+          ocr_texto?: string | null
+          ordem?: number
+          storage_path?: string | null
+          texto?: string | null
+          tipo: string
+          user_id: string
+        }
+        Update: {
+          aula_id?: string
+          bytes?: number | null
+          created_at?: string
+          duracao_seg?: number | null
+          id?: string
+          mime?: string | null
+          ocr_texto?: string | null
+          ordem?: number
+          storage_path?: string | null
+          texto?: string | null
+          tipo?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aula_midias_aula_id_fkey"
+            columns: ["aula_id"]
+            isOneToOne: false
+            referencedRelation: "aulas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      aula_transcricoes: {
+        Row: {
+          aula_id: string
+          created_at: string
+          id: string
+          idioma: string | null
+          segmentos: Json
+          texto: string
+          user_id: string
+        }
+        Insert: {
+          aula_id: string
+          created_at?: string
+          id?: string
+          idioma?: string | null
+          segmentos?: Json
+          texto?: string
+          user_id: string
+        }
+        Update: {
+          aula_id?: string
+          created_at?: string
+          id?: string
+          idioma?: string | null
+          segmentos?: Json
+          texto?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aula_transcricoes_aula_id_fkey"
+            columns: ["aula_id"]
+            isOneToOne: false
+            referencedRelation: "aulas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      aulas: {
+        Row: {
+          created_at: string
+          data: string
+          disciplina_id: string | null
+          duracao_seg: number
+          erro: string | null
+          gratuita: boolean
+          id: string
+          numero: number | null
+          professor: string | null
+          status: string
+          titulo: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data?: string
+          disciplina_id?: string | null
+          duracao_seg?: number
+          erro?: string | null
+          gratuita?: boolean
+          id?: string
+          numero?: number | null
+          professor?: string | null
+          status?: string
+          titulo: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data?: string
+          disciplina_id?: string | null
+          duracao_seg?: number
+          erro?: string | null
+          gratuita?: boolean
+          id?: string
+          numero?: number | null
+          professor?: string | null
+          status?: string
+          titulo?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aulas_disciplina_id_fkey"
+            columns: ["disciplina_id"]
+            isOneToOne: false
+            referencedRelation: "disciplinas"
             referencedColumns: ["id"]
           },
         ]
@@ -3096,6 +3426,108 @@ export type Database = {
         }
         Relationships: []
       }
+      conteudo_fila: {
+        Row: {
+          area: string | null
+          arquivo_url: string | null
+          atualizado_em: string
+          bytes: number | null
+          criado_em: string
+          drive_file_id: string | null
+          erro: string | null
+          id: string
+          linha_planilha: number | null
+          link_origem: string
+          meta: Json
+          precisa_compressao: boolean
+          previsto_para: string | null
+          prompt: string | null
+          publicado_em: string | null
+          ref_id: string
+          status: string
+          tipo: string
+          titulo: string | null
+        }
+        Insert: {
+          area?: string | null
+          arquivo_url?: string | null
+          atualizado_em?: string
+          bytes?: number | null
+          criado_em?: string
+          drive_file_id?: string | null
+          erro?: string | null
+          id?: string
+          linha_planilha?: number | null
+          link_origem: string
+          meta?: Json
+          precisa_compressao?: boolean
+          previsto_para?: string | null
+          prompt?: string | null
+          publicado_em?: string | null
+          ref_id?: string
+          status?: string
+          tipo: string
+          titulo?: string | null
+        }
+        Update: {
+          area?: string | null
+          arquivo_url?: string | null
+          atualizado_em?: string
+          bytes?: number | null
+          criado_em?: string
+          drive_file_id?: string | null
+          erro?: string | null
+          id?: string
+          linha_planilha?: number | null
+          link_origem?: string
+          meta?: Json
+          precisa_compressao?: boolean
+          previsto_para?: string | null
+          prompt?: string | null
+          publicado_em?: string | null
+          ref_id?: string
+          status?: string
+          tipo?: string
+          titulo?: string | null
+        }
+        Relationships: []
+      }
+      conteudo_fila_log: {
+        Row: {
+          criado_em: string
+          id: string
+          resultado: Json
+        }
+        Insert: {
+          criado_em?: string
+          id?: string
+          resultado?: Json
+        }
+        Update: {
+          criado_em?: string
+          id?: string
+          resultado?: Json
+        }
+        Relationships: []
+      }
+      conteudo_publicacoes_dia: {
+        Row: {
+          dia: string
+          tipo: string
+          total: number
+        }
+        Insert: {
+          dia: string
+          tipo: string
+          total?: number
+        }
+        Update: {
+          dia?: string
+          tipo?: string
+          total?: number
+        }
+        Relationships: []
+      }
       design_imagens_prompts: {
         Row: {
           ativo: boolean
@@ -3294,6 +3726,54 @@ export type Database = {
           clicks?: number
           palavra?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      disciplinas: {
+        Row: {
+          cor: string | null
+          created_at: string
+          id: string
+          nome: string
+          periodo: string | null
+          professor: string | null
+          user_id: string
+        }
+        Insert: {
+          cor?: string | null
+          created_at?: string
+          id?: string
+          nome: string
+          periodo?: string | null
+          professor?: string | null
+          user_id: string
+        }
+        Update: {
+          cor?: string | null
+          created_at?: string
+          id?: string
+          nome?: string
+          periodo?: string | null
+          professor?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      drive_config: {
+        Row: {
+          atualizado_em: string
+          chave: string
+          valor: string
+        }
+        Insert: {
+          atualizado_em?: string
+          chave: string
+          valor: string
+        }
+        Update: {
+          atualizado_em?: string
+          chave?: string
+          valor?: string
         }
         Relationships: []
       }
@@ -3528,6 +4008,110 @@ export type Database = {
         }
         Relationships: []
       }
+      flashcards_desafios: {
+        Row: {
+          area: string | null
+          ativo: boolean
+          cor: string
+          created_at: string
+          dias: number
+          id: string
+          meta_diaria: number
+          nivel: string
+          ordem: number
+          premium: boolean
+          subtitulo: string | null
+          tema: string | null
+          titulo: string
+          trilha: string
+          trilha_label: string | null
+          updated_at: string
+        }
+        Insert: {
+          area?: string | null
+          ativo?: boolean
+          cor?: string
+          created_at?: string
+          dias?: number
+          id?: string
+          meta_diaria: number
+          nivel?: string
+          ordem: number
+          premium?: boolean
+          subtitulo?: string | null
+          tema?: string | null
+          titulo: string
+          trilha?: string
+          trilha_label?: string | null
+          updated_at?: string
+        }
+        Update: {
+          area?: string | null
+          ativo?: boolean
+          cor?: string
+          created_at?: string
+          dias?: number
+          id?: string
+          meta_diaria?: number
+          nivel?: string
+          ordem?: number
+          premium?: boolean
+          subtitulo?: string | null
+          tema?: string | null
+          titulo?: string
+          trilha?: string
+          trilha_label?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      flashcards_desafios_progresso: {
+        Row: {
+          concluido_em: string | null
+          created_at: string
+          desafio_id: string
+          dias_concluidos: number
+          id: string
+          iniciado_em: string
+          status: string
+          ultimo_dia_contado: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          concluido_em?: string | null
+          created_at?: string
+          desafio_id: string
+          dias_concluidos?: number
+          id?: string
+          iniciado_em?: string
+          status?: string
+          ultimo_dia_contado?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          concluido_em?: string | null
+          created_at?: string
+          desafio_id?: string
+          dias_concluidos?: number
+          id?: string
+          iniciado_em?: string
+          status?: string
+          ultimo_dia_contado?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "flashcards_desafios_progresso_desafio_id_fkey"
+            columns: ["desafio_id"]
+            isOneToOne: false
+            referencedRelation: "flashcards_desafios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       flashcards_progresso: {
         Row: {
           area: string
@@ -3590,6 +4174,30 @@ export type Database = {
           bucket?: string
           payload?: Json
           updated_at?: string
+        }
+        Relationships: []
+      }
+      google_oauth_tokens: {
+        Row: {
+          atualizado_em: string
+          email: string | null
+          id: string
+          refresh_token: string
+          scope: string | null
+        }
+        Insert: {
+          atualizado_em?: string
+          email?: string | null
+          id?: string
+          refresh_token: string
+          scope?: string | null
+        }
+        Update: {
+          atualizado_em?: string
+          email?: string | null
+          id?: string
+          refresh_token?: string
+          scope?: string | null
         }
         Relationships: []
       }
@@ -5048,6 +5656,51 @@ export type Database = {
         }
         Relationships: []
       }
+      legacy_subscribers: {
+        Row: {
+          asaas_customer_id: string | null
+          asaas_subscription_id: string | null
+          claimed_at: string | null
+          claimed_user_id: string | null
+          created_at: string
+          email: string
+          expires_at: string | null
+          id: string
+          nome: string | null
+          observacao: string | null
+          status: string
+          tipo: string
+        }
+        Insert: {
+          asaas_customer_id?: string | null
+          asaas_subscription_id?: string | null
+          claimed_at?: string | null
+          claimed_user_id?: string | null
+          created_at?: string
+          email: string
+          expires_at?: string | null
+          id?: string
+          nome?: string | null
+          observacao?: string | null
+          status?: string
+          tipo?: string
+        }
+        Update: {
+          asaas_customer_id?: string | null
+          asaas_subscription_id?: string | null
+          claimed_at?: string | null
+          claimed_user_id?: string | null
+          created_at?: string
+          email?: string
+          expires_at?: string | null
+          id?: string
+          nome?: string | null
+          observacao?: string | null
+          status?: string
+          tipo?: string
+        }
+        Relationships: []
+      }
       lei_seca_favoritos: {
         Row: {
           created_at: string
@@ -6390,6 +7043,42 @@ export type Database = {
           texto?: string
           updated_at?: string
           voz_preferida?: string | null
+        }
+        Relationships: []
+      }
+      pdfs_gerados: {
+        Row: {
+          categoria: string
+          criado_em: string
+          drive_file_id: string
+          drive_link: string | null
+          id: string
+          nome_arquivo: string
+          tamanho_bytes: number | null
+          titulo: string
+          user_id: string | null
+        }
+        Insert: {
+          categoria: string
+          criado_em?: string
+          drive_file_id: string
+          drive_link?: string | null
+          id?: string
+          nome_arquivo: string
+          tamanho_bytes?: number | null
+          titulo: string
+          user_id?: string | null
+        }
+        Update: {
+          categoria?: string
+          criado_em?: string
+          drive_file_id?: string
+          drive_link?: string | null
+          id?: string
+          nome_arquivo?: string
+          tamanho_bytes?: number | null
+          titulo?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -9988,6 +10677,90 @@ export type Database = {
         }
         Relationships: []
       }
+      visuais_drive_arquivos: {
+        Row: {
+          criado_em: string
+          file_id: string
+          formato: string
+          id: string
+          link: string
+          tipo: string
+          titulo: string
+          user_id: string
+          visual_id: string | null
+        }
+        Insert: {
+          criado_em?: string
+          file_id: string
+          formato: string
+          id?: string
+          link: string
+          tipo: string
+          titulo: string
+          user_id: string
+          visual_id?: string | null
+        }
+        Update: {
+          criado_em?: string
+          file_id?: string
+          formato?: string
+          id?: string
+          link?: string
+          tipo?: string
+          titulo?: string
+          user_id?: string
+          visual_id?: string | null
+        }
+        Relationships: []
+      }
+      visuais_juridicos: {
+        Row: {
+          categoria: string
+          conteudo: Json
+          created_at: string
+          fonte: string | null
+          gerado_por: string | null
+          id: string
+          item_key: string
+          item_label: string
+          modelo: string | null
+          tipo: string
+          titulo: string
+          updated_at: string
+          views: number
+        }
+        Insert: {
+          categoria: string
+          conteudo: Json
+          created_at?: string
+          fonte?: string | null
+          gerado_por?: string | null
+          id?: string
+          item_key: string
+          item_label: string
+          modelo?: string | null
+          tipo: string
+          titulo: string
+          updated_at?: string
+          views?: number
+        }
+        Update: {
+          categoria?: string
+          conteudo?: Json
+          created_at?: string
+          fonte?: string | null
+          gerado_por?: string | null
+          id?: string
+          item_key?: string
+          item_label?: string
+          modelo?: string | null
+          tipo?: string
+          titulo?: string
+          updated_at?: string
+          views?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -10153,6 +10926,12 @@ export type Database = {
           title: string
         }[]
       }
+      claim_legacy_subscription: {
+        Args: { _email: string; _user_id: string }
+        Returns: boolean
+      }
+      claim_my_legacy_subscription: { Args: never; Returns: boolean }
+      cortar_inadimplentes_asaas: { Args: never; Returns: number }
       earth: { Args: never; Returns: number }
       estatisticas_estudo: {
         Args: { p_user_id: string }
@@ -10164,7 +10943,30 @@ export type Database = {
           total_sessoes: number
         }[]
       }
+      f_unaccent: { Args: { "": string }; Returns: string }
       flashcards_dashboard: { Args: never; Returns: Json }
+      flashcards_desafio_status: {
+        Args: never
+        Returns: {
+          area: string
+          cor: string
+          desafio_id: string
+          desbloqueado: boolean
+          dias: number
+          dias_concluidos: number
+          meta_diaria: number
+          nivel: string
+          ordem: number
+          premium: boolean
+          respondidas_hoje: number
+          status: string
+          subtitulo: string
+          tema: string
+          titulo: string
+          trilha: string
+          trilha_label: string
+        }[]
+      }
       flashcards_recontar_areas: {
         Args: never
         Returns: {
@@ -10231,6 +11033,21 @@ export type Database = {
       get_estatuto_user: {
         Args: { _slug: string; _user_id: string }
         Returns: Json
+      }
+      get_resumos_areas_counts: {
+        Args: never
+        Returns: {
+          area: string
+          total: number
+        }[]
+      }
+      get_resumos_temas_counts: {
+        Args: { p_area: string }
+        Returns: {
+          ordem_tema: number
+          tema: string
+          total: number
+        }[]
       }
       horus_transferir_numero: {
         Args: { _new_user_id: string; _phone: string }

@@ -14,6 +14,7 @@
 // - A marcação é apenas em memória do isolate: reinicia sozinha e não persiste.
 
 const PRIMARY = Deno.env.get("GEMINI_API_KEY") ?? "";
+const AUDIO_KEY = Deno.env.get("GEMINI_AUDIO_API_KEY") ?? "";
 const RESERVA = Deno.env.get("GEMINI_API_KEY_RESERVA") ?? "";
 
 const COOLDOWN_MS = 60 * 60 * 1000; // 1 hora
@@ -76,13 +77,18 @@ export async function geminiFetch(
     return fetch(url, init);
   }
 
-  // Monta a fila de chaves a tentar, na ordem:
-  // 1) a chave que veio na URL (respeita quem chamou)
-  // 2) GEMINI_API_KEY (principal)
-  // 3) GEMINI_API_KEY_RESERVA (reserva, se não estiver em cooldown)
+  const isAudioReq = url.includes("tts") || url.includes("speech") || url.includes("audio");
+
+  // Monta a fila de chaves a tentar, respeitando a separação Texto vs. Áudio:
+  // - Para Áudio: GEMINI_AUDIO_API_KEY -> URL Key -> GEMINI_API_KEY -> RESERVA
+  // - Para Texto: URL Key -> GEMINI_API_KEY -> RESERVA
   const urlKey = extractKey(url);
   const candidates: string[] = [];
   const pushUnique = (k: string) => { if (k && !candidates.includes(k)) candidates.push(k); };
+
+  if (isAudioReq && AUDIO_KEY) {
+    pushUnique(AUDIO_KEY);
+  }
   pushUnique(urlKey);
   pushUnique(PRIMARY);
   if (RESERVA && Date.now() >= reservaExhaustedUntil) pushUnique(RESERVA);

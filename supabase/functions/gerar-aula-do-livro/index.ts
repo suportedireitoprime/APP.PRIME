@@ -431,7 +431,10 @@ Deno.serve(async (req) => {
     const { data: userRes, error: userErr } = await authClient.auth.getUser();
     if (userErr) return json({ error: "token inválido" }, 401);
     const email = userRes?.user?.email?.toLowerCase();
-    if (!email || !ADMIN_EMAILS.has(email)) return json({ error: "apenas administradores" }, 403);
+    const solicitanteId = userRes?.user?.id ?? null;
+    // Geração sob demanda: qualquer usuário autenticado pode gerar a aula.
+    if (!email) return json({ error: "não autenticado" }, 401);
+
 
     const body = await req.json().catch(() => null);
     const sumario_id = typeof body?.sumario_id === "string" ? body.sumario_id : "";
@@ -699,7 +702,14 @@ Deno.serve(async (req) => {
     }
 
     await admin.from("aprender_sumario_sugerido")
-      .update({ aprovado: true, aula_id: aulaId, area_id: areaId })
+      .update({
+        aprovado: true,
+        aula_id: aulaId,
+        area_id: areaId,
+        gerado_por: ADMIN_EMAILS.has(email) ? null : solicitanteId,
+        gerado_em: new Date().toISOString(),
+      })
+
       .eq("id", sumario_id);
 
     return json({ ok: true, aula_id: aulaId, titulo, blocos: rows.length });

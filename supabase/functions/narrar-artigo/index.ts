@@ -233,7 +233,7 @@ function dividirTextoEmSegmentos(texto: string): string[] {
 
 const VOICE_NAME = "Kore";
 const MODEL = "gemini-2.5-flash-preview-tts";
-const NARRATION_CACHE_VERSION = "v4-cardinal-juridico";
+const NARRATION_CACHE_VERSION = "v5-hierarquia-epigrafe";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -531,22 +531,47 @@ Deno.serve(async (req) => {
       .replace(/^\s*(?:Artigo|Art)\.?\s*\d+[º°]?(?:\s*[-–—]\s*[A-Za-z])?\s*[.\-–—:]?\s*/i, "")
       .trim();
 
-    // Monta prefixo formal: "<Lei>, <hierarquia>, artigo <n>. <epígrafe?>. <texto>"
-    // Fallback compatível: usa `titulo_artigo` como hierarquia se não vier `hierarquia`.
+    // Monta prefixo formal falado:
+    // "<hierarquia completa>. <epígrafe>. artigo <n>. <texto>"
+    // Ex.: "parte geral, título quarto, do concurso de pessoas. Casos de impunibilidade. artigo trinta e um. ..."
     const cleanLabel = (s: any) =>
       s ? String(s).trim()
             .replace(/^(PARTE|LIVRO|T[IÍ]TULO|CAP[IÍ]TULO|SEÇ[AÃ]O|SUBSEÇ[AÃ]O)\s+[IVXLCDM\d]+\s*[-–—:.]?\s*/i, "")
             .replace(/\.+$/, "")
             .trim()
         : "";
+
+    // Mantém "PARTE GERAL", "TÍTULO IV" etc. na fala, convertendo o numeral para extenso
+    const hierarquiaParaFala = (s: any): string => {
+      if (!s) return "";
+      return String(s)
+        .split(/\s*[.>›|]+\s*/)
+        .map((seg) => seg.trim())
+        .filter(Boolean)
+        .map((seg) => {
+          const lower = seg === seg.toUpperCase() ? seg.toLowerCase() : seg;
+          return lower.replace(
+            /^(parte|livro|t[ií]tulo|cap[ií]tulo|se[çc][ãa]o|subse[çc][ãa]o)\s+([IVXLCDM]+|\d+)\b[.\-–—:]?/i,
+            (_m, label: string, num: string) => {
+              const roman = num.toUpperCase();
+              let ordinal = romanosParaOrdinais[roman] || (/^\d+$/.test(num) ? numeroParaOrdinal(parseInt(num, 10)) : num);
+              if (/se[çc][ãa]o/i.test(label)) ordinal = ordinal.replace(/o\b/g, "a");
+              return `${label.toLowerCase()} ${ordinal}`;
+            },
+          );
+        })
+        .join(", ");
+    };
+
     const hierLabel = cleanLabel(hierarquia ?? titulo_artigo);
+    const hierFala = hierarquiaParaFala(hierarquia ?? titulo_artigo);
     const epigrafeLabel = cleanLabel(epigrafe);
 
-    const partes: string[] = [lei_nome];
-    if (hierLabel) partes.push(hierLabel);
-    partes.push(`artigo ${artigoExtenso}`);
-    const prefixBase = partes.join(", ") + ".";
-    const prefixo = epigrafeLabel ? `${prefixBase} ${epigrafeLabel}. ` : `${prefixBase} `;
+    const partesPrefixo: string[] = [];
+    if (hierFala) partesPrefixo.push(`${hierFala}.`);
+    if (epigrafeLabel) partesPrefixo.push(`${epigrafeLabel}.`);
+    partesPrefixo.push(`artigo ${artigoExtenso}.`);
+    const prefixo = partesPrefixo.join(" ") + " ";
     const textoCompleto = prefixo + textoLimpo;
 
     const filePath = `${tabela_nome}/${NARRATION_CACHE_VERSION}/${String(artigo_numero).replace(/[^a-zA-Z0-9]/g, "_")}.wav`;
@@ -562,7 +587,9 @@ Deno.serve(async (req) => {
       const cachedTimings = Array.isArray(cached?.word_timings) ? cached.word_timings : [];
       const cachedTitle = cleanLabel(cached?.titulo_artigo);
       const sameTitle = !hierLabel || cachedTitle === hierLabel;
-      if (cached?.audio_url && cachedTimings.length > 0 && sameTitle) {
+      const mesmaVersao = typeof cached?.audio_url === "string" && cached.audio_url.includes(`/${NARRATION_CACHE_VERSION}/`);
+      if (cached?.audio_url && cachedTimings.length > 0 && sameTitle && mesmaVersao) {
+
         try {
           const audioUrl = await criarSignedUrl(supabase, filePath);
           if (audioUrl !== cached.audio_url) {
@@ -584,7 +611,7 @@ Deno.serve(async (req) => {
       }
     }
 
-    const keys = [Deno.env.get("GEMINI_API_KEY")].filter(Boolean) as string[];
+    const keys = [Deno.env.get("GEMINI_AUDIO_API_KEY"), Deno.env.get("GEMINI_API_KEY")].filter(Boolean) as string[];
     if (!keys.length) {
       return new Response(JSON.stringify({ error: "GEMINI_API_KEY não configurada" }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },

@@ -642,21 +642,24 @@ Regras:
 
       if (!geminiDisabled) {
         const keyToUse = geminiKeys[attempt % geminiKeys.length];
-        const res = await geminiFetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${keyToUse}`,
+        const modelsToTry = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
+        const modelToUse = modelsToTry[attempt % modelsToTry.length];
+        const res = await geminiFetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelToUse}:generateContent?key=${keyToUse}`,
           { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(geminiBody) }
         );
         if (res.ok) {
           data = await res.json();
         } else {
           const errText = await res.text();
-          _lastErr = errText.slice(0, 200);
+          _lastErr = `[HTTP ${res.status}] ${errText.slice(0, 200)}`;
+          console.error(`[assistente-juridica] Erro Gemini HTTP ${res.status}: ${errText.slice(0, 300)}`);
           const invalidKey = res.status === 400 && /API_KEY_INVALID|API key not valid/i.test(errText);
           const noQuota = res.status === 429 || res.status === 403;
           if (invalidKey || noQuota) {
-            console.error('Gemini indisponível, usando Lovable AI Gateway:', errText.slice(0, 200));
+            console.error('Gemini indisponível ou chave inválida, tentando Lovable AI Gateway:', errText.slice(0, 200));
             geminiDisabled = true;
           } else {
-            const isUnavailable = res.status === 503 || errText.includes('UNAVAILABLE');
+            const isUnavailable = res.status === 503 || errText.includes('UNAVAILABLE') || res.status === 404;
             if (!isUnavailable || attempt === 2) { console.error('Gemini API error:', errText); fatal = true; }
           }
         }

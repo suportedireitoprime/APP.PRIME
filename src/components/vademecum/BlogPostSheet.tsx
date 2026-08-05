@@ -13,7 +13,7 @@ import BlogCoverImage from '@/components/BlogCoverImage';
 import { blogHero } from '@/lib/blogImg';
 import { supabase } from '@/integrations/supabase/client';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
-import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
+import { useBodyScrollLock, resetBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 
 interface Props {
@@ -25,7 +25,12 @@ interface Props {
 }
 
 export default function BlogPostSheet({ post, onClose, showGoTo = false, inline = false }: Props) {
-  useEscapeKey(!!post && !inline, onClose);
+  const handleClose = () => {
+    resetBodyScrollLock();
+    onClose();
+  };
+
+  useEscapeKey(!!post && !inline, handleClose);
   const isDesktop = useIsDesktop();
   const navigate = useNavigate();
   const [fontSize, setFontSize] = useState(17);
@@ -126,7 +131,7 @@ export default function BlogPostSheet({ post, onClose, showGoTo = false, inline 
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
               className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md"
-              onClick={onClose}
+              onClick={handleClose}
             />
           )}
           <motion.div
@@ -166,7 +171,7 @@ export default function BlogPostSheet({ post, onClose, showGoTo = false, inline 
                 <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/60 to-transparent" />
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-card via-card/85 to-transparent" />
                 <button
-                  onClick={onClose}
+                  onClick={handleClose}
                   aria-label="Fechar"
                   className="absolute top-4 left-4 w-11 h-11 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white shadow-lg hover:bg-white/30 active:scale-95 transition-all"
                 >

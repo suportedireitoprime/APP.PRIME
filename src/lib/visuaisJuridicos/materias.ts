@@ -13,12 +13,17 @@ let areasCache: CatalogoItem[] | null = null;
 const temasCache = new Map<string, TemaResumo[]>();
 
 /** Lê todas as linhas de resumos_juridicos em páginas (com fallback offline). */
-async function lerResumos<T extends Record<string, any>>(colunas: string, filtro?: (q: any) => any): Promise<T[]> {
+async function lerResumos<T extends Record<string, unknown>>(
+  colunas: string,
+  filtro?: (q: ReturnType<typeof supabase.from>) => ReturnType<typeof supabase.from>,
+): Promise<T[]> {
   const out: T[] = [];
   const step = 1000;
   let from = 0;
   while (true) {
-    let q = (supabase as any).from('resumos_juridicos').select(colunas).range(from, from + step - 1);
+    let q = (supabase.from('resumos_juridicos') as unknown as ReturnType<typeof supabase.from>)
+      .select(colunas)
+      .range(from, from + step - 1);
     if (filtro) q = filtro(q);
     const { data, error } = await q;
     if (error) break;
@@ -60,17 +65,21 @@ export async function fetchAreasResumos(): Promise<CatalogoItem[]> {
   return itens;
 }
 
+const normStr = (v?: string | null) =>
+  (v || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+
 /** Tópicos (temas) de uma matéria, na ordem dos resumos. */
 export async function fetchTemasResumos(area: string): Promise<TemaResumo[]> {
-  const cache = temasCache.get(area);
+  const normAreaKey = normStr(area);
+  const cache = temasCache.get(normAreaKey);
   if (cache) return cache;
   const rows = await lerResumos<{ area: string; tema: string; ordem_tema: number | null }>(
     'area, tema, ordem_tema',
-    (q) => q.eq('area', area),
+    (q) => q.ilike('area', area),
   );
   const map = new Map<string, { total: number; ordem: number }>();
   for (const r of rows) {
-    if (r.area !== area || !r.tema) continue;
+    if (normStr(r.area) !== normAreaKey || !r.tema) continue;
     const atual = map.get(r.tema);
     map.set(r.tema, {
       total: (atual?.total || 0) + 1,
@@ -80,7 +89,7 @@ export async function fetchTemasResumos(area: string): Promise<TemaResumo[]> {
   const lista = [...map.entries()]
     .sort((a, b) => a[1].ordem - b[1].ordem || a[0].localeCompare(b[0], 'pt-BR'))
     .map(([tema, v]) => ({ tema, total: v.total }));
-  temasCache.set(area, lista);
+  temasCache.set(normAreaKey, lista);
   return lista;
 }
 
@@ -95,16 +104,16 @@ const subtemasCache = new Map<string, SubtemaResumo[]>();
 
 /** Subtemas de um tópico (tema) de uma matéria, na ordem dos resumos. */
 export async function fetchSubtemasResumos(area: string, tema: string): Promise<SubtemaResumo[]> {
-  const ck = `${area}||${tema}`;
+  const ck = `${normStr(area)}||${normStr(tema)}`;
   const cache = subtemasCache.get(ck);
   if (cache) return cache;
   const rows = await lerResumos<{ area: string; tema: string; subtema: string | null; ordem_subtema: number | null }>(
     'area, tema, subtema, ordem_subtema',
-    (q) => q.eq('area', area).eq('tema', tema),
+    (q) => q.ilike('area', area).ilike('tema', tema),
   );
   const map = new Map<string, { total: number; ordem: number }>();
   for (const r of rows) {
-    if (r.area !== area || r.tema !== tema) continue;
+    if (normStr(r.area) !== normStr(area) || normStr(r.tema) !== normStr(tema)) continue;
     const nome = (r.subtema || '').trim();
     if (!nome) continue;
     const atual = map.get(nome);

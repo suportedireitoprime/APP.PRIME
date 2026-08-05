@@ -50,7 +50,6 @@ import { useDesktopSessionGuard } from "@/hooks/useDesktopSessionGuard";
 import { useProfileSummary } from "@/hooks/useProfileSummary";
 import brasaoImgAsset from '@/assets/brasao-republica.webp';
 const brasaoImg = brasaoImgAsset;
-import { Loader2 } from "lucide-react";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { RecordingProvider } from "@/contexts/RecordingContext";
@@ -426,12 +425,11 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
   }, [user, cacheKey, cachedDone]);
 
   if (loading) {
-    return (
-      <div className="min-h-dvh flex items-center justify-center bg-background">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-      </div>
-    );
+    // Sem tela preta com spinner: só um frame vazio enquanto o retorno de
+    // OAuth é processado (caso raro).
+    return null;
   }
+
 
   if (!user) {
     const target = location.pathname === '/' ? '/landing' : '/auth';
@@ -661,7 +659,7 @@ function AnimatedRoutes() {
       <DesktopFileDropOverlay />
       <PersistentHome />
       <Suspense fallback={<LazyFallback />}>
-        <Routes location={location} key={location.pathname}>
+        <Routes location={location}>
           <Route path="/auth" element={<Auth />} />
           <Route path="/landing" element={<Landing />} />
           <Route path="/ir/*" element={<SmartLink />} />
@@ -707,7 +705,7 @@ function AnimatedRoutes() {
           <Route path="/legislacao-estadual/:uf/lei/:slug" element={<ProtectedRoute><PageTransition><LeiEstadualView /></PageTransition></ProtectedRoute>} />
           <Route path="/explicacao-lei" element={<ProtectedRoute><PageTransition><ExplicacaoLei /></PageTransition></ProtectedRoute>} />
           <Route path="/narracao" element={<ProtectedRoute><PageTransition><NarracaoLei /></PageTransition></ProtectedRoute>} />
-          <Route path="/visuais/:formato/*" element={<ProtectedRoute><VisualJuridico /></ProtectedRoute>} />
+          <Route path="/visuais/*" element={<ProtectedRoute><VisualJuridico /></ProtectedRoute>} />
           <Route path="/grafo-artigos" element={<ProtectedRoute><PageTransition><GrafoArtigos /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas" element={<ProtectedRoute><PageTransition><Ferramentas /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/locais" element={<ProtectedRoute><PageTransition><LocaisJuridicos /></PageTransition></ProtectedRoute>} />

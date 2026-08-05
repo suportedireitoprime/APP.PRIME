@@ -1,0 +1,1 @@
+delete from public.visuais_juridicos where item_key like 'teste-diag-%';

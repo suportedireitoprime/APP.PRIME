@@ -271,24 +271,15 @@ export default function LocaisJuridicos() {
   // Deep link: /ferramentas/locais?categoria=tribunais abre a categoria direto
   const categoriaParamRef = useRef(false);
   useEffect(() => {
-    if (categoriaParamRef.current || carregandoContagens) return;
+    if (categoriaParamRef.current) return;
     const param = searchParams.get('categoria') as CategoriaLocal | null;
     if (!param) return;
     categoriaParamRef.current = true;
     if (!CATEGORIAS_LOCAIS.some((c) => c.id === param)) return;
-    if ((contagens[param] ?? 0) <= 0) {
-      toast.info('Em breve: esta categoria ainda não foi populada.');
-      return;
-    }
     setCategoriaAtiva(param);
-  }, [searchParams, carregandoContagens, contagens]);
+  }, [searchParams]);
 
   const abrirCategoria = (categoria: CategoriaLocal) => {
-    const total = contagens[categoria] ?? 0;
-    if (total <= 0) {
-      toast.info('Em breve: esta categoria ainda não foi populada.');
-      return;
-    }
     setCategoriaAtiva(categoria);
   };
 
@@ -356,14 +347,16 @@ export default function LocaisJuridicos() {
                   <span className="font-body text-base font-semibold text-foreground truncate">
                     {categoria.label}
                   </span>
-                  {!disponivel && (
-                    <Badge variant="secondary" className="text-[11px]">Em breve</Badge>
+                  {!disponivel && !carregandoContagens && (
+                    <Badge variant="secondary" className="text-[11px]">Novo</Badge>
                   )}
                 </div>
                 <div className="font-body text-[12px] text-muted-foreground truncate mt-0.5">
-                  {disponivel
+                  {carregandoContagens
+                    ? 'Verificando locais…'
+                    : disponivel
                     ? `${total} ${total === 1 ? 'local disponível' : 'locais disponíveis'}`
-                    : 'Aguardando população da tabela'}
+                    : 'Locais em expansão'}
                 </div>
               </div>
               {carregandoContagens ? (

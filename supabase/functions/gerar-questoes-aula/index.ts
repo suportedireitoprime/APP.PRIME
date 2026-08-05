@@ -84,7 +84,8 @@ Deno.serve(async (req) => {
     const { data: userRes, error: userErr } = await authClient.auth.getUser();
     if (userErr) return json({ error: "token inválido" }, 401);
     const email = userRes?.user?.email?.toLowerCase();
-    if (!email || !ADMIN_EMAILS.has(email)) return json({ error: "apenas administradores" }, 403);
+    // Geração sob demanda: qualquer usuário autenticado pode gerar (admin também).
+    if (!email) return json({ error: "não autenticado" }, 401);
 
     const body = await req.json().catch(() => null);
     const aula_id = typeof body?.aula_id === "string" ? body.aula_id : "";

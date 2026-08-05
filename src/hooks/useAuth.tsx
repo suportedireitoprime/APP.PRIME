@@ -19,6 +19,22 @@ const OAUTH_DEEP_LINK = `${NATIVE_PACKAGE}://auth-callback`;
 // Esquema legado, mantido só para não quebrar links antigos já espalhados.
 const LEGACY_DEEP_LINK_SCHEMES = ['br.com.vacatio.app://', 'vacatio://'];
 
+// Bundle ID iOS usado como clientId do Sign in with Apple nativo.
+const APPLE_IOS_BUNDLE_ID = 'br.com.direito.app';
+
+function gerarNonce(tamanho = 32) {
+  const bytes = new Uint8Array(tamanho);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function sha256Hex(input: string) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(input));
+  return Array.from(new Uint8Array(buf), (b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+
+
 
 const getNativeGoogleError = (error: unknown) => {
   const err = error as { message?: string; code?: string; status?: string | number; statusCode?: string | number };
@@ -82,11 +98,25 @@ const readCachedSession = (): Session | null => {
   return null;
 };
 
+// Só faz sentido "esperar" o Supabase quando a URL traz retorno de OAuth
+// (code/access_token). Sem isso, a sessão já está (ou não está) no
+// localStorage — e travar a tela num spinner preto só atrasa o app.
+const hasPendingAuthCallback = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  try {
+    const { search, hash } = window.location;
+    return /[?&]code=/.test(search) || /access_token=|refresh_token=/.test(hash);
+  } catch {
+    return false;
+  }
+};
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [initialSession] = useState<Session | null>(() => readCachedSession());
   const [user, setUser] = useState<User | null>(initialSession?.user ?? null);
   const [session, setSession] = useState<Session | null>(initialSession);
-  const [loading, setLoading] = useState(!initialSession);
+  const [loading, setLoading] = useState(!initialSession && hasPendingAuthCallback());
+
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -263,29 +293,47 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const platform = Capacitor.getPlatform();
 
     if (platform === 'ios') {
-      // iOS: usa o fluxo OAuth do Supabase via Browser (Safari View Controller).
-      // O SocialLogin/Credential Manager foi removido pra não pedir biometria.
+      // iOS: login NATIVO da Apple (ASAuthorization) via
+      // @capacitor-community/apple-sign-in. Envia o identityToken pro Supabase
+      // com signInWithIdToken — sem abrir navegador.
       try {
-        const { data, error } = await supabase.auth.signInWithOAuth({
+        const { SignInWithApple } = await import('@capacitor-community/apple-sign-in');
+        const nonce = gerarNonce();
+        const hashedNonce = await sha256Hex(nonce);
+
+        const result: any = await SignInWithApple.authorize({
+          clientId: APPLE_IOS_BUNDLE_ID,
+          redirectURI: OAUTH_DEEP_LINK,
+          scopes: 'email name',
+          state: hashedNonce,
+          nonce: hashedNonce,
+        });
+
+        const identityToken = result?.response?.identityToken;
+        if (!identityToken) {
+          return { error: new Error('Apple não retornou identityToken.') };
+        }
+
+        const { error } = await supabase.auth.signInWithIdToken({
           provider: 'apple',
-          options: {
-            redirectTo: OAUTH_DEEP_LINK,
-            skipBrowserRedirect: true,
-          },
+          token: identityToken,
+          nonce,
         });
-        if (error) return { error: error as Error };
-        if (!data?.url) return { error: new Error('Supabase não retornou URL do OAuth Apple.') };
-        await Browser.open({
-          url: data.url,
-          presentationStyle: 'popover',
-          windowName: '_self',
-        });
+        if (error) {
+          console.error('[Apple/iOS] Supabase rejeitou identityToken', error);
+          return { error: new Error(error.message) };
+        }
         return { error: null };
       } catch (e: any) {
-        console.error('[Apple/iOS] OAuth failed', e);
-        return { error: new Error(e?.message || 'Não consegui entrar com a Apple.') };
+        const msg = String(e?.message || e || '');
+        if (/cancel/i.test(msg) || e?.code === '1001') {
+          return { error: null };
+        }
+        console.error('[Apple/iOS] native sign-in failed', e);
+        return { error: new Error(msg || 'Não consegui entrar com a Apple.') };
       }
     }
+
 
     // Android: Apple não tem SDK nativo. Abrimos o fluxo OAuth do Supabase
     // DENTRO do app via Chrome Custom Tabs (@capacitor/browser). O callback

@@ -13,6 +13,12 @@ export type AulaRow = {
   ordem: number;
   status?: string;
 };
+export type PendenteRow = {
+  id: string;
+  titulo: string;
+  ordem: number;
+  resumo: string | null;
+};
 export type ProgressoMap = Record<string, { concluida: boolean; pct: number }>;
 
 export type AprenderAreaData = {
@@ -20,6 +26,8 @@ export type AprenderAreaData = {
   modulos: ModuloRow[];
   aulas: AulaRow[];
   aulasPreparo: Record<string, number>;
+  /** Aulas ainda não geradas (sumário sugerido) — geradas sob demanda. */
+  pendentes: PendenteRow[];
   progresso: ProgressoMap;
 };
 
@@ -54,7 +62,7 @@ async function fetchAprenderAreaFromNetwork(
     .eq('slug', slug)
     .maybeSingle();
   if (!a) {
-    return { area: null, modulos: [], aulas: [], aulasPreparo: {}, progresso: {} };
+    return { area: null, modulos: [], aulas: [], aulasPreparo: {}, pendentes: [], progresso: {} };
   }
   const { data: mods } = await supabase
     .from('aprender_modulos')
@@ -101,11 +109,25 @@ async function fetchAprenderAreaFromNetwork(
     }
   }
 
+  const { data: sugestoes } = await supabase
+    .from('aprender_sumario_sugerido')
+    .select('id, titulo_melhorado, titulo_original, resumo_capitulo, ordem, aula_id')
+    .eq('area_id', a.id)
+    .is('aula_id', null)
+    .order('ordem');
+  const pendentes: PendenteRow[] = (sugestoes ?? []).map((s: any) => ({
+    id: s.id,
+    titulo: s.titulo_melhorado || s.titulo_original || 'Aula',
+    ordem: Number(s.ordem) || 0,
+    resumo: s.resumo_capitulo ?? null,
+  }));
+
   return {
     area: a as AreaRow,
     modulos: (mods ?? []) as ModuloRow[],
     aulas: publicadas,
     aulasPreparo: preparo,
+    pendentes,
     progresso,
   };
 }
@@ -190,4 +212,9 @@ export function prefetchAprenderArea(slug: string, uid: string | null) {
   loadAprenderArea(slug, uid)
     .then((data) => warmCover(data.area?.nome))
     .catch(() => {});
+}
+
+/** Descarta o cache da área (usar após gerar uma aula sob demanda). */
+export function invalidateAprenderArea(slug: string, uid: string | null) {
+  memCache.delete(keyFor(slug, uid));
 }
