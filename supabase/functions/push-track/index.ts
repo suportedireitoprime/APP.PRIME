@@ -82,6 +82,7 @@ Deno.serve(async (req) => {
     // Uma abertura implica entrega. Como o Android/iOS não devolvem recibo
     // quando o app está fechado, registramos o `delivered` derivado aqui —
     // senão o funil fica furado (opened > delivered).
+    let derivedDelivered = false;
     if (event_type === "opened") {
       let jaEntregue = false;
       if (installId) {
@@ -96,11 +97,7 @@ Deno.serve(async (req) => {
           metadata: { ...(enrichedMeta as any ?? {}), derived_from: "opened" },
           user_id: userId, platform,
         });
-        const { data: cd } = await supabase.from("push_campaigns")
-          .select("delivered_count").eq("id", campaign_id).single();
-        await supabase.from("push_campaigns").update({
-          delivered_count: ((cd as any)?.delivered_count ?? 0) + 1,
-        }).eq("id", campaign_id);
+        derivedDelivered = true;
       }
     }
 
@@ -111,13 +108,23 @@ Deno.serve(async (req) => {
         .eq("id", campaign_id);
     }
 
+    // Incrementa contadores atomicamente — evita read-then-write race condition.
+    // Usa um único update com os campos necessários.
+    const increments: Record<string, unknown> = {};
     const field = event_type === "delivered" ? "delivered_count"
       : event_type === "opened" ? "opened_count" : "converted_count";
+
+    // Busca os contadores atuais uma única vez
+    const fields = derivedDelivered ? `${field},delivered_count` : field;
     const { data: c } = await supabase.from("push_campaigns")
-      .select(field).eq("id", campaign_id).single();
-    await supabase.from("push_campaigns").update({
-      [field]: ((c as any)?.[field] ?? 0) + 1,
-    }).eq("id", campaign_id);
+      .select(fields).eq("id", campaign_id).single();
+
+    increments[field] = ((c as any)?.[field] ?? 0) + 1;
+    if (derivedDelivered) {
+      increments.delivered_count = ((c as any)?.delivered_count ?? 0) + 1;
+    }
+
+    await supabase.from("push_campaigns").update(increments).eq("id", campaign_id);
 
     return new Response(JSON.stringify({ ok: true }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } });

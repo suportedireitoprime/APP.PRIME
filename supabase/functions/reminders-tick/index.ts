@@ -145,7 +145,7 @@ Deno.serve(async (req) => {
   };
 
   const sendPushWithRetry = async (payload: any) => withRetries(async () => {
-    const res = await fetch(`${SUPABASE_URL}/functions/v1/push-send`, {
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/send-push`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${SRK}` },
       body: JSON.stringify(payload),
