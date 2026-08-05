@@ -57,7 +57,7 @@ const VideoaulaView = () => {
   const [concluida, setConcluida] = useState(false);
   const [inicio, setInicio] = useState(0);
   const [carregado, setCarregado] = useState(false);
-  const [tocando, setTocando] = useState(false);
+  const [tocando, setTocando] = useState(true);
   const [tempoAtual, setTempoAtual] = useState(0);
   const [duracao, setDuracao] = useState(0);
   const salvandoRef = useRef(false);
@@ -93,7 +93,7 @@ const VideoaulaView = () => {
     if (!catalogo || !videoId) return;
     let alive = true;
     setAula(getCachedAula(catalogo.id, videoId) as Aula | null);
-    setTocando(false);
+    setTocando(true);
     preaquecerYoutubeApi();
 
     void (async () => {
@@ -395,68 +395,84 @@ const VideoaulaView = () => {
           </h2>
 
           <section className="px-3 lg:px-0">
+            {/* Descrição / Panorama da Aula instantâneo (sem spinner quando já houver conteúdo disponível) */}
+            {(aula?.sobre_aula || aula?.descricao) && !resumo.data?.resumo && (
+              <div className="space-y-2 mb-4">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-primary">
+                  Do que trata a aula
+                </h3>
+                <div className="text-[14.5px] leading-relaxed text-foreground/90 font-body">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {aula.sobre_aula || aula.descricao || ''}
+                  </ReactMarkdown>
+                </div>
+              </div>
+            )}
 
-          {resumo.isLoading && (
-            <div className="py-6 flex items-center gap-2 text-muted-foreground text-sm">
-              <Loader2 className="h-4 w-4 animate-spin" /> Analisando a aula…
-            </div>
-          )}
-          {resumo.error && (
-            <p className="text-sm text-muted-foreground">
-              Não foi possível gerar o panorama agora.
-            </p>
-          )}
-          {resumo.data?.resumo && (
-            <div className="text-[15px] leading-relaxed text-foreground/90 space-y-3">
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                components={{
-                  h1: ({ children }) => (
-                    <h2 className="text-[17px] font-semibold text-foreground mt-4 first:mt-0">
-                      {children}
-                    </h2>
-                  ),
-                  h2: ({ children }) => (
-                    <h3 className="text-[16px] font-semibold text-primary mt-4 first:mt-0">
-                      {children}
-                    </h3>
-                  ),
-                  h3: ({ children }) => (
-                    <h4 className="text-[15px] font-semibold text-foreground mt-3">{children}</h4>
-                  ),
-                  p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
-                  ul: ({ children }) => (
-                    <ul className="list-disc pl-5 space-y-1 mb-2">{children}</ul>
-                  ),
-                  ol: ({ children }) => (
-                    <ol className="list-decimal pl-5 space-y-1 mb-2">{children}</ol>
-                  ),
-                  li: ({ children }) => <li className="leading-relaxed">{children}</li>,
-                  strong: ({ children }) => (
-                    <strong className="font-semibold text-foreground">{children}</strong>
-                  ),
-                  em: ({ children }) => <em className="italic text-foreground/80">{children}</em>,
-                  blockquote: ({ children }) => (
-                    <blockquote className="border-l-2 border-primary/50 pl-3 italic text-foreground/80">
-                      {children}
-                    </blockquote>
-                  ),
-                  code: ({ children }) => (
-                    <code className="rounded bg-muted px-1 py-0.5 text-[12px]">{children}</code>
-                  ),
-                  hr: () => <hr className="border-border my-3" />,
-                  a: ({ children, href }) => (
-                    <a href={href} target="_blank" rel="noreferrer" className="text-primary underline">
-                      {children}
-                    </a>
-                  ),
-                }}
-              >
-                {normalizarMarkdown(resumo.data.resumo)}
-              </ReactMarkdown>
-            </div>
-          )}
-        </section>
+            {resumo.data?.resumo && (
+              <div className="text-[15px] leading-relaxed text-foreground/90 space-y-3">
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    h1: ({ children }) => (
+                      <h2 className="text-[17px] font-semibold text-foreground mt-4 first:mt-0">
+                        {children}
+                      </h2>
+                    ),
+                    h2: ({ children }) => (
+                      <h3 className="text-[16px] font-semibold text-primary mt-4 first:mt-0">
+                        {children}
+                      </h3>
+                    ),
+                    h3: ({ children }) => (
+                      <h4 className="text-[15px] font-semibold text-foreground mt-3">{children}</h4>
+                    ),
+                    p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+                    ul: ({ children }) => (
+                      <ul className="list-disc pl-5 space-y-1 mb-2">{children}</ul>
+                    ),
+                    ol: ({ children }) => (
+                      <ol className="list-decimal pl-5 space-y-1 mb-2">{children}</ol>
+                    ),
+                    li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+                    strong: ({ children }) => (
+                      <strong className="font-semibold text-foreground">{children}</strong>
+                    ),
+                    em: ({ children }) => <em className="italic text-foreground/80">{children}</em>,
+                    blockquote: ({ children }) => (
+                      <blockquote className="border-l-2 border-primary/50 pl-3 italic text-foreground/80">
+                        {children}
+                      </blockquote>
+                    ),
+                    code: ({ children }) => (
+                      <code className="rounded bg-muted px-1 py-0.5 text-[12px]">{children}</code>
+                    ),
+                    hr: () => <hr className="border-border my-3" />,
+                    a: ({ children, href }) => (
+                      <a href={href} target="_blank" rel="noreferrer" className="text-primary underline">
+                        {children}
+                      </a>
+                    ),
+                  }}
+                >
+                  {normalizarMarkdown(resumo.data?.resumo || '')}
+                </ReactMarkdown>
+              </div>
+            )}
+
+            {/* Spinner de carregamento só aparece se NÃO houver descrição nem resumo no banco */}
+            {resumo.isLoading && !resumo.data?.resumo && !aula?.sobre_aula && !aula?.descricao && (
+              <div className="py-4 flex items-center gap-2 text-muted-foreground text-xs">
+                <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" /> Carregando panorama...
+              </div>
+            )}
+
+            {resumo.error && !aula?.sobre_aula && !aula?.descricao && (
+              <p className="text-sm text-muted-foreground">
+                Não foi possível carregar a descrição no momento.
+              </p>
+            )}
+          </section>
         </div>
       </div>
 
