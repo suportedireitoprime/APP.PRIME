@@ -348,22 +348,21 @@ const AnotacoesSheet = ({ open, onClose, tabelaNome, artigoNumero, artigoTexto, 
 
   const panel = (
     <AnimatePresence>
-      {isDesktop && (
-        <motion.div
-          key="anotacoes-backdrop"
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-          onClick={onClose}
-          className="fixed inset-0 z-[10040] bg-black/55 backdrop-blur-sm"
-        />
-      )}
+      <motion.div
+        key="anotacoes-backdrop"
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+        onClick={onClose}
+        className="fixed inset-0 z-[10040] bg-black/60 backdrop-blur-sm pointer-events-auto touch-none"
+      />
       <motion.div
         initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
         transition={{ type: 'spring', damping: 30, stiffness: 340 }}
         data-artigo-menu
+        onClick={(e) => e.stopPropagation()}
         className={
           isDesktop
-            ? 'fixed right-0 top-0 bottom-0 z-[10041] w-[min(30rem,92vw)] border-l border-border bg-background shadow-2xl flex flex-col'
-            : 'fixed inset-0 z-[10041] bg-background flex flex-col'
+            ? 'fixed right-0 top-0 bottom-0 z-[10041] w-[min(30rem,92vw)] border-l border-border bg-background shadow-2xl flex flex-col pointer-events-auto'
+            : 'fixed inset-0 z-[10041] bg-background flex flex-col pointer-events-auto'
         }
       >
         <header className="pt-safe border-b border-border bg-card">

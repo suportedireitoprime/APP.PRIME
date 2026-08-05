@@ -2697,6 +2697,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         </AnimatePresence>
 
         <Tabs value={activeTab} onValueChange={(v) => {
+          if (showAnotacoesSheet || showPerguntarSheet || showPraticarSheet) return;
           const openIA = (mode: 'explicacao' | 'exemplo') => {
             setActiveTab(mode);           // dispara a busca/cache já existente
             setIaFull({ mode, sectionId: focusedSegment });
