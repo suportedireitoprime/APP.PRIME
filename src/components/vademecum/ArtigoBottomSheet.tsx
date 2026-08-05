@@ -832,72 +832,88 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         setNarracaoStepIdx(1);
       }
 
-      // A função de narração vive no backend externo de legislação, que NÃO
-      // valida JWT deste projeto (projetos Supabase diferentes). Por isso o
-      // Authorization vai com a anon key desse backend e a identidade do
-      // usuário segue em `x-user-jwt` (usada apenas para telemetria/cache).
-      const { data: sessionData } = await supabase.auth.getSession();
-      const userJwt = sessionData.session?.access_token || null;
+      const STRUCT_RE = /^(PARTE|LIVRO|T[IÍ]TULO|CAP[IÍ]TULO|SEÇ[AÃ]O|SUBSEÇ[AÃ]O)\b/i;
+      const tituloIsEpig = artigo.titulo && !STRUCT_RE.test(artigo.titulo);
+      const epig = tituloIsEpig ? artigo.titulo : null;
+      const breadcrumbTitle = breadcrumb?.tituloDesc || breadcrumb?.titulo || null;
+      const hier = breadcrumbTitle || artigo.capitulo || (!tituloIsEpig ? artigo.titulo : null) || null;
 
-      const res = await fetch(
-        `${SB_URL}/functions/v1/narrar-artigo`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            apikey: SB_KEY,
-            Authorization: `Bearer ${SB_KEY}`,
-            ...(userJwt ? { 'x-user-jwt': userJwt } : {}),
-          },
+      const payload = {
+        tabela_nome: tabelaNome,
+        artigo_numero: artigo.numero,
+        artigo_texto: artigo.caput,
+        lei_nome: lei?.nome || tabelaNome,
+        hierarquia: hier,
+        titulo_artigo: hier,
+        epigrafe: epig,
+        force_regenerate: options?.forceRegenerate ?? false,
+      };
 
-          body: JSON.stringify((() => {
-            const STRUCT_RE = /^(PARTE|LIVRO|T[IÍ]TULO|CAP[IÍ]TULO|SEÇ[AÃ]O|SUBSEÇ[AÃ]O)\b/i;
-            const tituloIsEpig = artigo.titulo && !STRUCT_RE.test(artigo.titulo);
-            const epig = tituloIsEpig ? artigo.titulo : null;
-            const breadcrumbTitle = breadcrumb?.tituloDesc || breadcrumb?.titulo || null;
-            const hier = breadcrumbTitle || artigo.capitulo || (!tituloIsEpig ? artigo.titulo : null) || null;
-            return {
-              tabela_nome: tabelaNome,
-              artigo_numero: artigo.numero,
-              artigo_texto: artigo.caput,
-              lei_nome: lei?.nome || tabelaNome,
-              hierarquia: hier,
-              titulo_artigo: hier,
-              epigrafe: epig,
-              force_regenerate: options?.forceRegenerate ?? false,
-            };
-          })()),
+      let audio_url: string | null = null;
+      let word_timings: any[] | null = null;
+
+      // 1ª Tentativa: Invoca a Edge Function narrar-artigo com a chave GEMINI_API_KEY do Supabase do projeto
+      try {
+        const { data: edgeData, error: edgeErr } = await supabase.functions.invoke('narrar-artigo', {
+          body: payload,
+        });
+
+        if (!edgeErr && edgeData?.audio_url) {
+          audio_url = edgeData.audio_url;
+          word_timings = edgeData.word_timings || null;
+        } else if (edgeErr) {
+          console.warn('[ArtigoBottomSheet] supabase.functions.invoke(narrar-artigo) error:', edgeErr);
         }
-      );
+      } catch (errInvoke) {
+        console.warn('[ArtigoBottomSheet] Falha ao invocar narrar-artigo via Supabase SDK:', errInvoke);
+      }
 
-      if (res.ok) {
-        const { audio_url, word_timings } = await res.json();
-        if (!audio_url) throw new Error('Resposta sem audio_url');
+      // 2ª Tentativa: Se não retornou áudio via SDK, tenta o fetch no endpoint com anon key
+      if (!audio_url) {
+        try {
+          const { data: sessionData } = await supabase.auth.getSession();
+          const userJwt = sessionData.session?.access_token || null;
+          const res = await fetch(`${SB_URL}/functions/v1/narrar-artigo`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              apikey: SB_KEY,
+              Authorization: `Bearer ${SB_KEY}`,
+              ...(userJwt ? { 'x-user-jwt': userJwt } : {}),
+            },
+            body: JSON.stringify(payload),
+          });
+
+          if (res.ok) {
+            const json = await res.json();
+            audio_url = json.audio_url || null;
+            word_timings = json.word_timings || null;
+          }
+        } catch (fetchErr) {
+          console.warn('[ArtigoBottomSheet] Fetch direto narrar-artigo falhou:', fetchErr);
+        }
+      }
+
+      // Se obtivemos a narração em áudio (Gemini TTS)
+      if (audio_url) {
         if (!silent) setNarracaoStepIdx(2);
         setNarracaoUrl(audio_url);
         if (Array.isArray(word_timings)) setNarracaoWordTimings(word_timings);
+
         if (autoplay) {
           if (!silent) setNarracaoStepIdx(3);
-          // Fecha o overlay depois de 700ms e dispara o play
           setTimeout(async () => {
             if (!silent) setNarracaoLoading(false);
-            await playNarracao(audio_url);
+            await playNarracao(audio_url!);
           }, silent ? 0 : 700);
         } else if (!silent) {
           setNarracaoLoading(false);
         }
         return;
       }
-      const errorBody = await res.text().catch(() => '');
-      if (!isPremium && (res.status === 402 || errorBody.includes('daily_narration_limit_reached'))) {
-        setNarracaoLoading(false);
-        setNarracaoStepIdx(0);
-        openPremiumGate('narracao', 'Você usou suas 3 narrações gratuitas deste mês. Comece 3 dias grátis para ouvir sem limite.');
-        return;
-      }
 
-      // Fallback para síntese de voz nativa do dispositivo caso o serviço de nuvem esteja indisponível/401/500
-      console.warn(`[ArtigoBottomSheet] Narração na nuvem indisponível [${res.status}]. Acionando síntese nativa...`);
+      // Fallback para síntese de voz nativa caso o Gemini TTS esteja temporariamente indisponível
+      console.warn('[ArtigoBottomSheet] Narração em áudio via Gemini indisponível. Acionando síntese nativa...');
       const textoParaNarrar = `Artigo ${artigo.numero}. ${artigo.caput || ''}`;
       const ok = await speakNative(textoParaNarrar);
       setNarracaoLoading(false);
@@ -909,7 +925,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         toast.error('Não consegui gerar a narração agora. Tente novamente.');
       }
     } catch (e) {
-      console.error('Erro ao gerar narração na nuvem. Tentando narração nativa...', e);
+      console.error('Erro ao gerar narração via Gemini. Tentando narração nativa...', e);
       if (artigo) {
         const textoParaNarrar = `Artigo ${artigo.numero}. ${artigo.caput || ''}`;
         const ok = await speakNative(textoParaNarrar);
