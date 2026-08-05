@@ -172,6 +172,31 @@ const Audioaulas = () => {
     };
   }, [aulas]);
 
+  // Atalhos de teclado no Desktop (Espaço = Play/Pause, Esc = Fechar, Setas = Avançar/Voltar 15s)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName?.toUpperCase();
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || (e.target as HTMLElement)?.isContentEditable) {
+        return;
+      }
+      if (e.key === 'Escape' && aberto) {
+        e.preventDefault();
+        setAberto(false);
+      } else if (e.key === ' ' && atual) {
+        e.preventDefault();
+        togglePlay();
+      } else if (e.key === 'ArrowLeft' && atual) {
+        e.preventDefault();
+        seek(Math.max(0, tempo - 15));
+      } else if (e.key === 'ArrowRight' && atual) {
+        e.preventDefault();
+        seek(Math.min(dur, tempo + 15));
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [aberto, atual, setAberto, togglePlay, seek, tempo, dur]);
+
   const areas = useMemo(() => {
     const map = new Map<string, number>();
     for (const a of aulas) {
@@ -461,22 +486,34 @@ const Audioaulas = () => {
         </div>
       )}
 
-      {/* Player Completo Expandido */}
+      {/* Player Completo Expandido — Adaptado como Modal Centralizado em Desktop */}
       {atual && (
-        <div
-          className={`fixed inset-0 z-50 flex flex-col transition-transform duration-300 ease-out ${
-            aberto ? 'translate-y-0' : 'translate-y-full pointer-events-none'
-          }`}
-        >
-          <div className="absolute inset-0 -z-10 bg-zinc-950">
-            <img
-              src={capaDaArea(atual.area || '')}
-              alt=""
-              aria-hidden
-              className="w-full h-full object-cover opacity-25 blur-3xl scale-150"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-primary/20 via-zinc-950/90 to-black" />
-          </div>
+        <>
+          {/* Backdrop escuro para desktop */}
+          <div
+            onClick={() => setAberto(false)}
+            aria-hidden
+            className={`fixed inset-0 z-50 bg-black/75 backdrop-blur-md transition-opacity duration-300 ${
+              aberto ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+            }`}
+          />
+
+          <div
+            className={`fixed inset-0 z-[55] flex flex-col transition-all duration-300 ease-out lg:inset-auto lg:top-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:w-full lg:max-w-xl lg:h-[88vh] lg:max-h-[720px] lg:rounded-3xl lg:border lg:border-white/15 lg:shadow-2xl lg:shadow-black/90 lg:overflow-hidden ${
+              aberto
+                ? 'translate-y-0 opacity-100 scale-100'
+                : 'translate-y-full lg:translate-y-[-40%] lg:scale-95 opacity-0 pointer-events-none'
+            }`}
+          >
+            <div className="absolute inset-0 -z-10 bg-zinc-950">
+              <img
+                src={capaDaArea(atual.area || '')}
+                alt=""
+                aria-hidden
+                className="w-full h-full object-cover opacity-25 blur-3xl scale-150"
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-primary/20 via-zinc-950/90 to-black" />
+            </div>
 
           {/* Header do Player */}
           <div className="flex items-center justify-between px-4 pt-4 pb-2 shrink-0">
@@ -611,7 +648,8 @@ const Audioaulas = () => {
             </div>
           </div>
         </div>
-      )}
+      </>
+    )}
 
       {/* Navegação Inferior das Áudio Aulas */}
       <AudioaulasBottomNav

@@ -61,14 +61,14 @@ export default function GlobalAudioaulasMiniPlayer() {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 80, opacity: 0 }}
           transition={{ type: 'spring', damping: 22, stiffness: 260 }}
-          className="fixed left-0 right-0 z-[80] px-3 pointer-events-none"
+          className="fixed left-0 right-0 z-[80] px-3 pointer-events-none md:left-auto md:right-6 md:px-0"
           style={{
             bottom: navHeight
               ? `${navHeight + 28}px`
               : `calc(9.5rem + var(--sai-bottom,env(safe-area-inset-bottom,0px)))`,
           }}
         >
-          <div className="pointer-events-auto mx-auto max-w-md rounded-full border border-white/10 bg-[#0f0f0f]/95 backdrop-blur-md shadow-2xl shadow-black/60 flex items-center gap-2 pl-1.5 pr-1.5 py-1.5 relative overflow-hidden">
+          <div className="pointer-events-auto mx-auto max-w-md md:w-96 rounded-full border border-white/15 bg-[#0f0f0f]/95 backdrop-blur-md shadow-2xl shadow-black/80 flex items-center gap-2 pl-1.5 pr-1.5 py-1.5 relative overflow-hidden transition-all hover:scale-[1.02]">
             {/* Efeito de brilho/reflexo passando */}
             <motion.div
               aria-hidden
