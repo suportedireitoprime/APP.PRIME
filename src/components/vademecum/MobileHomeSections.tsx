@@ -144,13 +144,20 @@ const LOCAIS_CATS: LocalCat[] = [
   { id: 'museus',             label: 'Museus',             sublabel: 'Memória e cultura jurídica',     icon: Landmark,   color: '#EC4899' },
 ];
 
-type Tab = 'locais' | 'estudos' | 'documentos';
+type Tab = 'locais' | 'estudos' | 'documentos' | 'categorias' | 'emalta' | 'areas';
 
-const TABS: { id: Tab; label: string; icon: any }[] = [
+const TABS_HOME: { id: Tab; label: string; icon: any }[] = [
   { id: 'locais',     label: 'Locais',     icon: MapPin },
   { id: 'estudos',    label: 'Estudos',    icon: GraduationCap },
   { id: 'documentos', label: 'Documentos', icon: FolderOpen },
 ];
+
+const TABS_VADEMECUM: { id: Tab; label: string; icon: any }[] = [
+  { id: 'categorias', label: 'Categorias', icon: LayoutGrid },
+  { id: 'emalta',     label: 'Em Alta',     icon: Flame },
+  { id: 'areas',      label: 'Áreas',       icon: Scale },
+];
+
 
 
 
@@ -185,7 +192,8 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
 
 
   const [categorySearch, setCategorySearch] = useState('');
-  const [tab, setTab] = useState<Tab>('estudos');
+  const activeTabs = useMemo(() => (emAltaLeis ? TABS_VADEMECUM : TABS_HOME), [emAltaLeis]);
+  const [tab, setTab] = useState<Tab>(() => (emAltaLeis ? 'emalta' : 'estudos'));
 
   const handleVoiceSearch = useCallback((text: string) => {
     setCategorySearch(text);
@@ -284,7 +292,7 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
       {/* Segmented toggle */}
       <div>
         <div className="relative flex items-center gap-1 p-1 rounded-full bg-secondary/60 border border-border/60">
-          {TABS.map(t => {
+          {activeTabs.map(t => {
             const Icon = t.icon;
             const isActive = tab === t.id;
             return (
@@ -311,6 +319,134 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
       </div>
 
       <AnimatePresence mode="wait" initial={false}>
+        {tab === 'categorias' && (
+          <motion.div
+            key="categorias"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.24, ease: [0.22, 0.61, 0.36, 1] }}
+            className="space-y-4 px-1 pb-8"
+          >
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="w-1 h-5 rounded-full bg-primary" />
+                <h2 className="font-body text-foreground text-2xl sm:text-3xl font-bold tracking-tight">
+                  Categorias
+                </h2>
+              </div>
+              <p className="font-body text-muted-foreground text-[13px] leading-snug mt-1 ml-3">
+                Leis federais, legislação estadual, jurisprudência, OAB, decretos e outras normas.
+              </p>
+            </div>
+            <div className="h-[1.5px] bg-border/70 w-full -mt-2" />
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+              {CATEGORIA_CATS.map((c, i) => (
+                <HomeCard
+                  key={c.id}
+                  icon={c.icon}
+                  label={c.label}
+                  sublabel={c.sublabel}
+                  color={c.color}
+                  delay={i * 0.05}
+                  onClick={() => {
+                    if ('route' in c && c.route) { navigate(c.route); return; }
+                    if (c.id === 'cat-jurisprudencia') { navigate('/jurisprudencia'); return; }
+                    setCategorySearch('');
+                    setCategoryOpen(c);
+                  }}
+                  data-track="home_card_click"
+                  data-track-name={c.label}
+                  data-track-section="categorias"
+                />
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {tab === 'emalta' && (
+          <motion.div
+            key="emalta"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.24, ease: [0.22, 0.61, 0.36, 1] }}
+            className="space-y-4 px-1 pb-8"
+          >
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="w-1 h-5 rounded-full bg-primary" />
+                <h2 className="font-body text-foreground text-2xl sm:text-3xl font-bold tracking-tight">
+                  Em Alta
+                </h2>
+              </div>
+              <p className="font-body text-muted-foreground text-[13px] leading-snug mt-1 ml-3">
+                As principais leis, códigos, estatutos e jurisprudências mais consultados.
+              </p>
+            </div>
+            <div className="h-[1.5px] bg-border/70 w-full -mt-2" />
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+              {GRID_CATS.map((c, i) => (
+                <HomeCard
+                  key={c.id}
+                  icon={c.icon}
+                  label={c.label}
+                  sublabel={c.sublabel}
+                  color={c.color}
+                  delay={i * 0.05}
+                  onClick={() => { setCategorySearch(''); setCategoryOpen(c); }}
+                  data-track="home_card_click"
+                  data-track-name={c.label}
+                  data-track-section="emalta"
+                />
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {tab === 'areas' && (
+          <motion.div
+            key="areas"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.24, ease: [0.22, 0.61, 0.36, 1] }}
+            className="space-y-4 px-1 pb-8"
+          >
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="w-1 h-5 rounded-full bg-primary" />
+                <h2 className="font-body text-foreground text-2xl sm:text-3xl font-bold tracking-tight">
+                  Áreas do Direito
+                </h2>
+              </div>
+              <p className="font-body text-muted-foreground text-[13px] leading-snug mt-1 ml-3">
+                Navegue pela legislação organizada por área de atuação.
+              </p>
+            </div>
+            <div className="h-[1.5px] bg-border/70 w-full -mt-2" />
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+              {AREA_CATS.map((c, i) => (
+                <HomeCard
+                  key={c.id}
+                  icon={c.icon}
+                  label={c.label}
+                  sublabel={c.sublabel}
+                  color={c.color}
+                  delay={Math.min(i * 0.04, 0.3)}
+                  onClick={() => {
+                    setCategorySearch('');
+                    setCategoryOpen(c);
+                  }}
+                  data-track="home_card_click"
+                  data-track-name={c.label}
+                  data-track-section="areas"
+                />
+              ))}
+            </div>
+          </motion.div>
+        )}
+
         {tab === 'locais' && (
           <motion.div
             key="locais"
