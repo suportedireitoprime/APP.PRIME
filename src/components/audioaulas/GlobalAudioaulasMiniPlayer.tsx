@@ -1,31 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Play, Pause, SkipBack, SkipForward, X, Headphones } from 'lucide-react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Play, Pause, ArrowRight, X } from 'lucide-react';
 import { useAudioaulasPlayer } from '@/contexts/AudioaulasPlayerContext';
-import { srcOf } from '@/lib/assetUrl';
-import capaAudioaulas from '@/assets/atalho-audioaulas.webp.asset.json';
-import capaPenal from '@/assets/direito-penal.webp.asset.json';
-import capaCivil from '@/assets/direito-civil.webp.asset.json';
-import capaConstituicao from '@/assets/direito-constituicao.webp.asset.json';
-import capaClt from '@/assets/direito-clt.webp.asset.json';
-
-const CAPA_HUB = srcOf(capaAudioaulas);
-const CAPAS: { re: RegExp; url: string }[] = [
-  { re: /penal|processo penal/i, url: srcOf(capaPenal) },
-  { re: /civil/i, url: srcOf(capaCivil) },
-  { re: /constitu/i, url: srcOf(capaConstituicao) },
-  { re: /trabalh|clt/i, url: srcOf(capaClt) },
-];
-const capaDaArea = (area: string) => CAPAS.find((c) => c.re.test(area))?.url || CAPA_HUB;
 
 /**
- * Mini Player Flutuante Global de Áudio Aulas:
- * Posiciona-se perfeitamente acima do menu de rodapé (`[data-bottom-nav]`) e
- * continua reproduzindo o áudio de forma ininterrupta ao navegar pelo aplicativo.
+ * Mini Player Flutuante de Áudio Aulas — Estilo Cápsula idêntico ao Narração do Artigo.
+ * Permanece ativo e flutuando acima da barra de navegação em qualquer tela do aplicativo.
  */
 export default function GlobalAudioaulasMiniPlayer() {
-  const { atual, tocando, togglePlay, pular, setAberto, aberto, fechar, tempo, dur } = useAudioaulasPlayer();
+  const { atual, tocando, togglePlay, setAberto, aberto, fechar, tempo, dur } = useAudioaulasPlayer();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -53,105 +37,125 @@ export default function GlobalAudioaulasMiniPlayer() {
     };
   }, [location.pathname]);
 
-  const onPage = location.pathname.startsWith('/audioaulas');
-  // Se o player completo estiver aberto, esconde o mini player
-  const visivel = !!atual && !(aberto && onPage);
+  const onAudioaulasPage = location.pathname.startsWith('/audioaulas');
+  // Se o player full-screen estiver aberto na página de áudio aulas, esconde o mini player
+  const visible = !!atual && !(aberto && onAudioaulasPage);
 
-  const abrir = () => {
-    if (!location.pathname.startsWith('/audioaulas')) {
+  const handleReopen = () => {
+    if (onAudioaulasPage) {
+      setAberto(true);
+    } else {
       navigate('/audioaulas');
+      setTimeout(() => setAberto(true), 150);
     }
-    setAberto(true);
   };
 
-  const progresso = dur > 0 ? (tempo / dur) * 100 : 0;
+  const progress = dur > 0 ? (tempo / dur) * 100 : 0;
+  const eqBars = [0, 1, 2, 3];
 
   return (
     <AnimatePresence>
-      {visivel && atual && (
+      {visible && atual && (
         <motion.div
-          key="audioaulas-mini-player"
-          initial={{ y: '110%', opacity: 0 }}
+          initial={{ y: 80, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          exit={{ y: '110%', opacity: 0 }}
-          transition={{ type: 'tween', ease: [0.22, 1, 0.36, 1], duration: 0.35 }}
-          className="fixed left-0 right-0 z-40"
-          style={{ bottom: navHeight }}
+          exit={{ y: 80, opacity: 0 }}
+          transition={{ type: 'spring', damping: 22, stiffness: 260 }}
+          className="fixed left-0 right-0 z-[80] px-3 pointer-events-none"
+          style={{
+            bottom: navHeight
+              ? `${navHeight + 8}px`
+              : `calc(5.25rem + var(--sai-bottom,env(safe-area-inset-bottom,0px)))`,
+          }}
         >
-          <div className="relative border-t border-white/10 bg-gradient-to-r from-zinc-950 via-zinc-900/95 to-zinc-950 backdrop-blur-md shadow-[0_-8px_30px_rgba(0,0,0,0.6)]">
-            {/* Barra discreta de progresso no topo */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-white/10 overflow-hidden">
-              <div
-                className="h-full bg-primary transition-all duration-200"
-                style={{ width: `${progresso}%` }}
-              />
+          <div className="pointer-events-auto mx-auto max-w-md rounded-full border border-white/10 bg-[#0f0f0f]/95 backdrop-blur-md shadow-2xl shadow-black/60 flex items-center gap-2 pl-1.5 pr-1.5 py-1.5 relative overflow-hidden">
+            {/* Efeito de brilho/reflexo passando */}
+            <motion.div
+              aria-hidden
+              className="pointer-events-none absolute inset-y-0 w-1/3 -skew-x-12 bg-gradient-to-r from-transparent via-white/10 to-transparent"
+              initial={{ x: '-120%' }}
+              animate={{ x: '320%' }}
+              transition={{ duration: 2.6, repeat: Infinity, repeatDelay: 1.4, ease: 'easeInOut' }}
+            />
+
+            {/* Barra de progresso vibrante na parte inferior da cápsula */}
+            <div
+              className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-primary via-emerald-400 to-amber-400 transition-[width] duration-200"
+              style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
+            />
+
+            {/* Botão Play / Pause circular */}
+            <button
+              onClick={togglePlay}
+              aria-label={tocando ? 'Pausar' : 'Continuar'}
+              className="flex-shrink-0 w-10 h-10 rounded-full bg-primary hover:bg-primary/90 active:scale-95 transition flex items-center justify-center relative z-10 shadow-md shadow-primary/30"
+            >
+              {tocando ? (
+                <Pause className="w-4 h-4 text-primary-foreground" fill="currentColor" />
+              ) : (
+                <Play className="w-4 h-4 text-primary-foreground ml-0.5" fill="currentColor" />
+              )}
+            </button>
+
+            {/* Equalizador animado quando tocando */}
+            <div className="flex items-end gap-[2px] h-5 flex-shrink-0 pl-0.5 relative z-10" aria-hidden>
+              {eqBars.map((i) => (
+                <motion.span
+                  key={i}
+                  className="w-[3px] rounded-full bg-primary"
+                  initial={{ height: 4 }}
+                  animate={
+                    tocando
+                      ? { height: [4, 14, 7, 16, 5, 12, 4] }
+                      : { height: 4 }
+                  }
+                  transition={
+                    tocando
+                      ? { duration: 0.9 + i * 0.15, repeat: Infinity, ease: 'easeInOut', delay: i * 0.08 }
+                      : { duration: 0.2 }
+                  }
+                />
+              ))}
             </div>
 
-            <div className="max-w-4xl mx-auto px-3 py-2 sm:px-4">
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={abrir}
-                  className="flex items-center gap-3 min-w-0 flex-1 text-left group"
-                >
-                  <span className="relative h-11 w-11 sm:h-12 sm:w-12 shrink-0 rounded-xl overflow-hidden shadow-md bg-zinc-800">
-                    <img
-                      src={capaDaArea(atual.area || '')}
-                      alt=""
-                      className="h-full w-full object-cover transition-transform group-hover:scale-105"
-                    />
-                    <span className="absolute inset-0 bg-black/20 grid place-items-center">
-                      <Headphones className="h-4 w-4 text-white/80" />
-                    </span>
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs font-semibold text-primary uppercase tracking-wider truncate">
-                      {atual.area}
-                    </p>
-                    <p className="text-sm font-bold truncate text-white leading-tight">
-                      {atual.titulo}
-                    </p>
-                    <p className="text-[11px] text-zinc-400 truncate">
-                      {atual.tema || 'Áudio Aula'}
-                    </p>
-                  </div>
-                </button>
+            {/* Texto da Aula (Título e Área/Tema) */}
+            <button
+              onClick={handleReopen}
+              className="flex-1 min-w-0 text-left px-1 relative z-10"
+              aria-label="Abrir aula"
+            >
+              <p className="text-[12px] font-semibold text-white truncate leading-tight">
+                {atual.titulo}
+              </p>
+              <p className="text-[10.5px] text-white/60 truncate leading-tight">
+                {atual.area} {atual.tema ? `• ${atual.tema}` : ''}
+              </p>
+            </button>
 
-                <div className="flex items-center gap-1 shrink-0">
-                  <button
-                    onClick={() => pular(-1)}
-                    aria-label="Aula Anterior"
-                    className="grid h-10 w-10 place-items-center rounded-full text-zinc-300 hover:bg-white/10 hover:text-white transition"
-                  >
-                    <SkipBack className="h-4 w-4" />
-                  </button>
+            {/* Botão Fechar (X) */}
+            <button
+              onClick={fechar}
+              aria-label="Fechar player"
+              className="flex-shrink-0 w-9 h-9 rounded-full hover:bg-white/10 active:scale-95 transition flex items-center justify-center relative z-10"
+            >
+              <X className="w-4 h-4 text-white/70" />
+            </button>
 
-                  <button
-                    onClick={togglePlay}
-                    aria-label={tocando ? 'Pausar' : 'Tocar'}
-                    className="grid h-11 w-11 place-items-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 hover:scale-105 active:scale-95 transition"
-                  >
-                    {tocando ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 ml-0.5" />}
-                  </button>
-
-                  <button
-                    onClick={() => pular(1)}
-                    aria-label="Próxima Aula"
-                    className="grid h-10 w-10 place-items-center rounded-full text-zinc-300 hover:bg-white/10 hover:text-white transition"
-                  >
-                    <SkipForward className="h-4 w-4" />
-                  </button>
-
-                  <button
-                    onClick={fechar}
-                    aria-label="Fechar player"
-                    title="Fechar player"
-                    className="grid h-10 w-10 place-items-center rounded-full text-zinc-400 hover:bg-white/10 hover:text-white transition"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
+            {/* Seta com cabinho animada para a direita que redireciona para a aula */}
+            <button
+              onClick={handleReopen}
+              aria-label="Ir para áudio aula"
+              title="Abrir aula completa"
+              className="flex-shrink-0 w-9 h-9 rounded-full hover:bg-white/10 active:scale-95 transition flex items-center justify-center relative z-10 overflow-hidden"
+            >
+              <motion.span
+                className="inline-flex"
+                animate={{ x: [0, 4, 0] }}
+                transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                <ArrowRight className="w-5 h-5 text-white/90" strokeWidth={2.4} />
+              </motion.span>
+            </button>
           </div>
         </motion.div>
       )}
