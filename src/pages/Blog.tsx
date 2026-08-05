@@ -64,6 +64,19 @@ const Blog = () => {
   }, [dbPosts]);
 
 
+  // SEO & Título dinâmico por rota/filtro/artigo selecionado
+  useEffect(() => {
+    if (selectedPost) {
+      document.title = `${selectedPost.titulo} | Blogger Jurídico`;
+    } else if (selectedFilter === 'trending') {
+      document.title = 'Blogger Jurídico - Em Alta | Vade Mecum PRIME';
+    } else if (selectedFilter !== 'todos') {
+      document.title = `Blogger Jurídico - ${selectedFilter} | Vade Mecum PRIME`;
+    } else {
+      document.title = 'Blogger Jurídico | Vade Mecum PRIME';
+    }
+  }, [selectedPost, selectedFilter]);
+
   // Auto-open post from query param (compartilhamento)
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -74,9 +87,10 @@ const Blog = () => {
     }
   }, [location.search, allPosts]);
 
-  // Busca ranking "Em Alta" via RPC (com cache curto em sessionStorage)
+  // Busca ranking "Em Alta" via RPC (com cache curto em sessionStorage e flag de desmonte)
   useEffect(() => {
     if (selectedFilter !== 'trending' || trendingIds !== null) return;
+    let cancelled = false;
     try {
       const raw = sessionStorage.getItem(TRENDING_CACHE_KEY);
       if (raw) {
@@ -88,11 +102,13 @@ const Blog = () => {
       }
     } catch {}
     supabase.rpc('blog_posts_trending', { _limit: 50, _dias: 14 }).then(({ data, error }) => {
+      if (cancelled) return;
       if (error || !data) { setTrendingIds([]); return; }
       const ids = (data as Array<{ post_id: string }>).map((r) => r.post_id);
       setTrendingIds(ids);
       try { sessionStorage.setItem(TRENDING_CACHE_KEY, JSON.stringify({ at: Date.now(), ids })); } catch {}
     });
+    return () => { cancelled = true; };
   }, [selectedFilter, trendingIds]);
 
   const posts = useMemo(() => {
@@ -193,10 +209,13 @@ const Blog = () => {
 
       {/* Chips de tema */}
       <div className="bg-background border-b border-border/40">
-        <div className="flex gap-2 overflow-x-auto no-scrollbar px-4 py-3 max-w-3xl mx-auto">
+        <div role="tablist" aria-label="Filtros de temas do blog" className="flex gap-2 overflow-x-auto no-scrollbar px-4 py-3 max-w-3xl mx-auto">
           <button
+            role="tab"
+            aria-selected={selectedFilter === 'todos'}
+            aria-label="Exibir todos os artigos"
             onClick={() => setSelectedFilter('todos')}
-            className={`shrink-0 px-4 py-2 rounded-full text-xs font-body font-semibold uppercase tracking-wide transition-all ${
+            className={`shrink-0 min-h-[38px] px-4 py-2 rounded-full text-xs font-body font-semibold uppercase tracking-wide transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
               selectedFilter === 'todos'
                 ? 'bg-primary text-primary-foreground shadow-md'
                 : 'bg-secondary text-foreground hover:bg-secondary/80'
@@ -205,8 +224,11 @@ const Blog = () => {
             Todos
           </button>
           <button
+            role="tab"
+            aria-selected={selectedFilter === 'trending'}
+            aria-label="Exibir artigos em alta"
             onClick={() => setSelectedFilter('trending')}
-            className={`shrink-0 inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-body font-semibold uppercase tracking-wide transition-all ${
+            className={`shrink-0 min-h-[38px] inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-body font-semibold uppercase tracking-wide transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
               selectedFilter === 'trending'
                 ? 'bg-primary text-primary-foreground shadow-md'
                 : 'bg-secondary text-amber-400 hover:bg-secondary/80'
@@ -220,8 +242,11 @@ const Blog = () => {
             return (
               <button
                 key={tema}
+                role="tab"
+                aria-selected={active}
+                aria-label={`Filtrar por ${tema}`}
                 onClick={() => setSelectedFilter(tema)}
-                className={`shrink-0 px-4 py-2 rounded-full text-xs font-body font-semibold uppercase tracking-wide transition-all ${
+                className={`shrink-0 min-h-[38px] px-4 py-2 rounded-full text-xs font-body font-semibold uppercase tracking-wide transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
                   active ? 'bg-primary text-primary-foreground shadow-md' : 'bg-secondary text-foreground hover:bg-secondary/80'
                 }`}
               >
@@ -278,14 +303,23 @@ const Blog = () => {
               const cardNode = (
                 <motion.div
                   key={post.id}
+                  role="article"
+                  tabIndex={0}
+                  aria-label={`Ler artigo: ${post.titulo}`}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: Math.min(i, 8) * 0.04, duration: 0.35, ease: 'easeOut' }}
                   onClick={openPost}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      openPost();
+                    }
+                  }}
                   style={{
                     background: `linear-gradient(160deg, ${c.chip}22 0%, hsl(var(--card)) 45%, hsl(var(--card)) 100%)`,
                   }}
-                  className={`group relative flex items-stretch gap-0 border-y md:border md:rounded-2xl transition-colors cursor-pointer overflow-hidden ${
+                  className={`group relative flex items-stretch gap-0 border-y md:border md:rounded-2xl transition-colors cursor-pointer overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
                     active ? 'border-primary ring-1 ring-primary/40' : 'border-border/40 hover:border-primary/40'
                   }`}
                 >

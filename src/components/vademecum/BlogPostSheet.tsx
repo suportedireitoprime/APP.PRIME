@@ -136,6 +136,9 @@ export default function BlogPostSheet({ post, onClose, showGoTo = false, inline 
           )}
           <motion.div
             key={inline ? post.id : 'sheet'}
+            role={inline ? 'region' : 'dialog'}
+            aria-label={post ? `Artigo: ${post.titulo}` : 'Detalhes do artigo'}
+            aria-modal={!inline}
             initial={inline ? { opacity: 0, y: 8 } : { y: '100%' }}
             animate={inline ? { opacity: 1, y: 0 } : { y: 0 }}
             exit={inline ? { opacity: 0, y: 8 } : { y: '100%' }}
@@ -145,9 +148,8 @@ export default function BlogPostSheet({ post, onClose, showGoTo = false, inline 
                 ? 'relative h-full w-full bg-card border border-border rounded-2xl flex flex-col overflow-hidden shadow-xl'
                 : isDesktop
                 ? 'fixed z-50 inset-x-0 mx-auto top-[4vh] bottom-0 bg-card border border-b-0 border-border rounded-t-2xl flex flex-col w-[1080px] max-w-[94vw] shadow-2xl overflow-hidden 2xl:w-[1200px]'
-                : 'fixed inset-x-0 bottom-0 z-50 h-[90vh] bg-card rounded-t-3xl flex flex-col overflow-hidden shadow-2xl mx-auto max-w-3xl'
+                : 'fixed inset-x-0 bottom-0 z-50 h-[90vh] bg-card rounded-t-3xl flex flex-col overflow-hidden shadow-2xl mx-auto max-w-3xl pb-[var(--sai-bottom,0px)]'
             }
-
           >
             <div ref={scrollRef} className="flex-1 overflow-y-auto pb-8 relative">
               <div

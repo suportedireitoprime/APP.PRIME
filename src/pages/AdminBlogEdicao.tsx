@@ -101,6 +101,11 @@ export default function AdminBlogEdicao() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playingUrl, setPlayingUrl] = useState<string | null>(null);
 
+  // SEO & Título dinâmico do painel administrativo
+  useEffect(() => {
+    document.title = 'Gestão do Blog Edição | Vade Mecum PRIME Admin';
+  }, []);
+
   const load = async () => {
     setLoading(true);
     const [{ data: t }, { data: c }] = await Promise.all([
@@ -125,20 +130,23 @@ export default function AdminBlogEdicao() {
   useEffect(() => { load(); }, []);
 
   useEffect(() => {
+    let cancelled = false;
     (async () => {
       try {
-        const base = (import.meta as any).env?.VITE_SUPABASE_URL as string | undefined;
+        const env = (import.meta as unknown as { env: Record<string, string | undefined> }).env;
+        const base = env?.VITE_SUPABASE_URL;
         if (!base) throw new Error('VITE_SUPABASE_URL ausente');
-        const anon = (import.meta as any).env?.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined;
+        const anon = env?.VITE_SUPABASE_PUBLISHABLE_KEY;
         const r = await fetch(`${base}/functions/v1/narracao?fn=blog_preview&acao=vozes`, {
           headers: anon ? { apikey: anon, Authorization: `Bearer ${anon}` } : undefined,
         });
         const j = await r.json();
-        if (Array.isArray(j?.vozes)) setVozes(j.vozes as Voz[]);
+        if (!cancelled && Array.isArray(j?.vozes)) setVozes(j.vozes as Voz[]);
       } catch (e) {
         console.warn('falha ao carregar vozes', e);
       }
     })();
+    return () => { cancelled = true; };
   }, []);
 
   useEffect(() => {

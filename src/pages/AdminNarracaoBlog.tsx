@@ -45,21 +45,29 @@ const AdminNarracaoBlog = () => {
   const [fila, setFila] = useState<{ ativo: boolean; feitas: number; total: number }>({ ativo: false, feitas: 0, total: 0 });
   const [tocando, setTocando] = useState<string | null>(null);
 
+  // SEO & Título dinâmico do painel administrativo
   useEffect(() => {
+    document.title = 'Narração de Artigos do Blog | Vade Mecum PRIME Admin';
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
     (async () => {
       try {
-        const base = (import.meta as any).env?.VITE_SUPABASE_URL as string | undefined;
-        const anon = (import.meta as any).env?.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined;
+        const env = (import.meta as unknown as { env: Record<string, string | undefined> }).env;
+        const base = env?.VITE_SUPABASE_URL;
+        const anon = env?.VITE_SUPABASE_PUBLISHABLE_KEY;
         if (!base) return;
         const r = await fetch(`${base}/functions/v1/narracao?fn=blog_preview&acao=vozes`, {
           headers: anon ? { apikey: anon, Authorization: `Bearer ${anon}` } : undefined,
         });
         const j = await r.json();
-        if (Array.isArray(j?.vozes)) setVozes(j.vozes as Voz[]);
+        if (!cancelled && Array.isArray(j?.vozes)) setVozes(j.vozes as Voz[]);
       } catch {
         /* silencioso */
       }
     })();
+    return () => { cancelled = true; };
   }, []);
 
   const load = useCallback(async () => {
