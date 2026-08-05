@@ -26,9 +26,17 @@ implementation platform('com.google.firebase:firebase-bom:33.3.0')
 implementation 'com.google.firebase:firebase-messaging'
 ```
 
-## 4) Sincronizar
+## 4) Símbolos de Depuração Nativa (Google Play Console)
+Dentro de `buildTypes { release { ... } }` no arquivo `android/app/build.gradle`:
+```gradle
+ndk {
+    debugSymbolLevel 'SYMBOL_TABLE'
+}
+```
+
+## 5) Sincronizar
 ```bash
 npx cap sync android
 ```
 
-Pronto — o plugin `@capacitor/push-notifications` já vai funcionar com FCM.
+Pronto — o plugin `@capacitor/push-notifications` já vai funcionar com FCM e a geração de símbolos de depuração nativa (Native Debug Symbols) estará configurada para o Google Play Console.
