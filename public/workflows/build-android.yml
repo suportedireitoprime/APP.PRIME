@@ -110,10 +110,10 @@ jobs:
           # ----------------------------------------------------------------
           # Play Console recomendação #3: "Atualize o Plug-in do Android para
           # Gradle para a versão 9.0 ou mais recente".
-          # AGP 8.7.3 é a versão estável 8.x compatível com Gradle 8.11.1 e JDK 21.
+          # AGP 8.13.0 é a versão estável compatível com Gradle 8.14.3 e JDK 21.
           # ----------------------------------------------------------------
-          AGP_VERSION='8.7.3'
-          GRADLE_DIST='gradle-8.11.1-bin.zip'
+          AGP_VERSION='8.13.0'
+          GRADLE_DIST='gradle-8.14.3-all.zip'
 
           sed -i "s|classpath 'com.android.tools.build:gradle:[^']*'|classpath 'com.android.tools.build:gradle:${AGP_VERSION}'|" android/build.gradle
           echo "AGP forçado para ${AGP_VERSION}:"
@@ -2146,9 +2146,8 @@ jobs:
               android/gradle.properties || true; } > /tmp/gradle.properties.tmp
           mv /tmp/gradle.properties.tmp android/gradle.properties
           printf '\norg.gradle.java.home=%s\n' "$JAVA_HOME" >> android/gradle.properties
-          # R8 full mode + otimização/redução agressiva de recursos.
-          # Recomendação Play #4: "A redução otimizada de recursos não está ativada".
-          printf 'android.enableR8.fullMode=true\n' >> android/gradle.properties
+          # R8 modo padrão + otimização/redução de recursos sem breaking changes.
+          printf 'android.enableR8.fullMode=false\n' >> android/gradle.properties
           printf 'android.enableResourceOptimizations=true\n' >> android/gradle.properties
           printf 'android.nonTransitiveRClass=true\n' >> android/gradle.properties
           printf 'android.enableAppCompileTimeRClass=true\n' >> android/gradle.properties
@@ -2271,11 +2270,10 @@ jobs:
                   proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
                   signingConfig signingConfigs.release
                   ndk {
-                      debugSymbolLevel 'FULL'
+                      debugSymbolLevel 'SYMBOL_TABLE'
                   }
                   firebaseCrashlytics {
-                      nativeSymbolUploadEnabled true
-                      unstrippedNativeLibsDir 'build/intermediates/merged_native_libs/release/out/lib'
+                      mappingFileUploadEnabled true
                   }
               }'''
 
@@ -3491,9 +3489,9 @@ jobs:
           if 'enableSplit' not in s:
               bundle_block = (
                   "\n    bundle {\n"
-                  "        language { enableSplit = true }\n"
-                  "        density  { enableSplit = true }\n"
-                  "        abi      { enableSplit = true }\n"
+                  "        language { enableSplit true }\n"
+                  "        density  { enableSplit true }\n"
+                  "        abi      { enableSplit true }\n"
                   "    }\n"
               )
               idx = s.find('android {')

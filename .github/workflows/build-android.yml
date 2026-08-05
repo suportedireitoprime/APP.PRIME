@@ -110,10 +110,10 @@ jobs:
           # ----------------------------------------------------------------
           # Play Console recomendação #3: "Atualize o Plug-in do Android para
           # Gradle para a versão 9.0 ou mais recente".
-          # AGP 8.7.3 é a versão estável 8.x compatível com Gradle 8.11.1 e JDK 21.
+          # AGP 8.13.0 é a versão estável compatível com Gradle 8.14.3 e JDK 21.
           # ----------------------------------------------------------------
-          AGP_VERSION='8.7.3'
-          GRADLE_DIST='gradle-8.11.1-bin.zip'
+          AGP_VERSION='8.13.0'
+          GRADLE_DIST='gradle-8.14.3-all.zip'
 
           sed -i "s|classpath 'com.android.tools.build:gradle:[^']*'|classpath 'com.android.tools.build:gradle:${AGP_VERSION}'|" android/build.gradle
           echo "AGP forçado para ${AGP_VERSION}:"
