@@ -64,6 +64,7 @@ import {
 } from '@/lib/artigoFuncoesPrefetch';
 import { useNarracaoFlutuante } from '@/stores/useNarracaoFlutuante';
 import { useLocation } from 'react-router-dom';
+import { speakNative, stopNativeSpeech } from '@/lib/nativeTts';
 
 import { LEIS_SUPABASE_URL, LEIS_SUPABASE_ANON_KEY, LEIS_SUPABASE_PROJECT_ID } from "@/lib/legislacaoBackend";
 import { copiarTexto } from '@/lib/nativo/copiar';
@@ -888,32 +889,38 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         return;
       }
       const errorBody = await res.text().catch(() => '');
-      // Assinante Premium (ou admin) nunca vê o card de assinatura: se o
-      // backend recusar, é falha técnica — mostra erro, não paywall.
-      if (isPremium) {
-        console.error(`Narração recusada para usuário Premium [${res.status}]:`, errorBody);
-        setNarracaoLoading(false);
-        setNarracaoStepIdx(0);
-        if (!silent) toast.error('Não consegui gerar a narração agora. Tente novamente.');
-        return;
-      }
-      if (res.status === 402 || errorBody.includes('daily_narration_limit_reached')) {
+      if (!isPremium && (res.status === 402 || errorBody.includes('daily_narration_limit_reached'))) {
         setNarracaoLoading(false);
         setNarracaoStepIdx(0);
         openPremiumGate('narracao', 'Você usou suas 3 narrações gratuitas deste mês. Comece 3 dias grátis para ouvir sem limite.');
         return;
       }
-      if (res.status === 401 || errorBody.includes('authentication_required')) {
+
+      // Fallback para síntese de voz nativa do dispositivo caso o serviço de nuvem esteja indisponível/401/500
+      console.warn(`[ArtigoBottomSheet] Narração na nuvem indisponível [${res.status}]. Acionando síntese nativa...`);
+      const textoParaNarrar = `Artigo ${artigo.numero}. ${artigo.caput || ''}`;
+      const ok = await speakNative(textoParaNarrar);
+      setNarracaoLoading(false);
+      setNarracaoStepIdx(0);
+      if (ok) {
+        setNarracaoPlaying(true);
+        toast.success('Reproduzindo narração nativa do artigo.');
+      } else if (!silent) {
+        toast.error('Não consegui gerar a narração agora. Tente novamente.');
+      }
+    } catch (e) {
+      console.error('Erro ao gerar narração na nuvem. Tentando narração nativa...', e);
+      if (artigo) {
+        const textoParaNarrar = `Artigo ${artigo.numero}. ${artigo.caput || ''}`;
+        const ok = await speakNative(textoParaNarrar);
         setNarracaoLoading(false);
         setNarracaoStepIdx(0);
-        openPremiumGate('narracao', 'Entre na sua conta para usar as narrações gratuitas.');
-        return;
+        if (ok) {
+          setNarracaoPlaying(true);
+          toast.success('Reproduzindo narração nativa do artigo.');
+          return;
+        }
       }
-
-      console.error(`Erro ao gerar narração [${res.status}]:`, errorBody);
-      if (!silent) toast.error('Não consegui gerar a narração agora. Tente novamente.');
-    } catch (e) {
-      console.error('Erro ao gerar narração:', e);
       if (!silent) toast.error('Não consegui gerar a narração agora. Tente novamente.');
     }
     if (!silent) setNarracaoLoading(false);
@@ -929,8 +936,9 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
       if (narracaoAudioRef.current) {
         narracaoAudioRef.current.pause();
         stopProgressTracking();
-        setNarracaoPlaying(false);
       }
+      stopNativeSpeech();
+      setNarracaoPlaying(false);
       return;
     }
 
