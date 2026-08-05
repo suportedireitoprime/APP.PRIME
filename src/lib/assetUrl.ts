@@ -59,7 +59,7 @@ export function assetUrl(url: string | undefined | null): string {
     // garante que a imagem apareça offline (native) ou instantaneamente (web).
     const bundled = resolveBundled(url);
     if (bundled) return bundled;
-    return isNative ? `${CDN_HOST}${url}` : url;
+    return `${CDN_HOST}${url}`;
   }
   return url;
 }

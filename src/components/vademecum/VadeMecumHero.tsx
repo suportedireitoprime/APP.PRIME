@@ -2,12 +2,22 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, Search, Scale } from 'lucide-react';
+import { srcOf } from '@/lib/assetUrl';
 import brasaoImg from '@/assets/brasao-republica.webp';
 import vm1 from '@/assets/vademecum-hero/vm-1.png.asset.json';
 import vm2 from '@/assets/vademecum-hero/vm-2.png.asset.json';
 import vm4 from '@/assets/vademecum-hero/vm-4.png.asset.json';
+import heroVademecumBundled from '@/assets/hero-vademecum.webp';
+import themisCutoutBundled from '@/assets/themis-marble-cutout.webp';
+import landingVadeBundled from '@/assets/landing-vademecum-v2.webp';
 
-const FIGURAS = [vm1.url, vm2.url, vm4.url];
+const FIGURAS = [
+  srcOf(vm1) || heroVademecumBundled,
+  srcOf(vm2) || themisCutoutBundled,
+  srcOf(vm4) || landingVadeBundled,
+  heroVademecumBundled,
+  themisCutoutBundled,
+];
 
 const POSICOES = ['right', 'left', 'center'] as const;
 
@@ -78,6 +88,12 @@ const VadeMecumHero = ({ onBuscar }: Props) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
+            onError={(e) => {
+              const el = e.currentTarget as HTMLImageElement;
+              if (el.src !== heroVademecumBundled) {
+                el.src = heroVademecumBundled;
+              }
+            }}
             style={{ animation: 'ken-burns-a 12s ease-in-out infinite alternate' }}
             className={`absolute bottom-0 h-[86%] w-auto max-w-[64%] object-contain object-bottom drop-shadow-[0_10px_28px_rgba(0,0,0,0.35)] ${posClass}`}
           />
