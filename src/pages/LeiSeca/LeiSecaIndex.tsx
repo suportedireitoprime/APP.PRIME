@@ -15,6 +15,7 @@ import { LEI_SECA_MATERIAS, getMateriaByTrilha, corIcone, type LeiSecaMateria } 
 import { LeiSecaMateriaSheet } from "@/components/lei-seca/LeiSecaMateriaSheet";
 import { cn } from "@/lib/utils";
 import LeiSecaBottomNav from "@/components/lei-seca/LeiSecaBottomNav";
+import { haptic } from "@/lib/nativeHaptics";
 
 type Filtro = "todos" | "recentes" | "favoritos";
 
@@ -163,18 +164,18 @@ export default function LeiSecaIndex({ modo = "todos" }: { modo?: Filtro }) {
       </div>
 
       {/* CONTEÚDO E FILTROS */}
-      <div className="max-w-5xl mx-auto px-4 py-3 pb-[calc(7rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
+      <div className="max-w-5xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 py-3 pb-[calc(7rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
         {/* NAVEGAÇÃO POR PILLS */}
         <div className="flex items-center gap-2 p-1 rounded-2xl bg-muted/60 border border-border/60 mb-6 overflow-x-auto">
-          <FiltroPill ativo={filtro === "todos"} onClick={() => navigate("/lei-seca")} icon={<BookOpen className="h-4 w-4" />} label="Matérias" />
-          <FiltroPill ativo={filtro === "recentes"} onClick={() => navigate("/lei-seca/recentes")} icon={<Clock className="h-4 w-4" />} label="Recentes" badge={listaRecentes.length} />
-          <FiltroPill ativo={filtro === "favoritos"} onClick={() => navigate("/lei-seca/favoritos")} icon={<Heart className="h-4 w-4" />} label="Favoritos" badge={listaFavoritos.length} />
+          <FiltroPill ativo={filtro === "todos"} onClick={() => { haptic.selection(); navigate("/lei-seca"); }} icon={<BookOpen className="h-4 w-4" />} label="Matérias" />
+          <FiltroPill ativo={filtro === "recentes"} onClick={() => { haptic.selection(); navigate("/lei-seca/recentes"); }} icon={<Clock className="h-4 w-4" />} label="Recentes" badge={listaRecentes.length} />
+          <FiltroPill ativo={filtro === "favoritos"} onClick={() => { haptic.selection(); navigate("/lei-seca/favoritos"); }} icon={<Heart className="h-4 w-4" />} label="Favoritos" badge={listaFavoritos.length} />
         </div>
 
         {filtro === "todos" && (
           <>
             <SectionLabel icon={<BookOpen className="h-4 w-4 text-violet-500" />} label="Matérias" />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
               {isLoading && Array.from({ length: 8 }).map((_, i) => <Skeleton key={i} className="h-[78px] rounded-2xl" />)}
               {!isLoading &&
                 materias.map((m, idx) => {
@@ -188,7 +189,10 @@ export default function LeiSecaIndex({ modo = "todos" }: { modo?: Filtro }) {
                       onMouseEnter={prefetchMateria}
                       onTouchStart={prefetchMateria}
                       onFocus={prefetchMateria}
-                      onClick={() => setMateriaAberta(m)}
+                      onClick={() => {
+                        haptic.selection();
+                        setMateriaAberta(m);
+                      }}
                       style={{ animationDelay: `${Math.min(idx, 8) * 24}ms` }}
                       className="w-full min-h-[78px] h-auto py-3.5 rounded-2xl bg-card border border-border/60 hover:border-violet-500/40 hover:bg-card/80 hover:shadow-md transition-all flex items-center gap-3 px-3.5 text-left group active:scale-[0.985] animate-stagger-in touch-manipulation"
                     >

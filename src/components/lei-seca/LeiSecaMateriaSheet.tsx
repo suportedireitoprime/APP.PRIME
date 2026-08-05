@@ -40,7 +40,7 @@ export function LeiSecaMateriaSheet({ materia, trilhas, resumo, open, onOpenChan
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="bottom"
-        className="rounded-t-3xl border-t border-violet-500/20 max-h-[85vh] flex flex-col bg-card p-0"
+        className="rounded-t-3xl border-t border-violet-500/20 max-h-[85vh] flex flex-col bg-card p-0 lg:inset-auto lg:top-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:w-full lg:max-w-3xl lg:h-[80vh] lg:rounded-3xl lg:border lg:shadow-2xl"
       >
         {materia && (
           <>
