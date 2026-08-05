@@ -5,7 +5,7 @@ import * as pdfjsLib from 'pdfjs-dist';
 import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 import {
   Presentation, Upload, Loader2, Play, Check, Mic, ChevronRight, Trash2,
-  BookOpen, Scale, Eye, EyeOff, Search,
+  BookOpen, Scale, BookMarked, Eye, EyeOff, Search, Sparkles, Filter,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { PageHeader } from '@/components/vademecum/PageHeader';
@@ -20,7 +20,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
 type Voz = { id: string; genero: string; descricao: string; ativa?: boolean; padrao?: boolean };
 type SlidePreparado = { b64: string; texto: string; thumb: string };
-type Modo = 'materia' | 'lei';
+type Modo = 'materia' | 'lei' | 'livro';
 
 type ResumoRow = {
   id: string; area: string; tema: string; subtema: string | null;
@@ -28,6 +28,17 @@ type ResumoRow = {
 };
 
 type ArtigoRow = { numero: string; rotulo: string | null; caput: string | null; texto?: string | null };
+
+type LivroRow = {
+  livro_tabela: string;
+  livro_id: string;
+  titulo: string;
+  autor: string | null;
+  categoria: string;
+  apresentacao_id: string | null;
+  total_slides: number;
+  publicada: boolean;
+};
 
 type Apres = {
   id: string; titulo: string; origem: string; area: string | null; tema: string | null;
@@ -63,6 +74,12 @@ const AdminApresentacaoEditar = () => {
   const [buscaArtigo, setBuscaArtigo] = useState('');
   const [artigoSel, setArtigoSel] = useState<ArtigoRow | null>(null);
 
+  // livros (clássicos)
+  const [livros, setLivros] = useState<LivroRow[]>([]);
+  const [buscaLivro, setBuscaLivro] = useState('');
+  const [categoriaLivro, setCategoriaLivro] = useState('');
+  const [livroSel, setLivroSel] = useState<LivroRow | null>(null);
+
   // pdf
   const [nomePdf, setNomePdf] = useState('');
   const [slides, setSlides] = useState<SlidePreparado[]>([]);
@@ -86,10 +103,8 @@ const AdminApresentacaoEditar = () => {
     const { data } = await (supabase
       .from('apresentacoes_narradas') as any)
       .select('id, titulo, origem, area, tema, subtema, total_slides, publicada, status')
-      .neq('origem', 'livro')
       .order('created_at', { ascending: false });
     setLista((data as Apres[]) ?? []);
-
   };
   useEffect(() => { carregarLista(); }, []);
   useEffect(() => { if (job && !job.ativo && job.concluido) { carregarLista(); limparPdf(); } }, [job?.concluido, job?.ativo]);
@@ -125,7 +140,7 @@ const AdminApresentacaoEditar = () => {
   const lei = LEIS_CATALOG.find((l) => l.id === leiId) ?? null;
   useEffect(() => {
     if (modo !== 'lei' || !lei) return;
-    setArtigos([]); setArtigoSel(null);
+    setArtigos([]); setArtigoSel(null); setBuscaArtigo('');
     (async () => {
       setCarregando(true);
       const { data } = await (supabase.from(lei.tabela_nome as any) as any)
@@ -137,42 +152,129 @@ const AdminApresentacaoEditar = () => {
     })();
   }, [modo, leiId]);
 
+  // Auto-seleciona artigo se a busca for exatamente o número do artigo
+  useEffect(() => {
+    if (!buscaArtigo.trim() || !artigos.length) return;
+    const q = buscaArtigo.trim().toLowerCase();
+    const exato = artigos.find((a) => String(a.numero).trim().toLowerCase() === q);
+    if (exato) {
+      setArtigoSel(exato);
+    }
+  }, [buscaArtigo, artigos]);
+
   const artigosFiltrados = useMemo(() => {
     const q = buscaArtigo.trim().toLowerCase();
     const base = q ? artigos.filter((a) => String(a.numero).toLowerCase().includes(q)) : artigos;
     return base.slice(0, 120);
   }, [artigos, buscaArtigo]);
 
+  // ---------- livros (clássicos) ----------
+  useEffect(() => {
+    if (modo !== 'livro' || livros.length) return;
+    (async () => {
+      setCarregando(true);
+      try {
+        const res = await call({ acao: 'apres-livros' });
+        setLivros((res?.livros ?? []) as LivroRow[]);
+      } catch (e) {
+        toast.error('Erro ao carregar lista de livros');
+      } finally {
+        setCarregando(false);
+      }
+    })();
+  }, [modo, livros.length]);
+
+  const categoriasLivros = useMemo(() => {
+    const set = new Set<string>();
+    livros.forEach((l) => { if (l.categoria) set.add(l.categoria); });
+    return Array.from(set).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  }, [livros]);
+
+  const livrosFiltrados = useMemo(() => {
+    let list = livros;
+    if (categoriaLivro) {
+      list = list.filter((l) => l.categoria === categoriaLivro);
+    }
+    const q = buscaLivro.trim().toLowerCase();
+    if (q) {
+      list = list.filter(
+        (l) =>
+          l.titulo.toLowerCase().includes(q) ||
+          (l.autor && l.autor.toLowerCase().includes(q)) ||
+          (l.categoria && l.categoria.toLowerCase().includes(q))
+      );
+    }
+    return list;
+  }, [livros, categoriaLivro, buscaLivro]);
+
   // ---------- referência escolhida ----------
   const referencia = useMemo(() => {
-    if (modo === 'materia' && resumoSel) {
-      const texto = [resumoSel.markdown, resumoSel.exemplos, resumoSel.termos].filter(Boolean).join('\n\n');
+    if (modo === 'materia') {
+      if (resumoSel) {
+        const texto = [resumoSel.markdown, resumoSel.exemplos, resumoSel.termos].filter(Boolean).join('\n\n');
+        return {
+          id: resumoSel.id,
+          titulo: resumoSel.subtema || resumoSel.tema,
+          area: resumoSel.area,
+          tema: resumoSel.tema,
+          subtema: resumoSel.subtema,
+          texto,
+          livroTabela: 'resumos_juridicos',
+          livroId: resumoSel.id,
+        };
+      }
+      if (area && tema) {
+        return {
+          id: `materia:${area}:${tema}`,
+          titulo: `${area} — ${tema}`,
+          area,
+          tema,
+          subtema: null,
+          texto: `${area} · ${tema}`,
+          livroTabela: 'resumos_juridicos',
+          livroId: `materia:${area}:${tema}`,
+        };
+      }
+    }
+    if (modo === 'lei' && lei) {
+      if (artigoSel) {
+        const texto = [artigoSel.rotulo, artigoSel.caput, artigoSel.texto].filter(Boolean).join('\n');
+        return {
+          id: `${lei.tabela_nome}:${artigoSel.numero}`,
+          titulo: `${lei.sigla} — Art. ${artigoSel.numero}`,
+          area: lei.nome,
+          tema: `Art. ${artigoSel.numero}`,
+          subtema: artigoSel.rotulo,
+          texto,
+          livroTabela: lei.tabela_nome,
+          livroId: `art:${artigoSel.numero}`,
+        };
+      }
       return {
-        id: resumoSel.id,
-        titulo: resumoSel.subtema || resumoSel.tema,
-        area: resumoSel.area,
-        tema: resumoSel.tema,
-        subtema: resumoSel.subtema,
-        texto,
-        livroTabela: 'resumos_juridicos',
-        livroId: resumoSel.id,
+        id: lei.tabela_nome,
+        titulo: `${lei.sigla} — ${lei.nome}`,
+        area: lei.nome,
+        tema: lei.sigla,
+        subtema: lei.nome,
+        texto: `${lei.nome} (${lei.sigla}) - ${lei.descricao}`,
+        livroTabela: lei.tabela_nome,
+        livroId: `lei:${lei.id}`,
       };
     }
-    if (modo === 'lei' && lei && artigoSel) {
-      const texto = [artigoSel.rotulo, artigoSel.caput, artigoSel.texto].filter(Boolean).join('\n');
+    if (modo === 'livro' && livroSel) {
       return {
-        id: `${lei.tabela_nome}:${artigoSel.numero}`,
-        titulo: `${lei.sigla} — Art. ${artigoSel.numero}`,
-        area: lei.nome,
-        tema: `Art. ${artigoSel.numero}`,
-        subtema: artigoSel.rotulo,
-        texto,
-        livroTabela: lei.tabela_nome,
-        livroId: `art:${artigoSel.numero}`,
+        id: `${livroSel.livro_tabela}:${livroSel.livro_id}`,
+        titulo: livroSel.titulo,
+        area: 'Clássicos Jurídicos',
+        tema: livroSel.categoria || 'Livro Clássico',
+        subtema: livroSel.autor,
+        texto: `Livro: ${livroSel.titulo}${livroSel.autor ? ` — Autor: ${livroSel.autor}` : ''}`,
+        livroTabela: livroSel.livro_tabela,
+        livroId: livroSel.livro_id,
       };
     }
     return null;
-  }, [modo, resumoSel, lei, artigoSel]);
+  }, [modo, resumoSel, area, tema, lei, artigoSel, livroSel]);
 
   const limparPdf = () => { setSlides([]); setNomePdf(''); setLendoPdf(null); };
 
@@ -249,7 +351,9 @@ const AdminApresentacaoEditar = () => {
         referencia_texto: referencia.texto,
         descricao: modo === 'materia'
           ? `${referencia.area} · ${referencia.tema}`
-          : `${referencia.area}`,
+          : modo === 'lei'
+            ? `${referencia.area}`
+            : `Clássicos · ${referencia.subtema || 'Livro'}`,
       },
     });
   };
@@ -286,13 +390,13 @@ const AdminApresentacaoEditar = () => {
     <div className="min-h-dvh bg-background pb-28">
       <PageHeader
         title="Apresentação Editar"
-        subtitle="Resumo ou lei → PDF → narração"
+        subtitle="Selecione Leis, Matérias ou Livros → Envie o PDF → Gere a Narração"
         onBack={() => navigate('/admin-funcoes')}
       />
 
       {(job || lendoPdf || ocrAtivo) && (
         <div className="sticky top-0 z-30 bg-card/95 backdrop-blur border-b border-border p-3">
-          <div className="max-w-3xl mx-auto">
+          <div className="max-w-4xl mx-auto">
             <div className="flex items-center justify-between text-xs font-body mb-2">
               <span>
                 {lendoPdf
@@ -316,44 +420,63 @@ const AdminApresentacaoEditar = () => {
         </div>
       )}
 
-      <div className="max-w-3xl mx-auto p-4 space-y-4">
-        <div className="rounded-2xl border border-border bg-card p-4 flex gap-3">
-          <Presentation className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-          <p className="text-sm text-muted-foreground font-body">
-            Escolha o resumo (matéria) ou o artigo de lei, envie o PDF da apresentação e gere a narração.
-            O conteúdo dos slides é lido por OCR e o apresentador explica cada um em 30 a 40 segundos,
-            usando o resumo como base.
-          </p>
+      <div className="max-w-4xl mx-auto p-4 space-y-4">
+        {/* Banner Explicativo Responsivo */}
+        <div className="rounded-2xl border border-border bg-card p-4 flex flex-col sm:flex-row items-start sm:items-center gap-3">
+          <Presentation className="w-6 h-6 text-primary shrink-0" />
+          <div className="text-xs sm:text-sm text-muted-foreground font-body">
+            Escolha uma das 3 categorias (**Leis**, **Matérias** ou **Livros Clássicos**), selecione a referência, envie o PDF da apresentação e gere a narração.
+          </div>
         </div>
 
-        {/* 1 — origem */}
-        <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
-          <Passo n={1} titulo="Leis ou matérias" ok={!!referencia} ativo={!referencia} />
-          <div className="grid grid-cols-2 gap-2">
+        {/* 1 — Categorias Responsivas (3 Opções) */}
+        <div className="rounded-2xl border border-border bg-card p-4 space-y-4">
+          <Passo n={1} titulo="Escolha a categoria" ok={!!referencia} ativo={!referencia} />
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
             {([
-              { id: 'materia' as Modo, label: 'Matérias', icon: BookOpen },
-              { id: 'lei' as Modo, label: 'Leis', icon: Scale },
+              { id: 'materia' as Modo, label: 'Matérias', desc: 'Resumos por área e tema', icon: BookOpen },
+              { id: 'lei' as Modo, label: 'Leis', desc: 'Constituição e Códigos', icon: Scale },
+              { id: 'livro' as Modo, label: 'Livros (Clássicos)', desc: 'Biblioteca Jurídica', icon: BookMarked },
             ]).map((m) => {
               const Icon = m.icon;
+              const ativo = modo === m.id;
               return (
                 <button
                   key={m.id}
                   disabled={ocupado}
-                  onClick={() => { setModo(m.id); setResumoSel(null); setArtigoSel(null); }}
-                  className={`rounded-xl border p-3 flex items-center gap-2 text-sm font-semibold font-body transition ${modo === m.id ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground'}`}
+                  onClick={() => {
+                    setModo(m.id);
+                    setResumoSel(null);
+                    setArtigoSel(null);
+                    setLivroSel(null);
+                  }}
+                  className={`rounded-xl border p-3.5 text-left flex flex-col justify-between transition-all ${
+                    ativo
+                      ? 'border-primary bg-primary/10 text-primary shadow-sm'
+                      : 'border-border text-muted-foreground hover:border-primary/40 hover:text-foreground'
+                  }`}
                 >
-                  <Icon className="w-4 h-4" /> {m.label}
+                  <div className="flex items-center justify-between mb-2">
+                    <Icon className="w-5 h-5" />
+                    {ativo && <Sparkles className="w-3.5 h-3.5 text-primary" />}
+                  </div>
+                  <div>
+                    <span className="block text-sm font-bold font-heading">{m.label}</span>
+                    <span className="block text-[11px] opacity-80 font-body">{m.desc}</span>
+                  </div>
                 </button>
               );
             })}
           </div>
 
-          {modo === 'materia' ? (
-            <div className="space-y-2">
+          {/* Painel da Categoria 1: Matérias */}
+          {modo === 'materia' && (
+            <div className="space-y-3 pt-2 border-t border-border/60">
               <select
                 value={area}
                 onChange={(e) => { setArea(e.target.value); setTema(''); setResumoSel(null); }}
-                className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm font-body"
+                className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm font-body focus:ring-1 focus:ring-primary"
               >
                 <option value="">{carregando ? 'Carregando áreas…' : 'Escolha a área'}</option>
                 {areas.map((a) => <option key={a} value={a}>{a}</option>)}
@@ -363,7 +486,7 @@ const AdminApresentacaoEditar = () => {
                 <select
                   value={tema}
                   onChange={(e) => { setTema(e.target.value); setResumoSel(null); }}
-                  className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm font-body"
+                  className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm font-body focus:ring-1 focus:ring-primary"
                 >
                   <option value="">Escolha o tema</option>
                   {temas.map((t) => <option key={t} value={t}>{t}</option>)}
@@ -371,31 +494,34 @@ const AdminApresentacaoEditar = () => {
               )}
 
               {!!tema && (
-                <div className="rounded-xl border border-border divide-y divide-border max-h-72 overflow-y-auto">
+                <div className="rounded-xl border border-border divide-y divide-border max-h-72 overflow-y-auto bg-background/50">
                   {subtemas.map((r) => (
                     <button
                       key={r.id}
                       onClick={() => setResumoSel(r)}
-                      className={`w-full text-left p-3 flex items-center gap-2 ${resumoSel?.id === r.id ? 'bg-primary/10' : ''}`}
+                      className={`w-full text-left p-3 flex items-center gap-2 transition ${resumoSel?.id === r.id ? 'bg-primary/10' : 'hover:bg-accent/40'}`}
                     >
                       <span className="flex-1 min-w-0">
                         <span className="block text-sm font-body font-semibold truncate">{r.subtema || r.tema}</span>
                         <span className="block text-[11px] text-muted-foreground">
-                          {(r.markdown?.length ?? 0) > 0 ? `${Math.round((r.markdown!.length) / 100) / 10}k caracteres de resumo` : 'sem resumo salvo'}
+                          {(r.markdown?.length ?? 0) > 0 ? `${Math.round((r.markdown!.length) / 100) / 10}k caracteres` : 'sem resumo salvo'}
                         </span>
                       </span>
-                      {resumoSel?.id === r.id ? <Check className="w-4 h-4 text-primary" /> : <ChevronRight className="w-4 h-4 text-muted-foreground" />}
+                      {resumoSel?.id === r.id ? <Check className="w-4 h-4 text-primary shrink-0" /> : <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />}
                     </button>
                   ))}
                 </div>
               )}
             </div>
-          ) : (
-            <div className="space-y-2">
+          )}
+
+          {/* Painel da Categoria 2: Leis */}
+          {modo === 'lei' && (
+            <div className="space-y-3 pt-2 border-t border-border/60">
               <select
                 value={leiId}
                 onChange={(e) => setLeiId(e.target.value)}
-                className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm font-body"
+                className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm font-body focus:ring-1 focus:ring-primary"
               >
                 <option value="">Escolha a lei</option>
                 {LEIS_CATALOG.map((l) => <option key={l.id} value={l.id}>{l.nome}</option>)}
@@ -408,23 +534,23 @@ const AdminApresentacaoEditar = () => {
                     <input
                       value={buscaArtigo}
                       onChange={(e) => setBuscaArtigo(e.target.value)}
-                      placeholder="Buscar artigo (ex.: 121)"
-                      className="w-full rounded-xl border border-border bg-background pl-9 pr-3 py-2.5 text-sm font-body"
+                      placeholder="Buscar artigo (ex.: 1 ou 121)"
+                      className="w-full rounded-xl border border-border bg-background pl-9 pr-3 py-2.5 text-sm font-body focus:ring-1 focus:ring-primary"
                     />
                   </div>
-                  <div className="rounded-xl border border-border divide-y divide-border max-h-72 overflow-y-auto">
+                  <div className="rounded-xl border border-border divide-y divide-border max-h-72 overflow-y-auto bg-background/50">
                     {carregando && <div className="p-4 flex justify-center"><Loader2 className="w-5 h-5 animate-spin text-primary" /></div>}
                     {artigosFiltrados.map((a) => (
                       <button
                         key={a.numero}
                         onClick={() => setArtigoSel(a)}
-                        className={`w-full text-left p-3 flex items-center gap-2 ${artigoSel?.numero === a.numero ? 'bg-primary/10' : ''}`}
+                        className={`w-full text-left p-3 flex items-center gap-2 transition ${artigoSel?.numero === a.numero ? 'bg-primary/10' : 'hover:bg-accent/40'}`}
                       >
                         <span className="flex-1 min-w-0">
                           <span className="block text-sm font-body font-semibold">Art. {a.numero}</span>
                           <span className="block text-[11px] text-muted-foreground truncate">{a.rotulo || a.caput}</span>
                         </span>
-                        {artigoSel?.numero === a.numero ? <Check className="w-4 h-4 text-primary" /> : <ChevronRight className="w-4 h-4 text-muted-foreground" />}
+                        {artigoSel?.numero === a.numero ? <Check className="w-4 h-4 text-primary shrink-0" /> : <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />}
                       </button>
                     ))}
                   </div>
@@ -433,20 +559,95 @@ const AdminApresentacaoEditar = () => {
             </div>
           )}
 
+          {/* Painel da Categoria 3: Livros (Clássicos da Literatura Jurídica) */}
+          {modo === 'livro' && (
+            <div className="space-y-3 pt-2 border-t border-border/60">
+              <div className="flex flex-col sm:flex-row gap-2">
+                <div className="relative flex-1">
+                  <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <input
+                    value={buscaLivro}
+                    onChange={(e) => setBuscaLivro(e.target.value)}
+                    placeholder="Buscar livro clássico (ex.: Dos Delitos e das Penas)"
+                    className="w-full rounded-xl border border-border bg-background pl-9 pr-3 py-2.5 text-sm font-body focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+                {!!categoriasLivros.length && (
+                  <select
+                    value={categoriaLivro}
+                    onChange={(e) => setCategoriaLivro(e.target.value)}
+                    className="rounded-xl border border-border bg-background px-3 py-2.5 text-xs font-body"
+                  >
+                    <option value="">Todas as categorias</option>
+                    {categoriasLivros.map((cat) => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                  </select>
+                )}
+              </div>
+
+              <div className="rounded-xl border border-border divide-y divide-border max-h-80 overflow-y-auto bg-background/50">
+                {carregando && (
+                  <div className="p-6 flex justify-center items-center gap-2 text-sm font-body text-muted-foreground">
+                    <Loader2 className="w-5 h-5 animate-spin text-primary" /> Carregando biblioteca de clássicos…
+                  </div>
+                )}
+                {!carregando && !livrosFiltrados.length && (
+                  <div className="p-4 text-center text-xs text-muted-foreground font-body">
+                    Nenhum livro clássico encontrado.
+                  </div>
+                )}
+                {!carregando && livrosFiltrados.map((l) => {
+                  const sel = livroSel?.livro_id === l.livro_id && livroSel?.livro_tabela === l.livro_tabela;
+                  return (
+                    <button
+                      key={`${l.livro_tabela}:${l.livro_id}`}
+                      onClick={() => setLivroSel(l)}
+                      className={`w-full text-left p-3.5 flex items-center justify-between gap-3 transition ${
+                        sel ? 'bg-primary/10' : 'hover:bg-accent/40'
+                      }`}
+                    >
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="block text-sm font-bold font-heading truncate text-foreground">
+                            {l.titulo}
+                          </span>
+                          {l.apresentacao_id && (
+                            <span className="px-1.5 py-0.5 rounded text-[10px] bg-primary/20 text-primary font-semibold shrink-0">
+                              Já possui apresentação
+                            </span>
+                          )}
+                        </div>
+                        <span className="block text-xs text-muted-foreground font-body truncate mt-0.5">
+                          {l.autor ? `Autor: ${l.autor}` : 'Clássico Jurídico'} · {l.categoria}
+                        </span>
+                      </div>
+                      {sel ? <Check className="w-5 h-5 text-primary shrink-0" /> : <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {referencia && (
-            <p className="text-xs font-body text-muted-foreground">
-              Selecionado: <span className="text-foreground font-semibold">{referencia.titulo}</span>
-              {referencia.texto ? ` · ${referencia.texto.length} caracteres de referência` : ' · sem material de referência'}
-            </p>
+            <div className="p-3 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-between gap-2">
+              <span className="text-xs font-body text-muted-foreground truncate">
+                Referência ativa: <strong className="text-primary">{referencia.titulo}</strong>
+              </span>
+              <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-primary text-primary-foreground shrink-0 uppercase">
+                {modo}
+              </span>
+            </div>
           )}
         </div>
 
         {/* 2 — PDF */}
         <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
           <Passo n={2} titulo="Envie o PDF da apresentação" ok={!!slides.length} ativo={!!referencia && !slides.length} />
-          <label className={`flex items-center justify-center gap-2 rounded-xl border border-dashed border-border py-6 text-sm font-body ${!referencia || ocupado ? 'opacity-50' : 'cursor-pointer hover:border-primary/50'}`}>
-            <Upload className="w-4 h-4" />
-            {nomePdf || 'Selecionar PDF'}
+          <label className={`flex items-center justify-center gap-2 rounded-xl border border-dashed border-border py-6 text-sm font-body transition ${!referencia || ocupado ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-primary/50 hover:bg-accent/20'}`}>
+            <Upload className="w-4 h-4 text-primary" />
+            {nomePdf || 'Selecionar PDF da Apresentação'}
             <input
               type="file"
               accept="application/pdf"
@@ -473,7 +674,7 @@ const AdminApresentacaoEditar = () => {
               value={voz}
               onChange={(e) => setVoz(e.target.value)}
               disabled={ocupado}
-              className="flex-1 rounded-xl border border-border bg-background px-3 py-2.5 text-sm font-body"
+              className="flex-1 rounded-xl border border-border bg-background px-3 py-2.5 text-sm font-body focus:ring-1 focus:ring-primary"
             >
               {(vozes.length ? vozes : [{ id: 'Charon', genero: '', descricao: 'Padrão' } as Voz]).map((v) => (
                 <option key={v.id} value={v.id}>{v.id} — {v.descricao}</option>
@@ -483,29 +684,31 @@ const AdminApresentacaoEditar = () => {
           <button
             onClick={gerar}
             disabled={!referencia || !slides.length || ocupado}
-            className="w-full rounded-xl bg-primary text-primary-foreground py-3 font-heading font-bold text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+            className="w-full rounded-xl bg-primary text-primary-foreground py-3.5 font-heading font-bold text-sm flex items-center justify-center gap-2 disabled:opacity-50 shadow-md hover:bg-primary/90 transition"
           >
-            {job?.ativo ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
+            {job?.ativo ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4 fill-current" />}
             Gerar apresentação narrada
           </button>
         </div>
 
-        {/* lista */}
-        <div className="rounded-2xl border border-border bg-card p-4 space-y-2">
-          <h2 className="font-heading font-bold text-sm">Apresentações criadas</h2>
-          {!lista.length && <p className="text-xs text-muted-foreground font-body">Nenhuma apresentação de matéria ou lei ainda.</p>}
+        {/* Lista de Apresentações Criadas */}
+        <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
+          <h2 className="font-heading font-bold text-sm flex items-center gap-2">
+            <Presentation className="w-4 h-4 text-primary" /> Apresentações criadas
+          </h2>
+          {!lista.length && <p className="text-xs text-muted-foreground font-body">Nenhuma apresentação criada ainda.</p>}
           {lista.map((a) => (
-            <div key={a.id} className="rounded-xl border border-border p-3 flex items-center gap-3">
+            <div key={a.id} className="rounded-xl border border-border p-3 flex items-center gap-3 bg-background/40 hover:bg-background/80 transition">
               <span className="flex-1 min-w-0">
                 <span className="block text-sm font-body font-semibold truncate">{a.titulo}</span>
                 <span className="block text-[11px] text-muted-foreground truncate">
-                  {[a.area, a.tema].filter(Boolean).join(' · ')} · {a.total_slides} slides · {a.status}
+                  {[a.origem?.toUpperCase(), a.area, a.tema].filter(Boolean).join(' · ')} · {a.total_slides} slides · {a.status}
                 </span>
               </span>
-              <button onClick={() => alternarPublicacao(a)} className="p-2 text-muted-foreground" aria-label="Publicar">
+              <button onClick={() => alternarPublicacao(a)} className="p-2 text-muted-foreground hover:text-primary transition" aria-label="Publicar">
                 {a.publicada ? <Eye className="w-4 h-4 text-primary" /> : <EyeOff className="w-4 h-4" />}
               </button>
-              <button onClick={() => excluir(a)} className="p-2 text-destructive" aria-label="Excluir">
+              <button onClick={() => excluir(a)} className="p-2 text-destructive hover:opacity-80 transition" aria-label="Excluir">
                 <Trash2 className="w-4 h-4" />
               </button>
             </div>

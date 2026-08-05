@@ -56,6 +56,8 @@ import { SpeedInsights } from "@vercel/speed-insights/react";
 import { RecordingProvider } from "@/contexts/RecordingContext";
 import { LeisCantadasPlayerProvider } from "@/contexts/LeisCantadasPlayerContext";
 import GlobalLeisCantadasMiniPlayer from "@/components/leis-cantadas/GlobalLeisCantadasMiniPlayer";
+import { AudioaulasPlayerProvider } from "@/contexts/AudioaulasPlayerContext";
+import GlobalAudioaulasMiniPlayer from "@/components/audioaulas/GlobalAudioaulasMiniPlayer";
 import { GravacaoFlutuante } from "@/components/GravacaoFlutuante";
 import { GeofencePresenceBanner } from "@/components/GeofencePresenceBanner";
 import { ReminderInAppBanner } from "@/components/ReminderInAppBanner";
@@ -960,10 +962,13 @@ const App = () => (
               {/* <IntroOverlay /> — desativado por preferência (splash estático) */}
               <RecordingProvider>
                 <LeisCantadasPlayerProvider>
-                  <AnimatedRoutes />
-                  <NarracaoMiniPlayer />
-                  <GravacaoFlutuante />
-                  <GlobalLeisCantadasMiniPlayer />
+                  <AudioaulasPlayerProvider>
+                    <AnimatedRoutes />
+                    <NarracaoMiniPlayer />
+                    <GravacaoFlutuante />
+                    <GlobalLeisCantadasMiniPlayer />
+                    <GlobalAudioaulasMiniPlayer />
+                  </AudioaulasPlayerProvider>
                 </LeisCantadasPlayerProvider>
               </RecordingProvider>
 
