@@ -256,9 +256,11 @@ async function gerarAudioSegmento(
 ): Promise<string> {
   const textoComInstrucao =
     `TTS(português brasileiro, tom animado e envolvente):\n` +
-    `Narre com entusiasmo, energia e clareza, como uma professora jovem, ` +
-    `apaixonada por Direito, explicando o conteúdo para os alunos com empolgação ` +
-    `— nunca em tom monótono ou robótico.\n` +
+    `Narre com entonação profissional, padrão uniforme e tom envolvente para todos os artigos, ` +
+    `como uma professora jovem apaixonada por Direito explicando aos seus alunos.\n` +
+    `Narre a vinheta e o número do artigo apenas UMA vez no início (ex: "Artigo quarto."), ` +
+    `passando direto para o texto do caput sem jamais repetir o número do artigo.\n` +
+    `Mantenha rigorosamente a mesma tonalidade, ritmo, velocidade e padrão de leitura em todos os artigos.\n` +
     `Mantenha a precisão jurídica ao pronunciar "parágrafo primeiro", "inciso segundo", ` +
     `"alínea á", com uma breve pausa antes de cada um.\n` +
     `Leitura contínua, fluida e viva. Não diga "parte um" ou "continuação".\n\n${texto}`;
@@ -524,9 +526,9 @@ Deno.serve(async (req) => {
       if (sufixoLetra) artigoExtenso += " " + (letrasParaExtenso[sufixoLetra.toLowerCase()] ?? sufixoLetra);
     }
 
-    // Remove prefixo redundante do próprio texto ("Art. 2º —", "Art. 2 -", "Art. 2º.")
+    // Remove prefixo redundante do próprio texto ("Art. 4º —", "Artigo 4º -", "Art. 4º.")
     const textoLimpo = String(artigo_texto)
-      .replace(/^\s*Art\.?\s*\d+[º°]?(?:\s*[-–]\s*[A-Za-z])?\s*[.\-–—:]?\s*/i, "")
+      .replace(/^\s*(?:Artigo|Art)\.?\s*\d+[º°]?(?:\s*[-–—]\s*[A-Za-z])?\s*[.\-–—:]?\s*/i, "")
       .trim();
 
     // Monta prefixo formal: "<Lei>, <hierarquia>, artigo <n>. <epígrafe?>. <texto>"

@@ -142,6 +142,8 @@ function formatTextoArtigoParaNarracao(artigo: any, breadcrumb: any): string {
   partes.push(`Artigo ${numExtenso}.`);
 
   let texto = stripRedacao((artigo.caput || '').trim());
+  // Remove prefixo do próprio caput se ele já trouxer "Art. 4º —" ou "Artigo 4º"
+  texto = texto.replace(/^\s*(?:Artigo|Art)\.?\s*\d+[º°]?(?:\s*[-–—]\s*[A-Za-z])?\s*[.\-–—:]?\s*/i, '').trim();
   texto = texto.replace(/\b[Aa]rt\.?\s*/g, 'Artigo ');
   texto = texto.replace(/§\s*único/gi, 'Parágrafo único');
   texto = texto.replace(/§\s*/g, 'Parágrafo ');
