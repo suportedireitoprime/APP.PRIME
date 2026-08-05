@@ -231,7 +231,7 @@ function dividirTextoEmSegmentos(texto: string): string[] {
 // GEMINI TTS — Sulafat (animada) + prompt de entusiasmo
 // ============================================================================
 
-const VOICE_NAME = "Sulafat";
+const VOICE_NAME = "Kore";
 const MODEL = "gemini-2.5-flash-preview-tts";
 const NARRATION_CACHE_VERSION = "v4-cardinal-juridico";
 

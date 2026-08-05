@@ -108,6 +108,48 @@ function getWordTokens(text: string): string[] {
   return Array.from(text.matchAll(/[\p{L}\p{N}]+(?:[-–][\p{L}\p{N}]+)*/gu), match => match[0]);
 }
 
+function formatArtigoNumeroExtenso(numStr: string): string {
+  const clean = numStr.replace(/^[Aa]rt\.?\s*/, '').trim();
+  if (/^1º?$/i.test(clean)) return 'primeiro';
+  if (/^2º?$/i.test(clean)) return 'segundo';
+  if (/^3º?$/i.test(clean)) return 'terceiro';
+  if (/^4º?$/i.test(clean)) return 'quarto';
+  if (/^5º?$/i.test(clean)) return 'quinto';
+  if (/^6º?$/i.test(clean)) return 'sexto';
+  if (/^7º?$/i.test(clean)) return 'sétimo';
+  if (/^8º?$/i.test(clean)) return 'oitavo';
+  if (/^9º?$/i.test(clean)) return 'nono';
+  return clean;
+}
+
+function formatTextoArtigoParaNarracao(artigo: any, breadcrumb: any): string {
+  if (!artigo) return '';
+  const STRUCT_RE = /^(PARTE|LIVRO|T[IÍ]TULO|CAP[IÍ]TULO|SEÇ[AÃ]O|SUBSEÇ[AÃ]O)\b/i;
+  const tituloIsEpig = artigo.titulo && !STRUCT_RE.test(artigo.titulo);
+  const breadcrumbTitle = breadcrumb?.tituloDesc || breadcrumb?.titulo || null;
+  const hier = breadcrumbTitle || artigo.capitulo || (!tituloIsEpig ? artigo.titulo : null) || null;
+
+  const partes: string[] = [];
+
+  if (hier) {
+    partes.push(`${hier.trim()}.`);
+  }
+
+  const numExtenso = formatArtigoNumeroExtenso(artigo.numero);
+  partes.push(`Artigo ${numExtenso}.`);
+
+  let texto = stripRedacao((artigo.caput || '').trim());
+  texto = texto.replace(/\b[Aa]rt\.?\s*/g, 'Artigo ');
+  texto = texto.replace(/§\s*único/gi, 'Parágrafo único');
+  texto = texto.replace(/§\s*/g, 'Parágrafo ');
+  texto = texto.replace(/\b[Ii]nc\.?\s*/g, 'Inciso ');
+  texto = texto.replace(/\b[Al]l\.?\s*/g, 'Alínea ');
+
+  partes.push(texto);
+
+  return partes.filter(Boolean).join(' ');
+}
+
 function isLineRevogado(line: string): boolean {
   return /\(Revogado[^)]*\)/i.test(line);
 }
@@ -863,14 +905,15 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         console.warn('[ArtigoBottomSheet] Erro ao consultar narracoes_artigos:', errDb);
       }
 
-      // 2ª Tentativa: Gera em tempo real via Edge Function com o modelo Gemini 2.5 Flash TTS (gemini-2.5-flash-preview-tts / voz Sulafat)
+      // 2ª Tentativa: Gera em tempo real via Edge Function com o modelo Gemini 2.5 Flash TTS (gemini-2.5-flash-preview-tts / voz Kore)
       if (!audio_url) {
         try {
-          const textoCompleto = `Artigo ${artigo.numero}. ${artigo.caput || ''}`;
+          const textoFormatado = formatTextoArtigoParaNarracao(artigo, breadcrumb);
           const { data: fnData, error: fnErr } = await supabase.functions.invoke('narracao', {
             body: {
               fn: 'blog_preview',
-              texto: textoCompleto,
+              voz: 'Kore',
+              texto: textoFormatado,
             },
           });
 
@@ -910,28 +953,21 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         }
       }
 
-      // Se obtivemos o áudio gerado pelo Gemini 2.5 Flash TTS
+      // Se obtivemos o áudio gerado pelo Gemini 2.5 Flash TTS (Kore)
       if (audio_url) {
         if (!silent) setNarracaoStepIdx(2);
         setNarracaoUrl(audio_url);
         if (Array.isArray(word_timings)) setNarracaoWordTimings(word_timings);
 
-        if (autoplay) {
-          if (!silent) setNarracaoStepIdx(3);
-          setTimeout(async () => {
-            if (!silent) setNarracaoLoading(false);
-            await playNarracao(audio_url!);
-          }, silent ? 0 : 700);
-        } else if (!silent) {
-          setNarracaoLoading(false);
-        }
+        if (!silent) setNarracaoLoading(false);
+        await playNarracao(audio_url);
         return;
       }
 
       // Fallback para síntese de voz nativa caso o Gemini TTS esteja temporariamente indisponível
       console.warn('[ArtigoBottomSheet] Narração em áudio via Gemini indisponível. Acionando síntese nativa...');
-      const textoParaNarrar = `Artigo ${artigo.numero}. ${artigo.caput || ''}`;
-      const ok = await speakNative(textoParaNarrar);
+      const textoFormatadoFallback = formatTextoArtigoParaNarracao(artigo, breadcrumb);
+      const ok = await speakNative(textoFormatadoFallback);
       setNarracaoLoading(false);
       setNarracaoStepIdx(0);
       if (ok) {
@@ -943,8 +979,8 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
     } catch (e) {
       console.error('Erro ao gerar narração via Gemini. Tentando narração nativa...', e);
       if (artigo) {
-        const textoParaNarrar = `Artigo ${artigo.numero}. ${artigo.caput || ''}`;
-        const ok = await speakNative(textoParaNarrar);
+        const textoFormatadoFallback = formatTextoArtigoParaNarracao(artigo, breadcrumb);
+        const ok = await speakNative(textoFormatadoFallback);
         setNarracaoLoading(false);
         setNarracaoStepIdx(0);
         if (ok) {
