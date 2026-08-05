@@ -15,7 +15,7 @@ const config: CapacitorConfig = {
   // antes de gerar o AAB de release para que o app rode 100% offline com o
   // `dist/` embutido (o workflow do GitHub Actions faz isso automaticamente).
   server: {
-    url: 'https://221ec3d0-d957-479c-9221-c42c82deabc9.lovableproject.com?forceHideBadge=true',
+    url: 'http://10.0.2.2:8080',
     cleartext: true,
   },
   android: {
@@ -76,6 +76,9 @@ const config: CapacitorConfig = {
     // O @capacitor-community/safe-area popula env(safe-area-inset-*) e
     // --safe-area-inset-* no :root automaticamente. O CapacitorSystemBars
     // precisa ficar OFF pra não conflitar.
+    PrivacyScreen: {
+      enable: false,
+    },
     SafeArea: {
       statusBarStyle: 'DARK', // ícones claros sobre fundo escuro do app
       navigationBarStyle: 'DARK',
