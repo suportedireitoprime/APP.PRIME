@@ -2,7 +2,7 @@
 //
 // IMPORTANTE: a tabela `resenha_diaria` que está de fato populada — com
 // `texto_completo` integral extraído do Planalto e `explicacao` gerada por IA —
-// vive no backend de legislação (`iftdrbxvekrhzstayjwp`), junto com as edge
+// vive no backend de legislação (`dnjrgpldcwcpoywamorr`), junto com as edge
 // functions `popular-texto-resenha` / `scrape-resenha-diaria`.
 //
 // O projeto próprio do app possui uma cópia da tabela, porém sem texto integral

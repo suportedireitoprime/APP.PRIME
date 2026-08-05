@@ -1,7 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 
-const SOURCE_URL = 'https://izspjvegxdfgkgibpyst.supabase.co/rest/v1/FLASHCARDS_GERADOS';
+const SOURCE_URL = 'https://dnjrgpldcwcpoywamorr.supabase.co/rest/v1/FLASHCARDS_GERADOS';
 const SOURCE_KEY = 'sb_publishable_nqyec1qQmLMrbPH3YFPhxw_XtJ449ZC';
 
 // Normalização das áreas do app antigo (36 variações -> 29 áreas canônicas)

@@ -318,8 +318,8 @@ export const TRANSFER_GROUPS: TransferGroup[] = [
     titulo: 'Backend (Supabase)',
     desc: 'Projeto, chaves e URL pública',
     itens: [
-      { key: 'supabase_project_id', label: 'VITE_SUPABASE_PROJECT_ID', atual: 'iftdrbxvekrhzstayjwp', kind: 'arquivo', obrigatorio: true, arquivos: ['.env', 'src/integrations/supabase/client.ts', 'supabase/config.toml'], comoObter: 'Ao remixar no Lovable, um projeto Cloud novo é criado automaticamente. Se usar Supabase próprio, pegue o ref no dashboard.' },
-      { key: 'supabase_url', label: 'VITE_SUPABASE_URL / SUPABASE_URL', atual: 'https://iftdrbxvekrhzstayjwp.supabase.co', kind: 'arquivo', obrigatorio: true, arquivos: ['.env'], comoObter: 'URL do projeto novo (também vira secret no GitHub Actions).' },
+      { key: 'supabase_project_id', label: 'VITE_SUPABASE_PROJECT_ID', atual: 'dnjrgpldcwcpoywamorr', kind: 'arquivo', obrigatorio: true, arquivos: ['.env', 'src/integrations/supabase/client.ts', 'supabase/config.toml'], comoObter: 'Ao remixar no Lovable, um projeto Cloud novo é criado automaticamente. Se usar Supabase próprio, pegue o ref no dashboard.' },
+      { key: 'supabase_url', label: 'VITE_SUPABASE_URL / SUPABASE_URL', atual: 'https://dnjrgpldcwcpoywamorr.supabase.co', kind: 'arquivo', obrigatorio: true, arquivos: ['.env'], comoObter: 'URL do projeto novo (também vira secret no GitHub Actions).' },
       { key: 'supabase_publishable', label: 'VITE_SUPABASE_PUBLISHABLE_KEY', atual: '(anon key do projeto atual)', kind: 'arquivo', obrigatorio: true, arquivos: ['.env'], comoObter: 'Supabase → Project Settings → API. É pública, pode ficar no bundle.' },
       { key: 'supabase_service_role', label: 'SUPABASE_SERVICE_ROLE_KEY', atual: null, kind: 'secret-github', obrigatorio: true, comoObter: 'Supabase → API → service_role. Nunca no cliente.', naoSubstituivel: true },
       { key: 'public_site_url', label: 'PUBLIC_SITE_URL', atual: null, kind: 'secret-supabase', comoObter: 'URL pública do app novo (usada em e-mails e links das edge functions).' },

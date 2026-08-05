@@ -201,7 +201,7 @@ Acesso: via `user_roles` com role `admin`, checado por `has_role(auth.uid(), 'ad
 
 - **Preview Lovable:** https://id-preview--c0fdbf4f-89ce-48d8-98f3-a34af8f74615.lovable.app
 - **Produção:** https://vade-comenta-legal.lovable.app
-- **Supabase Dashboard:** https://supabase.com/dashboard/project/iftdrbxvekrhzstayjwp
+- **Supabase Dashboard:** https://supabase.com/dashboard/project/dnjrgpldcwcpoywamorr
 - **GitHub:** repositório vinculado (ver botão "Abrir repositório" em `/admin-funcoes`)
 - **Docs Lovable:** https://docs.lovable.dev
 

@@ -3,7 +3,7 @@
 // Body: { offset?, limite? }
 import { corsHeaders, json, adminClient, exigirAdmin, sha256Hex } from "../_shared/questoes-sheets.ts";
 
-const ORIGEM_URL = "https://izspjvegxdfgkgibpyst.supabase.co";
+const ORIGEM_URL = "https://dnjrgpldcwcpoywamorr.supabase.co";
 const ORIGEM_KEY = "sb_publishable_nqyec1qQmLMrbPH3YFPhxw_XtJ449ZC";
 const LOTE = 1000;
 
