@@ -236,18 +236,17 @@ export default function ResumosJuridicosAreas() {
       </div>
 
       {aba === "areas" && (
-        <div className="max-w-5xl mx-auto px-4 pt-4">
+        <div className="max-w-5xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 pt-4">
           {loading ? (
             <div className="flex items-center justify-center py-16 text-muted-foreground">
-              <Loader2 className="w-5 h-5 animate-spin mr-2" /> Carregando...
+              <Loader2 className="w-5 h-5 animate-spin mr-2" /> Carregando áreas...
             </div>
           ) : filtered.length === 0 ? (
-            <div className="text-center py-16 text-muted-foreground">
-              <BookOpen className="w-10 h-10 mx-auto mb-2 opacity-40" />
-              Nenhum resumo importado ainda.
+            <div className="text-center py-16 text-muted-foreground text-sm">
+              Nenhuma área encontrada para &quot;{q}&quot;
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
               {filtered.map((r, i) => {
                 const s = styleForArea(r.area);
                 const Icon = s.icon;
@@ -258,7 +257,7 @@ export default function ResumosJuridicosAreas() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: Math.min(i * 0.02, 0.3) }}
                     onClick={() => navigate(`/resumos-juridicos/${encodeURIComponent(r.area)}`)}
-                    className="flex items-center gap-3 p-4 rounded-2xl bg-card border border-border hover:border-primary/40 transition-all text-left"
+                    className="flex items-center gap-3 p-4 rounded-2xl bg-card border border-border hover:border-primary/40 transition-all text-left hover:scale-[1.02] shadow-sm"
                   >
                     <Icon className="w-7 h-7 shrink-0" style={{ color: s.color }} strokeWidth={1.7} />
                     <div className="flex-1 min-w-0">
@@ -277,7 +276,7 @@ export default function ResumosJuridicosAreas() {
       )}
 
       {aba === "leis" && (
-        <div className="max-w-5xl mx-auto px-4 pt-4 grid grid-cols-2 md:grid-cols-3 gap-3">
+        <div className="max-w-5xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 pt-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
           {AREAS_LEIS.map((a, i) => {
             const Icon = styleForArea(a.nome).icon;
             return (
@@ -287,7 +286,7 @@ export default function ResumosJuridicosAreas() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: Math.min(i * 0.02, 0.3) }}
                 onClick={() => { setBuscaLeis(""); setAreaLeis(a); }}
-                className="relative flex flex-col gap-2 p-4 rounded-2xl bg-card border border-border hover:border-primary/40 transition-all text-left min-h-[112px]"
+                className="relative flex flex-col gap-2 p-4 rounded-2xl bg-card border border-border hover:border-primary/40 transition-all text-left min-h-[112px] hover:scale-[1.02] shadow-sm"
               >
                 <ChevronRight className="absolute top-3 right-3 w-4 h-4 text-muted-foreground" />
                 <Icon className="w-7 h-7 shrink-0" style={{ color: a.color }} strokeWidth={1.7} />
@@ -302,7 +301,7 @@ export default function ResumosJuridicosAreas() {
       )}
 
       {aba === "jurisprudencia" && (
-        <div className="max-w-5xl mx-auto px-4 pt-4 grid grid-cols-2 md:grid-cols-3 gap-3">
+        <div className="max-w-5xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 pt-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
           {JURIS_ITENS.map((j, i) => (
             <motion.button
               key={j.rota}
@@ -310,7 +309,7 @@ export default function ResumosJuridicosAreas() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: Math.min(i * 0.02, 0.3) }}
               onClick={() => navigate(j.rota)}
-              className="relative flex flex-col gap-2 p-4 rounded-2xl bg-card border border-border hover:border-primary/40 transition-all text-left min-h-[120px]"
+              className="relative flex flex-col gap-2 p-4 rounded-2xl bg-card border border-border hover:border-primary/40 transition-all text-left min-h-[120px] hover:scale-[1.02] shadow-sm"
             >
               <ChevronRight className="absolute top-3 right-3 w-4 h-4 text-muted-foreground" />
               <Scroll className="w-7 h-7 shrink-0" style={{ color: j.color }} strokeWidth={1.7} />

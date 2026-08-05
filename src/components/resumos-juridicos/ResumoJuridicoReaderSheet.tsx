@@ -252,6 +252,18 @@ export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoC
   );
 
 
+  // Atalho de teclado (Esc = Fechar leitor no Desktop)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && resumo) {
+        e.preventDefault();
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose, resumo]);
+
   if (bloqueadoLeitura) {
     return (
       <>
@@ -275,15 +287,11 @@ export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoC
             onClick={onClose}
           />
           <motion.div
-            initial={{ y: "100%" }}
-            animate={{ y: 0 }}
-            exit={{ y: "100%" }}
-            transition={{ type: "spring", damping: 30, stiffness: 340 }}
-            className={
-              isDesktop
-                ? "fixed z-[100] inset-y-0 left-1/2 -translate-x-1/2 bg-card border-x border-border flex flex-col w-[800px] shadow-2xl overflow-hidden"
-                : "fixed inset-0 z-[100] bg-card flex flex-col overflow-hidden"
-            }
+            initial={{ y: "100%", opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: "100%", opacity: 0 }}
+            transition={{ type: "spring", damping: 28, stiffness: 280 }}
+            className="fixed inset-x-0 bottom-0 top-[5vh] z-[91] flex flex-col rounded-t-[2.5rem] bg-[#0c0c0e] text-foreground border-t border-white/10 shadow-2xl overflow-hidden lg:inset-auto lg:top-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:w-full lg:max-w-4xl lg:h-[86vh] lg:max-h-[850px] lg:rounded-3xl lg:border"
           >
             <div ref={scrollRef} className="flex-1 overflow-y-auto pb-8 relative">
               <div className="sticky top-0 z-10 bg-card/95 backdrop-blur-md border-b border-border">

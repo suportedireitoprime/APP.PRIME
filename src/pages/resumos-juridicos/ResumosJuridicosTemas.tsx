@@ -247,7 +247,7 @@ export default function ResumosJuridicosTemas() {
           className="border-b-0"
         />
 
-        <div className="max-w-5xl mx-auto px-4 pb-3">
+        <div className="max-w-5xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 pb-3">
           <div className="relative">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar tema" className="pl-9" />
@@ -255,13 +255,13 @@ export default function ResumosJuridicosTemas() {
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-4 pt-4">
+      <div className="max-w-5xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 pt-4">
         {loading ? (
           <div className="flex items-center justify-center py-16 text-muted-foreground">
             <Loader2 className="w-5 h-5 animate-spin mr-2" /> Carregando...
           </div>
         ) : (
-          <div className="flex flex-col gap-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
             {filtered.map((r, i) => {
               const Icon = TEMA_ICONS[hashIdx(r.tema, TEMA_ICONS.length)];
               return (
@@ -271,7 +271,7 @@ export default function ResumosJuridicosTemas() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: Math.min(i * 0.015, 0.25) }}
                   onClick={() => openSubtemas(r.tema)}
-                  className="flex items-center gap-3 px-4 h-[76px] rounded-xl bg-card border border-border hover:border-primary/40 transition-all text-left"
+                  className="flex items-center gap-3 px-4 h-[76px] rounded-xl bg-card border border-border hover:border-primary/40 transition-all text-left hover:scale-[1.02] shadow-sm"
                 >
                   <Icon className="w-7 h-7 shrink-0" strokeWidth={1.7} style={{ color: RED }} />
                   <div className="flex-1 min-w-0">
