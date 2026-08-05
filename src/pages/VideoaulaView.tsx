@@ -16,6 +16,7 @@ import { cn } from '@/lib/utils';
 import { getCachedAula, invalidarFavoritos, invalidarProgresso } from '@/lib/videoaulasStore';
 import { telaAcesa } from '@/lib/nativo/telaAcordada';
 import { haptic } from '@/lib/nativeHaptics';
+import { useVideoaulasPlayer } from '@/contexts/VideoaulasPlayerContext';
 
 
 type Aula = {
@@ -47,6 +48,7 @@ const VideoaulaView = () => {
   const catalogo = getCatalogo(catalogoId);
   const { user } = useAuth();
   const userId = user?.id ?? null;
+  const { tocarVideo, setTocandoState, setTempoState, setDuracaoState } = useVideoaulasPlayer();
   // Semente vinda do cache da lista: título e capa aparecem no mesmo frame.
   const [aula, setAula] = useState<Aula | null>(() =>
     catalogo && videoId ? (getCachedAula(catalogo.id, videoId) as Aula | null) : null,
@@ -60,6 +62,31 @@ const VideoaulaView = () => {
   const [duracao, setDuracao] = useState(0);
   const salvandoRef = useRef(false);
   const pctAtual = duracao > 0 ? Math.min(100, Math.round((tempoAtual / duracao) * 100)) : 0;
+
+  useEffect(() => {
+    if (aula) {
+      tocarVideo({
+        id: aula.id,
+        video_id: aula.video_id,
+        titulo: aula.titulo,
+        area: aula.area,
+        descricao: aula.descricao,
+        thumb: aula.thumb,
+        thumbnail: aula.thumbnail,
+        catalogoId,
+        areaSlug,
+      });
+    }
+  }, [aula, catalogoId, areaSlug, tocarVideo]);
+
+  useEffect(() => {
+    setTocandoState(tocando);
+  }, [tocando, setTocandoState]);
+
+  useEffect(() => {
+    setTempoState(tempoAtual);
+    setDuracaoState(duracao);
+  }, [tempoAtual, duracao, setTempoState, setDuracaoState]);
 
 
   useEffect(() => {

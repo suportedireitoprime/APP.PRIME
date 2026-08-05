@@ -57,6 +57,8 @@ import { LeisCantadasPlayerProvider } from "@/contexts/LeisCantadasPlayerContext
 import GlobalLeisCantadasMiniPlayer from "@/components/leis-cantadas/GlobalLeisCantadasMiniPlayer";
 import { AudioaulasPlayerProvider } from "@/contexts/AudioaulasPlayerContext";
 import GlobalAudioaulasMiniPlayer from "@/components/audioaulas/GlobalAudioaulasMiniPlayer";
+import { VideoaulasPlayerProvider } from "@/contexts/VideoaulasPlayerContext";
+import GlobalVideoaulaMiniPlayer from "@/components/videoaulas/GlobalVideoaulaMiniPlayer";
 import { GravacaoFlutuante } from "@/components/GravacaoFlutuante";
 import { GeofencePresenceBanner } from "@/components/GeofencePresenceBanner";
 import { ReminderInAppBanner } from "@/components/ReminderInAppBanner";
@@ -961,11 +963,14 @@ const App = () => (
               <RecordingProvider>
                 <LeisCantadasPlayerProvider>
                   <AudioaulasPlayerProvider>
-                    <AnimatedRoutes />
-                    <NarracaoMiniPlayer />
-                    <GravacaoFlutuante />
-                    <GlobalLeisCantadasMiniPlayer />
-                    <GlobalAudioaulasMiniPlayer />
+                    <VideoaulasPlayerProvider>
+                      <AnimatedRoutes />
+                      <NarracaoMiniPlayer />
+                      <GravacaoFlutuante />
+                      <GlobalLeisCantadasMiniPlayer />
+                      <GlobalAudioaulasMiniPlayer />
+                      <GlobalVideoaulaMiniPlayer />
+                    </VideoaulasPlayerProvider>
                   </AudioaulasPlayerProvider>
                 </LeisCantadasPlayerProvider>
               </RecordingProvider>
