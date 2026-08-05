@@ -85,6 +85,43 @@ const ResolverPadrao = ({
     if (!gateFuncoes.blocked) setComentarioAberto(true);
   };
 
+  // Atalhos de teclado no Desktop (A, B, C, D, E ou 1, 2, 3, 4, 5 para escolher; Enter para responder/avançar)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName?.toUpperCase();
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || (e.target as HTMLElement)?.isContentEditable) {
+        return;
+      }
+      const key = e.key.toUpperCase();
+      const mapaLetras: Record<string, string> = {
+        '1': 'A', 'A': 'A',
+        '2': 'B', 'B': 'B',
+        '3': 'C', 'C': 'C',
+        '4': 'D', 'D': 'D',
+        '5': 'E', 'E': 'E',
+      };
+      if (mapaLetras[key] && !resp && alternativas.some((a) => a.letra === mapaLetras[key])) {
+        e.preventDefault();
+        setSelecao(mapaLetras[key]);
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (!resp && selecao) {
+          responder();
+        } else if (resp && idx < questoes.length - 1) {
+          setIdx((i) => i + 1);
+        }
+      } else if (e.key === 'ArrowRight' && idx < questoes.length - 1) {
+        e.preventDefault();
+        setIdx((i) => i + 1);
+      } else if (e.key === 'ArrowLeft' && idx > 0) {
+        e.preventDefault();
+        setIdx((i) => i - 1);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [alternativas, idx, questoes.length, responder, resp, selecao]);
+
 
   const favoritar = async () => {
     if (!atual || !user) { toast.error('Entre na sua conta para salvar'); return; }
