@@ -14,6 +14,8 @@ import { CheckCircle2, Loader2, Play, Star } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { getCachedAula, invalidarFavoritos, invalidarProgresso } from '@/lib/videoaulasStore';
+import { telaAcesa } from '@/lib/nativo/telaAcordada';
+import { haptic } from '@/lib/nativeHaptics';
 
 
 type Aula = {
@@ -201,6 +203,7 @@ const VideoaulaView = () => {
   );
 
   const toggleFavorito = async () => {
+    haptic.selection();
     if (!userId || !catalogo || !aula) {
       toast.info('Entre na sua conta para favoritar.');
       return;
@@ -229,6 +232,14 @@ const VideoaulaView = () => {
   };
 
 
+  // Manter tela acesa no aparelho celular enquanto a videoaula estiver rodando
+  useEffect(() => {
+    void telaAcesa('videoaulas', tocando);
+    return () => {
+      void telaAcesa('videoaulas', false);
+    };
+  }, [tocando]);
+
   // Atalhos de teclado no Desktop (Espaço / 'k' = Play/Pause)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -246,6 +257,7 @@ const VideoaulaView = () => {
   }, []);
 
   const marcarConcluida = async () => {
+    haptic.success();
     const p = playerRef.current;
     const d = p?.getDuration?.() ?? 0;
     await salvarProgresso(d, d, true);
