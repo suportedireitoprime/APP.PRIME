@@ -53,6 +53,7 @@ const VideoaulaView = () => {
   const [aula, setAula] = useState<Aula | null>(() =>
     catalogo && videoId ? (getCachedAula(catalogo.id, videoId) as Aula | null) : null,
   );
+  const [aulasDaArea, setAulasDaArea] = useState<Aula[]>([]);
   const [favorito, setFavorito] = useState(false);
   const [concluida, setConcluida] = useState(false);
   const [inicio, setInicio] = useState(0);
@@ -131,6 +132,16 @@ const VideoaulaView = () => {
         setConcluida(!!prog.concluida);
       }
       setFavorito(!!favRes?.data);
+
+      // Busca aulas da mesma área para a Sidebar Lateral Esquerda no Desktop
+      let qArea: any = supabase.from(catalogo.tabela as any).select(cols);
+      if (catalogo.temAreas && aulaRes.data?.area) {
+        qArea = qArea.eq('area', aulaRes.data.area);
+      }
+      const { data: listaArea } = await qArea.limit(60);
+      if (alive && listaArea) {
+        setAulasDaArea(listaArea as unknown as Aula[]);
+      }
     })();
 
     return () => {
@@ -313,9 +324,58 @@ const VideoaulaView = () => {
         }
       />
 
-      <div className="lg:max-w-7xl lg:mx-auto lg:px-6 lg:pt-4 lg:grid lg:grid-cols-12 lg:gap-8 lg:items-start">
-        {/* Coluna Principal: Player de Vídeo (7/12 ou 8/12 no Desktop) */}
-        <div className="lg:col-span-7 xl:col-span-8 space-y-4">
+      <div className="lg:max-w-7xl lg:mx-auto lg:px-6 lg:pt-4 lg:grid lg:grid-cols-12 lg:gap-6 lg:items-start">
+        {/* ── Sidebar Lateral Esquerda: Lista de Aulas da Matéria (Desktop Apenas) ───── */}
+        <aside className="hidden lg:block lg:col-span-3 space-y-3 bg-card/40 border border-border/60 rounded-2xl p-4 shadow-sm max-h-[82vh] overflow-y-auto">
+          <div className="flex items-center justify-between border-b border-border/60 pb-2.5">
+            <h2 className="text-sm font-bold text-foreground">Aulas da Matéria</h2>
+            <span className="text-[11px] font-semibold text-primary px-2 py-0.5 rounded-full bg-primary/10">
+              {aulasDaArea.length} aulas
+            </span>
+          </div>
+          <div className="space-y-2">
+            {aulasDaArea.map((item) => {
+              const eAtivo = item.video_id === videoId;
+              const tLimpo = limparTitulo(item.titulo);
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    haptic.selection();
+                    navigate(`/videoaulas/${catalogo.id}/${areaSlug ?? 'todas'}/${item.video_id}`);
+                  }}
+                  className={cn(
+                    'w-full text-left flex items-start gap-2.5 p-2 rounded-xl border transition-colors group',
+                    eAtivo
+                      ? 'border-primary/60 bg-primary/15'
+                      : 'border-border/40 hover:border-border hover:bg-muted/50',
+                  )}
+                >
+                  <div className="relative w-16 h-10 shrink-0 rounded-lg overflow-hidden bg-black/60 border border-white/10">
+                    <img
+                      src={item.thumb ?? item.thumbnail ?? ytThumb(item.video_id, 'hq')}
+                      alt=""
+                      className="w-full h-full object-cover"
+                    />
+                    {eAtivo && (
+                      <div className="absolute inset-0 bg-primary/40 flex items-center justify-center">
+                        <Play className="w-4 h-4 text-white fill-current" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className={cn('text-xs font-medium line-clamp-2 leading-tight', eAtivo ? 'text-primary font-bold' : 'text-foreground group-hover:text-primary')}>
+                      {tLimpo}
+                    </p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </aside>
+
+        {/* ── Coluna Principal Central: Player de Vídeo e Controles ───────────── */}
+        <div className="lg:col-span-5 xl:col-span-5 space-y-4">
           <div className="relative w-full bg-black aspect-video lg:rounded-2xl lg:overflow-hidden lg:shadow-2xl lg:border lg:border-white/10">
             {tocando ? (
               <div ref={containerRef} className="h-full w-full" />
@@ -354,7 +414,7 @@ const VideoaulaView = () => {
               <span>{formatTempo(tempoAtual)}</span>
               <span>{duracao > 0 ? formatTempo(duracao) : '--:--'}</span>
             </div>
-            <h1 className="text-[17px] sm:text-xl lg:text-2xl font-bold leading-snug text-foreground">{tituloLimpo}</h1>
+            <h1 className="text-[17px] sm:text-xl lg:text-xl font-bold leading-snug text-foreground">{tituloLimpo}</h1>
             <p className="text-[12px] sm:text-sm text-muted-foreground">
               {aula?.area ?? catalogo.titulo}
               {duracao > 0 ? ` • ${formatTempo(duracao)}` : ''}
@@ -388,14 +448,22 @@ const VideoaulaView = () => {
           </div>
         </div>
 
-        {/* Coluna Lateral: Resumo de IA & Ações (5/12 ou 4/12 no Desktop) */}
-        <div className="lg:col-span-5 xl:col-span-4 pt-3 lg:pt-0 space-y-4 lg:bg-card/40 lg:border lg:border-white/10 lg:rounded-2xl lg:p-5 lg:shadow-xl">
-          <h2 className="hidden lg:block text-base font-bold text-foreground pb-2 border-b border-border">
+        {/* ── Coluna Lateral Direita: Ações da Aula (Desktop Cards) & Panorama ──── */}
+        <div className="lg:col-span-4 xl:col-span-4 pt-3 lg:pt-0 space-y-4 lg:bg-card/40 lg:border lg:border-white/10 lg:rounded-2xl lg:p-4 lg:shadow-xl">
+          {/* No Desktop: Renderiza a Barra de Ações em formato de cards no painel direito */}
+          <div className="hidden lg:block space-y-2 border-b border-border/60 pb-4">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-primary">Recursos da Aula</h2>
+            <Suspense fallback={<div className="h-20 animate-pulse bg-muted rounded-xl" />}>
+              <VideoaulaAcoesBar input={input} gridLayout gridCols={3} />
+            </Suspense>
+          </div>
+
+          <h2 className="hidden lg:block text-sm font-bold text-foreground pb-2 border-b border-border">
             Panorama & Estudo com IA
           </h2>
 
           <section className="px-3 lg:px-0">
-            {/* Descrição / Panorama da Aula instantâneo (sem spinner quando já houver conteúdo disponível) */}
+            {/* Descrição / Panorama da Aula */}
             {(aula?.sobre_aula || aula?.descricao) && !resumo.data?.resumo && (
               <div className="space-y-2 mb-4">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-primary">
@@ -460,7 +528,6 @@ const VideoaulaView = () => {
               </div>
             )}
 
-            {/* Spinner de carregamento só aparece se NÃO houver descrição nem resumo no banco */}
             {resumo.isLoading && !resumo.data?.resumo && !aula?.sobre_aula && !aula?.descricao && (
               <div className="py-4 flex items-center gap-2 text-muted-foreground text-xs">
                 <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" /> Carregando panorama...
@@ -476,7 +543,8 @@ const VideoaulaView = () => {
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-card/95 backdrop-blur px-2 py-2 pb-[calc(12px+var(--sai-bottom,0px))]">
+      {/* ── Footer Fixo de Ações APENAS para Telas Mobile (lg:hidden) ───────────── */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-card/95 backdrop-blur px-2 py-2 pb-[calc(12px+var(--sai-bottom,0px))] lg:hidden">
         <Suspense fallback={<div className="h-14" />}>
           <VideoaulaAcoesBar input={input} gridLayout gridCols={6} />
         </Suspense>

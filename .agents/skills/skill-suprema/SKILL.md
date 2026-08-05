@@ -20,8 +20,10 @@ A **Skill Suprema** reúne todas as diretrizes de design visual de alta fidelida
 - **Dimensões Tácteis & Feedback:** Alvos de toque mínimos de **48x48dp (Android)** / **44x44pt (iOS)**, uso de `Pressable` com feedback de toque `<100ms` e animações aceleradas por GPU (`transform`, `opacity`).
 
 ### 2. 🖥️ Layout Responsivo & Widescreen Desktop
-- **Contêineres Widescreen:** Expandir layouts para `lg:max-w-7xl 2xl:max-w-[1600px] lg:px-8`.
-- **Grids Multi-Colunas:** Converter listas verticais em grids adaptativos (2, 3, 4 ou 6 colunas no desktop).
+- **Contêineres Widescreen & Aproveitamento de Espaço:** Expandir layouts para `lg:max-w-7xl 2xl:max-w-[1600px] lg:px-8`.
+- **Adaptação Responsiva Mobile -> Desktop (Zero Rodapé Fixo no PC):** As ações e ferramentas originalmente no rodapé mobile (ex: "Flashcards", "Pegadinhas", "Resumos", "Lei seca", "Termos", "Questões") NUNCA devem ficar no rodapé fixo no desktop (`lg:hidden`). Elas DEVEM ser convertidas em cards/botões integrados nos painéis laterais (à direita ou à esquerda), posicionados logo abaixo das ações principais do conteúdo (ex: "Favoritar / Concluir"), liberando o rodapé no computador.
+- **Sidebar / Lista Lateral de Conteúdos no Desktop:** Em páginas de estudo e videoaulas no desktop, criar uma sidebar/lista lateral (esquerda ou direita) apresentando os cards dos demais itens/vídeos daquela mesma coleção/área para alternância instantânea sem sair da página.
+- **Grids de Cards no Desktop:** Exibir catálogos e módulos como **grids de cards responsivos** (3 a 4 colunas no widescreen), e não em carrosséis rasteiros ou listas horizontais simples.
 - **Atalhos de Teclado:** Implementar listeners de teclado (`Space`, `Enter`, `Esc`, setas) para navegação ágil no PC.
 
 ### 3. 🎨 Design Visual de Elite & Estética Anticlichê (Anthropic & UI/UX Pro Max)
