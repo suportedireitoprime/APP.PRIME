@@ -8,6 +8,7 @@
 //
 // Seguro em qualquer plataforma: sem suporte, tudo é ignorado.
 
+import { Capacitor } from '@capacitor/core';
 import { MediaSession } from '@jofr/capacitor-media-session';
 
 const DEFAULT_ARTIST = 'Direito Prime';
@@ -62,22 +63,87 @@ function tipoDaArte(url: string): string {
 // ————— camada de adaptação (plugin nativo ⇄ Media Session web) —————
 
 const setMetadata = (m: { title: string; artist: string; album: string; artwork: MediaImage[] }) => {
-  void MediaSession.setMetadata(m).catch(() => {});
+  if (Capacitor.isNativePlatform()) {
+    try {
+      void MediaSession.setMetadata(m).catch(() => {});
+    } catch {
+      /* ignore */
+    }
+  }
+  if (typeof navigator !== 'undefined' && 'mediaSession' in navigator && (window as any).MediaMetadata) {
+    try {
+      navigator.mediaSession.metadata = new (window as any).MediaMetadata({
+        title: m.title,
+        artist: m.artist,
+        album: m.album,
+        artwork: m.artwork,
+      });
+    } catch {
+      /* ignore */
+    }
+  }
 };
 
 const setPlaybackState = (playbackState: MediaSessionPlaybackState) => {
-  void MediaSession.setPlaybackState({ playbackState }).catch(() => {});
+  if (Capacitor.isNativePlatform()) {
+    try {
+      void MediaSession.setPlaybackState({ playbackState }).catch(() => {});
+    } catch {
+      /* ignore */
+    }
+  }
+  if (typeof navigator !== 'undefined' && 'mediaSession' in navigator) {
+    try {
+      navigator.mediaSession.playbackState = playbackState;
+    } catch {
+      /* ignore */
+    }
+  }
 };
 
 const setPositionState = (opts: { duration: number; position: number; playbackRate: number }) => {
-  void MediaSession.setPositionState(opts).catch(() => {});
+  if (Capacitor.isNativePlatform()) {
+    try {
+      void MediaSession.setPositionState(opts).catch(() => {});
+    } catch {
+      /* ignore */
+    }
+  }
+  if (
+    typeof navigator !== 'undefined' &&
+    'mediaSession' in navigator &&
+    typeof navigator.mediaSession.setPositionState === 'function'
+  ) {
+    try {
+      navigator.mediaSession.setPositionState({
+        duration: opts.duration,
+        playbackRate: opts.playbackRate,
+        position: opts.position,
+      });
+    } catch {
+      /* ignore */
+    }
+  }
 };
 
 const setActionHandler = (
   action: MediaSessionAction,
   handler: ((details: { seekTime?: number | null }) => void) | null,
 ) => {
-  void MediaSession.setActionHandler({ action }, handler).catch(() => {});
+  if (Capacitor.isNativePlatform()) {
+    try {
+      void MediaSession.setActionHandler({ action }, handler).catch(() => {});
+    } catch {
+      /* ignore */
+    }
+  }
+  if (typeof navigator !== 'undefined' && 'mediaSession' in navigator) {
+    try {
+      navigator.mediaSession.setActionHandler(action as any, handler ? (d: any) => handler(d) : null);
+    } catch {
+      /* ignore */
+    }
+  }
 };
 
 /** Guarda os listeners de cada <audio> para poder remover ao trocar de faixa. */

@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { registrarMidia, clearMediaSession } from '@/lib/mediaSession';
 import { telaAcesa } from '@/lib/nativo/telaAcordada';
 import { fonteDeAudio } from '@/lib/nativo/audioOffline';
+import { toast } from 'sonner';
 
 export interface AulaAudio {
   id: number;
@@ -180,11 +181,17 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
       setTempo(0);
       setDur(0);
 
-      const src = await fonteDeAudio(audioIdOf(a), a.url_audio);
-      el.src = src;
-      el.playbackRate = velocidade;
-      await el.play().catch(() => {});
-      setTocando(true);
+      try {
+        const src = await fonteDeAudio(audioIdOf(a), a.url_audio);
+        el.src = src;
+        el.playbackRate = velocidade;
+        await el.play();
+        setTocando(true);
+      } catch (err) {
+        console.error('[AudioaulasPlayer] Erro ao carregar/reproduzir áudio:', err);
+        setTocando(false);
+        toast.error('Não foi possível reproduzir este áudio. Verifique sua conexão.');
+      }
     },
     [atualId, velocidade],
   );
@@ -196,7 +203,11 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
       el.pause();
       setTocando(false);
     } else {
-      el.play().catch(() => {});
+      el.play().catch((err) => {
+        console.error('[AudioaulasPlayer] Erro ao alternar reprodução:', err);
+        setTocando(false);
+        toast.error('Erro ao reproduzir o áudio.');
+      });
       setTocando(true);
     }
   }, [atual, tocando]);
@@ -273,6 +284,11 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
         onLoadedMetadata={(e) => setDur(e.currentTarget.duration || 0)}
         onPlay={() => setTocando(true)}
         onPause={() => setTocando(false)}
+        onError={(e) => {
+          console.error('[AudioaulasPlayer] Erro no elemento de áudio:', e);
+          setTocando(false);
+          toast.error('Erro de carregamento do áudio.');
+        }}
         onEnded={() => {
           setTocando(false);
           if (atualIdx >= 0 && fila[atualIdx + 1]) {
