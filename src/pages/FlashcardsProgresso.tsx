@@ -23,6 +23,11 @@ const FlashcardsProgresso = () => {
   const [areas, setAreas] = useState<AreaRow[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // SEO & Título dinâmico
+  useEffect(() => {
+    document.title = 'Progresso & Estatísticas de Flashcards | Vade Mecum PRIME';
+  }, []);
+
   useEffect(() => {
     let alive = true;
     (async () => {

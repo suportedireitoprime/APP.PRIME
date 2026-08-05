@@ -44,6 +44,11 @@ const FlashcardsEstudo = () => {
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
 
+  // SEO & Título dinâmico
+  useEffect(() => {
+    document.title = 'Sessão de Prática de Flashcards | Vade Mecum PRIME';
+  }, []);
+
   const areaParam = params.get('area');
   const areasParam = params.get('areas');
   const temasParam = params.get('temas') || params.get('tema');

@@ -7,13 +7,16 @@ description: Skill Suprema 360° de Engenharia de UI/UX, Design Visual Anticlich
 
 A **Skill Suprema** reúne todas as diretrizes de design visual de alta fidelidade, arquitetura de componentes, performance React, acessibilidade WCAG 2.1 AA e compatibilidade nativa em um fluxo unificado de auditoria 360°. Inspirada nas melhores práticas globais de UI/UX Engineering (Anthropic, Vercel, AccessLint, UI/UX Pro Max e Bencium).
 
+> 📌 **Regra Obrigatória de Cobertura por Função:** Sempre que a Skill Suprema for acionada para uma **função / módulo do aplicativo** (ex: Flashcards, Biblioteca, Blog, Questões, etc.), a auditoria e as otimizações DEVEM ser aplicadas a **TODAS as rotas, sub-rotas, páginas de estudo, dashboards, editores e visões administrativas que compõem essa funcionalidade**, garantindo 100% de consistência.
+
 ---
 
 ## 📋 Checkpoints da Skill Suprema
 
 ### 1. 📱 Mobile Native, Touch & Capacitor (Android 15 / iOS 18)
 - **Permissões & Manifestos:** Validar permissões nativas no `AndroidManifest.xml` / `Info.plist` e chamadas de hardware com `Capacitor.isNativePlatform()`.
-- **Safe Area Insets:** Garantir ajuste perfeito à barra de status (`--sai-top`) e gestos inferiores (`--sai-bottom`).
+- **Safe Area Insets & Margem de Navegação:** Garantir ajuste perfeito à barra de status (`--sai-top`) e gestos inferiores (`--sai-bottom`). Barras de ação, footers e trilhos flutuantes NUNCA devem ficar escondidos ou cortados sob o `BottomNav` ou a barra do sistema (utilizar sempre `pb-[calc(80px+var(--sai-bottom,0px))]` ou margem segura).
+- **Mini-Player Flutuante Instantâneo:** Ao minimizar uma videoaula ou áudio, a mídia DEVE continuar a execução em segundo plano no mini-player flutuante (PiP) **instantaneamente**, sem congelamentos, delays de buffering ou interrupções de som.
 - **Dimensões Tácteis & Feedback:** Alvos de toque mínimos de **48x48dp (Android)** / **44x44pt (iOS)**, uso de `Pressable` com feedback de toque `<100ms` e animações aceleradas por GPU (`transform`, `opacity`).
 
 ### 2. 🖥️ Layout Responsivo & Widescreen Desktop

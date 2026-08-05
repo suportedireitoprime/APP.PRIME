@@ -27,6 +27,11 @@ const FlashcardsRevisar = () => {
   const [aberto, setAberto] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // SEO & Título dinâmico
+  useEffect(() => {
+    document.title = 'Revisão Espaçada de Flashcards | Vade Mecum PRIME';
+  }, []);
+
   const carregar = async (area: string | null) => {
     setLoading(true);
     const { data } = await supabase.rpc('flashcards_sessao', {

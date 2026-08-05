@@ -38,6 +38,11 @@ const Flashcards = () => {
   const [loading, setLoading] = useState(true);
   const [areaSheet, setAreaSheet] = useState<string | null>(null);
 
+  // SEO & Título dinâmico
+  useEffect(() => {
+    document.title = 'Flashcards | Vade Mecum PRIME';
+  }, []);
+
   useEffect(() => {
     let alive = true;
     (async () => {

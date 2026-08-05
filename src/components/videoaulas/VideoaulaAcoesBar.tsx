@@ -95,17 +95,17 @@ export default function VideoaulaAcoesBar({ input, gridLayout, extras, hideQuest
       type="button"
       onClick={guard(onClick)}
       className={cn(
-        "group relative flex flex-col items-center justify-center gap-1.5 py-2.5 px-1.5 rounded-xl transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/40",
-        gridLayout ? "w-full" : "shrink-0 min-w-[72px] snap-start",
+        "group relative flex flex-col items-center justify-center gap-1 py-1.5 px-0.5 rounded-xl transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/40 min-h-[48px]",
+        gridLayout ? "w-full" : "shrink-0 min-w-[64px] snap-start",
       )}
     >
       {bloqueado && (
-        <span className="absolute top-1 right-1 grid place-items-center h-3.5 w-3.5 rounded-full bg-brand-amber/20 text-brand-amber">
+        <span className="absolute top-0.5 right-0.5 grid place-items-center h-3.5 w-3.5 rounded-full bg-brand-amber/20 text-brand-amber">
           <Lock className="h-2.5 w-2.5" strokeWidth={2.5} />
         </span>
       )}
-      <Icon className={cn("h-6 w-6", bloqueado && "opacity-60")} strokeWidth={2} />
-      <span className={cn("text-[12px] font-medium leading-none text-center", bloqueado && "opacity-60")}>{label}</span>
+      <Icon className={cn("h-5 w-5 sm:h-6 sm:w-6", bloqueado && "opacity-60")} strokeWidth={2} />
+      <span className={cn("text-[10px] sm:text-[11px] font-medium leading-tight text-center line-clamp-1 truncate w-full", bloqueado && "opacity-60")}>{label}</span>
     </button>
   );
 

@@ -476,7 +476,7 @@ const VideoaulaView = () => {
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-card/95 backdrop-blur px-2 py-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom))]">
+      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-card/95 backdrop-blur px-2 py-2 pb-[calc(12px+var(--sai-bottom,0px))]">
         <Suspense fallback={<div className="h-14" />}>
           <VideoaulaAcoesBar input={input} gridLayout gridCols={6} />
         </Suspense>

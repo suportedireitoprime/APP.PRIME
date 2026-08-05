@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Check, Flame, Lock, Trophy, Crown } from 'lucide-react';
@@ -113,6 +114,11 @@ const FlashcardsDesafios = () => {
   const navigate = useNavigate();
   const { ativo, concluidos, desafios, loading, indisponivel } = useFlashcardsDesafios();
   const { isPremium } = useSubscription();
+
+  // SEO & Título dinâmico
+  useEffect(() => {
+    document.title = 'Desafios & Conquistas | Vade Mecum PRIME';
+  }, []);
 
   const praticar = (d: FlashcardDesafio) => {
     haptic.selection();
