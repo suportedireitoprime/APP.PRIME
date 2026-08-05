@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sparkles } from 'lucide-react';
-import { useBuscaConteudo, type ConteudoGrupo } from '@/hooks/useBuscaConteudo';
+import { useBuscaConteudo, prefetchBusca, type ConteudoGrupo } from '@/hooks/useBuscaConteudo';
 import { resolveRotaResultado } from '@/lib/buscaRotas';
 import CategoriaFiltroBar, { type CategoriaKey } from './CategoriaFiltroBar';
 import ResultadoConteudoCard from './ResultadoConteudoCard';
@@ -17,6 +17,14 @@ export default function ConteudoBusca({
 }: { query: string; onNavigate?: () => void; grupo?: ConteudoGrupo }) {
   const [categoria, setCategoria] = useState<CategoriaKey>('tudo');
   const { resultados: brutos, loading } = useBuscaConteudo(query, grupo);
+
+  // Pré-aquece as sugestões em background sem impactar a UI
+  useEffect(() => {
+    const lista = grupo === 'jurisprudencia' ? SUGESTOES_JURIS : SUGESTOES_CONTEUDO;
+    for (const sug of lista) {
+      prefetchBusca(sug, grupo);
+    }
+  }, [grupo]);
 
   // Remove resultados sem tela correspondente no app (ex.: artigo de lei
   // que não está no catálogo) e já traduz a rota final.

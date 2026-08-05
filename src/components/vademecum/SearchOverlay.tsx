@@ -76,7 +76,7 @@ const identificarLeiPorTexto = (text: string) => {
 
 const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
   const [query, setQuery] = useState('');
-  const debouncedQuery = useDebounce(query, 150);
+  const debouncedQuery = useDebounce(query, 100);
   const [mode, setMode] = useState<SearchMode>('conteudo');
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
