@@ -1,0 +1,17 @@
+{
+  "recommendations": [
+    "usernamehw.error-lens",
+    "bradlc.vscode-tailwindcss",
+    "dbaeumer.vscode-eslint",
+    "christian-kohler.path-intellisense",
+    "formulahendry.auto-rename-tag",
+    "cweijan.vscode-database-client2",
+    "supabase.supabase-vscode",
+    "ionic.ionic",
+    "richardwillis.vscode-gradle",
+    "ms-playwright.playwright",
+    "vitest.explorer",
+    "wallabyjs.console-ninja",
+    "naumovs.color-highlight"
+  ]
+}
