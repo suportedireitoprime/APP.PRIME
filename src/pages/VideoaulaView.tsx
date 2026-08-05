@@ -229,6 +229,22 @@ const VideoaulaView = () => {
   };
 
 
+  // Atalhos de teclado no Desktop (Espaço / 'k' = Play/Pause)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName?.toUpperCase();
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || (e.target as HTMLElement)?.isContentEditable) {
+        return;
+      }
+      if (e.key === ' ' || e.key === 'k') {
+        e.preventDefault();
+        setTocando((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   const marcarConcluida = async () => {
     const p = playerRef.current;
     const d = p?.getDuration?.() ?? 0;
@@ -245,7 +261,7 @@ const VideoaulaView = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-40">
+    <div className="min-h-screen bg-background pb-40 lg:pb-16">
       <PageHeader
         title={tituloLimpo}
         subtitle={aula?.area ?? catalogo.titulo}
@@ -258,79 +274,88 @@ const VideoaulaView = () => {
         }
       />
 
-      <div className="relative w-full bg-black aspect-video">
-        {tocando ? (
-          <div ref={containerRef} className="h-full w-full" />
-        ) : (
-          <button
-            type="button"
-            onClick={() => setTocando(true)}
-            aria-label="Reproduzir aula"
-            className="group absolute inset-0 h-full w-full"
-          >
-            <img
-              src={aula?.thumb ?? aula?.thumbnail ?? ytThumb(videoId, 'hq')}
-              alt={`Capa da aula ${tituloLimpo}`}
-              width={480}
-              height={360}
-              decoding="async"
-              className="absolute inset-0 h-full w-full object-cover"
-            />
-            <span className="absolute inset-0 grid place-items-center bg-black/30">
-              <span className="grid h-16 w-16 place-items-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform group-active:scale-95">
-                <Play className="h-7 w-7 translate-x-0.5 fill-current" />
-              </span>
-            </span>
-          </button>
-        )}
-      </div>
+      <div className="lg:max-w-7xl lg:mx-auto lg:px-6 lg:pt-4 lg:grid lg:grid-cols-12 lg:gap-8 lg:items-start">
+        {/* Coluna Principal: Player de Vídeo (7/12 ou 8/12 no Desktop) */}
+        <div className="lg:col-span-7 xl:col-span-8 space-y-4">
+          <div className="relative w-full bg-black aspect-video lg:rounded-2xl lg:overflow-hidden lg:shadow-2xl lg:border lg:border-white/10">
+            {tocando ? (
+              <div ref={containerRef} className="h-full w-full" />
+            ) : (
+              <button
+                type="button"
+                onClick={() => setTocando(true)}
+                aria-label="Reproduzir aula"
+                className="group absolute inset-0 h-full w-full"
+              >
+                <img
+                  src={aula?.thumb ?? aula?.thumbnail ?? ytThumb(videoId, 'hq')}
+                  alt={`Capa da aula ${tituloLimpo}`}
+                  width={480}
+                  height={360}
+                  decoding="async"
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+                <span className="absolute inset-0 grid place-items-center bg-black/30">
+                  <span className="grid h-16 w-16 place-items-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform group-active:scale-95">
+                    <Play className="h-7 w-7 translate-x-0.5 fill-current" />
+                  </span>
+                </span>
+              </button>
+            )}
+          </div>
 
-      <div className="pt-3 space-y-4">
-        <div className="px-3 space-y-2">
-          <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
-            <div
-              className="h-full rounded-full bg-primary transition-[width] duration-500"
-              style={{ width: `${pctAtual}%` }}
-            />
+          <div className="px-3 lg:px-0 space-y-2">
+            <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+              <div
+                className="h-full rounded-full bg-primary transition-[width] duration-500"
+                style={{ width: `${pctAtual}%` }}
+              />
+            </div>
+            <div className="flex items-center justify-between text-[12px] text-muted-foreground tabular-nums">
+              <span>{formatTempo(tempoAtual)}</span>
+              <span>{duracao > 0 ? formatTempo(duracao) : '--:--'}</span>
+            </div>
+            <h1 className="text-[17px] sm:text-xl lg:text-2xl font-bold leading-snug text-foreground">{tituloLimpo}</h1>
+            <p className="text-[12px] sm:text-sm text-muted-foreground">
+              {aula?.area ?? catalogo.titulo}
+              {duracao > 0 ? ` • ${formatTempo(duracao)}` : ''}
+              {concluida ? ' • Assistida' : pctAtual > 0 ? ` • ${pctAtual}% assistido` : ''}
+            </p>
           </div>
-          <div className="flex items-center justify-between text-[12px] text-muted-foreground tabular-nums">
-            <span>{formatTempo(tempoAtual)}</span>
-            <span>{duracao > 0 ? formatTempo(duracao) : '--:--'}</span>
+
+          <div className="flex items-center gap-2 px-3 lg:px-0">
+            <button
+              onClick={toggleFavorito}
+              className={cn(
+                'inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[13px] font-medium transition-colors',
+                favorito
+                  ? 'border-primary bg-primary/10 text-primary'
+                  : 'border-border text-muted-foreground hover:text-foreground',
+              )}
+            >
+              <Star className={cn('h-4 w-4', favorito && 'fill-current')} /> Favoritar
+            </button>
+            <button
+              onClick={marcarConcluida}
+              className={cn(
+                'inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[13px] font-medium transition-colors',
+                concluida
+                  ? 'border-primary bg-primary/10 text-primary'
+                  : 'border-border text-muted-foreground hover:text-foreground',
+              )}
+            >
+              <CheckCircle2 className="h-4 w-4" /> {concluida ? 'Concluída' : 'Concluir'}
+            </button>
           </div>
-          <h1 className="text-[17px] leading-snug text-foreground">{tituloLimpo}</h1>
-          <p className="text-[12px] text-muted-foreground">
-            {aula?.area ?? catalogo.titulo}
-            {duracao > 0 ? ` • ${formatTempo(duracao)}` : ''}
-            {concluida ? ' • Assistida' : pctAtual > 0 ? ` • ${pctAtual}% assistido` : ''}
-          </p>
         </div>
 
-        <div className="flex items-center gap-2 px-3">
-          <button
-            onClick={toggleFavorito}
-            className={cn(
-              'inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[13px] font-medium transition-colors',
-              favorito
-                ? 'border-primary bg-primary/10 text-primary'
-                : 'border-border text-muted-foreground hover:text-foreground',
-            )}
-          >
-            <Star className={cn('h-4 w-4', favorito && 'fill-current')} /> Favoritar
-          </button>
-          <button
-            onClick={marcarConcluida}
-            className={cn(
-              'inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[13px] font-medium transition-colors',
-              concluida
-                ? 'border-primary bg-primary/10 text-primary'
-                : 'border-border text-muted-foreground hover:text-foreground',
-            )}
-          >
-            <CheckCircle2 className="h-4 w-4" /> {concluida ? 'Concluída' : 'Concluir'}
-          </button>
-        </div>
+        {/* Coluna Lateral: Resumo de IA & Ações (5/12 ou 4/12 no Desktop) */}
+        <div className="lg:col-span-5 xl:col-span-4 pt-3 lg:pt-0 space-y-4 lg:bg-card/40 lg:border lg:border-white/10 lg:rounded-2xl lg:p-5 lg:shadow-xl">
+          <h2 className="hidden lg:block text-base font-bold text-foreground pb-2 border-b border-border">
+            Panorama & Estudo com IA
+          </h2>
 
-        <section className="px-3">
+          <section className="px-3 lg:px-0">
 
           {resumo.isLoading && (
             <div className="py-6 flex items-center gap-2 text-muted-foreground text-sm">
@@ -393,6 +418,7 @@ const VideoaulaView = () => {
             </div>
           )}
         </section>
+        </div>
       </div>
 
       <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-card/95 backdrop-blur px-2 py-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom))]">

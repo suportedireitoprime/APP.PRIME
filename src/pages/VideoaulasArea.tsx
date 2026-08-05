@@ -140,7 +140,7 @@ const VideoaulasArea = () => {
         onBack={() => navigate(`/videoaulas/${catalogo.id}`)}
       />
 
-      <div className="mx-auto max-w-md px-4 pt-4 space-y-3">
+      <div className="mx-auto max-w-md lg:max-w-5xl px-4 pt-4 space-y-3">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -162,7 +162,7 @@ const VideoaulasArea = () => {
           </button>
         </div>
 
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-3 gap-2 max-w-md mx-auto">
           {ABAS.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
@@ -183,7 +183,7 @@ const VideoaulasArea = () => {
 
 
 
-      <div className="px-4 pt-3 space-y-3">
+      <div className="max-w-md lg:max-w-7xl mx-auto px-4 pt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {lista.map((a, i) => {
           const p = progresso[a.video_id];
           const pct = p?.concluida ? 100 : Math.min(100, Math.round(p?.percentual ?? 0));
