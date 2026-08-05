@@ -2,12 +2,19 @@ import { useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import VisuaisJuridicosSheet from '@/components/visuais/VisuaisJuridicosSheet';
 import { SLUG_TIPO } from '@/lib/visuaisJuridicos/rotas';
-
+import type { VisualCategoria } from '@/lib/visuaisJuridicos/types';
 
 export default function VisualJuridico() {
-  const { formato } = useParams<{ formato: string }>();
+  const { formato, '*': resto } = useParams<{ formato: string; '*': string }>();
   const navigate = useNavigate();
   const tipo = formato ? SLUG_TIPO[formato] : undefined;
+
+  const segmentos = (resto || '').split('/').filter(Boolean);
+  const catRaw = segmentos[0];
+  const categoriaInicial: VisualCategoria | undefined =
+    catRaw === 'materias' || catRaw === 'leis' || catRaw === 'jurisprudencia'
+      ? catRaw
+      : undefined;
 
   const sair = () => {
     if (window.history.length > 1) navigate(-1);
@@ -16,16 +23,15 @@ export default function VisualJuridico() {
 
   // Espelha a navegação interna na URL: /visuais/mapa-mental/materias/direito-civil/lindb
   const aoMudarRota = useCallback(
-    (segmentos: string[]) => {
+    (segs: string[]) => {
       if (!formato) return;
-      const destino = ['/visuais', formato, ...segmentos].join('/');
+      const destino = ['/visuais', formato, ...segs].join('/');
       if (window.location.pathname !== destino) {
         navigate(destino, { replace: true });
       }
     },
     [formato, navigate],
   );
-
 
   if (!tipo) {
     return (
@@ -41,5 +47,14 @@ export default function VisualJuridico() {
     );
   }
 
-  return <VisuaisJuridicosSheet open modo="page" tipoInicial={tipo} onClose={sair} onRotaChange={aoMudarRota} />;
+  return (
+    <VisuaisJuridicosSheet
+      open
+      modo="page"
+      tipoInicial={tipo}
+      categoriaInicial={categoriaInicial}
+      onClose={sair}
+      onRotaChange={aoMudarRota}
+    />
+  );
 }

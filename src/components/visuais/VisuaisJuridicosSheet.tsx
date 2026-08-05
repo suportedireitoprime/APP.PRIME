@@ -170,6 +170,8 @@ interface Props {
   onClose: () => void;
   /** Quando definido, o componente abre direto neste formato, em tela cheia (rota própria). */
   tipoInicial?: VisualTipo;
+  /** Categoria inicial quando aberta pela URL (ex.: 'materias' | 'leis' | 'jurisprudencia'). */
+  categoriaInicial?: VisualCategoria;
   /** 'sheet' = folha de baixo pra cima (escolha do formato). 'page' = tela cheia dedicada. */
   modo?: 'sheet' | 'page';
   /** Chamado ao escolher um formato no passo 1 (usado para navegar para a rota do formato). */
@@ -178,7 +180,15 @@ interface Props {
   onRotaChange?: (segmentos: string[]) => void;
 }
 
-export default function VisuaisJuridicosSheet({ open, onClose, tipoInicial, modo = 'sheet', onEscolherTipo, onRotaChange }: Props) {
+export default function VisuaisJuridicosSheet({
+  open,
+  onClose,
+  tipoInicial,
+  categoriaInicial,
+  modo = 'sheet',
+  onEscolherTipo,
+  onRotaChange,
+}: Props) {
   const emPagina = modo === 'page';
   useBodyScrollLock(open && !emPagina);
   const { user } = useAuth();
@@ -186,7 +196,18 @@ export default function VisuaisJuridicosSheet({ open, onClose, tipoInicial, modo
   const podeGerar = isPremium || isAdminEmail(user?.email);
 
   const [tipo, setTipo] = useState<VisualTipo | null>(tipoInicial ?? null);
-  const [categoria, setCategoria] = useState<VisualCategoria | null>(null);
+  const [categoria, setCategoria] = useState<VisualCategoria | null>(categoriaInicial ?? null);
+
+  useEffect(() => {
+    if (tipoInicial) setTipo(tipoInicial);
+  }, [tipoInicial]);
+
+  useEffect(() => {
+    if (categoriaInicial && categoriaInicial !== categoria) {
+      setCategoria(categoriaInicial);
+    }
+  }, [categoriaInicial, categoria]);
+
   const [item, setItem] = useState<CatalogoItem | null>(null);
   const [artigo, setArtigo] = useState('');
   const [artigos, setArtigos] = useState<ArtigoLei[]>([]);
@@ -236,10 +257,9 @@ export default function VisuaisJuridicosSheet({ open, onClose, tipoInicial, modo
 
   const passo = !tipo ? 1 : !categoria ? 2 : !item ? 3 : 4;
 
-
   const reset = useCallback(() => {
     setTipo(tipoInicial ?? null);
-    setCategoria(null);
+    setCategoria(categoriaInicial ?? null);
     setItem(null);
     setArtigo('');
     setBusca('');
@@ -249,7 +269,7 @@ export default function VisuaisJuridicosSheet({ open, onClose, tipoInicial, modo
     setTema(null);
     setSubtemas([]);
     setFiltro('todos');
-  }, [tipoInicial]);
+  }, [tipoInicial, categoriaInicial]);
 
   // Espelha o passo atual na URL (…/visuais/mapa-mental/materias/direito-civil/lindb).
   useEffect(() => {
