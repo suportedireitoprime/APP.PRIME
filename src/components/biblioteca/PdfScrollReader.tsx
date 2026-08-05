@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ArrowLeft, Loader2, ExternalLink, ChevronLeft, ChevronRight, Bookmark, BookmarkCheck,
-  List, Search, X, ZoomIn, ZoomOut,
+  List, Search, X, ZoomIn, ZoomOut, Columns,
 } from 'lucide-react';
 import * as pdfjsLib from 'pdfjs-dist';
 // @ts-ignore vite ?url import
@@ -81,9 +81,8 @@ const MIN_ZOOM = 1;
 const MAX_ZOOM = 4;
 
 /**
- * Leitor de PDF em scroll vertical contínuo.
- * Renderiza páginas em <canvas> conforme entram no viewport (IntersectionObserver).
- * Suporta zoom em pinça, busca por palavra e sumário (outline) do documento.
+ * Leitor de PDF com suporte a scroll contínuo e modo página dupla (lado a lado) no desktop.
+ * Renderiza páginas em <canvas> conforme entram no viewport.
  */
 const PdfScrollReader = ({ url, titulo, onClose, livroId }: Props) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -106,6 +105,9 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId }: Props) => {
   const [matches, setMatches] = useState<Match[] | null>(null);
   const [zoom, setZoom] = useState(1);
   const isNative = Capacitor.isNativePlatform();
+  const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 1024;
+  const [dualPage, setDualPage] = useState<boolean>(() => isDesktop);
+  const [promptContinuarPage, setPromptContinuarPage] = useState<number | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -178,6 +180,12 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId }: Props) => {
             if (!cancelled) setOutline(itens);
           }
         } catch {}
+
+        // Verifica progresso salvo para o prompt "Continuar de onde parou"
+        const savedPage = Number(localStorage.getItem(PAGE_KEY(url)) || '1');
+        if (savedPage > 1 && savedPage <= pdf.numPages) {
+          setPromptContinuarPage(savedPage);
+        }
       } catch (e: any) {
         console.error('[PdfScrollReader]', e);
         if (!cancelled) {
@@ -226,23 +234,32 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId }: Props) => {
         { root: container, rootMargin: '400px 0px', threshold: [0, 0.5] }
       );
       pages.forEach((p) => observer!.observe(p));
-
-      const savedPage = Number(localStorage.getItem(PAGE_KEY(url)) || '1');
-      if (savedPage > 1 && savedPage <= totalPages) {
-        requestAnimationFrame(() => scrollToPage(savedPage, 'auto'));
-      }
     });
 
     return () => {
       cancelAnimationFrame(rafId);
       observer?.disconnect();
     };
-  }, [loading, error, totalPages]);
+  }, [loading, error, totalPages, dualPage]);
 
   // Persiste página atual
   useEffect(() => {
     if (currentPage > 0) localStorage.setItem(PAGE_KEY(url), String(currentPage));
   }, [currentPage, url]);
+
+  // Navegação por teclado
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (e.key === 'ArrowRight' || e.key === 'PageDown') {
+        goNext();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        goPrev();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [currentPage, totalPages, dualPage]);
 
   const renderPage = async (idx: number, host: HTMLDivElement) => {
     if (renderedRef.current.has(idx)) return;
@@ -252,7 +269,9 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId }: Props) => {
       if (!pdf) return;
       const page = await pdf.getPage(idx);
       const containerWidth = containerRef.current?.clientWidth || window.innerWidth;
-      const targetWidth = Math.min(containerWidth - 24, 900);
+      const targetWidth = dualPage
+        ? Math.min((containerWidth - 60) / 2, 600)
+        : Math.min(containerWidth - 24, 900);
       const viewport = page.getViewport({ scale: 1 });
       const scale = (targetWidth / viewport.width) * (window.devicePixelRatio || 1);
       const finalVp = page.getViewport({ scale });
@@ -285,8 +304,14 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId }: Props) => {
     if (el) el.scrollIntoView({ behavior, block: 'start' });
   };
 
-  const goPrev = () => scrollToPage(Math.max(1, currentPage - 1));
-  const goNext = () => scrollToPage(Math.min(totalPages, currentPage + 1));
+  const goPrev = () => {
+    const step = dualPage ? 2 : 1;
+    scrollToPage(Math.max(1, currentPage - step));
+  };
+  const goNext = () => {
+    const step = dualPage ? 2 : 1;
+    scrollToPage(Math.min(totalPages, currentPage + step));
+  };
 
   // ---- Zoom em pinça (dois dedos) + botões ----
   const pinchRef = useRef<{ dist: number; zoom: number } | null>(null);
@@ -367,7 +392,59 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId }: Props) => {
 
   const reader = (
     <div className="fixed inset-0 z-[1300] h-[100dvh] max-h-[100dvh] bg-neutral-900 flex flex-col overflow-hidden">
-      {/* Header — mesma altura do cabeçalho padrão (Radar) */}
+      {/* Prompt: Continuar de onde parou */}
+      <AnimatePresence>
+        {promptContinuarPage != null && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            className="fixed top-20 left-1/2 -translate-x-1/2 z-[1400] max-w-sm w-[90%] bg-neutral-950/95 border border-rose-500/40 text-white p-4 rounded-2xl shadow-2xl backdrop-blur-md flex flex-col gap-3"
+          >
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <p className="text-sm font-bold text-white flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-rose-500" />
+                  Continuar de onde parou?
+                </p>
+                <p className="text-xs text-neutral-300 mt-1">
+                  Sua última leitura foi na <strong className="text-white">página {promptContinuarPage}</strong>.
+                </p>
+              </div>
+              <button
+                onClick={() => setPromptContinuarPage(null)}
+                className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-neutral-400 hover:text-white shrink-0"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="flex items-center gap-2 pt-1">
+              <button
+                onClick={() => {
+                  scrollToPage(promptContinuarPage);
+                  setCurrentPage(promptContinuarPage);
+                  setPromptContinuarPage(null);
+                }}
+                className="flex-1 py-2.5 px-3 rounded-xl bg-gradient-to-r from-rose-600 to-rose-700 text-white text-xs font-bold shadow-lg hover:brightness-110 active:scale-95 transition"
+              >
+                Ir para pág. {promptContinuarPage}
+              </button>
+              <button
+                onClick={() => {
+                  scrollToPage(1);
+                  setCurrentPage(1);
+                  setPromptContinuarPage(null);
+                }}
+                className="py-2.5 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-neutral-200 text-xs font-semibold active:scale-95 transition"
+              >
+                Pág. 1
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Header */}
       <div
         className="flex items-center gap-3 shrink-0 bg-neutral-950/95 backdrop-blur border-b border-white/5"
         style={{
@@ -389,6 +466,20 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId }: Props) => {
           {titulo}
         </p>
         <div className="flex items-center gap-2 shrink-0">
+          {isDesktop && (
+            <button
+              onClick={() => setDualPage((d) => !d)}
+              title={dualPage ? 'Alternar para visão de 1 página' : 'Alternar para visão lado a lado (2 páginas)'}
+              className={`px-3 py-2 rounded-full border text-xs font-bold flex items-center gap-1.5 transition ${
+                dualPage
+                  ? 'bg-rose-500/20 border-rose-500/40 text-rose-300'
+                  : 'bg-white/[0.06] border-white/10 text-neutral-300 hover:bg-white/15'
+              }`}
+            >
+              <Columns className="w-4 h-4" />
+              <span className="hidden sm:inline">{dualPage ? '2 Páginas' : '1 Página'}</span>
+            </button>
+          )}
           <button
             onClick={() => setShowBusca(true)}
             aria-label="Procurar no PDF"
@@ -437,7 +528,7 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId }: Props) => {
               )}
             </div>
           )}
-          {!loading && !error && (
+          {!loading && !error && !dualPage && (
             <div
               className="py-4 pb-44 space-y-3"
               style={{
@@ -452,12 +543,52 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId }: Props) => {
                 <div
                   key={i}
                   data-page={i + 1}
-                  className="mx-auto bg-white rounded shadow-lg min-h-[400px] flex items-center justify-center"
+                  className="mx-auto bg-white rounded shadow-lg min-h-[400px] flex items-center justify-center overflow-hidden"
                   style={{ maxWidth: 900 }}
                 >
                   <div className="text-neutral-400 text-xs py-8">Página {i + 1}</div>
                 </div>
               ))}
+            </div>
+          )}
+          {!loading && !error && dualPage && (
+            <div
+              className="py-6 pb-44 px-4 flex flex-wrap items-start justify-center gap-6"
+              style={{
+                transform: `scale(${zoom})`,
+                transformOrigin: 'top center',
+                width: `${100 / zoom}%`,
+                marginLeft: 'auto',
+                marginRight: 'auto',
+              }}
+            >
+              {Array.from({ length: Math.ceil(totalPages / 2) }).map((_, spreadIdx) => {
+                const p1 = spreadIdx * 2 + 1;
+                const p2 = spreadIdx * 2 + 2;
+                return (
+                  <div
+                    key={`spread-${spreadIdx}`}
+                    className="w-full flex flex-col md:flex-row items-center justify-center gap-4 border-b border-white/5 pb-8 mb-4"
+                  >
+                    <div
+                      data-page={p1}
+                      className="bg-white rounded-lg shadow-2xl min-h-[450px] flex items-center justify-center overflow-hidden"
+                      style={{ maxWidth: 600, width: '100%' }}
+                    >
+                      <div className="text-neutral-400 text-xs py-8">Página {p1}</div>
+                    </div>
+                    {p2 <= totalPages && (
+                      <div
+                        data-page={p2}
+                        className="bg-white rounded-lg shadow-2xl min-h-[450px] flex items-center justify-center overflow-hidden"
+                        style={{ maxWidth: 600, width: '100%' }}
+                      >
+                        <div className="text-neutral-400 text-xs py-8">Página {p2}</div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>

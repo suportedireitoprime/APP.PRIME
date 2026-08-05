@@ -67,12 +67,14 @@ const LerAgoraDialog = ({ open, onClose, onSelect, hasPdf, hasOnline, pdfCached,
             </div>
 
             <div className="px-5 py-4 space-y-5">
-              {/* Recomendado — Leitura Nativa */}
+              {/* Principais Opções de Leitura */}
               {hasPdf && (
-                <div>
-                  <div className="text-[10px] uppercase tracking-widest text-primary/80 font-semibold mb-2">
-                    Recomendado
+                <div className="space-y-3">
+                  <div className="text-[10px] uppercase tracking-widest text-primary/90 font-bold">
+                    Opções de Leitura
                   </div>
+                  
+                  {/* Leitura Nativa (Kindle / IA) */}
                   <button
                     onClick={() => onSelect('nativa')}
                     className="w-full min-h-[68px] rounded-2xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground p-4 text-left flex items-center gap-3 shadow-lg hover:brightness-110 active:scale-[0.99] transition-all"
@@ -87,75 +89,60 @@ const LerAgoraDialog = ({ open, onClose, onSelect, hasPdf, hasOnline, pdfCached,
                       </div>
                     </div>
                   </button>
+
+                  {/* Ler em PDF */}
+                  <button
+                    onClick={() => onSelect('pdf')}
+                    className="w-full min-h-[68px] rounded-2xl bg-gradient-to-br from-zinc-900 via-rose-950/80 to-rose-900/90 text-white p-4 text-left flex items-center gap-3 border border-rose-500/30 shadow-lg hover:brightness-110 active:scale-[0.99] transition-all"
+                  >
+                    <div className="w-12 h-12 rounded-xl bg-rose-500/20 flex items-center justify-center shrink-0 border border-rose-400/30 backdrop-blur-sm">
+                      <BookOpen className="w-5 h-5 text-rose-300" strokeWidth={2.25} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-display font-bold text-sm text-white">Ler em PDF</div>
+                      <div className="text-[11px] text-rose-200/80 leading-tight mt-0.5">
+                        Abre o PDF dentro do app com rolagem contínua
+                      </div>
+                    </div>
+                  </button>
                 </div>
               )}
 
-              {/* Outras opções — lista compacta */}
-              {(hasPdf || hasOnline) && (
+              {/* Seção Baixar Offline */}
+              {hasPdf && (
                 <div>
                   <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2">
-                    Outras opções
+                    Baixar offline
                   </div>
-                  <div className="space-y-2">
-                    {hasPdf && (
-                      <OptionRow
-                        icon={BookOpen}
-                        title="Ler em PDF"
-                        desc="Abre o PDF dentro do app com rolagem contínua"
-                        onClick={() => onSelect('pdf')}
-                      />
-                    )}
-                    {hasOnline && online && (
-                      <OptionRow
-                        icon={BookCopy}
-                        title="Versão folheada"
-                        desc="Versão folheável no navegador"
-                        onClick={() => onSelect('online')}
-                      />
-                    )}
-                    {hasOnline && !online && (
-                      <div className="w-full min-h-[52px] rounded-2xl bg-secondary/30 p-3 flex items-center gap-3 border border-border/40 opacity-70">
-                        <div className="w-9 h-9 rounded-xl bg-background flex items-center justify-center shrink-0">
-                          <WifiOff className="w-4 h-4 text-muted-foreground" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="font-body font-semibold text-sm text-foreground">Versão folheada</div>
-                          <div className="text-[11px] text-muted-foreground leading-tight mt-0.5">Indisponível offline</div>
-                        </div>
+                  {isDownloading ? (
+                    <div className="w-full rounded-2xl bg-secondary/60 p-3 border border-border/60">
+                      <div className="flex items-center gap-3">
+                        <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                        <div className="flex-1 text-sm font-semibold text-foreground">Baixando PDF… {downloadProgress}%</div>
                       </div>
-                    )}
-                    {hasPdf && (
-                      isDownloading ? (
-                        <div className="w-full rounded-2xl bg-secondary/60 p-3 border border-border/60">
-                          <div className="flex items-center gap-3">
-                            <Loader2 className="w-4 h-4 animate-spin text-primary" />
-                            <div className="flex-1 text-sm font-semibold text-foreground">Baixando PDF… {downloadProgress}%</div>
-                          </div>
-                          <div className="mt-2 h-1.5 bg-background rounded-full overflow-hidden">
-                            <div className="h-full bg-primary transition-all" style={{ width: `${downloadProgress}%` }} />
-                          </div>
-                        </div>
-                      ) : pdfCached ? (
-                        <OptionRow
-                          icon={Check}
-                          title="PDF disponível offline"
-                          desc="Baixado. Toque em 'Ler em PDF' para abrir sem internet."
-                          onClick={() => onSelect('pdf')}
-                        />
-                      ) : (
-                        <OptionRow
-                          icon={Download}
-                          title="Baixar para offline"
-                          desc="Salva o PDF no aparelho para ler sem internet"
-                          onClick={() => onSelect('download')}
-                        />
-                      )
-                    )}
-                  </div>
+                      <div className="mt-2 h-1.5 bg-background rounded-full overflow-hidden">
+                        <div className="h-full bg-primary transition-all" style={{ width: `${downloadProgress}%` }} />
+                      </div>
+                    </div>
+                  ) : pdfCached ? (
+                    <OptionRow
+                      icon={Check}
+                      title="PDF disponível offline"
+                      desc="Baixado. Toque em 'Ler em PDF' para abrir sem internet."
+                      onClick={() => onSelect('pdf')}
+                    />
+                  ) : (
+                    <OptionRow
+                      icon={Download}
+                      title="Baixar para offline"
+                      desc="Salva o PDF no aparelho para ler sem internet"
+                      onClick={() => onSelect('download')}
+                    />
+                  )}
                 </div>
               )}
 
-              {/* Versão desktop */}
+              {/* Seção Continuar em outro dispositivo */}
               <div>
                 <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2">
                   Continuar em outro dispositivo

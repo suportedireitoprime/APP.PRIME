@@ -407,7 +407,6 @@ const RecomendacoesCarousel = ({ onAbrirLivro }: Props) => {
                   }
                   if (t.moved > 12) return; // arrasto/rolagem
                   if (Date.now() - t.t > 900) return;
-                  e.preventDefault();
                   openThis();
                 }}
                 onTouchCancel={() => {
@@ -435,7 +434,7 @@ const RecomendacoesCarousel = ({ onAbrirLivro }: Props) => {
                 }}
                 draggable={false}
                 className="shrink-0 snap-center outline-none group"
-                style={{ width: CARD_W, touchAction: 'pan-x' }}
+                style={{ width: CARD_W, touchAction: 'pan-x pan-y' }}
                 aria-label={livro.titulo}
               >
 
