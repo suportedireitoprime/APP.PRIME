@@ -29,6 +29,7 @@ import { useNavigate } from 'react-router-dom';
 import { Library } from 'lucide-react';
 import { copiarTexto } from '@/lib/nativo/copiar';
 import { compartilharNativo, podeCompartilhar } from '@/lib/nativo/compartilhar';
+import { haptic } from '@/lib/nativeHaptics';
 
 interface LivroDetailSheetProps {
   livro: LivroNormalizado | null;
@@ -159,6 +160,7 @@ const LivroDetailSheet = ({ livro, open, onClose }: LivroDetailSheetProps) => {
   };
 
   const onSelectModo = async (modo: LerModo) => {
+    haptic.selection();
     // Bloqueio de leitura: 1 livro por mês (bypass se este mesmo livro já foi liberado)
     if (!canUse) { setLerDialog(false); setGateOpen(true); return; }
     // Registra o uso antes de liberar qualquer modo (scope/ref = id do livro)
@@ -250,6 +252,7 @@ const LivroDetailSheet = ({ livro, open, onClose }: LivroDetailSheetProps) => {
               </button>
               <button
                 onClick={() => {
+                  haptic.selection();
                   const now = toggleFavorito(livro);
                   setFav(now);
                   toast.success(now ? 'Adicionado aos favoritos' : 'Removido dos favoritos');
