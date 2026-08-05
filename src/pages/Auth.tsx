@@ -344,6 +344,13 @@ const AuthFormScreen = ({ onBack }: { onBack: () => void }) => {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [legalOpen, setLegalOpen] = useState<null | 'privacidade' | 'termos'>(null);
 
+  // SEO & Título dinâmico por modo de autenticação
+  useEffect(() => {
+    if (mode === 'login') document.title = 'Entrar na sua Conta | Direito Prime';
+    else if (mode === 'signup') document.title = 'Criar Nova Conta | Direito Prime';
+    else if (mode === 'forgot') document.title = 'Recuperar Senha | Direito Prime';
+  }, [mode]);
+
   // Pré-carrega o bundle da triagem para abrir sem delay logo após signup.
   useEffect(() => {
     if (mode !== 'signup') return;
@@ -433,12 +440,15 @@ const AuthFormScreen = ({ onBack }: { onBack: () => void }) => {
     <>
       {/* Tabs */}
       {mode !== 'forgot' && (
-        <div className="flex mb-5 bg-white/[0.04] border border-white/10 rounded-2xl p-1">
+        <div role="tablist" aria-label="Modo de autenticação" className="flex mb-5 bg-white/[0.04] border border-white/10 rounded-2xl p-1">
           {(['login', 'signup'] as const).map((m) => (
             <button
               key={m}
+              role="tab"
+              aria-selected={mode === m}
+              aria-label={m === 'login' ? 'Acessar tela de Login' : 'Acessar tela de Cadastro'}
               onClick={() => setMode(m)}
-              className={`flex-1 py-3 text-sm font-body font-medium rounded-xl transition-all ${
+              className={`flex-1 py-3 text-sm font-body font-medium rounded-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
                 mode === m
                   ? 'bg-primary text-primary-foreground shadow-md'
                   : 'text-white/60 hover:text-white'

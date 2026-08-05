@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -13,6 +13,11 @@ const Onboarding = () => {
   const { user } = useAuth();
   const [saving, setSaving] = useState(false);
   const [pedirNotificacoes, setPedirNotificacoes] = useState(false);
+
+  // SEO & Título dinâmico da Triagem
+  useEffect(() => {
+    document.title = 'Personalizar Perfil | Direito Prime';
+  }, []);
 
   const finalizar = (r: CadastroResult) => {
     if (!user) {

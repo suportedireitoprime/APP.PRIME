@@ -57,6 +57,11 @@ const IndexMobile = () => {
     return () => window.removeEventListener('vacatio:bottom-nav-visibility', handler as EventListener);
   }, []);
 
+  // SEO & Título dinâmico da Home
+  useEffect(() => {
+    document.title = 'Direito Prime - Vade Mecum, Leis & Estudos Jurídicos';
+  }, []);
+
   useEffect(() => { warmCoverCache(); }, []);
 
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -42,6 +42,7 @@ const TESTIMONIALS = [
 
 const FaqItem = ({ item, index }: { item: { q: string; a: string }; index: number }) => {
   const [open, setOpen] = useState(false);
+  const faqId = `faq-item-${index}`;
   return (
     <motion.div
       initial={{ opacity: 0, y: 15 }}
@@ -53,8 +54,10 @@ const FaqItem = ({ item, index }: { item: { q: string; a: string }; index: numbe
     >
       <button
         onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left transition-colors hover:bg-white/5"
+        className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left transition-colors hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         aria-expanded={open}
+        aria-controls={faqId}
+        aria-label={`Pergunta: ${item.q}`}
       >
         <span className="text-foreground text-sm font-semibold flex-1">{item.q}</span>
         <ChevronDown
@@ -65,6 +68,9 @@ const FaqItem = ({ item, index }: { item: { q: string; a: string }; index: numbe
       <AnimatePresence initial={false}>
         {open && (
           <motion.div
+            id={faqId}
+            role="region"
+            aria-label={item.q}
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
@@ -82,6 +88,11 @@ const FaqItem = ({ item, index }: { item: { q: string; a: string }; index: numbe
 const Landing = () => {
   const navigate = useNavigate();
 
+  // SEO & Título dinâmico da Landing Page
+  useEffect(() => {
+    document.title = 'Direito Prime - A Plataforma Definitiva de Estudos Jurídicos';
+  }, []);
+
   const handleStart = useCallback((origem: string) => {
     trackStartJourney(origem);
     navigate('/auth');
@@ -92,7 +103,7 @@ const Landing = () => {
   }, []);
 
   return (
-    <div className="min-h-[100dvh] w-full bg-background overflow-x-hidden relative">
+    <main role="main" className="min-h-[100dvh] w-full bg-background overflow-x-hidden relative">
       {/* ───── HERO ───── */}
       <div className="relative">
         {/* Navbar sobre o hero */}
@@ -302,7 +313,7 @@ const Landing = () => {
           </div>
         </div>
       </footer>
-    </div>
+    </main>
   );
 };
 
