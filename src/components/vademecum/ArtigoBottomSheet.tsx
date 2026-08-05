@@ -642,29 +642,23 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
 
     (async () => {
       try {
-        const res = await fetch(
-          `${SB_URL}/rest/v1/narracoes_artigos?tabela_nome=eq.${tabelaNome}&artigo_numero=eq.${encodeURIComponent(artigo.numero)}&select=audio_url,word_timings&limit=1`,
-          {
-            headers: {
-              apikey: SB_KEY,
-              Authorization: `Bearer ${SB_KEY}`,
-            },
-          }
-        );
-        if (res.ok) {
-          const data = await res.json();
-          const row = data?.[0];
-          const hasTimings = Array.isArray(row?.word_timings) && row.word_timings.length > 0;
-          // Só reaproveita cache que já tenha karaokê (word_timings). Caches antigos
-          // sem timings ou sem o novo prefixo ("Código Civil, Título I, artigo…")
-          // são ignorados para forçar regeneração no próximo Narrar.
-          if (row?.audio_url && hasTimings) {
-            setNarracaoUrl(row.audio_url);
-            setNarracaoWordTimings(row.word_timings);
+        const { data: rows } = await supabase
+          .from('narracoes_artigos')
+          .select('audio_url, word_timings')
+          .eq('tabela_nome', tabelaNome)
+          .eq('artigo_numero', artigo.numero)
+          .limit(1);
+
+        const row = rows?.[0];
+        const hasTimings = Array.isArray(row?.word_timings) && row.word_timings.length > 0;
+        if (row?.audio_url) {
+          setNarracaoUrl(row.audio_url);
+          if (hasTimings) {
+            setNarracaoWordTimings(row.word_timings as any[]);
           }
         }
       } catch (e) {
-        console.error('Erro ao verificar narração:', e);
+        console.error('Erro ao verificar narração no banco principal:', e);
       }
     })();
   }, [tabelaNome, artigo?.id, artigo?.numero]);
@@ -852,23 +846,45 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
       let audio_url: string | null = null;
       let word_timings: any[] | null = null;
 
-      // 1ª Tentativa: Invoca a Edge Function narrar-artigo com a chave GEMINI_API_KEY do Supabase do projeto
+      // 1ª Tentativa: Consulta o cache de áudio no banco da aplicação (narracoes_artigos)
       try {
-        const { data: edgeData, error: edgeErr } = await supabase.functions.invoke('narrar-artigo', {
-          body: payload,
-        });
+        const { data: rows } = await supabase
+          .from('narracoes_artigos')
+          .select('audio_url, word_timings')
+          .eq('tabela_nome', tabelaNome)
+          .eq('artigo_numero', artigo.numero)
+          .limit(1);
 
-        if (!edgeErr && edgeData?.audio_url) {
-          audio_url = edgeData.audio_url;
-          word_timings = edgeData.word_timings || null;
-        } else if (edgeErr) {
-          console.warn('[ArtigoBottomSheet] supabase.functions.invoke(narrar-artigo) error:', edgeErr);
+        if (rows?.[0]?.audio_url) {
+          audio_url = rows[0].audio_url;
+          word_timings = rows[0].word_timings || null;
         }
-      } catch (errInvoke) {
-        console.warn('[ArtigoBottomSheet] Falha ao invocar narrar-artigo via Supabase SDK:', errInvoke);
+      } catch (errDb) {
+        console.warn('[ArtigoBottomSheet] Erro ao consultar narracoes_artigos:', errDb);
       }
 
-      // 2ª Tentativa: Se não retornou áudio via SDK, tenta o fetch no endpoint com anon key
+      // 2ª Tentativa: Gera em tempo real via Edge Function com o modelo Gemini 2.5 Flash TTS (gemini-2.5-flash-preview-tts / voz Sulafat)
+      if (!audio_url) {
+        try {
+          const textoCompleto = `Artigo ${artigo.numero}. ${artigo.caput || ''}`;
+          const { data: fnData, error: fnErr } = await supabase.functions.invoke('narracao', {
+            body: {
+              fn: 'blog_preview',
+              texto: textoCompleto,
+            },
+          });
+
+          if (!fnErr && fnData?.audio_data_url) {
+            audio_url = fnData.audio_data_url;
+          } else if (fnErr) {
+            console.warn('[ArtigoBottomSheet] Edge function narracao error:', fnErr);
+          }
+        } catch (errFn) {
+          console.warn('[ArtigoBottomSheet] Chamada Gemini 2.5 Flash TTS falhou:', errFn);
+        }
+      }
+
+      // 3ª Tentativa: Backend de legislação
       if (!audio_url) {
         try {
           const { data: sessionData } = await supabase.auth.getSession();
@@ -894,7 +910,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         }
       }
 
-      // Se obtivemos a narração em áudio (Gemini TTS)
+      // Se obtivemos o áudio gerado pelo Gemini 2.5 Flash TTS
       if (audio_url) {
         if (!silent) setNarracaoStepIdx(2);
         setNarracaoUrl(audio_url);
