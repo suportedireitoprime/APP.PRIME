@@ -28,6 +28,8 @@ const SUBTITULOS = [
   'Busca por Artigo',
 ];
 
+import { haptic } from '@/lib/nativeHaptics';
+
 interface Props {
   onBuscar: () => void;
 }
@@ -105,7 +107,10 @@ const VadeMecumHero = ({ onBuscar }: Props) => {
       {/* Topo */}
       <header className="relative px-3 pt-3 md:px-6 md:pt-6 flex items-center gap-2">
         <button
-          onClick={() => navigate('/')}
+          onClick={() => {
+            haptic.selection();
+            navigate('/');
+          }}
           aria-label="Voltar"
           className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-black/40 border border-white/20 backdrop-blur-md flex items-center justify-center active:scale-95 transition touch-manipulation"
         >
@@ -149,7 +154,10 @@ const VadeMecumHero = ({ onBuscar }: Props) => {
         {/* Barra de pesquisa — só leis */}
         <button
           type="button"
-          onClick={onBuscar}
+          onClick={() => {
+            haptic.selection();
+            onBuscar();
+          }}
           aria-label="Pesquisar leis"
           className="mt-auto relative w-full flex items-center h-16 pl-14 pr-[112px] rounded-2xl bg-black/45 backdrop-blur-md border border-primary/40 shadow-lg shadow-black/30 active:scale-[0.99] transition search-bar-shine"
         >

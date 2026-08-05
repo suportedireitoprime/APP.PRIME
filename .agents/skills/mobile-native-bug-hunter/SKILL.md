@@ -1,26 +1,33 @@
 ---
 name: mobile-native-bug-hunter
-description: Auditoria profunda e caça a bugs nativos mobile (Android/iOS Capacitor). Identifica congelamentos de tela, cliques travados, vazamento de memória, erros de rede mobile e otimiza responsividade tátil.
+description: Auditoria profunda de bugs nativos, Capacitor, diretrizes Google Material 3 e Apple HIG para mobile. Valida Safe Area insets (topo/rodapé), dimensões de toque (min 48dp/44pt), legibilidade, performance e prevenção de trava de tela.
 ---
 
-# Skill: Mobile Native Bug Hunter
+# Skill: Mobile Native Bug Hunter & UX Guidelines (Android 15 / iOS 18)
 
-Esta skill fornece uma auditoria especializada para caçar e eliminar bugs em dispositivos móveis (Android e iOS) rodando via Capacitor ou WebView Mobile.
+Esta skill executa uma auditoria completa de código nativo mobile, plugins Capacitor e diretrizes oficiais de interface do **Google Material Design 3** e **Apple Human Interface Guidelines (HIG)**.
 
-## 🎯 Foco Principal de Auditoria Mobile
+## 📱 Diretrizes e Checkpoints Obrigatórios
 
-1. **Congelamento de Tela e Trava de Cliques (UI Freezes):**
-   - Garantir que nenhuma função assíncrona ou loop bloqueie a thread principal (UI Main Loop).
-   - Adicionar estado visual de feedback imediato ao tocar (`active:scale-[0.98]`, feedback haptic tátil).
+### 1. Safe Area Insets (Android Gesture Bar & iOS Notch / Dynamic Island)
+- **Regra de Ouro:** Nenhum elemento clicável ou texto pode ficar escondido atrás da barra de notificações superior ou da barra de gestos/navegação inferior.
+- **Top Inset:** Usar `var(--sai-top, env(safe-area-inset-top, 0px))` ou `pt-[env(safe-area-inset-top)]`.
+- **Bottom Inset:** Usar `var(--sai-bottom, env(safe-area-inset-bottom, 0px))` ou `pb-[calc(1rem+env(safe-area-inset-bottom))]`.
 
-2. **Prevenção de Memory Leaks em WebViews:**
-   - Limpar todos os `setInterval`, `setTimeout`, `window.addEventListener` e subscrições do Supabase no `useEffect` cleanup.
-   - Cancelar requisições ativas se o usuário fechar a tela antes do retorno (`abortController` ou flag `alive`).
+### 2. Dimensões Mínimas de Toque (Google & Apple HIG)
+- **Tamanho Mínimo Clicável:**
+  - Android (Material 3): Mínimo **48x48dp** (48px).
+  - iOS (HIG): Mínimo **44x44pt** (44px).
+- **Espaçamento Tátil:** Espaço mínimo de 8px entre botões adjacentes para evitar toques acidentais.
 
-3. **Resiliência de Rede Mobile (4G / 5G / Conexão Instável):**
-   - Envelopar chamadas assíncronas em `try/catch` com timeouts e fallbacks locais em cache offline.
-   - Evitar telas em branco por falta de internet; exibir mensagens de erro amigáveis com toast ou fallback local.
+### 3. Tipografia & Legibilidade Ergonomica
+- **Tamanho Mínimo de Fonte:** Texto principal nunca menor que `14px` (`text-sm`) e rótulos/badges nunca menores que `11px`.
+- **Contraste:** Garantir contraste mínimo 4.5:1 para texto em fundos escuros/claros, prevenindo fadiga visual.
 
-4. **Área de Toque & Safe Area (Android 15 Edge-to-Edge / iOS Notch):**
-   - Garantir que todos os elementos clicáveis tenham altura/largura mínima tátil de 44x44px.
-   - Aplicar `env(safe-area-inset-top)` e `env(safe-area-inset-bottom)` nos contêineres fixos de topo e rodapé.
+### 4. Auditoria de Plugins e Bridge Nativa Capacitor
+- **Estado dos Plugins:** Garantir que imports de `@capacitor/core`, `@capacitor/filesystem`, `@capacitor/haptics`, `@capacitor/preferences`, `@capacitor/status-bar` estejam com fallbacks `Capacitor.isNativePlatform()`.
+- **Feedback Tátil (Haptics):** Toda ação interativa (abrir lei, favoritar, pesquisar, alternar artigo) deve disparar `haptic.selection()` ou `haptic.impact()`.
+
+### 5. Resiliência de Interface e Memória
+- **Zero Scroll Horizontal Acidental:** Contêineres envelopados com `w-full max-w-full overflow-x-hidden`.
+- **Cleanup no Unmount:** Cancelar timers e listeners no `useEffect` cleanup.
