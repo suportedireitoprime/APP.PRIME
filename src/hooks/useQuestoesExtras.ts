@@ -94,12 +94,21 @@ export type Trilha = {
 
 export function useDesafios() {
   const { user } = useAuth();
-  const [desafios, setDesafios] = useState<DesafioStatus[]>([]);
-  const [loading, setLoading] = useState(true);
+  const cacheKey = user ? `questoes_desafios_cache:${user.id}` : null;
+  const [desafios, setDesafios] = useState<DesafioStatus[]>(() => {
+    if (!cacheKey) return [];
+    try {
+      const cached = localStorage.getItem(cacheKey);
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [loading, setLoading] = useState(() => desafios.length === 0);
 
   const carregar = useCallback(async () => {
     if (!user) { setDesafios([]); setLoading(false); return; }
-    setLoading(true);
+    if (desafios.length === 0) setLoading(true);
     const { data, error } = await db.rpc('questoes_desafio_status');
     if (error) console.error('[desafios] status', error);
     const lista = (data ?? []) as DesafioStatus[];
@@ -134,16 +143,16 @@ export function useDesafios() {
       mudou = true;
     }
 
-    if (mudou) {
-      const { data: atualizado } = await db.rpc('questoes_desafio_status');
-      setDesafios((atualizado ?? lista) as DesafioStatus[]);
-      setLoading(false);
-      return;
-    }
+    const finalLista = mudou
+      ? ((await db.rpc('questoes_desafio_status')).data ?? lista) as DesafioStatus[]
+      : lista;
 
-    setDesafios(lista);
+    setDesafios(finalLista);
+    if (cacheKey && finalLista.length > 0) {
+      try { localStorage.setItem(cacheKey, JSON.stringify(finalLista)); } catch {}
+    }
     setLoading(false);
-  }, [user]);
+  }, [user, cacheKey, desafios.length]);
 
   useEffect(() => { carregar(); }, [carregar]);
 

@@ -34,28 +34,57 @@ export type Cargo = {
 const db = supabase as any;
 
 export function useQuestoesCargos() {
-  const [cargos, setCargos] = useState<Cargo[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [cargos, setCargos] = useState<Cargo[]>(() => {
+    try {
+      const cached = localStorage.getItem('questoes_cargos_cache');
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [loading, setLoading] = useState(() => cargos.length === 0);
+
   useEffect(() => {
     db.from('questoes_cargos').select('*').eq('ativo', true).order('ordem')
-      .then(({ data }: any) => { setCargos(data ?? []); setLoading(false); });
+      .then(({ data }: any) => {
+        if (data && data.length > 0) {
+          setCargos(data);
+          try { localStorage.setItem('questoes_cargos_cache', JSON.stringify(data)); } catch {}
+        }
+        setLoading(false);
+      });
   }, []);
   return { cargos, loading };
 }
 
 export function useQuestoesAreas(nivel?: string | null, cargoId?: string | null) {
-  const [areas, setAreas] = useState<{ area: string; total: number }[]>([]);
-  const [loading, setLoading] = useState(true);
+  const cacheKey = `questoes_areas_cache:${nivel ?? 'todos'}:${cargoId ?? 'todos'}`;
+  const [areas, setAreas] = useState<{ area: string; total: number }[]>(() => {
+    try {
+      const cached = localStorage.getItem(cacheKey);
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [loading, setLoading] = useState(() => areas.length === 0);
+
   useEffect(() => {
-    setLoading(true);
+    if (areas.length === 0) setLoading(true);
     db.rpc('questoes_areas', { _nivel: nivel ?? null, _cargo_id: cargoId ?? null })
-      .then(({ data }: any) => { setAreas(data ?? []); setLoading(false); });
+      .then(({ data }: any) => {
+        if (data) {
+          setAreas(data);
+          try { localStorage.setItem(cacheKey, JSON.stringify(data)); } catch {}
+        }
+        setLoading(false);
+      });
   }, [nivel, cargoId]);
   return { areas, loading };
 }
 
-/** Sem filtro de quantidade: traz todas as questões disponíveis. */
-const SEM_LIMITE = 100000;
+/** Limite padrão otimizado por bloco de prática (super rápido e leve). */
+const LIMITE_PADRAO = 50;
 
 export type FiltroAvancado = {
   segmentos: string[]; disciplinas: string[]; assuntos: string[]; anos: string[];
@@ -66,7 +95,7 @@ type SortearOpts = {
   nivel?: string | null;
   area?: string | null;
   cargoId?: string | null;
-  /** Quantidade máxima. Ausente/0 = todas as questões disponíveis. */
+  /** Quantidade máxima por bloco. Ausente/0 = 50 questões otimizadas. */
   limite?: number;
   novas?: boolean;
   modo?: 'sortear' | 'revisar';
@@ -95,15 +124,15 @@ export function useQuestoesSessao(opts: SortearOpts) {
           _bancas: null,
           _status: f.status ?? 'todos',
           _ordem: f.ordem ?? 'embaralhado',
-          _limit: f.quantidade ?? SEM_LIMITE,
+          _limit: f.quantidade && f.quantidade > 0 ? f.quantidade : LIMITE_PADRAO,
         })
       : o.modo === 'revisar'
-      ? await db.rpc('questoes_para_revisar', { _limit: o.limite ?? SEM_LIMITE })
+      ? await db.rpc('questoes_para_revisar', { _limit: o.limite ?? LIMITE_PADRAO })
       : await db.rpc('questoes_sortear', {
           _nivel: o.nivel ?? null,
           _area: o.area ?? null,
           _cargo_id: o.cargoId ?? null,
-          _limit: o.limite ?? SEM_LIMITE,
+          _limit: o.limite ?? LIMITE_PADRAO,
           _excluir_respondidas: !!o.novas,
         });
 
@@ -139,11 +168,29 @@ export async function comentarioIA(questao: Questao): Promise<string | null> {
 
 export function useQuestoesDesempenho() {
   const { user } = useAuth();
-  const [dados, setDados] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const cacheKey = user ? `questoes_desempenho_cache:${user.id}` : null;
+  const [dados, setDados] = useState<any>(() => {
+    if (!cacheKey) return null;
+    try {
+      const cached = localStorage.getItem(cacheKey);
+      return cached ? JSON.parse(cached) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [loading, setLoading] = useState(() => !dados);
+
   useEffect(() => {
     if (!user) { setLoading(false); return; }
-    db.rpc('questoes_desempenho').then(({ data }: any) => { setDados(data); setLoading(false); });
-  }, [user]);
+    db.rpc('questoes_desempenho').then(({ data }: any) => {
+      if (data) {
+        setDados(data);
+        if (cacheKey) {
+          try { localStorage.setItem(cacheKey, JSON.stringify(data)); } catch {}
+        }
+      }
+      setLoading(false);
+    });
+  }, [user, cacheKey]);
   return { dados, loading };
 }

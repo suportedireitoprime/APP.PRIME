@@ -21,7 +21,8 @@ jobs:
       # Identificadores Apple não são segredo. Mantemos fallback aqui para evitar
       # falso erro quando o GitHub não injeta esses 4 valores como secrets.
       APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID || 'DKVT35Y3W5' }}
-      APPLE_BUNDLE_ID: ${{ secrets.APPLE_BUNDLE_ID || 'br.com.direitoprime.app' }}
+      APPLE_BUNDLE_ID: ${{ secrets.APPLE_BUNDLE_ID || 'br.com.direito.app' }}
+      APPLE_APP_NAME: ${{ secrets.APPLE_APP_NAME || 'Estudos Jurídicos' }}
       APPLE_API_KEY_ID: ${{ secrets.APPLE_APP_STORE_CONNECT_KEY_ID || 'XR87K5FX25' }}
       APPLE_API_ISSUER_ID: ${{ secrets.APPLE_APP_STORE_CONNECT_ISSUER_ID || '1604c7ca-cdb0-49ec-aea1-058e12abdafe' }}
 
@@ -98,12 +99,14 @@ jobs:
           bunx cap add ios
           bunx cap sync ios
 
-      - name: Set version + build number
+      - name: Set version + build number + app name
         run: |
           PLIST="ios/App/App/Info.plist"
           RUN_NUM="${{ github.run_number }}"
-          # Marketing version legível: 1.0.<run_number>
-          VERSION="1.0.${RUN_NUM}"
+          # A versão publicada na App Store (br.com.direito.app) é 106.0.0, então
+          # a marketing version precisa ser MAIOR que ela, senão a Apple rejeita
+          # por versão duplicada/menor. Base 107 + run_number.
+          VERSION="${APPLE_MARKETING_VERSION:-107.0.${RUN_NUM}}"
           # CFBundleVersion precisa ser ESTRITAMENTE crescente entre todos os
           # uploads pra TestFlight (mesmo em versions diferentes) — usar
           # somente github.run_number quebra quando um upload anterior já
@@ -112,7 +115,10 @@ jobs:
           BUILD_NUM="$(date +%s)"
           /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" "$PLIST"
           /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $BUILD_NUM" "$PLIST"
-          echo "Version: $VERSION ($BUILD_NUM)"
+          # Nome exibido no ícone da home (atualiza só quando a build sobe).
+          /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName ${APPLE_APP_NAME}" "$PLIST" \
+            || /usr/libexec/PlistBuddy -c "Add :CFBundleDisplayName string ${APPLE_APP_NAME}" "$PLIST"
+          echo "Version: $VERSION ($BUILD_NUM) — name: ${APPLE_APP_NAME}"
 
       - name: Inject App Icon (full AppIcon.appiconset)
         run: |
@@ -203,6 +209,35 @@ jobs:
           fi
           echo "Validated ios-marketing app icon: $MARKETING_ICON (${WIDTH}x${HEIGHT})"
 
+      - name: Inject Splash (Splash.imageset)
+        run: |
+          set -euo pipefail
+          SPLASH_SRC="build-assets/ios-splash.png"
+          IMAGESET="ios/App/App/Assets.xcassets/Splash.imageset"
+          if [ ! -f "$SPLASH_SRC" ]; then
+            echo "::error::Splash iOS não encontrada em $SPLASH_SRC"
+            exit 1
+          fi
+          rm -rf "$IMAGESET"
+          mkdir -p "$IMAGESET"
+          cp "$SPLASH_SRC" "$IMAGESET/splash-2732x2732.png"
+          cp "$SPLASH_SRC" "$IMAGESET/splash-2732x2732-1.png"
+          cp "$SPLASH_SRC" "$IMAGESET/splash-2732x2732-2.png"
+          cat > "$IMAGESET/Contents.json" <<'JSON'
+          {
+            "images": [
+              { "filename": "splash-2732x2732.png", "idiom": "universal", "scale": "1x" },
+              { "filename": "splash-2732x2732-1.png", "idiom": "universal", "scale": "2x" },
+              { "filename": "splash-2732x2732-2.png", "idiom": "universal", "scale": "3x" }
+            ],
+            "info": { "author": "xcode", "version": 1 }
+          }
+          JSON
+          echo "Splash.imageset atualizado:"
+          ls -la "$IMAGESET"
+
+
+
       - name: Ensure Info.plist references AppIcon (CFBundleIcons)
         run: |
           set -euo pipefail
@@ -246,10 +281,10 @@ jobs:
           }
           add_or_set NSPhotoLibraryUsageDescription "O app Estudos Jurídicos pode acessar sua biblioteca de fotos apenas se você optar por anexar imagens em comentários ou personalizar seu perfil."
           add_or_set NSPhotoLibraryAddUsageDescription "O app Estudos Jurídicos solicita permissão para salvar imagens (como trechos de legislação) na sua biblioteca de fotos quando você usa a função de exportar."
-          add_or_set NSCameraUsageDescription "O app Estudos Jurídicos pode usar a câmera apenas se você optar por tirar uma foto para anexar em comentários ou personalizar seu perfil."
+          add_or_set NSCameraUsageDescription "O app Estudos Jurídicos usa a câmera quando você abre o Me Explique para receber a explicação do conteúdo que está estudando, ou quando você opta por tirar uma foto para anexar em comentários e personalizar seu perfil."
           add_or_set NSLocationWhenInUseUsageDescription "O app Estudos Jurídicos pode usar sua localização apenas se você optar por filtrar conteúdos de legislação estadual pelo estado em que se encontra."
           add_or_set NSLocationAlwaysAndWhenInUseUsageDescription "O app Estudos Jurídicos pode usar sua localização apenas se você optar por filtrar conteúdos de legislação estadual pelo estado em que se encontra."
-          add_or_set NSMicrophoneUsageDescription "O app Estudos Jurídicos pode acessar o microfone apenas se você optar por gravar áudio em comentários."
+          add_or_set NSMicrophoneUsageDescription "O app Estudos Jurídicos usa o microfone quando você fala com o professor do Me Explique, grava aulas no Modo Aula ou opta por gravar áudio em comentários."
           # NSUserTrackingUsageDescription intentionally NOT set — o app não usa
           # AppTrackingTransparency / IDFA nem faz rastreamento cross-app. Declarar
           # essa chave sem uso real bloqueia o envio para revisão na App Store.
@@ -387,21 +422,79 @@ jobs:
           echo "p8 size: $(wc -c < "$P8_PATH") bytes"
           echo "APPLE_API_KEY_PATH=$RUNNER_TEMP/signing/AuthKey.p8" >> "$GITHUB_ENV"
 
-      - name: Prepare keychain for cloud signing
+      - name: Import distribution certificate + provisioning profile
+        env:
+          APPLE_DISTRIBUTION_CERT_P12_BASE64: ${{ secrets.APPLE_DISTRIBUTION_CERT_P12_BASE64 }}
+          APPLE_DISTRIBUTION_CERT_PASSWORD: ${{ secrets.APPLE_DISTRIBUTION_CERT_PASSWORD }}
+          APPLE_PROVISIONING_PROFILE_BASE64: ${{ secrets.APPLE_PROVISIONING_PROFILE_BASE64 }}
         run: |
           set -euo pipefail
+          for name in APPLE_DISTRIBUTION_CERT_P12_BASE64 APPLE_PROVISIONING_PROFILE_BASE64; do
+            if [ -z "${!name:-}" ]; then
+              echo "::error::Missing GitHub secret ${name}. Assinatura manual precisa do certificado de distribuição e do perfil App Store."
+              exit 1
+            fi
+          done
+
           KEYCHAIN="$RUNNER_TEMP/prime.keychain-db"
           KEYCHAIN_PASSWORD="$(openssl rand -hex 24)"
           echo "::add-mask::$KEYCHAIN_PASSWORD"
           security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
           security set-keychain-settings -lut 21600 "$KEYCHAIN"
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
-          # Xcode grava o certificado gerado na nuvem no keychain default.
           security list-keychains -d user -s "$KEYCHAIN" $(security list-keychains -d user | tr -d '"')
           security default-keychain -s "$KEYCHAIN"
+
+          CERT="$RUNNER_TEMP/dist.p12"
+          echo "$APPLE_DISTRIBUTION_CERT_P12_BASE64" | tr -d '\n' | base64 --decode > "$CERT"
+          if [ ! -s "$CERT" ]; then
+            echo "::error::APPLE_DISTRIBUTION_CERT_P12_BASE64 inválido (arquivo vazio após decode)."
+            exit 1
+          fi
+          security import "$CERT" -k "$KEYCHAIN" -P "${APPLE_DISTRIBUTION_CERT_PASSWORD:-}" \
+            -T /usr/bin/codesign -T /usr/bin/security -A
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN" >/dev/null 2>&1 || true
 
-      - name: Write export options (automatic signing)
+          echo "Identidades disponíveis para assinatura:"
+          security find-identity -v -p codesigning "$KEYCHAIN"
+          if ! security find-identity -v -p codesigning "$KEYCHAIN" | grep -q "Apple Distribution"; then
+            echo "::error::Nenhuma identidade 'Apple Distribution' no keychain. O .p12 provavelmente é de Apple Development ou está sem a chave privada."
+            exit 1
+          fi
+
+          PROFILES="$HOME/Library/MobileDevice/Provisioning Profiles"
+          mkdir -p "$PROFILES"
+          echo "$APPLE_PROVISIONING_PROFILE_BASE64" | tr -d '\n' | base64 --decode > "$RUNNER_TEMP/profile.mobileprovision"
+          if [ ! -s "$RUNNER_TEMP/profile.mobileprovision" ]; then
+            echo "::error::APPLE_PROVISIONING_PROFILE_BASE64 inválido (arquivo vazio após decode)."
+            exit 1
+          fi
+          security cms -D -i "$RUNNER_TEMP/profile.mobileprovision" > "$RUNNER_TEMP/profile.plist"
+          PROFILE_APPID="$(/usr/libexec/PlistBuddy -c 'Print :Entitlements:application-identifier' "$RUNNER_TEMP/profile.plist")"
+
+          if [ "$PROFILE_APPID" != "$APPLE_TEAM_ID.$APPLE_BUNDLE_ID" ]; then
+            echo "::warning::O perfil do secret é de $PROFILE_APPID, mas o app é $APPLE_TEAM_ID.$APPLE_BUNDLE_ID. Gerando perfil App Store via App Store Connect API..."
+            python3 -m venv "$RUNNER_TEMP/ascvenv"
+            "$RUNNER_TEMP/ascvenv/bin/pip" install --quiet --disable-pip-version-check pyjwt cryptography requests
+            "$RUNNER_TEMP/ascvenv/bin/python" "$GITHUB_WORKSPACE/scripts/asc-create-profile.py" "$RUNNER_TEMP/profile.mobileprovision"
+
+            security cms -D -i "$RUNNER_TEMP/profile.mobileprovision" > "$RUNNER_TEMP/profile.plist"
+            PROFILE_APPID="$(/usr/libexec/PlistBuddy -c 'Print :Entitlements:application-identifier' "$RUNNER_TEMP/profile.plist")"
+            if [ "$PROFILE_APPID" != "$APPLE_TEAM_ID.$APPLE_BUNDLE_ID" ]; then
+              echo "::error::Não foi possível obter um perfil App Store para $APPLE_TEAM_ID.$APPLE_BUNDLE_ID (recebido $PROFILE_APPID)."
+              exit 1
+            fi
+          fi
+
+          PROFILE_UUID="$(/usr/libexec/PlistBuddy -c 'Print :UUID' "$RUNNER_TEMP/profile.plist")"
+          PROFILE_NAME="$(/usr/libexec/PlistBuddy -c 'Print :Name' "$RUNNER_TEMP/profile.plist")"
+          cp "$RUNNER_TEMP/profile.mobileprovision" "$PROFILES/$PROFILE_UUID.mobileprovision"
+          echo "Perfil instalado: $PROFILE_NAME ($PROFILE_UUID) para $PROFILE_APPID"
+          echo "APPLE_PROFILE_NAME=$PROFILE_NAME" >> "$GITHUB_ENV"
+          echo "APPLE_PROFILE_UUID=$PROFILE_UUID" >> "$GITHUB_ENV"
+
+
+      - name: Write export options (manual signing)
         run: |
           set -euo pipefail
           cat > ios-export-options.plist <<XML
@@ -414,7 +507,14 @@ jobs:
               <key>teamID</key>
               <string>${APPLE_TEAM_ID}</string>
               <key>signingStyle</key>
-              <string>automatic</string>
+              <string>manual</string>
+              <key>signingCertificate</key>
+              <string>Apple Distribution</string>
+              <key>provisioningProfiles</key>
+              <dict>
+                  <key>${APPLE_BUNDLE_ID}</key>
+                  <string>${APPLE_PROFILE_NAME}</string>
+              </dict>
               <key>uploadSymbols</key>
               <true/>
               <key>stripSwiftSymbols</key>
@@ -434,6 +534,11 @@ jobs:
           const projectPath = 'ios/App/App.xcodeproj/project.pbxproj';
           const appleTeamId = process.env.APPLE_TEAM_ID;
           const appleBundleId = process.env.APPLE_BUNDLE_ID;
+          const profileName = process.env.APPLE_PROFILE_NAME;
+          const profileUuid = process.env.APPLE_PROFILE_UUID;
+          if (!profileName || !profileUuid) {
+            throw new Error('APPLE_PROFILE_NAME/APPLE_PROFILE_UUID ausentes — o passo de importação do perfil não rodou.');
+          }
 
           let source = fs.readFileSync(projectPath, 'utf8');
 
@@ -470,17 +575,17 @@ jobs:
             }
 
             let updated = original;
-            // Com assinatura automática (cloud signing) o Xcode resolve a
-            // identidade de distribuição sozinho no archive. Fixar
-            // "Apple Distribution" aqui gera "conflicting provisioning settings".
-            updated = upsertSetting(updated, 'CODE_SIGN_IDENTITY', '"Apple Development"');
-            updated = upsertSetting(updated, '"CODE_SIGN_IDENTITY[sdk=iphoneos*]"', '"Apple Development"');
+            // Assinatura manual com o certificado "Apple Distribution" e o
+            // perfil App Store instalados no keychain. Assinatura automática
+            // falha em runner sem device ("team has no devices").
+            updated = upsertSetting(updated, 'CODE_SIGN_IDENTITY', '"Apple Distribution"');
+            updated = upsertSetting(updated, '"CODE_SIGN_IDENTITY[sdk=iphoneos*]"', '"Apple Distribution"');
 
-            updated = upsertSetting(updated, 'CODE_SIGN_STYLE', 'Automatic');
+            updated = upsertSetting(updated, 'CODE_SIGN_STYLE', 'Manual');
             updated = upsertSetting(updated, 'DEVELOPMENT_TEAM', appleTeamId);
             updated = upsertSetting(updated, 'PRODUCT_BUNDLE_IDENTIFIER', appleBundleId);
-            updated = upsertSetting(updated, 'PROVISIONING_PROFILE_SPECIFIER', '""');
-            updated = upsertSetting(updated, 'PROVISIONING_PROFILE', '""');
+            updated = upsertSetting(updated, 'PROVISIONING_PROFILE_SPECIFIER', `"${profileName}"`);
+            updated = upsertSetting(updated, 'PROVISIONING_PROFILE', `"${profileUuid}"`);
             updated = upsertSetting(updated, 'CODE_SIGN_ENTITLEMENTS', '"App/App.entitlements"');
             // Sem isto, `actool` não compila o AppIcon.appiconset e o App Store
             // Connect não consegue extrair o ícone marketing — o app fica sem
@@ -646,7 +751,7 @@ jobs:
           #if canImport(ActivityKit)
           import ActivityKit
 
-          @available(iOS 16.1, *)
+          @available(iOS 16.2, *)
           public struct LembreteActivityAttributes: ActivityAttributes {
               public struct ContentState: Codable, Hashable {
                   public var body: String
@@ -693,13 +798,13 @@ jobs:
               ]
 
               #if canImport(ActivityKit)
-              @available(iOS 16.1, *)
+              @available(iOS 16.2, *)
               private static var activities: [String: Activity<LembreteActivityAttributes>] = [:]
               #endif
 
               private func supported() -> Bool {
                   #if canImport(ActivityKit)
-                  if #available(iOS 16.1, *) {
+                  if #available(iOS 16.2, *) {
                       return ActivityAuthorizationInfo().areActivitiesEnabled
                   }
                   #endif
@@ -712,7 +817,7 @@ jobs:
 
               @objc func start(_ call: CAPPluginCall) {
                   #if canImport(ActivityKit)
-                  if #available(iOS 16.1, *) {
+                  if #available(iOS 16.2, *) {
                       guard ActivityAuthorizationInfo().areActivitiesEnabled else {
                           call.resolve(["started": false]); return
                       }
@@ -744,7 +849,7 @@ jobs:
 
               @objc func update(_ call: CAPPluginCall) {
                   #if canImport(ActivityKit)
-                  if #available(iOS 16.1, *) {
+                  if #available(iOS 16.2, *) {
                       let id = call.getString("id") ?? ""
                       guard let activity = LiveActivityPlugin.activities[id] else { call.resolve(); return }
                       let state = LembreteActivityAttributes.ContentState(
@@ -763,7 +868,7 @@ jobs:
 
               @objc func end(_ call: CAPPluginCall) {
                   #if canImport(ActivityKit)
-                  if #available(iOS 16.1, *) {
+                  if #available(iOS 16.2, *) {
                       let id = call.getString("id") ?? ""
                       guard let activity = LiveActivityPlugin.activities[id] else { call.resolve(); return }
                       LiveActivityPlugin.activities.removeValue(forKey: id)
@@ -787,14 +892,14 @@ jobs:
           import ActivityKit
 
           @main
-          @available(iOS 16.1, *)
+          @available(iOS 16.2, *)
           struct EstudosLiveActivityBundle: WidgetBundle {
               var body: some Widget {
                   LembreteLiveActivity()
               }
           }
 
-          @available(iOS 16.1, *)
+          @available(iOS 16.2, *)
           struct LembreteLiveActivity: Widget {
               var body: some WidgetConfiguration {
                   ActivityConfiguration(for: LembreteActivityAttributes.self) { context in
@@ -963,17 +1068,15 @@ jobs:
             exit 1
           fi
 
+          # Sem overrides de assinatura na linha de comando: eles vazam para os
+          # targets de SPM (Firebase, GoogleUtilities...) que não aceitam
+          # provisioning profile. A assinatura do target App já está no pbxproj.
           xcodebuild "${BUILD_CONTAINER[@]}" \
             -scheme App \
             -configuration Release \
             -sdk iphoneos \
             -destination 'generic/platform=iOS' \
             -archivePath "$RUNNER_TEMP/App.xcarchive" \
-            -allowProvisioningUpdates \
-            -authenticationKeyPath "$APPLE_API_KEY_PATH" \
-            -authenticationKeyID "$APPLE_API_KEY_ID" \
-            -authenticationKeyIssuerID "$APPLE_API_ISSUER_ID" \
-            DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
             clean archive
 
       - name: Verify AppIcon is embedded in archive
@@ -1000,10 +1103,6 @@ jobs:
           xcodebuild -exportArchive \
             -archivePath "$RUNNER_TEMP/App.xcarchive" \
             -exportOptionsPlist ios-export-options.plist \
-            -allowProvisioningUpdates \
-            -authenticationKeyPath "$APPLE_API_KEY_PATH" \
-            -authenticationKeyID "$APPLE_API_KEY_ID" \
-            -authenticationKeyIssuerID "$APPLE_API_ISSUER_ID" \
             -exportPath "$RUNNER_TEMP/export"
           ls -lh "$RUNNER_TEMP/export"
 
@@ -1013,9 +1112,20 @@ jobs:
           set -euo pipefail
           IPA=$(ls "$RUNNER_TEMP/export"/*.ipa | head -1)
           echo "Uploading: $IPA"
-          # A App Store Connect API às vezes responde 500 em list-apps, o que faz o
-          # altool falhar com "Cannot determine the Apple ID from Bundle ID". É
-          # transitório: tentamos algumas vezes com espera crescente.
+          # Diagnóstico: o app precisa existir no App Store Connect com esse bundle ID,
+          # e a API key precisa ter acesso a ele. Sem isso, o altool falha com
+          # "Cannot determine the Apple ID from Bundle ID".
+          if xcrun altool --list-apps --apiKey "$APPLE_API_KEY_ID" \
+               --apiIssuer "$APPLE_API_ISSUER_ID" --output-format json > /tmp/apps.json 2>/tmp/apps.err; then
+            if ! grep -q "$APPLE_BUNDLE_ID" /tmp/apps.json; then
+              echo "::error::A API key funciona, mas nenhum app com bundle ID $APPLE_BUNDLE_ID existe no App Store Connect (ou a key não tem acesso a ele). Crie o app em https://appstoreconnect.apple.com/apps (+ > Novo app, plataforma iOS, escolhendo esse bundle ID) e use uma API key com função Admin/App Manager. O IPA está anexado como artefato desta run."
+              exit 1
+            fi
+            echo "App encontrado no App Store Connect."
+          else
+            echo "Aviso: --list-apps falhou; seguindo direto para o upload."
+            cat /tmp/apps.err || true
+          fi
           attempt=1
           max_attempts=5
           until [ "$attempt" -gt "$max_attempts" ]; do
@@ -1026,15 +1136,16 @@ jobs:
               echo "Upload concluído."
               exit 0
             fi
-            if ! grep -qE "status code 5[0-9][0-9]|Cannot determine the Apple ID|timed out|The request timed out" /tmp/altool.log; then
+            if ! grep -qE "status code 5[0-9][0-9]|timed out|The request timed out" /tmp/altool.log; then
               echo "::error::Falha permanente no upload para o TestFlight. Veja o log acima."
               exit 1
             fi
             sleep $((attempt * 30))
             attempt=$((attempt + 1))
           done
-          echo "::error::App Store Connect segue retornando erro 500 após $max_attempts tentativas. O IPA está disponível como artefato desta run; tente novamente mais tarde."
+          echo "::error::App Store Connect segue retornando erro 5xx após $max_attempts tentativas. O IPA está disponível como artefato desta run; tente novamente mais tarde."
           exit 1
+
 
       - name: Upload IPA artifact
         if: always()

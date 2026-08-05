@@ -57,22 +57,27 @@ const ResumosHero = ({ onBuscar, titulo = 'Resumos Jurídicos', voltarPara = '/'
       {/* Figuras vazadas */}
       <div className="pointer-events-none absolute inset-0 select-none overflow-hidden">
         <AnimatePresence initial={false}>
-          <motion.img
-            key={figIndex}
-            src={FIGURAS[figIndex]}
-            alt=""
-            aria-hidden
-            width={1024}
-            height={1024}
-            loading="eager"
-            decoding="async"
-            initial={{ opacity: 0, scale: 1.04 }}
-            animate={{ opacity: 0.16, scale: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1.2, ease: 'easeOut' }}
-            className={`absolute bottom-0 h-[85%] w-auto object-contain ${posClass}`}
-            style={{ filter: 'brightness(0) invert(1)' }}
-          />
+          {FIGURAS[figIndex] && (
+            <motion.img
+              key={figIndex}
+              src={FIGURAS[figIndex]}
+              alt=""
+              aria-hidden
+              width={1024}
+              height={1024}
+              loading="eager"
+              decoding="async"
+              onError={(e) => {
+                (e.currentTarget as HTMLElement).style.display = 'none';
+              }}
+              initial={{ opacity: 0, scale: 1.04 }}
+              animate={{ opacity: 0.16, scale: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.2, ease: 'easeOut' }}
+              className={`absolute bottom-0 h-[85%] w-auto object-contain ${posClass}`}
+              style={{ filter: 'brightness(0) invert(1)' }}
+            />
+          )}
         </AnimatePresence>
       </div>
 

@@ -21,7 +21,8 @@ jobs:
       # Identificadores Apple não são segredo. Mantemos fallback aqui para evitar
       # falso erro quando o GitHub não injeta esses 4 valores como secrets.
       APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID || 'DKVT35Y3W5' }}
-      APPLE_BUNDLE_ID: ${{ secrets.APPLE_BUNDLE_ID || 'br.com.direitoprime.app' }}
+      APPLE_BUNDLE_ID: ${{ secrets.APPLE_BUNDLE_ID || 'br.com.direito.app' }}
+      APPLE_APP_NAME: ${{ secrets.APPLE_APP_NAME || 'Estudos Jurídicos' }}
       APPLE_API_KEY_ID: ${{ secrets.APPLE_APP_STORE_CONNECT_KEY_ID || 'XR87K5FX25' }}
       APPLE_API_ISSUER_ID: ${{ secrets.APPLE_APP_STORE_CONNECT_ISSUER_ID || '1604c7ca-cdb0-49ec-aea1-058e12abdafe' }}
 
@@ -98,12 +99,14 @@ jobs:
           bunx cap add ios
           bunx cap sync ios
 
-      - name: Set version + build number
+      - name: Set version + build number + app name
         run: |
           PLIST="ios/App/App/Info.plist"
           RUN_NUM="${{ github.run_number }}"
-          # Marketing version legível: 1.0.<run_number>
-          VERSION="1.0.${RUN_NUM}"
+          # A versão publicada na App Store (br.com.direito.app) é 106.0.0, então
+          # a marketing version precisa ser MAIOR que ela, senão a Apple rejeita
+          # por versão duplicada/menor. Base 107 + run_number.
+          VERSION="${APPLE_MARKETING_VERSION:-107.0.${RUN_NUM}}"
           # CFBundleVersion precisa ser ESTRITAMENTE crescente entre todos os
           # uploads pra TestFlight (mesmo em versions diferentes) — usar
           # somente github.run_number quebra quando um upload anterior já
@@ -112,7 +115,10 @@ jobs:
           BUILD_NUM="$(date +%s)"
           /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" "$PLIST"
           /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $BUILD_NUM" "$PLIST"
-          echo "Version: $VERSION ($BUILD_NUM)"
+          # Nome exibido no ícone da home (atualiza só quando a build sobe).
+          /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName ${APPLE_APP_NAME}" "$PLIST" \
+            || /usr/libexec/PlistBuddy -c "Add :CFBundleDisplayName string ${APPLE_APP_NAME}" "$PLIST"
+          echo "Version: $VERSION ($BUILD_NUM) — name: ${APPLE_APP_NAME}"
 
       - name: Inject App Icon (full AppIcon.appiconset)
         run: |
@@ -202,6 +208,35 @@ jobs:
             exit 1
           fi
           echo "Validated ios-marketing app icon: $MARKETING_ICON (${WIDTH}x${HEIGHT})"
+
+      - name: Inject Splash (Splash.imageset)
+        run: |
+          set -euo pipefail
+          SPLASH_SRC="build-assets/ios-splash.png"
+          IMAGESET="ios/App/App/Assets.xcassets/Splash.imageset"
+          if [ ! -f "$SPLASH_SRC" ]; then
+            echo "::error::Splash iOS não encontrada em $SPLASH_SRC"
+            exit 1
+          fi
+          rm -rf "$IMAGESET"
+          mkdir -p "$IMAGESET"
+          cp "$SPLASH_SRC" "$IMAGESET/splash-2732x2732.png"
+          cp "$SPLASH_SRC" "$IMAGESET/splash-2732x2732-1.png"
+          cp "$SPLASH_SRC" "$IMAGESET/splash-2732x2732-2.png"
+          cat > "$IMAGESET/Contents.json" <<'JSON'
+          {
+            "images": [
+              { "filename": "splash-2732x2732.png", "idiom": "universal", "scale": "1x" },
+              { "filename": "splash-2732x2732-1.png", "idiom": "universal", "scale": "2x" },
+              { "filename": "splash-2732x2732-2.png", "idiom": "universal", "scale": "3x" }
+            ],
+            "info": { "author": "xcode", "version": 1 }
+          }
+          JSON
+          echo "Splash.imageset atualizado:"
+          ls -la "$IMAGESET"
+
+
 
       - name: Ensure Info.plist references AppIcon (CFBundleIcons)
         run: |
@@ -435,17 +470,29 @@ jobs:
             exit 1
           fi
           security cms -D -i "$RUNNER_TEMP/profile.mobileprovision" > "$RUNNER_TEMP/profile.plist"
+          PROFILE_APPID="$(/usr/libexec/PlistBuddy -c 'Print :Entitlements:application-identifier' "$RUNNER_TEMP/profile.plist")"
+
+          if [ "$PROFILE_APPID" != "$APPLE_TEAM_ID.$APPLE_BUNDLE_ID" ]; then
+            echo "::warning::O perfil do secret é de $PROFILE_APPID, mas o app é $APPLE_TEAM_ID.$APPLE_BUNDLE_ID. Gerando perfil App Store via App Store Connect API..."
+            python3 -m venv "$RUNNER_TEMP/ascvenv"
+            "$RUNNER_TEMP/ascvenv/bin/pip" install --quiet --disable-pip-version-check pyjwt cryptography requests
+            "$RUNNER_TEMP/ascvenv/bin/python" "$GITHUB_WORKSPACE/scripts/asc-create-profile.py" "$RUNNER_TEMP/profile.mobileprovision"
+
+            security cms -D -i "$RUNNER_TEMP/profile.mobileprovision" > "$RUNNER_TEMP/profile.plist"
+            PROFILE_APPID="$(/usr/libexec/PlistBuddy -c 'Print :Entitlements:application-identifier' "$RUNNER_TEMP/profile.plist")"
+            if [ "$PROFILE_APPID" != "$APPLE_TEAM_ID.$APPLE_BUNDLE_ID" ]; then
+              echo "::error::Não foi possível obter um perfil App Store para $APPLE_TEAM_ID.$APPLE_BUNDLE_ID (recebido $PROFILE_APPID)."
+              exit 1
+            fi
+          fi
+
           PROFILE_UUID="$(/usr/libexec/PlistBuddy -c 'Print :UUID' "$RUNNER_TEMP/profile.plist")"
           PROFILE_NAME="$(/usr/libexec/PlistBuddy -c 'Print :Name' "$RUNNER_TEMP/profile.plist")"
-          PROFILE_APPID="$(/usr/libexec/PlistBuddy -c 'Print :Entitlements:application-identifier' "$RUNNER_TEMP/profile.plist")"
           cp "$RUNNER_TEMP/profile.mobileprovision" "$PROFILES/$PROFILE_UUID.mobileprovision"
           echo "Perfil instalado: $PROFILE_NAME ($PROFILE_UUID) para $PROFILE_APPID"
-          if [ "$PROFILE_APPID" != "$APPLE_TEAM_ID.$APPLE_BUNDLE_ID" ]; then
-            echo "::error::O perfil é de $PROFILE_APPID, mas o app é $APPLE_TEAM_ID.$APPLE_BUNDLE_ID. Gere um perfil App Store para o bundle correto."
-            exit 1
-          fi
           echo "APPLE_PROFILE_NAME=$PROFILE_NAME" >> "$GITHUB_ENV"
           echo "APPLE_PROFILE_UUID=$PROFILE_UUID" >> "$GITHUB_ENV"
+
 
       - name: Write export options (manual signing)
         run: |
@@ -1065,9 +1112,20 @@ jobs:
           set -euo pipefail
           IPA=$(ls "$RUNNER_TEMP/export"/*.ipa | head -1)
           echo "Uploading: $IPA"
-          # A App Store Connect API às vezes responde 500 em list-apps, o que faz o
-          # altool falhar com "Cannot determine the Apple ID from Bundle ID". É
-          # transitório: tentamos algumas vezes com espera crescente.
+          # Diagnóstico: o app precisa existir no App Store Connect com esse bundle ID,
+          # e a API key precisa ter acesso a ele. Sem isso, o altool falha com
+          # "Cannot determine the Apple ID from Bundle ID".
+          if xcrun altool --list-apps --apiKey "$APPLE_API_KEY_ID" \
+               --apiIssuer "$APPLE_API_ISSUER_ID" --output-format json > /tmp/apps.json 2>/tmp/apps.err; then
+            if ! grep -q "$APPLE_BUNDLE_ID" /tmp/apps.json; then
+              echo "::error::A API key funciona, mas nenhum app com bundle ID $APPLE_BUNDLE_ID existe no App Store Connect (ou a key não tem acesso a ele). Crie o app em https://appstoreconnect.apple.com/apps (+ > Novo app, plataforma iOS, escolhendo esse bundle ID) e use uma API key com função Admin/App Manager. O IPA está anexado como artefato desta run."
+              exit 1
+            fi
+            echo "App encontrado no App Store Connect."
+          else
+            echo "Aviso: --list-apps falhou; seguindo direto para o upload."
+            cat /tmp/apps.err || true
+          fi
           attempt=1
           max_attempts=5
           until [ "$attempt" -gt "$max_attempts" ]; do
@@ -1078,15 +1136,16 @@ jobs:
               echo "Upload concluído."
               exit 0
             fi
-            if ! grep -qE "status code 5[0-9][0-9]|Cannot determine the Apple ID|timed out|The request timed out" /tmp/altool.log; then
+            if ! grep -qE "status code 5[0-9][0-9]|timed out|The request timed out" /tmp/altool.log; then
               echo "::error::Falha permanente no upload para o TestFlight. Veja o log acima."
               exit 1
             fi
             sleep $((attempt * 30))
             attempt=$((attempt + 1))
           done
-          echo "::error::App Store Connect segue retornando erro 500 após $max_attempts tentativas. O IPA está disponível como artefato desta run; tente novamente mais tarde."
+          echo "::error::App Store Connect segue retornando erro 5xx após $max_attempts tentativas. O IPA está disponível como artefato desta run; tente novamente mais tarde."
           exit 1
+
 
       - name: Upload IPA artifact
         if: always()

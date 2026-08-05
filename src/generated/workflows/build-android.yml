@@ -110,14 +110,10 @@ jobs:
           # ----------------------------------------------------------------
           # Play Console recomendação #3: "Atualize o Plug-in do Android para
           # Gradle para a versão 9.0 ou mais recente".
-          # AGP 8.13 é a última linha 8.x estável em nov/2025 e casa com
-          # Gradle 8.14 + JDK 21. AGP 9.0 é experimental e ainda quebra
-          # plugins Capacitor 8 comuns — subimos AGP para o maior 8.x
-          # estável (elimina múltiplos warnings de APIs deprecadas mesmo
-          # que o alerta específico "AGP 9.0" só limpe no bump seguinte).
+          # AGP 8.7.3 é a versão estável 8.x compatível com Gradle 8.11.1 e JDK 21.
           # ----------------------------------------------------------------
-          AGP_VERSION='8.13.0'
-          GRADLE_DIST='gradle-8.14-bin.zip'
+          AGP_VERSION='8.7.3'
+          GRADLE_DIST='gradle-8.11.1-bin.zip'
 
           sed -i "s|classpath 'com.android.tools.build:gradle:[^']*'|classpath 'com.android.tools.build:gradle:${AGP_VERSION}'|" android/build.gradle
           echo "AGP forçado para ${AGP_VERSION}:"
@@ -143,15 +139,13 @@ jobs:
           allprojects {
               configurations.all {
                   resolutionStrategy {
-                      // Material Components 1.13.x migrou BottomSheetDialog para
-                      // APIs de WindowInsets não deprecadas (Play alert #2).
-                      force 'com.google.android.material:material:1.13.0'
-                      // CameraX 1.5.x removeu chamadas a Window.setStatusBarColor
-                      // no ImageCapture$Defaults.
-                      force 'androidx.camera:camera-core:1.5.0'
-                      force 'androidx.camera:camera-camera2:1.5.0'
-                      force 'androidx.camera:camera-lifecycle:1.5.0'
-                      force 'androidx.camera:camera-view:1.5.0'
+                      // Material Components 1.12.0 é a versão estável mais recente.
+                      force 'com.google.android.material:material:1.12.0'
+                      // CameraX 1.4.1 é a versão estável mais recente.
+                      force 'androidx.camera:camera-core:1.4.1'
+                      force 'androidx.camera:camera-camera2:1.4.1'
+                      force 'androidx.camera:camera-lifecycle:1.4.1'
+                      force 'androidx.camera:camera-view:1.4.1'
                       // ML Kit barcode + code scanner (pull transitivo do plugin
                       // @capacitor-mlkit/barcode-scanning). Versões mais novas
                       // migram para APIs modernas de janela.
@@ -1894,6 +1888,9 @@ jobs:
               'android.permission.WAKE_LOCK',
               'android.permission.CAMERA',
               'android.permission.READ_MEDIA_IMAGES',
+              # Me Explique / Modo Aula: captura de áudio do microfone na WebView
+              'android.permission.RECORD_AUDIO',
+              'android.permission.MODIFY_AUDIO_SETTINGS',
           ]
           for perm in perms:
               if perm not in s:
@@ -2888,7 +2885,41 @@ jobs:
                   print('✅ variables.gradle alinhado (min=30, target=36, compile=36)')
               else:
                   print('ℹ️  variables.gradle sem literais para patchar')
+
+          # 5) android/build.gradle (root) — força compileSdk 36 em TODOS os
+          #    módulos (plugins Capacitor/Cordova como :send-intent trazem o
+          #    próprio compileSdk 35 e as AARs androidx 1.17/activity 1.11
+          #    exigem 36, o que quebrava :send-intent:checkReleaseAarMetadata).
+          root = Path('android/build.gradle')
+          if root.exists():
+              rs = root.read_text()
+              marker = '// LOVABLE_FORCE_COMPILE_SDK'
+              if marker not in rs:
+                  snippet = '\n'.join([
+                      '',
+                      marker,
+                      'subprojects { sub ->',
+                      '    sub.afterEvaluate {',
+                      "        if (sub.hasProperty('android')) {",
+                      '            sub.android.compileSdkVersion 36',
+                      "            if (sub.android.hasProperty('buildToolsVersion')) {",
+                      "                sub.android.buildToolsVersion '36.0.0'",
+                      '            }',
+                      '        }',
+                      '    }',
+                      '}',
+                      '',
+                  ])
+                  rs += '\n' + snippet
+
+                  root.write_text(rs)
+                  print('✅ android/build.gradle: compileSdk 36 forçado em todos os módulos')
+              else:
+                  print('ℹ️  android/build.gradle já tinha o override de compileSdk')
+          else:
+              print('⚠️  android/build.gradle não encontrado')
           PY
+
 
 
       - name: Validate Android minSdk

@@ -94,61 +94,102 @@ export default function ResumosJuridicosTemas() {
 
   useEffect(() => {
     let cancelled = false;
+    const cacheKey = `resumos_temas_cache:${decodedArea}`;
+
+    // 1. Tenta carregar do localStorage imediatamente (0ms)
+    if (!temasCache.has(decodedArea)) {
+      try {
+        const stored = localStorage.getItem(cacheKey);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            temasCache.set(decodedArea, parsed);
+            setRows(parsed);
+            setLoading(false);
+          }
+        }
+      } catch {}
+    } else {
+      setRows(temasCache.get(decodedArea)!);
+      setLoading(false);
+    }
+
     (async () => {
-      if (temasCache.has(decodedArea)) {
-        setRows(temasCache.get(decodedArea)!);
-        setLoading(false);
-        return;
-      }
-      setLoading(true);
-      const map = new Map<string, { ordem: number | null; total: number }>();
-      let from = 0;
-      const step = 1000;
-      let gotAny = false;
-      while (true) {
-        const { data, error } = await (supabase as any)
-          .from("resumos_juridicos")
-          .select("tema, ordem_tema")
-          .eq("area", decodedArea)
-          .range(from, from + step - 1);
-        if (error) break;
-        if (!data || data.length === 0) break;
-        gotAny = true;
-        for (const r of data as { tema: string; ordem_tema: number | null }[]) {
-          const prev = map.get(r.tema);
-          map.set(r.tema, {
-            ordem: prev?.ordem ?? r.ordem_tema,
-            total: (prev?.total || 0) + 1,
-          });
-        }
-        if (data.length < step) break;
-        from += step;
-      }
-      if (!gotAny) {
-        const { bundle } = await import("@/services/offlineBundle");
-        const rows = await bundle.resumos<{ area: string; tema: string; ordem_tema: number | null }>();
-        for (const r of rows) {
-          if (r.area !== decodedArea) continue;
-          const prev = map.get(r.tema);
-          map.set(r.tema, {
-            ordem: prev?.ordem ?? r.ordem_tema,
-            total: (prev?.total || 0) + 1,
-          });
-        }
-      }
-      const list = Array.from(map.entries())
-        .map(([tema, v]) => ({ tema, ordem_tema: v.ordem, total: v.total }))
-        .sort((a, b) => {
-          if (a.ordem_tema != null && b.ordem_tema != null) return a.ordem_tema - b.ordem_tema;
-          if (a.ordem_tema != null) return -1;
-          if (b.ordem_tema != null) return 1;
-          return a.tema.localeCompare(b.tema);
+      if (!temasCache.has(decodedArea)) setLoading(true);
+      let list: Row[] = [];
+
+      // 2. Tenta função RPC no Supabase
+      try {
+        const { data: rpcData, error: rpcErr } = await (supabase as any).rpc("get_resumos_temas_counts", {
+          p_area: decodedArea,
         });
+        if (!rpcErr && Array.isArray(rpcData) && rpcData.length > 0) {
+          list = rpcData.map((r: any) => ({
+            tema: r.tema,
+            ordem_tema: r.ordem_tema != null ? Number(r.ordem_tema) : null,
+            total: Number(r.total) || 0,
+          }));
+        }
+      } catch {}
+
+      // 3. Fallback: consulta paginada tradicional
+      if (list.length === 0) {
+        const map = new Map<string, { ordem: number | null; total: number }>();
+        let from = 0;
+        const step = 1000;
+        let gotAny = false;
+        while (true) {
+          const { data, error } = await (supabase as any)
+            .from("resumos_juridicos")
+            .select("tema, ordem_tema")
+            .eq("area", decodedArea)
+            .range(from, from + step - 1);
+          if (error) break;
+          if (!data || data.length === 0) break;
+          gotAny = true;
+          for (const r of data as { tema: string; ordem_tema: number | null }[]) {
+            const prev = map.get(r.tema);
+            map.set(r.tema, {
+              ordem: prev?.ordem ?? r.ordem_tema,
+              total: (prev?.total || 0) + 1,
+            });
+          }
+          if (data.length < step) break;
+          from += step;
+        }
+        if (!gotAny) {
+          const { bundle } = await import("@/services/offlineBundle");
+          const rows = await bundle.resumos<{ area: string; tema: string; ordem_tema: number | null }>();
+          for (const r of rows) {
+            if (r.area !== decodedArea) continue;
+            const prev = map.get(r.tema);
+            map.set(r.tema, {
+              ordem: prev?.ordem ?? r.ordem_tema,
+              total: (prev?.total || 0) + 1,
+            });
+          }
+        }
+        list = Array.from(map.entries())
+          .map(([tema, v]) => ({ tema, ordem_tema: v.ordem, total: v.total }))
+          .sort((a, b) => {
+            if (a.ordem_tema != null && b.ordem_tema != null) return a.ordem_tema - b.ordem_tema;
+            if (a.ordem_tema != null) return -1;
+            if (b.ordem_tema != null) return 1;
+            return a.tema.localeCompare(b.tema);
+          });
+      }
+
       if (cancelled) return;
-      temasCache.set(decodedArea, list);
-      setRows(list);
+      if (list.length > 0) {
+        temasCache.set(decodedArea, list);
+        setRows(list);
+        try {
+          localStorage.setItem(cacheKey, JSON.stringify(list));
+        } catch {}
+      }
       setLoading(false);
     })();
+
     return () => {
       cancelled = true;
     };

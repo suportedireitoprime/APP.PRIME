@@ -127,42 +127,79 @@ export default function ResumosJuridicosAreas() {
 
 
   useEffect(() => {
-    if (areasCache) return;
+    // 1. Tenta carregar do localStorage imediatamente (0ms de espera)
+    if (!areasCache) {
+      try {
+        const stored = localStorage.getItem("resumos_areas_cache");
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            areasCache = parsed;
+            setRows(parsed);
+            setLoading(false);
+          }
+        }
+      } catch {}
+    } else {
+      setRows(areasCache);
+      setLoading(false);
+    }
+
     (async () => {
-      setLoading(true);
-      const map = new Map<string, number>();
-      let from = 0;
-      const step = 1000;
-      let gotAny = false;
-      while (true) {
-        const { data, error } = await (supabase as any)
-          .from("resumos_juridicos")
-          .select("area")
-          .not("area", "is", null)
-          .range(from, from + step - 1);
-        if (error) break;
-        if (!data || data.length === 0) break;
-        gotAny = true;
-        for (const r of data as { area: string }[]) {
-          map.set(r.area, (map.get(r.area) || 0) + 1);
+      if (!areasCache) setLoading(true);
+      let list: AreaRow[] = [];
+
+      // 2. Tenta função RPC no Supabase para agregação direta em 1 único request super rápido
+      try {
+        const { data: rpcData, error: rpcErr } = await (supabase as any).rpc("get_resumos_areas_counts");
+        if (!rpcErr && Array.isArray(rpcData) && rpcData.length > 0) {
+          list = rpcData.map((r: any) => ({ area: r.area, total: Number(r.total) || 0 }));
         }
-        if (data.length < step) break;
-        from += step;
-      }
-      // Fallback: bundle nativo
-      if (!gotAny) {
-        const { bundle } = await import("@/services/offlineBundle");
-        const rows = await bundle.resumos<{ area: string }>();
-        for (const r of rows) {
-          if (!r.area) continue;
-          map.set(r.area, (map.get(r.area) || 0) + 1);
+      } catch {}
+
+      // 3. Fallback: consulta agrupada tradicional
+      if (list.length === 0) {
+        const map = new Map<string, number>();
+        let from = 0;
+        const step = 1000;
+        let gotAny = false;
+        while (true) {
+          const { data, error } = await (supabase as any)
+            .from("resumos_juridicos")
+            .select("area")
+            .not("area", "is", null)
+            .range(from, from + step - 1);
+          if (error) break;
+          if (!data || data.length === 0) break;
+          gotAny = true;
+          for (const r of data as { area: string }[]) {
+            map.set(r.area, (map.get(r.area) || 0) + 1);
+          }
+          if (data.length < step) break;
+          from += step;
         }
+
+        if (!gotAny) {
+          const { bundle } = await import("@/services/offlineBundle");
+          const rows = await bundle.resumos<{ area: string }>();
+          for (const r of rows) {
+            if (!r.area) continue;
+            map.set(r.area, (map.get(r.area) || 0) + 1);
+          }
+        }
+
+        list = Array.from(map.entries())
+          .map(([area, total]) => ({ area, total }))
+          .sort((a, b) => a.area.localeCompare(b.area));
       }
-      const list = Array.from(map.entries())
-        .map(([area, total]) => ({ area, total }))
-        .sort((a, b) => a.area.localeCompare(b.area));
-      areasCache = list;
-      setRows(list);
+
+      if (list.length > 0) {
+        areasCache = list;
+        setRows(list);
+        try {
+          localStorage.setItem("resumos_areas_cache", JSON.stringify(list));
+        } catch {}
+      }
       setLoading(false);
     })();
   }, []);
