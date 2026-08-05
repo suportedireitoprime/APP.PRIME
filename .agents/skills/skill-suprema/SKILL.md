@@ -1,55 +1,60 @@
 ---
 name: skill-suprema
-description: Skill Suprema de Auditoria 360°, Performance, Responsividade Desktop/Mobile, Permissões Nativas Capacitor, Imagens WebP, Acessibilidade, Resiliência PWA/Offline, Telemetria e Otimização Geral do Aplicativo.
+description: Skill Suprema 360° de Engenharia de UI/UX, Design Visual Anticlichê, Arquitetura de Componentes, Performance React, Acessibilidade WCAG 2.1 AA, Permissões Nativas Capacitor, PWA/Offline e Telemetria.
 ---
 
-# 🚀 Skill Suprema (All-in-One Master Overhaul 360°)
+# 🚀 Skill Suprema (Master Overhaul 360° & UI/UX Engineering)
 
-A **Skill Suprema** reúne todas as diretrizes de qualidade, performance, design responsivo, acessibilidade e compatibilidade nativa em um fluxo unificado de auditoria 360°.
+A **Skill Suprema** reúne todas as diretrizes de design visual de alta fidelidade, arquitetura de componentes, performance React, acessibilidade WCAG 2.1 AA e compatibilidade nativa em um fluxo unificado de auditoria 360°. Inspirada nas melhores práticas globais de UI/UX Engineering (Anthropic, Vercel, AccessLint, UI/UX Pro Max e Bencium).
 
 ---
 
 ## 📋 Checkpoints da Skill Suprema
 
-### 1. 📱 Mobile Native & Capacitor (Android 15 / iOS 18)
-- **Permissões & Manifestos:** Verificar se as permissões nativas (áudio, microfone, armazenamento, notificações) estão declaradas no `AndroidManifest.xml` / `Info.plist` e se chamadas Capacitor usam `Capacitor.isNativePlatform()`.
-- **Prevenção de Crash & Congelamento:** Proteger reprodução de áudios/vídeos com `try/catch` e fallbacks em caso de perda de conexão.
-- **Safe Area Insets:** Garantir que nenhum elemento fique sob a barra de status superior (`--sai-top`) ou barra de gestos inferior (`--sai-bottom`).
-- **Dimensões Tácteis:** Mínimo **48x48dp (Android)** / **44x44pt (iOS)** e espaçamento mínimo de 8px entre botões.
+### 1. 📱 Mobile Native, Touch & Capacitor (Android 15 / iOS 18)
+- **Permissões & Manifestos:** Validar permissões nativas no `AndroidManifest.xml` / `Info.plist` e chamadas de hardware com `Capacitor.isNativePlatform()`.
+- **Safe Area Insets:** Garantir ajuste perfeito à barra de status (`--sai-top`) e gestos inferiores (`--sai-bottom`).
+- **Dimensões Tácteis & Feedback:** Alvos de toque mínimos de **48x48dp (Android)** / **44x44pt (iOS)**, uso de `Pressable` com feedback de toque `<100ms` e animações aceleradas por GPU (`transform`, `opacity`).
 
-### 2. 🖥️ Layout Responsivo Desktop
-- **Contêineres Widescreen:** Expandir telas para `lg:max-w-7xl 2xl:max-w-[1600px] lg:px-8`.
-- **Grids Multi-Colunas:** Converter listas verticais simples em grids adaptativos (2, 3, 4 ou 6 colunas no desktop).
-- **Atalhos de Teclado:** Incluir listeners (`Space`, `Enter`, `Esc`, setas, teclas numéricas `1-5`/`A-E`) para navegação agilizada no PC.
+### 2. 🖥️ Layout Responsivo & Widescreen Desktop
+- **Contêineres Widescreen:** Expandir layouts para `lg:max-w-7xl 2xl:max-w-[1600px] lg:px-8`.
+- **Grids Multi-Colunas:** Converter listas verticais em grids adaptativos (2, 3, 4 ou 6 colunas no desktop).
+- **Atalhos de Teclado:** Implementar listeners de teclado (`Space`, `Enter`, `Esc`, setas) para navegação ágil no PC.
 
-### 3. ⚡ Performance & Memória
-- **Zero Memory Leaks:** Limpar subscrições do Supabase, `setInterval`, `setTimeout` e `window.addEventListener` no `useEffect` cleanup.
-- **Cancelamento de Requisições:** Interromper buscas ativas ao desmontar componentes (`alive` / `cancelled` flag ou `AbortController`).
+### 3. 🎨 Design Visual de Elite & Estética Anticlichê (Anthropic & UI/UX Pro Max)
+- **Zero "AI Slop":** Banir estética genérica (sem gradientes roxos previsíveis em fundo branco, sem fontes puras repetitivas).
+- **Tipografia & Cores:** Tipografia com personalidade, cores dominantes fortes com variáveis CSS HSL e contraste AA/AAA nítido.
+- **Microinterações & Glassmorphism:** SVG em vez de emojis para ícones, transições suaves (150-300ms), cartões com opacidade refinada e `backdrop-blur`.
 
-### 4. 🖼️ Otimização de Imagens (WebP & Preload)
-- **Conversão WebP:** Garantir uso de imagens `.webp` otimizadas e compactadas.
-- **Carregamento Inteligente:** Usar `loading="lazy"` para itens fora da tela inicial, `decoding="async"` e `fetchPriority="high"` para imagens acima da dobra.
+### 4. 🏗️ Arquitetura de Componentes & Padrões de Composição (Vercel Composition)
+- **Eliminação de Boolean Props:** Evitar acúmulo de boolean props (`isCompact`, `hasBorder`). Adotar **Compound Components** (ex: `Select.Trigger`, `Select.Content`).
+- **Variantes Explícitas & Children:** Usar variantes declarativas e composição via `children` para flexibilidade e reutilização limpa.
 
-### 5. ♿ Acessibilidade (A11y), Contraste e Screen Readers
-- **Atributos ARIA:** Declarar `aria-label`, `aria-expanded`, `aria-selected`, `aria-controls` e `role` apropriados em elementos interativos.
-- **Foco & Teclado:** Garantir navegação acessível por tabulação (`tabIndex`), aneis de foco visíveis (`focus-visible:ring-2`) e manipuladores de eventos de teclado.
-- **Contraste de Cores:** Manter contraste adequado (nível AA/AAA) entre texto e plano de fundo (suporte a temas escuro e claro).
+### 5. ⚡ Performance React & Eliminação de Waterfalls (Vercel React Best Practices)
+- **Zero Waterfalls:** Evitar buscas sequenciais dependentes (`async/Suspense`).
+- **Otimização de Bundle:** Eliminar barrel imports desnecessários; usar `lazy()` / `dynamic()` para modais, overlays e telas secundárias.
+- **Prevenção de Re-renders:** Subscrição a booleanos derivados, `content-visibility` em listas longas e limpeza estrita de listeners/timers no `useEffect`.
 
-### 6. 🌐 PWA, Offline & Cache Resiliente
-- **Cache Local & Stale-While-Revalidate:** Armazenamento em localStorage/IndexedDB com expiração TTL inteligente.
-- **Degradação Graciosa:** Oferecer funcionalidade offline com `OfflineWatcher` e avisos visuais amigáveis.
+### 6. 🖼️ Otimização de Imagens & Assets (WebP, Preload & FetchPriority)
+- **WebP Otimizado:** Uso de imagens `.webp` compactadas com dimensões explícitas.
+- **Carregamento Inteligente:** `loading="eager"` + `fetchPriority="high"` para imagens acima da dobra; `loading="lazy"` + `decoding="async"` para o restante.
 
-### 7. ⚙️ Resiliência & Tratamento de Erros API / Supabase
-- **Prevenção de Tela Branca:** Proteger componentes com `ErrorBoundary`, Skeletons e componentes de estado vazio (`EmptyState`).
-- **Feedbacks ao Usuário:** Notificar erros e confirmações via `toast` (sonner) com mensagens claras e capturas de exceção não-fatais.
+### 7. ♿ Acessibilidade WCAG 2.1 A/AA & Contraste (AccessLint & Vercel Web Guidelines)
+- **Compliance WCAG 2.1 AA:** Razão de contraste mínima de 4.5:1 para texto normal.
+- **Proibição de Cor Isolada (WCAG 1.4.1):** Nunca indicar estado ou erro apenas com cor; utilizar ícones, textos e rótulos auxiliares.
+- **Atributos ARIA & Foco:** Garantir `role`, `aria-expanded`, `aria-selected`, `aria-controls`, `aria-label` e aneis de foco visíveis (`focus-visible:ring-2`).
 
-### 8. 📊 Telemetria, Analytics & Rastreamento GA4
-- **Screen & Page Tracking:** Registrar visualização de telas via `recordActivity`, `trackPageview` e `useScreenTracking`.
-- **Métricas de Engajamento:** Mapear ações relevantes (curtidas, favoritos, compartilhamentos, filtros e tempos de leitura).
+### 8. 🌐 PWA, Offline & Cache Resiliente
+- **Stale-While-Revalidate:** Cache inteligente em `localStorage`/`IndexedDB` com TTL.
+- **Degradação Graciosa:** Suporte offline com aviso amigável (`OfflineWatcher`).
 
-### 9. 🔍 SEO Dinâmico & Meta-Tags Open Graph
-- **Títulos Dinâmicos:** Atualizar o `document.title` de acordo com a rota, artigo ou filtro ativo.
-- **Meta-Tags e Compartilhamento:** Estruturar links de compartilhamento social com URL canônica e preview rico.
+### 9. ⚙️ Resiliência & Tratamento de Erros API / Supabase
+- **Prevenção de Tela Branca:** Isolamento de falhas com `ErrorBoundary`, `LoadingState` (Skeletons) e `EmptyState`.
+- **Feedback Transparente:** Tratamento de erros de API com `toast` (sonner) em mensagens compreensíveis.
+
+### 10. 📊 Telemetria, Analytics & SEO Dinâmico
+- **SEO Dinâmico:** Atualização do `document.title` por rota, artigo e aba ativa.
+- **Rastreamento Unificado:** Registro de pageviews (`useScreenTracking`), tempo de permanência e eventos de engajamento GA4.
 
 ---
 
@@ -58,4 +63,5 @@ Ao concluir o overhaul em qualquer funcionalidade, apresentar um resumo discrimi
 1. **Verificações Realizadas**
 2. **Bugs e Ajustes Efetuados**
 3. **Status de Compilação & GitHub**
+
 
