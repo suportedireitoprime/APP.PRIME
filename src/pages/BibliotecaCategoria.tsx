@@ -162,6 +162,15 @@ const BibliotecaCategoria = () => {
   useEffect(() => {
     if (colecao?.adminOnly && !isAdmin) navigate('/bibliotecas', { replace: true });
   }, [colecao, isAdmin, navigate]);
+
+  // SEO & Título dinâmico por Coleção / Área
+  useEffect(() => {
+    const nomeColecao = colecao?.label || 'Acervo';
+    document.title = areaSlug
+      ? `${decodeURIComponent(areaSlug)} - ${nomeColecao} | Vade Mecum PRIME`
+      : `${nomeColecao} | Vade Mecum PRIME`;
+  }, [colecao, areaSlug]);
+
   const { data: livros = [], isLoading } = useLivrosDaColecao(colecao);
   const [query, setQuery] = useState('');
   const [livroAberto, setLivroAberto] = useState<LivroNormalizado | null>(null);

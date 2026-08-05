@@ -34,6 +34,11 @@ const BibliotecaOffline = () => {
   const [nativo, setNativo] = useState<NativoPrefetchProgress>({ done: 0, total: 0, status: 'idle' });
   const [pdfs, setPdfs] = useState<{ name: string; uri: string; size: number }[]>([]);
 
+  // SEO & Título dinâmico
+  useEffect(() => {
+    document.title = 'Gerenciador Offline da Biblioteca | Vade Mecum PRIME';
+  }, []);
+
   useEffect(() => { const u = subscribeCapasProgress(setCapas); return () => { u(); }; }, []);
   useEffect(() => { const u = subscribeNativoProgress(setNativo); return () => { u(); }; }, []);
 

@@ -35,6 +35,11 @@ const AdminNarracaoBiblioteca = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const filaAbortRef = useRef(false);
 
+  // SEO & Título dinâmico da administração
+  useEffect(() => {
+    document.title = 'Administração - Narração da Biblioteca | Vade Mecum PRIME';
+  }, []);
+
   const [vozes, setVozes] = useState<Voz[]>([]);
   const [vozBusy, setVozBusy] = useState<string | null>(null);
   const [estiloPadrao, setEstiloPadrao] = useState('');

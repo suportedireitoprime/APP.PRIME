@@ -90,6 +90,16 @@ const Bibliotecas = () => {
 
 
 
+  // SEO & Título dinâmico por aba da biblioteca
+  useEffect(() => {
+    const rotulos = {
+      acervos: 'Biblioteca - Acervos | Vade Mecum PRIME',
+      performance: 'Biblioteca - Performance & Desenvolvimento | Vade Mecum PRIME',
+      materias: 'Biblioteca - Matérias do Direito | Vade Mecum PRIME',
+    };
+    document.title = rotulos[aba] || 'Biblioteca Jurídica | Vade Mecum PRIME';
+  }, [aba]);
+
   useEffect(() => {
     // Mesma mecânica de aquecimento usada no desktop:
     // hidrata cache persistente → prefetch de todas as coleções → capas.

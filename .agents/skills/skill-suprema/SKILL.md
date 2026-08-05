@@ -44,9 +44,10 @@ A **Skill Suprema** reúne todas as diretrizes de design visual de alta fidelida
 - **Proibição de Cor Isolada (WCAG 1.4.1):** Nunca indicar estado ou erro apenas com cor; utilizar ícones, textos e rótulos auxiliares.
 - **Atributos ARIA & Foco:** Garantir `role`, `aria-expanded`, `aria-selected`, `aria-controls`, `aria-label` e aneis de foco visíveis (`focus-visible:ring-2`).
 
-### 8. 🌐 PWA, Offline & Cache Resiliente
-- **Stale-While-Revalidate:** Cache inteligente em `localStorage`/`IndexedDB` com TTL.
-- **Degradação Graciosa:** Suporte offline com aviso amigável (`OfflineWatcher`).
+### 8. 🌐 PWA, Offline Nativo & Cache Resiliente
+- **Auditoria de Disponibilidade Offline Estrita:** Toda funcionalidade sob auditoria DEVE verificar se os dados e mídias principais (módulos de leitura, capas, leis, PDFs, áudios) estão acessíveis sem internet através de cache local (`IndexedDB` / `localStorage` / prefetches de arquivos nativos em `offlineBundle.ts` ou `leituraNativaPrefetch`).
+- **Navegação & Mídia Offline:** Garantir que o usuário consiga reproduzir mídias pré-baixadas e navegar em acervos/capas salvas offline.
+- **Stale-While-Revalidate & Degradação Graciosa:** Utilizar estratégia stale-while-revalidate e exibir avisos claros de status offline com o `OfflineWatcher` sem bloquear o uso dos conteúdos já baixados.
 
 ### 9. ⚙️ Resiliência & Tratamento de Erros API / Supabase
 - **Prevenção de Tela Branca:** Isolamento de falhas com `ErrorBoundary`, `LoadingState` (Skeletons) e `EmptyState`.
