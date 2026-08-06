@@ -1,6 +1,7 @@
 import { BookOpen, ChevronRight, type LucideIcon } from 'lucide-react';
 import { getAreaCover } from '@/lib/areasDireitoCovers';
 import type { AprenderHomeArea } from '@/lib/aprenderHomeSnapshot';
+import { shortenAreaName } from '@/lib/areaNameShortener';
 
 type Props = {
   area: AprenderHomeArea;
@@ -8,12 +9,6 @@ type Props = {
   onOpen: () => void;
   onPrefetch: () => void;
 };
-
-export function shortenAreaName(name: string): string {
-  if (!name) return name;
-  const cleaned = name.replace(/^Direito\s+(de|do|da|dos|das)?\s*/i, '').trim();
-  return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
-}
 
 const MateriaRow = ({ area, icon, onOpen, onPrefetch }: Props) => {
   const cover = getAreaCover(area.nome);

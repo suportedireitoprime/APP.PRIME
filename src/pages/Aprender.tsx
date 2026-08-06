@@ -16,6 +16,7 @@ import MateriaRow from '@/components/aprender/MateriaRow';
 import MateriaCard from '@/components/aprender/MateriaCard';
 import AulaCarouselCard from '@/components/aprender/AulaCarouselCard';
 import { useAprenderAreaModulesMap } from '@/hooks/useAprenderAreaModulesMap';
+import { shortenAreaName } from '@/lib/areaNameShortener';
 import { getAreaCover } from '@/lib/areasDireitoCovers';
 import { prefetchAprenderArea } from '@/lib/aprenderAreaLoader';
 import { prefetchAprenderAula } from '@/lib/aprenderAulaPrefetch';
@@ -591,8 +592,6 @@ const Aprender = () => {
                   })()}
                 </div>
               )}
-            </div>
-              </div>
             </div>
           </div>
 
