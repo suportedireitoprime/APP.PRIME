@@ -33,11 +33,11 @@ interface Item {
 }
 interface Group { title?: string; items: Item[]; }
 
-// Destaques — Meu Espaço (engloba o Perfil), Planos, Opinião, Avaliar o app
+// Destaques — Meu Espaço, Planos, Meus Lembretes, Avaliar o app
 const HIGHLIGHT_TRIO: Item[] = [
   { id: 'meu-espaco', label: 'Meu Espaço', icon: User },
   { id: 'planos',  label: 'Planos',  icon: Gem },
-  { id: 'opiniao', label: 'Opinião', icon: MessageSquareHeart },
+  { id: 'lembretes', label: 'Meus lembretes', icon: BellIcon },
   { id: 'avaliar', label: 'Avaliar o app', icon: Star },
 ];
 
@@ -45,7 +45,7 @@ const GROUPS: Group[] = [
   {
     title: 'Conta',
     items: [
-      { id: 'lembretes', label: 'Meus lembretes', icon: BellIcon },
+      { id: 'opiniao', label: 'Opinião', icon: MessageSquareHeart },
       { id: 'suporte', label: 'Suporte', icon: LifeBuoy },
     ],
   },
@@ -259,7 +259,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
                     key={it.id}
                     icon={it.icon}
                     label={it.label}
-                    variant={it.id === 'planos' ? 'gold' : it.id === 'meu-espaco' ? 'rose' : undefined}
+                    variant={it.id === 'planos' ? 'gold' : undefined}
                     onClick={() => handleItemClick(it.id)}
                   />
                 ))}
