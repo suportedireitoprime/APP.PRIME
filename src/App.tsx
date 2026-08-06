@@ -165,6 +165,7 @@ const VideoaulasCategorias = lazy(routePrefetch.videoaulasCategorias);
 const VideoaulasConquistas = lazy(routePrefetch.videoaulasConquistas);
 const AprenderDesempenho = lazy(() => import("./pages/AprenderDesempenho.tsx"));
 const AprenderAula = lazy(() => import("./pages/AprenderAula.tsx"));
+const AprenderModulo = lazy(routePrefetch.aprenderModulo);
 const JurisprudenciaArtigo = lazy(() => import("./pages/JurisprudenciaArtigo.tsx"));
 const Jurisprudencia = lazy(() => import("./pages/Jurisprudencia.tsx"));
 const PesquisasProntasLista = lazy(() => import("./pages/PesquisasProntasLista.tsx"));
@@ -734,6 +735,7 @@ function AnimatedRoutes() {
 
           <Route path="/aprender/categoria/:categoriaId" element={<ProtectedRoute><PageTransition><CategoriaAprender /></PageTransition></ProtectedRoute>} />
           <Route path="/aprender/area/:slug" element={<ProtectedRoute><PageTransition><AprenderArea /></PageTransition></ProtectedRoute>} />
+          <Route path="/aprender/modulo/:moduloId" element={<ProtectedRoute><PageTransition><AprenderModulo /></PageTransition></ProtectedRoute>} />
           <Route path="/aprender/teoria" element={<ProtectedRoute><PageTransition><AprenderTeoria /></PageTransition></ProtectedRoute>} />
           <Route path="/aprender/trilhas" element={<ProtectedRoute><PageTransition><AprenderTrilhas /></PageTransition></ProtectedRoute>} />
           <Route path="/aprender/questoes" element={<ProtectedRoute><PageTransition><AprenderQuestoes /></PageTransition></ProtectedRoute>} />

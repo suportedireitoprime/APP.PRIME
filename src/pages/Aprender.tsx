@@ -530,7 +530,7 @@ const Aprender = () => {
                         <div className="space-y-2 pt-1">
                           <div className="flex items-center justify-between px-1">
                             <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                              Tópicos e Módulos de {capitalized}
+                              Tópicos de {capitalized}
                             </p>
                             <span className="text-[11px] font-semibold text-muted-foreground">
                               {areaModules.length || 3} tópicos
@@ -540,11 +540,7 @@ const Aprender = () => {
                           {areaModules.length > 0 ? (
                             areaModules.map((mod, idx) => {
                               const handleTopicClick = () => {
-                                if (mod.primeiraAulaId) {
-                                  navigate(`/aprender/aula/${mod.primeiraAulaId}`);
-                                } else {
-                                  navigate(`/aprender/area/${activeArea.slug}?moduloId=${mod.id}`);
-                                }
+                                navigate(`/aprender/modulo/${mod.id}`);
                               };
 
                               return (

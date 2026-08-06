@@ -20,9 +20,8 @@ function AulaCard({ aula, onOpen, wide }: { aula: AprenderHomeAula; onOpen: (id:
       onFocus={prefetch}
       onTouchStart={prefetch}
       className={[
-        'group relative overflow-hidden rounded-2xl border border-border bg-card text-left transition-all min-h-[140px]',
+        'group relative overflow-hidden rounded-2xl border border-border bg-card text-left transition-all min-h-[135px] w-full',
         'hover:border-primary/50 hover:shadow-xl active:scale-[0.995]',
-        wide ? 'w-full' : 'w-[90%] shrink-0 snap-start sm:w-[48%] lg:w-full',
       ].join(' ')}
     >
       {cover?.cover && (
@@ -104,11 +103,11 @@ const ContinueCarousel = ({ aulas, onOpen }: Props) => {
       </div>
 
       {single ? (
-        <AulaCard aula={aulas[0]} onOpen={onOpen} wide={false} />
+        <AulaCard aula={aulas[0]} onOpen={onOpen} wide={true} />
       ) : (
-        <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none gap-3.5 pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+        <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none gap-3 pb-2 -mx-3 px-3 sm:mx-0 sm:px-0">
           {aulas.map((a) => (
-            <div key={a.aulaId} className="w-[280px] sm:w-[320px] shrink-0 snap-start">
+            <div key={a.aulaId} className="w-[82%] sm:w-[310px] shrink-0 snap-start">
               <AulaCard aula={a} onOpen={onOpen} wide={false} />
             </div>
           ))}
