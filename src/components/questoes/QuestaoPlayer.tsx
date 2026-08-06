@@ -85,14 +85,14 @@ const QuestaoPlayer = ({ questoes, loading, contexto = 'pratica', onRegistrar, o
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 pb-[calc(7rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
       <div className="flex items-center justify-between px-1">
         <span className="text-[12px] font-semibold uppercase tracking-wider text-primary">
           Questão {idx + 1} / {questoes.length}
         </span>
         <div className="flex items-center gap-3">
           <span className="text-[12px] tabular-nums text-muted-foreground">{acertos} acertos</span>
-          <button onClick={favoritar} aria-label="Favoritar questão" className="text-muted-foreground hover:text-primary">
+          <button onClick={favoritar} aria-label="Favoritar questão" className="text-muted-foreground hover:text-primary transition-transform active:scale-90">
             <Heart className={`h-5 w-5 ${atual && favoritos.has(atual.id) ? 'fill-primary text-primary' : ''}`} />
           </button>
         </div>
@@ -127,7 +127,7 @@ const QuestaoPlayer = ({ questoes, loading, contexto = 'pratica', onRegistrar, o
               key={op.letra}
               disabled={!!resp}
               onClick={() => responder(op.letra)}
-              className={`flex min-h-12 w-full items-start gap-3 rounded-xl border p-4 text-left text-[15px] leading-relaxed transition-colors ${
+              className={`flex min-h-12 w-full items-start gap-3 rounded-xl border p-4 text-left text-[15px] leading-relaxed transition-all active:scale-[0.98] ${
                 acertou || revela
                   ? 'border-green-500/60 bg-green-500/10'
                   : errou
@@ -147,7 +147,7 @@ const QuestaoPlayer = ({ questoes, loading, contexto = 'pratica', onRegistrar, o
       </div>
 
       {resp && (
-        <div className="rounded-xl border border-border bg-card p-4">
+        <div className="rounded-xl border border-border bg-card p-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
           <p className="mb-2 flex items-center gap-2 text-[13px] font-bold uppercase tracking-wide text-primary">
             <Sparkles className="h-4 w-4" /> Comentário
           </p>
@@ -168,7 +168,7 @@ const QuestaoPlayer = ({ questoes, loading, contexto = 'pratica', onRegistrar, o
           <button
             onClick={() => setIdx((i) => i + 1)}
             disabled={!resp}
-            className="inline-flex h-12 items-center gap-1.5 rounded-xl bg-primary px-5 text-[15px] font-bold text-primary-foreground disabled:opacity-40"
+            className="inline-flex h-12 items-center gap-1.5 rounded-xl bg-primary px-5 text-[15px] font-bold text-primary-foreground disabled:opacity-40 active:scale-95 transition-transform"
           >
             Próxima <ChevronRight className="h-4 w-4" />
           </button>
@@ -176,7 +176,7 @@ const QuestaoPlayer = ({ questoes, loading, contexto = 'pratica', onRegistrar, o
           <button
             onClick={onNovoBloco}
             disabled={!resp}
-            className="inline-flex h-12 items-center gap-1.5 rounded-xl bg-primary px-5 text-[15px] font-bold text-primary-foreground disabled:opacity-40"
+            className="inline-flex h-12 items-center gap-1.5 rounded-xl bg-primary px-5 text-[15px] font-bold text-primary-foreground disabled:opacity-40 active:scale-95 transition-transform"
           >
             <RotateCw className="h-4 w-4" /> Novo bloco
           </button>

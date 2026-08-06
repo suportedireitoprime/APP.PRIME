@@ -256,14 +256,14 @@ const ResolverPadrao = ({
           <motion.div
             initial={{ y: 90, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 90, opacity: 0 }}
+            exit={{ y: 90, opacity: 0, pointerEvents: 'none' }}
             transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
-            className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 px-4 pb-[calc(env(safe-area-inset-bottom)+16px)] pt-3 backdrop-blur"
+            className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 px-4 pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-3 backdrop-blur"
           >
             <div className="mx-auto w-full max-w-3xl">
               <button
                 onClick={responder}
-                className="h-14 w-full rounded-2xl bg-primary text-[16px] font-bold text-primary-foreground shadow-lg"
+                className="h-14 w-full rounded-2xl bg-primary text-[16px] font-bold text-primary-foreground shadow-lg active:scale-[0.98] transition-transform"
               >
                 Responder
               </button>
@@ -278,9 +278,9 @@ const ResolverPadrao = ({
           <motion.div
             initial={{ y: 120, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 120, opacity: 0 }}
+            exit={{ y: 120, opacity: 0, pointerEvents: 'none' }}
             transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
-            className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 px-2 pb-[calc(env(safe-area-inset-bottom)+8px)] pt-2 backdrop-blur"
+            className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 px-2 pb-[calc(0.75rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-2 backdrop-blur"
           >
             <div className="mx-auto w-full max-w-3xl space-y-2">
               <div className="flex items-center gap-2 px-1">

@@ -154,17 +154,17 @@ function Overlay({
 }: { titulo: string; icone: any; children: React.ReactNode; onClose: () => void; alto?: boolean }) {
   return (
     <motion.div
-      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, pointerEvents: 'none' }}
       transition={{ duration: 0.2 }}
       className="theme-questoes fixed inset-0 z-[80] flex items-end justify-center bg-black/70 p-0 backdrop-blur-sm sm:items-center sm:p-4"
       onClick={onClose}
     >
       <motion.div
-        initial={{ y: 60, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 60, opacity: 0 }}
+        initial={{ y: 60, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 60, opacity: 0, pointerEvents: 'none' }}
         transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
         onClick={(e) => e.stopPropagation()}
         className={cn(
-          'relative flex w-full flex-col rounded-t-3xl border border-border bg-card shadow-2xl pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] sm:max-w-lg sm:rounded-3xl sm:pb-0',
+          'relative flex w-full flex-col rounded-t-3xl border border-border bg-card shadow-2xl pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] sm:max-w-lg sm:rounded-3xl sm:pb-0',
           alto ? 'h-[90vh]' : 'max-h-[92vh] overflow-y-auto',
         )}
       >
