@@ -171,8 +171,17 @@ export default function Assinatura() {
     setTrialSheetPlan(plano);
   };
 
+  const hasUsedTrial = useMemo(() => {
+    if (!session?.user?.id) return false;
+    const local = typeof localStorage !== 'undefined' ? localStorage.getItem(`prime_trial_used_${session.user.id}`) : null;
+    return local === 'true' || isPremium || !!planoAtual;
+  }, [session?.user?.id, isPremium, planoAtual]);
+
   const confirmTrialAndBuy = async () => {
     if (!trialSheetPlan) return;
+    if (session?.user?.id) {
+      try { localStorage.setItem(`prime_trial_used_${session.user.id}`, 'true'); } catch { /* ignore */ }
+    }
     import('@/lib/appEvents')
       .then(({ appEvents }) =>
         appEvents.trialIniciado({ plano: trialSheetPlan, dias: trialDaysFor(trialSheetPlan) })
@@ -384,12 +393,12 @@ export default function Assinatura() {
               <Button
                 onClick={() => startPurchase(tab === 'mensal' ? 'mensal' : (isIOS ? 'anual' : 'anual_parcelado'))}
                 disabled={playLoading}
-                className="btn-attention-shine w-full h-14 rounded-2xl bg-gradient-to-r from-[hsl(348_78%_38%)] via-primary to-[hsl(348_78%_38%)] text-primary-foreground font-display text-lg font-black tracking-wider shadow-[0_10px_30px_rgba(224,31,71,0.4)] hover:brightness-110 active:scale-[0.99] transition-all"
+                className="btn-attention-shine relative overflow-hidden w-full h-14 rounded-2xl bg-gradient-to-r from-[hsl(348_78%_38%)] via-primary to-[hsl(348_78%_38%)] text-primary-foreground font-display text-lg font-black tracking-wider shadow-[0_10px_30px_rgba(224,31,71,0.4)] hover:brightness-110 active:scale-[0.99] transition-all"
               >
                 {playLoading ? (
                   <span className="flex items-center gap-2"><Loader2 className="w-5 h-5 animate-spin" /> Processando…</span>
                 ) : (
-                  <span>Começar 3 dias grátis</span>
+                  <span>{hasUsedTrial ? 'Assinar agora' : 'Começar 3 dias grátis'}</span>
                 )}
               </Button>
 
@@ -413,7 +422,6 @@ export default function Assinatura() {
             className="mx-4 rounded-2xl p-5 bg-card/60 border border-border"
           >
             <div className="flex items-center gap-2 mb-4">
-              <Sparkles className="w-4 h-4 text-primary" />
               <h3 className="font-display text-sm font-bold text-foreground uppercase tracking-wider">
                 Tudo que você desbloqueia
               </h3>
