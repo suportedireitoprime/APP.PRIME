@@ -16,9 +16,11 @@ import { scheduleTrialReminder, trialDaysFor, type TrialPlan } from "@/lib/trial
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { isAdminEmail } from "@/lib/adminEmails";
 import { maybeRequestAfterPurchase } from "@/lib/inAppReview";
-import { track } from "@/lib/analyticsEvents";
 import { useTrackArea } from "@/hooks/useTrackArea";
 import { useGoBack } from '@/hooks/useGoBack';
+import paywallLeft from '@/assets/paywall/paywall_left.png';
+import paywallCenter from '@/assets/paywall/paywall_center.png';
+import paywallRight from '@/assets/paywall/paywall_right.png';
 
 export default function Assinatura() {
   useTrackArea("assinatura_aberta");
@@ -221,10 +223,6 @@ export default function Assinatura() {
         />
 
         <div className="max-w-2xl mx-auto pt-6 space-y-7">
-import paywallLeft from '@/assets/paywall/paywall_left.png';
-import paywallCenter from '@/assets/paywall/paywall_center.png';
-import paywallRight from '@/assets/paywall/paywall_right.png';
-
             {/* ── 3D Image Stack: Leque de 3 Fotos Jurídicas no Topo ─────── */}
             <div className="relative flex items-center justify-center pt-2 pb-6 px-4 overflow-hidden">
               <div className="relative flex items-center justify-center w-full max-w-[340px] h-[190px]">
