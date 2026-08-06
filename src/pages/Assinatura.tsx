@@ -277,19 +277,31 @@ export default function Assinatura() {
                 <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
                   <Check className="w-3.5 h-3.5 text-primary" strokeWidth={3} />
                 </div>
-                <span className="font-body text-sm font-semibold text-foreground/90">Aulas em Trilhas, Slides e Questões por matéria</span>
+                <span className="font-body text-sm font-semibold text-foreground/90">Aplicativo Ilimitado</span>
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
                   <Check className="w-3.5 h-3.5 text-primary" strokeWidth={3} />
                 </div>
-                <span className="font-body text-sm font-semibold text-foreground/90">Vade Mecum Inteligente com IA e Resumos</span>
+                <span className="font-body text-sm font-semibold text-foreground/90">Acesso Offline</span>
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
                   <Check className="w-3.5 h-3.5 text-primary" strokeWidth={3} />
                 </div>
-                <span className="font-body text-sm font-semibold text-foreground/90">Todas as funcionalidades do DIREITO PRIME PRO</span>
+                <span className="font-body text-sm font-semibold text-foreground/90">Acesso Desktop</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                  <Check className="w-3.5 h-3.5 text-primary" strokeWidth={3} />
+                </div>
+                <span className="font-body text-sm font-semibold text-foreground/90">Vade Mecum Completo Narrado e Comentado</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                  <Check className="w-3.5 h-3.5 text-primary" strokeWidth={3} />
+                </div>
+                <span className="font-body text-sm font-semibold text-foreground/90">Mais de 50 Funcionalidades Liberadas</span>
               </div>
             </div>
 
