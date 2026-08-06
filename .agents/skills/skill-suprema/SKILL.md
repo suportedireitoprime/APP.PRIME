@@ -21,6 +21,7 @@ A **Skill Suprema** reúne todas as diretrizes de design visual de alta fidelida
   - **Recuo de Alternativas & Conteúdos Roláveis:** Os contêineres de questões, opções de resposta e exercícios DEVEM possuir recuo inferior responsivo (`pb-28 sm:pb-32` ou `pb-[calc(7rem+var(--sai-bottom,0px))]`) para que a última alternativa de resposta (ex: Opção D) nunca fique oculta ou inacessível ao rolar.
   - **Lock de Scroll & Limpeza Nátiva Unificada:** Modais e folhas DEVEM utilizar o hook unificado `useBodyScrollLock(open)` com purga completa de estilos inline (`position`, `top`, `width`, `touchAction`, `pointerEvents`) em `release()` / `resetBodyScrollLock()`, e aplicar `pointerEvents: 'none'` no `exit` do backdrop do `AnimatePresence` para eliminar congelamentos de tela ao fechar.
 - **Mini-Player Flutuante Instantâneo:** Ao minimizar uma videoaula ou áudio, a mídia DEVE continuar a execução em segundo plano no mini-player flutuante (PiP) **instantaneamente**, sem congelamentos, delays de buffering ou interrupções de som.
+- **Experiência do Usuário (UX 360°):** Integrada com a [skill-experiencia-do-usuario](../skill-experiencia-do-usuario/SKILL.md) para refinamento de animações, reorganização inteligente de layout, validação Supabase e interatividade de elite.
 - **Dimensões Tácteis & Feedback:** Alvos de toque mínimos de **48x48dp (Android)** / **44x44pt (iOS)**, uso de `Pressable` com feedback de toque `<100ms` e animações aceleradas por GPU (`transform`, `opacity`).
 
 ### 2. 🖥️ Layout Responsivo & Widescreen Desktop
