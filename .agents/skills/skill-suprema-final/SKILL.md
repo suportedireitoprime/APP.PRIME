@@ -1,17 +1,19 @@
 ---
-name: skill-suprema
-description: Skill Suprema 360° de Engenharia de UI/UX, Design Visual Anticlichê, Arquitetura de Componentes, Performance React, Acessibilidade WCAG 2.1 AA, Permissões Nativas Capacitor, PWA/Offline e Telemetria.
+name: skill-suprema-final
+description: Skill Suprema Final 360° - Unificação completa de Engenharia de UI/UX, Design Visual Anticlichê, Animações Fluidas (Framer Motion), Reorganização Inteligente de Layout, Hierarquia Visual, Arquitetura de Componentes, Performance React, Validação de Funções Supabase, Safe Area Insets (Android 15/iOS 18), Acessibilidade WCAG 2.1 AA, Capacitor Nativo, PWA/Offline e Telemetria.
 ---
 
 # 🚀 Skill Suprema Final (Master Overhaul 360° & UI/UX Engineering)
 
-> 📌 **Atenção:** Esta skill foi unificada com a Skill Experiência do Usuário na nova **[skill-suprema-final](../skill-suprema-final/SKILL.md)**. Todas as auditorias e diretrizes agora estão consolidadas na **Skill Suprema Final**.
+A **Skill Suprema Final** (`skill-suprema-final`) unifica todas as diretrizes de engenharia de software, design de experiência do usuário (UX 360°), animações fluidas, reorganização de layout, otimização de performance React, integração perfeita com Supabase, acessibilidade WCAG 2.1 AA e compatibilidade nativa (Android 15 / iOS 18 / Desktop Electron) em um único padrão definitivo de desenvolvimento.
+
+> 📌 **Regra Obrigatória de Cobertura Total por Módulo:** Sempre que a **Skill Suprema Final** for acionada para qualquer **função, área ou módulo do aplicativo** (ex: *"use a skill-suprema-final em X"*), a auditoria e as otimizações DEVEM ser aplicadas a **TODAS as rotas, sub-rotas, páginas de estudo, modais, sheets, dashboards, editores e visões administrativas que compõem essa funcionalidade**, garantindo 100% de consistência.
 
 ---
 
-## 📋 Checkpoints da Skill Suprema
+## 📋 Checkpoints da Skill Suprema Final
 
-### 1. 📱 Mobile Native, Touch & Capacitor (Android 15 / iOS 18)
+### 1. 📱 Mobile Native, Safe Area Insets & Scroll Lock (Android 15 / iOS 18)
 - **Permissões & Manifestos:** Validar permissões nativas no `AndroidManifest.xml` / `Info.plist` e chamadas de hardware com `Capacitor.isNativePlatform()`.
 - **Safe Area Insets & Margem de Navegação Nativa (Android & iOS):** Garantir ajuste estrito à barra de status (`--sai-top`) e à barra de gestos/navegação inferior do sistema (`--sai-bottom`).
   - **Headers & Navbars Superiores (Safe Area Top):** Todas as barras de navegação superiores (headers, navbars, botões de voltar e topo de modais) DEVEM utilizar a fórmula aditiva `pt-[calc(1.25rem+var(--sai-top,env(safe-area-inset-top,0px)))]` ou `top-[calc(1rem+var(--sai-top,0px))]`, NUNCA utilizando `max()` isolado que anula a margem de respiro quando a variável nativa não está presente.
@@ -19,58 +21,69 @@ description: Skill Suprema 360° de Engenharia de UI/UX, Design Visual Anticlich
   - **Recuo de Alternativas & Conteúdos Roláveis:** Os contêineres de questões, opções de resposta e exercícios DEVEM possuir recuo inferior responsivo (`pb-28 sm:pb-32` ou `pb-[calc(7rem+var(--sai-bottom,0px))]`) para que a última alternativa de resposta (ex: Opção D) nunca fique oculta ou inacessível ao rolar.
   - **Lock de Scroll & Limpeza Nátiva Unificada:** Modais e folhas DEVEM utilizar o hook unificado `useBodyScrollLock(open)` com purga completa de estilos inline (`position`, `top`, `width`, `touchAction`, `pointerEvents`) em `release()` / `resetBodyScrollLock()`, e aplicar `pointerEvents: 'none'` no `exit` do backdrop do `AnimatePresence` para eliminar congelamentos de tela ao fechar.
 - **Mini-Player Flutuante Instantâneo:** Ao minimizar uma videoaula ou áudio, a mídia DEVE continuar a execução em segundo plano no mini-player flutuante (PiP) **instantaneamente**, sem congelamentos, delays de buffering ou interrupções de som.
-- **Experiência do Usuário (UX 360°):** Integrada com a [skill-experiencia-do-usuario](../skill-experiencia-do-usuario/SKILL.md) para refinamento de animações, reorganização inteligente de layout, validação Supabase e interatividade de elite.
-- **Dimensões Tácteis & Feedback:** Alvos de toque mínimos de **48x48dp (Android)** / **44x44pt (iOS)**, uso de `Pressable` com feedback de toque `<100ms` e animações aceleradas por GPU (`transform`, `opacity`).
+- **Dimensões Tácteis & Haptics:** Alvos de toque mínimos de **48x48dp (Android)** / **44x44pt (iOS)**, com retorno tátil nativo via `haptic.selection()` ou `haptic.impact()` e animações aceleradas por GPU (`transform`, `opacity`).
 
-### 2. 🖥️ Layout Responsivo & Widescreen Desktop
+### 2. 🎭 Animações Fluidas, Microinterações & Transições Elegantes
+- **Abertura/Fechamento de Modais & Sheets:** Todos os elementos sobrepostos DEVEM abrir e fechar com animações de mola calibradas (`type: 'spring', stiffness: 260, damping: 30` ou `duration: 0.22, ease: 'easeOut'`).
+- **Animação de Saída Sem Bloqueios:** Usar `AnimatePresence` com `exit={{ opacity: 0, pointerEvents: 'none' }}` ou `exit={{ y: '100%', pointerEvents: 'none' }}` para que o overlay nunca bloqueie toques durante a transição de saída.
+- **Zero Jitter ou Saltos de Layout:** Utilizar `layoutId` do Framer Motion ou transições baseadas puramente em GPU (`transform`, `opacity`) para expansão e retração de elementos sem causar sobressaltos na página.
+- **Microinterações de Clique:** Aplicar efeito tátil no clique (`active:scale-[0.97]` ou `hover:bg-white/10 transition-all`).
+
+### 3. 📐 Reorganização Inteligente de Layout & Hierarquia Visual (Mobile & Desktop Widescreen)
+- **Harmonia & Prioridade de Informação:** Auditar a tela e reorganizar elementos visuais para garantir uma hierarquia clara (título principal -> sub-informações -> ações primárias -> ações secundárias).
 - **Contêineres Widescreen & Aproveitamento de Espaço:** Expandir layouts para `lg:max-w-7xl 2xl:max-w-[1600px] lg:px-8`.
 - **Adaptação Responsiva Mobile -> Desktop (Zero Rodapé Fixo no PC):** As ações e ferramentas originalmente no rodapé mobile (ex: "Flashcards", "Pegadinhas", "Resumos", "Lei seca", "Termos", "Questões") NUNCA devem ficar no rodapé fixo no desktop (`lg:hidden`). Elas DEVEM ser convertidas em cards/botões integrados nos painéis laterais (à direita ou à esquerda), posicionados logo abaixo das ações principais do conteúdo (ex: "Favoritar / Concluir"), liberando o rodapé no computador.
 - **Sidebar / Lista Lateral de Conteúdos no Desktop:** Em páginas de estudo e videoaulas no desktop, criar uma sidebar/lista lateral (esquerda ou direita) apresentando os cards dos demais itens/vídeos daquela mesma coleção/área para alternância instantânea sem sair da página.
 - **Grids de Cards no Desktop:** Exibir catálogos e módulos como **grids de cards responsivos** (3 a 4 colunas no widescreen), e não em carrosséis rasteiros ou listas horizontais simples.
 - **Atalhos de Teclado:** Implementar listeners de teclado (`Space`, `Enter`, `Esc`, setas) para navegação ágil no PC.
 
-### 3. 🎨 Design Visual de Elite & Estética Anticlichê (Anthropic & UI/UX Pro Max)
+### 4. 🎨 Design Visual de Elite & Estética Anticlichê (Anthropic & UI/UX Pro Max)
 - **Zero "AI Slop":** Banir estética genérica (sem gradientes roxos previsíveis em fundo branco, sem fontes puras repetitivas).
 - **Tipografia & Cores:** Tipografia com personalidade, cores dominantes fortes com variáveis CSS HSL e contraste AA/AAA nítido.
 - **Microinterações & Glassmorphism:** SVG em vez de emojis para ícones, transições suaves (150-300ms), cartões com opacidade refinada e `backdrop-blur`.
 
-### 4. 🏗️ Arquitetura de Componentes & Padrões de Composição (Vercel Composition)
+### 5. 🔗 Conectividade Supabase, Validação Backend & Resiliência
+- **Integração 100% Funcional:** Verificar se todos os botões de ação (curtir, favoritar, salvar, responder, comentar, baixar, navegar) estão devidamente vinculados às tabelas, Edge Functions e RPCs do Supabase sem erros 401/404/500 no console.
+- **Updates Otimistas (Optimistic UI):** Em ações de alta frequência (ex: favoritar um item, marcar como concluído), atualizar o estado da interface **imediatamente** antes de aguardar a resposta da rede, revertendo graciosamente apenas em caso de erro.
+- **Cache Instantâneo (0ms Lag):** Utilizar caches locais pré-carregados (em memória / `sessionStorage`) para contagens e dados de filtros, garantindo que o usuário veja as opções carregadas no 1º frame sem exibir contadores zerados ou telas brancas.
+
+### 6. 🏗️ Arquitetura de Componentes & Padrões de Composição (Vercel Composition)
 - **Eliminação de Boolean Props:** Evitar acúmulo de boolean props (`isCompact`, `hasBorder`). Adotar **Compound Components** (ex: `Select.Trigger`, `Select.Content`).
 - **Variantes Explícitas & Children:** Usar variantes declarativas e composição via `children` para flexibilidade e reutilização limpa.
 
-### 5. ⚡ Performance React & Eliminação de Waterfalls (Vercel React Best Practices)
+### 7. ⚡ Performance React & Eliminação de Waterfalls (Vercel React Best Practices)
 - **Zero Waterfalls:** Evitar buscas sequenciais dependentes (`async/Suspense`).
 - **Otimização de Bundle:** Eliminar barrel imports desnecessários; usar `lazy()` / `dynamic()` para modais, overlays e telas secundárias.
 - **Prevenção de Re-renders:** Subscrição a booleanos derivados, `content-visibility` em listas longas e limpeza estrita de listeners/timers no `useEffect`.
 
-### 6. 🖼️ Otimização de Imagens & Assets (WebP, Preload & FetchPriority)
+### 8. 🖼️ Otimização de Imagens & Assets (WebP, Preload & FetchPriority)
 - **WebP Otimizado:** Uso de imagens `.webp` compactadas com dimensões explícitas.
 - **Carregamento Inteligente:** `loading="eager"` + `fetchPriority="high"` para imagens acima da dobra; `loading="lazy"` + `decoding="async"` para o restante.
 
-### 7. ♿ Acessibilidade WCAG 2.1 A/AA & Contraste (AccessLint & Vercel Web Guidelines)
+### 9. ♿ Acessibilidade WCAG 2.1 A/AA & Contraste (AccessLint & Vercel Web Guidelines)
 - **Compliance WCAG 2.1 AA:** Razão de contraste mínima de 4.5:1 para texto normal.
 - **Proibição de Cor Isolada (WCAG 1.4.1):** Nunca indicar estado ou erro apenas com cor; utilizar ícones, textos e rótulos auxiliares.
 - **Atributos ARIA & Foco:** Garantir `role`, `aria-expanded`, `aria-selected`, `aria-controls`, `aria-label` e aneis de foco visíveis (`focus-visible:ring-2`).
 
-### 8. 🌐 PWA, Offline Nativo & Cache Resiliente
+### 10. 🌐 PWA, Offline Nativo & Cache Resiliente
 - **Auditoria de Disponibilidade Offline Estrita:** Toda funcionalidade sob auditoria DEVE verificar se os dados e mídias principais (módulos de leitura, capas, leis, PDFs, áudios) estão acessíveis sem internet através de cache local (`IndexedDB` / `localStorage` / prefetches de arquivos nativos em `offlineBundle.ts` ou `leituraNativaPrefetch`).
 - **Navegação & Mídia Offline:** Garantir que o usuário consiga reproduzir mídias pré-baixadas e navegar em acervos/capas salvas offline.
 - **Stale-While-Revalidate & Degradação Graciosa:** Utilizar estratégia stale-while-revalidate e exibir avisos claros de status offline com o `OfflineWatcher` sem bloquear o uso dos conteúdos já baixados.
 
-### 9. ⚙️ Resiliência & Tratamento de Erros API / Supabase
+### 11. ⚙️ Resiliência & Tratamento de Erros API / Supabase
 - **Prevenção de Tela Branca:** Isolamento de falhas com `ErrorBoundary`, `LoadingState` (Skeletons) e `EmptyState`.
 - **Feedback Transparente:** Tratamento de erros de API com `toast` (sonner) em mensagens compreensíveis.
 
-### 10. 📊 Telemetria, Analytics & SEO Dinâmico
+### 12. 📊 Telemetria, Analytics & SEO Dinâmico
 - **SEO Dinâmico:** Atualização do `document.title` por rota, artigo e aba ativa.
 - **Rastreamento Unificado:** Registro de pageviews (`useScreenTracking`), tempo de permanência e eventos de engajamento GA4.
 
 ---
 
 ## 📊 Relatório Final da Auditoria
-Ao concluir o overhaul em qualquer funcionalidade, apresentar um resumo discriminado com:
-1. **Verificações Realizadas**
-2. **Bugs e Ajustes Efetuados**
-3. **Status de Compilação & GitHub**
-
-
+Ao concluir o overhaul em qualquer funcionalidade usando a **Skill Suprema Final**, apresentar um resumo discriminado com:
+1. **Rotas e Páginas Auditadas**
+2. **Animações e Transições Adicionadas/Otimizadas**
+3. **Reorganização de Layout e Hierarquia Aplicadas**
+4. **Validação de Funções Supabase & Status de Compilação (`tsc`)**
+5. **Status de Sincronização no GitHub**

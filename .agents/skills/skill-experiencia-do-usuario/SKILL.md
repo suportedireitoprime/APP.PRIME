@@ -3,11 +3,9 @@ name: skill-experiencia-do-usuario
 description: Skill Suprema de Experiência do Usuário (UX 360°), Animações Fluidas (Framer Motion), Reorganização Inteligente de Layout, Hierarquia Visual, Validação de Funções Supabase e Interatividade Nível Elite.
 ---
 
-# 🎨 Skill de Experiência do Usuário (UX 360° & UI Overhaul)
+# 🎨 Skill Suprema Final (Master Overhaul 360° & UI/UX Engineering)
 
-A **Skill de Experiência do Usuário** (`skill-experiencia-do-usuario`) estabelece o padrão de excelência em UX/UI para todas as áreas do aplicativo. Ela foca em **animações extremamente fluidas**, **reorganização de layout e hierarquia visual**, **integração 100% perfeita com o Supabase**, **feedback táctil imediato** e **eliminação de qualquer travamento ou congelamento de tela**.
-
-> 📌 **Regra Obrigatória de Cobertura Total por Módulo:** Sempre que esta skill for acionada para uma **área, função ou módulo do aplicativo** (ex: *"use a skill-experiencia-do-usuario no Blog / Biblioteca / Flashcards / etc."*), o agente DEVE auditar e aplicar as otimizações a **TODAS as rotas, sub-rotas, páginas, modais, sheets e componentes** que integram essa funcionalidade.
+> 📌 **Atenção:** Esta skill foi unificada com a Skill Suprema na nova **[skill-suprema-final](../skill-suprema-final/SKILL.md)**. Todas as diretrizes de UX, animações e layout agora estão consolidadas na **Skill Suprema Final**.
 
 ---
 
