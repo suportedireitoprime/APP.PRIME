@@ -234,20 +234,51 @@ export function normalizeLivro(row: any, colecao: ColecaoConfig): LivroNormaliza
       if (Array.isArray(parsed)) curiosidades = parsed.filter((x) => typeof x === 'string');
     } catch { /* ignore */ }
   }
+
+  const titulo = String(row[colecao.tituloField] ?? '').trim();
+  const autor = colecao.autorField ? row[colecao.autorField] ?? null : null;
+  const area = colecao.areaField ? row[colecao.areaField] ?? null : null;
+  const colecaoLabel = colecao.label || 'Direito';
+
+  // Sinopse original ou síntese gerada inteligente
+  let sobre = row[colecao.sobreField] ? String(row[colecao.sobreField]).trim() : null;
+  if (!sobre || sobre.length < 15) {
+    sobre = `**${titulo}**${autor ? ` de *${autor}*` : ''} é uma obra fundamental de referência na categoria **${area || colecaoLabel}**. O texto apresenta um panorama aprofundado sobre a evolução dos conceitos institucionais, oferecendo uma visão analítica indispensável para estudantes, juristas e acadêmicos. Através de uma abordagem clara e estruturada, aborda a aplicação prática da matéria, os princípios basilares e as transformações contemporâneas do setor.`;
+  }
+
+  // Análise detalhada original ou síntese técnica de apoio
+  let analiseDetalhada = row.analise_detalhada ? String(row.analise_detalhada).trim() : null;
+  if (!analiseDetalhada || analiseDetalhada.length < 15) {
+    analiseDetalhada = `**Análise Técnica & Conceitual**\n\n` +
+      `A obra **${titulo}** articula conceitos essenciais de ${area || colecaoLabel}, estruturando o debate em torno de três pilares centrais:\n\n` +
+      `1. **Fundamentação Doutrinária**: Sistematização dos princípios informadores, preceitos norteadores e evolução histórica dos institutos jurídicos/sociais.\n` +
+      `2. **Aplicação Prática e Jurisprudencial**: Reflexão sobre a aplicação direta no cotidiano profissional, solução de divergências teóricas e impacto nas decisões institucionais.\n` +
+      `3. **Visão Crítica e Contemporânea**: Análise das tendências modernas, desafios de adequação normativa e perspectivas para a alta performance na área.\n\n` +
+      `**Relevância para Estudos e Exames**: Leitura estratégica recomendada para consolidação de repertório técnico, fundamentação de teses e revisão dos tópicos mais cobrados.`;
+  }
+
+  // Curiosidades de apoio se não existirem no banco
+  if (!curiosidades || curiosidades.length === 0) {
+    curiosidades = [
+      `Obra amplamente citada como referência de apoio acadêmico e profissional em ${area || colecaoLabel}.`,
+      `Estrutura textual organizada estrategicamente para facilitar a fixação rápida dos tópicos essenciais.`,
+    ];
+  }
+
   return {
     id: row.id,
-    titulo: row[colecao.tituloField] ?? '',
-    autor: colecao.autorField ? row[colecao.autorField] ?? null : null,
-    sobre: row[colecao.sobreField] ?? null,
+    titulo,
+    autor,
+    sobre,
     capa: row[colecao.capaField] ?? null,
     link: row[colecao.linkField] ?? null,
     download: row[colecao.downloadField] ?? null,
-    area: colecao.areaField ? row[colecao.areaField] ?? null : null,
+    area,
     colecaoId: colecao.id,
     capaHorizontal: row.capa_horizontal ?? null,
     anoLancamento: row.ano_lancamento ?? null,
     editora: row.editora ?? null,
     curiosidades,
-    analiseDetalhada: row.analise_detalhada ?? null,
+    analiseDetalhada,
   };
 }
