@@ -7,6 +7,8 @@ export type ModuloItem = {
   titulo: string;
   resumo: string | null;
   ordem: number;
+  primeiraAulaId?: string | null;
+  totalAulas?: number;
 };
 
 let cacheModulesMap: Map<string, ModuloItem[]> | null = null;
@@ -21,18 +23,37 @@ export function useAprenderAreaModulesMap() {
 
     (async () => {
       try {
-        const { data: raw, error } = await supabase
-          .from('aprender_modulos')
-          .select('id, area_id, titulo, resumo, ordem')
-          .order('ordem');
+        const [{ data: rawModulos, error: errMod }, { data: rawAulas }] = await Promise.all([
+          supabase
+            .from('aprender_modulos')
+            .select('id, area_id, titulo, resumo, ordem')
+            .order('ordem'),
+          supabase
+            .from('aprender_aulas')
+            .select('id, modulo_id, ordem')
+            .eq('status', 'published')
+            .order('ordem'),
+        ]);
 
-        if (cancelled || error || !raw) {
+        if (cancelled || errMod || !rawModulos) {
           if (!cancelled) setLoadingMap(false);
           return;
         }
 
+        // Mapear primeira aula por modulo
+        const firstLessonByModulo = new Map<string, string>();
+        const totalLessonsByModulo = new Map<string, number>();
+
+        (rawAulas ?? []).forEach((aula: { id: string; modulo_id: string; ordem: number }) => {
+          if (!aula.modulo_id) return;
+          if (!firstLessonByModulo.has(aula.modulo_id)) {
+            firstLessonByModulo.set(aula.modulo_id, aula.id);
+          }
+          totalLessonsByModulo.set(aula.modulo_id, (totalLessonsByModulo.get(aula.modulo_id) ?? 0) + 1);
+        });
+
         const map = new Map<string, ModuloItem[]>();
-        (raw as any[]).forEach((item) => {
+        (rawModulos as any[]).forEach((item) => {
           const areaId = item.area_id;
           if (!areaId) return;
 
@@ -42,6 +63,8 @@ export function useAprenderAreaModulesMap() {
             titulo: item.titulo,
             resumo: item.resumo,
             ordem: item.ordem,
+            primeiraAulaId: firstLessonByModulo.get(item.id) ?? null,
+            totalAulas: totalLessonsByModulo.get(item.id) ?? 0,
           };
 
           const existing = map.get(areaId) ?? [];

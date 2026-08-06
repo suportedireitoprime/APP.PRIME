@@ -491,8 +491,8 @@ const Aprender = () => {
 
                     return (
                       <div className="rounded-2xl border border-border/80 bg-card/80 p-4 space-y-4 shadow-md">
-                        {/* Cabeçalho da Matéria Selecionada */}
-                        <div className="flex items-center justify-between gap-3 pb-3 border-b border-border/60">
+                        {/* Cabeçalho da Matéria Selecionada com Barra de Progresso */}
+                        <div className="flex items-center justify-between gap-3 pb-3.5 border-b border-border/60">
                           <div className="flex items-center gap-3 min-w-0">
                             {icon ? (
                               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/15 p-2 shadow-inner">
@@ -507,9 +507,12 @@ const Aprender = () => {
                               <h3 className="text-lg font-extrabold text-foreground font-display tracking-tight truncate">
                                 {capitalized}
                               </h3>
-                              <p className="text-xs text-muted-foreground font-medium">
-                                {activeArea.totalAulas} aulas · {areaModules.length || 3} tópicos principais
-                              </p>
+                              <div className="flex items-center gap-2 mt-0.5">
+                                <div className="h-1.5 w-24 bg-muted rounded-full overflow-hidden">
+                                  <div className="h-full bg-primary rounded-full transition-all duration-500" style={{ width: `${activeArea.pct}%` }} />
+                                </div>
+                                <span className="text-xs font-bold text-primary">{activeArea.pct}% concluído</span>
+                              </div>
                             </div>
                           </div>
 
@@ -518,43 +521,61 @@ const Aprender = () => {
                             onPointerEnter={() => prefetchAprenderArea(activeArea.slug, uid)}
                             className="px-3 py-1.5 rounded-xl bg-primary/10 border border-primary/30 text-primary hover:bg-primary/20 text-xs font-bold transition-all flex items-center gap-1 shrink-0"
                           >
-                            <span>Ver todas as aulas</span>
+                            <span>Ver todas as aulas ({activeArea.totalAulas})</span>
                             <ChevronRight className="w-4 h-4" />
                           </button>
                         </div>
 
-                        {/* Lista Vertical dos Subtópicos / Módulos da Matéria Selecionada */}
-                        <div className="space-y-2">
-                          <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground px-1">
-                            Tópicos de {capitalized}
-                          </p>
+                        {/* Lista Vertical Elegante dos Subtópicos / Módulos da Matéria */}
+                        <div className="space-y-2 pt-1">
+                          <div className="flex items-center justify-between px-1">
+                            <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                              Tópicos e Módulos de {capitalized}
+                            </p>
+                            <span className="text-[11px] font-semibold text-muted-foreground">
+                              {areaModules.length || 3} tópicos
+                            </span>
+                          </div>
 
                           {areaModules.length > 0 ? (
-                            areaModules.map((mod, idx) => (
-                              <button
-                                key={mod.id}
-                                onClick={() => navigate(`/aprender/area/${activeArea.slug}`)}
-                                onPointerEnter={() => prefetchAprenderArea(activeArea.slug, uid)}
-                                className="w-full flex items-center justify-between p-3.5 rounded-xl border border-border/60 bg-card hover:bg-card/90 hover:border-primary/40 transition-all text-left group shadow-sm"
-                              >
-                                <div className="flex items-center gap-3 min-w-0">
-                                  <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 text-primary font-bold text-xs group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                                    {idx + 1}
-                                  </div>
-                                  <div className="min-w-0">
-                                    <p className="text-sm font-bold text-foreground truncate group-hover:text-primary transition-colors">
-                                      {mod.titulo}
-                                    </p>
-                                    {mod.resumo && (
-                                      <p className="text-xs text-muted-foreground truncate mt-0.5">
-                                        {mod.resumo}
+                            areaModules.map((mod, idx) => {
+                              const handleTopicClick = () => {
+                                if (mod.primeiraAulaId) {
+                                  navigate(`/aprender/aula/${mod.primeiraAulaId}`);
+                                } else {
+                                  navigate(`/aprender/area/${activeArea.slug}?moduloId=${mod.id}`);
+                                }
+                              };
+
+                              return (
+                                <button
+                                  key={mod.id}
+                                  onClick={handleTopicClick}
+                                  onPointerEnter={() => {
+                                    if (mod.primeiraAulaId) prefetchAprenderAula(mod.primeiraAulaId);
+                                    else prefetchAprenderArea(activeArea.slug, uid);
+                                  }}
+                                  className="w-full flex items-center justify-between p-3.5 rounded-2xl border border-border/60 bg-card/90 hover:bg-card hover:border-primary/40 transition-all text-left group shadow-sm active:scale-[0.99]"
+                                >
+                                  <div className="flex items-center gap-3.5 min-w-0">
+                                    <div className="w-7 h-7 rounded-xl bg-muted/80 text-muted-foreground font-semibold text-xs flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-all">
+                                      {idx + 1}
+                                    </div>
+                                    <div className="min-w-0">
+                                      <p className="text-sm font-bold text-foreground truncate group-hover:text-primary transition-colors">
+                                        {mod.titulo}
                                       </p>
-                                    )}
+                                      <p className="text-xs text-muted-foreground truncate mt-0.5">
+                                        {mod.resumo || `${mod.totalAulas ?? 1} ${mod.totalAulas === 1 ? 'aula disponível' : 'aulas disponíveis'}`}
+                                      </p>
+                                    </div>
                                   </div>
-                                </div>
-                                <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary shrink-0 transition-transform group-hover:translate-x-0.5 ml-2" />
-                              </button>
-                            ))
+                                  <div className="flex items-center gap-2 shrink-0">
+                                    <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-transform group-hover:translate-x-0.5 ml-1" />
+                                  </div>
+                                </button>
+                              );
+                            })
                           ) : (
                             <div className="space-y-2">
                               {[
@@ -566,10 +587,10 @@ const Aprender = () => {
                                   key={idx}
                                   onClick={() => navigate(`/aprender/area/${activeArea.slug}`)}
                                   onPointerEnter={() => prefetchAprenderArea(activeArea.slug, uid)}
-                                  className="w-full flex items-center justify-between p-3.5 rounded-xl border border-border/60 bg-card hover:bg-card/90 hover:border-primary/40 transition-all text-left group shadow-sm"
+                                  className="w-full flex items-center justify-between p-3.5 rounded-2xl border border-border/60 bg-card/90 hover:bg-card hover:border-primary/40 transition-all text-left group shadow-sm active:scale-[0.99]"
                                 >
-                                  <div className="flex items-center gap-3 min-w-0">
-                                    <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 text-primary font-bold text-xs group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                                  <div className="flex items-center gap-3.5 min-w-0">
+                                    <div className="w-7 h-7 rounded-xl bg-muted/80 text-muted-foreground font-semibold text-xs flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-all">
                                       {idx + 1}
                                     </div>
                                     <div className="min-w-0">
@@ -581,7 +602,7 @@ const Aprender = () => {
                                       </p>
                                     </div>
                                   </div>
-                                  <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary shrink-0 transition-transform group-hover:translate-x-0.5 ml-2" />
+                                  <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-transform group-hover:translate-x-0.5 ml-1" />
                                 </button>
                               ))}
                             </div>

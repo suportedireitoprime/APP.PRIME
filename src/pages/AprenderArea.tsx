@@ -51,6 +51,15 @@ const AprenderArea = () => {
 
   // Abas da área
   const [searchParams] = useSearchParams();
+  const moduloIdParam = searchParams.get('moduloId');
+
+  useEffect(() => {
+    if (!data || !moduloIdParam) return;
+    const idx = data.modulos.findIndex((m) => m.id === moduloIdParam);
+    if (idx >= 0) {
+      setTemaAberto({ modulo: data.modulos[idx], numero: idx + 1 });
+    }
+  }, [data, moduloIdParam]);
   const tabInicial = (['teoria', 'flashcards', 'questoes', 'progresso'] as const).includes(
     searchParams.get('tab') as TemaTabId,
   )
