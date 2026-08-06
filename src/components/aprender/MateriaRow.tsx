@@ -9,10 +9,17 @@ type Props = {
   onPrefetch: () => void;
 };
 
+export function shortenAreaName(name: string): string {
+  if (!name) return name;
+  const cleaned = name.replace(/^Direito\s+(de|do|da|dos|das)?\s*/i, '').trim();
+  return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+}
+
 const MateriaRow = ({ area, icon, onOpen, onPrefetch }: Props) => {
   const cover = getAreaCover(area.nome);
   const pct = area.pct ?? 0;
   const iniciada = pct > 0;
+  const displayName = shortenAreaName(area.nome);
 
   return (
     <button
@@ -20,15 +27,15 @@ const MateriaRow = ({ area, icon, onOpen, onPrefetch }: Props) => {
       onPointerEnter={onPrefetch}
       onFocus={onPrefetch}
       onTouchStart={onPrefetch}
-      className="group flex w-full items-center gap-3 rounded-2xl border border-border bg-card p-3 text-left transition-all hover:border-primary/40 hover:shadow-sm active:scale-[0.995] sm:p-3.5"
+      className="group flex w-full items-center gap-3 rounded-2xl border border-border bg-card p-3.5 text-left transition-all hover:border-primary/40 hover:shadow-md active:scale-[0.995] sm:p-4"
     >
       {icon ? (
-        <div className="relative flex h-14 w-14 shrink-0 items-center justify-center sm:h-16 sm:w-16 aprender-icon-shine">
-          <icon.Icon className="h-9 w-9 sm:h-10 sm:w-10" strokeWidth={1.9} style={{ color: icon.color }} />
+        <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 p-2 sm:h-14 sm:w-14">
+          <icon.Icon className="h-7 w-7 sm:h-8 sm:w-8" strokeWidth={2} style={{ color: icon.color }} />
         </div>
       ) : (
         <div
-          className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl sm:h-16 sm:w-16"
+          className="relative h-12 w-12 shrink-0 overflow-hidden rounded-2xl sm:h-14 sm:w-14"
           style={{ background: cover?.tint ?? 'linear-gradient(135deg,hsl(348 78% 38%),#c9b83c)' }}
         >
           {cover?.cover ? (
@@ -57,10 +64,10 @@ const MateriaRow = ({ area, icon, onOpen, onPrefetch }: Props) => {
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <p
-            className="min-w-0 flex-1 truncate text-[15px] font-semibold text-foreground sm:text-[16px]"
+            className="min-w-0 flex-1 truncate text-base font-bold text-foreground sm:text-[17px] group-hover:text-primary transition-colors font-display"
             style={{ fontFamily: "'Barlow', system-ui, sans-serif", letterSpacing: '-0.005em' }}
           >
-            {area.nome}
+            {displayName}
           </p>
           <span
             className={[
