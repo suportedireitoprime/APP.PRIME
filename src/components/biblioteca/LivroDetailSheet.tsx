@@ -186,7 +186,7 @@ const LivroDetailSheet = ({ livro, open, onClose }: LivroDetailSheetProps) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, pointerEvents: 'none' }}
             transition={{ duration: 0.2 }}
-            onClick={handleClose}
+            onClick={onClose}
             onTouchMove={(e) => e.preventDefault()}
             onWheel={(e) => e.preventDefault()}
             style={{ touchAction: 'none' }}
@@ -209,7 +209,7 @@ const LivroDetailSheet = ({ livro, open, onClose }: LivroDetailSheetProps) => {
             {/* Header flutuante — botão chevron-down + favoritar */}
             <div className="absolute top-[calc(var(--sai-top,0px)+0.75rem)] left-4 z-20 flex gap-2">
               <button
-                onClick={handleClose}
+                onClick={onClose}
                 aria-label="Fechar"
                 className="w-11 h-11 rounded-full bg-white/15 hover:bg-white/25 backdrop-blur-xl backdrop-saturate-150 transition-colors flex items-center justify-center border border-white/25 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.25)]"
               >
