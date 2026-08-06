@@ -32,6 +32,7 @@ import hero5 from '@/assets/aprender-hero/hero-5.png.asset.json';
 import hero6 from '@/assets/aprender-hero/hero-6.png.asset.json';
 import { useTrackArea } from "@/hooks/useTrackArea";
 import { srcOf } from '@/lib/assetUrl';
+import { cn } from '@/lib/utils';
 
 const HERO_ILLUSTRATIONS = [srcOf(hero1), srcOf(hero2), srcOf(hero3), srcOf(hero4), srcOf(hero5), srcOf(hero6)];
 
