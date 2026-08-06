@@ -320,9 +320,23 @@ export default function ObraDetailSheet({ obra, open, onClose }: Props) {
             {/* Backdrop hero */}
             <div className="relative w-full h-56 sm:h-72 shrink-0">
               {obra.backdrop_url ? (
-                <img src={obra.backdrop_url} alt="" className="w-full h-full object-cover" />
+                <img
+                  src={obra.backdrop_url}
+                  alt=""
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
+                  className="w-full h-full object-cover"
+                />
               ) : obra.poster_url ? (
-                <img src={obra.poster_url} alt="" className="w-full h-full object-cover object-top" />
+                <img
+                  src={obra.poster_url}
+                  alt=""
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
+                  className="w-full h-full object-cover object-top"
+                />
               ) : (
                 <div
                   className="w-full h-full flex items-center justify-center"
@@ -352,6 +366,9 @@ export default function ObraDetailSheet({ obra, open, onClose }: Props) {
                     <img
                       src={obra.poster_url}
                       alt={obra.titulo}
+                      loading="eager"
+                      fetchPriority="high"
+                      decoding="async"
                       className="w-24 sm:w-28 aspect-[2/3] rounded-xl object-cover shadow-xl border border-border/50 shrink-0"
                     />
                   )}

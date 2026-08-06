@@ -252,6 +252,9 @@ const LivroDetailSheet = ({ livro, open, onClose }: LivroDetailSheetProps) => {
                     src={capaHorizontalUrl || capaUrl}
                     alt=""
                     aria-hidden
+                    loading="eager"
+                    fetchPriority="high"
+                    decoding="async"
                     className="absolute inset-0 w-full h-full object-cover scale-110 blur-xl opacity-60"
                   />
                 )}
@@ -260,6 +263,9 @@ const LivroDetailSheet = ({ livro, open, onClose }: LivroDetailSheetProps) => {
                     src={capaHorizontalUrl || capaUrl}
                     alt=""
                     aria-hidden
+                    loading="eager"
+                    fetchPriority="high"
+                    decoding="async"
                     className="absolute inset-0 w-full h-full object-cover"
                     style={{ objectPosition: 'center' }}
                     onLoad={() => { const el = contentRef.current; if (el && el.scrollTop < 4) el.scrollTop = 0; }}
@@ -276,6 +282,9 @@ const LivroDetailSheet = ({ livro, open, onClose }: LivroDetailSheetProps) => {
                     <img
                       src={capaUrl}
                       alt={livro.titulo}
+                      loading="eager"
+                      fetchPriority="high"
+                      decoding="async"
                       className="w-28 h-40 rounded-lg object-cover shadow-[0_20px_60px_-10px_rgba(0,0,0,0.7)] ring-1 ring-white/10"
                       onLoad={() => { const el = contentRef.current; if (el && el.scrollTop < 4) el.scrollTop = 0; }}
                     />
