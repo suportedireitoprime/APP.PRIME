@@ -72,7 +72,11 @@ export async function invokeResenhaFn<T = any>(
 export async function garantirTextoIntegral(
   id: string,
 ): Promise<{ texto_completo: string | null; explicacao: string | null } | null> {
-  await invokeResenhaFn('popular-texto-resenha', { id, force: true });
+  try {
+    await invokeResenhaFn('popular-texto-resenha', { id, force: true });
+  } catch (e) {
+    console.warn('[resenha] popular-texto-resenha falhou, relendo do banco:', e);
+  }
   const row = await resenhaById<{ texto_completo: string | null; explicacao: string | null }>(
     id,
     'texto_completo,explicacao',

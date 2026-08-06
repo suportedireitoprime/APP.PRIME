@@ -102,21 +102,28 @@ function parseTextoCompleto(texto: string): ParsedLei {
 
   let ementa = '';
   let preambulo = '';
-  const presidenteMatch = clean.match(/O\s*PRESIDENTE\s*DA\s*REP(?:Ú|U)BLICA/i);
+  const presidenteMatch = clean.match(/(?:O\s*PRESIDENTE\s*DA\s*REP(?:Ú|U)BLICA|FAÇO\s+SABER|O\s*GOVERNADOR|O\s*MINISTRO)/i);
   
   if (presidenteMatch) {
     const presIdx = clean.indexOf(presidenteMatch[0]);
     ementa = clean.substring(0, presIdx).replace(/\s+/g, ' ').trim();
     
     const afterPresidente = clean.substring(presIdx);
-    const artMatch = afterPresidente.match(/Art\.\s*1[ºo°]?\s/);
+    const artMatch = afterPresidente.match(/Art\.\s*\d+[ºo°]?(?:-[A-Z])?\s/i);
     if (artMatch) {
       const artIdx = afterPresidente.indexOf(artMatch[0]);
       preambulo = afterPresidente.substring(0, artIdx).replace(/\s+/g, ' ').trim();
       clean = afterPresidente.substring(artIdx);
     } else {
-      preambulo = afterPresidente.replace(/\s+/g, ' ').trim();
-      clean = '';
+      preambulo = '';
+      clean = afterPresidente;
+    }
+  } else {
+    const artMatch = clean.match(/Art\.\s*\d+[ºo°]?(?:-[A-Z])?\s/i);
+    if (artMatch) {
+      const artIdx = clean.indexOf(artMatch[0]);
+      preambulo = clean.substring(0, artIdx).replace(/\s+/g, ' ').trim();
+      clean = clean.substring(artIdx);
     }
   }
 
@@ -316,6 +323,19 @@ const LeiOrdinariaDetail = ({ lei, onBack }: LeiOrdinariaDetailProps) => {
                   </div>
                 )}
               </>
+            ) : lei.texto_completo ? (
+              <div className="space-y-4">
+                {lei.ementa && (
+                  <div className="bg-card/50 border border-destructive/20 rounded-2xl p-4">
+                    <p className="text-destructive font-body italic text-sm leading-relaxed">
+                      {lei.ementa}
+                    </p>
+                  </div>
+                )}
+                <div className="rounded-2xl bg-card p-6 space-y-4 font-body text-sm leading-relaxed text-foreground whitespace-pre-wrap">
+                  {lei.texto_completo}
+                </div>
+              </div>
             ) : (
               /* Fallback: show ementa only */
               <p className="text-foreground font-body text-sm leading-relaxed">

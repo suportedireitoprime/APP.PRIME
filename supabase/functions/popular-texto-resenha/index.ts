@@ -77,20 +77,91 @@ function htmlToText(html: string): string {
   return src.trim();
 }
 
+function cleanJinaMarkdown(rawText: string): string {
+  let src = rawText
+    .replace(/^Source:[\s\S]*?Markdown Content:\s*/i, "")
+    .replace(/^Title:[\s\S]*?Markdown Content:\s*/i, "")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/^>\s*/gm, "")
+    .replace(/\*\*/g, "")
+    .trim();
+  const startIdx = src.search(/Presid[eê]ncia\s+da\s+Rep[uú]blica|LEI\s+N[º°]?|DECRETO\s+N[º°]?|MEDIDA\s+PROVIS[ÓO]RIA\s+N[º°]?|O\s+PRESIDENTE\s+DA\s+REP[ÚU]BLICA/i);
+  if (startIdx > 0) src = src.slice(startIdx);
+  const endIdx = src.search(/Este texto n[aã]o substitui o publicado no DOU|Bras[ií]lia,\s+em[\s\S]{0,300}?\n[\s\S]{0,50}Publicado no DOU/i);
+  if (endIdx > 200) src = src.slice(0, endIdx + 60);
+  return src.trim();
+}
+
 async function fetchPlanaltoText(rawUrl: string): Promise<{ text: string; finalUrl: string; status: number }> {
   // Force https so http->https redirect works reliably from Deno.
   const url = rawUrl.replace(/^http:\/\//i, "https://");
-  const res = await fetch(url, {
-    redirect: "follow",
-    headers: {
-      "User-Agent": UA,
-      "Accept": "text/html,application/xhtml+xml",
-      "Accept-Language": "pt-BR,pt;q=0.9",
-    },
-  });
-  const buf = await res.arrayBuffer();
-  const html = decodePlanalto(buf, res.headers.get("content-type"));
-  return { text: htmlToText(html), finalUrl: res.url, status: res.status };
+
+  // Strategy 1: Browserless /unblock (se chave configurada)
+  const browserlessKey = Deno.env.get("BROWSERLESS_API_KEY");
+  if (browserlessKey) {
+    try {
+      const brUrl = `https://production-sfo.browserless.io/unblock?token=${browserlessKey}`;
+      const resp = await fetch(brUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url, content: true, waitForTimeout: 10000, ttl: 60000 }),
+      });
+      if (resp.ok) {
+        const json = await resp.json().catch(() => null);
+        const html = json?.content || "";
+        const text = htmlToText(html);
+        if (text.length >= 200) {
+          console.log(`[popular-texto-resenha] Browserless OK (${text.length} chars)`);
+          return { text, finalUrl: url, status: 200 };
+        }
+      }
+    } catch (e) {
+      console.warn("[popular-texto-resenha] Browserless failed:", e);
+    }
+  }
+
+  // Strategy 2: Jina Reader (funciona mesmo com desafio F5 do Planalto)
+  try {
+    const jinaUrl = `https://r.jina.ai/${url}`;
+    const resp = await fetch(jinaUrl, {
+      headers: { "Accept": "text/html", "X-Return-Format": "html" },
+    });
+    if (resp.ok) {
+      const rawText = await resp.text();
+      const text = cleanJinaMarkdown(rawText);
+      if (text.length >= 200) {
+        console.log(`[popular-texto-resenha] Jina Reader OK (${text.length} chars)`);
+        return { text, finalUrl: url, status: 200 };
+      }
+    }
+  } catch (e) {
+    console.warn("[popular-texto-resenha] Jina Reader failed:", e);
+  }
+
+  // Strategy 3: Direct fetch (fallback)
+  try {
+    const res = await fetch(url, {
+      redirect: "follow",
+      headers: {
+        "User-Agent": UA,
+        "Accept": "text/html,application/xhtml+xml",
+        "Accept-Language": "pt-BR,pt;q=0.9",
+      },
+    });
+    if (res.ok) {
+      const buf = await res.arrayBuffer();
+      const html = decodePlanalto(buf, res.headers.get("content-type"));
+      const text = htmlToText(html);
+      if (text.length >= 200) {
+        console.log(`[popular-texto-resenha] Direct fetch OK (${text.length} chars)`);
+        return { text, finalUrl: res.url, status: res.status };
+      }
+    }
+  } catch (e) {
+    console.warn("[popular-texto-resenha] Direct fetch failed:", e);
+  }
+
+  return { text: "", finalUrl: url, status: 500 };
 }
 
 async function gerarExplicacao(numero: string, tipo: string, texto: string): Promise<string | null> {

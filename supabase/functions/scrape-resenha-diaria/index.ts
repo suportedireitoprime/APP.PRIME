@@ -254,16 +254,43 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Encadeia popular-texto-resenha (busca texto integral + explicação IA)
-    if (novosAtos.length > 0) {
-      try {
-        await fetch(`${supabaseUrl}/functions/v1/popular-texto-resenha`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "Authorization": `Bearer ${serviceKey}` },
-          body: JSON.stringify({ limit: 20 }),
-        }).then(r => r.json()).then(j => console.log("popular-texto-resenha:", JSON.stringify(j)));
-      } catch (chainErr) {
-        console.error("Failed to chain popular-texto-resenha:", chainErr);
+    // Popula texto integral e explicação diretamente para atos novos / sem texto
+    const { data: semTexto } = await supabase
+      .from("resenha_diaria")
+      .select("id, url, tipo_ato, numero_ato")
+      .or("texto_completo.is.null,texto_completo.eq.")
+      .not("url", "is", null)
+      .order("data_dou", { ascending: false })
+      .limit(10);
+
+    if (semTexto && semTexto.length > 0) {
+      console.log(`[scrape-resenha-diaria] Populando texto integral para ${semTexto.length} atos...`);
+      for (const ato of semTexto) {
+        try {
+          const jinaUrl = `https://r.jina.ai/${ato.url}`;
+          const r = await fetch(jinaUrl, { headers: { "Accept": "text/html", "X-Return-Format": "html" } });
+          if (r.ok) {
+            const raw = await r.text();
+            let src = raw
+              .replace(/^Source:[\s\S]*?Markdown Content:\s*/i, "")
+              .replace(/^Title:[\s\S]*?Markdown Content:\s*/i, "")
+              .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+              .replace(/^>\s*/gm, "")
+              .replace(/\*\*/g, "")
+              .trim();
+            const startIdx = src.search(/Presid[eê]ncia\s+da\s+Rep[uú]blica|LEI\s+N[º°]?|DECRETO\s+N[º°]?|MEDIDA\s+PROVIS[ÓO]RIA\s+N[º°]?|O\s+PRESIDENTE\s+DA\s+REP[ÚU]BLICA/i);
+            if (startIdx > 0) src = src.slice(startIdx);
+            const endIdx = src.search(/Este texto n[aã]o substitui o publicado no DOU|Bras[ií]lia,\s+em[\s\S]{0,300}?\n[\s\S]{0,50}Publicado no DOU/i);
+            if (endIdx > 200) src = src.slice(0, endIdx + 60);
+            const text = src.trim();
+            if (text.length >= 100) {
+              await supabase.from("resenha_diaria").update({ texto_completo: text }).eq("id", ato.id);
+              console.log(`[scrape-resenha-diaria] Texto populado para ${ato.numero_ato} (${text.length} chars)`);
+            }
+          }
+        } catch (popErr) {
+          console.warn(`[scrape-resenha-diaria] Falha ao popular ${ato.id}:`, popErr);
+        }
       }
     }
 
