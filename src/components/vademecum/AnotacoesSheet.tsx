@@ -350,22 +350,22 @@ const AnotacoesSheet = ({ open, onClose, tabelaNome, artigoNumero, artigoTexto, 
     <AnimatePresence>
       <motion.div
         key="anotacoes-backdrop"
-        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, pointerEvents: 'none' }}
         onClick={onClose}
         className="fixed inset-0 z-[10040] bg-black/60 backdrop-blur-sm pointer-events-auto touch-none"
       />
       <motion.div
-        initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
+        initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%', pointerEvents: 'none' }}
         transition={{ type: 'spring', damping: 30, stiffness: 340 }}
         data-artigo-menu
         onClick={(e) => e.stopPropagation()}
         className={
           isDesktop
             ? 'fixed right-0 top-0 bottom-0 z-[10041] w-[min(30rem,92vw)] border-l border-border bg-background shadow-2xl flex flex-col pointer-events-auto'
-            : 'fixed inset-0 z-[10041] bg-background flex flex-col pointer-events-auto'
+            : 'fixed inset-0 z-[10041] bg-background flex flex-col pointer-events-auto pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]'
         }
       >
-        <header className="pt-safe border-b border-border bg-card">
+        <header className="pt-[calc(1.25rem+var(--sai-top,env(safe-area-inset-top,0px)))] border-b border-border bg-card">
           <div className="h-16 px-4 flex items-center justify-between gap-3">
             <Button variant="ghost" size="icon" onClick={onClose} aria-label="Voltar ao artigo">
               <ArrowLeft className="w-5 h-5" />

@@ -369,7 +369,7 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
     <AnimatePresence>
       {open && (
         <motion.div
-          initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+          initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%', pointerEvents: 'none' }}
           transition={{ type: 'spring', damping: 28, stiffness: 300 }}
           className={`fixed inset-0 z-[60] bg-background ${isDesktop ? 'flex flex-row' : 'flex flex-col'}`}
         >
