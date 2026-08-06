@@ -14,6 +14,8 @@ import AprenderLembretesSheet from '@/components/aprender/AprenderLembretesSheet
 import ContinueCarousel from '@/components/aprender/ContinueCarousel';
 import MateriaRow from '@/components/aprender/MateriaRow';
 import MateriaCard from '@/components/aprender/MateriaCard';
+import AulaCarouselCard from '@/components/aprender/AulaCarouselCard';
+import { useAprenderHomeLessonsMap } from '@/hooks/useAprenderHomeLessonsMap';
 import { getAreaCover } from '@/lib/areasDireitoCovers';
 import { prefetchAprenderArea } from '@/lib/aprenderAreaLoader';
 import { prefetchAprenderAula } from '@/lib/aprenderAulaPrefetch';
@@ -98,6 +100,7 @@ const Aprender = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const uid = user?.id ?? null;
+  const { lessonsMap } = useAprenderHomeLessonsMap();
 
   // Primeiro render já pintado: memória → localStorage (síncrono).
   const [data, setData] = useState<AprenderHomeData>(() => {
@@ -444,27 +447,33 @@ const Aprender = () => {
                 ) : (
                   areasOrdenadas.map((a) => {
                     const icon = areaIconFor(a.slug);
+                    const areaLessons = lessonsMap.get(a.id) ?? [];
+
                     return (
                       <div key={a.id} className="space-y-3">
-                        {/* Título da Matéria / Área */}
+                        {/* Título da Matéria / Área + Ação Ver todas */}
                         <div className="flex items-center justify-between gap-3">
-                          <div className="flex items-center gap-2.5 min-w-0">
+                          <button
+                            onClick={() => navigate(`/aprender/area/${a.slug}`)}
+                            onPointerEnter={() => prefetchAprenderArea(a.slug, uid)}
+                            className="flex items-center gap-2.5 min-w-0 group text-left"
+                          >
                             {icon ? (
-                              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary/10 p-1.5">
+                              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary/10 p-1.5 group-hover:scale-105 transition-transform">
                                 <icon.Icon className="h-5 w-5" strokeWidth={2} style={{ color: icon.color }} />
                               </div>
                             ) : (
-                              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary">
+                              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary group-hover:scale-105 transition-transform">
                                 <BookOpen className="h-4 w-4" />
                               </div>
                             )}
                             <h3
-                              className="text-[17px] font-bold text-foreground font-display tracking-tight truncate"
+                              className="text-[17px] font-bold text-foreground font-display tracking-tight truncate group-hover:text-primary transition-colors"
                               style={{ fontFamily: "'Barlow', system-ui, sans-serif" }}
                             >
                               {a.nome}
                             </h3>
-                          </div>
+                          </button>
 
                           <div className="flex items-center gap-2 shrink-0">
                             <span
@@ -477,19 +486,43 @@ const Aprender = () => {
                             >
                               {a.pct}%
                             </span>
+
+                            <button
+                              onClick={() => navigate(`/aprender/area/${a.slug}`)}
+                              className="text-xs font-bold text-primary hover:underline flex items-center gap-0.5 ml-1"
+                            >
+                              <span>Ver todas</span>
+                              <ChevronRight className="w-3.5 h-3.5" />
+                            </button>
                           </div>
                         </div>
 
                         {/* Linha Divisória Elegante */}
                         <div className="h-px w-full bg-gradient-to-r from-primary/60 via-border/80 to-transparent" />
 
-                        {/* Card/Linha de Conteúdo da Matéria */}
-                        <MateriaRow
-                          area={a}
-                          icon={icon}
-                          onOpen={() => navigate(`/aprender/area/${a.slug}`)}
-                          onPrefetch={() => prefetchAprenderArea(a.slug, uid)}
-                        />
+                        {/* Carrossel Horizontal de Cards de Aulas da Matéria */}
+                        {areaLessons.length > 0 ? (
+                          <div className="flex overflow-x-auto snap-x snap-mandatory gap-3 scrollbar-none pb-2 -mx-3 px-3 sm:mx-0 sm:px-0">
+                            {areaLessons.map((aula) => (
+                              <AulaCarouselCard
+                                key={aula.id}
+                                aula={aula}
+                                icon={icon}
+                                onOpen={() => navigate(`/aprender/aula/${aula.id}`)}
+                                onPrefetch={() => prefetchAprenderAula(aula.id)}
+                              />
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="flex overflow-x-auto snap-x snap-mandatory gap-3 scrollbar-none pb-2 -mx-3 px-3 sm:mx-0 sm:px-0">
+                            <MateriaCard
+                              area={a}
+                              icon={icon}
+                              onOpen={() => navigate(`/aprender/area/${a.slug}`)}
+                              onPrefetch={() => prefetchAprenderArea(a.slug, uid)}
+                            />
+                          </div>
+                        )}
                       </div>
                     );
                   })
