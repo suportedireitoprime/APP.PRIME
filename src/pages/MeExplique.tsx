@@ -417,7 +417,7 @@ const MeExplique = () => {
       </div>
 
       {/* Controles */}
-      <footer className="relative z-10 flex items-center justify-center gap-6 px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-4">
+      <footer className="relative z-10 flex items-center justify-center gap-6 px-6 pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-4">
         {ativo ? (
           <>
             <button

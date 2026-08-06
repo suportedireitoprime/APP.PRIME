@@ -87,7 +87,7 @@ export default function PeticaoInicial() {
       subtitle="Crie petições com IA e jurisprudência real"
       mobileHeader={mobileHeader}
     >
-      <div className="px-4 sm:px-6 py-4 space-y-4">
+      <div className="px-4 sm:px-6 py-4 pb-[calc(7rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] space-y-4">
         <div className="rounded-2xl bg-gradient-to-br from-[hsl(0_72%_52%)] to-[hsl(0_70%_40%)] p-5 text-primary-foreground shadow-lg">
           <div className="flex items-start gap-3">
             <div className="w-11 h-11 rounded-xl bg-black/10 grid place-items-center shrink-0">

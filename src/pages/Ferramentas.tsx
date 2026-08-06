@@ -165,7 +165,7 @@ const Ferramentas = () => {
       mobileHeader={mobileHeader}
       wide
     >
-      <div className="px-4 sm:px-6 py-4 lg:hidden">
+      <div className="px-4 sm:px-6 py-4 pb-[calc(7rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] lg:hidden">
         {toolsList}
       </div>
       <div className="hidden lg:block">

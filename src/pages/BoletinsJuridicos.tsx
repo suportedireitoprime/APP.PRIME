@@ -144,7 +144,7 @@ export default function BoletinsJuridicos({ tipo = 'juridico' }: Props) {
 
   return (
     <DesktopPageLayout wide activeId="ferramentas" title={titulo} subtitle={subtitulo} mobileHeader={header}>
-      <div className="px-4 sm:px-6 py-4 lg:px-0 space-y-4">
+      <div className="px-4 sm:px-6 py-4 pb-[calc(7rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] lg:px-0 space-y-4">
         {/* Toggle Jurídico / Notícias — estilo Radares */}
         <div className="relative grid grid-cols-2 bg-secondary/60 rounded-full p-1 border border-border">
           <motion.div
