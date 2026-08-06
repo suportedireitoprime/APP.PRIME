@@ -235,8 +235,8 @@ const Aprender = () => {
       mobileHeader={mobileHeader}
       wide
     >
-      <div className="w-full 2xl:max-w-[1650px] mx-auto px-2 sm:px-4 lg:px-6 lg:pt-4 pb-[calc(7rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
-        <div className="lg:grid lg:grid-cols-12 lg:gap-6 lg:items-start">
+      <div className="w-full 2xl:max-w-[1750px] mx-auto px-3 sm:px-6 lg:px-8 lg:pt-4 pb-[calc(7rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
+        <div className="lg:grid lg:grid-cols-12 lg:gap-8 lg:items-start">
           {/* ── Sidebar Esquerda Desktop: Filtros & Lembretes de Estudo ───────────── */}
           <aside className="hidden lg:block lg:col-span-3 space-y-4 bg-card/40 border border-border/60 rounded-2xl p-4 shadow-sm">
             <div className="flex items-center justify-between border-b border-border/60 pb-3">

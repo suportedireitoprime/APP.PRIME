@@ -20,9 +20,9 @@ function AulaCard({ aula, onOpen, wide }: { aula: AprenderHomeAula; onOpen: (id:
       onFocus={prefetch}
       onTouchStart={prefetch}
       className={[
-        'group relative overflow-hidden rounded-2xl border border-border bg-card text-left transition-all',
-        'hover:border-primary/40 hover:shadow-md active:scale-[0.995]',
-        wide ? 'w-full' : 'w-[85%] shrink-0 snap-start sm:w-[60%]',
+        'group relative overflow-hidden rounded-2xl border border-border bg-card text-left transition-all min-h-[140px]',
+        'hover:border-primary/50 hover:shadow-xl active:scale-[0.995]',
+        wide ? 'w-full' : 'w-[90%] shrink-0 snap-start sm:w-[48%] lg:w-full',
       ].join(' ')}
     >
       {cover?.cover && (
@@ -31,7 +31,7 @@ function AulaCard({ aula, onOpen, wide }: { aula: AprenderHomeAula; onOpen: (id:
             src={cover.cover}
             alt=""
             aria-hidden="true"
-            className="absolute inset-0 h-full w-full object-cover opacity-40"
+            className="absolute inset-0 h-full w-full object-cover opacity-30 group-hover:scale-105 transition-transform duration-500"
             loading="eager"
             decoding="async"
           />
@@ -39,38 +39,38 @@ function AulaCard({ aula, onOpen, wide }: { aula: AprenderHomeAula; onOpen: (id:
             className="absolute inset-0"
             style={{
               background:
-                'linear-gradient(90deg, rgba(23,23,23,0.92) 0%, rgba(38,38,38,0.75) 55%, rgba(0,0,0,0.85) 100%)',
+                'linear-gradient(90deg, rgba(18,18,18,0.95) 0%, rgba(28,28,28,0.85) 55%, rgba(0,0,0,0.9) 100%)',
             }}
           />
         </>
       )}
-      <div className="relative flex items-center gap-3 p-4 sm:gap-4 sm:p-5">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[hsl(var(--aprender-accent))] shadow-lg sm:h-14 sm:w-14">
-          <Play className="h-5 w-5 fill-current text-[hsl(var(--aprender-accent-foreground))] sm:h-6 sm:w-6" />
+      <div className="relative flex items-center gap-3.5 p-4 sm:gap-4 sm:p-5 h-full">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg group-hover:scale-110 transition-transform sm:h-14 sm:w-14">
+          <Play className="h-5 w-5 fill-current ml-0.5 sm:h-6 sm:w-6" />
         </div>
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-[10px] font-bold uppercase tracking-widest text-white/85">
+        <div className="min-w-0 flex-1 space-y-1">
+          <p className="truncate text-[10.5px] font-bold uppercase tracking-widest text-primary">
             {aula.areaNome}
           </p>
           <p
-            className="mt-0.5 line-clamp-2 text-[15px] font-semibold leading-snug text-white sm:text-base"
-            style={{ fontFamily: "'Barlow', system-ui, sans-serif", letterSpacing: '-0.005em' }}
+            className="text-[14.5px] font-bold leading-snug text-foreground sm:text-base line-clamp-2"
+            style={{ fontFamily: "'Barlow', system-ui, sans-serif" }}
           >
             {aula.titulo}
           </p>
-          <div className="mt-2 flex items-center gap-2">
-            <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/20">
+          <div className="flex items-center gap-2 pt-1">
+            <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
               <div
-                className="h-full rounded-full bg-[hsl(var(--aprender-accent))] transition-all"
+                className="h-full rounded-full bg-primary transition-all duration-500"
                 style={{ width: `${aula.pct}%` }}
               />
             </div>
-            <span className="shrink-0 text-[12px] font-bold tabular-nums text-white sm:text-[13px]">
+            <span className="shrink-0 text-[12px] font-bold tabular-nums text-primary sm:text-[13px]">
               {aula.pct}%
             </span>
           </div>
           {aula.blocosTotal > 0 && restantes > 0 && (
-            <p className="mt-1 text-[11px] text-white/70">
+            <p className="text-[11px] text-muted-foreground font-medium">
               {restantes === 1 ? 'falta 1 etapa' : `faltam ${restantes} etapas`}
             </p>
           )}
@@ -83,7 +83,7 @@ function AulaCard({ aula, onOpen, wide }: { aula: AprenderHomeAula; onOpen: (id:
 /**
  * "Continue de onde parou" dinâmico:
  *  - 1 aula em andamento → card grande
- *  - 2+ aulas           → carrossel horizontal com snap
+ *  - 2+ aulas           → grid de 2 colunas no Desktop, carrossel no Mobile
  */
 const ContinueCarousel = ({ aulas, onOpen }: Props) => {
   if (!aulas.length) return null;
@@ -91,9 +91,9 @@ const ContinueCarousel = ({ aulas, onOpen }: Props) => {
   const single = aulas.length === 1;
 
   return (
-    <section aria-label="Continue de onde parou">
-      <div className="mb-2 flex items-baseline justify-between">
-        <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+    <section aria-label="Continue de onde parou" className="space-y-2">
+      <div className="flex items-baseline justify-between">
+        <p className="text-[11px] font-bold uppercase tracking-widest text-primary">
           Continue de onde parou
         </p>
         {!single && (
@@ -106,9 +106,9 @@ const ContinueCarousel = ({ aulas, onOpen }: Props) => {
       {single ? (
         <AulaCard aula={aulas[0]} onOpen={onOpen} wide />
       ) : (
-        <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:-mx-6 sm:px-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 w-full">
           {aulas.map((a) => (
-            <AulaCard key={a.aulaId} aula={a} onOpen={onOpen} wide={false} />
+            <AulaCard key={a.aulaId} aula={a} onOpen={onOpen} wide />
           ))}
         </div>
       )}
