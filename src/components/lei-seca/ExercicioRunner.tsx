@@ -44,7 +44,7 @@ export function ExercicioRunner({ exercicio, artigoTexto = "", onRespondido, onR
   })();
   return (
     <RespondidoContext.Provider value={onRespondido ?? null}>
-      <div className="animate-slide-in-right-card">{inner}</div>
+      <div className="animate-slide-in-right-card pb-28 sm:pb-32">{inner}</div>
     </RespondidoContext.Provider>
   );
 }

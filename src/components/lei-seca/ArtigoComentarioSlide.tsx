@@ -109,11 +109,11 @@ export function ArtigoComentarioSlide({
           )}
         </div>
 
-        {/* Rodapé */}
-        <div className="px-5 pb-5 pt-2 border-t border-white/5">
+        {/* Rodapé com Safe Area Inset para Android/iOS */}
+        <div className="px-5 pt-2 pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] border-t border-white/5">
           <Button
             onClick={onContinuar}
-            className="w-full h-12 font-bold text-base rounded-xl text-white hover:opacity-90"
+            className="w-full h-12 font-bold text-base rounded-xl text-white hover:opacity-90 touch-manipulation active:scale-[0.99] transition-transform"
             style={{ backgroundColor: cor, boxShadow: `0 10px 30px -10px ${cor}` }}
           >
             Continuar

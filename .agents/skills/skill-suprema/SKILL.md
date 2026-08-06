@@ -15,7 +15,7 @@ A **Skill Suprema** reúne todas as diretrizes de design visual de alta fidelida
 
 ### 1. 📱 Mobile Native, Touch & Capacitor (Android 15 / iOS 18)
 - **Permissões & Manifestos:** Validar permissões nativas no `AndroidManifest.xml` / `Info.plist` e chamadas de hardware com `Capacitor.isNativePlatform()`.
-- **Safe Area Insets & Margem de Navegação:** Garantir ajuste perfeito à barra de status (`--sai-top`) e gestos inferiores (`--sai-bottom`). Barras de ação, footers e trilhos flutuantes NUNCA devem ficar escondidos ou cortados sob o `BottomNav` ou a barra do sistema (utilizar sempre `pb-[calc(80px+var(--sai-bottom,0px))]` ou margem segura).
+- **Safe Area Insets & Margem de Navegação:** Garantir ajuste perfeito à barra de status (`--sai-top`) e gestos inferiores (`--sai-bottom`). Barras de ação, footers, modais e sheets de gabarito/feedback (ex: Lei Seca, Questões, Flashcards) NUNCA devem ficar escondidos ou cortados sob o `BottomNav` ou a barra de gestos do sistema (utilizar sempre `pb-[calc(1.25rem+var(--sai-bottom,0px))]` ou margem segura explicita). Os contêineres de alternativas devem ter recuo inferior (`pb-28`) para evitar que a última opção seja coberta.
 - **Mini-Player Flutuante Instantâneo:** Ao minimizar uma videoaula ou áudio, a mídia DEVE continuar a execução em segundo plano no mini-player flutuante (PiP) **instantaneamente**, sem congelamentos, delays de buffering ou interrupções de som.
 - **Dimensões Tácteis & Feedback:** Alvos de toque mínimos de **48x48dp (Android)** / **44x44pt (iOS)**, uso de `Pressable` com feedback de toque `<100ms` e animações aceleradas por GPU (`transform`, `opacity`).
 
