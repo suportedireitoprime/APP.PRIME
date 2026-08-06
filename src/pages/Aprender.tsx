@@ -234,168 +234,258 @@ const Aprender = () => {
       mobileHeader={mobileHeader}
       wide
     >
-      <div className="mx-auto w-full max-w-3xl pb-32 lg:max-w-none">
+      <div className="w-full 2xl:max-w-[1650px] mx-auto px-2 sm:px-4 lg:px-6 lg:pt-4 pb-[calc(7rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
+        <div className="lg:grid lg:grid-cols-12 lg:gap-6 lg:items-start">
+          {/* ── Sidebar Esquerda Desktop: Filtros & Lembretes de Estudo ───────────── */}
+          <aside className="hidden lg:block lg:col-span-3 space-y-4 bg-card/40 border border-border/60 rounded-2xl p-4 shadow-sm">
+            <div className="flex items-center justify-between border-b border-border/60 pb-3">
+              <h2 className="text-sm font-bold text-foreground">Filtrar Matérias</h2>
+              <span className="text-[11px] font-semibold text-primary px-2.5 py-0.5 rounded-full bg-primary/10">
+                {data.areas.length} totais
+              </span>
+            </div>
 
-        {/* Hero amarelo full-bleed — mais compacto no mobile */}
-        <section
-          className="bg-hero-yellow relative isolate overflow-hidden border-b border-black/10"
-          aria-label="Seu progresso em trilhas"
-        >
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.25),transparent_60%)]" />
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.18),transparent_65%)]" />
+            <div className="space-y-2">
+              <button
+                onClick={() => setFiltro('todas')}
+                className={cn(
+                  'w-full text-left px-3 py-2.5 rounded-xl border text-xs font-semibold transition-colors flex items-center justify-between',
+                  filtro === 'todas'
+                    ? 'border-primary/60 bg-primary/15 text-primary'
+                    : 'border-border/40 text-muted-foreground hover:bg-muted/50 hover:text-foreground',
+                )}
+              >
+                <span>Todas as Matérias</span>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-muted">
+                  {data.areas.length}
+                </span>
+              </button>
 
-          <div
-            className="pointer-events-none absolute inset-y-0 right-0 w-[42%] sm:w-[34%] overflow-hidden"
-            aria-hidden="true"
-          >
-            {HERO_ILLUSTRATIONS.map((url, i) => (
-              <img
-                key={url}
-                src={url}
-                alt=""
-                loading={i === 0 ? 'eager' : 'lazy'}
-                decoding="async"
-                className="absolute inset-y-0 right-0 h-full w-auto object-contain object-right transition-opacity duration-[1400ms] ease-in-out"
-                style={{ opacity: i === heroIdx ? 1 : 0 }}
-              />
-            ))}
-            <div
-              className="absolute inset-0 opacity-25"
-              style={{
-                background: 'linear-gradient(135deg, hsl(348 78% 38%) 0%, #F87171 100%)',
-                mixBlendMode: 'multiply',
-              }}
-            />
-            <div className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-[hsl(0_72%_52%)] via-[hsl(0_72%_52%)]/60 to-transparent" />
-          </div>
+              <button
+                onClick={() => setFiltro('andamento')}
+                className={cn(
+                  'w-full text-left px-3 py-2.5 rounded-xl border text-xs font-semibold transition-colors flex items-center justify-between',
+                  filtro === 'andamento'
+                    ? 'border-primary/60 bg-primary/15 text-primary'
+                    : 'border-border/40 text-muted-foreground hover:bg-muted/50 hover:text-foreground',
+                )}
+              >
+                <span>Em Andamento</span>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-muted">
+                  {emAndamentoCount}
+                </span>
+              </button>
+            </div>
 
-          <div className="relative p-4 sm:p-5">
-            <div className="flex items-start gap-3">
-              {/* Anel de progresso ao lado do texto (economiza altura) */}
-              <div className="relative shrink-0" style={{ width: size, height: size }}>
-                <svg width={size} height={size} className="-rotate-90">
-                  <circle cx={size / 2} cy={size / 2} r={r} stroke="rgba(0,0,0,0.15)" strokeWidth={stroke} fill="none" />
-                  <circle
-                    cx={size / 2}
-                    cy={size / 2}
-                    r={r}
-                    stroke="#111"
-                    strokeWidth={stroke}
-                    strokeLinecap="round"
-                    fill="none"
-                    strokeDasharray={c}
-                    strokeDashoffset={dash}
-                    style={{ transition: 'stroke-dashoffset 600ms ease' }}
+            <div className="pt-2 border-t border-border/60">
+              <button
+                onClick={() => setLembretesOpen(true)}
+                className="w-full flex items-center justify-center gap-2 p-3 rounded-xl border border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 text-xs font-bold transition-colors"
+              >
+                <Bell className="w-4 h-4" /> Configurar Lembretes
+              </button>
+            </div>
+          </aside>
+
+          {/* ── Coluna Central Widescreen: Trilha Hero, Continuar & Matérias ─────── */}
+          <div className="lg:col-span-6 space-y-5">
+            {/* Hero amarelo full-bleed */}
+            <section
+              className="bg-hero-yellow relative isolate overflow-hidden rounded-2xl border border-black/10 shadow-lg"
+              aria-label="Seu progresso em trilhas"
+            >
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.25),transparent_60%)]" />
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.18),transparent_65%)]" />
+
+              <div
+                className="pointer-events-none absolute inset-y-0 right-0 w-[42%] sm:w-[34%] overflow-hidden"
+                aria-hidden="true"
+              >
+                {HERO_ILLUSTRATIONS.map((url, i) => (
+                  <img
+                    key={url}
+                    src={url}
+                    alt=""
+                    loading={i === 0 ? 'eager' : 'lazy'}
+                    decoding="async"
+                    className="absolute inset-y-0 right-0 h-full w-auto object-contain object-right transition-opacity duration-[1400ms] ease-in-out"
+                    style={{ opacity: i === heroIdx ? 1 : 0 }}
                   />
-                </svg>
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="font-display text-base font-black leading-none text-black">{pct}%</span>
-                  <span className="mt-0.5 text-[8px] font-bold uppercase tracking-wider text-black/60">
-                    Progresso
-                  </span>
-                </div>
+                ))}
+                <div
+                  className="absolute inset-0 opacity-25"
+                  style={{
+                    background: 'linear-gradient(135deg, hsl(348 78% 38%) 0%, #F87171 100%)',
+                    mixBlendMode: 'multiply',
+                  }}
+                />
+                <div className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-[hsl(0_72%_52%)] via-[hsl(0_72%_52%)]/60 to-transparent" />
               </div>
 
-              <div className="min-w-0 max-w-[58%] lg:max-w-[70%]">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-black/70">Sua trilha</p>
-                <h1 className="mt-0.5 font-display text-[22px] font-black leading-tight text-black sm:text-[28px]">
-                  Aulas
-                  <span className="ml-2 font-display text-[15px] font-semibold italic text-black/70 sm:text-[20px]">
-                    em trilhas
-                  </span>
-                </h1>
-                <p
-                  className="mt-0.5 text-[12px] leading-snug text-black/70 sm:text-[13px]"
-                  style={{ fontFamily: "'Barlow', system-ui, sans-serif" }}
-                >
-                  Slides, flashcards e questões por matéria.
-                </p>
-              </div>
-            </div>
+              <div className="relative p-4 sm:p-5">
+                <div className="flex items-start gap-3">
+                  {/* Anel de progresso */}
+                  <div className="relative shrink-0" style={{ width: size, height: size }}>
+                    <svg width={size} height={size} className="-rotate-90">
+                      <circle cx={size / 2} cy={size / 2} r={r} stroke="rgba(0,0,0,0.15)" strokeWidth={stroke} fill="none" />
+                      <circle
+                        cx={size / 2}
+                        cy={size / 2}
+                        r={r}
+                        stroke="#111"
+                        strokeWidth={stroke}
+                        strokeLinecap="round"
+                        fill="none"
+                        strokeDasharray={c}
+                        strokeDashoffset={dash}
+                        style={{ transition: 'stroke-dashoffset 600ms ease' }}
+                      />
+                    </svg>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <span className="font-display text-base font-black leading-none text-black">{pct}%</span>
+                      <span className="mt-0.5 text-[8px] font-bold uppercase tracking-wider text-black/60">
+                        Progresso
+                      </span>
+                    </div>
+                  </div>
 
-            {/* Barra única com as 3 métricas */}
-            <div className="relative mt-3 rounded-xl bg-black/85 text-white ring-1 ring-black/20 shadow-lg">
-              <div className="grid grid-cols-3 divide-x divide-white/10">
-                <div className="flex flex-col items-center justify-center px-2 py-2">
-                  <span className="text-[9px] font-bold uppercase tracking-wider text-white/60">Matérias</span>
-                  <span className="mt-0.5 font-display text-base font-black leading-none">{data.areas.length}</span>
-                </div>
-                <div className="flex flex-col items-center justify-center px-2 py-2">
-                  <span className="text-[9px] font-bold uppercase tracking-wider text-white/60">Aulas</span>
-                  <span className="mt-0.5 font-display text-base font-black leading-none">{data.totalAulas}</span>
-                </div>
-                <div className="flex flex-col items-center justify-center px-2 py-2">
-                  <span className="text-[9px] font-bold uppercase tracking-wider text-white/60">Concluídas</span>
-                  <span className="mt-0.5 font-display text-base font-black leading-none text-[hsl(var(--aprender-accent))]">
-                    {data.totalConcluidas}
-                    <span className="text-white/50">/{data.totalAulas}</span>
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <div className="space-y-5 px-4 pt-5 sm:px-6 lg:px-0">
-          {/* Continue de onde parou — dinâmico */}
-          {continuar.length > 0 ? (
-            <ContinueCarousel
-              aulas={continuar}
-              onOpen={(id) => navigate(`/aprender/aula/${id}`)}
-            />
-          ) : loading ? (
-            <div className="h-[104px] rounded-2xl bg-muted animate-pulse" />
-          ) : null}
-
-          {/* Lista de matérias */}
-          <div>
-            <div className="mb-2 flex items-center justify-between gap-2">
-              <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Matérias</p>
-              {emAndamentoCount > 0 && (
-                <div className="flex items-center gap-1 rounded-full bg-muted p-0.5">
-                  {(['todas', 'andamento'] as const).map((f) => (
-                    <button
-                      key={f}
-                      onClick={() => setFiltro(f)}
-                      className={[
-                        'rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors',
-                        filtro === f
-                          ? 'bg-[hsl(var(--aprender-accent))] text-[hsl(var(--aprender-accent-foreground))]'
-                          : 'text-muted-foreground hover:text-foreground',
-                      ].join(' ')}
+                  <div className="min-w-0 max-w-[58%] lg:max-w-[70%]">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-black/70">Sua trilha de aprendizado</p>
+                    <h1 className="mt-0.5 font-display text-[22px] font-black leading-tight text-black sm:text-[26px]">
+                      Aulas
+                      <span className="ml-2 font-display text-[15px] font-semibold italic text-black/70 sm:text-[18px]">
+                        em trilhas
+                      </span>
+                    </h1>
+                    <p
+                      className="mt-0.5 text-[12px] leading-snug text-black/70 sm:text-[13px]"
+                      style={{ fontFamily: "'Barlow', system-ui, sans-serif" }}
                     >
-                      {f === 'todas' ? 'Todas' : `Em andamento (${emAndamentoCount})`}
-                    </button>
-                  ))}
+                      Slides, flashcards e questões por matéria.
+                    </p>
+                  </div>
                 </div>
-              )}
-            </div>
 
-            <div className="space-y-2 lg:grid lg:grid-cols-2 lg:gap-3 lg:space-y-0 xl:grid-cols-3 2xl:grid-cols-4">
-              {loading && !data.areas.length ? (
-                [...Array(6)].map((_, i) => (
-                  <div key={i} className="h-[84px] rounded-2xl bg-muted animate-pulse" />
-                ))
-              ) : areasOrdenadas.length === 0 ? (
-                <div className="rounded-2xl border border-border bg-card p-8 text-center text-muted-foreground">
-                  <Sparkles className="mx-auto mb-2 h-6 w-6 text-muted-foreground" />
-                  {filtro === 'andamento'
-                    ? 'Você ainda não começou nenhuma matéria.'
-                    : 'Nenhuma matéria disponível ainda.'}
+                {/* Barra única com as 3 métricas */}
+                <div className="relative mt-3 rounded-xl bg-black/85 text-white ring-1 ring-black/20 shadow-lg">
+                  <div className="grid grid-cols-3 divide-x divide-white/10">
+                    <div className="flex flex-col items-center justify-center px-2 py-2">
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-white/60">Matérias</span>
+                      <span className="mt-0.5 font-display text-base font-black leading-none">{data.areas.length}</span>
+                    </div>
+                    <div className="flex flex-col items-center justify-center px-2 py-2">
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-white/60">Aulas</span>
+                      <span className="mt-0.5 font-display text-base font-black leading-none">{data.totalAulas}</span>
+                    </div>
+                    <div className="flex flex-col items-center justify-center px-2 py-2">
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-white/60">Concluídas</span>
+                      <span className="mt-0.5 font-display text-base font-black leading-none text-[hsl(var(--aprender-accent))]">
+                        {data.totalConcluidas}
+                        <span className="text-white/50">/{data.totalAulas}</span>
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              ) : (
-                areasOrdenadas.map((a) => (
-                  <MateriaRow
-                    key={a.id}
-                    area={a}
-                    icon={areaIconFor(a.slug)}
-                    onOpen={() => navigate(`/aprender/area/${a.slug}`)}
-                    onPrefetch={() => prefetchAprenderArea(a.slug, uid)}
-                  />
-                ))
-              )}
+              </div>
+            </section>
+
+            {/* Continue de onde parou — dinâmico */}
+            {continuar.length > 0 ? (
+              <ContinueCarousel
+                aulas={continuar}
+                onOpen={(id) => navigate(`/aprender/aula/${id}`)}
+              />
+            ) : loading ? (
+              <div className="h-[104px] rounded-2xl bg-muted animate-pulse" />
+            ) : null}
+
+            {/* Lista de matérias */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Matérias ({areasOrdenadas.length})</p>
+                {emAndamentoCount > 0 && (
+                  <div className="flex items-center gap-1 rounded-full bg-muted p-0.5 lg:hidden">
+                    {(['todas', 'andamento'] as const).map((f) => (
+                      <button
+                        key={f}
+                        onClick={() => setFiltro(f)}
+                        className={[
+                          'rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors',
+                          filtro === f
+                            ? 'bg-[hsl(var(--aprender-accent))] text-[hsl(var(--aprender-accent-foreground))]'
+                            : 'text-muted-foreground hover:text-foreground',
+                        ].join(' ')}
+                      >
+                        {f === 'todas' ? 'Todas' : `Andamento (${emAndamentoCount})`}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-2.5 sm:grid sm:grid-cols-2 sm:gap-3 sm:space-y-0">
+                {loading && !data.areas.length ? (
+                  [...Array(6)].map((_, i) => (
+                    <div key={i} className="h-[84px] rounded-2xl bg-muted animate-pulse" />
+                  ))
+                ) : areasOrdenadas.length === 0 ? (
+                  <div className="col-span-full rounded-2xl border border-border bg-card p-8 text-center text-muted-foreground">
+                    <Sparkles className="mx-auto mb-2 h-6 w-6 text-muted-foreground" />
+                    {filtro === 'andamento'
+                      ? 'Você ainda não começou nenhuma matéria.'
+                      : 'Nenhuma matéria disponível ainda.'}
+                  </div>
+                ) : (
+                  areasOrdenadas.map((a) => (
+                    <MateriaRow
+                      key={a.id}
+                      area={a}
+                      icon={areaIconFor(a.slug)}
+                      onOpen={() => navigate(`/aprender/area/${a.slug}`)}
+                      onPrefetch={() => prefetchAprenderArea(a.slug, uid)}
+                    />
+                  ))
+                )}
+              </div>
             </div>
           </div>
+
+          {/* ── Sidebar Direita Desktop: Estatísticas & Ferramentas de Apoio ────── */}
+          <aside className="hidden lg:block lg:col-span-3 space-y-4 bg-card/40 border border-border/60 rounded-2xl p-4 shadow-sm">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-primary border-b border-border/60 pb-2.5">
+              Seu Desempenho
+            </h2>
+
+            <div className="rounded-xl border border-border/80 bg-card p-3.5 space-y-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-muted-foreground font-medium">Meta de Estudo</span>
+                <span className="font-bold text-primary">{pct}% atingido</span>
+              </div>
+              <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-primary transition-all duration-500"
+                  style={{ width: `${pct}%` }}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <button
+                onClick={() => navigate('/aprender/desempenho')}
+                className="w-full text-left p-3 rounded-xl border border-border/80 bg-card hover:border-primary/40 transition-colors flex items-center justify-between group"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                    <Trophy className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-foreground group-hover:text-primary transition-colors">Estatísticas Detalhadas</p>
+                    <p className="text-[11px] text-muted-foreground">Ofensiva, precisão e horas</p>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </aside>
         </div>
       </div>
 

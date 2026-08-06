@@ -631,7 +631,7 @@ const AprenderAula = () => {
               if (info.offset.x < -80) proximo();
               else if (info.offset.x > 80) anterior();
             }}
-            className="mx-auto h-full w-full max-w-3xl overflow-y-auto px-5 md:px-8 pt-6 md:pt-8 pb-[calc(9rem+env(safe-area-inset-bottom,0px))] lg:mx-0 lg:max-w-[74ch] xl:max-w-[80ch] lg:px-12 2xl:px-16 lg:pt-12 lg:pb-20 lg:leading-relaxed lg:[&_article]:space-y-6"
+            className="mx-auto h-full w-full max-w-3xl overflow-y-auto px-5 md:px-8 pt-6 md:pt-8 pb-[calc(9rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] lg:mx-0 lg:max-w-[74ch] xl:max-w-[80ch] lg:px-12 2xl:px-16 lg:pt-12 lg:pb-20 lg:leading-relaxed lg:[&_article]:space-y-6"
 
 
           >

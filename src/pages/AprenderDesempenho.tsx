@@ -70,7 +70,7 @@ const AprenderDesempenho = () => {
       mobileHeader={mobileHeader}
       wide
     >
-      <div className="px-4 sm:px-6 py-6 lg:px-0 lg:py-0 max-w-3xl lg:max-w-none mx-auto w-full space-y-4 lg:grid lg:grid-cols-[minmax(0,420px)_minmax(0,1fr)] lg:items-start lg:gap-6 lg:space-y-0">
+      <div className="w-full 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 py-6 pb-[calc(7rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] space-y-4 lg:grid lg:grid-cols-[minmax(0,420px)_minmax(0,1fr)] lg:items-start lg:gap-6 lg:space-y-0">
         <div className="grid grid-cols-3 gap-3 lg:grid-cols-1">
           <div className="rounded-2xl border border-border bg-card p-4 flex flex-col items-center gap-1">
             <DominioRing score={media} size={64} stroke={7} />
