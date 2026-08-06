@@ -181,16 +181,6 @@ const LivroDetailSheet = ({ livro, open, onClose }: LivroDetailSheetProps) => {
   };
 
 
-  const openNativoSystem = () => {
-    if (livro.download) openPdfNative(livro.download, `${livro.titulo}.pdf`);
-  };
-
-  const temAnaliseTecnica =
-    !!livro.anoLancamento ||
-    !!livro.editora ||
-    (livro.curiosidades && livro.curiosidades.length > 0) ||
-    !!livro.analiseDetalhada;
-
   return createPortal((
     <>
       <AnimatePresence>
