@@ -104,11 +104,13 @@ const ContinueCarousel = ({ aulas, onOpen }: Props) => {
       </div>
 
       {single ? (
-        <AulaCard aula={aulas[0]} onOpen={onOpen} wide />
+        <AulaCard aula={aulas[0]} onOpen={onOpen} wide={false} />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 w-full">
+        <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none gap-3.5 pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
           {aulas.map((a) => (
-            <AulaCard key={a.aulaId} aula={a} onOpen={onOpen} wide />
+            <div key={a.aulaId} className="w-[280px] sm:w-[320px] shrink-0 snap-start">
+              <AulaCard aula={a} onOpen={onOpen} wide={false} />
+            </div>
           ))}
         </div>
       )}

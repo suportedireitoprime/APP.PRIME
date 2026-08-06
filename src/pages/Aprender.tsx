@@ -12,7 +12,7 @@ import { PageHeader } from '@/components/vademecum/PageHeader';
 import AprenderBottomNav from '@/components/aprender/AprenderBottomNav';
 import AprenderLembretesSheet from '@/components/aprender/AprenderLembretesSheet';
 import ContinueCarousel from '@/components/aprender/ContinueCarousel';
-import MateriaRow from '@/components/aprender/MateriaRow';
+import MateriaCard from '@/components/aprender/MateriaCard';
 import { getAreaCover } from '@/lib/areasDireitoCovers';
 import { prefetchAprenderArea } from '@/lib/aprenderAreaLoader';
 import { prefetchAprenderAula } from '@/lib/aprenderAulaPrefetch';
@@ -328,12 +328,12 @@ const Aprender = () => {
                   {/* Anel de progresso */}
                   <div className="relative shrink-0" style={{ width: size, height: size }}>
                     <svg width={size} height={size} className="-rotate-90">
-                      <circle cx={size / 2} cy={size / 2} r={r} stroke="rgba(0,0,0,0.15)" strokeWidth={stroke} fill="none" />
+                      <circle cx={size / 2} cy={size / 2} r={r} stroke="rgba(255,255,255,0.2)" strokeWidth={stroke} fill="none" />
                       <circle
                         cx={size / 2}
                         cy={size / 2}
                         r={r}
-                        stroke="#111"
+                        stroke="#ffffff"
                         strokeWidth={stroke}
                         strokeLinecap="round"
                         fill="none"
@@ -343,23 +343,23 @@ const Aprender = () => {
                       />
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="font-display text-base font-black leading-none text-black">{pct}%</span>
-                      <span className="mt-0.5 text-[8px] font-bold uppercase tracking-wider text-black/60">
+                      <span className="font-display text-base font-black leading-none text-white">{pct}%</span>
+                      <span className="mt-0.5 text-[8px] font-bold uppercase tracking-wider text-white/80">
                         Progresso
                       </span>
                     </div>
                   </div>
 
                   <div className="min-w-0 max-w-[58%] lg:max-w-[70%]">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-black/70">Sua trilha de aprendizado</p>
-                    <h1 className="mt-0.5 font-display text-[22px] font-black leading-tight text-black sm:text-[26px]">
-                      Aulas
-                      <span className="ml-2 font-display text-[15px] font-semibold italic text-black/70 sm:text-[18px]">
-                        em trilhas
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-white/90">Sua trilha de aprendizado</p>
+                    <h1 className="mt-0.5 font-display text-[22px] font-black leading-tight text-white sm:text-[26px]">
+                      AULAS
+                      <span className="ml-2 font-display text-[15px] font-semibold italic text-white/90 sm:text-[18px]">
+                        EM TRILHAS
                       </span>
                     </h1>
                     <p
-                      className="mt-0.5 text-[12px] leading-snug text-black/70 sm:text-[13px]"
+                      className="mt-0.5 text-[12px] leading-snug text-white/85 sm:text-[13px]"
                       style={{ fontFamily: "'Barlow', system-ui, sans-serif" }}
                     >
                       Slides, flashcards e questões por matéria.
@@ -424,13 +424,13 @@ const Aprender = () => {
                 )}
               </div>
 
-              <div className="space-y-2.5 sm:grid sm:grid-cols-2 sm:gap-3 sm:space-y-0">
+              <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none gap-3.5 pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
                 {loading && !data.areas.length ? (
                   [...Array(6)].map((_, i) => (
-                    <div key={i} className="h-[84px] rounded-2xl bg-muted animate-pulse" />
+                    <div key={i} className="w-[210px] sm:w-[250px] h-[170px] shrink-0 rounded-2xl bg-muted animate-pulse" />
                   ))
                 ) : areasOrdenadas.length === 0 ? (
-                  <div className="col-span-full rounded-2xl border border-border bg-card p-8 text-center text-muted-foreground">
+                  <div className="w-full rounded-2xl border border-border bg-card p-8 text-center text-muted-foreground">
                     <Sparkles className="mx-auto mb-2 h-6 w-6 text-muted-foreground" />
                     {filtro === 'andamento'
                       ? 'Você ainda não começou nenhuma matéria.'
@@ -438,7 +438,7 @@ const Aprender = () => {
                   </div>
                 ) : (
                   areasOrdenadas.map((a) => (
-                    <MateriaRow
+                    <MateriaCard
                       key={a.id}
                       area={a}
                       icon={areaIconFor(a.slug)}
