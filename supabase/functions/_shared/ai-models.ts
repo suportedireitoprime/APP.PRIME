@@ -19,8 +19,8 @@
  */
 
 export const MODELS = {
-  text: "gemini-2.5-flash-lite",
-  textGateway: "google/gemini-2.5-flash-lite",
+  text: "gemini-2.5-flash",
+  textGateway: "google/gemini-2.5-flash",
   image: "gemini-2.5-flash-image",
   imageGateway: "google/gemini-2.5-flash-image",
   tts: "gemini-2.5-flash-preview-tts",
@@ -28,12 +28,15 @@ export const MODELS = {
 
 // Único modelo de texto permitido — sem fallback silencioso para outros.
 export const TEXT_MODEL_FALLBACKS = [
-  "gemini-2.5-flash-lite",
+  "gemini-2.5-flash",
+  "gemini-2.0-flash",
 ] as const;
 
 export const ALLOWED_TEXT_MODELS = new Set<string>([
-  "gemini-2.5-flash-lite",
-  "google/gemini-2.5-flash-lite",
+  "gemini-2.5-flash",
+  "google/gemini-2.5-flash",
+  "gemini-2.0-flash",
+  "google/gemini-2.0-flash",
 ]);
 
 // Aliases/modelos proibidos — se algum bater aqui, forçamos o modelo permitido.
@@ -41,11 +44,10 @@ const DENY_PATTERNS: RegExp[] = [
   /-latest$/i,               // qualquer alias -latest
   /gemini-3(\.|-)/i,         // família 3.x (mais cara)
   /gemini-2\.5-pro/i,        // 2.5 Pro
-  /gemini-2\.5-flash(?!-lite)(?!-image)(?!-preview-tts)/i, // 2.5 Flash "puro"
 ];
 
 /**
- * Força qualquer id de modelo de texto para `gemini-2.5-flash-lite`.
+ * Força qualquer id de modelo de texto para `gemini-2.5-flash`.
  * Se o id vier na forma `google/...` (Lovable Gateway), preserva o prefixo.
  * Loga warning para qualquer tentativa fora da política.
  */

@@ -37,7 +37,7 @@ Deno.serve(async (req) => {
     const MAX = 60000;
     const text = transcript.length > MAX ? transcript.slice(0, MAX) + "\n[...truncado]" : transcript;
 
-    console.log("[gerar-resumo-aula] provedor=gemini-proprio modelo=gemini-2.5-flash-lite");
+    console.log("[gerar-resumo-aula] provedor=gemini-proprio modelo=gemini-2.5-flash");
     const res = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
       method: "POST",
       headers: {
@@ -45,7 +45,7 @@ Deno.serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gemini-2.5-flash-lite",
+        model: "gemini-2.5-flash",
         messages: [
           { role: "system", content: SYSTEM },
           { role: "user", content: `Título sugerido pelo usuário: ${title || "(sem título)"}\n\nTranscrição:\n${text}` },
