@@ -221,155 +221,128 @@ export default function Assinatura() {
         />
 
         <div className="max-w-2xl mx-auto pt-6 space-y-7">
-          {/* Clean hero */}
-          <motion.section
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className="text-center space-y-4 px-4 pt-1"
-          >
+import paywallLeft from '@/assets/paywall/paywall_left.png';
+import paywallCenter from '@/assets/paywall/paywall_center.png';
+import paywallRight from '@/assets/paywall/paywall_right.png';
 
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted/50 border border-border">
-              <Briefcase className="w-3 h-3 text-primary" />
-              <span className="font-body text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
-                Uso profissional
-              </span>
-            </div>
-
-
-            <div className="flex justify-center">
-              <div className="btn-attention-shine relative inline-flex items-center justify-center px-5 py-2.5 rounded-2xl bg-primary shadow-[0_8px_24px_-8px_hsl(var(--primary)/0.5)]">
-                <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-primary-foreground leading-none tracking-tight">
-                  ESTUDE SEM LIMITES
-                </h1>
-              </div>
-            </div>
-            <p className="font-body text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
-              Escolha o plano ideal e aprove sem barreiras.
-            </p>
-
-            {/* Social proof */}
-            <div className="flex items-center justify-center gap-2 pt-1">
-              <div className="flex -space-x-0.5">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-primary text-primary" />
-                ))}
-              </div>
-              <span className="font-body text-xs text-muted-foreground">
-                <span className="font-bold text-foreground">4.9</span> · Nota máxima na Play Store
-              </span>
-            </div>
-
-          </motion.section>
-
-
-
-
-          {/* Plan carousel — equal-size cards, snap scroll, anual peeks on the side */}
-          <div
-            className="flex sm:grid sm:grid-cols-2 gap-3 overflow-x-auto sm:overflow-visible snap-x snap-mandatory sm:snap-none pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none"
-            style={{ scrollPaddingLeft: '1rem', scrollPaddingRight: '1rem' }}
-          >
-            {([
-              {
-                id: 'mensal' as const,
-                label: 'Mensal',
-                price: 'R$ 29,90',
-                priceSuffix: '/mês',
-                subtitle: 'Cobrado mensalmente · renove ou cancele quando quiser',
-                trial: '3 dias grátis',
-                highlights: ['Acesso total ao Vade Mecum', 'Acesso ao desktop', 'Uso offline', 'Horus 24h no WhatsApp'],
-                badge: null as string | null,
-              },
-              isIOS
-                ? {
-                    id: 'anual' as const,
-                    label: 'Anual',
-                    price: 'R$ 19,90',
-                    priceSuffix: '/mês',
-                    subtitle: '12x de R$ 19,90 · total R$ 238,80 por ano · economize 33%',
-                    trial: '3 dias grátis',
-                    highlights: ['Acesso total ao Vade Mecum', 'Acesso ao desktop', 'Uso offline', 'Horus 24h no WhatsApp'],
-                    badge: '-33%' as string | null,
-                  }
-                : {
-                    id: 'anual_parcelado' as const,
-                    label: 'Anual',
-                    price: 'R$ 16,66',
-                    priceSuffix: '/mês',
-                    subtitle: '12x de R$ 16,66 · total R$ 199,90 por ano · economize 44%',
-                    trial: '3 dias grátis',
-                    highlights: ['Acesso total ao Vade Mecum', 'Acesso ao desktop', 'Uso offline', 'Horus 24h no WhatsApp'],
-                    badge: '-44%' as string | null,
-                  },
-            ]).map((plan) => {
-              const isActive = tab === plan.id;
-              return (
-                <div
-                  key={plan.id}
-                  onClick={() => setTab(plan.id)}
-                  role="button"
-                  tabIndex={0}
-                  data-track="plan_card_viewed"
-                  data-plano={plan.id}
-                  className={`snap-start shrink-0 w-[85%] sm:w-auto sm:shrink relative rounded-2xl p-5 flex flex-col text-left transition-all cursor-pointer overflow-hidden ${
-                    isActive
-                      ? 'bg-card border-2 border-primary'
-                      : 'bg-card/70 border border-border hover:border-primary/40'
-                  }`}
+            {/* ── 3D Image Stack: Leque de 3 Fotos Jurídicas no Topo ─────── */}
+            <div className="relative flex items-center justify-center pt-2 pb-6 px-4 overflow-hidden">
+              <div className="relative flex items-center justify-center w-full max-w-[340px] h-[190px]">
+                {/* Foto Esquerda */}
+                <motion.div
+                  initial={{ opacity: 0, x: -30, rotate: -15 }}
+                  animate={{ opacity: 0.85, x: -65, rotate: -10, y: 8 }}
+                  transition={{ duration: 0.5, delay: 0.1 }}
+                  className="absolute w-[130px] h-[160px] rounded-2xl overflow-hidden border-2 border-white/20 shadow-2xl shrink-0"
                 >
-                  <div className="flex items-start justify-between mb-3 gap-2">
-                    <div className="flex items-center gap-2">
-                      <span className="font-display text-sm sm:text-base font-extrabold uppercase tracking-wider text-primary">
-                        {plan.label}
-                      </span>
-                    </div>
-                    {plan.badge && (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-primary text-primary-foreground font-body text-[10px] font-extrabold">
-                        {plan.badge}
-                      </span>
-                    )}
-                  </div>
+                  <img src={paywallLeft} alt="" className="w-full h-full object-cover" loading="eager" decoding="async" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                </motion.div>
 
-                  <div className="flex items-baseline gap-1">
-                    <span className="font-display text-3xl font-extrabold text-foreground">{plan.price}</span>
-                    <span className="font-body text-sm text-muted-foreground">{plan.priceSuffix}</span>
-                  </div>
-                  <span className="font-body text-[11px] text-muted-foreground mb-3">
-                    {plan.subtitle}
-                  </span>
+                {/* Foto Direita */}
+                <motion.div
+                  initial={{ opacity: 0, x: 30, rotate: 15 }}
+                  animate={{ opacity: 0.85, x: 65, rotate: 10, y: 8 }}
+                  transition={{ duration: 0.5, delay: 0.1 }}
+                  className="absolute w-[130px] h-[160px] rounded-2xl overflow-hidden border-2 border-white/20 shadow-2xl shrink-0"
+                >
+                  <img src={paywallRight} alt="" className="w-full h-full object-cover" loading="eager" decoding="async" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                </motion.div>
 
-                  <ul className="space-y-1.5 mb-4">
-                    {plan.highlights.map((h) => (
-                      <li key={h} className="flex items-center gap-2">
-                        <Check className="w-3.5 h-3.5 text-primary shrink-0" strokeWidth={3} />
-                        <span className="font-body text-[12px] text-foreground/90 leading-tight">{h}</span>
-                      </li>
-                    ))}
-                  </ul>
+                {/* Foto Central Destaque */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="absolute z-20 w-[150px] h-[180px] rounded-2xl overflow-hidden border-4 border-primary shadow-[0_15px_40px_rgba(224,31,71,0.45)] shrink-0"
+                >
+                  <img src={paywallCenter} alt="" className="w-full h-full object-cover" loading="eager" decoding="async" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                </motion.div>
+              </div>
+            </div>
 
-                  <Button
-                    onClick={(e) => { e.stopPropagation(); setTab(plan.id); startPurchase(plan.id); }}
-                    disabled={playLoading}
-                    data-track="plan_cta_click"
-                    data-plano={plan.id}
-                    className="btn-attention-shine mt-auto w-full h-14 rounded-xl bg-primary text-primary-foreground font-display font-extrabold text-base sm:text-lg tracking-wide hover:brightness-95 transition-all"
-                  >
-                    {playLoading && isActive ? (
-                      <span className="flex items-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> Processando…</span>
-                    ) : (
-                      <span>Começar {plan.trial}</span>
-                    )}
-                  </Button>
-                  <p className="text-center font-body text-[10px] text-muted-foreground mt-2">
-                    Cancele quando quiser
-                  </p>
+            {/* Headline & Subtitle */}
+            <div className="space-y-2">
+              <p className="font-display text-[11px] font-extrabold uppercase tracking-[0.2em] text-[#f97316]">
+                PROJETO DIREITO PRIME PRO
+              </p>
+              <h1 className="font-display text-2xl sm:text-3xl font-black text-foreground leading-tight px-2">
+                Chegue no topo da sua carreira na sua melhor versão.
+              </h1>
+            </div>
+
+            {/* Checklist de Benefícios */}
+            <div className="space-y-2 pt-2 text-left max-w-sm mx-auto px-4">
+              <div className="flex items-center gap-2.5">
+                <div className="w-5 h-5 rounded-full bg-[#f97316]/20 flex items-center justify-center shrink-0">
+                  <Check className="w-3.5 h-3.5 text-[#f97316]" strokeWidth={3} />
+                </div>
+                <span className="font-body text-sm font-semibold text-foreground/90">Aulas em Trilhas, Slides e Questões por matéria</span>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <div className="w-5 h-5 rounded-full bg-[#f97316]/20 flex items-center justify-center shrink-0">
+                  <Check className="w-3.5 h-3.5 text-[#f97316]" strokeWidth={3} />
+                </div>
+                <span className="font-body text-sm font-semibold text-foreground/90">Vade Mecum Inteligente com IA e Resumos</span>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <div className="w-5 h-5 rounded-full bg-[#f97316]/20 flex items-center justify-center shrink-0">
+                  <Check className="w-3.5 h-3.5 text-[#f97316]" strokeWidth={3} />
+                </div>
+                <span className="font-body text-sm font-semibold text-foreground/90">Todas as funcionalidades do DIREITO PRIME PRO</span>
+              </div>
+            </div>
+
+            {/* Card Principal de Preço com Badge 50% OFF */}
+            <div className="pt-4 px-2">
+              <div className="relative rounded-2xl border-2 border-primary bg-card/90 p-5 shadow-2xl text-center space-y-3">
+                {/* Badge 50% OFF sobreposto na borda */}
+                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-[#f97316] text-white font-display text-xs font-black tracking-wider uppercase shadow-md">
+                  50% OFF
                 </div>
 
-              );
-            })}
+                <p className="font-display text-xs font-bold uppercase tracking-widest text-muted-foreground pt-1">
+                  DIREITO PRIME PRO ANUAL
+                </p>
 
-          </div>
+                <div className="flex items-baseline justify-center gap-2">
+                  <span className="text-sm text-muted-foreground line-through font-semibold">R$ 199,90</span>
+                  <span className="font-display text-3xl sm:text-4xl font-black text-foreground">R$ 99,90</span>
+                  <span className="text-xs font-semibold text-muted-foreground">/ano</span>
+                </div>
+
+                <p className="text-xs font-bold text-[#f97316]">
+                  Apenas R$ 8,33 por mês
+                </p>
+              </div>
+            </div>
+
+            {/* Botão CTA Principal de Alta Conversão */}
+            <div className="pt-2 px-2 space-y-3">
+              <Button
+                onClick={() => startPurchase(tab === 'mensal' ? 'mensal' : 'anual')}
+                disabled={playLoading}
+                className="w-full h-14 rounded-2xl bg-gradient-to-r from-[hsl(0_72%_52%)] via-[#f97316] to-[hsl(348_78%_38%)] text-white font-display text-lg font-black tracking-wider shadow-[0_10px_30px_rgba(249,115,22,0.4)] hover:brightness-110 active:scale-[0.99] transition-all"
+              >
+                {playLoading ? (
+                  <span className="flex items-center gap-2"><Loader2 className="w-5 h-5 animate-spin" /> Processando…</span>
+                ) : (
+                  <span>Aproveitar 50% OFF</span>
+                )}
+              </Button>
+
+              <p className="text-[11px] text-muted-foreground text-center leading-tight">
+                Renovação automática no plano escolhido. Cancele quando quiser nas configurações da loja.
+              </p>
+
+              <div className="flex items-center justify-center gap-4 text-[11px] text-muted-foreground/80 font-medium pt-1">
+                <button onClick={() => navigate('/suporte')} className="hover:underline">Termos de Uso</button>
+                <span>•</span>
+                <button onClick={() => navigate('/suporte')} className="hover:underline">Privacidade</button>
+              </div>
+            </div>
 
           {/* Feature checklist */}
           <motion.div
