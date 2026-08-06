@@ -8,7 +8,7 @@ import NoticiaViewerSheet from '@/components/vademecum/NoticiaViewerSheet';
 import BlogPostSheet from '@/components/vademecum/BlogPostSheet';
 import ObraDetailSheet, { type Obra } from '@/components/tematica/ObraDetailSheet';
 import LivroDetailSheet from '@/components/biblioteca/LivroDetailSheet';
-import type { LivroNormalizado } from '@/lib/bibliotecaColecoes';
+import { findColecao, normalizeLivro, type LivroNormalizado } from '@/lib/bibliotecaColecoes';
 import { BLOG_POSTS, TEMA_COLORS, type BlogPost } from '@/data/blogPosts';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -17,14 +17,7 @@ const MAX_NEWS = 8;
 const MAX_OBRAS = 6;
 const MAX_LIVROS = 12;
 
-type Livro = {
-  id: number | string;
-  livro: string | null;
-  autor: string | null;
-  area: string | null;
-  imagem: string | null;
-  link: string | null;
-};
+type Livro = any;
 
 type FeedItem =
   | { kind: 'noticia'; id: string; data: Noticia }
@@ -253,7 +246,7 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
     (async () => {
       const { data } = await supabase
         .from('biblioteca_classicos')
-        .select('id, livro, autor, area, imagem, link')
+        .select('id, livro, autor, area, imagem, sobre, link, download, capa_horizontal, ano_lancamento, editora, curiosidades, analise_detalhada')
         .not('imagem', 'is', null)
         .limit(MAX_LIVROS);
       if (data) setLivros((data as unknown) as Livro[]);
@@ -314,24 +307,24 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
     else if (item.kind === 'blog') setSelectedPost(item.data);
     else if (item.kind === 'livro') {
       const l = item.data;
-      const normalized: LivroNormalizado = {
+      const colecaoClassicos = findColecao('classicos');
+      const normalized = colecaoClassicos ? normalizeLivro(l, colecaoClassicos) : {
         id: l.id,
         titulo: l.livro ?? 'Clássico',
         autor: l.autor,
-        sobre: null,
+        sobre: l.sobre,
         capa: l.imagem,
         link: l.link,
-        download: null,
+        download: l.download,
         area: l.area,
         colecaoId: 'classicos',
-        capaHorizontal: null,
-        anoLancamento: null,
-        editora: null,
-        curiosidades: null,
-        analiseDetalhada: null,
+        capaHorizontal: l.capa_horizontal,
+        anoLancamento: l.ano_lancamento,
+        editora: l.editora,
+        curiosidades: l.curiosidades,
+        analiseDetalhada: l.analise_detalhada,
       };
       setSelectedLivro(normalized);
-      navigate('/bibliotecas/classicos', { replace: true });
     }
     else setSelectedObra(item.data);
   };

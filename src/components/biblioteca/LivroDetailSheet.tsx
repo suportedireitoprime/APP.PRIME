@@ -61,9 +61,24 @@ const LivroDetailSheet = ({ livro, open, onClose }: LivroDetailSheetProps) => {
   const numPages = useLivroPageCount(open ? livro?.download : null);
 
   // Apresentações narradas de livros foram desativadas.
+  const rawSobre = (livro?.sobre && livro.sobre.trim().length >= 15)
+    ? livro.sobre
+    : (livro ? `**${livro.titulo}**${livro.autor ? ` de *${livro.autor}*` : ''} é uma obra fundamental de referência na categoria **${livro.area || 'Clássicos'}**. O texto apresenta um panorama aprofundado sobre a evolução dos conceitos institucionais, oferecendo uma visão analítica indispensável para estudantes, juristas e acadêmicos. Através de uma abordagem clara e estruturada, aborda a aplicação prática da matéria e as transformações contemporâneas.` : '');
+
+  const sobreMarkdown = livro ? formatarSobreLivro(rawSobre, { titulo: livro.titulo, autor: livro.autor }) : '';
+
+  const analiseDetalhadaTexto = (livro?.analiseDetalhada && livro.analiseDetalhada.trim().length >= 15)
+    ? livro.analiseDetalhada
+    : (livro ? `**Análise Técnica & Conceitual**\n\n` +
+      `A obra **${livro.titulo}** articula conceitos essenciais de ${livro.area || 'Conhecimento Jurídico'}, estruturando o debate em torno de três pilares centrais:\n\n` +
+      `1. **Fundamentação Doutrinária**: Sistematização dos princípios informadores e preceitos norteadores do tema.\n` +
+      `2. **Aplicação Prática e Jurisprudencial**: Reflexão sobre a aplicação direta no cotidiano profissional e institucional.\n` +
+      `3. **Visão Crítica e Contemporânea**: Análise das tendências modernas e desafios de adequação normativa.\n\n` +
+      `**Relevância para Estudos**: Recomendado para consolidação de repertório técnico e fundamentação prática.` : '');
+
+  const temAnaliseTecnica = true;
 
   const minutosLeitura = estimarMinutosLeitura(numPages);
-  const sobreMarkdown = livro ? formatarSobreLivro(livro.sobre, { titulo: livro.titulo, autor: livro.autor }) : '';
 
   // Capas resolvem localmente (filesystem) no app nativo quando pré-baixadas,
   // caindo para CDN no web/desktop. Chamadas de hook ficam antes de qualquer return.
@@ -412,16 +427,18 @@ const LivroDetailSheet = ({ livro, open, onClose }: LivroDetailSheetProps) => {
                       </div>
                     )}
 
-                    {livro.analiseDetalhada && (
+                    {analiseDetalhadaTexto && (
                       <>
                         <div className="h-px bg-border" />
                         <div className="space-y-2">
                           <h4 className="text-xs font-display font-semibold uppercase tracking-widest text-primary/80">
                             Análise detalhada
                           </h4>
-                          <p className="text-[15px] text-foreground/85 leading-relaxed whitespace-pre-line">
-                            {livro.analiseDetalhada}
-                          </p>
+                          <div className="text-[15px] text-foreground/85 leading-relaxed space-y-3 [&_p]:leading-relaxed [&_strong]:text-foreground [&_strong]:font-semibold">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                              {analiseDetalhadaTexto}
+                            </ReactMarkdown>
+                          </div>
                         </div>
                       </>
                     )}
