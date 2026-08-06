@@ -152,7 +152,7 @@ const HeroTribunal = ({ onAcessar, onConhecer }: Props) => {
       {/* Conteúdo */}
       <div
         className="relative z-10 flex-1 flex flex-col items-center justify-center text-center gap-5 px-5 sm:px-8 py-16 md:py-20 max-w-4xl mx-auto w-full"
-        style={{ paddingTop: 'calc(4rem + var(--sai-top, env(safe-area-inset-top, 0px)))' }}
+        style={{ paddingTop: 'calc(6rem + var(--sai-top, env(safe-area-inset-top, 0px)))' }}
       >
         <h1
           className="lp-title lp-sheen font-legal font-black leading-[1.05] tracking-tight"

@@ -109,7 +109,7 @@ const Landing = () => {
         {/* Navbar sobre o hero */}
         <nav
           className="absolute top-0 inset-x-0 z-30 px-4 lg:px-8"
-          style={{ paddingTop: 'max(var(--sai-top, env(safe-area-inset-top, 0px)), 1.25rem)' }}
+          style={{ paddingTop: 'calc(1.25rem + var(--sai-top, env(safe-area-inset-top, 0px)))' }}
         >
           <div className="flex flex-row items-center justify-between gap-3 max-w-7xl mx-auto">
             <Link to="/landing" className="flex items-center gap-3 min-w-0">

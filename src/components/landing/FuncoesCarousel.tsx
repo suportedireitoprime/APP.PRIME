@@ -12,7 +12,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 
-const AUTOPLAY_MS = 6000;
+const AUTOPLAY_MS = 2800;
 
 type Funcao = {
   id: string;
