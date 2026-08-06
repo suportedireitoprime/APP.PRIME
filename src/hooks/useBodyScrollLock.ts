@@ -12,7 +12,7 @@ const apply = () => {
 };
 
 /**
- * Ao liberar, limpamos os estilos inline para restaurar o comportamento normal.
+ * Ao liberar, limpamos TODOS os estilos inline para restaurar o comportamento normal.
  */
 const release = () => {
   if (lockCount !== 0) return;
@@ -21,6 +21,10 @@ const release = () => {
   b.style.overflow = '';
   b.style.touchAction = '';
   b.style.overscrollBehavior = '';
+  b.style.position = '';
+  b.style.top = '';
+  b.style.width = '';
+  b.style.pointerEvents = '';
   h.style.overflow = '';
 };
 

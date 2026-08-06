@@ -25,6 +25,7 @@ import { useFeatureLimit } from '@/hooks/useFeatureLimit';
 import PremiumGate from '@/components/PremiumGate';
 import LembreteSheet from '@/components/lembretes/LembreteSheet';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
+import { useBodyScrollLock, resetBodyScrollLock } from '@/hooks/useBodyScrollLock';
 import { useNavigate } from 'react-router-dom';
 import { Library } from 'lucide-react';
 import { copiarTexto } from '@/lib/nativo/copiar';
@@ -84,35 +85,8 @@ const LivroDetailSheet = ({ livro, open, onClose }: LivroDetailSheetProps) => {
     return () => unsub();
   }, [livro, open]);
 
-  // Lock scroll do body/html e trava a posição enquanto o sheet estiver aberto.
-  // Impede que gestos passem para a página atrás (iOS/Android).
-  useEffect(() => {
-    if (!open) return;
-    const scrollY = window.scrollY;
-    const bodyPrev = {
-      overflow: document.body.style.overflow,
-      position: document.body.style.position,
-      top: document.body.style.top,
-      width: document.body.style.width,
-      touchAction: document.body.style.touchAction,
-    };
-    const htmlPrev = document.documentElement.style.overflow;
-    document.body.style.overflow = 'hidden';
-    document.body.style.position = 'fixed';
-    document.body.style.top = `-${scrollY}px`;
-    document.body.style.width = '100%';
-    document.body.style.touchAction = 'none';
-    document.documentElement.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = bodyPrev.overflow;
-      document.body.style.position = bodyPrev.position;
-      document.body.style.top = bodyPrev.top;
-      document.body.style.width = bodyPrev.width;
-      document.body.style.touchAction = bodyPrev.touchAction;
-      document.documentElement.style.overflow = htmlPrev;
-      window.scrollTo(0, scrollY);
-    };
-  }, [open]);
+  // Trava scroll do fundo enquanto a folha estiver aberta sem alterar position:fixed no body
+  useBodyScrollLock(open);
 
   // Reset síncrono do scroll no mount/troca de livro. O `key={livro.id}` no
   // container abaixo força remount, então este effect roda com scrollTop já 0.
@@ -210,9 +184,9 @@ const LivroDetailSheet = ({ livro, open, onClose }: LivroDetailSheetProps) => {
             key="backdrop"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            exit={{ opacity: 0, pointerEvents: 'none' }}
             transition={{ duration: 0.2 }}
-            onClick={onClose}
+            onClick={handleClose}
             onTouchMove={(e) => e.preventDefault()}
             onWheel={(e) => e.preventDefault()}
             style={{ touchAction: 'none' }}
@@ -226,7 +200,7 @@ const LivroDetailSheet = ({ livro, open, onClose }: LivroDetailSheetProps) => {
             key="sheet"
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
-            exit={{ y: '100%' }}
+            exit={{ y: '100%', pointerEvents: 'none' }}
             transition={{ type: 'spring', stiffness: 260, damping: 30 }}
             className="fixed inset-x-0 bottom-0 z-[1001] h-[90dvh] mx-auto w-full md:max-w-[720px] bg-background flex flex-col overflow-hidden rounded-t-3xl md:border md:border-border md:border-b-0 shadow-[0_-8px_32px_-8px_rgba(0,0,0,0.5)]"
           >
@@ -235,7 +209,7 @@ const LivroDetailSheet = ({ livro, open, onClose }: LivroDetailSheetProps) => {
             {/* Header flutuante — botão chevron-down + favoritar */}
             <div className="absolute top-[calc(var(--sai-top,0px)+0.75rem)] left-4 z-20 flex gap-2">
               <button
-                onClick={onClose}
+                onClick={handleClose}
                 aria-label="Fechar"
                 className="w-11 h-11 rounded-full bg-white/15 hover:bg-white/25 backdrop-blur-xl backdrop-saturate-150 transition-colors flex items-center justify-center border border-white/25 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.25)]"
               >

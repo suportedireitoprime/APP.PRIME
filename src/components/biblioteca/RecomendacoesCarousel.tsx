@@ -370,62 +370,7 @@ const RecomendacoesCarousel = ({ onAbrirLivro }: Props) => {
                 key={cardKey}
                 data-cover-item
                 type="button"
-                onTouchStart={(e) => {
-                  const tch = e.touches[0];
-                  if (!tch) return;
-                  tapRef.current = {
-                    pointerId: -1,
-                    x: tch.clientX,
-                    y: tch.clientY,
-                    livroKey: cardKey,
-                    t: Date.now(),
-                    moved: 0,
-                    startScroll: scrollerRef.current?.scrollLeft ?? 0,
-                  };
-                }}
-                onTouchMove={(e) => {
-                  const t = tapRef.current;
-                  const tch = e.touches[0];
-                  if (!t || !tch) return;
-                  t.moved = Math.max(
-                    t.moved,
-                    Math.abs(tch.clientX - t.x),
-                    Math.abs(tch.clientY - t.y),
-                  );
-                }}
-                onTouchEnd={(e) => {
-                  const t = tapRef.current;
-                  tapRef.current = null;
-                  if (!t || t.livroKey !== cardKey) return;
-                  const tch = e.changedTouches[0];
-                  if (tch) {
-                    t.moved = Math.max(
-                      t.moved,
-                      Math.abs(tch.clientX - t.x),
-                      Math.abs(tch.clientY - t.y),
-                    );
-                  }
-                  if (t.moved > 12) return; // arrasto/rolagem
-                  if (Date.now() - t.t > 900) return;
-                  openThis();
-                }}
-                onTouchCancel={() => {
-                  tapRef.current = null;
-                }}
-                onPointerDown={(e) => {
-                  if (e.pointerType !== 'mouse') return;
-                  tapRef.current = {
-                    pointerId: e.pointerId,
-                    x: e.clientX,
-                    y: e.clientY,
-                    livroKey: cardKey,
-                    t: Date.now(),
-                    moved: 0,
-                    startScroll: scrollerRef.current?.scrollLeft ?? 0,
-                  };
-                }}
                 onClick={(e) => {
-                  // Mouse / teclado (Enter/Espaço).
                   if ((dragRef.current?.moved ?? 0) > 6) {
                     e.preventDefault();
                     return;
@@ -433,7 +378,7 @@ const RecomendacoesCarousel = ({ onAbrirLivro }: Props) => {
                   openThis();
                 }}
                 draggable={false}
-                className="shrink-0 snap-center outline-none group"
+                className="shrink-0 snap-center outline-none group cursor-pointer"
                 style={{ width: CARD_W, touchAction: 'pan-x pan-y' }}
                 aria-label={livro.titulo}
               >

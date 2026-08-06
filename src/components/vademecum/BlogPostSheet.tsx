@@ -128,7 +128,7 @@ export default function BlogPostSheet({ post, onClose, showGoTo = false, inline 
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              exit={{ opacity: 0, pointerEvents: 'none' }}
               transition={{ duration: 0.15 }}
               className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md"
               onClick={handleClose}
@@ -141,7 +141,7 @@ export default function BlogPostSheet({ post, onClose, showGoTo = false, inline 
             aria-modal={!inline}
             initial={inline ? { opacity: 0, y: 8 } : { y: '100%' }}
             animate={inline ? { opacity: 1, y: 0 } : { y: 0 }}
-            exit={inline ? { opacity: 0, y: 8 } : { y: '100%' }}
+            exit={inline ? { opacity: 0, y: 8 } : { y: '100%', pointerEvents: 'none' }}
             transition={inline ? { duration: 0.22, ease: 'easeOut' } : { type: 'spring', damping: 30, stiffness: 340 }}
             className={
               inline
