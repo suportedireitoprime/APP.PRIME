@@ -135,7 +135,7 @@ const PraticarLei = lazy(() => import("./pages/PraticarLei.tsx"));
 const PraticarSessao = lazy(() => import("./pages/PraticarSessao.tsx"));
 const Estudar = lazy(routePrefetch.estudos);
 const EstudosHub = lazy(() => import("./pages/EstudosHub.tsx"));
-const Aprender = lazy(() => import("./pages/Aprender.tsx"));
+const Aprender = lazy(routePrefetch.aprender);
 const VadeMecum = lazy(() => import("./pages/VadeMecum.tsx"));
 const VadeMecumCodigos = lazy(() => import("./pages/VadeMecumCodigos.tsx"));
 const VadeMecumSumulas = lazy(() => import("./pages/VadeMecumSumulas.tsx"));
