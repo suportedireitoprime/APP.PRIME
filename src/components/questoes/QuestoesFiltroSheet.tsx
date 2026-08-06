@@ -57,7 +57,30 @@ type Counts = {
   total: number;
 };
 
-const VAZIO: Counts = { segmentos: {}, disciplinas: {}, assuntos: {}, anos: {}, total: 0 };
+const DEFAULT_COUNTS: Counts = {
+  segmentos: { conceituais: 4098, concursos: 7466, policiais: 3120, oab: 1195 },
+  disciplinas: {},
+  assuntos: {},
+  anos: {},
+  total: 15879,
+};
+
+let cachedCountsMemory: Counts | null = null;
+function getInitialCounts(): Counts {
+  if (cachedCountsMemory) return cachedCountsMemory;
+  try {
+    const raw = sessionStorage.getItem('questoes:counts-cache');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object' && parsed.segmentos && Object.keys(parsed.segmentos).length > 0) {
+        cachedCountsMemory = parsed;
+        return parsed;
+      }
+    }
+  } catch { /* noop */ }
+  return DEFAULT_COUNTS;
+}
+
 const fmt = (n: number) => n.toLocaleString('pt-BR');
 
 /* -------------------------------------------------- passo numerado */
@@ -245,7 +268,7 @@ const QuestoesFiltroSheet = ({
 }) => {
   const [f, setF] = useState<QuestoesFiltro>(() => lerFiltroSalvo() ?? FILTRO_VAZIO);
   const [passo, setPasso] = useState<null | 'segmento' | 'disciplinas' | 'assuntos' | 'anos' | 'status' | 'quantidade'>(null);
-  const [counts, setCounts] = useState<Counts>(VAZIO);
+  const [counts, setCounts] = useState<Counts>(getInitialCounts);
   const [carregando, setCarregando] = useState(false);
 
   // Contagens reais do banco conforme o que já foi escolhido
@@ -262,7 +285,11 @@ const QuestoesFiltroSheet = ({
     }).then(({ data, error }: any) => {
       if (cancelado) return;
       if (error) console.error('[questoes] counts', error);
-      setCounts({ ...VAZIO, ...(data ?? {}) });
+      if (data) {
+        setCounts(data);
+        cachedCountsMemory = data;
+        try { sessionStorage.setItem('questoes:counts-cache', JSON.stringify(data)); } catch { /* noop */ }
+      }
       setCarregando(false);
     });
     return () => { cancelado = true; };
