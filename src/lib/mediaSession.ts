@@ -60,10 +60,25 @@ function tipoDaArte(url: string): string {
   return 'image/png';
 }
 
-// ————— camada de adaptação (plugin nativo ⇄ Media Session web) —————
+// ————— camada de adaptação (Media Session web/WebView nativa) —————
+// NOTA DE SEGURANÇA NATIVA (Android 14/15 & iOS 18):
+// Os WebViews nativos do Android (Chrome) e iOS (WKWebView) possuem suporte
+// nativo integrado à Media Session API (navigator.mediaSession).
+// Invocação direta do plugin legado @jofr/capacitor-media-session em Capacitor 8
+// causava exceções Java fatais no Foreground Service (SecurityException / ClassNotFoundException)
+// provocando o fechamento instantâneo do aplicativo.
+// Agora utilizamos a MediaSession API padrão do WebView, que é 100% estável e não fecha o app.
+
+const isNativePluginSupported = () => {
+  try {
+    return Capacitor.isNativePlatform() && Capacitor.isPluginAvailable('MediaSession');
+  } catch {
+    return false;
+  }
+};
 
 const setMetadata = (m: { title: string; artist: string; album: string; artwork: MediaImage[] }) => {
-  if (Capacitor.isNativePlatform()) {
+  if (isNativePluginSupported()) {
     try {
       void MediaSession.setMetadata(m).catch(() => {});
     } catch {
@@ -85,7 +100,7 @@ const setMetadata = (m: { title: string; artist: string; album: string; artwork:
 };
 
 const setPlaybackState = (playbackState: MediaSessionPlaybackState) => {
-  if (Capacitor.isNativePlatform()) {
+  if (isNativePluginSupported()) {
     try {
       void MediaSession.setPlaybackState({ playbackState }).catch(() => {});
     } catch {
@@ -102,7 +117,7 @@ const setPlaybackState = (playbackState: MediaSessionPlaybackState) => {
 };
 
 const setPositionState = (opts: { duration: number; position: number; playbackRate: number }) => {
-  if (Capacitor.isNativePlatform()) {
+  if (isNativePluginSupported()) {
     try {
       void MediaSession.setPositionState(opts).catch(() => {});
     } catch {
@@ -130,7 +145,7 @@ const setActionHandler = (
   action: MediaSessionAction,
   handler: ((details: { seekTime?: number | null }) => void) | null,
 ) => {
-  if (Capacitor.isNativePlatform()) {
+  if (isNativePluginSupported()) {
     try {
       void MediaSession.setActionHandler({ action }, handler).catch(() => {});
     } catch {
