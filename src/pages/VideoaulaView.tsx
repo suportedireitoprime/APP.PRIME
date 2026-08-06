@@ -5,12 +5,13 @@ import remarkGfm from 'remark-gfm';
 import { supabase } from '@/integrations/supabase/client';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 const VideoaulaAcoesBar = lazy(() => import('@/components/videoaulas/VideoaulaAcoesBar'));
+import { AnotacoesAulaSheet } from '@/components/videoaulas/AnotacoesAulaSheet';
 import { useVideoaulaResumo, type AulaCtxInput } from '@/hooks/useVideoaulaAcao';
 import { preaquecerYoutubeApi, useYoutubePlayer } from '@/hooks/useYoutubePlayer';
 import { getCatalogo, limparTitulo, ytThumb } from '@/lib/videoaulasCatalogos';
 import { useAuth } from '@/hooks/useAuth';
 import { normalizarMarkdown } from '@/lib/markdown';
-import { CheckCircle2, Loader2, Play, Star } from 'lucide-react';
+import { CheckCircle2, FileText, Loader2, Play, Star } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { getCachedAula, invalidarFavoritos, invalidarProgresso } from '@/lib/videoaulasStore';
@@ -61,6 +62,7 @@ const VideoaulaView = () => {
   const [tocando, setTocando] = useState(true);
   const [tempoAtual, setTempoAtual] = useState(0);
   const [duracao, setDuracao] = useState(0);
+  const [showAnotacoes, setShowAnotacoes] = useState(false);
   const salvandoRef = useRef(false);
   const pctAtual = duracao > 0 ? Math.min(100, Math.round((tempoAtual / duracao) * 100)) : 0;
 
@@ -198,7 +200,8 @@ const VideoaulaView = () => {
       const p = playerRef.current;
       if (!p?.getCurrentTime) return;
       setTempoAtual(p.getCurrentTime() || 0);
-      setDuracao(p.getDuration?.() || 0);
+      const d = p.getDuration ? p.getDuration() : 0;
+      if (d) setDuracao(d);
     }, 500);
     return () => window.clearInterval(id);
   }, [tocando, playerRef]);
@@ -209,22 +212,21 @@ const VideoaulaView = () => {
 
 
 
-  const tituloLimpo = useMemo(() => limparTitulo(aula?.titulo ?? 'Videoaula'), [aula]);
-
-  const input: AulaCtxInput | null = useMemo(
-    () =>
-      aula && catalogo
-        ? {
-            videoId: aula.video_id,
-            titulo: tituloLimpo,
-            tabela: catalogo.tabela,
-            area: aula.area ?? '',
-            conteudo: aula.sobre_aula ?? '',
-            descricao: aula.descricao ?? '',
-          }
-        : null,
-    [aula, catalogo, tituloLimpo],
+  const tituloLimpo = useMemo(
+    () => (aula?.titulo ? limparTitulo(aula.titulo) : 'Aula'),
+    [aula?.titulo],
   );
+
+  const input: AulaCtxInput | null = useMemo(() => {
+    if (!catalogo || !videoId || !aula) return null;
+    return {
+      tabela: catalogo.tabela,
+      videoId,
+      titulo: tituloLimpo,
+      area: aula.area ?? catalogo.titulo,
+      descricao: aula.sobre_aula || aula.descricao || undefined,
+    };
+  }, [catalogo, videoId, aula, tituloLimpo]);
 
   // O panorama por IA só é pedido depois do primeiro paint, para não competir
   // com o carregamento da tela.
@@ -235,17 +237,12 @@ const VideoaulaView = () => {
   }, [videoId]);
 
   const resumo = useVideoaulaResumo(
-    podeResumir && aula && catalogo
-      ? { videoId: aula.video_id, titulo: tituloLimpo, area: aula.area ?? '', tabela: catalogo.tabela }
-      : null,
+    podeResumir ? input : null
   );
 
   const toggleFavorito = async () => {
+    if (!userId || !catalogo || !aula) return;
     haptic.selection();
-    if (!userId || !catalogo || !aula) {
-      toast.info('Entre na sua conta para favoritar.');
-      return;
-    }
     if (favorito) {
       await supabase
         .from('videoaulas_favoritos')
@@ -324,9 +321,9 @@ const VideoaulaView = () => {
         }
       />
 
-      <div className="lg:max-w-7xl lg:mx-auto lg:px-6 lg:pt-4 lg:grid lg:grid-cols-12 lg:gap-6 lg:items-start">
-        {/* ── Sidebar Lateral Esquerda: Lista de Aulas da Matéria (Desktop Apenas) ───── */}
-        <aside className="hidden lg:block lg:col-span-3 space-y-3 bg-card/40 border border-border/60 rounded-2xl p-4 shadow-sm max-h-[82vh] overflow-y-auto">
+      <div className="w-full 2xl:max-w-[1750px] mx-auto px-2 sm:px-4 lg:px-6 lg:pt-4 lg:grid lg:grid-cols-12 lg:gap-6 lg:items-start">
+        {/* ── Sidebar Lateral Esquerda: Lista de Aulas da Matéria (Desktop - Colada na Esquerda) ───── */}
+        <aside className="hidden lg:block lg:col-span-3 xl:col-span-3 space-y-3 bg-card/40 border border-border/60 rounded-2xl p-4 shadow-sm max-h-[85vh] overflow-y-auto">
           <div className="flex items-center justify-between border-b border-border/60 pb-2.5">
             <h2 className="text-sm font-bold text-foreground">Aulas da Matéria</h2>
             <span className="text-[11px] font-semibold text-primary px-2 py-0.5 rounded-full bg-primary/10">
@@ -353,8 +350,11 @@ const VideoaulaView = () => {
                 >
                   <div className="relative w-16 h-10 shrink-0 rounded-lg overflow-hidden bg-black/60 border border-white/10">
                     <img
-                      src={item.thumb ?? item.thumbnail ?? ytThumb(item.video_id, 'hq')}
+                      src={item.thumb ?? item.thumbnail ?? ytThumb(item.video_id, 'mq')}
                       alt=""
+                      loading="eager"
+                      decoding="async"
+                      {...({ fetchpriority: 'high' } as any)}
                       className="w-full h-full object-cover"
                     />
                     {eAtivo && (
@@ -374,8 +374,8 @@ const VideoaulaView = () => {
           </div>
         </aside>
 
-        {/* ── Coluna Principal Central: Player de Vídeo e Controles ───────────── */}
-        <div className="lg:col-span-5 xl:col-span-5 space-y-4">
+        {/* ── Coluna Principal Central: Player de Vídeo Expandido & Centralizado ───────────── */}
+        <div className="lg:col-span-6 xl:col-span-6 space-y-4">
           <div className="relative w-full bg-black aspect-video lg:rounded-2xl lg:overflow-hidden lg:shadow-2xl lg:border lg:border-white/10">
             {tocando ? (
               <div ref={containerRef} className="h-full w-full" />
@@ -387,11 +387,13 @@ const VideoaulaView = () => {
                 className="group absolute inset-0 h-full w-full"
               >
                 <img
-                  src={aula?.thumb ?? aula?.thumbnail ?? ytThumb(videoId, 'hq')}
+                  src={aula?.thumb ?? aula?.thumbnail ?? ytThumb(videoId, 'mq')}
                   alt={`Capa da aula ${tituloLimpo}`}
                   width={480}
                   height={360}
+                  loading="eager"
                   decoding="async"
+                  {...({ fetchpriority: 'high' } as any)}
                   className="absolute inset-0 h-full w-full object-cover"
                 />
                 <span className="absolute inset-0 grid place-items-center bg-black/30">
@@ -414,7 +416,7 @@ const VideoaulaView = () => {
               <span>{formatTempo(tempoAtual)}</span>
               <span>{duracao > 0 ? formatTempo(duracao) : '--:--'}</span>
             </div>
-            <h1 className="text-[17px] sm:text-xl lg:text-xl font-bold leading-snug text-foreground">{tituloLimpo}</h1>
+            <h1 className="text-[17px] sm:text-xl lg:text-2xl font-bold leading-snug text-foreground">{tituloLimpo}</h1>
             <p className="text-[12px] sm:text-sm text-muted-foreground">
               {aula?.area ?? catalogo.titulo}
               {duracao > 0 ? ` • ${formatTempo(duracao)}` : ''}
@@ -422,11 +424,11 @@ const VideoaulaView = () => {
             </p>
           </div>
 
-          <div className="flex items-center gap-2 px-3 lg:px-0">
+          <div className="flex items-center gap-2 px-3 lg:px-0 flex-wrap">
             <button
               onClick={toggleFavorito}
               className={cn(
-                'inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[13px] font-medium transition-colors',
+                'inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-colors',
                 favorito
                   ? 'border-primary bg-primary/10 text-primary'
                   : 'border-border text-muted-foreground hover:text-foreground',
@@ -437,7 +439,7 @@ const VideoaulaView = () => {
             <button
               onClick={marcarConcluida}
               className={cn(
-                'inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[13px] font-medium transition-colors',
+                'inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-colors',
                 concluida
                   ? 'border-primary bg-primary/10 text-primary'
                   : 'border-border text-muted-foreground hover:text-foreground',
@@ -445,16 +447,22 @@ const VideoaulaView = () => {
             >
               <CheckCircle2 className="h-4 w-4" /> {concluida ? 'Concluída' : 'Concluir'}
             </button>
+            <button
+              onClick={() => setShowAnotacoes(true)}
+              className="inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 text-primary px-3.5 py-1.5 text-[13px] font-semibold transition-colors hover:bg-primary/20"
+            >
+              <FileText className="h-4 w-4" /> Anotações (Áudio/IA)
+            </button>
           </div>
         </div>
 
-        {/* ── Coluna Lateral Direita: Ações da Aula (Desktop Cards) & Panorama ──── */}
-        <div className="lg:col-span-4 xl:col-span-4 pt-3 lg:pt-0 space-y-4 lg:bg-card/40 lg:border lg:border-white/10 lg:rounded-2xl lg:p-4 lg:shadow-xl">
+        {/* ── Coluna Lateral Direita: Ações da Aula (Desktop Cards Alinhados à Direita) & Panorama ──── */}
+        <div className="lg:col-span-3 xl:col-span-3 pt-3 lg:pt-0 space-y-4 lg:bg-card/40 lg:border lg:border-white/10 lg:rounded-2xl lg:p-4 lg:shadow-xl">
           {/* No Desktop: Renderiza a Barra de Ações em formato de cards no painel direito */}
           <div className="hidden lg:block space-y-2 border-b border-border/60 pb-4">
             <h2 className="text-xs font-bold uppercase tracking-wider text-primary">Recursos da Aula</h2>
             <Suspense fallback={<div className="h-20 animate-pulse bg-muted rounded-xl" />}>
-              <VideoaulaAcoesBar input={input} gridLayout gridCols={3} />
+              <VideoaulaAcoesBar input={input} gridLayout gridCols={3} onOpenAnotacoes={() => setShowAnotacoes(true)} />
             </Suspense>
           </div>
 
@@ -546,9 +554,17 @@ const VideoaulaView = () => {
       {/* ── Footer Fixo de Ações APENAS para Telas Mobile (lg:hidden) ───────────── */}
       <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-card/95 backdrop-blur px-2 py-2 pb-[calc(12px+var(--sai-bottom,0px))] lg:hidden">
         <Suspense fallback={<div className="h-14" />}>
-          <VideoaulaAcoesBar input={input} gridLayout gridCols={6} />
+          <VideoaulaAcoesBar input={input} gridLayout gridCols={6} onOpenAnotacoes={() => setShowAnotacoes(true)} />
         </Suspense>
       </div>
+
+      <AnotacoesAulaSheet
+        open={showAnotacoes}
+        onClose={() => setShowAnotacoes(false)}
+        videoId={videoId ?? ''}
+        aulaTitulo={tituloLimpo}
+        areaSlug={areaSlug}
+      />
     </div>
   );
 };

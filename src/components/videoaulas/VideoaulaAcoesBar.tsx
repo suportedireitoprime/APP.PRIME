@@ -64,12 +64,14 @@ interface Props {
   /** Esconde o botão "Questões" da barra. */
   hideQuestoes?: boolean;
   /** Número de colunas quando gridLayout (default 4). */
-  gridCols?: 4 | 5 | 6;
+  gridCols?: 3 | 4 | 5 | 6;
+  /** Callback para abrir o sheet de Anotações da aula */
+  onOpenAnotacoes?: () => void;
 }
 
 type SeletorTipo = "resumos" | "flash" | null;
 
-export default function VideoaulaAcoesBar({ input, gridLayout, extras, hideQuestoes, gridCols = 4 }: Props) {
+export default function VideoaulaAcoesBar({ input, gridLayout, extras, hideQuestoes, gridCols = 4, onOpenAnotacoes }: Props) {
   const [aba, setAba] = useState<AulaAcaoTipo | null>(null);
   const [seletor, setSeletor] = useState<SeletorTipo>(null);
 
@@ -109,7 +111,7 @@ export default function VideoaulaAcoesBar({ input, gridLayout, extras, hideQuest
     </button>
   );
 
-  const gridColsClass = gridCols === 5 ? "grid-cols-5" : gridCols === 6 ? "grid-cols-6" : "grid-cols-4";
+  const gridColsClass = gridCols === 3 ? "grid-cols-3" : gridCols === 5 ? "grid-cols-5" : gridCols === 6 ? "grid-cols-6" : "grid-cols-4";
 
   return (
     <>
@@ -121,6 +123,7 @@ export default function VideoaulaAcoesBar({ input, gridLayout, extras, hideQuest
             : "flex items-stretch gap-1 w-full overflow-x-auto snap-x snap-mandatory scrollbar-none",
         )}
       >
+        {onOpenAnotacoes && <RailBtn icon={FileText} label="Anotações" onClick={onOpenAnotacoes} />}
         <RailBtn icon={Layers} label="Flashcards" onClick={() => setSeletor("flash")} />
         <RailBtn icon={AlertTriangle} label="Pegadinhas" onClick={() => setAba("pegadinhas")} />
         <RailBtn icon={BookOpenText} label="Resumos" onClick={() => setSeletor("resumos")} />
