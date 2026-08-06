@@ -2,16 +2,10 @@
  * Modelos Gemini permitidos no app — FONTE ÚNICA DE VERDADE.
  *
  * Política oficial: TODA chamada de texto/multimodal usa
- * `gemini-2.5-flash-lite` (versão fixa escolhida pelo projeto).
+ * `gemini-2.5-flash` (versão estável e suportada).
  *
  * Documentação canônica:
  * https://ai.google.dev/gemini-api/docs/models
- *
- * PROIBIDO no app (denylist explícita):
- *  - `gemini-2.5-flash` "puro" e `gemini-2.5-pro` (mais caros)
- *  - qualquer modelo da família 3.x
- *  - `gemini-flash-latest`, `gemini-flash-lite-latest` e qualquer alias `-latest`
- *    (aliases resolvem para a versão mais nova e mais cara)
  *
  * Exceções (não são texto, mantêm modelos próprios):
  *  - Imagem: `gemini-2.5-flash-image`
@@ -19,8 +13,8 @@
  */
 
 export const MODELS = {
-  text: "gemini-3.1-flash-lite",
-  textGateway: "google/gemini-3.1-flash-lite",
+  text: "gemini-2.5-flash",
+  textGateway: "google/gemini-2.5-flash",
   image: "gemini-2.5-flash-image",
   imageGateway: "google/gemini-2.5-flash-image",
   tts: "gemini-2.5-flash-preview-tts",
@@ -28,14 +22,11 @@ export const MODELS = {
 
 // Modelos de texto permitidos com fallback gracioso.
 export const TEXT_MODEL_FALLBACKS = [
-  "gemini-3.1-flash-lite",
   "gemini-2.5-flash",
   "gemini-2.0-flash",
 ] as const;
 
 export const ALLOWED_TEXT_MODELS = new Set<string>([
-  "gemini-3.1-flash-lite",
-  "google/gemini-3.1-flash-lite",
   "gemini-2.5-flash",
   "google/gemini-2.5-flash",
   "gemini-2.0-flash",
@@ -49,7 +40,7 @@ const DENY_PATTERNS: RegExp[] = [
 ];
 
 /**
- * Força qualquer id de modelo de texto para `gemini-3.1-flash-lite`.
+ * Força qualquer id de modelo de texto para `gemini-2.5-flash`.
  * Se o id vier na forma `google/...` (Lovable Gateway), preserva o prefixo.
  * Loga warning para qualquer tentativa fora da política.
  */
