@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import {
   Home, Bell, Landmark, Building2, Gavel, ShieldCheck, Briefcase, DollarSign, Scale, FileText,
   HeartPulse, Users, Globe, Leaf, Trophy, Hammer, Coins, Swords, Building, Globe2, AlertTriangle,
-  GraduationCap, Microscope, BookText, ClipboardList, Award, Lightbulb, Sparkles,
+  GraduationCap, Microscope, BookText, ClipboardList, Award, Lightbulb, Sparkles, ChevronRight, BookOpen,
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
@@ -12,6 +12,7 @@ import { PageHeader } from '@/components/vademecum/PageHeader';
 import AprenderBottomNav from '@/components/aprender/AprenderBottomNav';
 import AprenderLembretesSheet from '@/components/aprender/AprenderLembretesSheet';
 import ContinueCarousel from '@/components/aprender/ContinueCarousel';
+import MateriaRow from '@/components/aprender/MateriaRow';
 import MateriaCard from '@/components/aprender/MateriaCard';
 import { getAreaCover } from '@/lib/areasDireitoCovers';
 import { prefetchAprenderArea } from '@/lib/aprenderAreaLoader';
@@ -424,10 +425,14 @@ const Aprender = () => {
                 )}
               </div>
 
-              <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none gap-3.5 pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+              <div className="space-y-6 pt-1">
                 {loading && !data.areas.length ? (
-                  [...Array(6)].map((_, i) => (
-                    <div key={i} className="w-[210px] sm:w-[250px] h-[170px] shrink-0 rounded-2xl bg-muted animate-pulse" />
+                  [...Array(4)].map((_, i) => (
+                    <div key={i} className="space-y-3">
+                      <div className="h-6 w-48 rounded-md bg-muted animate-pulse" />
+                      <div className="h-px w-full bg-border" />
+                      <div className="h-[84px] rounded-2xl bg-muted animate-pulse" />
+                    </div>
                   ))
                 ) : areasOrdenadas.length === 0 ? (
                   <div className="w-full rounded-2xl border border-border bg-card p-8 text-center text-muted-foreground">
@@ -437,15 +442,57 @@ const Aprender = () => {
                       : 'Nenhuma matéria disponível ainda.'}
                   </div>
                 ) : (
-                  areasOrdenadas.map((a) => (
-                    <MateriaCard
-                      key={a.id}
-                      area={a}
-                      icon={areaIconFor(a.slug)}
-                      onOpen={() => navigate(`/aprender/area/${a.slug}`)}
-                      onPrefetch={() => prefetchAprenderArea(a.slug, uid)}
-                    />
-                  ))
+                  areasOrdenadas.map((a) => {
+                    const icon = areaIconFor(a.slug);
+                    return (
+                      <div key={a.id} className="space-y-3">
+                        {/* Título da Matéria / Área */}
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            {icon ? (
+                              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary/10 p-1.5">
+                                <icon.Icon className="h-5 w-5" strokeWidth={2} style={{ color: icon.color }} />
+                              </div>
+                            ) : (
+                              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary">
+                                <BookOpen className="h-4 w-4" />
+                              </div>
+                            )}
+                            <h3
+                              className="text-[17px] font-bold text-foreground font-display tracking-tight truncate"
+                              style={{ fontFamily: "'Barlow', system-ui, sans-serif" }}
+                            >
+                              {a.nome}
+                            </h3>
+                          </div>
+
+                          <div className="flex items-center gap-2 shrink-0">
+                            <span
+                              className={cn(
+                                'rounded-full px-2.5 py-0.5 text-[11px] font-bold tabular-nums border',
+                                a.pct > 0
+                                  ? 'bg-primary/15 text-primary border-primary/30'
+                                  : 'bg-muted text-muted-foreground border-border/50',
+                              )}
+                            >
+                              {a.pct}%
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Linha Divisória Elegante */}
+                        <div className="h-px w-full bg-gradient-to-r from-primary/60 via-border/80 to-transparent" />
+
+                        {/* Card/Linha de Conteúdo da Matéria */}
+                        <MateriaRow
+                          area={a}
+                          icon={icon}
+                          onOpen={() => navigate(`/aprender/area/${a.slug}`)}
+                          onPrefetch={() => prefetchAprenderArea(a.slug, uid)}
+                        />
+                      </div>
+                    );
+                  })
                 )}
               </div>
             </div>
