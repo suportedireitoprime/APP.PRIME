@@ -15,9 +15,13 @@ import inquilinatoImg from '@/assets/blog/inquilinato.png';
 import lgpdImg from '@/assets/blog/lgpd.png';
 import aristotelesImg from '@/assets/blog/aristoteles.png';
 import terrasIndigenasImg from '@/assets/blog/terras-indigenas.png';
+import inquisicaoImg from '@/assets/blog/inquisicao.png';
+import prisao2aInstanciaImg from '@/assets/blog/prisao-2a-instancia.png';
+import clienteDificilImg from '@/assets/blog/cliente-dificil.png';
+import reformaTributariaImg from '@/assets/blog/reforma-tributaria.png';
 
-const KEY = 'blog:posts:v5';
-const LEGACY_KEYS = ['blog:posts:v1', 'blog:posts:v2', 'blog:posts:v3', 'blog:posts:v4'];
+const KEY = 'blog:posts:v6';
+const LEGACY_KEYS = ['blog:posts:v1', 'blog:posts:v2', 'blog:posts:v3', 'blog:posts:v4', 'blog:posts:v5'];
 const TTL_MS = 24 * 60 * 60 * 1000; // 24 h
 
 const LISTA_COLS =
@@ -38,26 +42,79 @@ type RawPost = {
 
 type Cached = { at: number; posts: BlogPost[] };
 
+function createVectorSvgCover(categoria: string, titulo: string): string {
+  const cat = (categoria || 'Leis').toLowerCase();
+  let bgGradient = ['#2D4A3E', '#1B3028']; // Olive green Leis
+  if (cat.includes('stf')) bgGradient = ['#1D3A5D', '#0F233B']; // STF blue
+  else if (cat.includes('filosofia')) bgGradient = ['#4C2D6B', '#2C1642']; // Purple
+  else if (cat.includes('clássicos') || cat.includes('classicos')) bgGradient = ['#7C2D2A', '#451614']; // Earth red
+  else if (cat.includes('curiosidades')) bgGradient = ['#1D5D55', '#0E3631']; // Teal
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675">
+    <defs>
+      <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="${bgGradient[0]}" />
+        <stop offset="100%" stop-color="${bgGradient[1]}" />
+      </linearGradient>
+      <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+        <feDropShadow dx="0" dy="8" stdDeviation="12" flood-opacity="0.35" />
+      </filter>
+    </defs>
+    <rect width="1200" height="675" fill="url(#bg)" />
+    <!-- Subtle Background Motifs -->
+    <g opacity="0.12" stroke="#FFFFFF" stroke-width="2" fill="none">
+      <circle cx="200" cy="150" r="80" />
+      <circle cx="1000" cy="500" r="120" />
+      <path d="M 150 150 L 250 150 M 200 100 L 200 200" />
+      <path d="M 950 500 L 1050 500 M 1000 450 L 1000 550" />
+      <line x1="100" y1="600" x2="1100" y2="600" stroke-width="4" stroke-dasharray="12 12" />
+    </g>
+    <!-- Centered Figure Group with White Stroke Outline (Sticker Halo) -->
+    <g transform="translate(600, 335)" filter="url(#shadow)">
+      <!-- White Halo Background Cutout -->
+      <g stroke="#FFFFFF" stroke-width="14" stroke-linejoin="round" stroke-linecap="round" fill="#FFFFFF">
+        <circle cx="0" cy="-90" r="55" />
+        <path d="M -70 120 C -70 20, 70 20, 70 120 Z" />
+        <rect x="-110" y="40" width="60" height="70" rx="10" />
+        <path d="M 80 -20 L 130 50 L 80 80 Z" />
+      </g>
+      <!-- Main Vector Character -->
+      <circle cx="0" cy="-90" r="48" fill="#EFE1BD" />
+      <path d="M -62 120 C -62 28, 62 28, 62 120 Z" fill="#2C2C2C" />
+      <path d="M -15 28 L 0 65 L 15 28 Z" fill="#8C1220" />
+      <circle cx="0" cy="38" r="7" fill="#C9A26A" />
+      <!-- Book / Folder Prop -->
+      <rect x="-102" y="45" width="52" height="62" rx="6" fill="#8C1220" />
+      <line x1="-90" y1="58" x2="-62" y2="58" stroke="#C9A26A" stroke-width="4" />
+      <line x1="-90" y1="72" x2="-62" y2="72" stroke="#C9A26A" stroke-width="3" />
+      <!-- Scales Prop -->
+      <path d="M 80 -10 L 125 50 M 102.5 -10 L 102.5 75 M 65 75 L 140 75" stroke="#C9A26A" stroke-width="5" stroke-linecap="round" />
+      <path d="M 70 50 L 90 50 L 80 65 Z" fill="#C9A26A" />
+      <path d="M 115 50 L 135 50 L 125 65 Z" fill="#C9A26A" />
+    </g>
+  </svg>`;
+
+  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+}
+
 function resolveCover(p: RawPost): string {
   const t = (p.titulo || '').toLowerCase();
-  if (t.includes('esperança garcia') || t.includes('esperanca garcia')) {
-    return esperancaImg;
+  if (t.includes('esperança garcia') || t.includes('esperanca garcia')) return esperancaImg;
+  if (t.includes('kelsen') || t.includes('pirâmide') || t.includes('piramide')) return kelsenImg;
+  if (t.includes('inquilinato') || t.includes('aluguel') || t.includes('locação') || t.includes('locacao')) return inquilinatoImg;
+  if (t.includes('lgpd') || t.includes('privacidade') || t.includes('multas')) return lgpdImg;
+  if (t.includes('aristóteles') || t.includes('aristoteles')) return aristotelesImg;
+  if (t.includes('terras indígenas') || t.includes('terras indigenas') || t.includes('indígenas')) return terrasIndigenasImg;
+  if (t.includes('inquisição') || t.includes('inquisicao') || t.includes('colônia')) return inquisicaoImg;
+  if (t.includes('segunda instância') || t.includes('segunda instancia') || t.includes('adc 43')) return prisao2aInstanciaImg;
+  if (t.includes('cliente difícil') || t.includes('cliente dificil') || t.includes('ética') || t.includes('etica')) return clienteDificilImg;
+  if (t.includes('reforma tributária') || t.includes('reforma tributaria') || t.includes('tributária')) return reformaTributariaImg;
+
+  // Se for imagem antiga genérica do banco (ex: iftdrbxvekrhzstayjwp ou similar), gera a capa vetorial customizada com contorno branco
+  if (!p.imagem_url || p.imagem_url.includes('iftdrbxvekrhzstayjwp') || p.imagem_url.includes('blog-capas/2026/')) {
+    return createVectorSvgCover(p.categoria, p.titulo);
   }
-  if (t.includes('kelsen') || t.includes('pirâmide') || t.includes('piramide')) {
-    return kelsenImg;
-  }
-  if (t.includes('inquilinato') || t.includes('aluguel') || t.includes('locação') || t.includes('locacao')) {
-    return inquilinatoImg;
-  }
-  if (t.includes('lgpd') || t.includes('privacidade') || t.includes('multas')) {
-    return lgpdImg;
-  }
-  if (t.includes('aristóteles') || t.includes('aristoteles')) {
-    return aristotelesImg;
-  }
-  if (t.includes('terras indígenas') || t.includes('terras indigenas') || t.includes('indígenas')) {
-    return terrasIndigenasImg;
-  }
+
   return p.imagem_url;
 }
 
