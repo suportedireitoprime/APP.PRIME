@@ -60,7 +60,7 @@ export const BLOG_POSTS: BlogPost[] = [
       'Por que Sócrates aceitou beber cicuta em vez de fugir de Atenas? A resposta é uma das aulas mais poderosas sobre o Estado de Direito.',
     imagem_url: socratesImg,
     tema: 'Filosofia',
-    autor: 'Redação OAB na Risca',
+    autor: 'Redação Estudos Jurídicos',
     data_publicacao: '2026-07-12T09:00:00Z',
     tempo_leitura_min: 6,
     conteudo_md: `## O julgamento que mudou o Ocidente
@@ -95,7 +95,7 @@ Sócrates transformou sua morte no argumento definitivo de que **a lei só vale 
       'Onze ministros, mandato vitalício e a última palavra sobre a Constituição. Entenda em 5 minutos como o Supremo realmente decide.',
     imagem_url: stfImg,
     tema: 'STF',
-    autor: 'Redação OAB na Risca',
+    autor: 'Redação Estudos Jurídicos',
     data_publicacao: '2026-07-13T11:30:00Z',
     tempo_leitura_min: 5,
     conteudo_md: `## Quem são e como chegam lá
@@ -142,7 +142,7 @@ O STF **não é a última instância recursal comum** — para isso existe o STJ
       'De uma lei que proíbe morrer a um artigo do Código Civil sobre pombos-correios: o Direito brasileiro é mais estranho do que você imagina.',
     imagem_url: curiosidadesImg,
     tema: 'Curiosidades',
-    autor: 'Redação OAB na Risca',
+    autor: 'Redação Estudos Jurídicos',
     data_publicacao: '2026-07-14T15:00:00Z',
     tempo_leitura_min: 4,
     conteudo_md: `## 1. Existe uma lei que proíbe morrer
@@ -176,7 +176,7 @@ O Direito é feito de gente, e gente é curiosa. Guarde essas cinco: rende ponto
       'Publicado em 1764, o pequeno livro de Cesare Beccaria demoliu séculos de tortura judicial e fundou o Direito Penal moderno. Entenda por que ele ainda é a leitura mais atual — e mais subversiva — que você pode fazer na faculdade.',
     imagem_url: beccariaImg,
     tema: 'Clássicos',
-    autor: 'Redação OAB na Risca',
+    autor: 'Redação Estudos Jurídicos',
     data_publicacao: '2026-07-15T09:00:00Z',
     tempo_leitura_min: 12,
     conteudo_md: `## Um livro de 100 páginas que mudou o mundo
@@ -288,7 +288,7 @@ Beccaria escreveu com 26 anos um livro que **derrubou a tortura na Europa, aboli
       'Em 1762, Rousseau escreveu o manual da soberania popular. Entenda por que a vontade geral, a igualdade e a cidadania ativa são ideias que a Constituição de 1988 ainda tenta cumprir.',
     imagem_url: rousseauImg,
     tema: 'Clássicos',
-    autor: 'Redação OAB na Risca',
+    autor: 'Redação Estudos Jurídicos',
     data_publicacao: '2026-07-16T09:00:00Z',
     tempo_leitura_min: 11,
     conteudo_md: `## O livro que fez a Revolução Francesa pensar
@@ -393,7 +393,7 @@ Por isso, quando você estuda **Constitucional**, não está apenas decorando ar
       'Você usa a palavra "lei" todo dia, mas sabe explicar em uma frase o que a torna diferente de uma ordem, de um contrato ou de um costume? Entenda em 6 minutos.',
     imagem_url: leiOQueEImg,
     tema: 'Leis',
-    autor: 'Redação OAB na Risca',
+    autor: 'Redação Estudos Jurídicos',
     data_publicacao: '2026-07-17T09:00:00Z',
     tempo_leitura_min: 6,
     conteudo_md: `## Definição em uma frase
@@ -458,7 +458,7 @@ Lei é a maneira que uma sociedade democrática encontrou para trocar **força b
       'A hierarquia interna de uma lei confunde muito estudante — e é a primeira coisa que a banca cobra. Domine a estrutura com exemplos do Código Civil e da Constituição.',
     imagem_url: leiEstruturaImg,
     tema: 'Leis',
-    autor: 'Redação OAB na Risca',
+    autor: 'Redação Estudos Jurídicos',
     data_publicacao: '2026-07-17T10:00:00Z',
     tempo_leitura_min: 7,
     conteudo_md: `## A anatomia de uma lei
@@ -544,7 +544,7 @@ Dominar a estrutura de uma lei é como aprender a ler música: depois que você 
       'De um projeto no gabinete até a publicação no Diário Oficial: entenda cada passo do caminho que uma lei percorre — e onde ela pode morrer.',
     imagem_url: leiProcessoImg,
     tema: 'Leis',
-    autor: 'Redação OAB na Risca',
+    autor: 'Redação Estudos Jurídicos',
     data_publicacao: '2026-07-17T11:00:00Z',
     tempo_leitura_min: 8,
     conteudo_md: `## O caminho de uma lei
@@ -632,7 +632,7 @@ Entender o processo legislativo é entender **onde a democracia acontece de verd
       'Publicação não é vigência. Entenda o intervalo entre uma coisa e outra — e por que a LINDB criou esse "respiro" antes de qualquer nova regra pegar você.',
     imagem_url: leiVacatioImg,
     tema: 'Leis',
-    autor: 'Redação OAB na Risca',
+    autor: 'Redação Estudos Jurídicos',
     data_publicacao: '2026-07-18T09:00:00Z',
     tempo_leitura_min: 6,
     conteudo_md: `## Publicada não é vigente
@@ -703,7 +703,7 @@ A vacatio é o momento em que a lei já **existe**, mas ainda não **manda**. En
       'As duas se chamam "lei", saem do mesmo Congresso e obrigam do mesmo jeito. Mas exigem votação diferente, tratam de temas diferentes — e uma não substitui a outra.',
     imagem_url: leiOrdComplImg,
     tema: 'Leis',
-    autor: 'Redação OAB na Risca',
+    autor: 'Redação Estudos Jurídicos',
     data_publicacao: '2026-07-18T10:00:00Z',
     tempo_leitura_min: 7,
     conteudo_md: `## A dúvida clássica
@@ -776,7 +776,7 @@ Lei ordinária e lei complementar são **duas ferramentas diferentes na mesma ca
       '"Revogam-se as disposições em contrário" é a frase mais mal compreendida do Direito. Entenda revogação expressa, tácita, ab-rogação e derrogação em 5 minutos.',
     imagem_url: leiRevogacaoImg,
     tema: 'Leis',
-    autor: 'Redação OAB na Risca',
+    autor: 'Redação Estudos Jurídicos',
     data_publicacao: '2026-07-18T11:00:00Z',
     tempo_leitura_min: 6,
     conteudo_md: `## A vida útil de uma lei
@@ -856,7 +856,7 @@ Revogar é o modo civilizado de o Direito se atualizar. Uma lei nova não "briga
       'Todo mundo cita o art. 5º, II da CF. Mas a legalidade tem duas faces — uma larga e uma estreita — e confundir as duas é errar a questão inteira.',
     imagem_url: leiLegalidadeImg,
     tema: 'Leis',
-    autor: 'Redação OAB na Risca',
+    autor: 'Redação Estudos Jurídicos',
     data_publicacao: '2026-07-18T12:00:00Z',
     tempo_leitura_min: 6,
     conteudo_md: `## A frase que sustenta a democracia
@@ -947,7 +947,7 @@ Legalidade não é detalhe técnico — é o **muro** que separa o Estado democr
       'Antes de decorar artigo, entenda o que é Direito de verdade: a diferença entre lei, moral e ética, os ramos que você vai estudar e como não se perder no primeiro semestre.',
     imagem_url: oQueEDireitoImg,
     tema: 'Iniciantes',
-    autor: 'Redação OAB na Risca',
+    autor: 'Redação Estudos Jurídicos',
     data_publicacao: '2026-07-24T10:00:00Z',
     tempo_leitura_min: 8,
     conteudo_md: `## Antes de decorar artigo, entenda o jogo
@@ -1045,7 +1045,7 @@ Bem-vindo ao Direito. Ele é mais interessante do que parece, e mais difícil do
     resumo: "A lei diz o que é proibido — mas quem diz o que a lei quer dizer? A jurisprudência é a resposta dos tribunais, repetida vezes o suficiente para virar regra.",
     imagem_url: juris01Img,
     tema: 'Jurisprudência',
-    autor: 'Redação OAB na Risca',
+    autor: 'Redação Estudos Jurídicos',
     data_publicacao: '2026-07-20T09:00:00Z',
     tempo_leitura_min: 6,
     conteudo_md: `## Um exemplo antes da definição
@@ -1088,7 +1088,7 @@ Jurisprudência é o **direito vivo**. A lei nasce no Congresso; a jurisprudênc
     resumo: "Três palavras que parecem sinônimas — e não são. Entender a diferença entre elas separa o estudante médio do avançado.",
     imagem_url: juris02Img,
     tema: 'Jurisprudência',
-    autor: 'Redação OAB na Risca',
+    autor: 'Redação Estudos Jurídicos',
     data_publicacao: '2026-07-20T10:00:00Z',
     tempo_leitura_min: 5,
     conteudo_md: `## O problema
@@ -1144,7 +1144,7 @@ Guarde essa hierarquia — cai em OAB, concurso e no dia a dia da prática.`,
     resumo: "Nem todo tribunal fala sobre tudo. Entender quem decide o quê é o mapa que evita ler acórdão errado.",
     imagem_url: juris03Img,
     tema: 'Jurisprudência',
-    autor: 'Redação OAB na Risca',
+    autor: 'Redação Estudos Jurídicos',
     data_publicacao: '2026-07-20T11:00:00Z',
     tempo_leitura_min: 6,
     conteudo_md: `## O sistema é dividido por matéria
@@ -1202,7 +1202,7 @@ Buscar jurisprudência sem saber **de onde ela vem** é como pedir orientação 
     resumo: "Poucas ferramentas jurídicas têm o alcance de uma SV. Descumprimento gera reclamação direta ao Supremo — e responsabilidade.",
     imagem_url: juris04Img,
     tema: 'Jurisprudência',
-    autor: 'Redação OAB na Risca',
+    autor: 'Redação Estudos Jurídicos',
     data_publicacao: '2026-07-20T12:00:00Z',
     tempo_leitura_min: 6,
     conteudo_md: `## O nascimento
@@ -1247,7 +1247,7 @@ Súmula Vinculante é o **atalho definitivo**: quando existir uma, você não pr
     resumo: "Sem o STJ, cada Estado interpretaria o Código Civil de um jeito. Com ele, o Brasil tem uma única resposta — a súmula.",
     imagem_url: juris05Img,
     tema: 'Jurisprudência',
-    autor: 'Redação OAB na Risca',
+    autor: 'Redação Estudos Jurídicos',
     data_publicacao: '2026-07-20T13:00:00Z',
     tempo_leitura_min: 5,
     conteudo_md: `## A missão do STJ
@@ -1295,7 +1295,7 @@ Se o caso envolve **lei federal**, sua primeira parada é a súmula do STJ. Ela 
     resumo: "Os informativos são o \"resumão\" oficial dos tribunais. Quem lê semanalmente sai na frente em concursos e OAB.",
     imagem_url: juris06Img,
     tema: 'Jurisprudência',
-    autor: 'Redação OAB na Risca',
+    autor: 'Redação Estudos Jurídicos',
     data_publicacao: '2026-07-20T14:00:00Z',
     tempo_leitura_min: 5,
     conteudo_md: `## O que é um informativo
@@ -1341,7 +1341,7 @@ Informativo é o **radar da jurisprudência**. Quem lê acompanha os tribunais e
     resumo: "Um produto pouco conhecido — e absurdamente útil. Cada edição sintetiza dezenas de teses do STJ sobre um único tema.",
     imagem_url: juris07Img,
     tema: 'Jurisprudência',
-    autor: 'Redação OAB na Risca',
+    autor: 'Redação Estudos Jurídicos',
     data_publicacao: '2026-07-20T15:00:00Z',
     tempo_leitura_min: 5,
     conteudo_md: `## O que é
@@ -1391,7 +1391,7 @@ Se o STJ escreveu, você usa. "Jurisprudência em Teses" é o **atalho oficial**
     resumo: "Quando um único caso decide o destino de milhões de processos, ele vira um tema. Entenda como funciona esse gatilho.",
     imagem_url: juris08Img,
     tema: 'Jurisprudência',
-    autor: 'Redação OAB na Risca',
+    autor: 'Redação Estudos Jurídicos',
     data_publicacao: '2026-07-20T16:00:00Z',
     tempo_leitura_min: 6,
     conteudo_md: `## O problema que a técnica resolve
@@ -1439,7 +1439,7 @@ Se aparecer a expressão **"Tema X do STF"** ou **"Tema Y do STJ"**, saiba: é u
     resumo: "A jurisprudência é estável — mas não é eterna. Duas técnicas explicam como e por que ela pode virar do avesso.",
     imagem_url: juris09Img,
     tema: 'Jurisprudência',
-    autor: 'Redação OAB na Risca',
+    autor: 'Redação Estudos Jurídicos',
     data_publicacao: '2026-07-20T17:00:00Z',
     tempo_leitura_min: 5,
     conteudo_md: `## Por que precisamos dessas técnicas
@@ -1486,7 +1486,7 @@ O STF já mudou entendimento sobre execução provisória da pena após condena�
     resumo: "Uma citação bem feita convence. Uma mal feita denuncia amadorismo. Este é o padrão que funciona no fórum e na banca.",
     imagem_url: juris10Img,
     tema: 'Jurisprudência',
-    autor: 'Redação OAB na Risca',
+    autor: 'Redação Estudos Jurídicos',
     data_publicacao: '2026-07-20T18:00:00Z',
     tempo_leitura_min: 5,
     conteudo_md: `## Por que a forma importa

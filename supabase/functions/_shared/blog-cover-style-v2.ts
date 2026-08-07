@@ -124,6 +124,36 @@ export function getAccent(categoria?: string | null): Accent {
   return FALLBACK;
 }
 
+export function detectSubjectFigure(titulo: string, categoria: string): string | null {
+  const t = titulo.toLowerCase();
+  
+  if (/esperança\s+garcia|esperanca\s+garcia/i.test(t)) {
+    return "courageous 18th-century Afro-Brazilian woman lawyer (Esperança Garcia, first female attorney of Brazil) in dignified historical attire, holding a feather quill and parchment petition of rights";
+  }
+  if (/maria\s+da\s+penha/i.test(t)) {
+    return "courageous female advocate for women's rights holding a decree of justice and scales of protection";
+  }
+  if (/advogada|mulheres?\s+no\s+direito|jurista\s+mulher|primeira\s+advogada|advogadas/i.test(t)) {
+    return "distinguished female lawyer in an elegant burgundy suit holding a law folder and scales of justice";
+  }
+  if (/juíza|juiza|magistrada|ministra/i.test(t)) {
+    return "dignified female judge in a black judicial robe with white collar holding a wooden gavel";
+  }
+  if (/estudante|concurseiro|iniciante|faculdade|primeiro\s+semestre/i.test(t)) {
+    return "focused young law student with a backpack holding a thick law code book";
+  }
+  if (/ministro|stf|supremo|tribunal|acórdão/i.test(t)) {
+    return "dignified magistrate in a black judicial robe holding a formal court document";
+  }
+  if (/sócrates|socrates|filosofia|platão|platao|rousseau|beccaria/i.test(t)) {
+    return "classical philosopher in a toga, holding a rolled parchment scroll";
+  }
+  if (/promotor|acusação|penal|crime|defensoria|defensor/i.test(t)) {
+    return "prosecutor in a formal suit pointing at an open criminal statute book";
+  }
+  return null;
+}
+
 /**
  * Monta o prompt final da capa no padrão "painel do Blogger Jurídico":
  * fundo chapado na cor do tema + motivos jurídicos apagados + figura vazada.
@@ -136,14 +166,16 @@ export function buildCoverPrompt(
 ): string {
   const a = getAccent(categoria);
   const avoid = evitar.filter(Boolean).slice(0, 8);
-  // Semente = título + categoria + aleatório, para que duas capas nunca caiam
-  // na mesma figura/adereço/enquadramento mesmo com temas parecidos.
+  
+  // 1) Checa se o título exige uma figura/personagem específica (ex: Esperança Garcia -> mulher negra advogada histórica)
+  const detectedSubject = detectSubjectFigure(titulo, categoria);
+
   const seed = Math.abs(
     [...`${titulo}|${categoria}`].reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 7) +
       Math.floor(Math.random() * 100000),
   );
   const pick = <T,>(pool: T[], offset: number): T => pool[(seed + offset) % pool.length];
-  const figure = pick(FIGURE_POOL, 3);
+  const figure = detectedSubject || pick(FIGURE_POOL, 3);
   const prop = pick(PROP_POOL, 11);
   const side = pick(SIDE_POOL, 23);
   const motifs = pick(MOTIF_POOL, 37);

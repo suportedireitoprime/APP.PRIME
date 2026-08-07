@@ -356,16 +356,43 @@ Deno.serve(async (req) => {
     await supabase.from("blog_edicao_temas").update({ status: "gerando" }).eq("id", tema.id);
     await supabase.from("blog_edicao_logs").insert({ tema_id: tema.id, evento: "iniciado", payload: { titulo: tema.titulo_sugerido } });
 
-    // 1) Geração do artigo
-    const artPrompt = `Você é redator do blog "OAB na Risca" para estudantes brasileiros de Direito.
+    // 1) Busca contexto adicional do banco de dados (leis da resenha_diaria ou vade_mecum)
+    let contextoLegalBanco = "";
+    try {
+      if (/lei|decreto|medida|stf|stj|penal|civil|constitucional|trabalho|tributario|administrativo|atualidade/i.test(`${tema.categoria} ${tema.titulo_sugerido}`)) {
+        const { data: atos } = await supabase
+          .from("resenha_diaria")
+          .select("tipo_ato, numero_ato, ementa, texto_completo")
+          .not("texto_completo", "is", null)
+          .order("data_dou", { ascending: false })
+          .limit(2);
+        if (atos && atos.length > 0) {
+          contextoLegalBanco = "\n\n[CONTEXTO DE LEGISLAÇÃO RECENTE DO BANCO DE DADOS DA PLATAFORMA]:\n" +
+            atos.map((a) => `• ${a.numero_ato}: ${a.ementa}\nTrecho Legal: ${(a.texto_completo || "").slice(0, 600)}...`).join("\n\n");
+        }
+      }
+    } catch (e) {
+      console.warn("falha ao buscar contexto legal do banco:", e);
+    }
+
+    const artPrompt = `Você é redator do blog "Estudos Jurídicos" para estudantes de Direito, advogados e concurseiros no Brasil.
 
 Tema sugerido: "${tema.titulo_sugerido}"
 Categoria: ${tema.categoria}
-Briefing: ${tema.resumo_briefing || "—"}
+Briefing: ${tema.resumo_briefing || "—"}${contextoLegalBanco}
 Tom: ${cfg.tom}
 Tamanho-alvo: ~${cfg.tamanho_alvo} palavras.
 
-Escreva um artigo COMPLETO, profundo e envolvente. Retorne APENAS JSON válido (sem markdown, sem \`\`\`):
+INSTRUÇÕES CRÍTICAS DE CONTEÚDO E FORMATO:
+- Escreva um artigo COMPLETO, profundo, altamente pedagógico e informativo.
+- Se o tema envolver leis (ex: Direito Penal, Civil, Constitucional, Leis Esparsas ou Atualidades), cite artigos específicos da legislação (ex: Art. 1º, Art. 5º, Art. 121, etc.) e DESTRINCHE O TEXTO LEGAL PASSO A PASSO (explicando cada caput, parágrafo ou inciso com palavras claras e exemplos da vida real).
+- INCLUA ELEMENTOS VISUAIS E DESTAQUES EM MARKDOWN no corpo do texto para tornar a leitura rica e dinâmica:
+  - Use quadros de citação estilo callout para destaques importantes (ex: \`> 💡 **Conceito Chave**: ...\`, \`> 📜 **Artigo Destrinchado**: ...\`, \`> ⚖️ **Exemplo Prático**: ...\`, \`> 📌 **Atenção para Provas e OAB**: ...\`).
+  - Use tabelas formatadas em Markdown (\`| Conceito | Explicação | Aplicação |\`) para resumos e comparações rápidas.
+  - Use listas ordenadas, negritos estratégicos e citações doutrinárias ou de jurisprudência.
+- NÃO inclua H1 no início (o aplicativo já renderiza o título automaticamente).
+
+Retorne APENAS JSON válido (sem markdown em volta do JSON, sem \`\`\`):
 {
   "titulo": "Título final do post (max 90 chars, no máximo duas linhas em mobile)",
   "resumo": "Chamada de 1-2 frases que aparece no card (max 180 chars)",
@@ -374,7 +401,7 @@ Escreva um artigo COMPLETO, profundo e envolvente. Retorne APENAS JSON válido (
   "push_subtitulo": "Subtítulo persuasivo da notificação (MÁX 85 chars, 1 linha; desperta curiosidade e complementa o push_titulo; SEM emoji; SEM reticências)",
   "whatsapp_titulo": "Título PERSUASIVO para o WhatsApp/Horus (máx 60 chars, punchy, gancho de curiosidade; pode ter 1 emoji jurídico como ⚖️ 📖 🏛️)",
   "whatsapp_descricao": "Descrição envolvente de 2-3 frases para o WhatsApp (máx 300 chars). Vende o post: cria curiosidade, mostra por que vale ler, termina insinuando a resposta. Sem hashtags.",
-  "conteudo_md": "Artigo em Markdown puro, começando com uma introdução envolvente. Use ## para seções, ### para subseções, negrito, listas, citações relevantes. NÃO inclua H1 no início (o app renderiza o título). NÃO inclua imagem no markdown. Cite artigos, autores e casos quando pertinente. Português BR."
+  "conteudo_md": "Artigo em Markdown puro rico em elementos visuais, citações e artigos destrinchados. Português BR."
 }`;
 
     // Parser blindado: a IA às vezes devolve JSON com caracteres de controle,
@@ -467,6 +494,7 @@ Escreva um artigo COMPLETO, profundo e envolvente. Retorne APENAS JSON válido (
         imagem_path: imagemPath,
         headline_push: String(art.headline_push || art.resumo || art.titulo).slice(0, 120),
         categoria: tema.categoria,
+        autor: "Redação Estudos Jurídicos",
         tempo_leitura_min: tempo,
         publicado,
         data_publicacao: dataPub,
