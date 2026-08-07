@@ -384,12 +384,14 @@ Tom: ${cfg.tom}
 Tamanho-alvo: ~${cfg.tamanho_alvo} palavras.
 
 INSTRUÇÕES CRÍTICAS DE CONTEÚDO E FORMATO:
+- PROIBIDO USAR SAUDAÇÕES OU CLICHÊS DE ABERTURA: NUNCA escreva frases como "Fala futuro colega de toga", "Sejam bem-vindos ao OAB na Risca", "Olá leitor", "Neste artigo vamos aprender". COMECE O ARTIGO DIRETO NO CONTEÚDO JURÍDICO (ex: destrinchando o artigo legal, formulando um problema real ou o conceito central de forma direta e instigante).
+- PROIBIDO USAR O NOME "OAB na Risca" NO TEXTO. A redação oficial é "Estudos Jurídicos".
 - Escreva um artigo COMPLETO, profundo, altamente pedagógico e informativo.
 - Se o tema envolver leis (ex: Direito Penal, Civil, Constitucional, Leis Esparsas ou Atualidades), cite artigos específicos da legislação (ex: Art. 1º, Art. 5º, Art. 121, etc.) e DESTRINCHE O TEXTO LEGAL PASSO A PASSO (explicando cada caput, parágrafo ou inciso com palavras claras e exemplos da vida real).
 - INCLUA ELEMENTOS VISUAIS E DESTAQUES EM MARKDOWN no corpo do texto para tornar a leitura rica e dinâmica:
   - Use quadros de citação estilo callout para destaques importantes (ex: \`> 💡 **Conceito Chave**: ...\`, \`> 📜 **Artigo Destrinchado**: ...\`, \`> ⚖️ **Exemplo Prático**: ...\`, \`> 📌 **Atenção para Provas e OAB**: ...\`).
   - Use tabelas formatadas em Markdown (\`| Conceito | Explicação | Aplicação |\`) para resumos e comparações rápidas.
-  - Use listas ordenadas, negritos estratégicos e citações doutrinárias ou de jurisprudência.
+  - Use diagramas de fluxo em Markdown e listas numeradas organizadas.
 - NÃO inclua H1 no início (o aplicativo já renderiza o título automaticamente).
 
 Retorne APENAS JSON válido (sem markdown em volta do JSON, sem \`\`\`):

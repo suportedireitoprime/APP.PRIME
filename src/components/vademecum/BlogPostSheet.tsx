@@ -302,7 +302,34 @@ export default function BlogPostSheet({ post, onClose, showGoTo = false, inline 
                   "
                 >
                   {conteudo ? (
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        table: ({ node, ...props }) => (
+                          <div className="my-6 w-full overflow-x-auto rounded-2xl border border-primary/20 bg-card/70 shadow-lg backdrop-blur-md">
+                            <table className="w-full text-left text-xs md:text-sm border-collapse" {...props} />
+                          </div>
+                        ),
+                        thead: ({ node, ...props }) => (
+                          <thead className="bg-primary/15 text-primary font-display font-bold border-b border-primary/20 uppercase tracking-wider text-[11px]" {...props} />
+                        ),
+                        th: ({ node, ...props }) => (
+                          <th className="px-4 py-3 text-left font-bold" {...props} />
+                        ),
+                        td: ({ node, ...props }) => (
+                          <td className="px-4 py-3 border-b border-border/30 text-foreground/90 font-body leading-relaxed" {...props} />
+                        ),
+                        blockquote: ({ node, ...props }) => (
+                          <blockquote className="my-5 rounded-r-2xl border-l-4 border-primary bg-primary/10 p-4 md:p-5 shadow-sm text-foreground/95 relative not-italic" {...props} />
+                        ),
+                        pre: ({ node, ...props }) => (
+                          <pre className="my-6 p-4 rounded-2xl bg-card border border-border/80 text-primary font-mono text-xs md:text-sm overflow-x-auto shadow-inner leading-relaxed" {...props} />
+                        ),
+                        hr: ({ node, ...props }) => (
+                          <hr className="my-6 border-border/60" {...props} />
+                        ),
+                      }}
+                    >
                       {conteudo}
                     </ReactMarkdown>
                   ) : (
