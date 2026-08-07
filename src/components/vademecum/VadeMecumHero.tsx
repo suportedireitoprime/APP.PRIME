@@ -4,19 +4,28 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, Search, Scale } from 'lucide-react';
 import { srcOf } from '@/lib/assetUrl';
 import brasaoImg from '@/assets/brasao-republica.webp';
-import vm1 from '@/assets/vademecum-hero/vm-1.png.asset.json';
-import vm2 from '@/assets/vademecum-hero/vm-2.png.asset.json';
-import vm4 from '@/assets/vademecum-hero/vm-4.png.asset.json';
-import heroVademecumBundled from '@/assets/hero-vademecum.webp';
-import themisCutoutBundled from '@/assets/themis-marble-cutout.webp';
-import landingVadeBundled from '@/assets/landing-vademecum-v2.webp';
+
+// 5 Imagens 3D vazadas (cutouts recortados) exclusivas para o Vade Mecum
+import vmLivro3d from '@/assets/vademecum-hero/vm-livro-codigo-3d.png';
+import vmBalanca3d from '@/assets/vademecum-hero/vm-balanca-justica-3d.png';
+import vmMartelo3d from '@/assets/vademecum-hero/vm-martelo-juiz-3d.png';
+import vmPergaminho3d from '@/assets/vademecum-hero/vm-pergaminho-lei-3d.png';
+import vmEstudante3d from '@/assets/vademecum-hero/vm-estudante-lei-3d.png';
+
+// Figuras vazadas de leis e juridico do inicio do aplicativo (hero-figures)
+import { heroFigures } from '@/assets/hero-figures';
 
 const FIGURAS = [
-  srcOf(vm1) || heroVademecumBundled,
-  srcOf(vm2) || themisCutoutBundled,
-  srcOf(vm4) || landingVadeBundled,
-  heroVademecumBundled,
-  themisCutoutBundled,
+  vmLivro3d,
+  vmBalanca3d,
+  vmMartelo3d,
+  vmPergaminho3d,
+  vmEstudante3d,
+  heroFigures.find((f) => f.alt === 'Livro de leis aberto')?.url || vmLivro3d,
+  heroFigures.find((f) => f.alt === 'Martelo do juiz')?.url || vmMartelo3d,
+  heroFigures.find((f) => f.alt === 'Balança da justiça')?.url || vmBalanca3d,
+  heroFigures.find((f) => f.alt === 'Pergaminho lacrado')?.url || vmPergaminho3d,
+  heroFigures.find((f) => f.alt === 'Estudante apontando a lei')?.url || vmEstudante3d,
 ];
 
 const POSICOES = ['right', 'left', 'center'] as const;
@@ -92,8 +101,8 @@ const VadeMecumHero = ({ onBuscar }: Props) => {
             transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
             onError={(e) => {
               const el = e.currentTarget as HTMLImageElement;
-              if (el.src !== heroVademecumBundled) {
-                el.src = heroVademecumBundled;
+              if (el.src !== vmLivro3d) {
+                el.src = vmLivro3d;
               }
             }}
             style={{ animation: 'ken-burns-a 12s ease-in-out infinite alternate' }}
