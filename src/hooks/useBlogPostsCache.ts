@@ -9,8 +9,11 @@ import type { BlogPost, BlogTema } from '@/data/blogPosts';
 import { TEMAS } from '@/data/blogPosts';
 import { bundle } from '@/services/offlineBundle';
 
-const KEY = 'blog:posts:v2';
-const LEGACY_KEYS = ['blog:posts:v1'];
+import esperancaImg from '@/assets/blog/esperanca-garcia.png';
+import kelsenImg from '@/assets/blog/piramide-de-kelsen.png';
+
+const KEY = 'blog:posts:v4';
+const LEGACY_KEYS = ['blog:posts:v1', 'blog:posts:v2', 'blog:posts:v3'];
 const TTL_MS = 24 * 60 * 60 * 1000; // 24 h
 
 const LISTA_COLS =
@@ -31,15 +34,26 @@ type RawPost = {
 
 type Cached = { at: number; posts: BlogPost[] };
 
+function resolveCover(p: RawPost): string {
+  const t = (p.titulo || '').toLowerCase();
+  if (t.includes('esperança garcia') || t.includes('esperanca garcia')) {
+    return esperancaImg;
+  }
+  if (t.includes('kelsen') || t.includes('pirâmide de kelsen') || t.includes('piramide de kelsen')) {
+    return kelsenImg;
+  }
+  return p.imagem_url;
+}
+
 function map(rows: RawPost[]): BlogPost[] {
   return rows.map((p) => ({
     id: p.id,
     titulo: p.titulo,
     resumo: p.resumo,
     conteudo_md: p.conteudo_md ?? '',
-    imagem_url: p.imagem_url,
+    imagem_url: resolveCover(p),
     tema: (TEMAS.includes(p.categoria as BlogTema) ? p.categoria : 'Curiosidades') as BlogTema,
-    autor: p.autor,
+    autor: (!p.autor || p.autor === 'Redação OAB na Risca') ? 'Redação Estudos Jurídicos' : p.autor,
     tempo_leitura_min: p.tempo_leitura_min,
     data_publicacao: p.data_publicacao,
   }));

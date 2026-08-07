@@ -127,6 +127,9 @@ export function getAccent(categoria?: string | null): Accent {
 export function detectSubjectFigure(titulo: string, categoria: string): string | null {
   const t = titulo.toLowerCase();
   
+  if (/kelsen|pirâ|piram|hierarquia\s+das\s+normas/i.test(t)) {
+    return "austrian 20th-century jurist (Hans Kelsen) in a classic formal suit standing beside a prominent 3-tiered legal hierarchy pyramid diagram (Constituição at top, Leis in middle, Normas at base) with scales of justice";
+  }
   if (/esperança\s+garcia|esperanca\s+garcia/i.test(t)) {
     return "courageous 18th-century Afro-Brazilian woman lawyer (Esperança Garcia, first female attorney of Brazil) in dignified historical attire, holding a feather quill and parchment petition of rights";
   }
