@@ -22,8 +22,8 @@ import reformaTributariaImg from '@/assets/blog/reforma-tributaria.png';
 import processoLegislativoImg from '@/assets/blog/processo-legislativo.png';
 import hartDworkinImg from '@/assets/blog/hart-dworkin.png';
 
-const KEY = 'blog:posts:v12';
-const LEGACY_KEYS = ['blog:posts:v1', 'blog:posts:v2', 'blog:posts:v3', 'blog:posts:v4', 'blog:posts:v5', 'blog:posts:v6', 'blog:posts:v7', 'blog:posts:v8', 'blog:posts:v9', 'blog:posts:v10', 'blog:posts:v11'];
+const KEY = 'blog:posts:v13';
+const LEGACY_KEYS = ['blog:posts:v1', 'blog:posts:v2', 'blog:posts:v3', 'blog:posts:v4', 'blog:posts:v5', 'blog:posts:v6', 'blog:posts:v7', 'blog:posts:v8', 'blog:posts:v9', 'blog:posts:v10', 'blog:posts:v11', 'blog:posts:v12'];
 const TTL_MS = 24 * 60 * 60 * 1000; // 24 h
 
 const LISTA_COLS =
@@ -304,12 +304,9 @@ function resolveCover(p: RawPost): string {
   if (t.includes('cliente difícil') || t.includes('cliente dificil') || t.includes('ética') || t.includes('etica')) return clienteDificilImg;
   if (t.includes('reforma tributária') || t.includes('reforma tributaria') || t.includes('tributária')) return reformaTributariaImg;
 
-  // Se for imagem antiga genérica do banco (ex: iftdrbxvekrhzstayjwp ou similar), gera a capa vetorial customizada com contorno branco
-  if (!p.imagem_url || p.imagem_url.includes('iftdrbxvekrhzstayjwp') || p.imagem_url.includes('blog-capas/2026/')) {
-    return createVectorSvgCover(p.categoria, p.titulo);
-  }
-
-  return p.imagem_url;
+  // Qualquer post sem capa local importada recebe capa vetorial SVG personalizada
+  // (ignora imagens genéricas antigas do Supabase Storage como capa-0.png, capa-1.png, etc.)
+  return createVectorSvgCover(p.categoria, p.titulo);
 }
 
 function map(rows: RawPost[]): BlogPost[] {
