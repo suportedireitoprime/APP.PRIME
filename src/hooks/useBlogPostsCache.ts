@@ -22,8 +22,8 @@ import reformaTributariaImg from '@/assets/blog/reforma-tributaria.png';
 import processoLegislativoImg from '@/assets/blog/processo-legislativo.png';
 import hartDworkinImg from '@/assets/blog/hart-dworkin.png';
 
-const KEY = 'blog:posts:v15';
-const LEGACY_KEYS = ['blog:posts:v1', 'blog:posts:v2', 'blog:posts:v3', 'blog:posts:v4', 'blog:posts:v5', 'blog:posts:v6', 'blog:posts:v7', 'blog:posts:v8', 'blog:posts:v9', 'blog:posts:v10', 'blog:posts:v11', 'blog:posts:v12', 'blog:posts:v13', 'blog:posts:v14'];
+const KEY = 'blog:posts:v16';
+const LEGACY_KEYS = ['blog:posts:v1', 'blog:posts:v2', 'blog:posts:v3', 'blog:posts:v4', 'blog:posts:v5', 'blog:posts:v6', 'blog:posts:v7', 'blog:posts:v8', 'blog:posts:v9', 'blog:posts:v10', 'blog:posts:v11', 'blog:posts:v12', 'blog:posts:v13', 'blog:posts:v14', 'blog:posts:v15'];
 const TTL_MS = 24 * 60 * 60 * 1000; // 24 h
 
 const LISTA_COLS =
@@ -326,6 +326,7 @@ function createVectorSvgCover(categoria: string, titulo: string): string {
 
 function resolveCover(p: RawPost): string {
   const t = (p.titulo || '').toLowerCase();
+  // Assets locais bundled (carregam instantaneamente sem rede)
   if (t.includes('hart x dworkin') || t.includes('hart') || t.includes('dworkin')) return hartDworkinImg;
   if (t.includes('quem cria as leis') || t.includes('processo legislativo') || t.includes('etapas do processo')) return processoLegislativoImg;
   if (t.includes('esperança garcia') || t.includes('esperanca garcia')) return esperancaImg;
@@ -336,11 +337,15 @@ function resolveCover(p: RawPost): string {
   if (t.includes('terras indígenas') || t.includes('terras indigenas') || t.includes('indígenas')) return terrasIndigenasImg;
   if (t.includes('inquisição') || t.includes('inquisicao') || t.includes('colônia')) return inquisicaoImg;
   if (t.includes('segunda instância') || t.includes('segunda instancia') || t.includes('adc 43')) return prisao2aInstanciaImg;
-  if (t.includes('cliente difícil') || t.includes('cliente dificil') || t.includes('ética') || t.includes('etica')) return clienteDificilImg;
-  if (t.includes('reforma tributária') || t.includes('reforma tributaria') || t.includes('tributária')) return reformaTributariaImg;
+  if (t.includes('cliente difícil') || t.includes('cliente dificil')) return clienteDificilImg;
+  if (t.includes('reforma tributária') || t.includes('reforma tributaria')) return reformaTributariaImg;
 
-  // Qualquer post sem capa local importada recebe capa vetorial SVG personalizada
-  // (ignora imagens genéricas antigas do Supabase Storage como capa-0.png, capa-1.png, etc.)
+  // Se o banco tem uma imagem_url válida (PNG ilustrado no Supabase Storage), usa ela
+  if (p.imagem_url && p.imagem_url.startsWith('http')) {
+    return p.imagem_url;
+  }
+
+  // Último fallback: SVG vetorial para posts sem nenhuma imagem
   return createVectorSvgCover(p.categoria, p.titulo);
 }
 
