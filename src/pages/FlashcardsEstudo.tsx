@@ -196,8 +196,12 @@ const FlashcardsEstudo = () => {
 
   return (
     <div className={`min-h-dvh bg-background ${escolhendo ? 'pb-32' : 'pb-10'}`}>
-      {contando && !escolhendo && cards.length > 0 && !loading && (
-        <ContagemRegressiva onFim={() => setContando(false)} />
+      {contando && !escolhendo && (
+        <ContagemRegressiva
+          solido
+          subtitulo="Preparando seus flashcards…"
+          onFim={() => setContando(false)}
+        />
       )}
       {gateFlashcards.gateNode}
       <div className="mx-auto w-full max-w-3xl px-3.5 sm:px-6">
