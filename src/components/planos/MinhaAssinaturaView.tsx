@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { format, differenceInDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Capacitor } from '@capacitor/core';
 import CancelarAssinaturaSheet from './CancelarAssinaturaSheet';
 import { abrirLink } from '@/lib/nativo';
 
@@ -124,9 +125,9 @@ export default function MinhaAssinaturaView({ plano, expiresAt, startedAt, sourc
 
   const label = planoLabel(plano);
   const isAnual = /anual|year/i.test(plano ?? '');
-  const isApple = source === 'apple';
-  const preco = isAnual ? 'R$ 199,90/ano' : 'R$ 29,90/mês';
-  const equivalente = isAnual ? 'Equivalente a R$ 16,66/mês' : null;
+  const isApple = source === 'apple' || Capacitor.getPlatform() === 'ios';
+  const preco = isAnual ? (isApple ? 'R$ 238,80/ano' : 'R$ 199,90/ano') : 'R$ 29,90/mês';
+  const equivalente = isAnual ? (isApple ? 'Equivalente a R$ 19,90/mês' : 'Equivalente a R$ 16,66/mês') : null;
 
   const diasRestantes = useMemo(() => {
     if (!expiresAt) return null;

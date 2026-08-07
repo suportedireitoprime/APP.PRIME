@@ -339,7 +339,7 @@ export default function Assinatura() {
                 >
                   <span>Anual</span>
                   <span className="px-1.5 py-0.5 rounded-full bg-white/20 text-[9px] font-black uppercase">
-                    -44%
+                    {isIOS ? '-33%' : '-44%'}
                   </span>
                 </button>
               </div>
@@ -369,7 +369,7 @@ export default function Assinatura() {
               ) : (
                 <div className="relative rounded-2xl border-2 border-primary bg-card/90 p-5 shadow-2xl text-center space-y-3">
                   <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-primary text-primary-foreground font-display text-xs font-black tracking-wider uppercase shadow-md">
-                    ECONOMIZE 44%
+                    {isIOS ? 'ECONOMIZE 33%' : 'ECONOMIZE 44%'}
                   </div>
 
                   <p className="font-display text-xs font-bold uppercase tracking-widest text-muted-foreground pt-1">
@@ -377,12 +377,14 @@ export default function Assinatura() {
                   </p>
 
                   <div className="flex items-baseline justify-center gap-1.5">
-                    <span className="font-display text-3xl sm:text-4xl font-black text-foreground">12x R$ 16,66</span>
+                    <span className="font-display text-3xl sm:text-4xl font-black text-foreground">
+                      {isIOS ? '12x R$ 19,90' : '12x R$ 16,66'}
+                    </span>
                     <span className="text-xs font-semibold text-muted-foreground">/mês</span>
                   </div>
 
                   <p className="text-xs font-bold text-primary">
-                    Total R$ 199,90 por ano · 3 dias grátis
+                    {isIOS ? 'Total R$ 238,80 por ano · 3 dias grátis' : 'Total R$ 199,90 por ano · 3 dias grátis'}
                   </p>
                 </div>
               )}
