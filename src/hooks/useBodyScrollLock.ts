@@ -34,7 +34,17 @@ const release = () => {
  */
 export function resetBodyScrollLock() {
   lockCount = 0;
-  release();
+  const b = document.body;
+  const h = document.documentElement;
+  b.style.overflow = '';
+  b.style.touchAction = '';
+  b.style.overscrollBehavior = '';
+  b.style.position = '';
+  b.style.top = '';
+  b.style.width = '';
+  b.style.pointerEvents = 'auto';
+  setTimeout(() => { b.style.pointerEvents = ''; }, 50);
+  h.style.overflow = '';
 }
 
 /**

@@ -642,10 +642,12 @@ function AnimatedRoutes() {
     });
   }, [user?.id, profile?.isPremium]);
 
+  const { user, loading: authLoading } = useAuth();
+
   // Sem usuário logado, a Home persistente não monta.
-  // Renderiza a landing imediatamente na raiz para nunca deixar tela preta,
-  // mesmo enquanto a autenticação ainda está resolvendo.
+  // Enquanto a autenticação está inicializando (authLoading = true), não exibe a Landing.
   const HomeGate = () => {
+    if (authLoading) return null;
     if (!user) return <Landing />;
     return null;
   };

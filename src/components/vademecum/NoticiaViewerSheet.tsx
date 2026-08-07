@@ -73,14 +73,6 @@ export default function NoticiaViewerSheet({ noticia, onClose }: Props) {
     return () => { cancelled = true; };
   }, [noticia?.id]);
 
-  // Trava scroll do fundo enquanto o painel estiver aberto
-  useEffect(() => {
-    if (!noticia) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = prev; };
-  }, [noticia]);
-
   useEffect(() => {
     if (!noticia) {
       setComentariosCount(0);
@@ -105,7 +97,7 @@ export default function NoticiaViewerSheet({ noticia, onClose }: Props) {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
             className="fixed inset-0 z-50 bg-black/85"
-            onClick={onClose}
+            onClick={handleClose}
           />
           <motion.div
             initial={{ y: '100%' }}

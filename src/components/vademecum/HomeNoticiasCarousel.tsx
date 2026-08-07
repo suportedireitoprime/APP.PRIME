@@ -11,6 +11,7 @@ import LivroDetailSheet from '@/components/biblioteca/LivroDetailSheet';
 import { findColecao, normalizeLivro, type LivroNormalizado } from '@/lib/bibliotecaColecoes';
 import { BLOG_POSTS, TEMA_COLORS, type BlogPost } from '@/data/blogPosts';
 import { supabase } from '@/integrations/supabase/client';
+import { resetBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 const AUTOPLAY_MS = 10000;
 const MAX_NEWS = 8;
@@ -194,24 +195,16 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
     if (feed.length === 0) extendFeed(9);
   }, [feed.length, extendFeed]);
 
-  // Quando os livros clássicos / obras chegam do banco (depois do feed inicial),
-  // o ciclo já pulou esses slots. Reconstrói o feed uma vez para que o card de
-  // recomendação de livro e o de filme apareçam no padrão correto.
+  // Manter o feed estável ao carregar novas fontes (não reseta o feed visível nem troca os cards após 1s)
   const rebuiltRef = useRef({ livros: false, obras: false });
   useEffect(() => {
     const needLivros = livros.length > 0 && !rebuiltRef.current.livros;
     const needObras = obras.length > 0 && !rebuiltRef.current.obras;
     if (!needLivros && !needObras) return;
     rebuiltRef.current = { livros: livros.length > 0, obras: obras.length > 0 };
-    usedLivroIdsRef.current.clear();
-    usedObraIdsRef.current.clear();
     livroQueueRef.current = shuffle(livros);
     obraQueueRef.current = [...obras];
-    cycleStepRef.current = 0;
-    setFeed([]);
-    setActiveIndex(0);
   }, [livros, obras]);
-
 
   // À medida que o usuário se aproxima do fim, adiciona mais um ciclo.
   useEffect(() => {
@@ -254,7 +247,11 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
   }, []);
 
   useEffect(() => {
-    onOpenChange?.(!!selectedNoticia || !!selectedPost || !!selectedObra || !!selectedLivro);
+    const hasOpen = !!selectedNoticia || !!selectedPost || !!selectedObra || !!selectedLivro;
+    onOpenChange?.(hasOpen);
+    if (!hasOpen) {
+      resetBodyScrollLock();
+    }
   }, [selectedNoticia, selectedPost, selectedObra, selectedLivro, onOpenChange]);
 
 
