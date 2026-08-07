@@ -254,39 +254,120 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Popula texto integral e explicação diretamente para atos novos / sem texto
+    // ── Popula texto integral para atos sem texto ──────────────────────
+    // 3 estratégias inline: Browserless → Jina Reader → Direct fetch.
     const { data: semTexto } = await supabase
       .from("resenha_diaria")
       .select("id, url, tipo_ato, numero_ato")
       .or("texto_completo.is.null,texto_completo.eq.")
       .not("url", "is", null)
       .order("data_dou", { ascending: false })
-      .limit(10);
+      .limit(15);
 
     if (semTexto && semTexto.length > 0) {
       console.log(`[scrape-resenha-diaria] Populando texto integral para ${semTexto.length} atos...`);
+      const browserlessKey = Deno.env.get("BROWSERLESS_API_KEY");
+
       for (const ato of semTexto) {
         try {
-          const jinaUrl = `https://r.jina.ai/${ato.url}`;
-          const r = await fetch(jinaUrl, { headers: { "Accept": "text/html", "X-Return-Format": "html" } });
-          if (r.ok) {
-            const raw = await r.text();
-            let src = raw
-              .replace(/^Source:[\s\S]*?Markdown Content:\s*/i, "")
-              .replace(/^Title:[\s\S]*?Markdown Content:\s*/i, "")
-              .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
-              .replace(/^>\s*/gm, "")
-              .replace(/\*\*/g, "")
-              .trim();
-            const startIdx = src.search(/Presid[eê]ncia\s+da\s+Rep[uú]blica|LEI\s+N[º°]?|DECRETO\s+N[º°]?|MEDIDA\s+PROVIS[ÓO]RIA\s+N[º°]?|O\s+PRESIDENTE\s+DA\s+REP[ÚU]BLICA/i);
-            if (startIdx > 0) src = src.slice(startIdx);
-            const endIdx = src.search(/Este texto n[aã]o substitui o publicado no DOU|Bras[ií]lia,\s+em[\s\S]{0,300}?\n[\s\S]{0,50}Publicado no DOU/i);
-            if (endIdx > 200) src = src.slice(0, endIdx + 60);
-            const text = src.trim();
-            if (text.length >= 100) {
-              await supabase.from("resenha_diaria").update({ texto_completo: text }).eq("id", ato.id);
-              console.log(`[scrape-resenha-diaria] Texto populado para ${ato.numero_ato} (${text.length} chars)`);
-            }
+          // Força https
+          const atoUrl = (ato.url as string).replace(/^http:\/\//i, "https://");
+          let rawHtml = "";
+
+          // Strategy 1: Browserless /unblock (resolve desafio F5 anti-bot)
+          if (browserlessKey && !rawHtml) {
+            try {
+              const brUrl = `https://production-sfo.browserless.io/unblock?token=${browserlessKey}`;
+              const resp = await fetch(brUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ url: atoUrl, content: true, waitForTimeout: 10000, ttl: 60000 }),
+              });
+              if (resp.ok) {
+                const json = await resp.json().catch(() => null);
+                rawHtml = json?.content || "";
+                if (rawHtml.length > 500) console.log(`[scrape-resenha-diaria] Browserless OK (${rawHtml.length} chars) for ${ato.numero_ato}`);
+                else rawHtml = "";
+              }
+            } catch (e) { console.warn(`[scrape-resenha-diaria] Browserless failed for ${ato.id}:`, e); }
+          }
+
+          // Strategy 2: Jina Reader (retorna Markdown)
+          if (!rawHtml) {
+            try {
+              const jinaUrl = `https://r.jina.ai/${atoUrl}`;
+              const resp = await fetch(jinaUrl, { headers: { "Accept": "text/html", "X-Return-Format": "html" } });
+              if (resp.ok) {
+                rawHtml = await resp.text();
+                if (rawHtml.length > 500) console.log(`[scrape-resenha-diaria] Jina OK (${rawHtml.length} chars) for ${ato.numero_ato}`);
+                else rawHtml = "";
+              }
+            } catch (e) { console.warn(`[scrape-resenha-diaria] Jina failed for ${ato.id}:`, e); }
+          }
+
+          // Strategy 3: Direct fetch
+          if (!rawHtml) {
+            try {
+              const resp = await fetch(atoUrl, {
+                redirect: "follow",
+                headers: {
+                  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36",
+                  "Accept": "text/html,application/xhtml+xml",
+                  "Accept-Language": "pt-BR,pt;q=0.9",
+                },
+              });
+              if (resp.ok) {
+                const buf = new Uint8Array(await resp.arrayBuffer());
+                try { rawHtml = new TextDecoder("utf-8", { fatal: true }).decode(buf); }
+                catch { rawHtml = new TextDecoder("iso-8859-1").decode(buf); }
+                if (rawHtml.length > 500) console.log(`[scrape-resenha-diaria] Direct OK (${rawHtml.length} chars) for ${ato.numero_ato}`);
+                else rawHtml = "";
+              }
+            } catch (e) { console.warn(`[scrape-resenha-diaria] Direct failed for ${ato.id}:`, e); }
+          }
+
+          if (!rawHtml) { console.warn(`[scrape-resenha-diaria] Nenhuma estratégia retornou conteúdo para ${ato.numero_ato}`); continue; }
+
+          // ── Converter HTML/Markdown → texto plano limpo ──
+          let src = rawHtml;
+          // Se tem <body>, extrair só o body
+          const bodyMatch = /<body[^>]*>([\s\S]*?)<\/body>/i.exec(src);
+          if (bodyMatch) src = bodyMatch[1];
+          // Remover scripts/styles
+          src = src.replace(/<script[\s\S]*?<\/script>/gi, " ");
+          src = src.replace(/<style[\s\S]*?<\/style>/gi, " ");
+          src = src.replace(/<noscript[\s\S]*?<\/noscript>/gi, " ");
+          src = src.replace(/<!--[\s\S]*?-->/g, " ");
+          // Line breaks
+          src = src.replace(/<\s*br\s*\/?>/gi, "\n");
+          src = src.replace(/<\/(p|div|tr|li|h[1-6])>/gi, "\n");
+          src = src.replace(/<[^>]+>/g, " ");
+          // Entities
+          src = src.replace(/&nbsp;/gi, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"');
+          src = src.replace(/&#(\d+);/g, (_, n: string) => String.fromCharCode(Number(n)));
+          src = src.replace(/&#x([0-9a-f]+);/gi, (_, h: string) => String.fromCharCode(parseInt(h, 16)));
+          src = src.replace(/&[a-z]+;/gi, " ");
+          // Limpa Jina Markdown (caso Jina tenha retornado MD)
+          src = src.replace(/^Source:[\s\S]*?Markdown Content:\s*/i, "");
+          src = src.replace(/^Title:[\s\S]*?Markdown Content:\s*/i, "");
+          src = src.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1");
+          src = src.replace(/^>\s*/gm, "");
+          src = src.replace(/\*\*/g, "");
+          // Whitespace
+          src = src.replace(/\r/g, "").replace(/\u00A0/g, " ");
+          src = src.split("\n").map(l => l.replace(/[ \t]+/g, " ").trim()).filter(Boolean).join("\n");
+          // Trim boilerplate
+          const startIdx = src.search(/Presid[eê]ncia\s+da\s+Rep[uú]blica|LEI\s+N[º°]?|DECRETO\s+N[º°]?|MEDIDA\s+PROVIS[ÓO]RIA\s+N[º°]?|O\s+PRESIDENTE\s+DA\s+REP[ÚU]BLICA/i);
+          if (startIdx > 0) src = src.slice(startIdx);
+          const endIdx = src.search(/Este texto n[aã]o substitui o publicado no DOU|Bras[ií]lia,\s+em[\s\S]{0,300}?\n[\s\S]{0,50}Publicado no DOU/i);
+          if (endIdx > 200) src = src.slice(0, endIdx + 60);
+          const text = src.trim();
+
+          if (text.length >= 100) {
+            await supabase.from("resenha_diaria").update({ texto_completo: text }).eq("id", ato.id);
+            console.log(`[scrape-resenha-diaria] Texto populado para ${ato.numero_ato} (${text.length} chars)`);
+          } else {
+            console.warn(`[scrape-resenha-diaria] Texto muito curto (${text.length} chars) para ${ato.numero_ato}`);
           }
         } catch (popErr) {
           console.warn(`[scrape-resenha-diaria] Falha ao popular ${ato.id}:`, popErr);
