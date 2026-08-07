@@ -19,9 +19,10 @@ import inquisicaoImg from '@/assets/blog/inquisicao.png';
 import prisao2aInstanciaImg from '@/assets/blog/prisao-2a-instancia.png';
 import clienteDificilImg from '@/assets/blog/cliente-dificil.png';
 import reformaTributariaImg from '@/assets/blog/reforma-tributaria.png';
+import processoLegislativoImg from '@/assets/blog/processo-legislativo.png';
 
-const KEY = 'blog:posts:v7';
-const LEGACY_KEYS = ['blog:posts:v1', 'blog:posts:v2', 'blog:posts:v3', 'blog:posts:v4', 'blog:posts:v5', 'blog:posts:v6'];
+const KEY = 'blog:posts:v8';
+const LEGACY_KEYS = ['blog:posts:v1', 'blog:posts:v2', 'blog:posts:v3', 'blog:posts:v4', 'blog:posts:v5', 'blog:posts:v6', 'blog:posts:v7'];
 const TTL_MS = 24 * 60 * 60 * 1000; // 24 h
 
 const LISTA_COLS =
@@ -193,6 +194,7 @@ function createVectorSvgCover(categoria: string, titulo: string): string {
 
 function resolveCover(p: RawPost): string {
   const t = (p.titulo || '').toLowerCase();
+  if (t.includes('quem cria as leis') || t.includes('processo legislativo') || t.includes('etapas do processo')) return processoLegislativoImg;
   if (t.includes('esperança garcia') || t.includes('esperanca garcia')) return esperancaImg;
   if (t.includes('kelsen') || t.includes('pirâmide') || t.includes('piramide')) return kelsenImg;
   if (t.includes('inquilinato') || t.includes('aluguel') || t.includes('locação') || t.includes('locacao')) return inquilinatoImg;
