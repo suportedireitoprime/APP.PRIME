@@ -22,8 +22,8 @@ import reformaTributariaImg from '@/assets/blog/reforma-tributaria.png';
 import processoLegislativoImg from '@/assets/blog/processo-legislativo.png';
 import hartDworkinImg from '@/assets/blog/hart-dworkin.png';
 
-const KEY = 'blog:posts:v11';
-const LEGACY_KEYS = ['blog:posts:v1', 'blog:posts:v2', 'blog:posts:v3', 'blog:posts:v4', 'blog:posts:v5', 'blog:posts:v6', 'blog:posts:v7', 'blog:posts:v8', 'blog:posts:v9', 'blog:posts:v10'];
+const KEY = 'blog:posts:v12';
+const LEGACY_KEYS = ['blog:posts:v1', 'blog:posts:v2', 'blog:posts:v3', 'blog:posts:v4', 'blog:posts:v5', 'blog:posts:v6', 'blog:posts:v7', 'blog:posts:v8', 'blog:posts:v9', 'blog:posts:v10', 'blog:posts:v11'];
 const TTL_MS = 24 * 60 * 60 * 1000; // 24 h
 
 const LISTA_COLS =
@@ -370,7 +370,7 @@ export function useBlogPostsCache() {
           .eq('publicado', true)
           .order('data_publicacao', { ascending: false })
           .order('created_at', { ascending: false })
-          .limit(60);
+          .limit(120);
         rows = (data as RawPost[]) ?? null;
       } catch {}
       // Fallback pro bundle nativo (Electron / sem rede)
