@@ -170,8 +170,8 @@ export default function BlogPostSheet({ post, onClose, showGoTo = false, inline 
 
 
 
-                <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/60 to-transparent" />
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-card via-card/85 to-transparent" />
+                <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black/50 to-transparent" />
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-card/80 to-transparent" />
                 <button
                   onClick={handleClose}
                   aria-label="Fechar"

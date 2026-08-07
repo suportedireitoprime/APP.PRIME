@@ -199,7 +199,7 @@ MAIN SUBJECT — ONE CUT-OUT FIGURE: a single flat vector illustrated figure, ${
 
 SUPPORTING ELEMENTS (fill the panel, keep it rich but tidy): ${prop}; plus ${secondary}; plus ${floating}. All of them are cut-out flat vector objects in the same palette and outline weight as the figure, bottom-aligned or floating, arranged so the composition stays balanced around the centre. Aim for a well-populated scene — roughly 6 to 9 distinct foreground elements in total — with clear breathing space between objects, no overlapping clutter, and nothing touching the frame edges except the ground line.
 
-STYLE: flat vector editorial illustration, thin-to-medium clean dark outlines (${BASE_PALETTE.outline}), flat 2-3 tone shading, no gradients on the figure, no cross-hatching, no photorealism, no 3D render, no watercolour.
+STYLE: flat vector editorial illustration, thin-to-medium clean dark outlines (${BASE_PALETTE.outline}), crisp 1-2px white stroke outline (sticker-style white halo contour around the central character and props so the figure pops with high contrast against the background), flat 2-3 tone shading, no gradients on the figure, no cross-hatching, no photorealism, no 3D render, no watercolour.
 
 FIGURE PALETTE: cream #EFE1BD, warm beige skin ${BASE_PALETTE.skin}, warm neutral ${BASE_PALETTE.neutralWarm}, dark brown ${BASE_PALETTE.brownDark}, burgundy #8C1220 and soft gold #C9A26A for cloth and metal details. The figure must clearly stand out against the ${a.name} panel.
 
