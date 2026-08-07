@@ -22,8 +22,8 @@ import reformaTributariaImg from '@/assets/blog/reforma-tributaria.png';
 import processoLegislativoImg from '@/assets/blog/processo-legislativo.png';
 import hartDworkinImg from '@/assets/blog/hart-dworkin.png';
 
-const KEY = 'blog:posts:v9';
-const LEGACY_KEYS = ['blog:posts:v1', 'blog:posts:v2', 'blog:posts:v3', 'blog:posts:v4', 'blog:posts:v5', 'blog:posts:v6', 'blog:posts:v7', 'blog:posts:v8'];
+const KEY = 'blog:posts:v10';
+const LEGACY_KEYS = ['blog:posts:v1', 'blog:posts:v2', 'blog:posts:v3', 'blog:posts:v4', 'blog:posts:v5', 'blog:posts:v6', 'blog:posts:v7', 'blog:posts:v8', 'blog:posts:v9'];
 const TTL_MS = 24 * 60 * 60 * 1000; // 24 h
 
 const LISTA_COLS =
@@ -57,7 +57,105 @@ function createVectorSvgCover(categoria: string, titulo: string): string {
   // Elementos internos dinâmicos baseados no título específico
   let centerPropSvg = '';
   
-  if (t.includes('pétreas') || t.includes('petreas') || t.includes('cláusula')) {
+  if (t.includes('victor nunes leal') || t.includes('súmula') || t.includes('sumula')) {
+    // Ministro Victor Nunes Leal com Livro de Súmulas do STF
+    centerPropSvg = `
+      <g filter="url(#shadow)">
+        <g stroke="#FFFFFF" stroke-width="14" stroke-linejoin="round" stroke-linecap="round" fill="#FFFFFF">
+          <circle cx="0" cy="-90" r="55" />
+          <path d="M -70 120 C -70 20, 70 20, 70 120 Z" />
+          <rect x="-110" y="40" width="60" height="70" rx="10" />
+        </g>
+        <circle cx="0" cy="-90" r="48" fill="#EFE1BD" />
+        <path d="M -62 120 C -62 28, 62 28, 62 120 Z" fill="#1D3A5D" />
+        <path d="M -15 28 L 0 65 L 15 28 Z" fill="#C9A26A" />
+        <rect x="-102" y="45" width="60" height="65" rx="6" fill="#C9A26A" stroke="#FFFFFF" stroke-width="2" />
+        <text x="-72" y="80" text-anchor="middle" fill="#1D3A5D" font-family="sans-serif" font-weight="bold" font-size="11">SÚMULAS STF</text>
+      </g>`;
+  } else if (t.includes('rousseau') || t.includes('contrato social')) {
+    // Rousseau com Pena e Manuscrito do Contrato Social
+    centerPropSvg = `
+      <g filter="url(#shadow)">
+        <g stroke="#FFFFFF" stroke-width="14" stroke-linejoin="round" stroke-linecap="round" fill="#FFFFFF">
+          <circle cx="0" cy="-90" r="55" />
+          <path d="M -70 120 C -70 20, 70 20, 70 120 Z" />
+          <rect x="-110" y="40" width="60" height="70" rx="10" />
+        </g>
+        <circle cx="0" cy="-90" r="48" fill="#EFE1BD" />
+        <path d="M -62 120 C -62 28, 62 28, 62 120 Z" fill="#4C2D6B" />
+        <rect x="-102" y="45" width="60" height="65" rx="6" fill="#F4E8C1" stroke="#C9A26A" stroke-width="2" />
+        <text x="-72" y="80" text-anchor="middle" fill="#4C2D6B" font-family="serif" font-weight="bold" font-size="9">CONTRATO SOCIAL</text>
+      </g>`;
+  } else if (t.includes('legalidade') || t.includes('estado de direito')) {
+    // Jurista com Constituição e Balança da Legalidade
+    centerPropSvg = `
+      <g filter="url(#shadow)">
+        <g stroke="#FFFFFF" stroke-width="14" stroke-linejoin="round" fill="#FFFFFF">
+          <circle cx="0" cy="-90" r="55" />
+          <path d="M -70 120 C -70 20, 70 20, 70 120 Z" />
+          <rect x="-100" y="40" width="55" height="65" rx="8" />
+        </g>
+        <circle cx="0" cy="-90" r="48" fill="#EFE1BD" />
+        <path d="M -62 120 C -62 28, 62 28, 62 120 Z" fill="#2D4A3E" />
+        <rect x="-95" y="45" width="50" height="60" rx="6" fill="#8C1220" />
+        <text x="-70" y="80" text-anchor="middle" fill="#C9A26A" font-family="sans-serif" font-weight="bold" font-size="12">LEI</text>
+      </g>`;
+  } else if (t.includes('lei formal') || t.includes('lei material')) {
+    // Comparativo de Lei Formal vs Lei Material
+    centerPropSvg = `
+      <g filter="url(#shadow)">
+        <g stroke="#FFFFFF" stroke-width="12" stroke-linejoin="round" fill="#FFFFFF">
+          <rect x="-105" y="-70" width="90" height="150" rx="8" />
+          <rect x="15" y="-70" width="90" height="150" rx="8" />
+        </g>
+        <rect x="-100" y="-65" width="80" height="140" rx="6" fill="#F4E8C1" stroke="#C9A26A" stroke-width="2" />
+        <text x="-60" y="0" text-anchor="middle" fill="#8C1220" font-family="sans-serif" font-weight="bold" font-size="14">LEI FORMAL</text>
+        <rect x="20" y="-65" width="80" height="140" rx="6" fill="#F4E8C1" stroke="#1D3A5D" stroke-width="2" />
+        <text x="60" y="0" text-anchor="middle" fill="#1D3A5D" font-family="sans-serif" font-weight="bold" font-size="14">LEI MATERIAL</text>
+      </g>`;
+  } else if (t.includes('menino') || t.includes('inteligente') || t.includes('enigma')) {
+    // Jovem Prodígio com Lupa e Pergaminho
+    centerPropSvg = `
+      <g filter="url(#shadow)">
+        <g stroke="#FFFFFF" stroke-width="14" stroke-linejoin="round" stroke-linecap="round" fill="#FFFFFF">
+          <circle cx="0" cy="-90" r="55" />
+          <path d="M -70 120 C -70 20, 70 20, 70 120 Z" />
+          <circle cx="80" cy="20" r="35" />
+        </g>
+        <circle cx="0" cy="-90" r="48" fill="#EFE1BD" />
+        <path d="M -62 120 C -62 28, 62 28, 62 120 Z" fill="#1D5D55" />
+        <circle cx="80" cy="20" r="28" fill="none" stroke="#C9A26A" stroke-width="8" />
+        <line x1="100" y1="40" x2="130" y2="70" stroke="#C9A26A" stroke-width="10" stroke-linecap="round" />
+      </g>`;
+  } else if (t.includes('sherlock') || t.includes('expresso') || t.includes('assassinato')) {
+    // Detetive com Lupa e Dossiê de Provas
+    centerPropSvg = `
+      <g filter="url(#shadow)">
+        <g stroke="#FFFFFF" stroke-width="14" stroke-linejoin="round" fill="#FFFFFF">
+          <circle cx="0" cy="-90" r="55" />
+          <path d="M -70 120 C -70 20, 70 20, 70 120 Z" />
+          <rect x="-100" y="30" width="55" height="70" rx="6" />
+        </g>
+        <circle cx="0" cy="-90" r="48" fill="#EFE1BD" />
+        <path d="M -62 120 C -62 28, 62 28, 62 120 Z" fill="#2C2C2C" />
+        <rect x="-95" y="35" width="45" height="60" rx="4" fill="#F4E8C1" />
+        <text x="-72" y="70" text-anchor="middle" fill="#8C1220" font-family="sans-serif" font-weight="bold" font-size="10">PROVAS</text>
+      </g>`;
+  } else if (t.includes('habeas corpus') || t.includes('liberdade')) {
+    // Alvará de Soltura e Algemas Abertas
+    centerPropSvg = `
+      <g filter="url(#shadow)">
+        <g stroke="#FFFFFF" stroke-width="14" stroke-linejoin="round" fill="#FFFFFF">
+          <circle cx="0" cy="-90" r="55" />
+          <path d="M -70 120 C -70 20, 70 20, 70 120 Z" />
+          <rect x="-100" y="30" width="60" height="75" rx="6" />
+        </g>
+        <circle cx="0" cy="-90" r="48" fill="#EFE1BD" />
+        <path d="M -62 120 C -62 28, 62 28, 62 120 Z" fill="#1D3A5D" />
+        <rect x="-95" y="35" width="50" height="65" rx="4" fill="#FFFFFF" stroke="#1D3A5D" stroke-width="2" />
+        <text x="-70" y="72" text-anchor="middle" fill="#1D3A5D" font-family="sans-serif" font-weight="bold" font-size="10">HABEAS CORPUS</text>
+      </g>`;
+  } else if (t.includes('pétreas') || t.includes('petreas') || t.includes('cláusula')) {
     // Tábua de pedra com Constituição e Escudo de Proteção
     centerPropSvg = `
       <g filter="url(#shadow)">
@@ -90,18 +188,15 @@ function createVectorSvgCover(categoria: string, titulo: string): string {
       <g filter="url(#shadow)">
         <polygon points="0,-110 -130,110 130,110" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="14" stroke-linejoin="round" />
         <polygon points="0,-100 -120,100 120,100" fill="#2C2C2C" />
-        <!-- Topo: CF/88 -->
         <polygon points="0,-100 -40,-30 40,-30" fill="#C9A26A" />
         <text x="0" y="-55" text-anchor="middle" fill="#1B3028" font-family="sans-serif" font-weight="bold" font-size="16">CF/88</text>
-        <!-- Meio: Leis -->
         <polygon points="-40,-30 40,-30 80,35 -80,35" fill="#8C1220" />
         <text x="0" y="10" text-anchor="middle" fill="#FFFFFF" font-family="sans-serif" font-weight="bold" font-size="16">LEIS</text>
-        <!-- Base: Decretos -->
         <polygon points="-80,35 80,35 120,100 -120,100" fill="#1D3A5D" />
         <text x="0" y="75" text-anchor="middle" fill="#FFFFFF" font-family="sans-serif" font-weight="bold" font-size="14">DECRETOS</text>
       </g>`;
   } else if (t.includes('revogação') || t.includes('revogacao') || t.includes('morte')) {
-    // Livro com Carimbo REVOGADA e Corrente Quebrada
+    // Livro com Carimbo REVOGADA
     centerPropSvg = `
       <g filter="url(#shadow)">
         <g stroke="#FFFFFF" stroke-width="14" fill="#FFFFFF" stroke-linejoin="round">
@@ -129,7 +224,7 @@ function createVectorSvgCover(categoria: string, titulo: string): string {
         <text x="85" y="6" text-anchor="middle" fill="#FFFFFF" font-family="sans-serif" font-weight="bold" font-size="13">EFICÁCIA</text>
       </g>`;
   } else if (t.includes('caput') || t.includes('inciso') || t.includes('parágrafo') || t.includes('paragrafo') || t.includes('alínea') || t.includes('alinea')) {
-    // Estrutura do Artigo de Lei com Caput, Parágrafo (§) e Inciso (I)
+    // Estrutura do Artigo de Lei
     centerPropSvg = `
       <g filter="url(#shadow)">
         <g stroke="#FFFFFF" stroke-width="12" fill="#FFFFFF" stroke-linejoin="round">
