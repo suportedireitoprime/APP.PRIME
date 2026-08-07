@@ -69,13 +69,11 @@ function tipoDaArte(url: string): string {
 // provocando o fechamento instantâneo do aplicativo.
 // Agora utilizamos a MediaSession API padrão do WebView, que é 100% estável e não fecha o app.
 
-const isNativePluginSupported = () => {
-  try {
-    return Capacitor.isNativePlatform() && Capacitor.isPluginAvailable('MediaSession');
-  } catch {
-    return false;
-  }
-};
+// Desativamos chamadas diretas ao plugin nativo legado @jofr/capacitor-media-session
+// para evitar exceções fatais em Java no Android 14/15 e iOS 18.
+// A MediaSession API padrão do WebView (navigator.mediaSession) lida nativamente com
+// notificações, lockscreen e fundo sem crashar nem fechar o app.
+const isNativePluginSupported = () => false;
 
 const setMetadata = (m: { title: string; artist: string; album: string; artwork: MediaImage[] }) => {
   if (isNativePluginSupported()) {

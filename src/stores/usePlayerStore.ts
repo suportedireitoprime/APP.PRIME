@@ -37,7 +37,7 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
     audio.ontimeupdate = () => {
       if (audio.duration > 0) set({ progress: (audio.currentTime / audio.duration) * 100 });
     };
-    audio.play();
+    audio.play().catch((e) => console.warn('[usePlayerStore] erro ao reproduzir áudio:', e));
     void telaAcesa('narracao', true);
     registrarMidia({
       titulo: `Art. ${artigoNumero}`,

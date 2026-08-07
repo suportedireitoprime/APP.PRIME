@@ -162,7 +162,7 @@ export default function NarracaoLei() {
     }
 
     const audio = new Audio(url);
-    audio.play();
+    audio.play().catch((e) => console.warn('[NarracaoLei] erro ao reproduzir áudio:', e));
     void telaAcesa('narracao-lei', true);
     registrarMidia({
       titulo: 'Narração',
