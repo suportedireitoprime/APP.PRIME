@@ -28,6 +28,8 @@ function normalizeOrdinals(text: string): string {
 function normalizeLegislativeText(text: string): string {
   return normalizeOrdinals(
     text
+      .replace(/\\n/g, '\n')
+      .replace(/\\r/g, '')
       .replace(/<br\s*\/?>/gi, '\n')
       .replace(/<\/p>/gi, '\n')
       .replace(/<[^>]+>/g, '')

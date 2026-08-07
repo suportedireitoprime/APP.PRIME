@@ -73,6 +73,8 @@ interface ResenhaRow {
 function cleanText(t: string | null): string | null {
   if (!t) return null;
   return t
+    .replace(/\\n/g, '\n')
+    .replace(/\\r/g, '')
     .replace(/<br\s*\/?>/gi, '\n')
     .replace(/<\/p>/gi, '\n')
     .replace(/<[^>]+>/g, '')

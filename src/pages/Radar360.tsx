@@ -48,7 +48,7 @@ function formatFullDate(date: Date): string {
 }
 function cleanText(t: string | null): string | null {
   if (!t) return null;
-  return t.replace(/<br\s*\/?>/gi, '\n').replace(/<\/p>/gi, '\n').replace(/<[^>]+>/g, '').replace(/\u00A0/g, ' ').replace(/\r/g, '').trim();
+  return t.replace(/\\n/g, '\n').replace(/\\r/g, '').replace(/<br\s*\/?>/gi, '\n').replace(/<\/p>/gi, '\n').replace(/<[^>]+>/g, '').replace(/\u00A0/g, ' ').replace(/\r/g, '').trim();
 }
 
 export default function Radar360() {

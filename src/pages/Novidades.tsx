@@ -52,6 +52,8 @@ function formatFullDate(date: Date): string {
 function cleanResenhaTexto(texto: string | null): string | null {
   if (!texto) return null;
   return texto
+    .replace(/\\n/g, '\n')
+    .replace(/\\r/g, '')
     .replace(/<br\s*\/?>/gi, '\n')
     .replace(/<\/p>/gi, '\n')
     .replace(/<[^>]+>/g, '')
