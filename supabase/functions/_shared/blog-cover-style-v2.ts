@@ -133,6 +133,72 @@ export function detectSubjectFigure(titulo: string, categoria: string): string |
   if (/esperança\s+garcia|esperanca\s+garcia/i.test(t)) {
     return "courageous 18th-century Afro-Brazilian woman lawyer (Esperança Garcia, first female attorney of Brazil) in dignified historical attire, holding a feather quill and parchment petition of rights";
   }
+  if (/inquilinato|aluguel|locação|locacao/i.test(t)) {
+    return "distinguished civil lawyer holding a residential lease contract and set of brass keys next to a miniature house model and scales of justice";
+  }
+  if (/lgpd|privacidade|dados/i.test(t)) {
+    return "cyber law attorney holding a digital privacy shield with a padlock icon and data protection statute book";
+  }
+  if (/aristóteles|aristoteles|ética\s+a\s+nicômaco/i.test(t)) {
+    return "classical Greek philosopher Aristotle in a toga holding a scroll of justice and brass scales on a marble plinth";
+  }
+  if (/terras\s+indígenas|indigena|marco\s+temporal/i.test(t)) {
+    return "dignified STF magistrate in black robe holding the 1988 Constitution beside a map of indigenous territories";
+  }
+  if (/fuller|denunciantes\s+invejosos/i.test(t)) {
+    return "thoughtful 20th-century legal philosopher (Lon Fuller) standing between a scale of morality and law books";
+  }
+  if (/hart|dworkin|lei\s+ou\s+moral/i.test(t)) {
+    return "two distinguished legal philosophers in debate, one holding a positivist code book and the other a book of moral principles";
+  }
+  if (/victor\s+nunes\s+leal|era\s+das\s+súmulas/i.test(t)) {
+    return "dignified STF minister (Victor Nunes Leal) holding the landmark Book of Precedents (Súmulas do STF)";
+  }
+  if (/tributári|tributaria|imposto|reforma\s+tributária/i.test(t)) {
+    return "tax attorney in formal suit holding a financial ledger and tax reform code beside a scales of justice";
+  }
+  if (/sherlock|agatha|expresso|assassinato/i.test(t)) {
+    return "detective in classic coat holding a magnifying glass inspecting legal evidence files and a gavel";
+  }
+  if (/habeas\s+corpus|liberdade/i.test(t)) {
+    return "criminal defense attorney holding a signed writ of habeas corpus and unclasped brass handcuffs";
+  }
+  if (/rousseau|contrato\s+social/i.test(t)) {
+    return "18th-century philosopher Jean-Jacques Rousseau holding a quill and the manuscript of The Social Contract";
+  }
+  if (/inquisição|inquisicao|colônia|colonia/i.test(t)) {
+    return "colonial magistrate holding a historical court record scroll beside an antique scale of justice";
+  }
+  if (/beccaria|delitos\s+e\s+das\s+penas/i.test(t)) {
+    return "18th-century reformer Cesare Beccaria holding a quill and his book On Crimes and Punishments";
+  }
+  if (/hammurabi|código\npenal/i.test(t)) {
+    return "ancient king Hammurabi standing beside a carved stone stele of the Code of Hammurabi";
+  }
+  if (/kafka|gregor\s+samsa|o\s+processo/i.test(t)) {
+    return "thoughtful writer Franz Kafka in a suit holding a court case file folder and pocket watch";
+  }
+  if (/antígona|antigona/i.test(t)) {
+    return "classical Greek heroine Antigone holding a scroll of divine law vs human decree";
+  }
+  if (/rui\s+barbosa/i.test(t)) {
+    return "distinguished 19th-century Brazilian jurist Rui Barbosa in formal frock coat holding legal manuscripts";
+  }
+  if (/foucault|vigiar\s+e\s+punir/i.test(t)) {
+    return "philosopher Michel Foucault holding a pocket watch and book on penal system history";
+  }
+  if (/rawls|equidade/i.test(t)) {
+    return "philosopher John Rawls holding a scale of social justice and fairness";
+  }
+  if (/maquiavel|o\s+príncipe/i.test(t)) {
+    return "Renaissance thinker Niccolò Machiavelli holding a quill and book of statecraft";
+  }
+  if (/hobbes|leviatã|leviata/i.test(t)) {
+    return "philosopher Thomas Hobbes holding a scepter and legal manuscript of Leviathan";
+  }
+  if (/kant|imperativo/i.test(t)) {
+    return "philosopher Immanuel Kant holding a book of practical reason and balance scale";
+  }
   if (/maria\s+da\s+penha/i.test(t)) {
     return "courageous female advocate for women's rights holding a decree of justice and scales of protection";
   }
@@ -148,7 +214,7 @@ export function detectSubjectFigure(titulo: string, categoria: string): string |
   if (/ministro|stf|supremo|tribunal|acórdão/i.test(t)) {
     return "dignified magistrate in a black judicial robe holding a formal court document";
   }
-  if (/sócrates|socrates|filosofia|platão|platao|rousseau|beccaria/i.test(t)) {
+  if (/sócrates|socrates|filosofia|platão|platao/i.test(t)) {
     return "classical philosopher in a toga, holding a rolled parchment scroll";
   }
   if (/promotor|acusação|penal|crime|defensoria|defensor/i.test(t)) {

@@ -11,9 +11,13 @@ import { bundle } from '@/services/offlineBundle';
 
 import esperancaImg from '@/assets/blog/esperanca-garcia.png';
 import kelsenImg from '@/assets/blog/piramide-de-kelsen.png';
+import inquilinatoImg from '@/assets/blog/inquilinato.png';
+import lgpdImg from '@/assets/blog/lgpd.png';
+import aristotelesImg from '@/assets/blog/aristoteles.png';
+import terrasIndigenasImg from '@/assets/blog/terras-indigenas.png';
 
-const KEY = 'blog:posts:v4';
-const LEGACY_KEYS = ['blog:posts:v1', 'blog:posts:v2', 'blog:posts:v3'];
+const KEY = 'blog:posts:v5';
+const LEGACY_KEYS = ['blog:posts:v1', 'blog:posts:v2', 'blog:posts:v3', 'blog:posts:v4'];
 const TTL_MS = 24 * 60 * 60 * 1000; // 24 h
 
 const LISTA_COLS =
@@ -39,8 +43,20 @@ function resolveCover(p: RawPost): string {
   if (t.includes('esperança garcia') || t.includes('esperanca garcia')) {
     return esperancaImg;
   }
-  if (t.includes('kelsen') || t.includes('pirâmide de kelsen') || t.includes('piramide de kelsen')) {
+  if (t.includes('kelsen') || t.includes('pirâmide') || t.includes('piramide')) {
     return kelsenImg;
+  }
+  if (t.includes('inquilinato') || t.includes('aluguel') || t.includes('locação') || t.includes('locacao')) {
+    return inquilinatoImg;
+  }
+  if (t.includes('lgpd') || t.includes('privacidade') || t.includes('multas')) {
+    return lgpdImg;
+  }
+  if (t.includes('aristóteles') || t.includes('aristoteles')) {
+    return aristotelesImg;
+  }
+  if (t.includes('terras indígenas') || t.includes('terras indigenas') || t.includes('indígenas')) {
+    return terrasIndigenasImg;
   }
   return p.imagem_url;
 }
