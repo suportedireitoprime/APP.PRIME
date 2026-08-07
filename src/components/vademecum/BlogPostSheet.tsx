@@ -323,7 +323,14 @@ export default function BlogPostSheet({ post, onClose, showGoTo = false, inline 
                           <blockquote className="my-5 rounded-r-2xl border-l-4 border-primary bg-primary/10 p-4 md:p-5 shadow-sm text-foreground/95 relative not-italic" {...props} />
                         ),
                         pre: ({ node, ...props }) => (
-                          <pre className="my-6 p-4 rounded-2xl bg-card border border-border/80 text-primary font-mono text-xs md:text-sm overflow-x-auto shadow-inner leading-relaxed" {...props} />
+                          <pre className="my-6 p-4 md:p-5 rounded-2xl bg-zinc-950/90 border border-border/80 text-slate-100 font-mono text-xs md:text-sm overflow-x-auto shadow-xl leading-relaxed tracking-wide" {...props} />
+                        ),
+                        code: ({ node, inline, ...props }: any) => (
+                          inline ? (
+                            <code className="px-1.5 py-0.5 rounded-md bg-secondary text-foreground font-mono text-xs font-semibold" {...props} />
+                          ) : (
+                            <code className="text-slate-100 font-mono text-xs md:text-sm" {...props} />
+                          )
                         ),
                         hr: ({ node, ...props }) => (
                           <hr className="my-6 border-border/60" {...props} />
