@@ -4,10 +4,14 @@ import { supabase } from '@/integrations/supabase/client';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import FlashcardsBottomNav from '@/components/flashcards/FlashcardsBottomNav';
 import { Button } from '@/components/ui/button';
-import { RotateCcw, BookOpen, Scale, Lightbulb, CheckCircle2 } from 'lucide-react';
+import { RotateCcw, BookOpen, Scale, Lightbulb, CheckCircle2, ChevronRight, Layers, Sparkles, ChevronLeft, BrainCircuit } from 'lucide-react';
 import { toast } from 'sonner';
+import { haptic } from '@/lib/nativeHaptics';
+import { getAreaVisual } from '@/lib/flashcardsAreaVisual';
 
-type Item = {
+type AreaItem = { area: string; a_revisar: number };
+type TemaItem = { tema: string; a_revisar: number };
+type CardItem = {
   id: string;
   area: string;
   tema: string | null;
@@ -16,15 +20,19 @@ type Item = {
   exemplo: string | null;
   base_legal: string | null;
   dica: string | null;
-  reforco_conteudo: string | null;
 };
 
 const FlashcardsRevisar = () => {
   const navigate = useNavigate();
-  const [itens, setItens] = useState<Item[]>([]);
-  const [areas, setAreas] = useState<{ area: string; a_revisar: number }[]>([]);
+
+  // Navegação Hierárquica em 3 Níveis: 'categorias' | 'temas' | 'cards'
+  const [nivel, setNivel] = useState<'categorias' | 'temas' | 'cards'>('categorias');
   const [areaSel, setAreaSel] = useState<string | null>(null);
-  const [aberto, setAberto] = useState<string | null>(null);
+  const [temaSel, setTemaSel] = useState<string | null>(null);
+
+  const [areas, setAreas] = useState<AreaItem[]>([]);
+  const [temas, setTemas] = useState<TemaItem[]>([]);
+  const [cards, setCards] = useState<CardItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   // SEO & Título dinâmico
@@ -32,145 +40,278 @@ const FlashcardsRevisar = () => {
     document.title = 'Revisão Espaçada de Flashcards | Vade Mecum PRIME';
   }, []);
 
-  const carregar = async (area: string | null) => {
+  // Carregar Áreas no Nível 1
+  const carregarAreas = async () => {
     setLoading(true);
+    const { data } = await supabase.rpc('flashcards_resumo_areas');
+    if (data) {
+      setAreas(
+        (data as any[])
+          .filter((a) => Number(a.a_revisar) > 0)
+          .map((a) => ({ area: a.area, a_revisar: Number(a.a_revisar) })),
+      );
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    carregarAreas();
+  }, []);
+
+  // Selecionar Categoria (Nível 1 ➔ Nível 2)
+  const selecionarArea = async (areaNome: string) => {
+    haptic.selection();
+    setAreaSel(areaNome);
+    setLoading(true);
+    setNivel('temas');
+
+    // Buscar os temas com pendência de revisão na área escolhida
+    const { data } = await supabase.rpc('flashcards_temas', { _area: areaNome });
+    if (data) {
+      setTemas(
+        (data as any[])
+          .filter((t) => Number(t.total) > 0)
+          .map((t) => ({ tema: t.tema, a_revisar: Number(t.total) })),
+      );
+    }
+    setLoading(false);
+  };
+
+  // Selecionar Matéria/Tema (Nível 2 ➔ Nível 3)
+  const selecionarTema = async (temaNome: string | null) => {
+    haptic.selection();
+    setTemaSel(temaNome);
+    setLoading(true);
+    setNivel('cards');
+
     const { data } = await supabase.rpc('flashcards_sessao', {
-      _areas: area ? [area] : null,
-      _temas: null,
+      _areas: areaSel ? [areaSel] : null,
+      _temas: temaNome ? [temaNome] : null,
       _modo: 'revisar',
       _deck_id: null,
       _limit: 50,
     });
-    setItens((data as unknown as Item[]) || []);
+
+    setCards((data as unknown as CardItem[]) || []);
     setLoading(false);
   };
 
-  useEffect(() => { carregar(areaSel); }, [areaSel]);
-
-  useEffect(() => {
-    supabase.rpc('flashcards_resumo_areas').then(({ data }) => {
-      if (data) {
-        setAreas(
-          (data as any[])
-            .filter((a) => Number(a.a_revisar) > 0)
-            .map((a) => ({ area: a.area, a_revisar: Number(a.a_revisar) })),
-        );
-      }
-    });
-  }, []);
-
-  const marcarCompreendido = async (cardId: string) => {
-    const { data: auth } = await supabase.auth.getUser();
-    if (!auth.user) return;
-    const { error } = await supabase
-      .from('flashcards_progresso')
-      .update({ status: 'compreendido', ultima_resposta_em: new Date().toISOString() })
-      .eq('user_id', auth.user.id)
-      .eq('card_id', cardId);
-    if (error) { toast.error('Não foi possível atualizar'); return; }
-    setItens((prev) => prev.filter((i) => i.id !== cardId));
-    toast.success('Marcado como compreendido');
+  const voltarNivel = () => {
+    haptic.selection();
+    if (nivel === 'cards') {
+      setNivel('temas');
+      setTemaSel(null);
+    } else if (nivel === 'temas') {
+      setNivel('categorias');
+      setAreaSel(null);
+      carregarAreas();
+    } else {
+      navigate('/flashcards');
+    }
   };
 
   return (
-    <div className="min-h-dvh bg-background pb-24">
-      <div className="mx-auto w-full md:max-w-[900px]">
+    <div className="min-h-dvh bg-background pb-28 lg:pb-12 pt-[calc(0.5rem+var(--sai-top,env(safe-area-inset-top,0px)))]">
+      <div className="mx-auto w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] px-3 sm:px-6 lg:px-8">
         <PageHeader
-          title="Revisar"
-          subtitle="Material de apoio do que você marcou"
-          onBack={() => navigate('/flashcards')}
+          title={
+            nivel === 'categorias'
+              ? 'Revisão por Categorias'
+              : nivel === 'temas'
+              ? areaSel || 'Matérias para Revisar'
+              : temaSel || 'Flashcards Agendados'
+          }
+          subtitle={
+            nivel === 'categorias'
+              ? 'Escolha a área que possui cartões agendados'
+              : nivel === 'temas'
+              ? 'Selecione a matéria para revisar os conceitos'
+              : 'Clique em um card para ver o Resumo Cornell via IA'
+          }
+          onBack={voltarNivel}
         />
 
-        <div className="space-y-4 p-4">
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => setAreaSel(null)}
-              className={`rounded-full px-3 py-1.5 text-xs font-medium ${
-                !areaSel ? 'bg-primary text-primary-foreground' : 'border border-border bg-card text-foreground'
-              }`}
-            >
-              Todas
-            </button>
-            {areas.map((a) => (
-              <button
-                key={a.area}
-                onClick={() => setAreaSel(a.area)}
-                className={`rounded-full px-3 py-1.5 text-xs font-medium ${
-                  areaSel === a.area ? 'bg-primary text-primary-foreground' : 'border border-border bg-card text-foreground'
-                }`}
-              >
-                {a.area} · {a.a_revisar}
-              </button>
-            ))}
-          </div>
+        <div className="space-y-4 pt-3">
+          {/* NÍVEL 1: LISTA DE CATEGORIAS / ÁREAS COM PENDÊNCIAS */}
+          {nivel === 'categorias' && (
+            <div className="space-y-4">
+              {loading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
+                  {[...Array(4)].map((_, i) => (
+                    <div key={i} className="h-24 rounded-2xl animate-pulse bg-muted/40 border border-border/60" />
+                  ))}
+                </div>
+              ) : areas.length === 0 ? (
+                <div className="rounded-3xl border border-border bg-card p-12 text-center text-muted-foreground">
+                  <CheckCircle2 className="mx-auto mb-3 h-12 w-12 text-emerald-500" />
+                  <p className="text-base font-extrabold text-foreground">Sua revisão está 100% em dia!</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Marque novos flashcards como "Revisar" durante suas sessões de estudo.
+                  </p>
+                  <Button className="mt-5 rounded-2xl font-bold" onClick={() => navigate('/flashcards/estudar')}>
+                    Praticar novos flashcards
+                  </Button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
+                  {areas.map((a) => {
+                    const visual = getAreaVisual(a.area);
+                    return (
+                      <button
+                        key={a.area}
+                        onClick={() => selecionarArea(a.area)}
+                        className="group flex items-center justify-between rounded-2xl border border-border/80 bg-card p-5 text-left transition-all hover:border-primary/50 hover:shadow-md active:scale-[0.99]"
+                      >
+                        <div className="flex items-center gap-3.5 min-w-0">
+                          <visual.icon className="h-7 w-7 shrink-0 transition-transform group-hover:scale-110" strokeWidth={2} style={{ color: visual.color }} />
+                          <div className="min-w-0">
+                            <p className="truncate text-base font-extrabold text-foreground group-hover:text-primary transition-colors">
+                              {a.area}
+                            </p>
+                            <p className="mt-0.5 text-xs text-muted-foreground font-medium">
+                              {a.a_revisar} {a.a_revisar === 1 ? 'card agendado' : 'cards agendados'}
+                            </p>
+                          </div>
+                        </div>
 
-          {itens.length > 0 && (
-            <Button
-              className="w-full rounded-2xl"
-              onClick={() =>
-                navigate(
-                  `/flashcards/estudar?modo=revisar${areaSel ? `&area=${encodeURIComponent(areaSel)}` : ''}`,
-                )
-              }
-            >
-              <RotateCcw className="mr-2 h-4 w-4" /> Iniciar sessão de revisão
-            </Button>
-          )}
-
-          {loading && <p className="py-10 text-center text-sm text-muted-foreground">Carregando…</p>}
-
-          {!loading && !itens.length && (
-            <div className="py-16 text-center">
-              <CheckCircle2 className="mx-auto mb-3 h-10 w-10 text-primary" />
-              <p className="font-semibold text-foreground">Nada para revisar</p>
-              <p className="text-sm text-muted-foreground">
-                Marque flashcards como "Revisar" durante o estudo.
-              </p>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-black text-primary">
+                            {a.a_revisar}
+                          </span>
+                          <ChevronRight className="h-4.5 w-4.5 text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           )}
 
-          <div className="space-y-3">
-            {itens.map((i) => {
-              const open = aberto === i.id;
-              return (
-                <div key={i.id} className="rounded-2xl border border-border bg-card p-4">
-                  <button className="w-full text-left" onClick={() => setAberto(open ? null : i.id)}>
-                    <div className="mb-2 flex flex-wrap gap-2">
-                      <span className="rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-medium text-primary">
-                        {i.area}
-                      </span>
-                      {i.tema && (
-                        <span className="rounded-full bg-muted px-2.5 py-1 text-[11px] text-muted-foreground">
-                          {i.tema}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-sm font-medium text-foreground">{i.pergunta}</p>
-                  </button>
+          {/* NÍVEL 2: LISTA DE MATÉRIAS / TÓPICOS DA ÁREA */}
+          {nivel === 'temas' && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <Button variant="ghost" size="sm" onClick={voltarNivel} className="gap-1 font-bold text-xs">
+                  <ChevronLeft className="h-4 w-4" /> Voltar para Áreas
+                </Button>
+              </div>
 
-                  {open && (
-                    <div className="mt-3 space-y-3">
-                      <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground">{i.resposta}</p>
-                      {i.reforco_conteudo && (
-                        <Bloco icon={BookOpen} titulo="Material de reforço" texto={i.reforco_conteudo} />
-                      )}
-                      {i.exemplo && <Bloco icon={BookOpen} titulo="Exemplo" texto={i.exemplo} />}
-                      {i.base_legal && <Bloco icon={Scale} titulo="Base legal" texto={i.base_legal} />}
-                      {i.dica && <Bloco icon={Lightbulb} titulo="Dica" texto={i.dica} />}
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full"
-                        onClick={() => marcarCompreendido(i.id)}
-                      >
-                        <CheckCircle2 className="mr-2 h-4 w-4" /> Já compreendi
-                      </Button>
-                    </div>
-                  )}
+              {loading ? (
+                <div className="space-y-3">
+                  {[...Array(4)].map((_, i) => (
+                    <div key={i} className="h-16 rounded-2xl animate-pulse bg-muted/40 border border-border/60" />
+                  ))}
                 </div>
-              );
-            })}
-          </div>
+              ) : temas.length === 0 ? (
+                <div className="rounded-3xl border border-border bg-card p-10 text-center text-muted-foreground">
+                  <CheckCircle2 className="mx-auto mb-3 h-10 w-10 text-emerald-500" />
+                  <p className="text-base font-extrabold text-foreground">Nenhuma matéria pendente nesta área!</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {temas.map((t) => (
+                    <button
+                      key={t.tema}
+                      onClick={() => selecionarTema(t.tema)}
+                      className="group flex items-center justify-between rounded-2xl border border-border/80 bg-card p-4 text-left transition-all hover:border-primary/50 hover:shadow-md active:scale-[0.99]"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-base font-extrabold text-foreground group-hover:text-primary transition-colors">
+                          {t.tema}
+                        </p>
+                        <p className="mt-0.5 text-xs text-muted-foreground font-medium">
+                          {t.a_revisar} {t.a_revisar === 1 ? 'card para revisar' : 'cards para revisar'}
+                        </p>
+                      </div>
+                      <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-0.5 transition-transform shrink-0" />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* NÍVEL 3: LISTA DOS FLASHCARDS PARA REVISÃO INTELIGENTE */}
+          {nivel === 'cards' && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between gap-2">
+                <Button variant="ghost" size="sm" onClick={voltarNivel} className="gap-1 font-bold text-xs">
+                  <ChevronLeft className="h-4 w-4" /> Voltar para Matérias
+                </Button>
+
+                {cards.length > 0 && (
+                  <Button
+                    size="sm"
+                    className="rounded-xl font-extrabold gap-1.5 bg-primary text-white shadow-sm"
+                    onClick={() =>
+                      navigate(
+                        `/flashcards/estudar?modo=revisar${areaSel ? `&area=${encodeURIComponent(areaSel)}` : ''}${temaSel ? `&temas=${encodeURIComponent(temaSel)}` : ''}`,
+                      )
+                    }
+                  >
+                    <RotateCcw className="h-4 w-4" /> Praticar Todos em 3D
+                  </Button>
+                )}
+              </div>
+
+              {loading ? (
+                <div className="space-y-3">
+                  {[...Array(4)].map((_, i) => (
+                    <div key={i} className="h-24 rounded-2xl animate-pulse bg-muted/40 border border-border/60" />
+                  ))}
+                </div>
+              ) : cards.length === 0 ? (
+                <div className="rounded-3xl border border-border bg-card p-10 text-center text-muted-foreground">
+                  <CheckCircle2 className="mx-auto mb-3 h-10 w-10 text-emerald-500" />
+                  <p className="text-base font-extrabold text-foreground">Cards desta matéria já revisados!</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {cards.map((c) => (
+                    <button
+                      key={c.id}
+                      onClick={() => {
+                        haptic.selection();
+                        navigate(`/flashcards/cornell?cardId=${c.id}`);
+                      }}
+                      className="group w-full rounded-2xl border border-border/80 bg-card p-5 text-left transition-all hover:border-primary/60 hover:shadow-lg active:scale-[0.99] flex flex-col justify-between gap-3"
+                    >
+                      <div className="flex items-start justify-between gap-3 w-full">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-[11px] font-black text-primary">
+                              {c.area}
+                            </span>
+                            {c.tema && (
+                              <span className="rounded-full bg-muted/80 px-2.5 py-0.5 text-[11px] font-bold text-foreground">
+                                {c.tema}
+                              </span>
+                            )}
+                          </div>
+
+                          <p className="text-base font-extrabold leading-snug text-foreground group-hover:text-primary transition-colors">
+                            {c.pergunta}
+                          </p>
+                        </div>
+
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:scale-110 transition-transform">
+                          <BrainCircuit className="h-5 w-5" />
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between gap-2 pt-2 border-t border-border/60 text-xs font-bold text-primary">
+                        <span className="flex items-center gap-1">
+                          <Sparkles className="h-3.5 w-3.5" /> Ver Resumo Cornell AI
+                        </span>
+                        <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -179,15 +320,5 @@ const FlashcardsRevisar = () => {
   );
 };
 
-function Bloco({ icon: Icon, titulo, texto }: { icon: any; titulo: string; texto: string }) {
-  return (
-    <div className="rounded-2xl bg-muted/50 p-3">
-      <p className="mb-1 flex items-center gap-1.5 text-[11px] font-semibold uppercase text-muted-foreground">
-        <Icon className="h-3.5 w-3.5" /> {titulo}
-      </p>
-      <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground">{texto}</p>
-    </div>
-  );
-}
-
 export default FlashcardsRevisar;
+

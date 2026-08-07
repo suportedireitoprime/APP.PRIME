@@ -94,6 +94,27 @@ const FlashcardsEstudo = () => {
 
   useEffect(() => { carregar(); }, [carregar]);
 
+  // Ponto de Retomada: Salvar e restaurar último cartão estudado
+  const sessionKey = `flashcards_pos_${areaParam || areasParam || deckId || 'geral'}_${temasParam || 'todos'}`;
+
+  useEffect(() => {
+    if (cards.length > 0) {
+      const savedIdx = localStorage.getItem(sessionKey);
+      if (savedIdx) {
+        const parsed = parseInt(savedIdx, 10);
+        if (!isNaN(parsed) && parsed > 0 && parsed < cards.length) {
+          setIdx(parsed);
+        }
+      }
+    }
+  }, [cards, sessionKey]);
+
+  useEffect(() => {
+    if (cards.length > 0 && idx >= 0) {
+      localStorage.setItem(sessionKey, idx.toString());
+    }
+  }, [idx, cards.length, sessionKey]);
+
   useEffect(() => {
     supabase.rpc('flashcards_resumo_areas').then(({ data }) => {
       if (data) setAreas((data as any[]).map((a) => ({
