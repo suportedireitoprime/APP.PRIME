@@ -66,8 +66,8 @@ export function LeituraBlock({ payload }: { payload: LeituraPayload }) {
                   aria-expanded={ativo}
                   className={`flex min-h-[44px] items-center gap-2 rounded-full border px-4 text-[14px] font-medium transition-colors active:scale-[0.98] ${
                     ativo
-                      ? 'border-primary bg-primary text-primary-foreground'
-                      : 'border-border bg-card text-foreground/80 hover:bg-accent'
+                      ? 'border-primary bg-primary text-white font-bold shadow-md'
+                      : 'border-border bg-card text-foreground/90 hover:bg-accent font-medium'
                   }`}
                 >
                   <Icon className="h-4 w-4" />

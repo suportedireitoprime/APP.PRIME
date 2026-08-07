@@ -272,22 +272,22 @@ const AprenderArea = () => {
             />
 
             {/* Abas de alternância logo abaixo do painel */}
-            <div className="sticky top-0 z-30 border-b border-border bg-background">
+            <div className="sticky top-0 z-30 border-b border-border bg-background -mx-3 px-3 sm:mx-0 sm:px-0">
               <TemaTabs value={tab} onChange={setTab} />
             </div>
 
             {tab === 'teoria' && (
               <>
-                <h2 className="mb-3 mt-6 px-4 text-[11px] font-bold uppercase tracking-wider text-muted-foreground sm:px-6">
+                <h2 className="mb-3 mt-6 px-1 text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground sm:px-0">
                   Temas
                 </h2>
 
                 {modulosVisiveis.length === 0 ? (
-                  <div className="mx-4 rounded-2xl border border-border bg-card p-8 text-center text-muted-foreground sm:mx-6">
+                  <div className="mx-0 rounded-2xl border border-border bg-card p-8 text-center text-muted-foreground">
                     Nenhum tema publicado ainda nesta área.
                   </div>
                 ) : (
-                  <ul className="space-y-2.5 px-4 pb-6 sm:px-6">
+                  <ul className="space-y-3 px-0 pb-6">
                     {modulosVisiveis.map((m, i) => {
                       const list = aulas.filter((a) => a.modulo_id === m.id);
                       const total = list.length;
@@ -314,8 +314,8 @@ const AprenderArea = () => {
               </>
             )}
             {tab === 'teoria' && pendentes.length > 0 && (
-              <div className="px-4 pb-8 sm:px-6">
-                <h2 className="mb-1 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+              <div className="px-0 pb-8">
+                <h2 className="mb-1 text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground">
                   Aulas a gerar
                 </h2>
                 <p className="mb-3 text-[12px] text-muted-foreground">

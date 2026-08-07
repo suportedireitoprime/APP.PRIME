@@ -57,7 +57,7 @@ const AreaHeroPanel = ({
 
   return (
     <section
-      className={`relative isolate overflow-hidden border-b border-black/10 ${isAdministrativo ? 'bg-hero-yellow' : ''}`}
+      className={`relative isolate overflow-hidden border-b border-black/10 -mx-3 sm:mx-0 sm:rounded-3xl ${isAdministrativo ? 'bg-hero-yellow' : ''}`}
       style={panelStyle}
       aria-label={`Painel de progresso — ${nome}`}
     >

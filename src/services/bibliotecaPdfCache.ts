@@ -1,5 +1,6 @@
 import { Capacitor } from '@capacitor/core';
 import { Filesystem, Directory } from '@capacitor/filesystem';
+import { normalizePdfUrl } from '@/lib/pdfUrl';
 
 /**
  * Cache de PDFs sob demanda para modo offline.
@@ -49,12 +50,12 @@ export async function getLocalPdfUrl(url: string): Promise<string | null> {
     return Capacitor.convertFileSrc(stat.uri);
   } catch { return null; }
 }
-
 export async function downloadPdf(
-  url: string,
+  rawUrl: string,
   onProgress?: (loaded: number, total: number) => void,
 ): Promise<string> {
   if (!Capacitor.isNativePlatform()) throw new Error('Download offline disponível apenas no app');
+  const url = normalizePdfUrl(rawUrl);
   try {
     await Filesystem.mkdir({ path: DIR, directory: Directory.Data, recursive: true });
   } catch { /* ok */ }

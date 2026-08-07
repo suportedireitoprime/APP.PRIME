@@ -24,10 +24,10 @@ function normalizePdfUrl(raw: string): string {
   try {
     const u = new URL(raw);
     // Google Drive: /file/d/<id>/... ou ?id=<id>
-    if (/(^|\.)drive\.google\.com$/.test(u.hostname)) {
+    if (/(^|\.)drive\.google\.com$/.test(u.hostname) || /(^|\.)googleusercontent\.com$/.test(u.hostname)) {
       const m = u.pathname.match(/\/file\/d\/([^/]+)/);
       const id = m?.[1] || u.searchParams.get('id');
-      if (id) return `https://drive.google.com/uc?export=download&id=${id}`;
+      if (id) return `https://drive.usercontent.google.com/download?id=${id}&export=download&confirm=t`;
     }
     // Dropbox: ?dl=0 -> ?dl=1
     if (/dropbox\.com$/.test(u.hostname)) {
@@ -399,7 +399,7 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId }: Props) => {
             initial={{ opacity: 0, y: -20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            className="fixed top-20 left-1/2 -translate-x-1/2 z-[1400] max-w-sm w-[90%] bg-neutral-950/95 border border-rose-500/40 text-white p-4 rounded-2xl shadow-2xl backdrop-blur-md flex flex-col gap-3"
+            className="fixed top-16 inset-x-4 mx-auto sm:left-1/2 sm:-translate-x-1/2 z-[1400] max-w-sm w-[calc(100%-2rem)] bg-neutral-950/95 border border-rose-500/40 text-white p-4 rounded-2xl shadow-2xl backdrop-blur-md flex flex-col gap-3"
           >
             <div className="flex items-start justify-between gap-2">
               <div>

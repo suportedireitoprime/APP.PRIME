@@ -122,13 +122,13 @@ Devolva UM JSON com esta estrutura EXATA:
 
 TIPOS DE BLOCO PERMITIDOS (varie, intercale teoria com dinâmica):
 
-1) "leitura" — EM CAMADAS. O aluno lê só a base; o resto ele abre se quiser.
+1) "leitura" — EXPLICAÇÃO DIDÁTICA E APROFUNDADA. O aluno aprende a teoria completa com fluidez.
    { "tipo":"leitura", "ato":"fundamentos", "payload": {
        "titulo":"opcional",
-       "conteudo":"markdown da explicação BASE — 2 a 4 parágrafos CURTOS (3-4 frases, frases de até ~22 palavras)",
-       "em_portugues_claro":"1 frase traduzindo o conceito para linguagem do dia a dia",
-       "exemplo":"caso concreto curto, com nome de personagem (2-4 frases)",
-       "pegadinha":"onde o aluno costuma errar / como isso cai na prova (1-3 frases)"
+       "conteudo":"markdown da explicação COMPLETA — 3 a 5 parágrafos bem explicados, cobrindo com clareza os conceitos jurídicos, fundamentos e doutrina contidos no livro",
+       "em_portugues_claro":"explicação direta e didática do conceito em linguagem do dia a dia",
+       "exemplo":"caso concreto explicativo e detalhado com personagens e contexto realista (3-5 frases)",
+       "pegadinha":"explicação detalhada de onde os alunos erram em provas (OAB/concursos) e pegadinhas com justificativa jurídica"
    } }
    Os campos em_portugues_claro, exemplo e pegadinha são OBRIGATÓRIOS sempre que o conceito for técnico.
    REGRAS DE FORMATAÇÃO DO MARKDOWN:
@@ -293,8 +293,8 @@ function normalizarAto(v: unknown): string {
   return ATOS.has(s) ? s : "";
 }
 
-/** Quebra parágrafos muito longos em blocos menores (leitura em celular). */
-function quebrarParagrafos(md: string, maxPalavras = 60): string {
+/** Quebra parágrafos muito longos em blocos menores quando extremamente extensos. */
+function quebrarParagrafos(md: string, maxPalavras = 180): string {
   return String(md ?? "")
     .split(/\n{2,}/)
     .map((par) => {
@@ -342,7 +342,7 @@ function sanitizarBlocos(blocos: any[]): any[] {
     }
 
     if (tipo === "tabela") {
-      const colunas = (Array.isArray(p.colunas) ? p.colunas : []).map((c: any) => cortarPalavras(String(c ?? ""), 3));
+      const colunas = (Array.isArray(p.colunas) ? p.colunas : []).map((c: any) => cortarPalavras(String(c ?? ""), 5));
       const manter = Math.min(3, colunas.length || 3);
       const cortadas = colunas.slice(manter);
       p.colunas = colunas.slice(0, manter);
@@ -354,7 +354,7 @@ function sanitizarBlocos(blocos: any[]): any[] {
           const extra = cells[manter + i];
           if (extra) notas.push(`**${c}** — ${extra}`);
         });
-        return cells.slice(0, manter).map((c) => cortarPalavras(c, 12));
+        return cells.slice(0, manter).map((c) => cortarPalavras(c, 30));
       });
       if (notas.length) p.observacoes = notas.slice(0, 6);
     }
@@ -388,7 +388,7 @@ function sanitizarBlocos(blocos: any[]): any[] {
       p.ordem_correta = (Array.isArray(p.ordem_correta) ? p.ordem_correta : [])
         .map((x: any) => String(x)).filter((x: string) => ids.has(x));
     }
-    if (tipo === "destaque" && p.texto) p.texto = cortarPalavras(String(p.texto), 60);
+    if (tipo === "destaque" && p.texto) p.texto = cortarPalavras(String(p.texto), 150);
     if (tipo === "checkpoint") p.aprendeu = (Array.isArray(p.aprendeu) ? p.aprendeu : []).slice(0, 4);
     if (tipo === "recapitulacao") p.pontos = (Array.isArray(p.pontos) ? p.pontos : []).slice(0, 6);
 
@@ -596,6 +596,18 @@ Deno.serve(async (req) => {
 
     const moduloSlug = `livro-${sug.livro_id.slice(0, 8)}`;
     async function ensureModulo(): Promise<string> {
+      const temaNome = String(livroTema || sug.titulo_melhorado || "").trim();
+      if (temaNome) {
+        const { data: matchTitulo } = await admin
+          .from("aprender_modulos")
+          .select("id")
+          .eq("area_id", areaId)
+          .ilike("titulo", temaNome)
+          .limit(1)
+          .maybeSingle();
+        if (matchTitulo?.id) return matchTitulo.id;
+      }
+
       const { data: existing, error: existingErr } = await admin
         .from("aprender_modulos")
         .select("id")
@@ -606,10 +618,9 @@ Deno.serve(async (req) => {
       if (existing?.id) return existing.id;
       const { data: created, error } = await admin
         .from("aprender_modulos")
-        .insert({ area_id: areaId, slug: moduloSlug, titulo: livroTema || sug.titulo_melhorado, ordem: 0 })
+        .insert({ area_id: areaId, slug: moduloSlug, titulo: temaNome, ordem: 0 })
         .select("id").maybeSingle();
       if (error) {
-        // corrida — se outro request criou nesse meio-tempo, releia
         const { data: retry, error: retryErr } = await admin
           .from("aprender_modulos")
           .select("id")

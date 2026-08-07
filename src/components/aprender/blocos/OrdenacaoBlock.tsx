@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { ArrowUp, ArrowDown, CheckCircle2, RotateCcw, XCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 type Item = { id: string; texto: string };
 
@@ -44,28 +45,31 @@ export function OrdenacaoBlock({ payload }: { payload: any }) {
           const ok = verificado && acertos[i];
           const err = verificado && !acertos[i];
           return (
-            <li key={it.id}
-              className={`flex items-center gap-2 rounded-xl border px-3 py-2.5 bg-card ${
+            <motion.li
+              key={it.id}
+              layout
+              transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+              className={`flex items-center gap-2 rounded-xl border px-3.5 py-3 bg-card shadow-sm transition-colors ${
                 ok ? 'border-emerald-500/60 bg-emerald-500/10'
                   : err ? 'border-red-500/60 bg-red-500/10'
-                  : 'border-border'
+                  : 'border-border hover:border-primary/40'
               }`}>
               <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/15 text-xs font-bold text-primary">
                 {i + 1}
               </span>
-              <span className="flex-1 text-sm text-foreground">{it.texto}</span>
+              <span className="flex-1 text-sm font-medium text-foreground">{it.texto}</span>
               {verificado && (ok ? <CheckCircle2 className="h-4 w-4 text-emerald-500" /> : <XCircle className="h-4 w-4 text-red-500" />)}
               <div className="flex flex-col gap-1">
                 <button onClick={() => mover(i, -1)} disabled={i === 0}
-                  className="rounded-md border border-border p-1 text-muted-foreground hover:bg-muted disabled:opacity-30">
-                  <ArrowUp className="h-3 w-3" />
+                  className="rounded-md border border-border p-1.5 text-muted-foreground hover:bg-muted active:scale-95 disabled:opacity-30">
+                  <ArrowUp className="h-3.5 w-3.5" />
                 </button>
                 <button onClick={() => mover(i, 1)} disabled={i === ordem.length - 1}
-                  className="rounded-md border border-border p-1 text-muted-foreground hover:bg-muted disabled:opacity-30">
-                  <ArrowDown className="h-3 w-3" />
+                  className="rounded-md border border-border p-1.5 text-muted-foreground hover:bg-muted active:scale-95 disabled:opacity-30">
+                  <ArrowDown className="h-3.5 w-3.5" />
                 </button>
               </div>
-            </li>
+            </motion.li>
           );
         })}
       </ol>

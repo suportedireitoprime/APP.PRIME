@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import FlashcardsBottomNav from '@/components/flashcards/FlashcardsBottomNav';
@@ -168,20 +169,20 @@ const FlashcardsEstudo = () => {
   return (
     <div className={`min-h-dvh bg-background ${escolhendo ? 'pb-32' : 'pb-10'}`}>
       {gateFlashcards.gateNode}
-      <div className="mx-auto w-full max-w-3xl">
+      <div className="mx-auto w-full max-w-3xl px-3.5 sm:px-6">
         <PageHeader
-          title={titulo}
-          subtitle={escolhendo ? 'Escolha uma categoria' : `${cards.length} cards na sessão`}
+          title={escolhendo ? 'Categorias de Flashcards' : areaParam || 'Prática de Flashcards'}
+          subtitle={temasParam ? `Filtro: ${temasParam}` : undefined}
           onBack={() => navigate('/flashcards')}
           rightAction={
-            escolhendo ? undefined : (
+            !escolhendo && (
               <Sheet>
                 <SheetTrigger asChild>
-                  <button className="flex h-11 w-11 items-center justify-center rounded-full bg-muted">
-                    <SlidersHorizontal className="h-5 w-5 text-foreground" />
+                  <button className="flex h-10 w-10 items-center justify-center rounded-full bg-card border border-border/80 shadow-sm text-foreground hover:bg-muted">
+                    <SlidersHorizontal className="h-4.5 w-4.5 text-foreground" />
                   </button>
                 </SheetTrigger>
-                <SheetContent side="bottom" className="max-h-[90dvh] overflow-y-auto rounded-t-3xl">
+                <SheetContent side="bottom" className="max-h-[90dvh] overflow-y-auto rounded-t-3xl border-t border-border">
                   <SheetHeader><SheetTitle>Filtros</SheetTitle></SheetHeader>
 
                   <div className="mt-4 space-y-5 pb-8">
@@ -234,184 +235,191 @@ const FlashcardsEstudo = () => {
 
         {/* Categorias — padrão Aprender */}
         {escolhendo ? (
-          <div className="space-y-2 px-4 pt-4 sm:px-6">
-            <p className="mb-1 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+          <div className="space-y-3 pt-4">
+            <p className="mb-1 text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground">
               Categorias
             </p>
             <button
               onClick={() => { haptic.selection(); setParam('areas', areas.map((a) => a.area).join('|')); }}
-              className="flex w-full items-center gap-3 rounded-2xl border border-border bg-card p-3 text-left transition-all hover:border-primary/40 active:scale-[0.995] sm:p-3.5"
+              className="flex w-full items-center gap-3.5 rounded-2xl border border-border/80 bg-card p-4 text-left transition-all hover:border-primary/50 hover:shadow-md active:scale-[0.99]"
             >
-              <div className="aprender-icon-shine relative flex h-14 w-14 shrink-0 items-center justify-center sm:h-16 sm:w-16">
-                <Layers className="h-9 w-9 text-primary sm:h-10 sm:w-10" strokeWidth={1.9} />
+              <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary/10">
+                <Layers className="h-8 w-8 text-primary" strokeWidth={2} />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-[15px] font-semibold text-foreground sm:text-[16px]">Mistura geral</p>
-                <p className="mt-0.5 text-[12px] text-muted-foreground sm:text-[13px]">
-                  Cards de todas as categorias
+                <p className="text-base font-extrabold text-foreground">Mistura geral de matérias</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  Praticar com flashcards de todas as categorias ativas
                 </p>
               </div>
               <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />
             </button>
 
-            {areas.map((a) => {
-              const p = a.total_cards ? Math.round((a.compreendidos / a.total_cards) * 100) : 0;
-              const { icon: Icon, color } = getAreaVisual(a.area);
-              return (
-                <button
-                  key={a.area}
-                  onClick={() => { haptic.selection(); setAreaSheet(a.area); }}
-                  className="group flex w-full items-center gap-3 rounded-2xl border border-border bg-card p-3 text-left transition-all hover:border-primary/40 active:scale-[0.995] sm:p-3.5"
-                >
-                  <div className="aprender-icon-shine relative flex h-14 w-14 shrink-0 items-center justify-center sm:h-16 sm:w-16">
-                    <Icon className="h-9 w-9 sm:h-10 sm:w-10" strokeWidth={1.9} style={{ color }} />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <p
-                        className="min-w-0 flex-1 truncate text-[15px] font-semibold text-foreground sm:text-[16px]"
-                        style={{ fontFamily: "'Barlow', system-ui, sans-serif" }}
-                      >
-                        {a.area}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+              {areas.map((a) => {
+                const p = a.total_cards ? Math.round((a.compreendidos / a.total_cards) * 100) : 0;
+                const { icon: Icon, color } = getAreaVisual(a.area);
+                return (
+                  <button
+                    key={a.area}
+                    onClick={() => { haptic.selection(); setAreaSheet(a.area); }}
+                    className="group flex w-full items-center gap-3.5 rounded-2xl border border-border/80 bg-card p-4 text-left transition-all hover:border-primary/50 hover:shadow-md active:scale-[0.99]"
+                  >
+                    <div className="relative flex h-13 w-13 shrink-0 items-center justify-center rounded-2xl bg-primary/10">
+                      <Icon className="h-7 w-7" strokeWidth={2} style={{ color }} />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <p className="min-w-0 flex-1 truncate text-base font-extrabold text-foreground group-hover:text-primary transition-colors">
+                          {a.area}
+                        </p>
+                        <span className="shrink-0 rounded-full bg-primary/10 px-2.5 py-0.5 text-[11px] font-black text-primary tabular-nums">
+                          {p}%
+                        </span>
+                      </div>
+                      <p className="mt-0.5 text-xs text-muted-foreground">
+                        {a.total_cards} cards · {a.a_revisar} a revisar
                       </p>
-                      <span
-                        className={[
-                          'shrink-0 rounded-full px-2 py-0.5 text-[11px] font-bold tabular-nums',
-                          p > 0
-                            ? 'bg-[hsl(var(--aprender-accent)/0.18)] text-[hsl(var(--aprender-accent))]'
-                            : 'bg-muted text-muted-foreground',
-                        ].join(' ')}
-                      >
-                        {p}%
-                      </span>
                     </div>
-                    <p className="mt-0.5 text-[12px] text-muted-foreground sm:text-[13px]">
-                      {a.total_cards.toLocaleString('pt-BR')} cards
-                    </p>
-                    <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                      <div
-                        className="h-full rounded-full bg-[hsl(var(--aprender-accent))]"
-                        style={{ width: `${p}%` }}
-                      />
-                    </div>
-                  </div>
-                  <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-                </button>
-              );
-            })}
+                    <ChevronRight className="h-4.5 w-4.5 shrink-0 text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
+                  </button>
+                );
+              })}
+            </div>
           </div>
         ) : (
-          <div className="p-4">
-            <Progress value={progresso} className="mb-4 h-1.5" />
+          <div className="pt-4 space-y-4">
+            {/* Barra de progresso */}
+            <div className="flex items-center gap-3">
+              <Progress value={cards.length ? ((idx + 1) / cards.length) * 100 : 0} className="h-2 flex-1" />
+              <span className="text-xs font-black tabular-nums text-muted-foreground">
+                {idx + 1}/{cards.length}
+              </span>
+            </div>
 
-            {loading && <p className="py-16 text-center text-sm text-muted-foreground">Carregando…</p>}
+            {loading && (
+              <div className="h-[420px] rounded-3xl bg-muted/40 animate-pulse border border-border/60" />
+            )}
 
-            {!loading && !cards.length && (
-              <div className="py-16 text-center">
-                <p className="text-sm text-muted-foreground">Nenhum flashcard com esses filtros.</p>
-                <Button className="mt-4" onClick={() => setParam('modo', 'todos')}>Limpar modo</Button>
+            {!loading && cards.length === 0 && (
+              <div className="rounded-3xl border border-border bg-card p-10 text-center">
+                <p className="text-base font-extrabold text-foreground">Nenhum card encontrado neste filtro.</p>
+                <Button className="mt-4 rounded-xl" onClick={() => navigate('/flashcards')}>Voltar para Flashcards</Button>
               </div>
             )}
 
-            {!loading && !!cards.length && !atual && (
-              <div className="py-16 text-center">
-                <CheckCircle2 className="mx-auto mb-3 h-10 w-10 text-primary" />
-                <p className="font-semibold text-foreground">Sessão concluída!</p>
-                <p className="text-sm text-muted-foreground">{feitos} flashcards estudados.</p>
-                <Button className="mt-4" onClick={() => { setFeitos(0); carregar(); }}>Nova sessão</Button>
+            {!loading && cards.length > 0 && !atual && (
+              <div className="rounded-3xl border border-border bg-card p-10 text-center">
+                <CheckCircle2 className="mx-auto mb-3 h-12 w-12 text-emerald-500" />
+                <h3 className="text-xl font-black text-foreground">Sessão Concluída!</h3>
+                <p className="mt-1 text-sm text-muted-foreground">{feitos} flashcards estudados com sucesso.</p>
+                <Button className="mt-5 rounded-2xl px-6 font-bold" onClick={() => { setFeitos(0); carregar(); }}>Nova sessão</Button>
               </div>
             )}
 
             {atual && (
               <>
-                {/* Carta com flip 3D — altura responsiva */}
-                <div className="[perspective:1600px]">
-                  <button
-                    onClick={virar}
-                    aria-label={virado ? 'Ver pergunta' : 'Ver resposta'}
-                    className="relative block h-[clamp(360px,58dvh,560px)] w-full text-left"
+                {/* Transição de entrada e saída entre cards (entra um, sai outro) */}
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.div
+                    key={atual.id || idx}
+                    initial={{ opacity: 0, x: 45, scale: 0.96 }}
+                    animate={{ opacity: 1, x: 0, scale: 1 }}
+                    exit={{ opacity: 0, x: -45, scale: 0.96 }}
+                    transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                    className="relative w-full min-h-[380px] sm:min-h-[440px] h-[54dvh] max-h-[540px] [perspective:1600px]"
                   >
                     <div
-                      className="relative h-full w-full transition-transform duration-[600ms] [transform-style:preserve-3d]"
-                      style={{
-                        transform: virado ? 'rotateY(180deg)' : 'rotateY(0deg)',
-                        transitionTimingFunction: 'cubic-bezier(.22,1,.36,1)',
-                      }}
+                      role="button"
+                      tabIndex={0}
+                      onClick={virar}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') virar(); }}
+                      aria-label={virado ? 'Ver pergunta' : 'Ver resposta'}
+                      className="relative w-full h-full text-left focus:outline-none cursor-pointer select-none"
                     >
-                      {/* Frente */}
                       <div
-                        className="absolute inset-0 flex flex-col overflow-hidden rounded-[28px] border bg-card shadow-[0_18px_50px_-24px_rgba(0,0,0,0.65)] [backface-visibility:hidden] [-webkit-backface-visibility:hidden]"
-                        style={{ borderColor: `${getAreaVisual(atual.area).color}45` }}
+                        className="relative h-full w-full transition-transform duration-[800ms] [transform-style:preserve-3d]"
+                        style={{
+                          transform: virado ? 'rotateY(180deg)' : 'rotateY(0deg)',
+                          transitionTimingFunction: 'cubic-bezier(0.34, 1.25, 0.64, 1)',
+                        }}
                       >
+                        {/* Frente */}
                         <div
-                          className="h-1.5 w-full shrink-0"
-                          style={{
-                            background: `linear-gradient(90deg, ${getAreaVisual(atual.area).color}, ${getAreaVisual(atual.area).color}33)`,
-                          }}
-                        />
-                        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-5 py-5 sm:px-7 sm:py-6">
-                          <Tags card={atual} />
-                          <p
-                            className="mt-auto whitespace-pre-wrap text-[19px] font-semibold leading-[1.45] tracking-[-0.01em] text-foreground sm:text-[22px]"
-                            style={{ fontFamily: "'Barlow', system-ui, sans-serif" }}
-                          >
-                            {atual.pergunta}
-                          </p>
-                          <p className="mt-5 flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-widest text-muted-foreground">
-                            <RotateCcw className="h-3.5 w-3.5" /> Toque para virar
-                          </p>
-                        </div>
-                      </div>
+                          className="absolute inset-0 flex flex-col overflow-hidden rounded-[32px] border bg-card/98 backdrop-blur-xl shadow-[0_20px_50px_-15px_rgba(0,0,0,0.5)] [backface-visibility:hidden] [-webkit-backface-visibility:hidden]"
+                          style={{ borderColor: `${getAreaVisual(atual.area).color}55` }}
+                        >
+                          <div
+                            className="h-2 w-full shrink-0"
+                            style={{
+                              background: `linear-gradient(90deg, ${getAreaVisual(atual.area).color}, ${getAreaVisual(atual.area).color}33)`,
+                            }}
+                          />
+                          <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-5 py-5 sm:px-8 sm:py-7">
+                            <Tags card={atual} />
 
-                      {/* Verso */}
-                      <div
-                        className="absolute inset-0 flex flex-col overflow-hidden rounded-[28px] border bg-card shadow-[0_18px_50px_-24px_rgba(0,0,0,0.65)] [backface-visibility:hidden] [-webkit-backface-visibility:hidden]"
-                        style={{ transform: 'rotateY(180deg)', borderColor: `${getAreaVisual(atual.area).color}45` }}
-                      >
+                            {/* Pergunta Centralizada na vertical e horizontal */}
+                            <div className="my-auto flex-1 flex flex-col items-center justify-center text-center px-2 py-4">
+                              <p className="whitespace-pre-wrap text-xl sm:text-2xl md:text-3xl font-extrabold leading-relaxed tracking-tight text-foreground font-display max-w-xl">
+                                {atual.pergunta}
+                              </p>
+                            </div>
+
+                            <p className="mt-auto shrink-0 flex items-center justify-center gap-1.5 text-[10px] sm:text-[11px] font-normal tracking-wide text-muted-foreground/60">
+                              <RotateCcw className="h-3 w-3 text-muted-foreground/60" /> Toque ou aperte espaço para virar
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Verso */}
                         <div
-                          className="h-1.5 w-full shrink-0"
-                          style={{
-                            background: `linear-gradient(90deg, ${getAreaVisual(atual.area).color}33, ${getAreaVisual(atual.area).color})`,
-                          }}
-                        />
-                        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-5 py-5 sm:px-7 sm:py-6">
-                          <p
-                            className="text-[10px] font-bold uppercase tracking-[0.18em]"
-                            style={{ color: getAreaVisual(atual.area).color }}
-                          >
-                            Resposta
-                          </p>
-                          <p className="whitespace-pre-wrap text-[16px] leading-[1.6] text-foreground sm:text-[17px]">
-                            {atual.resposta}
-                          </p>
-                          {atual.exemplo && <Bloco icon={BookOpen} titulo="Exemplo" texto={atual.exemplo} />}
-                          {atual.base_legal && <Bloco icon={Scale} titulo="Base legal" texto={atual.base_legal} />}
-                          {atual.dica && <Bloco icon={Lightbulb} titulo="Dica" texto={atual.dica} />}
+                          className="absolute inset-0 flex flex-col overflow-hidden rounded-[32px] border bg-card/98 backdrop-blur-xl shadow-[0_20px_50px_-15px_rgba(0,0,0,0.5)] [backface-visibility:hidden] [-webkit-backface-visibility:hidden]"
+                          style={{ transform: 'rotateY(180deg)', borderColor: `${getAreaVisual(atual.area).color}55` }}
+                        >
+                          <div
+                            className="h-2 w-full shrink-0"
+                            style={{
+                              background: `linear-gradient(90deg, ${getAreaVisual(atual.area).color}33, ${getAreaVisual(atual.area).color})`,
+                            }}
+                          />
+                          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-5 py-5 sm:px-8 sm:py-7">
+                            <p
+                              className="text-xs font-black uppercase tracking-widest"
+                              style={{ color: getAreaVisual(atual.area).color }}
+                            >
+                              Resposta Explicada
+                            </p>
+                            <p className="whitespace-pre-wrap text-base sm:text-lg leading-relaxed text-foreground font-medium">
+                              {atual.resposta}
+                            </p>
+                            {atual.exemplo && <Bloco icon={BookOpen} titulo="Exemplo Prático" texto={atual.exemplo} />}
+                            {atual.base_legal && <Bloco icon={Scale} titulo="Base Legal / Artigo" texto={atual.base_legal} />}
+                            {atual.dica && <Bloco icon={Lightbulb} titulo="Dica de Ouro" texto={atual.dica} />}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </button>
-                </div>
+                  </motion.div>
+                </AnimatePresence>
 
-                <div className="mt-5 grid grid-cols-2 gap-3">
+                {/* Botões de Ação com Safe Area Inset Bottom para Mobile */}
+                <div className="pt-2 pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] grid grid-cols-2 gap-3">
                   <Button
                     variant="outline"
-                    className="h-14 rounded-2xl text-[15px] font-semibold sm:h-16"
+                    className="h-14 sm:h-16 rounded-2xl text-base font-bold gap-2 hover:border-amber-500/50 hover:bg-amber-500/10 active:scale-95 transition-all shadow-sm"
                     onClick={() => responder('revisar')}
                   >
-                    <RotateCcw className="mr-2 h-[18px] w-[18px]" /> Revisar
+                    <RotateCcw className="h-5 w-5 text-amber-500" />
+                    <span>Revisar</span>
                   </Button>
                   <Button
-                    className="h-14 rounded-2xl text-[15px] font-semibold sm:h-16"
+                    className="h-14 sm:h-16 rounded-2xl text-base font-black gap-2 bg-primary text-white hover:bg-primary/90 active:scale-95 transition-all shadow-md"
                     onClick={() => responder('compreendido')}
                   >
-                    <CheckCircle2 className="mr-2 h-[18px] w-[18px]" /> Compreendi
+                    <CheckCircle2 className="h-5 w-5 text-white" />
+                    <span>Compreendi</span>
                   </Button>
                 </div>
-
-                <p className="mt-3 text-center text-xs font-medium tabular-nums text-muted-foreground">
-                  {idx + 1} de {cards.length}
-                </p>
               </>
             )}
           </div>
@@ -427,23 +435,22 @@ const FlashcardsEstudo = () => {
 function Tags({ card }: { card: Card }) {
   const { icon: Icon, color } = getAreaVisual(card.area);
   return (
-    <div className="mb-4 flex flex-wrap items-center gap-2">
+    <div className="mb-2 flex items-center flex-wrap gap-1.5 text-[11px] font-extrabold tracking-tight">
       <span
-        className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-bold"
-        style={{ backgroundColor: `${color}2e`, color, border: `1px solid ${color}66` }}
+        className="inline-flex items-center gap-1 rounded-md px-2.5 py-1 shadow-sm shrink-0"
+        style={{ backgroundColor: `${color}18`, color, border: `1px solid ${color}40` }}
       >
-        <Icon className="h-3.5 w-3.5" strokeWidth={2.2} />
-        {card.area}
+        <Icon className="h-3 w-3 shrink-0" strokeWidth={2.2} />
+        <span className="truncate max-w-[140px] sm:max-w-none">{card.area}</span>
       </span>
+
       {card.tema && (
-        <span className="rounded-full border border-border bg-muted/60 px-3 py-1.5 text-[12px] font-medium text-foreground/80">
-          {card.tema}
-        </span>
-      )}
-      {card.status && (
-        <span className="rounded-full bg-muted px-3 py-1.5 text-[12px] text-muted-foreground">
-          {card.status === 'compreendido' ? 'Compreendido' : 'A revisar'}
-        </span>
+        <>
+          <ChevronRight className="h-3 w-3 text-muted-foreground/60 shrink-0" strokeWidth={2.2} />
+          <span className="inline-flex items-center rounded-md border border-border/70 bg-muted/70 px-2.5 py-1 text-foreground/90 font-bold truncate max-w-[180px] sm:max-w-none shrink-0 shadow-sm">
+            {card.tema}
+          </span>
+        </>
       )}
     </div>
   );

@@ -17,43 +17,43 @@ export function CheckpointBlock({ payload }: { payload: CheckpointPayload }) {
 
   return (
     <article className="max-w-[68ch]">
-      <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-primary">Checkpoint</p>
+      <p className="mb-3 text-xs font-extrabold uppercase tracking-wider text-primary">Checkpoint</p>
 
-      <div className="overflow-hidden rounded-2xl border border-primary/30 bg-primary/5">
-        <div className="border-b border-primary/20 px-4 py-3">
-          <h3 className="font-display text-[20px] font-bold leading-tight text-foreground">
+      <div className="overflow-hidden rounded-2xl border border-border/80 bg-card shadow-lg">
+        <div className="border-b border-border/70 bg-muted/30 px-5 py-4">
+          <h3 className="font-display text-[22px] font-bold leading-tight text-foreground">
             {titulo || 'Até aqui você já sabe'}
           </h3>
         </div>
 
-        <ul className="space-y-3 px-4 py-4">
+        <ul className="space-y-3.5 px-5 py-5">
           {aprendeu.map((item, i) => (
             <motion.li
               key={i}
               initial={{ opacity: 0, x: -8 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.08 }}
-              className="flex gap-3"
+              className="flex gap-3 items-start"
             >
-              <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" strokeWidth={2.2} />
-              <span className="text-[16px] leading-relaxed text-foreground/90">{item}</span>
+              <CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-emerald-500" strokeWidth={2.5} />
+              <span className="text-[17px] leading-relaxed font-medium text-foreground">{item}</span>
             </motion.li>
           ))}
         </ul>
 
         {pergunta_reflexiva && (
-          <div className="mx-4 mb-4 rounded-xl border border-border bg-card p-4">
-            <p className="mb-1.5 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+          <div className="mx-5 mb-5 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 shadow-sm">
+            <p className="mb-1.5 flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-wider text-amber-600 dark:text-amber-400">
               <HelpCircle className="h-4 w-4" /> Pare e responda para você
             </p>
-            <p className="font-display text-[17px] leading-snug text-foreground">{pergunta_reflexiva}</p>
+            <p className="font-display text-[18px] font-bold leading-snug text-foreground">{pergunta_reflexiva}</p>
           </div>
         )}
 
         {proximo && (
-          <div className="flex items-start gap-2 border-t border-primary/20 px-4 py-3">
-            <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-            <p className="text-[15px] leading-relaxed text-muted-foreground">{proximo}</p>
+          <div className="flex items-start gap-2.5 border-t border-border/70 bg-muted/20 px-5 py-4">
+            <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-primary" />
+            <p className="text-[15px] leading-relaxed font-medium text-muted-foreground">{proximo}</p>
           </div>
         )}
       </div>

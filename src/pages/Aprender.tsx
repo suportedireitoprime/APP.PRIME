@@ -449,164 +449,19 @@ const Aprender = () => {
                     : 'Nenhuma matéria disponível ainda.'}
                 </div>
               ) : (
-                <div className="space-y-4">
-                  {/* 🎛️ Menu de Alternância de Áreas (Abas Deslizantes) */}
-                  <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1 -mx-3 px-3 sm:mx-0 sm:px-0">
-                    {areasOrdenadas.map((a) => {
-                      const isActive = activeArea?.id === a.id;
-                      const icon = areaIconFor(a.slug);
-                      const shortName = a.nome.replace(/^Direito\s+(de|do|da|dos|das)?\s*/i, '').trim();
-                      const capitalized = shortName.charAt(0).toUpperCase() + shortName.slice(1);
-
-                      return (
-                        <button
-                          key={a.id}
-                          onClick={() => setSelectedAreaSlug(a.slug)}
-                          onPointerEnter={() => prefetchAprenderArea(a.slug, uid)}
-                          className={cn(
-                            'shrink-0 flex items-center gap-2 px-3.5 py-2 rounded-xl border text-xs font-bold transition-all snap-start',
-                            isActive
-                              ? 'bg-primary text-primary-foreground border-primary shadow-md scale-[1.02]'
-                              : 'bg-card/70 border-border/70 text-muted-foreground hover:bg-card hover:text-foreground'
-                          )}
-                        >
-                          {icon && <icon.Icon className="w-3.5 h-3.5" style={{ color: isActive ? 'currentColor' : icon.color }} />}
-                          <span>{capitalized}</span>
-                          {a.pct > 0 && (
-                            <span className={cn('text-[9.5px] px-1.5 py-0.2 rounded-full font-black', isActive ? 'bg-white/20 text-white' : 'bg-primary/15 text-primary')}>
-                              {a.pct}%
-                            </span>
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  {/* 📋 Conteúdo da Matéria Selecionada + Lista de Subtópicos / Módulos */}
-                  {activeArea && (() => {
-                    const icon = areaIconFor(activeArea.slug);
-                    const areaModules = modulesMap.get(activeArea.id) ?? [];
-                    const shortName = activeArea.nome.replace(/^Direito\s+(de|do|da|dos|das)?\s*/i, '').trim();
-                    const capitalized = shortName.charAt(0).toUpperCase() + shortName.slice(1);
-
+                <div className="space-y-3">
+                  {areasOrdenadas.map((area) => {
+                    const icon = areaIconFor(area.slug);
                     return (
-                      <div className="rounded-2xl border border-border/80 bg-card/80 p-4 space-y-4 shadow-md">
-                        {/* Cabeçalho da Matéria Selecionada com Barra de Progresso */}
-                        <div className="flex items-center justify-between gap-3 pb-3.5 border-b border-border/60">
-                          <div className="flex items-center gap-3 min-w-0">
-                            {icon ? (
-                              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/15 p-2 shadow-inner">
-                                <icon.Icon className="h-6 w-6" strokeWidth={2} style={{ color: icon.color }} />
-                              </div>
-                            ) : (
-                              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/15 text-primary">
-                                <BookOpen className="h-5 w-5" />
-                              </div>
-                            )}
-                            <div className="min-w-0">
-                              <h3 className="text-lg font-extrabold text-foreground font-display tracking-tight truncate">
-                                {capitalized}
-                              </h3>
-                              <div className="flex items-center gap-2 mt-0.5">
-                                <div className="h-1.5 w-24 bg-muted rounded-full overflow-hidden">
-                                  <div className="h-full bg-primary rounded-full transition-all duration-500" style={{ width: `${activeArea.pct}%` }} />
-                                </div>
-                                <span className="text-xs font-bold text-primary">{activeArea.pct}% concluído</span>
-                              </div>
-                            </div>
-                          </div>
-
-                          <button
-                            onClick={() => navigate(`/aprender/area/${activeArea.slug}`)}
-                            onPointerEnter={() => prefetchAprenderArea(activeArea.slug, uid)}
-                            className="px-3 py-1.5 rounded-xl bg-primary/10 border border-primary/30 text-primary hover:bg-primary/20 text-xs font-bold transition-all flex items-center gap-1 shrink-0"
-                          >
-                            <span>Ver todas as aulas ({activeArea.totalAulas})</span>
-                            <ChevronRight className="w-4 h-4" />
-                          </button>
-                        </div>
-
-                        {/* Lista Vertical Elegante dos Subtópicos / Módulos da Matéria */}
-                        <div className="space-y-2 pt-1">
-                          <div className="flex items-center justify-between px-1">
-                            <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                              Tópicos de {capitalized}
-                            </p>
-                            <span className="text-[11px] font-semibold text-muted-foreground">
-                              {areaModules.length || 3} tópicos
-                            </span>
-                          </div>
-
-                          {areaModules.length > 0 ? (
-                            areaModules.map((mod, idx) => {
-                              const handleTopicClick = () => {
-                                navigate(`/aprender/modulo/${mod.id}`);
-                              };
-
-                              return (
-                                <button
-                                  key={mod.id}
-                                  onClick={handleTopicClick}
-                                  onPointerEnter={() => {
-                                    if (mod.primeiraAulaId) prefetchAprenderAula(mod.primeiraAulaId);
-                                    else prefetchAprenderArea(activeArea.slug, uid);
-                                  }}
-                                  className="w-full flex items-center justify-between p-3.5 rounded-2xl border border-border/60 bg-card/90 hover:bg-card hover:border-primary/40 transition-all text-left group shadow-sm active:scale-[0.99]"
-                                >
-                                  <div className="flex items-center gap-3.5 min-w-0">
-                                    <div className="w-7 h-7 rounded-xl bg-muted/80 text-muted-foreground font-semibold text-xs flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-all">
-                                      {idx + 1}
-                                    </div>
-                                    <div className="min-w-0">
-                                      <p className="text-sm font-bold text-foreground truncate group-hover:text-primary transition-colors">
-                                        {mod.titulo}
-                                      </p>
-                                      <p className="text-xs text-muted-foreground truncate mt-0.5">
-                                        {mod.resumo || `${mod.totalAulas ?? 1} ${mod.totalAulas === 1 ? 'aula disponível' : 'aulas disponíveis'}`}
-                                      </p>
-                                    </div>
-                                  </div>
-                                  <div className="flex items-center gap-2 shrink-0">
-                                    <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-transform group-hover:translate-x-0.5 ml-1" />
-                                  </div>
-                                </button>
-                              );
-                            })
-                          ) : (
-                            <div className="space-y-2">
-                              {[
-                                { titulo: `Origens, Princípios e Conceitos de ${capitalized}`, resumo: 'Conceitos centrais e pilares orientadores' },
-                                { titulo: `Estrutura Geral e Regras de ${capitalized}`, resumo: 'Institutos fundamentais e doutrina' },
-                                { titulo: `Aplicação Prática e Jurisprudência`, resumo: 'Questões, casos e normas vigentes' },
-                              ].map((item, idx) => (
-                                <button
-                                  key={idx}
-                                  onClick={() => navigate(`/aprender/area/${activeArea.slug}`)}
-                                  onPointerEnter={() => prefetchAprenderArea(activeArea.slug, uid)}
-                                  className="w-full flex items-center justify-between p-3.5 rounded-2xl border border-border/60 bg-card/90 hover:bg-card hover:border-primary/40 transition-all text-left group shadow-sm active:scale-[0.99]"
-                                >
-                                  <div className="flex items-center gap-3.5 min-w-0">
-                                    <div className="w-7 h-7 rounded-xl bg-muted/80 text-muted-foreground font-semibold text-xs flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-all">
-                                      {idx + 1}
-                                    </div>
-                                    <div className="min-w-0">
-                                      <p className="text-sm font-bold text-foreground truncate group-hover:text-primary transition-colors">
-                                        {item.titulo}
-                                      </p>
-                                      <p className="text-xs text-muted-foreground truncate mt-0.5">
-                                        {item.resumo}
-                                      </p>
-                                    </div>
-                                  </div>
-                                  <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-transform group-hover:translate-x-0.5 ml-1" />
-                                </button>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </div>
+                      <MateriaRow
+                        key={area.id}
+                        area={area}
+                        icon={icon}
+                        onOpen={() => navigate(`/aprender/area/${area.slug}`)}
+                        onPrefetch={() => prefetchAprenderArea(area.slug, uid)}
+                      />
                     );
-                  })()}
+                  })}
                 </div>
               )}
             </div>

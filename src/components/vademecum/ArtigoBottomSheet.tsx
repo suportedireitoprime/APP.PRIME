@@ -1047,10 +1047,18 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
       // 1ª Tentativa: cache de áudio no banco (só reaproveita narrações da versão atual,
       // que já leem hierarquia + epígrafe + número do artigo e trazem word_timings).
       try {
+        const aliases = Array.from(new Set([
+          tabelaNome,
+          tabelaNome.toLowerCase(),
+          tabelaNome.toUpperCase(),
+          tabelaNome.replace(/^[A-Z0-9]+_/, '').toLowerCase(),
+          tabelaNome.replace(/^[A-Z0-9]+_/, '').toUpperCase(),
+        ]));
+
         const { data: rows } = await supabase
           .from('narracoes_artigos')
           .select('audio_url, word_timings')
-          .eq('tabela_nome', tabelaNome)
+          .in('tabela_nome', aliases)
           .eq('artigo_numero', artigo.numero)
           .limit(1);
 

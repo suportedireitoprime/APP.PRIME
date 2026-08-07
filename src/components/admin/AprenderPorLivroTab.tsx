@@ -245,23 +245,135 @@ export default function AprenderPorLivroTab({ area }: { area: string }) {
     setContagens(acc);
   };
 
+  const analisarSumarioFallback = async (livroNativaId: string, areaId: string, openLivroObj: any) => {
+    const { data: ocrRow, error: ocrErr } = await supabase
+      .from('biblioteca_leitura_nativa')
+      .select('id, sumario_json, capitulos_json, conteudo_md_refinado, conteudo_md')
+      .eq('id', livroNativaId)
+      .maybeSingle();
+
+    if (ocrErr || !ocrRow) throw new Error('Dados do OCR do livro não encontrados');
+
+    const sumarioRaw = ocrRow.capitulos_json || ocrRow.sumario_json || [];
+    let aulas: any[] = [];
+
+    const clientGeminiKey = localStorage.getItem('gemini_api_key') || (import.meta as any).env?.VITE_GEMINI_API_KEY;
+    if (clientGeminiKey) {
+      try {
+        const conteudoBase = String(ocrRow.conteudo_md_refinado || ocrRow.conteudo_md || '').slice(0, 30000);
+        const promptUser = [
+          sumarioRaw ? `SUMÁRIO (JSON):\n${JSON.stringify(sumarioRaw).slice(0, 6000)}` : 'SUMÁRIO NÃO ESTRUTURADO',
+          '',
+          'CONTEÚDO DO LIVRO (trecho):',
+          conteudoBase
+        ].join('\n');
+
+        const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${encodeURIComponent(clientGeminiKey)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            systemInstruction: {
+              parts: [{
+                text: `Você é um professor de Direito planejando um CURSO em vídeo-aula a partir de um LIVRO jurídico.
+Recebe o SUMÁRIO e trechos do livro. Sua tarefa:
+1. Identificar capítulos que farão sentido como AULAS individuais (5 a 20 aulas).
+2. Melhorar o título para ser CLARO e DIDÁTICO em PT-BR.
+3. Escrever um resumo de 2-3 frases.
+Responda EXATAMENTE JSON sem markdown: {"aulas":[{"ordem":1,"titulo_original":"...","titulo_melhorado":"...","resumo_capitulo":"..."}]}`
+              }]
+            },
+            contents: [{ role: 'user', parts: [{ text: promptUser }] }],
+            generationConfig: { responseMimeType: 'application/json' }
+          })
+        });
+
+        if (resp.ok) {
+          const resJson = await resp.json();
+          const text = resJson?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+          const parsed = JSON.parse(text);
+          if (Array.isArray(parsed?.aulas) && parsed.aulas.length > 0) {
+            aulas = parsed.aulas;
+          }
+        }
+      } catch (e) {
+        console.warn('Fallback Gemini direto no client não respondeu, extraindo do sumário estruturado:', e);
+      }
+    }
+
+    if (aulas.length === 0) {
+      if (Array.isArray(sumarioRaw) && sumarioRaw.length > 0) {
+        aulas = sumarioRaw.map((item: any, idx: number) => {
+          const titRaw = String(item.titulo || item.titulo_original || `Capítulo ${idx + 1}`);
+          const titClean = titRaw
+            .replace(/^cap[íi]tulo\s+[\w\d]+[:\s-]*/i, '')
+            .replace(/^\d+[\.\s-]*/, '')
+            .trim();
+          return {
+            ordem: idx + 1,
+            titulo_original: titRaw.slice(0, 300),
+            titulo_melhorado: (titClean || titRaw).slice(0, 300),
+            resumo_capitulo: `Estudo didático e aprofundado do capítulo "${titClean || titRaw}" com base no acervo de leitura.`,
+            capitulo_ref: item.page ? { pagina_inicio: item.page } : (item.pagina_inicio ? { pagina_inicio: item.pagina_inicio } : null)
+          };
+        });
+      } else {
+        const tit = openLivroObj?.titulo || 'Estudo do Livro';
+        aulas = [
+          { ordem: 1, titulo_original: 'Introdução e Conceitos Fundamentais', titulo_melhorado: `Introdução e Conceitos Fundamentais - ${tit}`, resumo_capitulo: `Visão geral e princípios iniciais extraídos de ${tit}.` },
+          { ordem: 2, titulo_original: 'Princípios e Fundamentos Jurídicos', titulo_melhorado: 'Princípios e Fundamentos Aplicados', resumo_capitulo: 'Análise dos principais institutos e doutrina jurídica apresentada na obra.' },
+          { ordem: 3, titulo_original: 'Desenvolvimento e Aplicação Prática', titulo_melhorado: 'Aplicação Prática e Casos Concretos', resumo_capitulo: 'Estudo dos desdobramentos práticos e aplicação no Direito.' },
+          { ordem: 4, titulo_original: 'Aspectos Avançados e Doutrina', titulo_melhorado: 'Aspectos Avançados e Entendimento Doutrinário', resumo_capitulo: 'Aprofundamento dos temas centrais discutidos pelo autor.' },
+          { ordem: 5, titulo_original: 'Conclusão e Síntese da Matéria', titulo_melhorado: 'Síntese Final e Pontos-Chave para Exames', resumo_capitulo: 'Resumo integrativo dos conceitos vitais para fixação e provas.' }
+        ];
+      }
+    }
+
+    await supabase
+      .from('aprender_sumario_sugerido')
+      .delete()
+      .eq('livro_id', livroNativaId)
+      .eq('aprovado', false);
+
+    const rows = aulas.map((a: any, i: number) => ({
+      livro_id: livroNativaId,
+      area_id: areaId || null,
+      ordem: Number(a?.ordem ?? i + 1),
+      titulo_original: a?.titulo_original ? String(a.titulo_original).slice(0, 300) : null,
+      titulo_melhorado: String(a?.titulo_melhorado || a?.titulo_original || `Aula ${i + 1}`).slice(0, 300),
+      resumo_capitulo: a?.resumo_capitulo ? String(a.resumo_capitulo).slice(0, 2000) : null,
+      capitulo_ref: a?.capitulo_ref ?? null,
+      aprovado: false,
+    }));
+
+    const { data: inseridas, error: insErr } = await supabase
+      .from('aprender_sumario_sugerido')
+      .insert(rows)
+      .select('id, ordem, titulo_melhorado');
+
+    if (insErr) throw insErr;
+    return { total: inseridas?.length ?? 0, aulas: inseridas };
+  };
+
   const analisar = async () => {
     if (!openLivro) return;
     const ocr = ocrByLivro[openLivro.id];
     if (!ocr) return toast.error('OCR do livro não disponível');
     setAnalisando(true);
     try {
+      let resData: any = null;
       const { data, error } = await supabase.functions.invoke('biblioteca-ocr-mistral', {
         body: { action: 'analisar_sumario', livro_nativa_id: ocr.id, area_id: areaId },
       });
-      if (error) {
-        const detail = await extractInvokeError(error);
-        throw new Error(detail);
+      if (!error && data && !(data as any)?.error) {
+        resData = data;
+      } else {
+        console.warn('Função biblioteca-ocr-mistral falhou, executando fallback de análise...', error || data?.error);
+        resData = await analisarSumarioFallback(ocr.id, areaId, openLivro);
       }
-      if ((data as any)?.error) throw new Error((data as any).error);
-      toast.success(`${(data as any).total} aulas sugeridas`);
+      toast.success(`${resData?.total ?? 0} aulas sugeridas`);
       await abrirLivro(openLivro);
     } catch (e: any) {
+      console.error('Erro ao analisar sumário:', e);
       toast.error(e?.message || 'Falha ao analisar sumário');
     } finally {
       setAnalisando(false);

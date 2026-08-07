@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { Info, AlertTriangle, Quote, Scale } from 'lucide-react';
+import { Zap, Flame, Info, AlertTriangle, Quote, Scale } from 'lucide-react';
 import { normalizarMarkdown } from '@/lib/markdown';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
@@ -368,36 +368,53 @@ const AprenderAula = () => {
 
   if (finalizada) {
     const pct = perguntas.length ? Math.round((acertos / perguntas.length) * 100) : 100;
+    const xpGanho = (total * 15) + (acertos * 25) + 100;
     return (
       <div className="min-h-screen bg-background">
-        <div className="mx-auto max-w-2xl px-4 py-10 text-center">
-          <div
-            className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full"
-            style={{ background: 'hsl(348 78% 38%)' }}
+        <div className="mx-auto max-w-2xl px-4 py-12 text-center">
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+            className="mx-auto mb-6 flex h-28 w-28 items-center justify-center rounded-full bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-300 shadow-xl shadow-amber-500/25 ring-4 ring-amber-400/30"
           >
-            <Trophy className="h-12 w-12 text-black" />
+            <Trophy className="h-14 w-14 text-slate-950 drop-shadow-md" />
+          </motion.div>
+          
+          <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-1.5 text-sm font-extrabold text-amber-500 mb-3 shadow-sm">
+            <Zap className="h-4 w-4 fill-amber-500 text-amber-500 animate-bounce" />
+            <span>+{xpGanho} XP GANHOS!</span>
           </div>
-          <h1 className="font-display text-3xl font-bold text-foreground">Aula concluída!</h1>
-          <p className="mt-2 text-muted-foreground">{aula.titulo}</p>
-          {perguntas.length > 0 && (
-            <div className="mt-8 grid grid-cols-2 gap-4">
-              <div className="rounded-xl border border-border bg-card p-4">
-                <p className="text-xs uppercase text-muted-foreground">Acertos</p>
-                <p className="mt-1 font-display text-2xl font-bold">{acertos}/{perguntas.length}</p>
-              </div>
-              <div className="rounded-xl border border-border bg-card p-4">
-                <p className="text-xs uppercase text-muted-foreground">Aproveitamento</p>
-                <p className="mt-1 font-display text-2xl font-bold">{pct}%</p>
-              </div>
+
+          <h1 className="font-display text-3xl font-extrabold text-foreground sm:text-4xl">Aula concluída!</h1>
+          <p className="mt-2 text-base text-muted-foreground">{aula.titulo}</p>
+
+          <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3">
+            <div className="rounded-2xl border border-border/80 bg-card p-4 shadow-sm">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Etapas</p>
+              <p className="mt-1 font-display text-2xl font-extrabold text-foreground">{total}</p>
             </div>
-          )}
+            {perguntas.length > 0 && (
+              <>
+                <div className="rounded-2xl border border-border/80 bg-card p-4 shadow-sm">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Acertos</p>
+                  <p className="mt-1 font-display text-2xl font-extrabold text-emerald-500">{acertos}/{perguntas.length}</p>
+                </div>
+                <div className="rounded-2xl border border-border/80 bg-card p-4 shadow-sm col-span-2 sm:col-span-1">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Aproveitamento</p>
+                  <p className="mt-1 font-display text-2xl font-extrabold text-amber-500">{pct}%</p>
+                </div>
+              </>
+            )}
+          </div>
+
           <div className="mt-8 space-y-4">
             <div className="grid gap-3 sm:grid-cols-2">
               <button
                 onClick={() => { setIdx(0); setRespostas({}); setFlipped({}); setConexoes({}); setFinalizada(false); startedAt.current = Date.now(); }}
-                className="flex h-14 items-center justify-center rounded-xl border border-border px-5 text-sm font-semibold hover:bg-accent"
+                className="flex h-14 items-center justify-center rounded-xl border border-border/80 bg-card px-5 text-sm font-bold text-foreground hover:bg-accent active:scale-95 transition-transform"
               >
-                <RotateCw className="mr-2 inline h-4 w-4" /> Refazer
+                <RotateCw className="mr-2 inline h-4 w-4" /> Refazer Aula
               </button>
               <button
                 onClick={() => {
@@ -405,21 +422,21 @@ const AprenderAula = () => {
                   navigate(`/aprender/aula/${proximaAula.id}`);
                 }}
                 disabled={!proximaAula}
-                className="flex h-14 items-center justify-center rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+                className="flex h-14 items-center justify-center rounded-xl bg-primary px-5 text-sm font-extrabold text-white shadow-lg hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-40 active:scale-95 transition-transform"
               >
-                Próxima aula <ArrowRight className="ml-2 inline h-4 w-4" />
+                Próxima aula <ArrowRight className="ml-2 inline h-4 w-4 text-white" strokeWidth={2.5} />
               </button>
             </div>
             <div className="flex items-center gap-3">
-              <span className="h-px flex-1 bg-border" />
-              <span className="text-xs uppercase tracking-wide text-muted-foreground">ou</span>
-              <span className="h-px flex-1 bg-border" />
+              <span className="h-px flex-1 bg-border/60" />
+              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">ou</span>
+              <span className="h-px flex-1 bg-border/60" />
             </div>
             <button
               onClick={() => navigate('/aprender')}
-              className="flex h-14 w-full items-center justify-center rounded-xl border border-border bg-card px-5 text-sm font-semibold hover:bg-accent"
+              className="flex h-14 w-full items-center justify-center rounded-xl border border-border/80 bg-card px-5 text-sm font-bold text-foreground hover:bg-accent active:scale-95 transition-transform"
             >
-              Voltar para trilhas
+              Voltar para trilhas de estudo
             </button>
           </div>
         </div>
@@ -521,25 +538,30 @@ const AprenderAula = () => {
             </p>
             <p className="truncate font-display text-[15px] font-bold text-foreground md:text-base lg:hidden">{aula.titulo}</p>
           </div>
-          <span className="shrink-0 rounded-full bg-muted px-3 py-1 text-xs font-medium tabular-nums text-muted-foreground md:text-sm">
-            {idx + 1}/{total}
-          </span>
+          <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-xs font-bold text-amber-600 dark:text-amber-400">
+              <Zap className="h-3.5 w-3.5 fill-amber-500 text-amber-500 animate-pulse" />
+              <span>{(idx + 1) * 15 + acertos * 25} XP</span>
+            </div>
+            {acertos > 0 && (
+              <div className="flex items-center gap-1 rounded-full border border-orange-500/30 bg-orange-500/10 px-2.5 py-1 text-xs font-bold text-orange-600 dark:text-orange-400">
+                <Flame className="h-3.5 w-3.5 fill-orange-500 text-orange-500" />
+                <span>{acertos}x</span>
+              </div>
+            )}
+            <span className="shrink-0 rounded-full bg-muted px-3 py-1 text-xs font-medium tabular-nums text-muted-foreground md:text-sm">
+              {idx + 1}/{total}
+            </span>
+          </div>
 
         </div>
 
 
-        {/* Timeline horizontal — fundo amarelo degradê (mesma paleta do painel inicial), sem margens laterais */}
+        {/* Timeline horizontal — Dark Card / Zinc de alto contraste com iluminação sutil */}
         <div
           ref={timelineScrollRef}
-          className="relative overflow-x-auto border-y border-black/10 py-3 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden scroll-smooth"
-          style={{
-            background: 'linear-gradient(135deg, hsl(348 78% 38%) 0%, hsl(348 78% 38%) 55%, hsl(348 78% 38%) 100%)',
-          }}
+          className="relative overflow-x-auto border-y border-border/80 bg-card/90 py-3 backdrop-blur-md [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden scroll-smooth shadow-sm"
         >
-          {/* Radial warmth overlays — mesmo efeito do painel amarelo */}
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.25),transparent_60%)]" />
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.35),transparent_65%)]" />
-
           <div
             className="mx-auto flex max-w-3xl items-center lg:max-w-none lg:px-10 2xl:px-16"
             style={{
@@ -561,7 +583,7 @@ const AprenderAula = () => {
               return (
                 <div key={b.id} ref={(el) => (timelineItemsRef.current[i] = el)} className="relative flex shrink-0 items-center">
                   {iniciaAto && (
-                    <span className="mr-1.5 shrink-0 rounded-full border border-black/25 px-2 py-[3px] text-[10px] font-bold uppercase tracking-wide text-black/70">
+                    <span className="mr-2 shrink-0 rounded-full bg-primary/20 border border-primary/40 px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-primary shadow-sm">
                       {ROTULO_ATO[ato]}
                     </span>
                   )}
@@ -574,36 +596,38 @@ const AprenderAula = () => {
                     {isAtual && (
                       <motion.span
                         layoutId="timeline-halo"
-                        className="absolute inset-0 rounded-full"
-                        style={{ background: 'rgba(0,0,0,0.18)' }}
+                        className="absolute inset-0 rounded-full bg-primary/25 ring-2 ring-primary/60 shadow-lg"
                         transition={{ type: 'spring', stiffness: 500, damping: 32 }}
                       />
                     )}
                     <Icon
                       className={`relative h-[22px] w-[22px] md:h-6 md:w-6 transition-colors ${
-                        ativo ? 'text-black' : 'text-black/40'
+                        isAtual
+                          ? 'text-primary drop-shadow-[0_0_8px_rgba(var(--primary),0.6)]'
+                          : isFeito
+                          ? 'text-foreground'
+                          : 'text-muted-foreground/40'
                       }`}
-                      strokeWidth={2}
+                      strokeWidth={isAtual ? 2.5 : 2}
                     />
                     {ok && (
-                      <span className="absolute -bottom-0.5 -right-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-green-600 ring-2 ring-[hsl(0_72%_52%)]">
-                        <CheckCircle2 className="h-2.5 w-2.5 text-white" strokeWidth={2} />
+                      <span className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 ring-2 ring-background shadow-md">
+                        <CheckCircle2 className="h-3 w-3 text-white" strokeWidth={2.5} />
                       </span>
                     )}
                     {err && (
-                      <span className="absolute -bottom-0.5 -right-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-red-600 ring-2 ring-[hsl(0_72%_52%)]">
-                        <XCircle className="h-2.5 w-2.5 text-white" strokeWidth={2} />
+                      <span className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 ring-2 ring-background shadow-md">
+                        <XCircle className="h-3 w-3 text-white" strokeWidth={2.5} />
                       </span>
                     )}
                   </button>
                   {!isLast && (
-                    <div className="relative mx-0.5 h-[3px] w-6 md:w-8 overflow-hidden rounded-full bg-black/20">
+                    <div className="relative mx-1 h-[3px] w-6 md:w-8 overflow-hidden rounded-full bg-muted/60">
                       <motion.div
-                        className="absolute inset-y-0 left-0 rounded-full"
-                        style={{ background: 'black' }}
+                        className="absolute inset-y-0 left-0 rounded-full bg-primary"
                         initial={false}
                         animate={{ width: isFeito ? '100%' : '0%' }}
-                        transition={{ duration: 0.5, ease: 'easeOut' }}
+                        transition={{ duration: 0.4, ease: 'easeOut' }}
                       />
                     </div>
                   )}
@@ -658,38 +682,35 @@ const AprenderAula = () => {
       </main>
 
       {/* Controles desktop — coluna fixa à direita, fora da coluna de leitura */}
-      <aside className="fixed right-5 top-1/2 z-20 hidden w-[12.5rem] -translate-y-1/2 flex-col gap-2 rounded-2xl border border-border bg-card/80 p-3 backdrop-blur lg:flex 2xl:right-8 2xl:w-[14rem]">
+      <aside className="fixed right-5 top-1/2 z-20 hidden w-[12.5rem] -translate-y-1/2 flex-col gap-2 rounded-2xl border border-border/80 bg-card/90 p-3 backdrop-blur-md shadow-lg lg:flex 2xl:right-8 2xl:w-[14rem]">
         <p className="px-1 pb-1 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
           Etapa {idx + 1} de {total}
         </p>
         <button
           onClick={proximo}
-          className="relative inline-flex h-12 w-full items-center justify-center gap-1.5 overflow-hidden rounded-xl text-sm font-semibold text-black shadow-md transition-transform hover:opacity-90 active:scale-95"
-          style={{ background: 'linear-gradient(135deg, hsl(348 78% 38%) 0%, hsl(348 78% 38%) 55%, hsl(348 78% 38%) 100%)' }}
+          className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary text-sm font-bold text-white shadow-md transition-all hover:bg-primary/90 active:scale-95"
         >
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.25),transparent_60%)]" />
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.35),transparent_65%)]" />
-          <span className="relative">{idx === total - 1 ? 'Concluir' : 'Próximo'}</span>
-          <ArrowRight className="relative h-4 w-4" strokeWidth={2} />
+          <span>{idx === total - 1 ? 'Concluir' : 'Próximo'}</span>
+          <ArrowRight className="h-4 w-4 text-white" strokeWidth={2.5} />
         </button>
         <button
           onClick={anterior}
           disabled={idx === 0}
-          className="inline-flex h-11 w-full items-center justify-center rounded-xl border border-border text-sm font-medium transition-transform hover:bg-accent disabled:opacity-40 active:scale-95"
+          className="inline-flex h-11 w-full items-center justify-center rounded-xl border border-border bg-muted/40 text-sm font-semibold text-foreground transition-transform hover:bg-accent disabled:opacity-40 active:scale-95"
         >
           Anterior
         </button>
-        <div className="my-1 h-px bg-border" />
+        <div className="my-1 h-px bg-border/60" />
         <button
           onClick={() => setMentorOpen(true)}
-          className="inline-flex h-11 w-full items-center gap-2 rounded-xl border border-border px-3 text-sm font-medium transition-colors hover:bg-accent"
+          className="inline-flex h-11 w-full items-center gap-2 rounded-xl border border-border/80 bg-card px-3 text-sm font-semibold text-foreground transition-colors hover:bg-accent"
         >
-          <MessageCircle className="h-[18px] w-[18px] text-primary" strokeWidth={2} />
+          <MessageCircle className="h-[18px] w-[18px] text-primary" strokeWidth={2.5} />
           Mentor
         </button>
         <button
           onClick={() => setSettingsOpen(true)}
-          className="inline-flex h-11 w-full items-center gap-2 rounded-xl border border-border px-3 text-sm font-medium transition-colors hover:bg-accent"
+          className="inline-flex h-11 w-full items-center gap-2 rounded-xl border border-border/80 bg-card px-3 text-sm font-semibold text-muted-foreground transition-colors hover:bg-accent"
         >
           <Settings2 className="h-[18px] w-[18px] text-muted-foreground" strokeWidth={2} />
           Ajustes
@@ -698,50 +719,42 @@ const AprenderAula = () => {
 
       {/* Rodapé unificado (mobile) — botões 48dp (Material) / 44pt (Apple) */}
       <div
-        className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-background/95 backdrop-blur lg:hidden"
-
+        className="fixed inset-x-0 bottom-0 z-20 border-t border-border/80 bg-card/95 backdrop-blur-md lg:hidden shadow-lg"
         style={{
           paddingLeft: 'calc(0.75rem + var(--sai-left, env(safe-area-inset-left, 0px)))',
           paddingRight: 'calc(0.75rem + var(--sai-right, env(safe-area-inset-right, 0px)))',
           paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom, 0px))',
         }}
       >
-        <div className="mx-auto flex max-w-3xl items-center gap-2 md:gap-3 py-3 lg:max-w-4xl lg:px-6">
-
+        <div className="mx-auto flex max-w-3xl items-center gap-2.5 md:gap-3 py-2.5 lg:max-w-4xl lg:px-6">
           <button
             onClick={() => setSettingsOpen(true)}
             aria-label="Configurações"
-            className="flex h-12 w-12 md:h-14 md:w-14 shrink-0 items-center justify-center rounded-full border border-border hover:bg-accent active:scale-95 transition-transform"
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border/80 bg-card hover:bg-accent active:scale-95 transition-transform text-foreground"
           >
-            <Settings2 className="h-[22px] w-[22px] md:h-6 md:w-6" />
+            <Settings2 className="h-[22px] w-[22px]" />
           </button>
           <button
             onClick={() => setMentorOpen(true)}
             aria-label="Mentor"
-            className="relative flex h-12 w-12 md:h-14 md:w-14 shrink-0 items-center justify-center overflow-hidden rounded-full text-black shadow-md active:scale-95 transition-transform"
-            style={{ background: 'linear-gradient(135deg, hsl(348 78% 38%) 0%, hsl(348 78% 38%) 55%, hsl(348 78% 38%) 100%)' }}
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary text-white shadow-md active:scale-95 transition-transform hover:bg-primary/90"
           >
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.25),transparent_60%)]" />
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.35),transparent_65%)]" />
-            <MessageCircle className="relative h-[22px] w-[22px] md:h-6 md:w-6" strokeWidth={2} />
+            <MessageCircle className="h-[22px] w-[22px] text-white" strokeWidth={2.5} />
           </button>
           <div className="flex-1" />
           <button
             onClick={anterior}
             disabled={idx === 0}
-            className="rounded-full border border-border px-5 md:px-6 h-12 md:h-14 text-sm md:text-base font-medium disabled:opacity-40 active:scale-95 transition-transform"
+            className="rounded-full border border-border/80 bg-muted/60 px-5 h-12 text-sm font-semibold text-foreground disabled:opacity-40 active:scale-95 transition-transform"
           >
             Anterior
           </button>
           <button
             onClick={proximo}
-            className="relative inline-flex items-center gap-1.5 overflow-hidden rounded-full px-6 md:px-7 h-12 md:h-14 text-sm md:text-base font-semibold text-black hover:opacity-90 active:scale-95 transition-transform shadow-md"
-            style={{ background: 'linear-gradient(135deg, hsl(348 78% 38%) 0%, hsl(348 78% 38%) 55%, hsl(348 78% 38%) 100%)' }}
+            className="inline-flex items-center gap-1.5 rounded-full bg-primary px-6 h-12 text-sm font-bold text-white hover:bg-primary/90 active:scale-95 transition-transform shadow-md"
           >
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.25),transparent_60%)]" />
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.35),transparent_65%)]" />
-            <span className="relative">{idx === total - 1 ? 'Concluir' : 'Próximo'}</span>
-            <ArrowRight className="relative h-4 w-4 md:h-5 md:w-5" strokeWidth={2} />
+            <span>{idx === total - 1 ? 'Concluir' : 'Próximo'}</span>
+            <ArrowRight className="h-4 w-4 text-white" strokeWidth={2.5} />
           </button>
         </div>
       </div>

@@ -191,14 +191,16 @@ const BottomNav = () => {
       aria-label="Navegação principal"
       role="navigation"
       data-bottom-nav
-      className={`fixed bottom-0 left-0 right-0 z-50 lg:hidden border-t border-white/10 bg-hero-panel backdrop-blur-md rounded-t-2xl shadow-[0_-8px_30px_rgba(0,0,0,0.6),0_-2px_10px_rgba(0,0,0,0.4)] pb-[calc(0.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] transition-all duration-300 ease-out ${hideNav ? 'translate-y-[140%] opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'}`}
+      className={`fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-black transition-all duration-300 ease-out ${hideNav ? 'translate-y-[140%] opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'}`}
     >
       {/* Degradê escuro subindo do rodapé para dar profundidade */}
       <div
         aria-hidden="true"
         className="absolute bottom-full left-0 right-0 h-20 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none"
       />
-      <div className="relative z-10 max-w-2xl mx-auto px-2 py-2">
+      {/* Menu de Rodapé Vermelho com topo arredondado */}
+      <div className="relative z-10 bg-hero-panel border-t border-white/10 rounded-t-2xl shadow-[0_-8px_30px_rgba(0,0,0,0.6),0_-2px_10px_rgba(0,0,0,0.4)]">
+        <div className="max-w-2xl mx-auto px-2 py-2">
         <div className="grid grid-cols-5 items-stretch">
           {/* Slot 1: Blog */}
           <button
@@ -296,7 +298,10 @@ const BottomNav = () => {
           </button>
         </div>
       </div>
-    </nav>
+    </div>
+    {/* Inset de fundo do sistema do celular (preto/escuro) sem puxar a cor do menu */}
+    <div className="bg-black h-[calc(0.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]" />
+  </nav>
 
 
     {/* Tablet agora usa a mesma bottom bar do celular (acima). */}
