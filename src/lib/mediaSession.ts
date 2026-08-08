@@ -73,7 +73,7 @@ function tipoDaArte(url: string): string {
 // para evitar exceções fatais em Java no Android 14/15 e iOS 18.
 // A MediaSession API padrão do WebView (navigator.mediaSession) lida nativamente com
 // notificações, lockscreen e fundo sem crashar nem fechar o app.
-const isNativePluginSupported = () => false;
+const isNativePluginSupported = () => Capacitor.isNativePlatform();
 
 const setMetadata = (m: { title: string; artist: string; album: string; artwork: MediaImage[] }) => {
   if (isNativePluginSupported()) {
