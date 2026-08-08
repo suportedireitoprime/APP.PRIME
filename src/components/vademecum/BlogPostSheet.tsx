@@ -337,7 +337,7 @@ export default function BlogPostSheet({ post, onClose, showGoTo = false, inline 
                         ),
                       }}
                     >
-                      {conteudo}
+                      {conteudo.replace(/\\n/g, '\n')}
                     </ReactMarkdown>
                   ) : (
                     <div className="space-y-3 animate-pulse" aria-label="Carregando artigo">
