@@ -300,7 +300,7 @@ const MeExplique = () => {
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/70 via-black/5 to-black/85" />
 
       {/* Topo */}
-      <header className="relative z-10 flex items-center gap-3 px-4 pt-[max(1rem,env(safe-area-inset-top))]">
+      <header className="relative z-10 flex items-center gap-3 px-4 pb-2 pt-[calc(1.25rem+var(--sai-top,env(safe-area-inset-top,0px)))]">
         <button
           onClick={() => {
             encerrar();
@@ -308,7 +308,7 @@ const MeExplique = () => {
             voltar();
           }}
           aria-label="Fechar"
-          className="flex h-11 w-11 items-center justify-center rounded-full bg-white/15 backdrop-blur active:scale-95"
+          className="flex h-11 w-11 min-h-[48px] min-w-[48px] items-center justify-center rounded-full bg-white/15 backdrop-blur active:scale-95 transition-transform"
         >
           <X className="h-5 w-5" />
         </button>
@@ -323,7 +323,7 @@ const MeExplique = () => {
               setTranscricaoAberta(true);
             }}
             aria-label="Ver e baixar a explicação"
-            className="relative flex h-11 w-11 items-center justify-center rounded-full bg-white/15 backdrop-blur active:scale-95"
+            className="relative flex h-11 w-11 min-h-[48px] min-w-[48px] items-center justify-center rounded-full bg-white/15 backdrop-blur active:scale-95 transition-transform"
           >
             <FileText className="h-5 w-5" />
             <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
@@ -335,7 +335,7 @@ const MeExplique = () => {
           <button
             onClick={() => void alternarLanterna()}
             aria-label={lanterna ? 'Desligar lanterna' : 'Ligar lanterna'}
-            className={`flex h-11 w-11 items-center justify-center rounded-full backdrop-blur active:scale-95 ${
+            className={`flex h-11 w-11 min-h-[48px] min-w-[48px] items-center justify-center rounded-full backdrop-blur active:scale-95 transition-transform ${
               lanterna ? 'bg-white text-black' : 'bg-white/15'
             }`}
           >
@@ -355,9 +355,9 @@ const MeExplique = () => {
 
       {/* Guia de mira */}
       {!ativo && (
-        <div className="pointer-events-none relative z-10 mx-auto mt-8 w-[78%] max-w-sm rounded-2xl border-2 border-dashed border-white/40 p-6 text-center">
+        <div className="pointer-events-none relative z-10 mx-auto mt-4 w-[85%] max-w-sm rounded-2xl border-2 border-dashed border-white/40 bg-black/30 p-5 text-center backdrop-blur-sm">
           <Camera className="mx-auto h-8 w-8 text-white/80" />
-          <p className="mt-3 text-[15px] font-semibold">Aponte para o livro, slide ou caderno</p>
+          <p className="mt-2.5 text-[15px] font-semibold">Aponte para o livro, slide ou caderno</p>
           <p className="mt-1 text-[13px] leading-snug text-white/70">
             Toque na tela para focar{recursos.zoom ? ' e use dois dedos para aproximar' : ''}. Depois
             toque em “Me explique” e o professor começa a explicar em voz alta.
@@ -365,8 +365,8 @@ const MeExplique = () => {
         </div>
       )}
 
-      {/* Transcrição */}
-      <div className="relative z-10 mt-auto space-y-2 px-4">
+      {/* Transcrição e Erros */}
+      <div className="relative z-10 mt-auto space-y-3 px-4 mb-2">
         <AnimatePresence initial={false}>
           {ultimaFala && (
             <motion.div
@@ -387,12 +387,12 @@ const MeExplique = () => {
         </AnimatePresence>
 
         {(erro || erroCamera) && (
-          <div className="rounded-2xl bg-destructive/85 px-4 py-3 text-[14px] leading-snug backdrop-blur">
-            {erro ?? erroCamera}
+          <div className="rounded-2xl bg-destructive/90 p-4 text-[14px] leading-snug backdrop-blur shadow-xl border border-white/10">
+            <p className="font-medium text-white">{erro ?? erroCamera}</p>
             {erroCamera && !erro && (
               <button
                 onClick={() => void abrirPreview()}
-                className="mt-2 flex h-11 items-center gap-2 rounded-full bg-white/20 px-4 text-[14px] font-semibold active:scale-95"
+                className="mt-3 flex h-12 min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-white/20 px-4 text-[14px] font-bold text-white hover:bg-white/30 active:scale-95 transition-all"
               >
                 <RefreshCw className="h-4 w-4" /> Tentar de novo
               </button>
@@ -406,7 +406,7 @@ const MeExplique = () => {
               <button
                 key={s}
                 onClick={() => perguntar(s)}
-                className="flex shrink-0 items-center gap-1.5 rounded-full bg-white/15 px-3.5 py-2 text-[13px] font-medium backdrop-blur active:scale-95"
+                className="flex shrink-0 items-center gap-1.5 rounded-full bg-white/15 px-3.5 py-2.5 min-h-[44px] text-[13px] font-medium backdrop-blur active:scale-95 transition-transform"
               >
                 <MessageSquare className="h-3.5 w-3.5" />
                 {s}
@@ -417,13 +417,13 @@ const MeExplique = () => {
       </div>
 
       {/* Controles */}
-      <footer className="relative z-10 flex items-center justify-center gap-6 px-6 pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-4">
+      <footer className="relative z-10 flex items-center justify-center gap-4 px-6 pb-[calc(1.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-3">
         {ativo ? (
           <>
             <button
               onClick={alternarMic}
               aria-label={micAtivo ? 'Desligar microfone' : 'Ligar microfone'}
-              className={`flex h-14 w-14 items-center justify-center rounded-full backdrop-blur active:scale-95 ${
+              className={`flex h-14 w-14 min-h-[48px] min-w-[48px] items-center justify-center rounded-full backdrop-blur active:scale-95 transition-transform ${
                 micAtivo ? 'bg-white/20' : 'bg-white text-black'
               }`}
             >
@@ -434,7 +434,7 @@ const MeExplique = () => {
                 void haptic.medium();
                 encerrar();
               }}
-              className="flex h-16 items-center justify-center gap-2.5 rounded-full bg-success px-7 text-[15px] font-bold text-success-foreground shadow-lg active:scale-95"
+              className="flex h-16 min-h-[52px] items-center justify-center gap-2.5 rounded-full bg-success px-7 text-[15px] font-bold text-success-foreground shadow-lg active:scale-95 transition-transform"
             >
               {status === 'conectando' ? (
                 <>
@@ -456,7 +456,7 @@ const MeExplique = () => {
           <button
             onClick={() => void iniciar()}
             disabled={iniciando || carregandoPlano}
-            className="flex h-16 items-center justify-center gap-2.5 rounded-full bg-primary px-9 text-[16px] font-bold text-primary-foreground shadow-lg active:scale-95 disabled:opacity-70"
+            className="flex h-14 min-h-[52px] w-full max-w-sm items-center justify-center gap-2.5 rounded-full bg-primary px-8 text-[16px] font-bold text-primary-foreground shadow-xl shadow-primary/30 active:scale-95 disabled:opacity-70 transition-all"
           >
             {iniciando ? (
               <Loader2 className="h-5 w-5 animate-spin" />
