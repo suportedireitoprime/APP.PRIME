@@ -324,60 +324,76 @@ async function fetchPlaceForLocal(local: any): Promise<PlaceHydration> {
 }
 
 async function hydratePhotos(supabase: any, localIds: string[], force: boolean) {
-  const capped = localIds.slice(0, 8);
+  const capped = localIds.slice(0, 50);
   const { data: rows } = await supabase
     .from('locais_juridicos')
     .select('id, categoria, nome, endereco, cidade, uf, lat, lng, place_id, photo_url, photo_attribution, photo_fetched_at, rating, user_ratings_total, editorial_summary, google_maps_uri, reviews')
     .in('id', capped);
 
   const results: any[] = [];
+  const pendentesBusca: any[] = [];
+
   for (const local of rows ?? []) {
-    try {
-      const isStoredUrl =
-        typeof local.photo_url === 'string' &&
-        local.photo_url.includes('/storage/v1/object/sign/' + PHOTO_BUCKET);
-      const isFresh =
-        !force &&
-        isStoredUrl &&
-        local.photo_fetched_at &&
-        Date.now() - new Date(local.photo_fetched_at).getTime() < CACHE_DAYS * 86400_000;
-      if (isFresh) {
-        results.push({
-          id: local.id,
-          photo_url: local.photo_url,
-          photo_attribution: local.photo_attribution,
-          rating: local.rating,
-          user_ratings_total: local.user_ratings_total,
-          editorial_summary: local.editorial_summary,
-          google_maps_uri: local.google_maps_uri,
-          reviews: local.reviews,
-          cached: true,
-        });
-        continue;
-      }
-      const result = await fetchPlaceForLocal(local);
-      // Persistir a foto no bucket privado e usar a URL assinada estável.
-      const stored = await persistPhotoToStorage(supabase, local.id, result.photo_url);
-      const finalPhotoUrl = stored ?? result.photo_url;
-      await supabase
-        .from('locais_juridicos')
-        .update({
-          photo_url: finalPhotoUrl,
-          photo_attribution: result.photo_attribution,
-          place_id: result.place_id ?? local.place_id,
-          rating: result.rating,
-          user_ratings_total: result.user_ratings_total,
-          editorial_summary: result.editorial_summary,
-          google_maps_uri: result.google_maps_uri,
-          reviews: result.reviews,
-          photo_fetched_at: new Date().toISOString(),
-        })
-        .eq('id', local.id);
-      results.push({ id: local.id, ...result, photo_url: finalPhotoUrl, cached: false });
-    } catch (err) {
-      results.push({ id: local.id, error: (err as Error).message, photo_url: null });
+    const isStoredUrl =
+      typeof local.photo_url === 'string' &&
+      local.photo_url.includes('/storage/v1/object/sign/' + PHOTO_BUCKET);
+    const isGooglePhoto =
+      typeof local.photo_url === 'string' &&
+      local.photo_url.includes('lh3.googleusercontent.com');
+
+    const isFresh =
+      !force &&
+      (isStoredUrl || isGooglePhoto) &&
+      local.photo_fetched_at &&
+      Date.now() - new Date(local.photo_fetched_at).getTime() < CACHE_DAYS * 86400_000;
+
+    if (isFresh) {
+      results.push({
+        id: local.id,
+        photo_url: local.photo_url,
+        photo_attribution: local.photo_attribution,
+        rating: local.rating,
+        user_ratings_total: local.user_ratings_total,
+        editorial_summary: local.editorial_summary,
+        google_maps_uri: local.google_maps_uri,
+        reviews: local.reviews,
+        cached: true,
+      });
+    } else {
+      pendentesBusca.push(local);
     }
   }
+
+  if (pendentesBusca.length > 0) {
+    const buscou = await Promise.all(
+      pendentesBusca.map(async (local) => {
+        try {
+          const result = await fetchPlaceForLocal(local);
+          const stored = await persistPhotoToStorage(supabase, local.id, result.photo_url);
+          const finalPhotoUrl = stored ?? result.photo_url;
+          await supabase
+            .from('locais_juridicos')
+            .update({
+              photo_url: finalPhotoUrl,
+              photo_attribution: result.photo_attribution,
+              place_id: result.place_id ?? local.place_id,
+              rating: result.rating,
+              user_ratings_total: result.user_ratings_total,
+              editorial_summary: result.editorial_summary,
+              google_maps_uri: result.google_maps_uri,
+              reviews: result.reviews,
+              photo_fetched_at: new Date().toISOString(),
+            })
+            .eq('id', local.id);
+          return { id: local.id, ...result, photo_url: finalPhotoUrl, cached: false };
+        } catch (err) {
+          return { id: local.id, error: (err as Error).message, photo_url: null };
+        }
+      })
+    );
+    results.push(...buscou);
+  }
+
   return results;
 }
 
