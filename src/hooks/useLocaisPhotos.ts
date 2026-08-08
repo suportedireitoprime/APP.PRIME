@@ -44,7 +44,13 @@ export function useLocaisPhotos(localIds: string[]) {
       if (cached) {
         const inicial: Record<string, PhotoResult> = {};
         for (const row of cached as any[]) {
-          if (row.photo_url) {
+          const rawUrl = (row.photo_url || '').trim();
+          const isGooglePhoto =
+            rawUrl.includes('lh3.googleusercontent.com') ||
+            rawUrl.includes('/storage/v1/object/sign/') ||
+            (rawUrl.startsWith('http') && !rawUrl.includes('connector-gateway.lovable.dev') && !rawUrl.includes('unsplash.com'));
+
+          if (isGooglePhoto) {
             inicial[row.id] = {
               id: row.id,
               photo_url: row.photo_url,

@@ -182,8 +182,14 @@ export default function LocaisJuridicos() {
     [contagens],
   );
 
-  // Hidrata fotos apenas dos primeiros 30 (carrossel + primeiros da lista)
-  const idsParaFoto = useMemo(() => locais.slice(0, 30).map((l) => l.id), [locais]);
+  // Hidrata fotos dos locais exibidos e do local selecionado no modal
+  const idsParaFoto = useMemo(() => {
+    const ids = locais.slice(0, 50).map((l) => l.id);
+    if (selecionado && !ids.includes(selecionado.id)) {
+      ids.push(selecionado.id);
+    }
+    return ids;
+  }, [locais, selecionado]);
   const photos = useLocaisPhotos(idsParaFoto);
 
   const carregarContagens = useCallback(async () => {
