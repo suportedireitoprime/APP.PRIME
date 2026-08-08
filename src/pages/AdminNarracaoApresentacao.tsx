@@ -218,10 +218,10 @@ const AdminNarracaoApresentacao = () => {
     if (!job || job.ativo || !job.concluido || !job.apresentacaoId) return;
     setLivros((prev) => prev.map((l) =>
       l.livro_id === job.livroId && l.livro_tabela === job.livroTabela
-        ? { ...l, apresentacao_id: job.apresentacaoId, publicada: job.falhas.length === 0 }
+        ? { ...l, apresentacao_id: job.apresentacaoId, total_slides: job.total, publicada: job.falhas.length === 0 }
         : l));
     limparPdf();
-  }, [job?.concluido, job?.ativo]);
+  }, [job]);
 
   const excluir = async (l: Livro) => {
     if (!l.apresentacao_id) return;
@@ -427,13 +427,13 @@ const AdminNarracaoApresentacao = () => {
         {sel && slides.length > 0 && (
           <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
             <Passo n={3} titulo="Escolha a voz" ok ativo />
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 min-w-0 w-full">
               <Mic className="w-4 h-4 text-primary shrink-0" />
               <select
                 value={voz}
                 disabled={ocupado}
                 onChange={(e) => setVoz(e.target.value)}
-                className="flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm font-body"
+                className="flex-1 min-w-0 w-full max-w-[calc(100vw-4.5rem)] truncate rounded-xl border border-border bg-background px-3 py-2 text-sm font-body"
               >
                 {vozes.map((v) => (
                   <option key={v.id} value={v.id}>{v.id} · {v.genero} — {v.descricao}</option>

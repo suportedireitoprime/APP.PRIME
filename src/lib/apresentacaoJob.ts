@@ -51,11 +51,23 @@ export const formatarEta = (seg: number | null): string => {
   return `${m}min ${String(s).padStart(2, '0')}s`;
 };
 
-const call = async (payload: Record<string, unknown>) => {
-  const { data, error } = await supabase.functions.invoke('narracao', { body: { ...payload, fn: 'blog_preview' } });
-  if (error) throw new Error(error.message);
-  if ((data as any)?.error) throw new Error((data as any).error);
-  return data as any;
+const call = async (payload: Record<string, unknown>, timeoutMs = 60000) => {
+  const ac = new AbortController();
+  const id = setTimeout(() => ac.abort(), timeoutMs);
+  try {
+    const { data, error } = await supabase.functions.invoke('narracao', {
+      body: { ...payload, fn: 'blog_preview' },
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (error) throw new Error(error.message);
+    if ((data as any)?.error) throw new Error((data as any).error);
+    return data as any;
+  } catch (err: any) {
+    if (err.name === 'AbortError') throw new Error('Timeout de comunicação com o servidor');
+    throw err;
+  } finally {
+    clearTimeout(id);
+  }
 };
 
 const dormir = (ms: number) => new Promise((r) => setTimeout(r, ms));
