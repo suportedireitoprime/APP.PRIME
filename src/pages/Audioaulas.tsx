@@ -317,7 +317,7 @@ const Audioaulas = () => {
       {gateMes.gateNode}
 
       {/* Hero Header */}
-      <div className="relative px-4 pt-8 pb-6 overflow-hidden sm:px-6 lg:px-10 lg:pt-12 lg:pb-10">
+      <div className="relative px-4 pt-[calc(2rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-6 overflow-hidden sm:px-6 lg:px-10 lg:pt-[calc(3rem+var(--sai-top,env(safe-area-inset-top,0px)))] lg:pb-10">
         <div className="absolute inset-0 -z-10">
           <img
             src={areaAtual ? capaDaArea(areaAtual) : CAPA_HUB}
