@@ -121,13 +121,11 @@ const DocumentoViewer = ({ blob, nome, mime, onClose, onBaixar, baixando }: Prop
 
     (async () => {
       try {
-        const pdfjsLib: any = await import('pdfjs-dist');
-        const workerMod: any = await import('pdfjs-dist/build/pdf.worker.min.mjs?url');
-        if (pdfjsLib.GlobalWorkerOptions && !pdfjsLib.GlobalWorkerOptions.workerSrc) {
-          pdfjsLib.GlobalWorkerOptions.workerSrc = workerMod.default;
-        }
+        const { pdfjsLib, configurarPdfWorker, getPdfDocumentParams } = await import('@/lib/pdfWorkerConfig');
+        configurarPdfWorker(pdfjsLib);
+        
         const data = new Uint8Array(await blob.arrayBuffer());
-        const pdf = await pdfjsLib.getDocument({ data }).promise;
+        const pdf = await pdfjsLib.getDocument(getPdfDocumentParams(data)).promise;
         const alvo = pdfRef.current;
         if (!alvo || cancelado) return;
         alvo.innerHTML = '';
@@ -145,9 +143,8 @@ const DocumentoViewer = ({ blob, nome, mime, onClose, onBaixar, baixando }: Prop
           canvas.style.width = '100%';
           canvas.style.height = 'auto';
           canvas.className = 'mb-3 rounded-xl bg-white shadow-sm';
-          const ctx = canvas.getContext('2d');
-          if (!ctx) continue;
-          await page.render({ canvasContext: ctx, viewport }).promise;
+          const ctx = canvas.getContext('2d')!;
+          await page.render({ canvasContext: ctx, viewport, canvas } as any).promise;
           if (cancelado) return;
           alvo.appendChild(canvas);
         }

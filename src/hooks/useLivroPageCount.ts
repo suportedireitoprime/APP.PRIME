@@ -22,12 +22,9 @@ export function useLivroPageCount(url: string | null | undefined) {
       if (!promise) {
         promise = (async () => {
           try {
-            const pdfjsLib: any = await import('pdfjs-dist');
-            const workerMod: any = await import('pdfjs-dist/build/pdf.worker.min.mjs?url');
-            if (pdfjsLib.GlobalWorkerOptions && !pdfjsLib.GlobalWorkerOptions.workerSrc) {
-              pdfjsLib.GlobalWorkerOptions.workerSrc = workerMod.default;
-            }
-            const task = pdfjsLib.getDocument({ url, withCredentials: false });
+            const { pdfjsLib, configurarPdfWorker, getPdfDocumentParams } = await import('@/lib/pdfWorkerConfig');
+            configurarPdfWorker(pdfjsLib);
+            const task = pdfjsLib.getDocument({ url, ...getPdfDocumentParams(new Uint8Array(0)) });
             const pdf = await task.promise;
             const n = pdf.numPages || 0;
             cache.set(url, n);

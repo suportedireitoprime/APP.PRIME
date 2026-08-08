@@ -3,8 +3,7 @@ import {
   ArrowLeft, Loader2, ExternalLink, ChevronLeft, ChevronRight, Bookmark, BookmarkCheck,
   List, Search, X, ZoomIn, ZoomOut, Columns,
 } from 'lucide-react';
-import * as pdfjsLib from 'pdfjs-dist';
-import { configurarPdfWorker } from '@/lib/pdfWorkerConfig';
+import { pdfjsLib, configurarPdfWorker } from '@/lib/pdfWorkerConfig';
 import { createPortal } from 'react-dom';
 import { openPdfNative } from '@/lib/fileOpener';
 import { Capacitor, CapacitorHttp } from '@capacitor/core';

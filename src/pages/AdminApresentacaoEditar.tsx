@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import * as pdfjsLib from 'pdfjs-dist';
-import { configurarPdfWorker, getPdfDocumentParams } from '@/lib/pdfWorkerConfig';
+import { pdfjsLib, configurarPdfWorker, getPdfDocumentParams } from '@/lib/pdfWorkerConfig';
 
 configurarPdfWorker(pdfjsLib);
 
