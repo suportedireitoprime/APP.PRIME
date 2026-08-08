@@ -479,7 +479,17 @@ export default function VisuaisJuridicosSheet({
       const { data, error } = await supabase.functions.invoke('visual-juridico-gerar', {
         body: { tipo, categoria, item_key: chave, item_label: rotulo, contexto },
       });
-      if (error) throw error;
+      if (error) {
+        let errorDetails = (error as Record<string, unknown>).message as string || '';
+        const errObj = error as unknown as Record<string, unknown>;
+        if (errObj?.context && typeof (errObj.context as Record<string, unknown>)?.json === 'function') {
+          try {
+            const body = await (errObj.context as { json: () => Promise<Record<string, unknown>> }).json();
+            if (typeof body?.error === 'string') errorDetails = body.error;
+          } catch { /* ignora */ }
+        }
+        throw new Error(errorDetails || 'Falha ao chamar a IA');
+      }
       const registro = (data as Record<string, unknown>)?.visual as VisualRecord | undefined;
       if (!registro) throw new Error('resposta vazia');
       registrarVisual(registro);
@@ -488,8 +498,15 @@ export default function VisuaisJuridicosSheet({
       setAberto(registro);
 
     } catch (e: unknown) {
+      console.error('[VisuaisJuridicosSheet] Erro ao gerar visual:', e);
       const msg = String((e as { message?: string })?.message || '');
-      toast.error(msg.includes('429') ? 'Muitas gerações agora. Tente em alguns minutos.' : 'Não foi possível gerar o visual agora.');
+      toast.error(
+        msg.includes('429')
+          ? 'Muitas gerações agora. Tente em alguns minutos.'
+          : msg
+            ? `Não foi possível gerar o visual: ${msg.slice(0, 70)}`
+            : 'Não foi possível gerar o visual agora.',
+      );
     } finally {
       setGerando(false);
       setGerandoKey(null);

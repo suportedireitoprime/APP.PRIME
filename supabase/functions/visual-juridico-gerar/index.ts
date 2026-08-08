@@ -7,6 +7,7 @@
 
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { geminiFetch } from "../_shared/geminiFetch.ts";
+import { MODELS } from "../_shared/ai-models.ts";
 import { normalizeContent, promptFor, type VisualTipo } from "./prompt.ts";
 
 const corsHeaders = {
@@ -17,7 +18,8 @@ const corsHeaders = {
 const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY") ?? "";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const MODEL = "gemini-2.5-flash-lite";
+const MODEL = MODELS.text; // "gemini-3.1-flash-lite"
+const GATEWAY_MODEL = MODELS.textGateway; // "google/gemini-3.1-flash-lite"
 
 const admin = createClient(SUPABASE_URL, SERVICE_KEY, {
   auth: { persistSession: false, autoRefreshToken: false },
@@ -62,7 +64,7 @@ async function callGateway(prompt: string): Promise<string> {
       "Lovable-API-Key": LOVABLE_API_KEY,
     },
     body: JSON.stringify({
-      model: "google/gemini-2.5-flash",
+      model: GATEWAY_MODEL,
       messages: [{ role: "user", content: prompt }],
       temperature: 0.55,
       response_format: { type: "json_object" },
@@ -102,7 +104,10 @@ async function callGemini(prompt: string): Promise<string> {
     return texto;
   } catch (e) {
     console.warn("[visual-juridico-gerar] Gemini direto falhou, usando gateway:", String(e).slice(0, 200));
-    return callGateway(prompt);
+    if (LOVABLE_API_KEY) {
+      return callGateway(prompt);
+    }
+    throw e;
   }
 }
 
