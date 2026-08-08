@@ -76,7 +76,7 @@ const QuestoesSimulado = () => {
   const mmss = `${String(Math.floor(segundos / 60)).padStart(2, '0')}:${String(segundos % 60).padStart(2, '0')}`;
 
   return (
-    <div className="theme-questoes min-h-screen bg-background pb-32">
+    <div className="theme-questoes min-h-screen bg-background pb-[calc(8.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
       <PageHeader
         title="Simulado"
         subtitle={rodando ? mmss : 'Escolha o cargo'}
@@ -86,32 +86,19 @@ const QuestoesSimulado = () => {
       <div className="mx-auto w-full max-w-3xl px-4 py-5">
         {!rodando ? (
           <>
-            <div className="mb-4 flex gap-2">
-              {TAMANHOS.map((t) => (
-                <button
-                  key={t}
-                  onClick={() => setTamanho(t)}
-                  className={`h-10 flex-1 rounded-xl border text-[14px] font-semibold transition-colors ${
-                    tamanho === t ? 'border-primary bg-primary/15 text-primary' : 'border-border text-muted-foreground'
-                  }`}
-                >
-                  {t} questões
-                </button>
-              ))}
-            </div>
-
             <button
-              onClick={() => iniciar(null)}
-              className="mb-3 flex w-full items-center gap-3 rounded-2xl border border-border bg-card p-4 text-left hover:border-primary/50"
+              type="button"
+              onClick={() => navigate('/questoes/simulado/geral')}
+              className="mb-3 flex w-full items-center gap-3 rounded-2xl border border-border bg-card p-4 text-left hover:border-primary/50 transition-all active:scale-98"
             >
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/15">
+              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/15 shrink-0">
                 <Timer className="h-6 w-6 text-primary" />
               </span>
               <span className="flex-1">
-                <span className="block text-[15px] font-bold text-foreground">Simulado geral</span>
-                <span className="block text-[12px] text-muted-foreground">Questões de todos os cargos</span>
+                <span className="block text-[15px] font-bold text-foreground">Simulado Geral</span>
+                <span className="block text-[12px] text-muted-foreground">Questões mescladas de todos os cargos e exames</span>
               </span>
-              <ChevronRight className="h-5 w-5 text-muted-foreground" />
+              <ChevronRight className="h-5 w-5 text-muted-foreground shrink-0" />
             </button>
 
             {loadingCargos ? (
@@ -121,10 +108,11 @@ const QuestoesSimulado = () => {
                 {cargos.map((c) => (
                   <button
                     key={c.id}
-                    onClick={() => iniciar(c)}
-                    className="flex w-full items-center gap-3 rounded-2xl border border-border bg-card p-4 text-left hover:border-primary/50"
+                    type="button"
+                    onClick={() => navigate(`/questoes/simulado/${c.slug || c.id}`)}
+                    className="flex w-full items-center gap-3 rounded-2xl border border-border bg-card p-4 text-left hover:border-primary/50 transition-all active:scale-98"
                   >
-                    <span className="flex h-11 w-11 items-center justify-center rounded-xl" style={{ background: `${c.cor}22` }}>
+                    <span className="flex h-11 w-11 items-center justify-center rounded-xl shrink-0" style={{ background: `${c.cor}22` }}>
                       <Gavel className="h-6 w-6" style={{ color: c.cor }} />
                     </span>
                     <span className="min-w-0 flex-1">
@@ -133,7 +121,7 @@ const QuestoesSimulado = () => {
                         {c.total_questoes.toLocaleString('pt-BR')} questões disponíveis
                       </span>
                     </span>
-                    <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                    <ChevronRight className="h-5 w-5 text-muted-foreground shrink-0" />
                   </button>
                 ))}
               </div>

@@ -184,6 +184,7 @@ const Questoes = lazy(() => import("./pages/Questoes.tsx"));
 const QuestoesAreas = lazy(() => import("./pages/QuestoesAreas.tsx"));
 const QuestoesPraticar = lazy(() => import("./pages/QuestoesPraticar.tsx"));
 const QuestoesSimulado = lazy(() => import("./pages/QuestoesSimulado.tsx"));
+const QuestoesSimuladoCargoConfig = lazy(() => import("./pages/QuestoesSimuladoCargoConfig.tsx"));
 const QuestoesRevisar = lazy(() => import("./pages/QuestoesRevisar.tsx"));
 const QuestoesCategorias = lazy(() => import("./pages/QuestoesCategorias.tsx"));
 const QuestoesTrilhas = lazy(() => import("./pages/QuestoesTrilhas.tsx"));
@@ -791,6 +792,7 @@ function AnimatedRoutes() {
           <Route path="/questoes/areas" element={<ProtectedRoute><PageTransition><QuestoesAreas /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/praticar" element={<ProtectedRoute><PageTransition><QuestoesPraticar /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/simulado" element={<ProtectedRoute><PageTransition><QuestoesSimulado /></PageTransition></ProtectedRoute>} />
+          <Route path="/questoes/simulado/:cargoId" element={<ProtectedRoute><PageTransition><QuestoesSimuladoCargoConfig /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/categorias" element={<ProtectedRoute><PageTransition><QuestoesCategorias /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/revisar" element={<ProtectedRoute><PageTransition><QuestoesRevisar /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/lembretes" element={<ProtectedRoute><PageTransition><QuestoesLembretes /></PageTransition></ProtectedRoute>} />
