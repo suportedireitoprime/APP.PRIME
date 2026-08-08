@@ -1,4 +1,4 @@
-# Diretivas do Projeto
+# Diretivas do Projeto & Skills Nativas Incorporadas
 
 ## Git & GitHub (Auto-Commit & Push)
 - Sempre que alterações no código forem finalizadas com sucesso (criação de arquivos, correções, refatorações ou novas funcionalidades), a IA deve automaticamente executar os comandos para enviar as atualizações ao GitHub:
@@ -16,16 +16,55 @@
 ## Arquitetura & Estabilidade (React + Capacitor 8 + Supabase)
 - **Prevenção de Tela Branca:**
   - Manter estilos inline de fundo escuro (`background-color: #0D0D0D; color: #FFFFFF`) no `<body>` do `index.html` para evitar relâmpagos brancos durante a hidratação.
-  - Certificar-se de que novos componentes principais e rotas sejam protegidos pelo `ErrorBoundary` e que `Suspense` utilize fallbacks visuais adaptados ao tema escuro.
+  - Certificar-se de que novos componentes principais e rotas sejam protegidos pelo `ErrorBoundary` e que `Suspense` utilize fallbacks visuais adaptados ao tema escuro (`bg-[#0D0D0D]`).
 - **Suporte Nativo Mobile & Safe Areas (Android 15 / iOS 18):**
   - Respeitar os insets de tela (status bar e navigation bar) utilizando `env(safe-area-inset-*)` no CSS.
   - Todas as chamadas de plugins nativos (`@capacitor/*`, `@capacitor-community/*`, `@capawesome/*`) devem possuir fallbacks graciosos para a Web/PWA.
 - **Integração com Supabase & Operação Offline:**
   - Utilizar sempre as definições de tipos em `src/integrations/supabase/types.ts`.
   - Reutilizar a camada de persistência com `idb-keyval`, Dexie ou React Query para garantir que a aplicação continue utilizável offline.
-- **Padrão Visual & UX Premium:**
-  - Manter o tema escuro elegante (fundo `#0D0D0D`, acentos em vinho e dourado, tipografia Barlow / Bebas Neue).
-  - Aplicar micro-animações com `framer-motion` de forma fluida, prevenindo re-renders excessivos.
+
+## 🎯 Integrador de Skills Nativas (`.agents/skills/`)
+
+### 1. 🚀 Skill Suprema Final (`skill-suprema-final`)
+- **Master Overhaul 360°:** Auditoria total de UX, performance, responsividade, acessibilidade e Supabase em todas as rotas e modais da funcionalidade alterada.
+- **Safe Area Insets:** Usar fórmulas aditivas `pt-[calc(1.25rem+var(--sai-top,env(safe-area-inset-top,0px)))]` nos headers e `pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]` nos rodapés/botões primários.
+- **Scroll Lock Limpo:** Utilizar `useBodyScrollLock(open)` com purga completa de estilos inline em `release()`, impedindo travamento de tela ao fechar modais.
+
+### 2. 📱 Capacitor & Mobile Native Bug Hunter (`capacitor-native-audit` / `mobile-native-bug-hunter`)
+- **Proteção Web:** Encapsular chamadas nativas em `Capacitor.isNativePlatform()`.
+- **Dimensões de Toque (HIG & Material 3):** Botões com área mínima clicável de **48x48dp (Android) / 44x44pt (iOS)** (`min-h-[48px]`).
+- **Feedback Tátil:** Disparar `haptic.selection()` ou `haptic.impact()` em ações interativas.
+- **Zero Scroll Horizontal:** Envelopar contêineres com `w-full max-w-full overflow-x-hidden`.
+
+### 3. 📐 Layout Híbrido & Design Desktop (`skill-layout-hibrido` / `desktop-responsive-design`)
+- **Tríplice Responsividade:**
+  - **Mobile:** Controles na metade inferior ("Thumb Zone"), botões táteis e recuo de safe area.
+  - **Tablet:** Transição para grids de 2 colunas e painéis retráteis.
+  - **Desktop Widescreen (`lg:`, `xl:`):** Estrutura de 2 a 3 colunas (`max-w-[1600px] mx-auto`), sidebars laterais fixas e **zero rodapé fixo no PC**.
+- **Navegação Desktop:** Suporte a atalhos de teclado (`Esc`, `Enter`, setas) e tooltips em botões de ação.
+
+### 4. ⚡ Otimização de Imagens & Carregamento 0ms (`image-optimization`)
+- **Above-the-Fold Images:** Capas, pôsteres e banners principais DEVEM usar `loading="eager"`, `fetchPriority="high"` e `decoding="async"`.
+- **Prefetching em Memória:** Pré-carregar capas de próximos itens prováveis via `new Image().src = url`.
+- **Fallbacks:** Exibir esqueletos e gradientes elegantes; nunca bordas quebradas.
+
+### 5. 🐛 Bug Hunter & Code Auditor (`bug-hunter`)
+- **Cleanup no Unmount:** Retornar função de limpeza em `useEffect` para listeners, intervalos e subscrições Supabase.
+- **Evitar State Update em Unmounted:** Checar se componente está montado em rotinas assíncronas antes de chamar `setState`.
+- **Promessas Flutuantes:** Embrulhar promessas assíncronas em `void asyncFunc().catch(...)`.
+- **TypeScript Estrito:** Substituir `any` por tipos concretos/guardas e usar `?.` e `??`.
+
+### 6. 🚀 Performance Optimization (`performance-optimization`)
+- **Code Splitting:** Carregar páginas secundárias via `lazy()` e `Suspense`.
+- **Memoização:** Usar `React.memo`, `useMemo` e `useCallback` em listas extensas (leis, buscas, questões).
+- **Virtualização:** Utilizar `@tanstack/react-virtual` para listas com mais de 50 itens.
+
+### 7. 🎓 UI/UX Gamificada de Aprendizagem (`skill-gamified-learning-ui`)
+- **Loop de Aprendizado em 3 Atos:** Fundamentos -> Aprofundamento -> Fixação.
+- **Pílulas Expansíveis:** Manter leitura limpa com pílulas expansíveis ("Em português claro", "Ver exemplo").
+- **Alto Contraste (WCAG AAA):** Substituir preto absoluto por grafite/zinc profundo (`bg-[#0d0f12]` / `bg-zinc-950`), ícones em branco puro (`text-white`) e cards elevados (`backdrop-blur-md`).
+- **Gamificação Viva:** Header com XP/Streak em tempo real e animações de vitória ao concluir etapas.
 
 ## Eficiência de Tokens & Desempenho (Padrão Lovable & Antigravity)
 - **Busca Direcionada (Progressive Disclosure):** Use `grep_search` e `view_file` com intervalos de linhas delimitados para inspecionar código. Nunca leia arquivos inteiros desnecessariamente.
