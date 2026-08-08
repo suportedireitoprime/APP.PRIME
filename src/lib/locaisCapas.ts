@@ -60,15 +60,22 @@ function hashString(str: string): number {
 }
 
 /**
- * Retorna a foto do Google Places se fornecida, ou seleciona uma imagem temática
+ * Retorna a foto do Google Places se fornecida e válida, ou seleciona uma imagem temática
  * de alta definição determinística para garantir que NENHUM card fique sem imagem.
  */
 export function obterCapaLocal(
   local: { id: string; categoria: string; nome?: string },
   photoUrlFromApi?: string | null,
 ): string {
-  if (photoUrlFromApi && photoUrlFromApi.trim()) {
-    return photoUrlFromApi.trim();
+  const urlLimpa = (photoUrlFromApi || '').trim();
+  
+  // Rejeita URLs legadas do Lovable Gateway quebrado ou strings inválidas
+  const eValida =
+    /^https?:\/\//i.test(urlLimpa) &&
+    !urlLimpa.includes('connector-gateway.lovable.dev');
+
+  if (eValida) {
+    return urlLimpa;
   }
 
   const cat = (local.categoria as CategoriaLocal) in CAPAS_CATEGORIA

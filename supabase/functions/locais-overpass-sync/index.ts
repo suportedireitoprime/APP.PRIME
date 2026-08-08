@@ -111,40 +111,46 @@ function joinEndereco(tags: Record<string, string>): string | null {
 // ============================================================
 // Hidratação de fotos (Google Places API via gateway) — merged
 // ============================================================
-const GATEWAY = 'https://connector-gateway.lovable.dev/google_maps';
+// ============================================================
+// Hidratação de fotos (Google Places API v1 Direta)
+// ============================================================
 const CACHE_DAYS = 30;
 const SIGNED_URL_TTL = 60 * 60 * 24 * 365; // 1 ano
 const PHOTO_BUCKET = 'locais-fotos';
 
+function getGoogleApiKey(): string {
+  return (
+    Deno.env.get('GOOGLE_MAPS_API_KEY') ||
+    Deno.env.get('GEMINI_API_KEY') ||
+    Deno.env.get('GEMINI_API_KEY_RESERVA') ||
+    ''
+  );
+}
+
 function streetViewFallback(lat: number, lng: number): string {
+  const apiKey = getGoogleApiKey();
+  if (!apiKey) return '';
   const params = new URLSearchParams({
     size: '1200x800',
     location: `${lat},${lng}`,
     fov: '80',
     pitch: '5',
     source: 'outdoor',
+    key: apiKey,
   });
-  return `${GATEWAY}/maps/api/streetview?${params.toString()}`;
+  return `https://maps.googleapis.com/maps/api/streetview?${params.toString()}`;
 }
 
-// Baixa os bytes da foto (URL do gateway ou pública) e salva no bucket
-// privado, retornando uma URL assinada de longa duração para servir como
-// CDN estável (as URLs do Google Places expiram em ~1h).
+// Baixa os bytes da foto do Google e salva no bucket privado,
+// retornando uma URL assinada de longa duração.
 async function persistPhotoToStorage(
   supabase: any,
   localId: string,
   sourceUrl: string,
 ): Promise<string | null> {
+  if (!sourceUrl || !sourceUrl.startsWith('http')) return null;
   try {
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-    const GOOGLE_MAPS_API_KEY = Deno.env.get('GOOGLE_MAPS_API_KEY');
-    const isGateway = sourceUrl.startsWith(GATEWAY);
-    const headers: Record<string, string> = {};
-    if (isGateway && LOVABLE_API_KEY && GOOGLE_MAPS_API_KEY) {
-      headers['Authorization'] = `Bearer ${LOVABLE_API_KEY}`;
-      headers['X-Connection-Api-Key'] = GOOGLE_MAPS_API_KEY;
-    }
-    const res = await fetch(sourceUrl, { headers });
+    const res = await fetch(sourceUrl);
     if (!res.ok) {
       console.error('persistPhoto fetch failed', res.status);
       return null;
@@ -214,8 +220,7 @@ type PlaceHydration = {
 };
 
 async function fetchPlaceForLocal(local: any): Promise<PlaceHydration> {
-  const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-  const GOOGLE_MAPS_API_KEY = Deno.env.get('GOOGLE_MAPS_API_KEY');
+  const apiKey = getGoogleApiKey();
   const fallback: PlaceHydration = {
     photo_url: streetViewFallback(local.lat, local.lng),
     photo_attribution: 'Google Street View',
@@ -229,7 +234,7 @@ async function fetchPlaceForLocal(local: any): Promise<PlaceHydration> {
 
   const nomeValido = (local.nome ?? '').trim();
   if (!nomeValido || nomeValido.toLowerCase() === 'sem nome') return fallback;
-  if (!LOVABLE_API_KEY || !GOOGLE_MAPS_API_KEY) return fallback;
+  if (!apiKey) return fallback;
 
   const cidade = [local.cidade, local.uf].filter(Boolean).join('/');
   const textQuery = `${nomeValido} ${cidade}`.trim();
@@ -239,20 +244,18 @@ async function fetchPlaceForLocal(local: any): Promise<PlaceHydration> {
     const body: Record<string, unknown> = {
       textQuery,
       locationBias: {
-        circle: { center: { latitude: local.lat, longitude: local.lng }, radius: 250 },
+        circle: { center: { latitude: local.lat, longitude: local.lng }, radius: 500 },
       },
-      maxResultCount: 3,
+      maxResultCount: 5,
     };
     if (includedType) {
       body.includedType = includedType;
-      body.strictTypeFiltering = true;
     }
 
-    const searchResp = await fetch(`${GATEWAY}/places/v1/places:searchText`, {
+    const searchResp = await fetch('https://places.googleapis.com/v1/places:searchText', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        'X-Connection-Api-Key': GOOGLE_MAPS_API_KEY,
+        'X-Goog-Api-Key': apiKey,
         'Content-Type': 'application/json',
         'X-Goog-FieldMask': [
           'places.id',
@@ -275,9 +278,11 @@ async function fetchPlaceForLocal(local: any): Promise<PlaceHydration> {
     }
 
     const data = await searchResp.json();
-    const place = (data.places ?? []).find((p: any) =>
+    const places = data.places ?? [];
+    const place = places.find((p: any) =>
       nomesCombinam(nomeValido, p?.displayName?.text ?? ''),
-    );
+    ) ?? places[0];
+
     if (!place) return fallback;
 
     let photo_url = streetViewFallback(local.lat, local.lng);
@@ -286,13 +291,7 @@ async function fetchPlaceForLocal(local: any): Promise<PlaceHydration> {
     if (photoName) {
       try {
         const mediaResp = await fetch(
-          `${GATEWAY}/places/v1/${photoName}/media?maxWidthPx=1200&skipHttpRedirect=true`,
-          {
-            headers: {
-              Authorization: `Bearer ${LOVABLE_API_KEY}`,
-              'X-Connection-Api-Key': GOOGLE_MAPS_API_KEY,
-            },
-          },
+          `https://places.googleapis.com/v1/${photoName}/media?maxWidthPx=1200&skipHttpRedirect=true&key=${apiKey}`,
         );
         if (mediaResp.ok) {
           const media = await mediaResp.json();

@@ -416,6 +416,12 @@ export default function LocaisJuridicos() {
           alt={local.nome}
           loading="lazy"
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+          onError={(e) => {
+            const fallbackUrl = obterCapaLocal(local, null);
+            if (e.currentTarget.src !== fallbackUrl) {
+              e.currentTarget.src = fallbackUrl;
+            }
+          }}
         />
         {tamanho === 'hero' ? (
           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
