@@ -2386,7 +2386,7 @@ const CategoriaLegislacao = () => {
                       type="button"
                       onClick={() => setOcrOpen(true)}
                       aria-label="Fotografar artigo (OCR)"
-                      className="w-8 h-8 rounded-full flex items-center justify-center bg-primary/10 text-primary hover:bg-primary/15 transition-colors"
+                      className="w-8 h-8 rounded-full flex items-center justify-center bg-red-500/15 text-red-400 hover:bg-red-500/25 transition-colors"
                     >
                       <Camera className="w-4 h-4" />
                     </button>
@@ -2398,11 +2398,11 @@ const CategoriaLegislacao = () => {
                   aria-label={voiceSearch.listening ? 'Parar gravação' : 'Buscar por voz'}
                   className={`relative overflow-hidden shrink-0 rounded-full flex items-center justify-center shadow-lg active:scale-[0.95] transition ${isDesktop ? 'w-11 h-11' : 'w-14 h-14'} ${
                     voiceSearch.listening
-                      ? 'bg-primary text-primary-foreground animate-pulse shadow-primary/40'
-                      : 'bg-primary text-primary-foreground shadow-primary/30'
+                      ? 'bg-hero-panel text-white animate-pulse shadow-red-950/50'
+                      : 'bg-hero-panel text-white shadow-red-950/40'
                   }`}
                 >
-                  {voiceSearch.listening && <span className="absolute inset-0 rounded-full bg-primary/30 animate-ping" />}
+                  {voiceSearch.listening && <span className="absolute inset-0 rounded-full bg-red-500/30 animate-ping" />}
                   {voiceSearch.listening
                     ? <MicOff className={`relative z-[2] ${isDesktop ? 'w-5 h-5' : 'w-6 h-6'}`} strokeWidth={2.5} />
                     : <Mic className={`relative z-[2] ${isDesktop ? 'w-5 h-5' : 'w-6 h-6'}`} strokeWidth={2.5} />}
@@ -2425,7 +2425,7 @@ const CategoriaLegislacao = () => {
                     disabled={loadingArtigos}
                     className={`flex items-center justify-center gap-1.5 px-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all ${isDesktop ? 'py-2' : 'py-3 md:py-3.5'} ${
                       activeTab === tab.key
-                        ? 'bg-primary text-primary-foreground'
+                        ? 'bg-hero-panel text-white shadow-md shadow-red-950/40'
                         : 'bg-secondary text-foreground hover:text-foreground'
                     } ${loadingArtigos ? 'opacity-70' : ''}`}
                   >
@@ -2464,7 +2464,7 @@ const CategoriaLegislacao = () => {
                       type="button"
                       onClick={() => voiceSearch.toggle()}
                       aria-label={voiceSearch.listening ? 'Parar gravação' : 'Buscar por voz'}
-                      className={`absolute right-1.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center ${voiceSearch.listening ? 'bg-red-500/20 text-red-500' : 'bg-primary/10 text-primary'}`}
+                      className={`absolute right-1.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center ${voiceSearch.listening ? 'bg-red-500/20 text-red-500' : 'bg-red-500/15 text-red-400'}`}
                     >
                       {voiceSearch.listening ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
                     </button>
