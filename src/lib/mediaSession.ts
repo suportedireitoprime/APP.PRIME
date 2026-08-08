@@ -11,8 +11,8 @@
 import { Capacitor } from '@capacitor/core';
 import { MediaSession } from '@capgo/capacitor-media-session';
 
-const DEFAULT_ARTIST = 'Direito Prime';
-const FALLBACK_ART = '/icon-512.png';
+const DEFAULT_ARTIST = 'Direito Prime ⚖️';
+const PUBLIC_FALLBACK_ART = 'https://direitoprime.com.br/icon-512.png';
 
 type Handler = (() => void) | undefined;
 
@@ -44,14 +44,20 @@ const ACOES: MediaSessionAction[] = [
 ];
 
 function urlAbsoluta(url?: string): string {
-  const alvo = url && url.trim() ? url : FALLBACK_ART;
-  if (/^(https?:|data:|blob:)/.test(alvo)) return alvo;
-  if (typeof window === 'undefined') return alvo;
-  try {
-    return new URL(alvo, window.location.origin).toString();
-  } catch {
+  const alvo = url && url.trim() ? url.trim() : PUBLIC_FALLBACK_ART;
+  if (/^https?:\/\//i.test(alvo)) {
+    // Se a URL contiver localhost ou capacitor:// (servidor local da webview nativa),
+    // o Android SystemUI externo não consegue ler a imagem. Convertemos para a URL pública.
+    if (alvo.includes('localhost') || alvo.includes('capacitor://')) {
+      return PUBLIC_FALLBACK_ART;
+    }
     return alvo;
   }
+  if (/^(data:|blob:)/.test(alvo)) return alvo;
+  if (alvo.startsWith('/')) {
+    return `https://direitoprime.com.br${alvo}`;
+  }
+  return PUBLIC_FALLBACK_ART;
 }
 
 function tipoDaArte(url: string): string {
@@ -183,13 +189,19 @@ export function registrarMidia({
   try {
     const arte = urlAbsoluta(capaUrl);
     const type = tipoDaArte(arte);
+    const albumComSimbolo = album ? `⚖️ ${album}` : 'Direito Prime ⚖️';
+    const artistComSimbolo = subtitulo ? `${subtitulo} • Direito Prime ⚖️` : DEFAULT_ARTIST;
+
     setMetadata({
       title: titulo,
-      artist: subtitulo || DEFAULT_ARTIST,
-      album: album || DEFAULT_ARTIST,
+      artist: artistComSimbolo,
+      album: albumComSimbolo,
       artwork: [
         { src: arte, sizes: '512x512', type },
+        { src: arte, sizes: '384x384', type },
         { src: arte, sizes: '256x256', type },
+        { src: arte, sizes: '192x192', type },
+        { src: arte, sizes: '128x128', type },
         { src: arte, sizes: '96x96', type },
       ],
     });

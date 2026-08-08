@@ -76,6 +76,7 @@ export const LeisCantadasPlayerProvider: React.FC<{ children: React.ReactNode }>
       titulo: atual.titulo || `Art. ${atual.numero_artigo ?? ""}`,
       subtitulo: atual.lei_nome || "Leis Cantadas",
       album: "Leis Cantadas",
+      capaUrl: (atual as Record<string, unknown>)?.capa_url as string | undefined,
       audio,
       onNext: atualIdx >= 0 && faixas[atualIdx + 1] ? () => pularRef.current(1) : undefined,
       onPrev: atualIdx > 0 ? () => pularRef.current(-1) : undefined,

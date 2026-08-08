@@ -143,6 +143,7 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
       titulo: atual.titulo,
       subtitulo: atual.tema || atual.area,
       album: 'Audioaulas',
+      capaUrl: (atual as any).capa_url || (atual as any).url_capa || (atual as any).imagem_url,
       audio: el,
       onNext: atualIdx >= 0 && fila[atualIdx + 1] ? () => pularRef.current(1) : undefined,
       onPrev: atualIdx > 0 ? () => pularRef.current(-1) : undefined,
