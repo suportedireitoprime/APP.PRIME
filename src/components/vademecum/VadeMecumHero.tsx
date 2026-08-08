@@ -2,33 +2,42 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, Search, Scale } from 'lucide-react';
-import { srcOf } from '@/lib/assetUrl';
+import { pickAsset, srcOf } from '@/lib/assetUrl';
 import brasaoImg from '@/assets/brasao-republica.webp';
 
-// 5 Imagens 3D vazadas (cutouts recortados) exclusivas para o Vade Mecum
-import vmLivro3d from '@/assets/vademecum-hero/vm-livro-codigo-3d.png';
-import vmBalanca3d from '@/assets/vademecum-hero/vm-balanca-justica-3d.png';
-import vmMartelo3d from '@/assets/vademecum-hero/vm-martelo-juiz-3d.png';
-import vmPergaminho3d from '@/assets/vademecum-hero/vm-pergaminho-lei-3d.png';
-import vmEstudante3d from '@/assets/vademecum-hero/vm-estudante-lei-3d.png';
+import cover2Asset from '@/assets/covers/cover-2.png.asset.json';
+import cover2Bundled from '@/assets/covers/cover-2.webp';
+import cover3Asset from '@/assets/covers/cover-3.png.asset.json';
+import cover3Bundled from '@/assets/covers/cover-3.webp';
+import cover4Asset from '@/assets/covers/cover-4.png.asset.json';
+import cover4Bundled from '@/assets/covers/cover-4.webp';
+import cover5Asset from '@/assets/covers/cover-5.png.asset.json';
+import cover5Bundled from '@/assets/covers/cover-5.webp';
+import cover6Asset from '@/assets/covers/cover-6.png.asset.json';
+import cover6Bundled from '@/assets/covers/cover-6.webp';
+import cover7Asset from '@/assets/covers/cover-7.png.asset.json';
+import cover7Bundled from '@/assets/covers/cover-7.webp';
+import cover8Asset from '@/assets/covers/cover-8.png.asset.json';
+import cover8Bundled from '@/assets/covers/cover-8.webp';
+import cover9Asset from '@/assets/covers/cover-9.png.asset.json';
+import cover9Bundled from '@/assets/covers/cover-9.webp';
+import cover10Asset from '@/assets/covers/cover-10.png.asset.json';
+import cover10Bundled from '@/assets/covers/cover-10.webp';
+import { useHeroHomeImages } from '@/hooks/useHeroHomeImages';
 
-// Figuras vazadas de leis e juridico do inicio do aplicativo (hero-figures)
-import { heroFigures } from '@/assets/hero-figures';
-
-const FIGURAS = [
-  vmLivro3d,
-  vmBalanca3d,
-  vmMartelo3d,
-  vmPergaminho3d,
-  vmEstudante3d,
-  heroFigures.find((f) => f.alt === 'Livro de leis aberto')?.url || vmLivro3d,
-  heroFigures.find((f) => f.alt === 'Martelo do juiz')?.url || vmMartelo3d,
-  heroFigures.find((f) => f.alt === 'Balança da justiça')?.url || vmBalanca3d,
-  heroFigures.find((f) => f.alt === 'Pergaminho lacrado')?.url || vmPergaminho3d,
-  heroFigures.find((f) => f.alt === 'Estudante apontando a lei')?.url || vmEstudante3d,
+const FALLBACK_COVERS = [
+  pickAsset(cover2Bundled, srcOf(cover2Asset)),
+  pickAsset(cover3Bundled, srcOf(cover3Asset)),
+  pickAsset(cover4Bundled, srcOf(cover4Asset)),
+  pickAsset(cover5Bundled, srcOf(cover5Asset)),
+  pickAsset(cover6Bundled, srcOf(cover6Asset)),
+  pickAsset(cover7Bundled, srcOf(cover7Asset)),
+  pickAsset(cover8Bundled, srcOf(cover8Asset)),
+  pickAsset(cover9Bundled, srcOf(cover9Asset)),
+  pickAsset(cover10Bundled, srcOf(cover10Asset)),
 ];
 
-const POSICOES = ['right', 'left', 'center'] as const;
+const POSICOES = ['right', 'left', 'center', 'right', 'left'] as const;
 
 const SUBTITULOS = [
   'Legislação Completa',
@@ -45,26 +54,37 @@ interface Props {
 
 const VadeMecumHero = ({ onBuscar }: Props) => {
   const navigate = useNavigate();
-  const [figIndex, setFigIndex] = useState(() => Math.floor(Math.random() * FIGURAS.length));
+  const { images: dbImages } = useHeroHomeImages();
+
+  const toOptimized = (url: string): string => {
+    try {
+      if (!url) return url;
+      if (url.includes('/storage/v1/object/public/')) {
+        const opt = url.replace('/object/public/', '/render/image/public/');
+        const sep = opt.includes('?') ? '&' : '?';
+        return `${opt}${sep}width=1024&quality=78&format=origin`;
+      }
+      return url;
+    } catch { return url; }
+  };
+
+  const HERO_COVERS = dbImages.length > 0
+    ? dbImages.map((i) => toOptimized(i.imagem_url))
+    : FALLBACK_COVERS;
+
+  const [coverIndex, setCoverIndex] = useState(() => Math.floor(Math.random() * Math.max(1, HERO_COVERS.length)));
   const [subIndex, setSubIndex] = useState(0);
 
   useEffect(() => {
-    const t = setInterval(() => setFigIndex((i) => (i + 1) % FIGURAS.length), 7000);
+    if (HERO_COVERS.length <= 1) return;
+    const t = setInterval(() => setCoverIndex((i) => (i + 1) % HERO_COVERS.length), 9000);
     return () => clearInterval(t);
-  }, []);
+  }, [HERO_COVERS.length]);
 
   useEffect(() => {
     const t = setInterval(() => setSubIndex((i) => (i + 1) % SUBTITULOS.length), 3200);
     return () => clearInterval(t);
   }, []);
-
-  const pos = POSICOES[figIndex % POSICOES.length];
-  const posClass =
-    pos === 'right'
-      ? 'right-[4%] left-auto'
-      : pos === 'left'
-      ? 'left-[4%] right-auto'
-      : 'left-1/2 -translate-x-1/2';
 
   return (
     <div
@@ -83,31 +103,44 @@ const VadeMecumHero = ({ onBuscar }: Props) => {
         className="pointer-events-none absolute -top-6 left-1/2 -translate-x-1/2 w-[280px] opacity-[0.10] select-none"
       />
 
-      {/* Figuras vazadas */}
+      {/* Cover art — exatamente as mesmas imagens do painel do Início (Home) */}
       <div className="pointer-events-none absolute inset-0 select-none overflow-hidden">
         <AnimatePresence initial={false}>
-          <motion.img
-            key={figIndex}
-            src={FIGURAS[figIndex]}
-            alt=""
-            aria-hidden
-            width={1024}
-            height={1024}
-            loading="eager"
-            decoding="async"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
-            onError={(e) => {
-              const el = e.currentTarget as HTMLImageElement;
-              if (el.src !== vmLivro3d) {
-                el.src = vmLivro3d;
-              }
-            }}
-            style={{ animation: 'ken-burns-a 12s ease-in-out infinite alternate' }}
-            className={`absolute bottom-0 h-[86%] w-auto max-w-[64%] object-contain object-bottom drop-shadow-[0_10px_28px_rgba(0,0,0,0.35)] ${posClass}`}
-          />
+          {(() => {
+            const currentUrl = HERO_COVERS[coverIndex % HERO_COVERS.length];
+            if (!currentUrl) return null;
+            const pos = POSICOES[coverIndex % POSICOES.length];
+            const posClass =
+              pos === 'right'
+                ? 'right-[4%] left-auto origin-bottom-right'
+                : pos === 'left'
+                ? 'left-[4%] right-auto origin-bottom-left'
+                : 'left-1/2 -translate-x-1/2 origin-bottom';
+            const kenBurnsAnim = coverIndex % 2 === 0
+              ? 'ken-burns-a 12s ease-in-out infinite alternate'
+              : 'ken-burns-b 12s ease-in-out infinite alternate';
+            return (
+              <motion.img
+                key={coverIndex}
+                src={currentUrl}
+                alt=""
+                loading="eager"
+                decoding="async"
+                width={1024}
+                height={1024}
+                onError={(e) => {
+                  const el = e.currentTarget as HTMLImageElement;
+                  el.style.opacity = '0';
+                }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 1.6, ease: [0.22, 1, 0.36, 1] }}
+                style={{ animation: kenBurnsAnim, willChange: 'transform' }}
+                className={`absolute bottom-0 h-[88%] w-auto max-w-[70%] object-contain object-bottom drop-shadow-[0_10px_28px_rgba(0,0,0,0.35)] ${posClass}`}
+              />
+            );
+          })()}
         </AnimatePresence>
       </div>
 
@@ -174,7 +207,7 @@ const VadeMecumHero = ({ onBuscar }: Props) => {
           <span className="relative z-[2] font-body text-white/70 text-[15px] font-medium truncate text-left">
             Pesquise a lei...
           </span>
-          <div className="absolute right-1.5 top-1/2 -translate-y-1/2 h-12 px-5 rounded-xl bg-hero-panel text-white font-display text-[13px] font-bold tracking-wider flex items-center justify-center shadow-md">
+          <div className="absolute right-1.5 top-1/2 -translate-y-1/2 h-12 px-5 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 text-black font-display text-[13px] font-extrabold tracking-wider flex items-center justify-center shadow-md shadow-amber-500/25 active:scale-95 transition">
             PESQUISAR
           </div>
         </button>
