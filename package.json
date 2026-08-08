@@ -75,7 +75,7 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@hookform/resolvers": "^3.10.0",
-    "@jofr/capacitor-media-session": "^4.0.0",
+    "@capgo/capacitor-media-session": "^8.0.0",
     "@nivo/bar": "^0.99.0",
     "@nivo/line": "^0.99.0",
     "@nivo/pie": "^0.99.0",

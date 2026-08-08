@@ -9,7 +9,7 @@
 // Seguro em qualquer plataforma: sem suporte, tudo é ignorado.
 
 import { Capacitor } from '@capacitor/core';
-import { MediaSession } from '@jofr/capacitor-media-session';
+import { MediaSession } from '@capgo/capacitor-media-session';
 
 const DEFAULT_ARTIST = 'Direito Prime';
 const FALLBACK_ART = '/icon-512.png';
@@ -62,17 +62,12 @@ function tipoDaArte(url: string): string {
 
 // ————— camada de adaptação (Media Session web/WebView nativa) —————
 // NOTA DE SEGURANÇA NATIVA (Android 14/15 & iOS 18):
-// Os WebViews nativos do Android (Chrome) e iOS (WKWebView) possuem suporte
-// nativo integrado à Media Session API (navigator.mediaSession).
-// Invocação direta do plugin legado @jofr/capacitor-media-session em Capacitor 8
-// causava exceções Java fatais no Foreground Service (SecurityException / ClassNotFoundException)
+// A versão antiga do plugin (@jofr/capacitor-media-session) causava exceções
+// fatais no Foreground Service no Capacitor 8 (SecurityException / ClassNotFoundException),
 // provocando o fechamento instantâneo do aplicativo.
-// Agora utilizamos a MediaSession API padrão do WebView, que é 100% estável e não fecha o app.
-
-// Desativamos chamadas diretas ao plugin nativo legado @jofr/capacitor-media-session
-// para evitar exceções fatais em Java no Android 14/15 e iOS 18.
-// A MediaSession API padrão do WebView (navigator.mediaSession) lida nativamente com
-// notificações, lockscreen e fundo sem crashar nem fechar o app.
+// Agora utilizamos a versão atualizada @capgo/capacitor-media-session, que suporta
+// Capacitor 8 e lida nativamente com notificações, lockscreen e fundo sem crashar,
+// e que garante que o player fique disponível na barra de notificações com o app fechado.
 const isNativePluginSupported = () => Capacitor.isNativePlatform();
 
 const setMetadata = (m: { title: string; artist: string; album: string; artwork: MediaImage[] }) => {
