@@ -1,6 +1,10 @@
 // Edge function: generate TTS narration per scene for admin triagem preview.
 // Uses Lovable AI Gateway with Gemini TTS (google/gemini-2.5-flash-tts).
-import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+};
 
 type SceneIn = { id: string; text: string };
 type Body = { voice?: string; scenes: SceneIn[]; model?: string };
