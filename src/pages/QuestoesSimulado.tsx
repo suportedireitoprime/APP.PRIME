@@ -91,7 +91,7 @@ const QuestoesSimulado = () => {
               onClick={() => navigate('/questoes/simulado/geral')}
               className="mb-3 flex w-full items-center gap-3 rounded-2xl border border-border bg-card p-4 text-left hover:border-primary/50 transition-all active:scale-98"
             >
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/15 shrink-0">
+              <span className="flex h-11 w-11 items-center justify-center shrink-0">
                 <Timer className="h-6 w-6 text-primary" />
               </span>
               <span className="flex-1">
@@ -112,7 +112,7 @@ const QuestoesSimulado = () => {
                     onClick={() => navigate(`/questoes/simulado/${c.slug || c.id}`)}
                     className="flex w-full items-center gap-3 rounded-2xl border border-border bg-card p-4 text-left hover:border-primary/50 transition-all active:scale-98"
                   >
-                    <span className="flex h-11 w-11 items-center justify-center rounded-xl shrink-0" style={{ background: `${c.cor}22` }}>
+                    <span className="flex h-11 w-11 items-center justify-center shrink-0">
                       <Gavel className="h-6 w-6" style={{ color: c.cor }} />
                     </span>
                     <span className="min-w-0 flex-1">
