@@ -33,6 +33,7 @@ import {
   labelCategoria,
   type CategoriaLocal,
 } from '@/lib/locaisCategorias';
+import { obterCapaLocal } from '@/lib/locaisCapas';
 import {
   googleMapsUrl,
   wazeUrl,
@@ -403,32 +404,23 @@ export default function LocaisJuridicos() {
   const resto = locaisOrdenados.slice(destaques.length);
 
   const renderCapa = (local: Local, tamanho: 'hero' | 'thumb') => {
-    const url = photos[local.id]?.photo_url;
-    const Icon = iconCategoria(local.categoria);
+    const photoUrlApi = photos[local.id]?.photo_url;
+    const url = obterCapaLocal(local, photoUrlApi);
     const base = tamanho === 'hero'
       ? 'aspect-[4/3] rounded-2xl'
-      : 'w-20 h-20 rounded-xl';
-    if (url) {
-      return (
-        <div className={`relative overflow-hidden bg-muted ${base}`}>
-          <img
-            src={url}
-            alt={local.nome}
-            loading="lazy"
-            className="absolute inset-0 w-full h-full object-cover"
-            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-          />
-          {tamanho === 'hero' && (
-            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
-          )}
-        </div>
-      );
-    }
+      : 'w-20 h-20 rounded-xl shrink-0';
     return (
-      <div className={`relative overflow-hidden ${base} bg-gradient-to-br from-primary/25 via-primary/10 to-muted flex items-center justify-center`}>
-        <Icon className={tamanho === 'hero' ? 'w-10 h-10 text-primary/70' : 'w-7 h-7 text-primary/70'} />
-        {tamanho === 'hero' && (
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+      <div className={`relative overflow-hidden bg-muted ${base}`}>
+        <img
+          src={url}
+          alt={local.nome}
+          loading="lazy"
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+        />
+        {tamanho === 'hero' ? (
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+        ) : (
+          <div className="absolute inset-0 bg-black/15 pointer-events-none" />
         )}
       </div>
     );
@@ -671,20 +663,11 @@ export default function LocaisJuridicos() {
                 {/* Foto com cantos arredondados no topo + botão fechar à esquerda */}
                 <div className="relative">
                   <div className="relative h-56 sm:h-64 bg-muted overflow-hidden rounded-t-3xl">
-                    {meta?.photo_url ? (
-                      <img
-                        src={meta.photo_url}
-                        alt={selecionado.nome}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <iframe
-                        title="Prévia do local"
-                        src={streetViewEmbedUrl(selecionado.lat, selecionado.lng)}
-                        className="w-full h-full border-0"
-                        loading="lazy"
-                      />
-                    )}
+                    <img
+                      src={obterCapaLocal(selecionado, meta?.photo_url)}
+                      alt={selecionado.nome}
+                      className="w-full h-full object-cover"
+                    />
                     <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-black/20 pointer-events-none" />
 
                     {/* Botão fechar (seta pra baixo) à esquerda */}
