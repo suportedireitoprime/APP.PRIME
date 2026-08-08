@@ -341,11 +341,12 @@ function resolveCover(p: RawPost): string {
   if (t.includes('reforma tributária') || t.includes('reforma tributaria')) return reformaTributariaImg;
 
   // Se o banco tem uma imagem_url válida (PNG ilustrado no Supabase Storage), usa ela
-  if (p.imagem_url && p.imagem_url.startsWith('http')) {
+  // Ignoramos imagens genéricas do Unsplash para forçar os SVGs vetoriais customizados
+  if (p.imagem_url && p.imagem_url.startsWith('http') && !p.imagem_url.includes('unsplash.com')) {
     return p.imagem_url;
   }
 
-  // Último fallback: SVG vetorial para posts sem nenhuma imagem
+  // Último fallback: SVG vetorial para posts sem nenhuma imagem ou com imagens genéricas
   return createVectorSvgCover(p.categoria, p.titulo);
 }
 
