@@ -52,22 +52,21 @@ export const formatarEta = (seg: number | null): string => {
 };
 
 const call = async (payload: Record<string, unknown>, timeoutMs = 60000) => {
-  const ac = new AbortController();
-  const id = setTimeout(() => ac.abort(), timeoutMs);
-  try {
-    const { data, error } = await supabase.functions.invoke('narracao', {
+  return new Promise((resolve, reject) => {
+    const id = setTimeout(() => reject(new Error('Timeout de comunicação com o servidor')), timeoutMs);
+    supabase.functions.invoke('narracao', {
       body: { ...payload, fn: 'blog_preview' },
       headers: { 'Content-Type': 'application/json' },
+    }).then(({ data, error }) => {
+      clearTimeout(id);
+      if (error) return reject(new Error(error.message));
+      if ((data as any)?.error) return reject(new Error((data as any).error));
+      resolve(data as any);
+    }).catch((err) => {
+      clearTimeout(id);
+      reject(err);
     });
-    if (error) throw new Error(error.message);
-    if ((data as any)?.error) throw new Error((data as any).error);
-    return data as any;
-  } catch (err: any) {
-    if (err.name === 'AbortError') throw new Error('Timeout de comunicação com o servidor');
-    throw err;
-  } finally {
-    clearTimeout(id);
-  }
+  });
 };
 
 const dormir = (ms: number) => new Promise((r) => setTimeout(r, ms));
