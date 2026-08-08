@@ -192,7 +192,7 @@ const FlashcardsTab = ({ flashcards, loading }: Props) => {
         </motion.div>
       </div>
 
-      <div className="mt-4 flex items-center justify-between gap-3">
+      <div className="mt-4 flex items-center justify-between gap-3 pb-[calc(6.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
         <button
           onClick={() => go(-1)}
           disabled={idx === 0}

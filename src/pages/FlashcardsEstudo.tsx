@@ -438,7 +438,7 @@ const FlashcardsEstudo = () => {
                 </AnimatePresence>
 
                 {/* Botões de Ação com Safe Area Inset Bottom para Mobile */}
-                <div className="pt-2 pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] grid grid-cols-2 gap-3">
+                <div className="pt-2 pb-[calc(6.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] grid grid-cols-2 gap-3">
                   <Button
                     variant="outline"
                     className="h-14 sm:h-16 rounded-2xl text-base font-bold gap-2 hover:border-amber-500/50 hover:bg-amber-500/10 active:scale-95 transition-all shadow-sm"

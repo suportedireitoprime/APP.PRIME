@@ -248,7 +248,7 @@ const AprenderArea = () => {
       subtitle={area?.descricao ?? 'Trilhas de estudo'}
       mobileHeader={mobileHeader}
     >
-      <div className="w-full 2xl:max-w-[1750px] mx-auto px-3 sm:px-6 lg:px-8 pb-[calc(7rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
+      <div className="w-full 2xl:max-w-[1750px] mx-auto px-3 sm:px-6 lg:px-8 pb-[calc(8.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
         {loading && !data ? (
           <div className="space-y-4 px-4 py-5 sm:px-6">
             <div className="h-44 rounded-2xl bg-muted animate-pulse" />
