@@ -26,7 +26,7 @@ import { useGoBack } from '@/hooks/useGoBack';
 import { copiarTexto } from '@/lib/nativo/copiar';
 const vacatioLogo = pickAsset(vacatioLogoBundled, srcOf(vacatioLogoAsset));
 
-const SITE_URL = 'www.vacatio.com.br';
+const SITE_URL = 'www.direitoprime.com.br';
 
 const steps = [
   {
@@ -46,7 +46,7 @@ const steps = [
   },
   {
     icon: ScanLine,
-    title: 'Escaneie com o botão abaixo',
+    title: 'Escaneie com o botão acima',
     text: 'Aponte a câmera do celular pro QR na tela do computador. Você entra na hora, sem digitar senha.',
   },
 ];
@@ -173,6 +173,31 @@ const DesktopPromo = () => {
               <Copy className="w-4 h-4 text-muted-foreground" />
             )}
           </button>
+
+          {/* CTA principal — escanear (Posicionado diretamente abaixo do endereço do site) */}
+          <motion.button
+            onClick={handleScan}
+            disabled={scanning}
+            whileTap={{ scale: 0.97 }}
+            className="mt-4 w-full flex items-center justify-center gap-3 py-4 rounded-full bg-primary text-primary-foreground font-display font-black text-base shadow-lg shadow-primary/30 disabled:opacity-60"
+          >
+            {scanning ? (
+              <>
+                <Camera className="w-5 h-5 animate-pulse" />
+                Abrindo a câmera…
+              </>
+            ) : (
+              <>
+                <ScanLine className="w-5 h-5" />
+                Escanear acesso
+              </>
+            )}
+          </motion.button>
+
+          <div className="mt-3 flex items-center gap-2 justify-center text-[11px] text-muted-foreground font-body">
+            <ShieldCheck className="w-3.5 h-3.5 text-primary" />
+            Código válido por 3 minutos e único por acesso
+          </div>
         </section>
 
         {/* Passo a passo */}
@@ -203,31 +228,6 @@ const DesktopPromo = () => {
             </motion.div>
           ))}
         </section>
-
-        {/* CTA principal — escanear */}
-        <motion.button
-          onClick={handleScan}
-          disabled={scanning}
-          whileTap={{ scale: 0.97 }}
-          className="w-full flex items-center justify-center gap-3 py-4 rounded-full bg-primary text-primary-foreground font-display font-black text-base shadow-lg shadow-primary/30 disabled:opacity-60"
-        >
-          {scanning ? (
-            <>
-              <Camera className="w-5 h-5 animate-pulse" />
-              Abrindo a câmera…
-            </>
-          ) : (
-            <>
-              <ScanLine className="w-5 h-5" />
-              Escanear acesso
-            </>
-          )}
-        </motion.button>
-
-        <div className="flex items-center gap-2 justify-center text-[11px] text-muted-foreground font-body">
-          <ShieldCheck className="w-3.5 h-3.5 text-primary" />
-          Código válido por 3 minutos e único por acesso
-        </div>
 
         {/* Benefícios */}
         <section className="space-y-2">

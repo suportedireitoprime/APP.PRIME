@@ -9,9 +9,9 @@ const GRAY_SOFT: [number, number, number] = [235, 236, 240];
 const TEXT: [number, number, number] = [30, 30, 34];
 
 const APP_NAME = 'Direito Prime — Vade Mecum';
-const APP_URL = 'https://vacatio.com.br';
-const STORE_APPLE = 'https://vacatio.com.br';
-const STORE_ANDROID = 'https://vacatio.com.br';
+const APP_URL = 'https://direitoprime.com.br';
+const STORE_APPLE = 'https://direitoprime.com.br';
+const STORE_ANDROID = 'https://direitoprime.com.br';
 const LOGO_URL = '/icon-512.png';
 
 async function urlToDataUrl(url: string): Promise<string | null> {
