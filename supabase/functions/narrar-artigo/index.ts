@@ -710,7 +710,7 @@ Deno.serve(async (req) => {
     // Falha silenciosa: se não conseguir, salva sem timings.
     let wordTimings: Array<{ word: string; start: number; end: number }> | null = null;
     try {
-      const lovableKey = Deno.env.get("LOVABLE_API_KEY");
+      const lovableKey = Deno.env.get('GEMINI_API_KEY');
       if (lovableKey) {
         const fd = new FormData();
         fd.append("file", new Blob([wavBytes as any], { type: "audio/wav" }), "narracao.wav");

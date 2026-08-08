@@ -10,7 +10,7 @@ const corsHeaders = {
 
 async function firecrawlMap(url: string, search: string, limit = 2000): Promise<string[]> {
   const key = Deno.env.get('FIRECRAWL_API_KEY');
-  const lovableKey = Deno.env.get('LOVABLE_API_KEY');
+  const lovableKey = Deno.env.get('GEMINI_API_KEY');
   if (!key) throw new Error('FIRECRAWL_API_KEY não configurada. Conecte o Firecrawl em Configurações → Conectores.');
 
   const isGateway = key.startsWith('lovc_');

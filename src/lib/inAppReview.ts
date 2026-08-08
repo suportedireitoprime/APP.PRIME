@@ -105,18 +105,10 @@ export async function maybeRequestOnSecondOpen(delayMs = 3500): Promise<void> {
   const opens = await trackAppOpen();
   if (await hasRated()) return;
 
-  // A cota do Play In-App Review é limitada por usuário/dia: pedir na segunda
-  // abertura queimava a única chance com quem ainda nem conheceu o app — e
-  // costuma render nota baixa. Agora exigimos engajamento real:
-  // 3+ aberturas E (1+ momento positivo OU 2+ dias desde a instalação).
-  if (opens < MIN_OPENS_BEFORE_PROMPT) return;
-
-  const [eventos, firstOpen] = await Promise.all([get(K_EVENT_COUNT), get(K_FIRST_OPEN)]);
-  const positivos = eventos ? Number(eventos) : 0;
-  const diasInstalado = firstOpen ? (Date.now() - Number(firstOpen)) / DAY_MS : 0;
-  if (positivos < 1 && diasInstalado < MIN_DAYS_BEFORE_SOFT_PROMPT) return;
-
-  setTimeout(() => { requestReviewNow(); }, delayMs);
+  // Mostra o prompt nativo de avaliação após 3 aberturas do aplicativo
+  if (opens >= MIN_OPENS_BEFORE_PROMPT) {
+    setTimeout(() => { requestReviewNow(); }, delayMs);
+  }
 }
 
 /** Prompt pós-compra — só aparece se a pessoa ainda não avaliou. */

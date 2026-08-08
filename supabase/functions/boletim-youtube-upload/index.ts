@@ -7,7 +7,7 @@ import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY")!;
+const LOVABLE_API_KEY = undefined!;
 const CLIENT_ID = Deno.env.get("YOUTUBE_CLIENT_ID")!;
 const CLIENT_SECRET = Deno.env.get("YOUTUBE_CLIENT_SECRET")!;
 const REFRESH_TOKEN = Deno.env.get("YOUTUBE_REFRESH_TOKEN")!;
@@ -43,7 +43,7 @@ async function gerarThumbnail(titulo: string, tipoLabel: string, dataBr: string)
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "google/gemini-2.5-flash-image",
+      model: 'gemini-2.5-flash-image',
       messages: [{ role: "user", content: prompt }],
       modalities: ["image", "text"],
     }),

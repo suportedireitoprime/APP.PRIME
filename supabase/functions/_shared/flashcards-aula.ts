@@ -18,7 +18,7 @@ const ADMIN_EMAILS = new Set([
   "wn7juridico@gmail.com",
 ]);
 // v5 — usa SOMENTE a GEMINI_API_KEY direta, via Gemini native API.
-const MODEL = "gemini-3.1-flash-lite";
+const MODEL = "gemini-2.5-flash-lite";
 const PROVIDER = "gemini-direto";
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 

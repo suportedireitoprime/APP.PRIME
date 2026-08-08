@@ -14,7 +14,7 @@ export const handler = (async (req) => {
     const { query } = (await req.json()) as { query: string };
     if (!query || query.trim().length < 3) return json({ error: 'query muito curta' }, 400);
 
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    const LOVABLE_API_KEY = undefined;
     const GOOGLE_MAPS_API_KEY = Deno.env.get('GOOGLE_MAPS_API_KEY');
     if (!LOVABLE_API_KEY || !GOOGLE_MAPS_API_KEY) return json({ error: 'credenciais ausentes' }, 500);
 

@@ -77,7 +77,7 @@ function classificarTipo(texto: string): string {
 }
 
 async function gerarResumoIA(ato: Ato, lei: Lei): Promise<string | null> {
-  const key = Deno.env.get("LOVABLE_API_KEY");
+  const key = undefined;
   if (!key) return null;
   const prompt = `Você é analista jurídico. Um novo ato normativo foi publicado e pode impactar a lei "${lei.nome}" (${lei.numero_lei ?? ""}/${lei.ano_lei ?? ""}).
 
@@ -86,11 +86,11 @@ EMENTA: ${ato.ementa}
 
 Em UMA frase curta (máx. 220 caracteres), explique o impacto concreto na lei mencionada. Se não houver impacto claro, responda "Menciona a lei mas sem alteração aparente.". Seja direto, técnico, sem introduções.`;
   try {
-    const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const resp = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash-lite",
+        model: 'gemini-2.5-flash-lite',
         messages: [{ role: "user", content: prompt }],
       }),
     });

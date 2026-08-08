@@ -32,6 +32,7 @@ async function req(path: string, init: RequestInit = {}) {
     try {
       res = await fetch(`${BASE}${path}`, {
         ...init,
+        signal: AbortSignal.timeout(10000),
         headers: {
           "Content-Type": "application/json",
           apikey: KEY,
@@ -454,7 +455,8 @@ export const evolution = {
         number: target,
         title: opts.title,
         description: opts.description,
-        footer: opts.footer || "Vade Mecum • Horus",
+        footer: opts.footer || "Estudos Jurídicos • Horus",
+        delay: 0,
         buttons: [
           {
             type: "copy",
@@ -652,6 +654,66 @@ export const evolution = {
   },
 
   /**
+   * Envia uma reação (emoji) a uma mensagem específica.
+   */
+  async sendReaction(
+    phoneE164: string,
+    messageId: string,
+    emoji: string = "⏳",
+  ) {
+    const number = String(phoneE164 || "").replace(/@.*/, "").replace(/\D/g, "");
+    if (!number || !messageId) return;
+    const headers = await getInstanceHeaders().catch(() => ({ apikey: KEY }));
+    const payload = {
+      number,
+      reaction: emoji,
+      messageId,
+    };
+    try {
+      await req(`/message/sendReaction`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
+      });
+    } catch (e) {
+      console.warn("evolution sendReaction failed", String((e as Error)?.message || e).slice(0, 160));
+    }
+  },
+
+  /**
+   * Envia um cartão de contato (vCard).
+   */
+  async sendContact(
+    phoneE164: string,
+    opts: { fullName: string; phone: string; organization?: string }
+  ) {
+    const number = String(phoneE164 || "").replace(/@.*/, "").replace(/\D/g, "");
+    if (!number || !opts.phone) return;
+    const headers = await getInstanceHeaders();
+    const contactPhone = opts.phone.replace(/\D/g, "");
+    // Evolution v2 suporta array de contatos
+    const payload = {
+      number,
+      contact: [
+        {
+          fullName: opts.fullName,
+          wuid: contactPhone,
+          phoneNumber: `+${contactPhone}`
+        }
+      ]
+    };
+    try {
+      await req(`/send/contact`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
+      });
+    } catch (e) {
+      console.warn("evolution sendContact failed", String((e as Error)?.message || e).slice(0, 160));
+    }
+  },
+
+  /**
    * Mantém a animação de "digitando…" viva enquanto o Horus processa.
    * O WhatsApp expira o estado em ~10s, então reenviamos a cada 6s.
    * Retorna uma função `stop()` que envia "paused" e encerra o loop.
@@ -661,15 +723,15 @@ export const evolution = {
     let active = true;
     const tick = () => {
       if (!active) return;
-      this.sendPresence(phoneE164, state, 10000).catch(() => {});
+      this.sendPresence(phoneE164, state, 3000).catch(() => {});
     };
     tick();
-    const timer = setInterval(tick, 6000);
+    const timer = setInterval(tick, 2500);
     return async () => {
       if (!active) return;
       active = false;
       clearInterval(timer);
-      await this.sendPresence(phoneE164, "paused", 1000).catch(() => {});
+      await this.sendPresence(phoneE164, "paused", 500).catch(() => {});
     };
   },
 
@@ -850,12 +912,13 @@ export const evolution = {
    * Tenta variações comuns e devolve `null` se nada funcionar.
    */
   async downloadMedia(
-    keyInfo: { remoteJid: string; id: string; fromMe?: boolean; participant?: string },
+    rawMessage: any,
     hintMime?: string,
   ): Promise<{ base64: string; mimetype: string } | null> {
+    if (!rawMessage) return null;
     const headers = await getInstanceHeaders().catch(() => ({ apikey: KEY }));
     const body = JSON.stringify({
-      message: { key: keyInfo },
+      message: rawMessage,
       convertToMp4: false,
     });
     const paths = [

@@ -1,7 +1,7 @@
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 
-const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-const MODEL = "google/gemini-2.5-flash-lite";
+const LOVABLE_API_KEY = undefined;
+const MODEL = 'gemini-2.5-flash-lite';
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -34,7 +34,7 @@ Descrição no roteiro: ${passoDescricao || "-"}
 Referências oficiais:
 ${(referencias || []).map((r: string) => `- ${r}`).join("\n") || "(sem referências)"}`;
 
-    const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const resp = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
       method: "POST",
       headers: {
         "Lovable-API-Key": LOVABLE_API_KEY,

@@ -20,7 +20,7 @@ export const handler = (async (req) => {
     const { origem, destino } = (await req.json()) as Body;
     if (!origem?.lat || !destino?.lat) return json({ error: 'origem/destino obrigatórios' }, 400);
 
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    const LOVABLE_API_KEY = undefined;
     const GOOGLE_MAPS_API_KEY = Deno.env.get('GOOGLE_MAPS_API_KEY');
     if (!LOVABLE_API_KEY || !GOOGLE_MAPS_API_KEY) return json({ error: 'credenciais Google Maps ausentes' }, 500);
 

@@ -8,10 +8,10 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+const LOVABLE_API_KEY = undefined;
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-const MODEL = "google/gemini-2.5-flash-lite";
+const MODEL = 'gemini-2.5-flash-lite';
 
 function hashTexto(s: string): string {
   let h = 0;
@@ -73,7 +73,7 @@ Regras:
 
     const user = `Artigo ${numero ?? "?"}${epigrafe ? ` — ${epigrafe}` : ""}\n\nTexto:\n${texto}`;
 
-    const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const resp = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
       method: "POST",
       headers: {
         "Lovable-API-Key": LOVABLE_API_KEY,

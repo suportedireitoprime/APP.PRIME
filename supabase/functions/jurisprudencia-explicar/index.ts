@@ -1,8 +1,8 @@
 // Edge function: explica um item de jurisprudência (tema/tese) usando IA (Lovable AI Gateway).
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 
-const GATEWAY_URL = 'https://ai.gateway.lovable.dev/v1/chat/completions';
-const MODEL = 'google/gemini-2.5-flash-lite';
+const GATEWAY_URL = 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions';
+const MODEL = 'gemini-2.5-flash-lite';
 
 interface Payload {
   titulo?: string;
@@ -61,7 +61,7 @@ function buildUserPrompt(p: Payload): string {
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
   try {
-    const apiKey = Deno.env.get('LOVABLE_API_KEY');
+    const apiKey = Deno.env.get('GEMINI_API_KEY');
     if (!apiKey) {
       return new Response(JSON.stringify({ error: 'LOVABLE_API_KEY ausente' }), {
         status: 500,

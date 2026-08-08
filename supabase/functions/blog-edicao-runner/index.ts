@@ -8,17 +8,17 @@ async function generateCoverOnce(_apiKey: string, prompt: string): Promise<Uint8
   // 1) Tenta primeiro o Lovable AI Gateway (google/gemini-2.5-flash-image)
   // Isto evita depender dos créditos pré-pagos da conta GEMINI direta, que já
   // ficaram exauridos em produção e causaram capas ausentes nos posts.
-  const lovableKey = Deno.env.get("LOVABLE_API_KEY");
+  const lovableKey = Deno.env.get('GEMINI_API_KEY');
   if (lovableKey) {
     try {
-      const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      const res = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${lovableKey}`,
         },
         body: JSON.stringify({
-          model: "google/gemini-3-pro-image",
+          model: 'gemini-3-pro-image',
           messages: [{ role: "user", content: prompt }],
           modalities: ["image", "text"],
         }),
@@ -117,14 +117,14 @@ async function warmCdn(url: string) {
  * objetos e símbolos) para que a capa represente de fato o conteúdo.
  */
 async function buildBriefDaCapa(titulo: string, resumo: string, categoria: string): Promise<CoverBrief | null> {
-  const key = Deno.env.get("LOVABLE_API_KEY");
+  const key = undefined;
   if (!key) return null;
   try {
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const res = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
       body: JSON.stringify({
-        model: "google/gemini-3.6-flash",
+        model: 'gemini-3.6-flash',
         messages: [
           {
             role: "system",

@@ -27,7 +27,7 @@ Regras:
 Retorne APENAS o texto da mensagem, sem prefixos ou aspas.`;
 
 export async function generateLembreteText(ctx: LembreteCtx): Promise<string | null> {
-  const KEY = Deno.env.get("LOVABLE_API_KEY");
+  const KEY = undefined;
   if (!KEY) return null;
 
   const parts: string[] = [];
@@ -42,7 +42,7 @@ export async function generateLembreteText(ctx: LembreteCtx): Promise<string | n
   const timeout = setTimeout(() => controller.abort(), 12_000);
 
   try {
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const res = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
       method: "POST",
       signal: controller.signal,
       headers: {
@@ -50,7 +50,7 @@ export async function generateLembreteText(ctx: LembreteCtx): Promise<string | n
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash-lite",
+        model: 'gemini-2.5-flash-lite',
         messages: [
           { role: "system", content: SYSTEM },
           { role: "user", content: parts.join("\n") },

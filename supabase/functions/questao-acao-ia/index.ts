@@ -3,7 +3,7 @@
 // Body: { questaoId?: string, questao?: QuestaoInline, tipo: AcaoTipo, forcar?: boolean }
 import { corsHeaders, json, adminClient } from "../_shared/questoes-sheets.ts";
 
-const GATEWAY = "https://ai.gateway.lovable.dev/v1/chat/completions";
+const GATEWAY = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
 const MODEL = "openai/gpt-5.6-sol";
 
 type Tipo =
@@ -83,7 +83,7 @@ async function gerar(tipo: Tipo, questao: any) {
   const r = await fetch(GATEWAY, {
     method: "POST",
     headers: {
-      "Lovable-API-Key": Deno.env.get("LOVABLE_API_KEY") ?? "",
+      Authorization: `Bearer ${Deno.env.get('GEMINI_API_KEY')}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({

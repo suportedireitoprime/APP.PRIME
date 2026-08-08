@@ -5,8 +5,8 @@ import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { isTabelaLeiPermitida } from '../_shared/leis-tabelas.ts';
 
-const GATEWAY_URL = 'https://ai.gateway.lovable.dev/v1/chat/completions';
-const MODEL = 'google/gemini-3.6-flash';
+const GATEWAY_URL = 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions';
+const MODEL = 'gemini-3.6-flash';
 
 const PROMPT = `Você é um professor de Direito brasileiro. Com base no artigo de lei enviado, produza um RESUMO DE ESTUDO.
 Responda APENAS com JSON válido, sem markdown externo, no formato:
@@ -26,7 +26,7 @@ Deno.serve(async (req) => {
     });
 
   try {
-    const apiKey = Deno.env.get('LOVABLE_API_KEY');
+    const apiKey = Deno.env.get('GEMINI_API_KEY');
     if (!apiKey) return json({ error: 'LOVABLE_API_KEY ausente' }, 500);
 
     const body = await req.json().catch(() => ({}));
@@ -58,8 +58,7 @@ Deno.serve(async (req) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Lovable-API-Key': apiKey,
-        'X-Lovable-AIG-SDK': 'fetch',
+        'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
         model: MODEL,

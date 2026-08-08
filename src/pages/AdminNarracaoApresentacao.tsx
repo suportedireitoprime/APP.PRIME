@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { pdfjsLib, configurarPdfWorker, getPdfDocumentParams } from '@/lib/pdfWorkerConfig';
-import { Presentation, Upload, Loader2, Trash2, Play, Search, Eye, EyeOff, Check, Mic, FileText, Star } from 'lucide-react';
+import { Presentation, Upload, Loader2, Trash2, Play, Search, Eye, EyeOff, Check, Mic, FileText, Star, ChevronRight, ArrowLeft, X, BookOpen, Folder } from 'lucide-react';
 import { toast } from 'sonner';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { supabase } from '@/integrations/supabase/client';
@@ -9,6 +9,7 @@ import {
   iniciarApresJob, subscribeApresJob, pararApresJob, limparApresJob,
   etaSegundos, formatarEta, type ApresJobEstado,
 } from '@/lib/apresentacaoJob';
+import { motion, AnimatePresence } from 'framer-motion';
 
 configurarPdfWorker(pdfjsLib);
 
@@ -55,8 +56,10 @@ const AdminNarracaoApresentacao = () => {
   });
   const [busca, setBusca] = useState('');
   const [categoria, setCategoria] = useState<string>(() => localStorage.getItem(CAT_KEY) || '');
+  const [view, setView] = useState<'categories' | 'books'>('categories');
   const [favoritos, setFavoritos] = useState<string[]>(() => lerFavoritos());
   const [sel, setSel] = useState<Livro | null>(null);
+  const [bottomSheetOpen, setBottomSheetOpen] = useState(false);
   const [carregando, setCarregando] = useState(() => (lerCache<Livro[]>(LIVROS_KEY) ?? []).length === 0);
   const [lendoPdf, setLendoPdf] = useState<{ feitos: number; total: number } | null>(null);
   const [slides, setSlides] = useState<SlidePreparado[]>([]);
@@ -257,7 +260,14 @@ const AdminNarracaoApresentacao = () => {
 
   return (
     <div className="min-h-dvh bg-background pb-28">
-      <PageHeader title="Apresentação Narrada" subtitle="PDF → voz → narração" onBack={() => navigate('/admin-narracao')} />
+      <PageHeader title="Apresentação Narrada" subtitle="PDF → voz → narração" onBack={() => {
+        if (view === 'books') {
+          setView('categories');
+          setSel(null);
+        } else {
+          navigate('/admin-narracao');
+        }
+      }} />
 
       {(job || lendoPdf) && (
         <div className="sticky top-0 z-30 bg-card/95 backdrop-blur border-b border-border p-3">
@@ -289,176 +299,263 @@ const AdminNarracaoApresentacao = () => {
       )}
 
       <div className="max-w-3xl mx-auto p-4 space-y-4">
-        <div className="rounded-2xl border border-border bg-card p-4 flex gap-3">
-          <Presentation className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-          <p className="text-sm text-muted-foreground font-body">
-            Escolha o livro, envie o PDF da apresentação, selecione a voz e dê o play.
-            Cada slide vira uma imagem com narração envolvente, como um professor explicando a obra.
-          </p>
-        </div>
-
-        {/* 1 — livro */}
-        <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
-          <Passo n={1} titulo="Escolha o livro" ok={!!sel} ativo={!sel} />
-          <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
-            {[
-              { id: 'favoritos', label: `★ Favoritos (${favoritos.length})` },
-              ...categorias.map(([c, n]) => ({ id: c, label: `${c} (${n})` })),
-            ].map((c) => (
-              <button
-                key={c.id}
-                onClick={() => { setCategoria(c.id); localStorage.setItem(CAT_KEY, c.id); }}
-                className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold font-body border transition ${categoria === c.id ? 'bg-primary text-primary-foreground border-primary' : 'border-border text-muted-foreground hover:border-primary/50'}`}
-              >
-                {c.label}
-              </button>
-            ))}
-          </div>
-
-          <div className="relative">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <input
-              value={busca}
-              onChange={(e) => setBusca(e.target.value)}
-              placeholder="Buscar livro…"
-              className="w-full rounded-xl border border-border bg-background pl-9 pr-3 py-2.5 text-sm font-body"
-            />
-          </div>
-
-          {carregando ? (
-            <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
-          ) : (
-            <div className="space-y-2 max-h-[46vh] overflow-y-auto pr-0.5">
-              {filtrados.map((l) => {
-                const ativo = sel?.livro_id === l.livro_id && sel?.livro_tabela === l.livro_tabela;
-                return (
-                  <div key={`${l.livro_tabela}:${l.livro_id}`} className={`rounded-2xl border p-3 ${ativo ? 'border-primary bg-primary/5' : 'border-border'}`}>
-                    <div className="flex items-start gap-2">
-                      <button
-                        onClick={() => { if (ocupado) return; setSel(ativo ? null : l); limparPdf(); }}
-                        className="flex-1 min-w-0 text-left"
-                      >
-                        <span className="block font-heading font-bold text-sm">{l.titulo}</span>
-                        {l.autor && <span className="block text-xs text-muted-foreground font-body">{l.autor}</span>}
-                        <span className="flex flex-wrap items-center gap-1.5 mt-1">
-                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-semibold uppercase tracking-wide">{l.categoria}</span>
-                          <span className="text-[11px] font-body text-muted-foreground">
-                            {l.apresentacao_id ? `${l.total_slides} slides · ${l.publicada ? 'publicada' : 'oculta'}` : 'sem apresentação'}
-                          </span>
-                        </span>
-                      </button>
-                      <button
-                        onClick={() => alternarFavorito(l)}
-                        aria-label={favoritos.includes(chaveFav(l)) ? 'Remover dos favoritos' : 'Favoritar livro'}
-                        className="w-9 h-9 rounded-full border border-border flex items-center justify-center shrink-0"
-                      >
-                        <Star className={`w-4 h-4 ${favoritos.includes(chaveFav(l)) ? 'fill-primary text-primary' : 'text-muted-foreground'}`} />
-                      </button>
-                    </div>
-
-                    {ativo && l.apresentacao_id && (
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        <button
-                          onClick={() => navigate(`/apresentacao/${l.apresentacao_id}`)}
-                          className="inline-flex items-center gap-2 rounded-xl border border-border px-3 py-2 text-xs font-semibold"
-                        >
-                          <Play className="w-4 h-4" /> Ver
-                        </button>
-                        <button
-                          onClick={() => alternarPublicacao(l)}
-                          className="inline-flex items-center gap-2 rounded-xl border border-border px-3 py-2 text-xs font-semibold"
-                        >
-                          {l.publicada ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                          {l.publicada ? 'Ocultar' : 'Publicar'}
-                        </button>
-                        <button
-                          onClick={() => excluir(l)}
-                          className="inline-flex items-center gap-2 rounded-xl border border-destructive/60 text-destructive px-3 py-2 text-xs font-semibold"
-                        >
-                          <Trash2 className="w-4 h-4" /> Excluir
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-
-        {/* 2 — PDF */}
-        {sel && (
-          <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
-            <Passo n={2} titulo="Envie o PDF da apresentação" ok={slides.length > 0} ativo={slides.length === 0} />
-            {faltantes && (
-              <p className="rounded-xl border border-destructive/60 bg-destructive/10 p-3 text-xs font-body text-destructive">
-                Esta apresentação ficou incompleta: {faltantes.prontos} de {faltantes.total} slides narrados.
-                Reenvie o mesmo PDF ({faltantes.total} páginas) para gerar apenas os {faltantes.indices.length} que faltam —
-                ela só fica visível no livro quando todos estiverem prontos.
-              </p>
-            )}
-            <button
-              disabled={ocupado}
-              onClick={() => fileRef.current?.click()}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-primary text-primary-foreground px-3 py-3 text-sm font-semibold disabled:opacity-50"
+        <AnimatePresence mode="wait">
+          {view === 'categories' ? (
+            <motion.div
+              key="categories"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              transition={{ duration: 0.2 }}
+              className="space-y-4"
             >
-              {lendoPdf ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-              {slides.length ? 'Trocar PDF' : sel.apresentacao_id ? 'Enviar novo PDF (substitui)' : 'Enviar PDF'}
-            </button>
+              <div className="rounded-2xl border border-border bg-card p-4 flex gap-3">
+                <Presentation className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                <p className="text-sm text-muted-foreground font-body">
+                  Escolha uma categoria e selecione a obra. Em seguida, envie o PDF da apresentação para transformá-la em narração animada.
+                </p>
+              </div>
 
-            {!!slides.length && (
-              <>
-                <div className="flex items-center gap-2 text-xs font-body text-muted-foreground">
-                  <FileText className="w-4 h-4 text-primary" />
-                  <span className="truncate">{nomePdf}</span>
-                  <span className="ml-auto shrink-0">{slides.length} slides</span>
-                </div>
-                <div className="grid grid-cols-4 gap-2">
-                  {slides.slice(0, 8).map((s, i) => (
-                    <img key={i} src={s.thumb} alt={`Slide ${i + 1}`} className="w-full h-auto rounded-lg border border-border" />
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
-        )}
-
-        {/* 3 — voz */}
-        {sel && slides.length > 0 && (
-          <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
-            <Passo n={3} titulo="Escolha a voz" ok ativo />
-            <div className="flex items-center gap-2 min-w-0 w-full">
-              <Mic className="w-4 h-4 text-primary shrink-0" />
-              <select
-                value={voz}
-                disabled={ocupado}
-                onChange={(e) => setVoz(e.target.value)}
-                className="flex-1 min-w-0 w-full max-w-[calc(100vw-4.5rem)] truncate rounded-xl border border-border bg-background px-3 py-2 text-sm font-body"
-              >
-                {vozes.map((v) => (
-                  <option key={v.id} value={v.id}>{v.id} · {v.genero} — {v.descricao}</option>
+              <div className="grid grid-cols-2 gap-3 mt-4">
+                <button
+                  onClick={() => {
+                    setCategoria('favoritos');
+                    localStorage.setItem(CAT_KEY, 'favoritos');
+                    setView('books');
+                  }}
+                  className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-border bg-card p-4 text-center hover:border-primary/50 transition-colors active:scale-95"
+                >
+                  <Star className="w-6 h-6 text-yellow-500 fill-yellow-500" />
+                  <div>
+                    <span className="block font-heading font-bold text-sm">Favoritos</span>
+                    <span className="block text-xs text-muted-foreground font-body">{favoritos.length} obras</span>
+                  </div>
+                </button>
+                {categorias.map(([c, n]) => (
+                  <button
+                    key={c}
+                    onClick={() => {
+                      setCategoria(c);
+                      localStorage.setItem(CAT_KEY, c);
+                      setView('books');
+                    }}
+                    className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-border bg-card p-4 text-center hover:border-primary/50 transition-colors active:scale-95"
+                  >
+                    <Folder className="w-6 h-6 text-muted-foreground" />
+                    <div>
+                      <span className="block font-heading font-bold text-sm">{c}</span>
+                      <span className="block text-xs text-muted-foreground font-body">{n} obras</span>
+                    </div>
+                  </button>
                 ))}
-              </select>
-            </div>
-          </div>
-        )}
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="books"
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 10 }}
+              transition={{ duration: 0.2 }}
+              className="space-y-4"
+            >
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => { setView('categories'); setSel(null); }}
+                  className="w-10 h-10 rounded-full border border-border flex items-center justify-center hover:bg-muted transition shrink-0"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
+                <h2 className="font-heading font-bold text-lg capitalize line-clamp-1">{categoria}</h2>
+              </div>
 
-        {/* 4 — play */}
-        {sel && slides.length > 0 && (
-          <button
-            disabled={ocupado}
-            onClick={gerarNarracao}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-primary text-primary-foreground px-4 py-4 text-base font-bold disabled:opacity-50 active:scale-[0.99] transition"
-          >
-            {job?.ativo ? <Loader2 className="w-5 h-5 animate-spin" /> : <Play className="w-5 h-5" />}
-            {job?.ativo
-              ? `Gerando… ${job.feitos}/${job.total} · ${pct}% · faltam ${eta}`
-              : faltantes && faltantes.total === slides.length
-                ? `Completar slides faltantes (${faltantes.indices.length})`
-                : `Gerar narração (${slides.length} slides)`}
-          </button>
-        )}
+              <div className="relative">
+                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <input
+                  value={busca}
+                  onChange={(e) => setBusca(e.target.value)}
+                  placeholder="Buscar obra..."
+                  className="w-full rounded-xl border border-border bg-background pl-9 pr-3 py-2.5 text-sm font-body"
+                />
+              </div>
+
+              {carregando ? (
+                <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
+              ) : (
+                <div className="space-y-2 pb-12">
+                  {filtrados.map((l) => {
+                    const concluido = !!l.apresentacao_id;
+                    return (
+                      <div key={`${l.livro_tabela}:${l.livro_id}`} className={`rounded-2xl border p-3 ${concluido ? 'border-green-500/50 bg-green-500/5' : 'border-border'}`}>
+                        <div className="flex items-start gap-2">
+                          <button
+                            onClick={() => {
+                              if (ocupado) return;
+                              setSel(l);
+                              limparPdf();
+                              setBottomSheetOpen(true);
+                            }}
+                            className="flex-1 min-w-0 text-left"
+                          >
+                            <span className="block font-heading font-bold text-sm">{l.titulo}</span>
+                            {l.autor && <span className="block text-xs text-muted-foreground font-body">{l.autor}</span>}
+                            <span className="flex flex-wrap items-center gap-1.5 mt-1">
+                              {concluido ? (
+                                <span className="flex items-center gap-1 text-[11px] font-bold text-green-500 tracking-wide px-2 py-0.5 rounded-full bg-green-500/10">
+                                  <Check className="w-3 h-3" /> PRONTO ({l.total_slides} SLIDES)
+                                </span>
+                              ) : (
+                                <span className="text-[11px] font-body text-muted-foreground px-2 py-0.5 rounded-full border border-border/50">sem apresentação</span>
+                              )}
+                            </span>
+                          </button>
+                          <button
+                            onClick={() => alternarFavorito(l)}
+                            aria-label={favoritos.includes(chaveFav(l)) ? 'Remover dos favoritos' : 'Favoritar livro'}
+                            className="w-9 h-9 rounded-full border border-border flex items-center justify-center shrink-0"
+                          >
+                            <Star className={`w-4 h-4 ${favoritos.includes(chaveFav(l)) ? 'fill-primary text-primary' : 'text-muted-foreground'}`} />
+                          </button>
+                        </div>
+
+                        {concluido && (
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            <button
+                              onClick={() => navigate(`/apresentacao/${l.apresentacao_id}`)}
+                              className="inline-flex items-center gap-2 rounded-xl border border-border px-3 py-2 text-xs font-semibold hover:bg-muted"
+                            >
+                              <Play className="w-4 h-4" /> Ver
+                            </button>
+                            <button
+                              onClick={() => alternarPublicacao(l)}
+                              className="inline-flex items-center gap-2 rounded-xl border border-border px-3 py-2 text-xs font-semibold hover:bg-muted"
+                            >
+                              {l.publicada ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                              {l.publicada ? 'Ocultar' : 'Publicar'}
+                            </button>
+                            <button
+                              onClick={() => excluir(l)}
+                              className="inline-flex items-center gap-2 rounded-xl border border-destructive/60 text-destructive px-3 py-2 text-xs font-semibold hover:bg-destructive/10"
+                            >
+                              <Trash2 className="w-4 h-4" /> Excluir
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
+
+      <AnimatePresence>
+        {bottomSheetOpen && sel && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => { if (!ocupado) { setBottomSheetOpen(false); setSel(null); } }}
+              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border rounded-t-3xl p-5 max-h-[90dvh] overflow-y-auto w-full max-w-3xl mx-auto flex flex-col gap-5"
+            >
+              <div className="w-12 h-1.5 bg-muted rounded-full mx-auto shrink-0" />
+              <div className="flex items-center justify-between">
+                <div className="min-w-0 pr-4">
+                  <h3 className="font-heading font-bold text-lg truncate">{sel.titulo}</h3>
+                  <p className="text-xs text-muted-foreground">{sel.autor || sel.categoria}</p>
+                </div>
+                <button 
+                  onClick={() => { if (!ocupado) { setBottomSheetOpen(false); setSel(null); } }}
+                  className="w-8 h-8 rounded-full border border-border flex items-center justify-center shrink-0 hover:bg-muted"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* 2 — PDF */}
+              <div className="rounded-2xl border border-border bg-background p-4 space-y-3">
+                <Passo n={1} titulo="Envie o PDF da apresentação" ok={slides.length > 0} ativo={slides.length === 0} />
+                {faltantes && (
+                  <p className="rounded-xl border border-destructive/60 bg-destructive/10 p-3 text-xs font-body text-destructive">
+                    Esta apresentação ficou incompleta: {faltantes.prontos} de {faltantes.total} slides narrados.
+                    Reenvie o mesmo PDF ({faltantes.total} páginas) para gerar apenas os {faltantes.indices.length} que faltam —
+                    ela só fica visível no livro quando todos estiverem prontos.
+                  </p>
+                )}
+                <button
+                  disabled={ocupado}
+                  onClick={() => fileRef.current?.click()}
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-primary text-primary-foreground px-3 py-3 text-sm font-semibold disabled:opacity-50"
+                >
+                  {lendoPdf ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                  {slides.length ? 'Trocar PDF' : sel.apresentacao_id ? 'Enviar novo PDF (substitui)' : 'Enviar PDF'}
+                </button>
+
+                {!!slides.length && (
+                  <>
+                    <div className="flex items-center gap-2 text-xs font-body text-muted-foreground">
+                      <FileText className="w-4 h-4 text-primary" />
+                      <span className="truncate">{nomePdf}</span>
+                      <span className="ml-auto shrink-0">{slides.length} slides</span>
+                    </div>
+                    <div className="flex gap-2 overflow-x-auto pb-1">
+                      {slides.slice(0, 8).map((s, i) => (
+                        <img key={i} src={s.thumb} alt={`Slide ${i + 1}`} className="h-16 w-auto rounded-md border border-border object-cover" />
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* 3 — voz */}
+              {slides.length > 0 && (
+                <div className="rounded-2xl border border-border bg-background p-4 space-y-3">
+                  <Passo n={2} titulo="Escolha a voz" ok ativo />
+                  <div className="flex items-center gap-2 min-w-0 w-full">
+                    <Mic className="w-4 h-4 text-primary shrink-0" />
+                    <select
+                      value={voz}
+                      disabled={ocupado}
+                      onChange={(e) => setVoz(e.target.value)}
+                      className="flex-1 min-w-0 w-full truncate rounded-xl border border-border bg-card px-3 py-2 text-sm font-body"
+                    >
+                      {vozes.map((v) => (
+                        <option key={v.id} value={v.id}>{v.id} · {v.genero} — {v.descricao}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              )}
+
+              {/* 4 — play */}
+              {slides.length > 0 && (
+                <button
+                  disabled={ocupado}
+                  onClick={gerarNarracao}
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-primary text-primary-foreground px-4 py-4 text-base font-bold disabled:opacity-50 active:scale-[0.99] transition mb-4"
+                >
+                  {job?.ativo ? <Loader2 className="w-5 h-5 animate-spin" /> : <Play className="w-5 h-5" />}
+                  {job?.ativo
+                    ? `Gerando… ${job.feitos}/${job.total} · ${pct}%`
+                    : faltantes && faltantes.total === slides.length
+                      ? `Completar slides faltantes (${faltantes.indices.length})`
+                      : `Gerar narração (${slides.length} slides)`}
+                </button>
+              )}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       <input
         ref={fileRef}

@@ -222,12 +222,16 @@ export async function ensureNativePushListeners() {
             if (campaignId) trackPush(campaignId, 'converted', { url });
           } else {
             const path = url.startsWith('/') ? url : `/${url}`;
+            // Salva globalmente para caso o App.tsx ainda não tenha montado (Cold Start)
+            (window as any)._pendingPushUrl = path;
+            
             // Dispara evento — App.tsx escuta e usa react-router `navigate()`
             // para evitar reload completo quando o app já está aberto.
             window.dispatchEvent(new CustomEvent('vacatio:push-navigate', { detail: { path } }));
             // Fallback: se ninguém tratar em 250ms, faz navegação hard.
             window.setTimeout(() => {
-              if (window.location.pathname !== path.split('?')[0]) {
+              const currentPathWithSearch = window.location.pathname + window.location.search;
+              if (currentPathWithSearch !== path && (window as any)._pendingPushUrl) {
                 window.location.assign(path);
               }
             }, 250);

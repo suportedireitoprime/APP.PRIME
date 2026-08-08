@@ -20,7 +20,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const apiKey = Deno.env.get('LOVABLE_API_KEY');
+    const apiKey = Deno.env.get('GEMINI_API_KEY');
     if (!apiKey) {
       return new Response(JSON.stringify({ error: 'LOVABLE_API_KEY not configured' }), {
         status: 500,
@@ -31,14 +31,14 @@ Deno.serve(async (req) => {
     const fullPrompt = `${prompt}. The image should be suitable as a background for an Instagram carousel slide with text overlay. Dark wine/burgundy tones, elegant legal theme, 4:5 aspect ratio. No text in the image.`;
 
     const _t0 = Date.now();
-    const resp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash-image',
+        model: 'gemini-2.5-flash-image',
         messages: [
           { role: 'user', content: fullPrompt },
         ],

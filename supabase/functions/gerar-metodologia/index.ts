@@ -2,8 +2,8 @@
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
-const GATEWAY_URL = 'https://ai.gateway.lovable.dev/v1/chat/completions';
-const MODEL = 'google/gemini-2.5-flash';
+const GATEWAY_URL = 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions';
+const MODEL = 'gemini-2.5-flash';
 
 const PROMPTS: Record<string, string> = {
   cornell: `Você é um professor de Direito brasileiro. Produza um estudo no MÉTODO CORNELL sobre o conteúdo enviado.
@@ -33,7 +33,7 @@ Deno.serve(async (req) => {
     new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
   try {
-    const apiKey = Deno.env.get('LOVABLE_API_KEY');
+    const apiKey = Deno.env.get('GEMINI_API_KEY');
     if (!apiKey) return json({ error: 'LOVABLE_API_KEY ausente' }, 500);
 
     const body = await req.json().catch(() => ({}));

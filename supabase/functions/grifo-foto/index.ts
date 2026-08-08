@@ -40,7 +40,7 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    const LOVABLE_API_KEY = undefined;
     if (!LOVABLE_API_KEY) {
       return new Response(JSON.stringify({ error: 'missing_api_key' }), {
         status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -51,14 +51,14 @@ Deno.serve(async (req: Request) => {
       ? imageBase64
       : `data:${mimeType};base64,${imageBase64}`;
 
-    const resp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${LOVABLE_API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash-lite',
+        model: 'gemini-2.5-flash-lite',
         temperature: 0.2,
         response_format: { type: 'json_object' },
         messages: [

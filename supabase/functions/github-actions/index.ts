@@ -3,7 +3,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const GATEWAY_URL = 'https://connector-gateway.lovable.dev/github';
 const GITHUB_DIRECT_URL = 'https://api.github.com';
-const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+const LOVABLE_API_KEY = undefined;
 const GITHUB_API_KEY = Deno.env.get('GITHUB_API_KEY');
 // If the stored GITHUB_API_KEY looks like a raw GitHub PAT, call the API directly
 // (bypasses the Lovable connector gateway, which needs a linked connection key).

@@ -62,7 +62,7 @@ async function gw(url: string, key: string) {
   for (let tentativa = 0; tentativa < 5; tentativa++) {
     const r = await fetch(url, {
       headers: {
-        Authorization: `Bearer ${Deno.env.get("LOVABLE_API_KEY")}`,
+        Authorization: `Bearer ${Deno.env.get('GEMINI_API_KEY')}`,
         "X-Connection-Api-Key": key,
       },
     });

@@ -59,22 +59,10 @@ Deno.serve(async (req) => {
           title: "🦉 Horus — Verificação",
           description:
             `Seu código de verificação é:\n\n*${code}*\n\nToque em *Copiar código* abaixo (ou copie manualmente) e cole no app para vincular seu WhatsApp.${transferNote}\n\nO código expira em 10 minutos. Se não foi você, ignore.`,
-          footer: "Vade Mecum • Horus",
+          footer: "Estudos Jurídicos • Horus",
           buttonLabel: "Copiar código",
           copyCode: code,
         });
-        // Card CTA URL — botão "Baixar / Abrir app" que redireciona para a loja/site
-        try {
-          await evolution.sendCtaUrl(phone, {
-            title: "📲 Abrir o Vade Mecum",
-            description: "Toque abaixo para abrir o app e colar o código de verificação.",
-            footer: "Vade Mecum • Horus",
-            buttonLabel: "Baixar / Abrir app",
-            url: HORUS_APP_URL,
-          });
-        } catch (e) {
-          console.warn("verify CTA url fail", String(e));
-        }
       } catch (e) {
         console.error("send code fail", e);
         return json({ error: "Não consegui enviar o código no WhatsApp. Verifique o número.", detail: String(e) }, 502);
@@ -132,7 +120,7 @@ Deno.serve(async (req) => {
 
       const transferred = Boolean((rpcData as any)?.transferred);
       const nome = String((rpcData as any)?.display_name || "").trim();
-      const saudacao = nome ? `, *${nome.split(" ")[0]}*` : "";
+      const saudacao = nome ? `, ${nome.split(" ")[0]}` : "";
 
       try {
         const extra = transferred

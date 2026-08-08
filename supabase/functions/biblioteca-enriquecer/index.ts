@@ -44,7 +44,7 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
     );
 
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    const LOVABLE_API_KEY = undefined;
     if (!LOVABLE_API_KEY) return json({ error: 'LOVABLE_API_KEY ausente' }, 500);
 
     // Busca livro
@@ -72,14 +72,14 @@ Deno.serve(async (req) => {
 }
 Regras: sem markdown, sem texto fora do JSON, sem \`\`\`. Se não souber algo com certeza, use "" (string vazia) ou array vazio. NUNCA invente dados factuais como ano ou editora.`;
 
-      const resp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+      const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${LOVABLE_API_KEY}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'google/gemini-2.5-flash-lite',
+          model: 'gemini-2.5-flash-lite',
           messages: [
             { role: 'system', content: 'Retorne apenas JSON válido, sem markdown.' },
             { role: 'user', content: prompt },
@@ -145,7 +145,7 @@ ${learningBlock}`;
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'google/gemini-2.5-flash-image',
+          model: 'gemini-2.5-flash-image',
           messages: [{ role: 'user', content: imgPrompt }],
           modalities: ['image', 'text'],
         }),
@@ -206,8 +206,8 @@ function json(data: unknown, status = 200) {
 // Body: { action: 'termos'|'resumo'|'chat'|'sugestoes'|'frase_marcante', ...payload }
 // ============================================================================
 
-const IA_MODEL = 'google/gemini-2.5-flash-lite';
-const IA_MODEL_FRASE = 'google/gemini-2.5-flash-lite';
+const IA_MODEL = 'gemini-2.5-flash-lite';
+const IA_MODEL_FRASE = 'gemini-2.5-flash-lite';
 
 const IA_SYSTEM_TERMOS = `Você é um professor que ajuda leitores a entender palavras difíceis, expressões técnicas, termos jurídicos, termos em latim, nomes históricos e conceitos abstratos que aparecem em um trecho de um livro.
 
@@ -298,9 +298,9 @@ Regras:
 }
 
 async function iaCallGateway(body: any) {
-  const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+  const LOVABLE_API_KEY = undefined;
   if (!LOVABLE_API_KEY) throw new Error('LOVABLE_API_KEY não configurada');
-  return fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+  return fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

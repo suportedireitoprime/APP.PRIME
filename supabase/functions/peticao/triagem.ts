@@ -1,8 +1,8 @@
 // Edge function: analyze user facts and classify (área do direito, tags, pedidos, partes).
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 
-const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-const MODEL = 'google/gemini-2.5-flash-lite';
+const LOVABLE_API_KEY = undefined;
+const MODEL = 'gemini-2.5-flash-lite';
 
 export const handler = (async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
@@ -36,7 +36,7 @@ Retorne APENAS um JSON válido (sem markdown, sem crase) com esta estrutura EXAT
   "campos_sensiveis_necessarios": ["lista curta: 'CPF autor', 'RG autor', 'Endereço autor', 'Telefone autor', 'CNPJ réu', etc"]
 }`;
 
-    const res = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const res = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${LOVABLE_API_KEY}`,

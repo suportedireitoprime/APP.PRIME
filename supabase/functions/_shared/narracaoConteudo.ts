@@ -189,8 +189,8 @@ async function ttsChunk(texto: string, voz: string, estilo: string): Promise<Uin
     }
   }
 
-  // Fallback 2: Lovable AI Gateway TTS
-  const lovableKey = Deno.env.get("LOVABLE_API_KEY");
+   TTS
+  const lovableKey = Deno.env.get('GEMINI_API_KEY');
   if (lovableKey) {
     try {
       const prompt = `${estilo}:\n\n${texto}`;
@@ -201,7 +201,7 @@ async function ttsChunk(texto: string, voz: string, estilo: string): Promise<Uin
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemini-2.5-flash-tts",
+          model: 'gemini-2.5-flash-preview-tts',
           contents: [{ role: "user", parts: [{ text: prompt }] }],
           generationConfig: {
             responseModalities: ["AUDIO"],
@@ -358,18 +358,17 @@ async function gerarTextoIA(prompt: string): Promise<string> {
     }
   }
 
-  // Fallback 2: Lovable AI Gateway
-  const lovableKey = Deno.env.get("LOVABLE_API_KEY");
+    const lovableKey = Deno.env.get('GEMINI_API_KEY');
   if (lovableKey) {
     try {
-      const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      const res = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${lovableKey}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemini-2.5-flash-lite",
+          model: 'gemini-2.5-flash-lite',
           messages: [{ role: "user", content: prompt }],
         }),
       });

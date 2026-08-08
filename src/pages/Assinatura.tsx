@@ -115,7 +115,7 @@ export default function Assinatura() {
   });
   const [devSheetOpen, setDevSheetOpen] = useState(false);
   const [trialSheetPlan, setTrialSheetPlan] = useState<TrialPlan | null>(null);
-  const isIOS = (platformOverride ?? nativePlatform) === 'ios';
+  const isIOS = (platformOverride ?? nativePlatform) === 'ios' || (typeof navigator !== 'undefined' && /iphone|ipad|ipod/i.test(navigator.userAgent));
   // Voltar: no modo prévia de admin, volta direto pro painel do plano ativo.
   // Fora disso usa o histórico interno e, se não houver, vai pro início.
   const handleBack = () => {
@@ -186,8 +186,8 @@ export default function Assinatura() {
         appEvents.trialIniciado({ plano: trialSheetPlan, dias: trialDaysFor(trialSheetPlan) })
       )
       .catch(() => {});
-    // Agenda lembrete (WhatsApp via cron + push local) e abre a loja.
-    await scheduleTrialReminder(trialSheetPlan);
+    // Agenda lembrete (WhatsApp via cron + push local) em background para não travar a UI
+    scheduleTrialReminder(trialSheetPlan).catch(() => {});
     const plano = trialSheetPlan;
     setTrialSheetPlan(null);
     if (nativeBilling) {
@@ -215,7 +215,7 @@ export default function Assinatura() {
         <WelcomePremiumOverlay
           open={showWelcome}
           planoLabel={planoAtual ?? 'Premium'}
-          syncing={welcomeFlag && !isPremium}
+          syncing={false}
           onClose={closeWelcome}
         />
         <TrialTimelineSheet

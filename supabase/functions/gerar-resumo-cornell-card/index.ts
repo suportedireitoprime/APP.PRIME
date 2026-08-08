@@ -1,7 +1,10 @@
-import { corsHeaders } from '../_shared/cors.ts';
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 
-const GATEWAY_URL = 'https://ai.gateway.lovable.dev/v1/chat/completions';
-const MODEL = 'google/gemini-3.6-flash';
+const GATEWAY_URL = 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions';
+const MODEL = 'gemini-2.5-flash';
 
 const SYSTEM_PROMPT = `Você é um doutrinador e professor especialista em Direito Brasileiro (OAB e Concursos de Alto Nível).
 Com base no Flashcard fornecido (Pergunta, Resposta Explicada, Área e Tema), crie um RESUMO NO MÉTODO CORNELL completo, altamente didático e direto ao ponto.
@@ -24,7 +27,7 @@ Deno.serve(async (req) => {
     });
 
   try {
-    const apiKey = Deno.env.get('LOVABLE_API_KEY') || Deno.env.get('GEMINI_API_KEY');
+    const apiKey = Deno.env.get('GEMINI_API_KEY');
     if (!apiKey) return json({ error: 'Chave de API de IA não configurada' }, 500);
 
     const body = await req.json().catch(() => ({}));

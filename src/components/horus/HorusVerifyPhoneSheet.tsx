@@ -284,25 +284,9 @@ export default function HorusVerifyPhoneSheet({ open, onClose, onVerified, initi
                     )}
                   </div>
                 </div>
-                <label className="block">
-                  <span className="font-body text-sm text-muted-foreground">
-                    Como o Horus deve te chamar?
-                  </span>
-                  <input
-                    type="text"
-                    value={nome}
-                    onChange={(e) => setNome(e.target.value)}
-                    placeholder="Seu nome"
-                    maxLength={60}
-                    className="mt-2 w-full h-14 px-4 rounded-2xl bg-secondary/60 border border-border focus:border-emerald-500 outline-none font-body text-lg"
-                  />
-                  <span className="mt-2 block font-body text-xs text-muted-foreground">
-                    Pode editar depois em Ajustes.
-                  </span>
-                </label>
                 <button
                   onClick={saveNameAndFinish}
-                  disabled={sending || !nome.trim()}
+                  disabled={sending}
                   className="w-full h-14 rounded-2xl font-display font-bold text-base flex items-center justify-center gap-2.5 disabled:opacity-50 text-white shadow-lg active:scale-[0.98] transition-transform"
                   style={{
                     background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
@@ -310,7 +294,7 @@ export default function HorusVerifyPhoneSheet({ open, onClose, onVerified, initi
                   }}
                 >
                   {sending ? <Loader2 className="w-5 h-5 animate-spin" /> : <PartyPopper className="w-5 h-5" />}
-                  Salvar e começar
+                  Começar
                 </button>
               </div>
             )}

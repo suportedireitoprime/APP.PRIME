@@ -165,11 +165,13 @@ type ParsedMedia = {
 };
 
 type ParsedMessage = {
+  id: string;
   from: string;
   remoteJid: string;
   text: string;
   fromMe: boolean;
   media?: ParsedMedia;
+  rawMessage?: any;
 };
 
 function extractMessage(body: any): ParsedMessage | null {
@@ -295,11 +297,13 @@ function extractMessage(body: any): ParsedMessage | null {
   const phone = String(remoteJid).replace(/@.*/, "").replace(/\D/g, "");
   if (!phone) return null;
   return {
+    id: messageId,
     from: phone,
     remoteJid: String(remoteJid).trim(),
     text: hasText ? text.trim() : "",
     fromMe,
     media,
+    rawMessage: msg,
   };
 }
 
@@ -312,6 +316,12 @@ async function handleIncomingMessage(admin: any, body: any) {
   // Animação de "digitando…" desde o primeiro instante e renovada a cada 6s
   // (o WhatsApp expira o estado em ~10s) até a resposta sair.
   const stopTyping = evolution.startTyping(parsed.remoteJid || parsed.from);
+
+  // Reação imediata para feedback visual (se tiver mídia ou texto longo)
+  if (parsed.id && (parsed.media || parsed.text.length > 50)) {
+    evolution.sendReaction(parsed.remoteJid || parsed.from, parsed.id, "⏳").catch(() => {});
+  }
+
   try {
     await processIncomingMessage(admin, body, parsed);
   } finally {
@@ -429,6 +439,14 @@ async function processIncomingMessage(admin: any, body: any, parsed: ParsedMessa
             role: "assistant",
             content: `[card] Baixar app: ${HORUS_APP_URL}`,
           });
+
+          // Enviar cartão de contato se for usuário 100% novo (não está em code_sent)
+          if (userRow?.onboarding_state !== "code_sent") {
+            await evolution.sendContact(parsed.remoteJid || parsed.from, {
+              fullName: "Horus • Vade Mecum",
+              phone: "5511914910906",
+            });
+          }
         } catch (e) {
           console.warn("onboarding CTA url fail", String(e));
         }
@@ -738,14 +756,14 @@ function pickAgent(agents: any[], text: string, isLinked: boolean) {
   return fallback || agents[0];
 }
 
-async function loadHistory(admin: any, phone: string, limit: number) {
+async function loadHistory(admin: any, phone: string, limit: number = 8) {
   const { data } = await admin
     .from("horus_conversations")
     .select("role, content, created_at")
     .eq("phone_e164", phone)
     .order("created_at", { ascending: false })
     .limit(limit);
-  return (data || []).reverse();
+  return (data || []).reverse().filter(m => m && m.content && !m.content.includes("Desculpe, tive um problema"));
 }
 
 async function logOutbound(admin: any, parsed: { from: string; remoteJid: string }, status: "sent" | "failed", error: string | null, extra: Record<string, unknown> = {}) {
@@ -808,10 +826,10 @@ async function askGemini(history: Array<{ role: string; content: string }>, syst
         body: JSON.stringify(payloadWithSearch),
       });
 
-      // Fallback silencioso: se o modelo não suportar a tool google_search, refaz sem tools.
+      // Fallback silencioso: se o modelo não suportar a tool google_search, ou se houver cota excedida (429), refaz sem tools.
       if (!res.ok && useSearch) {
         const errText = await res.clone().text().catch(() => "");
-        if (/google_search|tool|unsupported|invalid|not supported/i.test(errText)) {
+        if (/google_search|tool|unsupported|invalid|not supported|429|quota|resource_exhausted/i.test(errText)) {
           res = await geminiFetch(url, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -886,19 +904,21 @@ function normalizeGeminiTextModel(model: unknown): string | null {
   const raw = String(model || "").trim();
   if (!raw) return null;
   const bare = raw.replace(/^google\//i, "");
-  // Bloqueia aliases -latest, 3.x, 2.5-pro e 2.5-flash "puro" — normaliza p/ lite.
-  if (/-latest$/i.test(bare) || /gemini-3(\.|-)/i.test(bare) ||
+  // Aceita gemini-3.1-flash-lite diretamente
+  if (/gemini-3\.1-flash-lite/i.test(bare)) return "gemini-3.1-flash-lite";
+  // Bloqueia aliases -latest, 2.5-pro e 2.5-flash "puro" — normaliza p/ 3.1-flash-lite.
+  if (/-latest$/i.test(bare) ||
       /gemini-2\.5-pro/i.test(bare) ||
       /gemini-2\.5-flash(?!-lite)(?!-image)(?!-preview-tts)/i.test(bare)) {
-    console.warn(`[horus] modelo "${raw}" bloqueado pela política — usando gemini-2.5-flash-lite`);
-    return "gemini-2.5-flash-lite";
+    console.warn(`[horus] modelo "${raw}" bloqueado pela política — usando gemini-3.1-flash-lite`);
+    return "gemini-3.1-flash-lite";
   }
-  if (/flash-lite/i.test(bare)) return "gemini-2.5-flash-lite";
+  if (/flash-lite/i.test(bare)) return bare;
   return null;
 }
 
 async function askLovableGateway(history: Array<{ role: string; content: string }>, systemPrompt: string, agent: any): Promise<string> {
-  const lovableKey = Deno.env.get("LOVABLE_API_KEY") || "";
+  const lovableKey = undefined || "";
   if (!lovableKey) return "";
 
   const messages = [
@@ -911,7 +931,7 @@ async function askLovableGateway(history: Array<{ role: string; content: string 
       })),
   ];
 
-  const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+  const resp = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -1015,7 +1035,7 @@ async function enrichWithMedia(parsed: ParsedMessage): Promise<void> {
 
   // 2) Caso contrário, baixa via Evolution
   if (!base64) {
-    const dl = await evolution.downloadMedia(m.key, mimetype).catch(() => null);
+    const dl = await evolution.downloadMedia(parsed.rawMessage, mimetype).catch(() => null);
     if (dl?.base64) {
       base64 = dl.base64;
       if (dl.mimetype) mimetype = dl.mimetype;

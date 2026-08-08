@@ -23,7 +23,7 @@ export function slugify(s: string): string {
 
 /**
  * Chama LLM via Lovable AI Gateway (OpenAI-compatível).
- * `model` deve ser um id do catálogo (ex.: "google/gemini-2.5-flash-lite").
+ * `model` deve ser um id do catálogo (ex.: 'gemini-2.5-flash-lite').
  * Aceita ids antigos sem prefixo (ex.: "gemini-2.5-flash-lite") e normaliza.
  * O parâmetro `apiKey` é mantido por compat, mas usamos LOVABLE_API_KEY.
  * `context` (opcional): registra em ai_usage_log — { functionName, triggerType, refId }.
@@ -31,11 +31,11 @@ export function slugify(s: string): string {
 export async function callGemini(
   _apiKey: string,
   prompt: string,
-  model = "google/gemini-2.5-flash-lite",
+  model = 'gemini-2.5-flash-lite',
   maxTokens = 8192,
   context?: { functionName?: string; triggerType?: "manual" | "auto"; refId?: string | null },
 ): Promise<string> {
-  const lovableKey = Deno.env.get("LOVABLE_API_KEY");
+  const lovableKey = Deno.env.get('GEMINI_API_KEY');
   if (!lovableKey) throw new Error("LOVABLE_API_KEY ausente no ambiente");
 
   // Normaliza ids legados salvos no banco
@@ -47,11 +47,11 @@ export async function callGemini(
   // O Gateway só aceita ids da allowlist: aliases "-latest" (salvos no banco em
   // configs antigas) devolvem 400. Cai para o flash-lite (mais barato).
   const GATEWAY_TEXT_ALLOWED = new Set([
-    "google/gemini-2.5-flash-lite",
+    'gemini-2.5-flash-lite',
   ]);
   if (!GATEWAY_TEXT_ALLOWED.has(normalized)) {
     console.warn(`[blog-edicao] modelo "${normalized}" fora da allowlist do Gateway; usando google/gemini-2.5-flash-lite`);
-    normalized = "google/gemini-2.5-flash-lite";
+    normalized = 'gemini-2.5-flash-lite';
   }
 
   const startedAt = Date.now();
@@ -60,7 +60,7 @@ export async function callGemini(
   let inputUnits = 0;
   let outputUnits = 0;
   try {
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const res = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

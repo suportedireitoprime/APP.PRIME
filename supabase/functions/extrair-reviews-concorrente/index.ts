@@ -326,7 +326,7 @@ async function analisar(supabase: any, concorrente_id: string) {
 
   const lista = reviews.map((r: any, i: number) => `#${i + 1} [${r.rating || "?"}★ ${r.data_publicacao || ""}] ${r.autor || "anon"}: ${(r.texto || "").slice(0, 500)}`).join("\n");
   // Política: sempre gemini-2.5-flash-lite. Ver docs/gemini-2.5-flash-lite.md
-  const modelo = "google/gemini-2.5-flash-lite";
+  const modelo = 'gemini-2.5-flash-lite';
   const NOSSO_APP = `NOSSO APP (Vade Mecum Pro / Vacatio) — funcionalidades já existentes:
 - Vade Mecum completo (Constituição, Códigos, Estatutos, Leis Federais) com hierarquia (Livro/Título/Capítulo/Seção)
 - Busca por número de artigo, número de lei, nome/apelido/tag da lei; busca por voz
@@ -374,9 +374,9 @@ Regras:
 AVALIAÇÕES:
 ${lista}`;
 
-  const key = Deno.env.get("LOVABLE_API_KEY");
+  const key = undefined;
   if (!key) throw new Error("LOVABLE_API_KEY ausente");
-  const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+  const aiResp = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
     method: "POST",
     headers: { "Content-Type": "application/json", "Authorization": `Bearer ${key}` },
     body: JSON.stringify({

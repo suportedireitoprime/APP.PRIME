@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Crown, Sparkles, X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
   open: boolean;
@@ -19,6 +20,8 @@ function friendlyPlano(raw: string): string {
 }
 
 export default function WelcomePremiumOverlay({ open, planoLabel, onClose, syncing = false }: Props) {
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (!open || syncing) return;
     const t = window.setTimeout(onClose, 8000);
@@ -97,7 +100,10 @@ export default function WelcomePremiumOverlay({ open, planoLabel, onClose, synci
             )}
 
             <Button
-              onClick={onClose}
+              onClick={() => {
+                onClose();
+                navigate('/', { replace: true });
+              }}
               disabled={syncing}
               className="w-full h-11 font-display font-bold tracking-wide"
               size="lg"

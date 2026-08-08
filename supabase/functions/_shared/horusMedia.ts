@@ -35,12 +35,13 @@ async function callGemini(
     return "";
   }
 
+  const cleanMimetype = (mimetype || "").split(";")[0].trim();
   const body = {
     contents: [
       {
         role: "user",
         parts: [
-          { inlineData: { mimeType: mimetype, data: cleanB64(base64) } },
+          { inlineData: { mimeType: cleanMimetype, data: cleanB64(base64) } },
           { text: instruction },
         ],
       },

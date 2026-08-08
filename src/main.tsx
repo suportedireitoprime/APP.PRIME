@@ -61,6 +61,21 @@ import('./lib/nativo/backgroundSync').then((m) => m.iniciarSyncBackground()).cat
 // Widget de tela inicial: conteúdo do dia (uma vez por dia).
 import('./lib/nativo/widgetFeed').then((m) => m.atualizarWidgetDoDia()).catch(() => {});
 
+// --- TEMPORARY ERROR LOGGER FOR WHITE SCREEN DEBUGGING ---
+window.addEventListener('error', (e) => {
+  const errorBox = document.createElement('div');
+  errorBox.style.cssText = 'color:red; background:white; padding:20px; z-index:99999; position:fixed; top:0; left:0; width:100%; height:100%; overflow:auto; word-wrap: break-word; text-align: left;';
+  errorBox.innerHTML = `<h2>Error</h2><pre>${e.error?.stack || e.message || 'Unknown error'}</pre>`;
+  document.body.appendChild(errorBox);
+});
+window.addEventListener('unhandledrejection', (e) => {
+  const errorBox = document.createElement('div');
+  errorBox.style.cssText = 'color:red; background:white; padding:20px; z-index:99999; position:fixed; top:0; left:0; width:100%; height:100%; overflow:auto; word-wrap: break-word; text-align: left;';
+  errorBox.innerHTML = `<h2>Unhandled Promise Rejection</h2><pre>${e.reason?.stack || e.reason || 'Unknown error'}</pre>`;
+  document.body.appendChild(errorBox);
+});
+// ---------------------------------------------------------
+
 
 createRoot(document.getElementById("root")!).render(<App />);
 

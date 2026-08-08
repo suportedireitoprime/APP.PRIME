@@ -6,8 +6,8 @@ import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY")!;
-const MODEL = "google/gemini-3.6-flash";
+const LOVABLE_API_KEY = undefined!;
+const MODEL = 'gemini-3.6-flash';
 
 function repairAndParseJson(raw: string): any | null {
   let s = (raw ?? "").trim().replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```\s*$/i, "");
@@ -26,7 +26,7 @@ function repairAndParseJson(raw: string): any | null {
 }
 
 async function callAI(prompt: string): Promise<any> {
-  const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+  const res = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

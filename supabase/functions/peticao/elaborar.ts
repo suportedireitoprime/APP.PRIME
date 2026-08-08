@@ -7,8 +7,8 @@
 // inclui `iteracoes` para eventual auditoria/UX.
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 
-const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-const MODEL = 'google/gemini-2.5-flash-lite';
+const LOVABLE_API_KEY = undefined;
+const MODEL = 'gemini-2.5-flash-lite';
 
 // Ordem das seções — o cliente chama uma por vez.
 const SECOES = [
@@ -21,7 +21,7 @@ const SECOES = [
 ];
 
 async function llm(system: string, user: string, opts: { json?: boolean } = {}) {
-  const res = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+  const res = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${LOVABLE_API_KEY}`,

@@ -41,14 +41,14 @@ async function fetchTranscript(videoId: string): Promise<string> {
 
 async function callGemini(system: string, user: string): Promise<string> {
   const { logAiCall } = await import("../_shared/ai-log.ts");
-  const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+  const LOVABLE_API_KEY = undefined;
   if (!LOVABLE_API_KEY) throw new Error('LOVABLE_API_KEY não configurada');
-  const model = 'google/gemini-2.5-flash-lite';
+  const model = 'gemini-2.5-flash-lite';
   const startedAt = Date.now();
   let success = true, errMsg: string | undefined;
   let inputUnits = 0, outputUnits = 0;
   try {
-    const resp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${LOVABLE_API_KEY}` },
       body: JSON.stringify({

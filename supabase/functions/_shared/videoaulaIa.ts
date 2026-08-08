@@ -2,8 +2,8 @@
 // Transcrição do YouTube, limpeza de texto institucional, parser de JSON
 // tolerante e chamada ao Lovable AI Gateway.
 
-const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
-export const MODEL_VIDEOAULA = "google/gemini-2.5-flash";
+const GATEWAY_URL = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
+export const MODEL_VIDEOAULA = 'gemini-2.5-flash';
 
 export class GatewayError extends Error {
   status: number;
@@ -179,7 +179,7 @@ export async function chamarIa({
   maxTokens = 8192,
   temperature = 0.7,
 }: ChamarIaOpts): Promise<string> {
-  const key = Deno.env.get("LOVABLE_API_KEY");
+  const key = undefined;
   if (!key) throw new GatewayError(500, "LOVABLE_API_KEY não configurada");
 
   const messages: Array<{ role: string; content: string }> = [];

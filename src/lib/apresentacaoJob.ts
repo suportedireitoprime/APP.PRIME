@@ -51,7 +51,7 @@ export const formatarEta = (seg: number | null): string => {
   return `${m}min ${String(s).padStart(2, '0')}s`;
 };
 
-const call = async (payload: Record<string, unknown>, timeoutMs = 60000) => {
+const call = async (payload: Record<string, unknown>, timeoutMs = 180000) => {
   return new Promise((resolve, reject) => {
     const id = setTimeout(() => reject(new Error('Timeout de comunicação com o servidor')), timeoutMs);
     supabase.functions.invoke('narracao', {

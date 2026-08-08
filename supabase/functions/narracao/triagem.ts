@@ -9,7 +9,7 @@ const corsHeaders = {
 type SceneIn = { id: string; text: string };
 type Body = { voice?: string; scenes: SceneIn[]; model?: string };
 
-const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+const LOVABLE_API_KEY = undefined;
 
 async function speakOne(text: string, voice: string, model: string): Promise<string> {
   const prompt = `Fale em português brasileiro, com tom acolhedor, ritmo natural e sem pressa: ${text}`;
@@ -57,7 +57,7 @@ export const handler = (async (req) => {
     }
     const body = (await req.json()) as Body;
     const voice = (body.voice || 'Kore').toString();
-    const model = (body.model || 'google/gemini-2.5-flash-tts').toString();
+    const model = (body.model || 'gemini-2.5-flash-tts').toString();
     const scenes = Array.isArray(body.scenes) ? body.scenes.slice(0, 30) : [];
     if (!scenes.length) {
       return new Response(JSON.stringify({ error: 'no scenes' }), {

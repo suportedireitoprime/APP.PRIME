@@ -545,9 +545,18 @@ function PushNavListener() {
   const navigate = useNavigate();
   usePushJourneyTracker();
   useEffect(() => {
+    // Consome URL pendente caso o push tenha disparado antes do componente montar (Cold Start)
+    if (typeof window !== 'undefined' && (window as any)._pendingPushUrl) {
+      const pending = (window as any)._pendingPushUrl;
+      (window as any)._pendingPushUrl = undefined;
+      // setTimeout pequeno para não colidir com o render inicial do react-router
+      setTimeout(() => navigate(pending), 10);
+    }
+
     const handler = (e: Event) => {
       const detail = (e as CustomEvent).detail as { path?: string } | undefined;
       if (detail?.path) navigate(detail.path);
+      (window as any)._pendingPushUrl = undefined;
     };
     // Atalhos do ícone do app (long-press / Quick Actions)
     const atalhoHandler = (e: Event) => {

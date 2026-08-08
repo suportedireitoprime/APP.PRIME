@@ -16,12 +16,12 @@
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { geminiFetch } from '../_shared/geminiFetch.ts';
 
-const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY') ?? '';
+const LOVABLE_API_KEY = undefined ?? '';
 const GEMINI_KEY = Deno.env.get('GEMINI_API_KEY') ?? '';
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_ANON_KEY =
   Deno.env.get('SUPABASE_ANON_KEY') ?? Deno.env.get('SUPABASE_PUBLISHABLE_KEY') ?? '';
-const MODEL_SELECAO = 'google/gemini-2.5-flash-lite';
+const MODEL_SELECAO = 'gemini-2.5-flash-lite';
 
 type LeiMap = { slug_local: string; corpus_lei_id: number; nome_exibicao: string };
 type Selecao = { slug_local: string; numero_artigo: string; motivo?: string };
@@ -62,7 +62,7 @@ function safeJson<T>(txt: string, fallback: T): T {
 }
 
 async function chamarLovableJson(system: string, user: string): Promise<string> {
-  const res = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+  const res = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${LOVABLE_API_KEY}`,

@@ -261,7 +261,7 @@ async function maybeTriggerPush(supabase: any) {
   const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
   const { data: novas } = await supabase
     .from('noticias_juridicas')
-    .select('titulo, imagem_url')
+    .select('id, titulo, imagem_url')
     .gte('created_at', since)
     .order('created_at', { ascending: false })
     .limit(10);
@@ -271,7 +271,9 @@ async function maybeTriggerPush(supabase: any) {
   const emoji = auto.emoji || '📰';
   const title = `${emoji} ${novas.length === 1 ? 'Nova notícia jurídica' : `${novas.length} novas notícias jurídicas`}`;
   const body = String(novas[0].titulo || '').slice(0, 120);
-  const clickUrl = auto.default_url || '/noticias';
+  const clickUrl = (novas.length === 1 && novas[0].id) 
+    ? `/noticias?item=${novas[0].id}` 
+    : (auto.default_url || '/noticias');
   const audience = auto.audience ?? { all: true };
   const image = novas[0].imagem_url || null;
 

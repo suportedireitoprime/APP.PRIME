@@ -2,7 +2,7 @@
 // trechos e cores a grifar, retorna passages com line/start/end.
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 
-const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+const LOVABLE_API_KEY = undefined;
 
 const CORES = ['amarelo', 'verde', 'azul', 'rosa', 'laranja'] as const;
 
@@ -127,7 +127,7 @@ Regras:
     }
 
     const body = {
-      model: 'google/gemini-2.5-flash-lite',
+      model: 'gemini-2.5-flash-lite',
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userContent },
@@ -135,7 +135,7 @@ Regras:
       response_format: { type: 'json_object' },
     };
 
-    const resp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

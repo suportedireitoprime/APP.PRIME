@@ -17,7 +17,7 @@ Deno.serve(async (req) => {
   try {
     const { audioBase64, mimeType, filePath, language } = await req.json();
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    const LOVABLE_API_KEY = undefined;
     if (!LOVABLE_API_KEY) {
       return new Response(JSON.stringify({ error: "LOVABLE_API_KEY ausente" }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
