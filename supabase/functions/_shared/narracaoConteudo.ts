@@ -175,18 +175,53 @@ async function ttsGemini(texto: string, voz: string, estilo: string, apiKey: str
 }
 
 async function ttsChunk(texto: string, voz: string, estilo: string): Promise<Uint8Array> {
-  const chaves = [Deno.env.get("GEMINI_API_KEY"), Deno.env.get("GEMINI_API_KEY_RESERVA")].filter(Boolean) as string[];
-  if (!chaves.length) throw new Error("GEMINI_API_KEY ausente para TTS. Não foi usado Lovable AI.");
-  let ultimo: unknown = null;
+  const chaves = [
+    Deno.env.get("GEMINI_AUDIO_API_KEY"),
+    Deno.env.get("GEMINI_API_KEY"),
+    Deno.env.get("GEMINI_API_KEY_RESERVA"),
+  ].filter(Boolean) as string[];
+
   for (const chave of chaves) {
     try {
       return await ttsGemini(texto, voz, estilo, chave);
     } catch (e) {
-      ultimo = e;
       console.error("TTS Gemini falhou, tentando próxima chave:", (e as Error).message);
     }
   }
-  throw ultimo ?? new Error("TTS Gemini falhou. Não foi usado Lovable AI.");
+
+  // Fallback 2: Lovable AI Gateway TTS
+  const lovableKey = Deno.env.get("LOVABLE_API_KEY");
+  if (lovableKey) {
+    try {
+      const prompt = `${estilo}:\n\n${texto}`;
+      const res = await fetch("https://ai.gateway.lovable.dev/v1/audio/speech", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${lovableKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash-tts",
+          contents: [{ role: "user", parts: [{ text: prompt }] }],
+          generationConfig: {
+            responseModalities: ["AUDIO"],
+            speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: voz } } },
+          },
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const b64 = data.candidates?.[0]?.content?.parts?.find((p: any) => p?.inlineData?.data)?.inlineData?.data;
+        if (b64) return b64ToBytes(b64);
+        const buf = new Uint8Array(await res.arrayBuffer());
+        if (buf.length > 100) return buf;
+      }
+    } catch (eLov) {
+      console.error("Lovable TTS falhou:", (eLov as Error).message);
+    }
+  }
+
+  throw new Error("TTS Gemini falhou em todas as chaves e no Lovable AI Gateway.");
 }
 
 function chunkText(text: string, max = 1400): string[] {
@@ -299,24 +334,56 @@ const ESTILO_APRESENTACAO = [
 const TEXTO_MODEL = "gemini-2.5-flash-lite";
 
 async function gerarTextoIA(prompt: string): Promise<string> {
-  const key = (Deno.env.get("GEMINI_API_KEY") ?? "").trim();
-  if (!key) throw new Error("GEMINI_API_KEY ausente. Não foi usado Lovable AI.");
-  const res = await geminiFetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${TEXTO_MODEL}:generateContent?key=${encodeURIComponent(key)}`,
-    {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 0.8, maxOutputTokens: 900 },
-    }),
-    },
-  );
-  if (!res.ok) throw new Error(`Gemini direto falhou (não foi usado Lovable AI) ${res.status}: ${(await res.text().catch(() => "")).slice(0, 300)}`);
-  const data = await res.json();
-  const txt = data?.candidates?.[0]?.content?.parts?.map((p: any) => p.text).join(" ")?.trim();
-  if (!txt) throw new Error("Gemini direto retornou roteiro vazio");
-  return txt;
+  const keys = [Deno.env.get("GEMINI_API_KEY"), Deno.env.get("GEMINI_API_KEY_RESERVA")].filter(Boolean) as string[];
+  for (const key of keys) {
+    try {
+      const res = await geminiFetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${TEXTO_MODEL}:generateContent?key=${encodeURIComponent(key)}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ role: "user", parts: [{ text: prompt }] }],
+            generationConfig: { temperature: 0.8, maxOutputTokens: 900 },
+          }),
+        },
+      );
+      if (res.ok) {
+        const data = await res.json();
+        const txt = data?.candidates?.[0]?.content?.parts?.map((p: any) => p.text).join(" ")?.trim();
+        if (txt) return txt;
+      }
+    } catch (e) {
+      console.warn("Gemini direto falhou:", (e as Error).message);
+    }
+  }
+
+  // Fallback 2: Lovable AI Gateway
+  const lovableKey = Deno.env.get("LOVABLE_API_KEY");
+  if (lovableKey) {
+    try {
+      const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${lovableKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash-lite",
+          messages: [{ role: "user", content: prompt }],
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const txt = data?.choices?.[0]?.message?.content?.trim();
+        if (txt) return txt;
+      }
+    } catch (eLovable) {
+      console.error("Lovable Gateway texto falhou:", (eLovable as Error).message);
+    }
+  }
+
+  throw new Error("Não foi possível gerar o roteiro nem via Gemini nem via Lovable AI Gateway.");
 }
 
 async function gerarRoteiroSlide(opts: { titulo: string; indice: number; total: number; texto: string }): Promise<string> {
