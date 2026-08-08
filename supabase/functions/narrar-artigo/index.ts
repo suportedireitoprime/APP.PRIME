@@ -123,8 +123,56 @@ function limparAnotacoesParaNarracao(texto: string): string {
 // NORMALIZAÇÃO COMPLETA PARA TTS
 // ============================================================================
 
+// Converte notação jurídica já "escrita por extenso" (Artigo 5º, Parágrafo 1º,
+// Inciso I, Alínea a) para a forma falada correta.
+function romanoParaNumero(r: string): number {
+  const mapa: Record<string, number> = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 };
+  let total = 0;
+  const s = r.toUpperCase();
+  for (let i = 0; i < s.length; i++) {
+    const v = mapa[s[i]] ?? 0;
+    const prox = mapa[s[i + 1]] ?? 0;
+    total += v < prox ? -v : v;
+  }
+  return total;
+}
+
+function normalizarPronunciaJuridica(texto: string): string {
+  let r = texto;
+
+  // Artigo 5º / Art. 5º / artigo 10 → ordinal até 9, cardinal a partir de 10
+  r = r.replace(/\b(artigos?|arts?\.?)\s*(\d+)\s*[º°]?/gi, (_m, _p, num) =>
+    `artigo ${numeroParaExtensoJuridico(parseInt(num, 10))}`
+  );
+
+  // Parágrafo único / Parágrafo 1º / § 1º
+  r = r.replace(/\b(?:par[áa]grafo|§)\s*[úu]nico/gi, "parágrafo único");
+  r = r.replace(/\b(?:par[áa]grafos?|§+)\s*(\d+)\s*[º°]?/gi, (_m, num) =>
+    `parágrafo ${numeroParaExtensoJuridico(parseInt(num, 10))}`
+  );
+
+  // Inciso I / Inc. IV → sempre ordinal
+  r = r.replace(/\b(?:incisos?|inc\.?)\s*([IVXLC]+)\b/gi, (_m, rom) => {
+    const n = romanoParaNumero(rom);
+    return n > 0 ? `inciso ${numeroParaOrdinal(n)}` : `inciso ${rom}`;
+  });
+
+  // Alínea a / Alínea "b)" → letra por extenso
+  r = r.replace(/\b(?:al[íi]neas?|al\.?)\s*["“']?([a-zA-Z])["”']?\)?/gi, (_m, letra) =>
+    `alínea ${letrasParaExtenso[String(letra).toLowerCase()] || letra}`
+  );
+
+  // Números ordinais soltos ainda marcados com º (ex.: "3º" em títulos)
+  r = r.replace(/\b(\d+)\s*[º°]/g, (_m, num) => numeroParaOrdinal(parseInt(num, 10)));
+
+  return r;
+}
+
 function normalizarTextoParaTTS(texto: string): string {
   let r = limparAnotacoesParaNarracao(texto);
+
+  // Pronúncia jurídica ANTES de remover "º" (senão "1º" vira "1" → "um")
+  r = normalizarPronunciaJuridica(r);
 
   r = r
     .replace(/#{1,6}\s?/g, "")
@@ -233,7 +281,7 @@ function dividirTextoEmSegmentos(texto: string): string[] {
 
 const VOICE_NAME = "Kore";
 const MODEL = "gemini-2.5-flash-preview-tts";
-const NARRATION_CACHE_VERSION = "v5-hierarquia-epigrafe";
+const NARRATION_CACHE_VERSION = "v6-pronuncia-juridica";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -261,8 +309,11 @@ async function gerarAudioSegmento(
     `Narre a vinheta e o número do artigo apenas UMA vez no início (ex: "Artigo quarto."), ` +
     `passando direto para o texto do caput sem jamais repetir o número do artigo.\n` +
     `Mantenha rigorosamente a mesma tonalidade, ritmo, velocidade e padrão de leitura em todos os artigos.\n` +
-    `Mantenha a precisão jurídica ao pronunciar "parágrafo primeiro", "inciso segundo", ` +
-    `"alínea á", com uma breve pausa antes de cada um.\n` +
+    `Pronuncie a notação jurídica exatamente como está escrita no texto: ` +
+    `"artigo quinto", "parágrafo primeiro", "parágrafo único", "inciso segundo", "alínea á". ` +
+    `Nunca leia números soltos no lugar da forma por extenso (nunca diga "um" quando estiver escrito "primeiro"), ` +
+    `nunca leia algarismos romanos como letras e sempre diga a palavra "inciso", "parágrafo" ou "alínea" antes do número/letra, ` +
+    `com uma breve pausa antes de cada um.\n` +
     `Leitura contínua, fluida e viva. Não diga "parte um" ou "continuação".\n\n${texto}`;
 
   for (let ki = 0; ki < keys.length; ki++) {

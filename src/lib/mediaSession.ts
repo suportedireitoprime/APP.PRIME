@@ -140,7 +140,7 @@ const setActionHandler = (
 ) => {
   if (isNativePluginSupported()) {
     try {
-      void MediaSession.setActionHandler({ action }, handler).catch(() => {});
+      void MediaSession.setActionHandler({ action: action as any }, handler).catch(() => {});
     } catch {
       /* ignore */
     }

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Clock, BookOpen, Share2, ArrowUpRight, Heart, Type, Plus, Minus, MessageCircle } from 'lucide-react';
+import { ChevronDown, Clock, BookOpen, Share2, ArrowUpRight, Heart, Type, Plus, Minus, MessageCircle, Quote } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useNavigate } from 'react-router-dom';
@@ -14,6 +14,8 @@ import { blogHero } from '@/lib/blogImg';
 import { supabase } from '@/integrations/supabase/client';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 import { useBodyScrollLock, resetBodyScrollLock } from '@/hooks/useBodyScrollLock';
+import { removerEmojis } from '@/lib/textoSemEmoji';
+import FloatingCoverIcons from '@/components/blog/FloatingCoverIcons';
 
 
 interface Props {
@@ -168,7 +170,7 @@ export default function BlogPostSheet({ post, onClose, showGoTo = false, inline 
                   fetchPriority="high"
                 />
 
-
+                <FloatingCoverIcons seed={post.id.length + (post.titulo?.length || 0)} count={7} />
 
                 <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black/50 to-transparent" />
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-card/80 to-transparent" />
@@ -319,8 +321,11 @@ export default function BlogPostSheet({ post, onClose, showGoTo = false, inline 
                         td: ({ node, ...props }) => (
                           <td className="px-4 py-3 border-b border-border/30 text-foreground/90 font-body leading-relaxed" {...props} />
                         ),
-                        blockquote: ({ node, ...props }) => (
-                          <blockquote className="my-5 rounded-r-2xl border-l-4 border-primary bg-primary/10 p-4 md:p-5 shadow-sm text-foreground/95 relative not-italic" {...props} />
+                        blockquote: ({ node, children, ...props }) => (
+                          <blockquote className="my-5 rounded-r-2xl border-l-4 border-primary bg-primary/10 p-4 md:p-5 pl-11 shadow-sm text-foreground/95 relative not-italic" {...props}>
+                            <Quote className="absolute left-3.5 top-4 h-4 w-4 text-primary" aria-hidden="true" />
+                            {children}
+                          </blockquote>
                         ),
                         pre: ({ node, ...props }) => (
                           <pre className="my-6 p-4 md:p-5 rounded-2xl bg-zinc-950/90 border border-border/80 text-slate-100 font-mono text-xs md:text-sm overflow-x-auto shadow-xl leading-relaxed tracking-wide" {...props} />
@@ -337,7 +342,7 @@ export default function BlogPostSheet({ post, onClose, showGoTo = false, inline 
                         ),
                       }}
                     >
-                      {conteudo.replace(/\\n/g, '\n')}
+                      {removerEmojis(conteudo.replace(/\\n/g, '\n'))}
                     </ReactMarkdown>
                   ) : (
                     <div className="space-y-3 animate-pulse" aria-label="Carregando artigo">

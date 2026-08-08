@@ -115,7 +115,7 @@ export function AnotacoesAulaSheet({
       let textoTranscrito = '';
       if (voiceRecorder.isAvailable()) {
         const res = await voiceRecorder.stop();
-        textoTranscrito = res.transcript || '';
+        textoTranscrito = (res as { transcript?: string }).transcript || '';
       }
 
       // Se a API nativa não capturar o áudio inteiro, invoca transcrição via IA

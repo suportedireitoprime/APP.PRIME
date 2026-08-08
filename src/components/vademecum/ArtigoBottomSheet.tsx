@@ -97,7 +97,7 @@ function stripRedacao(text: string): string {
 }
 
 // Deve acompanhar NARRATION_CACHE_VERSION da edge function narrar-artigo
-const NARRACAO_CACHE_VERSION = 'v5-hierarquia-epigrafe';
+const NARRACAO_CACHE_VERSION = 'v6-pronuncia-juridica';
 
 function normalizeNarracaoToken(text: string): string {
   return text
@@ -232,8 +232,8 @@ function formatTextoArtigoParaNarracao(artigo: any, breadcrumb: any): string {
   texto = texto.replace(/\b[Aa]rt\.?\s*/g, 'Artigo ');
   texto = texto.replace(/§\s*único/gi, 'Parágrafo único');
   texto = texto.replace(/§\s*/g, 'Parágrafo ');
-  texto = texto.replace(/\b[Ii]nc\.?\s*/g, 'Inciso ');
-  texto = texto.replace(/\b[Al]l\.?\s*/g, 'Alínea ');
+  texto = texto.replace(/\b[Ii]nc\.\s*/g, 'Inciso ');
+  texto = texto.replace(/\b[Aa]l\.\s*/g, 'Alínea ');
 
   partes.push(texto);
 
@@ -355,7 +355,7 @@ function highlightTermos(text: string, showRedacao?: boolean): React.ReactNode[]
     while ((m = redacaoPattern.exec(text)) !== null) {
       if (m.index > lastIndex) parts.push(...highlightTermosOnly(text.slice(lastIndex, m.index)));
       parts.push(
-        <span key={`r${m.index}`} className="text-yellow-400 text-xs font-normal bg-yellow-400/10 rounded px-0.5">
+        <span key={`r${m.index}`} className="text-primary text-xs font-normal bg-primary/10 rounded px-0.5">
           {m[0]}
         </span>
       );
@@ -2492,7 +2492,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
     const highlightBg = isModifiedLine
       ? 'bg-violet-500/20 border-l-3 border-violet-400 pl-3 rounded-r-lg'
       : !modificationInfo && showRedacao && /\((?:Redação|Incluído|Acrescido|Alterado|Revogado|Vetado|Vigência)[^)]*\)/i.test(line)
-        ? 'bg-yellow-400/5 border-l-2 border-yellow-400/40 pl-2 rounded-r'
+        ? 'bg-primary/5 border-l-2 border-primary/40 pl-2 rounded-r'
         : '';
 
     const artLabel = (() => {
@@ -2516,7 +2516,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
 
         {isFirst && !isRevogado && artLabel && (
           <>
-            <span className="font-bold text-amber-400">{artLabel}</span>
+            <span className="font-bold text-primary">{artLabel}</span>
             <span className="text-foreground/60"> — </span>
           </>
         )}
@@ -2828,7 +2828,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                     >
                       <div
                         ref={narracaoProgressFillRef}
-                        className="h-full bg-gradient-to-r from-primary to-amber-400 transition-[width] duration-100 ease-out"
+                        className="h-full bg-gradient-to-r from-primary to-primary-light transition-[width] duration-100 ease-out"
                         style={{ width: '0%' }}
                       />
                     </div>
@@ -3366,7 +3366,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                         </div>
                         <div className="flex items-center justify-between px-5 pb-3 border-b border-border">
                           <div className="flex items-center gap-2">
-                            <HeaderIcon className={`w-5 h-5 ${isGrifar ? 'text-amber-400' : 'text-primary'}`} />
+                            <HeaderIcon className={`w-5 h-5 ${isGrifar ? 'text-primary' : 'text-primary'}`} />
                             <h3 className="font-heading text-base font-semibold text-foreground">{title}</h3>
                           </div>
                           <button
@@ -3384,7 +3384,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                               <div key={i}>
                                 <button
                                   onClick={item.onClick}
-                                  className={`w-full min-h-[68px] flex items-center gap-3 px-5 py-3.5 transition-colors text-left ${(item as any).active ? 'bg-amber-300/10' : 'hover:bg-secondary/60'}`}
+                                  className={`w-full min-h-[68px] flex items-center gap-3 px-5 py-3.5 transition-colors text-left ${(item as any).active ? 'bg-primary/10' : 'hover:bg-secondary/60'}`}
                                 >
                                   <span
                                     className="w-9 h-9 flex items-center justify-center shrink-0"
@@ -3397,7 +3397,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                                     <span className="block text-[12px] text-foreground/60 truncate mt-0.5">{item.desc}</span>
                                   </span>
                                   {(item as any).badge > 0 && (
-                                    <span className="ml-2 inline-flex min-w-[22px] h-[22px] px-1.5 rounded-full bg-amber-400 text-black text-[11px] font-bold items-center justify-center">
+                                    <span className="ml-2 inline-flex min-w-[22px] h-[22px] px-1.5 rounded-full bg-primary text-primary-foreground text-[11px] font-bold items-center justify-center">
                                       {(item as any).badge}
                                     </span>
                                   )}
@@ -3419,7 +3419,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                                 role="switch"
                                 aria-checked={grifoIaDefaultOn}
                                 onClick={() => setGrifoIaDefault(!grifoIaDefaultOn)}
-                                className={`relative shrink-0 w-11 h-6 rounded-full transition-colors ${grifoIaDefaultOn ? 'bg-amber-400' : 'bg-muted'}`}
+                                className={`relative shrink-0 w-11 h-6 rounded-full transition-colors ${grifoIaDefaultOn ? 'bg-primary' : 'bg-muted'}`}
                               >
                                 <span
                                   className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${grifoIaDefaultOn ? 'translate-x-5' : ''}`}
@@ -3490,7 +3490,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 className="relative z-[80] flex flex-col items-center justify-end gap-1.5 -mt-11 min-h-[6.25rem] min-w-[5.75rem] touch-manipulation select-none"
                 aria-label={voicePhase === 'recording' ? 'Parar gravação' : 'Gravar voz'}
               >
-                <span className={`relative w-[4.5rem] h-[4.5rem] sm:w-20 sm:h-20 rounded-full flex items-center justify-center shadow-lg ring-4 ring-card transition-all duration-300 ${voicePhase === 'recording' ? 'bg-red-500 shadow-red-500/40 scale-105' : voicePhase === 'processing' ? 'bg-secondary' : 'bg-amber-400 shadow-amber-400/40'}`}>
+                <span className={`relative w-[4.5rem] h-[4.5rem] sm:w-20 sm:h-20 rounded-full flex items-center justify-center shadow-lg ring-4 ring-card transition-all duration-300 ${voicePhase === 'recording' ? 'bg-red-500 shadow-red-500/40 scale-105' : voicePhase === 'processing' ? 'bg-secondary' : 'bg-primary shadow-primary/40'}`}>
                   {voicePhase === 'recording' && (
                     <>
                       <span className="absolute inset-0 rounded-full bg-red-500/40 animate-ping" style={{ animationDuration: '1.2s' }} />
@@ -3505,7 +3505,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                     <Mic className="w-8 h-8 sm:w-9 sm:h-9 text-black relative z-20" />
                   )}
                 </span>
-                <span className="font-body text-[11px] sm:text-[12px] font-semibold text-amber-400 leading-tight">
+                <span className="font-body text-[11px] sm:text-[12px] font-semibold text-primary leading-tight">
                   {voicePhase === 'recording' ? 'Parar' : voicePhase === 'processing' ? 'Analisando' : 'Gravar'}
                 </span>
               </button>
@@ -3562,7 +3562,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 <span className="relative">
                   <StickyNote className="w-7 h-7 sm:w-8 sm:h-8" />
                   {anotacoesCount > 0 && (
-                    <span className="absolute -top-1.5 -right-2 min-w-[18px] h-[18px] px-1 rounded-full bg-amber-400 text-[10px] font-bold text-black flex items-center justify-center leading-none shadow-md ring-2 ring-card">
+                    <span className="absolute -top-1.5 -right-2 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-[10px] font-bold text-primary-foreground flex items-center justify-center leading-none shadow-md ring-2 ring-card">
                       {anotacoesCount > 99 ? '99+' : anotacoesCount}
                     </span>
                   )}
@@ -3580,7 +3580,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                     toggleMode();
                   }
                 }}
-                className="flex flex-col items-center justify-end gap-1.5 py-1.5 text-amber-400 hover:text-amber-300 transition-colors"
+                className="flex flex-col items-center justify-end gap-1.5 py-1.5 text-primary hover:text-primary-light transition-colors"
               >
                 <X className="w-7 h-7 sm:w-8 sm:h-8" />
                 <span className="font-body text-[11px] sm:text-[12px] font-semibold leading-tight">Fechar</span>
@@ -3588,12 +3588,12 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
             ) : (
               <button
                 onClick={() => setActiveActionMenu('grifar')}
-                className={`relative flex flex-col items-center justify-end gap-1.5 py-1.5 transition-colors ${activeActionMenu === 'grifar' || magicMode || highlightMode ? 'text-amber-400' : 'text-foreground hover:text-primary'}`}
+                className={`relative flex flex-col items-center justify-end gap-1.5 py-1.5 transition-colors ${activeActionMenu === 'grifar' || magicMode || highlightMode ? 'text-primary' : 'text-foreground hover:text-primary'}`}
               >
                 <span className="relative">
                   <Feather className={`w-7 h-7 sm:w-8 sm:h-8 ${magicLoading ? 'animate-spin' : ''}`} />
                   {(highlights.length + magicHighlights.length) > 0 && (
-                    <span className="absolute -top-1.5 -right-2 min-w-[18px] h-[18px] px-1 rounded-full bg-amber-400 text-[10px] font-bold text-black flex items-center justify-center leading-none shadow-md ring-2 ring-card">
+                    <span className="absolute -top-1.5 -right-2 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-[10px] font-bold text-primary-foreground flex items-center justify-center leading-none shadow-md ring-2 ring-card">
                       {(highlights.length + magicHighlights.length) > 99 ? '99+' : (highlights.length + magicHighlights.length)}
                     </span>
                   )}
@@ -3638,7 +3638,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                         toggleMode();
                       }
                     }}
-                    className="pointer-events-auto flex items-center gap-2 px-5 py-3 rounded-full bg-amber-400 text-black shadow-xl shadow-amber-400/30 font-semibold text-sm hover:bg-amber-300 transition-colors"
+                    className="pointer-events-auto flex items-center gap-2 px-5 py-3 rounded-full bg-primary text-primary-foreground shadow-xl shadow-primary/30 font-semibold text-sm hover:bg-primary/90 transition-colors"
                     aria-label="Fechar grifo"
                   >
                     <X className="w-4 h-4" />
@@ -4067,7 +4067,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
             <span className="w-px h-5 bg-border" />
             <button
               onClick={() => setActiveActionMenu('grifar')}
-              className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium text-amber-400 hover:bg-amber-400/10 transition-colors"
+              className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium text-primary hover:bg-primary/10 transition-colors"
             >
               <Feather className="w-4 h-4" />
               <span>Grifar</span>

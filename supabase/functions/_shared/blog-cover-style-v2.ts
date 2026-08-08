@@ -223,6 +223,17 @@ export function detectSubjectFigure(titulo: string, categoria: string): string |
   return null;
 }
 
+export type CoverBrief = {
+  /** Personagem/figura central específica do artigo (em inglês, bem descritiva). */
+  figura?: string;
+  /** Objetos/elementos secundários que representam o tema (em inglês). */
+  elementos?: string[];
+  /** Símbolos/ícones flutuantes ligados ao tema (em inglês). */
+  simbolos?: string[];
+  /** Uma frase resumindo a cena para dar contexto ao modelo. */
+  cena?: string;
+};
+
 /**
  * Monta o prompt final da capa no padrão "painel do Blogger Jurídico":
  * fundo chapado na cor do tema + motivos jurídicos apagados + figura vazada.
@@ -232,6 +243,7 @@ export function buildCoverPrompt(
   titulo: string,
   categoria: string,
   evitar: string[] = [],
+  brief?: CoverBrief | null,
 ): string {
   const a = getAccent(categoria);
   const avoid = evitar.filter(Boolean).slice(0, 8);
@@ -244,16 +256,23 @@ export function buildCoverPrompt(
       Math.floor(Math.random() * 100000),
   );
   const pick = <T,>(pool: T[], offset: number): T => pool[(seed + offset) % pool.length];
-  const figure = detectedSubject || pick(FIGURE_POOL, 3);
+  const figure = (brief?.figura && brief.figura.trim()) || detectedSubject || pick(FIGURE_POOL, 3);
   const prop = pick(PROP_POOL, 11);
   const side = pick(SIDE_POOL, 23);
   const motifs = pick(MOTIF_POOL, 37);
-  const secondary = pick(SECONDARY_POOL, 53);
-  const floating = pick(FLOATING_POOL, 71);
+  const secondary = brief?.elementos?.length
+    ? brief.elementos.slice(0, 5).join("; ")
+    : pick(SECONDARY_POOL, 53);
+  const floating = brief?.simbolos?.length
+    ? `4 to 6 small flat vector icons floating around the figure, evenly balanced left and right, all directly tied to the article theme: ${brief.simbolos.slice(0, 6).join(", ")}`
+    : pick(FLOATING_POOL, 71);
+  const cena = brief?.cena?.trim();
 
   return `Flat vector cover panel for a Brazilian legal-education blog ("Blogger Jurídico"). 16:9 horizontal, FULL-BLEED, no borders.
 
 THEME OF THIS COVER: "${titulo}" — category: ${categoria}. Interpretation direction: ${a.hint}.
+
+STORYTELLING (top priority): the cover must be an EXPLICIT, LITERAL visual translation of this exact article title — a reader should guess the article just by looking at the image. ${cena ? `Scene to depict: ${cena}.` : ""} If the title names a philosopher, jurist, court or institution, depict that specific person/institution recognisably (period-correct clothing, hair, iconic attribute, the cover of his/her famous book, the courthouse). If the title is about a process (how laws are made, an appeal, a trial), depict that process happening as a small visual narrative (people at a lectern voting, a bill travelling through stages, hands signing and stamping). Generic "lawyer with scales" imagery is forbidden whenever a more specific reading of the title exists.
 
 BACKGROUND (most important): one FLAT, SOLID, SATURATED colour panel filling 100% of the canvas — a smooth diagonal gradient of the category colour ${a.hex} (${a.name}): lighter and slightly warmer at the top-right, deeper and darker at the bottom-left. Absolutely NO scenery, NO room, NO landscape, NO photographic texture, NO black background, NO white or cream margins.
 
@@ -263,7 +282,7 @@ COMPOSITION (mandatory): CENTERED and SYMMETRICAL. The main figure sits exactly 
 
 MAIN SUBJECT — ONE CUT-OUT FIGURE: a single flat vector illustrated figure, ${figure}. ${side}. The figure is a clean CUT-OUT (knockout) illustration placed on top of the colour panel: no ground, no shadow scenery, no room around it, only a soft drop shadow. It occupies roughly 60-72% of the frame height, feet/base touching the bottom edge, and is fully inside the frame (never cropped at the head or hands).
 
-SUPPORTING ELEMENTS (fill the panel, keep it rich but tidy): ${prop}; plus ${secondary}; plus ${floating}. All of them are cut-out flat vector objects in the same palette and outline weight as the figure, bottom-aligned or floating, arranged so the composition stays balanced around the centre. Aim for a well-populated scene — roughly 6 to 9 distinct foreground elements in total — with clear breathing space between objects, no overlapping clutter, and nothing touching the frame edges except the ground line.
+SUPPORTING ELEMENTS (fill the panel, keep it rich but tidy, and make every object say something about the title): ${secondary}; plus ${prop}; plus ${floating}. All of them are cut-out flat vector objects in the same palette and outline weight as the figure, bottom-aligned or floating, arranged so the composition stays balanced around the centre. Aim for a well-populated, story-rich scene — roughly 7 to 10 distinct foreground elements in total — with clear breathing space between objects, no overlapping clutter, and nothing touching the frame edges except the ground line.
 
 STYLE: flat vector editorial illustration, thin-to-medium clean dark outlines (${BASE_PALETTE.outline}), crisp 1-2px white stroke outline (sticker-style white halo contour around the central character and props so the figure pops with high contrast against the background), flat 2-3 tone shading, no gradients on the figure, no cross-hatching, no photorealism, no 3D render, no watercolour.
 

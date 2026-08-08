@@ -326,7 +326,13 @@ function createVectorSvgCover(categoria: string, titulo: string): string {
 
 function resolveCover(p: RawPost): string {
   const t = (p.titulo || '').toLowerCase();
-  // Assets locais bundled (carregam instantaneamente sem rede)
+  // 1º) Capa gerada pela IA e salva no Storage (blog-capas) — é a capa oficial
+  // do post. Só ignoramos placeholders genéricos do Unsplash.
+  if (p.imagem_url && p.imagem_url.startsWith('http') && !p.imagem_url.includes('unsplash.com')) {
+    return p.imagem_url;
+  }
+
+  // 2º) Assets locais bundled (carregam instantaneamente sem rede)
   if (t.includes('hart x dworkin') || t.includes('hart') || t.includes('dworkin')) return hartDworkinImg;
   if (t.includes('quem cria as leis') || t.includes('processo legislativo') || t.includes('etapas do processo')) return processoLegislativoImg;
   if (t.includes('esperança garcia') || t.includes('esperanca garcia')) return esperancaImg;
@@ -340,13 +346,7 @@ function resolveCover(p: RawPost): string {
   if (t.includes('cliente difícil') || t.includes('cliente dificil')) return clienteDificilImg;
   if (t.includes('reforma tributária') || t.includes('reforma tributaria')) return reformaTributariaImg;
 
-  // Se o banco tem uma imagem_url válida (PNG ilustrado no Supabase Storage), usa ela
-  // Ignoramos imagens genéricas do Unsplash para forçar os SVGs vetoriais customizados
-  if (p.imagem_url && p.imagem_url.startsWith('http') && !p.imagem_url.includes('unsplash.com')) {
-    return p.imagem_url;
-  }
-
-  // Último fallback: SVG vetorial para posts sem nenhuma imagem ou com imagens genéricas
+  // 3º) Último fallback: SVG vetorial para posts sem nenhuma capa
   return createVectorSvgCover(p.categoria, p.titulo);
 }
 

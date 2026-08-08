@@ -32,7 +32,7 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.props.fallback) return this.props.fallback(error, this.reset);
 
     return (
-      <div className="min-h-dvh flex flex-col items-center justify-center bg-background text-foreground p-6 gap-4">
+      <div className="min-h-dvh flex flex-col items-center justify-center bg-[#0D0D0D] text-[#FFFFFF] p-6 gap-4">
         <h1 className="text-2xl font-semibold">Algo deu errado</h1>
         <p className="text-sm text-muted-foreground text-center max-w-md">
           O app encontrou um erro inesperado. A ocorrência já foi registrada.

@@ -215,7 +215,7 @@ export default function AprenderPorLivroTab({ area }: { area: string }) {
       }
   }, [livros, area]);
 
-  const abrirLivro = async (livro: Livro) => {
+  const abrirLivro = async (livro: Livro, autoAnalisar = false) => {
     setOpenLivro(livro);
     const ocr = ocrByLivro[livro.id];
     if (!ocr) return;
@@ -226,6 +226,12 @@ export default function AprenderPorLivroTab({ area }: { area: string }) {
         .order('ordem') as any,
     );
     setSugestoes(rows);
+    // Abertura pelo botão "Gerar aulas": se o livro ainda não tem sumário
+    // analisado, dispara a análise na hora para a lista de aulas já aparecer.
+    if (autoAnalisar && rows.length === 0 && !analisando) {
+      void analisar(livro);
+      return;
+    }
     // Conta flashcards e perguntas por aula
     const aulaIds = rows.map((r) => r.aula_id).filter(Boolean) as string[];
     if (aulaIds.length === 0) { setContagens({}); return; }
@@ -354,9 +360,10 @@ Responda EXATAMENTE JSON sem markdown: {"aulas":[{"ordem":1,"titulo_original":".
     return { total: inseridas?.length ?? 0, aulas: inseridas };
   };
 
-  const analisar = async () => {
-    if (!openLivro) return;
-    const ocr = ocrByLivro[openLivro.id];
+  const analisar = async (livroAlvo?: Livro) => {
+    const livro = livroAlvo ?? openLivro;
+    if (!livro) return;
+    const ocr = ocrByLivro[livro.id];
     if (!ocr) return toast.error('OCR do livro não disponível');
     setAnalisando(true);
     try {
@@ -368,10 +375,10 @@ Responda EXATAMENTE JSON sem markdown: {"aulas":[{"ordem":1,"titulo_original":".
         resData = data;
       } else {
         console.warn('Função biblioteca-ocr-mistral falhou, executando fallback de análise...', error || data?.error);
-        resData = await analisarSumarioFallback(ocr.id, areaId, openLivro);
+        resData = await analisarSumarioFallback(ocr.id, areaId, livro);
       }
       toast.success(`${resData?.total ?? 0} aulas sugeridas`);
-      await abrirLivro(openLivro);
+      await abrirLivro(livro);
     } catch (e: any) {
       console.error('Erro ao analisar sumário:', e);
       toast.error(e?.message || 'Falha ao analisar sumário');
@@ -603,7 +610,7 @@ Responda EXATAMENTE JSON sem markdown: {"aulas":[{"ordem":1,"titulo_original":".
                   </button>
                   {podeAbrirGeracao && !concluido && (
                     <button
-                      onClick={() => abrirLivro(l)}
+                      onClick={() => abrirLivro(l, true)}
                       disabled={gerandoLote || analisando}
                       title="Gerar aulas deste livro"
                       className="w-full sm:w-auto shrink-0 inline-flex items-center justify-center gap-1 rounded-lg bg-primary px-3 py-2 text-xs sm:text-sm font-semibold text-primary-foreground hover:opacity-90 disabled:opacity-50"
@@ -636,7 +643,7 @@ Responda EXATAMENTE JSON sem markdown: {"aulas":[{"ordem":1,"titulo_original":".
           <div className="mt-4 space-y-3">
             <div className="flex flex-col sm:flex-row gap-2">
               <button
-                onClick={analisar}
+                onClick={() => { void analisar(); }}
                 disabled={analisando}
                 className="flex-1 inline-flex items-center justify-center gap-2 rounded-lg border border-primary bg-primary/10 px-3 py-2 text-sm font-semibold text-primary hover:bg-primary/20 disabled:opacity-50"
               >
@@ -700,7 +707,11 @@ Responda EXATAMENTE JSON sem markdown: {"aulas":[{"ordem":1,"titulo_original":".
             )}
 
             {sugestoes.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Nenhuma aula sugerida ainda. Clique em "Analisar sumário".</p>
+              analisando ? (
+              <p className="text-sm text-muted-foreground">Lendo o sumário do livro para montar a lista de aulas…</p>
+            ) : (
+              <p className="text-sm text-muted-foreground">Nenhuma aula sugerida ainda. Clique em "Analisar sumário do livro".</p>
+            )
             ) : (
               <div className="divide-y divide-border rounded-xl border border-border bg-card">
                 {sugestoes.map((s) => {

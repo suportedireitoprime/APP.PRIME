@@ -485,7 +485,7 @@ function EstudosRouter() {
 function LazyFallback() {
   return (
     <div
-      className="min-h-dvh bg-background p-4 pt-16 space-y-4 animate-in fade-in duration-300"
+      className="min-h-dvh bg-[#0D0D0D] p-4 pt-16 space-y-4 animate-in fade-in duration-300"
       style={{ animationDelay: '120ms', animationFillMode: 'backwards' }}
       aria-busy="true"
       aria-live="polite"

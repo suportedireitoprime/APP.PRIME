@@ -1,7 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders, json, slugify, callGemini } from "../_shared/blog-edicao.ts";
 import { geminiFetch } from "../_shared/geminiFetch.ts";
-import { buildCoverPrompt } from "../_shared/blog-cover-style-v2.ts";
+import { buildCoverPrompt, type CoverBrief } from "../_shared/blog-cover-style-v2.ts";
 import { evolution, buildHorusTrackedUrl } from "../_shared/evolution.ts";
 
 async function generateCoverOnce(_apiKey: string, prompt: string): Promise<Uint8Array | null> {
@@ -113,6 +113,48 @@ async function warmCdn(url: string) {
 }
 
 /**
+ * Deriva um briefing visual específico do título do artigo (personagem real,
+ * objetos e símbolos) para que a capa represente de fato o conteúdo.
+ */
+async function buildBriefDaCapa(titulo: string, resumo: string, categoria: string): Promise<CoverBrief | null> {
+  const key = Deno.env.get("LOVABLE_API_KEY");
+  if (!key) return null;
+  try {
+    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
+      body: JSON.stringify({
+        model: "google/gemini-3.6-flash",
+        messages: [
+          {
+            role: "system",
+            content:
+              "Você é diretor de arte de um blog jurídico. Dado o título de um artigo, descreva em INGLÊS a cena de capa mais representativa possível: quem é a figura central (se o título cita um filósofo, jurista, tribunal ou obra, nomeie e descreva a pessoa/instituição de forma reconhecível, com roupa de época e atributo icônico, incluindo a capa do livro famoso quando fizer sentido), quais objetos secundários contam a história e quais pequenos símbolos flutuam ao redor. Nada de cenas genéricas de 'advogado com balança'. Responda SOMENTE com JSON.",
+          },
+          {
+            role: "user",
+            content: `Título: ${titulo}\nResumo: ${resumo}\nCategoria: ${categoria}\n\nJSON: {"figura":"...","elementos":["...","...","..."],"simbolos":["...","..."],"cena":"one sentence"}`,
+          },
+        ],
+        response_format: { type: "json_object" },
+      }),
+    });
+    if (!res.ok) {
+      console.warn("brief capa falhou", res.status, (await res.text()).slice(0, 200));
+      return null;
+    }
+    const data = await res.json();
+    const raw = String(data?.choices?.[0]?.message?.content || "").replace(/^```(?:json)?/i, "").replace(/```$/i, "");
+    const b = JSON.parse(raw) as CoverBrief;
+    if (!b?.figura && !b?.elementos?.length) return null;
+    return b;
+  } catch (e) {
+    console.warn("brief capa erro", (e as Error).message);
+    return null;
+  }
+}
+
+/**
  * Parser tolerante para o JSON do artigo devolvido pela IA.
  * Corrige os erros mais comuns: cercas de markdown, texto em volta do objeto,
  * caracteres de controle crus dentro de strings, aspas curvas em chaves e
@@ -163,6 +205,20 @@ function parseArtigoJson(raw: string): any {
 /**
 
  * Remove H1/H2 iniciais que apenas repetem o título do post.
+ */
+const EMOJI_RE =
+  /[\u{1F000}-\u{1FAFF}\u{2190}-\u{21FF}\u{2300}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}\u{20E3}]/gu;
+
+/** Remove emojis/pictogramas — o app usa apenas ícones SVG. */
+function semEmoji(texto: string): string {
+  return String(texto || "")
+    .replace(EMOJI_RE, "")
+    .replace(/[ \t]{2,}/g, " ")
+    .replace(/(^|\n)([>\-*]?\s*)\s+/g, "$1$2")
+    .trimEnd();
+}
+
+/**
  * Alguns retornos do Gemini começam com `## <título>` mesmo instruídos a não fazê-lo,
  * o que gera a sensação de "capa duplicada" logo abaixo da capa real.
  */
@@ -389,10 +445,11 @@ INSTRUÇÕES CRÍTICAS DE CONTEÚDO E FORMATO:
 - Escreva um artigo COMPLETO, profundo, altamente pedagógico e informativo.
 - Se o tema envolver leis (ex: Direito Penal, Civil, Constitucional, Leis Esparsas ou Atualidades), cite artigos específicos da legislação (ex: Art. 1º, Art. 5º, Art. 121, etc.) e DESTRINCHE O TEXTO LEGAL PASSO A PASSO (explicando cada caput, parágrafo ou inciso com palavras claras e exemplos da vida real).
 - INCLUA ELEMENTOS VISUAIS E DESTAQUES EM MARKDOWN no corpo do texto para tornar a leitura rica e dinâmica:
-  - Use quadros de citação estilo callout para destaques importantes (ex: \`> 💡 **Conceito Chave**: ...\`, \`> 📜 **Artigo Destrinchado**: ...\`, \`> ⚖️ **Exemplo Prático**: ...\`, \`> 📌 **Atenção para Provas e OAB**: ...\`).
+  - Use quadros de citação estilo callout para destaques importantes (ex: \`> **Conceito Chave**: ...\`, \`> **Artigo Destrinchado**: ...\`, \`> **Exemplo Prático**: ...\`, \`> **Atenção para Provas e OAB**: ...\`).
   - Use tabelas formatadas em Markdown (\`| Conceito | Explicação | Aplicação |\`) para resumos e comparações rápidas.
   - Use diagramas de fluxo em Markdown e listas numeradas organizadas.
 - NÃO inclua H1 no início (o aplicativo já renderiza o título automaticamente).
+- PROIBIDO USAR EMOJIS OU PICTOGRAMAS em qualquer campo (título, resumo, conteúdo, callouts, tabelas). O aplicativo usa apenas ícones SVG. Use texto puro em negrito para os rótulos dos destaques.
 
 Retorne APENAS JSON válido (sem markdown em volta do JSON, sem \`\`\`):
 {
@@ -401,7 +458,7 @@ Retorne APENAS JSON válido (sem markdown em volta do JSON, sem \`\`\`):
   "headline_push": "Headline PERSUASIVA para notificação push (max 80 chars, criando curiosidade)",
   "push_titulo": "Título CURTO e chamativo para a notificação push do celular (MÁX 38 chars, cabe em 1 linha sem cortar; punchy, com verbo forte ou pergunta; SEM emoji; NÃO repita o título do artigo literalmente)",
   "push_subtitulo": "Subtítulo persuasivo da notificação (MÁX 85 chars, 1 linha; desperta curiosidade e complementa o push_titulo; SEM emoji; SEM reticências)",
-  "whatsapp_titulo": "Título PERSUASIVO para o WhatsApp/Horus (máx 60 chars, punchy, gancho de curiosidade; pode ter 1 emoji jurídico como ⚖️ 📖 🏛️)",
+  "whatsapp_titulo": "Título PERSUASIVO para o WhatsApp/Horus (máx 60 chars, punchy, gancho de curiosidade; SEM emoji)",
   "whatsapp_descricao": "Descrição envolvente de 2-3 frases para o WhatsApp (máx 300 chars). Vende o post: cria curiosidade, mostra por que vale ler, termina insinuando a resposta. Sem hashtags.",
   "conteudo_md": "Artigo em Markdown puro rico em elementos visuais, citações e artigos destrinchados. Português BR."
 }`;
@@ -441,6 +498,11 @@ Retorne APENAS JSON válido (sem markdown em volta do JSON, sem \`\`\`):
     // Sanitiza conteudo_md: remove H1/H2 iniciais que repetem o título (evita
     // aparência de "capa duplicada" logo abaixo da capa do post).
     art.conteudo_md = stripLeadingTitleHeading(String(art.conteudo_md), String(art.titulo));
+    // Sem emojis: o app usa apenas ícones SVG
+    art.conteudo_md = semEmoji(art.conteudo_md);
+    art.titulo = semEmoji(String(art.titulo));
+    art.resumo = semEmoji(String(art.resumo || ""));
+    art.headline_push = semEmoji(String(art.headline_push || ""));
 
     // 2) Capa
     const { data: recentesCapa } = await supabase
@@ -448,10 +510,12 @@ Retorne APENAS JSON válido (sem markdown em volta do JSON, sem \`\`\`):
       .select("titulo")
       .order("data_publicacao", { ascending: false })
       .limit(6);
+    const coverBrief = await buildBriefDaCapa(String(art.titulo), String(art.resumo || ""), String(tema.categoria));
     const coverPrompt = buildCoverPrompt(
       String(art.titulo),
       String(tema.categoria),
       (recentesCapa || []).map((p: any) => p.titulo),
+      coverBrief,
     );
     const coverBytes = await generateCover(geminiKey, coverPrompt);
 

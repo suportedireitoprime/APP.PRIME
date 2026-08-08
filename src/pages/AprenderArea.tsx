@@ -129,7 +129,7 @@ const AprenderArea = () => {
   );
 
   const { gerar, gerando, passo, titulo: tituloGerando } = useGerarAulaDemanda();
-  const autoGerouRef = useRef(false);
+
 
   const recarregarArea = async () => {
     if (!slug) return;
@@ -146,16 +146,7 @@ const AprenderArea = () => {
     navigate(`/aprender/aula/${res.aulaId}`);
   };
 
-  // Ao entrar na matéria sem nenhuma aula pronta, gera a primeira automaticamente.
-  useEffect(() => {
-    if (!area || loading || gerando || autoGerouRef.current) return;
-    if (aulas.length > 0) return;
-    const primeira = pendentes[0];
-    if (!primeira) return;
-    autoGerouRef.current = true;
-    gerarAula(primeira.id, primeira.titulo);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [area?.id, loading, aulas.length, pendentes.length]);
+  // Geração 100% sob demanda: nada é gerado sem o aluno tocar na aula.
 
   // Carrega flashcards + questões de todas as aulas da área quando abre aba de prática
   useEffect(() => {

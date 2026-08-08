@@ -136,7 +136,7 @@ const FlashcardsCornell = () => {
         status: 'compreendido',
         proxima_revisao_em: proximaData,
         ultima_resposta_em: new Date().toISOString(),
-      },
+      } as any,
       { onConflict: 'user_id,card_id' },
     );
 

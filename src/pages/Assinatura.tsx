@@ -17,10 +17,9 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "
 import { isAdminEmail } from "@/lib/adminEmails";
 import { maybeRequestAfterPurchase } from "@/lib/inAppReview";
 import { useTrackArea } from "@/hooks/useTrackArea";
+import { track } from "@/lib/analyticsEvents";
 import { useGoBack } from '@/hooks/useGoBack';
-import paywallLeft from '@/assets/paywall/paywall_left.png';
-import paywallCenter from '@/assets/paywall/paywall_center.png';
-import paywallRight from '@/assets/paywall/paywall_right.png';
+import PaywallImageStack from '@/components/planos/PaywallImageStack';
 
 export default function Assinatura() {
   useTrackArea("assinatura_aberta");
@@ -232,43 +231,8 @@ export default function Assinatura() {
         />
 
         <div className="max-w-2xl mx-auto pt-6 space-y-7">
-            {/* ── 3D Image Stack: Leque de 3 Fotos Jurídicas no Topo ─────── */}
-            <div className="relative flex items-center justify-center pt-2 pb-6 px-4 overflow-hidden">
-              <div className="relative flex items-center justify-center w-full max-w-[340px] h-[190px]">
-                {/* Foto Esquerda */}
-                <motion.div
-                  initial={{ opacity: 0, x: -30, rotate: -15 }}
-                  animate={{ opacity: 0.85, x: -65, rotate: -10, y: 8 }}
-                  transition={{ duration: 0.5, delay: 0.1 }}
-                  className="absolute w-[130px] h-[160px] rounded-2xl overflow-hidden border-2 border-white/20 shadow-2xl shrink-0"
-                >
-                  <img src={paywallLeft} alt="" className="w-full h-full object-cover" loading="eager" decoding="async" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                </motion.div>
-
-                {/* Foto Direita */}
-                <motion.div
-                  initial={{ opacity: 0, x: 30, rotate: 15 }}
-                  animate={{ opacity: 0.85, x: 65, rotate: 10, y: 8 }}
-                  transition={{ duration: 0.5, delay: 0.1 }}
-                  className="absolute w-[130px] h-[160px] rounded-2xl overflow-hidden border-2 border-white/20 shadow-2xl shrink-0"
-                >
-                  <img src={paywallRight} alt="" className="w-full h-full object-cover" loading="eager" decoding="async" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                </motion.div>
-
-                {/* Foto Central Destaque */}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
-                  className="absolute z-20 w-[150px] h-[180px] rounded-2xl overflow-hidden border-4 border-primary shadow-[0_15px_40px_rgba(224,31,71,0.45)] shrink-0"
-                >
-                  <img src={paywallCenter} alt="" className="w-full h-full object-cover" loading="eager" decoding="async" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-                </motion.div>
-              </div>
-            </div>
+            {/* ── Carrossel 3D: 6 fotos jurídicas girando automaticamente ── */}
+            <PaywallImageStack />
 
             {/* Headline & Subtitle */}
             <div className="space-y-2 text-center">
@@ -395,7 +359,7 @@ export default function Assinatura() {
               <Button
                 onClick={() => startPurchase(tab === 'mensal' ? 'mensal' : (isIOS ? 'anual' : 'anual_parcelado'))}
                 disabled={playLoading}
-                className="btn-attention-shine relative overflow-hidden w-full h-14 rounded-2xl bg-gradient-to-r from-[hsl(348_78%_38%)] via-primary to-[hsl(348_78%_38%)] text-primary-foreground font-display text-lg font-black tracking-wider shadow-[0_10px_30px_rgba(224,31,71,0.4)] hover:brightness-110 active:scale-[0.99] transition-all"
+                className="btn-shine-loop relative overflow-hidden w-full h-14 rounded-2xl bg-gradient-to-r from-[hsl(348_78%_38%)] via-primary to-[hsl(348_78%_38%)] text-primary-foreground font-display text-lg font-black tracking-wider shadow-[0_10px_30px_rgba(224,31,71,0.4)] hover:brightness-110 active:scale-[0.99] transition-all"
               >
                 {playLoading ? (
                   <span className="flex items-center gap-2"><Loader2 className="w-5 h-5 animate-spin" /> Processando…</span>

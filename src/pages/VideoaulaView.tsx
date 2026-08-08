@@ -126,7 +126,8 @@ const VideoaulaView = () => {
           : Promise.resolve({ data: null } as any),
       ]);
       if (!alive) return;
-      if (aulaRes.data) setAula(aulaRes.data as unknown as Aula);
+      const aulaData = aulaRes.data as any;
+      if (aulaData) setAula(aulaData as unknown as Aula);
       setCarregado(true);
       const prog = progRes?.data as any;
       if (prog) {
@@ -137,8 +138,8 @@ const VideoaulaView = () => {
 
       // Busca aulas da mesma área para a Sidebar Lateral Esquerda no Desktop
       let qArea: any = supabase.from(catalogo.tabela as any).select(cols);
-      if (catalogo.temAreas && aulaRes.data?.area) {
-        qArea = qArea.eq('area', aulaRes.data.area);
+      if (catalogo.temAreas && aulaData?.area) {
+        qArea = qArea.eq('area', aulaData.area);
       }
       const { data: listaArea } = await qArea.limit(60);
       if (alive && listaArea) {
@@ -536,7 +537,7 @@ const VideoaulaView = () => {
               </div>
             )}
 
-            {resumo.isLoading && !resumo.data?.resumo && !aula?.sobre_aula && !aula?.descricao && (
+            {resumo.isLoading && !(resumo.data as any)?.resumo && !aula?.sobre_aula && !aula?.descricao && (
               <div className="py-4 flex items-center gap-2 text-muted-foreground text-xs">
                 <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" /> Carregando panorama...
               </div>
