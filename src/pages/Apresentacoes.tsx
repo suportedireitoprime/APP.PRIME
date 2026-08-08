@@ -31,7 +31,6 @@ const Apresentacoes = () => {
       const { data } = await (supabase.from('apresentacoes_narradas') as any)
         .select('id, titulo, descricao, capa_url, total_slides, origem, area, tema, subtema')
         .eq('publicada', true)
-        .neq('origem', 'livro')
         .order('created_at', { ascending: false });
       setItens((data as Apres[]) ?? []);
       setCarregando(false);
