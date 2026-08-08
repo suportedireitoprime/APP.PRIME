@@ -19,7 +19,6 @@ const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY") ?? "";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const MODEL = MODELS.text; // "gemini-3.1-flash-lite"
-const GATEWAY_MODEL = MODELS.textGateway; // "google/gemini-3.1-flash-lite"
 
 const admin = createClient(SUPABASE_URL, SERVICE_KEY, {
   auth: { persistSession: false, autoRefreshToken: false },
@@ -50,72 +49,42 @@ function parseJsonLoose(text: string): any {
   }
 }
 
-const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY") ?? "";
-
-// Fallback: gateway de IA da Lovable (usado quando a chave Gemini direta falha,
-// por ex. modelo indisponível para a chave / quota esgotada).
-async function callGateway(prompt: string): Promise<string> {
-  if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY ausente");
-  const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+async function callGemini(prompt: string): Promise<string> {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${GEMINI_API_KEY}`;
+  const res = await geminiFetch(url, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${LOVABLE_API_KEY}`,
-      "Lovable-API-Key": LOVABLE_API_KEY,
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: GATEWAY_MODEL,
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.55,
-      response_format: { type: "json_object" },
+      contents: [{ role: "user", parts: [{ text: prompt }] }],
+      generationConfig: {
+        temperature: 0.55,
+        topP: 0.9,
+        maxOutputTokens: 2400,
+        responseMimeType: "application/json",
+      },
     }),
   });
-  const body = await res.text();
-  if (!res.ok) throw new Error(`gateway ${res.status}: ${body.slice(0, 300)}`);
-  const data = JSON.parse(body);
-  return String(data?.choices?.[0]?.message?.content ?? "").trim();
-}
 
-async function callGemini(prompt: string): Promise<string> {
-  if (!GEMINI_API_KEY) return callGateway(prompt);
-  try {
-    const res = await geminiFetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${GEMINI_API_KEY}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ role: "user", parts: [{ text: prompt }] }],
-          generationConfig: {
-            temperature: 0.55,
-            topP: 0.9,
-            maxOutputTokens: 2400,
-            responseMimeType: "application/json",
-          },
-        }),
-      },
-    );
-    const body = await res.text();
-    if (!res.ok) throw new Error(`gemini ${res.status}: ${body.slice(0, 300)}`);
-    const data = JSON.parse(body);
-    const parts = data?.candidates?.[0]?.content?.parts ?? [];
-    const texto = parts.map((p: any) => p?.text ?? "").join("").trim();
-    if (!texto) throw new Error("gemini resposta vazia");
-    return texto;
-  } catch (e) {
-    console.warn("[visual-juridico-gerar] Gemini direto falhou, usando gateway:", String(e).slice(0, 200));
-    if (LOVABLE_API_KEY) {
-      return callGateway(prompt);
-    }
-    throw e;
+  const body = await res.text();
+  if (!res.ok) {
+    console.error("[visual-juridico-gerar] Gemini API erro:", res.status, body.slice(0, 400));
+    throw new Error(`Gemini API (${res.status}): ${body.slice(0, 200)}`);
   }
+
+  const data = JSON.parse(body);
+  const parts = data?.candidates?.[0]?.content?.parts ?? [];
+  const texto = parts.map((p: Record<string, unknown>) => String(p?.text ?? "")).join("").trim();
+  if (!texto) throw new Error("Gemini retornou resposta vazia");
+  return texto;
 }
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
-    if (!GEMINI_API_KEY && !LOVABLE_API_KEY) return json({ error: "Nenhuma chave de IA configurada" }, 500);
+    if (!GEMINI_API_KEY && !Deno.env.get("GEMINI_API_KEY_RESERVA")) {
+      return json({ error: "Nenhuma chave Gemini configurada no Supabase" }, 500);
+    }
 
     const body = await req.json().catch(() => null);
     const tipo = String(body?.tipo ?? "") as VisualTipo;
