@@ -335,7 +335,7 @@ async function gerarRoteiroSlide(opts: { titulo: string; indice: number; total: 
     "NUNCA descreva a imagem nem use frases como 'como você vê na imagem', 'observe o slide', 'nesta tela', 'veja aqui' — a pessoa já está vendo o slide enquanto ouve.",
     "Sem markdown, sem títulos, sem listas, sem indicações de cena — só o texto a ser lido em voz alta.",
     "",
-    "Conteúdo do slide:",
+    "Conteúdo deste slide (Transcrição e Descrição Visual extraídos pelo Mistral Pixtral OCR):",
     texto ? texto.slice(0, 4000) : "(o slide é majoritariamente visual — descreva e explique o ponto provável a partir do tema da obra)",
   ].join("\n");
   const roteiro = await gerarTextoIA(prompt);
@@ -403,7 +403,7 @@ async function gerarRoteiroSlideTema(opts: {
     "Material de referência (resumo/artigo do tema):",
     (contexto || "(sem material extra)").slice(0, 6000),
     "",
-    "Conteúdo deste slide (OCR):",
+    "Conteúdo deste slide (Transcrição e Descrição Visual extraídos pelo Mistral Pixtral OCR):",
     texto ? texto.slice(0, 4000) : "(slide majoritariamente visual — desenvolva a partir do material de referência)",
   ].join("\n");
   const roteiro = await gerarTextoIA(prompt);
@@ -930,6 +930,45 @@ export async function handleNarracaoConteudo(req: Request, body: any): Promise<R
       if (imgErr) throw new Error(`upload imagem: ${imgErr.message}`);
       const imgUrl = await assinar(admin, imgPath);
 
+      // Extração de Visão/OCR com Mistral (Pixtral-12b)
+      let textoInterpretado = textoSlide;
+      try {
+        const mistralKey = Deno.env.get("MISTRAL_API_KEY");
+        if (mistralKey) {
+          const base64Data = imagemB64.startsWith("data:") ? imagemB64 : `data:image/png;base64,${imagemB64}`;
+          const resMistral = await fetch("https://api.mistral.ai/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${mistralKey}`
+            },
+            body: JSON.stringify({
+              model: "pixtral-12b-2409",
+              messages: [
+                {
+                  role: "user",
+                  content: [
+                    { type: "text", text: "Você é um analisador OCR especializado. Extraia TODO o texto legível deste slide didático de forma literal. Em seguida, descreva os seus elementos visuais (gráficos, diagramas ou esquemas) de forma estruturada. Retorne a resposta detalhada e objetiva, ideal para basear o roteiro falado de um professor narrador." },
+                    { type: "image_url", image_url: { url: base64Data } }
+                  ]
+                }
+              ]
+            })
+          });
+          if (resMistral.ok) {
+            const jsonMistral = await resMistral.json();
+            const ocrConteudo = jsonMistral.choices?.[0]?.message?.content;
+            if (ocrConteudo && ocrConteudo.length > 50) {
+              textoInterpretado = ocrConteudo;
+            }
+          } else {
+            console.error("Mistral Vision falhou", await resMistral.text());
+          }
+        }
+      } catch (errMistral) {
+        console.error("Erro OCR Mistral", errMistral);
+      }
+
       // roteiro: apresentação de tema/lei usa o material de referência (30-40s)
       const origem = String((apr as any).origem || "livro");
       const roteiro = origem === "livro"
@@ -937,13 +976,13 @@ export async function handleNarracaoConteudo(req: Request, body: any): Promise<R
             titulo: String(apr.titulo),
             indice: index,
             total: Number(apr.total_slides || 0),
-            texto: textoSlide,
+            texto: textoInterpretado,
           })
         : await gerarRoteiroSlideTema({
             titulo: String(apr.titulo),
             indice: index,
             total: Number(apr.total_slides || 0),
-            texto: textoSlide,
+            texto: textoInterpretado,
             contexto: String((apr as any).referencia_texto || ""),
           });
 
