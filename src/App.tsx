@@ -186,11 +186,10 @@ const QuestoesPraticar = lazy(() => import("./pages/QuestoesPraticar.tsx"));
 const QuestoesSimulado = lazy(() => import("./pages/QuestoesSimulado.tsx"));
 const QuestoesSimuladoCargoConfig = lazy(() => import("./pages/QuestoesSimuladoCargoConfig.tsx"));
 const QuestoesRevisar = lazy(() => import("./pages/QuestoesRevisar.tsx"));
-const QuestoesCategorias = lazy(() => import("./pages/QuestoesCategorias.tsx"));
+const QuestoesDesafios = lazy(() => import("./pages/QuestoesDesafios.tsx"));
 const QuestoesTrilhas = lazy(() => import("./pages/QuestoesTrilhas.tsx"));
 const QuestoesLembretes = lazy(() => import('./pages/QuestoesLembretes'));
 const QuestoesCadernos = lazy(() => import("./pages/QuestoesCadernos.tsx"));
-const QuestoesDesafios = lazy(() => import("./pages/QuestoesDesafios.tsx"));
 const QuestoesConquistas = lazy(() => import("./pages/QuestoesConquistas.tsx"));
 
 const QuestoesDesempenho = lazy(() => import("./pages/QuestoesDesempenho.tsx"));
@@ -793,7 +792,7 @@ function AnimatedRoutes() {
           <Route path="/questoes/praticar" element={<ProtectedRoute><PageTransition><QuestoesPraticar /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/simulado" element={<ProtectedRoute><PageTransition><QuestoesSimulado /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/simulado/:cargoId" element={<ProtectedRoute><PageTransition><QuestoesSimuladoCargoConfig /></PageTransition></ProtectedRoute>} />
-          <Route path="/questoes/categorias" element={<ProtectedRoute><PageTransition><QuestoesCategorias /></PageTransition></ProtectedRoute>} />
+          <Route path="/questoes/desafios" element={<ProtectedRoute><PageTransition><QuestoesDesafios /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/revisar" element={<ProtectedRoute><PageTransition><QuestoesRevisar /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/lembretes" element={<ProtectedRoute><PageTransition><QuestoesLembretes /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/trilhas" element={<ProtectedRoute><PageTransition><QuestoesTrilhas /></PageTransition></ProtectedRoute>} />

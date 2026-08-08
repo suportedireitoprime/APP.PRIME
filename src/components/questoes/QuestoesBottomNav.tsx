@@ -1,13 +1,13 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ListChecks, LayoutGrid, Timer, FolderTree, Bell } from 'lucide-react';
+import { ListChecks, LayoutGrid, Timer, Flame, Bell } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
 const SLOTS = [
   { id: 'questoes', label: 'Questões', icon: ListChecks, route: '/questoes' },
   { id: 'areas', label: 'Áreas', icon: LayoutGrid, route: '/questoes/areas' },
   { id: 'simulado', label: 'Simulado', icon: Timer, route: '/questoes/simulado' },
-  { id: 'categorias', label: 'Categorias', icon: FolderTree, route: '/questoes/categorias' },
+  { id: 'desafios', label: 'Desafios', icon: Flame, route: '/questoes/desafios' },
   { id: 'lembretes', label: 'Lembretes', icon: Bell, route: '/questoes/lembretes' },
 ];
 

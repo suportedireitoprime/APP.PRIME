@@ -6,7 +6,7 @@ import { PageHeader } from '@/components/vademecum/PageHeader';
 import QuestoesHero from '@/components/questoes/QuestoesHero';
 import QuestoesBottomNav from '@/components/questoes/QuestoesBottomNav';
 import QuestoesFiltroSheet from '@/components/questoes/QuestoesFiltroSheet';
-import DesafiosStrip from '@/components/questoes/DesafiosStrip';
+
 import { useQuestoesCargos, useQuestoesDesempenho } from '@/hooks/useQuestoes';
 
 const ATALHOS = [
@@ -70,8 +70,7 @@ const Questoes = () => {
         </div>
 
         <div className="px-4 lg:px-0">
-          {/* Desafios */}
-          <DesafiosStrip />
+
 
           {/* Título */}
           <div className="pt-8 mb-4">

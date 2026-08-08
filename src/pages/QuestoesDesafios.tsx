@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Flame } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import DesafioLinha from '@/components/questoes/DesafioLinha';
-import DesafiosBottomNav from '@/components/questoes/DesafiosBottomNav';
+import QuestoesBottomNav from '@/components/questoes/QuestoesBottomNav';
 import { useDesafios, type DesafioStatus } from '@/hooks/useQuestoesExtras';
 import { cn } from '@/lib/utils';
 import { useGoBack } from '@/hooks/useGoBack';
@@ -92,7 +92,7 @@ const QuestoesDesafios = () => {
         </div>
       </div>
 
-      <DesafiosBottomNav />
+      <QuestoesBottomNav />
     </div>
   );
 };
