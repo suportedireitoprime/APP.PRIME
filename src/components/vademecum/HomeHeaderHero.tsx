@@ -558,7 +558,7 @@ const HomeHeaderHero = ({ onSearchOpenChange }: { onSearchOpenChange?: (open: bo
             <span className="relative z-[2] font-body text-white/70 text-[15px] font-medium truncate text-left">
               <TypingHint />
             </span>
-            <div className="absolute right-1.5 top-1/2 -translate-y-1/2 h-12 px-5 rounded-xl bg-primary text-primary-foreground font-display text-[13px] font-bold tracking-wider flex items-center justify-center shadow-md">
+            <div className="absolute right-1.5 top-1/2 -translate-y-1/2 h-12 px-5 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 text-black font-display text-[13px] font-extrabold tracking-wider flex items-center justify-center shadow-md shadow-amber-500/25 active:scale-95 transition">
               PESQUISAR
             </div>
           </button>
