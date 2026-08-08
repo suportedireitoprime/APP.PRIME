@@ -4,8 +4,7 @@ import {
   List, Search, X, ZoomIn, ZoomOut, Columns,
 } from 'lucide-react';
 import * as pdfjsLib from 'pdfjs-dist';
-// @ts-ignore vite ?url import
-import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
+import { configurarPdfWorker } from '@/lib/pdfWorkerConfig';
 import { createPortal } from 'react-dom';
 import { openPdfNative } from '@/lib/fileOpener';
 import { Capacitor, CapacitorHttp } from '@capacitor/core';
@@ -13,7 +12,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { logPdfEvent } from '@/lib/pdfTelemetry';
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
+configurarPdfWorker(pdfjsLib);
 
 /**
  * Normaliza URLs de compartilhamento comuns (Drive/Dropbox) para o

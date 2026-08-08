@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as pdfjsLib from 'pdfjs-dist';
-// @ts-ignore
-import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
+import { configurarPdfWorker, getPdfDocumentParams } from '@/lib/pdfWorkerConfig';
 import { Presentation, Upload, Loader2, Trash2, Play, Search, Eye, EyeOff, Check, Mic, FileText, Star } from 'lucide-react';
 import { toast } from 'sonner';
 import { PageHeader } from '@/components/vademecum/PageHeader';
@@ -12,7 +11,7 @@ import {
   etaSegundos, formatarEta, type ApresJobEstado,
 } from '@/lib/apresentacaoJob';
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
+configurarPdfWorker(pdfjsLib);
 
 type Livro = {
   livro_tabela: string; livro_id: string; titulo: string; autor: string | null;
@@ -168,8 +167,9 @@ const AdminNarracaoApresentacao = () => {
     setSlides([]);
     setNomePdf(file.name);
     try {
+      configurarPdfWorker(pdfjsLib);
       const buf = new Uint8Array(await file.arrayBuffer());
-      const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+      const pdf = await pdfjsLib.getDocument(getPdfDocumentParams(buf)).promise;
       const total = pdf.numPages;
       setLendoPdf({ feitos: 0, total });
       const preparados: SlidePreparado[] = [];

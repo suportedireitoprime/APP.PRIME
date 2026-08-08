@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as pdfjsLib from 'pdfjs-dist';
-// @ts-ignore
-import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
+import { configurarPdfWorker, getPdfDocumentParams } from '@/lib/pdfWorkerConfig';
+
+configurarPdfWorker(pdfjsLib);
+
 import {
   Presentation, Upload, Loader2, Play, Check, Mic, ChevronRight, Trash2,
   BookOpen, Scale, BookMarked, Eye, EyeOff, Search, Sparkles, Filter,
@@ -283,8 +285,9 @@ const AdminApresentacaoEditar = () => {
     limparPdf();
     setNomePdf(file.name);
     try {
+      configurarPdfWorker(pdfjsLib);
       const buf = new Uint8Array(await file.arrayBuffer());
-      const pdf = await pdfjsLib.getDocument({ data: buf.slice() }).promise;
+      const pdf = await pdfjsLib.getDocument(getPdfDocumentParams(buf)).promise;
       const total = pdf.numPages;
       setLendoPdf({ feitos: 0, total });
       const preparados: SlidePreparado[] = [];
