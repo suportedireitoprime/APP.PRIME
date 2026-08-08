@@ -20,7 +20,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/PageHeader';
-import QuestoesBottomNav from '@/components/questoes/QuestoesBottomNav';
+
 import ResolverPadrao from '@/components/questoes/ResolverPadrao';
 import { useQuestoesCargos, useQuestoesSessao, useQuestoesAreas, type Cargo, type Questao } from '@/hooks/useQuestoes';
 import { supabase } from '@/integrations/supabase/client';
@@ -489,8 +489,6 @@ export default function QuestoesSimuladoCargoConfig() {
           </>
         )}
       </div>
-
-      <QuestoesBottomNav />
     </div>
   );
 }
