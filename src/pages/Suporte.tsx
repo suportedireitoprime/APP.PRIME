@@ -4,6 +4,13 @@ import { Loader2, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -32,6 +39,16 @@ export default function Suporte() {
         mensagem: mensagem.trim(),
       });
       if (error) throw error;
+      
+      // Dispara o e-mail via Edge Function no background (sem esperar para não travar a UI se demorar)
+      supabase.functions.invoke('enviar-suporte', {
+        body: {
+          assunto: assunto.trim(),
+          mensagem: mensagem.trim(),
+          email: user!.email || ''
+        }
+      }).catch(console.error);
+
       toast.success('Mensagem enviada! Responderemos em breve.');
       setAssunto('');
       setMensagem('');
@@ -49,12 +66,17 @@ export default function Suporte() {
       <div className="flex-1 overflow-y-auto p-4 space-y-4 max-w-2xl lg:max-w-3xl w-full mx-auto">
         <div>
           <label className="text-sm font-medium text-foreground font-body mb-1 block">Assunto</label>
-          <Input
-            value={assunto}
-            onChange={(e) => setAssunto(e.target.value)}
-            placeholder="Ex: Problema ao carregar artigos"
-            maxLength={100}
-          />
+          <Select value={assunto} onValueChange={setAssunto}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Selecione o assunto..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Financeiro / Minha assinatura">Financeiro / Minha assinatura</SelectItem>
+              <SelectItem value="Bugs encontrados">Bugs encontrados</SelectItem>
+              <SelectItem value="Tutorial (Como usar)">Tutorial (Como usar)</SelectItem>
+              <SelectItem value="Outro">Outro</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <div>
           <label className="text-sm font-medium text-foreground font-body mb-1 block">Mensagem</label>
