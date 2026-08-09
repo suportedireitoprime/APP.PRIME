@@ -13,7 +13,7 @@ import {
   PiggyBank, Plane, PocketKnife, RadioTower, ReceiptText, Scale, Scroll, ScrollText, Search,
   Shield, ShieldAlert, ShieldCheck, ShieldX, Ship, ShoppingCart, Siren, Award, Sprout, Stamp, Store,
   Tractor, TreePine, Users, Vote, Wallet, Wifi, X, type LucideIcon,
-  Presentation, FolderOpen, RefreshCw,
+  Presentation, FolderOpen, RefreshCw, MessageCircle,
 } from 'lucide-react';
 import { estiloPasta } from '@/lib/documentosTipos';
 import { usePastasDocumentos } from '@/hooks/useDocumentosDrive';
