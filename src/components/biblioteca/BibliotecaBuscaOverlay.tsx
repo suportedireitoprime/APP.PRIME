@@ -115,17 +115,29 @@ const BibliotecaBuscaOverlay = ({ open, onClose, onAbrirLivro }: Props) => {
     for (const livro of lista) {
       const haystack = [norm(livro.titulo), norm(livro.autor), norm(livro.area), norm(livro.sobre)];
       const joined = haystack.join(' | ');
-      if (!tokens.every((t) => joined.includes(t))) continue;
+      
+      let matches = 0;
+      tokens.forEach((t) => {
+        if (joined.includes(t)) matches++;
+      });
+      
+      // Exige que pelo menos metade dos termos digitados seja encontrada
+      if (matches < Math.ceil(tokens.length / 2)) continue;
+
       let score = 0;
       if (haystack[0].includes(q)) score += 100;
       if (haystack[0].startsWith(q)) score += 50;
+      
       tokens.forEach((t) => {
         if (haystack[0].includes(t)) score += 10;
         if (haystack[1].includes(t)) score += 5;
         if (haystack[2].includes(t)) score += 3;
         if (haystack[3].includes(t)) score += 1;
       });
-      scored.push({ livro, score });
+      
+      if (score > 0) {
+        scored.push({ livro, score });
+      }
     }
     scored.sort((a, b) => b.score - a.score);
     return scored.map((s) => s.livro);
@@ -285,9 +297,14 @@ const BibliotecaBuscaOverlay = ({ open, onClose, onAbrirLivro }: Props) => {
                 <p className="py-10 text-center font-body text-sm text-muted-foreground">Buscando…</p>
               )}
               {!carregando && listaFiltrada.length === 0 && (
-                <p className="py-10 text-center font-body text-sm text-muted-foreground">
-                  Nenhum livro encontrado.
-                </p>
+                <div className="py-10 text-center font-body text-sm text-muted-foreground">
+                  <p>Nenhum livro encontrado.</p>
+                  <p className="mt-2 text-xs opacity-50">
+                    Debug: {todosLivros.length} total.
+                    Query: "{query}" (norm: "{norm(query)}").
+                    Tokens: {JSON.stringify(norm(query).split(' ').filter(Boolean))}.
+                  </p>
+                </div>
               )}
               {listaFiltrada.map((l) => (
                 <LivroItem key={`${l.colecaoId}-${l.id}`} livro={l} />
