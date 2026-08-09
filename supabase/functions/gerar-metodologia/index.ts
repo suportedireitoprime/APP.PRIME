@@ -3,7 +3,7 @@ import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const GATEWAY_URL = 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions';
-const MODEL = 'gemini-2.5-flash';
+const MODEL = 'gemini-3.6-flash';
 
 const PROMPTS: Record<string, string> = {
   cornell: `Você é um professor de Direito brasileiro. Produza um estudo no MÉTODO CORNELL sobre o conteúdo enviado.
@@ -92,7 +92,7 @@ Deno.serve(async (req) => {
     if (!resp.ok) {
       const txt = await resp.text();
       console.error('gateway error', resp.status, txt);
-      return json({ error: 'Falha ao gerar conteúdo' }, 500);
+      return json({ error: 'Falha ao gerar conteúdo', detalhe: txt }, 500);
     }
 
     const data = await resp.json();
