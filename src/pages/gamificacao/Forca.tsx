@@ -46,8 +46,8 @@ const ForcaPage = () => {
   // Fetch Laws on Mount
   useEffect(() => {
     const fetchLaws = async () => {
-      const { data: cf } = await supabase.from('vade_mecum_leis').select('id, nome_curto, slug').eq('slug', 'cf');
-      const { data: codigos } = await supabase.from('vade_mecum_leis').select('id, nome_curto, slug').eq('categoria', 'codigo').order('nome_curto');
+      const { data: cf } = await supabase.from('vade_mecum_leis').select('id, nome, nome_curto, slug').eq('slug', 'cf');
+      const { data: codigos } = await supabase.from('vade_mecum_leis').select('id, nome, nome_curto, slug').eq('categoria', 'codigo').order('nome');
       
       const combined = [...(cf || []), ...(codigos || [])];
       // deduplicate if CF is already in codigos
@@ -402,8 +402,13 @@ const ForcaPage = () => {
                     onClick={() => handleLawSelect(law)}
                     className="flex items-center justify-between p-4 bg-card rounded-2xl border border-border/40 hover:border-primary/50 transition-all text-left group"
                   >
-                    <span className="font-display font-bold text-lg">{law.nome_curto}</span>
-                    <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary" />
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                        <BookOpenText className="w-5 h-5 text-primary" />
+                      </div>
+                      <span className="font-display font-bold text-lg leading-tight">{law.nome}</span>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary shrink-0" />
                   </button>
                 ))}
               </div>
@@ -416,7 +421,7 @@ const ForcaPage = () => {
               exit={{ opacity: 0, x: 20 }}
               className="space-y-4"
             >
-              <h2 className="text-xl font-display font-black text-foreground uppercase tracking-wide">{selectedLaw.nome_curto}</h2>
+              <h2 className="text-xl font-display font-black text-foreground uppercase tracking-wide">{selectedLaw.nome}</h2>
               <p className="text-sm text-muted-foreground mb-2">Selecione o artigo para jogar. Palavras geradas por Inteligência Artificial sob demanda.</p>
               <div className="grid gap-3 h-[60vh] overflow-y-auto pr-2">
                 {articles.length === 0 && (
@@ -465,7 +470,7 @@ const ForcaPage = () => {
             >
               <div className="flex items-center justify-between mb-8">
                 <div className="flex flex-col gap-1">
-                  <h3 className="font-display font-bold text-muted-foreground text-sm uppercase tracking-wider">{selectedLaw.nome_curto}</h3>
+                  <h3 className="font-display font-bold text-muted-foreground text-sm uppercase tracking-wider">{selectedLaw.nome}</h3>
                   <h2 className="font-display font-black text-2xl text-foreground leading-none">{selectedArticle.nome}</h2>
                 </div>
                 <div className="flex gap-2">
