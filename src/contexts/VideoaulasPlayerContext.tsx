@@ -10,8 +10,11 @@ export interface AulaVideo {
   descricao?: string | null;
   thumb?: string | null;
   thumbnail?: string | null;
+  capa?: string | null;
+  professor?: string | null;
   catalogoId?: string;
   areaSlug?: string;
+  tempoInicial?: number;
 }
 
 interface VideoaulasPlayerContextType {
@@ -32,6 +35,7 @@ interface VideoaulasPlayerContextType {
 
 const Ctx = createContext<VideoaulasPlayerContextType | undefined>(undefined);
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useVideoaulasPlayer() {
   const ctx = useContext(Ctx);
   if (!ctx) throw new Error('useVideoaulasPlayer deve ser usado dentro de VideoaulasPlayerProvider');
@@ -56,7 +60,7 @@ export const VideoaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
   const tocarVideo = useCallback((aula: AulaVideo) => {
     setAtual(aula);
     setTocando(true);
-    setTempo(0);
+    setTempo(aula.tempoInicial || 0);
   }, []);
 
   const togglePlay = useCallback(() => {

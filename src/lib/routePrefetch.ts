@@ -10,6 +10,7 @@ export const routePrefetch = {
   locais:   () => import("@/pages/LocaisJuridicos.tsx"),
   desktop:  () => import("@/pages/DesktopPromo.tsx"),
   blog:     () => import("@/pages/Blog.tsx"),
+  meuEspaco: () => import("@/pages/MeuEspaco.tsx"),
   biblioteca: () => import("@/pages/Bibliotecas.tsx"),
   assistenteHorus: () => import("@/pages/AssistenteHorus.tsx"),
   resumosJuridicos: () => import("@/pages/resumos-juridicos/ResumosJuridicosAreas.tsx"),

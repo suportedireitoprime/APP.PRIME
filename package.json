@@ -16,6 +16,8 @@
     "electron:pack": "bun run build:electron && electron-builder",
     "export:laws": "node scripts/export-laws.mjs",
     "export:offline": "node scripts/export-offline-bundle.mjs",
+    "export:covers": "node scripts/export-offline-covers.mjs",
+    "export:all": "node scripts/export-laws.mjs && node scripts/export-offline-bundle.mjs && node scripts/export-offline-covers.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",

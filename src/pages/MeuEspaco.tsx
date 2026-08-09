@@ -5,6 +5,7 @@ import {
   ChevronLeft, ChevronRight, Camera, Pencil, Check,
   StickyNote, Highlighter, Star, BookMarked,
   Scale, FileText, Film, Gavel, BookOpen, Sparkles, Calendar,
+  NotebookPen, Video,
 } from "lucide-react";
 import { haptic } from "@/lib/nativeHaptics";
 import { supabase } from "@/integrations/supabase/client";
@@ -438,6 +439,43 @@ const MeuEspaco = () => {
               {bio || <span className="text-muted-foreground italic">Diga algo sobre você, sua área do Direito, o que estuda...</span>}
             </p>
           )}
+        </div>
+      </div>
+
+      {/* Destaques (Removidos da Home) */}
+      <div className="px-5 mt-6 lg:px-0">
+        <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold mb-2 px-1">Atalhos Principais</p>
+        <div className="space-y-2.5">
+          {[
+            { id: 'leituras',    label: 'Minhas Leituras',  sub: 'Livros em andamento e progresso',  icon: BookOpen,      color: '#FFD400', route: '/minhas-leituras' },
+            { id: 'resumos',     label: 'Meus Resumos',     sub: 'Favoritos e abertos recentemente', icon: NotebookPen,   color: '#22D3EE', route: '/meus-resumos' },
+            { id: 'videoaulas',  label: 'Minhas Videoaulas',sub: 'Em andamento e favoritas',         icon: Video,         color: '#FF2D78', route: '/minhas-videoaulas' },
+          ].map((it) => (
+            <button
+              key={it.id}
+              onClick={() => go(it.route)}
+              data-track={`meu_espaco_${it.id}`}
+              className="w-full flex items-center gap-3 px-4 py-5 min-h-[76px] rounded-2xl bg-secondary/40 border border-border/60 shadow-sm active:scale-[0.99] transition hover:bg-secondary/60 text-left"
+            >
+              <it.icon
+                className="w-8 h-8 shrink-0"
+                style={{
+                  color: it.color,
+                  filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))',
+                }}
+                strokeWidth={1.15}
+              />
+              <div className="flex-1 min-w-0">
+                <p className="font-display text-foreground text-[15.5px] font-bold leading-tight truncate">
+                  {it.label}
+                </p>
+                <p className="font-body text-muted-foreground text-[12px] leading-tight truncate mt-0.5">
+                  {it.sub}
+                </p>
+              </div>
+              <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
+            </button>
+          ))}
         </div>
       </div>
 

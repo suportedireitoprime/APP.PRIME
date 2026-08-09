@@ -559,14 +559,14 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
         </div>
       )}
 
-      {/* Lembretes — central única */}
+      {/* Lembretes e Assistente */}
       <div className="px-1 pb-6">
         <h3 className="font-display text-foreground text-[18px] font-bold mb-3 flex items-center gap-2">
           <span className="w-1 h-5 rounded-full bg-primary" />
-          Lembretes
+          Lembretes & Hórus
         </h3>
         <p className="font-body text-muted-foreground text-[12.5px] leading-snug mb-3 ml-3">
-          Todos os lembretes que você ativou no app, em um só lugar.
+          Todos os lembretes que você ativou no app e o seu assistente jurídico.
         </p>
         <div className="space-y-2.5">
           <button
@@ -592,49 +592,30 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
             </div>
             <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
           </button>
-        </div>
-      </div>
 
-      {/* Meu Espaço — em lista */}
-      <div className="px-1 pb-6">
-        <h3 className="font-display text-foreground text-[18px] font-bold mb-3 flex items-center gap-2">
-          <span className="w-1 h-5 rounded-full bg-primary" />
-          Meu Espaço
-        </h3>
-        <p className="font-body text-muted-foreground text-[12.5px] leading-snug mb-3 ml-3">
-          Continue de onde parou: leituras, resumos e videoaulas.
-        </p>
-        <div className="space-y-2.5">
-          {[
-            { id: 'leituras',    label: 'Minhas Leituras',  sub: 'Livros em andamento e progresso',  icon: BookOpen,      color: '#FFD400', route: '/minhas-leituras' },
-            { id: 'resumos',     label: 'Meus Resumos',     sub: 'Favoritos e abertos recentemente', icon: NotebookPen,   color: '#22D3EE', route: '/meus-resumos' },
-            { id: 'videoaulas',  label: 'Minhas Videoaulas',sub: 'Em andamento e favoritas',         icon: Video,         color: '#FF2D78', route: '/minhas-videoaulas' },
-          ].map((it) => (
-            <button
-              key={it.id}
-              onClick={() => navigate(it.route)}
-              data-track={`home_meu_espaco_${it.id}`}
-              className="w-full flex items-center gap-3 px-4 py-5 min-h-[76px] rounded-2xl bg-card border border-border/60 shadow-sm active:scale-[0.99] transition"
-            >
-              <it.icon
-                className="w-8 h-8 shrink-0"
-                style={{
-                  color: it.color,
-                  filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))',
-                }}
-                strokeWidth={1.15}
-              />
-              <div className="flex-1 min-w-0 text-left">
-                <p className="font-display text-foreground text-[15.5px] font-bold leading-tight truncate">
-                  {it.label}
-                </p>
-                <p className="font-body text-muted-foreground text-[12px] leading-tight truncate mt-0.5">
-                  {it.sub}
-                </p>
-              </div>
-              <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
-            </button>
-          ))}
+          <button
+            onClick={() => navigate('/assistente-horus')}
+            data-track="home_horus_click"
+            className="w-full flex items-center gap-3 px-4 py-5 min-h-[76px] rounded-2xl bg-card border border-border/60 shadow-sm active:scale-[0.99] transition"
+          >
+            <MessageCircle
+              className="w-8 h-8 shrink-0"
+              style={{
+                color: '#25D366', // Cor verde do WhatsApp
+                filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))',
+              }}
+              strokeWidth={1.15}
+            />
+            <div className="flex-1 min-w-0 text-left">
+              <p className="font-display text-foreground text-[15.5px] font-bold leading-tight truncate">
+                Hórus
+              </p>
+              <p className="font-body text-muted-foreground text-[12px] leading-tight truncate mt-0.5">
+                Seu assistente jurídico no WhatsApp
+              </p>
+            </div>
+            <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
+          </button>
         </div>
       </div>
 

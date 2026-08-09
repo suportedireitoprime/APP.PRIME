@@ -115,7 +115,7 @@ const setPlaybackState = (playbackState: MediaSessionPlaybackState) => {
   }
 };
 
-const setPositionState = (opts: { duration: number; position: number; playbackRate: number }) => {
+export const setPositionState = (opts: { duration: number; position: number; playbackRate: number }) => {
   if (isNativePluginSupported()) {
     try {
       void MediaSession.setPositionState(opts).catch(() => {});
@@ -164,6 +164,24 @@ const setActionHandler = (
 const limpezas = new WeakMap<HTMLAudioElement, () => void>();
 let audioAtivo: HTMLAudioElement | null = null;
 
+export type RegistrarMidiaArgs = {
+  /** Linha principal da notificação. */
+  titulo: string;
+  /** Linha secundária (lei, matéria, área…). */
+  subtitulo?: string;
+  /** Agrupador opcional (ex.: "Leis Cantadas", "Audioaulas"). */
+  album?: string;
+  /** URL da capa/thumb. Relativa ou absoluta. */
+  capaUrl?: string;
+  audio: HTMLAudioElement;
+  onNext?: Handler;
+  onPrev?: Handler;
+  onStop?: Handler;
+  onSeek?: (timeSec: number) => void;
+  /** Se false, não sincroniza a posição com o audio (útil quando a posição vem de outra fonte, ex: youtube) */
+  syncPosition?: boolean;
+};
+
 /**
  * Registra o áudio como a mídia atual do sistema.
  * Chame no momento em que a reprodução começa (ou ao trocar de faixa).
@@ -178,6 +196,7 @@ export function registrarMidia({
   onPrev,
   onStop,
   onSeek,
+  syncPosition = true,
 }: RegistrarMidiaArgs) {
   if (typeof window === 'undefined' || !audio) return;
 
@@ -216,15 +235,20 @@ export function registrarMidia({
       onStop?.();
     });
     setActionHandler('seekbackward', () => {
-      audio.currentTime = Math.max(0, audio.currentTime - 10);
+      if (syncPosition) audio.currentTime = Math.max(0, audio.currentTime - 10);
+      else onSeek?.(Math.max(0, audio.currentTime - 10)); // approximate if syncPosition false but no real pos known by audio
     });
     setActionHandler('seekforward', () => {
-      const limite = Number.isFinite(audio.duration) ? audio.duration : Number.MAX_SAFE_INTEGER;
-      audio.currentTime = Math.min(limite, audio.currentTime + 10);
+      if (syncPosition) {
+        const limite = Number.isFinite(audio.duration) ? audio.duration : Number.MAX_SAFE_INTEGER;
+        audio.currentTime = Math.min(limite, audio.currentTime + 10);
+      } else {
+        onSeek?.(audio.currentTime + 10);
+      }
     });
     setActionHandler('seekto', (d) => {
       if (d?.seekTime == null) return;
-      audio.currentTime = d.seekTime;
+      if (syncPosition) audio.currentTime = d.seekTime;
       onSeek?.(d.seekTime);
     });
     setActionHandler('nexttrack', onNext ? () => onNext() : null);
@@ -232,6 +256,7 @@ export function registrarMidia({
 
     let ultimaPosicao = -1;
     const atualizarPosicao = (forcar = false) => {
+      if (!syncPosition) return;
       if (!Number.isFinite(audio.duration) || audio.duration <= 0) return;
       const pos = Math.min(audio.currentTime, audio.duration);
       // Evita spam de chamadas na ponte nativa a cada timeupdate.
@@ -260,20 +285,24 @@ export function registrarMidia({
     audio.addEventListener('playing', aoTocar);
     audio.addEventListener('pause', aoPausar);
     audio.addEventListener('ended', aoFinalizar);
-    audio.addEventListener('loadedmetadata', aoMetadata);
-    audio.addEventListener('durationchange', aoMetadata);
-    audio.addEventListener('ratechange', aoMetadata);
-    audio.addEventListener('timeupdate', aoAtualizar);
+    if (syncPosition) {
+      audio.addEventListener('loadedmetadata', aoMetadata);
+      audio.addEventListener('durationchange', aoMetadata);
+      audio.addEventListener('ratechange', aoMetadata);
+      audio.addEventListener('timeupdate', aoAtualizar);
+    }
 
     limpezas.set(audio, () => {
       audio.removeEventListener('play', aoTocar);
       audio.removeEventListener('playing', aoTocar);
       audio.removeEventListener('pause', aoPausar);
       audio.removeEventListener('ended', aoFinalizar);
-      audio.removeEventListener('loadedmetadata', aoMetadata);
-      audio.removeEventListener('durationchange', aoMetadata);
-      audio.removeEventListener('ratechange', aoMetadata);
-      audio.removeEventListener('timeupdate', aoAtualizar);
+      if (syncPosition) {
+        audio.removeEventListener('loadedmetadata', aoMetadata);
+        audio.removeEventListener('durationchange', aoMetadata);
+        audio.removeEventListener('ratechange', aoMetadata);
+        audio.removeEventListener('timeupdate', aoAtualizar);
+      }
       limpezas.delete(audio);
     });
 

@@ -54,7 +54,7 @@ export function useYoutubePlayer({ videoId, startAt = 0, ativo = true, autoplay 
   startRef.current = startAt;
 
   useEffect(() => {
-    if (!ativo || !videoId) return;
+    if (!videoId) return;
     let cancelado = false;
     let timer: number | undefined;
 
@@ -81,7 +81,7 @@ export function useYoutubePlayer({ videoId, startAt = 0, ativo = true, autoplay 
         const t = p.getCurrentTime() || 0;
         const d = p.getDuration() || 0;
         if (d > 0 && t > 0) cbRef.current.onTick?.(t, d);
-      }, 10000);
+      }, 1000);
     });
 
     return () => {
@@ -94,7 +94,17 @@ export function useYoutubePlayer({ videoId, startAt = 0, ativo = true, autoplay 
       }
       playerRef.current = null;
     };
-  }, [videoId, ativo, autoplay]);
+  }, [videoId, autoplay]);
+
+  // Hook para play/pause externo via "ativo"
+  useEffect(() => {
+    if (!pronto || !playerRef.current) return;
+    if (ativo) {
+      playerRef.current.playVideo?.();
+    } else {
+      playerRef.current.pauseVideo?.();
+    }
+  }, [ativo, pronto]);
 
   return { containerRef, playerRef, pronto };
 }

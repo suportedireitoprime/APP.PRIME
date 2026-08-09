@@ -9,12 +9,22 @@
  * Rodado no CI (post-build). Requer VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY.
  * Falha silenciosa se as env vars estiverem ausentes (não quebra o build web em dev).
  */
+import { existsSync, readFileSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
+try {
+  if (existsSync('.env')) {
+    for (const line of readFileSync('.env', 'utf8').split('\n')) {
+      const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)\s*$/);
+      if (m && !process.env[m[1]]) process.env[m[1]] = m[2].replace(/^["']|["']$/g, '');
+    }
+  }
+} catch {}
+
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-const OUT_DIR = process.env.LAWS_BUNDLE_OUT || 'dist/laws-bundle';
+const OUT_DIR = process.env.LAWS_BUNDLE_OUT || 'public/laws-bundle';
 const PAGE_SIZE = 1000;
 
 if (!SUPABASE_URL || !SUPABASE_KEY) {

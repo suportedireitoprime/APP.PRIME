@@ -49,7 +49,8 @@ const VideoaulaView = () => {
   const catalogo = getCatalogo(catalogoId);
   const { user } = useAuth();
   const userId = user?.id ?? null;
-  const { tocarVideo, setTocandoState, setTempoState, setDuracaoState } = useVideoaulasPlayer();
+  const { tocarVideo, tocando, togglePlay, tempo, duracao } = useVideoaulasPlayer();
+  
   // Semente vinda do cache da lista: título e capa aparecem no mesmo frame.
   const [aula, setAula] = useState<Aula | null>(() =>
     catalogo && videoId ? (getCachedAula(catalogo.id, videoId) as Aula | null) : null,
@@ -57,17 +58,14 @@ const VideoaulaView = () => {
   const [aulasDaArea, setAulasDaArea] = useState<Aula[]>([]);
   const [favorito, setFavorito] = useState(false);
   const [concluida, setConcluida] = useState(false);
-  const [inicio, setInicio] = useState(0);
   const [carregado, setCarregado] = useState(false);
-  const [tocando, setTocando] = useState(true);
-  const [tempoAtual, setTempoAtual] = useState(0);
-  const [duracao, setDuracao] = useState(0);
   const [showAnotacoes, setShowAnotacoes] = useState(false);
-  const salvandoRef = useRef(false);
-  const pctAtual = duracao > 0 ? Math.min(100, Math.round((tempoAtual / duracao) * 100)) : 0;
+  const pctAtual = duracao > 0 ? Math.min(100, Math.round((tempo / duracao) * 100)) : 0;
+
+  const [inicio, setInicio] = useState(0);
 
   useEffect(() => {
-    if (aula) {
+    if (aula && (!carregado || aula.video_id !== videoId)) {
       tocarVideo({
         id: aula.id,
         video_id: aula.video_id,
@@ -78,25 +76,15 @@ const VideoaulaView = () => {
         thumbnail: aula.thumbnail,
         catalogoId,
         areaSlug,
+        tempoInicial: inicio,
       });
     }
-  }, [aula, catalogoId, areaSlug, tocarVideo]);
-
-  useEffect(() => {
-    setTocandoState(tocando);
-  }, [tocando, setTocandoState]);
-
-  useEffect(() => {
-    setTempoState(tempoAtual);
-    setDuracaoState(duracao);
-  }, [tempoAtual, duracao, setTempoState, setDuracaoState]);
-
+  }, [aula, catalogoId, areaSlug, tocarVideo, videoId, carregado, inicio]);
 
   useEffect(() => {
     if (!catalogo || !videoId) return;
     let alive = true;
     setAula(getCachedAula(catalogo.id, videoId) as Aula | null);
-    setTocando(true);
     preaquecerYoutubeApi();
 
     void (async () => {
@@ -152,67 +140,6 @@ const VideoaulaView = () => {
     };
   }, [catalogo, videoId, userId]);
 
-  const salvarProgresso = useCallback(
-    async (tempo: number, duracao: number, forcarConclusao = false) => {
-      if (!userId || !catalogo || !videoId || !aula || salvandoRef.current) return;
-      salvandoRef.current = true;
-      const percentual = duracao > 0 ? Math.min(100, Math.round((tempo / duracao) * 100)) : 0;
-      const done = forcarConclusao || percentual >= 92;
-      const { error } = await supabase.from('videoaulas_progresso').upsert(
-        {
-          user_id: userId,
-          tabela: catalogo.tabela,
-          registro_id: String(aula.id),
-          video_id: videoId,
-          tempo_atual: Math.round(tempo),
-          duracao: Math.round(duracao),
-          percentual,
-          concluida: done,
-        },
-        { onConflict: 'user_id,tabela,registro_id' },
-      );
-      salvandoRef.current = false;
-      if (error) console.error('[videoaula] progresso', error.message);
-      else {
-        if (done) setConcluida(true);
-        invalidarProgresso();
-      }
-
-    },
-    [userId, catalogo, videoId, aula],
-  );
-
-  const { containerRef, playerRef } = useYoutubePlayer({
-    videoId: videoId ?? '',
-    ativo: tocando,
-    autoplay: true,
-    startAt: carregado ? inicio : 0,
-    onTick: (t, d) => salvarProgresso(t, d),
-    onEnded: () => {
-      const p = playerRef.current;
-      salvarProgresso(p?.getDuration?.() ?? 0, p?.getDuration?.() ?? 0, true);
-    },
-  });
-
-  // Acompanha o tempo do vídeo para a barra de progresso.
-  useEffect(() => {
-    if (!tocando) return;
-    const id = window.setInterval(() => {
-      const p = playerRef.current;
-      if (!p?.getCurrentTime) return;
-      setTempoAtual(p.getCurrentTime() || 0);
-      const d = p.getDuration ? p.getDuration() : 0;
-      if (d) setDuracao(d);
-    }, 500);
-    return () => window.clearInterval(id);
-  }, [tocando, playerRef]);
-
-  useEffect(() => {
-    if (!tocando && inicio > 0) setTempoAtual(inicio);
-  }, [inicio, tocando]);
-
-
-
   const tituloLimpo = useMemo(
     () => (aula?.titulo ? limparTitulo(aula.titulo) : 'Aula'),
     [aula?.titulo],
@@ -229,17 +156,13 @@ const VideoaulaView = () => {
     };
   }, [catalogo, videoId, aula, tituloLimpo]);
 
-  // O panorama por IA só é pedido depois do primeiro paint, para não competir
-  // com o carregamento da tela.
   const [podeResumir, setPodeResumir] = useState(false);
   useEffect(() => {
     const t = window.setTimeout(() => setPodeResumir(true), 600);
     return () => window.clearTimeout(t);
   }, [videoId]);
 
-  const resumo = useVideoaulaResumo(
-    podeResumir ? input : null
-  );
+  const resumo = useVideoaulaResumo(podeResumir ? input : null);
 
   const toggleFavorito = async () => {
     if (!userId || !catalogo || !aula) return;
@@ -267,36 +190,11 @@ const VideoaulaView = () => {
     invalidarFavoritos();
   };
 
-
-  // Manter tela acesa no aparelho celular enquanto a videoaula estiver rodando
-  useEffect(() => {
-    void telaAcesa('videoaulas', tocando);
-    return () => {
-      void telaAcesa('videoaulas', false);
-    };
-  }, [tocando]);
-
-  // Atalhos de teclado no Desktop (Espaço / 'k' = Play/Pause)
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      const tag = (e.target as HTMLElement)?.tagName?.toUpperCase();
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || (e.target as HTMLElement)?.isContentEditable) {
-        return;
-      }
-      if (e.key === ' ' || e.key === 'k') {
-        e.preventDefault();
-        setTocando((prev) => !prev);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
-
   const marcarConcluida = async () => {
     haptic.success();
-    const p = playerRef.current;
-    const d = p?.getDuration?.() ?? 0;
-    await salvarProgresso(d, d, true);
+    // A lógica de salvar progresso verdadeiro foi movida para GlobalVideoaulaMiniPlayer.
+    // Aqui apenas atualizamos visualmente ou despachamos evento pro context se necessário.
+    setConcluida(true);
     toast.success('Aula marcada como concluída.');
   };
 
@@ -377,33 +275,19 @@ const VideoaulaView = () => {
 
         {/* ── Coluna Principal Central: Player de Vídeo Expandido & Centralizado ───────────── */}
         <div className="lg:col-span-6 xl:col-span-6 space-y-4">
-          <div className="relative w-full bg-black aspect-video lg:rounded-2xl lg:overflow-hidden lg:shadow-2xl lg:border lg:border-white/10">
-            {tocando ? (
-              <div ref={containerRef} className="h-full w-full" />
-            ) : (
-              <button
-                type="button"
-                onClick={() => setTocando(true)}
-                aria-label="Reproduzir aula"
-                className="group absolute inset-0 h-full w-full"
-              >
-                <img
-                  src={aula?.thumb ?? aula?.thumbnail ?? ytThumb(videoId, 'mq')}
-                  alt={`Capa da aula ${tituloLimpo}`}
-                  width={480}
-                  height={360}
-                  loading="eager"
-                  decoding="async"
-                  {...({ fetchpriority: 'high' } as any)}
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
-                <span className="absolute inset-0 grid place-items-center bg-black/30">
-                  <span className="grid h-16 w-16 place-items-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform group-active:scale-95">
-                    <Play className="h-7 w-7 translate-x-0.5 fill-current" />
-                  </span>
-                </span>
-              </button>
-            )}
+          <div 
+            id="videoaula-placeholder"
+            className="relative w-full bg-transparent aspect-video lg:rounded-2xl lg:overflow-hidden"
+          >
+            {/* O GlobalVideoaulaMiniPlayer.tsx vai teletransportar o player para cá */}
+            {/* O próprio placeholder não precisa de fundo porque o player global preenche */}
+            
+            {/* Fallback caso demore a teletransportar: */}
+            <div className="absolute inset-0 bg-black/10 animate-pulse pointer-events-none" />
+          </div>
+
+          <div className="w-full flex items-start gap-4">
+            <div className="flex-1 space-y-2">      </div>
           </div>
 
           <div className="px-3 lg:px-0 space-y-2">
@@ -414,7 +298,7 @@ const VideoaulaView = () => {
               />
             </div>
             <div className="flex items-center justify-between text-[12px] text-muted-foreground tabular-nums">
-              <span>{formatTempo(tempoAtual)}</span>
+              <span>{formatTempo(tempo)}</span>
               <span>{duracao > 0 ? formatTempo(duracao) : '--:--'}</span>
             </div>
             <h1 className="text-[17px] sm:text-xl lg:text-2xl font-bold leading-snug text-foreground">{tituloLimpo}</h1>

@@ -1,6 +1,6 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { GraduationCap, Monitor, ChevronRight, ChevronDown, X, Search, Sparkles, MessageCircle, Bot, BookOpen, WifiOff, StickyNote, Newspaper, ScanEye, Scale, Library, Mic, FileText, FileSignature, Image as ImageIcon, Bell, Gavel, Star, Send, Video, Film, Clapperboard, Bird, Headphones, Layers, ScrollText } from 'lucide-react';
+import { LayoutGrid, GraduationCap, Monitor, ChevronRight, ChevronDown, X, Search, Sparkles, MessageCircle, Bot, BookOpen, WifiOff, StickyNote, Newspaper, ScanEye, Scale, Library, Mic, FileText, FileSignature, Image as ImageIcon, Bell, Gavel, Star, Send, Video, Film, Clapperboard, Bird, Headphones, Layers, ScrollText } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import MentorOverlay from './MentorOverlay';
 // PessoalSheet removido — Meu Espaço agora é rota dedicada (/meu-espaco).
@@ -281,20 +281,20 @@ const BottomNav = () => {
           </button>
 
 
-          {/* Slot 5: Assistente Horus */}
+          {/* Slot 5: Meu Espaço */}
           <button
-            onPointerDown={() => prefetchRoute('assistenteHorus')}
-            onMouseEnter={() => prefetchRoute('assistenteHorus')}
-            onClick={() => { haptic.selection(); navigate('/assistente-horus'); }}
+            onPointerDown={() => prefetchRoute('meuEspaco')}
+            onMouseEnter={() => prefetchRoute('meuEspaco')}
+            onClick={() => { haptic.selection(); navigate('/meu-espaco'); }}
             data-track="bottom_nav_click"
-            data-track-destino="assistente-horus"
+            data-track-destino="meu-espaco"
             className={`flex flex-col items-center justify-center gap-1 py-2 rounded-xl transition-all ${
-              path.startsWith('/assistente-horus') ? 'text-white/90 bg-white/15 ring-1 ring-white/25' : 'text-white/90 hover:bg-white/10'
+              path.startsWith('/meu-espaco') ? 'text-white/90 bg-white/15 ring-1 ring-white/25' : 'text-white/90 hover:bg-white/10'
             }`}
-            aria-label="Assistente Horus"
+            aria-label="Meu Espaço"
           >
-            <Bird className={`w-8 h-8 transition-transform text-white/90 drop-shadow-md ${path.startsWith('/assistente-horus') ? 'scale-110' : ''}`} strokeWidth={1.2} />
-            <span className="font-body text-[12px] font-medium leading-tight text-center text-white/90 drop-shadow-sm">Assistente</span>
+            <LayoutGrid className={`w-8 h-8 transition-transform text-white/90 drop-shadow-md ${path.startsWith('/meu-espaco') ? 'scale-110' : ''}`} strokeWidth={1.2} />
+            <span className="font-body text-[12px] font-medium leading-tight text-center text-white/90 drop-shadow-sm">Meu Espaço</span>
           </button>
         </div>
       </div>
