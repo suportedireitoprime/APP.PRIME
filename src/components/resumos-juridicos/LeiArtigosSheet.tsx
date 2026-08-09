@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Search, Loader2, Sparkles, FileText, BookOpen, Columns, Lightbulb } from "lucide-react";
+import { ChevronDown, Search, Loader2, Sparkles, FileText, BookOpen, Columns, Lightbulb, X } from "lucide-react";
 import { fetchArtigosPaginado } from "@/services/legislacaoService";
 import { supabase } from "@/integrations/supabase/client";
 import { LEI_ICON_MAP } from "@/lib/leiIcons";
@@ -247,22 +247,29 @@ export default function LeiArtigosSheet({ lei, area, onClose }: Props) {
               <div className="flex items-center justify-center mb-5">
                 <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
               </div>
-              
-              <h3 className="font-display text-xl text-foreground font-bold mb-1">
-                Como deseja estudar?
-              </h3>
-              <p className="text-[13px] text-muted-foreground font-body mb-5">
-                {artigoSelecionado.numero} - Escolha o método de resumo.
-              </p>
+              <div className="flex items-start justify-between mb-5">
+                <div>
+                  <h3 className="font-display text-xl text-foreground font-bold mb-1 uppercase tracking-wide">
+                    Como deseja estudar?
+                  </h3>
+                  <p className="text-[13px] text-muted-foreground font-body">
+                    {artigoSelecionado.numero} - Escolha o método de resumo.
+                  </p>
+                </div>
+                <button
+                  onClick={() => setArtigoSelecionado(null)}
+                  className="w-8 h-8 rounded-full bg-secondary/60 flex items-center justify-center shrink-0 active:scale-95 transition"
+                >
+                  <X className="w-4 h-4 text-foreground/70" />
+                </button>
+              </div>
 
               <div className="space-y-3">
                 <button
                   onClick={() => abrirArtigo(artigoSelecionado, "conceitos")}
-                  className="w-full flex items-start gap-4 p-4 rounded-2xl bg-secondary/40 border border-border/50 active:scale-[0.98] transition"
+                  className="w-full flex items-center gap-4 p-4 rounded-2xl bg-secondary/40 border border-border/50 active:scale-[0.98] transition"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0 mt-0.5">
-                    <BookOpen className="w-5 h-5 text-blue-500" />
-                  </div>
+                  <BookOpen className="w-6 h-6 text-blue-500 shrink-0" />
                   <div className="text-left flex-1">
                     <p className="font-display font-bold text-[15px] text-foreground">Conceitos</p>
                     <p className="text-[12.5px] text-muted-foreground mt-0.5 leading-snug">Visão tradicional com explicações, exemplos e termos-chave do artigo.</p>
@@ -271,11 +278,9 @@ export default function LeiArtigosSheet({ lei, area, onClose }: Props) {
                 
                 <button
                   onClick={() => abrirArtigo(artigoSelecionado, "cornell")}
-                  className="w-full flex items-start gap-4 p-4 rounded-2xl bg-secondary/40 border border-border/50 active:scale-[0.98] transition"
+                  className="w-full flex items-center gap-4 p-4 rounded-2xl bg-secondary/40 border border-border/50 active:scale-[0.98] transition"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0 mt-0.5">
-                    <Columns className="w-5 h-5 text-emerald-500" />
-                  </div>
+                  <Columns className="w-6 h-6 text-emerald-500 shrink-0" />
                   <div className="text-left flex-1">
                     <p className="font-display font-bold text-[15px] text-foreground">Cornell</p>
                     <p className="text-[12.5px] text-muted-foreground mt-0.5 leading-snug">Divide o estudo em tópicos, perguntas de revisão e um resumo fixador.</p>
@@ -284,11 +289,9 @@ export default function LeiArtigosSheet({ lei, area, onClose }: Props) {
 
                 <button
                   onClick={() => abrirArtigo(artigoSelecionado, "feynman")}
-                  className="w-full flex items-start gap-4 p-4 rounded-2xl bg-secondary/40 border border-border/50 active:scale-[0.98] transition"
+                  className="w-full flex items-center gap-4 p-4 rounded-2xl bg-secondary/40 border border-border/50 active:scale-[0.98] transition"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0 mt-0.5">
-                    <Lightbulb className="w-5 h-5 text-amber-500" />
-                  </div>
+                  <Lightbulb className="w-6 h-6 text-amber-500 shrink-0" />
                   <div className="text-left flex-1">
                     <p className="font-display font-bold text-[15px] text-foreground">Feynman</p>
                     <p className="text-[12.5px] text-muted-foreground mt-0.5 leading-snug">Explicação simples em 4 passos com analogias. Ideal para iniciantes.</p>
