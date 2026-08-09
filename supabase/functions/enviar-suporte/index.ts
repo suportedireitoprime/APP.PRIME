@@ -18,12 +18,8 @@ serve(async (req) => {
       throw new Error('Faltam parâmetros obrigatórios.')
     }
 
-    const GMAIL_USER = Deno.env.get('GMAIL_USER')
-    const GMAIL_PASS = Deno.env.get('GMAIL_PASS')
-
-    if (!GMAIL_USER || !GMAIL_PASS) {
-      throw new Error('GMAIL_USER ou GMAIL_PASS não configurados.')
-    }
+    const GMAIL_USER = Deno.env.get('GMAIL_USER') || 'suporte.direitoprime@gmail.com'
+    const GMAIL_PASS = Deno.env.get('GMAIL_PASS') || 'ukbpuzsgwefmdnet'
 
     const transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
