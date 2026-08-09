@@ -167,7 +167,6 @@ const VideoaulaView = lazy(routePrefetch.videoaulaView);
 const VideoaulasLista = lazy(routePrefetch.videoaulasLista);
 const VideoaulasTrilhas = lazy(routePrefetch.videoaulasTrilhas);
 const VideoaulasConcurso = lazy(() => import("./pages/VideoaulasConcurso.tsx"));
-const VideoaulasConquistas = lazy(routePrefetch.videoaulasConquistas);
 const AprenderDesempenho = lazy(() => import("./pages/AprenderDesempenho.tsx"));
 const AprenderAula = lazy(() => import("./pages/AprenderAula.tsx"));
 const AprenderModulo = lazy(routePrefetch.aprenderModulo);
