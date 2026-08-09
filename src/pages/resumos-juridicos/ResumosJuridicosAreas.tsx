@@ -49,19 +49,19 @@ type Aba = "areas" | "leis" | "jurisprudencia";
 const ABAS: { id: Aba; label: string; icon: typeof Gavel }[] = [
   { id: "leis", label: "Leis", icon: ScrollText },
   { id: "areas", label: "Matérias", icon: BookOpen },
-  { id: "jurisprudencia", label: "Juris.", icon: Gavel },
+  { id: "jurisprudencia", label: "Jurisprudência", icon: Gavel },
 ];
 
 const JURIS_ITENS: { label: string; desc: string; rota: string; color: string }[] = [
-  { label: "Súmulas Vinculantes", desc: "STF · efeito vinculante", rota: "/jurisprudencia/sumulas-vinculantes", color: "#f87171" },
-  { label: "Súmulas do STF", desc: "Enunciados do Supremo", rota: "/jurisprudencia/sumulas-stf", color: "#60a5fa" },
-  { label: "Súmulas do STJ", desc: "Enunciados do Superior", rota: "/jurisprudencia/sumulas-stj", color: "#34d399" },
-  { label: "Informativos do STF", desc: "Julgados recentes", rota: "/jurisprudencia/informativos-stf", color: "#a78bfa" },
-  { label: "Informativos do STJ", desc: "Julgados recentes", rota: "/jurisprudencia/informativos-stj", color: "#22d3ee" },
-  { label: "Teses do STF", desc: "Repercussão geral", rota: "/jurisprudencia/teses-stf", color: "#fbbf24" },
-  { label: "Teses do STJ", desc: "Jurisprudência em teses", rota: "/jurisprudencia/teses-stj", color: "#fb923c" },
-  { label: "Pesquisas prontas STF", desc: "Temas selecionados", rota: "/jurisprudencia/prontas/stf", color: "#f472b6" },
-  { label: "Pesquisas prontas STJ", desc: "Temas selecionados", rota: "/jurisprudencia/prontas/stj", color: "#a3e635" },
+  { label: "Súmulas Vinculantes", desc: "STF · efeito vinculante", rota: "/resumos-juridicos/jurisprudencia/sumulas-vinculantes", color: "#f87171" },
+  { label: "Súmulas do STF", desc: "Enunciados do Supremo", rota: "/resumos-juridicos/jurisprudencia/sumulas-stf", color: "#60a5fa" },
+  { label: "Súmulas do STJ", desc: "Enunciados do Superior", rota: "/resumos-juridicos/jurisprudencia/sumulas-stj", color: "#34d399" },
+  { label: "Informativos do STF", desc: "Julgados recentes", rota: "/resumos-juridicos/jurisprudencia/informativos-stf", color: "#a78bfa" },
+  { label: "Informativos do STJ", desc: "Julgados recentes", rota: "/resumos-juridicos/jurisprudencia/informativos-stj", color: "#22d3ee" },
+  { label: "Teses do STF", desc: "Repercussão geral", rota: "/resumos-juridicos/jurisprudencia/teses-stf", color: "#fbbf24" },
+  { label: "Teses do STJ", desc: "Jurisprudência em teses", rota: "/resumos-juridicos/jurisprudencia/teses-stj", color: "#fb923c" },
+  { label: "Pesquisas prontas STF", desc: "Temas selecionados", rota: "/resumos-juridicos/jurisprudencia/prontas-stf", color: "#f472b6" },
+  { label: "Pesquisas prontas STJ", desc: "Temas selecionados", rota: "/resumos-juridicos/jurisprudencia/prontas-stj", color: "#a3e635" },
 ];
 
 
@@ -514,7 +514,7 @@ export default function ResumosJuridicosAreas() {
                     { id: "todos", label: "Todos" },
                     { id: "areas", label: "Matérias" },
                     { id: "leis", label: "Leis" },
-                    { id: "jurisprudencia", label: "Juris." },
+                    { id: "jurisprudencia", label: "Jurisprudência" },
                   ] as const).map((f) => {
                     const ativo = filtroBusca === f.id;
                     return (

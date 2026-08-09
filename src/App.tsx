@@ -80,6 +80,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 // Lazy loaded
 const CategoriaLegislacao = lazy(() => import("./pages/CategoriaLegislacao.tsx"));
+const ResumosJuridicosJurisprudencia = lazy(() => import("./pages/resumos-juridicos/ResumosJuridicosJurisprudencia.tsx"));
 const Noticias = lazy(routePrefetch.noticias);
 const Novidades = lazy(() => import("./pages/Novidades.tsx"));
 const Anotacoes = lazy(() => import("./pages/Anotacoes.tsx"));
@@ -794,6 +795,7 @@ function AnimatedRoutes() {
           <Route path="/resumos-juridicos" element={<ProtectedRoute><PageTransition><ResumosJuridicosAreas /></PageTransition></ProtectedRoute>} />
           <Route path="/resumos-juridicos/favoritos" element={<ProtectedRoute><PageTransition><ResumosJuridicosLista modo="favoritos" /></PageTransition></ProtectedRoute>} />
           <Route path="/resumos-juridicos/recentes" element={<ProtectedRoute><PageTransition><ResumosJuridicosLista modo="recentes" /></PageTransition></ProtectedRoute>} />
+          <Route path="/resumos-juridicos/jurisprudencia/:categoria" element={<ProtectedRoute><PageTransition><ResumosJuridicosJurisprudencia /></PageTransition></ProtectedRoute>} />
           <Route path="/resumos-juridicos/:area" element={<ProtectedRoute><PageTransition><ResumosJuridicosTemas /></PageTransition></ProtectedRoute>} />
           <Route path="/resumos-juridicos/:area/:tema" element={<ProtectedRoute><PageTransition><ResumosJuridicosSubtemas /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes" element={<ProtectedRoute><PageTransition><Questoes /></PageTransition></ProtectedRoute>} />
