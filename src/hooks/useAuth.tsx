@@ -68,6 +68,8 @@ interface AuthContextType {
   signInWithApple: () => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: Error | null }>;
+  verifyOtp: (email: string, token: string, type: 'recovery') => Promise<{ error: Error | null }>;
+  updatePassword: (password: string) => Promise<{ error: Error | null }>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -80,6 +82,8 @@ const AuthContext = createContext<AuthContextType>({
   signInWithApple: async () => ({ error: null }),
   signOut: async () => {},
   resetPassword: async () => ({ error: null }),
+  verifyOtp: async () => ({ error: null }),
+  updatePassword: async () => ({ error: null }),
 });
 
 const readCachedSession = (): Session | null => {
@@ -234,6 +238,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error as Error | null };
   }, []);
 
+  const verifyOtp = useCallback(async (email: string, token: string, type: 'recovery') => {
+    const { error } = await supabase.auth.verifyOtp({ email, token, type });
+    return { error: error as Error | null };
+  }, []);
+
+  const updatePassword = useCallback(async (password: string) => {
+    const { error } = await supabase.auth.updateUser({ password });
+    return { error: error as Error | null };
+  }, []);
+
   const signInWithGoogle = useCallback(async () => {
     const isNative = Capacitor.isNativePlatform();
 
@@ -374,7 +388,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, signIn, signUp, signInWithGoogle, signInWithApple, signOut, resetPassword }}>
+    <AuthContext.Provider value={{ user, session, loading, signIn, signUp, signInWithGoogle, signInWithApple, signOut, resetPassword, verifyOtp, updatePassword }}>
       {children}
     </AuthContext.Provider>
   );

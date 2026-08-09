@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import nodemailer from "npm:nodemailer@6.9.13"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -17,36 +18,37 @@ serve(async (req) => {
       throw new Error('Faltam parâmetros obrigatórios.')
     }
 
-    const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
-    if (!RESEND_API_KEY) throw new Error('RESEND_API_KEY não configurada.')
+    const GMAIL_USER = Deno.env.get('GMAIL_USER')
+    const GMAIL_PASS = Deno.env.get('GMAIL_PASS')
 
-    // Enviar o e-mail via Resend
-    const res = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${RESEND_API_KEY}`
+    if (!GMAIL_USER || !GMAIL_PASS) {
+      throw new Error('GMAIL_USER ou GMAIL_PASS não configurados.')
+    }
+
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
+      auth: {
+        user: GMAIL_USER,
+        pass: GMAIL_PASS,
       },
-      body: JSON.stringify({
-        from: 'Suporte App Prime <onboarding@resend.dev>',
-        reply_to: email, // Quando a equipe responder, vai para o usuário
-        to: ['suporte.direitoprime@gmail.com'], // O destino final do suporte
-        subject: `[SUPORTE] ${assunto} - ${email}`,
-        html: `
-          <h3>Nova mensagem de Suporte - Direito Prime</h3>
-          <p><strong>Usuário (Email):</strong> ${email}</p>
-          <p><strong>Assunto:</strong> ${assunto}</p>
-          <hr />
-          <p><strong>Mensagem:</strong></p>
-          <p style="white-space: pre-wrap;">${mensagem}</p>
-        `
-      })
     })
 
-    if (!res.ok) {
-      const errorText = await res.text()
-      throw new Error(`Erro no Resend: ${errorText}`)
-    }
+    await transporter.sendMail({
+      from: `"Suporte App Prime" <${GMAIL_USER}>`,
+      replyTo: email,
+      to: 'suporte.direitoprime@gmail.com',
+      subject: `[SUPORTE] ${assunto} - ${email}`,
+      html: `
+        <h3>Nova mensagem de Suporte - Direito Prime</h3>
+        <p><strong>Usuário (Email):</strong> ${email}</p>
+        <p><strong>Assunto:</strong> ${assunto}</p>
+        <hr />
+        <p><strong>Mensagem:</strong></p>
+        <p style="white-space: pre-wrap;">${mensagem}</p>
+      `
+    })
 
     return new Response(JSON.stringify({ success: true }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

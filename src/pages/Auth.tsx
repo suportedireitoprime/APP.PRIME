@@ -331,10 +331,12 @@ const LandingScreen = ({ onStart }: { onStart: () => void }) => (
 
 /* ─── Auth Form Screen ─── */
 const AuthFormScreen = ({ onBack }: { onBack: () => void }) => {
-  const { signIn, signUp, resetPassword, signInWithGoogle, signInWithApple } = useAuth();
+  const { signIn, signUp, resetPassword, verifyOtp, updatePassword, signInWithGoogle, signInWithApple } = useAuth();
   const navigateForm = useNavigate();
   const [mode, setMode] = useState<'login' | 'signup' | 'forgot'>('login');
   const [resetEmailSent, setResetEmailSent] = useState(false);
+  const [resetCode, setResetCode] = useState('');
+  const [resetNewPassword, setResetNewPassword] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
@@ -389,11 +391,42 @@ const AuthFormScreen = ({ onBack }: { onBack: () => void }) => {
     track(`${mode}_attempted`, { email_domain: email.split('@')[1] ?? 'unknown' });
     try {
       if (mode === 'forgot') {
-        const { error } = await resetPassword(email);
-        if (error) throw error;
-        track('password_reset_sent', { email_domain: email.split('@')[1] ?? 'unknown' });
-        toast.success('Enviamos o link de recuperação para seu email.');
-        setResetEmailSent(true);
+        if (!resetEmailSent) {
+          const { error } = await resetPassword(email);
+          if (error) throw error;
+          track('password_reset_sent', { email_domain: email.split('@')[1] ?? 'unknown' });
+          toast.success('Enviamos o código de recuperação para seu email.');
+          setResetEmailSent(true);
+        } else {
+          // Verify OTP and then update password
+          if (!resetCode || !resetNewPassword) {
+            toastErroAuth('Preencha o código e a nova senha.');
+            setSubmitting(false);
+            return;
+          }
+          if (resetNewPassword.length < 6) {
+            toastErroAuth('A nova senha deve ter pelo menos 6 caracteres.');
+            setSubmitting(false);
+            return;
+          }
+          
+          const { error: otpError } = await verifyOtp(email, resetCode.trim(), 'recovery');
+          if (otpError) throw otpError;
+          
+          const { error: updateError } = await updatePassword(resetNewPassword);
+          if (updateError) throw updateError;
+          
+          toast.success('Senha atualizada com sucesso! Entrando...');
+          track('password_reset_success', { email_domain: email.split('@')[1] ?? 'unknown' });
+          
+          let sessao = null as Awaited<ReturnType<typeof supabase.auth.getSession>>['data']['session'];
+          for (let i = 0; i < 6 && !sessao; i++) {
+            const { data: sess } = await supabase.auth.getSession();
+            sessao = sess.session;
+            if (!sessao) await new Promise((r) => setTimeout(r, 250));
+          }
+          if (sessao) navigateForm('/', { replace: true });
+        }
       } else if (mode === 'login') {
         const { error } = await signIn(email, password);
         if (error) throw error;
@@ -588,6 +621,21 @@ const AuthFormScreen = ({ onBack }: { onBack: () => void }) => {
             </div>
           )}
 
+          {mode === 'forgot' && resetEmailSent && (
+            <>
+              <div className="relative">
+                <input type="text" name="code" placeholder="Código de 6 dígitos" value={resetCode} onChange={(e) => setResetCode(e.target.value)} required className={inputCls} maxLength={6} />
+                <KeyRound className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              </div>
+              <div className="relative">
+                <input type={showPassword ? 'text' : 'password'} name="new-password" placeholder="Nova senha (mín. 6 caracteres)" value={resetNewPassword} onChange={(e) => setResetNewPassword(e.target.value)} required minLength={6} className={inputCls} />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </>
+          )}
+
           {!resetEmailSent && (
             <button
               type="submit"
@@ -602,6 +650,23 @@ const AuthFormScreen = ({ onBack }: { onBack: () => void }) => {
                   {mode === 'signup' && 'Criar Conta'}
                   {mode === 'forgot' && 'Enviar link de recuperação'}
                   <ArrowRight className="w-5 h-5" />
+                </>
+              )}
+            </button>
+          )}
+
+          {resetEmailSent && (
+            <button
+              type="submit"
+              disabled={submitting}
+              className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-body font-bold text-base flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50 shadow-lg shadow-primary/25"
+            >
+              {submitting ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <>
+                  Redefinir Senha
+                  <CheckCircle className="w-5 h-5" />
                 </>
               )}
             </button>
