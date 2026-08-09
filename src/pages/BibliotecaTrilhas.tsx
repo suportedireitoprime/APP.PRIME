@@ -13,6 +13,7 @@ const SetupLivro = ({ onSelect, onCancel }: { onSelect: (livro: LivroNormalizado
   const [busca, setBusca] = useState('');
   const [livros, setLivros] = useState<LivroNormalizado[]>([]);
   const [loading, setLoading] = useState(false);
+  const [categoriaAberta, setCategoriaAberta] = useState<string | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -20,7 +21,7 @@ const SetupLivro = ({ onSelect, onCancel }: { onSelect: (livro: LivroNormalizado
       setLoading(true);
       try {
         const promises = COLECOES.filter(c => !c.adminOnly).map(async (colecao) => {
-          const { data } = await supabase.from(colecao.table as any).select(colecao.select).limit(50);
+          const { data } = await supabase.from(colecao.table as any).select(colecao.select).limit(500);
           return (data || []).map((r: any) => normalizeLivro(r, colecao));
         });
         const results = await Promise.all(promises);
@@ -33,52 +34,88 @@ const SetupLivro = ({ onSelect, onCancel }: { onSelect: (livro: LivroNormalizado
     return () => { alive = false; };
   }, []);
 
+  const grupos = useMemo(() => {
+    const map = new Map<string, LivroNormalizado[]>();
+    for (const l of livros) {
+      const g = l.area || (COLECOES.find(c => c.id === l.colecaoId)?.titulo || 'Outros');
+      if (!map.has(g)) map.set(g, []);
+      map.get(g)!.push(l);
+    }
+    return Array.from(map.entries()).sort((a,b) => a[0].localeCompare(b[0]));
+  }, [livros]);
+
   const filtrados = useMemo(() => {
-    if (!busca) return livros.slice(0, 20); // show some default
+    if (!categoriaAberta) return [];
+    const lista = grupos.find(g => g[0] === categoriaAberta)?.[1] || [];
+    if (!busca) return lista;
     const q = busca.toLowerCase();
-    return livros.filter(l => l.titulo?.toLowerCase().includes(q) || l.autor?.toLowerCase().includes(q)).slice(0, 50);
-  }, [busca, livros]);
+    return lista.filter(l => l.titulo?.toLowerCase().includes(q) || l.autor?.toLowerCase().includes(q));
+  }, [categoriaAberta, grupos, busca]);
 
   return (
-    <motion.div initial="hidden" animate="show" exit={{ opacity: 0, y: -20 }} className="w-full flex flex-col pt-4 px-4 pb-32">
-      <button onClick={onCancel} className="self-start p-2 mb-2 text-muted-foreground hover:text-foreground">
-        <ChevronLeft className="w-6 h-6" />
-      </button>
-      <div className="text-center mb-6">
-        <h2 className="text-2xl font-black text-foreground mb-2">Qual livro ler?</h2>
-        <p className="text-sm text-muted-foreground">Busque a obra no seu acervo</p>
+    <motion.div initial="hidden" animate="show" exit={{ opacity: 0, y: -20 }} className="w-full flex flex-col pb-32">
+      <PageHeader
+        title={categoriaAberta ? categoriaAberta : "Qual livro ler?"}
+        subtitle={categoriaAberta ? "Busque a obra no acervo" : "Escolha a categoria"}
+        onBack={categoriaAberta ? () => { setCategoriaAberta(null); setBusca(''); } : onCancel}
+      />
+      
+      <div className="pt-4 px-4">
+        {categoriaAberta && (
+          <div className="relative mb-6">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <input 
+              type="text" 
+              placeholder="Buscar título ou autor..." 
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              className="w-full bg-card border border-border/50 rounded-full py-4 pl-12 pr-4 text-sm focus:outline-none focus:border-primary transition-colors"
+            />
+          </div>
+        )}
+
+        {loading ? (
+          <div className="flex justify-center py-10"><div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>
+        ) : !categoriaAberta ? (
+          <div className="space-y-3">
+            {grupos.map(([nome, itens]) => (
+              <motion.button
+                key={nome}
+                onClick={() => { haptic.selection(); setCategoriaAberta(nome); }}
+                className="w-full flex items-center justify-between p-4 rounded-3xl border border-border/40 bg-card/60 backdrop-blur-md shadow-sm hover:border-primary/50 transition-all active:scale-[0.98]"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+                    <BookOpen className="w-6 h-6 text-primary" />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-sm font-bold text-foreground">{nome}</p>
+                    <p className="text-xs text-muted-foreground">{itens.length} livros</p>
+                  </div>
+                </div>
+              </motion.button>
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {filtrados.map(livro => (
+              <motion.button
+                key={livro.id}
+                onClick={() => { haptic.selection(); onSelect(livro); }}
+                className="w-full flex items-center gap-4 text-left p-4 rounded-3xl border border-border/40 bg-card/60 backdrop-blur-md shadow-sm hover:border-primary/50 transition-all active:scale-[0.98]"
+              >
+                <div className="w-12 h-16 bg-muted rounded overflow-hidden shrink-0">
+                  {livro.capa ? <img src={livro.capa} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><BookOpen className="w-5 h-5 opacity-30" /></div>}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold leading-tight mb-1 truncate text-foreground">{livro.titulo}</p>
+                  <p className="text-xs text-muted-foreground truncate">{livro.autor || 'Autor Desconhecido'}</p>
+                </div>
+              </motion.button>
+            ))}
+          </div>
+        )}
       </div>
-      <div className="relative mb-6">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-        <input 
-          type="text" 
-          placeholder="Buscar título ou autor..." 
-          value={busca}
-          onChange={(e) => setBusca(e.target.value)}
-          className="w-full bg-card border border-border/50 rounded-full py-4 pl-12 pr-4 text-sm focus:outline-none focus:border-primary transition-colors"
-        />
-      </div>
-      {loading ? (
-         <div className="flex justify-center py-10"><div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>
-      ) : (
-        <div className="space-y-3">
-          {filtrados.map(livro => (
-            <motion.button
-              key={livro.id}
-              onClick={() => { haptic.selection(); onSelect(livro); }}
-              className="w-full flex items-center gap-4 text-left p-4 rounded-3xl border border-border/40 bg-card/60 backdrop-blur-md shadow-sm hover:border-primary/50 transition-all active:scale-[0.98]"
-            >
-              <div className="w-12 h-16 bg-muted rounded overflow-hidden shrink-0">
-                {livro.capa ? <img src={livro.capa} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><BookOpen className="w-5 h-5 opacity-30" /></div>}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold leading-tight mb-1 truncate text-foreground">{livro.titulo}</p>
-                <p className="text-xs text-muted-foreground truncate">{livro.autor || 'Autor Desconhecido'}</p>
-              </div>
-            </motion.button>
-          ))}
-        </div>
-      )}
     </motion.div>
   );
 };
