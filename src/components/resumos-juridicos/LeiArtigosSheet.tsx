@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Search, Loader2, Sparkles, FileText } from "lucide-react";
+import { ChevronDown, Search, Loader2, Sparkles, FileText, BookOpen, Columns, Lightbulb } from "lucide-react";
 import { fetchArtigosPaginado } from "@/services/legislacaoService";
 import { supabase } from "@/integrations/supabase/client";
 import { LEI_ICON_MAP } from "@/lib/leiIcons";
@@ -64,10 +64,23 @@ export default function LeiArtigosSheet({ lei, area, onClose }: Props) {
   const abrirArtigo = async (artigo: ArtigoItem, metodo: Metodo) => {
     if (!lei || gerandoNumero) return;
     setErro(null);
-    setGerandoNumero(artigo.numero);
     setMetodoSelecionado(metodo);
     setArtigoSelecionado(null);
+
     try {
+      // Checagem super-rápida local para não exibir a tela de "Gerando..." se já existir.
+      const { data: cached } = await supabase.from('resumos_juridicos')
+        .select('*')
+        .eq('tabela_codigo', lei.tabela_nome)
+        .eq('numero_artigo', artigo.numero)
+        .maybeSingle();
+
+      if (cached?.markdown) {
+        setResumo(cached as ResumoRow);
+        return;
+      }
+
+      setGerandoNumero(artigo.numero);
       const { data, error } = await supabase.functions.invoke("gerar-resumo-artigo", {
         body: {
           tabela_codigo: lei.tabela_nome,
@@ -245,26 +258,41 @@ export default function LeiArtigosSheet({ lei, area, onClose }: Props) {
               <div className="space-y-3">
                 <button
                   onClick={() => abrirArtigo(artigoSelecionado, "conceitos")}
-                  className="w-full text-left p-4 rounded-2xl bg-secondary/40 border border-border/50 active:scale-[0.98] transition"
+                  className="w-full flex items-start gap-4 p-4 rounded-2xl bg-secondary/40 border border-border/50 active:scale-[0.98] transition"
                 >
-                  <p className="font-display font-bold text-[15px] text-foreground">Conceitos</p>
-                  <p className="text-[12.5px] text-muted-foreground mt-0.5 leading-snug">Visão tradicional com explicações, exemplos e termos-chave do artigo.</p>
+                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0 mt-0.5">
+                    <BookOpen className="w-5 h-5 text-blue-500" />
+                  </div>
+                  <div className="text-left flex-1">
+                    <p className="font-display font-bold text-[15px] text-foreground">Conceitos</p>
+                    <p className="text-[12.5px] text-muted-foreground mt-0.5 leading-snug">Visão tradicional com explicações, exemplos e termos-chave do artigo.</p>
+                  </div>
                 </button>
                 
                 <button
                   onClick={() => abrirArtigo(artigoSelecionado, "cornell")}
-                  className="w-full text-left p-4 rounded-2xl bg-secondary/40 border border-border/50 active:scale-[0.98] transition"
+                  className="w-full flex items-start gap-4 p-4 rounded-2xl bg-secondary/40 border border-border/50 active:scale-[0.98] transition"
                 >
-                  <p className="font-display font-bold text-[15px] text-foreground">Cornell</p>
-                  <p className="text-[12.5px] text-muted-foreground mt-0.5 leading-snug">Divide o estudo em tópicos, perguntas de revisão e um resumo fixador.</p>
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0 mt-0.5">
+                    <Columns className="w-5 h-5 text-emerald-500" />
+                  </div>
+                  <div className="text-left flex-1">
+                    <p className="font-display font-bold text-[15px] text-foreground">Cornell</p>
+                    <p className="text-[12.5px] text-muted-foreground mt-0.5 leading-snug">Divide o estudo em tópicos, perguntas de revisão e um resumo fixador.</p>
+                  </div>
                 </button>
 
                 <button
                   onClick={() => abrirArtigo(artigoSelecionado, "feynman")}
-                  className="w-full text-left p-4 rounded-2xl bg-secondary/40 border border-border/50 active:scale-[0.98] transition"
+                  className="w-full flex items-start gap-4 p-4 rounded-2xl bg-secondary/40 border border-border/50 active:scale-[0.98] transition"
                 >
-                  <p className="font-display font-bold text-[15px] text-foreground">Feynman</p>
-                  <p className="text-[12.5px] text-muted-foreground mt-0.5 leading-snug">Explicação simples em 4 passos com analogias. Ideal para iniciantes.</p>
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0 mt-0.5">
+                    <Lightbulb className="w-5 h-5 text-amber-500" />
+                  </div>
+                  <div className="text-left flex-1">
+                    <p className="font-display font-bold text-[15px] text-foreground">Feynman</p>
+                    <p className="text-[12.5px] text-muted-foreground mt-0.5 leading-snug">Explicação simples em 4 passos com analogias. Ideal para iniciantes.</p>
+                  </div>
                 </button>
               </div>
             </motion.div>
