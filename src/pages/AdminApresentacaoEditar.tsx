@@ -17,8 +17,6 @@ import {
   etaSegundos, formatarEta, type ApresJobEstado,
 } from '@/lib/apresentacaoJob';
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
-
 type Voz = { id: string; genero: string; descricao: string; ativa?: boolean; padrao?: boolean };
 type SlidePreparado = { b64: string; texto: string; thumb: string };
 type Modo = 'materia' | 'lei' | 'livro';
