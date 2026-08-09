@@ -440,7 +440,7 @@ const ForcaPage = () => {
             animate={{ opacity: 1, y: 0 }}
             className="flex flex-col items-center gap-5 w-full"
           >
-            <h2 className={`text-3xl font-black ${status === 'won' ? 'text-emerald-400' : 'text-red-400'}`}>
+            <h2 className={`text-3xl font-black ${status === 'won' ? 'text-emerald-500' : 'text-red-500'}`}>
               {status === 'won' ? 'CORRETO!' : 'FALHOU!'}
             </h2>
             
@@ -461,7 +461,7 @@ const ForcaPage = () => {
               {status === 'won' ? (
                 <button 
                   onClick={() => startPhase(selectedArticle, currentPhaseIndex + 1)}
-                  className="flex-1 px-6 py-4 bg-primary text-primary-foreground rounded-2xl font-bold hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
+                  className="flex-1 px-6 py-4 bg-emerald-500 text-emerald-950 rounded-2xl font-black hover:bg-emerald-400 transition-all flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(16,185,129,0.3)]"
                 >
                   Próxima Fase <ChevronRight className="w-5 h-5" />
                 </button>
