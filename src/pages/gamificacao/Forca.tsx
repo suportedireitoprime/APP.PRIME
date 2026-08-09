@@ -1,11 +1,12 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Skull, Lightbulb, RefreshCw, ChevronRight, BookOpenText } from 'lucide-react';
+import { Skull, Lightbulb, RefreshCw, ChevronRight, BookOpenText, Flame, Star, Trophy } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import { forcaCatalog, ForcaArea, ForcaLaw, ForcaArticle, ForcaWord } from '@/data/forcaCatalog';
 import { useGameSounds } from '@/hooks/useGameSounds';
+import { useForcaProgresso } from '@/hooks/useForcaProgresso';
 
 const MAX_MISTAKES = 6;
 const MAX_HINTS = 3;
@@ -13,6 +14,7 @@ const MAX_HINTS = 3;
 const ForcaPage = () => {
   const navigate = useNavigate();
   const { playClick, playCorrect, playWrong, playWin, playLose, playHint, playTriumph } = useGameSounds();
+  const { progresso, saveProgress } = useForcaProgresso();
   
   const [selectedArea, setSelectedArea] = useState<ForcaArea | null>(null);
   const [selectedLaw, setSelectedLaw] = useState<ForcaLaw | null>(null);
@@ -21,6 +23,11 @@ const ForcaPage = () => {
   const [currentPhaseIndex, setCurrentPhaseIndex] = useState(0);
   const [currentWord, setCurrentWord] = useState<ForcaWord | null>(null);
   const [hintsUsed, setHintsUsed] = useState(0);
+  
+  const currentComboRef = useRef(0);
+  const highestComboRef = useRef(0);
+  const phaseXpRef = useRef(0);
+  const [currentCombo, setCurrentCombo] = useState(0); // for visual
   
   const [guessedLetters, setGuessedLetters] = useState<Set<string>>(new Set());
   const [status, setStatus] = useState<'playing' | 'won' | 'lost' | 'article_completed'>('playing');
@@ -36,6 +43,10 @@ const ForcaPage = () => {
     setCurrentPhaseIndex(phaseIndex);
     setGuessedLetters(new Set());
     setHintsUsed(0);
+    currentComboRef.current = 0;
+    highestComboRef.current = 0;
+    phaseXpRef.current = 0;
+    setCurrentCombo(0);
     setStatus('playing');
   }, []);
 
@@ -58,9 +69,11 @@ const ForcaPage = () => {
     if (isWon) {
       setStatus('won');
       playWin();
+      saveProgress(phaseXpRef.current + 50, highestComboRef.current, true);
     } else if (mistakes >= MAX_MISTAKES) {
       setStatus('lost');
       playLose();
+      saveProgress(phaseXpRef.current, highestComboRef.current, false);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [guessedLetters, mistakes, normalizedTarget, status, currentWord]);
@@ -68,15 +81,25 @@ const ForcaPage = () => {
   const guessLetter = useCallback((letter: string) => {
     if (status !== 'playing' || guessedLetters.has(letter)) return;
     playClick();
+    
+    const isCorrect = normalizedTarget.includes(letter);
+    
+    if (isCorrect) {
+      currentComboRef.current += 1;
+      highestComboRef.current = Math.max(highestComboRef.current, currentComboRef.current);
+      const mult = currentComboRef.current >= 5 ? 2.0 : currentComboRef.current >= 3 ? 1.5 : 1.0;
+      phaseXpRef.current += Math.round(10 * mult);
+      setCurrentCombo(currentComboRef.current);
+    } else {
+      currentComboRef.current = 0;
+      setCurrentCombo(0);
+    }
+    
     setGuessedLetters(prev => {
       const next = new Set(prev).add(letter);
-      // Play correct/wrong after state updates
       setTimeout(() => {
-        if (normalizedTarget.includes(letter)) {
-          playCorrect();
-        } else {
-          playWrong();
-        }
+        if (isCorrect) playCorrect();
+        else playWrong();
       }, 50);
       return next;
     });
@@ -123,7 +146,7 @@ const ForcaPage = () => {
     const randomChar = unguessedChars[Math.floor(Math.random() * unguessedChars.length)];
     playHint();
     setHintsUsed(prev => prev + 1);
-    setGuessedLetters(prev => new Set(prev).add(randomChar));
+    guessLetter(randomChar); // Use guessLetter so it counts for combos and XP!
   };
 
   const renderHangman = () => {
@@ -297,11 +320,15 @@ const ForcaPage = () => {
           onAnimationStart={() => playTriumph()}
           className="flex flex-col items-center justify-center py-12 px-4 text-center space-y-6"
         >
-          <div className="w-20 h-20 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mb-4">
-            <BookOpenText className="w-10 h-10" />
+          <div className="w-20 h-20 bg-emerald-500/20 text-emerald-500 rounded-full flex items-center justify-center mb-4">
+            <Trophy className="w-10 h-10" />
           </div>
-          <h2 className="text-3xl font-black text-foreground">Artigo Concluído!</h2>
-          <p className="text-muted-foreground max-w-md">Você completou todas as fases deste artigo com sucesso.</p>
+          <h2 className="text-3xl font-black text-emerald-400 uppercase">
+            Artigo Dominado!
+          </h2>
+          <p className="text-muted-foreground font-medium max-w-sm">
+            Você concluiu todas as fases deste artigo com excelência e faturou um caminhão de XP.
+          </p>
           <button 
             onClick={() => {
               setSelectedArticle(null);
@@ -316,6 +343,31 @@ const ForcaPage = () => {
 
     return (
       <div className="flex flex-col items-center w-full max-w-2xl mx-auto relative pt-4">
+        {/* Gamification Header */}
+        <div className="w-full bg-zinc-900/60 border border-zinc-800 rounded-2xl p-3 flex flex-wrap gap-2 items-center justify-between shadow-sm mb-6">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center justify-center w-10 h-10 bg-amber-500/20 text-amber-400 rounded-full border border-amber-400/30">
+              <Star className="w-5 h-5" />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xs text-muted-foreground font-bold uppercase tracking-wider">Lvl {progresso?.level || 1}</span>
+              <span className="text-sm font-black text-zinc-100">{progresso?.xp_total || 0} XP</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground font-bold">COMBO</span>
+            <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full font-black text-sm transition-all ${
+              currentCombo >= 5 ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30 shadow-[0_0_15px_rgba(244,63,94,0.3)] animate-pulse' : 
+              currentCombo >= 3 ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 
+              'bg-zinc-800 text-zinc-500'
+            }`}>
+              <Flame className={`w-4 h-4 ${currentCombo >= 3 ? 'fill-current' : ''}`} />
+              x{currentCombo >= 5 ? '2.0' : currentCombo >= 3 ? '1.5' : '1.0'}
+            </div>
+          </div>
+        </div>
+
         {/* Floating Hint Button */}
         <button
           onClick={useHintAction}
@@ -389,7 +441,21 @@ const ForcaPage = () => {
             <h2 className={`text-3xl font-black ${status === 'won' ? 'text-emerald-400' : 'text-red-400'}`}>
               {status === 'won' ? 'CORRETO!' : 'FALHOU!'}
             </h2>
-            <div className="flex items-center gap-3 w-full max-w-sm">
+            
+            {/* Gamification Result */}
+            <div className="flex gap-4 items-center bg-zinc-900/80 px-4 py-2 rounded-xl border border-zinc-800 text-sm font-bold text-zinc-300">
+              <span className="flex gap-1 items-center">
+                <Star className="w-4 h-4 text-amber-400" />
+                +{status === 'won' ? phaseXpRef.current + 50 : phaseXpRef.current} XP
+              </span>
+              <div className="w-px h-4 bg-zinc-700" />
+              <span className="flex gap-1 items-center">
+                <Flame className="w-4 h-4 text-rose-400" />
+                Máx Combo: {highestComboRef.current}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-3 w-full max-w-sm mt-2">
               {status === 'won' ? (
                 <button 
                   onClick={() => startPhase(selectedArticle, currentPhaseIndex + 1)}
