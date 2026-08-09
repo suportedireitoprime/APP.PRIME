@@ -1,32 +1,32 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Calendar, PlayCircle, Route as RouteIcon, MapPin, CheckCircle2, ChevronRight, Settings2 } from 'lucide-react';
+import { ChevronLeft, Calendar, PlayCircle, Route as RouteIcon, MapPin, CheckCircle2, ChevronRight, Settings2, Lightbulb, Target } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PageHeader } from '@/components/vademecum/PageHeader';
-import VideoaulasBottomNav from '@/components/videoaulas/VideoaulasBottomNav';
 import { useTrilhaStore } from '@/lib/trilhasStore';
 import { loadConcursos, type ConcursoRow } from '@/lib/videoaulasStore';
 import { haptic } from '@/lib/nativeHaptics';
 import { slugify } from '@/lib/videoaulasCatalogos';
 import { Drawer, DrawerContent, DrawerPortal, DrawerOverlay } from '@/components/ui/drawer';
 
-// Componente para a fase 1 de setup (Escolher Edital)
+// --- SETUP FASE 1: ESCOLHER EDITAL ---
 const SetupEdital = ({ concursos, onSelect }: { concursos: ConcursoRow[], onSelect: (id: string) => void }) => (
   <motion.div
-    initial={{ opacity: 0, x: 20 }}
-    animate={{ opacity: 1, x: 0 }}
-    exit={{ opacity: 0, x: -20 }}
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: -20 }}
     className="w-full flex flex-col pt-4 px-4 pb-32"
   >
     <div className="text-center mb-8">
-      <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-        <RouteIcon className="w-8 h-8 text-primary" />
+      <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 relative">
+        <Target className="w-10 h-10 text-primary" />
+        <div className="absolute inset-0 bg-primary/20 rounded-full animate-ping opacity-50" />
       </div>
-      <h2 className="text-2xl font-black text-foreground mb-2">Qual seu foco?</h2>
-      <p className="text-sm text-muted-foreground">Escolha o edital para montarmos seu cronograma de estudos personalizado.</p>
+      <h2 className="text-2xl font-black text-foreground mb-2">Qual seu alvo?</h2>
+      <p className="text-sm text-muted-foreground">Escolha o edital para montarmos seu plano de aprovação.</p>
     </div>
 
-    <div className="space-y-3">
+    <div className="space-y-4">
       {concursos.map(c => (
         <button
           key={c.id}
@@ -34,14 +34,16 @@ const SetupEdital = ({ concursos, onSelect }: { concursos: ConcursoRow[], onSele
             haptic.selection();
             onSelect(c.id);
           }}
-          className="w-full relative overflow-hidden flex flex-col text-left rounded-2xl border border-border bg-card shadow-sm hover:border-primary/50 transition-colors group"
+          className="w-full relative overflow-hidden flex flex-col text-left rounded-3xl border border-border/40 bg-card/60 shadow-lg shadow-black/5 hover:border-primary/50 transition-all active:scale-[0.98]"
         >
-          <div className="h-24 w-full relative bg-black/10">
+          <div className="h-28 w-full relative bg-muted">
             <img src={c.capa} className="absolute inset-0 w-full h-full object-cover" alt="" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-            <div className="absolute bottom-3 left-3 text-white">
-              <p className="text-sm font-bold uppercase">{c.titulo}</p>
-              <p className="text-[10px] text-white/80">{c.disciplinas?.length || 0} disciplinas</p>
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0D0D0D] via-[#0D0D0D]/60 to-transparent" />
+            <div className="absolute bottom-4 left-4 right-4 text-white">
+              <p className="text-sm font-bold uppercase leading-tight mb-1">{c.titulo}</p>
+              <p className="text-xs text-white/70 flex items-center gap-1.5">
+                <MapPin className="w-3 h-3" /> {c.disciplinas?.length || 0} disciplinas
+              </p>
             </div>
           </div>
         </button>
@@ -50,10 +52,12 @@ const SetupEdital = ({ concursos, onSelect }: { concursos: ConcursoRow[], onSele
   </motion.div>
 );
 
-// Componente para a fase 2 de setup (Ritmo)
-const SetupRitmo = ({ editalId, concursos, onBack, onFinish }: { editalId: string, concursos: ConcursoRow[], onBack: () => void, onFinish: (aulas: number) => void }) => {
+// --- SETUP FASE 2: RITMO/PRAZO ---
+const SetupRitmo = ({ editalId, concursos, onBack, onFinish }: { editalId: string, concursos: ConcursoRow[], onBack: () => void, onFinish: (dias: number) => void }) => {
   const edital = concursos.find(c => c.id === editalId);
-  const [aulas, setAulas] = useState(2);
+  const [dias, setDias] = useState(30);
+
+  const opcoesDias = [15, 30, 45, 90];
 
   return (
     <motion.div
@@ -70,34 +74,40 @@ const SetupRitmo = ({ editalId, concursos, onBack, onFinish }: { editalId: strin
         <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
           <Calendar className="w-8 h-8 text-primary" />
         </div>
-        <h2 className="text-2xl font-black text-foreground mb-2">Seu Ritmo</h2>
+        <h2 className="text-2xl font-black text-foreground mb-2">Prazo da Missão</h2>
         <p className="text-sm text-muted-foreground mb-4">
-          Para o edital <strong className="text-foreground">{edital?.titulo}</strong>, quantas aulas você consegue assistir por dia?
+          Em quanto tempo você quer bater o edital <strong className="text-foreground">{edital?.titulo}</strong>?
         </p>
 
-        <div className="flex flex-col gap-3 mt-8">
-          {[1, 2, 3, 4].map(num => (
+        <div className="grid grid-cols-2 gap-3 mt-8">
+          {opcoesDias.map(num => (
             <button
               key={num}
-              onClick={() => setAulas(num)}
-              className={`p-4 rounded-xl border-2 transition-all flex items-center justify-between ${
-                aulas === num ? 'border-primary bg-primary/10' : 'border-border bg-card hover:border-primary/50'
+              onClick={() => {
+                haptic.selection();
+                setDias(num);
+              }}
+              className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-2 ${
+                dias === num ? 'border-primary bg-primary/10 scale-105 shadow-lg shadow-primary/20' : 'border-border/50 bg-card/60 backdrop-blur hover:border-primary/50'
               }`}
             >
-              <span className={`font-bold ${aulas === num ? 'text-primary' : 'text-foreground'}`}>
-                {num} {num === 1 ? 'aula' : 'aulas'} por dia
+              <span className={`text-2xl font-black ${dias === num ? 'text-primary' : 'text-foreground'}`}>
+                {num}
               </span>
-              {aulas === num && <CheckCircle2 className="w-5 h-5 text-primary" />}
+              <span className={`text-xs font-semibold uppercase tracking-wider ${dias === num ? 'text-primary/80' : 'text-muted-foreground'}`}>
+                Dias
+              </span>
+              {dias === num && <CheckCircle2 className="w-5 h-5 text-primary absolute top-2 right-2" />}
             </button>
           ))}
         </div>
 
         <button
           onClick={() => {
-            haptic.selection();
-            onFinish(aulas);
+            haptic.success();
+            onFinish(dias);
           }}
-          className="w-full mt-8 bg-primary text-primary-foreground font-bold py-4 rounded-xl shadow-lg shadow-primary/25 hover:bg-primary/90 transition-colors active:scale-95"
+          className="w-full mt-10 bg-primary text-primary-foreground font-bold py-4 rounded-2xl shadow-[0_0_20px_rgba(var(--primary),0.3)] hover:shadow-[0_0_30px_rgba(var(--primary),0.5)] transition-all active:scale-95"
         >
           Gerar Minha Trilha
         </button>
@@ -106,7 +116,7 @@ const SetupRitmo = ({ editalId, concursos, onBack, onFinish }: { editalId: strin
   );
 };
 
-// O Mapa da Trilha
+// --- MAPA DA TRILHA (FLUIDO E ELEGANTE) ---
 const TrilhaMap = ({ concursos }: { concursos: ConcursoRow[] }) => {
   const navigate = useNavigate();
   const { trilhaAtiva, limparTrilha, marcarDiaConcluido, desmarcarDiaConcluido } = useTrilhaStore();
@@ -114,52 +124,71 @@ const TrilhaMap = ({ concursos }: { concursos: ConcursoRow[] }) => {
 
   const edital = useMemo(() => concursos.find(c => c.id === trilhaAtiva?.editalId), [concursos, trilhaAtiva]);
 
-  // Gerar nós fictícios da trilha distribuindo disciplinas
+  // Geração de Nodos com base na Meta de Dias
   const nodos = useMemo(() => {
     if (!edital || !trilhaAtiva) return [];
-    const dias = [];
+    const diasList = [];
     let dIndex = 0;
     const disc = edital.disciplinas || ['Disciplinas Gerais'];
     
-    // Distribuir disciplinas nos dias, de acordo com as "aulas por dia"
-    for (let i = 0; i < 20; i++) { // Gerar 20 dias para o roadmap
+    // Distribui 2 disciplinas por dia. Pode ser adaptado se necessário.
+    const aulasPorDia = 2; 
+
+    for (let i = 0; i < trilhaAtiva.diasMeta; i++) {
       const selecionadas = [];
-      for(let a=0; a < trilhaAtiva.aulasPorDia; a++){
+      for(let a=0; a < aulasPorDia; a++){
         selecionadas.push(disc[dIndex % disc.length]);
         dIndex++;
       }
-      dias.push({
-        dia: i + 1,
-        disciplinas: selecionadas
-      });
+      diasList.push({ dia: i + 1, disciplinas: selecionadas });
     }
-    return dias;
+    return diasList;
   }, [edital, trilhaAtiva]);
 
   if (!edital || !trilhaAtiva) return null;
 
+  const totalConcluido = trilhaAtiva.diasConcluidos.length;
+  const progressoPct = Math.round((totalConcluido / trilhaAtiva.diasMeta) * 100);
+
   return (
     <div className="w-full pb-32">
-      {/* Header Sticky da Trilha */}
-      <div className="sticky top-0 z-30 bg-background/90 backdrop-blur-md border-b border-border px-4 py-3 flex items-center justify-between">
+      {/* Header Sticky Gamificado */}
+      <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-white/5 px-4 py-4 flex items-center justify-between shadow-sm">
         <div>
-          <p className="text-[10px] uppercase font-bold text-primary tracking-wider">Sua Trilha Ativa</p>
-          <p className="text-sm font-bold text-foreground">{edital.titulo}</p>
+          <p className="text-[10px] uppercase font-black text-primary tracking-widest mb-0.5">Missão: {trilhaAtiva.diasMeta} Dias</p>
+          <p className="text-sm font-bold text-foreground truncate max-w-[200px]">{edital.titulo}</p>
         </div>
-        <button 
-          onClick={() => setDrawerOpen(true)}
-          className="p-2 rounded-full bg-muted text-muted-foreground hover:text-foreground"
-        >
-          <Settings2 className="w-5 h-5" />
-        </button>
+        <div className="flex items-center gap-3">
+          <div className="flex flex-col items-end">
+            <span className="text-xs font-bold text-primary">{progressoPct}%</span>
+            <div className="w-16 h-1.5 bg-muted rounded-full overflow-hidden mt-0.5">
+              <div className="h-full bg-primary transition-all duration-500 ease-out" style={{ width: `${progressoPct}%` }} />
+            </div>
+          </div>
+          <button 
+            onClick={() => {
+              haptic.selection();
+              setDrawerOpen(true);
+            }}
+            className="p-2 rounded-full bg-white/5 text-muted-foreground hover:text-foreground active:scale-95 transition-all"
+          >
+            <Settings2 className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
-      {/* Caminho da Forca / Roadmap */}
-      <div className="px-4 py-8 relative">
-        {/* Linha vertical central */}
-        <div className="absolute left-1/2 top-10 bottom-10 w-1 bg-border -translate-x-1/2 z-0 rounded-full" />
+      {/* O MAPA FLUIDO */}
+      <div className="px-4 py-10 relative overflow-hidden">
+        {/* Linha vertical central brilhante (O Caminho) */}
+        <div className="absolute left-1/2 top-10 bottom-10 w-1.5 bg-white/5 -translate-x-1/2 z-0 rounded-full overflow-hidden">
+          {/* Preenchimento do progresso na linha */}
+          <div 
+            className="w-full bg-primary/80 transition-all duration-700 ease-in-out" 
+            style={{ height: `${(totalConcluido / trilhaAtiva.diasMeta) * 100}%`, boxShadow: '0 0 10px rgba(var(--primary), 0.5)' }} 
+          />
+        </div>
 
-        <div className="space-y-12">
+        <div className="space-y-10">
           {nodos.map((nodo, i) => {
             const concluido = trilhaAtiva.diasConcluidos.includes(nodo.dia);
             const isLeft = i % 2 === 0;
@@ -167,48 +196,75 @@ const TrilhaMap = ({ concursos }: { concursos: ConcursoRow[] }) => {
             return (
               <motion.div
                 key={nodo.dia}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
+                viewport={{ once: true, margin: "-100px" }}
                 className={`relative z-10 flex w-full items-center ${isLeft ? 'justify-start' : 'justify-end'}`}
               >
-                {/* O conector horizontal até o centro */}
-                <div className={`absolute top-1/2 w-[calc(50%-2rem)] h-1 bg-border -translate-y-1/2 z-0 ${isLeft ? 'left-1/2' : 'right-1/2'}`} />
+                {/* Conector Pontilhado Opcional (Mais elegante que linha dura) */}
+                <div className={`absolute top-1/2 w-[calc(50%-2.5rem)] h-[2px] border-b-2 border-dotted -translate-y-1/2 z-0 ${concluido ? 'border-primary/40' : 'border-white/10'} ${isLeft ? 'left-1/2' : 'right-1/2'}`} />
 
-                {/* Bolinha do Centro */}
-                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full border-4 border-background bg-card z-20 flex items-center justify-center shadow-sm">
-                  {concluido ? (
-                    <div className="w-full h-full bg-primary rounded-full flex items-center justify-center">
-                      <CheckCircle2 className="w-4 h-4 text-primary-foreground" />
-                    </div>
-                  ) : (
-                    <span className="text-[10px] font-bold text-muted-foreground">{nodo.dia}</span>
-                  )}
-                </div>
-
-                {/* O Card do Dia */}
-                <div 
-                  className={`w-[45%] bg-card border ${concluido ? 'border-primary/50 opacity-70' : 'border-border shadow-md'} rounded-2xl p-3 relative z-30 transition-all hover:scale-105 active:scale-95`}
+                {/* Bolinha Central Brilhante */}
+                <button
                   onClick={() => {
                     haptic.selection();
                     if(concluido) {
                       desmarcarDiaConcluido(nodo.dia);
                     } else {
                       marcarDiaConcluido(nodo.dia);
-                      // Navegar para a primeira disciplina do dia
-                      navigate(`/videoaulas/areas/${slugify(nodo.disciplinas[0])}`);
                     }
                   }}
+                  className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full z-20 flex items-center justify-center transition-all duration-300 ${
+                    concluido 
+                      ? 'bg-primary border-4 border-background shadow-[0_0_15px_rgba(var(--primary),0.6)] scale-110' 
+                      : 'bg-[#1A1A1A] border-4 border-background text-muted-foreground'
+                  }`}
                 >
-                  <p className={`text-[10px] font-bold uppercase tracking-wider mb-2 ${concluido ? 'text-primary' : 'text-muted-foreground'}`}>
-                    Dia {nodo.dia}
-                  </p>
-                  <div className="space-y-1">
+                  {concluido ? (
+                    <CheckCircle2 className="w-5 h-5 text-primary-foreground" />
+                  ) : (
+                    <span className="text-[11px] font-black">{nodo.dia}</span>
+                  )}
+                </button>
+
+                {/* Cartão de Conteúdo Glassmorphism */}
+                <div 
+                  className={`w-[45%] rounded-3xl p-4 relative z-30 transition-all duration-300 backdrop-blur-md border ${
+                    concluido 
+                      ? 'bg-primary/5 border-primary/20 shadow-sm opacity-80' 
+                      : 'bg-card/40 border-white/10 shadow-lg hover:border-white/20 hover:-translate-y-1'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <p className={`text-[10px] font-black uppercase tracking-widest ${concluido ? 'text-primary/70' : 'text-muted-foreground'}`}>
+                      Dia {nodo.dia}
+                    </p>
+                    {/* Dica para encorajar (apenas nos primeiros ou últimos nós para não poluir) */}
+                    {(nodo.dia === 1 || nodo.dia === trilhaAtiva.diasMeta) && !concluido && (
+                      <Lightbulb className="w-3.5 h-3.5 text-yellow-500/70 animate-pulse" />
+                    )}
+                  </div>
+                  
+                  <div className="space-y-2.5">
                     {nodo.disciplinas.map((disc, idx) => (
-                      <div key={idx} className="flex items-center gap-1.5">
-                        <PlayCircle className="w-3 h-3 text-primary/70 shrink-0" />
-                        <p className="text-[11px] font-semibold text-foreground line-clamp-1">{disc}</p>
-                      </div>
+                      <button 
+                        key={idx}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          haptic.light();
+                          navigate(`/videoaulas/areas/${slugify(disc)}`);
+                        }}
+                        className="flex flex-col gap-1 w-full text-left group"
+                      >
+                        <div className="flex items-center gap-2">
+                          <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-colors ${concluido ? 'bg-primary/20' : 'bg-white/5 group-hover:bg-primary/20'}`}>
+                            <PlayCircle className={`w-3 h-3 ${concluido ? 'text-primary' : 'text-foreground/70 group-hover:text-primary'}`} />
+                          </div>
+                          <p className={`text-[11px] font-semibold line-clamp-2 leading-tight ${concluido ? 'text-muted-foreground' : 'text-foreground group-hover:text-primary transition-colors'}`}>
+                            {disc}
+                          </p>
+                        </div>
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -218,24 +274,27 @@ const TrilhaMap = ({ concursos }: { concursos: ConcursoRow[] }) => {
         </div>
       </div>
 
+      {/* Drawer de Configurações */}
       <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
         <DrawerPortal>
-          <DrawerOverlay className="fixed inset-0 bg-black/60 z-50" onClick={() => setDrawerOpen(false)} />
-          <DrawerContent className="bg-card flex flex-col rounded-t-[20px] fixed bottom-0 left-0 right-0 z-50 pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))]">
-            <div className="p-4">
-              <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-muted-foreground/20 mb-6" />
-              <h3 className="text-lg font-bold mb-4">Configurações da Trilha</h3>
-              <p className="text-sm text-muted-foreground mb-6">Você está focado no edital {edital.titulo} com ritmo de {trilhaAtiva.aulasPorDia} aulas/dia.</p>
+          <DrawerOverlay className="fixed inset-0 bg-black/60 z-50 backdrop-blur-sm" onClick={() => setDrawerOpen(false)} />
+          <DrawerContent className="bg-card border-t border-white/10 flex flex-col rounded-t-[32px] fixed bottom-0 left-0 right-0 z-50 pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
+            <div className="p-6">
+              <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-white/10 mb-8" />
+              <h3 className="text-xl font-black mb-2">Ajustes da Missão</h3>
+              <p className="text-sm text-muted-foreground mb-8">
+                Você definiu o prazo de <strong className="text-foreground">{trilhaAtiva.diasMeta} dias</strong> para o edital {edital.titulo}.
+              </p>
               
               <button
                 onClick={() => {
-                  haptic.impact();
+                  haptic.medium();
                   limparTrilha();
                   setDrawerOpen(false);
                 }}
-                className="w-full bg-destructive/10 text-destructive font-bold py-3 rounded-xl hover:bg-destructive/20 transition-colors"
+                className="w-full bg-destructive/10 text-destructive font-bold py-4 rounded-2xl hover:bg-destructive/20 transition-colors active:scale-[0.98]"
               >
-                Refazer Trilha (Começar de Novo)
+                Abortar e Refazer Trilha
               </button>
             </div>
           </DrawerContent>
@@ -267,7 +326,7 @@ const VideoaulasTrilhas = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#0A0A0A]">
       {!trilhaAtiva && (
         <PageHeader
           title="Montar Trilha"
@@ -278,7 +337,7 @@ const VideoaulasTrilhas = () => {
 
       {loading ? (
         <div className="flex items-center justify-center min-h-[50vh]">
-          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+          <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
         </div>
       ) : (
         <AnimatePresence mode="wait">
@@ -294,23 +353,23 @@ const VideoaulasTrilhas = () => {
                 editalId={selectedEdital!} 
                 concursos={concursos} 
                 onBack={() => setSetupStep('edital')}
-                onFinish={(aulas) => {
+                onFinish={(dias) => {
                   setTrilhaAtiva({
                     editalId: selectedEdital!,
-                    aulasPorDia: aulas,
-                    dataInicio: new Date().toISOString(),
-                    diasConcluidos: []
+                    diasMeta: dias,
+                    diasConcluidos: [],
+                    dataInicio: new Date().toISOString()
                   });
-                }}
+                }} 
               />
             )
           ) : (
-            <TrilhaMap key="mapa" concursos={concursos} />
+            <motion.div key="mapa" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <TrilhaMap concursos={concursos} />
+            </motion.div>
           )}
         </AnimatePresence>
       )}
-
-      <VideoaulasBottomNav />
     </div>
   );
 };

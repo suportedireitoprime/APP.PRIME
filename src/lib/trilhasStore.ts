@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware';
 
 export interface TrilhaAtiva {
   editalId: string;
-  aulasPorDia: number;
+  diasMeta: number;
   diasConcluidos: number[]; // Array de índices de dias que já foram concluídos
   dataInicio: string;
 }
