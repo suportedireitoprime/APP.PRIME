@@ -13,7 +13,8 @@ const SetupLivro = ({ onSelect, onCancel }: { onSelect: (livro: LivroNormalizado
   const [busca, setBusca] = useState('');
   const [livros, setLivros] = useState<LivroNormalizado[]>([]);
   const [loading, setLoading] = useState(false);
-  const [categoriaAberta, setCategoriaAberta] = useState<string | null>(null);
+  const [colecaoAberta, setColecaoAberta] = useState<string | null>(null);
+  const [areaAberta, setAreaAberta] = useState<string | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -21,7 +22,7 @@ const SetupLivro = ({ onSelect, onCancel }: { onSelect: (livro: LivroNormalizado
       setLoading(true);
       try {
         const promises = COLECOES.filter(c => !c.adminOnly).map(async (colecao) => {
-          const { data } = await supabase.from(colecao.table as any).select(colecao.select).limit(500);
+          const { data } = await supabase.from(colecao.table as any).select(colecao.select).limit(2000);
           return (data || []).map((r: any) => normalizeLivro(r, colecao));
         });
         const results = await Promise.all(promises);
@@ -34,54 +35,121 @@ const SetupLivro = ({ onSelect, onCancel }: { onSelect: (livro: LivroNormalizado
     return () => { alive = false; };
   }, []);
 
-  const grupos = useMemo(() => {
+  const { colecoesConfig, livrosPorColecao } = useMemo(() => {
+    const config = COLECOES.filter(c => !c.adminOnly);
     const map = new Map<string, LivroNormalizado[]>();
     for (const l of livros) {
-      const g = l.area || (COLECOES.find(c => c.id === l.colecaoId)?.titulo || 'Outros');
-      if (!map.has(g)) map.set(g, []);
-      map.get(g)!.push(l);
+      if (!map.has(l.colecaoId)) map.set(l.colecaoId, []);
+      map.get(l.colecaoId)!.push(l);
     }
-    return Array.from(map.entries()).sort((a,b) => a[0].localeCompare(b[0]));
+    return { colecoesConfig: config, livrosPorColecao: map };
   }, [livros]);
 
-  const filtrados = useMemo(() => {
-    if (!categoriaAberta) return [];
-    const lista = grupos.find(g => g[0] === categoriaAberta)?.[1] || [];
-    if (!busca) return lista;
+  const areasDaColecao = useMemo(() => {
+    if (!colecaoAberta) return [];
+    const lista = livrosPorColecao.get(colecaoAberta) || [];
+    const map = new Map<string, number>();
+    for (const l of lista) {
+      const a = l.area || 'Outros';
+      map.set(a, (map.get(a) || 0) + 1);
+    }
+    return Array.from(map.entries()).sort((a,b) => a[0].localeCompare(b[0]));
+  }, [colecaoAberta, livrosPorColecao]);
+
+  const filtradosBusca = useMemo(() => {
+    if (!busca) return [];
     const q = busca.toLowerCase();
-    return lista.filter(l => l.titulo?.toLowerCase().includes(q) || l.autor?.toLowerCase().includes(q));
-  }, [categoriaAberta, grupos, busca]);
+    return livros.filter(l => l.titulo?.toLowerCase().includes(q) || l.autor?.toLowerCase().includes(q)).slice(0, 50);
+  }, [busca, livros]);
+
+  const handleBack = () => {
+    if (busca) {
+      setBusca('');
+      return;
+    }
+    if (areaAberta) {
+      setAreaAberta(null);
+      return;
+    }
+    if (colecaoAberta) {
+      setColecaoAberta(null);
+      return;
+    }
+    onCancel();
+  };
+
+  const currentTitle = areaAberta ? areaAberta : (colecaoAberta ? colecoesConfig.find(c => c.id === colecaoAberta)?.label : "Qual livro ler?");
+  const currentSubtitle = areaAberta ? "Escolha a obra" : (colecaoAberta ? "Escolha a categoria" : "Selecione o acervo");
 
   return (
     <motion.div initial="hidden" animate="show" exit={{ opacity: 0, y: -20 }} className="w-full flex flex-col pb-32">
       <PageHeader
-        title={categoriaAberta ? categoriaAberta : "Qual livro ler?"}
-        subtitle={categoriaAberta ? "Busque a obra no acervo" : "Escolha a categoria"}
-        onBack={categoriaAberta ? () => { setCategoriaAberta(null); setBusca(''); } : onCancel}
+        title={currentTitle || "Qual livro ler?"}
+        subtitle={currentSubtitle}
+        onBack={handleBack}
       />
       
       <div className="pt-4 px-4">
-        {categoriaAberta && (
-          <div className="relative mb-6">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-            <input 
-              type="text" 
-              placeholder="Buscar título ou autor..." 
-              value={busca}
-              onChange={(e) => setBusca(e.target.value)}
-              className="w-full bg-card border border-border/50 rounded-full py-4 pl-12 pr-4 text-sm focus:outline-none focus:border-primary transition-colors"
-            />
-          </div>
-        )}
+        <div className="relative mb-6">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+          <input 
+            type="text" 
+            placeholder="Buscar título ou autor..." 
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+            className="w-full bg-card border border-border/50 rounded-full py-4 pl-12 pr-4 text-sm focus:outline-none focus:border-primary transition-colors"
+          />
+        </div>
 
         {loading ? (
           <div className="flex justify-center py-10"><div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>
-        ) : !categoriaAberta ? (
+        ) : busca ? (
           <div className="space-y-3">
-            {grupos.map(([nome, itens]) => (
+            {filtradosBusca.map(livro => (
+              <motion.button
+                key={livro.id}
+                onClick={() => { haptic.selection(); onSelect(livro); }}
+                className="w-full flex items-center gap-4 text-left p-4 rounded-3xl border border-border/40 bg-card/60 backdrop-blur-md shadow-sm hover:border-primary/50 transition-all active:scale-[0.98]"
+              >
+                <div className="w-12 h-16 bg-muted rounded overflow-hidden shrink-0">
+                  {livro.capa ? <img src={livro.capa} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><BookOpen className="w-5 h-5 opacity-30" /></div>}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold leading-tight mb-1 truncate text-foreground">{livro.titulo}</p>
+                  <p className="text-xs text-muted-foreground truncate">{livro.autor || 'Autor Desconhecido'}</p>
+                </div>
+              </motion.button>
+            ))}
+            {filtradosBusca.length === 0 && (
+               <p className="text-center text-muted-foreground py-8">Nenhum livro encontrado.</p>
+            )}
+          </div>
+        ) : !colecaoAberta ? (
+          <div className="space-y-3">
+            {colecoesConfig.map(colecao => (
+              <motion.button
+                key={colecao.id}
+                onClick={() => { haptic.selection(); setColecaoAberta(colecao.id); }}
+                className="w-full flex items-center justify-between p-4 rounded-3xl border border-border/40 bg-card/60 backdrop-blur-md shadow-sm hover:border-primary/50 transition-all active:scale-[0.98]"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+                    <BookOpen className="w-6 h-6 text-primary" />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-sm font-bold text-foreground">{colecao.label}</p>
+                    <p className="text-xs text-muted-foreground">{livrosPorColecao.get(colecao.id)?.length || 0} livros</p>
+                  </div>
+                </div>
+              </motion.button>
+            ))}
+          </div>
+        ) : (!areaAberta && colecoesConfig.find(c => c.id === colecaoAberta)?.modo === 'categorias') ? (
+          <div className="space-y-3">
+            {areasDaColecao.map(([nome, count]) => (
               <motion.button
                 key={nome}
-                onClick={() => { haptic.selection(); setCategoriaAberta(nome); }}
+                onClick={() => { haptic.selection(); setAreaAberta(nome); }}
                 className="w-full flex items-center justify-between p-4 rounded-3xl border border-border/40 bg-card/60 backdrop-blur-md shadow-sm hover:border-primary/50 transition-all active:scale-[0.98]"
               >
                 <div className="flex items-center gap-4">
@@ -90,7 +158,7 @@ const SetupLivro = ({ onSelect, onCancel }: { onSelect: (livro: LivroNormalizado
                   </div>
                   <div className="text-left">
                     <p className="text-sm font-bold text-foreground">{nome}</p>
-                    <p className="text-xs text-muted-foreground">{itens.length} livros</p>
+                    <p className="text-xs text-muted-foreground">{count} livros</p>
                   </div>
                 </div>
               </motion.button>
@@ -98,7 +166,9 @@ const SetupLivro = ({ onSelect, onCancel }: { onSelect: (livro: LivroNormalizado
           </div>
         ) : (
           <div className="space-y-3">
-            {filtrados.map(livro => (
+            {(livrosPorColecao.get(colecaoAberta) || [])
+               .filter(l => !areaAberta || (l.area || 'Outros') === areaAberta)
+               .map(livro => (
               <motion.button
                 key={livro.id}
                 onClick={() => { haptic.selection(); onSelect(livro); }}
@@ -281,6 +351,7 @@ const TrilhaMapaLeitura = ({ trilha, onBack }: { trilha: TrilhaLeituraAtiva, onB
 export const BibliotecaTrilhas = () => {
   const { trilhasAtivas, setTrilhaAtiva } = useBibliotecaTrilhasStore();
   const trilhasArr = Object.values(trilhasAtivas);
+  const navigate = useNavigate();
   const [view, setView] = useState<'dashboard'|'setup_livro'|'setup_detalhes'|'mapa'>(trilhasArr.length > 0 ? 'dashboard' : 'setup_livro');
   const [selectedLivro, setSelectedLivro] = useState<LivroNormalizado | null>(null);
   const [trilhaVisualizada, setTrilhaVisualizada] = useState<TrilhaLeituraAtiva | null>(null);
@@ -328,7 +399,13 @@ export const BibliotecaTrilhas = () => {
       {view === 'setup_livro' && (
         <SetupLivro 
           onSelect={(livro) => { setSelectedLivro(livro); setView('setup_detalhes'); }}
-          onCancel={trilhasArr.length > 0 ? () => setView('dashboard') : () => {}} // or let them go somewhere else
+          onCancel={() => {
+            if (trilhasArr.length > 0) {
+              setView('dashboard');
+            } else {
+              navigate('/biblioteca');
+            }
+          }}
         />
       )}
 
