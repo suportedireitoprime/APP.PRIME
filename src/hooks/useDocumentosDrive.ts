@@ -65,8 +65,10 @@ export function useConteudoPasta(pastaId: string | null, busca: string) {
 
 /** Baixa os bytes do documento (a pasta do Drive é privada). */
 export function useDownloadDocumento() {
-  return useCallback(async (id: string): Promise<Blob> => {
-    const res = await fetch(`${FN_URL}?arquivo=${encodeURIComponent(id)}`, {
+  return useCallback(async (id: string, formato?: 'pdf' | 'docx'): Promise<Blob> => {
+    const params = new URLSearchParams({ arquivo: id });
+    if (formato) params.append('formato', formato);
+    const res = await fetch(`${FN_URL}?${params.toString()}`, {
       headers: await autorizacao(),
     });
     if (!res.ok) {

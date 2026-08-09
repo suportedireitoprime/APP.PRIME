@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronLeft, ChevronRight, Search, Eye, Download, Share2, Loader2,
-  RefreshCw, FolderOpen, Folder, X,
+  RefreshCw, FolderOpen, Folder, X, FileText, FileBadge,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -109,6 +109,7 @@ const DocumentosSheet = ({ categoria, open, onClose }: Props) => {
   };
 
   const comLimite = async (doc: ItemDrive, acao: () => Promise<void>) => {
+    // Para visualizar, mantém a regra original (uso diário gratuito de 1 documento)
     if (!(await podeUsar(doc.id))) {
       setGateOpen(true);
       return;
@@ -127,16 +128,29 @@ const DocumentosSheet = ({ categoria, open, onClose }: Props) => {
 
   const ver = (doc: ItemDrive) =>
     comLimite(doc, async () => {
-      const blob = await baixarBlobDoc(doc.id);
+      const blob = await baixarBlobDoc(doc.id, 'pdf');
       setVisualizando({ doc, blob });
     });
 
 
-  const baixar = (doc: ItemDrive) =>
-    comLimite(doc, async () => {
-      const blob = await baixarBlobDoc(doc.id);
-      await baixarBlob(blob, doc.nome, { titulo: doc.nome });
-    });
+  const baixarPremium = async (doc: ItemDrive, formato: 'pdf' | 'docx') => {
+    if (!isAdmin && !isPremium) {
+      setGateOpen(true);
+      return;
+    }
+    setOcupado(doc.id);
+    try {
+      const blob = await baixarBlobDoc(doc.id, formato);
+      const ext = formato === 'pdf' ? '.pdf' : '.docx';
+      const nomeFinal = doc.nome.replace(/\.[a-z0-9]{2,5}$/i, '') + ext;
+      await baixarBlob(blob, nomeFinal, { titulo: nomeFinal });
+    } catch (e) {
+      console.error('documento download:', e);
+      toast.error('Não consegui baixar este documento');
+    } finally {
+      setOcupado(null);
+    }
+  };
 
   const enviar = (doc: ItemDrive) =>
     comLimite(doc, async () => {
@@ -336,26 +350,26 @@ const DocumentosSheet = ({ categoria, open, onClose }: Props) => {
                   <button
                     onClick={() => { const d = acoesDoc; setAcoesDoc(null); ver(d); }}
                     disabled={ocupado === acoesDoc.id}
-                    className="flex h-12 flex-col items-center justify-center gap-1 rounded-2xl bg-primary text-primary-foreground font-body text-[12.5px] font-semibold active:scale-95 transition disabled:opacity-60"
+                    className="flex h-12 flex-col items-center justify-center gap-1 rounded-2xl border border-border/60 bg-background font-body text-[12.5px] font-semibold text-foreground active:scale-95 transition disabled:opacity-60"
                   >
                     <Eye className="h-[18px] w-[18px]" />
                     Ver
                   </button>
                   <button
-                    onClick={() => { const d = acoesDoc; setAcoesDoc(null); baixar(d); }}
+                    onClick={() => { const d = acoesDoc; setAcoesDoc(null); baixarPremium(d, 'docx'); }}
                     disabled={ocupado === acoesDoc.id}
                     className="flex h-12 flex-col items-center justify-center gap-1 rounded-2xl border border-border/60 bg-background font-body text-[12.5px] font-semibold text-foreground active:scale-95 transition disabled:opacity-60"
                   >
-                    <Download className="h-[18px] w-[18px]" />
-                    Baixar
+                    <FileText className="h-[18px] w-[18px] text-blue-500" />
+                    Word
                   </button>
                   <button
-                    onClick={() => { const d = acoesDoc; setAcoesDoc(null); enviar(d); }}
+                    onClick={() => { const d = acoesDoc; setAcoesDoc(null); baixarPremium(d, 'pdf'); }}
                     disabled={ocupado === acoesDoc.id}
                     className="flex h-12 flex-col items-center justify-center gap-1 rounded-2xl border border-border/60 bg-background font-body text-[12.5px] font-semibold text-foreground active:scale-95 transition disabled:opacity-60"
                   >
-                    <Share2 className="h-[18px] w-[18px]" />
-                    Enviar
+                    <FileBadge className="h-[18px] w-[18px] text-red-500" />
+                    PDF
                   </button>
                 </div>
               </motion.div>

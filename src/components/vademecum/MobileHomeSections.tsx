@@ -653,14 +653,11 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
             transition={{ duration: 0.24, ease: [0.22, 0.61, 0.36, 1] }}
             className="space-y-3 px-1 pb-8"
           >
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="w-1 h-5 rounded-full bg-primary" />
-                <h2 className="font-body text-foreground text-2xl sm:text-3xl font-bold tracking-tight">
-                  Documentos
-                </h2>
-              </div>
-              <p className="font-body text-muted-foreground text-[13px] leading-snug mt-1 ml-3">
+            <div className="text-center pt-2">
+              <h2 className="font-display text-[18px] md:text-[17px] font-semibold text-foreground tracking-wide uppercase">
+                DOCUMENTOS
+              </h2>
+              <p className="font-body text-muted-foreground text-[11.5px] leading-snug mt-1">
                 Modelos prontos para usar: petições, contestações, contratos, procurações e mais.
               </p>
             </div>
@@ -681,18 +678,27 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
                 {docPastas.pastas.map((p, i) => {
                   const est = estiloPasta(p.nome);
                   return (
-                    <HomeCard
+                    <motion.button
                       key={p.id}
-                      icon={est.icon}
-                      label={est.label}
-                      sublabel="Modelos prontos"
-                      color={est.color}
-                      delay={Math.min(i * 0.04, 0.3)}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: Math.min(i * 0.04, 0.3), duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}
                       onClick={() => setDocPasta({ id: p.id, nome: p.nome })}
                       data-track="home_card_click"
                       data-track-name={est.label}
                       data-track-section="documentos"
-                    />
+                      className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-4 text-center hover:border-primary/50 transition-colors active:scale-95"
+                    >
+                      <est.icon
+                        className="w-8 h-8"
+                        style={{ color: est.color, filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 10px rgba(0,0,0,0.55))' }}
+                        strokeWidth={1.25}
+                      />
+                      <div>
+                        <span className="block font-display font-bold text-[14px] leading-tight text-foreground whitespace-normal break-words">{est.label}</span>
+                        <span className="block text-[11px] text-muted-foreground font-body mt-1 leading-tight">Modelos prontos</span>
+                      </div>
+                    </motion.button>
                   );
                 })}
               </div>

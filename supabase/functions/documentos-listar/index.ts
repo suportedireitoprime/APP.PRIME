@@ -55,6 +55,7 @@ Deno.serve(async (req) => {
     const pastaId = url.searchParams.get('pasta') || raiz;
     const busca = (url.searchParams.get('q') || '').trim();
     const pageToken = url.searchParams.get('pageToken') || '';
+    const formato = url.searchParams.get('formato') || 'pdf';
 
     if (arquivoId) {
       if (!ID_RE.test(arquivoId)) return json({ error: 'id inválido' }, 400);
@@ -68,21 +69,33 @@ Deno.serve(async (req) => {
 
       // Google Docs/Sheets precisam ser exportados; demais baixam direto.
       const ehGoogle = String(info.mimeType || '').startsWith('application/vnd.google-apps');
-      const alvo = ehGoogle
-        ? `https://www.googleapis.com/drive/v3/files/${arquivoId}/export?mimeType=application%2Fpdf`
-        : `https://www.googleapis.com/drive/v3/files/${arquivoId}?alt=media&supportsAllDrives=true`;
+      let alvo = `https://www.googleapis.com/drive/v3/files/${arquivoId}?alt=media&supportsAllDrives=true`;
+      let mimeEnvio = info.mimeType || 'application/octet-stream';
+      let nomeEnvio = String(info.name || 'documento').replace(/["\\]/g, '');
+
+      if (ehGoogle) {
+        if (formato === 'docx') {
+          alvo = `https://www.googleapis.com/drive/v3/files/${arquivoId}/export?mimeType=application%2Fvnd.openxmlformats-officedocument.wordprocessingml.document`;
+          mimeEnvio = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+          nomeEnvio = `${nomeEnvio}.docx`;
+        } else {
+          alvo = `https://www.googleapis.com/drive/v3/files/${arquivoId}/export?mimeType=application%2Fpdf`;
+          mimeEnvio = 'application/pdf';
+          nomeEnvio = `${nomeEnvio}.pdf`;
+        }
+      }
+
       const res = await fetch(alvo, { headers: { Authorization: `Bearer ${token}` } });
       if (!res.ok) {
         const detalhe = await res.text();
         console.error(`drive download ${res.status}: ${detalhe.slice(0, 300)}`);
         return json({ error: 'falha ao baixar do Drive', status: res.status, details: detalhe.slice(0, 300) }, res.status);
       }
-      const nome = String(info.name || 'documento').replace(/["\\]/g, '');
       return new Response(res.body, {
         headers: {
           ...corsHeaders,
-          'Content-Type': ehGoogle ? 'application/pdf' : (info.mimeType || 'application/octet-stream'),
-          'Content-Disposition': `inline; filename="${ehGoogle ? `${nome}.pdf` : nome}"`,
+          'Content-Type': mimeEnvio,
+          'Content-Disposition': `inline; filename="${nomeEnvio}"`,
           'Cache-Control': 'private, max-age=300',
         },
       });
