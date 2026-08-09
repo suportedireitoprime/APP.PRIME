@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
 import { geminiFetch } from "../_shared/geminiFetch.ts";
+import { buildGeminiTextUrl } from "../_shared/ai-models.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -76,7 +77,7 @@ Artigo: ${artigo.numero}
 Texto: ${conteudoTexto}`;
 
     const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY") ?? "";
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+    const url = buildGeminiTextUrl(GEMINI_API_KEY);
     
     const geminiBody = {
       contents: [{ role: "user", parts: [{ text: userPrompt }] }],
@@ -96,7 +97,7 @@ Texto: ${conteudoTexto}`;
     if (!resp.ok) {
       const txt = await resp.text();
       console.error("Erro Gemini:", txt);
-      return new Response(JSON.stringify({ error: "Falha ao gerar palavras" }), {
+      return new Response(JSON.stringify({ error: "Falha ao gerar palavras", details: txt }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });

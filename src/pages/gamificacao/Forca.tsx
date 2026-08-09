@@ -144,12 +144,12 @@ const ForcaPage = () => {
         setCurrentPhases(data.phases);
         startPhase(data.phases, 0);
       } else {
-        alert("Erro ao gerar as palavras para este artigo.");
+        alert("Erro ao gerar: " + (error?.message || JSON.stringify(error) || "Desconhecido"));
         setSelectedArticle(null);
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
-      alert("Erro ao conectar com a IA.");
+      alert("Erro ao conectar com a IA: " + e.message);
       setSelectedArticle(null);
     } finally {
       setIsGenerating(false);
@@ -246,12 +246,16 @@ const ForcaPage = () => {
   };
 
   const renderHangman = () => {
-    const strokeColor = mistakes >= MAX_MISTAKES ? '#FF4444' : '#FF6B6B';
-    const gallowsColor = '#555';
+    const strokeColor = mistakes >= MAX_MISTAKES ? '#ef4444' : '#e2e8f0'; 
+    const gallowsColor = '#334155';
+    const ropeColor = '#8b5cf6';
     
     return (
-      <div className="flex justify-center mb-6">
-        <svg width="200" height="220" viewBox="0 0 200 220" className="scale-[0.85] md:scale-100 origin-center">
+      <div className="flex justify-center mb-6 relative">
+        {mistakes >= MAX_MISTAKES && (
+          <div className="absolute inset-0 bg-red-900/20 blur-xl rounded-full" />
+        )}
+        <svg width="200" height="220" viewBox="0 0 200 220" className="scale-[0.85] md:scale-100 origin-center z-10 drop-shadow-md">
           {/* Base */}
           <line x1="20" y1="200" x2="180" y2="200" stroke={gallowsColor} strokeWidth="6" strokeLinecap="round" />
           {/* Main pillar */}
@@ -259,58 +263,67 @@ const ForcaPage = () => {
           {/* Top bar */}
           <line x1="57" y1="20" x2="140" y2="20" stroke={gallowsColor} strokeWidth="6" strokeLinecap="round" />
           {/* Rope */}
-          <line x1="140" y1="20" x2="140" y2="40" stroke={gallowsColor} strokeWidth="4" strokeLinecap="round" />
+          <line x1="140" y1="20" x2="140" y2="42" stroke={ropeColor} strokeWidth="3" strokeDasharray="4 2" />
 
-          {/* Head */}
+          {/* Head - Grim Skull */}
           {mistakes > 0 && (
-            <motion.circle
-              cx="140" cy="58" r="18" fill="none"
-              stroke={strokeColor} strokeWidth="3"
-              initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
-            />
+            <motion.g
+              initial={{ opacity: 0, scale: 0.5, y: -10 }} animate={{ opacity: 1, scale: 1, y: 0 }}
+              stroke={strokeColor} strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round"
+            >
+              <circle cx="140" cy="56" r="14" />
+              <path d="M 133 66 L 133 72 M 140 66 L 140 72 M 147 66 L 147 72 M 129 66 L 151 66" />
+              <circle cx="134" cy="54" r="2" fill={strokeColor} />
+              <circle cx="146" cy="54" r="2" fill={strokeColor} />
+              <path d="M 140 59 L 140 61" strokeWidth="1.5" />
+            </motion.g>
           )}
 
-          {/* Body */}
+          {/* Spine & Ribcage */}
           {mistakes > 1 && (
-            <motion.line
-              x1="140" y1="78" x2="140" y2="140"
+            <motion.g
               stroke={strokeColor} strokeWidth="3" strokeLinecap="round"
               initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
-            />
+            >
+              <line x1="140" y1="74" x2="140" y2="120" />
+              <line x1="130" y1="84" x2="150" y2="84" strokeWidth="2.5" />
+              <line x1="132" y1="94" x2="148" y2="94" strokeWidth="2.5" />
+              <line x1="134" y1="104" x2="146" y2="104" strokeWidth="2.5" />
+            </motion.g>
           )}
 
           {/* Left Arm */}
           {mistakes > 2 && (
-            <motion.line
-              x1="140" y1="95" x2="115" y2="120"
-              stroke={strokeColor} strokeWidth="3" strokeLinecap="round"
+            <motion.path
+              d="M 140 84 Q 120 95 115 115"
+              stroke={strokeColor} strokeWidth="3" strokeLinecap="round" fill="none"
               initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
             />
           )}
 
           {/* Right Arm */}
           {mistakes > 3 && (
-            <motion.line
-              x1="140" y1="95" x2="165" y2="120"
-              stroke={strokeColor} strokeWidth="3" strokeLinecap="round"
+            <motion.path
+              d="M 140 84 Q 160 95 165 115"
+              stroke={strokeColor} strokeWidth="3" strokeLinecap="round" fill="none"
               initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
             />
           )}
 
           {/* Left Leg */}
           {mistakes > 4 && (
-            <motion.line
-              x1="140" y1="140" x2="115" y2="175"
-              stroke={strokeColor} strokeWidth="3" strokeLinecap="round"
+            <motion.path
+              d="M 140 120 Q 130 140 120 165"
+              stroke={strokeColor} strokeWidth="3" strokeLinecap="round" fill="none"
               initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
             />
           )}
 
           {/* Right Leg */}
           {mistakes > 5 && (
-            <motion.line
-              x1="140" y1="140" x2="165" y2="175"
-              stroke={strokeColor} strokeWidth="3" strokeLinecap="round"
+            <motion.path
+              d="M 140 120 Q 150 140 160 165"
+              stroke={strokeColor} strokeWidth="3" strokeLinecap="round" fill="none"
               initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
             />
           )}
@@ -468,17 +481,17 @@ const ForcaPage = () => {
               <h2 className="text-xl font-display font-black text-foreground uppercase tracking-wide">{selectedLaw.nome}</h2>
               <p className="text-sm text-muted-foreground mb-4">Selecione o nível para jogar. Complete sem errar para ganhar 3 estrelas!</p>
               
-              <div className="h-[65vh] overflow-y-auto pr-2 pb-[env(safe-area-inset-bottom)] scroll-smooth">
+              <div className="pr-2 pb-6">
                 {phasesTrilha.length === 0 && (
                    <div className="py-10 flex flex-col items-center justify-center gap-3">
                      <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
                      <span className="text-sm text-muted-foreground">Carregando trilha...</span>
                    </div>
                 )}
-                <div className="space-y-12 pb-32">
+                <div className="space-y-12">
                   {phasesTrilha.map(phase => (
                     <div key={phase.id} className="relative">
-                      <div className="sticky top-0 z-10 bg-[#0D0D0D]/90 backdrop-blur-md py-4 border-b border-primary/20 mb-8 rounded-b-3xl shadow-sm mx-2">
+                      <div className="relative bg-[#0D0D0D] py-4 border-b border-primary/20 mb-8 rounded-b-3xl mx-2">
                         <h3 className="font-display font-black text-lg text-primary text-center px-4 leading-tight">{phase.title}</h3>
                       </div>
                       <div className="flex flex-col items-center gap-8 py-2">
@@ -561,19 +574,28 @@ const ForcaPage = () => {
               {renderHangman()}
               {renderWord()}
 
+              <div className="flex justify-between items-center mb-6 md:mb-8">
+                <div className="flex items-center gap-2">
+                  {Array.from({ length: MAX_HINTS }).map((_, i) => (
+                    <div key={i} className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+                      i < (MAX_HINTS - hintsUsed) ? 'bg-yellow-500/20 text-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.3)]' : 'bg-white/5 text-white/20'
+                    }`}>
+                      <Lightbulb className="w-4 h-4" />
+                    </div>
+                  ))}
+                </div>
+                <button
+                  onClick={useHintAction}
+                  disabled={hintsUsed >= MAX_HINTS || status !== 'playing'}
+                  className="flex items-center gap-2 bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-500 border border-yellow-500/30 px-4 py-2 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm transition-all active:scale-95"
+                >
+                  <Lightbulb className="w-4 h-4" />
+                  Usar Dica
+                </button>
+              </div>
+
               {status === 'playing' ? (
                 <>
-                  <div className="mb-6 flex justify-center">
-                    <button
-                      onClick={useHintAction}
-                      disabled={hintsUsed >= MAX_HINTS}
-                      className="flex items-center gap-2 bg-card border border-border/50 hover:border-primary/50 disabled:opacity-50 disabled:pointer-events-none px-5 py-2.5 rounded-full transition-all text-sm font-bold shadow-sm"
-                    >
-                      <Lightbulb className={`w-4 h-4 ${hintsUsed < MAX_HINTS ? 'text-yellow-400' : 'text-muted-foreground'}`} />
-                      Dica ({MAX_HINTS - hintsUsed} restantes)
-                    </button>
-                  </div>
-                  
                   {hintsUsed > 0 && currentWord && (
                     <motion.div 
                       initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
