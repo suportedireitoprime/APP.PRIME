@@ -12,19 +12,8 @@ import TematicaCarrossel from '@/components/ferramentas/TematicaCarrossel';
 
 
 
-const TOOLS = [
-  { id: 'desktop', label: 'Desktop', desc: 'Versão para computador', icon: Monitor, color: '#38BDF8' },
-  { id: 'me-explique', label: 'Me Explique', desc: 'Aponte a câmera e ouça a explicação', icon: Camera, color: '#22D3EE' },
-  { id: 'peticao-inicial', label: 'Petição Inicial', desc: 'Gere petições com IA e jurisprudência', icon: FileSignature, color: '#FFD400' },
-  { id: 'radar360', label: 'Radar 360', desc: 'Alterações de leis e projetos monitorados', icon: Radar, color: '#8B5CF6' },
-  { id: 'leis-cantadas', label: 'Leis Cantadas', desc: 'Aprenda a lei seca com música', icon: Music, color: '#22C55E' },
-  { id: 'gravar-aula', label: 'Gravar aula', desc: 'Grave aulas com resumo automático', icon: Mic, color: '#F97316' },
-  { id: 'tematica', label: 'Temática Jurídica', desc: 'Filmes, séries e documentários', icon: Film, color: '#FF2D78' },
-  { id: 'boletins', label: 'Boletins Jurídicos', desc: 'Vídeo diário com as normas de hoje', icon: Clapperboard, color: '#14B8A6' },
-  { id: 'noticias', label: 'Notícias', desc: 'Notícias jurídicas e atualizações', icon: Newspaper, color: '#6366F1' },
-  { id: 'newsletter', label: 'Newsletter', desc: 'Resumo jurídico diário no e-mail', icon: Send, color: '#EC4899' },
-  { id: 'forca', label: 'Jogo da Forca', desc: 'Teste seu vocabulário', icon: BookOpenText, color: '#FACC15' },
-];
+import { Trophy, Compass } from 'lucide-react';
+import { ForcaRanking } from '@/components/gamificacao/ForcaRanking';
 
 
 
@@ -33,7 +22,19 @@ const Ferramentas = () => {
   const navigate = useNavigate();
   const [dicionarioOpen, setDicionarioOpen] = useState(false);
 
-  const handleToolClick = (id: string) => {
+  const [rankingOpen, setRankingOpen] = useState(false);
+
+  const handleToolClick = (id: string, route?: string) => {
+    if (id === 'ranking') {
+      setRankingOpen(true);
+      return;
+    }
+    
+    if (route && route !== '#') {
+      navigate(route);
+      return;
+    }
+
     switch (id) {
       case 'desktop': navigate('/desktop'); break;
       case 'me-explique': navigate('/me-explique'); break;
@@ -69,45 +70,53 @@ const Ferramentas = () => {
 
 
   const toolsList = (
-    <div className="space-y-3">
-      {TOOLS.map((tool, i) => {
-        const Icon = tool.icon;
-        return (
-          <div key={tool.id} className="space-y-3">
-            <motion.button
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.06 }}
-              onClick={() => handleToolClick(tool.id)}
-              data-track="ferramenta_abrir"
-              data-ferramenta-id={tool.id}
-              data-ferramenta-nome={tool.label}
-              className="flex items-center gap-3 px-4 h-[76px] rounded-2xl bg-card border border-border/60 shadow-sm hover:border-primary/40 active:scale-[0.99] transition-all group w-full"
-            >
-              <Icon
-                className="w-8 h-8 shrink-0"
-                style={{
-                  color: tool.color,
-                  filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))',
-                }}
-                strokeWidth={1.15}
-              />
-              <div className="flex-1 min-w-0 text-left">
-                <p className="font-display text-foreground text-[15.5px] font-bold leading-tight truncate">
-                  {tool.label}
-                </p>
-                <p className="font-body text-muted-foreground text-[12px] leading-tight truncate mt-0.5">
-                  {tool.desc}
-                </p>
-              </div>
-
-              <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-            </motion.button>
-
-            {tool.id === 'me-explique' && <TematicaCarrossel />}
+    <div className="space-y-8">
+      {DESKTOP_TOOL_GROUPS.map((group) => (
+        <section key={group.id} className="space-y-3">
+          <div className="flex items-baseline gap-2 pb-1 border-b border-border/40 px-1">
+            <h2 className="font-display text-lg font-bold text-foreground">{group.label}</h2>
           </div>
-        );
-      })}
+          <div className="space-y-3">
+            {group.tools.map((tool, i) => {
+              const Icon = tool.icon;
+              return (
+                <div key={tool.id} className="space-y-3">
+                  <motion.button
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.04 }}
+                    onClick={() => handleToolClick(tool.id, tool.route)}
+                    data-track="ferramenta_abrir"
+                    data-ferramenta-id={tool.id}
+                    data-ferramenta-nome={tool.label}
+                    className="flex items-center gap-3 px-4 h-[76px] rounded-2xl bg-card border border-border/60 shadow-sm hover:border-primary/40 active:scale-[0.99] transition-all group w-full"
+                  >
+                    <Icon
+                      className="w-8 h-8 shrink-0"
+                      style={{
+                        color: tool.color,
+                        filter: tool.id === 'caca-palavras' || tool.id === 'palavras-cruzadas' ? 'grayscale(1)' : 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))',
+                      }}
+                      strokeWidth={1.15}
+                    />
+                    <div className="flex-1 min-w-0 text-left">
+                      <p className={`font-display text-[15.5px] font-bold leading-tight truncate ${tool.id === 'caca-palavras' || tool.id === 'palavras-cruzadas' ? 'text-muted-foreground' : 'text-foreground'}`}>
+                        {tool.label}
+                      </p>
+                      <p className="font-body text-muted-foreground text-[12px] leading-tight truncate mt-0.5">
+                        {tool.desc}
+                      </p>
+                    </div>
+
+                    <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+                  </motion.button>
+                  {tool.id === 'me-explique' && <TematicaCarrossel />}
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      ))}
     </div>
   );
 
@@ -127,7 +136,7 @@ const Ferramentas = () => {
               return (
                 <button
                   key={tool.id}
-                  onClick={() => navigate(tool.route)}
+                  onClick={() => handleToolClick(tool.id, tool.route)}
                   data-track="ferramenta_abrir"
                   data-ferramenta-id={tool.id}
                   data-ferramenta-nome={tool.label}
@@ -175,6 +184,8 @@ const Ferramentas = () => {
       <Suspense fallback={null}>
         {dicionarioOpen && <DicionarioJuridico open={dicionarioOpen} onClose={() => setDicionarioOpen(false)} />}
       </Suspense>
+
+      <ForcaRanking isOpen={rankingOpen} onClose={() => setRankingOpen(false)} />
     </DesktopPageLayout>
   );
 };
