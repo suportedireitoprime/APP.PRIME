@@ -6,7 +6,7 @@ import {
   Rss, Palette, Users, GitBranch, Github, ImageIcon, KeyRound, Bug, Newspaper,
   Quote, Monitor, Send, RefreshCcw, Lock, Wrench, FileText, Crown, Search, Target, MapPin, PlayCircle,
   Sparkles, UserPlus, GraduationCap, Scale, Store, Mail, FileSignature,
-  ListChecks,
+  ListChecks, Headphones,
 } from 'lucide-react';
 
 import { toast } from 'sonner';
@@ -37,6 +37,7 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   '/admin-hero-home': () => import('./AdminHeroHome'),
   '/admin-home-curiosidades': () => import('./AdminHomeCuriosidades'),
   '/admin-overlay-frases': () => import('./AdminOverlayFrases'),
+  '/admin/resumo-livro-audio': () => import('./AdminResumoLivroAudioEditar'),
   
   '/admin-funcoes-assinantes': () => import('./AdminFuncoesAssinantes'),
   '/admin-assinantes': () => import('./AdminAssinantes'),
@@ -251,6 +252,7 @@ const CATEGORIES: Category[] = [
       { id: 'hero-home', label: 'Imagens Início do App', icon: ImageIcon, desc: 'Personagens do painel amarelo + animações de entrada', route: '/admin-hero-home' },
       { id: 'home-curiosidades', label: 'Curiosidades da Home', icon: Lightbulb, desc: 'Cards leves misturados aos stats, com capa vazada IA', route: '/admin-home-curiosidades' },
       { id: 'apresentacao-editar', label: 'Apresentação Editar', icon: Mic, desc: 'Resumo ou lei + PDF → OCR e narração de cada slide', route: '/admin-apresentacao-editar' },
+      { id: 'resumo-livro-audio-editar', label: 'Resumo Livro Áudio Editar', icon: Headphones, desc: 'Adicionar áudio para os resumos dos livros', route: '/admin/resumo-livro-audio' },
       { id: 'narracao', label: 'Narração Editar', icon: Mic, desc: 'TTS com Gemini', route: '/narracao' },
       { id: 'explicacao-lei', label: 'Explicações Editar (IA)', icon: Lightbulb, desc: 'Batch de explicações', route: '/explicacao-lei' },
       { id: 'boletins', label: 'Boletins Editar', icon: Rss, desc: 'Newsletters e boletins', route: '/newsletter' },
