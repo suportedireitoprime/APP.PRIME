@@ -16,7 +16,7 @@ export default function AdminResumoLivroAudioEditar() {
   const [loading, setLoading] = useState(true);
   const [livros, setLivros] = useState<LivroComColecao[]>([]);
   const [busca, setBusca] = useState('');
-  const [uploadingId, setUploadingId] = useState<number | null>(null);
+  const [uploadingId, setUploadingId] = useState<number | string | null>(null);
 
   useEffect(() => {
     carregarTudo();
@@ -25,9 +25,9 @@ export default function AdminResumoLivroAudioEditar() {
   async function carregarTudo() {
     setLoading(true);
     try {
-      const colecoesVisiveis = COLECOES.filter((c) => c.modo !== 'escondido');
+      const colecoesVisiveis = COLECOES.filter((c) => (c.modo as any) !== 'escondido');
       const promessas = colecoesVisiveis.map(async (col) => {
-        const { data, error } = await supabase.from(col.table).select(col.select);
+        const { data, error } = await supabase.from(col.table as any).select(col.select);
         if (error) {
           console.error(`Erro ao carregar ${col.table}:`, error);
           return [];
@@ -77,18 +77,18 @@ export default function AdminResumoLivroAudioEditar() {
       const filePath = `resumos-livros/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
-        .from('aulas-audio') // Usando um bucket público existente
+        .from('audios') // Usando um bucket público existente
         .upload(filePath, file, { upsert: true, contentType: file.type });
 
       if (uploadError) throw uploadError;
 
       // 2. Get Public URL
-      const { data: publicData } = supabase.storage.from('aulas-audio').getPublicUrl(filePath);
+      const { data: publicData } = supabase.storage.from('audios').getPublicUrl(filePath);
       const publicUrl = publicData.publicUrl;
 
       // 3. Update Database
       const { error: dbError } = await supabase
-        .from(item.colecao.table)
+        .from(item.colecao.table as any)
         .update({ audio_resumo_url: publicUrl })
         .eq('id', item.livro.id);
 
@@ -163,7 +163,7 @@ export default function AdminResumoLivroAudioEditar() {
                   {item.livro.autor && <p className="text-sm text-muted-foreground truncate">{item.livro.autor}</p>}
                   <div className="flex items-center gap-2 mt-2">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded-full">
-                      {item.colecao.titulo}
+                      {(item.colecao as any).titulo || item.colecao.modo}
                     </span>
                     {item.livro.audioResumoUrl ? (
                       <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-green-500 bg-green-500/10 px-2 py-0.5 rounded-full">
