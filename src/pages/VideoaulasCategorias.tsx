@@ -68,7 +68,7 @@ const VideoaulasCategorias = () => {
                 }}
                 className="group flex flex-col w-full overflow-hidden rounded-2xl border border-border bg-card text-left shadow-sm transition-all hover:border-primary/50 active:scale-[0.98]"
               >
-                <div className="relative w-full aspect-[4/3] sm:aspect-video overflow-hidden bg-black/10">
+                <div className="relative w-full h-[85px] sm:h-[100px] overflow-hidden bg-black/10">
                   <ThumbImg
                     src={c.capa}
                     alt={c.titulo}
@@ -81,14 +81,14 @@ const VideoaulasCategorias = () => {
                   </div>
                 </div>
 
-                <div className="flex flex-col flex-1 p-4">
-                  <h3 className="truncate text-base font-bold leading-tight">{c.titulo}</h3>
-                  <p className="mt-1 line-clamp-2 text-xs leading-snug text-muted-foreground flex-1">
+                <div className="flex flex-col flex-1 p-3">
+                  <h3 className="truncate text-[13px] font-bold leading-tight">{c.titulo}</h3>
+                  <p className="mt-0.5 line-clamp-2 text-[10px] leading-snug text-muted-foreground flex-1">
                     {c.descricao}
                   </p>
                   
-                  <div className="mt-3 flex items-center justify-between">
-                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-primary">
+                  <div className="mt-2 flex items-center justify-between">
+                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-primary">
                       <Video className="h-3.5 w-3.5" />
                       {info?.total ? `${info.total.toLocaleString('pt-BR')} aulas` : '—'}
                     </span>
@@ -121,7 +121,7 @@ const VideoaulasCategorias = () => {
                 }}
                 className="group flex flex-col w-full overflow-hidden rounded-2xl border border-border bg-card text-left shadow-sm transition-all hover:border-primary/50 active:scale-[0.98]"
               >
-                <div className="relative w-full aspect-[4/3] sm:aspect-video overflow-hidden bg-black/10">
+                <div className="relative w-full h-[85px] sm:h-[100px] overflow-hidden bg-black/10">
                   <ThumbImg
                     src={c.capa}
                     alt={c.titulo}
@@ -134,13 +134,13 @@ const VideoaulasCategorias = () => {
                     </span>
                   </div>
                 </div>
-                <div className="flex flex-col flex-1 p-4">
-                  <h3 className="truncate text-base font-bold leading-tight">{c.titulo}</h3>
-                  <p className="mt-1 line-clamp-2 text-xs leading-snug text-muted-foreground flex-1">
+                <div className="flex flex-col flex-1 p-3">
+                  <h3 className="truncate text-[13px] font-bold leading-tight">{c.titulo}</h3>
+                  <p className="mt-0.5 line-clamp-2 text-[10px] leading-snug text-muted-foreground flex-1">
                     {c.descricao}
                   </p>
-                  <div className="mt-3 flex items-center justify-between text-muted-foreground group-hover:text-primary transition-colors">
-                    <span className="text-xs font-semibold">{c.disciplinas?.length || 0} Disciplinas</span>
+                  <div className="mt-2 flex items-center justify-between text-muted-foreground group-hover:text-primary transition-colors">
+                    <span className="text-[10px] font-semibold">{c.disciplinas?.length || 0} Disciplinas</span>
                     <ChevronRight className="h-4 w-4" />
                   </div>
                 </div>
@@ -161,7 +161,7 @@ const VideoaulasCategorias = () => {
                 }}
                 className="group flex flex-col w-full overflow-hidden rounded-2xl border border-border bg-card text-left shadow-sm transition-all hover:border-primary/50 active:scale-[0.98]"
               >
-                <div className="relative w-full aspect-[4/3] sm:aspect-video overflow-hidden bg-black/10">
+                <div className="relative w-full h-[85px] sm:h-[100px] overflow-hidden bg-black/10">
                   <ThumbImg
                     src={c.capa}
                     alt={c.titulo}
@@ -174,13 +174,13 @@ const VideoaulasCategorias = () => {
                     </span>
                   </div>
                 </div>
-                <div className="flex flex-col flex-1 p-4">
-                  <h3 className="truncate text-base font-bold leading-tight">{c.titulo}</h3>
-                  <p className="mt-1 line-clamp-2 text-xs leading-snug text-muted-foreground flex-1">
+                <div className="flex flex-col flex-1 p-3">
+                  <h3 className="truncate text-[13px] font-bold leading-tight">{c.titulo}</h3>
+                  <p className="mt-0.5 line-clamp-2 text-[10px] leading-snug text-muted-foreground flex-1">
                     {c.descricao}
                   </p>
-                  <div className="mt-3 flex items-center justify-between text-muted-foreground group-hover:text-primary transition-colors">
-                    <span className="text-xs font-semibold">{c.disciplinas?.length || 0} Disciplinas</span>
+                  <div className="mt-2 flex items-center justify-between text-muted-foreground group-hover:text-primary transition-colors">
+                    <span className="text-[10px] font-semibold">{c.disciplinas?.length || 0} Disciplinas</span>
                     <ChevronRight className="h-4 w-4" />
                   </div>
                 </div>
