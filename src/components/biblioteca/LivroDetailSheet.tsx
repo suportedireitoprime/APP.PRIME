@@ -338,8 +338,8 @@ const LivroDetailSheet = ({ livro, open, onClose }: LivroDetailSheetProps) => {
 
                   {livro.audioResumoUrl && (
                     <Button
-                      variant="outline"
-                      className="w-full h-14 text-lg font-semibold gap-2.5 rounded-2xl shadow-sm mt-3 border-primary/20 text-foreground hover:bg-primary/5"
+                      variant="secondary"
+                      className="w-full h-14 text-lg font-semibold gap-2.5 rounded-2xl shadow-sm mt-3 bg-secondary/80 hover:bg-secondary text-foreground border border-white/5"
                       onClick={() => {
                         haptic.selection();
                         tocarResumo(livro);
