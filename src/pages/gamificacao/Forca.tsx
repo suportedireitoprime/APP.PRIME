@@ -370,11 +370,11 @@ const ForcaPage = () => {
             <div className="flex flex-col items-end">
               <div className="flex items-center gap-1.5 text-primary">
                 <Star className="w-4 h-4 fill-primary" />
-                <span className="font-display font-black leading-none">{progresso.xp_total} XP</span>
+                <span className="font-display font-black leading-none">{progresso?.xp_total ?? 0} XP</span>
               </div>
               <div className="flex items-center gap-1.5 text-orange-500">
                 <Flame className="w-3.5 h-3.5 fill-orange-500" />
-                <span className="text-[11px] font-bold leading-none uppercase">Combo Max: {progresso.highest_combo}</span>
+                <span className="text-[11px] font-bold leading-none uppercase">Combo Max: {progresso?.highest_combo ?? 0}</span>
               </div>
             </div>
           </div>
