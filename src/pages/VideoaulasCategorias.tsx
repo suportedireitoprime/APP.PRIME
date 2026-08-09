@@ -13,7 +13,7 @@ import {
 import { haptic } from '@/lib/nativeHaptics';
 import { prefetchCatalogo, loadConcursos, type ConcursoRow } from '@/lib/videoaulasStore';
 
-const CarouselSection = ({ title, icon: Icon, children }: { title: string, icon: any, children: React.ReactNode }) => (
+const GridSection = ({ title, icon: Icon, children }: { title: string, icon: any, children: React.ReactNode }) => (
   <div className="mb-8">
     <div className="mb-3 px-4 flex items-center gap-2">
       <Icon className="h-4 w-4 text-primary" />
@@ -21,7 +21,7 @@ const CarouselSection = ({ title, icon: Icon, children }: { title: string, icon:
         {title}
       </h2>
     </div>
-    <div className="flex gap-4 overflow-x-auto pb-4 pt-1 px-4 scrollbar-hide snap-x">
+    <div className="grid grid-cols-2 gap-3 px-4">
       {children}
     </div>
   </div>
@@ -55,7 +55,7 @@ const VideoaulasCategorias = () => {
       <div className="w-full pb-32 pt-4">
         
         {/* Jornadas Padrão (CATALOGOS) */}
-        <CarouselSection title="Jornadas Padrão" icon={GraduationCap}>
+        <GridSection title="Jornadas Padrão" icon={GraduationCap}>
           {CATALOGOS.map((c) => {
             const info = data.porCatalogo[c.id];
             return (
@@ -66,9 +66,9 @@ const VideoaulasCategorias = () => {
                   haptic.selection();
                   navigate(`/videoaulas/${c.id}`);
                 }}
-                className="group flex flex-col w-[260px] shrink-0 snap-center overflow-hidden rounded-2xl border border-border bg-card text-left shadow-md transition-all hover:border-primary/50 active:scale-[0.98]"
+                className="group flex flex-col w-full overflow-hidden rounded-2xl border border-border bg-card text-left shadow-sm transition-all hover:border-primary/50 active:scale-[0.98]"
               >
-                <div className="relative w-full h-[140px] overflow-hidden bg-black/10">
+                <div className="relative w-full aspect-[4/3] sm:aspect-video overflow-hidden bg-black/10">
                   <ThumbImg
                     src={c.capa}
                     alt={c.titulo}
@@ -107,11 +107,11 @@ const VideoaulasCategorias = () => {
               </button>
             );
           })}
-        </CarouselSection>
+        </GridSection>
 
         {/* Carreiras Policiais */}
         {policiais.length > 0 && (
-          <CarouselSection title="Carreiras Policiais" icon={ShieldAlert}>
+          <GridSection title="Carreiras Policiais" icon={ShieldAlert}>
             {policiais.map((c) => (
               <button
                 key={c.id}
@@ -119,9 +119,9 @@ const VideoaulasCategorias = () => {
                   haptic.selection();
                   navigate(`/videoaulas/concurso/${c.id}`);
                 }}
-                className="group flex flex-col w-[260px] shrink-0 snap-center overflow-hidden rounded-2xl border border-border bg-card text-left shadow-md transition-all hover:border-primary/50 active:scale-[0.98]"
+                className="group flex flex-col w-full overflow-hidden rounded-2xl border border-border bg-card text-left shadow-sm transition-all hover:border-primary/50 active:scale-[0.98]"
               >
-                <div className="relative w-full h-[140px] overflow-hidden bg-black/10">
+                <div className="relative w-full aspect-[4/3] sm:aspect-video overflow-hidden bg-black/10">
                   <ThumbImg
                     src={c.capa}
                     alt={c.titulo}
@@ -146,12 +146,12 @@ const VideoaulasCategorias = () => {
                 </div>
               </button>
             ))}
-          </CarouselSection>
+          </GridSection>
         )}
 
         {/* Tribunais */}
         {tribunais.length > 0 && (
-          <CarouselSection title="Tribunais & TJs" icon={Scale}>
+          <GridSection title="Tribunais & TJs" icon={Scale}>
             {tribunais.map((c) => (
               <button
                 key={c.id}
@@ -159,9 +159,9 @@ const VideoaulasCategorias = () => {
                   haptic.selection();
                   navigate(`/videoaulas/concurso/${c.id}`);
                 }}
-                className="group flex flex-col w-[260px] shrink-0 snap-center overflow-hidden rounded-2xl border border-border bg-card text-left shadow-md transition-all hover:border-primary/50 active:scale-[0.98]"
+                className="group flex flex-col w-full overflow-hidden rounded-2xl border border-border bg-card text-left shadow-sm transition-all hover:border-primary/50 active:scale-[0.98]"
               >
-                <div className="relative w-full h-[140px] overflow-hidden bg-black/10">
+                <div className="relative w-full aspect-[4/3] sm:aspect-video overflow-hidden bg-black/10">
                   <ThumbImg
                     src={c.capa}
                     alt={c.titulo}
@@ -186,7 +186,7 @@ const VideoaulasCategorias = () => {
                 </div>
               </button>
             ))}
-          </CarouselSection>
+          </GridSection>
         )}
 
       </div>
