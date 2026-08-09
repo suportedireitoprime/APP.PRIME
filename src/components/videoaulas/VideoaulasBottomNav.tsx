@@ -15,11 +15,11 @@ type Tab = {
 
 const TABS: Tab[] = [
   {
-    id: 'categorias',
-    label: 'Categorias',
-    to: '/videoaulas/categorias',
-    icon: LayoutGrid,
-    match: (p) => p === '/videoaulas' || p.startsWith('/videoaulas/categorias'),
+    id: 'aulas',
+    label: 'Aulas',
+    to: '/videoaulas/painel',
+    icon: PlayCircle,
+    match: (p) => p === '/videoaulas/painel',
   },
   {
     id: 'trilhas',
@@ -29,25 +29,25 @@ const TABS: Tab[] = [
     match: (p) => p.startsWith('/videoaulas/trilhas'),
   },
   {
-    id: 'praticar',
-    label: 'Praticar',
-    to: '/videoaulas/praticar',
-    icon: BrainCircuit,
-    match: (p) => p.startsWith('/videoaulas/praticar'),
+    id: 'categorias',
+    label: 'Categorias',
+    to: '/videoaulas/categorias',
+    icon: LayoutGrid,
+    match: (p) => p === '/videoaulas' || p.startsWith('/videoaulas/categorias'),
   },
   {
-    id: 'anotacoes',
-    label: 'Anotações',
-    to: '/videoaulas/anotacoes',
-    icon: BookOpenText,
-    match: (p) => p.startsWith('/videoaulas/anotacoes'),
+    id: 'favoritos',
+    label: 'Favoritos',
+    to: '/videoaulas/favoritos',
+    icon: Star,
+    match: (p) => p.startsWith('/videoaulas/favoritos'),
   },
   {
     id: 'mais',
     label: 'Mais',
     to: '#', // Handled by drawer
     icon: Menu,
-    match: (p) => p.startsWith('/videoaulas/favoritos') || p.startsWith('/videoaulas/conquistas'),
+    match: (p) => p.startsWith('/videoaulas/conquistas') || p.startsWith('/videoaulas/anotacoes') || p.startsWith('/videoaulas/praticar'),
   },
 ];
 
@@ -123,16 +123,33 @@ const VideoaulasBottomNav = () => {
                     onClick={() => {
                       haptic.selection();
                       setDrawerOpen(false);
-                      navigate('/videoaulas/favoritos');
+                      navigate('/videoaulas/praticar');
                     }}
                     className="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-white/5 active:scale-[0.98] transition-all text-left"
                   >
                     <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                      <Star className="w-5 h-5" />
+                      <BrainCircuit className="w-5 h-5" />
                     </div>
                     <div>
-                      <p className="font-bold text-foreground">Aulas Favoritas</p>
-                      <p className="text-xs text-muted-foreground">Suas aulas salvas para ver depois</p>
+                      <p className="font-bold text-foreground">Praticar</p>
+                      <p className="text-xs text-muted-foreground">Questões e Flashcards</p>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      haptic.selection();
+                      setDrawerOpen(false);
+                      navigate('/videoaulas/anotacoes');
+                    }}
+                    className="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-white/5 active:scale-[0.98] transition-all text-left"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                      <BookOpenText className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-foreground">Anotações</p>
+                      <p className="text-xs text-muted-foreground">Seu caderno virtual</p>
                     </div>
                   </button>
 
@@ -150,23 +167,6 @@ const VideoaulasBottomNav = () => {
                     <div>
                       <p className="font-bold text-foreground">Conquistas</p>
                       <p className="text-xs text-muted-foreground">Seu progresso e medalhas</p>
-                    </div>
-                  </button>
-                  
-                  <button
-                    onClick={() => {
-                      haptic.selection();
-                      setDrawerOpen(false);
-                      navigate('/videoaulas');
-                    }}
-                    className="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-white/5 active:scale-[0.98] transition-all text-left"
-                  >
-                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white">
-                      <PlayCircle className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <p className="font-bold text-foreground">Visão Geral (Painel)</p>
-                      <p className="text-xs text-muted-foreground">Acesse seu progresso em vídeo</p>
                     </div>
                   </button>
                 </div>
