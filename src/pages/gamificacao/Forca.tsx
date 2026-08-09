@@ -315,8 +315,27 @@ const ForcaPage = () => {
     }
 
     return (
-      <div className="flex flex-col items-center w-full max-w-2xl mx-auto">
-        <div className="w-full flex items-center justify-between mb-2">
+      <div className="flex flex-col items-center w-full max-w-2xl mx-auto relative pt-4">
+        {/* Floating Hint Button */}
+        <button
+          onClick={useHintAction}
+          disabled={hintsUsed >= MAX_HINTS || status !== 'playing'}
+          className={`absolute -top-2 right-0 z-10 flex items-center justify-center w-12 h-12 rounded-full transition-all group shadow-lg
+            ${hintsUsed >= MAX_HINTS || status !== 'playing'
+              ? 'bg-zinc-800 text-zinc-600 border border-zinc-700 cursor-not-allowed'
+              : 'bg-yellow-400 text-yellow-950 hover:bg-yellow-300 hover:scale-105 active:scale-95 shadow-yellow-400/20 cursor-pointer'
+            }`}
+        >
+          <Lightbulb className={`w-6 h-6 ${hintsUsed < MAX_HINTS && status === 'playing' ? 'group-hover:animate-pulse' : ''}`} />
+          
+          {hintsUsed < MAX_HINTS && status === 'playing' && (
+            <span className="absolute -bottom-1 -right-1 bg-zinc-950 text-yellow-400 border border-yellow-400/50 text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center shadow-md">
+              {MAX_HINTS - hintsUsed}
+            </span>
+          )}
+        </button>
+
+        <div className="w-full flex items-center justify-between mb-2 pr-14">
           <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
             FASE {currentPhaseIndex + 1} DE {selectedArticle.phases.length}
           </span>
@@ -336,26 +355,9 @@ const ForcaPage = () => {
 
         {renderHangman()}
 
-        <div className="w-full bg-amber-500/15 border border-amber-400/25 text-amber-300 rounded-2xl p-4 flex items-center gap-3 mb-4 shadow-sm">
-          <Lightbulb className="w-6 h-6 shrink-0" />
-          <span className="flex-1 text-[15px] md:text-[16px] leading-snug font-medium">{currentWord.hint}</span>
-        </div>
-
-        {/* Hint Button */}
-        <div className="w-full flex justify-center mb-8">
-          <button
-            onClick={useHintAction}
-            disabled={hintsUsed >= MAX_HINTS || status !== 'playing'}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all
-              ${hintsUsed >= MAX_HINTS || status !== 'playing'
-                ? 'bg-zinc-800/50 text-zinc-600 cursor-not-allowed'
-                : 'bg-amber-500/15 text-amber-300 border border-amber-400/30 hover:bg-amber-500/25 active:scale-95 shadow-sm'
-              }`}
-          >
-            <Lightbulb className="w-5 h-5" />
-            <span>Revelar Letra</span>
-            <span className="ml-1 text-xs opacity-70">({MAX_HINTS - hintsUsed} restantes)</span>
-          </button>
+        {/* Text Hint */}
+        <div className="w-full bg-zinc-800/50 border border-zinc-700/50 rounded-2xl p-4 flex items-center justify-center shadow-sm mb-8 px-4">
+          <span className="text-[15px] md:text-[16px] leading-snug font-medium text-zinc-300 text-center">{currentWord.hint}</span>
         </div>
 
         <div className="flex flex-wrap justify-center gap-1.5 md:gap-3 mb-10 w-full px-2">
