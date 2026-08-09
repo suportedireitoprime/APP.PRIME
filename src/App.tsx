@@ -160,6 +160,8 @@ const FlashcardsDesafios = lazy(() => import("./pages/FlashcardsDesafios.tsx"));
 const FlashcardsProgresso = lazy(() => import("./pages/FlashcardsProgresso.tsx"));
 const Videoaulas = lazy(routePrefetch.videoaulas);
 const VideoaulasCategorias = lazy(routePrefetch.videoaulasCategorias);
+const VideoaulasCatalogo = lazy(routePrefetch.videoaulasCatalogo);
+const VideoaulasArea = lazy(routePrefetch.videoaulasArea);
 const VideoaulasPraticar = lazy(() => import('@/pages/VideoaulasPraticar'));
 const VideoaulasAnotacoes = lazy(() => import('@/pages/VideoaulasAnotacoes'));
 const VideoaulasConquistas = lazy(routePrefetch.videoaulasConquistas);
