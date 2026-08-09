@@ -1,25 +1,34 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Skull, Lightbulb, RefreshCw, ChevronRight, BookOpenText, Flame, Star, Trophy } from 'lucide-react';
+import { Skull, Lightbulb, RefreshCw, ChevronRight, BookOpenText, Flame, Star, Trophy, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
-import { forcaCatalog, ForcaArea, ForcaLaw, ForcaArticle, ForcaWord } from '@/data/forcaCatalog';
 import { useGameSounds } from '@/hooks/useGameSounds';
 import { useForcaProgresso } from '@/hooks/useForcaProgresso';
 import { ForcaRanking } from '@/components/gamificacao/ForcaRanking';
+import { supabase } from '@/integrations/supabase/client';
 
 const MAX_MISTAKES = 6;
 const MAX_HINTS = 3;
+
+interface ForcaWord {
+  word: string;
+  hint: string;
+}
 
 const ForcaPage = () => {
   const navigate = useNavigate();
   const { playClick, playCorrect, playWrong, playWin, playLose, playHint, playTriumph } = useGameSounds();
   const { progresso, saveProgress } = useForcaProgresso();
   
-  const [selectedArea, setSelectedArea] = useState<ForcaArea | null>(null);
-  const [selectedLaw, setSelectedLaw] = useState<ForcaLaw | null>(null);
-  const [selectedArticle, setSelectedArticle] = useState<ForcaArticle | null>(null);
+  const [laws, setLaws] = useState<any[]>([]);
+  const [selectedLaw, setSelectedLaw] = useState<any | null>(null);
+  
+  const [articles, setArticles] = useState<any[]>([]);
+  const [selectedArticle, setSelectedArticle] = useState<any | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [currentPhases, setCurrentPhases] = useState<ForcaWord[]>([]);
   
   const [currentPhaseIndex, setCurrentPhaseIndex] = useState(0);
   const [currentWord, setCurrentWord] = useState<ForcaWord | null>(null);
@@ -28,20 +37,46 @@ const ForcaPage = () => {
   const currentComboRef = useRef(0);
   const highestComboRef = useRef(0);
   const phaseXpRef = useRef(0);
-  const [currentCombo, setCurrentCombo] = useState(0); // for visual
+  const [currentCombo, setCurrentCombo] = useState(0); 
   
   const [guessedLetters, setGuessedLetters] = useState<Set<string>>(new Set());
   const [status, setStatus] = useState<'playing' | 'won' | 'lost' | 'article_completed'>('playing');
   const [isRankingOpen, setIsRankingOpen] = useState(false);
 
+  // Fetch Laws on Mount
+  useEffect(() => {
+    const fetchLaws = async () => {
+      const { data: cf } = await supabase.from('vade_mecum_leis').select('id, nome_curto, slug').eq('slug', 'cf');
+      const { data: codigos } = await supabase.from('vade_mecum_leis').select('id, nome_curto, slug').eq('categoria', 'codigo').order('nome_curto');
+      
+      const combined = [...(cf || []), ...(codigos || [])];
+      // deduplicate if CF is already in codigos
+      const unique = Array.from(new Map(combined.map(item => [item.id, item])).values());
+      setLaws(unique);
+    };
+    fetchLaws();
+  }, []);
+
+  const fetchArticles = async (lawId: string) => {
+    const { data } = await supabase.from('vade_mecum_artigos').select('id, nome, hierarquia_completa').eq('lei_id', lawId).order('ordem');
+    setArticles(data || []);
+  };
+
+  const handleLawSelect = (law: any) => {
+    setSelectedLaw(law);
+    setArticles([]);
+    fetchArticles(law.id);
+  };
+
   const normalizeString = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
-  const startPhase = useCallback((article: ForcaArticle, phaseIndex: number) => {
-    if (phaseIndex >= article.phases.length) {
+  const startPhase = useCallback((phases: ForcaWord[], phaseIndex: number) => {
+    if (phaseIndex >= phases.length) {
       setStatus('article_completed');
+      playTriumph();
       return;
     }
-    setCurrentWord(article.phases[phaseIndex]);
+    setCurrentWord(phases[phaseIndex]);
     setCurrentPhaseIndex(phaseIndex);
     setGuessedLetters(new Set());
     setHintsUsed(0);
@@ -50,11 +85,32 @@ const ForcaPage = () => {
     phaseXpRef.current = 0;
     setCurrentCombo(0);
     setStatus('playing');
-  }, []);
+  }, [playTriumph]);
 
-  const handleArticleSelect = (article: ForcaArticle) => {
+  const handleArticleSelect = async (article: any) => {
+    playClick();
     setSelectedArticle(article);
-    startPhase(article, 0);
+    setIsGenerating(true);
+    setCurrentPhases([]);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('forca-gerar-artigo', {
+        body: { artigo_id: article.id }
+      });
+      if (data?.phases) {
+        setCurrentPhases(data.phases);
+        startPhase(data.phases, 0);
+      } else {
+        alert("Erro ao gerar as palavras para este artigo.");
+        setSelectedArticle(null);
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Erro ao conectar com a IA.");
+      setSelectedArticle(null);
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   useEffect(() => {
@@ -77,8 +133,7 @@ const ForcaPage = () => {
       playLose();
       saveProgress(phaseXpRef.current, highestComboRef.current, false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [guessedLetters, mistakes, normalizedTarget, status, currentWord]);
+  }, [guessedLetters, mistakes, normalizedTarget, status, currentWord, playWin, playLose, saveProgress]);
 
   const guessLetter = useCallback((letter: string) => {
     if (status !== 'playing' || guessedLetters.has(letter)) return;
@@ -105,10 +160,8 @@ const ForcaPage = () => {
       }, 50);
       return next;
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status, guessedLetters, normalizedTarget]);
+  }, [status, guessedLetters, normalizedTarget, playClick, playCorrect, playWrong]);
 
-  // Keyboard support
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (status !== 'playing') return;
@@ -127,14 +180,11 @@ const ForcaPage = () => {
       setCurrentWord(null);
     } else if (selectedLaw) {
       setSelectedLaw(null);
-    } else if (selectedArea) {
-      setSelectedArea(null);
     } else {
       navigate('/ferramentas');
     }
   };
 
-  /** Reveal one random unguessed letter as a hint */
   const useHintAction = () => {
     if (hintsUsed >= MAX_HINTS || status !== 'playing' || !normalizedTarget) return;
     
@@ -148,7 +198,7 @@ const ForcaPage = () => {
     const randomChar = unguessedChars[Math.floor(Math.random() * unguessedChars.length)];
     playHint();
     setHintsUsed(prev => prev + 1);
-    guessLetter(randomChar); // Use guessLetter so it counts for combos and XP!
+    guessLetter(randomChar);
   };
 
   const renderHangman = () => {
@@ -158,45 +208,22 @@ const ForcaPage = () => {
     return (
       <div className="flex justify-center mb-6">
         <svg width="200" height="220" viewBox="0 0 200 220" className="scale-[0.85] md:scale-100 origin-center">
-          {/* Platform */}
-          <line x1="20" y1="210" x2="180" y2="210" stroke={gallowsColor} strokeWidth="4" strokeLinecap="round" />
-          {/* Vertical pole */}
-          <line x1="60" y1="210" x2="60" y2="20" stroke={gallowsColor} strokeWidth="4" strokeLinecap="round" />
-          {/* Top beam */}
-          <line x1="58" y1="22" x2="140" y2="22" stroke={gallowsColor} strokeWidth="4" strokeLinecap="round" />
-          {/* Support brace */}
-          <line x1="60" y1="55" x2="90" y2="22" stroke={gallowsColor} strokeWidth="3" strokeLinecap="round" />
+          {/* Base */}
+          <line x1="20" y1="200" x2="180" y2="200" stroke={gallowsColor} strokeWidth="6" strokeLinecap="round" />
+          {/* Main pillar */}
+          <line x1="60" y1="200" x2="60" y2="20" stroke={gallowsColor} strokeWidth="6" strokeLinecap="round" />
+          {/* Top bar */}
+          <line x1="57" y1="20" x2="140" y2="20" stroke={gallowsColor} strokeWidth="6" strokeLinecap="round" />
           {/* Rope */}
-          <line x1="140" y1="22" x2="140" y2="46" stroke="#8B7355" strokeWidth="3" strokeLinecap="round" />
+          <line x1="140" y1="20" x2="140" y2="40" stroke={gallowsColor} strokeWidth="4" strokeLinecap="round" />
 
           {/* Head */}
           {mistakes > 0 && (
-            <g>
-              <motion.circle
-                cx="140" cy="62" r="16"
-                fill="none" stroke={strokeColor} strokeWidth="3"
-                initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-              />
-              {/* Face - alive */}
-              {mistakes < MAX_MISTAKES ? (
-                <>
-                  <circle cx="134" cy="58" r="2" fill={strokeColor} />
-                  <circle cx="146" cy="58" r="2" fill={strokeColor} />
-                  <path d="M134 68 Q140 72 146 68" fill="none" stroke={strokeColor} strokeWidth="1.5" strokeLinecap="round" />
-                </>
-              ) : (
-                /* Face - dead (X eyes + tongue) */
-                <>
-                  <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                    <line x1="131" y1="55" x2="137" y2="61" stroke="#FF4444" strokeWidth="2" strokeLinecap="round" />
-                    <line x1="137" y1="55" x2="131" y2="61" stroke="#FF4444" strokeWidth="2" strokeLinecap="round" />
-                    <line x1="143" y1="55" x2="149" y2="61" stroke="#FF4444" strokeWidth="2" strokeLinecap="round" />
-                    <line x1="149" y1="55" x2="143" y2="61" stroke="#FF4444" strokeWidth="2" strokeLinecap="round" />
-                    <path d="M136 69 Q140 76 144 69" fill="#FF4444" stroke="#FF4444" strokeWidth="1" />
-                  </motion.g>
-                </>
-              )}
-            </g>
+            <motion.circle
+              cx="140" cy="58" r="18" fill="none"
+              stroke={strokeColor} strokeWidth="3"
+              initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
+            />
           )}
 
           {/* Body */}
@@ -248,302 +275,311 @@ const ForcaPage = () => {
     );
   };
 
-  const keyboard = "QWERTYUIOPASDFGHJKLZXCVBNM".split('');
-
-  const renderFunnel = () => {
-    if (!selectedArea) {
-      return (
-        <div className="space-y-4">
-          <h2 className="text-xl font-bold px-1 text-foreground mb-4">Escolha a Área</h2>
-          {forcaCatalog.map(area => (
-            <motion.button
-              key={area.id}
-              onClick={() => setSelectedArea(area)}
-              className="w-full flex items-center justify-between p-5 rounded-2xl bg-card border border-border/50 shadow-sm hover:border-primary/50 transition-all active:scale-[0.98]"
-            >
-              <span className="font-display font-bold text-[17px] text-foreground">{area.name}</span>
-              <ChevronRight className="w-5 h-5 text-muted-foreground" />
-            </motion.button>
-          ))}
-        </div>
-      );
-    }
-
-    if (!selectedLaw) {
-      return (
-        <div className="space-y-4">
-          <h2 className="text-xl font-bold px-1 text-foreground mb-4">Leis de {selectedArea.name}</h2>
-          {selectedArea.laws.map(law => (
-            <motion.button
-              key={law.id}
-              onClick={() => setSelectedLaw(law)}
-              className="w-full flex items-center justify-between p-5 rounded-2xl bg-card border border-border/50 shadow-sm hover:border-primary/50 transition-all active:scale-[0.98]"
-            >
-              <span className="font-display font-bold text-[17px] text-foreground">{law.name}</span>
-              <ChevronRight className="w-5 h-5 text-muted-foreground" />
-            </motion.button>
-          ))}
-        </div>
-      );
-    }
-
-    if (!selectedArticle) {
-      return (
-        <div className="space-y-4">
-          <h2 className="text-xl font-bold px-1 text-foreground mb-4">Artigos ({selectedLaw.name})</h2>
-          {selectedLaw.articles.map(article => (
-            <motion.button
-              key={article.id}
-              onClick={() => handleArticleSelect(article)}
-              className="w-full flex flex-col items-start p-5 rounded-2xl bg-card border border-border/50 shadow-sm hover:border-primary/50 transition-all active:scale-[0.98] gap-2"
-            >
-              <div className="flex w-full items-center justify-between">
-                <span className="font-display font-bold text-[17px] text-foreground">{article.title}</span>
-                <ChevronRight className="w-5 h-5 text-muted-foreground" />
-              </div>
-              <span className="text-sm text-muted-foreground text-left">{article.description}</span>
-            </motion.button>
-          ))}
-        </div>
-      );
-    }
-
-    return null;
-  };
-
-  const renderGame = () => {
-    if (!currentWord || !selectedArticle) return null;
-
-    if (status === 'article_completed') {
-      return (
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          onAnimationStart={() => playTriumph()}
-          className="flex flex-col items-center justify-center py-12 px-4 text-center space-y-6"
-        >
-          <div className="w-20 h-20 bg-emerald-500/20 text-emerald-500 rounded-full flex items-center justify-center mb-4">
-            <Trophy className="w-10 h-10" />
-          </div>
-          <h2 className="text-3xl font-black text-emerald-400 uppercase">
-            Artigo Dominado!
-          </h2>
-          <p className="text-muted-foreground font-medium max-w-sm">
-            Você concluiu todas as fases deste artigo com excelência e faturou um caminhão de XP.
-          </p>
-          <button 
-            onClick={() => {
-              setSelectedArticle(null);
-            }}
-            className="mt-8 px-8 py-4 bg-primary text-primary-foreground rounded-full font-bold shadow-lg hover:bg-primary/90 transition-all"
-          >
-            Escolher outro Artigo
-          </button>
-        </motion.div>
-      );
-    }
+  const renderWord = () => {
+    if (!currentWord) return null;
+    const words = currentWord.word.toUpperCase().split(' ');
 
     return (
-      <div className="flex flex-col items-center w-full max-w-2xl mx-auto relative pt-4">
-        {/* Gamification Header */}
-        <div className="w-full bg-zinc-900/60 border border-zinc-800 rounded-2xl p-3 flex flex-wrap gap-2 items-center justify-between shadow-sm mb-6">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-10 h-10 bg-amber-500/20 text-amber-400 rounded-full border border-amber-400/30">
-              <Star className="w-5 h-5" />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-xs text-muted-foreground font-bold uppercase tracking-wider">Lvl {progresso?.level || 1}</span>
-              <span className="text-sm font-black text-zinc-100">{progresso?.xp_total || 0} XP</span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button 
-              onClick={() => setIsRankingOpen(true)}
-              className="flex items-center justify-center w-8 h-8 rounded-full bg-zinc-800 hover:bg-zinc-700 transition-colors mr-1 border border-zinc-700"
-            >
-              <Trophy className="w-4 h-4 text-zinc-400" />
-            </button>
-            <span className="text-xs text-muted-foreground font-bold hidden sm:inline">COMBO</span>
-            <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full font-black text-sm transition-all ${
-              currentCombo >= 5 ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30 shadow-[0_0_15px_rgba(244,63,94,0.3)] animate-pulse' : 
-              currentCombo >= 3 ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 
-              'bg-zinc-800 text-zinc-500'
-            }`}>
-              <Flame className={`w-4 h-4 ${currentCombo >= 3 ? 'fill-current' : ''}`} />
-              x{currentCombo >= 5 ? '2.0' : currentCombo >= 3 ? '1.5' : '1.0'}
-            </div>
-          </div>
-        </div>
-        
-        <ForcaRanking isOpen={isRankingOpen} onClose={() => setIsRankingOpen(false)} />
-
-        <div className="w-full flex items-center justify-between mb-2">
-          <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-            FASE {currentPhaseIndex + 1} DE {selectedArticle.phases.length}
-          </span>
-          <div className="flex items-center gap-2 text-red-400 font-mono font-bold text-sm">
-            <Skull className="w-4 h-4" />
-            <span>{mistakes} / {MAX_MISTAKES}</span>
-          </div>
-        </div>
-        
-        <div className="w-full h-2 bg-zinc-800/50 rounded-full mb-8 overflow-hidden">
-          <motion.div 
-            className="h-full bg-primary" 
-            initial={{ width: 0 }}
-            animate={{ width: `${((currentPhaseIndex) / selectedArticle.phases.length) * 100}%` }}
-          />
-        </div>
-
-        <div className="relative w-full flex justify-center mb-8">
-          {renderHangman()}
-          
-          {/* Floating Hint Button */}
-          <button
-            onClick={useHintAction}
-            disabled={hintsUsed >= MAX_HINTS || status !== 'playing'}
-            className={`absolute top-0 right-0 z-10 flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-full transition-all group shadow-lg
-              ${hintsUsed >= MAX_HINTS || status !== 'playing'
-                ? 'bg-zinc-800 text-zinc-600 border border-zinc-700 cursor-not-allowed'
-                : 'bg-yellow-400 text-yellow-950 hover:bg-yellow-300 hover:scale-105 active:scale-95 shadow-[0_0_15px_rgba(250,204,21,0.3)] cursor-pointer border-2 border-yellow-300'
-              }`}
-          >
-            <Lightbulb className={`w-6 h-6 md:w-7 md:h-7 ${hintsUsed < MAX_HINTS && status === 'playing' ? 'group-hover:animate-pulse' : ''}`} />
-            
-            {hintsUsed < MAX_HINTS && status === 'playing' && (
-              <span className="absolute -bottom-1 -right-1 bg-zinc-950 text-yellow-400 border border-yellow-400 text-[10px] md:text-xs font-black w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center shadow-md">
-                {MAX_HINTS - hintsUsed}
-              </span>
-            )}
-          </button>
-        </div>
-
-        {/* Text Hint */}
-        <div className="w-full bg-zinc-800/50 border border-zinc-700/50 rounded-2xl p-4 flex items-center justify-center shadow-sm mb-8 px-4">
-          <span className="text-[15px] md:text-[16px] leading-snug font-medium text-zinc-300 text-center">{currentWord.hint}</span>
-        </div>
-
-        <div className="flex flex-wrap justify-center gap-1.5 md:gap-3 mb-10 w-full px-2">
-          {normalizedTarget.split('').map((char, index) => {
-            if (char === ' ') {
-              return <div key={index} className="w-4 md:w-8 h-10 md:h-12" />;
-            }
-            const isRevealed = guessedLetters.has(char) || status === 'lost';
-            return (
-              <div 
-                key={index} 
-                className={`flex items-center justify-center w-8 h-12 md:w-12 md:h-16 text-xl md:text-2xl font-black uppercase rounded-xl border-b-[3px] md:border-b-4 
-                  ${isRevealed 
-                    ? status === 'lost' && !guessedLetters.has(char) ? 'text-red-400 border-red-400/40 bg-red-400/15' : 'text-foreground border-emerald-400/50 bg-emerald-400/10' 
-                    : 'text-transparent border-zinc-600/60 bg-zinc-800/60'}`}
-              >
-                {isRevealed ? currentWord.word[index] : ''}
-              </div>
-            );
-          })}
-        </div>
-
-        {status !== 'playing' ? (
-          <motion.div 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col items-center gap-5 w-full"
-          >
-            <h2 className={`text-3xl font-black ${status === 'won' ? 'text-emerald-500' : 'text-red-500'}`}>
-              {status === 'won' ? 'CORRETO!' : 'FALHOU!'}
-            </h2>
-            
-            {/* Gamification Result */}
-            <div className="flex gap-4 items-center bg-zinc-900/80 px-4 py-2 rounded-xl border border-zinc-800 text-sm font-bold text-zinc-300">
-              <span className="flex gap-1 items-center">
-                <Star className="w-4 h-4 text-amber-400" />
-                +{status === 'won' ? phaseXpRef.current + 50 : phaseXpRef.current} XP
-              </span>
-              <div className="w-px h-4 bg-zinc-700" />
-              <span className="flex gap-1 items-center">
-                <Flame className="w-4 h-4 text-rose-400" />
-                Máx Combo: {highestComboRef.current}
-              </span>
-            </div>
-
-            <div className="flex items-center gap-3 w-full max-w-sm mt-2">
-              {status === 'won' ? (
-                <button 
-                  onClick={() => startPhase(selectedArticle, currentPhaseIndex + 1)}
-                  className="flex-1 px-6 py-4 bg-emerald-500 text-emerald-950 rounded-2xl font-black hover:bg-emerald-400 transition-all flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(16,185,129,0.3)]"
-                >
-                  Próxima Fase <ChevronRight className="w-5 h-5" />
-                </button>
-              ) : (
-                <button 
-                  onClick={() => startPhase(selectedArticle, currentPhaseIndex)} // retry
-                  className="flex-1 px-6 py-4 bg-red-400/20 text-red-400 border border-red-400/30 rounded-2xl font-bold hover:bg-red-400/30 transition-all flex items-center justify-center gap-2"
-                >
-                  <RefreshCw className="w-5 h-5" /> Tentar Novamente
-                </button>
-              )}
-            </div>
-          </motion.div>
-        ) : (
-          <div className="flex flex-wrap justify-center gap-1.5 md:gap-2 w-full">
-            {keyboard.map(key => {
-              const isGuessed = guessedLetters.has(key);
-              const isCorrect = isGuessed && normalizedTarget.includes(key);
-              const isWrong = isGuessed && !normalizedTarget.includes(key);
-
+      <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 mb-8">
+        {words.map((w, wIdx) => (
+          <div key={wIdx} className="flex gap-1.5 md:gap-2">
+            {w.split('').map((char, i) => {
+              const isRevealed = guessedLetters.has(char) || status !== 'playing';
+              const isMissed = !guessedLetters.has(char) && status !== 'playing';
               return (
-                <button
-                  key={key}
-                  disabled={isGuessed}
-                  onClick={() => guessLetter(key)}
-                  className={`flex items-center justify-center w-8 h-10 sm:w-10 sm:h-12 md:w-12 md:h-14 rounded-lg md:rounded-xl font-bold text-sm md:text-lg transition-all
-                    ${isCorrect ? 'bg-emerald-400/20 text-emerald-400 border-emerald-400/30 border' : ''}
-                    ${isWrong ? 'bg-red-400/25 text-red-400 border-red-400/30 border opacity-50' : ''}
-                    ${!isGuessed ? 'bg-zinc-800 text-white hover:bg-zinc-700 active:scale-90 border border-zinc-600 shadow-sm' : ''}
-                  `}
+                <div 
+                  key={i}
+                  className={`w-8 h-10 md:w-11 md:h-14 flex items-center justify-center border-b-[3px] text-2xl md:text-3xl font-black font-display transition-colors
+                    ${isRevealed ? (isMissed ? 'border-red-500/50 text-red-400' : 'border-primary text-foreground') : 'border-border text-transparent'}`}
                 >
-                  {key}
-                </button>
+                  <AnimatePresence>
+                    {isRevealed && (
+                      <motion.span
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                      >
+                        {char}
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                </div>
               );
             })}
           </div>
-        )}
+        ))}
       </div>
     );
   };
 
-  const title = selectedArticle ? selectedArticle.title : 'Jogo da Forca';
-  const subtitle = selectedArticle ? `Fase ${currentPhaseIndex + 1}/${selectedArticle.phases.length}` : 'Trilha de Aprendizado';
+  const renderKeyboard = () => {
+    const rows = [
+      ['Q','W','E','R','T','Y','U','I','O','P'],
+      ['A','S','D','F','G','H','J','K','L'],
+      ['Z','X','C','V','B','N','M']
+    ];
 
-  const mobileHeader = (
-    <PageHeader
-      title={title}
-      subtitle={subtitle}
-      onBack={handleBack}
-    />
-  );
+    return (
+      <div className="flex flex-col gap-2 md:gap-3 max-w-[500px] mx-auto pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
+        {rows.map((row, i) => (
+          <div key={i} className="flex justify-center gap-1.5 md:gap-2">
+            {row.map(char => {
+              const isGuessed = guessedLetters.has(char);
+              const isCorrect = isGuessed && normalizedTarget.includes(char);
+              
+              let btnClass = "flex-1 max-w-[44px] h-[52px] md:h-[58px] rounded-xl font-display font-bold text-lg md:text-xl transition-all shadow-sm active:scale-95";
+              if (!isGuessed) {
+                btnClass += " bg-card text-foreground border border-border/50 hover:bg-muted";
+              } else if (isCorrect) {
+                btnClass += " bg-emerald-500 text-emerald-950 border-emerald-600 opacity-90";
+              } else {
+                btnClass += " bg-zinc-800 text-zinc-500 border-zinc-700 opacity-50";
+              }
+
+              return (
+                <button
+                  key={char}
+                  onClick={() => guessLetter(char)}
+                  disabled={isGuessed || status !== 'playing'}
+                  className={btnClass}
+                >
+                  {char}
+                </button>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   return (
-    <DesktopPageLayout
-      activeId="forca"
-      title={title}
-      subtitle={subtitle}
-      mobileHeader={mobileHeader}
-    >
-      <div className="px-4 md:px-8 py-6 pb-24 md:pb-12 max-w-4xl mx-auto">
+    <DesktopPageLayout>
+      <PageHeader 
+        title="JOGO DA FORCA" 
+        subtitle="Trilha de Aprendizado"
+        onBack={handleBack}
+        actions={
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => setIsRankingOpen(true)}
+              className="flex items-center gap-2 bg-[#F59E0B]/20 text-[#F59E0B] px-3 py-1.5 rounded-xl border border-[#F59E0B]/30 hover:bg-[#F59E0B]/30 transition-colors"
+            >
+              <Trophy className="w-4 h-4" />
+              <span className="font-display font-bold text-sm hidden md:inline">Ranking Elite</span>
+            </button>
+            <div className="flex flex-col items-end">
+              <div className="flex items-center gap-1.5 text-primary">
+                <Star className="w-4 h-4 fill-primary" />
+                <span className="font-display font-black leading-none">{progresso.xp_total} XP</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-orange-500">
+                <Flame className="w-3.5 h-3.5 fill-orange-500" />
+                <span className="text-[11px] font-bold leading-none uppercase">Combo Max: {progresso.highest_combo}</span>
+              </div>
+            </div>
+          </div>
+        }
+      />
+      
+      <div className="max-w-[700px] mx-auto px-4 md:px-0 pb-20 pt-4">
         <AnimatePresence mode="wait">
-          <motion.div
-            key={selectedArea ? (selectedLaw ? (selectedArticle ? 'game' : 'article') : 'law') : 'area'}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.2 }}
-          >
-            {selectedArticle ? renderGame() : renderFunnel()}
-          </motion.div>
+          {!selectedLaw ? (
+            <motion.div
+              key="laws"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              className="space-y-4"
+            >
+              <h2 className="text-xl font-display font-black text-foreground uppercase tracking-wide">CÓDIGOS E LEIS</h2>
+              <div className="grid gap-3">
+                {laws.length === 0 && (
+                   <div className="py-10 flex justify-center"><Loader2 className="w-8 h-8 animate-spin text-muted-foreground" /></div>
+                )}
+                {laws.map(law => (
+                  <button
+                    key={law.id}
+                    onClick={() => handleLawSelect(law)}
+                    className="flex items-center justify-between p-4 bg-card rounded-2xl border border-border/40 hover:border-primary/50 transition-all text-left group"
+                  >
+                    <span className="font-display font-bold text-lg">{law.nome_curto}</span>
+                    <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary" />
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          ) : !selectedArticle ? (
+            <motion.div
+              key="articles"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              className="space-y-4"
+            >
+              <h2 className="text-xl font-display font-black text-foreground uppercase tracking-wide">{selectedLaw.nome_curto}</h2>
+              <p className="text-sm text-muted-foreground mb-2">Selecione o artigo para jogar. Palavras geradas por Inteligência Artificial sob demanda.</p>
+              <div className="grid gap-3 h-[60vh] overflow-y-auto pr-2">
+                {articles.length === 0 && (
+                   <div className="py-10 flex flex-col items-center justify-center gap-3">
+                     <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+                     <span className="text-sm text-muted-foreground">Carregando artigos...</span>
+                   </div>
+                )}
+                {articles.map(article => (
+                  <button
+                    key={article.id}
+                    onClick={() => handleArticleSelect(article)}
+                    className="flex items-center justify-between p-4 bg-card rounded-2xl border border-border/40 hover:border-primary/50 transition-all text-left group"
+                  >
+                    <div>
+                      <h3 className="font-display font-bold text-[15px]">{article.nome}</h3>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary" />
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          ) : isGenerating ? (
+            <motion.div
+              key="generating"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex flex-col items-center justify-center py-20 gap-6 text-center"
+            >
+              <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mb-2">
+                <Loader2 className="w-8 h-8 text-primary animate-spin" />
+              </div>
+              <div>
+                <h3 className="font-display font-black text-2xl mb-2 text-foreground">Gerando Palavras...</h3>
+                <p className="text-muted-foreground max-w-sm mx-auto">
+                  A Inteligência Artificial está analisando o <strong>{selectedArticle.nome}</strong> para criar 5 palavras essenciais deste artigo para você jogar.
+                </p>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="game"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex flex-col min-h-[70vh]"
+            >
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex flex-col gap-1">
+                  <h3 className="font-display font-bold text-muted-foreground text-sm uppercase tracking-wider">{selectedLaw.nome_curto}</h3>
+                  <h2 className="font-display font-black text-2xl text-foreground leading-none">{selectedArticle.nome}</h2>
+                </div>
+                <div className="flex gap-2">
+                  <div className="flex items-center gap-1 bg-card border border-border/50 px-3 py-1.5 rounded-full">
+                    <BookOpenText className="w-4 h-4 text-primary" />
+                    <span className="font-bold text-sm">{currentPhaseIndex + 1}/{currentPhases.length}</span>
+                  </div>
+                </div>
+              </div>
+
+              {renderHangman()}
+              {renderWord()}
+
+              {status === 'playing' ? (
+                <>
+                  <div className="mb-6 flex justify-center">
+                    <button
+                      onClick={useHintAction}
+                      disabled={hintsUsed >= MAX_HINTS}
+                      className="flex items-center gap-2 bg-card border border-border/50 hover:border-primary/50 disabled:opacity-50 disabled:pointer-events-none px-5 py-2.5 rounded-full transition-all text-sm font-bold shadow-sm"
+                    >
+                      <Lightbulb className={`w-4 h-4 ${hintsUsed < MAX_HINTS ? 'text-yellow-400' : 'text-muted-foreground'}`} />
+                      Dica ({MAX_HINTS - hintsUsed} restantes)
+                    </button>
+                  </div>
+                  
+                  {hintsUsed > 0 && currentWord && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                      className="bg-primary/10 border border-primary/20 text-primary-foreground p-3 rounded-xl mb-6 text-center text-sm font-medium mx-auto max-w-sm"
+                    >
+                      💡 {currentWord.hint}
+                    </motion.div>
+                  )}
+
+                  {renderKeyboard()}
+                </>
+              ) : status === 'article_completed' ? (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="flex flex-col items-center justify-center p-8 bg-card border border-primary/30 rounded-3xl text-center shadow-lg"
+                >
+                  <Trophy className="w-16 h-16 text-yellow-500 mb-4" />
+                  <h2 className="text-3xl font-black text-foreground mb-2">ARTIGO CONCLUÍDO!</h2>
+                  <p className="text-muted-foreground mb-8">Você dominou todas as palavras chave deste artigo.</p>
+                  
+                  <button
+                    onClick={handleBack}
+                    className="bg-primary text-primary-foreground px-8 py-4 rounded-2xl font-bold font-display tracking-wide shadow-[0_0_20px_rgba(var(--primary),0.3)] hover:scale-105 transition-all"
+                  >
+                    ESCOLHER OUTRO ARTIGO
+                  </button>
+                </motion.div>
+              ) : (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="flex flex-col items-center p-6 bg-card border border-border/50 rounded-3xl text-center mx-auto max-w-sm mt-4 shadow-lg"
+                >
+                  <div className="mb-4">
+                    {status === 'won' ? (
+                      <div className="w-16 h-16 bg-emerald-500/20 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <Star className="w-8 h-8 fill-current" />
+                      </div>
+                    ) : (
+                      <div className="w-16 h-16 bg-red-500/20 text-red-500 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <Skull className="w-8 h-8" />
+                      </div>
+                    )}
+                    <h2 className={`text-3xl font-black ${status === 'won' ? 'text-emerald-500' : 'text-red-500'}`}>
+                      {status === 'won' ? 'CORRETO!' : 'FALHOU!'}
+                    </h2>
+                    
+                    <div className="flex justify-center mt-3 mb-2 gap-4">
+                       <div className="bg-background rounded-xl px-4 py-2 border border-border/50">
+                         <span className="block text-[11px] font-bold text-muted-foreground uppercase tracking-widest">XP Ganho</span>
+                         <span className="text-xl font-black text-primary">+{status === 'won' ? phaseXpRef.current + 50 : phaseXpRef.current}</span>
+                       </div>
+                       <div className="bg-background rounded-xl px-4 py-2 border border-border/50">
+                         <span className="block text-[11px] font-bold text-muted-foreground uppercase tracking-widest">Combo Max</span>
+                         <span className="text-xl font-black text-orange-500">{highestComboRef.current}x</span>
+                       </div>
+                    </div>
+                  </div>
+                  
+                  <p className="text-sm text-foreground mb-1 font-bold">A palavra era:</p>
+                  <p className="text-xl font-display font-black text-primary mb-6 tracking-widest">{currentWord?.word}</p>
+
+                  <button
+                    onClick={() => {
+                      if (status === 'won') {
+                        startPhase(currentPhases, currentPhaseIndex + 1);
+                      } else {
+                        startPhase(currentPhases, currentPhaseIndex);
+                      }
+                    }}
+                    className={`flex items-center justify-center gap-2 w-full px-6 py-4 rounded-2xl font-bold font-display tracking-wide transition-all shadow-md active:scale-95
+                      ${status === 'won' ? 'bg-emerald-500 text-emerald-950 hover:bg-emerald-400' : 'bg-red-500 text-red-950 hover:bg-red-400'}`}
+                  >
+                    {status === 'won' ? (
+                      <>PRÓXIMA FASE <ChevronRight className="w-5 h-5" /></>
+                    ) : (
+                      <><RefreshCw className="w-5 h-5" /> TENTAR NOVAMENTE</>
+                    )}
+                  </button>
+                </motion.div>
+              )}
+            </motion.div>
+          )}
         </AnimatePresence>
       </div>
+      
+      <ForcaRanking isOpen={isRankingOpen} onClose={() => setIsRankingOpen(false)} />
     </DesktopPageLayout>
   );
 };

@@ -25,3 +25,14 @@ entrypoint = "./functions/test-key/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/test-key/*.html" ]
+
+[functions.forca-gerar-artigo]
+enabled = true
+verify_jwt = false
+import_map = "./functions/forca-gerar-artigo/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/forca-gerar-artigo/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/forca-gerar-artigo/*.html" ]
