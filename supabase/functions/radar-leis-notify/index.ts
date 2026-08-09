@@ -58,7 +58,7 @@ ${contexto}`;
       method: "POST",
       headers: { "Content-Type": "application/json", "Authorization": `Bearer ${key}` },
       body: JSON.stringify({
-        model: 'gemini-2.5-flash-lite',
+        model: 'gemini-3.1-flash-lite',
         messages: [{ role: "user", content: prompt }],
         response_format: { type: "json_object" },
       }),

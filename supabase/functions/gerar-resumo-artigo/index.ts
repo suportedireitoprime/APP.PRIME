@@ -6,7 +6,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 import { isTabelaLeiPermitida } from '../_shared/leis-tabelas.ts';
 
 const GATEWAY_URL = 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions';
-const MODEL = 'gemini-3.6-flash';
+const MODEL = 'gemini-3.1-flash-lite';
 
 const PROMPT = `Você é um professor de Direito brasileiro. Com base no artigo de lei enviado, produza um RESUMO DE ESTUDO.
 Responda APENAS com JSON válido, sem markdown externo, no formato:

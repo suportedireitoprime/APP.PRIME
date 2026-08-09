@@ -90,7 +90,7 @@ Em UMA frase curta (máx. 220 caracteres), explique o impacto concreto na lei me
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
       body: JSON.stringify({
-        model: 'gemini-2.5-flash-lite',
+        model: 'gemini-3.1-flash-lite',
         messages: [{ role: "user", content: prompt }],
       }),
     });

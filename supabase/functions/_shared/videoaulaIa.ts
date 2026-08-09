@@ -3,7 +3,7 @@
 // tolerante e chamada ao Lovable AI Gateway.
 
 const GATEWAY_URL = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
-export const MODEL_VIDEOAULA = 'gemini-2.5-flash';
+export const MODEL_VIDEOAULA = 'gemini-3.1-flash-lite';
 
 export class GatewayError extends Error {
   status: number;

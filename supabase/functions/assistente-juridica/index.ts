@@ -613,7 +613,7 @@ Regras:
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Lovable-API-Key': LOVABLE_API_KEY },
         body: JSON.stringify({
-          model: 'gemini-2.5-flash-lite',
+          model: 'gemini-3.1-flash-lite',
           messages: msgs,
           temperature: geminiBody.generationConfig.temperature,
           max_tokens: geminiBody.generationConfig.maxOutputTokens,
@@ -642,7 +642,7 @@ Regras:
 
       if (!geminiDisabled) {
         const keyToUse = geminiKeys[attempt % geminiKeys.length];
-        const modelsToTry = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
+        const modelsToTry = ["gemini-3.1-flash-lite", "gemini-2.0-flash", "gemini-1.5-flash"];
         const modelToUse = modelsToTry[attempt % modelsToTry.length];
         const res = await geminiFetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelToUse}:generateContent?key=${keyToUse}`,
           { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(geminiBody) }
@@ -773,7 +773,7 @@ Regras:
     await logAiCall({
       functionName: "assistente-juridica",
       kind: "text",
-      model: "gemini-2.5-flash-lite",
+      model: "gemini-3.1-flash-lite",
       triggerType: "manual",
       inputUnits: _lastUsage?.promptTokenCount ?? 0,
       outputUnits: _lastUsage?.candidatesTokenCount ?? 0,

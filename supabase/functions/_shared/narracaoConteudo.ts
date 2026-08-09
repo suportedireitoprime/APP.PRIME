@@ -331,7 +331,7 @@ const ESTILO_APRESENTACAO = [
   "Narre o texto a seguir",
 ].join(" ");
 
-const TEXTO_MODEL = "gemini-2.5-flash-lite";
+const TEXTO_MODEL = "gemini-3.1-flash-lite";
 
 async function gerarTextoIA(prompt: string): Promise<string> {
   const keys = [Deno.env.get("GEMINI_API_KEY"), Deno.env.get("GEMINI_API_KEY_RESERVA")].filter(Boolean) as string[];
@@ -368,7 +368,7 @@ async function gerarTextoIA(prompt: string): Promise<string> {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: 'gemini-2.5-flash-lite',
+          model: 'gemini-3.1-flash-lite',
           messages: [{ role: "user", content: prompt }],
         }),
       });

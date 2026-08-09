@@ -325,8 +325,8 @@ async function analisar(supabase: any, concorrente_id: string) {
   if (!reviews?.length) throw new Error("Nenhuma review para analisar. Extraia primeiro.");
 
   const lista = reviews.map((r: any, i: number) => `#${i + 1} [${r.rating || "?"}★ ${r.data_publicacao || ""}] ${r.autor || "anon"}: ${(r.texto || "").slice(0, 500)}`).join("\n");
-  // Política: sempre gemini-2.5-flash-lite. Ver docs/gemini-2.5-flash-lite.md
-  const modelo = 'gemini-2.5-flash-lite';
+  // Política: sempre gemini-3.1-flash-lite. Ver docs/gemini-3.1-flash-lite.md
+  const modelo = 'gemini-3.1-flash-lite';
   const NOSSO_APP = `NOSSO APP (Vade Mecum Pro / Vacatio) — funcionalidades já existentes:
 - Vade Mecum completo (Constituição, Códigos, Estatutos, Leis Federais) com hierarquia (Livro/Título/Capítulo/Seção)
 - Busca por número de artigo, número de lei, nome/apelido/tag da lei; busca por voz

@@ -23,8 +23,8 @@ export const MODELS = {
 // Modelos de texto permitidos com fallback gracioso.
 export const TEXT_MODEL_FALLBACKS = [
   "gemini-3.1-flash-lite",
-  "gemini-2.5-flash-lite",
-  "gemini-2.5-flash",
+  "gemini-3.1-flash-lite",
+  "gemini-3.1-flash-lite",
   "gemini-2.0-flash",
   "gemini-1.5-flash",
   "gemini-1.5-pro",
@@ -32,8 +32,8 @@ export const TEXT_MODEL_FALLBACKS = [
 
 export const ALLOWED_TEXT_MODELS = new Set<string>([
   "gemini-3.1-flash-lite",
-  "gemini-2.5-flash-lite",
-  "gemini-2.5-flash",
+  "gemini-3.1-flash-lite",
+  "gemini-3.1-flash-lite",
   "gemini-2.0-flash",
 ]);
 
@@ -44,7 +44,7 @@ const DENY_PATTERNS: RegExp[] = [
 ];
 
 /**
- * Força qualquer id de modelo de texto para `gemini-2.5-flash-lite`.
+ * Força qualquer id de modelo de texto para `gemini-3.1-flash-lite`.
  * Se o id vier na forma `google/...` (Lovable Gateway), preserva o prefixo.
  * Loga warning para qualquer tentativa fora da política.
  */

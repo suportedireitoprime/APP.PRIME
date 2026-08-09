@@ -1,5 +1,5 @@
 // Edge Function: recebe uma transcrição e devolve resumo estruturado (JSON).
-// Modelo obrigatório: gemini-2.5-flash-lite direto na chave Gemini do projeto.
+// Modelo obrigatório: gemini-3.1-flash-lite direto na chave Gemini do projeto.
 
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 
