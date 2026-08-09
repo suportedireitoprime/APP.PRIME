@@ -340,39 +340,7 @@ export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoC
                   titulo={resumo.subtema || resumo.tema}
                   subtitulo={`${resumo.area} — ${resumo.tema}`}
                 >
-                  {/* Métodos de estudo */}
-                  <div
-                    className="flex w-full rounded-xl p-1 gap-1"
-                    style={{ background: "rgba(122,18,32,0.07)" }}
-                  >
-                    {METODOS.map((m) => {
-                      const ativo = metodo === m.id;
-                      return (
-                        <button
-                          key={m.id}
-                          onClick={() => setMetodo(m.id)}
-                          className="relative flex-1 py-2 rounded-lg text-sm font-body font-semibold transition-colors text-center"
-                        >
-                          {ativo && (
-                            <motion.span
-                              layoutId="ficha-metodo"
-                              transition={{ type: "spring", stiffness: 420, damping: 34 }}
-                              className="absolute inset-0 rounded-lg"
-                              style={{ background: PALETA.wine }}
-                            />
-                          )}
-                          <span
-                            className="relative"
-                            style={{ color: ativo ? "#FFF9F0" : "hsl(var(--muted-foreground))" }}
-                          >
-                            {m.label}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  {metodo === "conceitos" && abas.length > 1 && (
+                  {/* Métodos de estudo removidos - a seleção agora ocorre na Action Sheet prévia */}                  {metodo === "conceitos" && abas.length > 1 && (
                     <div
                       className="flex w-full mt-4 border-b"
                       style={{ borderColor: "rgba(122,18,32,0.16)" }}

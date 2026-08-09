@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { PALETA } from "@/lib/visuaisJuridicos/layout";
+import { Brain } from "lucide-react";
 
 /**
  * Cartão "ficha editorial" — mesma identidade do mapa mental e do PDF:
@@ -28,20 +29,11 @@ export default function FichaEditorial({
           background: `linear-gradient(135deg, ${PALETA.wineDeep} 0%, ${PALETA.wine} 100%)`,
         }}
       >
-        {/* Cérebro vazado */}
-        <svg
-          viewBox="0 0 100 100"
-          aria-hidden="true"
+        <Brain
           className="absolute -right-2 -top-1 h-[112%] w-auto opacity-[0.16] pointer-events-none"
-          fill="none"
           stroke="#fff"
-          strokeWidth={3.2}
-          strokeLinecap="round"
-        >
-          <path d="M48 18c-9-6-22-2-24 9-8 3-11 13-6 20-4 7-1 17 8 19 3 8 14 11 22 6" />
-          <path d="M52 18c9-6 22-2 24 9 8 3 11 13 6 20 4 7 1 17-8 19-3 8-14 11-22 6" />
-          <path d="M50 16v62M36 33h10M64 33H54M34 52h12M66 52H54M40 68h6M60 68h-6" />
-        </svg>
+          strokeWidth={1.5}
+        />
 
         <div className="relative">
           {etiqueta && (
