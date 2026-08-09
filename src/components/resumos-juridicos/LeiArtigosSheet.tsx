@@ -40,7 +40,7 @@ export default function LeiArtigosSheet({ lei, area, onClose }: Props) {
         setArtigos(
           (r || [])
             .map((a: any) => ({ id: a.id, numero: a.numero, caput: a.caput || "" }))
-            .filter((a: any) => /^(art|§|parágrafo)/i.test(a.numero.trim()))
+            .filter((a: any) => /^(art|§|parágrafo|\d)/i.test(a.numero.trim()))
         );
       })
       .catch(() => ativo && setErro("Não foi possível carregar os artigos desta lei."))
