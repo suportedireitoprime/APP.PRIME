@@ -52,6 +52,7 @@ interface Props {
   onFavoritoChange?: () => void;
   /** Gera Cornell e Feynman automaticamente quando ainda não existem. */
   pregerarMetodos?: boolean;
+  initialMetodo?: Metodo;
 }
 
 type Tab = "resumo" | "exemplos" | "termos";
@@ -65,7 +66,7 @@ const METODOS: { id: Metodo; label: string }[] = [
   { id: "feynman", label: "Feynman" },
 ];
 
-export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoChange, pregerarMetodos }: Props) {
+export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoChange, pregerarMetodos, initialMetodo }: Props) {
   const gateResumo = useGatedFeature('resumo_ver', 'resumo', { scope: resumo?.id ? String(resumo.id) : null });
   const gateDownload = useGatedFeature('resumo_download', 'resumo_download');
   const isDesktop = useIsDesktop();
@@ -87,7 +88,7 @@ export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoC
     if (resumo && scrollRef.current) {
       scrollRef.current.scrollTo({ top: 0, behavior: "auto" });
       setTab("resumo");
-      setMetodo("conceitos");
+      setMetodo(initialMetodo || "conceitos");
       setCornell(null);
       setFeynman(null);
       setGerando(null);

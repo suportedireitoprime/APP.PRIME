@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { LEI_ICON_MAP } from "@/lib/leiIcons";
 import type { LeiCatalogItem } from "@/data/leisCatalog";
 import ResumoJuridicoReaderSheet, { type ResumoRow } from "./ResumoJuridicoReaderSheet";
+import { type Metodo } from "./metodologias";
 
 interface Props {
   lei: LeiCatalogItem | null;
@@ -25,6 +26,8 @@ export default function LeiArtigosSheet({ lei, area, onClose }: Props) {
   const [busca, setBusca] = useState("");
   const [gerandoNumero, setGerandoNumero] = useState<string | null>(null);
   const [erro, setErro] = useState<string | null>(null);
+  const [artigoSelecionado, setArtigoSelecionado] = useState<ArtigoItem | null>(null);
+  const [metodoSelecionado, setMetodoSelecionado] = useState<Metodo | null>(null);
   const [resumo, setResumo] = useState<ResumoRow | null>(null);
 
   useEffect(() => {
@@ -58,10 +61,12 @@ export default function LeiArtigosSheet({ lei, area, onClose }: Props) {
     );
   }, [artigos, busca]);
 
-  const abrirArtigo = async (artigo: ArtigoItem) => {
+  const abrirArtigo = async (artigo: ArtigoItem, metodo: Metodo) => {
     if (!lei || gerandoNumero) return;
     setErro(null);
     setGerandoNumero(artigo.numero);
+    setMetodoSelecionado(metodo);
+    setArtigoSelecionado(null);
     try {
       const { data, error } = await supabase.functions.invoke("gerar-resumo-artigo", {
         body: {
@@ -80,6 +85,11 @@ export default function LeiArtigosSheet({ lei, area, onClose }: Props) {
     } finally {
       setGerandoNumero(null);
     }
+  };
+
+  const handleArtigoClick = (artigo: ArtigoItem) => {
+    if (gerandoNumero) return;
+    setArtigoSelecionado(artigo);
   };
 
   const LeiIcon = (lei && LEI_ICON_MAP[lei.id]) || FileText;
@@ -164,7 +174,7 @@ export default function LeiArtigosSheet({ lei, area, onClose }: Props) {
                       return (
                         <button
                           key={`${a.numero}-${i}`}
-                          onClick={() => abrirArtigo(a)}
+                          onClick={() => handleArtigoClick(a)}
                           disabled={!!gerandoNumero}
                           className="w-full flex items-center gap-3 p-4 min-h-[76px] rounded-2xl bg-secondary/40 border border-border/50 text-left active:scale-[0.99] transition disabled:opacity-60"
                         >
@@ -204,10 +214,69 @@ export default function LeiArtigosSheet({ lei, area, onClose }: Props) {
         )}
       </AnimatePresence>
 
+      <AnimatePresence>
+        {artigoSelecionado && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setArtigoSelecionado(null)}
+              className="fixed inset-0 z-[90] bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}
+              className="fixed bottom-0 left-0 right-0 z-[91] rounded-t-3xl border-t border-border bg-background pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] px-5 pt-4"
+            >
+              <div className="flex items-center justify-center mb-5">
+                <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
+              </div>
+              
+              <h3 className="font-display text-xl text-foreground font-bold mb-1">
+                Como deseja estudar?
+              </h3>
+              <p className="text-[13px] text-muted-foreground font-body mb-5">
+                {artigoSelecionado.numero} - Escolha o método de resumo.
+              </p>
+
+              <div className="space-y-3">
+                <button
+                  onClick={() => abrirArtigo(artigoSelecionado, "conceitos")}
+                  className="w-full text-left p-4 rounded-2xl bg-secondary/40 border border-border/50 active:scale-[0.98] transition"
+                >
+                  <p className="font-display font-bold text-[15px] text-foreground">Conceitos</p>
+                  <p className="text-[12.5px] text-muted-foreground mt-0.5 leading-snug">Visão tradicional com explicações, exemplos e termos-chave do artigo.</p>
+                </button>
+                
+                <button
+                  onClick={() => abrirArtigo(artigoSelecionado, "cornell")}
+                  className="w-full text-left p-4 rounded-2xl bg-secondary/40 border border-border/50 active:scale-[0.98] transition"
+                >
+                  <p className="font-display font-bold text-[15px] text-foreground">Cornell</p>
+                  <p className="text-[12.5px] text-muted-foreground mt-0.5 leading-snug">Divide o estudo em tópicos, perguntas de revisão e um resumo fixador.</p>
+                </button>
+
+                <button
+                  onClick={() => abrirArtigo(artigoSelecionado, "feynman")}
+                  className="w-full text-left p-4 rounded-2xl bg-secondary/40 border border-border/50 active:scale-[0.98] transition"
+                >
+                  <p className="font-display font-bold text-[15px] text-foreground">Feynman</p>
+                  <p className="text-[12.5px] text-muted-foreground mt-0.5 leading-snug">Explicação simples em 4 passos com analogias. Ideal para iniciantes.</p>
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
       <ResumoJuridicoReaderSheet
         resumo={resumo}
-        onClose={() => setResumo(null)}
+        onClose={() => { setResumo(null); setMetodoSelecionado(null); }}
         pregerarMetodos
+        initialMetodo={metodoSelecionado || undefined}
       />
     </>
   );
