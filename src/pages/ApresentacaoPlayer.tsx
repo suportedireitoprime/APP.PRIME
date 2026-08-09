@@ -86,6 +86,10 @@ const ApresentacaoPlayer = () => {
     let vivo = true;
     const urls = slides.map((s) => s.imagem_url).filter(Boolean) as string[];
     if (!urls.length) { setMidiaPronta(true); return; }
+
+    // Fallback: se demorar mais de 3 segundos (por lentidão na rede ou erro silencioso), libera a tela
+    const tm = setTimeout(() => { if (vivo) setMidiaPronta(true); }, 3000);
+
     Promise.all(
       urls.map((u) => new Promise<void>((resolve) => {
         const img = new Image();
@@ -94,8 +98,16 @@ const ApresentacaoPlayer = () => {
         img.onerror = () => resolve();
         img.src = u;
       })),
-    ).then(() => { if (vivo) setMidiaPronta(true); });
-    return () => { vivo = false; };
+    ).then(() => { 
+      if (vivo) {
+        clearTimeout(tm);
+        setMidiaPronta(true); 
+      }
+    });
+    return () => { 
+      vivo = false; 
+      clearTimeout(tm);
+    };
   }, [slides]);
 
   /** Deixa o áudio do próximo slide já bufferizado para a troca não ter pausa. */
