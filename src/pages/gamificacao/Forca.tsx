@@ -368,26 +368,7 @@ const ForcaPage = () => {
           </div>
         </div>
 
-        {/* Floating Hint Button */}
-        <button
-          onClick={useHintAction}
-          disabled={hintsUsed >= MAX_HINTS || status !== 'playing'}
-          className={`absolute -top-2 right-0 z-10 flex items-center justify-center w-12 h-12 rounded-full transition-all group shadow-lg
-            ${hintsUsed >= MAX_HINTS || status !== 'playing'
-              ? 'bg-zinc-800 text-zinc-600 border border-zinc-700 cursor-not-allowed'
-              : 'bg-yellow-400 text-yellow-950 hover:bg-yellow-300 hover:scale-105 active:scale-95 shadow-yellow-400/20 cursor-pointer'
-            }`}
-        >
-          <Lightbulb className={`w-6 h-6 ${hintsUsed < MAX_HINTS && status === 'playing' ? 'group-hover:animate-pulse' : ''}`} />
-          
-          {hintsUsed < MAX_HINTS && status === 'playing' && (
-            <span className="absolute -bottom-1 -right-1 bg-zinc-950 text-yellow-400 border border-yellow-400/50 text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center shadow-md">
-              {MAX_HINTS - hintsUsed}
-            </span>
-          )}
-        </button>
-
-        <div className="w-full flex items-center justify-between mb-2 pr-14">
+        <div className="w-full flex items-center justify-between mb-2">
           <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
             FASE {currentPhaseIndex + 1} DE {selectedArticle.phases.length}
           </span>
@@ -405,7 +386,28 @@ const ForcaPage = () => {
           />
         </div>
 
-        {renderHangman()}
+        <div className="relative w-full flex justify-center mb-8">
+          {renderHangman()}
+          
+          {/* Floating Hint Button */}
+          <button
+            onClick={useHintAction}
+            disabled={hintsUsed >= MAX_HINTS || status !== 'playing'}
+            className={`absolute top-0 right-0 z-10 flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-full transition-all group shadow-lg
+              ${hintsUsed >= MAX_HINTS || status !== 'playing'
+                ? 'bg-zinc-800 text-zinc-600 border border-zinc-700 cursor-not-allowed'
+                : 'bg-yellow-400 text-yellow-950 hover:bg-yellow-300 hover:scale-105 active:scale-95 shadow-[0_0_15px_rgba(250,204,21,0.3)] cursor-pointer border-2 border-yellow-300'
+              }`}
+          >
+            <Lightbulb className={`w-6 h-6 md:w-7 md:h-7 ${hintsUsed < MAX_HINTS && status === 'playing' ? 'group-hover:animate-pulse' : ''}`} />
+            
+            {hintsUsed < MAX_HINTS && status === 'playing' && (
+              <span className="absolute -bottom-1 -right-1 bg-zinc-950 text-yellow-400 border border-yellow-400 text-[10px] md:text-xs font-black w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center shadow-md">
+                {MAX_HINTS - hintsUsed}
+              </span>
+            )}
+          </button>
+        </div>
 
         {/* Text Hint */}
         <div className="w-full bg-zinc-800/50 border border-zinc-700/50 rounded-2xl p-4 flex items-center justify-center shadow-sm mb-8 px-4">
