@@ -51,9 +51,9 @@ dependencies {
     implementation project(':capawesome-capacitor-background-task')
     implementation project(':capawesome-capacitor-badge')
     implementation project(':capawesome-capacitor-maps-launcher')
+    implementation project(':capgo-capacitor-media-session')
     implementation project(':capgo-native-purchases')
     implementation project(':codetrix-studio-capacitor-google-auth')
-    implementation project(':capgo-capacitor-media-session')
     implementation project(':capacitor-voice-recorder')
     implementation project(':send-intent')
 

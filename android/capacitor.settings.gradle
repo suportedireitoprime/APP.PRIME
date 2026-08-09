@@ -128,14 +128,14 @@ project(':capawesome-capacitor-badge').projectDir = new File('../node_modules/.p
 include ':capawesome-capacitor-maps-launcher'
 project(':capawesome-capacitor-maps-launcher').projectDir = new File('../node_modules/.pnpm/@capawesome+capacitor-maps-_477df0c65a159aa2ca07f2bc0e02e194/node_modules/@capawesome/capacitor-maps-launcher/android')
 
+include ':capgo-capacitor-media-session'
+project(':capgo-capacitor-media-session').projectDir = new File('../node_modules/.pnpm/@capgo+capacitor-media-session@8.0.29_@capacitor+core@8.5.0/node_modules/@capgo/capacitor-media-session/android')
+
 include ':capgo-native-purchases'
 project(':capgo-native-purchases').projectDir = new File('../node_modules/.pnpm/@capgo+native-purchases@8.6.4_@capacitor+core@8.5.0/node_modules/@capgo/native-purchases/android')
 
 include ':codetrix-studio-capacitor-google-auth'
 project(':codetrix-studio-capacitor-google-auth').projectDir = new File('../node_modules/.pnpm/@codetrix-studio+capacitor-_6918f7a4adaffd1dff7049226443e88f/node_modules/@codetrix-studio/capacitor-google-auth/android')
-
-include ':capgo-capacitor-media-session'
-project(':capgo-capacitor-media-session').projectDir = new File('../node_modules/.pnpm/@capgo+capacitor-media-session@8.0.29_@capacitor+core@8.5.0/node_modules/@capgo/capacitor-media-session/android')
 
 include ':capacitor-voice-recorder'
 project(':capacitor-voice-recorder').projectDir = new File('../node_modules/.pnpm/capacitor-voice-recorder@7._c1d009c50212e6b9e3063e914297d59e/node_modules/capacitor-voice-recorder/android')

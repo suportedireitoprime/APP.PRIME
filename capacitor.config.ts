@@ -48,8 +48,8 @@ const config: CapacitorConfig = {
     SplashScreen: {
       // Zerado: usamos apenas o splash nativo do Android 12+ (estático),
       // sem animação custom do plugin sobre ele.
-      launchShowDuration: 1500,
-      launchFadeOutDuration: 300,
+      launchShowDuration: 0,
+      launchFadeOutDuration: 0,
       launchAutoHide: true,
       backgroundColor: '#8C1220',
       androidSplashResourceName: 'splash',
