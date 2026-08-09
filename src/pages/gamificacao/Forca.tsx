@@ -7,6 +7,7 @@ import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import { forcaCatalog, ForcaArea, ForcaLaw, ForcaArticle, ForcaWord } from '@/data/forcaCatalog';
 import { useGameSounds } from '@/hooks/useGameSounds';
 import { useForcaProgresso } from '@/hooks/useForcaProgresso';
+import { ForcaRanking } from '@/components/gamificacao/ForcaRanking';
 
 const MAX_MISTAKES = 6;
 const MAX_HINTS = 3;
@@ -31,6 +32,7 @@ const ForcaPage = () => {
   
   const [guessedLetters, setGuessedLetters] = useState<Set<string>>(new Set());
   const [status, setStatus] = useState<'playing' | 'won' | 'lost' | 'article_completed'>('playing');
+  const [isRankingOpen, setIsRankingOpen] = useState(false);
 
   const normalizeString = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
@@ -356,7 +358,13 @@ const ForcaPage = () => {
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground font-bold">COMBO</span>
+            <button 
+              onClick={() => setIsRankingOpen(true)}
+              className="flex items-center justify-center w-8 h-8 rounded-full bg-zinc-800 hover:bg-zinc-700 transition-colors mr-1 border border-zinc-700"
+            >
+              <Trophy className="w-4 h-4 text-zinc-400" />
+            </button>
+            <span className="text-xs text-muted-foreground font-bold hidden sm:inline">COMBO</span>
             <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full font-black text-sm transition-all ${
               currentCombo >= 5 ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30 shadow-[0_0_15px_rgba(244,63,94,0.3)] animate-pulse' : 
               currentCombo >= 3 ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 
@@ -367,6 +375,8 @@ const ForcaPage = () => {
             </div>
           </div>
         </div>
+        
+        <ForcaRanking isOpen={isRankingOpen} onClose={() => setIsRankingOpen(false)} />
 
         <div className="w-full flex items-center justify-between mb-2">
           <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
