@@ -58,7 +58,7 @@ const ForcaPage = () => {
   }, []);
 
   const fetchArticles = async (lawId: string) => {
-    const { data } = await supabase.from('vade_mecum_artigos').select('id, nome, hierarquia_completa').eq('lei_id', lawId).order('ordem');
+    const { data } = await supabase.from('vade_mecum_artigos').select('id, numero, epigrafe').eq('lei_id', lawId).order('ordem');
     setArticles(data || []);
   };
 
@@ -437,7 +437,9 @@ const ForcaPage = () => {
                     className="flex items-center justify-between p-4 bg-card rounded-2xl border border-border/40 hover:border-primary/50 transition-all text-left group"
                   >
                     <div>
-                      <h3 className="font-display font-bold text-[15px]">{article.nome}</h3>
+                      <h3 className="font-display font-bold text-[15px]">
+                        {article.numero} {article.epigrafe ? `- ${article.epigrafe}` : ''}
+                      </h3>
                     </div>
                     <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary" />
                   </button>
@@ -457,7 +459,7 @@ const ForcaPage = () => {
               <div>
                 <h3 className="font-display font-black text-2xl mb-2 text-foreground">Gerando Palavras...</h3>
                 <p className="text-muted-foreground max-w-sm mx-auto">
-                  A Inteligência Artificial está analisando o <strong>{selectedArticle.nome}</strong> para criar 5 palavras essenciais deste artigo para você jogar.
+                  A Inteligência Artificial está analisando o <strong>{selectedArticle.numero}</strong> para criar 5 palavras essenciais deste artigo para você jogar.
                 </p>
               </div>
             </motion.div>
@@ -471,7 +473,9 @@ const ForcaPage = () => {
               <div className="flex items-center justify-between mb-8">
                 <div className="flex flex-col gap-1">
                   <h3 className="font-display font-bold text-muted-foreground text-sm uppercase tracking-wider">{selectedLaw.nome}</h3>
-                  <h2 className="font-display font-black text-2xl text-foreground leading-none">{selectedArticle.nome}</h2>
+                  <h2 className="font-display font-black text-2xl text-foreground leading-none">
+                    {selectedArticle.numero} {selectedArticle.epigrafe ? `- ${selectedArticle.epigrafe}` : ''}
+                  </h2>
                 </div>
                 <div className="flex gap-2">
                   <div className="flex items-center gap-1 bg-card border border-border/50 px-3 py-1.5 rounded-full">

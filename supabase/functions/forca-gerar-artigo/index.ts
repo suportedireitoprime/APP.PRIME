@@ -46,8 +46,8 @@ Deno.serve(async (req) => {
     const { data: artigo, error: artigoErr } = await supabaseAdmin
       .from("vade_mecum_artigos")
       .select(`
-        nome,
-        conteudo,
+        numero,
+        texto,
         vade_mecum_leis ( nome_curto, ementa )
       `)
       .eq("id", artigo_id)
@@ -61,7 +61,7 @@ Deno.serve(async (req) => {
     }
 
     const leiNome = Array.isArray(artigo.vade_mecum_leis) ? artigo.vade_mecum_leis[0]?.nome_curto : (artigo.vade_mecum_leis as any)?.nome_curto;
-    const conteudoTexto = artigo.conteudo.replace(/<[^>]*>?/gm, ''); // tira HTML basico
+    const conteudoTexto = artigo.texto.replace(/<[^>]*>?/gm, ''); // tira HTML basico
 
     // 3. Pede para a IA gerar as fases
     const systemInstruction = `Você é um especialista em direito criando um Jogo da Forca jurídico.
@@ -72,7 +72,7 @@ Regras:
 3. Seja didático.`;
 
     const userPrompt = `Lei: ${leiNome || "Desconhecida"}
-Artigo: ${artigo.nome}
+Artigo: ${artigo.numero}
 Texto: ${conteudoTexto}`;
 
     const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY") ?? "";
