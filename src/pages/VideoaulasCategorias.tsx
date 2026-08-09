@@ -250,7 +250,7 @@ const VideoaulasCategorias = () => {
 
         {/* Magistratura */}
         {magistratura.length > 0 && (
-          <GridSection title="Juiz de Direito (Magistratura)" icon={Briefcase}>
+          <GridSection title="Magistratura" icon={Briefcase}>
             {magistratura.map((c) => (
               <button
                 key={c.id}
