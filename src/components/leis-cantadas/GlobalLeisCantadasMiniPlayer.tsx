@@ -1,113 +1,135 @@
-import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Play, Pause, SkipBack, SkipForward, X } from "lucide-react";
+import { Play, Pause, ArrowRight, X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useLeisCantadasPlayer } from "@/contexts/LeisCantadasPlayerContext";
-import { ImageCapa } from "@/components/leis-cantadas/VideoCapa";
+import { haptic } from "@/lib/nativeHaptics";
 
 /**
  * Mini player global das Leis Cantadas: fica logo acima do menu de rodapé e
  * continua tocando ao navegar pelo app.
  */
 export default function GlobalLeisCantadasMiniPlayer() {
-  const { atual, tocando, tocar, pular, setAberto, aberto, fechar } = useLeisCantadasPlayer();
+  const { atual, tocando, togglePlay, setAberto, aberto, fechar, tempo, dur } = useLeisCantadasPlayer();
   const navigate = useNavigate();
   const location = useLocation();
-
-  const [navHeight, setNavHeight] = useState(0);
-
-  useEffect(() => {
-    const medir = () => {
-      const nav = document.querySelector<HTMLElement>("[data-bottom-nav]");
-      setNavHeight(nav ? nav.getBoundingClientRect().height : 0);
-    };
-    medir();
-
-    const nav = document.querySelector<HTMLElement>("[data-bottom-nav]");
-    let ro: ResizeObserver | undefined;
-    if (nav && "ResizeObserver" in window) {
-      ro = new ResizeObserver(medir);
-      ro.observe(nav);
-    }
-    window.addEventListener("resize", medir);
-    const t = window.setTimeout(medir, 300);
-    return () => {
-      ro?.disconnect();
-      window.removeEventListener("resize", medir);
-      window.clearTimeout(t);
-    };
-  }, [location.pathname]);
 
   const onPage = location.pathname === "/leis-cantadas";
   const visivel = !!atual && !(aberto && onPage);
 
   const abrir = () => {
+    haptic.selection();
     if (location.pathname !== "/leis-cantadas") {
       navigate("/leis-cantadas");
     }
     setAberto(true);
   };
 
+  const progress = dur > 0 ? tempo / dur : 0;
+  const eqBars = [0, 1, 2, 3];
+
   return (
     <AnimatePresence>
       {visivel && atual && (
         <motion.div
-          key="mini-player"
-          initial={{ y: "110%", opacity: 0 }}
+          initial={{ y: 80, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          exit={{ y: "110%", opacity: 0 }}
-          transition={{ type: "tween", ease: [0.22, 1, 0.36, 1], duration: 0.4 }}
-          className="fixed left-0 right-0 z-40"
-          style={{ bottom: navHeight }}
+          exit={{ y: 80, opacity: 0 }}
+          transition={{ type: 'spring', damping: 22, stiffness: 260 }}
+          className="fixed left-0 right-0 z-[80] px-3 pointer-events-none"
+          style={{
+            // Sobe mais acima da bottom nav (botão central elevado "Ferramentas")
+            bottom: `calc(9.5rem + var(--sai-bottom,env(safe-area-inset-bottom,0px)))`,
+          }}
         >
-          <div className="border-t border-border/40 bg-gradient-to-t from-card via-card/95 to-secondary/80 backdrop-blur-md rounded-t-2xl shadow-[0_-8px_30px_rgba(0,0,0,0.5)]">
-            <div className="max-w-2xl mx-auto px-2 py-2">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <button
-                  onClick={abrir}
-                  className="flex items-center gap-3 min-w-0 flex-1 text-left"
-                >
-                  <ImageCapa className="h-11 w-11 shrink-0 rounded-xl sm:h-12 sm:w-12" />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold truncate text-foreground">
-                      {atual.titulo || `Art. ${atual.numero_artigo}`}
-                    </p>
-                    <p className="text-xs text-foreground/70 truncate">{atual.lei_nome}</p>
-                  </div>
-                </button>
-                <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
-                  <button
-                    onClick={() => pular(-1)}
-                    aria-label="Anterior"
-                    className="grid h-10 w-10 place-items-center rounded-full text-foreground hover:bg-white/10"
-                  >
-                    <SkipBack className="h-4 w-4" />
-                  </button>
-                  <button
-                    onClick={() => tocar(atual)}
-                    aria-label={tocando ? "Pausar" : "Tocar"}
-                    className="grid h-11 w-11 place-items-center rounded-full bg-fuchsia-600 text-white hover:bg-fuchsia-500"
-                  >
-                    {tocando ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
-                  </button>
-                  <button
-                    onClick={() => pular(1)}
-                    aria-label="Próxima"
-                    className="grid h-10 w-10 place-items-center rounded-full text-foreground hover:bg-white/10"
-                  >
-                    <SkipForward className="h-4 w-4" />
-                  </button>
-                  <button
-                    onClick={fechar}
-                    aria-label="Fechar player"
-                    title="Fechar player"
-                    className="grid h-10 w-10 place-items-center rounded-full text-foreground/70 hover:bg-white/10 hover:text-foreground"
-                  >
-                    <X className="h-5 w-5" />
-                  </button>
-                </div>
-              </div>
+          <div className="pointer-events-auto mx-auto max-w-md rounded-full border border-white/10 bg-[#0f0f0f]/95 backdrop-blur-md shadow-2xl shadow-black/60 flex items-center gap-2 pl-1.5 pr-1.5 py-1.5 relative overflow-hidden">
+            {/* Reflexo passando */}
+            <motion.div
+              aria-hidden
+              className="pointer-events-none absolute inset-y-0 w-1/3 -skew-x-12 bg-gradient-to-r from-transparent via-white/10 to-transparent"
+              initial={{ x: '-120%' }}
+              animate={{ x: '320%' }}
+              transition={{ duration: 2.6, repeat: Infinity, repeatDelay: 1.4, ease: 'easeInOut' }}
+            />
+
+            {/* Barra de progresso interna sutil */}
+            <div
+              className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-primary/80 to-amber-400/80 transition-[width] duration-200"
+              style={{ width: `${Math.round(progress * 100)}%` }}
+            />
+
+            <button
+              onClick={() => {
+                haptic.selection();
+                togglePlay();
+              }}
+              aria-label={tocando ? 'Pausar' : 'Continuar'}
+              className="flex-shrink-0 w-10 h-10 rounded-full bg-primary hover:bg-primary/90 active:scale-95 transition flex items-center justify-center relative z-10"
+            >
+              {tocando ? (
+                <Pause className="w-4 h-4 text-primary-foreground" fill="currentColor" />
+              ) : (
+                <Play className="w-4 h-4 text-primary-foreground ml-0.5" fill="currentColor" />
+              )}
+            </button>
+
+            {/* Equalizer indicando áudio tocando */}
+            <div className="flex items-end gap-[2px] h-5 flex-shrink-0 pl-0.5 relative z-10" aria-hidden>
+              {eqBars.map((i) => (
+                <motion.span
+                  key={i}
+                  className="w-[3px] rounded-full bg-primary"
+                  initial={{ height: 4 }}
+                  animate={
+                    tocando
+                      ? { height: [4, 14, 7, 16, 5, 12, 4] }
+                      : { height: 4 }
+                  }
+                  transition={
+                    tocando
+                      ? { duration: 0.9 + i * 0.15, repeat: Infinity, ease: 'easeInOut', delay: i * 0.08 }
+                      : { duration: 0.2 }
+                  }
+                />
+              ))}
             </div>
+
+            <button
+              onClick={abrir}
+              className="flex-1 min-w-0 text-left px-1 relative z-10"
+              aria-label="Abrir player"
+            >
+              <p className="text-[12px] font-semibold text-white truncate leading-tight">
+                {atual.titulo || `Art. ${atual.numero_artigo}`}
+              </p>
+              <p className="text-[10.5px] text-white/60 truncate leading-tight">
+                Leis Cantadas
+              </p>
+            </button>
+
+            <button
+              onClick={() => {
+                haptic.selection();
+                fechar();
+              }}
+              aria-label="Fechar player"
+              className="flex-shrink-0 w-9 h-9 rounded-full hover:bg-white/10 active:scale-95 transition flex items-center justify-center relative z-10"
+            >
+              <X className="w-4 h-4 text-white/70" />
+            </button>
+
+            <button
+              onClick={abrir}
+              aria-label="Abrir player expandido"
+              className="flex-shrink-0 w-9 h-9 rounded-full hover:bg-white/10 active:scale-95 transition flex items-center justify-center relative z-10 overflow-hidden"
+            >
+              <motion.span
+                className="inline-flex"
+                animate={{ x: [0, 4, 0] }}
+                transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                <ArrowRight className="w-5 h-5 text-white/90" strokeWidth={2.4} />
+              </motion.span>
+            </button>
           </div>
         </motion.div>
       )}
