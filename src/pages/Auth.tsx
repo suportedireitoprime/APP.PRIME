@@ -7,7 +7,12 @@ import {
   Mail, Lock, User, Eye, EyeOff, ArrowRight, Loader2,
   KeyRound, ArrowLeft, BookOpen, Scale, Video, Star, Brain, Radar, CheckCircle
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
+import { useHideSplashScreen } from '@/hooks/useHideSplashScreen';
+import GoogleIcon from '@/components/GoogleIcon';
+import AppleIcon from '@/components/AppleIcon';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { LegalSheet } from '@/components/auth/LegalSheet';

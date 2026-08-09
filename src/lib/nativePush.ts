@@ -234,7 +234,7 @@ export async function ensureNativePushListeners() {
               if (currentPathWithSearch !== path && (window as any)._pendingPushUrl) {
                 window.location.assign(path);
               }
-            }, 250);
+            }, 1500);
             // Convertido: navegou pra dentro do app
             if (campaignId) {
               window.setTimeout(() => trackPush(campaignId, 'converted', { url: path }), 500);

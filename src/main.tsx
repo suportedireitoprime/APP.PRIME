@@ -36,12 +36,9 @@ if (Capacitor.isNativePlatform()) {
   void import("@capacitor-community/safe-area").then(({ SafeArea, SystemBarsStyle }) => {
     void SafeArea.setSystemBarsStyle({ style: SystemBarsStyle.Dark }).catch(() => {});
   });
-  // Fecha imediatamente qualquer splash do plugin (o splash do sistema
-  // Android 12+ é gerenciado pelo tema; esta chamada garante que nada
-  // do plugin fique visível sobre a WebView em OEMs teimosos).
-  void import("@capacitor/splash-screen").then(({ SplashScreen }) => {
-    void SplashScreen.hide({ fadeOutDuration: 0 }).catch(() => {});
-  });
+  // A Splash Screen nativa agora é ocultada sob demanda pelos componentes principais
+  // (ex: IndexMobile.tsx, Auth.tsx) após o primeiro render, evitando a "tela branca"
+  // ou "travadinha" durante o boot.
 }
 
 // Push: anexa os listeners nativos ANTES do React montar e converte o

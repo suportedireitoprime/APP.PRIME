@@ -24,6 +24,7 @@ import HomeNoticiasCarousel from '@/components/vademecum/HomeNoticiasCarousel';
 import ContinueBanner from '@/components/desktop/ContinueBanner';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
 import { leiPath, tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
+import { useHideSplashScreen } from '@/hooks/useHideSplashScreen';
 // Overlays only mount when opened — lazy so they don't inflate the initial
 // desktop chunk.
 const SearchOverlay = lazy(() => import('@/components/vademecum/SearchOverlay'));

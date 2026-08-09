@@ -29,11 +29,14 @@ import { pushRecente } from '@/lib/leisRecentes';
 import { warmCoverCache } from '@/lib/coverLoader';
 import { track } from '@/lib/analyticsEvents';
 
+import { useHideSplashScreen } from '@/hooks/useHideSplashScreen';
+
 const HERO_CONFIG = { radar: camaraHero, legislacao: heroImage, noticias: senadoHero } as const;
 
 type Tab = 'legislacao' | 'noticias' | 'ferramentas';
 
 const IndexMobile = () => {
+  useHideSplashScreen(100);
   const navigate = useNavigate();
   const [, setActiveTab] = useState<Tab>('legislacao');
   const [menuOpen, setMenuOpen] = useState(false);

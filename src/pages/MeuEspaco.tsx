@@ -106,6 +106,7 @@ function formatEventLabel(ts: number) {
 }
 
 const MeuEspaco = () => {
+  useHideSplashScreen(100);
   useTrackArea("meu_espaco_aberto");
   const navigate = useNavigate();
   const goBack = useGoBack('/');

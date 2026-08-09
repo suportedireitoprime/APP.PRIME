@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useHideSplashScreen } from '@/hooks/useHideSplashScreen';
 import CadastroOnboardingOverlay, {
   type CadastroResult,
 } from '@/components/onboarding/CadastroOnboardingOverlay';
 import NotificacoesPermissaoStep from '@/components/onboarding/NotificacoesPermissaoStep';
 
 const Onboarding = () => {
+  useHideSplashScreen(100);
   const navigate = useNavigate();
   const { user } = useAuth();
   const [saving, setSaving] = useState(false);
