@@ -62,7 +62,6 @@ const VideoaulasCategorias = () => {
       <PageHeader
         title="Categorias"
         subtitle="Escolha por onde estudar"
-        onBack={() => navigate('/videoaulas')}
       />
 
       <div className="w-full pb-32 pt-4">

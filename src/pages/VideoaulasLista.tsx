@@ -50,7 +50,6 @@ const VideoaulasLista = ({ modo }: { modo: 'favoritos' | 'recentes' }) => {
       <PageHeader
         title={modo === 'favoritos' ? 'Videoaulas favoritas' : 'Continuar assistindo'}
         subtitle={loading ? 'Carregando…' : `${rows.length} aulas`}
-        onBack={() => navigate('/videoaulas')}
       />
 
       <div className="px-4 pt-4 space-y-3">
