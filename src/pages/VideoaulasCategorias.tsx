@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight, LayoutGrid, Play, Video, ShieldAlert, Scale, GraduationCap, BookOpen } from 'lucide-react';
+import { ChevronRight, LayoutGrid, Play, Video, ShieldAlert, Scale, GraduationCap, BookOpen, Briefcase } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import ThumbImg from '@/components/videoaulas/ThumbImg';
 import VideoaulasBottomNav from '@/components/videoaulas/VideoaulasBottomNav';
@@ -43,6 +43,7 @@ const VideoaulasCategorias = () => {
 
   const policiais = concursos.filter(c => c.grupo === 'policial');
   const tribunais = concursos.filter(c => c.grupo === 'tribunais');
+  const magistratura = concursos.filter(c => c.grupo === 'magistratura');
 
   const jornadasPadrao = CATALOGOS.filter(c => !c.id.startsWith('oab'));
   const oabList = CATALOGOS.filter(c => c.id.startsWith('oab'));
@@ -229,6 +230,46 @@ const VideoaulasCategorias = () => {
                   <div className="absolute bottom-3 left-3 text-white">
                     <span className="bg-primary/90 text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider">
                       Edital
+                    </span>
+                  </div>
+                </div>
+                <div className="flex flex-col flex-1 p-3">
+                  <h3 className="truncate text-[13px] font-bold leading-tight">{c.titulo}</h3>
+                  <p className="mt-0.5 line-clamp-2 text-[10px] leading-snug text-muted-foreground flex-1">
+                    {c.descricao}
+                  </p>
+                  <div className="mt-2 flex items-center justify-between text-muted-foreground group-hover:text-primary transition-colors">
+                    <span className="text-[10px] font-semibold">{c.disciplinas?.length || 0} Disciplinas</span>
+                    <ChevronRight className="h-4 w-4" />
+                  </div>
+                </div>
+              </button>
+            ))}
+          </GridSection>
+        )}
+
+        {/* Magistratura */}
+        {magistratura.length > 0 && (
+          <GridSection title="Juiz de Direito (Magistratura)" icon={Briefcase}>
+            {magistratura.map((c) => (
+              <button
+                key={c.id}
+                onClick={() => {
+                  haptic.selection();
+                  navigate(`/videoaulas/concurso/${c.id}`);
+                }}
+                className="group flex flex-col w-full overflow-hidden rounded-2xl border border-border bg-card text-left shadow-sm transition-all hover:border-primary/50 active:scale-[0.98]"
+              >
+                <div className="relative w-full h-[85px] sm:h-[100px] overflow-hidden bg-black/10">
+                  <ThumbImg
+                    src={c.capa}
+                    alt={c.titulo}
+                    fallback={<Briefcase className="h-8 w-8 text-primary/40" />}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <div className="absolute bottom-3 left-3 text-white">
+                    <span className="bg-primary/90 text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider">
+                      Magistratura
                     </span>
                   </div>
                 </div>

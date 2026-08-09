@@ -66,7 +66,7 @@ let memConcursosAt = 0;
 const catKey = (id: CatalogoId) => `video:cat:${id}`;
 const PROG_KEY = 'video:progresso';
 const FAV_KEY = 'video:favoritos';
-const CONCURSOS_KEY = 'video:concursos:v4';
+const CONCURSOS_KEY = 'video:concursos:v5';
 
 const fresco = (at: number, ttl: number) => at > 0 && Date.now() - at < ttl;
 
