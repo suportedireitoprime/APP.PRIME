@@ -61,7 +61,8 @@ const LivroDetailSheet = ({ livro, open, onClose }: LivroDetailSheetProps) => {
 
 
   // Ficha técnica: nº de páginas + tempo médio de leitura (lazy via pdfjs)
-  const numPages = useLivroPageCount(open ? livro?.download : null);
+  const calculatedNumPages = useLivroPageCount(open && !livro?.paginas ? livro?.download : null);
+  const numPages = livro?.paginas || calculatedNumPages;
 
   // Apresentações narradas de livros foram desativadas.
   const rawSobre = (livro?.sobre && livro.sobre.trim().length >= 15)
@@ -81,7 +82,7 @@ const LivroDetailSheet = ({ livro, open, onClose }: LivroDetailSheetProps) => {
 
   const temAnaliseTecnica = true;
 
-  const minutosLeitura = estimarMinutosLeitura(numPages);
+  const minutosLeitura = livro?.minutosLeitura || estimarMinutosLeitura(numPages);
 
   // Capas resolvem localmente (filesystem) no app nativo quando pré-baixadas,
   // caindo para CDN no web/desktop. Chamadas de hook ficam antes de qualquer return.

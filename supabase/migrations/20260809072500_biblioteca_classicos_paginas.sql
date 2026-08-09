@@ -1,0 +1,32 @@
+UPDATE biblioteca_classicos SET paginas = 350, minutos_leitura = 420 WHERE livro = 'O Advogado do Diabo';
+UPDATE biblioteca_classicos SET paginas = 250, minutos_leitura = 300 WHERE livro = 'Eles, os Juízes, Vistos por Nós, os Advogados';
+UPDATE biblioteca_classicos SET paginas = 280, minutos_leitura = 330 WHERE livro = 'Virando a Própria Mesa';
+UPDATE biblioteca_classicos SET paginas = 240, minutos_leitura = 290 WHERE livro = 'Ética a Nicômaco';
+UPDATE biblioteca_classicos SET paginas = 140, minutos_leitura = 160 WHERE livro = 'O Príncipe';
+UPDATE biblioteca_classicos SET paginas = 250, minutos_leitura = 300 WHERE livro = 'A Era dos Direitos';
+UPDATE biblioteca_classicos SET paginas = 400, minutos_leitura = 480 WHERE livro = 'Introdução ao Estudo do Direito';
+UPDATE biblioteca_classicos SET paginas = 500, minutos_leitura = 600 WHERE livro = 'O Leviatã';
+UPDATE biblioteca_classicos SET paginas = 600, minutos_leitura = 720 WHERE livro = 'O Espírito das Leis';
+UPDATE biblioteca_classicos SET paginas = 450, minutos_leitura = 540 WHERE livro = 'O Mundo Assombrado pelos Demônios';
+UPDATE biblioteca_classicos SET paginas = 180, minutos_leitura = 210 WHERE livro = 'O Contrato Social';
+UPDATE biblioteca_classicos SET paginas = 120, minutos_leitura = 140 WHERE livro = 'A Luta pelo Direito';
+UPDATE biblioteca_classicos SET paginas = 140, minutos_leitura = 160 WHERE livro = 'O Último Dia de um Condenado';
+UPDATE biblioteca_classicos SET paginas = 100, minutos_leitura = 120 WHERE livro = 'O que é Direito (Primeiros Passos)';
+UPDATE biblioteca_classicos SET paginas = 200, minutos_leitura = 240 WHERE livro = 'Sobre a Liberdade';
+UPDATE biblioteca_classicos SET paginas = 380, minutos_leitura = 450 WHERE livro = 'A República';
+UPDATE biblioteca_classicos SET paginas = 450, minutos_leitura = 540 WHERE livro = 'Teoria Pura do Direito';
+UPDATE biblioteca_classicos SET paginas = 330, minutos_leitura = 400 WHERE livro = 'Vigiar e Punir: Nascimento da Prisão';
+UPDATE biblioteca_classicos SET paginas = 120, minutos_leitura = 140 WHERE livro = 'A Arte da Guerra';
+UPDATE biblioteca_classicos SET paginas = 560, minutos_leitura = 670 WHERE livro = 'O Mundo de Sofia';
+UPDATE biblioteca_classicos SET paginas = 350, minutos_leitura = 420 WHERE livro = 'Justiça: O que é fazer a coisa certa';
+UPDATE biblioteca_classicos SET paginas = 130, minutos_leitura = 150 WHERE livro = 'Dos Delitos e das Penas';
+UPDATE biblioteca_classicos SET paginas = 100, minutos_leitura = 150 WHERE livro = 'O Caso dos Exploradores de Cavernas';
+UPDATE biblioteca_classicos SET paginas = 330, minutos_leitura = 400 WHERE livro = '1984';
+UPDATE biblioteca_classicos SET paginas = 280, minutos_leitura = 330 WHERE livro = 'O Processo';
+UPDATE biblioteca_classicos SET paginas = 380, minutos_leitura = 450 WHERE livro = 'A Meta: Um Processo de Melhoria Contínua';
+UPDATE biblioteca_classicos SET paginas = 140, minutos_leitura = 160 WHERE livro = 'O Monge e o Executivo';
+UPDATE biblioteca_classicos SET paginas = 280, minutos_leitura = 330 WHERE livro = 'Como as Democracias Morrem';
+UPDATE biblioteca_classicos SET paginas = 160, minutos_leitura = 190 WHERE livro = 'Acesso à Justiça';
+
+-- Corrige a imagem de capa horizontal para todos os livros que não tem, usando a capa principal
+UPDATE biblioteca_classicos SET capa_horizontal = imagem WHERE capa_horizontal IS NULL OR capa_horizontal LIKE '%token=%';

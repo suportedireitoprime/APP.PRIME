@@ -62,7 +62,7 @@ export const COLECOES: ColecaoConfig[] = [
     gradient: 'from-slate-900 via-slate-800 to-zinc-950',
     modo: 'categorias',
     table: 'biblioteca_estudos',
-    select: 'id, tema, area, capa_livro, sobre, link, download, ordem, capa_horizontal, ano_lancamento, editora, curiosidades, analise_detalhada, audio_resumo_url',
+    select: 'id, tema, area, capa_livro, sobre, link, download, ordem, capa_horizontal, ano_lancamento, editora, curiosidades, analise_detalhada, audio_resumo_url, paginas, minutos_leitura',
     tituloField: 'tema',
     capaField: 'capa_livro',
     sobreField: 'sobre',
@@ -80,7 +80,7 @@ export const COLECOES: ColecaoConfig[] = [
     gradient: 'from-stone-900 via-stone-800 to-neutral-950',
     modo: 'livros',
     table: 'biblioteca_classicos',
-    select: 'id, livro, autor, imagem, sobre, link, download, capa_horizontal, ano_lancamento, editora, curiosidades, analise_detalhada, audio_resumo_url',
+    select: 'id, livro, autor, imagem, sobre, link, download, capa_horizontal, ano_lancamento, editora, curiosidades, analise_detalhada, audio_resumo_url, paginas, minutos_leitura',
     tituloField: 'livro',
     autorField: 'autor',
     capaField: 'imagem',
@@ -98,7 +98,7 @@ export const COLECOES: ColecaoConfig[] = [
     gradient: 'from-red-900 via-rose-800 to-red-950',
     modo: 'categorias',
     table: 'biblioteca_oab',
-    select: 'id, area, ordem, tema, capa_livro, sobre, link, download, capa_horizontal, ano_lancamento, editora, curiosidades, analise_detalhada, audio_resumo_url',
+    select: 'id, area, ordem, tema, capa_livro, sobre, link, download, capa_horizontal, ano_lancamento, editora, curiosidades, analise_detalhada, audio_resumo_url, paginas, minutos_leitura',
     tituloField: 'tema',
     capaField: 'capa_livro',
     sobreField: 'sobre',
@@ -116,7 +116,7 @@ export const COLECOES: ColecaoConfig[] = [
     gradient: 'from-emerald-900 via-emerald-800 to-teal-950',
     modo: 'livros',
     table: 'biblioteca_fora_da_toga',
-    select: 'id, area, livro, autor, capa_livro, sobre, link, download, capa_horizontal, ano_lancamento, editora, curiosidades, analise_detalhada, audio_resumo_url',
+    select: 'id, area, livro, autor, capa_livro, sobre, link, download, capa_horizontal, ano_lancamento, editora, curiosidades, analise_detalhada, audio_resumo_url, paginas, minutos_leitura',
     tituloField: 'livro',
     autorField: 'autor',
     capaField: 'capa_livro',
@@ -135,7 +135,7 @@ export const COLECOES: ColecaoConfig[] = [
     gradient: 'from-amber-900 via-yellow-800 to-orange-950',
     modo: 'livros',
     table: 'biblioteca_oratoria',
-    select: 'id, area, livro, autor, capa_livro, sobre, link, download, capa_horizontal, ano_lancamento, editora, curiosidades, analise_detalhada, audio_resumo_url',
+    select: 'id, area, livro, autor, capa_livro, sobre, link, download, capa_horizontal, ano_lancamento, editora, curiosidades, analise_detalhada, audio_resumo_url, paginas, minutos_leitura',
     tituloField: 'livro',
     autorField: 'autor',
     capaField: 'capa_livro',
@@ -153,7 +153,7 @@ export const COLECOES: ColecaoConfig[] = [
     gradient: 'from-orange-900 via-red-900 to-rose-950',
     modo: 'livros',
     table: 'biblioteca_lideranca',
-    select: 'id, livro, autor, area, imagem, sobre, link, download, capa_horizontal, ano_lancamento, editora, curiosidades, analise_detalhada, audio_resumo_url',
+    select: 'id, livro, autor, area, imagem, sobre, link, download, capa_horizontal, ano_lancamento, editora, curiosidades, analise_detalhada, audio_resumo_url, paginas, minutos_leitura',
     tituloField: 'livro',
     autorField: 'autor',
     capaField: 'imagem',
@@ -171,7 +171,7 @@ export const COLECOES: ColecaoConfig[] = [
     gradient: 'from-sky-900 via-blue-800 to-indigo-950',
     modo: 'livros',
     table: 'biblioteca_portugues',
-    select: 'id, area, livro, autor, imagem, sobre, link, download, capa_horizontal, ano_lancamento, editora, curiosidades, analise_detalhada, audio_resumo_url',
+    select: 'id, area, livro, autor, imagem, sobre, link, download, capa_horizontal, ano_lancamento, editora, curiosidades, analise_detalhada, audio_resumo_url, paginas, minutos_leitura',
     tituloField: 'livro',
     autorField: 'autor',
     capaField: 'imagem',
@@ -189,7 +189,7 @@ export const COLECOES: ColecaoConfig[] = [
     gradient: 'from-violet-900 via-purple-800 to-fuchsia-950',
     modo: 'livros',
     table: 'biblioteca_pesquisa_cientifica',
-    select: 'id, area, livro, autor, imagem, sobre, link, download, capa_horizontal, ano_lancamento, editora, curiosidades, analise_detalhada, audio_resumo_url',
+    select: 'id, area, livro, autor, imagem, sobre, link, download, capa_horizontal, ano_lancamento, editora, curiosidades, analise_detalhada, audio_resumo_url, paginas, minutos_leitura',
     tituloField: 'livro',
     autorField: 'autor',
     capaField: 'imagem',
@@ -223,6 +223,8 @@ export interface LivroNormalizado {
   curiosidades?: string[] | null;
   analiseDetalhada?: string | null;
   audioResumoUrl?: string | null;
+  paginas?: number | null;
+  minutosLeitura?: number | null;
 }
 
 export function normalizeLivro(row: any, colecao: ColecaoConfig): LivroNormalizado {
@@ -282,5 +284,7 @@ export function normalizeLivro(row: any, colecao: ColecaoConfig): LivroNormaliza
     curiosidades,
     analiseDetalhada,
     audioResumoUrl: row.audio_resumo_url ?? null,
+    paginas: row.paginas ?? null,
+    minutosLeitura: row.minutos_leitura ?? null,
   };
 }
