@@ -21,6 +21,7 @@
   - Respeitar os insets de tela (status bar e navigation bar) utilizando `env(safe-area-inset-*)` no CSS.
   - Todas as chamadas de plugins nativos (`@capacitor/*`, `@capacitor-community/*`, `@capawesome/*`) devem possuir fallbacks graciosos para a Web/PWA.
 - **Integração com Supabase & Operação Offline:**
+  - **Deploy Automático:** Sempre que alterar ou criar *Edge Functions* ou configurações do Supabase, a IA DEVE fazer o deploy automaticamente (ex: `.\node_modules\.bin\supabase.cmd functions deploy <nome> --project-ref dnjrgpldcwcpoywamorr` ou via Supabase MCP). Nunca peça para o usuário rodar os comandos no terminal.
   - Utilizar sempre as definições de tipos em `src/integrations/supabase/types.ts`.
   - Reutilizar a camada de persistência com `idb-keyval`, Dexie ou React Query para garantir que a aplicação continue utilizável offline.
 
@@ -73,3 +74,23 @@
 - **Economia de Contexto:** Reutilize informações já levantadas nos turnos anteriores para evitar consumo excessivo de tokens de contexto.
 - **Validação Prática:** Nunca declare conclusão de tarefa sem rodar `tsc.CMD --noEmit` ou o comando de verificação adequado.
 
+## Diretivas Lovable (System Prompt)
+
+- **PERFECT ARCHITECTURE:** Always consider whether the code needs refactoring given the latest request. If it does, refactor the code to be more efficient and maintainable. Spaghetti code is your enemy.
+- **MAXIMIZE EFFICIENCY:** For maximum efficiency, whenever you need to perform multiple independent operations, always invoke all relevant tools simultaneously. Never make sequential tool calls when they can be combined.
+- **BE CONCISE:** You MUST answer concisely with fewer than 2 lines of text (not including tool use or code generation), unless user asks for detail. After editing code, do not write a long explanation, just keep it as short as possible without emojis.
+- **COMMUNICATE ACTIONS:** Before performing any changes, briefly inform the user what you will do.
+
+### SEO Requirements:
+ALWAYS implement SEO best practices automatically for every page/component.
+- **Title tags**: Include main keyword, keep under 60 characters
+- **Meta description**: Max 160 characters with target keyword naturally integrated
+- **Single H1**: Must match page's primary intent and include main keyword
+- **Semantic HTML**: Use semantic tags correctly
+- **Image optimization**: All images must have descriptive alt attributes with relevant keywords
+- **Performance**: Implement lazy loading for images, defer non-critical scripts
+- **Mobile optimization**: Ensure responsive design with proper viewport meta tag
+
+### Coding guidelines
+- ALWAYS generate beautiful and responsive designs.
+- Use toast components to inform the user.

@@ -23,7 +23,7 @@ const TOOLS = [
   { id: 'boletins', label: 'Boletins Jurídicos', desc: 'Vídeo diário com as normas de hoje', icon: Clapperboard, color: '#14B8A6' },
   { id: 'noticias', label: 'Notícias', desc: 'Notícias jurídicas e atualizações', icon: Newspaper, color: '#6366F1' },
   { id: 'newsletter', label: 'Newsletter', desc: 'Resumo jurídico diário no e-mail', icon: Send, color: '#EC4899' },
-
+  { id: 'forca', label: 'Jogo da Forca', desc: 'Teste seu vocabulário', icon: BookOpenText, color: '#FACC15' },
 ];
 
 
@@ -53,7 +53,7 @@ const Ferramentas = () => {
       case 'aprender': navigate('/aprender'); break;
       case 'modo-offline': navigate('/modo-offline'); break;
       case 'tematica': navigate('/tematica-juridica'); break;
-
+      case 'forca': navigate('/gamificacao/forca'); break;
     }
   };
 

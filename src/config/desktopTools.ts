@@ -19,6 +19,7 @@ import {
   User,
   Sparkles,
   Layers,
+  Scale,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -91,6 +92,7 @@ export const DESKTOP_TOOL_GROUPS: DesktopToolGroup[] = [
       { id: 'lembretes', label: 'Meus Lembretes', desc: 'Avisos e rotinas de estudo', icon: Bell, route: '/meus-lembretes', color: '#DC2626' },
       { id: 'assinatura', label: 'Assinatura', desc: 'Planos, créditos e benefícios', icon: CreditCard, route: '/assinatura', color: '#10B981' },
       { id: 'suporte', label: 'Suporte', desc: 'Fale com a equipe Direito Prime', icon: LifeBuoy, route: '/suporte', color: '#EC4899' },
+      { id: 'forca', label: 'Jogo da Forca', desc: 'Teste seu vocabulário jurídico', icon: Scale, route: '/gamificacao/forca', color: '#FACC15' },
     ],
   },
 ];

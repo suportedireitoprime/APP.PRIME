@@ -144,6 +144,7 @@ const VadeMecumFavoritos = lazy(() => import("./pages/VadeMecumFavoritos.tsx"));
 const VadeMecumRecentes = lazy(() => import("./pages/VadeMecumRecentes.tsx"));
 
 const ArtigoEducacional = lazy(() => import("./pages/ArtigoEducacional.tsx"));
+const ForcaPage = lazy(() => import("./pages/gamificacao/Forca.tsx"));
 const CategoriaAprender = lazy(() => import("./pages/CategoriaAprender.tsx"));
 const AprenderArea = lazy(() => import("./pages/AprenderArea.tsx"));
 const AprenderTeoria = lazy(() => import("./pages/AprenderTeoria.tsx"));
@@ -743,6 +744,7 @@ function AnimatedRoutes() {
           <Route path="/vade-mecum/favoritos" element={<ProtectedRoute><PageTransition><VadeMecumFavoritos /></PageTransition></ProtectedRoute>} />
           <Route path="/vade-mecum/recentes" element={<ProtectedRoute><PageTransition><VadeMecumRecentes /></PageTransition></ProtectedRoute>} />
           <Route path="/aprender" element={<ProtectedRoute><PageTransition><Aprender /></PageTransition></ProtectedRoute>} />
+          <Route path="/gamificacao/forca" element={<ProtectedRoute><PageTransition><ForcaPage /></PageTransition></ProtectedRoute>} />
 
           <Route path="/aprender/categoria/:categoriaId" element={<ProtectedRoute><PageTransition><CategoriaAprender /></PageTransition></ProtectedRoute>} />
           <Route path="/aprender/area/:slug" element={<ProtectedRoute><PageTransition><AprenderArea /></PageTransition></ProtectedRoute>} />
