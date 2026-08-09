@@ -84,8 +84,53 @@ const Flashcards = () => {
         <PageHeader title="Flashcards" onBack={() => navigate('/')} />
 
         <div className="pt-3 space-y-6">
-          {/* ── Painel de Status & Desafios ───────────────────────── */}
+          {/* ── Desafios ───────────────────────── */}
           <DesafiosCarousel dash={dash} onVerTodos={() => setDesafiosSheet(true)} />
+
+          {/* ── Ações Rápidas (Revisão & Progresso) ───────────────── */}
+          <section className="flex flex-col gap-2">
+            <button
+              onClick={() => {
+                haptic.selection();
+                navigate('/flashcards/revisao-inteligente');
+              }}
+              className="w-full flex items-center justify-between p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-primary/50 transition-colors active:scale-95"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Flame className="w-5 h-5 text-primary" />
+                </div>
+                <div className="text-left">
+                  <p className="text-sm font-bold text-foreground leading-tight">Revisar Cards</p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">
+                    {paraHoje > 0 ? `${paraHoje} agendados para hoje` : 'Tudo em dia!'}
+                  </p>
+                </div>
+              </div>
+              <ChevronRight className="w-5 h-5 text-muted-foreground" />
+            </button>
+
+            <button
+              onClick={() => {
+                haptic.selection();
+                navigate('/flashcards/progresso');
+              }}
+              className="w-full flex items-center justify-between p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-primary/50 transition-colors active:scale-95"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Trophy className="w-5 h-5 text-primary" />
+                </div>
+                <div className="text-left">
+                  <p className="text-sm font-bold text-foreground leading-tight">Meu Progresso</p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">
+                    {pct}% dos cards dominados
+                  </p>
+                </div>
+              </div>
+              <ChevronRight className="w-5 h-5 text-muted-foreground" />
+            </button>
+          </section>
 
           {/* ── Reforçar (só quando existe) ──────────────────────────── */}
           {!!criticos.length && (
