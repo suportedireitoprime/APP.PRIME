@@ -178,9 +178,10 @@ const AreaTrilhaMap = ({ areaSlug, catalogoId, aulas }: { areaSlug: string, cata
             return (
               <motion.div
                 key={nodo.dia}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
+                initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ type: 'spring', stiffness: 110, damping: 15, delay: i * 0.05 }}
                 className={`relative z-10 flex w-full items-center ${isLeft ? 'justify-start' : 'justify-end'}`}
               >
                 <div className={`absolute top-1/2 w-[calc(50%-2.5rem)] h-[2px] border-b-2 border-dotted -translate-y-1/2 z-0 ${concluido ? 'border-primary/40' : 'border-white/10'} ${isLeft ? 'left-1/2' : 'right-1/2'}`} />
@@ -241,8 +242,10 @@ const AreaTrilhaMap = ({ areaSlug, catalogoId, aulas }: { areaSlug: string, cata
                             <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-colors ${concluido ? 'bg-primary/20' : 'bg-white/5 group-hover:bg-primary/20'}`}>
                               <PlayCircle className={`w-3 h-3 ${concluido ? 'text-primary' : 'text-foreground/70 group-hover:text-primary'}`} />
                             </div>
-                            <p className={`text-[11px] font-semibold line-clamp-2 leading-tight ${concluido ? 'text-muted-foreground' : 'text-foreground group-hover:text-primary transition-colors'}`}>
-                              {limparTitulo(aula.titulo)}
+                            <p className={`text-[11px] font-semibold line-clamp-3 leading-tight ${concluido ? 'text-muted-foreground' : 'text-foreground group-hover:text-primary transition-colors'}`}>
+                              {limparTitulo(aula.titulo)
+                                .replace(new RegExp(`^${aula.area} - `, 'i'), '')
+                                .replace(new RegExp(`^${aula.area} `, 'i'), '')}
                             </p>
                           </div>
                         </button>
@@ -525,7 +528,7 @@ const VideoaulasArea = () => {
       </AnimatePresence>
 
       {/* Menu de Rodapé Exclusivo da Área */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[#0A0A0A]/90 backdrop-blur-xl border-t border-border/40 pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))]">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-lg shadow-black/10 pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))]">
         <div className="flex h-16 max-w-md mx-auto relative px-1">
           {MENU.map(({ id, label, icon: Icon }) => {
             const ativo = aba === id;
