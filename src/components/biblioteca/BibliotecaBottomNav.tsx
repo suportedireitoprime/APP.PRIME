@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { BookMarked, Heart, Clock, HardDrive, Library } from 'lucide-react';
+import { BookMarked, Heart, Clock, HardDrive, Library, Route as RouteIcon } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
-export type BibliotecaAtalhoTab = 'leitura' | 'favoritos' | 'recentes' | 'offline';
+export type BibliotecaAtalhoTab = 'leitura' | 'favoritos' | 'recentes' | 'offline' | 'trilhas';
 
 /** Abre um dos painéis da BibliotecaAtalhosBar (Leitura, Favoritos, Recentes, Offline). */
 export function abrirAtalhoBiblioteca(tab: BibliotecaAtalhoTab) {
@@ -12,7 +12,7 @@ export function abrirAtalhoBiblioteca(tab: BibliotecaAtalhoTab) {
 }
 
 type Slot = {
-  id: 'leitura' | 'favoritos' | 'biblioteca' | 'recentes' | 'offline';
+  id: 'leitura' | 'favoritos' | 'biblioteca' | 'recentes' | 'offline' | 'trilhas';
   label: string;
   icon: typeof Heart;
 };
@@ -21,7 +21,7 @@ const SLOTS: Slot[] = [
   { id: 'biblioteca', label: 'Biblioteca', icon: Library },
   { id: 'leitura', label: 'Leitura', icon: BookMarked },
   { id: 'favoritos', label: 'Favoritos', icon: Heart },
-  { id: 'recentes', label: 'Recentes', icon: Clock },
+  { id: 'trilhas', label: 'Trilhas', icon: RouteIcon },
   { id: 'offline', label: 'Offline', icon: HardDrive },
 ];
 
@@ -39,6 +39,10 @@ const BibliotecaBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
     setActive(slot.id);
     if (slot.id === 'biblioteca') {
       if (pathname !== '/bibliotecas') navigate('/bibliotecas');
+      return;
+    }
+    if (slot.id === 'trilhas') {
+      navigate('/bibliotecas/trilhas');
       return;
     }
     abrirAtalhoBiblioteca(slot.id);

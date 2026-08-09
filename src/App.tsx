@@ -231,6 +231,7 @@ const DesktopLinkConfirm = lazy(() => import("./pages/DesktopLinkConfirm.tsx"));
 import Bibliotecas from "./pages/Bibliotecas.tsx";
 import BibliotecaCategoria from "./pages/BibliotecaCategoria.tsx";
 import BibliotecaOffline from "./pages/BibliotecaOffline.tsx";
+import BibliotecaTrilhas from "./pages/BibliotecaTrilhas.tsx";
 
 const CompressaoImagens = lazy(() => import("./pages/CompressaoImagens.tsx"));
 const AdminFuncoesAssinantes = lazy(() => import("./pages/AdminFuncoesAssinantes.tsx"));
@@ -831,6 +832,7 @@ function AnimatedRoutes() {
           <Route path="/newsletter" element={<ProtectedRoute><PageTransition><Newsletter /></PageTransition></ProtectedRoute>} />
           <Route path="/biblioteca" element={<ProtectedRoute><PageTransition><Bibliotecas /></PageTransition></ProtectedRoute>} />
           <Route path="/bibliotecas" element={<ProtectedRoute><PageTransition><Bibliotecas /></PageTransition></ProtectedRoute>} />
+          <Route path="/bibliotecas/trilhas" element={<ProtectedRoute><PageTransition><BibliotecaTrilhas /></PageTransition></ProtectedRoute>} />
           <Route path="/bibliotecas/:colecaoId" element={<ProtectedRoute><PageTransition><BibliotecaCategoria /></PageTransition></ProtectedRoute>} />
           <Route path="/bibliotecas/:colecaoId/:areaSlug" element={<ProtectedRoute><PageTransition><BibliotecaCategoria /></PageTransition></ProtectedRoute>} />
           <Route path="/biblioteca-offline" element={<ProtectedRoute><PageTransition><BibliotecaOffline /></PageTransition></ProtectedRoute>} />
