@@ -37,10 +37,20 @@ export type FavoritoRow = {
   thumb?: string | null;
 };
 
-/** Catálogo muda muito pouco: 24h. Progresso é do próprio usuário: 2min. */
+export type ConcursoRow = {
+  id: string;
+  titulo: string;
+  grupo: string;
+  descricao: string;
+  capa: string;
+  disciplinas: string[];
+};
+
+/** Catálogo muda muito pouco: 24h. Progresso é do próprio usuário: 2min. Concursos: 24h */
 const TTL_CATALOGO = 24 * 60 * 60 * 1000;
 const TTL_PROGRESSO = 2 * 60 * 1000;
 const TTL_FAVORITOS = 5 * 60 * 1000;
+const TTL_CONCURSOS = 24 * 60 * 60 * 1000;
 
 const memAulas = new Map<CatalogoId, AulaCache[]>();
 const memAulasAt = new Map<CatalogoId, number>();
@@ -50,10 +60,13 @@ let memProgresso: ProgressoRow[] | null = null;
 let memProgressoAt = 0;
 let memFavoritos: FavoritoRow[] | null = null;
 let memFavoritosAt = 0;
+let memConcursos: ConcursoRow[] | null = null;
+let memConcursosAt = 0;
 
 const catKey = (id: CatalogoId) => `video:cat:${id}`;
 const PROG_KEY = 'video:progresso';
 const FAV_KEY = 'video:favoritos';
+const CONCURSOS_KEY = 'video:concursos';
 
 const fresco = (at: number, ttl: number) => at > 0 && Date.now() - at < ttl;
 
@@ -287,6 +300,56 @@ export function invalidarFavoritos() {
   revalidateFavoritos(true);
 }
 
+/* -------------------------------------------------------------- concursos */
+
+async function fetchConcursos(): Promise<ConcursoRow[]> {
+  const { data } = await supabase
+    .from('trilhas_concursos')
+    .select('*')
+    .order('titulo', { ascending: true });
+  return ((data as any[]) ?? []) as ConcursoRow[];
+}
+
+function revalidateConcursos(forcar = false) {
+  if (!forcar && fresco(memConcursosAt, TTL_CONCURSOS)) return;
+  const key = 'revalidate:concursos';
+  if (inflight.has(key)) return;
+  void dedupe(key, async () => {
+    const fresh = await fetchConcursos();
+    memConcursos = fresh;
+    memConcursosAt = Date.now();
+    await setAprenderCache(CONCURSOS_KEY, 'home', fresh);
+    notificar();
+    return fresh;
+  }).catch(() => {});
+}
+
+export function getCachedConcursos(): ConcursoRow[] | null {
+  return memConcursos;
+}
+
+export async function loadConcursos(): Promise<ConcursoRow[]> {
+  if (memConcursos) {
+    revalidateConcursos();
+    return memConcursos;
+  }
+  const persisted = await getAprenderCacheEntry<ConcursoRow[]>(CONCURSOS_KEY);
+  if (persisted?.payload) {
+    memConcursos = persisted.payload;
+    memConcursosAt = persisted.updatedAt;
+    revalidateConcursos();
+    return persisted.payload;
+  }
+  return dedupe(CONCURSOS_KEY, async () => {
+    const rows = await fetchConcursos();
+    memConcursos = rows;
+    memConcursosAt = Date.now();
+    void setAprenderCache(CONCURSOS_KEY, 'home', rows);
+    notificar();
+    return rows;
+  });
+}
+
 /* ------------------------------------------------------------------ warmup */
 
 let hidratado = false;
@@ -318,6 +381,15 @@ export function hydrateVideoaulasCache() {
         notificar();
       })
       .catch(() => {});
+      
+    void getAprenderCacheEntry<ConcursoRow[]>(CONCURSOS_KEY)
+      .then((e) => {
+        if (!e?.payload || memConcursos) return;
+        memConcursos = e.payload;
+        memConcursosAt = e.updatedAt;
+        notificar();
+      })
+      .catch(() => {});
   }, 1500);
 }
 
@@ -330,6 +402,7 @@ export function warmVideoaulasCache() {
   onIdle(() => {
     void loadProgresso().catch(() => {});
     void loadFavoritos().catch(() => {});
+    void loadConcursos().catch(() => {});
     CATALOGOS.forEach((c, i) => {
       if (fresco(memAulasAt.get(c.id) ?? 0, TTL_CATALOGO)) return;
       setTimeout(() => {

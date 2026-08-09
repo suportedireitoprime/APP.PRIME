@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight, LayoutGrid, Play, Video } from 'lucide-react';
+import { ChevronRight, LayoutGrid, Play, Video, ShieldAlert, Scale, GraduationCap } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import ThumbImg from '@/components/videoaulas/ThumbImg';
 import VideoaulasBottomNav from '@/components/videoaulas/VideoaulasBottomNav';
@@ -11,19 +11,38 @@ import {
   type ResumoVideoaulas,
 } from '@/lib/videoaulasResumo';
 import { haptic } from '@/lib/nativeHaptics';
-import { prefetchCatalogo } from '@/lib/videoaulasStore';
+import { prefetchCatalogo, loadConcursos, type ConcursoRow } from '@/lib/videoaulasStore';
+
+const CarouselSection = ({ title, icon: Icon, children }: { title: string, icon: any, children: React.ReactNode }) => (
+  <div className="mb-8">
+    <div className="mb-3 px-4 flex items-center gap-2">
+      <Icon className="h-4 w-4 text-primary" />
+      <h2 className="text-[13px] font-bold uppercase tracking-widest text-muted-foreground">
+        {title}
+      </h2>
+    </div>
+    <div className="flex gap-4 overflow-x-auto pb-4 pt-1 px-4 scrollbar-hide snap-x">
+      {children}
+    </div>
+  </div>
+);
 
 const VideoaulasCategorias = () => {
   const navigate = useNavigate();
   const [data, setData] = useState<ResumoVideoaulas>(RESUMO_VAZIO);
+  const [concursos, setConcursos] = useState<ConcursoRow[]>([]);
 
   useEffect(() => {
     let alive = true;
     carregarResumoVideoaulas().then((r) => alive && setData(r));
+    loadConcursos().then((c) => alive && setConcursos(c));
     return () => {
       alive = false;
     };
   }, []);
+
+  const policiais = concursos.filter(c => c.grupo === 'policial');
+  const tribunais = concursos.filter(c => c.grupo === 'tribunais');
 
   return (
     <div className="min-h-screen bg-background">
@@ -33,15 +52,10 @@ const VideoaulasCategorias = () => {
         onBack={() => navigate('/videoaulas')}
       />
 
-      <div className="mx-auto w-full max-w-3xl px-4 pb-32 pt-4 sm:px-6">
-        <div className="mb-3 flex items-center gap-1.5">
-          <LayoutGrid className="h-3.5 w-3.5 text-primary" />
-          <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-            Categorias de videoaulas
-          </p>
-        </div>
-
-        <div className="space-y-2.5 lg:grid lg:grid-cols-2 lg:gap-3 lg:space-y-0">
+      <div className="w-full pb-32 pt-4">
+        
+        {/* Jornadas Padrão (CATALOGOS) */}
+        <CarouselSection title="Jornadas Padrão" icon={GraduationCap}>
           {CATALOGOS.map((c) => {
             const info = data.porCatalogo[c.id];
             return (
@@ -52,34 +66,37 @@ const VideoaulasCategorias = () => {
                   haptic.selection();
                   navigate(`/videoaulas/${c.id}`);
                 }}
-                className="group flex w-full items-stretch overflow-hidden rounded-2xl border border-border bg-card text-left shadow-[0_4px_18px_-6px_rgba(0,0,0,0.35)] transition-all hover:border-primary/50 active:scale-[0.98]"
-                style={{ minHeight: 104 }}
+                className="group flex flex-col w-[260px] shrink-0 snap-center overflow-hidden rounded-2xl border border-border bg-card text-left shadow-md transition-all hover:border-primary/50 active:scale-[0.98]"
               >
-                <div className="relative w-[116px] shrink-0 overflow-hidden">
+                <div className="relative w-full h-[140px] overflow-hidden bg-black/10">
                   <ThumbImg
                     src={c.capa}
                     alt={c.titulo}
                     fallback={<Play className="h-8 w-8 text-primary/40" />}
                   />
-                  <div className="absolute inset-0 grid place-items-center bg-black/20">
-                    <div className="rounded-full border border-white/25 bg-black/40 p-2 backdrop-blur-sm transition-transform group-hover:scale-110">
-                      <Play className="h-4 w-4 fill-current text-primary-foreground" />
+                  <div className="absolute inset-0 grid place-items-center bg-black/20 opacity-0 transition-opacity group-hover:opacity-100">
+                    <div className="rounded-full border border-white/25 bg-black/40 p-3 backdrop-blur-sm transition-transform scale-90 group-hover:scale-100">
+                      <Play className="h-6 w-6 fill-current text-primary-foreground" />
                     </div>
                   </div>
                 </div>
 
-                <div className="flex min-w-0 flex-1 flex-col justify-center px-3.5 py-2.5">
-                  <h3 className="truncate text-[15px] font-bold leading-tight">{c.titulo}</h3>
-                  <p className="mt-1 line-clamp-2 text-[11.5px] leading-snug text-muted-foreground">
+                <div className="flex flex-col flex-1 p-4">
+                  <h3 className="truncate text-base font-bold leading-tight">{c.titulo}</h3>
+                  <p className="mt-1 line-clamp-2 text-xs leading-snug text-muted-foreground flex-1">
                     {c.descricao}
                   </p>
-                  <span className="mt-1.5 inline-flex items-center gap-1 text-[11.5px] font-bold text-primary">
-                    <Video className="h-3 w-3" />
-                    {info?.total ? `${info.total.toLocaleString('pt-BR')} aulas` : '—'}
-                    {info?.concluidas ? ` · ${info.pct}% assistido` : ''}
-                  </span>
+                  
+                  <div className="mt-3 flex items-center justify-between">
+                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-primary">
+                      <Video className="h-3.5 w-3.5" />
+                      {info?.total ? `${info.total.toLocaleString('pt-BR')} aulas` : '—'}
+                    </span>
+                    {info?.concluidas ? <span className="text-[10px] text-muted-foreground font-medium">{info.pct}% assistido</span> : null}
+                  </div>
+                  
                   {info?.total ? (
-                    <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                    <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-muted">
                       <div
                         className="h-full rounded-full bg-[hsl(var(--aprender-accent))]"
                         style={{ width: `${info.pct}%` }}
@@ -87,16 +104,92 @@ const VideoaulasCategorias = () => {
                     </div>
                   ) : null}
                 </div>
-
-                <div className="flex items-center pr-3">
-                  <ChevronRight className="h-5 w-5 text-muted-foreground/60 transition-all group-hover:translate-x-0.5 group-hover:text-primary" />
-                </div>
               </button>
             );
           })}
-        </div>
-      </div>
+        </CarouselSection>
 
+        {/* Carreiras Policiais */}
+        {policiais.length > 0 && (
+          <CarouselSection title="Carreiras Policiais" icon={ShieldAlert}>
+            {policiais.map((c) => (
+              <button
+                key={c.id}
+                onClick={() => {
+                  haptic.selection();
+                  navigate(`/videoaulas/concurso/${c.id}`);
+                }}
+                className="group flex flex-col w-[260px] shrink-0 snap-center overflow-hidden rounded-2xl border border-border bg-card text-left shadow-md transition-all hover:border-primary/50 active:scale-[0.98]"
+              >
+                <div className="relative w-full h-[140px] overflow-hidden bg-black/10">
+                  <ThumbImg
+                    src={c.capa}
+                    alt={c.titulo}
+                    fallback={<ShieldAlert className="h-8 w-8 text-primary/40" />}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <div className="absolute bottom-3 left-3 text-white">
+                    <span className="bg-primary/90 text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider">
+                      Edital
+                    </span>
+                  </div>
+                </div>
+                <div className="flex flex-col flex-1 p-4">
+                  <h3 className="truncate text-base font-bold leading-tight">{c.titulo}</h3>
+                  <p className="mt-1 line-clamp-2 text-xs leading-snug text-muted-foreground flex-1">
+                    {c.descricao}
+                  </p>
+                  <div className="mt-3 flex items-center justify-between text-muted-foreground group-hover:text-primary transition-colors">
+                    <span className="text-xs font-semibold">{c.disciplinas?.length || 0} Disciplinas</span>
+                    <ChevronRight className="h-4 w-4" />
+                  </div>
+                </div>
+              </button>
+            ))}
+          </CarouselSection>
+        )}
+
+        {/* Tribunais */}
+        {tribunais.length > 0 && (
+          <CarouselSection title="Tribunais & TJs" icon={Scale}>
+            {tribunais.map((c) => (
+              <button
+                key={c.id}
+                onClick={() => {
+                  haptic.selection();
+                  navigate(`/videoaulas/concurso/${c.id}`);
+                }}
+                className="group flex flex-col w-[260px] shrink-0 snap-center overflow-hidden rounded-2xl border border-border bg-card text-left shadow-md transition-all hover:border-primary/50 active:scale-[0.98]"
+              >
+                <div className="relative w-full h-[140px] overflow-hidden bg-black/10">
+                  <ThumbImg
+                    src={c.capa}
+                    alt={c.titulo}
+                    fallback={<Scale className="h-8 w-8 text-primary/40" />}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <div className="absolute bottom-3 left-3 text-white">
+                    <span className="bg-primary/90 text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider">
+                      Edital
+                    </span>
+                  </div>
+                </div>
+                <div className="flex flex-col flex-1 p-4">
+                  <h3 className="truncate text-base font-bold leading-tight">{c.titulo}</h3>
+                  <p className="mt-1 line-clamp-2 text-xs leading-snug text-muted-foreground flex-1">
+                    {c.descricao}
+                  </p>
+                  <div className="mt-3 flex items-center justify-between text-muted-foreground group-hover:text-primary transition-colors">
+                    <span className="text-xs font-semibold">{c.disciplinas?.length || 0} Disciplinas</span>
+                    <ChevronRight className="h-4 w-4" />
+                  </div>
+                </div>
+              </button>
+            ))}
+          </CarouselSection>
+        )}
+
+      </div>
       <VideoaulasBottomNav />
     </div>
   );
