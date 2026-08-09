@@ -69,7 +69,7 @@ export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoC
   const gateResumo = useGatedFeature('resumo_ver', 'resumo', { scope: resumo?.id ? String(resumo.id) : null });
   const gateDownload = useGatedFeature('resumo_download', 'resumo_download');
   const isDesktop = useIsDesktop();
-  const [fontScale, setFontScale] = useState(1.15);
+  const [fontScale, setFontScale] = useState(1.05);
   const [tab, setTab] = useState<Tab>("resumo");
   const [metodo, setMetodo] = useState<Metodo>("conceitos");
   const [cornell, setCornell] = useState<CornellContent | null>(null);
@@ -333,7 +333,7 @@ export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoC
               </div>
 
 
-              <div className="space-y-4 px-4 pt-5 md:px-5">
+              <div className="space-y-4 px-0 pt-0 md:px-5 md:pt-5">
                 <FichaEditorial
                   etiqueta="Resumo Jurídico"
                   titulo={resumo.subtema || resumo.tema}

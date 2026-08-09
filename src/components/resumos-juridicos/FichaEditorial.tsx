@@ -18,7 +18,7 @@ export default function FichaEditorial({
 }) {
   return (
     <div
-      className="ficha-editorial relative rounded-[22px] overflow-hidden border shadow-[0_22px_60px_-30px_rgba(0,0,0,0.6)]"
+      className="ficha-editorial relative rounded-none md:rounded-[22px] overflow-hidden border-y md:border-x shadow-[0_22px_60px_-30px_rgba(0,0,0,0.6)]"
       style={{ background: PALETA.paper, borderColor: "rgba(122,18,32,0.18)" }}
     >
       {/* Cabeçalho vinho */}
