@@ -159,12 +159,13 @@ const FlashcardsDecks = lazy(() => import("./pages/FlashcardsDecks.tsx"));
 const FlashcardsDesafios = lazy(() => import("./pages/FlashcardsDesafios.tsx"));
 const FlashcardsProgresso = lazy(() => import("./pages/FlashcardsProgresso.tsx"));
 const Videoaulas = lazy(routePrefetch.videoaulas);
-const VideoaulasCatalogo = lazy(routePrefetch.videoaulasCatalogo);
-const VideoaulasArea = lazy(routePrefetch.videoaulasArea);
+const VideoaulasCategorias = lazy(routePrefetch.videoaulasCategorias);
+const VideoaulasPraticar = lazy(() => import('@/pages/VideoaulasPraticar'));
+const VideoaulasAnotacoes = lazy(() => import('@/pages/VideoaulasAnotacoes'));
+const VideoaulasConquistas = lazy(routePrefetch.videoaulasConquistas);
 const VideoaulaView = lazy(routePrefetch.videoaulaView);
 const VideoaulasLista = lazy(routePrefetch.videoaulasLista);
 const VideoaulasTrilhas = lazy(routePrefetch.videoaulasTrilhas);
-const VideoaulasCategorias = lazy(routePrefetch.videoaulasCategorias);
 const VideoaulasConcurso = lazy(() => import("./pages/VideoaulasConcurso.tsx"));
 const VideoaulasConquistas = lazy(routePrefetch.videoaulasConquistas);
 const AprenderDesempenho = lazy(() => import("./pages/AprenderDesempenho.tsx"));
@@ -763,10 +764,13 @@ function AnimatedRoutes() {
           <Route path="/flashcards/progresso" element={<ProtectedRoute><PageTransition><FlashcardsProgresso /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/desafios" element={<ProtectedRoute><PageTransition><FlashcardsDesafios /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/decks" element={<ProtectedRoute><PageTransition><FlashcardsDecks /></PageTransition></ProtectedRoute>} />
-          <Route path="/videoaulas" element={<ProtectedRoute><PageTransition><Videoaulas /></PageTransition></ProtectedRoute>} />
+          <Route path="/videoaulas" element={<Navigate to="/videoaulas/categorias" replace />} />
+          <Route path="/videoaulas/painel" element={<ProtectedRoute><PageTransition><Videoaulas /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/favoritos" element={<ProtectedRoute><PageTransition><VideoaulasLista modo="favoritos" /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/recentes" element={<ProtectedRoute><PageTransition><VideoaulasLista modo="recentes" /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/trilhas" element={<ProtectedRoute><PageTransition><VideoaulasTrilhas /></PageTransition></ProtectedRoute>} />
+          <Route path="/videoaulas/praticar" element={<ProtectedRoute><PageTransition><VideoaulasPraticar /></PageTransition></ProtectedRoute>} />
+          <Route path="/videoaulas/anotacoes" element={<ProtectedRoute><PageTransition><VideoaulasAnotacoes /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/categorias" element={<ProtectedRoute><PageTransition><VideoaulasCategorias /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/concurso/:id" element={<ProtectedRoute><PageTransition><VideoaulasConcurso /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/conquistas" element={<ProtectedRoute><PageTransition><VideoaulasConquistas /></PageTransition></ProtectedRoute>} />
