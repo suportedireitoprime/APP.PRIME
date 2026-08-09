@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { CheckCircle2, History, Mic, PlayCircle, Search, Star, Video, BookOpenText, Route as RouteIcon, Calendar, Lightbulb, Settings2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -304,7 +304,10 @@ const VideoaulasArea = () => {
     () => new Set((getCachedFavoritos() ?? []).map((f) => f.video_id)),
   );
   
-  const [aba, setAba] = useState<'videos' | 'trilhas' | 'favoritos' | 'recentes' | 'anotacoes'>('videos');
+  const location = useLocation();
+  const [aba, setAba] = useState<'videos' | 'trilhas' | 'favoritos' | 'recentes' | 'anotacoes'>(
+    (location.state as any)?.tab || 'videos'
+  );
   const [busca, setBusca] = useState('');
   const { listening, partial, toggle } = useVoiceInput((t) => setBusca(t));
   const [loading, setLoading] = useState(
@@ -504,6 +507,8 @@ const VideoaulasArea = () => {
                 onFinish={(dias) => {
                   setAreaTrilhaAtiva(areaSlug, {
                     areaSlug,
+                    areaName: nomeArea,
+                    catalogoId: catalogo.id,
                     diasMeta: dias,
                     diasConcluidos: [],
                     dataInicio: new Date().toISOString()

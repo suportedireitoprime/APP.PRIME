@@ -3,6 +3,8 @@ import { persist } from 'zustand/middleware';
 
 export interface AreaTrilhaAtiva {
   areaSlug: string;
+  areaName: string;
+  catalogoId: string;
   diasMeta: number;
   diasConcluidos: number[]; // Array de índices de dias que já foram concluídos
   dataInicio: string;

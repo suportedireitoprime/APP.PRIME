@@ -1,22 +1,28 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Calendar, PlayCircle, Route as RouteIcon, MapPin, CheckCircle2, ChevronRight, Settings2, Lightbulb, Target } from 'lucide-react';
+import { ChevronLeft, Calendar, PlayCircle, Route as RouteIcon, MapPin, CheckCircle2, Settings2, Lightbulb, Target, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { useTrilhaStore } from '@/lib/trilhasStore';
+import { useAreaTrilhaStore } from '@/lib/areaTrilhasStore';
 import { loadConcursos, type ConcursoRow } from '@/lib/videoaulasStore';
 import { haptic } from '@/lib/nativeHaptics';
 import { slugify } from '@/lib/videoaulasCatalogos';
 import { Drawer, DrawerContent, DrawerPortal, DrawerOverlay } from '@/components/ui/drawer';
 
 // --- SETUP FASE 1: ESCOLHER EDITAL ---
-const SetupEdital = ({ concursos, onSelect }: { concursos: ConcursoRow[], onSelect: (id: string) => void }) => (
+const SetupEdital = ({ concursos, onSelect, onCancel }: { concursos: ConcursoRow[], onSelect: (id: string) => void, onCancel?: () => void }) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     exit={{ opacity: 0, y: -20 }}
     className="w-full flex flex-col pt-4 px-4 pb-32"
   >
+    {onCancel && (
+      <button onClick={onCancel} className="self-start p-2 mb-4 text-muted-foreground hover:text-foreground">
+        <ChevronLeft className="w-6 h-6" />
+      </button>
+    )}
     <div className="text-center mb-8">
       <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 relative">
         <Target className="w-10 h-10 text-primary" />
@@ -56,7 +62,6 @@ const SetupEdital = ({ concursos, onSelect }: { concursos: ConcursoRow[], onSele
 const SetupRitmo = ({ editalId, concursos, onBack, onFinish }: { editalId: string, concursos: ConcursoRow[], onBack: () => void, onFinish: (dias: number) => void }) => {
   const edital = concursos.find(c => c.id === editalId);
   const [dias, setDias] = useState(30);
-
   const opcoesDias = [15, 30, 45, 90];
 
   return (
@@ -116,22 +121,19 @@ const SetupRitmo = ({ editalId, concursos, onBack, onFinish }: { editalId: strin
   );
 };
 
-// --- MAPA DA TRILHA (FLUIDO E ELEGANTE) ---
-const TrilhaMap = ({ concursos }: { concursos: ConcursoRow[] }) => {
+// --- MAPA DA TRILHA (GLOBAL/EDITAL) ---
+const TrilhaMap = ({ concursos, onBack }: { concursos: ConcursoRow[], onBack: () => void }) => {
   const navigate = useNavigate();
   const { trilhaAtiva, limparTrilha, marcarDiaConcluido, desmarcarDiaConcluido } = useTrilhaStore();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const edital = useMemo(() => concursos.find(c => c.id === trilhaAtiva?.editalId), [concursos, trilhaAtiva]);
 
-  // Geração de Nodos com base na Meta de Dias
   const nodos = useMemo(() => {
     if (!edital || !trilhaAtiva) return [];
     const diasList = [];
     let dIndex = 0;
     const disc = edital.disciplinas || ['Disciplinas Gerais'];
-    
-    // Distribui 2 disciplinas por dia. Pode ser adaptado se necessário.
     const aulasPorDia = 2; 
 
     for (let i = 0; i < trilhaAtiva.diasMeta; i++) {
@@ -152,11 +154,15 @@ const TrilhaMap = ({ concursos }: { concursos: ConcursoRow[] }) => {
 
   return (
     <div className="w-full pb-32">
-      {/* Header Sticky Gamificado */}
       <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-white/5 px-4 py-4 flex items-center justify-between shadow-sm">
-        <div>
-          <p className="text-[10px] uppercase font-black text-primary tracking-widest mb-0.5">Missão: {trilhaAtiva.diasMeta} Dias</p>
-          <p className="text-sm font-bold text-foreground truncate max-w-[200px]">{edital.titulo}</p>
+        <div className="flex items-center gap-3">
+          <button onClick={onBack} className="p-2 -ml-2 rounded-full bg-white/5 text-muted-foreground hover:text-foreground">
+             <ChevronLeft className="w-5 h-5" />
+          </button>
+          <div>
+            <p className="text-[10px] uppercase font-black text-primary tracking-widest mb-0.5">Edital Completo</p>
+            <p className="text-sm font-bold text-foreground truncate max-w-[150px]">{edital.titulo}</p>
+          </div>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex flex-col items-end">
@@ -177,11 +183,8 @@ const TrilhaMap = ({ concursos }: { concursos: ConcursoRow[] }) => {
         </div>
       </div>
 
-      {/* O MAPA FLUIDO */}
       <div className="px-4 py-10 relative overflow-hidden">
-        {/* Linha vertical central brilhante (O Caminho) */}
         <div className="absolute left-1/2 top-10 bottom-10 w-1.5 bg-white/5 -translate-x-1/2 z-0 rounded-full overflow-hidden">
-          {/* Preenchimento do progresso na linha */}
           <div 
             className="w-full bg-primary/80 transition-all duration-700 ease-in-out" 
             style={{ height: `${(totalConcluido / trilhaAtiva.diasMeta) * 100}%`, boxShadow: '0 0 10px rgba(var(--primary), 0.5)' }} 
@@ -196,15 +199,14 @@ const TrilhaMap = ({ concursos }: { concursos: ConcursoRow[] }) => {
             return (
               <motion.div
                 key={nodo.dia}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
+                initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ type: 'spring', stiffness: 110, damping: 15, delay: i * 0.05 }}
                 className={`relative z-10 flex w-full items-center ${isLeft ? 'justify-start' : 'justify-end'}`}
               >
-                {/* Conector Pontilhado Opcional (Mais elegante que linha dura) */}
                 <div className={`absolute top-1/2 w-[calc(50%-2.5rem)] h-[2px] border-b-2 border-dotted -translate-y-1/2 z-0 ${concluido ? 'border-primary/40' : 'border-white/10'} ${isLeft ? 'left-1/2' : 'right-1/2'}`} />
 
-                {/* Bolinha Central Brilhante */}
                 <button
                   onClick={() => {
                     haptic.selection();
@@ -227,7 +229,6 @@ const TrilhaMap = ({ concursos }: { concursos: ConcursoRow[] }) => {
                   )}
                 </button>
 
-                {/* Cartão de Conteúdo Glassmorphism */}
                 <div 
                   className={`w-[45%] rounded-3xl p-4 relative z-30 transition-all duration-300 backdrop-blur-md border ${
                     concluido 
@@ -239,7 +240,6 @@ const TrilhaMap = ({ concursos }: { concursos: ConcursoRow[] }) => {
                     <p className={`text-[10px] font-black uppercase tracking-widest ${concluido ? 'text-primary/70' : 'text-muted-foreground'}`}>
                       Dia {nodo.dia}
                     </p>
-                    {/* Dica para encorajar (apenas nos primeiros ou últimos nós para não poluir) */}
                     {(nodo.dia === 1 || nodo.dia === trilhaAtiva.diasMeta) && !concluido && (
                       <Lightbulb className="w-3.5 h-3.5 text-yellow-500/70 animate-pulse" />
                     )}
@@ -274,7 +274,6 @@ const TrilhaMap = ({ concursos }: { concursos: ConcursoRow[] }) => {
         </div>
       </div>
 
-      {/* Drawer de Configurações */}
       <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
         <DrawerPortal>
           <DrawerOverlay className="fixed inset-0 bg-black/60 z-50 backdrop-blur-sm" onClick={() => setDrawerOpen(false)} />
@@ -291,10 +290,11 @@ const TrilhaMap = ({ concursos }: { concursos: ConcursoRow[] }) => {
                   haptic.medium();
                   limparTrilha();
                   setDrawerOpen(false);
+                  onBack();
                 }}
                 className="w-full bg-destructive/10 text-destructive font-bold py-4 rounded-2xl hover:bg-destructive/20 transition-colors active:scale-[0.98]"
               >
-                Abortar e Refazer Trilha
+                Abortar Missão (Edital)
               </button>
             </div>
           </DrawerContent>
@@ -304,16 +304,140 @@ const TrilhaMap = ({ concursos }: { concursos: ConcursoRow[] }) => {
   );
 };
 
+
+// --- DASHBOARD DE TRILHAS ---
+const TrilhasDashboard = ({ concursos, onCreateNova, onOpenEdital }: { concursos: ConcursoRow[], onCreateNova: () => void, onOpenEdital: () => void }) => {
+  const navigate = useNavigate();
+  const { trilhaAtiva } = useTrilhaStore();
+  const { trilhasAtivas } = useAreaTrilhaStore();
+
+  const areasArray = Object.values(trilhasAtivas);
+  
+  return (
+    <div className="w-full flex flex-col pt-6 px-4 pb-32">
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h2 className="text-2xl font-black text-foreground">Suas Trilhas</h2>
+          <p className="text-sm text-muted-foreground">Continue de onde parou</p>
+        </div>
+        <button 
+          onClick={() => {
+            haptic.selection();
+            onCreateNova();
+          }}
+          className="bg-primary/10 text-primary hover:bg-primary/20 transition-colors p-3 rounded-full"
+        >
+          <Plus className="w-6 h-6" />
+        </button>
+      </div>
+
+      <div className="space-y-4">
+        {/* Cartão da Trilha de Edital (Global) */}
+        {trilhaAtiva && (
+          <button
+            onClick={() => {
+              haptic.light();
+              onOpenEdital();
+            }}
+            className="w-full relative overflow-hidden flex flex-col text-left rounded-3xl border border-primary/20 bg-primary/5 shadow-lg shadow-primary/5 hover:border-primary/50 transition-all active:scale-[0.98] p-5"
+          >
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                  <Target className="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold text-primary uppercase tracking-widest">Edital Completo</p>
+                  <p className="text-sm font-bold text-foreground">
+                    {concursos.find(c => c.id === trilhaAtiva.editalId)?.titulo || 'Edital'}
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-auto">
+              <div className="flex items-center justify-between mb-1.5">
+                <p className="text-[10px] font-bold text-muted-foreground">
+                  {trilhaAtiva.diasConcluidos.length} de {trilhaAtiva.diasMeta} dias
+                </p>
+                <p className="text-[10px] font-bold text-primary">
+                  {Math.round((trilhaAtiva.diasConcluidos.length / trilhaAtiva.diasMeta) * 100)}%
+                </p>
+              </div>
+              <div className="h-2 w-full rounded-full bg-black/40 overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-primary"
+                  style={{ width: `${Math.round((trilhaAtiva.diasConcluidos.length / trilhaAtiva.diasMeta) * 100)}%` }}
+                />
+              </div>
+            </div>
+          </button>
+        )}
+
+        {/* Cartões das Trilhas de Disciplina (Área) */}
+        {areasArray.map((areaTrilha) => (
+          <button
+            key={areaTrilha.areaSlug}
+            onClick={() => {
+              haptic.light();
+              navigate(`/videoaulas/${areaTrilha.catalogoId}/${areaTrilha.areaSlug}`, { state: { tab: 'trilhas' } });
+            }}
+            className="w-full relative overflow-hidden flex flex-col text-left rounded-3xl border border-border/40 bg-card/60 backdrop-blur-md shadow-lg shadow-black/10 hover:border-white/20 transition-all active:scale-[0.98] p-5"
+          >
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
+                  <RouteIcon className="w-5 h-5 text-muted-foreground" />
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Disciplina</p>
+                  <p className="text-sm font-bold text-foreground">
+                    {areaTrilha.areaName}
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-auto">
+              <div className="flex items-center justify-between mb-1.5">
+                <p className="text-[10px] font-bold text-muted-foreground">
+                  {areaTrilha.diasConcluidos.length} de {areaTrilha.diasMeta} dias
+                </p>
+                <p className="text-[10px] font-bold text-primary">
+                  {Math.round((areaTrilha.diasConcluidos.length / areaTrilha.diasMeta) * 100)}%
+                </p>
+              </div>
+              <div className="h-2 w-full rounded-full bg-black/40 overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-primary/70"
+                  style={{ width: `${Math.round((areaTrilha.diasConcluidos.length / areaTrilha.diasMeta) * 100)}%` }}
+                />
+              </div>
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+
 const VideoaulasTrilhas = () => {
   const navigate = useNavigate();
   const [concursos, setConcursos] = useState<ConcursoRow[]>([]);
   const [loading, setLoading] = useState(true);
   
-  // Estado local para o fluxo de setup
-  const [setupStep, setSetupStep] = useState<'edital' | 'ritmo'>('edital');
-  const [selectedEdital, setSelectedEdital] = useState<string | null>(null);
-
   const { trilhaAtiva, setTrilhaAtiva } = useTrilhaStore();
+  const { trilhasAtivas } = useAreaTrilhaStore();
+
+  const hasAnyTrail = !!trilhaAtiva || Object.keys(trilhasAtivas).length > 0;
+
+  // Estados de navegação local
+  const [view, setView] = useState<'dashboard' | 'setup_edital' | 'setup_ritmo' | 'mapa'>(
+    hasAnyTrail ? 'dashboard' : 'setup_edital'
+  );
+  
+  const [selectedEdital, setSelectedEdital] = useState<string | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -327,13 +451,17 @@ const VideoaulasTrilhas = () => {
 
   return (
     <div className="min-h-screen bg-[#0A0A0A]">
-      {!trilhaAtiva && (
-        <PageHeader
-          title="Montar Trilha"
-          subtitle="Cronograma Inteligente"
-          onBack={() => navigate('/videoaulas/categorias')}
-        />
-      )}
+      <PageHeader
+        title="Trilhas"
+        subtitle="Cronogramas Inteligentes"
+        onBack={() => {
+          if (view === 'setup_edital' && hasAnyTrail) {
+            setView('dashboard');
+          } else {
+            navigate('/videoaulas/categorias');
+          }
+        }}
+      />
 
       {loading ? (
         <div className="flex items-center justify-center min-h-[50vh]">
@@ -341,31 +469,52 @@ const VideoaulasTrilhas = () => {
         </div>
       ) : (
         <AnimatePresence mode="wait">
-          {!trilhaAtiva ? (
-            setupStep === 'edital' ? (
-              <SetupEdital key="edital" concursos={concursos} onSelect={(id) => {
-                setSelectedEdital(id);
-                setSetupStep('ritmo');
-              }} />
-            ) : (
-              <SetupRitmo 
-                key="ritmo" 
-                editalId={selectedEdital!} 
-                concursos={concursos} 
-                onBack={() => setSetupStep('edital')}
-                onFinish={(dias) => {
-                  setTrilhaAtiva({
-                    editalId: selectedEdital!,
-                    diasMeta: dias,
-                    diasConcluidos: [],
-                    dataInicio: new Date().toISOString()
-                  });
-                }} 
+          {view === 'dashboard' && (
+            <motion.div key="dashboard" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <TrilhasDashboard 
+                concursos={concursos}
+                onCreateNova={() => setView('setup_edital')}
+                onOpenEdital={() => setView('mapa')}
               />
-            )
-          ) : (
+            </motion.div>
+          )}
+
+          {view === 'setup_edital' && (
+            <SetupEdital 
+              key="edital" 
+              concursos={concursos} 
+              onSelect={(id) => {
+                setSelectedEdital(id);
+                setView('setup_ritmo');
+              }}
+              onCancel={hasAnyTrail ? () => setView('dashboard') : undefined}
+            />
+          )}
+
+          {view === 'setup_ritmo' && (
+            <SetupRitmo 
+              key="ritmo" 
+              editalId={selectedEdital!} 
+              concursos={concursos} 
+              onBack={() => setView('setup_edital')}
+              onFinish={(dias) => {
+                setTrilhaAtiva({
+                  editalId: selectedEdital!,
+                  diasMeta: dias,
+                  diasConcluidos: [],
+                  dataInicio: new Date().toISOString()
+                });
+                setView('mapa');
+              }} 
+            />
+          )}
+
+          {view === 'mapa' && trilhaAtiva && (
             <motion.div key="mapa" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <TrilhaMap concursos={concursos} />
+              <TrilhaMap 
+                concursos={concursos} 
+                onBack={() => setView('dashboard')} 
+              />
             </motion.div>
           )}
         </AnimatePresence>
