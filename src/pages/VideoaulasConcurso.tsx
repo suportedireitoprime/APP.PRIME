@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { ChevronRight, Folder } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { loadConcursos, type ConcursoRow } from '@/lib/videoaulasStore';
 import { slugify } from '@/lib/videoaulasCatalogos';
 import { haptic } from '@/lib/nativeHaptics';
@@ -61,7 +62,7 @@ const VideoaulasConcurso = () => {
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
             <div className="absolute bottom-4 left-4 right-4 text-white">
               <span className="bg-primary px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider mb-2 inline-block">
-                {concurso.grupo === 'policial' ? 'Carreiras Policiais' : 'Tribunais'}
+                {concurso.grupo === 'policial' ? 'Carreiras Policiais' : concurso.grupo === 'tribunais' ? 'Tribunais' : 'Magistratura'}
               </span>
               <p className="text-xs text-white/90 line-clamp-2">{concurso.descricao}</p>
             </div>
@@ -76,9 +77,21 @@ const VideoaulasConcurso = () => {
         </div>
 
         {/* Disciplinas List */}
-        <div className="space-y-2 pb-8">
+        <motion.div 
+          className="space-y-2 pb-8"
+          variants={{
+            hidden: { opacity: 0 },
+            show: { opacity: 1, transition: { staggerChildren: 0.05 } }
+          }}
+          initial="hidden"
+          animate="show"
+        >
           {concurso.disciplinas?.map((disciplina, i) => (
-            <button
+            <motion.button
+              variants={{
+                hidden: { opacity: 0, x: -15 },
+                show: { opacity: 1, x: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } }
+              }}
               key={`${disciplina}-${i}`}
               onClick={() => {
                 haptic.selection();
@@ -99,15 +112,15 @@ const VideoaulasConcurso = () => {
                   </p>
                 </div>
               </div>
-              <ChevronRight className="h-5 w-5 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-primary" />
-            </button>
+              <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+            </motion.button>
           ))}
-          {(!concurso.disciplinas || concurso.disciplinas.length === 0) && (
-            <p className="text-sm text-muted-foreground text-center py-8">
-              Nenhuma disciplina mapeada ainda.
-            </p>
-          )}
-        </div>
+        </motion.div>
+        {(!concurso.disciplinas || concurso.disciplinas.length === 0) && (
+          <p className="text-sm text-muted-foreground text-center py-8">
+            Nenhuma disciplina mapeada ainda.
+          </p>
+        )}
       </div>
     </div>
   );

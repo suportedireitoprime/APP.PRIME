@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight, LayoutGrid, Play, Video, ShieldAlert, Scale, GraduationCap, BookOpen, Briefcase } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import ThumbImg from '@/components/videoaulas/ThumbImg';
 import VideoaulasBottomNav from '@/components/videoaulas/VideoaulasBottomNav';
@@ -21,9 +22,17 @@ const GridSection = ({ title, icon: Icon, children }: { title: string, icon: any
         {title}
       </h2>
     </div>
-    <div className="grid grid-cols-2 gap-3 px-4">
+    <motion.div 
+      variants={{
+        hidden: { opacity: 0 },
+        show: { opacity: 1, transition: { staggerChildren: 0.08 } }
+      }}
+      initial="hidden"
+      animate="show"
+      className="grid grid-cols-2 gap-3 px-4"
+    >
       {children}
-    </div>
+    </motion.div>
   </div>
 );
 
@@ -118,7 +127,11 @@ const VideoaulasCategorias = () => {
           {oabList.map((c) => {
             const info = data.porCatalogo[c.id];
             return (
-              <button
+              <motion.button
+                variants={{
+                  hidden: { opacity: 0, scale: 0.95, y: 10 },
+                  show: { opacity: 1, scale: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } }
+                }}
                 key={c.id}
                 onPointerDown={() => prefetchCatalogo(c.id)}
                 onClick={() => {
@@ -163,7 +176,7 @@ const VideoaulasCategorias = () => {
                     </div>
                   ) : null}
                 </div>
-              </button>
+              </motion.button>
             );
           })}
         </GridSection>
@@ -172,7 +185,11 @@ const VideoaulasCategorias = () => {
         {policiais.length > 0 && (
           <GridSection title="Carreiras Policiais" icon={ShieldAlert}>
             {policiais.map((c) => (
-              <button
+              <motion.button
+                variants={{
+                  hidden: { opacity: 0, scale: 0.95, y: 10 },
+                  show: { opacity: 1, scale: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } }
+                }}
                 key={c.id}
                 onClick={() => {
                   haptic.selection();
@@ -203,7 +220,7 @@ const VideoaulasCategorias = () => {
                     <ChevronRight className="h-4 w-4" />
                   </div>
                 </div>
-              </button>
+              </motion.button>
             ))}
           </GridSection>
         )}
@@ -212,7 +229,11 @@ const VideoaulasCategorias = () => {
         {tribunais.length > 0 && (
           <GridSection title="Tribunais & TJs" icon={Scale}>
             {tribunais.map((c) => (
-              <button
+              <motion.button
+                variants={{
+                  hidden: { opacity: 0, scale: 0.95, y: 10 },
+                  show: { opacity: 1, scale: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } }
+                }}
                 key={c.id}
                 onClick={() => {
                   haptic.selection();
@@ -243,7 +264,7 @@ const VideoaulasCategorias = () => {
                     <ChevronRight className="h-4 w-4" />
                   </div>
                 </div>
-              </button>
+              </motion.button>
             ))}
           </GridSection>
         )}
@@ -252,7 +273,11 @@ const VideoaulasCategorias = () => {
         {magistratura.length > 0 && (
           <GridSection title="Magistratura" icon={Briefcase}>
             {magistratura.map((c) => (
-              <button
+              <motion.button
+                variants={{
+                  hidden: { opacity: 0, scale: 0.95, y: 10 },
+                  show: { opacity: 1, scale: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } }
+                }}
                 key={c.id}
                 onClick={() => {
                   haptic.selection();
@@ -283,7 +308,7 @@ const VideoaulasCategorias = () => {
                     <ChevronRight className="h-4 w-4" />
                   </div>
                 </div>
-              </button>
+              </motion.button>
             ))}
           </GridSection>
         )}
