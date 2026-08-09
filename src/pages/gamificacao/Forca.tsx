@@ -8,6 +8,7 @@ import { useGameSounds } from '@/hooks/useGameSounds';
 import { useForcaProgresso } from '@/hooks/useForcaProgresso';
 import { ForcaRanking } from '@/components/gamificacao/ForcaRanking';
 import { supabase } from '@/integrations/supabase/client';
+import { useForcaEstrelas } from '@/hooks/useForcaEstrelas';
 
 const MAX_MISTAKES = 6;
 const MAX_HINTS = 3;
@@ -17,6 +18,12 @@ interface ForcaWord {
   hint: string;
 }
 
+interface FaseTrilha {
+  id: string;
+  title: string;
+  articles: any[];
+}
+
 const ForcaPage = () => {
   const navigate = useNavigate();
   const { playClick, playCorrect, playWrong, playWin, playLose, playHint, playTriumph } = useGameSounds();
@@ -24,7 +31,9 @@ const ForcaPage = () => {
   
   const [laws, setLaws] = useState<any[]>([]);
   const [selectedLaw, setSelectedLaw] = useState<any | null>(null);
+  const { estrelas, saveStars } = useForcaEstrelas(selectedLaw?.id || null);
   
+  const [phasesTrilha, setPhasesTrilha] = useState<FaseTrilha[]>([]);
   const [articles, setArticles] = useState<any[]>([]);
   const [selectedArticle, setSelectedArticle] = useState<any | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -37,11 +46,13 @@ const ForcaPage = () => {
   const currentComboRef = useRef(0);
   const highestComboRef = useRef(0);
   const phaseXpRef = useRef(0);
+  const totalMistakesRef = useRef(0);
   const [currentCombo, setCurrentCombo] = useState(0); 
   
   const [guessedLetters, setGuessedLetters] = useState<Set<string>>(new Set());
   const [status, setStatus] = useState<'playing' | 'won' | 'lost' | 'article_completed'>('playing');
   const [isRankingOpen, setIsRankingOpen] = useState(false);
+  const [completedStars, setCompletedStars] = useState(0);
 
   // Fetch Laws on Mount
   useEffect(() => {
@@ -59,7 +70,26 @@ const ForcaPage = () => {
 
   const fetchArticles = async (lawId: string) => {
     const { data } = await supabase.from('vade_mecum_artigos').select('id, numero, epigrafe').eq('lei_id', lawId).order('ordem');
-    setArticles(data || []);
+    const arts = data || [];
+    setArticles(arts);
+
+    // Group into phases
+    const groupedPhases: FaseTrilha[] = [];
+    let currentPhase: FaseTrilha = { id: 'default', title: 'Introdução', articles: [] };
+
+    for (const art of arts) {
+      const num = art.numero.toUpperCase();
+      const isHeader = num.startsWith('TÍTULO') || num.startsWith('LIVRO') || num.startsWith('PARTE') || num.startsWith('CAPÍTULO') || num.startsWith('SEÇÃO') || num.startsWith('SUBSEÇÃO');
+      
+      if (isHeader) {
+        if (currentPhase.articles.length > 0) groupedPhases.push(currentPhase);
+        currentPhase = { id: art.id, title: `${art.numero}${art.epigrafe ? ` - ${art.epigrafe}` : ''}`, articles: [] };
+      } else {
+        currentPhase.articles.push(art);
+      }
+    }
+    if (currentPhase.articles.length > 0) groupedPhases.push(currentPhase);
+    setPhasesTrilha(groupedPhases);
   };
 
   const handleLawSelect = (law: any) => {
@@ -74,7 +104,20 @@ const ForcaPage = () => {
     if (phaseIndex >= phases.length) {
       setStatus('article_completed');
       playTriumph();
+      
+      // Calculate and save stars
+      let earnedStars = 1;
+      if (totalMistakesRef.current === 0) earnedStars = 3;
+      else if (totalMistakesRef.current <= 3) earnedStars = 2;
+      
+      setCompletedStars(earnedStars);
+      if (selectedArticle) {
+        saveStars(selectedArticle.id, earnedStars);
+      }
       return;
+    }
+    if (phaseIndex === 0) {
+       totalMistakesRef.current = 0;
     }
     setCurrentWord(phases[phaseIndex]);
     setCurrentPhaseIndex(phaseIndex);
@@ -150,6 +193,7 @@ const ForcaPage = () => {
     } else {
       currentComboRef.current = 0;
       setCurrentCombo(0);
+      totalMistakesRef.current += 1;
     }
     
     setGuessedLetters(prev => {
@@ -422,28 +466,57 @@ const ForcaPage = () => {
               className="space-y-4"
             >
               <h2 className="text-xl font-display font-black text-foreground uppercase tracking-wide">{selectedLaw.nome}</h2>
-              <p className="text-sm text-muted-foreground mb-2">Selecione o artigo para jogar. Palavras geradas por Inteligência Artificial sob demanda.</p>
-              <div className="grid gap-3 h-[60vh] overflow-y-auto pr-2">
-                {articles.length === 0 && (
+              <p className="text-sm text-muted-foreground mb-4">Selecione o nível para jogar. Complete sem errar para ganhar 3 estrelas!</p>
+              
+              <div className="h-[65vh] overflow-y-auto pr-2 pb-[env(safe-area-inset-bottom)] scroll-smooth">
+                {phasesTrilha.length === 0 && (
                    <div className="py-10 flex flex-col items-center justify-center gap-3">
                      <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-                     <span className="text-sm text-muted-foreground">Carregando artigos...</span>
+                     <span className="text-sm text-muted-foreground">Carregando trilha...</span>
                    </div>
                 )}
-                {articles.map(article => (
-                  <button
-                    key={article.id}
-                    onClick={() => handleArticleSelect(article)}
-                    className="flex items-center justify-between p-4 bg-card rounded-2xl border border-border/40 hover:border-primary/50 transition-all text-left group"
-                  >
-                    <div>
-                      <h3 className="font-display font-bold text-[15px]">
-                        {article.numero} {article.epigrafe ? `- ${article.epigrafe}` : ''}
-                      </h3>
+                <div className="space-y-12 pb-32">
+                  {phasesTrilha.map(phase => (
+                    <div key={phase.id} className="relative">
+                      <div className="sticky top-0 z-10 bg-[#0D0D0D]/90 backdrop-blur-md py-4 border-b border-primary/20 mb-8 rounded-b-3xl shadow-sm mx-2">
+                        <h3 className="font-display font-black text-lg text-primary text-center px-4 leading-tight">{phase.title}</h3>
+                      </div>
+                      <div className="flex flex-col items-center gap-8 py-2">
+                        {phase.articles.map((article, i) => {
+                           const earnedStars = estrelas[article.id] || 0;
+                           // Zig-zag pattern
+                           const offset = i % 4 === 0 ? '-translate-x-12' : i % 4 === 1 ? 'translate-x-0' : i % 4 === 2 ? 'translate-x-12' : 'translate-x-0';
+                           const isCompleted = earnedStars > 0;
+                           
+                           return (
+                             <div key={article.id} className={`relative flex justify-center ${offset} transition-all duration-300`}>
+                               <button
+                                 onClick={() => handleArticleSelect(article)}
+                                 className={`relative flex flex-col items-center justify-center w-[72px] h-[72px] rounded-full border-4 shadow-xl hover:scale-105 active:scale-95 transition-transform z-10
+                                   ${isCompleted ? 'bg-primary border-primary/20 shadow-primary/20' : 'bg-card border-border hover:border-primary/50'}`}
+                               >
+                                  <span className={`font-display font-black text-xl leading-none ${isCompleted ? 'text-primary-foreground' : 'text-foreground'}`}>
+                                    {article.numero.replace('º', '')}
+                                  </span>
+                                  {isCompleted && <span className="text-[10px] font-bold text-primary-foreground/70 uppercase mt-0.5">Artigo</span>}
+                               </button>
+
+                               {/* Star Rating Badge */}
+                               <div className="absolute -top-3.5 flex items-center justify-center gap-0.5 bg-background/95 backdrop-blur-sm px-2.5 py-1 rounded-full border border-border shadow-md z-20">
+                                 {[1,2,3].map(s => (
+                                   <Star 
+                                     key={s} 
+                                     className={`w-3.5 h-3.5 ${s <= earnedStars ? 'fill-yellow-400 text-yellow-400 drop-shadow-[0_0_5px_rgba(250,204,21,0.5)]' : 'text-muted-foreground/30 fill-transparent'}`} 
+                                   />
+                                 ))}
+                               </div>
+                             </div>
+                           )
+                        })}
+                      </div>
                     </div>
-                    <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary" />
-                  </button>
-                ))}
+                  ))}
+                </div>
               </div>
             </motion.div>
           ) : isGenerating ? (
@@ -518,9 +591,23 @@ const ForcaPage = () => {
                   animate={{ opacity: 1, scale: 1 }}
                   className="flex flex-col items-center justify-center p-8 bg-card border border-primary/30 rounded-3xl text-center shadow-lg"
                 >
-                  <Trophy className="w-16 h-16 text-yellow-500 mb-4" />
+                  <div className="flex gap-2 mb-6">
+                    {[1, 2, 3].map(s => (
+                      <motion.div
+                        key={s}
+                        initial={{ opacity: 0, y: 20, scale: 0.5 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        transition={{ delay: s * 0.15, type: "spring" }}
+                      >
+                        <Star className={`w-16 h-16 ${s <= completedStars ? 'fill-yellow-400 text-yellow-400 drop-shadow-[0_0_15px_rgba(250,204,21,0.6)]' : 'text-muted-foreground/30 fill-transparent'}`} />
+                      </motion.div>
+                    ))}
+                  </div>
+                  
                   <h2 className="text-3xl font-black text-foreground mb-2">ARTIGO CONCLUÍDO!</h2>
-                  <p className="text-muted-foreground mb-8">Você dominou todas as palavras chave deste artigo.</p>
+                  <p className="text-muted-foreground mb-8">
+                    {completedStars === 3 ? "Perfeito! Você dominou o artigo." : completedStars === 2 ? "Muito bem! Quase perfeito." : "Bom trabalho! Continue praticando."}
+                  </p>
                   
                   <button
                     onClick={handleBack}
