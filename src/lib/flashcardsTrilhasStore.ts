@@ -1,30 +1,26 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-export interface TrilhaLeituraAtiva {
-  id: string; // Unique ID for the trail
-  livroId: string;
-  livroTitulo: string;
-  livroCapa?: string;
-  formato: 'pdf' | 'nativo';
-  diasMeta: number;
+export interface FlashcardTrilhaAtiva {
+  id: string; // Unique ID (e.g., timestamp)
+  area: string; // Ex: "Direito Penal" ou "Todas as Áreas"
+  tema: string; // Ex: "Crimes contra o Patrimônio" ou "Todos os Temas"
+  diasMeta: number; // Ex: 7 dias
+  cardsPorDia: number; // Ex: 20 cards
   diasConcluidos: number[]; // Array of completed day indices (1-indexed)
-  dataInicio: string;
-  paginasTotais?: number;
-  tabela?: string;
-  downloadUrl?: string;
+  dataInicio: string; // ISO date string
 }
 
-interface BibliotecaTrilhaState {
-  trilhasAtivas: Record<string, TrilhaLeituraAtiva>; // key is trail id (usually livroId + timestamp)
-  setTrilhaAtiva: (trilha: TrilhaLeituraAtiva) => void;
+interface FlashcardTrilhaState {
+  trilhasAtivas: Record<string, FlashcardTrilhaAtiva>;
+  setTrilhaAtiva: (trilha: FlashcardTrilhaAtiva) => void;
   limparTrilha: (id: string) => void;
   marcarDiaConcluido: (id: string, dia: number) => void;
   desmarcarDiaConcluido: (id: string, dia: number) => void;
-  atualizarTrilha: (id: string, updates: Partial<TrilhaLeituraAtiva>) => void;
+  atualizarTrilha: (id: string, updates: Partial<FlashcardTrilhaAtiva>) => void;
 }
 
-export const useBibliotecaTrilhasStore = create<BibliotecaTrilhaState>()(
+export const useFlashcardsTrilhasStore = create<FlashcardTrilhaState>()(
   persist(
     (set) => ({
       trilhasAtivas: {},
@@ -63,7 +59,7 @@ export const useBibliotecaTrilhasStore = create<BibliotecaTrilhaState>()(
             },
           };
         }),
-      atualizarTrilha: (id, updates) => 
+      atualizarTrilha: (id, updates) =>
         set((state) => {
           const trilha = state.trilhasAtivas[id];
           if (!trilha) return state;
@@ -76,7 +72,7 @@ export const useBibliotecaTrilhasStore = create<BibliotecaTrilhaState>()(
         }),
     }),
     {
-      name: 'biblioteca-trilhas-storage',
+      name: 'flashcards-trilhas-storage',
     }
   )
 );

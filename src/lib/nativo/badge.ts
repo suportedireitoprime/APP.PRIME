@@ -6,15 +6,21 @@ import { Capacitor } from '@capacitor/core';
 
 const isNative = () => Capacitor.isNativePlatform();
 
-async function plugin() {
-  const { Badge } = await import('@capawesome/capacitor-badge');
-  return Badge;
+async function getPlugin() {
+  if (!isNative()) return null;
+  try {
+    const mod = await import('@capawesome/capacitor-badge');
+    return mod;
+  } catch {
+    return null;
+  }
 }
 
 export async function definirBadge(count: number): Promise<void> {
-  if (!isNative()) return;
+  const mod = await getPlugin();
+  if (!mod) return;
   try {
-    const Badge = await plugin();
+    const Badge = mod.Badge;
     const { isSupported } = await Badge.isSupported();
     if (!isSupported) return;
     // iOS exige permissão de notificação para exibir o badge.
@@ -30,20 +36,20 @@ export async function definirBadge(count: number): Promise<void> {
 }
 
 export async function limparBadge(): Promise<void> {
-  if (!isNative()) return;
+  const mod = await getPlugin();
+  if (!mod) return;
   try {
-    const Badge = await plugin();
-    await Badge.clear();
+    await mod.Badge.clear();
   } catch {
     /* noop */
   }
 }
 
 export async function aumentarBadge(): Promise<void> {
-  if (!isNative()) return;
+  const mod = await getPlugin();
+  if (!mod) return;
   try {
-    const Badge = await plugin();
-    await Badge.increase();
+    await mod.Badge.increase();
   } catch {
     /* noop */
   }

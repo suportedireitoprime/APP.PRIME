@@ -90,7 +90,7 @@ const FlashcardsEstudo = () => {
       _temas: temasParam ? temasParam.split('|').filter(Boolean) : null,
       _modo: modo,
       _deck_id: deckId,
-      _limit: 30,
+      _limit: parseInt(params.get('limite') || '30', 10),
     });
     if (error) toast.error('Não foi possível carregar os flashcards');
     setCards(((data as unknown as Card[]) || []));

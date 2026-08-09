@@ -8,19 +8,20 @@ function isNative() {
   try { return Capacitor.isNativePlatform(); } catch { return false; }
 }
 
-async function plugin() {
+async function getPlugin() {
   if (!isNative()) return null;
   try {
     const mod = await import("@capacitor-firebase/analytics");
-    return mod.FirebaseAnalytics;
+    return mod;
   } catch {
     return null;
   }
 }
 
 export async function nativeSetConsent(granted: boolean) {
-  const p = await plugin();
-  if (!p) return;
+  const mod = await getPlugin();
+  if (!mod) return;
+  const p = mod.FirebaseAnalytics;
   try {
     await p.setEnabled({ enabled: granted });
     await p.setConsent?.({
@@ -32,28 +33,28 @@ export async function nativeSetConsent(granted: boolean) {
 }
 
 export async function nativeSetUserId(userId: string | null) {
-  const p = await plugin();
-  if (!p) return;
-  try { await p.setUserId({ userId }); } catch { /* noop */ }
+  const mod = await getPlugin();
+  if (!mod) return;
+  try { await mod.FirebaseAnalytics.setUserId({ userId }); } catch { /* noop */ }
 }
 
 export async function nativeLogEvent(name: string, params: Record<string, any> = {}) {
-  const p = await plugin();
-  if (!p) return;
-  try { await p.logEvent({ name, params }); } catch { /* noop */ }
+  const mod = await getPlugin();
+  if (!mod) return;
+  try { await mod.FirebaseAnalytics.logEvent({ name, params }); } catch { /* noop */ }
 }
 
 export async function nativeLogScreen(screenName: string) {
-  const p = await plugin();
-  if (!p) return;
-  try { await p.setCurrentScreen({ screenName }); } catch { /* noop */ }
+  const mod = await getPlugin();
+  if (!mod) return;
+  try { await mod.FirebaseAnalytics.setCurrentScreen({ screenName }); } catch { /* noop */ }
 }
 
 export async function nativeSetUserProperty(name: string, value: string) {
-  const p = await plugin();
-  if (!p) return;
+  const mod = await getPlugin();
+  if (!mod) return;
   try {
     // @ts-expect-error tipos variam entre versões do plugin
-    await p.setUserProperty?.({ name, value });
+    await mod.FirebaseAnalytics.setUserProperty?.({ name, value });
   } catch { /* noop */ }
 }

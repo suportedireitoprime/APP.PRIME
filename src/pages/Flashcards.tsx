@@ -4,7 +4,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import FlashcardsBottomNav from '@/components/flashcards/FlashcardsBottomNav';
 import AreaTemasSheet from '@/components/flashcards/AreaTemasSheet';
-import { Calendar, ChevronRight, Flame, Search, Sparkles, Users, X } from 'lucide-react';
+import { DesafiosCarousel } from '@/components/flashcards/DesafiosCarousel';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Calendar, ChevronRight, Flame, Search, Sparkles, Users, X, Trophy } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { getAreaVisual } from '@/lib/flashcardsAreaVisual';
 import { haptic } from '@/lib/nativeHaptics';
@@ -37,6 +39,7 @@ const Flashcards = () => {
   const [buscaAberta, setBuscaAberta] = useState(false);
   const [loading, setLoading] = useState(true);
   const [areaSheet, setAreaSheet] = useState<string | null>(null);
+  const [desafiosSheet, setDesafiosSheet] = useState(false);
 
   // SEO & Título dinâmico
   useEffect(() => {
@@ -81,62 +84,8 @@ const Flashcards = () => {
         <PageHeader title="Flashcards" onBack={() => navigate('/')} />
 
         <div className="pt-3 space-y-6">
-          {/* ── Painel de Status & Data ───────────────────────── */}
-          <section
-            aria-label="Sessão de hoje"
-            className="relative overflow-hidden rounded-3xl p-5 sm:p-7 text-primary-foreground shadow-xl border border-white/10"
-            style={{
-              background:
-                'linear-gradient(155deg, hsl(var(--primary) / 0.96) 0%, hsl(348 72% 34%) 62%, hsl(348 70% 24%) 100%)',
-            }}
-          >
-            <div className="pointer-events-none absolute -right-10 -top-10 h-48 w-48 rounded-full bg-primary-foreground/10 blur-3xl" />
-
-            <div className="flex flex-wrap items-center justify-between gap-2.5">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-foreground/15 px-3 py-1 text-xs font-bold text-primary-foreground backdrop-blur-md">
-                <Calendar className="h-3.5 w-3.5" />
-                {new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })}
-              </span>
-
-              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-primary-foreground/90 bg-black/20 px-3 py-1 rounded-full backdrop-blur-sm">
-                <Users className="h-3.5 w-3.5 text-amber-300" />
-                1.420 estudantes praticando hoje
-              </span>
-            </div>
-
-            <div className="mt-4">
-              <h1 className="font-display text-[24px] sm:text-3xl lg:text-4xl font-black leading-tight tracking-tight">
-                {paraHoje > 0 ? (
-                  <>
-                    {paraHoje.toLocaleString('pt-BR')}
-                    <span className="ml-2.5 text-base sm:text-lg font-bold text-primary-foreground/80">
-                      {paraHoje === 1 ? 'card agendado para revisão' : 'cards agendados para revisão'}
-                    </span>
-                  </>
-                ) : (
-                  'Sua revisão de hoje está 100% em dia!'
-                )}
-              </h1>
-
-              <div className="mt-4 flex items-center gap-3 max-w-md">
-                <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-primary-foreground/25">
-                  <div
-                    className="h-full rounded-full bg-primary-foreground transition-all duration-500"
-                    style={{ width: `${pct}%` }}
-                  />
-                </div>
-                <span className="shrink-0 text-xs font-black tabular-nums text-primary-foreground/90">
-                  {pct}% dominado
-                </span>
-              </div>
-
-              {(dash?.streak ?? 0) > 0 && (
-                <p className="mt-2.5 flex items-center gap-1.5 text-xs font-bold text-primary-foreground/85">
-                  <Flame className="h-4 w-4 text-amber-300 fill-amber-300" /> {dash?.streak} dias seguidos praticando
-                </p>
-              )}
-            </div>
-          </section>
+          {/* ── Painel de Status & Desafios ───────────────────────── */}
+          <DesafiosCarousel dash={dash} onVerTodos={() => setDesafiosSheet(true)} />
 
           {/* ── Reforçar (só quando existe) ──────────────────────────── */}
           {!!criticos.length && (
@@ -256,6 +205,28 @@ const Flashcards = () => {
         open={!!areaSheet}
         onOpenChange={(v) => !v && setAreaSheet(null)}
       />
+
+      <Sheet open={desafiosSheet} onOpenChange={setDesafiosSheet}>
+        <SheetContent side="bottom" className="h-[80vh] rounded-t-3xl sm:max-w-md mx-auto">
+          <SheetHeader className="text-left pb-4 border-b border-border/50">
+            <SheetTitle className="text-xl font-black flex items-center gap-2">
+              <Trophy className="w-5 h-5 text-primary" />
+              Todos os Desafios
+            </SheetTitle>
+          </SheetHeader>
+          <div className="pt-4 overflow-y-auto space-y-3 pb-20">
+            <div className="p-4 rounded-2xl bg-card border border-border shadow-sm active:scale-95 transition-all cursor-pointer">
+              <h3 className="font-bold text-sm mb-1">Desafio 1</h3>
+              <p className="text-xs text-muted-foreground">Estude 15 cards de Constitucional</p>
+            </div>
+            <div className="p-4 rounded-2xl bg-card border border-border shadow-sm active:scale-95 transition-all cursor-pointer">
+              <h3 className="font-bold text-sm mb-1">Desafio 2</h3>
+              <p className="text-xs text-muted-foreground">Domine a Lei Seca (20 cards)</p>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
+
       <FlashcardsBottomNav />
     </div>
   );

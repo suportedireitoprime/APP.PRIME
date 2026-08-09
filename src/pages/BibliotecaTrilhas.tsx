@@ -7,6 +7,11 @@ import { haptic } from '@/lib/nativeHaptics';
 import { useBibliotecaTrilhasStore, type TrilhaLeituraAtiva } from '@/lib/bibliotecaTrilhasStore';
 import { supabase } from '@/integrations/supabase/client';
 import { COLECOES, type LivroNormalizado, normalizeLivro } from '@/lib/bibliotecaColecoes';
+import PdfScrollReader from '@/components/biblioteca/PdfScrollReader';
+import LeitorNativo from '@/components/biblioteca/LeitorNativo';
+import { readLeituraProgress } from '@/lib/leituraProgress';
+import BibliotecaBottomNav from '@/components/biblioteca/BibliotecaBottomNav';
+import { useLivroPageCount } from '@/hooks/useLivroPageCount';
 
 // --- SETUP 1: ESCOLHER LIVRO ---
 const SetupLivro = ({ onSelect, onCancel }: { onSelect: (livro: LivroNormalizado) => void, onCancel: () => void }) => {
@@ -191,10 +196,16 @@ const SetupLivro = ({ onSelect, onCancel }: { onSelect: (livro: LivroNormalizado
 };
 
 // --- SETUP 2: RITMO/PRAZO E FORMATO ---
-const SetupDetalhes = ({ livro, onBack, onFinish }: { livro: LivroNormalizado, onBack: () => void, onFinish: (dias: number, formato: 'pdf'|'nativo') => void }) => {
+const SetupDetalhes = ({ livro, onBack, onFinish }: { livro: LivroNormalizado, onBack: () => void, onFinish: (dias: number, formato: 'pdf'|'nativo', paginas: number) => void }) => {
   const [dias, setDias] = useState(7);
   const [formato, setFormato] = useState<'pdf'|'nativo'>('pdf');
+  const [paginas, setPaginas] = useState<number>(0);
   const opcoesDias = [3, 7, 15, 30];
+  const pdfPages = useLivroPageCount(livro.download);
+
+  useEffect(() => {
+    if (pdfPages && paginas === 0) setPaginas(pdfPages);
+  }, [pdfPages]);
 
   return (
     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="w-full flex flex-col pt-4 px-4 pb-32">
@@ -248,9 +259,34 @@ const SetupDetalhes = ({ livro, onBack, onFinish }: { livro: LivroNormalizado, o
           </button>
         </div>
 
+        <p className="text-left text-sm font-bold text-foreground mb-3">3. Total de Páginas</p>
+        <div className="flex flex-col gap-2 mb-8">
+          <div className="flex items-center gap-3 bg-card/60 p-2 rounded-2xl border-2 border-border/50 focus-within:border-primary/50 transition-colors">
+            <input 
+              type="number" 
+              value={paginas || ''} 
+              onChange={e => setPaginas(parseInt(e.target.value) || 0)} 
+              className="w-full bg-transparent p-2 outline-none font-bold text-lg text-center" 
+              placeholder="Ex: 250" 
+            />
+          </div>
+          <div className="flex justify-between px-2">
+            <span className="text-xs text-muted-foreground">Necessário para dividir a leitura</span>
+            {pdfPages ? <span className="text-xs text-primary font-bold">Auto-detectado ✓</span> : <span className="text-xs text-muted-foreground">Calculando...</span>}
+          </div>
+        </div>
+
         <button
-          onClick={() => { haptic.success(); onFinish(dias, formato); }}
-          className="w-full mt-4 bg-primary text-primary-foreground font-bold py-4 rounded-2xl shadow-[0_0_20px_rgba(var(--primary),0.3)] hover:shadow-[0_0_30px_rgba(var(--primary),0.5)] transition-all active:scale-95"
+          onClick={() => { 
+            if (paginas <= 0) { 
+              haptic.selection(); 
+              if (!confirm('Páginas não informadas. Prosseguir com leitura livre?')) return; 
+            } else {
+              haptic.selection();
+            }
+            onFinish(dias, formato, paginas); 
+          }}
+          className="w-full mt-2 bg-primary text-primary-foreground font-bold py-4 rounded-2xl shadow-[0_0_20px_rgba(var(--primary),0.3)] hover:shadow-[0_0_30px_rgba(var(--primary),0.5)] transition-all active:scale-95"
         >
           Iniciar Missão
         </button>
@@ -260,8 +296,47 @@ const SetupDetalhes = ({ livro, onBack, onFinish }: { livro: LivroNormalizado, o
 };
 
 // --- MAPA DA TRILHA DE LEITURA ---
-const TrilhaMapaLeitura = ({ trilha, onBack }: { trilha: TrilhaLeituraAtiva, onBack: () => void }) => {
-  const { marcarDiaConcluido, desmarcarDiaConcluido, limparTrilha } = useBibliotecaTrilhasStore();
+const TrilhaMapaLeitura = ({ trilha, onBack, onOpenReader }: { trilha: TrilhaLeituraAtiva, onBack: () => void, onOpenReader: (trilha: TrilhaLeituraAtiva, startPage: number) => void }) => {
+  const { marcarDiaConcluido, desmarcarDiaConcluido, limparTrilha, atualizarTrilha } = useBibliotecaTrilhasStore();
+  const [tick, setTick] = useState(0);
+
+  useEffect(() => {
+    const i = setInterval(() => setTick(t => t + 1), 2500);
+    return () => clearInterval(i);
+  }, []);
+
+  useEffect(() => {
+    if (!trilha.paginasTotais) return;
+    const progressos = readLeituraProgress(tick);
+    if (trilha.formato === 'nativo' && trilha.tabela) {
+      const p = progressos.find(x => String(x.snap.id) === String(trilha.livroId));
+      if (p) {
+        const paginasPorDia = Math.ceil(trilha.paginasTotais / trilha.diasMeta);
+        const indexAtual = p.index;
+        const paginaAtual = indexAtual + 1;
+        const diasQueDevemEstarConcluidos = Math.floor(paginaAtual / paginasPorDia);
+        for (let d = 1; d <= diasQueDevemEstarConcluidos; d++) {
+          if (!trilha.diasConcluidos.includes(d) && d <= trilha.diasMeta) {
+            marcarDiaConcluido(trilha.id, d);
+          }
+        }
+      }
+    }
+    if (trilha.formato === 'pdf' && trilha.downloadUrl) {
+      const pdfPageKey = `pdf-reader:page:${trilha.downloadUrl}`;
+      const savedPageStr = localStorage.getItem(pdfPageKey);
+      if (savedPageStr) {
+        const p = Number(savedPageStr);
+        const paginasPorDia = Math.ceil(trilha.paginasTotais / trilha.diasMeta);
+        const diasQueDevemEstarConcluidos = Math.floor(p / paginasPorDia);
+        for (let d = 1; d <= diasQueDevemEstarConcluidos; d++) {
+          if (!trilha.diasConcluidos.includes(d) && d <= trilha.diasMeta) {
+            marcarDiaConcluido(trilha.id, d);
+          }
+        }
+      }
+    }
+  }, [tick, trilha]);
   
   const nodos = Array.from({ length: trilha.diasMeta }).map((_, i) => ({ dia: i + 1 }));
   const totalConcluido = trilha.diasConcluidos.length;
@@ -274,9 +349,23 @@ const TrilhaMapaLeitura = ({ trilha, onBack }: { trilha: TrilhaLeituraAtiva, onB
           <button onClick={onBack} className="p-2 -ml-2 rounded-full bg-white/5 text-muted-foreground hover:text-foreground shrink-0">
              <ChevronLeft className="w-5 h-5" />
           </button>
-          <div className="min-w-0">
+          <div className="min-w-0 flex flex-col">
             <p className="text-[10px] uppercase font-black text-primary tracking-widest mb-0.5 truncate">Lendo em {trilha.diasMeta} dias</p>
             <p className="text-sm font-bold text-foreground truncate">{trilha.livroTitulo}</p>
+            {!trilha.paginasTotais && (
+              <button 
+                onClick={() => {
+                  haptic.selection();
+                  const val = prompt('Quantas páginas tem o livro?');
+                  if (val && !isNaN(Number(val)) && Number(val) > 0) {
+                    atualizarTrilha(trilha.id, { paginasTotais: Number(val) });
+                  }
+                }}
+                className="text-[10px] font-bold text-yellow-500 hover:text-yellow-400 mt-0.5 text-left flex items-center gap-1 active:scale-95 transition-all"
+              >
+                ⚠️ Definir total de páginas
+              </button>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-3 shrink-0">
@@ -302,6 +391,10 @@ const TrilhaMapaLeitura = ({ trilha, onBack }: { trilha: TrilhaLeituraAtiva, onB
             const concluido = trilha.diasConcluidos.includes(nodo.dia);
             const isLeft = i % 2 === 0;
 
+            const paginasPorDia = trilha.paginasTotais ? Math.ceil(trilha.paginasTotais / trilha.diasMeta) : 0;
+            const startPage = paginasPorDia ? Math.max(1, (nodo.dia - 1) * paginasPorDia + 1) : 1;
+            const endPage = paginasPorDia ? Math.min(trilha.paginasTotais!, nodo.dia * paginasPorDia) : 0;
+
             return (
               <motion.div
                 key={nodo.dia}
@@ -326,17 +419,27 @@ const TrilhaMapaLeitura = ({ trilha, onBack }: { trilha: TrilhaLeituraAtiva, onB
                   {concluido ? <CheckCircle2 className="w-5 h-5 text-primary-foreground" /> : <span className="text-[11px] font-black">{nodo.dia}</span>}
                 </button>
 
-                <div className={`w-[45%] rounded-3xl p-4 relative z-30 transition-all duration-300 backdrop-blur-md border ${
-                    concluido ? 'bg-primary/5 border-primary/20 shadow-sm opacity-80' : 'bg-card/40 border-white/10 shadow-lg'
+                <button 
+                  onClick={() => { haptic.selection(); onOpenReader(trilha, startPage); }}
+                  className={`w-[45%] text-left rounded-3xl p-4 relative z-30 transition-all duration-300 backdrop-blur-md border overflow-hidden ${
+                    concluido ? 'bg-primary/5 border-primary/20 shadow-sm opacity-80' : 'bg-card/40 border-white/10 shadow-lg hover:border-primary/50 cursor-pointer active:scale-95'
                 }`}>
-                  <p className={`text-[10px] font-black uppercase tracking-widest mb-1 ${concluido ? 'text-primary/70' : 'text-muted-foreground'}`}>
-                    Dia {nodo.dia}
-                  </p>
-                  <p className="text-[11px] text-foreground font-semibold line-clamp-2">
-                    {trilha.paginasTotais ? `Ler ~${Math.ceil(trilha.paginasTotais / trilha.diasMeta)} págs` : `Leitura livre`}
-                  </p>
-                  <p className="text-[10px] text-muted-foreground mt-1">Formato: {trilha.formato.toUpperCase()}</p>
-                </div>
+                  {trilha.livroCapa && (
+                    <>
+                      <div className="absolute inset-0 z-0 bg-cover bg-center opacity-10" style={{ backgroundImage: `url(${trilha.livroCapa})` }} />
+                      <div className="absolute inset-0 z-0 bg-gradient-to-br from-background/40 via-background/80 to-background" />
+                    </>
+                  )}
+                  <div className="relative z-10">
+                    <p className={`text-[10px] font-black uppercase tracking-widest mb-1 ${concluido ? 'text-primary/70' : 'text-muted-foreground'}`}>
+                      Dia {nodo.dia}
+                    </p>
+                    <p className="text-[11px] text-foreground font-semibold line-clamp-2">
+                      {paginasPorDia ? `Páginas ${startPage} a ${endPage}` : `Leitura livre`}
+                    </p>
+                    <p className="text-[10px] text-muted-foreground mt-1 text-primary">Abrir {trilha.formato.toUpperCase()}</p>
+                  </div>
+                </button>
               </motion.div>
             );
           })}
@@ -346,7 +449,6 @@ const TrilhaMapaLeitura = ({ trilha, onBack }: { trilha: TrilhaLeituraAtiva, onB
   );
 };
 
-
 // --- DASHBOARD PRINCIPAL ---
 export const BibliotecaTrilhas = () => {
   const { trilhasAtivas, setTrilhaAtiva } = useBibliotecaTrilhasStore();
@@ -355,88 +457,145 @@ export const BibliotecaTrilhas = () => {
   const [view, setView] = useState<'dashboard'|'setup_livro'|'setup_detalhes'|'mapa'>(trilhasArr.length > 0 ? 'dashboard' : 'setup_livro');
   const [selectedLivro, setSelectedLivro] = useState<LivroNormalizado | null>(null);
   const [trilhaVisualizada, setTrilhaVisualizada] = useState<TrilhaLeituraAtiva | null>(null);
+  const [readerOpen, setReaderOpen] = useState<TrilhaLeituraAtiva | null>(null);
+
+  const handleCreateTrilha = async (dias: number, formato: 'pdf'|'nativo', paginas: number) => {
+    if (!selectedLivro) return;
+    
+    const nova: TrilhaLeituraAtiva = {
+      id: `${selectedLivro.id}-${Date.now()}`,
+      livroId: String(selectedLivro.id),
+      livroTitulo: selectedLivro.titulo,
+      livroCapa: selectedLivro.capa,
+      formato,
+      diasMeta: dias,
+      diasConcluidos: [],
+      dataInicio: new Date().toISOString(),
+      paginasTotais: paginas > 0 ? paginas : null,
+      tabela: selectedLivro.colecaoId,
+      downloadUrl: selectedLivro.download || undefined
+    };
+    setTrilhaAtiva(nova);
+    setTrilhaVisualizada(nova);
+    setView('mapa');
+  };
+
+  const handleOpenReader = (trilha: TrilhaLeituraAtiva, startPage: number) => {
+    if (trilha.formato === 'nativo' && trilha.tabela) {
+      const key = `leitura-nativa:${trilha.tabela.replace(/^biblioteca_/, '')}:${trilha.livroId}`;
+      const fallbackKey = `leitura-nativa:${trilha.tabela}:${trilha.livroId}`;
+      const payload = JSON.stringify({ index: Math.max(0, startPage - 1), updatedAt: Date.now() });
+      localStorage.setItem(key, payload);
+      localStorage.setItem(fallbackKey, payload);
+    } else if (trilha.formato === 'pdf' && trilha.downloadUrl) {
+      const pdfPageKey = `pdf-reader:bookmark:${trilha.downloadUrl}`;
+      localStorage.setItem(pdfPageKey, String(startPage));
+      localStorage.setItem(`pdf-reader:page:${trilha.downloadUrl}`, String(startPage));
+    }
+    setReaderOpen(trilha);
+  };
 
   return (
     <div className="min-h-screen bg-background">
-      {view === 'dashboard' && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full pt-6 px-4 pb-32">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-2xl font-black text-foreground">Missões de Leitura</h2>
-              <p className="text-sm text-muted-foreground">Continue seus livros</p>
-            </div>
-            <button onClick={() => { haptic.selection(); setView('setup_livro'); }} className="bg-primary/10 text-primary p-3 rounded-full hover:bg-primary/20">
-              <Target className="w-5 h-5" />
-            </button>
-          </div>
-          <div className="space-y-4">
-            {trilhasArr.length === 0 && <p className="text-muted-foreground text-sm">Nenhuma missão ativa.</p>}
-            {trilhasArr.map((t) => (
-              <button
-                key={t.id}
-                onClick={() => { setTrilhaVisualizada(t); setView('mapa'); }}
-                className="w-full relative overflow-hidden flex items-center gap-4 text-left p-4 rounded-3xl border border-border/40 bg-card/60 backdrop-blur-md shadow-lg shadow-black/10 active:scale-[0.98]"
-              >
-                <div className="w-12 h-16 bg-muted rounded overflow-hidden shrink-0">
-                  {t.livroCapa ? <img src={t.livroCapa} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><BookOpen className="w-5 h-5 opacity-30" /></div>}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[10px] font-bold text-primary uppercase tracking-widest mb-0.5">Missão: {t.diasMeta} dias</p>
-                  <p className="text-sm font-bold text-foreground truncate mb-2">{t.livroTitulo}</p>
-                  <div className="flex items-center gap-2">
-                    <div className="flex-1 h-1.5 rounded-full bg-black/40 overflow-hidden">
-                      <div className="h-full bg-primary" style={{ width: `${Math.round((t.diasConcluidos.length / t.diasMeta)*100)}%` }} />
-                    </div>
-                    <p className="text-[10px] text-muted-foreground font-bold">{Math.round((t.diasConcluidos.length / t.diasMeta)*100)}%</p>
-                  </div>
-                </div>
+      <AnimatePresence mode="wait">
+        {view === 'dashboard' && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full pt-6 px-4 pb-32">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h2 className="text-2xl font-black text-foreground">Missões de Leitura</h2>
+                <p className="text-sm text-muted-foreground">Continue seus livros</p>
+              </div>
+              <button onClick={() => { haptic.selection(); setView('setup_livro'); }} className="bg-primary/10 text-primary p-3 rounded-full hover:bg-primary/20">
+                <Target className="w-5 h-5" />
               </button>
-            ))}
-          </div>
-        </motion.div>
-      )}
+            </div>
+            <div className="space-y-4">
+              {trilhasArr.length === 0 && <p className="text-muted-foreground text-sm">Nenhuma missão ativa.</p>}
+              {trilhasArr.map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => { setTrilhaVisualizada(t); setView('mapa'); }}
+                  className="w-full relative overflow-hidden flex items-center gap-4 text-left p-4 rounded-3xl border border-border/40 bg-card/60 backdrop-blur-md shadow-lg shadow-black/10 active:scale-[0.98]"
+                >
+                  <div className="w-12 h-16 bg-muted rounded overflow-hidden shrink-0">
+                    {t.livroCapa ? <img src={t.livroCapa} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><BookOpen className="w-5 h-5 opacity-30" /></div>}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[10px] font-bold text-primary uppercase tracking-widest mb-0.5">Missão: {t.diasMeta} dias</p>
+                    <p className="text-sm font-bold text-foreground truncate mb-2">{t.livroTitulo}</p>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 h-1.5 rounded-full bg-black/40 overflow-hidden">
+                        <div className="h-full bg-primary" style={{ width: `${Math.round((t.diasConcluidos.length / t.diasMeta)*100)}%` }} />
+                      </div>
+                      <p className="text-[10px] text-muted-foreground font-bold">{Math.round((t.diasConcluidos.length / t.diasMeta)*100)}%</p>
+                    </div>
+                  </div>
+                </button>
+              ))}
+              {trilhasArr.length > 0 && (
+                <button
+                  onClick={() => { haptic.selection(); setView('setup_livro'); }}
+                  className="w-full mt-4 flex items-center justify-center gap-2 p-4 rounded-3xl border-2 border-dashed border-border/40 text-muted-foreground hover:text-foreground hover:border-primary/50 hover:bg-primary/5 transition-all active:scale-[0.98]"
+                >
+                  <Target className="w-5 h-5" />
+                  <span className="text-sm font-bold">Adicionar Nova Missão</span>
+                </button>
+              )}
+            </div>
+          </motion.div>
+        )}
 
-      {view === 'setup_livro' && (
-        <SetupLivro 
-          onSelect={(livro) => { setSelectedLivro(livro); setView('setup_detalhes'); }}
-          onCancel={() => {
-            if (trilhasArr.length > 0) {
-              setView('dashboard');
-            } else {
-              navigate('/biblioteca');
-            }
-          }}
+        {view === 'setup_livro' && (
+          <SetupLivro 
+            onSelect={(livro) => { setSelectedLivro(livro); setView('setup_detalhes'); }}
+            onCancel={() => {
+              if (trilhasArr.length > 0) {
+                setView('dashboard');
+              } else {
+                navigate('/biblioteca');
+              }
+            }}
+          />
+        )}
+
+        {view === 'setup_detalhes' && selectedLivro && (
+          <SetupDetalhes 
+            livro={selectedLivro}
+            onBack={() => setView('setup_livro')}
+            onFinish={handleCreateTrilha}
+          />
+        )}
+
+        {view === 'mapa' && trilhaVisualizada && (
+          <TrilhaMapaLeitura 
+            trilha={trilhaVisualizada} 
+            onBack={() => { setTrilhaVisualizada(null); setView('dashboard'); }}
+            onOpenReader={handleOpenReader}
+          />
+        )}
+      </AnimatePresence>
+
+      {readerOpen?.formato === 'pdf' && readerOpen.downloadUrl && (
+        <PdfScrollReader
+          url={readerOpen.downloadUrl}
+          titulo={readerOpen.livroTitulo}
+          livroId={readerOpen.livroId}
+          onClose={() => setReaderOpen(null)}
         />
       )}
-
-      {view === 'setup_detalhes' && selectedLivro && (
-        <SetupDetalhes 
-          livro={selectedLivro}
-          onBack={() => setView('setup_livro')}
-          onFinish={(dias, formato) => {
-            const novaTrilha: TrilhaLeituraAtiva = {
-              id: `${selectedLivro.id}_${Date.now()}`,
-              livroId: selectedLivro.id,
-              livroTitulo: selectedLivro.titulo || 'Livro',
-              livroCapa: selectedLivro.capa || undefined,
-              formato,
-              diasMeta: dias,
-              diasConcluidos: [],
-              dataInicio: new Date().toISOString(),
-              paginasTotais: (selectedLivro as any).paginas || 0
-            };
-            setTrilhaAtiva(novaTrilha);
-            setTrilhaVisualizada(novaTrilha);
-            setView('mapa');
-          }}
+      
+      {readerOpen?.formato === 'nativo' && readerOpen.tabela && (
+        <LeitorNativo
+          livroId={readerOpen.livroId}
+          livroTabela={readerOpen.tabela}
+          pdfUrl={readerOpen.downloadUrl || ''}
+          titulo={readerOpen.livroTitulo}
+          capa={readerOpen.livroCapa}
+          onClose={() => setReaderOpen(null)}
         />
       )}
-
-      {view === 'mapa' && trilhaVisualizada && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          <TrilhaMapaLeitura trilha={trilhaVisualizada} onBack={() => { setTrilhaVisualizada(null); setView('dashboard'); }} />
-        </motion.div>
-      )}
+      
+      {view === 'dashboard' && <BibliotecaBottomNav />}
     </div>
   );
 };

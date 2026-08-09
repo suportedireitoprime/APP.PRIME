@@ -27,10 +27,11 @@ import LembreteSheet from '@/components/lembretes/LembreteSheet';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 import { useBodyScrollLock, resetBodyScrollLock } from '@/hooks/useBodyScrollLock';
 import { useNavigate } from 'react-router-dom';
-import { Library } from 'lucide-react';
+import { Library, Headphones } from 'lucide-react';
 import { copiarTexto } from '@/lib/nativo/copiar';
 import { compartilharNativo, podeCompartilhar } from '@/lib/nativo/compartilhar';
 import { haptic } from '@/lib/nativeHaptics';
+import { useResumoLivroPlayer } from '@/contexts/ResumoLivroPlayerContext';
 
 interface LivroDetailSheetProps {
   livro: LivroNormalizado | null;
@@ -55,6 +56,8 @@ const LivroDetailSheet = ({ livro, open, onClose }: LivroDetailSheetProps) => {
   const { canUse, register, used, config } = useFeatureLimit('biblioteca_ler', {
     scope: livro ? String(livro.id) : null,
   });
+
+  const { tocar: tocarResumo, setAberto: abrirPlayerResumo } = useResumoLivroPlayer();
 
 
   // Ficha técnica: nº de páginas + tempo médio de leitura (lazy via pdfjs)
@@ -332,6 +335,21 @@ const LivroDetailSheet = ({ livro, open, onClose }: LivroDetailSheetProps) => {
                     <BookOpen className="w-5 h-5" />
                     Ler agora
                   </Button>
+
+                  {livro.audioResumoUrl && (
+                    <Button
+                      variant="outline"
+                      className="w-full h-14 text-lg font-semibold gap-2.5 rounded-2xl shadow-sm mt-3 border-primary/20 text-foreground hover:bg-primary/5"
+                      onClick={() => {
+                        haptic.selection();
+                        tocarResumo(livro);
+                        abrirPlayerResumo(true);
+                      }}
+                    >
+                      <Headphones className="w-5 h-5 text-primary" />
+                      Ouvir resumo
+                    </Button>
+                  )}
                 </div>
 
 

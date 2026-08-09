@@ -57,6 +57,9 @@ import { LeisCantadasPlayerProvider } from "@/contexts/LeisCantadasPlayerContext
 import GlobalLeisCantadasMiniPlayer from "@/components/leis-cantadas/GlobalLeisCantadasMiniPlayer";
 import { AudioaulasPlayerProvider } from "@/contexts/AudioaulasPlayerContext";
 import GlobalAudioaulasMiniPlayer from "@/components/audioaulas/GlobalAudioaulasMiniPlayer";
+import { ResumoLivroPlayerProvider } from "./contexts/ResumoLivroPlayerContext.tsx";
+import { GlobalResumoMiniPlayer } from "./components/biblioteca/GlobalResumoMiniPlayer.tsx";
+import ResumoLivroAudioSheet from "./components/biblioteca/ResumoLivroAudioSheet.tsx";
 import { VideoaulasPlayerProvider } from "@/contexts/VideoaulasPlayerContext";
 import GlobalVideoaulaMiniPlayer from "@/components/videoaulas/GlobalVideoaulaMiniPlayer";
 import { GravacaoFlutuante } from "@/components/GravacaoFlutuante";
@@ -75,6 +78,7 @@ import Onboarding from "./pages/Onboarding.tsx";
 import AdminFuncoes from "./pages/AdminFuncoes.tsx";
 import AdminPush from "./pages/AdminPush.tsx";
 import AdminPushSection from "./pages/AdminPushSection.tsx";
+import AdminResumoLivroAudioEditar from "./pages/AdminResumoLivroAudioEditar.tsx";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -152,11 +156,14 @@ const AprenderTrilhas = lazy(() => import("./pages/AprenderTrilhas.tsx"));
 const AprenderQuestoes = lazy(() => import("./pages/AprenderQuestoes.tsx"));
 const AprenderFlashcards = lazy(() => import("./pages/AprenderFlashcards.tsx"));
 const Flashcards = lazy(() => import("./pages/Flashcards.tsx"));
+const FlashcardsCargos = lazy(() => import("./pages/FlashcardsCargos.tsx"));
+const FlashcardsCargosDetalhes = lazy(() => import("./pages/FlashcardsCargosDetalhes.tsx"));
 const FlashcardsEstudo = lazy(() => import("./pages/FlashcardsEstudo.tsx"));
 const FlashcardsRevisar = lazy(() => import("./pages/FlashcardsRevisar.tsx"));
 const FlashcardsCornell = lazy(() => import("./pages/FlashcardsCornell.tsx"));
 const FlashcardsDecks = lazy(() => import("./pages/FlashcardsDecks.tsx"));
 const FlashcardsDesafios = lazy(() => import("./pages/FlashcardsDesafios.tsx"));
+const FlashcardsTrilhas = lazy(() => import("./pages/FlashcardsTrilhas.tsx"));
 const FlashcardsProgresso = lazy(() => import("./pages/FlashcardsProgresso.tsx"));
 const Videoaulas = lazy(routePrefetch.videoaulas);
 const VideoaulasCategorias = lazy(routePrefetch.videoaulasCategorias);
@@ -689,7 +696,7 @@ function AnimatedRoutes() {
 
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/desktop-link/:token" element={<DesktopLinkConfirm />} />
-          <Route path="/onboarding" element={<ProtectedRoute requireOnboarding={false}><Onboarding /></ProtectedRoute>} />
+          <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
           <Route path="/" element={<HomeGate />} />
 
           <Route path="/legislacao/:tipo" element={<ProtectedRoute><PageTransition><CategoriaLegislacao /></PageTransition></ProtectedRoute>} />
@@ -761,6 +768,9 @@ function AnimatedRoutes() {
           <Route path="/aprender/aula/:aulaId" element={<ProtectedRoute><AprenderAula /></ProtectedRoute>} />
           <Route path="/flashcards" element={<ProtectedRoute><PageTransition><Flashcards /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/estudar" element={<ProtectedRoute><PageTransition><FlashcardsEstudo /></PageTransition></ProtectedRoute>} />
+          <Route path="/flashcards/trilhas" element={<ProtectedRoute><PageTransition><FlashcardsTrilhas /></PageTransition></ProtectedRoute>} />
+          <Route path="/flashcards/cargos" element={<ProtectedRoute><PageTransition><FlashcardsCargos /></PageTransition></ProtectedRoute>} />
+          <Route path="/flashcards/cargos/:id" element={<ProtectedRoute><PageTransition><FlashcardsCargosDetalhes /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/revisar" element={<ProtectedRoute><PageTransition><FlashcardsRevisar /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/cornell" element={<ProtectedRoute><PageTransition><FlashcardsCornell /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/progresso" element={<ProtectedRoute><PageTransition><FlashcardsProgresso /></PageTransition></ProtectedRoute>} />
@@ -823,6 +833,7 @@ function AnimatedRoutes() {
 
           <Route path="/questoes/desempenho" element={<ProtectedRoute><PageTransition><QuestoesDesempenho /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-questoes" element={<ProtectedRoute><PageTransition><AdminQuestoes /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin/resumo-livro-audio" element={<ProtectedRoute><PageTransition><AdminResumoLivroAudioEditar /></PageTransition></ProtectedRoute>} />
 
           <Route path="/admin-monitor" element={<ProtectedRoute><PageTransition><AdminMonitor /></PageTransition></ProtectedRoute>} />
           <Route path="/perfil" element={<ProtectedRoute><PageTransition><Perfil /></PageTransition></ProtectedRoute>} />
@@ -991,12 +1002,16 @@ const App = () => (
                 <LeisCantadasPlayerProvider>
                   <AudioaulasPlayerProvider>
                     <VideoaulasPlayerProvider>
-                      <AnimatedRoutes />
-                      <NarracaoMiniPlayer />
-                      <GravacaoFlutuante />
-                      <GlobalLeisCantadasMiniPlayer />
-                      <GlobalAudioaulasMiniPlayer />
-                      <GlobalVideoaulaMiniPlayer />
+                      <ResumoLivroPlayerProvider>
+                        <AnimatedRoutes />
+                        <NarracaoMiniPlayer />
+                        <GravacaoFlutuante />
+                        <GlobalLeisCantadasMiniPlayer />
+                        <GlobalAudioaulasMiniPlayer />
+                        <GlobalVideoaulaMiniPlayer />
+                        <GlobalResumoMiniPlayer />
+                        <ResumoLivroAudioSheet />
+                      </ResumoLivroPlayerProvider>
                     </VideoaulasPlayerProvider>
                   </AudioaulasPlayerProvider>
                 </LeisCantadasPlayerProvider>

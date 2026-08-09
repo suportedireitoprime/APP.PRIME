@@ -372,6 +372,11 @@ const LeitorNativo = ({ livroId, livroTabela, pdfUrl, titulo, onClose, autor, an
       } catch (e: any) {
         console.error('[LeitorNativo]', e);
         if (!cancelled) {
+          // Evita matar a tela se o fetch der timeout (60s) mas a Edge Function
+          // continuar processando no background.
+          const { data: check } = await supabase.from('biblioteca_leitura_nativa').select('status').eq('livro_id', livroId).eq('livro_tabela', livroTabela).maybeSingle();
+          if (check?.status === 'processando') return;
+          
           setStatus('erro');
           const raw = String(e?.message || e || '');
           const isNetwork =
@@ -381,7 +386,7 @@ const LeitorNativo = ({ livroId, livroTabela, pdfUrl, titulo, onClose, autor, an
           setErro(
             isNetwork
               ? 'Sem conexão com o servidor. Verifique sua internet e tente novamente. Se já baixou este livro offline, abra-o pela aba "Offline".'
-              : (raw || 'Falha ao preparar a leitura.')
+              : (raw || 'Falha ao preparar a leitura. O livro pode ser muito grande.')
           );
         }
       }
@@ -401,51 +406,53 @@ const LeitorNativo = ({ livroId, livroTabela, pdfUrl, titulo, onClose, autor, an
   // Fallback: parse do markdown legado com <!-- capa-capitulo -->.
   // ============================================================
   const paginas = useMemo<Pagina[]>(() => {
-    const cleanArtefatos = (raw: string) =>
-      raw
-        .replace(/^\s*-{2,}\s*\d+\s*\|\s*/gm, '')
-        .replace(/^\s*-{2,}\s*\d+\s*\|?\s*$/gm, '')
-        .replace(/^\s*-{3,}\s*$/gm, '')
+    const cleanArtefatos = (raw: string) => {
+      return raw
+        .split('\n')
+        .map(line => {
+          let l = line;
+          l = l.replace(/^[ \t]*-{2,}[ \t]*\d+[ \t]*\|[ \t]*$/, '');
+          l = l.replace(/^[ \t]*-{2,}[ \t]*\d+[ \t]*\|?[ \t]*$/, '');
+          l = l.replace(/^[ \t]*-{3,}[ \t]*$/, '');
+          l = l.replace(/^[ \t]*[\[\(]?[ \t]*[-–—·•*|]{0,3}[ \t]*\d{1,4}[ \t]*[-–—·•*|]{0,3}[ \t]*[\]\)]?[ \t]*$/, '');
+          l = l.replace(/^[ \t]*\d{1,4}[ \t]*[|·•][ \t]*[^|\n.;:]{3,60}[ \t]*$/, '');
+          l = l.replace(/^[ \t]*[^|\n.;:]{3,60}?[ \t]*[|·•][ \t]*\d{1,4}[ \t]*$/, '');
+          l = l.replace(/^#{4,6}[ \t]+/, '### ');
+          return l;
+        })
+        .join('\n')
         .replace(/<!--\s*capa-capitulo\s*-->/g, '')
         .replace(/<!--\s*(continua|page:\d+|toc-original|\/toc-original)\s*-->/g, '')
-        // Número de página solto do rodapé/cabeçalho: linha só com "7",
-        // "— 27 —", "· 27 ·", "[27]", "(27)", "7 |", "| 7".
-        .replace(
-          /^[ \t]*[\[\(]?[ \t]*[-–—·•*|]{0,3}[ \t]*\d{1,4}[ \t]*[-–—·•*|]{0,3}[ \t]*[\]\)]?[ \t]*$/gm,
-          '',
-        )
-        // Cabeçalho/rodapé corrente com número colado ao título do livro/capítulo.
-        .replace(/^[ \t]*\d{1,4}[ \t]*[|·•][ \t]*[^|\n.;:]{3,60}[ \t]*$/gm, '')
-        .replace(/^[ \t]*[^|\n.;:]{3,60}?[ \t]*[|·•][ \t]*\d{1,4}[ \t]*$/gm, '')
-        .replace(/([^\n])\s+(#{1,6})\s+/g, '$1\n\n$2 ')
-        .replace(/^#{4,6}\s+/gm, '### ')
+        .replace(/([^\n])[ \t]+(#{1,6})[ \t]+/g, '$1\n\n$2 ')
         .replace(/(^|\s)#{2,6}(?=\s*$)/gm, '$1')
         .replace(/\n{3,}/g, '\n\n')
-        // Número de página grudado no fim da página (após a última quebra).
         .replace(/\n[ \t]*\d{1,4}[ \t]*$/g, '')
         .trim();
+    };
 
-    // Remove blocos marcados como índice original do livro pelo refino
-    const stripTocOriginal = (raw: string) =>
-      raw.replace(/<!--\s*toc-original\s*-->[\s\S]*?<!--\s*\/toc-original\s*-->/g, '');
+    const stripTocOriginal = (raw: string) => {
+      let res = raw;
+      while (true) {
+        const start = res.indexOf('<!-- toc-original -->');
+        if (start === -1) break;
+        const end = res.indexOf('<!-- /toc-original -->', start);
+        if (end === -1) {
+          res = res.substring(0, start);
+          break;
+        }
+        res = res.substring(0, start) + res.substring(end + 22);
+      }
+      return res;
+    };
 
-    // Promove títulos literais tipo "**PÁGINA 25**", "### PÁGINA 25", "Página 25",
-    // "Pág. 25" etc. (deixados pelo refino da IA) a marcadores reais
-    // <!-- page:N --> para que cada página do OCR ocupe UMA página do leitor.
-    // Também remove rótulos residuais no meio de um parágrafo (sem quebrar o texto).
-    const promoverTitulosDePagina = (raw: string) =>
-      raw
-        // Linha isolada com rótulo de página → vira marcador real
-        .replace(
-          /(^|\n)[ \t]*(?:#{1,6}[ \t]*)?[*_]{0,2}[ \t]*P[ÁA]G(?:\.|INA)?[ \t]+(\d+)[º°ª]?[ \t]*[*_]{0,2}[ \t]*[.:\-–—]?[ \t]*(?=\n|$)/gi,
-          (_m, pre, n) => `${pre}\n<!-- page:${n} -->\n`,
-        )
-        // Rótulo residual embutido em heading `### Página 50` no meio do fluxo
-        // (já contemplado acima), mas garante remoção de heading em minúsculas.
-        .replace(
-          /(^|\n)[ \t]*#{1,6}[ \t]*P[áa]gina[ \t]+\d+[.:\-]?[ \t]*(?=\n|$)/gi,
-          '$1',
-        );
+    const promoverTitulosDePagina = (raw: string) => {
+      return raw.split('\n').map(line => {
+        if (!/p[áa]g/i.test(line)) return line;
+        return line
+          .replace(/^[ \t]*(?:#{1,6}[ \t]*)?[*_]{0,2}[ \t]*P[ÁA]G(?:\.|INA)?[ \t]+(\d+)[º°ª]?[ \t]*[*_]{0,2}[ \t]*[.:\-–—]?[ \t]*$/i, '\n<!-- page:$1 -->\n')
+          .replace(/^[ \t]*#{1,6}[ \t]*P[áa]gina[ \t]+\d+[.:\-]?[ \t]*$/i, '');
+      }).join('\n');
+    };
 
     const paginarPorMarcadores = (texto: string): Array<{ ocrPage: number; md: string }> => {
       const src = promoverTitulosDePagina(stripTocOriginal(texto));

@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { BookMarked, Heart, Clock, HardDrive, Library, Route as RouteIcon } from 'lucide-react';
+import { BookMarked, Heart, HardDrive, Library, Route as RouteIcon } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
 export type BibliotecaAtalhoTab = 'leitura' | 'favoritos' | 'recentes' | 'offline' | 'trilhas';
@@ -20,8 +20,8 @@ type Slot = {
 const SLOTS: Slot[] = [
   { id: 'biblioteca', label: 'Biblioteca', icon: Library },
   { id: 'leitura', label: 'Leitura', icon: BookMarked },
-  { id: 'favoritos', label: 'Favoritos', icon: Heart },
   { id: 'trilhas', label: 'Trilhas', icon: RouteIcon },
+  { id: 'favoritos', label: 'Favoritos', icon: Heart },
   { id: 'offline', label: 'Offline', icon: HardDrive },
 ];
 
@@ -32,7 +32,26 @@ const SLOTS: Slot[] = [
 const BibliotecaBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const [active, setActive] = useState<Slot['id']>('biblioteca');
+  const [active, setActive] = useState<Slot['id']>(() => {
+    if (pathname.includes('/trilhas')) return 'trilhas';
+    return 'biblioteca';
+  });
+
+  useEffect(() => {
+    if (pathname.includes('/trilhas')) setActive('trilhas');
+    else if (pathname.endsWith('/bibliotecas')) setActive('biblioteca');
+    
+    // Opcional: Escutar quando um modal fecha para voltar o visual para a aba atual da URL
+    const handleClose = () => {
+      if (window.location.hash.includes('/trilhas') || window.location.pathname.includes('/trilhas')) {
+        setActive('trilhas');
+      } else {
+        setActive('biblioteca');
+      }
+    };
+    window.addEventListener('biblioteca-atalho-close', handleClose);
+    return () => window.removeEventListener('biblioteca-atalho-close', handleClose);
+  }, [pathname]);
 
   const handle = (slot: Slot) => {
     haptic.selection();
@@ -42,7 +61,7 @@ const BibliotecaBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
       return;
     }
     if (slot.id === 'trilhas') {
-      navigate('/bibliotecas/trilhas');
+      if (!pathname.includes('/trilhas')) navigate('/bibliotecas/trilhas');
       return;
     }
     abrirAtalhoBiblioteca(slot.id);
