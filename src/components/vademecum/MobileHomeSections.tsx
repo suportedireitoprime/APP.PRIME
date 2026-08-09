@@ -595,18 +595,17 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
         </div>
       </div>
 
-      {/* Meus estudos — em lista */}
-      <div className="px-1 pb-24">
+      {/* Meu Espaço — em lista */}
+      <div className="px-1 pb-6">
         <h3 className="font-display text-foreground text-[18px] font-bold mb-3 flex items-center gap-2">
           <span className="w-1 h-5 rounded-full bg-primary" />
-          Meus estudos
+          Meu Espaço
         </h3>
         <p className="font-body text-muted-foreground text-[12.5px] leading-snug mb-3 ml-3">
-          Continue de onde parou: aulas, leituras, resumos e videoaulas.
+          Continue de onde parou: leituras, resumos e videoaulas.
         </p>
         <div className="space-y-2.5">
           {[
-            { id: 'modo-aula',   label: 'Modo Aula',        sub: 'Grave a aula e receba o material', icon: GraduationCap, color: '#8B1E3F', route: '/modo-aula' },
             { id: 'leituras',    label: 'Minhas Leituras',  sub: 'Livros em andamento e progresso',  icon: BookOpen,      color: '#FFD400', route: '/minhas-leituras' },
             { id: 'resumos',     label: 'Meus Resumos',     sub: 'Favoritos e abertos recentemente', icon: NotebookPen,   color: '#22D3EE', route: '/meus-resumos' },
             { id: 'videoaulas',  label: 'Minhas Videoaulas',sub: 'Em andamento e favoritas',         icon: Video,         color: '#FF2D78', route: '/minhas-videoaulas' },
@@ -614,7 +613,7 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
             <button
               key={it.id}
               onClick={() => navigate(it.route)}
-              data-track={`home_meus_estudos_${it.id}`}
+              data-track={`home_meu_espaco_${it.id}`}
               className="w-full flex items-center gap-3 px-4 py-5 min-h-[76px] rounded-2xl bg-card border border-border/60 shadow-sm active:scale-[0.99] transition"
             >
               <it.icon
@@ -636,6 +635,42 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
               <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
             </button>
           ))}
+        </div>
+      </div>
+
+      {/* Modo Aula */}
+      <div className="px-1 pb-24">
+        <h3 className="font-display text-foreground text-[18px] font-bold mb-3 flex items-center gap-2">
+          <span className="w-1 h-5 rounded-full bg-primary" />
+          Modo Aula
+        </h3>
+        <p className="font-body text-muted-foreground text-[12.5px] leading-snug mb-3 ml-3">
+          Grave sua aula e receba o material e resumos automáticos.
+        </p>
+        <div className="space-y-2.5">
+          <button
+            onClick={() => navigate('/modo-aula')}
+            data-track="home_modo_aula_click"
+            className="w-full flex items-center gap-3 px-4 py-5 min-h-[76px] rounded-2xl bg-card border border-border/60 shadow-sm active:scale-[0.99] transition"
+          >
+            <GraduationCap
+              className="w-8 h-8 shrink-0"
+              style={{
+                color: '#8B1E3F',
+                filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))',
+              }}
+              strokeWidth={1.15}
+            />
+            <div className="flex-1 min-w-0 text-left">
+              <p className="font-display text-foreground text-[15.5px] font-bold leading-tight truncate">
+                Modo Aula
+              </p>
+              <p className="font-body text-muted-foreground text-[12px] leading-tight truncate mt-0.5">
+                Grave a aula e receba o material
+              </p>
+            </div>
+            <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
+          </button>
         </div>
       </div>
 
