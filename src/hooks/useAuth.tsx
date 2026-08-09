@@ -119,7 +119,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [initialSession] = useState<Session | null>(() => readCachedSession());
   const [user, setUser] = useState<User | null>(initialSession?.user ?? null);
   const [session, setSession] = useState<Session | null>(initialSession);
-  const [loading, setLoading] = useState(!initialSession && hasPendingAuthCallback());
+  const [loading, setLoading] = useState(!initialSession);
 
 
   useEffect(() => {
