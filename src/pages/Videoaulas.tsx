@@ -73,20 +73,21 @@ const Videoaulas = () => {
   );
 
   const lista = useMemo(() => {
-      const l = [...areasDireito].sort((a, b) => {
-        const ai = a.pct > 0 ? 0 : 1;
-        const bi = b.pct > 0 ? 0 : 1;
-        if (ai !== bi) return ai - bi;
-        if (ai === 0 && b.pct !== a.pct) return b.pct - a.pct;
-        return a.area.localeCompare(b.area, 'pt-BR');
-      });
-      let result = filtro === 'andamento' ? l.filter((a) => a.pct > 0) : l;
-      if (busca.trim()) {
-        const b = busca.toLowerCase();
-        result = result.filter(a => a.area.toLowerCase().includes(b));
-      }
-      return result;
-    }, [areasDireito, filtro, busca]);
+    const l = [...areasDireito].sort((a, b) => {
+      const ai = a.pct > 0 ? 0 : 1;
+      const bi = b.pct > 0 ? 0 : 1;
+      if (ai !== bi) return ai - bi;
+      if (ai === 0 && b.pct !== a.pct) return b.pct - a.pct;
+      return a.area.localeCompare(b.area, 'pt-BR');
+    });
+    let result = filtro === 'andamento' ? l.filter((a) => a.pct > 0) : l;
+    if (busca.trim()) {
+      const normalize = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, '');
+      const b = normalize(busca);
+      result = result.filter(a => normalize(a.area).includes(b));
+    }
+    return result;
+  }, [areasDireito, filtro, busca]);
 
   const pct = data.pctGeral;
   const size = 72;
@@ -322,8 +323,8 @@ const Videoaulas = () => {
       <Drawer open={drawerBusca} onOpenChange={setDrawerBusca}>
         <DrawerContent className="h-[95vh] bg-background border-t border-white/10 px-0 flex flex-col">
           <DrawerTitle className="sr-only">Pesquisar disciplina</DrawerTitle>
-          <div className="p-4 border-b border-white/10 shrink-0">
-             <div className="relative">
+          <div className="p-4 border-b border-white/10 shrink-0 flex items-center gap-3">
+             <div className="relative flex-1">
                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                <input
                  autoFocus
@@ -331,17 +332,31 @@ const Videoaulas = () => {
                  placeholder="Digite o nome da disciplina..."
                  value={busca}
                  onChange={(e) => setBusca(e.target.value)}
-                 className="w-full h-12 bg-black/40 border border-white/10 rounded-2xl pl-12 pr-12 text-white placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all"
+                 className="w-full h-12 bg-black/40 border border-white/10 rounded-2xl pl-12 pr-20 text-white placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all"
                />
-               {busca && (
+               <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
+                 {busca && (
+                   <button 
+                     onClick={() => setBusca('')}
+                     className="p-2 hover:bg-white/5 rounded-full transition-colors"
+                   >
+                     <X className="h-4 w-4 text-muted-foreground" />
+                   </button>
+                 )}
                  <button 
-                   onClick={() => setBusca('')}
-                   className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-white/5 rounded-full transition-colors"
+                   onClick={() => { haptic.selection(); /* lgica p voz */ }}
+                   className="p-2 hover:bg-white/5 rounded-full transition-colors"
                  >
-                   <X className="h-4 w-4 text-muted-foreground" />
+                   <Mic className="h-4 w-4 text-muted-foreground" />
                  </button>
-               )}
+               </div>
              </div>
+             <button 
+               onClick={() => { haptic.selection(); setDrawerBusca(false); }}
+               className="text-[13px] font-semibold text-muted-foreground hover:text-white transition-colors px-1"
+             >
+               Cancelar
+             </button>
           </div>
           <div className="flex-1 overflow-y-auto p-4 space-y-2">
             {lista.length === 0 && (
