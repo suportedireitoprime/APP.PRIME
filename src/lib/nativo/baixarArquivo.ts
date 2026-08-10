@@ -40,6 +40,10 @@ type OpcoesDownload = {
    * compartilhar). Padrão: true. Passe false para ir direto ao compartilhar.
    */
   menu?: boolean;
+  /** Força a ação direta sem exibir o menu. */
+  acaoFixa?: 'salvar' | 'compartilhar';
+  /** Texto opcional que acompanha o compartilhamento do arquivo. */
+  textoCompartilhamento?: string;
 };
 
 /**
@@ -79,10 +83,9 @@ export async function baixarBlob(
       recursive: true,
     });
 
-    // Objeto (não `let`) para o TS não estreitar o tipo dentro dos callbacks.
-    const escolha: { acao: 'salvar' | 'compartilhar' } = { acao: 'compartilhar' };
+    const escolha: { acao: 'salvar' | 'compartilhar' } = { acao: opcoes.acaoFixa || 'compartilhar' };
     let cancelou = false;
-    if (menu) {
+    if (menu && !opcoes.acaoFixa) {
       const { menuAcoes } = await import('./menuAcoes');
       let escolheu = false;
       const mostrou = await menuAcoes({
@@ -111,6 +114,7 @@ export async function baixarBlob(
 
     await Share.share({
       title: titulo || nome,
+      text: opcoes.textoCompartilhamento,
       files: [uri],
       dialogTitle: titulo || 'Salvar ou compartilhar',
     });

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Download, Loader2, Key, HelpCircle, StickyNote, FileText, ChevronDown, BookOpen } from 'lucide-react';
+import { Download, Loader2, Key, HelpCircle, StickyNote, FileText, ChevronDown, BookOpen, Send } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 import { Document, Page, Text, View, StyleSheet, pdf } from '@react-pdf/renderer';
 import { toast } from 'sonner';
 import { baixarBlob } from '@/lib/nativo';
@@ -95,17 +96,37 @@ const ResumoCornellView = ({ data, leiNome, artigoNumero }: Props) => {
   const [exporting, setExporting] = useState(false);
   const [expandedQ, setExpandedQ] = useState<number | null>(null);
 
-  const handleExport = async () => {
+  const handleDownload = async () => {
+    setExporting(true);
+    try {
+      const blob = await pdf(<CornellPdfDoc data={data} />).toBlob();
+      await baixarBlob(blob, `cornell-${artigoNumero.replace(/\s+/g, '-')}.pdf`, {
+        titulo: `Resumo Cornell — Art. ${artigoNumero}`,
+        toastSucesso: true,
+        menu: false,
+        acaoFixa: 'salvar'
+      });
+    } catch (e) {
+      toast.error('Erro ao baixar PDF');
+      console.error(e);
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const handleShare = async () => {
     setExporting(true);
     try {
       const blob = await pdf(<CornellPdfDoc data={data} />).toBlob();
       await baixarBlob(blob, `cornell-${artigoNumero.replace(/\s+/g, '-')}.pdf`, {
         titulo: `Resumo Cornell — Art. ${artigoNumero}`,
         toastSucesso: false,
+        menu: false,
+        acaoFixa: 'compartilhar',
+        textoCompartilhamento: `Ó, esse aqui é o resumo Cornell de ${leiNome} - Art. ${artigoNumero}. Bons estudos! 🚀`
       });
-      toast.success('PDF Cornell exportado!');
     } catch (e) {
-      toast.error('Erro ao gerar PDF');
+      toast.error('Erro ao enviar PDF');
       console.error(e);
     } finally {
       setExporting(false);
@@ -113,11 +134,11 @@ const ResumoCornellView = ({ data, leiNome, artigoNumero }: Props) => {
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 bg-white p-4 md:p-6 rounded-2xl border border-slate-200">
       {/* Title */}
       <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
-        <h2 className="font-display text-xl font-bold text-foreground">{data.titulo}</h2>
-        <p className="text-sm text-muted-foreground mt-1">{leiNome} — Método Cornell</p>
+        <h2 className="font-display text-xl font-bold text-zinc-900">{data.titulo}</h2>
+        <p className="text-sm text-slate-500 mt-1">{leiNome} — Método Cornell</p>
       </motion.div>
 
       {/* Two columns layout */}
@@ -125,38 +146,38 @@ const ResumoCornellView = ({ data, leiNome, artigoNumero }: Props) => {
         {/* Left: Keywords + Questions */}
         <div className="space-y-4">
           <motion.div initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}
-            className="rounded-xl border border-primary/20 bg-primary/5 p-5">
+            className="rounded-xl border border-indigo-200 bg-indigo-50 p-5">
             <div className="flex items-center gap-2 mb-3">
-              <Key className="w-5 h-5 text-primary" />
-              <span className="text-sm font-bold text-primary uppercase tracking-wider">Palavras-chave</span>
+              <Key className="w-5 h-5 text-indigo-600" />
+              <span className="text-sm font-bold text-indigo-600 uppercase tracking-wider">Palavras-chave</span>
             </div>
             <div className="flex flex-wrap gap-2">
               {data.palavras_chave.map((k, i) => (
-                <span key={i} className="px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium">{k}</span>
+                <span key={i} className="px-3 py-1.5 rounded-full bg-indigo-100 text-indigo-700 text-sm font-medium">{k}</span>
               ))}
             </div>
           </motion.div>
 
           <motion.div initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}
-            className="rounded-xl border border-accent/20 bg-accent/5 p-5">
+            className="rounded-xl border border-sky-200 bg-sky-50 p-5">
             <div className="flex items-center gap-2 mb-4">
-              <HelpCircle className="w-5 h-5 text-accent" />
-              <span className="text-sm font-bold text-accent uppercase tracking-wider">Perguntas</span>
+              <HelpCircle className="w-5 h-5 text-sky-600" />
+              <span className="text-sm font-bold text-sky-600 uppercase tracking-wider">Perguntas</span>
             </div>
             <div className="space-y-2">
               {data.perguntas.map((p, i) => {
                 const item = normalizePergunta(p);
                 const isOpen = expandedQ === i;
                 return (
-                  <div key={i} className="rounded-lg border border-accent/15 bg-background/50 overflow-hidden">
+                  <div key={i} className="rounded-lg border border-sky-200 bg-white overflow-hidden">
                     <button
                       onClick={() => setExpandedQ(isOpen ? null : i)}
                       className="w-full flex items-center gap-2 px-4 py-3 text-left"
                     >
-                      <span className="font-bold text-accent text-sm shrink-0">{i + 1}.</span>
-                      <span className="text-base font-semibold text-foreground flex-1">{item.pergunta}</span>
+                      <span className="font-bold text-sky-600 text-sm shrink-0">{i + 1}.</span>
+                      <span className="text-base font-semibold text-zinc-800 flex-1">{item.pergunta}</span>
                       <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
-                        <ChevronDown className="w-4 h-4 text-accent shrink-0" />
+                        <ChevronDown className="w-4 h-4 text-sky-600 shrink-0" />
                       </motion.div>
                     </button>
                     <AnimatePresence>
@@ -168,9 +189,9 @@ const ResumoCornellView = ({ data, leiNome, artigoNumero }: Props) => {
                           transition={{ duration: 0.25 }}
                         >
                           <div className="px-4 pb-4 pt-0">
-                            <div className="p-3 rounded-lg bg-accent/10 border border-accent/20">
-                              <p className="text-base text-foreground leading-[1.8]">
-                                <span className="font-bold text-accent">R:</span> {item.resposta}
+                            <div className="p-3 rounded-lg bg-sky-50 border border-sky-100">
+                              <p className="text-base text-zinc-700 leading-[1.8]">
+                                <span className="font-bold text-sky-700">R:</span> {item.resposta}
                               </p>
                             </div>
                           </div>
@@ -186,22 +207,24 @@ const ResumoCornellView = ({ data, leiNome, artigoNumero }: Props) => {
 
         {/* Right: Notes */}
         <motion.div initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15 }}
-          className="rounded-xl border border-border bg-card p-3 md:p-5">
+          className="rounded-xl border border-slate-200 bg-slate-50 p-3 md:p-5">
           <div className="flex items-center gap-2 mb-5">
-            <StickyNote className="w-5 h-5 text-foreground/60" />
-            <span className="text-sm font-bold text-foreground/60 uppercase tracking-wider">Anotações</span>
+            <StickyNote className="w-5 h-5 text-slate-500" />
+            <span className="text-sm font-bold text-slate-500 uppercase tracking-wider">Anotações</span>
           </div>
           <div className="space-y-4">
             {data.anotacoes.map((a, i) => (
-              <div key={i} className="rounded-xl bg-muted/30 border border-primary/10 p-3">
-                <div className="flex items-center gap-2 mb-1.5">
-                  <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold shrink-0">
+              <div key={i} className="rounded-xl bg-white border border-slate-200 p-3 shadow-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs font-bold shrink-0">
                     {i + 1}
                   </div>
-                  <BookOpen className="w-3.5 h-3.5 text-primary/60 shrink-0" />
-                  <h4 className="font-bold text-base text-foreground">{a.topico}</h4>
+                  <BookOpen className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                  <h4 className="font-bold text-base text-zinc-900">{a.topico}</h4>
                 </div>
-                <p className="text-base leading-[1.8] text-foreground ml-8">{a.conteudo}</p>
+                <div className="text-base leading-[1.8] text-zinc-700 ml-8 prose prose-sm prose-zinc max-w-none prose-p:my-1 prose-headings:my-2">
+                  <ReactMarkdown>{a.conteudo}</ReactMarkdown>
+                </div>
               </div>
             ))}
           </div>
@@ -210,20 +233,35 @@ const ResumoCornellView = ({ data, leiNome, artigoNumero }: Props) => {
 
       {/* Summary footer */}
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-        className="rounded-xl bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 border border-primary/20 p-5">
+        className="rounded-xl bg-slate-100 border border-slate-200 p-5">
         <div className="flex items-center gap-2 mb-3">
-          <FileText className="w-5 h-5 text-primary" />
-          <span className="text-sm font-bold text-primary uppercase tracking-wider">Resumo Geral</span>
+          <FileText className="w-5 h-5 text-indigo-600" />
+          <span className="text-sm font-bold text-indigo-600 uppercase tracking-wider">Resumo Geral</span>
         </div>
-        <p className="text-base text-foreground/80 leading-[1.8]">{data.resumo_geral}</p>
+        <div className="text-base text-zinc-700 leading-[1.8] prose prose-sm prose-zinc max-w-none prose-p:my-1">
+          <ReactMarkdown>{data.resumo_geral}</ReactMarkdown>
+        </div>
       </motion.div>
 
-      {/* Export button */}
-      <motion.button initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
-        onClick={handleExport} disabled={exporting}
-        className="w-full py-3.5 rounded-xl bg-primary text-primary-foreground font-semibold text-base flex items-center justify-center gap-2 disabled:opacity-50">
-        {exporting ? <><Loader2 className="w-5 h-5 animate-spin" /> Gerando PDF...</> : <><Download className="w-5 h-5" /> Baixar PDF Cornell</>}
-      </motion.button>
+      {/* Export buttons */}
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
+        className="grid grid-cols-2 gap-3"
+      >
+        <button
+          onClick={handleDownload} disabled={exporting}
+          className="w-full py-3.5 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300 font-semibold text-base flex items-center justify-center gap-2 disabled:opacity-50 transition-colors"
+        >
+          {exporting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5" />}
+          Baixar
+        </button>
+        <button
+          onClick={handleShare} disabled={exporting}
+          className="w-full py-3.5 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 font-semibold text-base flex items-center justify-center gap-2 disabled:opacity-50 transition-colors"
+        >
+          {exporting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-4 h-4 -mt-0.5" />}
+          Enviar
+        </button>
+      </motion.div>
     </div>
   );
 };
