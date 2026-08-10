@@ -412,9 +412,6 @@ const VideoaulaView = () => {
             {/* Descrição / Panorama da Aula */}
             {(aula?.sobre_aula || aula?.descricao || resumo.data?.resumo) && (
               <div className="space-y-2 mb-4">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-primary">
-                  Do que trata a aula
-                </h3>
                 <div className="text-[15px] leading-relaxed text-foreground/90 space-y-3 font-body">
                   <ReactMarkdown
                     remarkPlugins={[remarkGfm]}
@@ -460,9 +457,7 @@ const VideoaulaView = () => {
                       ),
                     }}
                   >
-                    {normalizarMarkdown(resumo.data?.resumo || aula?.sobre_aula || aula?.descricao || '')
-                      .replace(/^#\s*do que trata a aula\s*/im, '')
-                      .trim()}
+                    {normalizarMarkdown(resumo.data?.resumo || aula?.sobre_aula || aula?.descricao || '')}
                   </ReactMarkdown>
                 </div>
               </div>

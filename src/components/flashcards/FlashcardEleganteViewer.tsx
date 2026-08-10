@@ -238,12 +238,12 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
         <button
           onClick={goPrev}
           disabled={idx === 0}
-          className="h-10 px-3 rounded-xl text-sm font-semibold inline-flex items-center gap-1 disabled:opacity-30 transition-colors hover:bg-white/5 text-foreground"
+          className="h-10 px-3 rounded-xl text-sm font-semibold inline-flex items-center gap-1 disabled:opacity-30 transition-colors hover:bg-white/5 text-foreground shrink-0"
         >
           <ChevronLeft className="w-4 h-4" /> Anterior
         </button>
 
-        <div className="flex items-center gap-1.5">
+        <div className="hidden md:flex items-center gap-1.5">
           {cards.map((_, i) => (
             <button
               key={i}
@@ -269,7 +269,7 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.2 }}
             onClick={goNext}
-            className="h-10 px-4 rounded-xl text-sm font-bold inline-flex items-center gap-1 transition-all active:scale-95 text-white shadow-md"
+            className="h-10 px-4 rounded-xl text-sm font-bold inline-flex items-center gap-1 transition-all active:scale-95 text-white shadow-md shrink-0"
             style={{
               background: `linear-gradient(90deg, ${accent}, color-mix(in oklab, ${accent} 70%, white))`,
               boxShadow: `0 4px 16px ${accent}66`,
@@ -278,7 +278,7 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
             Próximo <ChevronRight className="w-4 h-4" />
           </motion.button>
         ) : (
-          <span className="h-10 px-4 inline-flex items-center text-xs text-muted-foreground/60 select-none">
+          <span className="h-10 px-4 inline-flex items-center text-xs text-muted-foreground/60 select-none shrink-0 whitespace-nowrap">
             {idx === total - 1 ? "Último" : "Vire o card →"}
           </span>
         )}

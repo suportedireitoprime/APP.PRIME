@@ -74,10 +74,14 @@ const VideoaulasCatalogo = () => {
       setLoading(true);
     }
     (async () => {
-      const rows = await loadCatalogo(catalogo.id);
-      if (!alive) return;
-      setAulas(rows as Aula[]);
-      setLoading(false);
+      try {
+        const rows = await loadCatalogo(catalogo.id);
+        if (alive) setAulas(rows as Aula[]);
+      } catch (err) {
+        console.error("Erro ao carregar catálogo", err);
+      } finally {
+        if (alive) setLoading(false);
+      }
     })();
     const off = subscribeVideoaulas(() => {
       if (!alive) return;

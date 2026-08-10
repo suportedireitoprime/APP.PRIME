@@ -26,7 +26,11 @@ export function buildPrompt(tipo: string, c: AulaCtx): string {
   const ctx = header(c);
   switch (tipo) {
     case "flashcards":
-      return `Você é uma professora de Direito criando flashcards de revisão para concursos e OAB a partir do conteúdo jurídico explicado na videoaula.\n${ctx}\n\nGere 8 flashcards sobre conceitos, regras, classificações, prazos, exceções e aplicações jurídicas abordadas. NÃO crie cartões sobre plataforma, canal, ensino gratuito, apresentação do curso ou frases institucionais.\nResponda APENAS JSON estrito (sem \`\`\`):\n{"cards":[{"frente":"...","verso":"..."}]}`;
+      return `Você é uma professora de Direito criando flashcards de revisão para concursos e OAB a partir do conteúdo jurídico explicado na videoaula.\n${ctx}\n\nGere 12 a 15 flashcards MISTOS contemplando três estilos:
+1) Tradicional: pergunta direta sobre regras/prazos e resposta direta;
+2) Lacunas: frase doutrinária/legal com uma palavra essencial substituída por "_____" e a resposta sendo a palavra;
+3) Conceito-chave: "frente" sendo o termo jurídico, e "verso" sendo a definição.
+NÃO crie cartões sobre plataforma, canal, ensino gratuito, apresentação do curso ou frases institucionais.\nResponda APENAS JSON estrito (sem \`\`\`):\n{"cards":[{"frente":"...","verso":"..."}]}`;
 
     case "lacunas":
       return `Você é uma professora de Direito criando flashcards do tipo CLOZE (lacuna) sobre o tema desta videoaula.\n${ctx}\n\nGere 8 cartões. Em "frente" coloque uma frase doutrinária/legal com a palavra-chave SUBSTITUÍDA por "_____" (5 underlines). Em "verso" coloque APENAS a palavra/expressão que completa a lacuna.\nResponda APENAS JSON estrito (sem \`\`\`):\n{"cards":[{"frente":"O prazo prescricional do crime é de _____ anos.","verso":"oito"}]}`;

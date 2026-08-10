@@ -168,7 +168,7 @@ export default function VideoaulaAcoesBar({ input, gridLayout, extras, hideQuest
               </button>
 
               <button
-                onClick={guard(() => { haptic.selection(); setSeletor("flash"); })}
+                onClick={guard(() => { haptic.light(); setAba("flashcards"); })}
                 className="flex flex-col items-center justify-center gap-1 py-2 rounded-xl transition-all text-muted-foreground hover:bg-muted/50"
               >
                 <RefreshCw className="w-7 h-7 sm:w-8 sm:h-8 drop-shadow-md" strokeWidth={1.2} />
@@ -347,12 +347,12 @@ function PainelOverlay({ input, tipo, onClose }: { input: AulaCtxInput | null; t
         onClick={(e) => e.stopPropagation()}
         className={cn(
           "relative overflow-y-auto border-border bg-card shadow-2xl",
-          tipo === "questoes"
+          tipo === "questoes" || tipo === "flashcards"
             ? "w-full h-full max-h-screen rounded-none pb-12 sm:pb-12"
             : "w-full sm:max-w-lg max-h-[92vh] rounded-t-3xl sm:rounded-3xl pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] sm:pb-0"
         )}
       >
-        {tipo === "questoes" ? (
+        {tipo === "questoes" || tipo === "flashcards" ? (
           <div className="sticky top-0 z-10 flex items-center gap-3 px-4 py-4 bg-card/95 backdrop-blur border-b border-border">
             <button onClick={onClose} className="h-10 w-10 shrink-0 grid place-items-center rounded-full bg-black/60 hover:bg-black/80 text-white transition-colors">
               <X className="h-5 w-5" />
