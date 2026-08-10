@@ -437,7 +437,7 @@ const VideoaulasArea = () => {
                   >
                     <div className="relative w-36 shrink-0 aspect-video rounded-xl overflow-hidden bg-muted self-center shadow-inner">
                       <img
-                        src={a.thumb || a.thumbnail || ytThumb(a.video_id, 'mq')}
+                        src={areaSlug === 'direito-penal' ? '/capas/direito-penal.jpg' : (a.thumb || a.thumbnail || ytThumb(a.video_id, 'mq'))}
                         alt={`Capa da aula ${limparTitulo(a.titulo)}`}
                         width={320}
                         height={180}
