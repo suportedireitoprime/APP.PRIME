@@ -40,7 +40,6 @@ export function TrilhaAula({ videoId, concluida, pctAtual, onMarcarConcluida }: 
     }
   };
 
-  // Simula marcação ao clicar nos itens
   const handleAssistirClick = () => {
     if (!concluida) {
       onMarcarConcluida();
@@ -57,7 +56,6 @@ export function TrilhaAula({ videoId, concluida, pctAtual, onMarcarConcluida }: 
   const handleQuestoesClick = () => {
     if (!questoesDone) {
       setQuestoesDone(true);
-      // Gera nota aleatória entre 5 e 10 (passos de 0.5) para demonstração visual
       const mockNota = Math.floor(Math.random() * 11) * 0.5 + 5;
       const notaF = Math.min(10, mockNota);
       setNotaQuestoes(notaF);
@@ -69,102 +67,111 @@ export function TrilhaAula({ videoId, concluida, pctAtual, onMarcarConcluida }: 
   const isRevisando = concluida && !flashcardsDone;
   const isPraticando = concluida && flashcardsDone && !questoesDone;
 
+  // Calcula preenchimento da linha baseado nos passos
+  let progressPct = "0%";
+  if (questoesDone) progressPct = "100%";
+  else if (flashcardsDone) progressPct = "50%";
+  else if (concluida) progressPct = "15%";
+
   return (
-    <div className="bg-secondary/30 rounded-2xl p-4 border border-border/50 shadow-inner">
-      <h3 className="text-[11px] uppercase font-black text-muted-foreground mb-4 tracking-widest flex items-center gap-2">
-        Trilha de Conclusão da Aula
-      </h3>
-      <div className="space-y-2">
+    <div className="bg-card rounded-2xl p-3 sm:p-4 border border-border/60 shadow-sm relative overflow-hidden">
+      {/* Fundo sutil para destacar a área da trilha */}
+      <div className="absolute inset-0 bg-gradient-to-r from-secondary/10 via-secondary/20 to-secondary/10 pointer-events-none" />
+
+      <div className="relative z-10 flex items-start justify-between px-2 sm:px-6">
         
-        {/* Passo 1: Assistir Aula */}
+        {/* Linha Conectora */}
+        <div className="absolute left-[10%] right-[10%] top-[14px] sm:top-4 h-[2px] bg-border z-0 rounded-full overflow-hidden">
+          <div 
+            className="h-full bg-primary transition-all duration-700 ease-in-out" 
+            style={{ width: progressPct }} 
+          />
+        </div>
+
+        {/* Passo 1: Aula */}
         <button 
-          onClick={handleAssistirClick}
-          className={cn(
-            "w-full flex items-center justify-between p-3 rounded-xl border transition-all text-left",
-            concluida ? "bg-primary/5 border-primary/20" : "bg-card border-border hover:border-primary/50",
-            isAssistindo && "ring-2 ring-primary/50 shadow-[0_0_15px_rgba(239,68,68,0.15)] bg-card"
-          )}
+          onClick={handleAssistirClick} 
+          className="relative z-10 flex flex-col items-center gap-1.5 group outline-none"
         >
-          <div className="flex items-center gap-3">
-            <div className={cn("w-8 h-8 rounded-full flex items-center justify-center shrink-0", concluida ? "bg-primary text-white shadow-md shadow-primary/30" : "bg-muted text-muted-foreground")}>
-              {concluida ? <CheckCircle2 className="w-5 h-5" /> : <Play className="w-4 h-4 ml-0.5" />}
+          <div className="relative">
+            <div className={cn(
+              "w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-all duration-300", 
+              concluida 
+                ? "bg-primary text-white shadow-[0_0_12px_rgba(239,68,68,0.5)] scale-110" 
+                : "bg-card border-2 border-border text-muted-foreground",
+              isAssistindo && "border-primary/50 text-primary bg-card"
+            )}>
+              {concluida ? <CheckCircle2 className="w-4 h-4 sm:w-4 sm:h-4" /> : <Play className="w-3 h-3 sm:w-3.5 sm:h-3.5 ml-0.5" />}
             </div>
-            <div>
-              <p className={cn("text-sm font-bold", concluida ? "text-primary" : "text-foreground")}>1. Assistir Aula</p>
-              <p className="text-[11px] font-medium text-muted-foreground">{concluida ? "Concluído" : pctAtual > 0 ? `${pctAtual}% assistido` : "Pendente"}</p>
-            </div>
+            {isAssistindo && (
+               <div className="absolute inset-0 -m-1">
+                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-30"></span>
+               </div>
+            )}
           </div>
-          {isAssistindo && (
-             <div className="flex h-3 w-3 relative shrink-0">
-               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-               <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
-             </div>
-          )}
+          <span className={cn("text-[9px] sm:text-[10px] font-bold uppercase tracking-wider", concluida ? "text-primary" : isAssistindo ? "text-foreground" : "text-muted-foreground")}>Aula</span>
         </button>
 
-        {/* Passo 2: Revisar Flashcards */}
+        {/* Passo 2: Flashcards */}
         <button 
-          onClick={handleFlashcardsClick}
+          onClick={handleFlashcardsClick} 
           className={cn(
-            "w-full flex items-center justify-between p-3 rounded-xl border transition-all text-left",
-            flashcardsDone ? "bg-primary/5 border-primary/20" : "bg-card border-border hover:border-primary/50",
-            !concluida && "opacity-40 grayscale pointer-events-none",
-            isRevisando && "ring-2 ring-primary/50 shadow-[0_0_15px_rgba(239,68,68,0.15)] bg-card"
+            "relative z-10 flex flex-col items-center gap-1.5 group outline-none",
+            !concluida && "opacity-40 grayscale pointer-events-none"
           )}
         >
-          <div className="flex items-center gap-3">
-            <div className={cn("w-8 h-8 rounded-full flex items-center justify-center shrink-0", flashcardsDone ? "bg-primary text-white shadow-md shadow-primary/30" : "bg-muted text-muted-foreground")}>
-              {flashcardsDone ? <CheckCircle2 className="w-5 h-5" /> : <Layers className="w-4 h-4" />}
+          <div className="relative">
+            <div className={cn(
+              "w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-all duration-300", 
+              flashcardsDone 
+                ? "bg-primary text-white shadow-[0_0_12px_rgba(239,68,68,0.5)] scale-110" 
+                : "bg-card border-2 border-border text-muted-foreground",
+              isRevisando && "border-primary/50 text-primary bg-card"
+            )}>
+              {flashcardsDone ? <CheckCircle2 className="w-4 h-4 sm:w-4 sm:h-4" /> : <Layers className="w-3 h-3 sm:w-3.5 sm:h-3.5" />}
             </div>
-            <div>
-              <p className={cn("text-sm font-bold", flashcardsDone ? "text-primary" : "text-foreground")}>2. Revisar Flashcards</p>
-              <p className="text-[11px] font-medium text-muted-foreground">{flashcardsDone ? "Concluído" : "Pendente"}</p>
-            </div>
+            {isRevisando && (
+               <div className="absolute inset-0 -m-1">
+                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-30"></span>
+               </div>
+            )}
           </div>
-          {isRevisando && (
-             <div className="flex h-3 w-3 relative shrink-0">
-               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-               <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
-             </div>
-          )}
+          <span className={cn("text-[9px] sm:text-[10px] font-bold uppercase tracking-wider", flashcardsDone ? "text-primary" : isRevisando ? "text-foreground" : "text-muted-foreground")}>Flashcards</span>
         </button>
 
-        {/* Passo 3: Praticar Questões */}
+        {/* Passo 3: Questões */}
         <button 
-          onClick={handleQuestoesClick}
+          onClick={handleQuestoesClick} 
           className={cn(
-            "w-full flex items-center justify-between p-3 rounded-xl border transition-all text-left",
-            questoesDone ? "bg-primary/5 border-primary/20" : "bg-card border-border hover:border-primary/50",
-            (!concluida || !flashcardsDone) && "opacity-40 grayscale pointer-events-none",
-            isPraticando && "ring-2 ring-primary/50 shadow-[0_0_15px_rgba(239,68,68,0.15)] bg-card"
+            "relative z-10 flex flex-col items-center gap-1.5 group outline-none",
+            (!concluida || !flashcardsDone) && "opacity-40 grayscale pointer-events-none"
           )}
         >
-          <div className="flex items-center gap-3">
-            <div className={cn("w-8 h-8 rounded-full flex items-center justify-center shrink-0", questoesDone ? "bg-primary text-white shadow-md shadow-primary/30" : "bg-muted text-muted-foreground")}>
-              {questoesDone ? <CheckCircle2 className="w-5 h-5" /> : <ListChecks className="w-4 h-4" />}
+          <div className="relative">
+            <div className={cn(
+              "w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-all duration-300", 
+              questoesDone 
+                ? "bg-primary text-white shadow-[0_0_12px_rgba(239,68,68,0.5)] scale-110" 
+                : "bg-card border-2 border-border text-muted-foreground",
+              isPraticando && "border-primary/50 text-primary bg-card"
+            )}>
+              {questoesDone ? <CheckCircle2 className="w-4 h-4 sm:w-4 sm:h-4" /> : <ListChecks className="w-3 h-3 sm:w-3.5 sm:h-3.5" />}
             </div>
-            <div>
-              <p className={cn("text-sm font-bold", questoesDone ? "text-primary" : "text-foreground")}>3. Praticar Questões</p>
-              <p className="text-[11px] font-medium text-muted-foreground">{questoesDone ? "Concluído" : "Pendente"}</p>
-            </div>
-          </div>
-          
-          {isPraticando && (
-             <div className="flex h-3 w-3 relative shrink-0">
-               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-               <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
-             </div>
-          )}
-
-          {questoesDone && notaQuestoes !== null && (
-            <div className="flex flex-col items-end shrink-0">
-              <span className="text-[9px] uppercase font-bold text-muted-foreground tracking-wider mb-0.5">Sua Nota</span>
-              <div className="flex items-center gap-1 text-amber-500 font-black text-lg leading-none">
-                <Star className="w-4 h-4 fill-current mb-0.5" />
-                {notaQuestoes.toFixed(1)}<span className="text-[10px] text-muted-foreground font-semibold">/10</span>
+            {isPraticando && (
+               <div className="absolute inset-0 -m-1">
+                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-30"></span>
+               </div>
+            )}
+            
+            {/* Badge de Nota Absoluto em cima */}
+            {questoesDone && notaQuestoes !== null && (
+              <div className="absolute -top-6 left-1/2 -translate-x-1/2 flex items-center gap-0.5 bg-amber-500/20 text-amber-500 px-1.5 py-0.5 rounded-full border border-amber-500/30 whitespace-nowrap">
+                <Star className="w-2.5 h-2.5 fill-current" />
+                <span className="text-[10px] font-black leading-none">{notaQuestoes.toFixed(1)}</span>
               </div>
-            </div>
-          )}
+            )}
+          </div>
+          <span className={cn("text-[9px] sm:text-[10px] font-bold uppercase tracking-wider", questoesDone ? "text-primary" : isPraticando ? "text-foreground" : "text-muted-foreground")}>Questões</span>
         </button>
 
       </div>
