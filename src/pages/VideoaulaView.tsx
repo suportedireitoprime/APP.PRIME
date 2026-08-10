@@ -338,13 +338,6 @@ const VideoaulaView = () => {
               )}
             >
               <CheckCircle2 className="h-4 w-4" /> {concluida ? 'Concluída' : 'Concluir'}
-            </button>
-            <button
-              onClick={() => setShowAnotacoes(true)}
-              className="inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 text-primary px-3.5 py-1.5 text-[13px] font-semibold transition-colors hover:bg-primary/20"
-            >
-              <FileText className="h-4 w-4" /> Anotações (Áudio/IA)
-            </button>
           </div>
         </div>
 

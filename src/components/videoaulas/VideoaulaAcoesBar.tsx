@@ -6,7 +6,7 @@ import {
   Layers, AlertTriangle, Workflow, NotebookPen, Scale, ListChecks,
   X, Loader2, Sparkles, ChevronLeft, ChevronRight, CheckCircle2,
   FileText, Lightbulb, ListTree, Bookmark, Table as TableIcon, BookOpenText,
-  Brackets, KeyRound, BookA, Lock, RefreshCw,
+  Brackets, KeyRound, BookA, Lock, RefreshCw, PenTool,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useVideoaulaAcao, type AulaAcaoTipo, type AulaCtxInput } from "@/hooks/useVideoaulaAcao";
@@ -127,7 +127,7 @@ export default function VideoaulaAcoesBar({ input, gridLayout, extras, hideQuest
       {gate.gateNode}
       {gridLayout ? (
         <div className={cn("grid gap-1 w-full", gridColsClass)}>
-          {onOpenAnotacoes && <RailBtn icon={FileText} label="Anotações" onClick={onOpenAnotacoes} />}
+          {onOpenAnotacoes && <RailBtn icon={PenTool} label="Anotações" onClick={onOpenAnotacoes} />}
           <RailBtn icon={Layers} label="Flashcards" onClick={() => setSeletor("flash")} />
           <RailBtn icon={AlertTriangle} label="Pegadinhas" onClick={() => setAba("pegadinhas")} />
           <RailBtn icon={BookOpenText} label="Resumos" onClick={() => setSeletor("resumos")} />
@@ -152,7 +152,7 @@ export default function VideoaulaAcoesBar({ input, gridLayout, extras, hideQuest
                 onClick={guard(() => { haptic.selection(); if (onOpenAnotacoes) onOpenAnotacoes(); })}
                 className="flex flex-col items-center justify-center gap-1 py-2 rounded-xl transition-all text-muted-foreground hover:bg-muted/50"
               >
-                <FileText className="w-7 h-7 sm:w-8 sm:h-8 drop-shadow-md" strokeWidth={1.2} />
+                <PenTool className="w-7 h-7 sm:w-8 sm:h-8 drop-shadow-md" strokeWidth={1.2} />
                 <span className="font-body text-[10px] sm:text-[12px] font-medium leading-tight text-center drop-shadow-sm">Anotações</span>
               </button>
               
