@@ -1,12 +1,17 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight, History, Play, Video, Search, Mic } from 'lucide-react';
+import { ChevronRight, History, Play, Video, Search, Mic, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import ThumbImg from '@/components/videoaulas/ThumbImg';
 import VideoaulasBottomNav from '@/components/videoaulas/VideoaulasBottomNav';
 import { areaIconFor } from '@/lib/areasDireitoIcons';
 import { limparTitulo, simplificarNomeArea, ytThumb } from '@/lib/videoaulasCatalogos';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerTitle,
+} from '@/components/ui/drawer';
 import {
   carregarResumoVideoaulas,
   RESUMO_VAZIO,
@@ -27,6 +32,7 @@ const Videoaulas = () => {
   const [loading, setLoading] = useState(() => !resumoVideoaulasSincrono());
   const [filtro, setFiltro] = useState<'todas' | 'andamento'>('todas');
   const [busca, setBusca] = useState('');
+  const [drawerBusca, setDrawerBusca] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -210,26 +216,19 @@ const Videoaulas = () => {
             </div>
           )}
 
-          {/* Search Bar */}
-          <div className="relative mb-6">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Pesquisar disciplina..."
-              value={busca}
-              onChange={(e) => setBusca(e.target.value)}
-              className="w-full h-12 bg-black/40 border border-white/10 rounded-2xl pl-12 pr-12 text-white placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all"
-            />
-            <button 
-              onClick={() => {
-                haptic.selection();
-                // Opcional: implementar lgica de busca por voz se existir
-              }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-white/5 rounded-full transition-colors"
-            >
+          {/* Search Bar - Abre Drawer */}
+          <button 
+            onClick={() => { haptic.selection(); setDrawerBusca(true); }}
+            className="relative w-full mb-6 group text-left"
+          >
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+            <div className="w-full h-12 bg-black/40 border border-white/10 rounded-2xl pl-12 pr-12 text-muted-foreground flex items-center group-hover:border-white/20 transition-all">
+              Pesquisar disciplina...
+            </div>
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-white/5 rounded-full transition-colors pointer-events-none">
               <Mic className="h-4 w-4 text-muted-foreground" />
-            </button>
-          </div>
+            </div>
+          </button>
 
           {/* Áreas do Direito */}
           <div>
@@ -319,6 +318,67 @@ const Videoaulas = () => {
           </div>
         </div>
       </div>
+
+      <Drawer open={drawerBusca} onOpenChange={setDrawerBusca}>
+        <DrawerContent className="h-[95vh] bg-background border-t border-white/10 px-0 flex flex-col">
+          <DrawerTitle className="sr-only">Pesquisar disciplina</DrawerTitle>
+          <div className="p-4 border-b border-white/10 shrink-0">
+             <div className="relative">
+               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+               <input
+                 autoFocus
+                 type="text"
+                 placeholder="Digite o nome da disciplina..."
+                 value={busca}
+                 onChange={(e) => setBusca(e.target.value)}
+                 className="w-full h-12 bg-black/40 border border-white/10 rounded-2xl pl-12 pr-12 text-white placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all"
+               />
+               {busca && (
+                 <button 
+                   onClick={() => setBusca('')}
+                   className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-white/5 rounded-full transition-colors"
+                 >
+                   <X className="h-4 w-4 text-muted-foreground" />
+                 </button>
+               )}
+             </div>
+          </div>
+          <div className="flex-1 overflow-y-auto p-4 space-y-2">
+            {lista.length === 0 && (
+              <p className="text-center text-muted-foreground text-[13px] py-8 font-medium">Nenhuma disciplina encontrada.</p>
+            )}
+            {lista.map((a) => {
+              const { Icon, color } = areaIconFor(a.area);
+              return (
+                <button
+                  key={`${a.catalogo}-${a.slug}-busca`}
+                  onPointerDown={() => prefetchCatalogo('areas')}
+                  onClick={() => {
+                    haptic.selection();
+                    setDrawerBusca(false);
+                    navigate(`/videoaulas/areas/${a.slug}`);
+                  }}
+                  className="group flex w-full items-center gap-3 rounded-2xl border border-border bg-card p-3 text-left transition-all hover:border-primary/40 hover:shadow-sm active:scale-[0.995]"
+                >
+                  <div className="relative flex h-12 w-12 shrink-0 items-center justify-center aprender-icon-shine">
+                    <Icon className="h-7 w-7" strokeWidth={1.9} style={{ color }} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="min-w-0 flex-1 truncate text-[15px] font-semibold text-foreground font-display">
+                      {simplificarNomeArea(a.area)}
+                    </p>
+                    <p className="mt-0.5 flex items-center gap-1 text-[12px] text-muted-foreground">
+                      <Video className="h-3 w-3" />
+                      {a.total} {a.total === 1 ? 'aula' : 'aulas'}
+                    </p>
+                  </div>
+                  <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+                </button>
+              );
+            })}
+          </div>
+        </DrawerContent>
+      </Drawer>
 
       <VideoaulasBottomNav />
     </div>
