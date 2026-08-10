@@ -11,7 +11,15 @@ import { preaquecerYoutubeApi, useYoutubePlayer } from '@/hooks/useYoutubePlayer
 import { getCatalogo, limparTitulo, ytThumb } from '@/lib/videoaulasCatalogos';
 import { useAuth } from '@/hooks/useAuth';
 import { normalizarMarkdown } from '@/lib/markdown';
-import { CheckCircle2, FileText, Loader2, Play, Star } from 'lucide-react';
+import { CheckCircle2, FileText, Loader2, Play, Heart, Share2, MessageCircle, Send } from 'lucide-react';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+  DrawerTrigger,
+} from '@/components/ui/drawer';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { getCachedAula, invalidarFavoritos, invalidarProgresso } from '@/lib/videoaulasStore';
@@ -326,7 +334,7 @@ const VideoaulaView = () => {
                   : 'border-border text-muted-foreground hover:text-foreground',
               )}
             >
-              <Star className={cn('h-4 w-4', favorito && 'fill-current')} /> Favoritar
+              <Heart className={cn('h-4 w-4', favorito && 'fill-current')} /> Favoritar
             </button>
             <button
               onClick={marcarConcluida}
@@ -337,8 +345,52 @@ const VideoaulaView = () => {
                   : 'border-border text-muted-foreground hover:text-foreground',
               )}
             >
-              <CheckCircle2 className="h-4 w-4" /> {concluida ? 'Concluída' : 'Concluir'}
+              <CheckCircle2 className="h-4 w-4" /> {concluida ? 'Marcado como concluído' : 'Marcar como concluído'}
             </button>
+
+            <Drawer>
+              <DrawerTrigger asChild>
+                <button
+                  className="inline-flex items-center gap-1.5 rounded-full border border-border px-3.5 py-1.5 text-[13px] font-medium text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Share2 className="h-4 w-4" /> Compartilhar
+                </button>
+              </DrawerTrigger>
+              <DrawerContent>
+                <div className="mx-auto w-full max-w-sm">
+                  <DrawerHeader>
+                    <DrawerTitle>Compartilhar Aula</DrawerTitle>
+                    <DrawerDescription>Envie esta aula para seus amigos de estudo.</DrawerDescription>
+                  </DrawerHeader>
+                  <div className="p-4 pb-8 space-y-3">
+                    <button
+                      onClick={() => {
+                        const nome = user?.user_metadata?.full_name?.split(' ')[0] || user?.user_metadata?.name?.split(' ')[0] || 'Alguém';
+                        const tema = aula?.area ?? catalogo?.titulo ?? 'Estudos Jurídicos';
+                        const text = encodeURIComponent(`${nome} tá recomendando esse vídeo pra você, que trata de ${tema}.\n\nAcesse a aula aqui:\n${window.location.href}`);
+                        window.open(`https://wa.me/?text=${text}`, '_blank');
+                      }}
+                      className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                    >
+                      <MessageCircle className="h-5 w-5" /> Compartilhar no WhatsApp
+                    </button>
+                    
+                    <button
+                      onClick={() => {
+                        const nome = user?.user_metadata?.full_name?.split(' ')[0] || user?.user_metadata?.name?.split(' ')[0] || 'Alguém';
+                        const tema = aula?.area ?? catalogo?.titulo ?? 'Estudos Jurídicos';
+                        const text = encodeURIComponent(`${nome} tá recomendando esse vídeo pra você, que trata de ${tema}.`);
+                        const url = encodeURIComponent(window.location.href);
+                        window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank');
+                      }}
+                      className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#0088cc] px-4 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                    >
+                      <Send className="h-5 w-5" /> Compartilhar no Telegram
+                    </button>
+                  </div>
+                </div>
+              </DrawerContent>
+            </Drawer>
           </div>
         </div>
 
@@ -408,7 +460,9 @@ const VideoaulaView = () => {
                       ),
                     }}
                   >
-                    {normalizarMarkdown(resumo.data?.resumo || aula?.sobre_aula || aula?.descricao || '')}
+                    {normalizarMarkdown(resumo.data?.resumo || aula?.sobre_aula || aula?.descricao || '')
+                      .replace(/^#\s*do que trata a aula\s*/im, '')
+                      .trim()}
                   </ReactMarkdown>
                 </div>
               </div>
