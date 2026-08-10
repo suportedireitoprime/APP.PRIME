@@ -362,11 +362,11 @@ const VideoaulaView = () => {
             )}
           </div>
 
-          <div className="flex items-center gap-2 px-3 lg:px-0 flex-wrap mt-2">
+          <div className="flex items-center gap-2 px-3 lg:px-0 mt-2 w-full overflow-x-auto pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             <button
               onClick={marcarConcluida}
               className={cn(
-                'inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-colors bg-transparent',
+                'inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-colors bg-transparent flex-shrink-0 whitespace-nowrap',
                 concluida
                   ? 'border-green-500 text-green-500'
                   : 'border-green-500/40 text-muted-foreground hover:border-green-500 hover:text-foreground',
@@ -377,7 +377,7 @@ const VideoaulaView = () => {
             <button
               onClick={toggleFavorito}
               className={cn(
-                'inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-colors bg-transparent',
+                'inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-colors bg-transparent flex-shrink-0 whitespace-nowrap',
                 favorito
                   ? 'border-red-500 text-red-500'
                   : 'border-red-500/40 text-muted-foreground hover:border-red-500 hover:text-foreground',
@@ -388,7 +388,7 @@ const VideoaulaView = () => {
             <Drawer>
               <DrawerTrigger asChild>
                 <button
-                  className="inline-flex items-center gap-1.5 rounded-full border border-blue-500/40 px-3.5 py-1.5 text-[13px] font-medium text-muted-foreground bg-transparent hover:border-blue-500 hover:text-foreground transition-colors"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-blue-500/40 px-3.5 py-1.5 text-[13px] font-medium text-muted-foreground bg-transparent hover:border-blue-500 hover:text-foreground transition-colors flex-shrink-0 whitespace-nowrap"
                 >
                   <Share2 className="h-4 w-4" /> Enviar
                 </button>
