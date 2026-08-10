@@ -110,7 +110,7 @@ const Ferramentas = () => {
 
                     <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
                   </motion.button>
-                  {tool.id === 'me-explique' && <TematicaCarrossel />}
+                  {tool.id === 'tematica' && <TematicaCarrossel />}
                 </div>
               );
             })}

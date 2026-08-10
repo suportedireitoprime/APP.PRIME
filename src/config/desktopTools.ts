@@ -66,6 +66,7 @@ export const DESKTOP_TOOL_GROUPS: DesktopToolGroup[] = [
     tools: [
       { id: 'peticao', label: 'Petição Inicial', desc: 'Monte peças com apoio de IA', icon: FileSignature, route: '/ferramentas/peticao-inicial', color: '#10B981' },
       { id: 'gravar', label: 'Gravar aula', desc: 'Grave e transcreva áudios de estudo', icon: Mic, route: '/anotacoes/audio', color: '#F43F5E' },
+      { id: 'tematica', label: 'Temática Jurídica', desc: 'Filmes, séries e documentários', icon: Film, route: '/tematica-juridica', color: '#0891B2' },
     ],
   },
   {
@@ -74,6 +75,8 @@ export const DESKTOP_TOOL_GROUPS: DesktopToolGroup[] = [
     hint: 'Recursos adicionais do aplicativo',
     tools: [
       { id: 'offline', label: 'Modo Offline', desc: 'Baixe leis e livros para usar sem internet', icon: CloudDownload, route: '/modo-offline', color: '#64748B' },
+      { id: 'me-explique', label: 'Me Explique', desc: 'Explicações passo a passo com IA', icon: Bot, route: '/me-explique', color: '#8B5CF6' },
+      { id: 'assistente', label: 'Assistente Horus', desc: 'IA jurídica para tirar dúvidas', icon: Sparkles, route: '/assistente-horus', color: '#DC2626' },
     ],
   },
   {
