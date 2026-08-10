@@ -88,7 +88,7 @@ export default function Radares() {
       <header className="sticky top-0 z-30 bg-background/85 backdrop-blur-md">
         <div className="max-w-3xl mx-auto lg:max-w-[1300px]">
           <PageHeader
-            title="Radares"
+            title="Radares de Leis"
             subtitle="Panorama legislativo em tempo real"
             onBack={() => goBack()}
           />

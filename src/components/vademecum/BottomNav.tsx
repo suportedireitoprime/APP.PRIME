@@ -148,7 +148,7 @@ const BottomNav = () => {
     { id: 'vade-mecum', label: 'Vade Mecum', desc: 'Legislação completa: códigos, estatutos e leis', icon: Scale, action: () => navigate('/vade-mecum') },
     { id: 'peticao-inicial', label: 'Petição Inicial', desc: 'Gere petições com IA e jurisprudência real do STF/STJ', icon: FileSignature, action: () => navigate('/ferramentas/peticao-inicial'), prefetch: 'peticaoInicial' },
 
-    { id: 'radar360', label: 'Radar 360', desc: 'Alterações recentes e projetos de lei', icon: ScanEye, action: () => navigate('/radar-360'), prefetch: 'radar360' },
+
     { id: 'audioaulas', label: 'Audioaulas', desc: 'Aulas em áudio por área do Direito', icon: Headphones, action: () => navigate('/audioaulas') },
     { id: 'videoaulas', label: 'Videoaulas', desc: 'Aulas em vídeo com flashcards, questões e lei seca por IA', icon: Video, action: () => navigate('/videoaulas') },
     { id: 'gravar-aula', label: 'Gravar aula', desc: 'Grave aulas longas com resumo automático por IA', icon: Mic, action: () => navigate('/anotacoes/audio'), prefetch: 'gravarAula' },
