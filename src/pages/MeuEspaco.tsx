@@ -616,7 +616,6 @@ const MeuEspaco = () => {
 
       </div>
 
-      {COVER_PICKER_MARKER
       {/* Cover picker */}
       <AnimatePresence>
         {coverPickerOpen && (
