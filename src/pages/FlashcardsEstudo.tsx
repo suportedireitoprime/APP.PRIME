@@ -17,6 +17,17 @@ import { haptic } from '@/lib/nativeHaptics';
 import { playFlipSound } from '@/lib/flipSound';
 import { getAreaVisual } from '@/lib/flashcardsAreaVisual';
 import { useGatedFeature } from '@/hooks/useGatedFeature';
+import laurel from '@/assets/landing-tribunal/laurel-leaf.png';
+import scales from '@/assets/landing-tribunal/scales.png';
+
+function hashString(s: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return Math.abs(h);
+}
 
 export type Card = {
   id: string;
@@ -352,7 +363,14 @@ const FlashcardsEstudo = () => {
               </div>
             )}
 
-            {atual && (
+            {atual && (() => {
+              const accent = "#ef4444";
+              const temaKey = atual.tema ?? atual.area ?? atual.pergunta.slice(0, 32);
+              const h = hashString(temaKey);
+              const angle = h % 360;
+              const pattern = h % 4;
+
+              return (
               <>
                 {/* Transição de entrada e saída entre cards (entra um, sai outro) */}
                 <AnimatePresence mode="wait" initial={false}>
@@ -381,55 +399,93 @@ const FlashcardsEstudo = () => {
                       >
                         {/* Frente */}
                         <div
-                          className="absolute inset-0 flex flex-col overflow-hidden rounded-[32px] border bg-card/98 backdrop-blur-xl shadow-[0_20px_50px_-15px_rgba(0,0,0,0.5)] [backface-visibility:hidden] [-webkit-backface-visibility:hidden]"
-                          style={{ borderColor: `${getAreaVisual(atual.area).color}55` }}
+                          className="absolute inset-0 rounded-[32px] border p-6 md:p-8 flex flex-col overflow-hidden text-white [backface-visibility:hidden] [-webkit-backface-visibility:hidden]"
+                          style={{
+                            borderColor: `${accent}40`,
+                            boxShadow: `0 20px 60px -30px ${accent}80, inset 0 0 0 1px ${accent}25`,
+                            background: `
+                              radial-gradient(120% 80% at ${20 + (h % 60)}% ${10 + (h % 40)}%, ${accent}55 0%, transparent 55%),
+                              radial-gradient(100% 70% at ${80 - (h % 50)}% ${90 - (h % 30)}%, ${accent}30 0%, transparent 60%),
+                              linear-gradient(${angle}deg, oklch(0.22 0.04 280) 0%, oklch(0.14 0.03 280) 100%)
+                            `,
+                          }}
                         >
-                          <div
-                            className="h-2 w-full shrink-0"
-                            style={{
-                              background: `linear-gradient(90deg, ${getAreaVisual(atual.area).color}, ${getAreaVisual(atual.area).color}33)`,
-                            }}
-                          />
-                          <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-5 py-5 sm:px-8 sm:py-7">
-                            <Tags card={atual} />
+                          <svg className="absolute inset-0 h-full w-full opacity-[0.07] pointer-events-none" aria-hidden viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice">
+                            <defs>
+                              <pattern id={`fcp-${h}`} x="0" y="0" width={pattern === 0 ? 40 : pattern === 1 ? 60 : 80} height={pattern === 0 ? 40 : pattern === 1 ? 60 : 80} patternUnits="userSpaceOnUse" patternTransform={`rotate(${angle / 6})`}>
+                                {pattern === 0 && <circle cx="20" cy="20" r="1.5" fill="currentColor" />}
+                                {pattern === 1 && <path d="M0 30 L60 30" stroke="currentColor" strokeWidth="0.6" />}
+                                {pattern === 2 && <path d="M0 0 L80 80 M80 0 L0 80" stroke="currentColor" strokeWidth="0.5" />}
+                                {pattern === 3 && <rect x="20" y="20" width="40" height="40" fill="none" stroke="currentColor" strokeWidth="0.5" />}
+                              </pattern>
+                            </defs>
+                            <rect width="400" height="400" fill={`url(#fcp-${h})`} />
+                          </svg>
 
-                            {/* Pergunta Centralizada na vertical e horizontal */}
-                            <div className="my-auto flex-1 flex flex-col items-center justify-center text-center px-2 py-4">
-                              <p className="whitespace-pre-wrap text-xl sm:text-2xl md:text-3xl font-extrabold leading-relaxed tracking-tight text-foreground font-display max-w-xl">
-                                {atual.pergunta}
-                              </p>
-                            </div>
+                          <div className="absolute -top-24 -right-24 h-64 w-64 rounded-full opacity-30 blur-3xl pointer-events-none" style={{ background: accent }} aria-hidden />
 
-                            <p className="mt-auto shrink-0 flex items-center justify-center gap-1.5 text-[10px] sm:text-[11px] font-normal tracking-wide text-muted-foreground/60">
-                              <RotateCcw className="h-3 w-3 text-muted-foreground/60" /> Toque ou aperte espaço para virar
+                          {/* Floating Elements from Landing Page */}
+                          <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[32px]">
+                            {Array.from({ length: 6 }).map((_, i) => (
+                              <img key={i} src={laurel} alt="" aria-hidden="true" className="absolute -top-10 lp-fall" style={{ left: `${(i * 18 + 5) % 100}%`, width: `${14 + (i % 3) * 6}px`, animationDuration: `${12 + (i % 4) * 3}s`, animationDelay: `${i * 1.5}s`, opacity: 0.5, filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />
+                            ))}
+                            <img src={scales} alt="" aria-hidden="true" className="pointer-events-none absolute right-[8%] top-[25%] w-10 lp-float" style={{ animationDirection: 'reverse', opacity: 0.45, filter: `drop-shadow(0 0 12px ${accent}60)` }} />
+                            <img src={laurel} alt="" aria-hidden="true" className="pointer-events-none absolute left-[12%] bottom-[25%] w-8 lp-float" style={{ animationDelay: '2s', opacity: 0.35 }} />
+                          </div>
+
+                          <div className="relative z-10 mb-4 flex items-start justify-between gap-3">
+                            <p className="text-sm md:text-base font-semibold leading-snug line-clamp-2" style={{ color: `color-mix(in oklab, ${accent} 70%, white)`, textShadow: "0 2px 12px rgba(0,0,0,0.55)" }}>
+                              {atual.tema ?? atual.area ?? "Flashcard"}
                             </p>
+                            <Scale className="h-5 w-5 shrink-0" style={{ color: `${accent}`, opacity: 0.7 }} aria-hidden />
+                          </div>
+                          
+                          <div className="relative z-10 flex-1 flex items-center justify-center text-center">
+                            <motion.p initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.3 }} className="text-xl md:text-2xl leading-snug font-medium" style={{ fontFamily: "'Merriweather','Georgia',serif", textShadow: "0 2px 16px rgba(0,0,0,0.6)" }}>
+                              {atual.pergunta}
+                            </motion.p>
+                          </div>
+                          
+                          <div className="relative z-10 mt-auto shrink-0 flex items-center justify-center gap-1.5 text-[10px] sm:text-[11px] font-normal tracking-wide text-white/60 pt-4">
+                            <RotateCcw className="h-3 w-3 text-white/60" /> Toque ou aperte espaço para virar
                           </div>
                         </div>
 
                         {/* Verso */}
                         <div
-                          className="absolute inset-0 flex flex-col overflow-hidden rounded-[32px] border bg-card/98 backdrop-blur-xl shadow-[0_20px_50px_-15px_rgba(0,0,0,0.5)] [backface-visibility:hidden] [-webkit-backface-visibility:hidden]"
-                          style={{ transform: 'rotateY(180deg)', borderColor: `${getAreaVisual(atual.area).color}55` }}
+                          className="absolute inset-0 rounded-[32px] border bg-card p-5 md:p-7 overflow-y-auto scrollbar-hide flex flex-col [backface-visibility:hidden] [-webkit-backface-visibility:hidden]"
+                          style={{
+                            transform: 'rotateY(180deg)',
+                            borderColor: `${accent}55`,
+                            boxShadow: `0 20px 60px -30px ${accent}60`,
+                          }}
                         >
-                          <div
-                            className="h-2 w-full shrink-0"
-                            style={{
-                              background: `linear-gradient(90deg, ${getAreaVisual(atual.area).color}33, ${getAreaVisual(atual.area).color})`,
-                            }}
-                          />
-                          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-5 py-5 sm:px-8 sm:py-7">
-                            <p
-                              className="text-xs font-black uppercase tracking-widest"
-                              style={{ color: getAreaVisual(atual.area).color }}
-                            >
+                          {/* Floating Elements (Verso) */}
+                          <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[32px]">
+                            {Array.from({ length: 6 }).map((_, i) => (
+                              <img key={i} src={laurel} alt="" aria-hidden="true" className="absolute -top-10 lp-fall" style={{ left: `${(i * 18 + 5) % 100}%`, width: `${14 + (i % 3) * 6}px`, animationDuration: `${12 + (i % 4) * 3}s`, animationDelay: `${i * 1.5}s`, opacity: 0.15, filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />
+                            ))}
+                            <img src={scales} alt="" aria-hidden="true" className="pointer-events-none absolute right-[8%] top-[25%] w-10 lp-float" style={{ animationDirection: 'reverse', opacity: 0.1, filter: `drop-shadow(0 0 12px ${accent}60)` }} />
+                            <img src={laurel} alt="" aria-hidden="true" className="pointer-events-none absolute left-[12%] bottom-[25%] w-8 lp-float" style={{ animationDelay: '2s', opacity: 0.1 }} />
+                          </div>
+
+                          <div className="relative z-10 flex-1 flex flex-col">
+                            <p className="text-[10px] uppercase tracking-[0.2em] font-semibold mb-3 text-center" style={{ color: accent }}>
                               Resposta Explicada
                             </p>
-                            <p className="whitespace-pre-wrap text-base sm:text-lg leading-relaxed text-foreground font-medium">
-                              {atual.resposta}
-                            </p>
-                            {atual.exemplo && <Bloco icon={BookOpen} titulo="Exemplo Prático" texto={atual.exemplo} />}
-                            {atual.base_legal && <Bloco icon={Scale} titulo="Base Legal / Artigo" texto={atual.base_legal} />}
-                            {atual.dica && <Bloco icon={Lightbulb} titulo="Dica de Ouro" texto={atual.dica} />}
+                            <div className="flex-1 flex flex-col items-center justify-center space-y-4 pb-4">
+                              <p className="whitespace-pre-wrap text-base sm:text-lg md:text-xl font-medium leading-relaxed text-foreground text-center max-w-prose">
+                                {atual.resposta}
+                              </p>
+                            </div>
+                            
+                            {(atual.exemplo || atual.base_legal || atual.dica) && (
+                              <div className="mt-3 border-t border-border pt-3 space-y-3" onClick={(e) => e.stopPropagation()}>
+                                {atual.exemplo && <Bloco icon={BookOpen} titulo="Exemplo Prático" texto={atual.exemplo} />}
+                                {atual.base_legal && <Bloco icon={Scale} titulo="Base Legal / Artigo" texto={atual.base_legal} />}
+                                {atual.dica && <Bloco icon={Lightbulb} titulo="Dica de Ouro" texto={atual.dica} />}
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -456,7 +512,7 @@ const FlashcardsEstudo = () => {
                   </Button>
                 </div>
               </>
-            )}
+            })()}
           </div>
         )}
       </div>
