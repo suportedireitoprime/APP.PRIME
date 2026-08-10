@@ -401,24 +401,26 @@ const VideoaulasArea = () => {
         {(aba === 'videos' || aba === 'favoritos' || aba === 'recentes') && (
           <motion.div key="lista" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <div className="mx-auto max-w-md lg:max-w-5xl px-4 pt-4 space-y-3">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  value={listening ? partial : busca}
-                  onChange={(e) => setBusca(e.target.value)}
-                  placeholder={listening ? 'Ouvindo…' : 'Buscar aula…'}
-                  aria-label="Buscar aula"
-                  className="rounded-full bg-card pl-9 pr-11"
-                />
+              <div className="flex gap-2 items-center">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    value={listening ? partial : busca}
+                    onChange={(e) => setBusca(e.target.value)}
+                    placeholder={listening ? 'Ouvindo…' : 'Buscar aula…'}
+                    aria-label="Buscar aula"
+                    className="rounded-full bg-card pl-9 pr-4"
+                  />
+                </div>
                 <button
                   type="button"
                   onClick={toggle}
                   aria-label={listening ? 'Parar busca por voz' : 'Buscar por voz'}
-                  className={`absolute right-1.5 top-1/2 -translate-y-1/2 grid h-8 w-8 place-items-center rounded-full transition-colors ${
-                    listening ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-primary'
+                  className={`shrink-0 grid h-12 w-12 place-items-center rounded-full transition-colors ${
+                    listening ? 'bg-red-500/20 text-red-500' : 'bg-[#E3262F] text-white hover:bg-red-600'
                   }`}
                 >
-                  <Mic className="h-4 w-4" />
+                  <Mic className="h-5 w-5" />
                 </button>
               </div>
             </div>
@@ -431,7 +433,7 @@ const VideoaulasArea = () => {
                   <button
                     key={String(a.id)}
                     onClick={() => navigate(`/videoaulas/${catalogo.id}/${areaSlug}/${a.video_id}`)}
-                    className="w-full text-left rounded-2xl border border-border/40 bg-card/60 backdrop-blur-md shadow-lg hover:border-primary/50 transition-all overflow-hidden flex gap-3 p-3 active:scale-[0.98] h-32"
+                    className="w-full text-left rounded-2xl border border-border/40 bg-card/60 backdrop-blur-md shadow-lg hover:border-primary/50 transition-all overflow-hidden flex gap-3 p-3 active:scale-[0.98] h-auto min-h-[140px]"
                   >
                     <div className="relative w-36 shrink-0 aspect-video rounded-xl overflow-hidden bg-muted self-center shadow-inner">
                       <img
@@ -464,7 +466,7 @@ const VideoaulasArea = () => {
                           )}
                         </div>
                         
-                        <p className="text-xs font-semibold leading-tight text-foreground line-clamp-2">
+                        <p className="text-xs font-medium leading-tight text-foreground">
                           {limparTitulo(a.titulo)}
                         </p>
                       </div>

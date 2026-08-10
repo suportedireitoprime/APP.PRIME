@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect } from "react";
+import { AnimatePresence } from "framer-motion";
 import { initAnalytics, trackPageview, setAnalyticsUserWithProfile } from "@/lib/analytics";
 import { useScreenTracking } from "@/lib/screenTracking";
 import { initNavTelemetry, markRouteChange } from "@/lib/navTelemetry";
@@ -689,7 +690,8 @@ function AnimatedRoutes() {
       <DesktopFileDropOverlay />
       <PersistentHome />
       <Suspense fallback={<LazyFallback />}>
-        <Routes location={location}>
+        <AnimatePresence mode="wait">
+          <Routes location={location} key={location.pathname}>
           <Route path="/auth" element={<Auth />} />
           <Route path="/landing" element={<Landing />} />
           <Route path="/ir/*" element={<SmartLink />} />
@@ -961,10 +963,10 @@ function AnimatedRoutes() {
           <Route path="/pessoal/tematicas" element={<ProtectedRoute><PageTransition><PessoalTematicas /></PageTransition></ProtectedRoute>} />
           <Route path="/meu-espaco" element={<ProtectedRoute><PageTransition><MeuEspaco /></PageTransition></ProtectedRoute>} />
           <Route path="/homepage/meu-espaco" element={<ProtectedRoute><PageTransition><MeuEspaco /></PageTransition></ProtectedRoute>} />
-          <Route path="*" element={<NotFound />} />
+          <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
 
-
-        </Routes>
+          </Routes>
+        </AnimatePresence>
       </Suspense>
     </div>
   );

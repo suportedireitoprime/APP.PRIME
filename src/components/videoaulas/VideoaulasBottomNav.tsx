@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LayoutGrid, PlayCircle, Route, Star, Trophy, BookOpenText, BrainCircuit, Menu, X } from 'lucide-react';
+import { LayoutGrid, PlayCircle, Route, Star, Heart, Trophy, BookOpenText, BrainCircuit, Menu, X, History } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { useState } from 'react';
 import { Drawer, DrawerContent, DrawerOverlay, DrawerPortal } from '@/components/ui/drawer';
@@ -55,7 +55,7 @@ const VideoaulasBottomNav = () => {
       id: 'favoritos',
       label: 'Favoritos',
       to: '/videoaulas/favoritos',
-      icon: Star,
+      icon: Heart,
       match: (p) => p.startsWith('/videoaulas/favoritos'),
     },
     {
@@ -178,6 +178,23 @@ const VideoaulasBottomNav = () => {
                     <div>
                       <p className="font-bold text-foreground">Conquistas</p>
                       <p className="text-xs text-muted-foreground">Seu progresso e medalhas</p>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      haptic.selection();
+                      setDrawerOpen(false);
+                      navigate('/videoaulas/recentes');
+                    }}
+                    className="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-white/5 active:scale-[0.98] transition-all text-left"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                      <History className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-foreground">Histórico</p>
+                      <p className="text-xs text-muted-foreground">Aulas assistidas recentemente</p>
                     </div>
                   </button>
                 </div>
