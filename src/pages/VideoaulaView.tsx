@@ -377,7 +377,7 @@ const VideoaulaView = () => {
             <button
               onClick={toggleFavorito}
               className={cn(
-                'inline-flex items-center gap-1.5 rounded-full border px-2.5 sm:px-3.5 py-1.5 text-[11px] sm:text-[13px] font-medium transition-colors bg-transparent flex-shrink-0 whitespace-nowrap',
+                'inline-flex items-center justify-center gap-1.5 rounded-full border px-2.5 sm:px-3.5 py-1.5 text-[11px] sm:text-[13px] font-medium transition-colors bg-transparent flex-shrink-0 whitespace-nowrap w-[95px] sm:w-[110px]',
                 favorito
                   ? 'border-red-500 text-red-500'
                   : 'border-red-500/40 text-muted-foreground hover:border-red-500 hover:text-foreground',
@@ -388,7 +388,7 @@ const VideoaulaView = () => {
             <Drawer>
               <DrawerTrigger asChild>
                 <button
-                  className="inline-flex items-center gap-1.5 rounded-full border border-blue-500/40 px-2.5 sm:px-3.5 py-1.5 text-[11px] sm:text-[13px] font-medium text-muted-foreground bg-transparent hover:border-blue-500 hover:text-foreground transition-colors flex-shrink-0 whitespace-nowrap"
+                  className="inline-flex items-center justify-center gap-1.5 rounded-full border border-blue-500/40 px-2.5 sm:px-3.5 py-1.5 text-[11px] sm:text-[13px] font-medium text-muted-foreground bg-transparent hover:border-blue-500 hover:text-foreground transition-colors flex-shrink-0 whitespace-nowrap w-[95px] sm:w-[110px]"
                 >
                   <Send className="h-3.5 w-3.5 sm:h-4 sm:w-4 -mt-0.5" /> Enviar
                 </button>
