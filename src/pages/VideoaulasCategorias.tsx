@@ -78,43 +78,42 @@ const VideoaulasCategorias = () => {
                   haptic.selection();
                   navigate(`/videoaulas/${c.id}`);
                 }}
-                className="group flex flex-col w-full overflow-hidden rounded-2xl border border-border bg-card text-left shadow-sm transition-all hover:border-primary/50 active:scale-[0.98]"
+                className="group relative flex flex-col justify-end w-full aspect-[3/4] overflow-hidden rounded-2xl border border-border bg-black text-left shadow-sm transition-all hover:border-primary/50 active:scale-[0.98]"
               >
-                <div className="relative w-full h-[85px] sm:h-[100px] overflow-hidden bg-black/10">
-                  <ThumbImg
-                    src={c.capa}
-                    alt={c.titulo}
-                    fallback={<Play className="h-8 w-8 text-primary/40" />}
-                  />
-                  <div className="absolute inset-0 grid place-items-center bg-black/20 opacity-0 transition-opacity group-hover:opacity-100">
-                    <div className="rounded-full border border-white/25 bg-black/40 p-3 backdrop-blur-sm transition-transform scale-90 group-hover:scale-100">
-                      <Play className="h-6 w-6 fill-current text-primary-foreground" />
-                    </div>
+                <ThumbImg
+                  src={c.capa}
+                  alt={c.titulo}
+                  fallback={<Play className="h-10 w-10 text-white/20" />}
+                />
+                <div className="absolute inset-x-0 bottom-0 h-[60%] bg-gradient-to-t from-black/95 via-black/60 to-transparent pointer-events-none" />
+                
+                <div className="absolute inset-0 grid place-items-center bg-black/20 opacity-0 transition-opacity group-hover:opacity-100 z-10 pointer-events-none">
+                  <div className="rounded-full border border-white/25 bg-black/40 p-3 backdrop-blur-sm transition-transform scale-90 group-hover:scale-100">
+                    <Play className="h-6 w-6 fill-current text-primary-foreground" />
                   </div>
                 </div>
 
-                <div className="flex flex-col flex-1 p-3">
-                  <h3 className="truncate text-[13px] font-bold leading-tight">{c.titulo}</h3>
-                  <p className="mt-0.5 line-clamp-2 text-[10px] leading-snug text-muted-foreground flex-1">
-                    {c.descricao}
-                  </p>
-                  
-                  <div className="mt-2 flex items-center justify-between">
-                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-primary">
-                      <Video className="h-3.5 w-3.5" />
-                      {info?.total ? `${info.total.toLocaleString('pt-BR')} aulas` : '—'}
-                    </span>
-                    {info?.concluidas ? <span className="text-[10px] text-muted-foreground font-medium">{info.pct}% assistido</span> : null}
-                  </div>
-                  
-                  {info?.total ? (
-                    <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                      <div
-                        className="h-full rounded-full bg-[hsl(var(--aprender-accent))]"
-                        style={{ width: `${info.pct}%` }}
-                      />
+                <div className="relative z-10 flex flex-col h-full p-3 text-white w-full">
+                  <div className="mt-auto">
+                    <h3 className="text-[14px] sm:text-[15px] font-bold leading-tight line-clamp-2 drop-shadow-md">{c.titulo}</h3>
+                    
+                    <div className="mt-2 flex items-center justify-between text-white/80 group-hover:text-white transition-colors">
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-primary">
+                        <Video className="h-3.5 w-3.5" />
+                        {info?.total ? `${info.total.toLocaleString('pt-BR')} aulas` : '—'}
+                      </span>
+                      {info?.concluidas ? <span className="text-[10px] text-white/60 font-medium">{info.pct}% assistido</span> : null}
                     </div>
-                  ) : null}
+                    
+                    {info?.total ? (
+                      <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-white/20">
+                        <div
+                          className="h-full rounded-full bg-[hsl(var(--aprender-accent))]"
+                          style={{ width: `${info.pct}%` }}
+                        />
+                      </div>
+                    ) : null}
+                  </div>
                 </div>
               </button>
             );
@@ -137,43 +136,42 @@ const VideoaulasCategorias = () => {
                   haptic.selection();
                   navigate(`/videoaulas/${c.id}`);
                 }}
-                className="group flex flex-col w-full overflow-hidden rounded-2xl border border-border bg-card text-left shadow-sm transition-all hover:border-primary/50 active:scale-[0.98]"
+                className="group relative flex flex-col justify-end w-full aspect-[3/4] overflow-hidden rounded-2xl border border-border bg-black text-left shadow-sm transition-all hover:border-primary/50 active:scale-[0.98]"
               >
-                <div className="relative w-full h-[85px] sm:h-[100px] overflow-hidden bg-black/10">
-                  <ThumbImg
-                    src={c.capa}
-                    alt={c.titulo}
-                    fallback={<Play className="h-8 w-8 text-primary/40" />}
-                  />
-                  <div className="absolute inset-0 grid place-items-center bg-black/20 opacity-0 transition-opacity group-hover:opacity-100">
-                    <div className="rounded-full border border-white/25 bg-black/40 p-3 backdrop-blur-sm transition-transform scale-90 group-hover:scale-100">
-                      <Play className="h-6 w-6 fill-current text-primary-foreground" />
-                    </div>
+                <ThumbImg
+                  src={c.capa}
+                  alt={c.titulo}
+                  fallback={<Play className="h-10 w-10 text-white/20" />}
+                />
+                <div className="absolute inset-x-0 bottom-0 h-[60%] bg-gradient-to-t from-black/95 via-black/60 to-transparent pointer-events-none" />
+                
+                <div className="absolute inset-0 grid place-items-center bg-black/20 opacity-0 transition-opacity group-hover:opacity-100 z-10 pointer-events-none">
+                  <div className="rounded-full border border-white/25 bg-black/40 p-3 backdrop-blur-sm transition-transform scale-90 group-hover:scale-100">
+                    <Play className="h-6 w-6 fill-current text-primary-foreground" />
                   </div>
                 </div>
 
-                <div className="flex flex-col flex-1 p-3">
-                  <h3 className="truncate text-[13px] font-bold leading-tight">{c.titulo}</h3>
-                  <p className="mt-0.5 line-clamp-2 text-[10px] leading-snug text-muted-foreground flex-1">
-                    {c.descricao}
-                  </p>
-                  
-                  <div className="mt-2 flex items-center justify-between">
-                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-primary">
-                      <Video className="h-3.5 w-3.5" />
-                      {info?.total ? `${info.total.toLocaleString('pt-BR')} aulas` : '—'}
-                    </span>
-                    {info?.concluidas ? <span className="text-[10px] text-muted-foreground font-medium">{info.pct}% assistido</span> : null}
-                  </div>
-                  
-                  {info?.total ? (
-                    <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                      <div
-                        className="h-full rounded-full bg-[hsl(var(--aprender-accent))]"
-                        style={{ width: `${info.pct}%` }}
-                      />
+                <div className="relative z-10 flex flex-col h-full p-3 text-white w-full">
+                  <div className="mt-auto">
+                    <h3 className="text-[14px] sm:text-[15px] font-bold leading-tight line-clamp-2 drop-shadow-md">{c.titulo}</h3>
+                    
+                    <div className="mt-2 flex items-center justify-between text-white/80 group-hover:text-white transition-colors">
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-primary">
+                        <Video className="h-3.5 w-3.5" />
+                        {info?.total ? `${info.total.toLocaleString('pt-BR')} aulas` : '—'}
+                      </span>
+                      {info?.concluidas ? <span className="text-[10px] text-white/60 font-medium">{info.pct}% assistido</span> : null}
                     </div>
-                  ) : null}
+                    
+                    {info?.total ? (
+                      <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-white/20">
+                        <div
+                          className="h-full rounded-full bg-[hsl(var(--aprender-accent))]"
+                          style={{ width: `${info.pct}%` }}
+                        />
+                      </div>
+                    ) : null}
+                  </div>
                 </div>
               </motion.button>
             );
