@@ -48,6 +48,7 @@ export function useYoutubePlayer({ videoId, startAt = 0, ativo = true, autoplay 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const playerRef = useRef<any>(null);
   const [pronto, setPronto] = useState(false);
+  const [playing, setPlaying] = useState(false);
   const cbRef = useRef({ onTick, onEnded });
   cbRef.current = { onTick, onEnded };
   const startRef = useRef(startAt);
@@ -85,6 +86,9 @@ export function useYoutubePlayer({ videoId, startAt = 0, ativo = true, autoplay 
             }
           },
           onStateChange: (e: any) => {
+            if (e.data === window.YT.PlayerState.PLAYING) setPlaying(true);
+            else if (e.data === window.YT.PlayerState.PAUSED || e.data === window.YT.PlayerState.ENDED) setPlaying(false);
+            
             if (e.data === window.YT.PlayerState.ENDED) cbRef.current.onEnded?.();
           },
         },
@@ -101,6 +105,7 @@ export function useYoutubePlayer({ videoId, startAt = 0, ativo = true, autoplay 
 
     return () => {
       cancelado = true;
+      setPlaying(false);
       if (timer) window.clearInterval(timer);
       try {
         playerRef.current?.destroy?.();
@@ -121,5 +126,5 @@ export function useYoutubePlayer({ videoId, startAt = 0, ativo = true, autoplay 
     }
   }, [ativo, pronto]);
 
-  return { containerRef, playerRef, pronto };
+  return { containerRef, playerRef, pronto, playing };
 }

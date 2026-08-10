@@ -1,10 +1,11 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Pause, Maximize2, X, Move } from 'lucide-react';
 import { useVideoaulasPlayer } from '@/contexts/VideoaulasPlayerContext';
-import { limparTitulo, getCatalogo } from '@/lib/videoaulasCatalogos';
+import { limparTitulo, getCatalogo, getCapaDaArea, ytThumb } from '@/lib/videoaulasCatalogos';
 import { haptic } from '@/lib/nativeHaptics';
+import ThumbImg from './ThumbImg';
 import { useYoutubePlayer } from '@/hooks/useYoutubePlayer';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -29,8 +30,13 @@ export default function GlobalVideoaulaMiniPlayer() {
   const audioRef = useRef<HTMLAudioElement>(null);
   const rafRef = useRef<number>();
   const salvandoRef = useRef(false);
+  const [interagido, setInteragido] = useState(false);
 
   const onVideoPage = location.pathname.includes('/videoaulas/') && location.pathname.split('/').length >= 4;
+
+  useEffect(() => {
+    setInteragido(false);
+  }, [atual?.video_id]);
 
   const salvarProgresso = useCallback(
     async (t: number, d: number, forcarConclusao = false) => {
@@ -61,7 +67,7 @@ export default function GlobalVideoaulaMiniPlayer() {
     [userId, atual]
   );
 
-  const { containerRef, playerRef } = useYoutubePlayer({
+  const { containerRef, playerRef, playing } = useYoutubePlayer({
     videoId: atual?.video_id || '',
     ativo: tocando,
     autoplay: true,
@@ -77,6 +83,10 @@ export default function GlobalVideoaulaMiniPlayer() {
       salvarProgresso(duracao, duracao, true);
     },
   });
+
+  useEffect(() => {
+    if (playing) setInteragido(true);
+  }, [playing]);
 
   // Registrar Media Session
   useEffect(() => {
@@ -211,8 +221,35 @@ export default function GlobalVideoaulaMiniPlayer() {
       >
         <audio ref={audioRef} src={GHOST_AUDIO_B64} loop preload="auto" playsInline className="hidden" />
 
+        {/* Fachada Customizada (Apenas onVideoPage) */}
+        {onVideoPage && !interagido && (
+          <div 
+            className="absolute inset-0 z-[60] flex items-center justify-center bg-black cursor-pointer group pointer-events-auto"
+            onClick={(e) => {
+              e.stopPropagation();
+              haptic.selection();
+              setInteragido(true);
+              setTocandoState(true);
+              playerRef.current?.playVideo?.();
+            }}
+          >
+            <ThumbImg
+              src={getCapaDaArea(atual.area) || atual.thumb || atual.thumbnail || ytThumb(atual.video_id, 'maxres')}
+              alt={tituloLimpo}
+              priority
+            />
+            <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors duration-300" />
+            <button 
+              className="absolute w-[68px] h-[48px] bg-black/70 group-hover:bg-[#ff0000] rounded-xl flex items-center justify-center backdrop-blur-sm transition-colors duration-300"
+              aria-label="Reproduzir vídeo"
+            >
+              <Play className="w-8 h-8 text-white fill-current ml-1" />
+            </button>
+          </div>
+        )}
+
         {/* Container do Iframe (sempre montado) */}
-        <div ref={containerRef} className="w-full h-full pointer-events-auto" />
+        <div ref={containerRef} className="w-full h-full pointer-events-auto bg-black" />
 
         {/* Overlays apenas no modo Mini Player */}
         {!onVideoPage && (
