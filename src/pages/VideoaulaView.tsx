@@ -318,10 +318,14 @@ const VideoaulaView = () => {
               <span>{duracao > 0 ? formatTempo(duracao) : '--:--'}</span>
             </div>
             <h1 className="text-[17px] sm:text-xl lg:text-2xl font-bold leading-snug text-foreground">{tituloLimpo}</h1>
-            <p className="text-[12px] sm:text-sm text-muted-foreground">
-              {aula?.area ?? catalogo.titulo}
-              {duracao > 0 ? ` • ${formatTempo(duracao)}` : ''}
-              {concluida ? ' • Assistida' : pctAtual > 0 ? ` • ${pctAtual}% assistido` : ''}
+            <p className="text-[12px] sm:text-[13px] text-muted-foreground flex items-center gap-1.5 font-medium mt-1">
+              <span>Siga estas etapas para concluir a aula</span>
+              {duracao > 0 && (
+                <>
+                  <span className="opacity-50">•</span>
+                  <span>{formatTempo(duracao)}</span>
+                </>
+              )}
             </p>
           </div>
 
