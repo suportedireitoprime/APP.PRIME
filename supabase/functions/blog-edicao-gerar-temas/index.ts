@@ -15,7 +15,7 @@ Deno.serve(async (req) => {
     const geminiKey = Deno.env.get("GEMINI_API_KEY");
     if (!geminiKey) return json({ error: "GEMINI_API_KEY ausente" }, 500);
 
-    const prompt = `Você é editor-chefe de um blog jurídico brasileiro chamado "OAB na Risca", voltado para estudantes de Direito, concurseiros e advogados jovens.
+    const prompt = `Você é editor-chefe de um blog jurídico brasileiro chamado "Estudos Jurídicos", voltado para estudantes de Direito, concurseiros e advogados jovens.
 
 Gere ${quantidade} temas variados e envolventes para posts do blog. Distribua ENTRE AS CINCO CATEGORIAS ABAIXO de forma equilibrada (≈20% cada):
 - "Filosofia" (filosofia do direito, pensadores clássicos, ética)

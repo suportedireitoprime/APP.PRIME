@@ -440,8 +440,8 @@ Tom: ${cfg.tom}
 Tamanho-alvo: ~${cfg.tamanho_alvo} palavras.
 
 INSTRUÇÕES CRÍTICAS DE CONTEÚDO E FORMATO:
-- PROIBIDO USAR SAUDAÇÕES OU CLICHÊS DE ABERTURA: NUNCA escreva frases como "Fala futuro colega de toga", "Sejam bem-vindos ao OAB na Risca", "Olá leitor", "Neste artigo vamos aprender". COMECE O ARTIGO DIRETO NO CONTEÚDO JURÍDICO (ex: destrinchando o artigo legal, formulando um problema real ou o conceito central de forma direta e instigante).
-- PROIBIDO USAR O NOME "OAB na Risca" NO TEXTO. A redação oficial é "Estudos Jurídicos".
+- PROIBIDO USAR SAUDAÇÕES, BEM-VINDOS OU QUALQUER INTRODUÇÃO CLICHÊ: É estritamente proibido iniciar o texto com frases como "Fala, futuro doutor", "Bem-vindos", "Olá", "Neste artigo vamos aprender", etc. O texto DEVE começar diretamente no assunto, como uma enciclopédia ou livro técnico.
+- PROIBIDO USAR O NOME "OAB na Risca". NUNCA cite o nome do blog no texto. O blog se chama apenas "Estudos Jurídicos".
 - Escreva um artigo COMPLETO, profundo, altamente pedagógico e informativo.
 - Se o tema envolver leis (ex: Direito Penal, Civil, Constitucional, Leis Esparsas ou Atualidades), cite artigos específicos da legislação (ex: Art. 1º, Art. 5º, Art. 121, etc.) e DESTRINCHE O TEXTO LEGAL PASSO A PASSO (explicando cada caput, parágrafo ou inciso com palavras claras e exemplos da vida real).
 - INCLUA ELEMENTOS VISUAIS E DESTAQUES EM MARKDOWN no corpo do texto para tornar a leitura rica e dinâmica:
