@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Mail, Newspaper, BookOpen, Radar, Bell, Check, Loader2, Send } from 'lucide-react';
+import { ArrowLeft, Mail, Newspaper, BookOpen, Radar, Bell, Check, Loader2, Send, Film, Video } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { motion } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
@@ -14,6 +14,8 @@ interface Preferencias {
   noticias: boolean;
   leis_do_dia: boolean;
   radar_legislativo: boolean;
+  tematica_juridica: boolean;
+  boletins_juridicos: boolean;
   leis_monitoradas: string[];
 }
 
@@ -21,6 +23,8 @@ const DEFAULT_PREFS: Preferencias = {
   noticias: true,
   leis_do_dia: true,
   radar_legislativo: true,
+  tematica_juridica: true,
+  boletins_juridicos: true,
   leis_monitoradas: [],
 };
 
@@ -104,6 +108,8 @@ const Newsletter = () => {
     { key: 'noticias' as const, label: 'Notícias Jurídicas', desc: 'Principais notícias da Câmara e portais jurídicos', icon: Newspaper, color: 'from-blue-500 to-cyan-600' },
     { key: 'leis_do_dia' as const, label: 'Leis do Dia', desc: 'Resenha diária do DOU — atos e normas publicados', icon: BookOpen, color: 'from-emerald-500 to-green-600' },
     { key: 'radar_legislativo' as const, label: 'Radar Legislativo', desc: 'PLs em tramitação, votação e sanção', icon: Radar, color: 'from-violet-500 to-purple-600' },
+    { key: 'tematica_juridica' as const, label: 'Temática Jurídica', desc: 'Recomendação de filmes e séries jurídicas (Sexta)', icon: Film, color: 'from-pink-500 to-rose-600' },
+    { key: 'boletins_juridicos' as const, label: 'Boletins Jurídicos', desc: 'Alertas em vídeo de jurisprudência e normas quentes', icon: Video, color: 'from-orange-500 to-amber-600' },
   ];
 
   const mobileHeader = (

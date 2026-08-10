@@ -1,11 +1,10 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import nodemailer from 'npm:nodemailer@6.9.13'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
-
-const GATEWAY_URL = 'https://connector-gateway.lovable.dev/resend'
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -13,16 +12,22 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const LOVABLE_API_KEY = undefined
-    if (!LOVABLE_API_KEY) throw new Error('LOVABLE_API_KEY not configured')
-
-    const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
-    if (!RESEND_API_KEY) throw new Error('RESEND_API_KEY not configured')
+    const GMAIL_PASSWORD = Deno.env.get('GMAIL_APP_PASSWORD')
+    if (!GMAIL_PASSWORD) throw new Error('GMAIL_APP_PASSWORD not configured')
 
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     )
+
+    // Setup Nodemailer transport
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'aviso.direitoprime@gmail.com',
+        pass: GMAIL_PASSWORD,
+      },
+    })
 
     // Get active subscribers
     const { data: subscribers, error: subError } = await supabase
@@ -39,6 +44,7 @@ Deno.serve(async (req) => {
 
     // Fetch content for newsletter
     const today = new Date().toISOString().slice(0, 10)
+    const isFriday = new Date().getDay() === 5
 
     // 1. Notícias
     const { data: noticias } = await supabase
@@ -63,6 +69,20 @@ Deno.serve(async (req) => {
       .order('data_publicacao', { ascending: false })
       .limit(5)
 
+    // 4. Temática Jurídica
+    const { data: tematicas } = await supabase
+      .from('tematica_juridica')
+      .select('titulo,tipo,sinopse,ano,capa_url,id')
+      .order('created_at', { ascending: false })
+      .limit(1)
+
+    // 5. Boletins Jurídicos
+    const { data: boletins } = await supabase
+      .from('boletins_juridicos')
+      .select('titulo,descricao,video_id,created_at')
+      .order('created_at', { ascending: false })
+      .limit(1)
+
     let sentCount = 0
     const errors: string[] = []
 
@@ -77,8 +97,15 @@ Deno.serve(async (req) => {
       if (prefs.leis_do_dia && resenha?.length) {
         sections.push(buildResenhaSection(resenha))
       }
-      if (alteracoes?.length) {
+      if (alteracoes?.length && prefs.radar_legislativo) {
         sections.push(buildAlteracoesSection(alteracoes))
+      }
+      // Send Temática Jurídica only on Fridays (or always if debugging, but usually Friday)
+      if (prefs.tematica_juridica && tematicas?.length && isFriday) {
+        sections.push(buildTematicaSection(tematicas[0]))
+      }
+      if (prefs.boletins_juridicos && boletins?.length) {
+        sections.push(buildBoletimSection(boletins[0]))
       }
 
       if (sections.length === 0) continue
@@ -86,33 +113,21 @@ Deno.serve(async (req) => {
       const html = buildEmailHTML(sections, today, sub.email)
 
       try {
-        const res = await fetch(`${GATEWAY_URL}/emails`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-            'X-Connection-Api-Key': RESEND_API_KEY,
-          },
-          body: JSON.stringify({
-            from: 'Vacatio Newsletter <onboarding@resend.dev>',
-            to: [sub.email],
-            subject: `📋 Vacatio Digest — ${today}`,
-            html,
-          }),
+        const info = await transporter.sendMail({
+          from: '"Vacatio Newsletter" <aviso.direitoprime@gmail.com>',
+          to: sub.email,
+          subject: `📋 Vacatio Digest — ${today}`,
+          html,
         })
 
-        if (!res.ok) {
-          const errBody = await res.text()
-          errors.push(`${sub.email}: ${res.status} ${errBody}`)
-        } else {
-          sentCount++
-          // Update last sent
-          await supabase
-            .from('newsletter_subscriptions')
-            .update({ ultimo_envio: new Date().toISOString() })
-            .eq('id', sub.id)
-        }
-      } catch (e) {
+        sentCount++
+        // Update last sent
+        await supabase
+          .from('newsletter_subscriptions')
+          .update({ ultimo_envio: new Date().toISOString() })
+          .eq('id', sub.id)
+          
+      } catch (e: any) {
         errors.push(`${sub.email}: ${e.message}`)
       }
 
@@ -124,7 +139,7 @@ Deno.serve(async (req) => {
       JSON.stringify({ success: true, sent: sentCount, errors: errors.length, errorDetails: errors.slice(0, 5) }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
-  } catch (err) {
+  } catch (err: any) {
     console.error('Newsletter error:', err)
     return new Response(
       JSON.stringify({ error: err.message }),
@@ -158,6 +173,7 @@ function buildEmailHTML(sections: string[], date: string, email: string): string
   .badge-sancao{background:#8b5cf6;color:#fff}
   .footer{padding:20px 24px;text-align:center;font-size:11px;color:#666}
   .footer a{color:#fbbf24}
+  .cover-img{width:100%;max-height:200px;object-fit:cover;border-radius:6px;margin-bottom:10px}
 </style>
 </head>
 <body>
@@ -203,6 +219,29 @@ function buildAlteracoesSection(alteracoes: any[]): string {
       <p>Lei alteradora: ${escapeHtml(a.lei_alteradora || 'N/A')}</p>
     </div>`).join('')
   return `<div class="section"><h2>🔔 Alterações Legislativas</h2>${items}</div>`
+}
+
+function buildTematicaSection(t: any): string {
+  return `<div class="section">
+    <h2>🎬 Recomendação de Sexta</h2>
+    <div class="item" style="border-left-color: #ec4899;">
+      ${t.capa_url ? `<img src="${t.capa_url}" class="cover-img" alt="Capa" />` : ''}
+      <h3>${escapeHtml(t.titulo)} (${t.ano}) — ${escapeHtml(t.tipo)}</h3>
+      <p>${escapeHtml(t.sinopse)}</p>
+      <a href="https://vademecum-legal-guide.lovable.app/tematica-juridica/${t.id}" target="_blank">Ver mais no app →</a>
+    </div>
+  </div>`
+}
+
+function buildBoletimSection(b: any): string {
+  return `<div class="section">
+    <h2>📺 Boletim Jurídico Recente</h2>
+    <div class="item" style="border-left-color: #f97316;">
+      <h3>${escapeHtml(b.titulo)}</h3>
+      <p>${escapeHtml(b.descricao)}</p>
+      <a href="https://vademecum-legal-guide.lovable.app/boletins" target="_blank">Assistir agora →</a>
+    </div>
+  </div>`
 }
 
 function escapeHtml(str: string): string {
