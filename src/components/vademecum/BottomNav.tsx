@@ -148,21 +148,13 @@ const BottomNav = () => {
     { id: 'vade-mecum', label: 'Vade Mecum', desc: 'Legislação completa: códigos, estatutos e leis', icon: Scale, action: () => navigate('/vade-mecum') },
     { id: 'peticao-inicial', label: 'Petição Inicial', desc: 'Gere petições com IA e jurisprudência real do STF/STJ', icon: FileSignature, action: () => navigate('/ferramentas/peticao-inicial'), prefetch: 'peticaoInicial' },
 
-    { id: 'dicionario', label: 'Dicionário Jurídico', desc: 'Consulte termos e conceitos do Direito', icon: BookOpen, action: () => navigate('/ferramentas/dicionario'), prefetch: 'dicionario' },
     { id: 'radar360', label: 'Radar 360', desc: 'Alterações recentes e projetos de lei', icon: ScanEye, action: () => navigate('/radar-360'), prefetch: 'radar360' },
-    { id: 'locais', label: 'Locais Jurídicos', desc: 'Tribunais, cartórios, delegacias e museus perto de você', icon: Scale, action: () => navigate('/ferramentas/locais'), prefetch: 'locais' },
-    { id: 'assistente', label: 'Assistente IA', desc: 'IA jurídica para tirar dúvidas', icon: Bot, action: () => navigate('/assistente-horus'), prefetch: 'assistenteHorus' },
     { id: 'audioaulas', label: 'Audioaulas', desc: 'Aulas em áudio por área do Direito', icon: Headphones, action: () => navigate('/audioaulas') },
     { id: 'videoaulas', label: 'Videoaulas', desc: 'Aulas em vídeo com flashcards, questões e lei seca por IA', icon: Video, action: () => navigate('/videoaulas') },
-    { id: 'flashcards', label: 'Flashcards', desc: 'Decks, revisão espaçada e progresso por área', icon: ArrowLeftRight, action: () => navigate('/flashcards') },
     { id: 'gravar-aula', label: 'Gravar aula', desc: 'Grave aulas longas com resumo automático por IA', icon: Mic, action: () => navigate('/anotacoes/audio'), prefetch: 'gravarAula' },
-    { id: 'tematica', label: 'Temática Jurídica', desc: 'Filmes, séries e documentários para juristas', icon: Clapperboard, action: () => navigate('/tematica-juridica'), prefetch: 'tematica' },
-    { id: 'resumos', label: 'Resumos Jurídicos', desc: 'Biblioteca por área, tema e subtema', icon: FileText, action: () => navigate('/resumos-juridicos'), prefetch: 'resumosJuridicos' },
     { id: 'boletins', label: 'Boletins Jurídicos', desc: 'Vídeo diário com as normas quentes de hoje', icon: Video, action: () => navigate('/boletins'), prefetch: 'boletins' },
     { id: 'noticias', label: 'Notícias', desc: 'Notícias jurídicas e atualizações', icon: Newspaper, action: () => navigate('/noticias'), prefetch: 'noticias' },
     { id: 'newsletter', label: 'Newsletter', desc: 'Receba um resumo jurídico diário no e-mail', icon: Send, action: () => navigate('/newsletter'), prefetch: 'newsletter' },
-    { id: 'biblioteca', label: 'Biblioteca', desc: 'Livros e materiais de estudo para leitura', icon: Library, action: () => navigate('/biblioteca'), prefetch: 'biblioteca' },
-    { id: 'aprender', label: 'Aprender', desc: 'Artigos educacionais e conteúdos complementares', icon: BookOpen, action: () => navigate('/aprender'), prefetch: 'aprender' },
     { id: 'modo-offline', label: 'Modo Offline', desc: 'Baixe leis para consultar sem internet', icon: WifiOff, action: () => navigate('/modo-offline'), prefetch: 'modoOffline' },
   ];
 
