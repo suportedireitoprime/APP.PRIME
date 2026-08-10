@@ -194,14 +194,14 @@ const VideoaulasCategorias = () => {
                   haptic.selection();
                   navigate(`/videoaulas/concurso/${c.id}`);
                 }}
-                className="group relative flex flex-col justify-end w-full aspect-[4/5] sm:aspect-square overflow-hidden rounded-2xl border border-border bg-black text-left shadow-sm transition-all hover:border-primary/50 active:scale-[0.98]"
+                className="group relative flex flex-col justify-end w-full aspect-[3/4] overflow-hidden rounded-2xl border border-border bg-black text-left shadow-sm transition-all hover:border-primary/50 active:scale-[0.98]"
               >
                 <ThumbImg
                   src={c.capa}
                   alt={c.titulo}
                   fallback={<ShieldAlert className="h-10 w-10 text-white/20" />}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent pointer-events-none" />
+                <div className="absolute inset-x-0 bottom-0 h-[60%] bg-gradient-to-t from-black/95 via-black/60 to-transparent pointer-events-none" />
                 
                 <div className="relative z-10 flex flex-col h-full p-3 text-white w-full">
                   <div>
@@ -211,10 +211,7 @@ const VideoaulasCategorias = () => {
                   </div>
                   <div className="mt-auto">
                     <h3 className="text-[14px] sm:text-[15px] font-bold leading-tight line-clamp-2 drop-shadow-md">{c.titulo}</h3>
-                    <p className="mt-1 line-clamp-2 text-[11px] leading-snug text-white/80 drop-shadow-sm">
-                      {c.descricao}
-                    </p>
-                    <div className="mt-2 flex items-center justify-between text-white/60 group-hover:text-white transition-colors">
+                    <div className="mt-2 flex items-center justify-between text-white/80 group-hover:text-white transition-colors">
                       <span className="text-[10px] font-semibold">{c.disciplinas?.length || 0} Disciplinas</span>
                       <ChevronRight className="h-4 w-4" />
                     </div>
@@ -239,14 +236,14 @@ const VideoaulasCategorias = () => {
                   haptic.selection();
                   navigate(`/videoaulas/concurso/${c.id}`);
                 }}
-                className="group relative flex flex-col justify-end w-full aspect-[4/5] sm:aspect-square overflow-hidden rounded-2xl border border-border bg-black text-left shadow-sm transition-all hover:border-primary/50 active:scale-[0.98]"
+                className="group relative flex flex-col justify-end w-full aspect-[3/4] overflow-hidden rounded-2xl border border-border bg-black text-left shadow-sm transition-all hover:border-primary/50 active:scale-[0.98]"
               >
                 <ThumbImg
                   src={c.capa}
                   alt={c.titulo}
                   fallback={<Scale className="h-10 w-10 text-white/20" />}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent pointer-events-none" />
+                <div className="absolute inset-x-0 bottom-0 h-[60%] bg-gradient-to-t from-black/95 via-black/60 to-transparent pointer-events-none" />
                 
                 <div className="relative z-10 flex flex-col h-full p-3 text-white w-full">
                   <div>
@@ -256,10 +253,7 @@ const VideoaulasCategorias = () => {
                   </div>
                   <div className="mt-auto">
                     <h3 className="text-[14px] sm:text-[15px] font-bold leading-tight line-clamp-2 drop-shadow-md">{c.titulo}</h3>
-                    <p className="mt-1 line-clamp-2 text-[11px] leading-snug text-white/80 drop-shadow-sm">
-                      {c.descricao}
-                    </p>
-                    <div className="mt-2 flex items-center justify-between text-white/60 group-hover:text-white transition-colors">
+                    <div className="mt-2 flex items-center justify-between text-white/80 group-hover:text-white transition-colors">
                       <span className="text-[10px] font-semibold">{c.disciplinas?.length || 0} Disciplinas</span>
                       <ChevronRight className="h-4 w-4" />
                     </div>
@@ -284,14 +278,14 @@ const VideoaulasCategorias = () => {
                   haptic.selection();
                   navigate(`/videoaulas/concurso/${c.id}`);
                 }}
-                className="group relative flex flex-col justify-end w-full aspect-[4/5] sm:aspect-square overflow-hidden rounded-2xl border border-border bg-black text-left shadow-sm transition-all hover:border-primary/50 active:scale-[0.98]"
+                className="group relative flex flex-col justify-end w-full aspect-[3/4] overflow-hidden rounded-2xl border border-border bg-black text-left shadow-sm transition-all hover:border-primary/50 active:scale-[0.98]"
               >
                 <ThumbImg
                   src={c.capa}
                   alt={c.titulo}
                   fallback={<Briefcase className="h-10 w-10 text-white/20" />}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent pointer-events-none" />
+                <div className="absolute inset-x-0 bottom-0 h-[60%] bg-gradient-to-t from-black/95 via-black/60 to-transparent pointer-events-none" />
                 
                 <div className="relative z-10 flex flex-col h-full p-3 text-white w-full">
                   <div>
@@ -301,10 +295,7 @@ const VideoaulasCategorias = () => {
                   </div>
                   <div className="mt-auto">
                     <h3 className="text-[14px] sm:text-[15px] font-bold leading-tight line-clamp-2 drop-shadow-md">{c.titulo}</h3>
-                    <p className="mt-1 line-clamp-2 text-[11px] leading-snug text-white/80 drop-shadow-sm">
-                      {c.descricao}
-                    </p>
-                    <div className="mt-2 flex items-center justify-between text-white/60 group-hover:text-white transition-colors">
+                    <div className="mt-2 flex items-center justify-between text-white/80 group-hover:text-white transition-colors">
                       <span className="text-[10px] font-semibold">{c.disciplinas?.length || 0} Disciplinas</span>
                       <ChevronRight className="h-4 w-4" />
                     </div>
