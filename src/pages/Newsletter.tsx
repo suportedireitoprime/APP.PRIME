@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Mail, Newspaper, BookOpen, Radar, Bell, Check, Loader2, Send, Film, Video } from 'lucide-react';
+import { ArrowLeft, Mail, Newspaper, BookOpen, Radar, Bell, Check, Loader2, Send, Film, Video, MicVocal } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { motion } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
@@ -102,7 +102,7 @@ const Newsletter = () => {
     { key: 'leis_do_dia' as const, label: 'Leis do Dia (08:00)', desc: 'Resenha diária do DOU — atos e normas publicados', icon: BookOpen, color: 'from-emerald-500 to-green-600' },
     { key: 'radar_legislativo' as const, label: 'Radar Legislativo (12:00)', desc: 'PLs em tramitação, votação e sanção', icon: Radar, color: 'from-violet-500 to-purple-600' },
     { key: 'tematica_juridica' as const, label: 'Temática Jurídica (Sexta 18:00)', desc: 'Recomendação de filmes e séries jurídicas (Sexta)', icon: Film, color: 'from-pink-500 to-rose-600' },
-    { key: 'boletins_juridicos' as const, label: 'Boletins Jurídicos (17:00)', desc: 'Alertas em vídeo de jurisprudência e normas quentes', icon: Video, color: 'from-orange-500 to-amber-600' },
+    { key: 'boletins_juridicos' as const, label: 'Boletins Jurídicos (17:00)', desc: 'Alertas em vídeo de jurisprudência e normas quentes', icon: MicVocal, color: 'from-orange-500 to-amber-600' },
   ];
 
   const mobileHeader = (

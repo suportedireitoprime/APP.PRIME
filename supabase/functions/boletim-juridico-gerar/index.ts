@@ -212,7 +212,7 @@ Deno.serve(async (req) => {
     const promptExtra =
       cfg?.prompt_tts_extra ||
       "Narração jornalística com entusiasmo, ritmo dinâmico e voz clara.";
-    const maxNormas = Math.max(1, Math.min(10, cfg?.max_normas || 6));
+    const maxNormas = 3;
 
     // Imagens por tipo
     const { data: imgs } = await supa
@@ -230,12 +230,10 @@ Deno.serve(async (req) => {
     const { data: normas, error: normasErr } = await supa
       .from("resenha_diaria")
       .select("tipo_ato,numero_ato,ementa,texto_completo,url,data_dou,data_publicacao")
-      // `data_publicacao` é texto por extenso ("30 de julho de 2026"); a coluna
-      // comparável é `data_dou` (date). Comparar com a versão ISO aqui nunca casava
-      // e o boletim caía sempre em "sem_leis".
-      .eq("data_dou", dataRef)
+      .lte("data_dou", dataRef)
       .not("ementa", "is", null)
       .neq("ementa", "")
+      .order("data_dou", { ascending: false })
       .order("created_at", { ascending: false })
       .limit(maxNormas * 3);
     if (normasErr) throw normasErr;
@@ -430,6 +428,10 @@ Deno.serve(async (req) => {
         labelUnidade: filtradas.length === 1 ? "norma comentada" : "normas comentadas",
       });
     }
+
+    // Auto 7-day retention cleanup per user policy
+    const date7DaysAgo = new Date(Date.now() - 7 * 24 * 3600 * 1000).toISOString().slice(0, 10);
+    await supa.from("boletins_juridicos").delete().lt("data_ref", date7DaysAgo);
 
     return new Response(
       JSON.stringify({ boletim_id: boletimId, duracao_s: Math.round(duracaoTotal), cenas: scenes.length }),

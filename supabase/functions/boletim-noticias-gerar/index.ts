@@ -269,7 +269,7 @@ Deno.serve(async (req) => {
     // Nº de manchetes limitado pelo orçamento de tempo: cada lead ocupa ~16s
     // (32 palavras a 2 palavras/s) e intro+encerramento somam ~10s.
     const alvoManchetes = Math.floor((PALAVRAS_ALVO_MAX - 15) / MEDIA_PALAVRAS_LEAD);
-    const n = Math.max(MIN_MANCHETES, Math.min(alvoManchetes, cfg?.noticias_max_itens || 8));
+    const n = 3;
 
     // Notícias das últimas 48h
     // Janela de 48h: em fins de semana as fontes publicam pouco e 36h não davam
@@ -482,6 +482,10 @@ Deno.serve(async (req) => {
         labelUnidade: escolhidas.length === 1 ? "manchete" : "manchetes",
       });
     }
+
+    // Auto 7-day retention cleanup per user policy
+    const date7DaysAgo = new Date(Date.now() - 7 * 24 * 3600 * 1000).toISOString().slice(0, 10);
+    await supa.from("boletins_juridicos").delete().lt("data_ref", date7DaysAgo);
 
     return new Response(
       JSON.stringify({

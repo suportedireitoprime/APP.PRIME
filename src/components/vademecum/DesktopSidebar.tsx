@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import {pickAsset, srcOf } from '@/lib/assetUrl';
-import { Scale, BookOpen, FileText, Newspaper, Landmark, Shield, ScrollText, Gavel, Settings, PanelLeftClose, Radar, RefreshCw, Bell, Info, LogOut, BookMarked, HeartPulse, Lock, User as UserIcon, Clapperboard, Mail, Wrench, FileSignature, BookOpenText, Mic, CloudDownload, BellRing, CreditCard, LifeBuoy, MessageSquare } from 'lucide-react';
+import { Scale, BookOpen, FileText, Newspaper, Landmark, Shield, ScrollText, Gavel, Settings, PanelLeftClose, Radar, RefreshCw, Bell, Info, LogOut, BookMarked, HeartPulse, Lock, User as UserIcon, Clapperboard, Mail, Wrench, FileSignature, BookOpenText, Mic, CloudDownload, BellRing, CreditCard, LifeBuoy, MessageSquare, MicVocal } from 'lucide-react';
 import { tipoToSlug } from '@/lib/legislacaoSlugs';
 import { getLeisPorTipo } from '@/data/leisCatalog';
 import SuporteSheet from './SuporteSheet';
@@ -35,7 +35,7 @@ const CATEGORIAS = [
 const CONTEUDO_ITEMS = [
   { id: 'explicacao', label: 'Artigos e Análises', icon: FileText, color: '#6366F1' },
   { id: 'atualizacao', label: 'Notícias Jurídicas', icon: Newspaper, route: '/noticias', color: '#EC4899' },
-  { id: 'boletins', label: 'Boletins Jurídicos', icon: Clapperboard, route: '/boletins', color: 'hsl(348 78% 38%)' },
+  { id: 'boletins', label: 'Boletins Jurídicos', icon: MicVocal, route: '/boletins', color: 'hsl(348 78% 38%)' },
   { id: 'newsletter', label: 'Newsletter', icon: Mail, route: '/newsletter', color: '#F97316' },
   { id: 'blog', label: 'Blog', icon: BookOpen, route: '/blog', color: '#0EA5E9' },
   { id: 'novidades', label: 'Novidades', icon: Bell, route: '/novidades', color: '#8B5CF6' },
