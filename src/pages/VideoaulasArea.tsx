@@ -441,7 +441,7 @@ const VideoaulasArea = () => {
                   >
                     <div 
                       className={`relative shrink-0 rounded-xl overflow-hidden bg-muted self-center shadow-inner ${
-                        areaSlug === 'direito-penal' ? 'w-[84px] sm:w-[96px] aspect-[3/4]' : 'w-36 aspect-video'
+                        areaSlug === 'direito-penal' ? 'w-[110px] sm:w-[120px] aspect-[4/3]' : 'w-36 aspect-video'
                       }`}
                     >
                       <img
