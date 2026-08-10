@@ -338,6 +338,7 @@ const VideoaulaView = () => {
               )}
             >
               <CheckCircle2 className="h-4 w-4" /> {concluida ? 'Concluída' : 'Concluir'}
+            </button>
           </div>
         </div>
 

@@ -754,7 +754,7 @@ function QuestaoItem({ q, index, total }: { q: QuestaoIA; index: number; total: 
   const acertou = mostrarGabarito && resposta === gab;
 
   return (
-    <div className="space-y-4 relative pb-16">
+    <div id={`questao-${index}`} className="space-y-4 relative pb-16 pt-4">
       <div className="flex items-center justify-between">
         <span className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground font-semibold">
           Questão {index} de {total}
@@ -813,41 +813,39 @@ function QuestaoItem({ q, index, total }: { q: QuestaoIA; index: number; total: 
       )}
 
       {mostrarGabarito && (
-        <div className="space-y-4 mt-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <div className="space-y-4 mt-6 animate-in fade-in slide-in-from-bottom-8 duration-500">
           <div className={cn(
-            "rounded-xl border p-3 flex items-center justify-center gap-2",
-            acertou ? "border-emerald-500/40 bg-emerald-500/10" : "border-red-500/40 bg-red-500/10",
+            "rounded-xl border p-3 flex items-center justify-center gap-2 shadow-sm",
+            acertou ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-500" : "border-red-500/40 bg-red-500/10 text-red-500",
           )}>
-            <CheckCircle2 className={cn("h-5 w-5 shrink-0", acertou ? "text-emerald-400" : "text-red-400")} />
+            <CheckCircle2 className="h-5 w-5 shrink-0" />
             <p className="text-sm font-semibold text-center">
               {acertou ? "Resposta correta!" : `Resposta incorreta`}
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-2 bg-emerald-600/10 border border-emerald-500/20 rounded-xl p-2">
+          <div className="flex flex-col gap-2">
             <button
               onClick={() => setVerComentario(!verComentario)}
-              className="w-full h-11 flex items-center justify-center gap-2 rounded-lg hover:bg-emerald-500/20 text-emerald-500 font-semibold text-sm transition-colors"
+              className="w-full h-12 flex items-center justify-start px-4 gap-3 rounded-xl border border-border bg-secondary/20 hover:bg-secondary/40 text-foreground font-medium text-sm transition-colors"
             >
-              <Sparkles className="h-4 w-4" /> Comentários
+              <Sparkles className="h-4 w-4 text-primary" /> Comentários
             </button>
-            <div className="grid grid-cols-2 gap-2">
-              <button className="h-10 flex items-center justify-center gap-2 rounded-lg hover:bg-emerald-500/20 text-emerald-500 font-medium text-xs transition-colors">
-                <Scale className="h-4 w-4" /> Lei Seca
-              </button>
-              <button className="h-10 flex items-center justify-center gap-2 rounded-lg hover:bg-emerald-500/20 text-emerald-500 font-medium text-xs transition-colors">
-                <AlertTriangle className="h-4 w-4" /> Pegadinhas
-              </button>
-              <button className="h-10 flex items-center justify-center gap-2 rounded-lg hover:bg-emerald-500/20 text-emerald-500 font-medium text-xs transition-colors">
-                <BookA className="h-4 w-4" /> Termos
-              </button>
-              <button
-                onClick={() => setReportarModalOpen(true)}
-                className="h-10 flex items-center justify-center gap-2 rounded-lg hover:bg-red-500/20 text-red-500 font-medium text-xs transition-colors"
-              >
-                <AlertTriangle className="h-4 w-4" /> Reportar erro
-              </button>
-            </div>
+            <button className="w-full h-12 flex items-center justify-start px-4 gap-3 rounded-xl border border-border bg-secondary/20 hover:bg-secondary/40 text-foreground font-medium text-sm transition-colors">
+              <Scale className="h-4 w-4 text-primary" /> Lei Seca
+            </button>
+            <button className="w-full h-12 flex items-center justify-start px-4 gap-3 rounded-xl border border-border bg-secondary/20 hover:bg-secondary/40 text-foreground font-medium text-sm transition-colors">
+              <AlertTriangle className="h-4 w-4 text-primary" /> Pegadinhas
+            </button>
+            <button className="w-full h-12 flex items-center justify-start px-4 gap-3 rounded-xl border border-border bg-secondary/20 hover:bg-secondary/40 text-foreground font-medium text-sm transition-colors">
+              <BookA className="h-4 w-4 text-primary" /> Termos
+            </button>
+            <button
+              onClick={() => setReportarModalOpen(true)}
+              className="w-full h-12 flex items-center justify-start px-4 gap-3 rounded-xl border border-red-500/20 bg-red-500/5 hover:bg-red-500/10 text-red-500 font-medium text-sm transition-colors mt-2"
+            >
+              <AlertTriangle className="h-4 w-4" /> Reportar erro na questão
+            </button>
           </div>
 
           {verComentario && q.comentario && (
@@ -864,6 +862,21 @@ function QuestaoItem({ q, index, total }: { q: QuestaoIA; index: number; total: 
             onClose={() => setReportarModalOpen(false)}
             questao={q}
           />
+        </div>
+      )}
+
+      {mostrarGabarito && index < total && (
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background via-background/90 to-transparent z-20 pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pointer-events-none animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <div className="w-full sm:max-w-lg mx-auto pointer-events-auto">
+            <button
+              onClick={() => {
+                document.getElementById(`questao-${index + 1}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
+              className="w-full h-12 rounded-xl border border-primary/20 bg-primary/10 text-primary hover:bg-primary/20 text-sm font-semibold shadow-lg transition-all active:scale-[0.98]"
+            >
+              Próxima Questão
+            </button>
+          </div>
         </div>
       )}
     </div>
