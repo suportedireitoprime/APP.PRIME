@@ -123,16 +123,12 @@ const MeuEspaco = () => {
   const [coverPickerOpen, setCoverPickerOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string>(() => toYMD(new Date()));
   const [activeTab, setActiveTab] = useState<'meus' | 'metas'>('metas');
-  const [metas, setMetas] = useState([
-    { id: 'm1', type: 'Trilha de Leitura', title: 'Direito Constitucional', done: false, icon: BookOpen },
-    { id: 'm2', type: 'Trilha de Videoaula', title: 'Processo Penal: Inquérito', done: false, icon: Video },
-    { id: 'm3', type: 'Revisão e Exercícios', title: 'Direito Civil: Contratos', done: true, icon: FileText },
-  ]);
-
-  const toggleMeta = (id: string) => {
-    import('@/lib/nativeHaptics').then(({ haptic }) => haptic.selection());
-    setMetas(prev => prev.map(m => m.id === id ? { ...m, done: !m.done } : m));
-  };
+  
+  const METAS_MOCK = [
+    { id: 'm1', type: 'Trilha de Leitura', title: 'Direito Constitucional', progress: 35, path: '/minhas-leituras', icon: BookOpen },
+    { id: 'm2', type: 'Trilha de Videoaula', title: 'Processo Penal: Inquérito', progress: 0, path: '/minhas-videoaulas', icon: Video },
+    { id: 'm3', type: 'Revisão e Exercícios', title: 'Direito Civil: Contratos', progress: 100, path: '/meus-resumos', icon: FileText },
+  ];
 
 
   // Snapshot local para paint imediato antes do React Query reidratar.
@@ -560,29 +556,38 @@ const MeuEspaco = () => {
         )}
 
         {activeTab === 'metas' && (
-          <div className="mt-5 px-5 lg:px-0 pb-[calc(4rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] space-y-3">
-            <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold px-1">Lista de tarefas</p>
-            {metas.sort((a,b) => Number(a.done) - Number(b.done)).map(m => {
+          <div className="mt-5 px-5 lg:px-0 pb-[calc(4rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] space-y-4">
+            <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold px-1">Seu progresso diário</p>
+            {METAS_MOCK.sort((a,b) => b.progress - a.progress).map(m => {
               const Icon = m.icon;
+              const isDone = m.progress === 100;
               return (
                 <button
                   key={m.id}
-                  onClick={() => toggleMeta(m.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 min-h-[64px] rounded-2xl border transition-all text-left active:scale-[0.99] ${m.done ? 'bg-secondary/20 border-border/30 opacity-75' : 'bg-secondary/40 border-border/60 shadow-sm'}`}
+                  onClick={() => go(m.path)}
+                  className={`w-full flex items-center gap-4 px-4 py-3 min-h-[72px] rounded-2xl border transition-all text-left active:scale-[0.99] ${isDone ? 'bg-secondary/20 border-border/30 opacity-75' : 'bg-secondary/40 border-border/60 shadow-sm hover:bg-secondary/60'}`}
                 >
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${m.done ? 'bg-green-500/10 text-green-500' : 'bg-background text-primary'}`}>
-                    {m.done ? <Check className="w-5 h-5" /> : <Icon className="w-5 h-5" />}
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${isDone ? 'bg-green-500/10 text-green-500' : 'bg-primary/10 text-primary'}`}>
+                    {isDone ? <Check className="w-6 h-6" /> : <Icon className="w-5 h-5" />}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
-                      {m.type}
+                  <div className="flex-1 min-w-0 flex flex-col justify-center">
+                    <div className="flex items-center justify-between mb-1">
+                      <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">
+                        {m.type}
+                      </div>
+                      <div className={`text-[10px] font-black ${isDone ? 'text-green-500' : 'text-primary'}`}>
+                        {isDone ? 'CONCLUÍDO' : `${m.progress}%`}
+                      </div>
                     </div>
-                    <div className={`font-body text-sm font-semibold truncate ${m.done ? 'text-muted-foreground line-through' : 'text-foreground'}`}>
+                    <div className={`font-body text-sm font-bold truncate mb-2.5 ${isDone ? 'text-muted-foreground' : 'text-foreground'}`}>
                       {m.title}
                     </div>
-                  </div>
-                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${m.done ? 'border-green-500 bg-green-500 text-white' : 'border-muted-foreground/30'}`}>
-                    {m.done && <Check className="w-3 h-3" />}
+                    <div className="w-full h-1.5 bg-background rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full rounded-full transition-all duration-1000 ease-out ${isDone ? 'bg-green-500' : 'bg-primary'}`} 
+                        style={{ width: `${m.progress}%` }}
+                      />
+                    </div>
                   </div>
                 </button>
               );
