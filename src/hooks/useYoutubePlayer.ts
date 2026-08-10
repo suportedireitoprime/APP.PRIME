@@ -70,7 +70,9 @@ export function useYoutubePlayer({ videoId, startAt = 0, ativo = true, autoplay 
           playsinline: 1, 
           hl: 'pt', 
           autoplay: autoplay ? 1 : 0,
-          origin: window.location.origin
+          origin: window.location.origin,
+          controls: 0,
+          iv_load_policy: 3
         },
         events: {
           onReady: (e: any) => {

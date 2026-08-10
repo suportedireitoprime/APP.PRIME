@@ -150,7 +150,7 @@ export default function GlobalVideoaulaMiniPlayer() {
 
     const loop = () => {
       const placeholder = document.getElementById('videoaula-placeholder');
-      if (placeholder && el) {
+      if (placeholder && el && onVideoPage) {
         const rect = placeholder.getBoundingClientRect();
         el.style.position = 'fixed';
         el.style.top = `${rect.top}px`;
@@ -159,6 +159,12 @@ export default function GlobalVideoaulaMiniPlayer() {
         el.style.height = `${rect.height}px`;
         el.style.zIndex = '40';
         el.style.borderRadius = getComputedStyle(placeholder).borderRadius;
+      } else if (el) {
+        el.style.top = '';
+        el.style.left = '';
+        el.style.width = '';
+        el.style.height = '';
+        el.style.borderRadius = '16px'; // 2xl
       }
       rafRef.current = requestAnimationFrame(loop);
     };
@@ -189,10 +195,10 @@ export default function GlobalVideoaulaMiniPlayer() {
         initial={false}
         animate={
           onVideoPage
-            ? { opacity: 1, scale: 1, y: 0, width: 'auto', height: 'auto', bottom: 'auto', right: 'auto' }
+            ? { opacity: 1, scale: 1, y: 0, width: 'auto', height: 'auto', bottom: 'auto', right: 'auto', display: 'block' }
             : tocando
-              ? { opacity: 1, scale: 1, y: 0, width: 320, height: 180, bottom: 80, right: 16 }
-              : { opacity: 0, scale: 0.8, y: 20, width: 320, height: 180, bottom: 80, right: 16 }
+              ? { opacity: 1, scale: 1, y: 0, width: 320, height: 180, bottom: 80, right: 16, display: 'block' }
+              : { opacity: 0, scale: 0.8, y: 20, width: 320, height: 180, bottom: 80, right: 16, transitionEnd: { display: 'none' } }
         }
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
         drag={!onVideoPage && tocando}
