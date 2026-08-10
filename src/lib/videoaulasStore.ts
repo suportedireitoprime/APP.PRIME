@@ -63,7 +63,7 @@ let memFavoritosAt = 0;
 let memConcursos: ConcursoRow[] | null = null;
 let memConcursosAt = 0;
 
-const catKey = (id: CatalogoId) => `video:cat:${id}`;
+const catKey = (id: CatalogoId) => `video:cat:v2:${id}`;
 const PROG_KEY = 'video:progresso';
 const FAV_KEY = 'video:favoritos';
 const CONCURSOS_KEY = 'video:concursos:v7';

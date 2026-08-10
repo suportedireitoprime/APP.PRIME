@@ -9,6 +9,7 @@ import trabalhoCapa from '@/assets/thumbnails/trabalho.jpg';
 import administrativoCapa from '@/assets/thumbnails/administrativo.jpg';
 import consumidorCapa from '@/assets/thumbnails/consumidor.jpg';
 import civilCapa from '@/assets/thumbnails/civil.jpg';
+import filosofiaCapa from '@/assets/thumbnails/filosofia.jpg';
 import { srcOf } from '@/lib/assetUrl';
 
 export type CatalogoId = 'iniciante' | 'areas' | 'oab-primeira-fase' | 'oab-segunda-fase';
@@ -95,6 +96,7 @@ export function getCapaDaArea(areaNome?: string | null): string | null {
   if (n.includes('administrativo')) return administrativoCapa;
   if (n.includes('consumidor')) return consumidorCapa;
   if (n.includes('civil') || n.includes('família')) return civilCapa;
+  if (n.includes('filosofia')) return filosofiaCapa;
   return null;
 }
 
