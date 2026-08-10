@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, Maximize2, X, Move } from 'lucide-react';
+import { Play, Pause, Maximize2, X, Move, Loader2 } from 'lucide-react';
 import { useVideoaulasPlayer } from '@/contexts/VideoaulasPlayerContext';
 import { limparTitulo, getCatalogo, getCapaDaArea, ytThumb } from '@/lib/videoaulasCatalogos';
 import { haptic } from '@/lib/nativeHaptics';
@@ -30,12 +30,12 @@ export default function GlobalVideoaulaMiniPlayer() {
   const audioRef = useRef<HTMLAudioElement>(null);
   const rafRef = useRef<number>();
   const salvandoRef = useRef(false);
-  const [interagido, setInteragido] = useState(false);
+  const [tentouTocar, setTentouTocar] = useState(false);
 
   const onVideoPage = location.pathname.includes('/videoaulas/') && location.pathname.split('/').length >= 4;
 
   useEffect(() => {
-    setInteragido(false);
+    setTentouTocar(false);
   }, [atual?.video_id]);
 
   const salvarProgresso = useCallback(
@@ -83,10 +83,6 @@ export default function GlobalVideoaulaMiniPlayer() {
       salvarProgresso(duracao, duracao, true);
     },
   });
-
-  useEffect(() => {
-    if (playing) setInteragido(true);
-  }, [playing]);
 
   // Registrar Media Session
   useEffect(() => {
@@ -222,13 +218,14 @@ export default function GlobalVideoaulaMiniPlayer() {
         <audio ref={audioRef} src={GHOST_AUDIO_B64} loop preload="auto" playsInline className="hidden" />
 
         {/* Fachada Customizada (Apenas onVideoPage) */}
-        {onVideoPage && !interagido && (
+        {onVideoPage && !playing && (
           <div 
             className="absolute inset-0 z-[60] flex items-center justify-center bg-black cursor-pointer group pointer-events-auto"
             onClick={(e) => {
               e.stopPropagation();
+              if (tentouTocar) return;
               haptic.selection();
-              setInteragido(true);
+              setTentouTocar(true);
               setTocandoState(true);
               playerRef.current?.playVideo?.();
             }}
@@ -237,13 +234,18 @@ export default function GlobalVideoaulaMiniPlayer() {
               src={getCapaDaArea(atual.area) || atual.thumb || atual.thumbnail || ytThumb(atual.video_id, 'maxres')}
               alt={tituloLimpo}
               priority
+              className="absolute inset-0 w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors duration-300" />
             <button 
               className="absolute w-[68px] h-[48px] bg-black/70 group-hover:bg-[#ff0000] rounded-xl flex items-center justify-center backdrop-blur-sm transition-colors duration-300"
               aria-label="Reproduzir vídeo"
             >
-              <Play className="w-8 h-8 text-white fill-current ml-1" />
+              {tentouTocar && !playing ? (
+                <Loader2 className="w-8 h-8 text-white animate-spin" />
+              ) : (
+                <Play className="w-8 h-8 text-white fill-current ml-1" />
+              )}
             </button>
           </div>
         )}

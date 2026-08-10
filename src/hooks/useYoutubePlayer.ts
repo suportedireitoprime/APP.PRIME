@@ -80,9 +80,7 @@ export function useYoutubePlayer({ videoId, startAt = 0, ativo = true, autoplay 
             setPronto(true);
             if (startRef.current > 5) e.target.seekTo(startRef.current, true);
             if (autoplay) {
-              setTimeout(() => {
-                e.target.playVideo?.();
-              }, 150);
+              try { e.target.playVideo?.(); } catch (err) {}
             }
           },
           onStateChange: (e: any) => {
