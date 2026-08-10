@@ -328,7 +328,7 @@ function resolveCover(p: RawPost): string {
   const t = (p.titulo || '').toLowerCase();
   // 1º) Capa gerada pela IA e salva no Storage (blog-capas) — é a capa oficial
   // do post. Só ignoramos placeholders genéricos do Unsplash.
-  if (p.imagem_url && p.imagem_url.startsWith('http') && !p.imagem_url.includes('unsplash.com')) {
+  if (p.imagem_url && (p.imagem_url.startsWith('http') || p.imagem_url.startsWith('/assets/')) && !p.imagem_url.includes('unsplash.com')) {
     return p.imagem_url;
   }
 
