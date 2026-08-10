@@ -438,12 +438,10 @@ const VideoaulasArea = () => {
                   <button
                     key={String(a.id)}
                     onClick={() => navigate(`/videoaulas/${catalogo.id}/${areaSlug}/${a.video_id}`)}
-                    className="w-full text-left rounded-2xl border border-border/40 bg-card/60 backdrop-blur-md shadow-lg hover:border-primary/50 transition-all overflow-hidden flex gap-3 p-3 active:scale-[0.98] h-auto min-h-[140px]"
+                    className="w-full text-left rounded-2xl border border-border/40 bg-card/60 backdrop-blur-md shadow-lg hover:border-primary/50 transition-all overflow-hidden flex gap-3 p-2.5 active:scale-[0.98] h-auto"
                   >
                     <div 
-                      className={`relative shrink-0 rounded-xl overflow-hidden bg-muted self-center shadow-inner ${
-                        getCapaDaArea(nomeArea) ? 'w-[110px] sm:w-[120px] aspect-[4/3]' : 'w-36 aspect-video'
-                      }`}
+                      className="relative w-[130px] sm:w-[150px] aspect-video shrink-0 rounded-xl overflow-hidden bg-muted self-center shadow-inner"
                     >
                       <ThumbImg
                         src={getCapaDaArea(nomeArea) || a.thumb || a.thumbnail || ytThumb(a.video_id, 'mq')}
