@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -319,6 +319,18 @@ function SeletorOverlay<T extends string>({
 
 function PainelOverlay({ input, tipo, onClose }: { input: AulaCtxInput | null; tipo: AulaAcaoTipo; onClose: () => void }) {
   const { data, isLoading, error, refetch } = useVideoaulaAcao(input, tipo, true);
+  const [showLoading, setShowLoading] = useState(false);
+
+  // Atraso de 500ms para mostrar o loader (evita piscar se o cache for muito rápido)
+  useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout>;
+    if (isLoading) {
+      timeout = setTimeout(() => setShowLoading(true), 500);
+    } else {
+      setShowLoading(false);
+    }
+    return () => clearTimeout(timeout);
+  }, [isLoading]);
 
   return (
     <motion.div
@@ -361,7 +373,7 @@ function PainelOverlay({ input, tipo, onClose }: { input: AulaCtxInput | null; t
         )}
 
         <div className="p-4 md:p-5">
-          {isLoading && (
+          {showLoading && (
             <div className="py-12 flex flex-col items-center gap-3">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
               <p className="text-sm text-muted-foreground text-center">

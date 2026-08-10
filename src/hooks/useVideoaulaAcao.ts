@@ -23,6 +23,22 @@ export interface AulaCtxInput {
 }
 
 async function fetchAcao(body: Record<string, unknown>) {
+  // Verifica o cache diretamente pelo cliente primeiro para máxima velocidade
+  if (body.tabela && body.videoId && body.tipo) {
+    const { data: cached } = await supabase
+      .from("videoaulas_acao_cache")
+      .select("payload")
+      .eq("tabela", body.tabela as string)
+      .eq("video_id", body.videoId as string)
+      .eq("tipo", body.tipo as string)
+      .maybeSingle();
+      
+    if (cached?.payload) {
+      return cached.payload;
+    }
+  }
+
+  // Se não estiver no cache, chama a IA (Edge Function)
   const { data, error } = await supabase.functions.invoke("videoaula-acao-ia", { body });
   if (error) throw error;
   if (data?.error) throw new Error(data.error);
