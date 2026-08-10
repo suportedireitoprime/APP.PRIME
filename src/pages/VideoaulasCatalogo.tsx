@@ -243,7 +243,7 @@ const VideoaulasCatalogo = () => {
                   >
                     <div className="relative w-[110px] shrink-0 overflow-hidden">
                       <ThumbImg
-                        src={area.thumb}
+                        src={slugify(area.nome) === 'direito-penal' ? '/capas/direito-penal.jpg' : area.thumb}
                         alt={area.nome}
                         fallback={<Play className="h-8 w-8 text-primary/40" />}
                       />
