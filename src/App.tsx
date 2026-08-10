@@ -80,6 +80,7 @@ import AdminFuncoes from "./pages/AdminFuncoes.tsx";
 import AdminPush from "./pages/AdminPush.tsx";
 import AdminPushSection from "./pages/AdminPushSection.tsx";
 import AdminResumoLivroAudioEditar from "./pages/AdminResumoLivroAudioEditar.tsx";
+import AdminErrosQuestoes from "./pages/AdminErrosQuestoes.tsx";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -890,6 +891,7 @@ function AnimatedRoutes() {
           <Route path="/admin-triagem-hub" element={<ProtectedRoute><PageTransition><AdminTriagemHub /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-boletins" element={<ProtectedRoute><PageTransition><AdminBoletins /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-desktop" element={<ProtectedRoute><PageTransition><AdminDesktop /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin-erros-questoes" element={<ProtectedRoute><PageTransition><AdminErrosQuestoes /></PageTransition></ProtectedRoute>} />
 
           <Route path="/admin-modelos" element={<ProtectedRoute><PageTransition><AdminModelos /></PageTransition></ProtectedRoute>} />
           <Route path="/boletins" element={<ProtectedRoute><PageTransition><BoletinsJuridicos /></PageTransition></ProtectedRoute>} />

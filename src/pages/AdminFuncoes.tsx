@@ -44,6 +44,7 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   '/admin-boletins': () => import('./AdminBoletins'),
   '/admin-modelos': () => import('./AdminModelos'),
   '/admin-desktop': () => import('./AdminDesktop'),
+  '/admin-erros-questoes': () => import('./AdminErrosQuestoes'),
   '/admin-jurisprudencia': () => import('./AdminJurisprudencia'),
   '/admin-concorrentes': () => import('./AdminConcorrentes'),
   '/admin-radares-leis': () => import('./AdminRadaresLeis'),
@@ -177,11 +178,11 @@ const CATEGORIES: Category[] = [
   {
     id: 'questoes',
     title: 'Questões',
-    desc: 'Importar questões das planilhas, cargos e comentários por IA',
+    desc: 'Importar questões das planilhas, cargos, e visualizar reportes de erros',
     icon: ListChecks,
-    route: '/admin-questoes',
     items: [
       { id: 'admin-questoes', label: 'Questões — Editar', icon: ListChecks, desc: 'Buscar mais questões, novos cargos e importar do Google Sheets', route: '/admin-questoes' },
+      { id: 'admin-erros-questoes', label: 'Reportes de Erro', icon: ShieldAlert, desc: 'Visualizar e resolver erros em questões reportados por alunos', route: '/admin-erros-questoes' },
     ],
   },
 

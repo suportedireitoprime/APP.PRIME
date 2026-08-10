@@ -14,6 +14,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { useGatedFeature } from "@/hooks/useGatedFeature";
 import { toast } from "sonner";
 import FlashcardEleganteViewer from "@/components/flashcards/FlashcardEleganteViewer";
+import { ReportarErroQuestaoModal } from "./ReportarErroQuestaoModal";
 import { haptic } from "@/lib/nativeHaptics";
 import {
   Drawer,
@@ -341,11 +342,11 @@ function PainelOverlay({ input, tipo, onClose }: { input: AulaCtxInput | null; t
       >
         {tipo === "questoes" ? (
           <div className="sticky top-0 z-10 flex items-center gap-3 px-4 py-4 bg-card/95 backdrop-blur border-b border-border">
-            <button onClick={onClose} className="h-10 w-10 shrink-0 grid place-items-center rounded-full bg-muted/50 hover:bg-muted text-foreground transition-colors">
-              <X className="h-6 w-6" />
+            <button onClick={onClose} className="h-10 w-10 shrink-0 grid place-items-center rounded-full bg-black/60 hover:bg-black/80 text-white transition-colors">
+              <X className="h-5 w-5" />
             </button>
             <p className="text-sm uppercase tracking-[0.1em] text-red-400 font-bold flex-1 text-center pr-10">
-              <Sparkles className="h-4 w-4 inline mr-2" /> {TITULOS[tipo]}
+              {TITULOS[tipo]}
             </p>
           </div>
         ) : (
@@ -730,6 +731,8 @@ type QuestaoIA = {
 function QuestaoItem({ q, index, total }: { q: QuestaoIA; index: number; total: number }) {
   const [resposta, setResposta] = useState<string | null>(null);
   const [mostrarGabarito, setMostrarGabarito] = useState(false);
+  const [verComentario, setVerComentario] = useState(false);
+  const [reportarModalOpen, setReportarModalOpen] = useState(false);
 
   const gab = (q.gabarito || "").trim().toUpperCase();
   const alternativas: Array<[string, string | undefined]> = [
@@ -739,7 +742,7 @@ function QuestaoItem({ q, index, total }: { q: QuestaoIA; index: number; total: 
   const acertou = mostrarGabarito && resposta === gab;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 relative pb-16">
       <div className="flex items-center justify-between">
         <span className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground font-semibold">
           Questão {index} de {total}
@@ -784,35 +787,71 @@ function QuestaoItem({ q, index, total }: { q: QuestaoIA; index: number; total: 
         })}
       </div>
 
-      {!mostrarGabarito && (
-        <button
-          onClick={() => setMostrarGabarito(true)}
-          disabled={!resposta}
-          className="w-full h-11 mt-2 rounded-xl bg-primary text-primary-foreground text-sm font-semibold disabled:opacity-40 hover:opacity-90 transition-opacity"
-        >
-          Responder
-        </button>
+      {!mostrarGabarito && resposta && (
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background via-background/90 to-transparent z-20 pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pointer-events-none">
+          <div className="w-full sm:max-w-lg mx-auto pointer-events-auto">
+            <button
+              onClick={() => setMostrarGabarito(true)}
+              className="w-full h-12 rounded-xl bg-primary text-primary-foreground text-sm font-semibold shadow-xl hover:opacity-90 transition-all active:scale-[0.98]"
+            >
+              Responder
+            </button>
+          </div>
+        </div>
       )}
 
       {mostrarGabarito && (
-        <div className="space-y-3 mt-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <div className="space-y-4 mt-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
           <div className={cn(
-            "rounded-xl border p-3 flex items-center gap-2",
+            "rounded-xl border p-3 flex items-center justify-center gap-2",
             acertou ? "border-emerald-500/40 bg-emerald-500/10" : "border-red-500/40 bg-red-500/10",
           )}>
             <CheckCircle2 className={cn("h-5 w-5 shrink-0", acertou ? "text-emerald-400" : "text-red-400")} />
-            <p className="text-sm font-semibold">
-              {acertou ? "Você acertou!" : `Resposta correta: ${gab}`}
+            <p className="text-sm font-semibold text-center">
+              {acertou ? "Resposta correta!" : `Resposta incorreta`}
             </p>
           </div>
-          {q.comentario && (
-            <div className="rounded-xl border border-border bg-background p-4">
+
+          <div className="grid grid-cols-1 gap-2 bg-emerald-600/10 border border-emerald-500/20 rounded-xl p-2">
+            <button
+              onClick={() => setVerComentario(!verComentario)}
+              className="w-full h-11 flex items-center justify-center gap-2 rounded-lg hover:bg-emerald-500/20 text-emerald-500 font-semibold text-sm transition-colors"
+            >
+              <Sparkles className="h-4 w-4" /> Comentários
+            </button>
+            <div className="grid grid-cols-2 gap-2">
+              <button className="h-10 flex items-center justify-center gap-2 rounded-lg hover:bg-emerald-500/20 text-emerald-500 font-medium text-xs transition-colors">
+                <Scale className="h-4 w-4" /> Lei Seca
+              </button>
+              <button className="h-10 flex items-center justify-center gap-2 rounded-lg hover:bg-emerald-500/20 text-emerald-500 font-medium text-xs transition-colors">
+                <AlertTriangle className="h-4 w-4" /> Pegadinhas
+              </button>
+              <button className="h-10 flex items-center justify-center gap-2 rounded-lg hover:bg-emerald-500/20 text-emerald-500 font-medium text-xs transition-colors">
+                <BookA className="h-4 w-4" /> Termos
+              </button>
+              <button
+                onClick={() => setReportarModalOpen(true)}
+                className="h-10 flex items-center justify-center gap-2 rounded-lg hover:bg-red-500/20 text-red-500 font-medium text-xs transition-colors"
+              >
+                <AlertTriangle className="h-4 w-4" /> Reportar erro
+              </button>
+            </div>
+          </div>
+
+          {verComentario && q.comentario && (
+            <div className="rounded-xl border border-border bg-background p-4 animate-in fade-in duration-300">
               <p className="text-[10px] uppercase tracking-[0.1em] text-muted-foreground font-semibold mb-2 inline-flex items-center gap-1.5">
                 <Sparkles className="h-3 w-3" /> Comentário
               </p>
               <p className="text-sm leading-relaxed text-foreground/90 whitespace-pre-line">{q.comentario}</p>
             </div>
           )}
+
+          <ReportarErroQuestaoModal
+            isOpen={reportarModalOpen}
+            onClose={() => setReportarModalOpen(false)}
+            questao={q}
+          />
         </div>
       )}
     </div>
