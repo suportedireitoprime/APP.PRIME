@@ -60,6 +60,7 @@ const VideoaulasCategorias = () => {
   return (
     <div className="min-h-screen bg-background">
       <PageHeader
+        onBack={() => navigate(-1)}
         title="Categorias"
         subtitle="Escolha por onde estudar"
       />
@@ -80,6 +81,7 @@ const VideoaulasCategorias = () => {
                 }}
                 className="group relative flex flex-col justify-end w-full aspect-[3/4] overflow-hidden rounded-2xl border border-border bg-black text-left shadow-sm transition-all hover:border-primary/50 active:scale-[0.98]"
               >
+                <motion.div variants={{ hidden: { x: '-100%' }, show: { x: '200%', transition: { duration: 1.5, ease: 'easeInOut' } } }} className="absolute inset-0 w-full bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 z-30 pointer-events-none" />
                 <ThumbImg
                   src={c.capa}
                   alt={c.titulo}
@@ -98,11 +100,14 @@ const VideoaulasCategorias = () => {
                     <h3 className="text-[14px] sm:text-[15px] font-bold leading-tight line-clamp-2 drop-shadow-md">{c.titulo}</h3>
                     
                     <div className="mt-2 flex items-center justify-between text-white/80 group-hover:text-white transition-colors">
-                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-primary">
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-white">
                         <Video className="h-3.5 w-3.5" />
                         {info?.total ? `${info.total.toLocaleString('pt-BR')} aulas` : '—'}
                       </span>
-                      {info?.concluidas ? <span className="text-[10px] text-white/60 font-medium">{info.pct}% assistido</span> : null}
+                      <div className="flex items-center gap-1.5">
+                        {info?.concluidas ? <span className="text-[10px] text-white/60 font-medium">{info.pct}% assistido</span> : null}
+                        <ChevronRight className="h-4 w-4" />
+                      </div>
                     </div>
                     
                     {info?.total ? (
@@ -138,6 +143,7 @@ const VideoaulasCategorias = () => {
                 }}
                 className="group relative flex flex-col justify-end w-full aspect-[3/4] overflow-hidden rounded-2xl border border-border bg-black text-left shadow-sm transition-all hover:border-primary/50 active:scale-[0.98]"
               >
+                <motion.div variants={{ hidden: { x: '-100%' }, show: { x: '200%', transition: { duration: 1.5, ease: 'easeInOut' } } }} className="absolute inset-0 w-full bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 z-30 pointer-events-none" />
                 <ThumbImg
                   src={c.capa}
                   alt={c.titulo}
@@ -156,11 +162,14 @@ const VideoaulasCategorias = () => {
                     <h3 className="text-[14px] sm:text-[15px] font-bold leading-tight line-clamp-2 drop-shadow-md">{c.titulo}</h3>
                     
                     <div className="mt-2 flex items-center justify-between text-white/80 group-hover:text-white transition-colors">
-                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-primary">
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-white">
                         <Video className="h-3.5 w-3.5" />
                         {info?.total ? `${info.total.toLocaleString('pt-BR')} aulas` : '—'}
                       </span>
-                      {info?.concluidas ? <span className="text-[10px] text-white/60 font-medium">{info.pct}% assistido</span> : null}
+                      <div className="flex items-center gap-1.5">
+                        {info?.concluidas ? <span className="text-[10px] text-white/60 font-medium">{info.pct}% assistido</span> : null}
+                        <ChevronRight className="h-4 w-4" />
+                      </div>
                     </div>
                     
                     {info?.total ? (
@@ -194,6 +203,7 @@ const VideoaulasCategorias = () => {
                 }}
                 className="group relative flex flex-col justify-end w-full aspect-[3/4] overflow-hidden rounded-2xl border border-border bg-black text-left shadow-sm transition-all hover:border-primary/50 active:scale-[0.98]"
               >
+                <motion.div variants={{ hidden: { x: '-100%' }, show: { x: '200%', transition: { duration: 1.5, ease: 'easeInOut' } } }} className="absolute inset-0 w-full bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 z-30 pointer-events-none" />
                 <ThumbImg
                   src={c.capa}
                   alt={c.titulo}
@@ -231,6 +241,7 @@ const VideoaulasCategorias = () => {
                 }}
                 className="group relative flex flex-col justify-end w-full aspect-[3/4] overflow-hidden rounded-2xl border border-border bg-black text-left shadow-sm transition-all hover:border-primary/50 active:scale-[0.98]"
               >
+                <motion.div variants={{ hidden: { x: '-100%' }, show: { x: '200%', transition: { duration: 1.5, ease: 'easeInOut' } } }} className="absolute inset-0 w-full bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 z-30 pointer-events-none" />
                 <ThumbImg
                   src={c.capa}
                   alt={c.titulo}
@@ -268,6 +279,7 @@ const VideoaulasCategorias = () => {
                 }}
                 className="group relative flex flex-col justify-end w-full aspect-[3/4] overflow-hidden rounded-2xl border border-border bg-black text-left shadow-sm transition-all hover:border-primary/50 active:scale-[0.98]"
               >
+                <motion.div variants={{ hidden: { x: '-100%' }, show: { x: '200%', transition: { duration: 1.5, ease: 'easeInOut' } } }} className="absolute inset-0 w-full bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 z-30 pointer-events-none" />
                 <ThumbImg
                   src={c.capa}
                   alt={c.titulo}

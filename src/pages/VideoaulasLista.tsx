@@ -48,6 +48,7 @@ const VideoaulasLista = ({ modo }: { modo: 'favoritos' | 'recentes' }) => {
   return (
     <div className="min-h-screen bg-background pb-28">
       <PageHeader
+        onBack={() => navigate(-1)}
         title={modo === 'favoritos' ? 'Videoaulas favoritas' : 'Continuar assistindo'}
         subtitle={loading ? 'Carregando…' : `${rows.length} aulas`}
       />

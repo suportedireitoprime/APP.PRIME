@@ -459,7 +459,7 @@ const VideoaulasTrilhas = () => {
           if (view === 'setup_edital' && hasAnyTrail) {
             setView('dashboard');
           } else {
-            navigate('/videoaulas/categorias');
+            navigate(-1);
           }
         }}
       />
