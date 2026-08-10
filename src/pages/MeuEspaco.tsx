@@ -125,9 +125,9 @@ const MeuEspaco = () => {
   const [activeTab, setActiveTab] = useState<'meus' | 'metas'>('metas');
   
   const METAS_MOCK = [
-    { id: 'm1', type: 'Trilha de Leitura', title: 'Direito Constitucional', progress: 35, path: '/minhas-leituras', icon: BookOpen },
-    { id: 'm2', type: 'Trilha de Videoaula', title: 'Processo Penal: Inquérito', progress: 0, path: '/minhas-videoaulas', icon: Video },
-    { id: 'm3', type: 'Revisão e Exercícios', title: 'Direito Civil: Contratos', progress: 100, path: '/meus-resumos', icon: FileText },
+    { id: 'm1', type: 'Missão de Leitura', title: 'Crime e Castigo', subtitle: 'Meta: Ler 15 páginas hoje (Págs 45 a 60)', progress: 0, path: '/pessoal/livros', icon: BookOpen },
+    { id: 'm2', type: 'Trilha de Videoaula', title: 'Processo Penal: Inquérito', subtitle: 'Continuar Aula 04: Prazos do Inquérito', progress: 65, path: '/minhas-videoaulas', icon: Video },
+    { id: 'm3', type: 'Revisão e Exercícios', title: 'Direito Civil: Contratos', subtitle: '10 exercícios separados para hoje', progress: 100, path: '/pessoal/anotacoes', icon: FileText },
   ];
 
 
@@ -558,9 +558,14 @@ const MeuEspaco = () => {
         {activeTab === 'metas' && (
           <div className="mt-5 px-5 lg:px-0 pb-[calc(4rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] space-y-4">
             <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold px-1">Seu progresso diário</p>
-            {METAS_MOCK.sort((a,b) => b.progress - a.progress).map(m => {
-              const Icon = m.icon;
-              const isDone = m.progress === 100;
+            {METAS_MOCK.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+                Nenhuma meta pendente para hoje. Bom descanso!
+              </div>
+            ) : (
+              METAS_MOCK.sort((a,b) => b.progress - a.progress).map(m => {
+                const Icon = m.icon;
+                const isDone = m.progress === 100;
               return (
                 <button
                   key={m.id}
@@ -579,9 +584,15 @@ const MeuEspaco = () => {
                         {isDone ? 'CONCLUÍDO' : `${m.progress}%`}
                       </div>
                     </div>
-                    <div className={`font-body text-sm font-bold truncate mb-2.5 ${isDone ? 'text-muted-foreground' : 'text-foreground'}`}>
+                    <div className={`font-body text-sm font-bold truncate ${isDone ? 'text-muted-foreground' : 'text-foreground'}`}>
                       {m.title}
                     </div>
+                    {m.subtitle && (
+                      <div className={`text-xs mt-0.5 mb-2.5 truncate ${isDone ? 'text-muted-foreground/60 line-through' : 'text-muted-foreground'}`}>
+                        {m.subtitle}
+                      </div>
+                    )}
+                    {!m.subtitle && <div className="mb-2.5" />}
                     <div className="w-full h-1.5 bg-background rounded-full overflow-hidden">
                       <div 
                         className={`h-full rounded-full transition-all duration-1000 ease-out ${isDone ? 'bg-green-500' : 'bg-primary'}`} 
@@ -591,7 +602,7 @@ const MeuEspaco = () => {
                   </div>
                 </button>
               );
-            })}
+            }))}
           </div>
         )}
 
