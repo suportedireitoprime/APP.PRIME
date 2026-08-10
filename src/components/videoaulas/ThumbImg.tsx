@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from 'react';
+import CoverAnimatedOverlay from './CoverAnimatedOverlay';
 
 type Props = {
   src?: string | null;
@@ -7,10 +8,19 @@ type Props = {
   className?: string;
   /** Capas visíveis de cara devem carregar com prioridade (sem lazy). */
   priority?: boolean;
+  /** Ativa elementos jurídicos flutuantes e folhas de louro caindo. */
+  animatedOverlay?: boolean;
 };
 
-/** Capa com fallback e fade-in, usada nos cards de videoaulas. */
-const ThumbImg = ({ src, alt, fallback, className = '', priority = false }: Props) => {
+/** Capa com fallback, fade-in e overlay animado, usada nos cards de videoaulas. */
+const ThumbImg = ({
+  src,
+  alt,
+  fallback,
+  className = '',
+  priority = false,
+  animatedOverlay = true,
+}: Props) => {
   const [erro, setErro] = useState(false);
   const [carregou, setCarregou] = useState(false);
 
@@ -23,21 +33,24 @@ const ThumbImg = ({ src, alt, fallback, className = '', priority = false }: Prop
   }
 
   return (
-    <img
-      src={src}
-      alt={alt}
-      width={320}
-      height={180}
-      loading={priority ? 'eager' : 'lazy'}
-      // @ts-expect-error atributo nativo do <img>
-      fetchpriority={priority ? 'high' : 'low'}
-      decoding="async"
-      onLoad={() => setCarregou(true)}
-      onError={() => setErro(true)}
-      className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${
-        carregou ? 'opacity-100' : 'opacity-0'
-      } ${className}`}
-    />
+    <>
+      <img
+        src={src}
+        alt={alt}
+        width={320}
+        height={180}
+        loading={priority ? 'eager' : 'lazy'}
+        // @ts-expect-error atributo nativo do <img>
+        fetchpriority={priority ? 'high' : 'low'}
+        decoding="async"
+        onLoad={() => setCarregou(true)}
+        onError={() => setErro(true)}
+        className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${
+          carregou ? 'opacity-100' : 'opacity-0'
+        } ${className}`}
+      />
+      {carregou && animatedOverlay && <CoverAnimatedOverlay />}
+    </>
   );
 };
 

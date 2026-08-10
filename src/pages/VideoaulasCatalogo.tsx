@@ -239,27 +239,26 @@ const VideoaulasCatalogo = () => {
                   <button
                     key={area.nome}
                     onClick={() => navigate(`/videoaulas/${catalogo.id}/${slugify(area.nome)}`)}
-                    className="group flex w-full items-stretch overflow-hidden rounded-2xl border border-border bg-card text-left transition-all hover:border-primary/50 active:scale-[0.98]"
-                    style={{ minHeight: 96 }}
+                    className="group flex w-full items-center overflow-hidden rounded-2xl border border-border bg-card text-left transition-all hover:border-[#E3262F]/50 active:scale-[0.98]"
                   >
-                    <div className="relative w-[110px] shrink-0 overflow-hidden">
+                    <div className="relative w-[145px] sm:w-[170px] aspect-video shrink-0 overflow-hidden bg-black">
                         <ThumbImg
                           src={getCapaDaArea(area.nome) || area.thumb}
                           alt={area.nome}
-                          fallback={<Play className="h-8 w-8 text-primary/40" />}
+                          fallback={<Play className="h-8 w-8 text-[#E3262F]/60" />}
                         />
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent to-card/30" />
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent to-card/20 pointer-events-none" />
                     </div>
                     <div className="flex min-w-0 flex-1 flex-col justify-center px-3.5 py-2.5">
-                      <h3 className="truncate text-[15px] font-bold leading-tight">
+                      <h3 className="truncate text-[14px] sm:text-[15px] font-bold leading-tight">
                         {simplificarNomeArea(area.nome)}
                       </h3>
-                      <p className="mt-1 text-[12px] font-semibold text-primary">
+                      <p className="mt-1 text-[12px] font-extrabold text-[#E3262F]">
                         {area.total} {area.total === 1 ? 'aula' : 'aulas'}
                       </p>
                     </div>
                     <div className="flex items-center pr-3">
-                      <ChevronRight className="h-5 w-5 text-muted-foreground/60 transition-all group-hover:translate-x-0.5 group-hover:text-primary" />
+                      <ChevronRight className="h-5 w-5 text-muted-foreground/60 transition-all group-hover:translate-x-0.5 group-hover:text-[#E3262F]" />
                     </div>
                   </button>
                 ))

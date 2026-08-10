@@ -464,7 +464,7 @@ const VideoaulasArea = () => {
                     <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
                       <div>
                         <div className="flex items-center justify-between gap-2 mb-1.5">
-                          <p className="text-[10px] font-black tracking-wider uppercase text-primary/80">Aula {a.ordem ?? i + 1}</p>
+                          <p className="text-[11px] font-black tracking-wider uppercase text-[#E3262F]">Aula {a.ordem ?? i}</p>
                           {favoritos.has(a.video_id) && (
                             <Star className="h-3.5 w-3.5 text-yellow-500" fill="currentColor" />
                           )}
@@ -475,15 +475,16 @@ const VideoaulasArea = () => {
                         </p>
                       </div>
 
-                      <div className="mt-auto">
-                        <div className="flex items-center justify-between mb-1.5">
-                           <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">
-                            {p?.concluida ? 'Concluída' : pct > 0 ? `${pct}% assistido` : a.duracao_segundos ? formatDuracao(a.duracao_segundos) : '0%'}
-                          </p>
+                      <div className="mt-2">
+                        <div className="flex items-center justify-between text-[10px] text-muted-foreground font-semibold mb-1">
+                          <span className="text-[#E3262F] font-bold">{pct}%</span>
+                          {p?.tempo_atual && a.duracao_segundos ? (
+                            <span>{formatDuracao(p.tempo_atual)} / {formatDuracao(a.duracao_segundos)}</span>
+                          ) : null}
                         </div>
                         <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
                           <div
-                            className="h-full rounded-full bg-primary"
+                            className="h-full rounded-full bg-[#E3262F] transition-all duration-300"
                             style={{ width: `${pct}%` }}
                           />
                         </div>

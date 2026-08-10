@@ -339,7 +339,7 @@ const VideoaulaView = () => {
         <div className="lg:col-span-6 xl:col-span-6 space-y-4">
           <div 
             id="videoaula-placeholder"
-            className="relative w-full bg-transparent aspect-video lg:rounded-2xl lg:overflow-hidden"
+            className="relative w-[calc(100%+1rem)] sm:w-[calc(100%+2rem)] lg:w-full -mx-2 sm:-mx-4 lg:mx-0 bg-transparent aspect-video lg:rounded-2xl lg:overflow-hidden"
           >
             {/* O GlobalVideoaulaMiniPlayer.tsx vai teletransportar o player para cá */}
             {/* O próprio placeholder não precisa de fundo porque o player global preenche */}

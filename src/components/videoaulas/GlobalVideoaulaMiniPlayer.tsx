@@ -238,7 +238,7 @@ export default function GlobalVideoaulaMiniPlayer() {
             />
             <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors duration-300" />
             <button 
-              className="absolute w-[68px] h-[48px] bg-black/70 group-hover:bg-[#ff0000] rounded-xl flex items-center justify-center backdrop-blur-sm transition-colors duration-300"
+              className="absolute w-[68px] h-[48px] bg-[#E3262F] hover:bg-[#c91e26] shadow-lg shadow-[#E3262F]/30 rounded-xl flex items-center justify-center backdrop-blur-sm transition-all duration-300 group-hover:scale-105 active:scale-95"
               aria-label="Reproduzir vídeo"
             >
               {tentouTocar && !playing ? (
