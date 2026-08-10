@@ -745,6 +745,7 @@ function QuestaoItem({ q, index, total }: { q: QuestaoIA; index: number; total: 
   const [mostrarGabarito, setMostrarGabarito] = useState(false);
   const [verComentario, setVerComentario] = useState(false);
   const [reportarModalOpen, setReportarModalOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const gab = (q.gabarito || "").trim().toUpperCase();
   const alternativas: Array<[string, string | undefined]> = [
@@ -803,7 +804,10 @@ function QuestaoItem({ q, index, total }: { q: QuestaoIA; index: number; total: 
         <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background via-background/90 to-transparent z-20 pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pointer-events-none">
           <div className="w-full sm:max-w-lg mx-auto pointer-events-auto">
             <button
-              onClick={() => setMostrarGabarito(true)}
+              onClick={() => {
+                setMostrarGabarito(true);
+                setDrawerOpen(true);
+              }}
               className="w-full h-12 rounded-xl bg-primary text-primary-foreground text-sm font-semibold shadow-xl hover:opacity-90 transition-all active:scale-[0.98]"
             >
               Responder
@@ -813,72 +817,102 @@ function QuestaoItem({ q, index, total }: { q: QuestaoIA; index: number; total: 
       )}
 
       {mostrarGabarito && (
-        <div className="space-y-4 mt-6 animate-in fade-in slide-in-from-bottom-8 duration-500">
-          <div className={cn(
-            "rounded-xl border p-3 flex items-center justify-center gap-2 shadow-sm",
-            acertou ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-500" : "border-red-500/40 bg-red-500/10 text-red-500",
-          )}>
-            <CheckCircle2 className="h-5 w-5 shrink-0" />
-            <p className="text-sm font-semibold text-center">
-              {acertou ? "Resposta correta!" : `Resposta incorreta`}
-            </p>
-          </div>
+        <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
+          <DrawerPortal>
+            <DrawerOverlay className="bg-black/40 backdrop-blur-sm" />
+            <DrawerContent className="bg-background max-h-[85vh] flex flex-col rounded-t-3xl pb-safe">
+              <div className="px-5 pt-3 pb-6 flex-1 overflow-y-auto">
+                <div className={cn(
+                  "rounded-2xl border p-4 flex flex-col items-center justify-center gap-2 shadow-sm mb-6",
+                  acertou ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-500" : "border-red-500/40 bg-red-500/10 text-red-500",
+                )}>
+                  <CheckCircle2 className="h-8 w-8 shrink-0" />
+                  <p className="text-lg font-bold text-center">
+                    {acertou ? "Resposta correta!" : `Resposta incorreta`}
+                  </p>
+                </div>
 
-          <div className="flex flex-col gap-2">
-            <button
-              onClick={() => setVerComentario(!verComentario)}
-              className="w-full h-12 flex items-center justify-start px-4 gap-3 rounded-xl border border-border bg-secondary/20 hover:bg-secondary/40 text-foreground font-medium text-sm transition-colors"
-            >
-              <Sparkles className="h-4 w-4 text-primary" /> Comentários
-            </button>
-            <button className="w-full h-12 flex items-center justify-start px-4 gap-3 rounded-xl border border-border bg-secondary/20 hover:bg-secondary/40 text-foreground font-medium text-sm transition-colors">
-              <Scale className="h-4 w-4 text-primary" /> Lei Seca
-            </button>
-            <button className="w-full h-12 flex items-center justify-start px-4 gap-3 rounded-xl border border-border bg-secondary/20 hover:bg-secondary/40 text-foreground font-medium text-sm transition-colors">
-              <AlertTriangle className="h-4 w-4 text-primary" /> Pegadinhas
-            </button>
-            <button className="w-full h-12 flex items-center justify-start px-4 gap-3 rounded-xl border border-border bg-secondary/20 hover:bg-secondary/40 text-foreground font-medium text-sm transition-colors">
-              <BookA className="h-4 w-4 text-primary" /> Termos
-            </button>
-            <button
-              onClick={() => setReportarModalOpen(true)}
-              className="w-full h-12 flex items-center justify-start px-4 gap-3 rounded-xl border border-red-500/20 bg-red-500/5 hover:bg-red-500/10 text-red-500 font-medium text-sm transition-colors mt-2"
-            >
-              <AlertTriangle className="h-4 w-4" /> Reportar erro na questão
-            </button>
-          </div>
+                <div className="flex flex-col gap-3">
+                  <button
+                    onClick={() => setVerComentario(!verComentario)}
+                    className="w-full h-14 flex items-center justify-start px-5 gap-3 rounded-2xl border border-border bg-secondary/30 hover:bg-secondary/50 text-foreground font-semibold text-[15px] transition-colors"
+                  >
+                    <Sparkles className="h-5 w-5 text-primary" /> Comentários
+                  </button>
 
-          {verComentario && q.comentario && (
-            <div className="rounded-xl border border-border bg-background p-4 animate-in fade-in duration-300">
-              <p className="text-[10px] uppercase tracking-[0.1em] text-muted-foreground font-semibold mb-2 inline-flex items-center gap-1.5">
-                <Sparkles className="h-3 w-3" /> Comentário
-              </p>
-              <p className="text-sm leading-relaxed text-foreground/90 whitespace-pre-line">{q.comentario}</p>
-            </div>
-          )}
+                  {verComentario && q.comentario && (
+                    <div className="rounded-2xl border border-border bg-background p-5 animate-in fade-in slide-in-from-top-2 duration-300 shadow-inner">
+                      <p className="text-[11px] uppercase tracking-[0.15em] text-primary font-bold mb-3 inline-flex items-center gap-1.5">
+                        <Sparkles className="h-3.5 w-3.5" /> Comentário do Professor
+                      </p>
+                      <p className="text-[15px] leading-relaxed text-foreground/90 whitespace-pre-line font-medium">{q.comentario}</p>
+                    </div>
+                  )}
 
-          <ReportarErroQuestaoModal
-            isOpen={reportarModalOpen}
-            onClose={() => setReportarModalOpen(false)}
-            questao={q}
-          />
-        </div>
+                  <button className="w-full h-14 flex items-center justify-start px-5 gap-3 rounded-2xl border border-border bg-secondary/30 hover:bg-secondary/50 text-foreground font-semibold text-[15px] transition-colors">
+                    <Scale className="h-5 w-5 text-primary" /> Lei Seca
+                  </button>
+                  <button className="w-full h-14 flex items-center justify-start px-5 gap-3 rounded-2xl border border-border bg-secondary/30 hover:bg-secondary/50 text-foreground font-semibold text-[15px] transition-colors">
+                    <AlertTriangle className="h-5 w-5 text-primary" /> Pegadinhas
+                  </button>
+                  <button className="w-full h-14 flex items-center justify-start px-5 gap-3 rounded-2xl border border-border bg-secondary/30 hover:bg-secondary/50 text-foreground font-semibold text-[15px] transition-colors">
+                    <BookA className="h-5 w-5 text-primary" /> Termos
+                  </button>
+                  
+                  <button
+                    onClick={() => setReportarModalOpen(true)}
+                    className="w-full h-14 flex items-center justify-start px-5 gap-3 rounded-2xl border border-red-500/20 bg-red-500/5 hover:bg-red-500/10 text-red-500 font-semibold text-[15px] transition-colors mt-2"
+                  >
+                    <AlertTriangle className="h-5 w-5" /> Reportar erro na questão
+                  </button>
+
+                  {index < total && (
+                    <button
+                      onClick={() => {
+                        setDrawerOpen(false);
+                        setTimeout(() => {
+                          document.getElementById(`questao-${index + 1}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }, 300);
+                      }}
+                      className="w-full h-14 mt-4 rounded-2xl bg-primary text-primary-foreground text-[15px] font-bold shadow-xl transition-all active:scale-[0.98]"
+                    >
+                      Próxima Questão
+                    </button>
+                  )}
+                </div>
+              </div>
+            </DrawerContent>
+          </DrawerPortal>
+        </Drawer>
       )}
 
-      {mostrarGabarito && index < total && (
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background via-background/90 to-transparent z-20 pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pointer-events-none animate-in fade-in slide-in-from-bottom-4 duration-300">
-          <div className="w-full sm:max-w-lg mx-auto pointer-events-auto">
+      {mostrarGabarito && index < total && !drawerOpen && (
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background via-background/90 to-transparent z-10 pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pointer-events-none animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <div className="w-full sm:max-w-lg mx-auto pointer-events-auto flex flex-col gap-2">
+            <button
+              onClick={() => setDrawerOpen(true)}
+              className="w-full h-12 rounded-xl border border-border bg-secondary/80 text-foreground hover:bg-secondary text-sm font-semibold shadow-lg transition-all active:scale-[0.98] backdrop-blur"
+            >
+              Ver opções / resultado
+            </button>
             <button
               onClick={() => {
                 document.getElementById(`questao-${index + 1}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
               }}
-              className="w-full h-12 rounded-xl border border-primary/20 bg-primary/10 text-primary hover:bg-primary/20 text-sm font-semibold shadow-lg transition-all active:scale-[0.98]"
+              className="w-full h-12 rounded-xl bg-primary text-primary-foreground text-sm font-semibold shadow-lg transition-all active:scale-[0.98]"
             >
               Próxima Questão
             </button>
           </div>
         </div>
       )}
+
+      {/* Render the modal outside the drawer to avoid z-index/portal issues if they open simultaneously */}
+      <ReportarErroQuestaoModal
+        isOpen={reportarModalOpen}
+        onClose={() => setReportarModalOpen(false)}
+        questao={q}
+      />
     </div>
   );
 }
