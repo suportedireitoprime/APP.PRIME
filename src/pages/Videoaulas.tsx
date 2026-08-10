@@ -6,7 +6,7 @@ import { PageHeader } from '@/components/vademecum/PageHeader';
 import ThumbImg from '@/components/videoaulas/ThumbImg';
 import VideoaulasBottomNav from '@/components/videoaulas/VideoaulasBottomNav';
 import { areaIconFor } from '@/lib/areasDireitoIcons';
-import { limparTitulo, simplificarNomeArea, ytThumb } from '@/lib/videoaulasCatalogos';
+import { CATALOGOS, limparTitulo, simplificarNomeArea, slugify, ytThumb } from '@/lib/videoaulasCatalogos';
 import {
   Drawer,
   DrawerContent,
@@ -19,6 +19,7 @@ import {
   type ResumoVideoaulas,
 } from '@/lib/videoaulasResumo';
 import {
+  getCachedCatalogo,
   prefetchCatalogo,
   subscribeVideoaulas,
   warmVideoaulasCache,
@@ -88,6 +89,34 @@ const Videoaulas = () => {
     }
     return result;
   }, [areasDireito, filtro, busca]);
+
+  // Busca nas aulas individuais (títulos) — só quando há termo de busca
+  const buscaAulas = useMemo(() => {
+    if (!busca.trim()) return [];
+    const normalize = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, '');
+    const b = normalize(busca);
+    type AulaHit = { catalogoId: string; videoId: string; titulo: string; area: string; slugArea: string };
+    const hits: AulaHit[] = [];
+    for (const cat of CATALOGOS) {
+      const cache = getCachedCatalogo(cat.id);
+      if (!cache) continue;
+      for (const row of cache) {
+        if (normalize(String(row.titulo ?? '')).includes(b)) {
+          const area = cat.temAreas ? String(row.area ?? '').trim() : cat.titulo;
+          hits.push({
+            catalogoId: cat.id,
+            videoId: String(row.video_id ?? ''),
+            titulo: String(row.titulo ?? ''),
+            area,
+            slugArea: cat.temAreas ? slugify(area) : 'aulas',
+          });
+        }
+        if (hits.length >= 30) break;
+      }
+      if (hits.length >= 30) break;
+    }
+    return hits;
+  }, [busca]);
 
   const pct = data.pctGeral;
   const size = 72;
@@ -359,8 +388,15 @@ const Videoaulas = () => {
              </button>
           </div>
           <div className="flex-1 overflow-y-auto p-4 space-y-2">
-            {lista.length === 0 && (
-              <p className="text-center text-muted-foreground text-[13px] py-8 font-medium">Nenhuma disciplina encontrada.</p>
+            {lista.length === 0 && buscaAulas.length === 0 && (
+              <p className="text-center text-muted-foreground text-[13px] py-8 font-medium">
+                {busca.trim() ? 'Nenhum resultado encontrado.' : 'Digite para buscar disciplinas e aulas.'}
+              </p>
+            )}
+
+            {/* Áreas encontradas */}
+            {lista.length > 0 && busca.trim() && (
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground px-1 pt-1 pb-0.5">Disciplinas</p>
             )}
             {lista.map((a) => {
               const { Icon, color } = areaIconFor(a.area);
@@ -371,6 +407,7 @@ const Videoaulas = () => {
                   onClick={() => {
                     haptic.selection();
                     setDrawerBusca(false);
+                    setBusca('');
                     navigate(`/videoaulas/areas/${a.slug}`);
                   }}
                   className="group flex w-full items-center gap-3 rounded-2xl border border-border bg-card p-3 text-left transition-all hover:border-primary/40 hover:shadow-sm active:scale-[0.995]"
@@ -391,6 +428,40 @@ const Videoaulas = () => {
                 </button>
               );
             })}
+
+            {/* Aulas individuais encontradas */}
+            {buscaAulas.length > 0 && (
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground px-1 pt-3 pb-0.5">Aulas</p>
+            )}
+            {buscaAulas.map((a) => (
+              <button
+                key={`aula-${a.catalogoId}-${a.videoId}`}
+                onClick={() => {
+                  haptic.selection();
+                  setDrawerBusca(false);
+                  setBusca('');
+                  navigate(`/videoaulas/${a.catalogoId}/${a.slugArea}/${a.videoId}`);
+                }}
+                className="group flex w-full items-center gap-3 rounded-2xl border border-border bg-card p-2.5 text-left transition-all hover:border-primary/40 hover:shadow-sm active:scale-[0.995]"
+              >
+                <div className="relative w-20 aspect-video shrink-0 rounded-lg overflow-hidden bg-muted">
+                  <ThumbImg
+                    src={ytThumb(a.videoId, 'mq')}
+                    alt={a.titulo}
+                    fallback={<Play className="h-4 w-4 text-primary/50" />}
+                  />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="min-w-0 line-clamp-2 text-[13px] font-semibold leading-snug text-foreground">
+                    {limparTitulo(a.titulo)}
+                  </p>
+                  <p className="mt-0.5 text-[11px] text-muted-foreground truncate">
+                    {simplificarNomeArea(a.area)}
+                  </p>
+                </div>
+                <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+              </button>
+            ))}
           </div>
         </DrawerContent>
       </Drawer>
