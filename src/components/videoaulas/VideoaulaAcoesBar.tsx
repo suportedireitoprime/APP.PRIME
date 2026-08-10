@@ -269,19 +269,20 @@ function SeletorOverlay<T extends string>({
   onPick: (id: T) => void;
 }) {
   return (
-    <motion.div
-      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      transition={{ duration: 0.2 }}
-      className="fixed inset-0 z-[80] bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
-      onClick={onClose}
-    >
+    <>
       <motion.div
-        initial={{ y: 60, opacity: 0, scale: 0.98 }}
-        animate={{ y: 0, opacity: 1, scale: 1 }}
-        exit={{ y: 60, opacity: 0, scale: 0.98 }}
-        transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+        className="fixed inset-0 z-[80] bg-black/60 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      <motion.div
+        initial={{ x: '100%' }}
+        animate={{ x: 0 }}
+        exit={{ x: '100%' }}
+        transition={{ type: 'spring', damping: 30, stiffness: 340 }}
         onClick={(e) => e.stopPropagation()}
-        className="flex-1 w-full bg-background rounded-t-3xl sm:rounded-3xl sm:max-w-lg mx-auto overflow-hidden shadow-2xl pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]"
+        className="fixed inset-0 sm:left-auto sm:right-0 sm:w-[min(30rem,92vw)] z-[81] flex flex-col bg-background shadow-2xl pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))]"
       >
         <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-3 bg-card/95 backdrop-blur border-b border-border">
           <p className="text-[10px] uppercase tracking-[0.2em] text-primary font-semibold inline-flex items-center gap-1.5">
@@ -313,7 +314,7 @@ function SeletorOverlay<T extends string>({
           })}
         </div>
       </motion.div>
-    </motion.div>
+    </>
   );
 }
 
@@ -333,46 +334,45 @@ function PainelOverlay({ input, tipo, onClose }: { input: AulaCtxInput | null; t
   }, [isLoading]);
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      transition={{ duration: 0.2 }}
-      className="fixed inset-0 z-[80] bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
-      onClick={onClose}
-    >
+    <>
       <motion.div
-        initial={{ y: 60, opacity: 0, scale: 0.98 }}
-        animate={{ y: 0, opacity: 1, scale: 1 }}
-        exit={{ y: 60, opacity: 0, scale: 0.98 }}
-        transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+        className="fixed inset-0 z-[80] bg-black/60 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      <motion.div
+        initial={{ x: '100%' }}
+        animate={{ x: 0 }}
+        exit={{ x: '100%' }}
+        transition={{ type: 'spring', damping: 30, stiffness: 340 }}
         onClick={(e) => e.stopPropagation()}
         className={cn(
-          "relative overflow-y-auto border-border bg-card shadow-2xl",
-          tipo === "questoes" || tipo === "flashcards"
-            ? "w-full h-full max-h-screen rounded-none pb-12 sm:pb-12"
-            : "w-full sm:max-w-lg max-h-[92vh] rounded-t-3xl sm:rounded-3xl pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] sm:pb-0"
+          "fixed inset-0 sm:left-auto sm:right-0 sm:w-[min(40rem,92vw)] z-[81] flex flex-col bg-card shadow-2xl pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))]",
+          (tipo === "questoes" || tipo === "flashcards") && "sm:w-[min(50rem,92vw)]"
         )}
       >
         {tipo === "questoes" || tipo === "flashcards" ? (
-          <div className="sticky top-0 z-10 flex items-center gap-3 px-4 py-4 bg-card/95 backdrop-blur border-b border-border">
+          <div className="sticky top-0 z-10 flex items-center gap-3 px-4 py-4 bg-card/95 backdrop-blur border-b border-border shrink-0">
             <button onClick={onClose} className="h-10 w-10 shrink-0 grid place-items-center rounded-full bg-black/60 hover:bg-black/80 text-white transition-colors">
-              <X className="h-5 w-5" />
+              <ChevronLeft className="h-6 w-6" />
             </button>
             <p className="text-sm uppercase tracking-[0.1em] text-red-400 font-bold flex-1 text-center pr-10">
               {TITULOS[tipo]}
             </p>
           </div>
         ) : (
-          <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-3 bg-card/95 backdrop-blur border-b border-border">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-red-400 font-semibold inline-flex items-center gap-1.5">
+          <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-3 bg-card/95 backdrop-blur border-b border-border shrink-0">
+            <button onClick={onClose} className="h-8 w-8 grid place-items-center rounded-full hover:bg-muted">
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <p className="text-[10px] uppercase tracking-[0.2em] text-red-400 font-semibold inline-flex items-center gap-1.5 flex-1 justify-center pr-8">
               <Sparkles className="h-3 w-3" /> {TITULOS[tipo]}
             </p>
-            <button onClick={onClose} className="h-8 w-8 grid place-items-center rounded-full hover:bg-muted">
-              <X className="h-4 w-4" />
-            </button>
           </div>
         )}
 
-        <div className="p-4 md:p-5">
+        <div className="flex-1 overflow-y-auto p-4 md:p-5">
           {showLoading && (
             <div className="py-12 flex flex-col items-center gap-3">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -392,7 +392,7 @@ function PainelOverlay({ input, tipo, onClose }: { input: AulaCtxInput | null; t
           {data && !isLoading && !error && <PainelConteudo tipo={tipo} data={data} />}
         </div>
       </motion.div>
-    </motion.div>
+    </>
   );
 }
 
