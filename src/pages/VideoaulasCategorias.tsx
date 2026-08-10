@@ -204,11 +204,6 @@ const VideoaulasCategorias = () => {
                 <div className="absolute inset-x-0 bottom-0 h-[60%] bg-gradient-to-t from-black/95 via-black/60 to-transparent pointer-events-none" />
                 
                 <div className="relative z-10 flex flex-col h-full p-3 text-white w-full">
-                  <div>
-                    <span className="bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider shadow-sm">
-                      Edital
-                    </span>
-                  </div>
                   <div className="mt-auto">
                     <h3 className="text-[14px] sm:text-[15px] font-bold leading-tight line-clamp-2 drop-shadow-md">{c.titulo}</h3>
                     <div className="mt-2 flex items-center justify-between text-white/80 group-hover:text-white transition-colors">
@@ -246,11 +241,6 @@ const VideoaulasCategorias = () => {
                 <div className="absolute inset-x-0 bottom-0 h-[60%] bg-gradient-to-t from-black/95 via-black/60 to-transparent pointer-events-none" />
                 
                 <div className="relative z-10 flex flex-col h-full p-3 text-white w-full">
-                  <div>
-                    <span className="bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider shadow-sm">
-                      Edital
-                    </span>
-                  </div>
                   <div className="mt-auto">
                     <h3 className="text-[14px] sm:text-[15px] font-bold leading-tight line-clamp-2 drop-shadow-md">{c.titulo}</h3>
                     <div className="mt-2 flex items-center justify-between text-white/80 group-hover:text-white transition-colors">
@@ -288,11 +278,6 @@ const VideoaulasCategorias = () => {
                 <div className="absolute inset-x-0 bottom-0 h-[60%] bg-gradient-to-t from-black/95 via-black/60 to-transparent pointer-events-none" />
                 
                 <div className="relative z-10 flex flex-col h-full p-3 text-white w-full">
-                  <div>
-                    <span className="bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider shadow-sm">
-                      Magistratura
-                    </span>
-                  </div>
                   <div className="mt-auto">
                     <h3 className="text-[14px] sm:text-[15px] font-bold leading-tight line-clamp-2 drop-shadow-md">{c.titulo}</h3>
                     <div className="mt-2 flex items-center justify-between text-white/80 group-hover:text-white transition-colors">
