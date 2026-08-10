@@ -122,11 +122,11 @@ const MeuEspaco = () => {
   const [bioOverride, setBioOverride] = useState<string | null>(null);
   const [coverPickerOpen, setCoverPickerOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string>(() => toYMD(new Date()));
-  const [activeTab, setActiveTab] = useState<'meus' | 'metas'>('meus');
+  const [activeTab, setActiveTab] = useState<'meus' | 'metas'>('metas');
   const [metas, setMetas] = useState([
-    { id: 'm1', type: 'Trilha', title: 'Direito Constitucional', done: false, icon: FileText },
-    { id: 'm2', type: 'Leitura', title: 'Crime e Castigo: Cap. 1', done: false, icon: BookOpen },
-    { id: 'm3', type: 'Videoaula', title: 'Processo Penal: Inquérito', done: true, icon: Video },
+    { id: 'm1', type: 'Trilha de Leitura', title: 'Direito Constitucional', done: false, icon: BookOpen },
+    { id: 'm2', type: 'Trilha de Videoaula', title: 'Processo Penal: Inquérito', done: false, icon: Video },
+    { id: 'm3', type: 'Revisão e Exercícios', title: 'Direito Civil: Contratos', done: true, icon: FileText },
   ]);
 
   const toggleMeta = (id: string) => {
@@ -403,30 +403,6 @@ const MeuEspaco = () => {
         </div>
         <p className="font-body text-sm text-muted-foreground">{handle}</p>
 
-        {/* Stats trio — clicáveis, levam pra subpágina */}
-        <div className="mt-5 w-full max-w-md lg:max-w-2xl grid grid-cols-3 gap-2">
-          <StatCell
-            icon={Scale}
-            label="Minhas leis"
-            value={leisCount.toLocaleString('pt-BR')}
-            onClick={() => go('/pessoal/leis')}
-            onPrefetch={() => { prefetchRoute('/pessoal/leis'); if (user?.id) prefetchPessoalByPath(qc, user.id, '/pessoal/leis'); }}
-          />
-          <StatCell
-            icon={FileText}
-            label="Meus artigos"
-            value={artigosCount.toLocaleString('pt-BR')}
-            onClick={() => go('/pessoal/artigos')}
-            onPrefetch={() => { prefetchRoute('/pessoal/artigos'); if (user?.id) prefetchPessoalByPath(qc, user.id, '/pessoal/artigos'); }}
-          />
-          <StatCell
-            icon={BookOpen}
-            label="Minhas leituras"
-            value={leiturasCount.toLocaleString('pt-BR')}
-            onClick={() => go('/pessoal/livros')}
-            onPrefetch={() => { prefetchRoute('/pessoal/livros'); if (user?.id) prefetchPessoalByPath(qc, user.id, '/pessoal/livros'); }}
-          />
-        </div>
       </div>
 
       
