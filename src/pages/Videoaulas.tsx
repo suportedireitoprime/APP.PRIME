@@ -26,6 +26,31 @@ import {
 } from '@/lib/videoaulasStore';
 import { haptic } from '@/lib/nativeHaptics';
 
+function escapeRegExp(string: string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+const Highlight = ({ text, query }: { text: string; query: string }) => {
+  if (!query.trim()) return <>{text}</>;
+  const vowels: Record<string, string> = {
+    a: '[aáàãâä]', e: '[eéèêë]', i: '[iíìîï]', o: '[oóòõôö]', u: '[uúùûü]', c: '[cç]'
+  };
+  const patternStr = escapeRegExp(query.toLowerCase().replace(/\s+/g, ' ')).split('').map(char => vowels[char] || char).join('');
+  try {
+    const regex = new RegExp(`(${patternStr})`, 'gi');
+    const parts = text.split(regex);
+    return (
+      <>
+        {parts.map((part, i) => 
+          regex.test(part) ? <span key={i} className="text-primary font-bold">{part}</span> : part
+        )}
+      </>
+    );
+  } catch {
+    return <>{text}</>;
+  }
+};
+
 const Videoaulas = () => {
   const navigate = useNavigate();
   // Render instantâneo: se o cache em memória já tem os catálogos, pinta na hora.
@@ -34,6 +59,7 @@ const Videoaulas = () => {
   const [filtro, setFiltro] = useState<'todas' | 'andamento'>('todas');
   const [busca, setBusca] = useState('');
   const [drawerBusca, setDrawerBusca] = useState(false);
+  const [drawerCategoria, setDrawerCategoria] = useState('Todos');
 
   useEffect(() => {
     let alive = true;
@@ -111,12 +137,23 @@ const Videoaulas = () => {
             slugArea: cat.temAreas ? slugify(area) : 'aulas',
           });
         }
-        if (hits.length >= 30) break;
+        if (hits.length >= 300) break;
       }
-      if (hits.length >= 30) break;
+      if (hits.length >= 300) break;
     }
     return hits;
   }, [busca]);
+
+  const areasDosResultados = useMemo(() => {
+    if (!buscaAulas.length) return [];
+    const areas = new Set(buscaAulas.map(a => a.area));
+    return ['Todos', ...Array.from(areas).sort((a, b) => a.localeCompare(b, 'pt-BR'))];
+  }, [buscaAulas]);
+
+  const aulasFiltradas = useMemo(() => {
+    if (drawerCategoria === 'Todos') return buscaAulas;
+    return buscaAulas.filter(a => a.area === drawerCategoria);
+  }, [buscaAulas, drawerCategoria]);
 
   const pct = data.pctGeral;
   const size = 72;
@@ -360,45 +397,72 @@ const Videoaulas = () => {
                  type="text"
                  placeholder="Digite o nome da disciplina..."
                  value={busca}
-                 onChange={(e) => setBusca(e.target.value)}
-                 className="w-full h-12 bg-black/40 border border-white/10 rounded-2xl pl-12 pr-20 text-white placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all"
+                 onChange={(e) => {
+                   setBusca(e.target.value);
+                   setDrawerCategoria('Todos');
+                 }}
+                 className="w-full h-12 bg-black/40 border border-white/10 rounded-2xl pl-12 pr-12 text-white placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all"
                />
-               <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
+               <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
                  {busca && (
                    <button 
-                     onClick={() => setBusca('')}
+                     onClick={() => { setBusca(''); setDrawerCategoria('Todos'); }}
                      className="p-2 hover:bg-white/5 rounded-full transition-colors"
                    >
                      <X className="h-4 w-4 text-muted-foreground" />
                    </button>
                  )}
-                 <button 
-                   onClick={() => { haptic.selection(); /* lgica p voz */ }}
-                   className="p-2 hover:bg-white/5 rounded-full transition-colors"
-                 >
-                   <Mic className="h-4 w-4 text-muted-foreground" />
-                 </button>
                </div>
              </div>
              <button 
-               onClick={() => { haptic.selection(); setDrawerBusca(false); }}
-               className="text-[13px] font-semibold text-muted-foreground hover:text-white transition-colors px-1"
+               onClick={() => { haptic.selection(); /* lgica p voz */ }}
+               className="p-3 hover:bg-white/5 rounded-full transition-colors -ml-1"
              >
-               Cancelar
+               <Mic className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
+             </button>
+             <button 
+               onClick={() => { haptic.selection(); setDrawerBusca(false); }}
+               className="p-3 hover:bg-white/5 rounded-full transition-colors -ml-1"
+             >
+               <X className="h-5 w-5 text-muted-foreground hover:text-white transition-colors" />
              </button>
           </div>
+
+          {areasDosResultados.length > 1 && (
+            <div className="border-b border-white/10 shrink-0">
+              <div className="flex overflow-x-auto p-4 gap-2 no-scrollbar">
+                {areasDosResultados.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => {
+                      haptic.selection();
+                      setDrawerCategoria(cat);
+                    }}
+                    className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                      drawerCategoria === cat 
+                        ? 'bg-primary text-primary-foreground' 
+                        : 'bg-white/5 text-muted-foreground hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    {simplificarNomeArea(cat)}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="flex-1 overflow-y-auto p-4 space-y-2">
-            {lista.length === 0 && buscaAulas.length === 0 && (
+            {lista.length === 0 && aulasFiltradas.length === 0 && (
               <p className="text-center text-muted-foreground text-[13px] py-8 font-medium">
                 {busca.trim() ? 'Nenhum resultado encontrado.' : 'Digite para buscar disciplinas e aulas.'}
               </p>
             )}
 
             {/* Áreas encontradas */}
-            {lista.length > 0 && busca.trim() && (
+            {lista.length > 0 && busca.trim() && drawerCategoria === 'Todos' && (
               <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground px-1 pt-1 pb-0.5">Disciplinas</p>
             )}
-            {lista.map((a) => {
+            {drawerCategoria === 'Todos' && lista.map((a) => {
               const { Icon, color } = areaIconFor(a.area);
               return (
                 <button
@@ -417,7 +481,7 @@ const Videoaulas = () => {
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="min-w-0 flex-1 truncate text-[15px] font-semibold text-foreground font-display">
-                      {simplificarNomeArea(a.area)}
+                      <Highlight text={simplificarNomeArea(a.area)} query={busca} />
                     </p>
                     <p className="mt-0.5 flex items-center gap-1 text-[12px] text-muted-foreground">
                       <Video className="h-3 w-3" />
@@ -430,10 +494,10 @@ const Videoaulas = () => {
             })}
 
             {/* Aulas individuais encontradas */}
-            {buscaAulas.length > 0 && (
+            {aulasFiltradas.length > 0 && (
               <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground px-1 pt-3 pb-0.5">Aulas</p>
             )}
-            {buscaAulas.map((a) => (
+            {aulasFiltradas.map((a) => (
               <button
                 key={`aula-${a.catalogoId}-${a.videoId}`}
                 onClick={() => {
@@ -442,24 +506,26 @@ const Videoaulas = () => {
                   setBusca('');
                   navigate(`/videoaulas/${a.catalogoId}/${a.slugArea}/${a.videoId}`);
                 }}
-                className="group flex w-full items-center gap-3 rounded-2xl border border-border bg-card p-2.5 text-left transition-all hover:border-primary/40 hover:shadow-sm active:scale-[0.995]"
+                className="group flex w-full items-start gap-3 rounded-2xl border border-border bg-card p-2.5 text-left transition-all hover:border-primary/40 hover:shadow-sm active:scale-[0.995]"
               >
-                <div className="relative w-20 aspect-video shrink-0 rounded-lg overflow-hidden bg-muted">
+                <div className="relative w-28 aspect-video shrink-0 rounded-lg overflow-hidden bg-muted">
                   <ThumbImg
                     src={ytThumb(a.videoId, 'mq')}
                     alt={a.titulo}
-                    fallback={<Play className="h-4 w-4 text-primary/50" />}
+                    fallback={<Play className="h-5 w-5 text-primary/50" />}
                   />
                 </div>
-                <div className="min-w-0 flex-1">
-                  <p className="min-w-0 line-clamp-2 text-[13px] font-semibold leading-snug text-foreground">
-                    {limparTitulo(a.titulo)}
+                <div className="min-w-0 flex-1 flex flex-col justify-center min-h-[63px]">
+                  <p className="min-w-0 text-[13px] font-semibold leading-snug text-foreground whitespace-normal">
+                    <Highlight text={limparTitulo(a.titulo)} query={busca} />
                   </p>
-                  <p className="mt-0.5 text-[11px] text-muted-foreground truncate">
+                  <p className="mt-1 text-[11px] text-muted-foreground truncate">
                     {simplificarNomeArea(a.area)}
                   </p>
                 </div>
-                <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+                <div className="flex h-full items-center justify-center shrink-0 min-h-[63px]">
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                </div>
               </button>
             ))}
           </div>
