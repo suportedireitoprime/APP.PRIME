@@ -208,7 +208,42 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
                   boxShadow: `0 20px 60px -30px ${accent}60`,
                 }}
               >
-                <div className="flex-1 flex flex-col">
+                {/* Floating Elements from Landing Page (Verso) */}
+                <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <img
+                      key={i}
+                      src={laurel}
+                      alt=""
+                      aria-hidden="true"
+                      className="absolute -top-10 lp-fall"
+                      style={{
+                        left: `${(i * 18 + 5) % 100}%`,
+                        width: `${14 + (i % 3) * 6}px`,
+                        animationDuration: `${12 + (i % 4) * 3}s`,
+                        animationDelay: `${i * 1.5}s`,
+                        opacity: 0.15,
+                        filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))',
+                      }}
+                    />
+                  ))}
+                  <img
+                    src={scales}
+                    alt=""
+                    aria-hidden="true"
+                    className="pointer-events-none absolute right-[8%] top-[25%] w-10 lp-float"
+                    style={{ animationDirection: 'reverse', opacity: 0.1, filter: `drop-shadow(0 0 12px ${accent}60)` }}
+                  />
+                  <img
+                    src={laurel}
+                    alt=""
+                    aria-hidden="true"
+                    className="pointer-events-none absolute left-[12%] bottom-[25%] w-8 lp-float"
+                    style={{ animationDelay: '2s', opacity: 0.1 }}
+                  />
+                </div>
+
+                <div className="relative z-10 flex-1 flex flex-col">
                   <p
                     className="text-[10px] uppercase tracking-[0.2em] font-semibold mb-3 text-center"
                     style={{ color: accent }}
@@ -224,7 +259,7 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
                 {(card.explicacao || card.exemplo || card.dica) && (
                   <div
                     onClick={(e) => e.stopPropagation()}
-                    className="mt-3 border-t border-border pt-3"
+                    className="relative z-10 mt-3 border-t border-border pt-3"
                   >
                     <AbasExtra card={card} accent={accent} />
                   </div>
