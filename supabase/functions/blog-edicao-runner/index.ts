@@ -116,7 +116,7 @@ async function warmCdn(url: string) {
  * Deriva um briefing visual específico do título do artigo (personagem real,
  * objetos e símbolos) para que a capa represente de fato o conteúdo.
  */
-async function buildBriefDaCapa(titulo: string, resumo: string, categoria: string): Promise<CoverBrief | null> {
+async function buildBriefDaCapa(titulo: string, artigoCompleto: string, categoria: string): Promise<CoverBrief | null> {
   const key = undefined;
   if (!key) return null;
   try {
@@ -133,7 +133,7 @@ async function buildBriefDaCapa(titulo: string, resumo: string, categoria: strin
           },
           {
             role: "user",
-            content: `Título: ${titulo}\nResumo: ${resumo}\nCategoria: ${categoria}\n\nJSON: {"figura":"...","elementos":["...","...","..."],"simbolos":["...","..."],"cena":"one sentence"}`,
+            content: `Título: ${titulo}\nArtigo Completo: ${artigoCompleto.slice(0, 4000)}\nCategoria: ${categoria}\n\nJSON: {"figura":"...","elementos":["...","...","..."],"simbolos":["...","..."],"cena":"one sentence"}`,
           },
         ],
         response_format: { type: "json_object" },
@@ -510,7 +510,7 @@ Retorne APENAS JSON válido (sem markdown em volta do JSON, sem \`\`\`):
       .select("titulo")
       .order("data_publicacao", { ascending: false })
       .limit(6);
-    const coverBrief = await buildBriefDaCapa(String(art.titulo), String(art.resumo || ""), String(tema.categoria));
+    const coverBrief = await buildBriefDaCapa(String(art.titulo), String(art.conteudo_md || art.resumo || ""), String(tema.categoria));
     const coverPrompt = buildCoverPrompt(
       String(art.titulo),
       String(tema.categoria),
