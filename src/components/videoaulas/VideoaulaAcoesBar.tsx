@@ -6,7 +6,7 @@ import {
   Layers, AlertTriangle, Workflow, NotebookPen, Scale, ListChecks,
   X, Loader2, Sparkles, ChevronLeft, ChevronRight, CheckCircle2,
   FileText, Lightbulb, ListTree, Bookmark, Table as TableIcon, BookOpenText,
-  Brackets, KeyRound, BookA, Lock, RefreshCw, PenTool,
+  Brackets, KeyRound, BookA, Lock, RefreshCw, PenTool, type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useVideoaulaAcao, type AulaAcaoTipo, type AulaCtxInput } from "@/hooks/useVideoaulaAcao";
@@ -45,7 +45,7 @@ type MetodoResumo = {
   id: Extract<AulaAcaoTipo, "cornell" | "feynman" | "mapa" | "topicos" | "tradicional" | "fichamento" | "comparativa">;
   label: string;
   desc: string;
-  icon: any;
+  icon: LucideIcon;
 };
 
 const METODOS_RESUMO: MetodoResumo[] = [
@@ -59,7 +59,7 @@ const METODOS_RESUMO: MetodoResumo[] = [
 ];
 
 type TipoFlash = Extract<AulaAcaoTipo, "flashcards" | "lacunas" | "conceito">;
-const TIPOS_FLASH: Array<{ id: TipoFlash; label: string; desc: string; icon: any }> = [
+const TIPOS_FLASH: Array<{ id: TipoFlash; label: string; desc: string; icon: LucideIcon }> = [
   { id: "flashcards", label: "Tradicional", desc: "Pergunta → resposta", icon: Layers },
   { id: "lacunas", label: "Lacunas", desc: "Frase com palavra-chave oculta", icon: Brackets },
   { id: "conceito", label: "Conceito-chave", desc: "Termo → definição curta", icon: KeyRound },
@@ -101,7 +101,7 @@ export default function VideoaulaAcoesBar({ input, gridLayout, extras, hideQuest
 
   const RailBtn = ({
     icon: Icon, label, onClick,
-  }: { icon: any; label: string; onClick: () => void }) => (
+  }: { icon: LucideIcon; label: string; onClick: () => void }) => (
     <button
       type="button"
       onClick={guard(onClick)}
@@ -281,7 +281,7 @@ function SeletorOverlay<T extends string>({
         exit={{ y: 60, opacity: 0, scale: 0.98 }}
         transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full sm:max-w-lg max-h-[92vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border border-border bg-card shadow-2xl pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] sm:pb-0"
+        className="flex-1 w-full bg-background rounded-t-3xl sm:rounded-3xl sm:max-w-lg mx-auto overflow-hidden shadow-2xl pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]"
       >
         <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-3 bg-card/95 backdrop-blur border-b border-border">
           <p className="text-[10px] uppercase tracking-[0.2em] text-primary font-semibold inline-flex items-center gap-1.5">
