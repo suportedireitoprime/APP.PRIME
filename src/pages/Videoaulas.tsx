@@ -279,7 +279,7 @@ const Videoaulas = () => {
                   >
                     <div className="relative aspect-video bg-muted">
                       <ThumbImg
-                        src={ytThumb(r.videoId, 'mq')}
+                        src={getCapaDaArea(r.area) || ytThumb(r.videoId, 'mq')}
                         alt={r.titulo}
                         priority={i < 3}
                         fallback={<Play className="h-6 w-6 text-primary/50" />}

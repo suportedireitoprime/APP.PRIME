@@ -4,7 +4,7 @@ import { ChevronLeft, Calendar, PlayCircle, Route as RouteIcon, CheckCircle2, Se
 import { motion, AnimatePresence } from 'framer-motion';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { useCategoriaTrilhaStore } from '@/lib/categoriaTrilhaStore';
-import { getCatalogo, limparTitulo, slugify, ytThumb, formatDuracao } from '@/lib/videoaulasCatalogos';
+import { getCatalogo, limparTitulo, slugify, ytThumb, formatDuracao, getCapaDaArea } from '@/lib/videoaulasCatalogos';
 import { loadCatalogo, getCachedCatalogo, loadProgresso, getCachedProgresso } from '@/lib/videoaulasStore';
 import { haptic } from '@/lib/nativeHaptics';
 import { Drawer, DrawerContent, DrawerPortal, DrawerOverlay } from '@/components/ui/drawer';
@@ -19,6 +19,8 @@ type Aula = {
   duracao_segundos?: number | null;
   thumb?: string | null;
   thumbnail?: string | null;
+  percentual?: number;
+  concluida?: boolean;
 };
 
 // --- SETUP FASE: RITMO/PRAZO ---
@@ -81,7 +83,7 @@ const SetupRitmo = ({ catalogoId, titulo, onBack, onFinish }: { catalogoId: stri
 
 const TrilhaMap = ({ catalogoId, titulo, aulas, onBack }: { catalogoId: string, titulo: string, aulas: Aula[], onBack: () => void }) => {
   const navigate = useNavigate();
-  const { trilhasAtivas, limparCategoriaTrilha, marcarDiaConcluido, desmarcarDiaConcluido } = useCategoriaTrilhaStore();
+  const { trilhasAtivas, limparCategoriaTrilha } = useCategoriaTrilhaStore();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
   const [expandedDays, setExpandedDays] = useState<number[]>([]);
@@ -112,7 +114,6 @@ const TrilhaMap = ({ catalogoId, titulo, aulas, onBack }: { catalogoId: string, 
     return diasList;
   }, [trilhaAtiva, aulas]);
 
-  // Default to first uncompleted day, or 1
   const firstUncompleted = nodos.find(n => !n.aulas.every(a => a.concluida))?.dia || 1;
   const [diaSelecionado, setDiaSelecionado] = useState(firstUncompleted);
 
@@ -154,7 +155,6 @@ const TrilhaMap = ({ catalogoId, titulo, aulas, onBack }: { catalogoId: string, 
           </div>
         </div>
 
-        {/* VIEW TOGGLE */}
         <div className="flex bg-white/5 rounded-full p-1 mt-1">
           <button 
             onClick={() => { haptic.selection(); setViewMode('map'); }} 
@@ -281,7 +281,6 @@ const TrilhaMap = ({ catalogoId, titulo, aulas, onBack }: { catalogoId: string, 
         </div>
       ) : (
         <>
-          {/* HORIZONTAL TABS */}
           <div className="w-full overflow-x-auto hide-scrollbar px-4 py-4 border-b border-white/5 sticky top-[110px] z-30 bg-background/80 backdrop-blur-md">
             <div className="flex items-center gap-3">
               {nodos.map(nodo => {
@@ -320,7 +319,6 @@ const TrilhaMap = ({ catalogoId, titulo, aulas, onBack }: { catalogoId: string, 
             </div>
           </div>
 
-          {/* SELECTED DAY CONTENT */}
           <div className="px-4 py-6">
             <AnimatePresence mode="wait">
               <motion.div
@@ -339,7 +337,6 @@ const TrilhaMap = ({ catalogoId, titulo, aulas, onBack }: { catalogoId: string, 
                 </div>
 
                 <div className="flex flex-col relative pl-6">
-                  {/* The vertical line for the timeline */}
                   <div className="absolute left-[7px] top-8 bottom-8 w-[2px] bg-white/10" />
 
                   {nodoAtual?.aulas.map((aula, idx) => {
@@ -349,7 +346,6 @@ const TrilhaMap = ({ catalogoId, titulo, aulas, onBack }: { catalogoId: string, 
 
                     return (
                       <div key={idx} className="relative flex items-center gap-4 py-3">
-                        {/* Dot */}
                         <div className={`absolute -left-6 w-3 h-3 rounded-full border-2 border-background z-20 ${diaConcluido ? 'bg-primary' : 'bg-white/20'}`} />
 
                         <button
@@ -363,7 +359,7 @@ const TrilhaMap = ({ catalogoId, titulo, aulas, onBack }: { catalogoId: string, 
                             diaConcluido ? 'border-primary/20 opacity-70' : 'border-white/10 group-hover:border-primary/50'
                           } transition-colors bg-muted`}>
                             <ThumbImg
-                              src={aula.thumb || aula.thumbnail || ytThumb(aula.video_id)}
+                              src={getCapaDaArea(aula.area) || aula.thumb || aula.thumbnail || ytThumb(aula.video_id)}
                               alt={`Capa da aula ${limparTitulo(aula.titulo)}`}
                               fallback={<PlayCircle className="h-6 w-6 text-primary/50" />}
                             />

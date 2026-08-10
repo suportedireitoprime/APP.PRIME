@@ -32,6 +32,7 @@ export type AreaResumo = {
 export type RecenteResumo = {
   videoId: string;
   titulo: string;
+  area: string;
   percentual: number;
   rota: string;
 };
@@ -131,6 +132,7 @@ function agregar(aulas: AulaRow[], progressoRows: ProgressoRow[]): ResumoVideoau
       return {
         videoId: aula.videoId,
         titulo: aula.titulo,
+        area: aula.area || '',
         percentual: Math.min(100, Number(p.percentual) || 0),
         rota: rotaAula(aula),
       };

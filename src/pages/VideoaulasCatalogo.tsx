@@ -12,6 +12,7 @@ import {
   simplificarNomeArea,
   slugify,
   ytThumb,
+  getCapaDaArea
 } from '@/lib/videoaulasCatalogos';
 import {
   getCachedCatalogo,
@@ -158,7 +159,7 @@ const VideoaulasCatalogo = () => {
       >
         <div className="relative aspect-video w-32 shrink-0 bg-muted">
           <ThumbImg
-            src={a.thumb || a.thumbnail || ytThumb(a.video_id)}
+            src={getCapaDaArea(a.area) || a.thumb || a.thumbnail || ytThumb(a.video_id)}
             alt={`Capa da aula ${limparTitulo(a.titulo || 'videoaula')}`}
             fallback={<Play className="h-6 w-6 text-primary/50" />}
           />
