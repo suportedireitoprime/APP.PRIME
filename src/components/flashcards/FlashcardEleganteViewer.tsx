@@ -42,6 +42,29 @@ function hashString(s: string): number {
   return Math.abs(h);
 }
 
+function triggerConfetti() {
+  if (typeof window === 'undefined') return;
+  const fire = () => {
+    const confetti = (window as any).confetti;
+    if (confetti) {
+      confetti({
+        particleCount: 150,
+        spread: 90,
+        origin: { y: 0.6 },
+        colors: ['#22c55e', '#16a34a', '#15803d', '#4ade80', '#eab308']
+      });
+    }
+  };
+  if (!(window as any).confetti) {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js';
+    script.onload = fire;
+    document.head.appendChild(script);
+  } else {
+    fire();
+  }
+}
+
 const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
   cards,
   accent = "#ef4444",
@@ -96,9 +119,12 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
   const isLast = idx === total - 1;
 
   useEffect(() => {
-    if (isLast && flipped && !completedRef.current && onComplete) {
+    if (isLast && flipped && !completedRef.current) {
       completedRef.current = true;
-      onComplete();
+      triggerConfetti();
+      if (onComplete) {
+        onComplete();
+      }
     }
   }, [isLast, flipped, onComplete]);
 
@@ -313,6 +339,18 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
             }}
           >
             Próximo <ChevronRight className="w-4 h-4" />
+          </motion.button>
+        ) : flipped && isLast ? (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="h-10 px-4 rounded-xl text-sm font-bold inline-flex items-center gap-1 text-white shadow-md shrink-0 cursor-default"
+            style={{
+              background: `linear-gradient(90deg, #16a34a, #22c55e)`,
+              boxShadow: `0 4px 16px rgba(34, 197, 94, 0.4)`,
+            }}
+          >
+            Concluído 🎉
           </motion.button>
         ) : (
           <span className="h-10 px-4 inline-flex items-center text-xs text-muted-foreground/60 select-none shrink-0 whitespace-nowrap">
