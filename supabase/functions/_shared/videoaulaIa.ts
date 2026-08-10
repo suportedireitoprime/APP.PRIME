@@ -3,7 +3,7 @@
 // tolerante e chamada à API do Gemini via geminiFetch.
 import { geminiFetch } from "./geminiFetch.ts";
 
-const GEMINI_MODEL = 'gemini-2.5-flash';
+const GEMINI_MODEL = 'gemini-3.1-flash-lite';
 
 export class GatewayError extends Error {
   status: number;
