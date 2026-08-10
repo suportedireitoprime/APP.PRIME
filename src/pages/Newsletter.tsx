@@ -67,27 +67,20 @@ const Newsletter = () => {
     setSaving(true);
 
     const payload = {
+      ...(subId ? { id: subId } : {}),
       user_id: user.id,
       email,
       ativo,
       preferencias: prefs,
     };
 
-    let error;
-    if (subId) {
-      ({ error } = await supabase
-        .from('newsletter_subscriptions' as any)
-        .update(payload)
-        .eq('id', subId));
-    } else {
-      ({ error } = await supabase
-        .from('newsletter_subscriptions' as any)
-        .insert(payload));
-    }
+    const { error } = await supabase
+      .from('newsletter_subscriptions' as any)
+      .upsert(payload, { onConflict: 'user_id' });
 
     if (error) {
-      toast.error('Erro ao salvar preferências');
-      console.error(error);
+      toast.error('Erro ao salvar preferências: ' + error.message);
+      console.error('Save error:', error);
     } else {
       toast.success(ativo ? 'Newsletter ativado!' : 'Newsletter desativado');
       if (!subId) loadSubscription();
@@ -170,7 +163,7 @@ const Newsletter = () => {
       </div>
 
       {/* Tópicos */}
-      <div className="space-y-3">
+      <div className={`space-y-3 transition-opacity duration-300 ${!ativo ? 'opacity-50 pointer-events-none grayscale-[0.5]' : ''}`}>
         <h2 className="font-display text-sm font-bold text-foreground">Tópicos do Newsletter</h2>
         {TOPICS.map((topic, i) => {
           const Icon = topic.icon;
@@ -181,14 +174,14 @@ const Newsletter = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
-              className="group bg-card border border-border rounded-xl overflow-hidden transition-all"
+              className={`group border rounded-xl overflow-hidden transition-all ${active ? 'bg-card border-border' : 'bg-card/50 border-border/50'}`}
             >
               <summary className="flex items-center gap-3 w-full p-3.5 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-                <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center shrink-0">
-                  <Icon className="w-4 h-4 text-white" />
+                <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors ${active ? 'bg-primary' : 'bg-muted'}`}>
+                  <Icon className={`w-4 h-4 ${active ? 'text-white' : 'text-muted-foreground'}`} />
                 </div>
                 <div className="flex-1 text-left">
-                  <p className="font-display text-sm font-bold text-foreground">{topic.label}</p>
+                  <p className={`font-display text-sm font-bold ${active ? 'text-foreground' : 'text-muted-foreground'}`}>{topic.label}</p>
                 </div>
                 
                 {/* Switch (chavinha) */}
