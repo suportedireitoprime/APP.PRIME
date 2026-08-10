@@ -435,7 +435,11 @@ const VideoaulasArea = () => {
                     onClick={() => navigate(`/videoaulas/${catalogo.id}/${areaSlug}/${a.video_id}`)}
                     className="w-full text-left rounded-2xl border border-border/40 bg-card/60 backdrop-blur-md shadow-lg hover:border-primary/50 transition-all overflow-hidden flex gap-3 p-3 active:scale-[0.98] h-auto min-h-[140px]"
                   >
-                    <div className="relative w-36 shrink-0 aspect-video rounded-xl overflow-hidden bg-muted self-center shadow-inner">
+                    <div 
+                      className={`relative shrink-0 rounded-xl overflow-hidden bg-muted self-center shadow-inner ${
+                        areaSlug === 'direito-penal' ? 'w-[84px] sm:w-[96px] aspect-[3/4]' : 'w-36 aspect-video'
+                      }`}
+                    >
                       <img
                         src={areaSlug === 'direito-penal' ? '/capas/direito-penal.jpg' : (a.thumb || a.thumbnail || ytThumb(a.video_id, 'mq'))}
                         alt={`Capa da aula ${limparTitulo(a.titulo)}`}
