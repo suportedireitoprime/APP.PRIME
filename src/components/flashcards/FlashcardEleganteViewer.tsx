@@ -2,13 +2,15 @@ import { useEffect, useRef, useState, useCallback, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   BookOpen,
-  Sparkles,
+  Scale,
   Lightbulb,
   RotateCw,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
 import { getTemaCover } from "@/lib/flashcards-tema-cover";
+import laurel from '@/assets/landing-tribunal/laurel-leaf.png';
+import scales from '@/assets/landing-tribunal/scales.png';
 
 export interface FlashcardElegante {
   pergunta: string;
@@ -42,7 +44,7 @@ function hashString(s: string): number {
 
 const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
   cards,
-  accent = "#c9a14a",
+  accent = "#ef4444",
   titulo,
   onComplete,
   footerLastCard,
@@ -397,6 +399,41 @@ function FrenteCard({
         />
       )}
 
+      {/* Floating Elements from Landing Page */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <img
+            key={i}
+            src={laurel}
+            alt=""
+            aria-hidden="true"
+            className="absolute -top-10 lp-fall"
+            style={{
+              left: `${(i * 18 + 5) % 100}%`,
+              width: `${14 + (i % 3) * 6}px`,
+              animationDuration: `${12 + (i % 4) * 3}s`,
+              animationDelay: `${i * 1.5}s`,
+              opacity: 0.5,
+              filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))',
+            }}
+          />
+        ))}
+        <img
+          src={scales}
+          alt=""
+          aria-hidden="true"
+          className="pointer-events-none absolute right-[8%] top-[25%] w-10 lp-float"
+          style={{ animationDirection: 'reverse', opacity: 0.45, filter: `drop-shadow(0 0 12px ${accent}60)` }}
+        />
+        <img
+          src={laurel}
+          alt=""
+          aria-hidden="true"
+          className="pointer-events-none absolute left-[12%] bottom-[25%] w-8 lp-float"
+          style={{ animationDelay: '2s', opacity: 0.35 }}
+        />
+      </div>
+
       <div className="relative mb-4 flex items-start justify-between gap-3">
         <p
           className="text-sm md:text-base font-semibold leading-snug line-clamp-2"
@@ -407,7 +444,7 @@ function FrenteCard({
         >
           {card.tema ?? fallbackTitulo ?? "Flashcard"}
         </p>
-        <Sparkles
+        <Scale
           className="h-5 w-5 shrink-0"
           style={{ color: `${accent}`, opacity: 0.7 }}
           aria-hidden
