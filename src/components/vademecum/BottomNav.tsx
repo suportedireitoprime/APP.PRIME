@@ -1,6 +1,6 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LayoutGrid, GraduationCap, Monitor, ChevronRight, ChevronDown, X, Search, Sparkles, MessageCircle, Bot, BookOpen, WifiOff, StickyNote, Newspaper, ScanEye, Scale, Library, Mic, FileText, FileSignature, Image as ImageIcon, Bell, Gavel, Star, Send, Video, Film, Clapperboard, Bird, Headphones, Layers, ScrollText } from 'lucide-react';
+import { LayoutGrid, GraduationCap, Monitor, ChevronRight, ChevronDown, X, Search, Sparkles, MessageCircle, Bot, BookOpen, WifiOff, StickyNote, Newspaper, ScanEye, Scale, Library, Mic, FileText, FileSignature, Image as ImageIcon, Bell, Gavel, Star, Send, Video, Film, Clapperboard, Bird, Headphones, Layers, ScrollText, User, ArrowLeftRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import MentorOverlay from './MentorOverlay';
 // PessoalSheet removido — Meu Espaço agora é rota dedicada (/meu-espaco).
@@ -154,7 +154,7 @@ const BottomNav = () => {
     { id: 'assistente', label: 'Assistente IA', desc: 'IA jurídica para tirar dúvidas', icon: Bot, action: () => navigate('/assistente-horus'), prefetch: 'assistenteHorus' },
     { id: 'audioaulas', label: 'Audioaulas', desc: 'Aulas em áudio por área do Direito', icon: Headphones, action: () => navigate('/audioaulas') },
     { id: 'videoaulas', label: 'Videoaulas', desc: 'Aulas em vídeo com flashcards, questões e lei seca por IA', icon: Video, action: () => navigate('/videoaulas') },
-    { id: 'flashcards', label: 'Flashcards', desc: 'Decks, revisão espaçada e progresso por área', icon: Layers, action: () => navigate('/flashcards') },
+    { id: 'flashcards', label: 'Flashcards', desc: 'Decks, revisão espaçada e progresso por área', icon: ArrowLeftRight, action: () => navigate('/flashcards') },
     { id: 'gravar-aula', label: 'Gravar aula', desc: 'Grave aulas longas com resumo automático por IA', icon: Mic, action: () => navigate('/anotacoes/audio'), prefetch: 'gravarAula' },
     { id: 'tematica', label: 'Temática Jurídica', desc: 'Filmes, séries e documentários para juristas', icon: Clapperboard, action: () => navigate('/tematica-juridica'), prefetch: 'tematica' },
     { id: 'resumos', label: 'Resumos Jurídicos', desc: 'Biblioteca por área, tema e subtema', icon: FileText, action: () => navigate('/resumos-juridicos'), prefetch: 'resumosJuridicos' },
@@ -293,7 +293,7 @@ const BottomNav = () => {
             }`}
             aria-label="Meu Espaço"
           >
-            <LayoutGrid className={`w-8 h-8 transition-transform text-white/90 drop-shadow-md ${path.startsWith('/meu-espaco') ? 'scale-110' : ''}`} strokeWidth={1.2} />
+            <User className={`w-8 h-8 transition-transform text-white/90 drop-shadow-md ${path.startsWith('/meu-espaco') ? 'scale-110' : ''}`} strokeWidth={1.2} />
             <span className="font-body text-[12px] font-medium leading-tight text-center text-white/90 drop-shadow-sm">Meu Espaço</span>
           </button>
         </div>
