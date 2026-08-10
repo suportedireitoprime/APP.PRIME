@@ -29,6 +29,34 @@ Deno.serve(async (req) => {
       },
     })
 
+    // Determine current hour in BRT (UTC-3)
+    const now = new Date()
+    const brtTime = new Date(now.getTime() - (3 * 60 * 60 * 1000))
+    const currentHourBrt = brtTime.getUTCHours() 
+    const isFriday = brtTime.getUTCDay() === 5 // 0 = Sun, 5 = Fri
+    const today = brtTime.toISOString().slice(0, 10)
+
+    // Manual override for testing via API (e.g. ?forceHour=7 or ?forceAll=true)
+    const url = new URL(req.url)
+    const forceHour = url.searchParams.get('forceHour')
+    const forceAll = url.searchParams.get('forceAll') === 'true'
+    const activeHour = forceHour ? parseInt(forceHour) : currentHourBrt
+
+    console.log(`Running Newsletter Job for BRT Hour: ${activeHour}, Date: ${today}`)
+
+    // Check if there's anything to send at this hour
+    const shouldSendNoticias = forceAll || activeHour === 7
+    const shouldSendLeis = forceAll || activeHour === 8
+    const shouldSendRadar = forceAll || activeHour === 12
+    const shouldSendBoletins = forceAll || activeHour === 17
+    const shouldSendTematica = forceAll || (activeHour === 18 && isFriday)
+
+    if (!shouldSendNoticias && !shouldSendLeis && !shouldSendRadar && !shouldSendBoletins && !shouldSendTematica) {
+      return new Response(JSON.stringify({ success: true, message: `No scheduled topics for hour ${activeHour}`, sent: 0 }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
     // Get active subscribers
     const { data: subscribers, error: subError } = await supabase
       .from('newsletter_subscriptions')
@@ -42,86 +70,114 @@ Deno.serve(async (req) => {
       })
     }
 
-    // Fetch content for newsletter
-    const today = new Date().toISOString().slice(0, 10)
-    const isFriday = new Date().getDay() === 5
+    // Fetch user profiles for names
+    const userIds = subscribers.map(s => s.user_id)
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('id, display_name')
+      .in('id', userIds)
+    
+    const profileMap = Object.fromEntries((profiles || []).map(p => [p.id, p.display_name]))
 
-    // 1. Notícias
-    const { data: noticias } = await supabase
-      .from('noticias_camara')
-      .select('titulo,resumo,link,imagem_url')
-      .not('imagem_url', 'is', null)
-      .neq('imagem_url', '')
-      .order('data_publicacao', { ascending: false })
-      .limit(5)
+    // Fetch content based on current hour
+    let noticias = [], resenha = [], alteracoes = [], tematicas = [], boletins = []
 
-    // 2. Leis do dia (resenha diária)
-    const { data: resenha } = await supabase
-      .from('resenha_diaria')
-      .select('tipo_ato,numero_ato,ementa,url')
-      .order('data_dou', { ascending: false })
-      .limit(10)
+    if (shouldSendNoticias) {
+      const { data } = await supabase
+        .from('noticias_camara')
+        .select('titulo,resumo,link,imagem_url')
+        .not('imagem_url', 'is', null)
+        .neq('imagem_url', '')
+        .order('data_publicacao', { ascending: false })
+        .limit(3) // limit to 3 to keep it clean when sending all
+      noticias = data || []
+    }
 
-    // 3. Alterações legislativas recentes
-    const { data: alteracoes } = await supabase
-      .from('legislacao_alteracoes')
-      .select('lei_alteradora,artigo_numero,tipo_alteracao,tabela_nome')
-      .order('data_publicacao', { ascending: false })
-      .limit(5)
+    if (shouldSendLeis) {
+      const { data } = await supabase
+        .from('resenha_diaria')
+        .select('tipo_ato,numero_ato,ementa,url')
+        .order('data_dou', { ascending: false })
+        .limit(5)
+      resenha = data || []
+    }
 
-    // 4. Temática Jurídica
-    const { data: tematicas } = await supabase
-      .from('tematica_juridica')
-      .select('titulo,tipo,sinopse,ano,capa_url,id')
-      .order('created_at', { ascending: false })
-      .limit(1)
+    if (shouldSendRadar) {
+      const { data } = await supabase
+        .from('legislacao_alteracoes')
+        .select('lei_alteradora,artigo_numero,tipo_alteracao,tabela_nome')
+        .order('data_publicacao', { ascending: false })
+        .limit(3)
+      alteracoes = data || []
+    }
 
-    // 5. Boletins Jurídicos
-    const { data: boletins } = await supabase
-      .from('boletins_juridicos')
-      .select('titulo,descricao,video_id,created_at')
-      .order('created_at', { ascending: false })
-      .limit(1)
+    if (shouldSendTematica) {
+      const { data } = await supabase
+        .from('tematica_juridica')
+        .select('titulo,tipo,sinopse,ano,capa_url,id')
+        .order('created_at', { ascending: false })
+        .limit(1)
+      tematicas = data || []
+    }
+
+    if (shouldSendBoletins) {
+      const { data } = await supabase
+        .from('boletins_juridicos')
+        .select('titulo,descricao,video_id,created_at')
+        .order('created_at', { ascending: false })
+        .limit(1)
+      boletins = data || []
+    }
 
     let sentCount = 0
     const errors: string[] = []
 
     for (const sub of subscribers) {
-      const prefs = sub.preferencias || {}
+      // when forcing all, bypass preferences so user can see the full template
+      const prefs = forceAll ? { noticias: true, leis_do_dia: true, radar_legislativo: true, tematica_juridica: true, boletins_juridicos: true } : (sub.preferencias || {})
       const sections: string[] = []
 
-      // Build personalized HTML
-      if (prefs.noticias && noticias?.length) {
+      // Build personalized HTML based on preferences and fetched data
+      if (shouldSendNoticias && prefs.noticias && noticias.length) {
         sections.push(buildNoticiasSection(noticias))
       }
-      if (prefs.leis_do_dia && resenha?.length) {
+      if (shouldSendLeis && prefs.leis_do_dia && resenha.length) {
         sections.push(buildResenhaSection(resenha))
       }
-      if (alteracoes?.length && prefs.radar_legislativo) {
+      if (shouldSendRadar && prefs.radar_legislativo && alteracoes.length) {
         sections.push(buildAlteracoesSection(alteracoes))
       }
-      // Send Temática Jurídica only on Fridays (or always if debugging, but usually Friday)
-      if (prefs.tematica_juridica && tematicas?.length && isFriday) {
+      if (shouldSendTematica && prefs.tematica_juridica && tematicas.length) {
         sections.push(buildTematicaSection(tematicas[0]))
       }
-      if (prefs.boletins_juridicos && boletins?.length) {
+      if (shouldSendBoletins && prefs.boletins_juridicos && boletins.length) {
         sections.push(buildBoletimSection(boletins[0]))
       }
 
       if (sections.length === 0) continue
 
-      const html = buildEmailHTML(sections, today, sub.email)
+      const userName = profileMap[sub.user_id] || 'Estudante'
+      const html = buildEmailHTML(sections, today, userName, forceAll)
+
+      // Determine subject dynamically based on what's included
+      let subject = `📋 Resumo Jurídico — ${today}`
+      if (!forceAll && sections.length === 1) {
+        if (shouldSendNoticias) subject = `📰 Notícias Jurídicas — ${today}`
+        if (shouldSendLeis) subject = `📜 Leis do Dia (DOU) — ${today}`
+        if (shouldSendRadar) subject = `🔔 Radar Legislativo — ${today}`
+        if (shouldSendTematica) subject = `🎬 Recomendação de Sexta — ${today}`
+        if (shouldSendBoletins) subject = `📺 Novo Boletim Jurídico — ${today}`
+      }
 
       try {
-        const info = await transporter.sendMail({
-          from: '"Vacatio Newsletter" <aviso.direitoprime@gmail.com>',
+        await transporter.sendMail({
+          from: '"Direito Newsletter" <aviso.direitoprime@gmail.com>',
           to: sub.email,
-          subject: `📋 Vacatio Digest — ${today}`,
+          subject,
           html,
         })
 
         sentCount++
-        // Update last sent
         await supabase
           .from('newsletter_subscriptions')
           .update({ ultimo_envio: new Date().toISOString() })
@@ -131,7 +187,7 @@ Deno.serve(async (req) => {
         errors.push(`${sub.email}: ${e.message}`)
       }
 
-      // Rate limit: small delay between sends
+      // Rate limit
       await new Promise(r => setTimeout(r, 200))
     }
 
@@ -150,42 +206,70 @@ Deno.serve(async (req) => {
 
 // ---- HTML Builders ----
 
-function buildEmailHTML(sections: string[], date: string, email: string): string {
+function getSvgIcon(type: string): string {
+  switch (type) {
+    case 'newspaper':
+      return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>`
+    case 'book':
+      return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>`
+    case 'radar':
+      return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19.07 4.93A10 10 0 0 0 6.99 3.34"/><path d="M4 6h.01"/><path d="M2.29 9.62A10 10 0 1 0 21.31 8.35"/><path d="M16.24 7.76A6 6 0 1 0 8.23 16.67"/><path d="M12 18h.01"/><path d="M17.99 11.66A6 6 0 0 1 15.77 16.67"/><path d="M12 12h.01"/><path d="M16.8 12c0 2.65-2.15 4.8-4.8 4.8s-4.8-2.15-4.8-4.8 2.15-4.8 4.8-4.8 4.8 2.15 4.8 4.8Z"/></svg>`
+    case 'film':
+      return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 3v18"/><path d="M3 7.5h4"/><path d="M3 12h18"/><path d="M3 16.5h4"/><path d="M17 3v18"/><path d="M17 7.5h4"/><path d="M17 16.5h4"/></svg>`
+    case 'video':
+      return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg>`
+    default:
+      return ''
+  }
+}
+
+function buildEmailHTML(sections: string[], date: string, userName: string, forceAll: boolean): string {
+  // Removed margins and max-width for edge-to-edge experience (or keeping it clean full width on mobile)
+  // Removed the "Direito Prime" header block per user request.
+  // Added a friendly description block.
+  
   return `<!DOCTYPE html>
 <html lang="pt-BR">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
-  body{margin:0;padding:0;background:#0f0f0f;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;color:#e0e0e0}
-  .container{max-width:600px;margin:0 auto;background:#1a1a1a;border-radius:12px;overflow:hidden}
-  .header{background:linear-gradient(135deg,#7f1d1d,#991b1b);padding:28px 24px;text-align:center}
-  .header h1{color:#fff;margin:0;font-size:26px;letter-spacing:1px}
-  .header p{color:rgba(255,255,255,0.7);margin:6px 0 0;font-size:13px}
-  .section{padding:20px 24px;border-bottom:1px solid #2a2a2a}
-  .section h2{color:#fbbf24;font-size:16px;margin:0 0 14px;text-transform:uppercase;letter-spacing:1px;font-weight:700}
-  .item{margin-bottom:14px;padding:12px 14px;background:#222;border-radius:8px;border-left:3px solid #fbbf24}
-  .item h3{margin:0 0 4px;font-size:14px;color:#fff}
-  .item p{margin:0;font-size:12px;color:#aaa;line-height:1.5}
-  .item a{color:#fbbf24;text-decoration:none;font-size:12px}
-  .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;margin-left:6px}
-  .badge-tramitando{background:#3b82f6;color:#fff}
-  .badge-votacao{background:#f59e0b;color:#000}
-  .badge-publicada{background:#10b981;color:#fff}
-  .badge-sancao{background:#8b5cf6;color:#fff}
-  .footer{padding:20px 24px;text-align:center;font-size:11px;color:#666}
-  .footer a{color:#fbbf24}
-  .cover-img{width:100%;max-height:200px;object-fit:cover;border-radius:6px;margin-bottom:10px}
+  body{margin:0;padding:0;background:#0D0D0D;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;color:#FFFFFF;width:100% !important;}
+  .container{width:100%;max-width:100%;margin:0;background:#0D0D0D;}
+  .header-content{padding:24px 20px 16px 20px;background:#111111;border-bottom:1px solid #1F1F1F;}
+  .greeting{font-size:22px;color:#FFFFFF;font-weight:800;margin-bottom:8px;}
+  .description{font-size:15px;color:#BBBBBB;line-height:1.5;margin:0;}
+  .section{padding:24px 20px 8px 20px;}
+  .section-title{display:flex;align-items:center;gap:8px;color:#DC2626;font-size:14px;margin:0 0 16px;text-transform:uppercase;letter-spacing:1px;font-weight:800;}
+  .item{margin-bottom:16px;padding:16px;background:#1A1A1A;border-radius:12px;border:1px solid #2A2A2A;}
+  .item h3{margin:0 0 8px;font-size:16px;color:#FFFFFF;line-height:1.4;font-weight:700;}
+  .item p{margin:0 0 12px;font-size:14px;color:#AAAAAA;line-height:1.5;}
+  .item a{display:inline-block;color:#DC2626;text-decoration:none;font-size:14px;font-weight:600;}
+  .app-button-container{padding:32px 20px;text-align:center;}
+  .app-button{display:inline-block;background:#DC2626;color:#FFFFFF;text-decoration:none;font-size:16px;font-weight:700;padding:16px 32px;border-radius:12px;width:80%;max-width:300px;text-align:center;box-shadow:0 4px 12px rgba(220, 38, 38, 0.3);}
+  .footer{padding:24px 20px;text-align:center;font-size:13px;color:#666666;border-top:1px solid #1F1F1F;background:#0A0A0A;}
+  .footer a{color:#888888;text-decoration:underline;}
+  .cover-img{width:100%;max-height:220px;object-fit:cover;border-radius:8px;margin-bottom:16px;}
 </style>
 </head>
 <body>
 <div class="container">
-  <div class="header">
-    <h1>⚖️ Vacatio</h1>
-    <p>Seu resumo jurídico diário — ${date}</p>
+  
+  <div class="header-content">
+    <div class="greeting">Olá, ${escapeHtml(userName)}! 👋</div>
+    <p class="description">
+      Aqui está o seu resumo jurídico de hoje, organizado especialmente para você. Acompanhe as principais leis do dia, movimentações no legislativo e novidades do mundo jurídico para manter-se sempre atualizado de forma rápida e prática.
+    </p>
   </div>
+  
   ${sections.join('')}
+  
+  <div class="app-button-container">
+    <p style="color:#BBBBBB; font-size:14px; margin-bottom:16px;">Você pode acompanhar todas essas leis, notícias e muito mais diretamente no aplicativo!</p>
+    <a href="https://vademecum-legal-guide.lovable.app/" class="app-button">Acessar Aplicativo</a>
+  </div>
+
   <div class="footer">
-    <p>Você recebeu este e-mail porque se inscreveu no Newsletter do Vacatio.</p>
-    <p>Para cancelar, acesse suas <a href="https://vademecum-legal-guide.lovable.app/newsletter">preferências</a>.</p>
+    <p>Este e-mail foi gerado automaticamente de acordo com as suas preferências no APP PRIME.</p>
+    <p>Para alterar os horários ou cancelar inscrições, acesse o <a href="https://vademecum-legal-guide.lovable.app/newsletter">painel do aplicativo</a>.</p>
   </div>
 </div>
 </body>
@@ -196,50 +280,50 @@ function buildNoticiasSection(noticias: any[]): string {
   const items = noticias.map(n => `
     <div class="item">
       <h3>${escapeHtml(n.titulo)}</h3>
-      <p>${escapeHtml(n.resumo?.slice(0, 120) || '')}...</p>
-      ${n.link ? `<a href="${n.link}" target="_blank">Ler mais →</a>` : ''}
+      <p>${escapeHtml(n.resumo?.slice(0, 140) || '')}...</p>
+      ${n.link ? `<a href="${n.link}" target="_blank">Ler a notícia completa →</a>` : ''}
     </div>`).join('')
-  return `<div class="section"><h2>📰 Notícias</h2>${items}</div>`
+  return `<div class="section"><div class="section-title">${getSvgIcon('newspaper')} NOTÍCIAS JURÍDICAS</div>${items}</div>`
 }
 
 function buildResenhaSection(resenha: any[]): string {
   const items = resenha.map(r => `
     <div class="item">
       <h3>${escapeHtml(r.tipo_ato)} ${escapeHtml(r.numero_ato)}</h3>
-      <p>${escapeHtml(r.ementa?.slice(0, 150) || '')}</p>
-      ${r.url ? `<a href="${r.url}" target="_blank">Ver no DOU →</a>` : ''}
+      <p>${escapeHtml(r.ementa?.slice(0, 160) || '')}</p>
+      ${r.url ? `<a href="${r.url}" target="_blank">Acessar no Diário Oficial →</a>` : ''}
     </div>`).join('')
-  return `<div class="section"><h2>📜 Leis do Dia</h2>${items}</div>`
+  return `<div class="section"><div class="section-title">${getSvgIcon('book')} LEIS DO DIA</div>${items}</div>`
 }
 
 function buildAlteracoesSection(alteracoes: any[]): string {
   const items = alteracoes.map(a => `
     <div class="item">
       <h3>${escapeHtml(a.tipo_alteracao || 'Alteração')} — ${escapeHtml(a.artigo_numero)}</h3>
-      <p>Lei alteradora: ${escapeHtml(a.lei_alteradora || 'N/A')}</p>
+      <p>Lei alteradora responsável: <strong>${escapeHtml(a.lei_alteradora || 'N/A')}</strong></p>
     </div>`).join('')
-  return `<div class="section"><h2>🔔 Alterações Legislativas</h2>${items}</div>`
+  return `<div class="section"><div class="section-title">${getSvgIcon('radar')} RADAR LEGISLATIVO</div>${items}</div>`
 }
 
 function buildTematicaSection(t: any): string {
   return `<div class="section">
-    <h2>🎬 Recomendação de Sexta</h2>
-    <div class="item" style="border-left-color: #ec4899;">
+    <div class="section-title">${getSvgIcon('film')} RECOMENDAÇÃO DE SEXTA</div>
+    <div class="item">
       ${t.capa_url ? `<img src="${t.capa_url}" class="cover-img" alt="Capa" />` : ''}
       <h3>${escapeHtml(t.titulo)} (${t.ano}) — ${escapeHtml(t.tipo)}</h3>
       <p>${escapeHtml(t.sinopse)}</p>
-      <a href="https://vademecum-legal-guide.lovable.app/tematica-juridica/${t.id}" target="_blank">Ver mais no app →</a>
+      <a href="https://vademecum-legal-guide.lovable.app/tematica-juridica/${t.id}" target="_blank">Ver detalhes no app →</a>
     </div>
   </div>`
 }
 
 function buildBoletimSection(b: any): string {
   return `<div class="section">
-    <h2>📺 Boletim Jurídico Recente</h2>
-    <div class="item" style="border-left-color: #f97316;">
+    <div class="section-title">${getSvgIcon('video')} BOLETIM JURÍDICO RECENTE</div>
+    <div class="item">
       <h3>${escapeHtml(b.titulo)}</h3>
       <p>${escapeHtml(b.descricao)}</p>
-      <a href="https://vademecum-legal-guide.lovable.app/boletins" target="_blank">Assistir agora →</a>
+      <a href="https://vademecum-legal-guide.lovable.app/boletins" target="_blank">Assistir ao vídeo agora →</a>
     </div>
   </div>`
 }

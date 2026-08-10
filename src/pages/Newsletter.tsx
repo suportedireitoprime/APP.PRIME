@@ -98,11 +98,11 @@ const Newsletter = () => {
   };
 
   const TOPICS = [
-    { key: 'noticias' as const, label: 'Notícias Jurídicas', desc: 'Principais notícias da Câmara e portais jurídicos', icon: Newspaper, color: 'from-blue-500 to-cyan-600' },
-    { key: 'leis_do_dia' as const, label: 'Leis do Dia', desc: 'Resenha diária do DOU — atos e normas publicados', icon: BookOpen, color: 'from-emerald-500 to-green-600' },
-    { key: 'radar_legislativo' as const, label: 'Radar Legislativo', desc: 'PLs em tramitação, votação e sanção', icon: Radar, color: 'from-violet-500 to-purple-600' },
-    { key: 'tematica_juridica' as const, label: 'Temática Jurídica', desc: 'Recomendação de filmes e séries jurídicas (Sexta)', icon: Film, color: 'from-pink-500 to-rose-600' },
-    { key: 'boletins_juridicos' as const, label: 'Boletins Jurídicos', desc: 'Alertas em vídeo de jurisprudência e normas quentes', icon: Video, color: 'from-orange-500 to-amber-600' },
+    { key: 'noticias' as const, label: 'Notícias Jurídicas (07:00)', desc: 'Principais notícias da Câmara e portais jurídicos', icon: Newspaper, color: 'from-blue-500 to-cyan-600' },
+    { key: 'leis_do_dia' as const, label: 'Leis do Dia (08:00)', desc: 'Resenha diária do DOU — atos e normas publicados', icon: BookOpen, color: 'from-emerald-500 to-green-600' },
+    { key: 'radar_legislativo' as const, label: 'Radar Legislativo (12:00)', desc: 'PLs em tramitação, votação e sanção', icon: Radar, color: 'from-violet-500 to-purple-600' },
+    { key: 'tematica_juridica' as const, label: 'Temática Jurídica (Sexta 18:00)', desc: 'Recomendação de filmes e séries jurídicas (Sexta)', icon: Film, color: 'from-pink-500 to-rose-600' },
+    { key: 'boletins_juridicos' as const, label: 'Boletins Jurídicos (17:00)', desc: 'Alertas em vídeo de jurisprudência e normas quentes', icon: Video, color: 'from-orange-500 to-amber-600' },
   ];
 
   const mobileHeader = (
@@ -139,7 +139,7 @@ const Newsletter = () => {
           </div>
           <div>
             <p className="font-display text-sm font-bold text-foreground">Newsletter Ativo</p>
-            <p className="text-[11px] text-muted-foreground">Receber e-mail diário às 7h</p>
+            <p className="text-[11px] text-muted-foreground">Receba atualizações ao longo do dia</p>
           </div>
         </div>
         <button
@@ -182,7 +182,14 @@ const Newsletter = () => {
                   <Icon className={`w-4 h-4 ${active ? 'text-white' : 'text-muted-foreground'}`} />
                 </div>
                 <div className="flex-1 text-left">
-                  <p className={`font-display text-sm font-bold ${active ? 'text-foreground' : 'text-muted-foreground'}`}>{topic.label}</p>
+                  <p className={`font-display text-sm font-bold ${active ? 'text-foreground' : 'text-muted-foreground'}`}>
+                    {topic.label.split(' (')[0]}
+                    {topic.label.includes(' (') && (
+                      <span className="text-primary/80 font-normal ml-1">
+                        ({topic.label.split(' (')[1]}
+                      </span>
+                    )}
+                  </p>
                 </div>
                 
                 {/* Switch (chavinha) */}
