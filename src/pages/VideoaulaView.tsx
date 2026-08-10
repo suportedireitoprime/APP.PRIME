@@ -210,11 +210,36 @@ const VideoaulaView = () => {
   };
 
   const marcarConcluida = async () => {
-    haptic.success();
-    // A lógica de salvar progresso verdadeiro foi movida para GlobalVideoaulaMiniPlayer.
-    // Aqui apenas atualizamos visualmente ou despachamos evento pro context se necessário.
-    setConcluida(true);
-    toast.success('Aula marcada como concluída.');
+    haptic.selection();
+    if (concluida) {
+      setConcluida(false);
+      if (userId && catalogo && videoId) {
+        supabase
+          .from('videoaulas_progresso')
+          .update({ concluida: false })
+          .eq('user_id', userId)
+          .eq('tabela', catalogo.tabela)
+          .eq('video_id', videoId)
+          .then();
+      }
+      toast('Marcação de aula removida.');
+    } else {
+      setConcluida(true);
+      if (userId && catalogo && videoId) {
+        supabase
+          .from('videoaulas_progresso')
+          .upsert({ 
+            user_id: userId, 
+            tabela: catalogo.tabela,
+            registro_id: String(aula.id),
+            video_id: videoId, 
+            concluida: true,
+            tempo_atual: tempo || 0
+          })
+          .then();
+      }
+      toast.success('Aula marcada como concluída.');
+    }
   };
 
   if (!catalogo || !videoId) {
@@ -341,31 +366,31 @@ const VideoaulaView = () => {
             <button
               onClick={marcarConcluida}
               className={cn(
-                'inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-colors',
+                'inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-colors bg-transparent',
                 concluida
-                  ? 'border-primary bg-primary/10 text-primary'
-                  : 'border-border text-muted-foreground hover:text-foreground',
+                  ? 'border-green-500 text-green-500'
+                  : 'border-green-500/40 text-muted-foreground hover:border-green-500 hover:text-foreground',
               )}
             >
-              <CheckCircle2 className="h-4 w-4" /> {concluida ? 'Como visto' : 'Marcar como visto'}
+              <CheckCircle2 className="h-4 w-4" /> {concluida ? 'Visto' : 'Marcar como visto'}
             </button>
             <button
               onClick={toggleFavorito}
               className={cn(
-                'inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-colors',
+                'inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-colors bg-transparent',
                 favorito
-                  ? 'border-primary bg-primary/10 text-primary'
-                  : 'border-border text-muted-foreground hover:text-foreground',
+                  ? 'border-red-500 text-red-500'
+                  : 'border-red-500/40 text-muted-foreground hover:border-red-500 hover:text-foreground',
               )}
             >
-              <Heart className={cn('h-4 w-4', favorito && 'fill-current')} /> Favoritar
+              <Heart className={cn('h-4 w-4', favorito && 'fill-current text-red-500')} /> Favoritar
             </button>
             <Drawer>
               <DrawerTrigger asChild>
                 <button
-                  className="inline-flex items-center gap-1.5 rounded-full border border-border px-3.5 py-1.5 text-[13px] font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-blue-500/40 px-3.5 py-1.5 text-[13px] font-medium text-muted-foreground bg-transparent hover:border-blue-500 hover:text-foreground transition-colors"
                 >
-                  <Share2 className="h-4 w-4" /> Compartilhar
+                  <Share2 className="h-4 w-4" /> Enviar
                 </button>
               </DrawerTrigger>
               <DrawerContent>
