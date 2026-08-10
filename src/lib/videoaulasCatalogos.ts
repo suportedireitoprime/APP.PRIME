@@ -2,6 +2,9 @@ import conceitosThumbAsset from '@/assets/thumbnails/conceitos-thumb.webp.asset.
 import areasThumbAsset from '@/assets/thumbnails/areas-thumb.webp.asset.json';
 import oabPrimeiraThumbAsset from '@/assets/thumbnails/oab-primeira-fase-thumb.webp.asset.json';
 import oabSegundaThumbAsset from '@/assets/thumbnails/oab-segunda-fase-thumb.webp.asset.json';
+import ambientalCapa from '@/assets/thumbnails/ambiental.jpg';
+import penalCapa from '@/assets/thumbnails/penal.jpg';
+import processoPenalCapa from '@/assets/thumbnails/processo-penal.jpg';
 import { srcOf } from '@/lib/assetUrl';
 
 export type CatalogoId = 'iniciante' | 'areas' | 'oab-primeira-fase' | 'oab-segunda-fase';
@@ -76,6 +79,15 @@ export function slugify(texto: string): string {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '');
+}
+
+export function getCapaDaArea(areaNome?: string | null): string | null {
+  if (!areaNome) return null;
+  const n = simplificarNomeArea(areaNome).toLowerCase();
+  if (n.includes('ambiental')) return ambientalCapa;
+  if (n.includes('processo penal')) return processoPenalCapa;
+  if (n.includes('penal')) return penalCapa;
+  return null;
 }
 
 /** `mq` (320x180) basta para cards de lista e baixa bem mais rápido que `hq`. */

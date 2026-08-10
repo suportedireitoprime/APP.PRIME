@@ -6,7 +6,7 @@ import { PageHeader } from '@/components/vademecum/PageHeader';
 import ThumbImg from '@/components/videoaulas/ThumbImg';
 import VideoaulasBottomNav from '@/components/videoaulas/VideoaulasBottomNav';
 import { areaIconFor } from '@/lib/areasDireitoIcons';
-import { CATALOGOS, limparTitulo, simplificarNomeArea, slugify, ytThumb } from '@/lib/videoaulasCatalogos';
+import { CATALOGOS, limparTitulo, simplificarNomeArea, slugify, ytThumb, getCapaDaArea } from '@/lib/videoaulasCatalogos';
 import {
   Drawer,
   DrawerContent,
@@ -35,7 +35,14 @@ const Highlight = ({ text, query }: { text: string; query: string }) => {
   const vowels: Record<string, string> = {
     a: '[aáàãâä]', e: '[eéèêë]', i: '[iíìîï]', o: '[oóòõôö]', u: '[uúùûü]', c: '[cç]'
   };
-  const patternStr = escapeRegExp(query.toLowerCase().replace(/\s+/g, ' ')).split('').map(char => vowels[char] || char).join('');
+  
+  const termos = query.toLowerCase().split(/\s+/).filter(Boolean);
+  if (termos.length === 0) return <>{text}</>;
+
+  const patternStr = termos.map(termo => 
+    escapeRegExp(termo).split('').map(char => vowels[char] || char).join('')
+  ).join('|');
+
   try {
     const regex = new RegExp(`(${patternStr})`, 'gi');
     const parts = text.split(regex);
@@ -116,9 +123,12 @@ const Videoaulas = () => {
     });
     let result = filtro === 'andamento' ? l.filter((a) => a.pct > 0) : l;
     if (busca.trim()) {
-      const normalize = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, '');
-      const b = normalize(busca);
-      result = result.filter(a => normalize(a.area).includes(b));
+      const normalize = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      const termos = normalize(busca).split(/\s+/).filter(Boolean);
+      result = result.filter(a => {
+        const areaNormalizada = normalize(a.area);
+        return termos.every(t => areaNormalizada.includes(t));
+      });
     }
     return result;
   }, [areasDireito, filtro, busca]);
@@ -126,16 +136,17 @@ const Videoaulas = () => {
   // Busca nas aulas individuais (títulos) — só quando há termo de busca
   const buscaAulas = useMemo(() => {
     if (!busca.trim()) return [];
-    const normalize = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, '');
-    const b = normalize(busca);
+    const normalize = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    const termos = normalize(busca).split(/\s+/).filter(Boolean);
     type AulaHit = { catalogoId: string; videoId: string; titulo: string; area: string; slugArea: string };
     const hits: AulaHit[] = [];
     for (const cat of CATALOGOS) {
       const cache = getCachedCatalogo(cat.id);
       if (!cache) continue;
       for (const row of cache) {
-        if (normalize(String(row.titulo ?? '')).includes(b)) {
-          const area = cat.temAreas ? String(row.area ?? '').trim() : cat.titulo;
+        const area = cat.temAreas ? String(row.area ?? '').trim() : cat.titulo;
+        const textoBusca = normalize(`${String(row.titulo ?? '')} ${area}`);
+        if (termos.every(t => textoBusca.includes(t))) {
           hits.push({
             catalogoId: cat.id,
             videoId: String(row.video_id ?? ''),
