@@ -27,7 +27,7 @@ const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY")!;
 const TTS_MODEL = "gemini-2.5-flash-preview-tts";
 // gemini-3.1-flash-lite foi descontinuado no endpoint direto (generativelanguage.googleapis.com).
 // Usar o alias "-latest" mantido pelo Google.
-const TEXT_MODEL = "gemini-3.1-flash-lite";
+const TEXT_MODEL = "gemini-2.0-flash";
 const BUCKET_AUDIO = "boletins-audio";
 const BUCKET_IMG = "boletins-thumbnails";
 

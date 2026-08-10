@@ -13,8 +13,8 @@
  */
 
 export const MODELS = {
-  text: "gemini-3.1-flash-lite",
-  textGateway: 'gemini-3.1-flash-lite',
+  text: "gemini-2.0-flash",
+  textGateway: 'gemini-2.0-flash',
   image: "gemini-2.5-flash-image",
   imageGateway: 'gemini-2.5-flash-image',
   tts: "gemini-2.5-flash-preview-tts",
@@ -22,19 +22,15 @@ export const MODELS = {
 
 // Modelos de texto permitidos com fallback gracioso.
 export const TEXT_MODEL_FALLBACKS = [
-  "gemini-3.1-flash-lite",
-  "gemini-3.1-flash-lite",
-  "gemini-3.1-flash-lite",
+  "gemini-2.5-flash",
   "gemini-2.0-flash",
   "gemini-1.5-flash",
-  "gemini-1.5-pro",
 ] as const;
 
 export const ALLOWED_TEXT_MODELS = new Set<string>([
-  "gemini-3.1-flash-lite",
-  "gemini-3.1-flash-lite",
-  "gemini-3.1-flash-lite",
+  "gemini-2.5-flash",
   "gemini-2.0-flash",
+  "gemini-1.5-flash",
 ]);
 
 // Aliases/modelos proibidos — se algum bater aqui, forçamos o modelo permitido.
