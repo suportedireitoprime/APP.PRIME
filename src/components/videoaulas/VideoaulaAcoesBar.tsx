@@ -332,16 +332,32 @@ function PainelOverlay({ input, tipo, onClose }: { input: AulaCtxInput | null; t
         exit={{ y: 60, opacity: 0, scale: 0.98 }}
         transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full sm:max-w-lg max-h-[92vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl border border-border bg-card shadow-2xl pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] sm:pb-0"
+        className={cn(
+          "relative overflow-y-auto border-border bg-card shadow-2xl",
+          tipo === "questoes"
+            ? "w-full h-full max-h-screen rounded-none pb-12 sm:pb-12"
+            : "w-full sm:max-w-lg max-h-[92vh] rounded-t-3xl sm:rounded-3xl pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] sm:pb-0"
+        )}
       >
-        <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-3 bg-card/95 backdrop-blur border-b border-border">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-red-400 font-semibold inline-flex items-center gap-1.5">
-            <Sparkles className="h-3 w-3" /> {TITULOS[tipo]}
-          </p>
-          <button onClick={onClose} className="h-8 w-8 grid place-items-center rounded-full hover:bg-muted">
-            <X className="h-4 w-4" />
-          </button>
-        </div>
+        {tipo === "questoes" ? (
+          <div className="sticky top-0 z-10 flex items-center gap-3 px-4 py-4 bg-card/95 backdrop-blur border-b border-border">
+            <button onClick={onClose} className="h-10 w-10 shrink-0 grid place-items-center rounded-full bg-muted/50 hover:bg-muted text-foreground transition-colors">
+              <X className="h-6 w-6" />
+            </button>
+            <p className="text-sm uppercase tracking-[0.1em] text-red-400 font-bold flex-1 text-center pr-10">
+              <Sparkles className="h-4 w-4 inline mr-2" /> {TITULOS[tipo]}
+            </p>
+          </div>
+        ) : (
+          <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-3 bg-card/95 backdrop-blur border-b border-border">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-red-400 font-semibold inline-flex items-center gap-1.5">
+              <Sparkles className="h-3 w-3" /> {TITULOS[tipo]}
+            </p>
+            <button onClick={onClose} className="h-8 w-8 grid place-items-center rounded-full hover:bg-muted">
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        )}
 
         <div className="p-4 md:p-5">
           {isLoading && (
@@ -711,12 +727,10 @@ type QuestaoIA = {
   comentario?: string;
 };
 
-function QuestoesPanel({ questoes }: { questoes: QuestaoIA[] }) {
-  const [i, setI] = useState(0);
+function QuestaoItem({ q, index, total }: { q: QuestaoIA; index: number; total: number }) {
   const [resposta, setResposta] = useState<string | null>(null);
   const [mostrarGabarito, setMostrarGabarito] = useState(false);
-  if (!questoes.length) return <p className="text-sm text-muted-foreground">Sem questões.</p>;
-  const q = questoes[i];
+
   const gab = (q.gabarito || "").trim().toUpperCase();
   const alternativas: Array<[string, string | undefined]> = [
     ["A", q.a], ["B", q.b], ["C", q.c], ["D", q.d],
@@ -727,25 +741,9 @@ function QuestoesPanel({ questoes }: { questoes: QuestaoIA[] }) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
-          Questão {i + 1} de {questoes.length}
+        <span className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground font-semibold">
+          Questão {index} de {total}
         </span>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => { setI(Math.max(0, i - 1)); setResposta(null); setMostrarGabarito(false); }}
-            disabled={i === 0}
-            className="h-8 w-8 grid place-items-center rounded-full border border-border disabled:opacity-40 hover:bg-muted"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </button>
-          <button
-            onClick={() => { setI(Math.min(questoes.length - 1, i + 1)); setResposta(null); setMostrarGabarito(false); }}
-            disabled={i + 1 >= questoes.length}
-            className="h-8 w-8 grid place-items-center rounded-full border border-border disabled:opacity-40 hover:bg-muted"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </button>
-        </div>
       </div>
 
       <div className="rounded-xl border border-border bg-background p-4">
@@ -790,26 +788,26 @@ function QuestoesPanel({ questoes }: { questoes: QuestaoIA[] }) {
         <button
           onClick={() => setMostrarGabarito(true)}
           disabled={!resposta}
-          className="w-full h-11 rounded-xl bg-primary text-primary-foreground text-sm font-semibold disabled:opacity-40 hover:opacity-90 transition-opacity"
+          className="w-full h-11 mt-2 rounded-xl bg-primary text-primary-foreground text-sm font-semibold disabled:opacity-40 hover:opacity-90 transition-opacity"
         >
-          Confirmar resposta
+          Responder
         </button>
       )}
 
       {mostrarGabarito && (
-        <div className="space-y-3">
+        <div className="space-y-3 mt-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
           <div className={cn(
             "rounded-xl border p-3 flex items-center gap-2",
             acertou ? "border-emerald-500/40 bg-emerald-500/10" : "border-red-500/40 bg-red-500/10",
           )}>
-            <CheckCircle2 className={cn("h-5 w-5", acertou ? "text-emerald-400" : "text-red-400")} />
+            <CheckCircle2 className={cn("h-5 w-5 shrink-0", acertou ? "text-emerald-400" : "text-red-400")} />
             <p className="text-sm font-semibold">
               {acertou ? "Você acertou!" : `Resposta correta: ${gab}`}
             </p>
           </div>
           {q.comentario && (
             <div className="rounded-xl border border-border bg-background p-4">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2 inline-flex items-center gap-1.5">
+              <p className="text-[10px] uppercase tracking-[0.1em] text-muted-foreground font-semibold mb-2 inline-flex items-center gap-1.5">
                 <Sparkles className="h-3 w-3" /> Comentário
               </p>
               <p className="text-sm leading-relaxed text-foreground/90 whitespace-pre-line">{q.comentario}</p>
@@ -817,6 +815,18 @@ function QuestoesPanel({ questoes }: { questoes: QuestaoIA[] }) {
           )}
         </div>
       )}
+    </div>
+  );
+}
+
+function QuestoesPanel({ questoes }: { questoes: QuestaoIA[] }) {
+  if (!questoes.length) return <p className="text-sm text-muted-foreground">Sem questões.</p>;
+  
+  return (
+    <div className="space-y-12 pb-16">
+      {questoes.map((q, i) => (
+        <QuestaoItem key={i} q={q} index={i + 1} total={questoes.length} />
+      ))}
     </div>
   );
 }
