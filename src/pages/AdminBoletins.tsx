@@ -34,7 +34,7 @@ export default function AdminBoletins() {
   const [saving, setSaving] = useState(false);
   const [gerando, setGerando] = useState(false);
   const [boletins, setBoletins] = useState<any[]>([]);
-  const [player, setPlayer] = useState<{ id: string; scenes: BoletimScene[]; youtubeUrl?: string } | null>(null);
+  const [player, setPlayer] = useState<{ id: string; scenes: any[]; youtubeUrl?: string; data_ref?: string } | null>(null);
   const { repo, setRepo } = useSharedGithubRepo('');
   const [rendering, setRendering] = useState<string | null>(null);
 
@@ -380,7 +380,7 @@ export default function AdminBoletins() {
 
       </div>
 
-      {player && <BoletimPlayer boletimId={player.id} scenes={player.scenes} youtubeUrl={player.youtubeUrl || undefined} onClose={() => setPlayer(null)} />}
+      {player && <BoletimPlayer boletimId={player.id} dataRef={player.data_ref} scenes={player.scenes} youtubeUrl={player.youtubeUrl || undefined} onClose={() => setPlayer(null)} />}
     </DesktopPageLayout>
   );
 }

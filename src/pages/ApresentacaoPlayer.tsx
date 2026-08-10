@@ -317,7 +317,7 @@ const ApresentacaoPlayer = () => {
         className="hidden"
       />
 
-      <header className="flex items-center gap-3 p-3">
+      <header className="flex items-center gap-3 px-3 pb-3 pt-[calc(0.75rem+env(safe-area-inset-top,0px))]">
         <button onClick={() => goBack()} className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center"><ArrowLeft className="w-5 h-5" /></button>
         <div className="min-w-0 flex-1">
           <p className="font-heading font-bold text-sm truncate">{apres.titulo}</p>

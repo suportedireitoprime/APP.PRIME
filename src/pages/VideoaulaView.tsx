@@ -93,7 +93,7 @@ const VideoaulaView = () => {
       }`;
       // Aula + progresso + favorito em paralelo (antes eram 2 rodadas sequenciais).
       const [aulaRes, progRes, favRes] = await Promise.all([
-        supabase.from(catalogo.tabela as any).select(cols).eq('video_id', videoId).maybeSingle(),
+        supabase.from(catalogo.tabela as 'videoaulas_areas_direito').select(cols).eq('video_id', videoId).maybeSingle(),
         userId
           ? supabase
               .from('videoaulas_progresso')
@@ -102,7 +102,7 @@ const VideoaulaView = () => {
               .eq('tabela', catalogo.tabela)
               .eq('video_id', videoId)
               .maybeSingle()
-          : Promise.resolve({ data: null } as any),
+          : Promise.resolve({ data: null } as { data: null }),
         userId
           ? supabase
               .from('videoaulas_favoritos')
@@ -111,13 +111,13 @@ const VideoaulaView = () => {
               .eq('tabela', catalogo.tabela)
               .eq('video_id', videoId)
               .maybeSingle()
-          : Promise.resolve({ data: null } as any),
+          : Promise.resolve({ data: null } as { data: null }),
       ]);
       if (!alive) return;
-      const aulaData = aulaRes.data as any;
-      if (aulaData) setAula(aulaData as unknown as Aula);
+      const aulaData = aulaRes.data as unknown as Aula | null;
+      if (aulaData) setAula(aulaData);
       setCarregado(true);
-      const prog = progRes?.data as any;
+      const prog = progRes?.data as { tempo_atual?: number; concluida?: boolean } | null;
       if (prog) {
         setInicio(Number(prog.tempo_atual) || 0);
         setConcluida(!!prog.concluida);
@@ -125,7 +125,7 @@ const VideoaulaView = () => {
       setFavorito(!!favRes?.data);
 
       // Busca aulas da mesma área para a Sidebar Lateral Esquerda no Desktop
-      let qArea: any = supabase.from(catalogo.tabela as any).select(cols);
+      let qArea = supabase.from(catalogo.tabela as 'videoaulas_areas_direito').select(cols);
       if (catalogo.temAreas && aulaData?.area) {
         qArea = qArea.eq('area', aulaData.area);
       }
@@ -163,6 +163,13 @@ const VideoaulaView = () => {
   }, [videoId]);
 
   const resumo = useVideoaulaResumo(podeResumir ? input : null);
+
+  const tituloHeader = useMemo(() => {
+    if (!aulasDaArea.length || !videoId) return 'Aula';
+    const idx = aulasDaArea.findIndex((a) => a.video_id === videoId);
+    if (idx !== -1) return `Aula ${idx + 1}`;
+    return 'Aula';
+  }, [aulasDaArea, videoId]);
 
   const toggleFavorito = async () => {
     if (!userId || !catalogo || !aula) return;
@@ -209,7 +216,7 @@ const VideoaulaView = () => {
   return (
     <div className="min-h-screen bg-background pb-40 lg:pb-16">
       <PageHeader
-        title={tituloLimpo}
+        title={tituloHeader}
         subtitle={aula?.area ?? catalogo.titulo}
         onBack={() =>
           navigate(
@@ -253,7 +260,7 @@ const VideoaulaView = () => {
                       alt=""
                       loading="eager"
                       decoding="async"
-                      {...({ fetchpriority: 'high' } as any)}
+                      {...({ fetchpriority: 'high' } as React.DetailedHTMLProps<React.ImgHTMLAttributes<HTMLImageElement>, HTMLImageElement>)}
                       className="w-full h-full object-cover"
                     />
                     {eAtivo && (
@@ -421,7 +428,7 @@ const VideoaulaView = () => {
               </div>
             )}
 
-            {resumo.isLoading && !(resumo.data as any)?.resumo && !aula?.sobre_aula && !aula?.descricao && (
+            {resumo.isLoading && !(resumo.data as { resumo?: string } | undefined)?.resumo && !aula?.sobre_aula && !aula?.descricao && (
               <div className="py-4 flex items-center gap-2 text-muted-foreground text-xs">
                 <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" /> Carregando panorama...
               </div>
@@ -437,10 +444,12 @@ const VideoaulaView = () => {
       </div>
 
       {/* ── Footer Fixo de Ações APENAS para Telas Mobile (lg:hidden) ───────────── */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-card/95 backdrop-blur px-2 py-2 pb-[calc(12px+var(--sai-bottom,0px))] lg:hidden">
-        <Suspense fallback={<div className="h-14" />}>
-          <VideoaulaAcoesBar input={input} gridLayout gridCols={6} onOpenAnotacoes={() => setShowAnotacoes(true)} />
-        </Suspense>
+      <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden pointer-events-none">
+        <div className="pointer-events-auto">
+          <Suspense fallback={<div className="h-[76px] bg-hero-panel rounded-t-2xl border-t border-white/10" />}>
+            <VideoaulaAcoesBar input={input} onOpenAnotacoes={() => setShowAnotacoes(true)} />
+          </Suspense>
+        </div>
       </div>
 
       <AnotacoesAulaSheet

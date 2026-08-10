@@ -225,17 +225,38 @@ Deno.serve(async (req) => {
     }
     const getImg = (t: TipoKey) => imgMap.get(t) || imgMap.get("generico")!;
 
-    // Normas: apenas as publicadas na data de referência do boletim.
-    // Regra: se não houver leis novas nesse dia, o boletim NÃO é gerado.
-    const { data: normas, error: normasErr } = await supa
+    // Encontra a data_dou mais recente com leis, menor ou igual a dataRef
+    const { data: ultimasLeis, error: erroUltima } = await supa
       .from("resenha_diaria")
-      .select("tipo_ato,numero_ato,ementa,texto_completo,url,data_dou,data_publicacao")
+      .select("data_dou")
       .lte("data_dou", dataRef)
       .not("ementa", "is", null)
       .neq("ementa", "")
       .order("data_dou", { ascending: false })
-      .order("created_at", { ascending: false })
-      .limit(maxNormas * 3);
+      .limit(1)
+      .maybeSingle();
+
+    if (erroUltima) throw erroUltima;
+
+    if (!ultimasLeis || !ultimasLeis.data_dou) {
+      // Se não há NENHUMA lei na base inteira (ou antes de dataRef)
+      return new Response(
+        JSON.stringify({ skipped: true, reason: "sem_leis", dataRef, message: "Nenhuma lei encontrada." }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    const dataReal = ultimasLeis.data_dou;
+
+    // Busca TODAS as normas exclusivamente dessa data específica, sem limite.
+    const { data: normas, error: normasErr } = await supa
+      .from("resenha_diaria")
+      .select("tipo_ato,numero_ato,ementa,texto_completo,url,data_dou,data_publicacao")
+      .eq("data_dou", dataReal)
+      .not("ementa", "is", null)
+      .neq("ementa", "")
+      .order("created_at", { ascending: false });
+      
     if (normasErr) throw normasErr;
 
     // Filtra ruído (títulos genéricos como "Projetos de Lei do Congresso Nacional")
@@ -246,56 +267,47 @@ Deno.serve(async (req) => {
         if (t.includes("projeto")) return false;
         if (!/\d/.test(num)) return false; // exige algum número no identificador
         return true;
-      })
-      .slice(0, maxNormas);
+      });
 
     if (filtradas.length === 0) {
-      // Registra um "boletim vazio" do dia para que a timeline mostre o dia
-      // com um marcador apagado ("sem leis publicadas"), em vez de sumir.
-      const tituloVazio = `Boletim Jurídico — ${new Date(dataRef + "T12:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "long" })}`;
-      const { data: existente } = await supa
-        .from("boletins_juridicos")
-        .select("id")
-        .eq("data_ref", dataRef)
-        .eq("tipo", "juridico")
-        .maybeSingle();
-      if (!existente) {
-        await supa.from("boletins_juridicos").insert({
-          data_ref: dataRef,
-          tipo: "juridico",
-          titulo: tituloVazio,
-          subtitulo: "Nenhuma lei nova publicada neste dia",
-          status: "sem_leis",
-          roteiro_json: [],
-        });
-      }
       return new Response(
-        JSON.stringify({
-          skipped: true,
-          reason: "sem_leis_novas",
-          dataRef,
-          message: `Nenhuma lei nova publicada em ${dataRef}. Registrado como dia sem leis.`,
-        }),
+        JSON.stringify({ skipped: true, reason: "sem_leis_validas", dataRef: dataReal, message: "Apenas ruído." }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
     // Cria registro do boletim (status: gerando)
-    const titulo = `Boletim Jurídico — ${new Date(dataRef + "T12:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "long" })}`;
-    const { data: boletim, error: insErr } = await supa
+    const titulo = `Boletim Jurídico — ${new Date(dataReal + "T12:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "long" })}`;
+    const { data: existente } = await supa
       .from("boletins_juridicos")
-      .insert({
-        data_ref: dataRef,
-        titulo,
-        subtitulo: `${filtradas.length} ${filtradas.length === 1 ? "norma comentada" : "normas comentadas"}`,
-        status: "gerando",
-        gerado_por: triggeredBy,
-        roteiro_json: [],
-      })
       .select("id")
-      .single();
-    if (insErr) throw insErr;
-    const boletimId = boletim.id as string;
+      .eq("data_ref", dataReal)
+      .eq("tipo", "juridico")
+      .maybeSingle();
+      
+    let boletimId = existente?.id;
+    
+    if (!boletimId) {
+      const { data: boletim, error: insErr } = await supa
+        .from("boletins_juridicos")
+        .insert({
+          data_ref: dataReal,
+          titulo,
+          subtitulo: `${filtradas.length} ${filtradas.length === 1 ? "norma comentada" : "normas comentadas"}`,
+          status: "gerando",
+          gerado_por: triggeredBy,
+          roteiro_json: [],
+        })
+        .select("id")
+        .single();
+      if (insErr) throw insErr;
+      boletimId = boletim.id;
+    } else {
+      // Atualiza para gerando se já existe
+      await supa.from("boletins_juridicos").update({ status: "gerando" }).eq("id", boletimId);
+    }
+
+
 
     // Gera roteiros via Gemini
     const roteiros = await gerarRoteirosGemini(filtradas);
@@ -416,6 +428,8 @@ Deno.serve(async (req) => {
 
     // Push (best-effort)
     if (cfg?.enviar_push !== false) {
+      const { data: bData } = await supa.from("boletins_juridicos").select("capa_url").eq("id", boletimId).maybeSingle();
+      
       await notificarBoletimPronto({
         supa,
         boletimId,
@@ -426,6 +440,7 @@ Deno.serve(async (req) => {
         automationKey: "boletim_juridico_diario",
         pushEmoji: "🎬",
         labelUnidade: filtradas.length === 1 ? "norma comentada" : "normas comentadas",
+        capaUrl: bData?.capa_url,
       });
     }
 

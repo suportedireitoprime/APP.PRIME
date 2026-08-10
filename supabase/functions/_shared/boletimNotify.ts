@@ -14,6 +14,7 @@ export interface NotifyBoletimArgs {
   automationKey: string;
   pushEmoji?: string;
   labelUnidade: string; // "normas comentadas" | "manchetes"
+  capaUrl?: string;
 }
 
 const APP_URL = Deno.env.get("HORUS_APP_URL") ||

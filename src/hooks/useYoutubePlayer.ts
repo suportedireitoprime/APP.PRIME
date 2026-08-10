@@ -62,12 +62,25 @@ export function useYoutubePlayer({ videoId, startAt = 0, ativo = true, autoplay 
       if (cancelado || !containerRef.current) return;
       playerRef.current = new window.YT.Player(containerRef.current, {
         videoId,
-        playerVars: { rel: 0, modestbranding: 1, playsinline: 1, hl: 'pt', autoplay: autoplay ? 1 : 0 },
+        width: '100%',
+        height: '100%',
+        playerVars: { 
+          rel: 0, 
+          modestbranding: 1, 
+          playsinline: 1, 
+          hl: 'pt', 
+          autoplay: autoplay ? 1 : 0,
+          origin: window.location.origin
+        },
         events: {
           onReady: (e: any) => {
             setPronto(true);
             if (startRef.current > 5) e.target.seekTo(startRef.current, true);
-            if (autoplay) e.target.playVideo?.();
+            if (autoplay) {
+              setTimeout(() => {
+                e.target.playVideo?.();
+              }, 150);
+            }
           },
           onStateChange: (e: any) => {
             if (e.data === window.YT.PlayerState.ENDED) cbRef.current.onEnded?.();

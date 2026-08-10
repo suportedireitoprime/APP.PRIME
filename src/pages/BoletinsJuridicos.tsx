@@ -89,6 +89,14 @@ export default function BoletinsJuridicos({ tipo = 'juridico' }: Props) {
   const titulo = isNoticias ? 'Boletins de Notícias' : 'Boletins Jurídicos';
   const subtitulo = isNoticias ? 'As manchetes que importam, todo dia' : 'Seu vídeo diário de direito';
 
+  const [prevTipo, setPrevTipo] = useState(tipo);
+  
+  if (tipo !== prevTipo) {
+    setPrevTipo(tipo);
+    setItems([]);
+    setLoading(true);
+  }
+
   useEffect(() => {
     (async () => {
       const SNAPSHOT_KEY = `boletins:snapshot:v1:${tipo}`;
@@ -335,7 +343,7 @@ export default function BoletinsJuridicos({ tipo = 'juridico' }: Props) {
       </div>
 
 
-      {ativo && <BoletimPlayer boletimId={ativo.id} scenes={ativo.roteiro_json || []} youtubeUrl={ativo.youtube_url || undefined} onClose={() => setAtivo(null)} />}
+      {ativo && <BoletimPlayer boletimId={ativo.id} dataRef={ativo.data_ref} scenes={ativo.roteiro_json || []} youtubeUrl={ativo.youtube_url || undefined} onClose={() => setAtivo(null)} />}
     </DesktopPageLayout>
   );
 }

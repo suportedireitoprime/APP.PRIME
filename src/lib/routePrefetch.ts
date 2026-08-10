@@ -57,6 +57,7 @@ export const routePrefetch = {
   videoaulasLista: () => import("@/pages/VideoaulasLista.tsx"),
   videoaulasTrilhas: () => import("@/pages/VideoaulasTrilhas.tsx"),
   videoaulasCategorias: () => import("@/pages/VideoaulasCategorias.tsx"),
+  videoaulasCatalogoTrilha: () => import("@/pages/VideoaulasCatalogoTrilha.tsx"),
   videoaulasConquistas: () => import("@/pages/VideoaulasConquistas.tsx"),
 
 } as const;

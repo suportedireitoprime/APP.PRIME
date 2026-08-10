@@ -142,12 +142,13 @@ async function selecionarERescrever(
     .map((x, i) => `[${i}] (${x.fonte}) ${x.titulo}${x.categoria ? ` — ${x.categoria}` : ""}`)
     .join("\n");
 
-  const prompt = `Você é editor-chefe do "Boletim de Notícias Jurídicas" — um mini-podcast noturno que DEVE caber entre 2 e 2 minutos e 30 segundos de áudio total.
-Abaixo, ${noticias.length} manchetes de hoje. Escolha as ${n} MAIS relevantes para o público jurídico brasileiro (advogados, estudantes, concurseiros).
+  const prompt = `Você é editora-chefe do "Boletim de Notícias Jurídicas" — um mini-podcast noturno.
+Abaixo, ${noticias.length} manchetes de hoje. Escolha EXATAMENTE ${n} MAIS relevantes para o público jurídico brasileiro (advogados, estudantes, concurseiros).
 
 Priorize: decisões do STF/STJ, novas leis/MPs, mudanças em códigos (CPC/CPP/CLT/CDC), OAB, concursos, temas que afetam a rotina do operador do Direito. Ignore fofocas, notas político-partidárias e conteúdo repetido.
 
-ORÇAMENTO DE TEMPO (obrigatório): a narração roda a ~1,8 palavra por segundo, então o boletim inteiro deve somar entre ${PALAVRAS_ALVO_MIN} e ${PALAVRAS_ALVO_MAX} palavras. Com ${n} manchetes, cada lead precisa ter de 30 a 36 palavras — CONTE as palavras antes de responder: menos de 30 palavras é resposta inválida.
+ORÇAMENTO DE TEMPO (obrigatório): cada notícia deve durar entre 15 e 20 segundos de fala. A narração roda a ~1,8 palavra por segundo. Portanto, com ${n} manchetes, CADA lead precisa ter entre 30 a 36 palavras — CONTE as palavras antes de responder: menos de 30 palavras ou mais de 36 é resposta inválida.
+
 
 Para cada notícia escolhida, escreva um lead em português brasileiro, com 30 a 36 palavras (limite rígido — nunca menos de 30, nunca mais de 36), tom de podcast noturno, EXATAMENTE nesta estrutura:
 - 1ª frase: FATO — o que aconteceu hoje (quem + o quê), verbo forte no início.
@@ -263,13 +264,11 @@ Deno.serve(async (req) => {
     const triggeredBy = (body.triggeredBy as string) || null;
 
     const { data: cfg } = await supa.from("boletim_config").select("*").eq("id", 1).maybeSingle();
-    const voz = cfg?.noticias_voz_id || cfg?.voz_id || "Kore";
+    const voz = cfg?.noticias_voz_id || "Aoede";
     const promptExtra = cfg?.noticias_prompt_tts_extra ||
       "Locutor de telejornal jurídico. Tom persuasivo e envolvente, ritmo dinâmico de rádio, ênfase em verbos fortes e nomes próprios.";
     // Nº de manchetes limitado pelo orçamento de tempo: cada lead ocupa ~16s
-    // (32 palavras a 2 palavras/s) e intro+encerramento somam ~10s.
-    const alvoManchetes = Math.floor((PALAVRAS_ALVO_MAX - 15) / MEDIA_PALAVRAS_LEAD);
-    const n = 3;
+    const n = 10;
 
     // Notícias das últimas 48h
     // Janela de 48h: em fins de semana as fontes publicam pouco e 36h não davam
@@ -290,67 +289,12 @@ Deno.serve(async (req) => {
         { status: 422, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    // Pede folga de manchetes: o modelo costuma devolver leads mais curtos do que
-    // o pedido, então o roteiro é fechado por orçamento de palavras logo abaixo.
-    const escolhidasBrutas = await selecionarERescrever(noticias, Math.min(14, n + 6));
-    if (escolhidasBrutas.length === 0) throw new Error("Gemini não escolheu notícias");
-    let escolhidas: typeof escolhidasBrutas = [];
-    let acumulado = 15; // intro + encerramento
-    for (const e of escolhidasBrutas) {
-      const p = contarPalavras(e.resumo);
-      if (escolhidas.length >= MIN_MANCHETES && acumulado + p > PALAVRAS_ALVO_MAX) break;
-      escolhidas.push(e);
-      acumulado += p;
-      if (acumulado >= PALAVRAS_ALVO_MIN && escolhidas.length >= n) break;
-    }
+    const escolhidas = await selecionarERescrever(noticias, n);
+    if (escolhidas.length === 0) throw new Error("Gemini não escolheu notícias");
     let totalPalavras = escolhidas.reduce((a, e) => a + contarPalavras(e.resumo), 0);
     console.log(
-      `[boletim-noticias] ${escolhidas.length} manchetes, ${totalPalavras} palavras ` +
-      `(alvo ${PALAVRAS_ALVO_MIN}-${PALAVRAS_ALVO_MAX} = ${DURACAO_ALVO_MIN_S}-${DURACAO_ALVO_MAX_S}s)`,
+      `[boletim-noticias] ${escolhidas.length} manchetes, ${totalPalavras} palavras`,
     );
-    // O modelo tende a devolver leads curtos demais; se o roteiro não alcança
-    // 2 minutos, pede uma expansão antes de gerar o áudio.
-    // Fallback determinístico: se o roteiro ainda não fecha 2 minutos, completa
-    // com mais manchetes (o modelo costuma devolver leads curtos e ignorar o
-    // pedido de alongar o texto, mas sempre há notícias sobrando na janela).
-    const usados = new Set(escolhidas.map((e) => e.index));
-    for (let rodada = 1; rodada <= 2 && totalPalavras < PALAVRAS_ALVO_MIN; rodada++) {
-      const restantes = noticias.filter((_, i) => !usados.has(i));
-      if (restantes.length < 2) break;
-      const mapa = noticias.map((_, i) => i).filter((i) => !usados.has(i));
-      const extras = await selecionarERescrever(restantes, Math.min(8, restantes.length));
-      let adicionou = false;
-      for (const ex of extras) {
-        const idxReal = mapa[ex.index];
-        if (idxReal === undefined || usados.has(idxReal)) continue;
-        const p = contarPalavras(ex.resumo);
-        if (totalPalavras + 15 + p > PALAVRAS_ALVO_MAX) continue;
-        escolhidas.push({ ...ex, index: idxReal });
-        usados.add(idxReal);
-        totalPalavras += p;
-        adicionou = true;
-        if (totalPalavras + 15 >= PALAVRAS_ALVO_MIN) break;
-      }
-      console.log(`[boletim-noticias] complemento ${rodada}: ${escolhidas.length} manchetes, ${totalPalavras} palavras`);
-      if (!adicionou) break;
-    }
-
-    for (let tentativa = 1; tentativa <= 3 && totalPalavras + 15 < PALAVRAS_ALVO_MIN; tentativa++) {
-      const expandidos = await expandirLeads(escolhidas, noticias);
-      if (!expandidos) break;
-      let mudou = false;
-      for (let i = 0; i < escolhidas.length; i++) {
-        if (!expandidos[i]) continue;
-        const novo = limitarPalavras(expandidos[i], MAX_PALAVRAS_LEAD);
-        if (contarPalavras(novo) > contarPalavras(escolhidas[i].resumo)) {
-          escolhidas[i].resumo = novo;
-          mudou = true;
-        }
-      }
-      totalPalavras = escolhidas.reduce((a, e) => a + contarPalavras(e.resumo), 0);
-      console.log(`[boletim-noticias] expansão ${tentativa}: ${totalPalavras} palavras`);
-      if (!mudou) break;
-    }
 
     // Criar registro
     const dataFmt = new Date(dataRef + "T12:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "long" });
@@ -378,7 +322,7 @@ Deno.serve(async (req) => {
       kind: "intro",
       tipo: "noticia",
       titulo: "Boletim de Notícias",
-      texto: `Boa noite. As ${escolhidas.length} manchetes jurídicas de ${dataFala}. Bora.`,
+      texto: `Boa noite. As notícias para você ficar atualizada do dia.`,
     });
     for (const e of escolhidas) {
       const src = noticias[e.index];
@@ -470,6 +414,8 @@ Deno.serve(async (req) => {
     }).eq("id", boletimId);
 
     if (cfg?.enviar_push !== false) {
+      const { data: bData } = await supa.from("boletins_noticias").select("capa_url").eq("id", boletimId).maybeSingle();
+
       await notificarBoletimPronto({
         supa,
         boletimId,
@@ -480,6 +426,7 @@ Deno.serve(async (req) => {
         automationKey: "boletim_noticias_diario",
         pushEmoji: "📰",
         labelUnidade: escolhidas.length === 1 ? "manchete" : "manchetes",
+        capaUrl: bData?.capa_url,
       });
     }
 

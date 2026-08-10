@@ -38,6 +38,7 @@ interface Props {
   boletimId?: string;
   scenes: BoletimScene[];
   youtubeUrl?: string;
+  dataRef?: string;
   onClose?: () => void;
 }
 
@@ -53,7 +54,7 @@ type Comentario = {
  * Player nativo: reproduz o áudio TTS de cada cena com Ken Burns + texto animado.
  * Sincronia por evento `ended` do <audio>; próximo áudio pré-carregado.
  */
-export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, onClose }: Props) {
+export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, onClose }: Props) {
   const [idx, setIdx] = useState(0);
   const [playing, setPlaying] = useState(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -215,7 +216,8 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, onClose }
   const duracaoTotalS = scenes.reduce((acc, s) => acc + (s.duracao_s || 8), 0);
   const totalMin = Math.floor(duracaoTotalS / 60);
   const totalSec = Math.round(duracaoTotalS % 60);
-  const hoje = new Date().toLocaleDateString('pt-BR', {
+  const dataRefDate = dataRef ? new Date(`${dataRef}T12:00:00`) : new Date();
+  const hoje = dataRefDate.toLocaleDateString('pt-BR', {
     day: '2-digit',
     month: 'long',
     year: 'numeric',
@@ -399,7 +401,7 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, onClose }
 
 
       {/* Top bar */}
-      <div className="relative z-10 flex items-center gap-3 p-4 pt-6">
+      <div className="relative z-10 flex items-center gap-3 p-4 pt-[calc(1.5rem+env(safe-area-inset-top,0px))]">
         <div className="flex-1 flex gap-1">
           {scenes.map((_, i) => (
             <div key={i} className="flex-1 h-1 rounded-full bg-white/20 overflow-hidden">
@@ -431,7 +433,7 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, onClose }
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -20, opacity: 0 }}
             transition={{ duration: 0.5 }}
-            className={scene.kind === 'intro' ? 'flex flex-col items-center' : ''}
+            className={`w-full ${scene.kind === 'intro' ? 'flex flex-col items-center' : 'pt-2'}`}
           >
             {scene.kind === 'intro' ? (
               <>
@@ -468,30 +470,55 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, onClose }
                     initial={{ scale: 0.6, opacity: 0, rotate: -8 }}
                     animate={{ scale: 1, opacity: 1, rotate: 0 }}
                     transition={{ type: 'spring', damping: 14, stiffness: 220, delay: 0.05 }}
-                    className="flex items-center gap-3 mb-4"
+                    className="flex flex-col items-start gap-2 mb-4"
                   >
-                    <img
-                      src={brasaoImg}
-                      alt="Brasão da República"
-                      className="w-12 h-12 md:w-14 md:h-14 object-contain drop-shadow-[0_4px_12px_rgba(0,0,0,0.7)]"
-                    />
-                    {scene.tipo_label && (
-                      <span
-                        className="inline-block text-xs uppercase tracking-widest font-bold px-3 py-1 rounded-full"
-                        style={{ backgroundColor: cor, color: '#fff' }}
-                      >
-                        {scene.tipo_label}
-                      </span>
-                    )}
-                    {fonteLabel && (
-                      <button
-                        type="button"
-                        onClick={abrirFonte}
-                        className="inline-flex items-center gap-1 text-[11px] uppercase tracking-widest font-bold px-3 py-1 rounded-full bg-white/15 backdrop-blur text-white/90 hover:bg-white/25 transition"
-                      >
-                        via {fonteLabel}
-                      </button>
-                    )}
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={brasaoImg}
+                        alt="Brasão da República"
+                        className="w-12 h-12 md:w-14 md:h-14 object-contain drop-shadow-[0_4px_12px_rgba(0,0,0,0.7)]"
+                      />
+                      <div className="flex flex-col">
+                        {scene.tipo_label && (
+                          <span
+                            className="inline-block text-xs uppercase tracking-widest font-bold px-3 py-1 rounded-full w-fit"
+                            style={{ backgroundColor: cor, color: '#fff' }}
+                          >
+                            {scene.tipo_label}
+                          </span>
+                        )}
+                        {scene.tipo_label?.toLowerCase().includes('complementar') && (
+                          <span className="text-[11px] text-white/70 mt-1 font-medium pl-1">
+                            Aprovada pelo Congresso. Exige maioria absoluta (mais da metade) dos votos.
+                          </span>
+                        )}
+                        {scene.tipo_label?.toLowerCase().includes('ordinária') && !scene.tipo_label?.toLowerCase().includes('complementar') && (
+                          <span className="text-[11px] text-white/70 mt-1 font-medium pl-1">
+                            Aprovada pelo Congresso. Exige maioria simples dos votos.
+                          </span>
+                        )}
+                        {scene.tipo_label?.toLowerCase().includes('medida provisória') && (
+                          <span className="text-[11px] text-white/70 mt-1 font-medium pl-1">
+                            Tem força de lei imediata. Precisa ser aprovada pelo Congresso em até 120 dias.
+                          </span>
+                        )}
+                        {scene.tipo_label?.toLowerCase().includes('decreto') && (
+                          <span className="text-[11px] text-white/70 mt-1 font-medium pl-1">
+                            Ato do Presidente para regulamentar e dar cumprimento fiel à lei.
+                          </span>
+                        )}
+                        {scene.tipo_label?.toLowerCase().includes('resolução') && (
+                          <span className="text-[11px] text-white/70 mt-1 font-medium pl-1">
+                            Decisão de um conselho ou tribunal sobre temas específicos.
+                          </span>
+                        )}
+                        {scene.tipo_label?.toLowerCase().includes('portaria') && (
+                          <span className="text-[11px] text-white/70 mt-1 font-medium pl-1">
+                            Regra interna de um Ministério ou órgão para orientar a aplicação da lei.
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </motion.div>
                 )}
                 {scene.kind === 'norma' && (
@@ -511,7 +538,16 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, onClose }
                       transition={{ duration: scene.duracao_s || 8, ease: 'linear' }}
                       className="absolute inset-0 w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                    {fonteLabel && (
+                      <button
+                        type="button"
+                        onClick={abrirFonte}
+                        className="absolute top-3 right-3 z-10 inline-flex items-center gap-1 text-[10px] uppercase tracking-widest font-bold px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/20 text-white hover:bg-black/60 transition"
+                      >
+                        VIA {fonteLabel}
+                      </button>
+                    )}
                   </motion.div>
                 )}
                 <h1 className="font-display text-3xl md:text-5xl font-black text-white leading-tight mb-4">

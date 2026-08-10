@@ -1,9 +1,9 @@
 // Helpers compartilhados pelas edge functions de Videoaulas.
 // Transcrição do YouTube, limpeza de texto institucional, parser de JSON
-// tolerante e chamada ao Lovable AI Gateway.
+// tolerante e chamada à API do Gemini via geminiFetch.
+import { geminiFetch } from "./geminiFetch.ts";
 
-const GATEWAY_URL = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
-export const MODEL_VIDEOAULA = 'gemini-3.1-flash-lite';
+const GEMINI_MODEL = 'gemini-2.5-flash';
 
 export class GatewayError extends Error {
   status: number;
@@ -123,7 +123,7 @@ export function limparTextoInstitucional(texto: string): string {
     .trim();
 }
 
-export function parseJsonStrict(raw: string): any {
+export function parseJsonStrict(raw: string): unknown {
   let s = raw.trim();
   s = s.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
   const i = s.indexOf("{");
@@ -136,7 +136,7 @@ export function parseJsonStrict(raw: string): any {
   }
 }
 
-function repairAndParse(s: string): any {
+function repairAndParse(s: string): unknown {
   let t = s.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, "");
   const stack: string[] = [];
   let inStr = false;
@@ -171,7 +171,7 @@ interface ChamarIaOpts {
   temperature?: number;
 }
 
-/** Chama o Lovable AI Gateway e devolve o texto da resposta. */
+/** Chama a API do Gemini via geminiFetch e devolve o texto da resposta. */
 export async function chamarIa({
   system,
   prompt,
@@ -179,36 +179,38 @@ export async function chamarIa({
   maxTokens = 8192,
   temperature = 0.7,
 }: ChamarIaOpts): Promise<string> {
-  const key = undefined;
-  if (!key) throw new GatewayError(500, "LOVABLE_API_KEY não configurada");
+  const key = Deno.env.get("GEMINI_API_KEY") ?? "";
+  if (!key) throw new GatewayError(500, "GEMINI_API_KEY não configurada");
 
-  const messages: Array<{ role: string; content: string }> = [];
-  if (system) messages.push({ role: "system", content: system });
-  messages.push({ role: "user", content: prompt });
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${key}`;
 
-  const res = await fetch(GATEWAY_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Lovable-API-Key": key,
-    },
-    body: JSON.stringify({
-      model: MODEL_VIDEOAULA,
-      messages,
+  const parts: Array<{ text: string }> = [];
+  if (system) parts.push({ text: system });
+  parts.push({ text: prompt });
+
+  const body: Record<string, unknown> = {
+    contents: [{ role: "user", parts }],
+    generationConfig: {
       temperature,
-      max_tokens: maxTokens,
-      ...(json ? { response_format: { type: "json_object" } } : {}),
-    }),
+      maxOutputTokens: maxTokens,
+      ...(json ? { responseMimeType: "application/json" } : {}),
+    },
+  };
+
+  const res = await geminiFetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
   });
 
   if (!res.ok) {
-    const body = await res.text();
-    console.error(`[videoaulaIa] gateway ${res.status}: ${body.slice(0, 500)}`);
-    throw new GatewayError(res.status, `IA indisponível (${res.status}): ${body.slice(0, 300)}`);
+    const errBody = await res.text();
+    console.error(`[videoaulaIa] gemini ${res.status}: ${errBody.slice(0, 500)}`);
+    throw new GatewayError(res.status, `IA indisponível (${res.status}): ${errBody.slice(0, 300)}`);
   }
 
   const data = await res.json();
-  const text = data?.choices?.[0]?.message?.content ?? "";
+  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
   if (!text) throw new GatewayError(502, "A IA devolveu resposta vazia");
   return text as string;
 }

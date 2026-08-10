@@ -246,8 +246,7 @@ export async function ensureNativePushListeners() {
       }
     });
 
-    // Notificação chegou com app aberto — Android/iOS não exibem banner nativo
-    // automaticamente no foreground, então mostramos uma notificação local.
+    // Notificação chegou com app aberto — mostramos nosso Popup In-App customizado
     await PushNotifications.addListener('pushNotificationReceived', async (notif) => {
       const data = (notif.data ?? {}) as Record<string, string>;
       const campaignId = data.campaign_id;
@@ -257,37 +256,12 @@ export async function ensureNativePushListeners() {
       }
 
       try {
-        const { LocalNotifications } = await import('@capacitor/local-notifications');
-        // Garante permissão (Android 13+ exige runtime permission separada)
-        const perm = await LocalNotifications.checkPermissions();
-        if (perm.display !== 'granted') {
-          const req = await LocalNotifications.requestPermissions();
-          if (req.display !== 'granted') {
-            console.warn('LocalNotifications permission not granted, skipping foreground display');
-            return;
-          }
-        }
-        // Cria canal (idempotente) para evitar falha silenciosa
-        try {
-          await LocalNotifications.createChannel?.({
-            id: DEFAULT_PUSH_CHANNEL_ID,
-            name: 'Direito Prime · Alertas',
-            description: 'Alertas principais do app',
-            importance: 5,
-            visibility: 1,
-            vibration: true,
-            lights: true,
-          } as any);
-        } catch {}
-        await LocalNotifications.schedule({
-          notifications: [{
-            id: Date.now() % 2147483647,
-            title: notif.title ?? data.title ?? 'OAB na Risca',
-            body: notif.body ?? data.body ?? '',
-            schedule: { at: new Date(Date.now() + 250) },
-            channelId: DEFAULT_PUSH_CHANNEL_ID,
-            extra: data,
-          }],
+        const { useInAppPushStore } = await import('@/store/inAppPushStore');
+        useInAppPushStore.getState().showPush({
+          title: notif.title ?? data.title ?? 'OAB na Risca',
+          body: notif.body ?? data.body ?? '',
+          imageUrl: data.image || (notif as any).image,
+          actionUrl: data.url,
         });
       } catch (e) {
         console.warn('Foreground push display failed', e);

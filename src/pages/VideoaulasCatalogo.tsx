@@ -4,6 +4,7 @@ import { PageHeader } from '@/components/vademecum/PageHeader';
 import { Input } from '@/components/ui/input';
 import { ChevronRight, History, Mic, Play, Search, Star, Video } from 'lucide-react';
 import ThumbImg from '@/components/videoaulas/ThumbImg';
+import VideoaulasBottomNav from '@/components/videoaulas/VideoaulasBottomNav';
 import {
   formatDuracao,
   getCatalogo,
@@ -201,7 +202,7 @@ const VideoaulasCatalogo = () => {
   );
 
   return (
-    <div className="relative min-h-screen bg-background pb-10">
+    <div className="relative min-h-screen bg-background pb-24">
       <div className="relative z-10">
         <PageHeader
           title={catalogo.titulo}
@@ -337,6 +338,7 @@ const VideoaulasCatalogo = () => {
         </div>
       </div>
 
+      <VideoaulasBottomNav />
     </div>
   );
 

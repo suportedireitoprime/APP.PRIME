@@ -65,6 +65,7 @@ import GlobalVideoaulaMiniPlayer from "@/components/videoaulas/GlobalVideoaulaMi
 import { GravacaoFlutuante } from "@/components/GravacaoFlutuante";
 import { GeofencePresenceBanner } from "@/components/GeofencePresenceBanner";
 import { ReminderInAppBanner } from "@/components/ReminderInAppBanner";
+import InAppPushPopup from "@/components/ui/InAppPushPopup";
 import HorusTakeoverNoticeDialog from "@/components/horus/HorusTakeoverNoticeDialog";
 
 // Eagerly loaded (critical path)
@@ -175,6 +176,8 @@ const VideoaulasConquistas = lazy(routePrefetch.videoaulasConquistas);
 const VideoaulaView = lazy(routePrefetch.videoaulaView);
 const VideoaulasLista = lazy(routePrefetch.videoaulasLista);
 const VideoaulasTrilhas = lazy(routePrefetch.videoaulasTrilhas);
+const VideoaulasCatalogoTrilha = lazy(routePrefetch.videoaulasCatalogoTrilha);
+
 const VideoaulasConcurso = lazy(() => import("./pages/VideoaulasConcurso.tsx"));
 const AprenderDesempenho = lazy(() => import("./pages/AprenderDesempenho.tsx"));
 const AprenderAula = lazy(() => import("./pages/AprenderAula.tsx"));
@@ -639,8 +642,8 @@ function AnimatedRoutes() {
     // (e voltar) passa a resolver do cache de módulos, sem Suspense visível.
     const carregarChunks = () => {
       (['videoaulas', 'videoaulasCatalogo', 'videoaulasArea', 'videoaulaView',
-        'videoaulasCategorias', 'videoaulasTrilhas', 'videoaulasLista',
-        'videoaulasConquistas', 'resumosJuridicos', 'resumosJuridicosTemas',
+        'videoaulasCategorias', 'videoaulasTrilhas', 'videoaulasCatalogoTrilha', 'videoaulasLista',
+        'videoaulaView', 'videoaulasConquistas', 'resumosJuridicos', 'resumosJuridicosTemas',
         'resumosJuridicosSubtemas', 'resumosJuridicosLista', 'audioaulas',
         'dicionario', 'biblioteca', 'bibliotecaCategoria', 'blog',
         'tematica'] as const).forEach((k) => prefetchRoute(k));
@@ -662,7 +665,7 @@ function AnimatedRoutes() {
       email: user?.email,
       is_premium: profile?.isPremium ?? false,
     });
-  }, [user?.id, profile?.isPremium]);
+  }, [user?.id, user?.email, profile?.isPremium]);
 
   // Sem usuário logado, a Home persistente não monta.
   // Renderiza a landing imediatamente na raiz para nunca deixar tela preta,
@@ -781,6 +784,7 @@ function AnimatedRoutes() {
           <Route path="/videoaulas/favoritos" element={<ProtectedRoute><PageTransition><VideoaulasLista modo="favoritos" /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/recentes" element={<ProtectedRoute><PageTransition><VideoaulasLista modo="recentes" /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/trilhas" element={<ProtectedRoute><PageTransition><VideoaulasTrilhas /></PageTransition></ProtectedRoute>} />
+          <Route path="/videoaulas/:catalogo/trilha" element={<ProtectedRoute><PageTransition><VideoaulasCatalogoTrilha /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/praticar" element={<ProtectedRoute><PageTransition><VideoaulasPraticar /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/anotacoes" element={<ProtectedRoute><PageTransition><VideoaulasAnotacoes /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/categorias" element={<ProtectedRoute><PageTransition><VideoaulasCategorias /></PageTransition></ProtectedRoute>} />
@@ -996,6 +1000,7 @@ const App = () => (
               
               <GeofencePresenceBanner />
               <ReminderInAppBanner />
+              <InAppPushPopup />
               <HorusTakeoverNoticeDialog />
               {/* <IntroOverlay /> — desativado por preferência (splash estático) */}
               <RecordingProvider>

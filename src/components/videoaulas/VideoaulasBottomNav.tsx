@@ -13,48 +13,59 @@ type Tab = {
   match: (path: string) => boolean;
 };
 
-const TABS: Tab[] = [
-  {
-    id: 'aulas',
-    label: 'Aulas',
-    to: '/videoaulas/painel',
-    icon: PlayCircle,
-    match: (p) => p === '/videoaulas/painel',
-  },
-  {
-    id: 'trilhas',
-    label: 'Trilhas',
-    to: '/videoaulas/trilhas',
-    icon: Route,
-    match: (p) => p.startsWith('/videoaulas/trilhas'),
-  },
-  {
-    id: 'categorias',
-    label: 'Categorias',
-    to: '/videoaulas/categorias',
-    icon: LayoutGrid,
-    match: (p) => p === '/videoaulas' || p.startsWith('/videoaulas/categorias'),
-  },
-  {
-    id: 'favoritos',
-    label: 'Favoritos',
-    to: '/videoaulas/favoritos',
-    icon: Star,
-    match: (p) => p.startsWith('/videoaulas/favoritos'),
-  },
-  {
-    id: 'mais',
-    label: 'Mais',
-    to: '#', // Handled by drawer
-    icon: Menu,
-    match: (p) => p.startsWith('/videoaulas/conquistas') || p.startsWith('/videoaulas/anotacoes') || p.startsWith('/videoaulas/praticar'),
-  },
-];
+const getTrilhasRoute = (pathname: string) => {
+  // Try to match /videoaulas/something (where something is a catalogoId)
+  const matchCat = pathname.match(/^\/videoaulas\/([^/]+)$/);
+  const ignore = ['painel', 'trilhas', 'categorias', 'favoritos', 'conquistas', 'anotacoes', 'praticar'];
+  
+  if (matchCat && !ignore.includes(matchCat[1])) {
+    return `/videoaulas/${matchCat[1]}/trilha`;
+  }
+  return '/videoaulas/trilhas';
+};
 
 const VideoaulasBottomNav = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const TABS: Tab[] = [
+    {
+      id: 'aulas',
+      label: 'Aulas',
+      to: '/videoaulas/painel',
+      icon: PlayCircle,
+      match: (p) => p === '/videoaulas/painel',
+    },
+    {
+      id: 'trilhas',
+      label: 'Trilhas',
+      to: getTrilhasRoute(pathname),
+      icon: Route,
+      match: (p) => p.startsWith('/videoaulas/trilhas') || p.endsWith('/trilha'),
+    },
+    {
+      id: 'categorias',
+      label: 'Categorias',
+      to: '/videoaulas/categorias',
+      icon: LayoutGrid,
+      match: (p) => p === '/videoaulas' || p.startsWith('/videoaulas/categorias'),
+    },
+    {
+      id: 'favoritos',
+      label: 'Favoritos',
+      to: '/videoaulas/favoritos',
+      icon: Star,
+      match: (p) => p.startsWith('/videoaulas/favoritos'),
+    },
+    {
+      id: 'mais',
+      label: 'Mais',
+      to: '#', // Handled by drawer
+      icon: Menu,
+      match: (p) => p.startsWith('/videoaulas/conquistas') || p.startsWith('/videoaulas/anotacoes') || p.startsWith('/videoaulas/praticar'),
+    },
+  ];
 
   return (
     <>
