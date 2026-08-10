@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 const VideoaulaAcoesBar = lazy(() => import('@/components/videoaulas/VideoaulaAcoesBar'));
 import { AnotacoesAulaSheet } from '@/components/videoaulas/AnotacoesAulaSheet';
+import { TrilhaAula } from '@/components/videoaulas/TrilhaAula';
 import { useVideoaulaResumo, type AulaCtxInput } from '@/hooks/useVideoaulaAcao';
 import { preaquecerYoutubeApi, useYoutubePlayer } from '@/hooks/useYoutubePlayer';
 import { getCatalogo, limparTitulo, ytThumb } from '@/lib/videoaulasCatalogos';
@@ -324,7 +325,18 @@ const VideoaulaView = () => {
             </p>
           </div>
 
-          <div className="flex items-center gap-2 px-3 lg:px-0 flex-wrap">
+          <div className="px-3 lg:px-0 py-2">
+            {videoId && (
+              <TrilhaAula 
+                videoId={videoId} 
+                concluida={concluida} 
+                pctAtual={pctAtual} 
+                onMarcarConcluida={marcarConcluida} 
+              />
+            )}
+          </div>
+
+          <div className="flex items-center gap-2 px-3 lg:px-0 flex-wrap mt-2">
             <button
               onClick={toggleFavorito}
               className={cn(
@@ -336,18 +348,6 @@ const VideoaulaView = () => {
             >
               <Heart className={cn('h-4 w-4', favorito && 'fill-current')} /> Favoritar
             </button>
-            <button
-              onClick={marcarConcluida}
-              className={cn(
-                'inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-colors',
-                concluida
-                  ? 'border-primary bg-primary/10 text-primary'
-                  : 'border-border text-muted-foreground hover:text-foreground',
-              )}
-            >
-              <CheckCircle2 className="h-4 w-4" /> {concluida ? 'Marcado como concluído' : 'Marcar como concluído'}
-            </button>
-
             <Drawer>
               <DrawerTrigger asChild>
                 <button
