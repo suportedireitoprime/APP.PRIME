@@ -4,10 +4,11 @@ import { PageHeader } from '@/components/vademecum/PageHeader';
 import { CheckCircle2, History, Mic, PlayCircle, Play, Search, Star, Video, BookOpenText, Route as RouteIcon, Calendar, Lightbulb, Settings2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
-import { formatDuracao, getCatalogo, limparTitulo, ytThumb } from '@/lib/videoaulasCatalogos';
+import { formatDuracao, getCatalogo, limparTitulo, ytThumb, getCapaDaArea } from '@/lib/videoaulasCatalogos';
 import { motion, AnimatePresence } from 'framer-motion';
 import { haptic } from '@/lib/nativeHaptics';
 import { Drawer, DrawerContent, DrawerPortal, DrawerOverlay } from '@/components/ui/drawer';
+import ThumbImg from '@/components/videoaulas/ThumbImg';
 import {
   getCachedAulasDaArea,
   getCachedFavoritos,
@@ -441,19 +442,14 @@ const VideoaulasArea = () => {
                   >
                     <div 
                       className={`relative shrink-0 rounded-xl overflow-hidden bg-muted self-center shadow-inner ${
-                        areaSlug === 'direito-penal' ? 'w-[110px] sm:w-[120px] aspect-[4/3]' : 'w-36 aspect-video'
+                        getCapaDaArea(nomeArea) ? 'w-[110px] sm:w-[120px] aspect-[4/3]' : 'w-36 aspect-video'
                       }`}
                     >
-                      <img
-                        src={areaSlug === 'direito-penal' ? '/capas/direito-penal.jpg' : (a.thumb || a.thumbnail || ytThumb(a.video_id, 'mq'))}
+                      <ThumbImg
+                        src={getCapaDaArea(nomeArea) || a.thumb || a.thumbnail || ytThumb(a.video_id, 'mq')}
                         alt={`Capa da aula ${limparTitulo(a.titulo)}`}
-                        width={320}
-                        height={180}
-                        loading={i < 4 ? 'eager' : 'lazy'}
-                        // @ts-expect-error atributo nativo
-                        fetchpriority={i < 4 ? 'high' : 'low'}
-                        decoding="async"
-                        className="absolute inset-0 h-full w-full object-cover"
+                        priority={i < 4}
+                        fallback={<Play className="h-6 w-6 text-primary/50" />}
                       />
                       <div className="absolute inset-0 bg-black/5" />
                       <span className="absolute inset-0 grid place-items-center">

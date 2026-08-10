@@ -243,11 +243,11 @@ const VideoaulasCatalogo = () => {
                     style={{ minHeight: 96 }}
                   >
                     <div className="relative w-[110px] shrink-0 overflow-hidden">
-                      <ThumbImg
-                        src={slugify(area.nome) === 'direito-penal' ? '/capas/direito-penal.jpg' : area.thumb}
-                        alt={area.nome}
-                        fallback={<Play className="h-8 w-8 text-primary/40" />}
-                      />
+                        <ThumbImg
+                          src={getCapaDaArea(area.nome) || area.thumb}
+                          alt={area.nome}
+                          fallback={<Play className="h-8 w-8 text-primary/40" />}
+                        />
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent to-card/30" />
                     </div>
                     <div className="flex min-w-0 flex-1 flex-col justify-center px-3.5 py-2.5">
