@@ -300,8 +300,8 @@ export default function AdminPushSection() {
             .select("id")
             .single();
           if (hcErr) throw hcErr;
-          const { data: hData, error: hErr } = await supabase.functions.invoke("horus-campaign-run", {
-            body: { campaign_id: hc.id },
+          const { data: hData, error: hErr } = await supabase.functions.invoke("horus", {
+            body: { fn: 'campaign-run', campaign_id: hc.id },
           });
           if (hErr) {
             const detail = hErr instanceof FunctionsHttpError ? await hErr.context.text() : hErr.message;

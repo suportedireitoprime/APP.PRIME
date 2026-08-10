@@ -42,7 +42,7 @@ export function HorusAdminTab() {
 
   async function loadStatus() {
     setLoading(true);
-    const { data, error } = await supabase.functions.invoke('horus-admin', { body: { action: 'status' } });
+    const { data, error } = await supabase.functions.invoke('horus', { body: { fn: 'admin', action: 'status' } });
     if (error) toast.error('Erro ao carregar status');
     setStatus(data);
     setLoading(false);
@@ -51,7 +51,7 @@ export function HorusAdminTab() {
 
   async function callAction(action: string) {
     setWorking(true);
-    const { data, error } = await supabase.functions.invoke('horus-admin', { body: { action } });
+    const { data, error } = await supabase.functions.invoke('horus', { body: { fn: 'admin', action } });
     setWorking(false);
     if (error || data?.error) { toast.error(data?.error || 'Falhou'); return; }
     toast.success('OK');
@@ -60,7 +60,7 @@ export function HorusAdminTab() {
 
   async function generateQrCode() {
     setWorking(true); setQr(null); setQrStatus('Conectando instância do WhatsApp...');
-    const started = await supabase.functions.invoke('horus-admin', { body: { action: 'connect' } });
+    const started = await supabase.functions.invoke('horus', { body: { fn: 'admin', action: 'connect' } });
     if (started.error || started.data?.error) {
       setWorking(false); setQrStatus(null);
       toast.error(started.data?.error || 'Falhou ao iniciar conexão'); return;
@@ -70,7 +70,7 @@ export function HorusAdminTab() {
     setQrStatus('Aguardando QR Code...');
     for (let i = 1; i <= 10; i++) {
       if (i > 1) await wait(3000);
-      const { data } = await supabase.functions.invoke('horus-admin', { body: { action: 'qr_status' } });
+      const { data } = await supabase.functions.invoke('horus', { body: { fn: 'admin', action: 'qr_status' } });
       const image = await readQrFromResponse(data);
       if (image) { setQr(image); setQrStatus('Escaneie no WhatsApp → Aparelhos conectados'); setWorking(false); await loadStatus(); return; }
     }

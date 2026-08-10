@@ -6,7 +6,7 @@ import { sanitizeFirstName } from "../_shared/nomeSanitizer.ts";
 // Sincroniza estatísticas consolidadas do usuário para o Horus usar como contexto.
 // Chamado pelo frontend (debounced ~1x/sessão) e pelo cron diário.
 
-Deno.serve(async (req) => {
+export const handler = async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
@@ -39,7 +39,7 @@ Deno.serve(async (req) => {
     console.error("horus-stats-sync error", e);
     return json({ ok: false, error: String(e?.message || e) }, 500);
   }
-});
+};
 
 function json(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), {

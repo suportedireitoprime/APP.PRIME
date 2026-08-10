@@ -38,7 +38,7 @@ export function HorusCanalTab() {
   const [texto, setTexto] = useState('');
 
   async function call(body: any) {
-    const { data, error } = await supabase.functions.invoke('horus-admin', { body });
+    const { data, error } = await supabase.functions.invoke('horus', { body: { fn: 'admin', ...body } });
     if (error) throw new Error(error.message);
     if (data?.error) throw new Error(String(data.error));
     return data;

@@ -54,7 +54,7 @@ export function HorusConversasTab() {
   async function sendManual() {
     if (!open || !replyText.trim()) return;
     setSending(true);
-    const { error } = await supabase.functions.invoke('horus-send-manual', { body: { phone: open.phone_e164, text: replyText.trim() } });
+    const { error } = await supabase.functions.invoke('horus', { body: { fn: 'send-manual', phone: open.phone_e164, text: replyText.trim() } });
     setSending(false);
     if (error) { toast.error(error.message || 'Falhou'); return; }
     toast.success('Enviada');

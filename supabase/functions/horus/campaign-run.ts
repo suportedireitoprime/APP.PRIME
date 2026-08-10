@@ -4,7 +4,7 @@ import { evolution } from "../_shared/evolution.ts";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-Deno.serve(async (req) => {
+export const handler = async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   const admin = createClient(
@@ -62,7 +62,7 @@ Deno.serve(async (req) => {
   } catch (e) {
     return json({ error: String(e?.message || e) }, 500);
   }
-});
+};
 
 async function processCampaign(admin: any, campaignId: string, campaign: any) {
   const { data: pending } = await admin.from("horus_campaign_targets").select("id, phone").eq("campaign_id", campaignId).eq("status", "pendente").limit(5000);

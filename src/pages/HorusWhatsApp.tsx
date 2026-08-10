@@ -40,8 +40,8 @@ export default function HorusWhatsApp() {
   async function sendCode() {
     if (!phone.trim()) return;
     setSending(true);
-    const { data, error } = await supabase.functions.invoke('horus-verify', {
-      body: { action: 'start', phone },
+    const { data, error } = await supabase.functions.invoke('horus', {
+      body: { fn: 'verify', action: 'resend', phone },
     });
     setSending(false);
     if (error || data?.error) return toast.error(data?.error || 'Erro ao enviar código');
@@ -51,8 +51,8 @@ export default function HorusWhatsApp() {
 
   async function confirmCode() {
     setSending(true);
-    const { data, error } = await supabase.functions.invoke('horus-verify', {
-      body: { action: 'confirm', phone, code },
+    const { data, error } = await supabase.functions.invoke('horus', {
+      body: { fn: 'verify', action: 'confirm', phone, code: code },
     });
     setSending(false);
     if (error || data?.error) return toast.error(data?.error || 'Código incorreto');
@@ -63,14 +63,14 @@ export default function HorusWhatsApp() {
 
   async function updatePref(key: string, value: boolean) {
     setLinked((l) => l ? { ...l, [key]: value } : l);
-    await supabase.functions.invoke('horus-verify', {
-      body: { action: 'update_prefs', [key]: value },
+    await supabase.functions.invoke('horus', {
+      body: { fn: 'verify', action: 'update_prefs', [key]: value },
     });
   }
 
   async function unlink() {
     if (!confirm('Desvincular seu WhatsApp do Horus?')) return;
-    await supabase.functions.invoke('horus-verify', { body: { action: 'unlink' } });
+    await supabase.functions.invoke('horus', { body: { fn: 'verify', action: 'unlink' } });
     setLinked(null);
     toast.success('Desvinculado');
   }

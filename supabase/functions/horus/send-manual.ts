@@ -2,7 +2,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { evolution } from "../_shared/evolution.ts";
 
-Deno.serve(async (req) => {
+export const handler = async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   const admin = createClient(
@@ -58,7 +58,7 @@ Deno.serve(async (req) => {
   } catch (e) {
     return json({ error: String(e?.message || e) }, 500);
   }
-});
+};
 
 function json(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), {

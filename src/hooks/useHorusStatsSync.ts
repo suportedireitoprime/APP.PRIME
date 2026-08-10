@@ -20,7 +20,7 @@ export function useHorusStatsSync() {
 
     const t = setTimeout(() => {
       supabase.functions
-        .invoke('horus-stats-sync', { body: { user_id: user.id } })
+        .invoke('horus', { body: { fn: 'stats-sync', user_id: user.id } })
         .then(({ error }) => {
           if (!error) sessionStorage.setItem(key, String(Date.now()));
         })

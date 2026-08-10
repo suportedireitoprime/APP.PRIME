@@ -6,7 +6,7 @@ import { evolution } from "../_shared/evolution.ts";
 // Regras: 8h-21h BRT, máximo 1 msg/48h por usuário, respeita horário preferido,
 // só usuários com telefone vinculado.
 
-Deno.serve(async (req) => {
+export const handler = async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
@@ -77,7 +77,7 @@ Deno.serve(async (req) => {
     console.error("horus-proactive-scheduler error", e);
     return json({ ok: false, error: String(e?.message || e) }, 500);
   }
-});
+};
 
 function json(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), {

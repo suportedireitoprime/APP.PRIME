@@ -3,7 +3,7 @@ import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { evolution, toE164, HORUS_APP_URL } from "../_shared/evolution.ts";
 
 // v2: transferência atômica de número entre contas
-Deno.serve(async (req) => {
+export const handler = async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   try {
     const authHeader = req.headers.get("Authorization");
@@ -154,7 +154,7 @@ Deno.serve(async (req) => {
     console.error("horus-verify error", e);
     return json({ error: String(e?.message || e) }, 500);
   }
-});
+};
 
 function json(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), {

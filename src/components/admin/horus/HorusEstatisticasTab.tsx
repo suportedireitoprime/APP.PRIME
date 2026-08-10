@@ -77,7 +77,7 @@ function UsersPanel() {
 
   async function forceSync(userId: string) {
     setSyncing(true);
-    const { error } = await supabase.functions.invoke('horus-stats-sync', { body: { user_id: userId, force: true } });
+    const { error } = await supabase.functions.invoke('horus', { body: { fn: 'stats-sync', user_id: userId, force: true } });
     setSyncing(false);
     if (error) return toast.error('Falha ao sincronizar');
     toast.success('Sincronizado');
@@ -177,7 +177,7 @@ function ProactivePanel() {
   }
   async function runNow() {
     setTriggering(true);
-    const { data, error } = await supabase.functions.invoke('horus-proactive-scheduler', { body: { manual: true } });
+    const { data, error } = await supabase.functions.invoke('horus', { body: { fn: 'proactive-scheduler', manual: true } });
     setTriggering(false);
     if (error) return toast.error('Falha: ' + error.message);
     toast.success(`Enviados: ${(data as any)?.enviados ?? 0}`);

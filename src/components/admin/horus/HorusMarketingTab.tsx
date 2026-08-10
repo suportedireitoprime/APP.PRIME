@@ -149,7 +149,7 @@ export function HorusMarketingTab() {
 
   async function runNow(c: Campaign) {
     if (!confirm(`Disparar "${c.titulo}" agora?`)) return;
-    const { error } = await supabase.functions.invoke('horus-campaign-run', { body: { campaign_id: c.id } });
+    const { error } = await supabase.functions.invoke('horus', { body: { fn: 'campaign-run', campaign_id: c.id } });
     if (error) toast.error(error.message);
     else toast.success('Disparo iniciado');
     load();

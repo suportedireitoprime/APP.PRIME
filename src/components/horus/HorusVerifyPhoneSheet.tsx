@@ -68,8 +68,8 @@ export default function HorusVerifyPhoneSheet({ open, onClose, onVerified, initi
     if (raw.length < 10) return toast.error('Número inválido');
     setSending(true);
     haptic.light();
-    const { data, error } = await supabase.functions.invoke('horus-verify', {
-      body: { action: 'start', phone: raw },
+    const { data, error } = await supabase.functions.invoke('horus', {
+      body: { fn: 'verify', action: 'start', phone: raw },
     });
     setSending(false);
     if (error || data?.error) return toast.error(data?.error || 'Não foi possível enviar o código');
@@ -108,8 +108,8 @@ export default function HorusVerifyPhoneSheet({ open, onClose, onVerified, initi
     setSending(true);
     haptic.light();
     const raw = phone.replace(/\D/g, '');
-    const { data, error } = await supabase.functions.invoke('horus-verify', {
-      body: { action: 'confirm', phone: raw, code },
+    const { data, error } = await supabase.functions.invoke('horus', {
+      body: { fn: 'verify', action: 'confirm', phone: raw, code },
     });
     setSending(false);
     if (error || data?.error) return toast.error(data?.error || 'Código incorreto');

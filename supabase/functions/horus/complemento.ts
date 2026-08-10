@@ -33,7 +33,7 @@ function render(template: string, nome: string): string {
   return withName.replace(/^,\s*/, "").trim();
 }
 
-Deno.serve(async (req) => {
+export const handler = async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   const admin = createClient(
@@ -109,7 +109,7 @@ Deno.serve(async (req) => {
   } catch (e) {
     return json({ error: String((e as Error)?.message || e) }, 500);
   }
-});
+};
 
 function json(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), {

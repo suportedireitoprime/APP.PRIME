@@ -31,7 +31,7 @@ async function isUserPremium(admin: any, userId: string): Promise<boolean> {
   }
 }
 
-Deno.serve(async (req) => {
+export const handler = async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
@@ -88,7 +88,7 @@ Deno.serve(async (req) => {
     // Webhooks should acknowledge receipt so Evolution Go does not get stuck retrying.
     return json({ ok: false, error: String(e?.message || e) }, 200);
   }
-});
+};
 
 function isQrEvent(eventName: string) {
   return /qr/i.test(eventName);

@@ -3,7 +3,7 @@ import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { evolution, INSTANCE } from "../_shared/evolution.ts";
 import { handleCanalAction } from "../_shared/horusCanal.ts";
 
-Deno.serve(async (req) => {
+export const handler = async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   try {
     const internalToken = Deno.env.get("HORUS_INTERNAL_TOKEN");
@@ -132,7 +132,7 @@ Deno.serve(async (req) => {
     console.error("horus-admin error", e);
     return json({ error: String(e?.message || e) }, 500);
   }
-});
+};
 
 function json(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), {
