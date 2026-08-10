@@ -176,84 +176,38 @@ const Newsletter = () => {
           const Icon = topic.icon;
           const active = prefs[topic.key];
           return (
-            <motion.button
+            <motion.details
               key={topic.key}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
-              onClick={() => setPrefs(p => ({ ...p, [topic.key]: !active }))}
-              className={`flex items-center gap-3 w-full p-3.5 rounded-xl border transition-all ${
-                active ? 'bg-primary/10 border-primary/40' : 'bg-card border-border'
-              }`}
+              className="group bg-card border border-border rounded-xl overflow-hidden transition-all"
             >
-              <div className={`w-9 h-9 rounded-lg bg-gradient-to-br ${topic.color} flex items-center justify-center shrink-0`}>
-                <Icon className="w-4 h-4 text-white" />
+              <summary className="flex items-center gap-3 w-full p-3.5 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center shrink-0">
+                  <Icon className="w-4 h-4 text-white" />
+                </div>
+                <div className="flex-1 text-left">
+                  <p className="font-display text-sm font-bold text-foreground">{topic.label}</p>
+                </div>
+                
+                {/* Switch (chavinha) */}
+                <div
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setPrefs(p => ({ ...p, [topic.key]: !active }));
+                  }}
+                  className={`w-10 h-6 rounded-full transition-colors relative flex shrink-0 items-center ${active ? 'bg-primary' : 'bg-muted'}`}
+                >
+                  <div className={`w-4 h-4 rounded-full bg-white absolute transition-transform ${active ? 'translate-x-5' : 'translate-x-1'}`} />
+                </div>
+              </summary>
+              <div className="px-14 pb-3.5 pt-0 text-[12px] text-muted-foreground">
+                {topic.desc}
               </div>
-              <div className="flex-1 text-left">
-                <p className="font-display text-sm font-bold text-foreground">{topic.label}</p>
-                <p className="text-[11px] text-muted-foreground mt-0.5">{topic.desc}</p>
-              </div>
-              {active && <Check className="w-4 h-4 text-primary shrink-0" />}
-            </motion.button>
+            </motion.details>
           );
         })}
-      </div>
-
-      {/* Leis monitoradas */}
-      <div className="space-y-3">
-        <h2 className="font-display text-sm font-bold text-foreground">Leis Monitoradas</h2>
-        <p className="text-[11px] text-muted-foreground">Selecione quais leis deseja receber alertas de alteração</p>
-        <div className="grid grid-cols-2 gap-2">
-          {LEIS_CATALOG.filter(l => ['constituicao', 'codigo'].includes(l.tipo)).map(lei => {
-            const selected = prefs.leis_monitoradas.includes(lei.tabela_nome);
-            return (
-              <button
-                key={lei.id}
-                onClick={() => toggleLei(lei.tabela_nome)}
-                className={`p-2.5 rounded-lg border text-left transition-all text-xs ${
-                  selected
-                    ? 'bg-primary/10 border-primary/40 text-foreground'
-                    : 'bg-card border-border text-muted-foreground hover:border-primary/20'
-                }`}
-              >
-                <div className="flex items-center gap-1.5">
-                  {selected && <Check className="w-3 h-3 text-primary shrink-0" />}
-                  <span className="font-display font-bold">{lei.sigla}</span>
-                </div>
-                <p className="text-[10px] mt-0.5 opacity-70 truncate">{lei.nome}</p>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Estatutos */}
-        <details className="group">
-          <summary className="text-xs text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
-            Ver Estatutos e Leis Especiais ▸
-          </summary>
-          <div className="grid grid-cols-2 gap-2 mt-2">
-            {LEIS_CATALOG.filter(l => !['constituicao', 'codigo'].includes(l.tipo)).map(lei => {
-              const selected = prefs.leis_monitoradas.includes(lei.tabela_nome);
-              return (
-                <button
-                  key={lei.id}
-                  onClick={() => toggleLei(lei.tabela_nome)}
-                  className={`p-2.5 rounded-lg border text-left transition-all text-xs ${
-                    selected
-                      ? 'bg-primary/10 border-primary/40 text-foreground'
-                      : 'bg-card border-border text-muted-foreground hover:border-primary/20'
-                  }`}
-                >
-                  <div className="flex items-center gap-1.5">
-                    {selected && <Check className="w-3 h-3 text-primary shrink-0" />}
-                    <span className="font-display font-bold">{lei.sigla}</span>
-                  </div>
-                  <p className="text-[10px] mt-0.5 opacity-70 truncate">{lei.nome}</p>
-                </button>
-              );
-            })}
-          </div>
-        </details>
       </div>
 
       {/* Salvar */}
