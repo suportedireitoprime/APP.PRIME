@@ -512,6 +512,7 @@ const FlashcardsEstudo = () => {
                   </Button>
                 </div>
               </>
+              );
             })()}
           </div>
         )}
