@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/PageHeader';
-import { CheckCircle2, History, Mic, PlayCircle, Search, Star, Video, BookOpenText, Route as RouteIcon, Calendar, Lightbulb, Settings2 } from 'lucide-react';
+import { CheckCircle2, History, Mic, PlayCircle, Play, Search, Star, Video, BookOpenText, Route as RouteIcon, Calendar, Lightbulb, Settings2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
 import { formatDuracao, getCatalogo, limparTitulo, ytThumb } from '@/lib/videoaulasCatalogos';
@@ -19,6 +19,10 @@ import {
   type ProgressoRow,
 } from '@/lib/videoaulasStore';
 import { useAreaTrilhaStore } from '@/lib/areaTrilhasStore';
+
+const normalizeText = (text: string) => {
+  return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+};
 
 type Aula = {
   id: string | number;
@@ -362,13 +366,13 @@ const VideoaulasArea = () => {
   );
 
   const lista = useMemo(() => {
-    const termo = busca.trim().toLowerCase();
+    const termo = normalizeText(busca.trim());
     let base = aulas;
     if (aba === 'favoritos') base = base.filter((a) => favoritos.has(a.video_id));
     if (aba === 'recentes') {
       base = base.filter((a) => (progresso[a.video_id]?.percentual ?? 0) > 0);
     }
-    if (termo) base = base.filter((a) => limparTitulo(a.titulo).toLowerCase().includes(termo));
+    if (termo) base = base.filter((a) => normalizeText(limparTitulo(a.titulo)).includes(termo));
     return base;
   }, [aulas, aba, busca, favoritos, progresso]);
 
@@ -451,13 +455,15 @@ const VideoaulasArea = () => {
                         decoding="async"
                         className="absolute inset-0 h-full w-full object-cover"
                       />
-                      <div className="absolute inset-0 bg-black/30" />
+                      <div className="absolute inset-0 bg-black/5" />
                       <span className="absolute inset-0 grid place-items-center">
-                        {p?.concluida ? (
-                          <CheckCircle2 className="h-7 w-7 text-primary shadow-sm" fill="currentColor" />
-                        ) : (
-                          <PlayCircle className="h-8 w-8 text-white drop-shadow-md" />
-                        )}
+                        <div className="rounded-full bg-white/20 backdrop-blur-md border border-white/30 p-2 shadow-lg">
+                          {p?.concluida ? (
+                            <CheckCircle2 className="h-6 w-6 text-primary" fill="currentColor" />
+                          ) : (
+                            <Play className="h-6 w-6 text-white ml-0.5" fill="currentColor" />
+                          )}
+                        </div>
                       </span>
                     </div>
 
