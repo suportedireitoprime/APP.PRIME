@@ -55,6 +55,7 @@ const MeExplique = () => {
   const [erroCamera, setErroCamera] = useState<string | null>(null);
   const [micAtivo, setMicAtivo] = useState(true);
   const [falas, setFalas] = useState<FalaTranscrita[]>([]);
+  const [falaParcial, setFalaParcial] = useState<FalaTranscrita | null>(null);
   const [historico, setHistorico] = useState<FalaSalva[]>([]);
   const [transcricaoAberta, setTranscricaoAberta] = useState(false);
 
@@ -114,6 +115,7 @@ const MeExplique = () => {
     sessaoRef.current?.encerrar();
     sessaoRef.current = null;
     setStatus('inativo');
+    setFalaParcial(null);
   }, []);
 
   // Câmera já ligada ao entrar na tela.
@@ -177,9 +179,11 @@ const MeExplique = () => {
         streamVideo: cameraRef.current.obterStream(),
 
         onStatus: (s) => setStatus(s),
+        onTranscricaoParcial: (fala) => setFalaParcial(fala),
         onTranscricao: (fala) => {
           setFalas((atual) => [...atual.slice(-20), fala]);
           registrar(fala);
+          setFalaParcial(null);
         },
         onErro: (msg) => setErro(msg),
         fps: 1,
@@ -368,22 +372,28 @@ const MeExplique = () => {
       {/* Transcrição e Erros */}
       <div className="relative z-10 mt-auto space-y-3 px-4 mb-2">
         <AnimatePresence initial={false}>
-          {ultimaFala && (
-            <motion.div
-              key={`${falas.length}-${ultimaFala.texto.slice(0, 12)}`}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className={`max-h-40 overflow-y-auto rounded-2xl px-4 py-3 text-[15px] leading-relaxed backdrop-blur ${
-                ultimaFala.quem === 'professor' ? 'bg-white/15' : 'bg-primary/85'
-              }`}
-            >
-              <p className="mb-1 text-[11px] font-bold uppercase tracking-wide text-white/70">
-                {ultimaFala.quem === 'professor' ? 'Professor' : 'Você'}
-              </p>
-              {ultimaFala.texto}
-            </motion.div>
-          )}
+          {(falaParcial || ultimaFala) && (() => {
+            const fala = falaParcial || ultimaFala;
+            return (
+              <motion.div
+                key={falaParcial ? `parcial-${fala.quem}` : `${falas.length}-${fala.texto.slice(0, 12)}`}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className={`max-h-40 overflow-y-auto rounded-2xl px-4 py-3 text-[15px] leading-relaxed backdrop-blur ${
+                  fala.quem === 'professor' ? 'bg-white/15' : 'bg-primary/85'
+                }`}
+              >
+                <p className="mb-1 text-[11px] font-bold uppercase tracking-wide text-white/70">
+                  {fala.quem === 'professor' ? 'Professor' : 'Você'}
+                </p>
+                {fala.texto}
+                {falaParcial && (
+                  <span className="ml-1 inline-block w-1.5 h-3.5 bg-current animate-pulse opacity-60 rounded-full align-middle" />
+                )}
+              </motion.div>
+            );
+          })()}
         </AnimatePresence>
 
         {(erro || erroCamera) && (

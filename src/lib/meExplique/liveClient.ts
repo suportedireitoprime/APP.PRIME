@@ -42,6 +42,7 @@ export interface OpcoesLive {
 
   onStatus: (status: StatusLive) => void;
   onTranscricao: (fala: FalaTranscrita) => void;
+  onTranscricaoParcial?: (fala: FalaTranscrita) => void;
   onErro: (mensagem: string) => void;
   /** Frames por segundo enviados ao modelo (limite recomendado: 1). */
   fps?: number;
@@ -301,9 +302,11 @@ export class SessaoMeExplique {
 
     if (conteudo.inputTranscription?.text) {
       this.bufferAluno += conteudo.inputTranscription.text;
+      this.opcoes.onTranscricaoParcial?.({ quem: "aluno", texto: this.bufferAluno });
     }
     if (conteudo.outputTranscription?.text) {
       this.bufferProfessor += conteudo.outputTranscription.text;
+      this.opcoes.onTranscricaoParcial?.({ quem: "professor", texto: this.bufferProfessor });
     }
 
     if (conteudo.interrupted) {
