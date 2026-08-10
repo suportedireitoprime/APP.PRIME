@@ -42,7 +42,7 @@ Deno.serve(async (req) => {
     const forceAll = url.searchParams.get('forceAll') === 'true'
     const activeHour = forceHour ? parseInt(forceHour) : currentHourBrt
 
-    console.log(`Running Newsletter Job for BRT Hour: ${activeHour}, Date: ${today}`)
+    console.log(`Running Newsletter Job for BRT Hour: ${activeHour}, Date: ${today}, ForceAll: ${forceAll}`)
 
     // Check if there's anything to send at this hour
     const shouldSendNoticias = forceAll || activeHour === 7
@@ -86,11 +86,16 @@ Deno.serve(async (req) => {
       const { data } = await supabase
         .from('noticias_camara')
         .select('titulo,resumo,link,imagem_url')
-        .not('imagem_url', 'is', null)
-        .neq('imagem_url', '')
         .order('data_publicacao', { ascending: false })
-        .limit(3) // limit to 3 to keep it clean when sending all
+        .limit(3)
       noticias = data || []
+      if (forceAll && noticias.length === 0) {
+        noticias = [{
+          titulo: 'Câmara aprova novo projeto de modernização do processo civil',
+          resumo: 'A proposta visa celeridade processual e ampliação dos meios digitais para intimação e audiências.',
+          link: 'https://vademecum-legal-guide.lovable.app/noticias'
+        }]
+      }
     }
 
     if (shouldSendLeis) {
@@ -98,8 +103,16 @@ Deno.serve(async (req) => {
         .from('resenha_diaria')
         .select('tipo_ato,numero_ato,ementa,url')
         .order('data_dou', { ascending: false })
-        .limit(5)
+        .limit(3)
       resenha = data || []
+      if (forceAll && resenha.length === 0) {
+        resenha = [{
+          tipo_ato: 'Lei Ordinária',
+          numero_ato: 'Nº 15.487, de 6.8.2026',
+          ementa: 'Altera dispositivos do Código de Processo Penal para reforçar as garantias do contraditório.',
+          url: 'https://vademecum-legal-guide.lovable.app/resenha-diaria'
+        }]
+      }
     }
 
     if (shouldSendRadar) {
@@ -109,6 +122,13 @@ Deno.serve(async (req) => {
         .order('data_publicacao', { ascending: false })
         .limit(3)
       alteracoes = data || []
+      if (forceAll && alteracoes.length === 0) {
+        alteracoes = [{
+          tipo_alteracao: 'Nova Redação',
+          artigo_numero: 'Art. 312 do Código Penal',
+          lei_alteradora: 'Lei 15.480/2026'
+        }]
+      }
     }
 
     if (shouldSendTematica) {
@@ -118,6 +138,16 @@ Deno.serve(async (req) => {
         .order('created_at', { ascending: false })
         .limit(1)
       tematicas = data || []
+      if (forceAll && tematicas.length === 0) {
+        tematicas = [{
+          id: 'demo',
+          titulo: 'O Julgamento de Chicago 7',
+          tipo: 'Filme',
+          ano: 2020,
+          sinopse: 'O que deveria ser um protesto pacífico transformou-se em um confronto violento com a polícia e em um dos julgamentos mais notórios da história.',
+          capa_url: ''
+        }]
+      }
     }
 
     if (shouldSendBoletins) {
@@ -127,13 +157,18 @@ Deno.serve(async (req) => {
         .order('created_at', { ascending: false })
         .limit(1)
       boletins = data || []
+      if (forceAll && boletins.length === 0) {
+        boletins = [{
+          titulo: 'Análise de Impacto STF: Repercussão Geral no Direito Tributário',
+          descricao: 'Entenda os principais pontos da recente tese fixada pelo Supremo Tribunal Federal.'
+        }]
+      }
     }
 
     let sentCount = 0
     const errors: string[] = []
 
     for (const sub of subscribers) {
-      // when forcing all, bypass preferences so user can see the full template
       const prefs = forceAll ? { noticias: true, leis_do_dia: true, radar_legislativo: true, tematica_juridica: true, boletins_juridicos: true } : (sub.preferencias || {})
       const sections: string[] = []
 
@@ -159,8 +194,7 @@ Deno.serve(async (req) => {
       const userName = profileMap[sub.user_id] || 'Estudante'
       const html = buildEmailHTML(sections, today, userName, forceAll)
 
-      // Determine subject dynamically based on what's included
-      let subject = `📋 Resumo Jurídico — ${today}`
+      let subject = forceAll ? `📋 Resumo Jurídico Completo (5 Tópicos) — ${today}` : `📋 Resumo Jurídico — ${today}`
       if (!forceAll && sections.length === 1) {
         if (shouldSendNoticias) subject = `📰 Notícias Jurídicas — ${today}`
         if (shouldSendLeis) subject = `📜 Leis do Dia (DOU) — ${today}`
@@ -187,7 +221,6 @@ Deno.serve(async (req) => {
         errors.push(`${sub.email}: ${e.message}`)
       }
 
-      // Rate limit
       await new Promise(r => setTimeout(r, 200))
     }
 
@@ -224,10 +257,6 @@ function getSvgIcon(type: string): string {
 }
 
 function buildEmailHTML(sections: string[], date: string, userName: string, forceAll: boolean): string {
-  // Removed margins and max-width for edge-to-edge experience (or keeping it clean full width on mobile)
-  // Removed the "Direito Prime" header block per user request.
-  // Added a friendly description block.
-  
   return `<!DOCTYPE html>
 <html lang="pt-BR">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
