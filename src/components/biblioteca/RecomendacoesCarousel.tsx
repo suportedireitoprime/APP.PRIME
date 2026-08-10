@@ -95,7 +95,8 @@ const useColecao = (id: string) => {
     queryKey: ['biblioteca-colecao', id],
     enabled: !!cfg,
     staleTime: 30 * 60 * 1000,
-    initialData: seed ?? (id === 'classicos' ? FALLBACK_CLASSICOS : undefined),
+    initialData: seed,
+    placeholderData: id === 'classicos' ? FALLBACK_CLASSICOS : undefined,
     queryFn: async () => {
       if (!cfg) return [];
       try {
