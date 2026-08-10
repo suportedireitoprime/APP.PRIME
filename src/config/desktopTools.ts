@@ -21,6 +21,7 @@ import {
   Layers,
   Scale,
   Trophy,
+  Bot,
   type LucideIcon,
 } from 'lucide-react';
 
