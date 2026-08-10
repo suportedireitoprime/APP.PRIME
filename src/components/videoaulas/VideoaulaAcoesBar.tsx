@@ -284,13 +284,13 @@ function SeletorOverlay<T extends string>({
         onClick={(e) => e.stopPropagation()}
         className="fixed inset-0 sm:left-auto sm:right-0 sm:w-[min(30rem,92vw)] z-[81] flex flex-col bg-background shadow-2xl pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))]"
       >
-        <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-3 bg-card/95 backdrop-blur border-b border-border">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-primary font-semibold inline-flex items-center gap-1.5">
-            <Sparkles className="h-3 w-3" /> {titulo}
-          </p>
-          <button onClick={onClose} className="h-8 w-8 grid place-items-center rounded-full hover:bg-muted">
-            <X className="h-4 w-4" />
+        <div className="sticky top-0 z-10 flex items-center gap-3 px-4 py-4 bg-card/95 backdrop-blur border-b border-border shrink-0">
+          <button onClick={onClose} className="h-10 w-10 shrink-0 grid place-items-center rounded-full bg-black/60 hover:bg-black/80 text-white transition-colors">
+            <ChevronLeft className="h-6 w-6" />
           </button>
+          <p className="text-sm uppercase tracking-[0.1em] text-primary font-bold flex-1 text-center pr-10">
+            {titulo}
+          </p>
         </div>
         <div className="p-3 flex flex-col gap-2">
           {opcoes.map((opt) => {
@@ -299,9 +299,9 @@ function SeletorOverlay<T extends string>({
               <button
                 key={opt.id}
                 onClick={() => onPick(opt.id)}
-                className="text-left rounded-2xl border border-border bg-background hover:border-primary/50 hover:bg-muted/40 transition-colors p-3.5 flex items-center gap-3"
+                className="text-left rounded-2xl border border-border bg-secondary/30 hover:bg-secondary/60 transition-colors p-3.5 flex items-center gap-3"
               >
-                <div className="h-10 w-10 shrink-0 rounded-xl bg-primary/10 grid place-items-center">
+                <div className="h-10 w-10 shrink-0 rounded-xl bg-secondary grid place-items-center">
                   <Icon className="h-5 w-5 text-primary" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -352,25 +352,14 @@ function PainelOverlay({ input, tipo, onClose }: { input: AulaCtxInput | null; t
           (tipo === "questoes" || tipo === "flashcards") && "sm:w-[min(50rem,92vw)]"
         )}
       >
-        {tipo === "questoes" || tipo === "flashcards" ? (
-          <div className="sticky top-0 z-10 flex items-center gap-3 px-4 py-4 bg-card/95 backdrop-blur border-b border-border shrink-0">
-            <button onClick={onClose} className="h-10 w-10 shrink-0 grid place-items-center rounded-full bg-black/60 hover:bg-black/80 text-white transition-colors">
-              <ChevronLeft className="h-6 w-6" />
-            </button>
-            <p className="text-sm uppercase tracking-[0.1em] text-red-400 font-bold flex-1 text-center pr-10">
-              {TITULOS[tipo]}
-            </p>
-          </div>
-        ) : (
-          <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-3 bg-card/95 backdrop-blur border-b border-border shrink-0">
-            <button onClick={onClose} className="h-8 w-8 grid place-items-center rounded-full hover:bg-muted">
-              <ChevronLeft className="h-5 w-5" />
-            </button>
-            <p className="text-[10px] uppercase tracking-[0.2em] text-red-400 font-semibold inline-flex items-center gap-1.5 flex-1 justify-center pr-8">
-              <Sparkles className="h-3 w-3" /> {TITULOS[tipo]}
-            </p>
-          </div>
-        )}
+        <div className="sticky top-0 z-10 flex items-center gap-3 px-4 py-4 bg-card/95 backdrop-blur border-b border-border shrink-0">
+          <button onClick={onClose} className="h-10 w-10 shrink-0 grid place-items-center rounded-full bg-black/60 hover:bg-black/80 text-white transition-colors">
+            <ChevronLeft className="h-6 w-6" />
+          </button>
+          <p className="text-sm uppercase tracking-[0.1em] text-red-400 font-bold flex-1 text-center pr-10">
+            {TITULOS[tipo]}
+          </p>
+        </div>
 
         <div className="flex-1 overflow-y-auto p-4 md:p-5">
           {showLoading && (
