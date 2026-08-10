@@ -194,29 +194,30 @@ const VideoaulasCategorias = () => {
                   haptic.selection();
                   navigate(`/videoaulas/concurso/${c.id}`);
                 }}
-                className="group flex flex-col w-full overflow-hidden rounded-2xl border border-border bg-card text-left shadow-sm transition-all hover:border-primary/50 active:scale-[0.98]"
+                className="group relative flex flex-col justify-end w-full aspect-[4/5] sm:aspect-square overflow-hidden rounded-2xl border border-border bg-black text-left shadow-sm transition-all hover:border-primary/50 active:scale-[0.98]"
               >
-                <div className="relative w-full h-[85px] sm:h-[100px] overflow-hidden bg-black/10">
-                  <ThumbImg
-                    src={c.capa}
-                    alt={c.titulo}
-                    fallback={<ShieldAlert className="h-8 w-8 text-primary/40" />}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                  <div className="absolute bottom-3 left-3 text-white">
-                    <span className="bg-primary/90 text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider">
+                <ThumbImg
+                  src={c.capa}
+                  alt={c.titulo}
+                  fallback={<ShieldAlert className="h-10 w-10 text-white/20" />}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent pointer-events-none" />
+                
+                <div className="relative z-10 flex flex-col h-full p-3 text-white w-full">
+                  <div>
+                    <span className="bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider shadow-sm">
                       Edital
                     </span>
                   </div>
-                </div>
-                <div className="flex flex-col flex-1 p-3">
-                  <h3 className="truncate text-[13px] font-bold leading-tight">{c.titulo}</h3>
-                  <p className="mt-0.5 line-clamp-2 text-[10px] leading-snug text-muted-foreground flex-1">
-                    {c.descricao}
-                  </p>
-                  <div className="mt-2 flex items-center justify-between text-muted-foreground group-hover:text-primary transition-colors">
-                    <span className="text-[10px] font-semibold">{c.disciplinas?.length || 0} Disciplinas</span>
-                    <ChevronRight className="h-4 w-4" />
+                  <div className="mt-auto">
+                    <h3 className="text-[14px] sm:text-[15px] font-bold leading-tight line-clamp-2 drop-shadow-md">{c.titulo}</h3>
+                    <p className="mt-1 line-clamp-2 text-[11px] leading-snug text-white/80 drop-shadow-sm">
+                      {c.descricao}
+                    </p>
+                    <div className="mt-2 flex items-center justify-between text-white/60 group-hover:text-white transition-colors">
+                      <span className="text-[10px] font-semibold">{c.disciplinas?.length || 0} Disciplinas</span>
+                      <ChevronRight className="h-4 w-4" />
+                    </div>
                   </div>
                 </div>
               </motion.button>
@@ -238,29 +239,30 @@ const VideoaulasCategorias = () => {
                   haptic.selection();
                   navigate(`/videoaulas/concurso/${c.id}`);
                 }}
-                className="group flex flex-col w-full overflow-hidden rounded-2xl border border-border bg-card text-left shadow-sm transition-all hover:border-primary/50 active:scale-[0.98]"
+                className="group relative flex flex-col justify-end w-full aspect-[4/5] sm:aspect-square overflow-hidden rounded-2xl border border-border bg-black text-left shadow-sm transition-all hover:border-primary/50 active:scale-[0.98]"
               >
-                <div className="relative w-full h-[85px] sm:h-[100px] overflow-hidden bg-black/10">
-                  <ThumbImg
-                    src={c.capa}
-                    alt={c.titulo}
-                    fallback={<Scale className="h-8 w-8 text-primary/40" />}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                  <div className="absolute bottom-3 left-3 text-white">
-                    <span className="bg-primary/90 text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider">
+                <ThumbImg
+                  src={c.capa}
+                  alt={c.titulo}
+                  fallback={<Scale className="h-10 w-10 text-white/20" />}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent pointer-events-none" />
+                
+                <div className="relative z-10 flex flex-col h-full p-3 text-white w-full">
+                  <div>
+                    <span className="bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider shadow-sm">
                       Edital
                     </span>
                   </div>
-                </div>
-                <div className="flex flex-col flex-1 p-3">
-                  <h3 className="truncate text-[13px] font-bold leading-tight">{c.titulo}</h3>
-                  <p className="mt-0.5 line-clamp-2 text-[10px] leading-snug text-muted-foreground flex-1">
-                    {c.descricao}
-                  </p>
-                  <div className="mt-2 flex items-center justify-between text-muted-foreground group-hover:text-primary transition-colors">
-                    <span className="text-[10px] font-semibold">{c.disciplinas?.length || 0} Disciplinas</span>
-                    <ChevronRight className="h-4 w-4" />
+                  <div className="mt-auto">
+                    <h3 className="text-[14px] sm:text-[15px] font-bold leading-tight line-clamp-2 drop-shadow-md">{c.titulo}</h3>
+                    <p className="mt-1 line-clamp-2 text-[11px] leading-snug text-white/80 drop-shadow-sm">
+                      {c.descricao}
+                    </p>
+                    <div className="mt-2 flex items-center justify-between text-white/60 group-hover:text-white transition-colors">
+                      <span className="text-[10px] font-semibold">{c.disciplinas?.length || 0} Disciplinas</span>
+                      <ChevronRight className="h-4 w-4" />
+                    </div>
                   </div>
                 </div>
               </motion.button>
@@ -282,29 +284,30 @@ const VideoaulasCategorias = () => {
                   haptic.selection();
                   navigate(`/videoaulas/concurso/${c.id}`);
                 }}
-                className="group flex flex-col w-full overflow-hidden rounded-2xl border border-border bg-card text-left shadow-sm transition-all hover:border-primary/50 active:scale-[0.98]"
+                className="group relative flex flex-col justify-end w-full aspect-[4/5] sm:aspect-square overflow-hidden rounded-2xl border border-border bg-black text-left shadow-sm transition-all hover:border-primary/50 active:scale-[0.98]"
               >
-                <div className="relative w-full h-[85px] sm:h-[100px] overflow-hidden bg-black/10">
-                  <ThumbImg
-                    src={c.capa}
-                    alt={c.titulo}
-                    fallback={<Briefcase className="h-8 w-8 text-primary/40" />}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                  <div className="absolute bottom-3 left-3 text-white">
-                    <span className="bg-primary/90 text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider">
+                <ThumbImg
+                  src={c.capa}
+                  alt={c.titulo}
+                  fallback={<Briefcase className="h-10 w-10 text-white/20" />}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent pointer-events-none" />
+                
+                <div className="relative z-10 flex flex-col h-full p-3 text-white w-full">
+                  <div>
+                    <span className="bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider shadow-sm">
                       Magistratura
                     </span>
                   </div>
-                </div>
-                <div className="flex flex-col flex-1 p-3">
-                  <h3 className="truncate text-[13px] font-bold leading-tight">{c.titulo}</h3>
-                  <p className="mt-0.5 line-clamp-2 text-[10px] leading-snug text-muted-foreground flex-1">
-                    {c.descricao}
-                  </p>
-                  <div className="mt-2 flex items-center justify-between text-muted-foreground group-hover:text-primary transition-colors">
-                    <span className="text-[10px] font-semibold">{c.disciplinas?.length || 0} Disciplinas</span>
-                    <ChevronRight className="h-4 w-4" />
+                  <div className="mt-auto">
+                    <h3 className="text-[14px] sm:text-[15px] font-bold leading-tight line-clamp-2 drop-shadow-md">{c.titulo}</h3>
+                    <p className="mt-1 line-clamp-2 text-[11px] leading-snug text-white/80 drop-shadow-sm">
+                      {c.descricao}
+                    </p>
+                    <div className="mt-2 flex items-center justify-between text-white/60 group-hover:text-white transition-colors">
+                      <span className="text-[10px] font-semibold">{c.disciplinas?.length || 0} Disciplinas</span>
+                      <ChevronRight className="h-4 w-4" />
+                    </div>
                   </div>
                 </div>
               </motion.button>
