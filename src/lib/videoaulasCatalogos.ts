@@ -5,6 +5,10 @@ import oabSegundaThumbAsset from '@/assets/thumbnails/oab-segunda-fase-thumb.web
 import ambientalCapa from '@/assets/thumbnails/ambiental.jpg';
 import penalCapa from '@/assets/thumbnails/penal.jpg';
 import processoPenalCapa from '@/assets/thumbnails/processo-penal.jpg';
+import trabalhoCapa from '@/assets/thumbnails/trabalho.jpg';
+import administrativoCapa from '@/assets/thumbnails/administrativo.jpg';
+import consumidorCapa from '@/assets/thumbnails/consumidor.jpg';
+import civilCapa from '@/assets/thumbnails/civil.jpg';
 import { srcOf } from '@/lib/assetUrl';
 
 export type CatalogoId = 'iniciante' | 'areas' | 'oab-primeira-fase' | 'oab-segunda-fase';
@@ -87,6 +91,10 @@ export function getCapaDaArea(areaNome?: string | null): string | null {
   if (n.includes('ambiental')) return ambientalCapa;
   if (n.includes('processo penal')) return processoPenalCapa;
   if (n.includes('penal')) return penalCapa;
+  if (n.includes('trabalho') || n.includes('trabalhista')) return trabalhoCapa;
+  if (n.includes('administrativo')) return administrativoCapa;
+  if (n.includes('consumidor')) return consumidorCapa;
+  if (n.includes('civil') || n.includes('família')) return civilCapa;
   return null;
 }
 
