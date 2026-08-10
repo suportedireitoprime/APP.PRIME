@@ -21,6 +21,16 @@ import {
   DrawerDescription,
   DrawerTrigger,
 } from '@/components/ui/drawer';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { getCachedAula, invalidarFavoritos, invalidarProgresso } from '@/lib/videoaulasStore';
@@ -59,7 +69,7 @@ const VideoaulaView = () => {
   const catalogo = getCatalogo(catalogoId);
   const { user } = useAuth();
   const userId = user?.id ?? null;
-  const { tocarVideo, tocando, togglePlay, tempo, duracao } = useVideoaulasPlayer();
+  const { tocarVideo, tocando, togglePlay, tempo, duracao, setTocandoState, seek } = useVideoaulasPlayer();
   
   // Semente vinda do cache da lista: título e capa aparecem no mesmo frame.
   const [aula, setAula] = useState<Aula | null>(() =>
@@ -75,6 +85,7 @@ const VideoaulaView = () => {
   const pctAtual = displayDuracao > 0 ? Math.min(100, Math.round((tempo / displayDuracao) * 100)) : 0;
 
   const [inicio, setInicio] = useState(0);
+  const [showResumePrompt, setShowResumePrompt] = useState<{ show: boolean; tempo: number }>({ show: false, tempo: 0 });
 
   useEffect(() => {
     if (aula && (!carregado || aula.video_id !== videoId)) {
@@ -97,6 +108,7 @@ const VideoaulaView = () => {
     if (!catalogo || !videoId) return;
     let alive = true;
     setAula(getCachedAula(catalogo.id, videoId) as Aula | null);
+    setShowResumePrompt({ show: false, tempo: 0 });
     preaquecerYoutubeApi();
 
     void (async () => {
@@ -131,8 +143,14 @@ const VideoaulaView = () => {
       setCarregado(true);
       const prog = progRes?.data as { tempo_atual?: number; concluida?: boolean } | null;
       if (prog) {
-        setInicio(Number(prog.tempo_atual) || 0);
+        const t = Number(prog.tempo_atual) || 0;
         setConcluida(!!prog.concluida);
+        if (t > 15 && !prog.concluida) {
+          setTocandoState(false);
+          setShowResumePrompt({ show: true, tempo: t });
+        } else {
+          setInicio(t);
+        }
       }
       setFavorito(!!favRes?.data);
 
@@ -150,7 +168,7 @@ const VideoaulaView = () => {
     return () => {
       alive = false;
     };
-  }, [catalogo, videoId, userId]);
+  }, [catalogo, videoId, userId, setTocandoState]);
 
   const tituloLimpo = useMemo(
     () => (aula?.titulo ? limparTitulo(aula.titulo) : 'Aula'),
@@ -505,15 +523,43 @@ const VideoaulaView = () => {
                 <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" /> Carregando panorama...
               </div>
             )}
-
-            {resumo.error && !aula?.sobre_aula && !aula?.descricao && (
-              <p className="text-sm text-muted-foreground">
-                Não foi possível carregar a descrição no momento.
-              </p>
-            )}
           </section>
         </div>
       </div>
+
+      <AlertDialog open={showResumePrompt.show} onOpenChange={(v) => { if (!v) setShowResumePrompt({ show: false, tempo: 0 }) }}>
+        <AlertDialogContent className="w-11/12 max-w-md rounded-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Continuar assistindo?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Você já começou esta aula. Deseja continuar de {formatTempo(showResumePrompt.tempo)} ou recomeçar do zero?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col gap-2 sm:flex-row">
+            <AlertDialogCancel 
+              onClick={() => {
+                setInicio(0);
+                seek(0);
+                setTocandoState(true);
+                setShowResumePrompt({ show: false, tempo: 0 });
+              }}
+              className="mt-0"
+            >
+              Começar do zero
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setInicio(showResumePrompt.tempo);
+                seek(showResumePrompt.tempo);
+                setTocandoState(true);
+                setShowResumePrompt({ show: false, tempo: 0 });
+              }}
+            >
+              Continuar de onde parei
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* ── Footer Fixo de Ações APENAS para Telas Mobile (lg:hidden) ───────────── */}
       <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden pointer-events-none">
