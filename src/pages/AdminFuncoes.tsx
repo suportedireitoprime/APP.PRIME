@@ -6,7 +6,7 @@ import {
   Rss, Palette, Users, GitBranch, Github, ImageIcon, KeyRound, Bug, Newspaper,
   Quote, Monitor, Send, RefreshCcw, Lock, Wrench, FileText, Crown, Search, Target, MapPin, PlayCircle,
   Sparkles, UserPlus, GraduationCap, Scale, Store, Mail, FileSignature,
-  ListChecks, Headphones,
+  ListChecks, Headphones, ShieldAlert,
 } from 'lucide-react';
 
 import { toast } from 'sonner';
