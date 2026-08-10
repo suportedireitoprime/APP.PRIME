@@ -62,6 +62,13 @@ const Videoaulas = () => {
   const [drawerCategoria, setDrawerCategoria] = useState('Todos');
 
   useEffect(() => {
+    if (!drawerBusca) {
+      setBusca('');
+      setDrawerCategoria('Todos');
+    }
+  }, [drawerBusca]);
+
+  useEffect(() => {
     let alive = true;
     const atualizar = () => {
       carregarResumoVideoaulas().then((r) => {
