@@ -20,6 +20,7 @@ import { prefetchAllPessoal, prefetchPessoalByPath } from "@/services/pessoalPre
 import { track } from "@/lib/analyticsEvents";
 import { useTrackArea } from "@/hooks/useTrackArea";
 import { useGoBack } from '@/hooks/useGoBack';
+import { useHideSplashScreen } from '@/hooks/useHideSplashScreen';
 
 const PESSOAL_SNAP = "sheet_snapshot";
 const prefetchRoute = (path: string) => {
