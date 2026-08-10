@@ -105,19 +105,11 @@ const VideoaulasCategorias = () => {
                         {info?.total ? `${info.total.toLocaleString('pt-BR')} aulas` : '—'}
                       </span>
                       <div className="flex items-center gap-1.5">
-                        {info?.concluidas ? <span className="text-[10px] text-white/60 font-medium">{info.pct}% assistido</span> : null}
                         <ChevronRight className="h-4 w-4" />
                       </div>
                     </div>
                     
-                    {info?.total ? (
-                      <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-white/20">
-                        <div
-                          className="h-full rounded-full bg-[hsl(var(--aprender-accent))]"
-                          style={{ width: `${info.pct}%` }}
-                        />
-                      </div>
-                    ) : null}
+
                   </div>
                 </div>
               </button>
@@ -167,19 +159,11 @@ const VideoaulasCategorias = () => {
                         {info?.total ? `${info.total.toLocaleString('pt-BR')} aulas` : '—'}
                       </span>
                       <div className="flex items-center gap-1.5">
-                        {info?.concluidas ? <span className="text-[10px] text-white/60 font-medium">{info.pct}% assistido</span> : null}
                         <ChevronRight className="h-4 w-4" />
                       </div>
                     </div>
                     
-                    {info?.total ? (
-                      <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-white/20">
-                        <div
-                          className="h-full rounded-full bg-[hsl(var(--aprender-accent))]"
-                          style={{ width: `${info.pct}%` }}
-                        />
-                      </div>
-                    ) : null}
+
                   </div>
                 </div>
               </motion.button>

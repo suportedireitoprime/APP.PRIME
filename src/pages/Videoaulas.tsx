@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight, History, Play, Video } from 'lucide-react';
+import { ChevronRight, History, Play, Video, Search, Mic } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import ThumbImg from '@/components/videoaulas/ThumbImg';
@@ -26,6 +26,7 @@ const Videoaulas = () => {
   const [data, setData] = useState<ResumoVideoaulas>(() => resumoVideoaulasSincrono() ?? RESUMO_VAZIO);
   const [loading, setLoading] = useState(() => !resumoVideoaulasSincrono());
   const [filtro, setFiltro] = useState<'todas' | 'andamento'>('todas');
+  const [busca, setBusca] = useState('');
 
   useEffect(() => {
     let alive = true;
@@ -66,15 +67,20 @@ const Videoaulas = () => {
   );
 
   const lista = useMemo(() => {
-    const l = [...areasDireito].sort((a, b) => {
-      const ai = a.pct > 0 ? 0 : 1;
-      const bi = b.pct > 0 ? 0 : 1;
-      if (ai !== bi) return ai - bi;
-      if (ai === 0 && b.pct !== a.pct) return b.pct - a.pct;
-      return a.area.localeCompare(b.area, 'pt-BR');
-    });
-    return filtro === 'andamento' ? l.filter((a) => a.pct > 0) : l;
-  }, [areasDireito, filtro]);
+      const l = [...areasDireito].sort((a, b) => {
+        const ai = a.pct > 0 ? 0 : 1;
+        const bi = b.pct > 0 ? 0 : 1;
+        if (ai !== bi) return ai - bi;
+        if (ai === 0 && b.pct !== a.pct) return b.pct - a.pct;
+        return a.area.localeCompare(b.area, 'pt-BR');
+      });
+      let result = filtro === 'andamento' ? l.filter((a) => a.pct > 0) : l;
+      if (busca.trim()) {
+        const b = busca.toLowerCase();
+        result = result.filter(a => a.area.toLowerCase().includes(b));
+      }
+      return result;
+    }, [areasDireito, filtro, busca]);
 
   const pct = data.pctGeral;
   const size = 72;
@@ -203,6 +209,27 @@ const Videoaulas = () => {
               </div>
             </div>
           )}
+
+          {/* Search Bar */}
+          <div className="relative mb-6">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Pesquisar disciplina..."
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              className="w-full h-12 bg-black/40 border border-white/10 rounded-2xl pl-12 pr-12 text-white placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all"
+            />
+            <button 
+              onClick={() => {
+                haptic.selection();
+                // Opcional: implementar lgica de busca por voz se existir
+              }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-white/5 rounded-full transition-colors"
+            >
+              <Mic className="h-4 w-4 text-muted-foreground" />
+            </button>
+          </div>
 
           {/* Áreas do Direito */}
           <div>

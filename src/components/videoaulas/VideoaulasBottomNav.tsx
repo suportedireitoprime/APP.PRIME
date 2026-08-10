@@ -32,7 +32,7 @@ const VideoaulasBottomNav = () => {
   const TABS: Tab[] = [
     {
       id: 'aulas',
-      label: 'Aulas',
+      label: 'Livre',
       to: '/videoaulas/painel',
       icon: PlayCircle,
       match: (p) => p === '/videoaulas/painel',
