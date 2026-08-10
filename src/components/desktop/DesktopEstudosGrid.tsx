@@ -20,14 +20,14 @@ interface Props {
 }
 
 const ESTUDOS: Item[] = [
-  { id: 'biblioteca', label: 'Biblioteca', sublabel: 'Livros, clássicos e coleções', icon: Library, color: '#E3262F', route: '/bibliotecas' },
-  { id: 'videoaulas', label: 'Videoaulas', sublabel: 'Aulas em vídeo por área', icon: Video, color: '#E3262F', route: '/videoaulas' },
-  { id: 'audioaulas', label: 'Audioaulas', sublabel: 'Estude ouvindo, onde estiver', icon: Headphones, color: '#E3262F', route: '/audioaulas' },
-  { id: 'resumos', label: 'Resumos', sublabel: 'Resumos jurídicos por tema', icon: NotebookPen, color: '#E3262F', route: '/resumos-juridicos' },
-  { id: 'mapas', label: 'Mapas Mentais', sublabel: 'Mapas, infográficos e fluxogramas', icon: Brain, color: '#E3262F', route: '/assistente' },
-  { id: 'questoes', label: 'Questões', sublabel: 'Pratique e acompanhe o desempenho', icon: ListChecks, color: '#E3262F', route: '/questoes' },
-  { id: 'lei-seca', label: 'Lei Seca', sublabel: 'Treine o texto da lei por área', icon: Scale, color: '#E3262F', route: '/lei-seca' },
-  { id: 'dicionario', label: 'Dicionário', sublabel: 'Termos jurídicos explicados', icon: BookA, color: '#E3262F', route: '/ferramentas/dicionario' },
+  { id: 'biblioteca', label: 'Biblioteca', sublabel: 'Livros, clássicos e coleções', icon: Library, color: 'hsl(var(--primary))', route: '/bibliotecas' },
+  { id: 'videoaulas', label: 'Videoaulas', sublabel: 'Aulas em vídeo por área', icon: Video, color: 'hsl(var(--primary))', route: '/videoaulas' },
+  { id: 'audioaulas', label: 'Audioaulas', sublabel: 'Estude ouvindo, onde estiver', icon: Headphones, color: 'hsl(var(--primary))', route: '/audioaulas' },
+  { id: 'resumos', label: 'Resumos', sublabel: 'Resumos jurídicos por tema', icon: NotebookPen, color: 'hsl(var(--primary))', route: '/resumos-juridicos' },
+  { id: 'mapas', label: 'Mapas Mentais', sublabel: 'Mapas, infográficos e fluxogramas', icon: Brain, color: 'hsl(var(--primary))', route: '/assistente' },
+  { id: 'questoes', label: 'Questões', sublabel: 'Pratique e acompanhe o desempenho', icon: ListChecks, color: 'hsl(var(--primary))', route: '/questoes' },
+  { id: 'lei-seca', label: 'Lei Seca', sublabel: 'Treine o texto da lei por área', icon: Scale, color: 'hsl(var(--primary))', route: '/lei-seca' },
+  { id: 'dicionario', label: 'Dicionário', sublabel: 'Termos jurídicos explicados', icon: BookA, color: 'hsl(var(--primary))', route: '/ferramentas/dicionario' },
 ];
 
 const DesktopEstudosGrid = (_props: Props) => {

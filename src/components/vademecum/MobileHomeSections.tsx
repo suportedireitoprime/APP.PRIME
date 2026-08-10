@@ -113,14 +113,14 @@ const JURI_OPCOES = [
 // Aba "Em Alta" — funções de estudo (evita repetir o que já existe no Vade Mecum)
 type EmAltaCat = Cat & { route: string; emBreve?: boolean };
 const EMALTA_CATS: EmAltaCat[] = [
-  { id: 'ea-biblioteca',  label: 'Biblioteca',     sublabel: 'Livros, clássicos e coleções',   icon: Library,     color: '#E3262F', route: '/bibliotecas' },
-  { id: 'ea-videoaulas',  label: 'Videoaulas',     sublabel: 'Aulas em vídeo por área',        icon: Video,       color: '#E3262F', route: '/videoaulas' },
-  { id: 'ea-resumos',     label: 'Resumos',        sublabel: 'Resumos jurídicos por tema',     icon: NotebookPen, color: '#E3262F', route: '/resumos-juridicos' },
-  { id: 'ea-audioaulas',  label: 'Audioaulas',     sublabel: 'Estude ouvindo, onde estiver',   icon: Headphones,  color: '#E3262F', route: '/audioaulas' },
-  { id: 'ea-mapas',       label: 'Mapas Mentais',  sublabel: 'Mapas, infográficos e fluxogramas',    icon: Brain,       color: '#E3262F', route: '/assistente' },
-  { id: 'ea-dicionario',  label: 'Dicionário',     sublabel: 'Termos jurídicos explicados',    icon: BookA,       color: '#E3262F', route: '/ferramentas/dicionario' },
-  { id: 'ea-lei-seca',    label: 'Lei Seca',       sublabel: 'Treine o texto da lei por área',  icon: Scale,       color: '#E3262F', route: '/lei-seca' },
-  { id: 'ea-apresentacao', label: 'Apresentação',  sublabel: 'Aulas narradas em slides',       icon: Presentation, color: '#E3262F', route: '/apresentacoes' },
+  { id: 'ea-biblioteca',  label: 'Biblioteca',     sublabel: 'Livros, clássicos e coleções',   icon: Library,     color: 'hsl(var(--primary))', route: '/bibliotecas' },
+  { id: 'ea-videoaulas',  label: 'Videoaulas',     sublabel: 'Aulas em vídeo por área',        icon: Video,       color: 'hsl(var(--primary))', route: '/videoaulas' },
+  { id: 'ea-resumos',     label: 'Resumos',        sublabel: 'Resumos jurídicos por tema',     icon: NotebookPen, color: 'hsl(var(--primary))', route: '/resumos-juridicos' },
+  { id: 'ea-audioaulas',  label: 'Audioaulas',     sublabel: 'Estude ouvindo, onde estiver',   icon: Headphones,  color: 'hsl(var(--primary))', route: '/audioaulas' },
+  { id: 'ea-mapas',       label: 'Mapas Mentais',  sublabel: 'Mapas, infográficos e fluxogramas',    icon: Brain,       color: 'hsl(var(--primary))', route: '/assistente' },
+  { id: 'ea-dicionario',  label: 'Dicionário',     sublabel: 'Termos jurídicos explicados',    icon: BookA,       color: 'hsl(var(--primary))', route: '/ferramentas/dicionario' },
+  { id: 'ea-lei-seca',    label: 'Lei Seca',       sublabel: 'Treine o texto da lei por área',  icon: Scale,       color: 'hsl(var(--primary))', route: '/lei-seca' },
+  { id: 'ea-apresentacao', label: 'Apresentação',  sublabel: 'Aulas narradas em slides',       icon: Presentation, color: 'hsl(var(--primary))', route: '/apresentacoes' },
 ];
 
 
