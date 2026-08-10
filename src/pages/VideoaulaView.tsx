@@ -38,6 +38,7 @@ type Aula = {
   sobre_aula?: string | null;
   thumb?: string | null;
   thumbnail?: string | null;
+  duracao_segundos?: number | null;
 };
 
 function formatTempo(s: number) {
@@ -69,7 +70,9 @@ const VideoaulaView = () => {
   const [concluida, setConcluida] = useState(false);
   const [carregado, setCarregado] = useState(false);
   const [showAnotacoes, setShowAnotacoes] = useState(false);
-  const pctAtual = duracao > 0 ? Math.min(100, Math.round((tempo / duracao) * 100)) : 0;
+  
+  const displayDuracao = duracao > 0 ? duracao : (aula?.duracao_segundos || 0);
+  const pctAtual = displayDuracao > 0 ? Math.min(100, Math.round((tempo / displayDuracao) * 100)) : 0;
 
   const [inicio, setInicio] = useState(0);
 
@@ -97,7 +100,7 @@ const VideoaulaView = () => {
     preaquecerYoutubeApi();
 
     void (async () => {
-      const cols = `id, video_id, titulo, descricao, sobre_aula, ${catalogo.thumbCol}${
+      const cols = `id, video_id, titulo, descricao, sobre_aula, duracao_segundos, ${catalogo.thumbCol}${
         catalogo.temAreas ? ', area' : ''
       }`;
       // Aula + progresso + favorito em paralelo (antes eram 2 rodadas sequenciais).
@@ -315,21 +318,15 @@ const VideoaulaView = () => {
             </div>
             <div className="flex items-center justify-between text-[12px] text-muted-foreground tabular-nums">
               <span>{formatTempo(tempo)}</span>
-              <span>{duracao > 0 ? formatTempo(duracao) : '--:--'}</span>
+              <span>{displayDuracao > 0 ? formatTempo(displayDuracao) : '--:--'}</span>
             </div>
             <h1 className="text-[17px] sm:text-xl lg:text-2xl font-bold leading-snug text-foreground">{tituloLimpo}</h1>
-            <p className="text-[12px] sm:text-[13px] text-muted-foreground flex items-center gap-1.5 font-medium mt-1">
-              <span>Siga estas etapas para concluir a aula</span>
-              {duracao > 0 && (
-                <>
-                  <span className="opacity-50">•</span>
-                  <span>{formatTempo(duracao)}</span>
-                </>
-              )}
-            </p>
           </div>
 
-          <div className="px-3 lg:px-0 py-2">
+          <div className="px-3 lg:px-0 py-2 mt-4 space-y-2">
+            <p className="text-[11px] sm:text-[12px] uppercase tracking-wider text-muted-foreground font-bold pl-1">
+              Siga estas etapas para concluir a aula
+            </p>
             {videoId && (
               <TrilhaAula 
                 videoId={videoId} 
@@ -341,6 +338,17 @@ const VideoaulaView = () => {
           </div>
 
           <div className="flex items-center gap-2 px-3 lg:px-0 flex-wrap mt-2">
+            <button
+              onClick={marcarConcluida}
+              className={cn(
+                'inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-colors',
+                concluida
+                  ? 'border-primary bg-primary/10 text-primary'
+                  : 'border-border text-muted-foreground hover:text-foreground',
+              )}
+            >
+              <CheckCircle2 className="h-4 w-4" /> {concluida ? 'Como visto' : 'Marcar como visto'}
+            </button>
             <button
               onClick={toggleFavorito}
               className={cn(
