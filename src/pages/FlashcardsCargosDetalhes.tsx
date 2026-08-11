@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PageHeader } from '@/components/vademecum/PageHeader';
-import FlashcardsBottomNav from '@/components/flashcards/FlashcardsBottomNav';
+import FlashcardsCargoBottomNav, { CargoTab } from '@/components/flashcards/FlashcardsCargoBottomNav';
 import { supabase } from '@/integrations/supabase/client';
 import { haptic } from '@/lib/nativeHaptics';
-import { Building, ArrowLeft, Target, Calendar, CheckCircle2, ChevronLeft, Trash2, Layers } from 'lucide-react';
+import { Building, ArrowLeft, Target, Calendar, CheckCircle2, ChevronLeft, Trash2, Layers, Play, Clock, Award } from 'lucide-react';
 import { useFlashcardsTrilhasStore, type FlashcardTrilhaAtiva } from '@/lib/flashcardsTrilhasStore';
 
 type DisciplinaEdital = {
@@ -116,7 +116,7 @@ const TrilhaMapaEdital = ({ cargo, trilha, onBack }: { cargo: Cargo, trilha: Fla
   const dias = Array.from({ length: trilha.diasMeta }, (_, i) => i + 1);
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="w-full flex flex-col bg-background min-h-screen">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="w-full flex flex-col bg-background min-h-screen pb-32">
       <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-border/50">
         <div className="flex items-center gap-3 p-4">
           <button onClick={onBack} className="p-2 -ml-2 text-muted-foreground hover:text-foreground rounded-full hover:bg-card">
@@ -138,7 +138,7 @@ const TrilhaMapaEdital = ({ cargo, trilha, onBack }: { cargo: Cargo, trilha: Fla
         </div>
       </div>
 
-      <div className="px-4 pt-6 pb-32">
+      <div className="px-4 pt-6">
         <div className="flex items-center justify-between mb-8">
           <div>
             <p className="text-sm text-muted-foreground font-bold uppercase tracking-wider">Progresso do Edital</p>
@@ -211,25 +211,17 @@ const TrilhaMapaEdital = ({ cargo, trilha, onBack }: { cargo: Cargo, trilha: Fla
 
 // --- PÁGINA PRINCIPAL ---
 
-type ViewStep = 'detalhes' | 'setup_ritmo' | 'mapa';
-
 export default function FlashcardsCargosDetalhes() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [cargo, setCargo] = useState<Cargo | null>(null);
   const [loading, setLoading] = useState(true);
   
-  const [step, setStep] = useState<ViewStep>('detalhes');
+  const [activeTab, setActiveTab] = useState<CargoTab>('livre');
   const { trilhasAtivas, setTrilhaAtiva } = useFlashcardsTrilhasStore();
   
   const trilhaDoEditalId = Object.keys(trilhasAtivas).find(k => trilhasAtivas[k].isEdital && trilhasAtivas[k].editalId === id);
   const trilhaAtiva = trilhaDoEditalId ? trilhasAtivas[trilhaDoEditalId] : null;
-
-  useEffect(() => {
-    if (trilhaAtiva && step === 'detalhes' && !loading) {
-      setStep('mapa');
-    }
-  }, [trilhaAtiva, step, loading]);
 
   useEffect(() => {
     async function loadCargo() {
@@ -267,7 +259,17 @@ export default function FlashcardsCargosDetalhes() {
       editalId: cargo.id
     };
     setTrilhaAtiva(novaTrilha);
-    setStep('mapa');
+  };
+
+  const handlePraticarLivre = (area: string) => {
+    haptic.selection();
+    const params = new URLSearchParams();
+    params.set('area', area);
+    params.set('modo', 'todos');
+    params.set('limite', '20');
+    // Adicionamos editalId para que a tela de estudo saiba que é contexto de edital
+    // Mas no modo livre por área, a query vai puxar os flashcards daquela área.
+    navigate(`/flashcards/estudar?${params.toString()}`);
   };
 
   if (loading) {
@@ -292,10 +294,12 @@ export default function FlashcardsCargosDetalhes() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground pb-[120px] md:pb-8 flex flex-col font-sans">
+    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
       <AnimatePresence mode="wait">
-        {step === 'detalhes' && !trilhaAtiva && (
-          <motion.div key="detalhes" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8">
+        
+        {/* TAB: LIVRE (Detalhes e Prática por Matéria) */}
+        {activeTab === 'livre' && (
+          <motion.div key="livre" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8 pb-32">
             <div className="flex items-center gap-3 py-4">
               <button 
                 onClick={() => { haptic.selection(); navigate('/flashcards/cargos'); }}
@@ -323,21 +327,11 @@ export default function FlashcardsCargosDetalhes() {
               )}
             </div>
 
-            <div className="mb-8">
-              <button 
-                onClick={() => { haptic.selection(); setStep('setup_ritmo'); }}
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base h-16 rounded-3xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98] flex items-center justify-center gap-3"
-              >
-                <Target className="w-6 h-6" />
-                Iniciar Trilha do Edital
-              </button>
-            </div>
-
             <div className="mb-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-bold text-lg flex items-center gap-2">
                   <Layers className="w-5 h-5 text-primary" />
-                  Conteúdo Programático
+                  Prática Livre
                 </h3>
                 <span className="text-xs font-bold bg-muted text-muted-foreground px-2.5 py-1 rounded-full">
                   {cargo.edital_disciplinas?.length || 0} Matérias
@@ -346,24 +340,34 @@ export default function FlashcardsCargosDetalhes() {
               
               <div className="space-y-3">
                 {cargo.edital_disciplinas?.map((disc, index) => (
-                  <div key={index} className="bg-card rounded-2xl p-4 border border-border/50 shadow-sm flex flex-col gap-1.5">
-                    <div className="flex justify-between items-start">
-                      <h4 className="font-bold text-base text-foreground">{disc.area}</h4>
-                      {disc.peso && (
-                        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                          disc.peso.toLowerCase() === 'alta' ? 'bg-red-500/10 text-red-500' :
-                          disc.peso.toLowerCase() === 'média' ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-500' :
-                          'bg-primary/10 text-primary'
-                        }`}>
-                          Peso {disc.peso}
-                        </span>
+                  <div key={index} className="bg-card rounded-2xl p-4 border border-border/50 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 group hover:border-primary/50 transition-colors">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h4 className="font-bold text-base text-foreground">{disc.area}</h4>
+                        {disc.peso && (
+                          <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                            disc.peso.toLowerCase() === 'alta' ? 'bg-red-500/10 text-red-500' :
+                            disc.peso.toLowerCase() === 'média' ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-500' :
+                            'bg-primary/10 text-primary'
+                          }`}>
+                            Peso {disc.peso}
+                          </span>
+                        )}
+                      </div>
+                      {disc.descricao && (
+                        <p className="text-sm text-muted-foreground line-clamp-2">
+                          {disc.descricao}
+                        </p>
                       )}
                     </div>
-                    {disc.descricao && (
-                      <p className="text-sm text-muted-foreground line-clamp-2">
-                        {disc.descricao}
-                      </p>
-                    )}
+                    
+                    <button
+                      onClick={() => handlePraticarLivre(disc.area)}
+                      className="shrink-0 flex items-center justify-center gap-2 h-10 px-4 rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground font-bold text-sm transition-all active:scale-95"
+                    >
+                      <Play className="w-4 h-4" />
+                      Praticar
+                    </button>
                   </div>
                 ))}
                 
@@ -377,24 +381,65 @@ export default function FlashcardsCargosDetalhes() {
           </motion.div>
         )}
 
-        {step === 'setup_ritmo' && cargo && (
+        {/* TAB: TRILHAS */}
+        {activeTab === 'trilhas' && !trilhaAtiva && (
           <SetupRitmo 
             cargo={cargo} 
-            onBack={() => setStep('detalhes')} 
+            onBack={() => setActiveTab('livre')} 
             onFinish={handleCriarTrilha} 
           />
         )}
 
-        {step === 'mapa' && trilhaAtiva && cargo && (
+        {activeTab === 'trilhas' && trilhaAtiva && (
           <TrilhaMapaEdital 
             cargo={cargo}
             trilha={trilhaAtiva}
-            onBack={() => navigate('/flashcards/cargos')}
+            onBack={() => setActiveTab('livre')}
           />
         )}
+        
+        {/* TAB: REVISÃO (Placeholder) */}
+        {activeTab === 'revisao' && (
+          <motion.div key="revisao" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 flex flex-col items-center justify-center px-6 text-center pt-24 pb-32">
+            <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+              <Clock className="w-10 h-10 text-primary" />
+            </div>
+            <h2 className="text-2xl font-black mb-3">Sessão de Revisão</h2>
+            <p className="text-muted-foreground mb-8 max-w-sm">
+              Revise os flashcards de {cargo.orgao} que estão agendados para hoje através da repetição espaçada.
+            </p>
+            <button className="h-14 px-8 rounded-2xl bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20 active:scale-95 transition-transform flex items-center gap-2">
+              <Play className="w-5 h-5 fill-current" />
+              Iniciar Revisão
+            </button>
+          </motion.div>
+        )}
+
+        {/* TAB: DESEMPENHO (Placeholder) */}
+        {activeTab === 'desempenho' && (
+          <motion.div key="desempenho" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 flex flex-col items-center justify-center px-6 text-center pt-24 pb-32">
+            <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+              <Award className="w-10 h-10 text-primary" />
+            </div>
+            <h2 className="text-2xl font-black mb-3">Seu Desempenho</h2>
+            <p className="text-muted-foreground mb-8 max-w-sm">
+              Acompanhe sua taxa de acertos e evolução no edital {cargo.orgao}. Em breve!
+            </p>
+            <button 
+              onClick={() => setActiveTab('livre')}
+              className="h-12 px-6 rounded-xl bg-card border border-border font-bold hover:bg-accent active:scale-95 transition-all"
+            >
+              Voltar ao Edital
+            </button>
+          </motion.div>
+        )}
+
       </AnimatePresence>
 
-      {(step === 'detalhes' || step === 'mapa') && <FlashcardsBottomNav />}
+      <FlashcardsCargoBottomNav 
+        activeTab={activeTab} 
+        onChangeTab={setActiveTab} 
+      />
     </div>
   );
 }
