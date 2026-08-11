@@ -318,7 +318,7 @@ const FlashcardsEstudo = () => {
           <div className="pt-4 space-y-4">
             {/* Barra de progresso */}
             <div className="flex items-center gap-3">
-              <Progress value={cards.length ? ((idx + 1) / cards.length) * 100 : 0} className="h-2 flex-1" />
+              <Progress value={cards.length ? ((idx + 1) / cards.length) * 100 : 0} className="h-2 flex-1 [&>div]:bg-emerald-500" />
               <span className="text-xs font-black tabular-nums text-muted-foreground">
                 {idx + 1}/{cards.length}
               </span>
@@ -358,20 +358,50 @@ const FlashcardsEstudo = () => {
 
               return (
               <>
-                {/* Transição de entrada e saída entre cards (entra um, sai outro) */}
-                <AnimatePresence mode="wait" initial={false}>
-                  <motion.div
-                    key={atual.id || idx}
-                    initial={{ opacity: 0, x: 45, y: 0, scale: 0.96 }}
-                    animate={{ opacity: 1, x: 0, y: 0, scale: 1 }}
-                    exit={
-                      exitDirection === 'down'
-                        ? { opacity: 0, y: 150, x: 0, scale: 0.9 }
-                        : { opacity: 0, x: -45, y: 0, scale: 0.96 }
-                    }
-                    transition={{ duration: 0.2 }}
-                    className="relative w-full min-h-[380px] sm:min-h-[440px] h-[54dvh] max-h-[540px] [perspective:1600px]"
-                  >
+                {/* Contêiner com empilhamento 3D de cards vindo de trás */}
+                <div className="relative w-full min-h-[380px] sm:min-h-[440px] h-[54dvh] max-h-[540px]">
+                  {/* Card 3 (Mais ao fundo) */}
+                  {cards[idx + 2] && (
+                    <div 
+                      className="absolute inset-0 rounded-[32px] border border-emerald-500/20 bg-card/60 backdrop-blur-sm pointer-events-none transition-all duration-300"
+                      style={{
+                        transform: 'translateY(18px) scale(0.91)',
+                        opacity: 0.35,
+                        zIndex: 1,
+                        background: 'linear-gradient(135deg, rgba(16,185,129,0.12) 0%, rgba(13,15,18,0.95) 100%)',
+                        boxShadow: '0 10px 30px -15px rgba(0,0,0,0.8)'
+                      }}
+                    />
+                  )}
+
+                  {/* Card 2 (Logo atrás do ativo) */}
+                  {cards[idx + 1] && (
+                    <div 
+                      className="absolute inset-0 rounded-[32px] border border-emerald-500/35 bg-card/85 backdrop-blur-sm pointer-events-none transition-all duration-300"
+                      style={{
+                        transform: 'translateY(9px) scale(0.95)',
+                        opacity: 0.7,
+                        zIndex: 2,
+                        background: 'linear-gradient(135deg, rgba(16,185,129,0.2) 0%, rgba(13,15,18,0.98) 100%)',
+                        boxShadow: '0 15px 40px -20px rgba(16,185,129,0.15)'
+                      }}
+                    />
+                  )}
+
+                  {/* Transição 3D do Card Ativo */}
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.div
+                      key={atual.id || idx}
+                      initial={{ opacity: 0, y: -15, scale: 0.94, rotateX: 12 }}
+                      animate={{ opacity: 1, y: 0, scale: 1, rotateX: 0 }}
+                      exit={
+                        exitDirection === 'down'
+                          ? { opacity: 0, y: 180, rotateX: -55, scale: 0.82, transition: { duration: 0.32, ease: [0.32, 0.72, 0, 1] } }
+                          : { opacity: 0, x: -160, rotateZ: -14, scale: 0.88, transition: { duration: 0.28, ease: 'easeInOut' } }
+                      }
+                      transition={{ duration: 0.35, ease: [0.34, 1.25, 0.64, 1] }}
+                      className="relative z-10 w-full h-full [perspective:1600px]"
+                    >
                     <div
                       role="button"
                       tabIndex={0}
@@ -482,15 +512,16 @@ const FlashcardsEstudo = () => {
                     </div>
                   </motion.div>
                 </AnimatePresence>
+                </div>
 
                 {/* Botões de Ação com Safe Area Inset Bottom para Mobile */}
                 <div className="pt-2 pb-[calc(6.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] grid grid-cols-2 gap-3">
                   <Button
                     variant="outline"
-                    className="h-14 sm:h-16 rounded-2xl text-base font-bold gap-2 hover:border-amber-500/50 hover:bg-amber-500/10 active:scale-95 transition-all shadow-sm"
+                    className="h-14 sm:h-16 rounded-2xl text-base font-bold gap-2 border-border/80 hover:border-emerald-500/50 hover:bg-emerald-500/10 active:scale-95 transition-all shadow-sm"
                     onClick={() => responder('revisar')}
                   >
-                    <RotateCcw className="h-5 w-5 text-amber-500" />
+                    <RotateCcw className="h-5 w-5 text-emerald-500" />
                     <span>Revisar</span>
                   </Button>
                   <Button
