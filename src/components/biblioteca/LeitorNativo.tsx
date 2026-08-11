@@ -1086,14 +1086,23 @@ const LeitorNativo = ({ livroId, livroTabela, pdfUrl, titulo, onClose, autor, an
           <ArrowLeft className="w-[22px] h-[22px]" />
         </button>
         <div className="flex-1 min-w-0 text-center md:text-left">
-          <h1 className="font-display text-[18px] md:text-[19px] font-semibold tracking-wide truncate">
+          <h1 className="font-display text-[15px] md:text-[16px] font-semibold tracking-wide line-clamp-2 leading-tight">
             {titulo}
           </h1>
           {headerSub && (
-            <p className="text-[11px] md:text-[12px] font-body opacity-70 truncate mt-0.5">{headerSub}</p>
+            <p className="text-[11px] md:text-[12px] font-body opacity-70 line-clamp-1 mt-0.5 leading-tight">{headerSub}</p>
           )}
         </div>
-        <div className="w-12 md:hidden shrink-0" />
+        <div className="w-12 md:w-11 shrink-0 flex items-center justify-center">
+          <button
+            onClick={() => setShowCompartilhar(true)}
+            aria-label="Compartilhar"
+            className="w-10 h-10 rounded-full flex items-center justify-center active:scale-95 transition-transform"
+            style={{ color: dark ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.45)' }}
+          >
+            <Share2 className="w-5 h-5" />
+          </button>
+        </div>
       </header>
 
 
@@ -1640,12 +1649,16 @@ const LeitorNativo = ({ livroId, livroTabela, pdfUrl, titulo, onClose, autor, an
               </button>
 
               <button
-                onClick={toggleNarracao}
-                aria-label={speaking ? 'Parar narração' : 'Ouvir narração'}
-                title={speaking ? 'Parar narração' : audioPaginaAtual ? 'Ouvir narração' : 'Narração em breve'}
-                className={`w-14 h-14 rounded-full flex items-center justify-center transition active:scale-95 ${speaking ? 'bg-primary text-primary-foreground' : dark ? 'bg-white/[0.06] hover:bg-white/10' : 'bg-black/[0.04] hover:bg-black/10'} ${!audioPaginaAtual && !speaking ? 'opacity-50' : ''}`}
+                onClick={() => setShowAssistente(true)}
+                aria-label="Assistente IA"
+                title="Assistente IA"
+                className={`w-14 h-14 rounded-full flex items-center justify-center transition active:scale-95 text-white shadow-lg`}
+                style={{
+                  background: 'hsl(var(--primary))',
+                  boxShadow: '0 8px 20px -6px hsl(var(--primary) / 0.5)',
+                }}
               >
-                {speaking ? <Square className="w-[20px] h-[20px]" /> : <Volume2 className="w-[22px] h-[22px]" />}
+                <WandSparkles className="w-[20px] h-[20px]" />
               </button>
 
 
@@ -1990,60 +2003,7 @@ const LeitorNativo = ({ livroId, livroTabela, pdfUrl, titulo, onClose, autor, an
         onHighlight={setHighlightTerm}
       />
 
-      {/* FAB — Assistente de IA para a página atual */}
-      {!isDesktop && status === 'pronto' && currentPage && currentPage.kind === 'content' && (currentPage.md || '').trim().length > 40 && !menuOpen && !showAssistente && (
-        <motion.button
-          key="assistente-fab"
-          initial={{ opacity: 0, scale: 0.6, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.6 }}
-          transition={{ type: 'spring', stiffness: 320, damping: 22, delay: 0.2 }}
-          onClick={() => setShowAssistente(true)}
-          aria-label="Assistente de leitura"
-          className="fixed z-[1310] w-14 h-14 rounded-full flex items-center justify-center active:scale-95 transition group"
-          style={{
-            right: 'calc(env(safe-area-inset-right, 0px) + 18px)',
-            bottom: 'calc(env(safe-area-inset-bottom, 0px) + 148px)',
-            background: 'hsl(var(--primary))',
-            color: 'hsl(var(--primary-foreground))',
-            boxShadow:
-              '0 12px 32px -8px hsl(var(--primary) / 0.55), 0 4px 12px -2px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.25)',
-          }}
-        >
-          <motion.span
-            aria-hidden
-            className="absolute inset-0 rounded-full"
-            style={{ background: 'hsl(var(--primary))', opacity: 0.35 }}
-            animate={{ scale: [1, 1.35, 1], opacity: [0.35, 0, 0.35] }}
-            transition={{ duration: 2.4, repeat: Infinity, ease: 'easeOut' }}
-          />
-          <WandSparkles className="w-6 h-6 relative" />
-        </motion.button>
-      )}
-
-      {/* FAB — Compartilhar frase */}
-      {!isDesktop && status === 'pronto' && currentPage && currentPage.kind === 'content' && (currentPage.md || '').trim().length > 40 && !menuOpen && !showAssistente && !showCompartilhar && (
-        <motion.button
-          key="compartilhar-fab"
-          initial={{ opacity: 0, scale: 0.6, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.6 }}
-          transition={{ type: 'spring', stiffness: 320, damping: 22, delay: 0.28 }}
-          onClick={() => setShowCompartilhar(true)}
-          aria-label="Compartilhar frase"
-          className="fixed z-[1310] w-12 h-12 rounded-full flex items-center justify-center active:scale-95 transition"
-          style={{
-            right: 'calc(env(safe-area-inset-right, 0px) + 20px)',
-            bottom: 'calc(env(safe-area-inset-bottom, 0px) + 220px)',
-            background: 'hsl(var(--background))',
-            color: 'hsl(var(--foreground))',
-            border: '1px solid hsl(var(--border))',
-            boxShadow: '0 8px 24px -6px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1)',
-          }}
-        >
-          <Share2 className="w-5 h-5" />
-        </motion.button>
-      )}
+      {/* FABs removidos para uma leitura mais limpa */}
 
       {/* Painel do Assistente de IA */}
       {currentPage && (

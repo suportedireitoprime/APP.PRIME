@@ -107,7 +107,7 @@ const DEFAULTS: LeitorPrefs = {
   fontSize: 17,
   fonteId: 'georgia',
   alinhamento: 'justify',
-  espacamento: 'normal',
+  espacamento: 'amplo',
   brilho: 1,
   tonalidade: 0,
   pageMode: 'slide',

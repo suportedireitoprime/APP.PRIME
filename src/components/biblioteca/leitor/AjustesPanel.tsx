@@ -236,19 +236,26 @@ function PainelTexto({
   return (
     <div className="space-y-5">
       <div>
-        <SectionTitle tema={tema}>Tamanho</SectionTitle>
-        <div className="flex items-center gap-3">
-          <span className="text-[13px] opacity-60">A</span>
-          <input
-            type="range"
-            min={14}
-            max={26}
-            step={1}
-            value={prefs.fontSize}
-            onChange={(e) => update('fontSize', Number(e.target.value))}
-            className="flex-1 accent-[hsl(var(--primary))]"
-          />
-          <span className="text-[19px] opacity-80" style={{ fontFamily: 'Georgia, serif' }}>A</span>
+        <SectionTitle tema={tema}>Tamanho da Fonte</SectionTitle>
+        <div className="flex items-center justify-between gap-1 overflow-x-auto pb-1 no-scrollbar">
+          {[14, 16, 18, 20, 22, 24].map((size) => {
+            const active = prefs.fontSize >= size && prefs.fontSize < size + 2;
+            return (
+              <button
+                key={size}
+                onClick={() => update('fontSize', size)}
+                className="w-12 h-10 rounded-xl flex items-center justify-center font-medium transition shrink-0"
+                style={{
+                  background: active ? 'hsl(var(--primary) / 0.15)' : tema.isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
+                  boxShadow: active ? '0 0 0 1.5px hsl(var(--primary))' : 'none',
+                  color: active ? 'hsl(var(--primary))' : tema.text,
+                  fontSize: '15px'
+                }}
+              >
+                {size}
+              </button>
+            );
+          })}
         </div>
       </div>
 
