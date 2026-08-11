@@ -80,7 +80,7 @@ const Flashcards = () => {
           <section className="grid grid-cols-3 gap-2">
             <button
               onClick={() => { haptic.selection(); navigate('/flashcards/progresso'); }}
-              className="flex flex-col items-center justify-center p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-primary/50 transition-colors active:scale-95 gap-3"
+              className="flex flex-col items-center justify-center p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-emerald-500/50 transition-colors active:scale-95 gap-3"
             >
               <BarChart3 className="w-6 h-6 text-muted-foreground" />
               <p className="text-xs font-bold text-foreground text-center leading-tight">Meu Progresso</p>
@@ -88,7 +88,7 @@ const Flashcards = () => {
 
             <button
               onClick={() => { haptic.selection(); navigate('/flashcards/decks'); }}
-              className="flex flex-col items-center justify-center p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-primary/50 transition-colors active:scale-95 gap-3"
+              className="flex flex-col items-center justify-center p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-emerald-500/50 transition-colors active:scale-95 gap-3"
             >
               <Layers className="w-6 h-6 text-muted-foreground" />
               <p className="text-xs font-bold text-foreground text-center leading-tight">Meus Decks</p>
@@ -96,7 +96,7 @@ const Flashcards = () => {
 
             <button
               onClick={() => { haptic.selection(); navigate('/flashcards/desafios'); }}
-              className="flex flex-col items-center justify-center p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-primary/50 transition-colors active:scale-95 gap-3"
+              className="flex flex-col items-center justify-center p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-emerald-500/50 transition-colors active:scale-95 gap-3"
             >
               <Target className="w-6 h-6 text-muted-foreground" />
               <p className="text-xs font-bold text-foreground text-center leading-tight">Meus Desafios</p>
@@ -139,7 +139,7 @@ const Flashcards = () => {
               </div>
             ) : lista.length === 0 ? (
               <div className="rounded-2xl border border-border bg-card p-10 text-center text-muted-foreground">
-                <Sparkles className="mx-auto mb-2 h-7 w-7 text-primary" />
+                <Sparkles className="mx-auto mb-2 h-7 w-7 text-emerald-500" />
                 Nenhuma matéria encontrada.
               </div>
             ) : (
@@ -151,7 +151,7 @@ const Flashcards = () => {
                     <button
                       key={a.area}
                       onClick={() => { haptic.selection(); setAreaSheet(a.area); }}
-                      className="group flex flex-col justify-between rounded-2xl border border-border/80 bg-card p-4 text-left transition-all hover:border-primary/50 hover:shadow-md active:scale-[0.99] gap-3"
+                      className="group flex flex-col justify-between rounded-2xl border border-border/80 bg-card p-4 text-left transition-all hover:border-emerald-500/50 hover:shadow-md active:scale-[0.99] gap-3"
                     >
                       <div className="flex items-center justify-between gap-3 w-full">
                         <div className="flex items-center gap-4 min-w-0">
@@ -162,7 +162,7 @@ const Flashcards = () => {
                             <Icon className="h-5 w-5" strokeWidth={2.2} style={{ color }} />
                           </div>
                           <div className="min-w-0">
-                            <p className="truncate text-base font-extrabold text-foreground group-hover:text-primary transition-colors tracking-tight">
+                            <p className="truncate text-base font-extrabold text-foreground group-hover:text-emerald-500 transition-colors tracking-tight">
                               {a.area}
                             </p>
                             <p className="text-xs text-muted-foreground font-medium mt-0.5">
@@ -194,7 +194,7 @@ const Flashcards = () => {
         <SheetContent side="bottom" className="h-[80vh] rounded-t-3xl sm:max-w-md mx-auto">
           <SheetHeader className="text-left pb-4 border-b border-border/50">
             <SheetTitle className="text-xl font-black flex items-center gap-2">
-              <Trophy className="w-5 h-5 text-primary" />
+              <Trophy className="w-5 h-5 text-emerald-500" />
               Todos os Desafios
             </SheetTitle>
           </SheetHeader>

@@ -119,7 +119,7 @@ const AreaTemasSheet = ({ area, open, onOpenChange }: Props) => {
           <button
             onClick={() => { haptic.selection(); setSel([]); }}
             className={`flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition-colors ${
-              sel.length === 0 ? 'border-primary/50 bg-primary/10' : 'border-border bg-card hover:border-primary/30'
+              sel.length === 0 ? 'border-emerald-500/50 bg-emerald-500/10' : 'border-border bg-card hover:border-emerald-500/30'
             }`}
           >
             <span
@@ -142,7 +142,7 @@ const AreaTemasSheet = ({ area, open, onOpenChange }: Props) => {
             <span
               className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 ${
                 sel.length === 0
-                  ? 'border-primary bg-primary text-primary-foreground'
+                  ? 'border-emerald-500 bg-emerald-500 text-white'
                   : 'border-muted-foreground/60 bg-muted-foreground/15'
               }`}
             >
@@ -162,7 +162,7 @@ const AreaTemasSheet = ({ area, open, onOpenChange }: Props) => {
                   key={t.tema}
                   onClick={() => toggle(t.tema)}
                   className={`flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition-colors ${
-                    ativo ? 'border-primary/50 bg-primary/10' : 'border-border bg-card hover:border-primary/30'
+                    ativo ? 'border-emerald-500/50 bg-emerald-500/10' : 'border-border bg-card hover:border-emerald-500/30'
                   }`}
                 >
                   <span
@@ -185,7 +185,7 @@ const AreaTemasSheet = ({ area, open, onOpenChange }: Props) => {
                   <span
                     className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 ${
                       ativo
-                        ? 'border-primary bg-primary text-primary-foreground'
+                        ? 'border-emerald-500 bg-emerald-500 text-white'
                         : 'border-muted-foreground/60 bg-muted-foreground/15'
                     }`}
                   >

@@ -268,10 +268,10 @@ const FlashcardsEstudo = () => {
             </p>
             <button
               onClick={() => { haptic.selection(); setParam('areas', areas.map((a) => a.area).join('|')); }}
-              className="flex w-full items-center gap-3.5 rounded-2xl border border-border/80 bg-card p-4 text-left transition-all hover:border-primary/50 hover:shadow-md active:scale-[0.99]"
+              className="flex w-full items-center gap-3.5 rounded-2xl border border-border/80 bg-card p-4 text-left transition-all hover:border-emerald-500/50 hover:shadow-md active:scale-[0.99]"
             >
-              <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary/10">
-                <Layers className="h-8 w-8 text-primary" strokeWidth={2} />
+              <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-emerald-500/10">
+                <Layers className="h-8 w-8 text-emerald-500" strokeWidth={2} />
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-base font-extrabold text-foreground">Mistura geral de matérias</p>
@@ -290,17 +290,17 @@ const FlashcardsEstudo = () => {
                   <button
                     key={a.area}
                     onClick={() => { haptic.selection(); setAreaSheet(a.area); }}
-                    className="group flex w-full items-center gap-3.5 rounded-2xl border border-border/80 bg-card p-4 text-left transition-all hover:border-primary/50 hover:shadow-md active:scale-[0.99]"
+                    className="group flex w-full items-center gap-3.5 rounded-2xl border border-border/80 bg-card p-4 text-left transition-all hover:border-emerald-500/50 hover:shadow-md active:scale-[0.99]"
                   >
-                    <div className="relative flex h-13 w-13 shrink-0 items-center justify-center rounded-2xl bg-primary/10">
+                    <div className="relative flex h-13 w-13 shrink-0 items-center justify-center rounded-2xl bg-emerald-500/10">
                       <Icon className="h-7 w-7" strokeWidth={2} style={{ color }} />
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <p className="min-w-0 flex-1 truncate text-base font-extrabold text-foreground group-hover:text-primary transition-colors">
+                        <p className="min-w-0 flex-1 truncate text-base font-extrabold text-foreground group-hover:text-emerald-500 transition-colors">
                           {a.area}
                         </p>
-                        <span className="shrink-0 rounded-full bg-primary/10 px-2.5 py-0.5 text-[11px] font-black text-primary tabular-nums">
+                        <span className="shrink-0 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-black text-emerald-500 tabular-nums">
                           {p}%
                         </span>
                       </div>
@@ -489,7 +489,7 @@ const FlashcardsEstudo = () => {
                     <span>Revisar</span>
                   </Button>
                   <Button
-                    className="h-14 sm:h-16 rounded-2xl text-base font-black gap-2 bg-primary text-white hover:bg-primary/90 active:scale-95 transition-all shadow-md"
+                    className="h-14 sm:h-16 rounded-2xl text-base font-black gap-2 bg-emerald-500 text-white hover:bg-emerald-500/90 active:scale-95 transition-all shadow-md"
                     onClick={() => responder('compreendido')}
                   >
                     <CheckCircle2 className="h-5 w-5 text-white" />
@@ -540,7 +540,7 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
       type="button"
       onClick={onClick}
       className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-        active ? 'bg-primary text-primary-foreground' : 'border border-border bg-card text-foreground'
+        active ? 'bg-emerald-500 text-white' : 'border border-border bg-card text-foreground'
       }`}
     >
       {children}
