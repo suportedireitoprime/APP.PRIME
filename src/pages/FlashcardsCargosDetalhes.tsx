@@ -5,7 +5,7 @@ import { PageHeader } from '@/components/vademecum/PageHeader';
 import FlashcardsCargoBottomNav, { CargoTab } from '@/components/flashcards/FlashcardsCargoBottomNav';
 import { supabase } from '@/integrations/supabase/client';
 import { haptic } from '@/lib/nativeHaptics';
-import { Building, ArrowLeft, Target, Calendar, CheckCircle2, ChevronLeft, Trash2, Layers, Play, Clock, Award, FileText } from 'lucide-react';
+import { Building, ArrowLeft, Target, Calendar, CheckCircle2, ChevronLeft, ChevronRight, Trash2, Layers, Play, Clock, Award, FileText } from 'lucide-react';
 import { useFlashcardsTrilhasStore, type FlashcardTrilhaAtiva } from '@/lib/flashcardsTrilhasStore';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { getAreaVisual } from '@/lib/flashcardsAreaVisual';
