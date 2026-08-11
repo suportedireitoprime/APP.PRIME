@@ -90,7 +90,7 @@ const AreaTemasSheet = ({ area, open, onOpenChange }: Props) => {
 
         <div className="flex items-center gap-3 px-5 pb-3 pr-14 pt-3 sm:px-6 sm:pr-16">
           <div className="relative flex h-12 w-12 shrink-0 items-center justify-center">
-            <Icon className="h-8 w-8 text-emerald-500" strokeWidth={1.9} />
+            <Icon className="h-8 w-8 text-success" strokeWidth={1.9} />
           </div>
           <div className="min-w-0 flex-1">
             <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Área</p>
@@ -111,7 +111,7 @@ const AreaTemasSheet = ({ area, open, onOpenChange }: Props) => {
               onChange={(e) => setBusca(e.target.value)}
               placeholder="Buscar matéria..."
               autoFocus={false}
-              className="h-11 rounded-full pl-9 focus-visible:ring-1 focus-visible:ring-emerald-500 focus-visible:border-emerald-500"
+              className="h-11 rounded-full pl-9 focus-visible:ring-1 focus-visible:ring-success focus-visible:border-success"
             />
           </div>
         </div>
@@ -121,27 +121,27 @@ const AreaTemasSheet = ({ area, open, onOpenChange }: Props) => {
             <button
               onClick={() => { haptic.selection(); setSel([]); }}
               className={`flex w-full items-center gap-3 rounded-2xl border p-3.5 text-left transition-all ${
-                sel.length === 0 ? 'border-emerald-500 bg-emerald-500/15 shadow-sm' : 'border-emerald-500/30 bg-emerald-950/20 hover:border-emerald-500/50'
+                sel.length === 0 ? 'border-success bg-success/15 shadow-sm' : 'border-success/30 bg-emerald-950/20 hover:border-success/50'
               }`}
             >
               <span className="flex h-10 w-10 shrink-0 items-center justify-center">
-                <Icon className="h-5 w-5 text-emerald-500" strokeWidth={2.2} />
+                <Icon className="h-5 w-5 text-success" strokeWidth={2.2} />
               </span>
               <span className="min-w-0 flex-1">
                 <span
-                  className="block text-[15px] font-bold text-emerald-400"
+                  className="block text-[15px] font-bold text-success"
                   style={{ fontFamily: "'Barlow', system-ui, sans-serif" }}
                 >
                   Todas as matérias
                 </span>
-                <span className="block text-[12px] text-emerald-500/80 font-medium">
+                <span className="block text-[12px] text-success/80 font-medium">
                   {temas.length} matérias · {temas.reduce((s, t) => s + t.total, 0).toLocaleString('pt-BR')} cards
                 </span>
               </span>
               <span
                 className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 ${
                   sel.length === 0
-                    ? 'border-emerald-500 bg-emerald-500 text-white'
+                    ? 'border-success bg-success text-white'
                     : 'border-muted-foreground/60 bg-muted-foreground/15'
                 }`}
               >
@@ -162,11 +162,11 @@ const AreaTemasSheet = ({ area, open, onOpenChange }: Props) => {
                   key={t.tema}
                   onClick={() => toggle(t.tema)}
                   className={`flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition-colors ${
-                    ativo ? 'border-emerald-500/50 bg-emerald-500/10' : 'border-border bg-card hover:border-emerald-500/30'
+                    ativo ? 'border-success/50 bg-success/10' : 'border-border bg-card hover:border-success/30'
                   }`}
                 >
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center">
-                    <Icon className="h-5 w-5 text-emerald-500" strokeWidth={1.9} />
+                    <Icon className="h-5 w-5 text-success" strokeWidth={1.9} />
                   </span>
                   <span className="min-w-0 flex-1">
                     <span
@@ -182,7 +182,7 @@ const AreaTemasSheet = ({ area, open, onOpenChange }: Props) => {
                   <span
                     className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 ${
                       ativo
-                        ? 'border-emerald-500 bg-emerald-500 text-white'
+                        ? 'border-success bg-success text-white'
                         : 'border-muted-foreground/60 bg-muted-foreground/15'
                     }`}
                   >
@@ -196,7 +196,7 @@ const AreaTemasSheet = ({ area, open, onOpenChange }: Props) => {
         </div>
 
         <div className="border-t border-border bg-background px-4 pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-3 sm:px-6">
-          <Button onClick={estudar} className="h-14 w-full rounded-2xl text-[15px] font-bold bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 active:scale-[0.98]">
+          <Button onClick={estudar} className="h-14 w-full rounded-2xl text-[15px] font-bold bg-success hover:bg-success text-white shadow-lg shadow-success/20 active:scale-[0.98]">
             Praticar {sel.length ? `${sel.length} matéria${sel.length > 1 ? 's' : ''}` : 'tudo'} ·{' '}
             {totalSel.toLocaleString('pt-BR')} cards
           </Button>
