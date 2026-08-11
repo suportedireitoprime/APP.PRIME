@@ -86,6 +86,7 @@ const FlashcardsEstudo = () => {
   const [temas, setTemas] = useState<{ tema: string; total: number }[]>([]);
   const [feitos, setFeitos] = useState(0);
   const [areaSheet, setAreaSheet] = useState<string | null>(null);
+  const [exitDirection, setExitDirection] = useState<'left' | 'down'>('left');
   const salvando = useRef(false);
   const gateFlashcards = useGatedFeature('flashcards', 'flashcards');
 
@@ -177,6 +178,10 @@ const FlashcardsEstudo = () => {
   const responder = async (status: 'compreendido' | 'revisar') => {
     if (!atual || salvando.current) return;
     if (gateFlashcards.blocked) { gateFlashcards.openGate(); return; }
+    
+    // Configura a direção da animação baseada na resposta
+    setExitDirection(status === 'revisar' ? 'down' : 'left');
+    
     salvando.current = true;
     haptic.light();
     const { data: auth } = await supabase.auth.getUser();
@@ -390,10 +395,14 @@ const FlashcardsEstudo = () => {
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.div
                     key={atual.id || idx}
-                    initial={{ opacity: 0, x: 45, scale: 0.96 }}
-                    animate={{ opacity: 1, x: 0, scale: 1 }}
-                    exit={{ opacity: 0, x: -45, scale: 0.96 }}
-                    transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                    initial={{ opacity: 0, x: 45, y: 0, scale: 0.96 }}
+                    animate={{ opacity: 1, x: 0, y: 0, scale: 1 }}
+                    exit={
+                      exitDirection === 'down'
+                        ? { opacity: 0, y: 150, x: 0, scale: 0.9 }
+                        : { opacity: 0, x: -45, y: 0, scale: 0.96 }
+                    }
+                    transition={{ duration: 0.2 }}
                     className="relative w-full min-h-[380px] sm:min-h-[440px] h-[54dvh] max-h-[540px] [perspective:1600px]"
                   >
                     <div

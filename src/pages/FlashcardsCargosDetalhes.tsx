@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import FlashcardsCargoBottomNav, { CargoTab } from '@/components/flashcards/FlashcardsCargoBottomNav';
 import FlashcardsCargoHero from '@/components/flashcards/FlashcardsCargoHero';
-import { getAreaVisual } from '@/lib/getAreaVisual';
+import { getAreaVisual } from '@/lib/flashcardsAreaVisual';
 import { supabase } from '@/integrations/supabase/client';
 import { haptic } from '@/lib/nativeHaptics';
 import { Building, ArrowLeft, Target, Calendar, CheckCircle2, ChevronLeft, Trash2, Layers, Play, Clock, Award, FileText, ChevronRight, Scale } from 'lucide-react';
