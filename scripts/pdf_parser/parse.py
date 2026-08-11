@@ -113,10 +113,18 @@ def main():
         sumario_customizado = []
         
         start_img_page = 0
+        capitulos_por_pagina = {}
+        
         if sumario_json:
             paginas_validas = [item["pagina"] for item in sumario_json if item["pagina"] > 4]
             if paginas_validas:
                 start_img_page = min(paginas_validas)
+            
+            # Mapear os capítulos de Nível 1 para gerar a marcação de Capa
+            for item in sumario_json:
+                pg = item["pagina"]
+                if item["nivel"] == 1 and pg not in capitulos_por_pagina:
+                    capitulos_por_pagina[pg] = item["titulo"]
 
         for page_num in range(total_paginas):
             if page_num % 50 == 0:
@@ -187,7 +195,13 @@ def main():
                         linhas_refinadas.append(linha)
                         
                 clean_md = '\n'.join(linhas_refinadas)
-                markdown_completo += f"\n<!-- page:{page_num + 1} -->\n{clean_md}\n\n"
+                
+                capa_inject = ""
+                if sumario_json and (page_num + 1) in capitulos_por_pagina:
+                    titulo_cap = capitulos_por_pagina[page_num + 1]
+                    capa_inject = f"<!-- capa-capitulo -->\n## {titulo_cap}\n"
+                
+                markdown_completo += f"\n{capa_inject}<!-- page:{page_num + 1} -->\n{clean_md}\n\n"
 
         final_toc = sumario_json if len(sumario_json) > 0 else sumario_customizado
 
