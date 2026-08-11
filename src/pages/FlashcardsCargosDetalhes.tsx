@@ -6,9 +6,28 @@ import FlashcardsCargoBottomNav, { CargoTab } from '@/components/flashcards/Flas
 import { getAreaVisual } from '@/lib/getAreaVisual';
 import { supabase } from '@/integrations/supabase/client';
 import { haptic } from '@/lib/nativeHaptics';
-import { Building, ArrowLeft, Target, Calendar, CheckCircle2, ChevronLeft, Trash2, Layers, Play, Clock, Award, FileText, ChevronRight } from 'lucide-react';
+import { Building, ArrowLeft, Target, Calendar, CheckCircle2, ChevronLeft, Trash2, Layers, Play, Clock, Award, FileText, ChevronRight, Scale } from 'lucide-react';
 import { useFlashcardsTrilhasStore, type FlashcardTrilhaAtiva } from '@/lib/flashcardsTrilhasStore';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import prfLogo from '@/assets/cargos/policia-rodoviaria-federal.webp';
+import pfLogo from '@/assets/cargos/policia-federal.webp';
+
+function getLogoAndStyles(cargo: string, orgao: string) {
+  const t = (cargo + " " + orgao).toLowerCase();
+  if (t.includes('rodoviária federal') || t.includes('prf')) {
+    return { logoSrc: prfLogo, iconType: 'image' };
+  }
+  if (t.includes('polícia federal') || t.includes('pf')) {
+    return { logoSrc: pfLogo, iconType: 'image' };
+  }
+  if (t.includes('oab')) {
+    return { icon: Scale, iconType: 'icon' };
+  }
+  if (t.includes('juiz') || t.includes('tj')) {
+    return { icon: Scale, iconType: 'icon' };
+  }
+  return { icon: Building, iconType: 'icon' };
+}
 
 type DisciplinaEdital = {
   area: string;
@@ -344,7 +363,7 @@ export default function FlashcardsCargosDetalhes() {
 
             <div className="space-y-3 pb-8">
               {cargo.edital_disciplinas?.map((disc, index) => {
-                const { icon: Icon, color } = getAreaVisual(disc.area);
+                const { icon: Icon, logoSrc, iconType } = getLogoAndStyles(cargo.cargo, cargo.orgao);
                 return (
                   <button
                     key={index}
@@ -353,7 +372,13 @@ export default function FlashcardsCargosDetalhes() {
                   >
                     <div className="flex items-center justify-between gap-3 w-full">
                       <div className="flex items-center gap-3 min-w-0 flex-1">
-                        <Icon className="h-6 w-6 shrink-0 transition-transform group-hover:scale-110" strokeWidth={1.8} style={{ color }} />
+                        <div className="shrink-0 flex items-center justify-center transition-transform group-hover:scale-110">
+                          {iconType === 'image' ? (
+                            <img src={logoSrc} alt={cargo.orgao} className="w-8 h-8 object-contain" />
+                          ) : Icon && (
+                            <Icon className="w-6 h-6 text-primary" strokeWidth={1.8} />
+                          )}
+                        </div>
                         <div className="min-w-0 flex-1">
                           <p className="truncate text-base font-extrabold text-foreground group-hover:text-primary transition-colors tracking-tight">
                             {disc.area}

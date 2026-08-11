@@ -30,7 +30,7 @@ export default function FlashcardsCargoBottomNav({ activeTab, onChangeTab }: Fla
           aria-hidden="true"
           className="absolute bottom-full left-0 right-0 h-20 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none"
         />
-        <div className="relative z-10 bg-hero-panel border-t border-white/10 rounded-t-2xl shadow-[0_-8px_30px_rgba(0,0,0,0.6),0_-2px_10px_rgba(0,0,0,0.4)]">
+        <div className="relative z-10 bg-[#18181b] border-t border-white/10 rounded-t-2xl shadow-[0_-8px_30px_rgba(0,0,0,0.6),0_-2px_10px_rgba(0,0,0,0.4)]">
           <div className="max-w-2xl mx-auto px-2 py-2">
             <div className="grid grid-cols-5 items-stretch">
               {tabs.map((tab) => {
