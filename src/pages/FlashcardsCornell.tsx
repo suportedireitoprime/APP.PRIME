@@ -70,7 +70,20 @@ const FlashcardsCornell = () => {
       setCard(data as CardDetail);
       setLoadingCard(false);
 
-      // Gerar Resumo Cornell com Gemini AI
+      if (data.resumo_ia) {
+        try {
+          const parsed = JSON.parse(data.resumo_ia);
+          if (parsed && typeof parsed === 'object') {
+            setCornell(parsed as CornellData);
+            setLoadingAi(false);
+            return;
+          }
+        } catch (e) {
+          console.error('Erro ao parsear resumo_ia salvo', e);
+        }
+      }
+
+      // Gerar Resumo Cornell com Gemini AI caso não exista
       gerarCornell(data as CardDetail);
     })();
   }, [cardId]);
@@ -97,7 +110,13 @@ const FlashcardsCornell = () => {
           sintese_final: c.resposta.slice(0, 180),
         });
       } else {
-        setCornell(data.cornell as CornellData);
+        const generated = data.cornell as CornellData;
+        setCornell(generated);
+        // Salvar o resumo gerado no Supabase para uso futuro
+        await supabase
+          .from('flashcards_cards')
+          .update({ resumo_ia: JSON.stringify(generated) })
+          .eq('id', c.id);
       }
     } catch (e) {
       console.error('Erro ao invocar Gemini AI:', e);

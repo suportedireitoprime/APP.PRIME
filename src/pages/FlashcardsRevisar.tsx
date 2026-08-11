@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { PageHeader } from '@/components/vademecum/PageHeader';
-import FlashcardsBottomNav from '@/components/flashcards/FlashcardsBottomNav';
 import { Button } from '@/components/ui/button';
 import { RotateCcw, BookOpen, Scale, Lightbulb, CheckCircle2, ChevronRight, Layers, Sparkles, ChevronLeft, BrainCircuit } from 'lucide-react';
 import { toast } from 'sonner';
@@ -153,33 +152,23 @@ const FlashcardsRevisar = () => {
                   </Button>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
+                <div className="grid grid-cols-3 gap-2 sm:gap-3">
                   {areas.map((a) => {
                     const visual = getAreaVisual(a.area);
+                    const shortName = a.area.replace(/^Direito\s+/i, '');
                     return (
                       <button
                         key={a.area}
                         onClick={() => selecionarArea(a.area)}
-                        className="group flex items-center justify-between rounded-2xl border border-border/80 bg-card p-5 text-left transition-all hover:border-primary/50 hover:shadow-md active:scale-[0.99]"
+                        className="group flex flex-col items-center justify-center rounded-2xl border border-border/80 bg-card p-3 text-center transition-all hover:border-primary/50 hover:shadow-md active:scale-[0.99] gap-2"
                       >
-                        <div className="flex items-center gap-3.5 min-w-0">
-                          <visual.icon className="h-7 w-7 shrink-0 transition-transform group-hover:scale-110" strokeWidth={2} style={{ color: visual.color }} />
-                          <div className="min-w-0">
-                            <p className="truncate text-base font-extrabold text-foreground group-hover:text-primary transition-colors">
-                              {a.area}
-                            </p>
-                            <p className="mt-0.5 text-xs text-muted-foreground font-medium">
-                              {a.a_revisar} {a.a_revisar === 1 ? 'card agendado' : 'cards agendados'}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-2 shrink-0">
-                          <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-black text-primary">
-                            {a.a_revisar}
-                          </span>
-                          <ChevronRight className="h-4.5 w-4.5 text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
-                        </div>
+                        <visual.icon className="h-6 w-6 shrink-0 transition-transform group-hover:scale-110 mb-1" strokeWidth={2.2} style={{ color: visual.color }} />
+                        <p className="text-[11px] font-extrabold text-foreground group-hover:text-primary transition-colors leading-tight line-clamp-2">
+                          {shortName}
+                        </p>
+                        <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-black text-primary mt-0.5">
+                          {a.a_revisar}
+                        </span>
                       </button>
                     );
                   })}
@@ -314,8 +303,6 @@ const FlashcardsRevisar = () => {
           )}
         </div>
       </div>
-
-      <FlashcardsBottomNav />
     </div>
   );
 };
