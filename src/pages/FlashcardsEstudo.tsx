@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import { haptic } from '@/lib/nativeHaptics';
 import { playFlipSound } from '@/lib/flipSound';
 import { getAreaVisual } from '@/lib/flashcardsAreaVisual';
+import { useFlashcardsSessao, useFlashcardsResumoAreas, FlashcardCard } from '@/lib/flashcardsQueries';
 import { useGatedFeature } from '@/hooks/useGatedFeature';
 import laurel from '@/assets/landing-tribunal/laurel-leaf.png';
 import scales from '@/assets/landing-tribunal/scales.png';
@@ -28,21 +29,6 @@ function hashString(s: string): number {
   }
   return Math.abs(h);
 }
-
-export type Card = {
-  id: string;
-  area: string;
-  tema: string | null;
-  subtema: string | null;
-  pergunta: string;
-  resposta: string;
-  exemplo: string | null;
-  base_legal: string | null;
-  dica: string | null;
-  reforco_conteudo: string | null;
-  artigo_numero: string | null;
-  status: string | null;
-};
 
 type AreaResumo = {
   area: string;
@@ -77,12 +63,26 @@ const FlashcardsEstudo = () => {
   // Sem nenhum filtro escolhido → tela de categorias.
   const escolhendo = !areaParam && !areasParam && !deckId && modo !== 'edital';
 
-  const [cards, setCards] = useState<Card[]>([]);
+  const limitParam = parseInt(params.get('limite') || '30', 10);
+  let listaAreas = areasParam ? areasParam.split('|').filter(Boolean) : areaParam ? [areaParam] : null;
+  const temasList = temasParam ? temasParam.split('|').filter(Boolean) : null;
+  const modoAtual = modo;
+
+  const { data: cardsRaw, isLoading: loadingCards, refetch: refetchCards } = useFlashcardsSessao({
+    areas: listaAreas,
+    temas: temasList,
+    modo: modoAtual,
+    deckId: deckId,
+    limit: limitParam
+  }, !escolhendo);
+
+  const { data: areasRaw } = useFlashcardsResumoAreas();
+  const areas = areasRaw || [];
+
+  const [cards, setCards] = useState<FlashcardCard[]>([]);
   const [idx, setIdx] = useState(0);
   const [virado, setVirado] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [contando, setContando] = useState(!escolhendo);
-  const [areas, setAreas] = useState<AreaResumo[]>([]);
   const [temas, setTemas] = useState<{ tema: string; total: number }[]>([]);
   const [feitos, setFeitos] = useState(0);
   const [areaSheet, setAreaSheet] = useState<string | null>(null);
@@ -90,42 +90,15 @@ const FlashcardsEstudo = () => {
   const salvando = useRef(false);
   const gateFlashcards = useGatedFeature('flashcards', 'flashcards');
 
-  const carregar = useCallback(async () => {
-    if (escolhendo) { setCards([]); setLoading(false); return; }
-    setLoading(true);
-    
-    let listaAreas = areasParam ? areasParam.split('|').filter(Boolean) : areaParam ? [areaParam] : null;
-    let modoAtual = modo;
-    
-    // Se for modo edital, busca as áreas do edital primeiro
-    if (modo === 'edital' && editalId) {
-      const { data: cargoData } = await supabase
-        .from('flashcards_cargos')
-        .select('edital_disciplinas')
-        .eq('id', editalId)
-        .single();
-        
-      if (cargoData && cargoData.edital_disciplinas) {
-        listaAreas = (cargoData.edital_disciplinas as any[]).map(d => d.area);
-      }
-      modoAtual = 'todos'; // Força 'todos' para puxar cards daquelas áreas, independente do status
+  const loading = loadingCards && !escolhendo;
+
+  useEffect(() => {
+    if (cardsRaw) {
+      setCards(cardsRaw);
+      setIdx(0);
+      setVirado(false);
     }
-
-    const { data, error } = await supabase.rpc('flashcards_sessao', {
-      _areas: listaAreas,
-      _temas: temasParam ? temasParam.split('|').filter(Boolean) : null,
-      _modo: modoAtual,
-      _deck_id: deckId,
-      _limit: parseInt(params.get('limite') || '30', 10),
-    });
-    if (error) toast.error('Não foi possível carregar os flashcards');
-    setCards(((data as unknown as Card[]) || []));
-    setIdx(0);
-    setVirado(false);
-    setLoading(false);
-  }, [areaParam, areasParam, temasParam, modo, editalId, deckId, escolhendo]);
-
-  useEffect(() => { carregar(); }, [carregar]);
+  }, [cardsRaw]);
 
   // Ponto de Retomada: Salvar e restaurar último cartão estudado
   const sessionKey = `flashcards_pos_${areaParam || areasParam || deckId || 'geral'}_${temasParam || 'todos'}`;
@@ -147,17 +120,6 @@ const FlashcardsEstudo = () => {
       localStorage.setItem(sessionKey, idx.toString());
     }
   }, [idx, cards.length, sessionKey]);
-
-  useEffect(() => {
-    supabase.rpc('flashcards_resumo_areas').then(({ data }) => {
-      if (data) setAreas((data as any[]).map((a) => ({
-        area: a.area,
-        total_cards: Number(a.total_cards),
-        compreendidos: Number(a.compreendidos),
-        a_revisar: Number(a.a_revisar),
-      })));
-    });
-  }, []);
 
   useEffect(() => {
     if (!areaParam) { setTemas([]); return; }
@@ -378,7 +340,7 @@ const FlashcardsEstudo = () => {
                 <CheckCircle2 className="mx-auto mb-3 h-12 w-12 text-emerald-500" />
                 <h3 className="text-xl font-black text-foreground">Sessão Concluída!</h3>
                 <p className="mt-1 text-sm text-muted-foreground">{feitos} flashcards estudados com sucesso.</p>
-                <Button className="mt-5 rounded-2xl px-6 font-bold" onClick={() => { setFeitos(0); carregar(); }}>Nova sessão</Button>
+                <Button className="mt-5 rounded-2xl px-6 font-bold" onClick={() => { setFeitos(0); refetchCards(); }}>Nova sessão</Button>
               </div>
             )}
 

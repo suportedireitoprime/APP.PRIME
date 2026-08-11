@@ -11,17 +11,7 @@ import { Input } from '@/components/ui/input';
 import { getAreaVisual } from '@/lib/flashcardsAreaVisual';
 import { haptic } from '@/lib/nativeHaptics';
 import FlashcardsCargoHero from '@/components/flashcards/FlashcardsCargoHero';
-
-type Dash = {
-  total_cards: number;
-  estudados: number;
-  compreendidos: number;
-  a_revisar: number;
-  hoje: number;
-  streak: number;
-  atividade_30d: { dia: string; total: number }[];
-  temas_criticos: { area: string; tema: string; total: number }[];
-};
+import { useFlashcardsDashboard, useFlashcardsResumoAreas, FlashcardsAreaRow, FlashcardsDash } from '@/lib/flashcardsQueries';
 
 type AreaRow = {
   area: string;
@@ -34,32 +24,20 @@ type AreaRow = {
 
 const Flashcards = () => {
   const navigate = useNavigate();
-  const [dash, setDash] = useState<Dash | null>(null);
-  const [areas, setAreas] = useState<AreaRow[]>([]);
+  const { data: dash, isLoading: loadingDash } = useFlashcardsDashboard();
+  const { data: areasRaw, isLoading: loadingAreas } = useFlashcardsResumoAreas();
+  const areas = areasRaw || [];
+  
   const [busca, setBusca] = useState('');
   const [buscaAberta, setBuscaAberta] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [areaSheet, setAreaSheet] = useState<string | null>(null);
   const [desafiosSheet, setDesafiosSheet] = useState(false);
+
+  const loading = loadingDash || loadingAreas;
 
   // SEO & Título dinâmico
   useEffect(() => {
     document.title = 'Flashcards | Vade Mecum PRIME';
-  }, []);
-
-  useEffect(() => {
-    let alive = true;
-    (async () => {
-      const [d, a] = await Promise.all([
-        supabase.rpc('flashcards_dashboard'),
-        supabase.rpc('flashcards_resumo_areas'),
-      ]);
-      if (!alive) return;
-      if (d.data) setDash(d.data as unknown as Dash);
-      if (a.data) setAreas(a.data as unknown as AreaRow[]);
-      setLoading(false);
-    })();
-    return () => { alive = false; };
   }, []);
 
   const lista = useMemo(() => {

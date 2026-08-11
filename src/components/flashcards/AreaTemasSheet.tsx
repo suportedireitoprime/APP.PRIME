@@ -5,6 +5,7 @@ import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
 import { getAreaVisual } from '@/lib/flashcardsAreaVisual';
 import { haptic } from '@/lib/nativeHaptics';
 
@@ -25,6 +26,7 @@ const AreaTemasSheet = ({ area, open, onOpenChange }: Props) => {
   const [sel, setSel] = useState<string[]>([]);
 
   const { icon: Icon, color } = getAreaVisual(area ?? '');
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (!open || !area) return;
@@ -35,7 +37,23 @@ const AreaTemasSheet = ({ area, open, onOpenChange }: Props) => {
       setTemas(((data as any[]) || []).map((t) => ({ tema: t.tema, total: Number(t.total) })));
       setLoading(false);
     });
-  }, [open, area]);
+
+    // Prefetch all cards for this area immediately to guarantee instantaneous loading
+    queryClient.prefetchQuery({
+      queryKey: ['flashcards_sessao', { areas: [area], temas: null, modo: 'todos', deckId: null, limit: 30 }],
+      queryFn: async () => {
+        const { data, error } = await supabase.rpc('flashcards_sessao', {
+          _areas: [area],
+          _temas: null,
+          _modo: 'todos',
+          _deck_id: null,
+          _limit: 30,
+        });
+        if (error) throw error;
+        return data || [];
+      },
+    });
+  }, [open, area, queryClient]);
 
   const filtrados = useMemo(() => {
     const q = busca.trim().toLowerCase();

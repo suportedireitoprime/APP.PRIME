@@ -637,6 +637,7 @@ function AnimatedRoutes() {
       import('@/lib/bibliotecaTracking'),
       import('@/lib/resumosLocal'),
       import('@/hooks/useDicionarioPrefs'),
+      import('@/lib/flashcardsQueries').then((m) => m.prefetchFlashcardsDashboard(queryClient)),
     ]).then(() => import('@/lib/userSync').then((m) => m.pullAllUserSync(true)));
 
 
