@@ -10,6 +10,7 @@ import { haptic } from '@/lib/nativeHaptics';
 import { slugify, getCapaDaArea } from '@/lib/videoaulasCatalogos';
 import VideoaulasBottomNav from '@/components/videoaulas/VideoaulasBottomNav';
 import { Drawer, DrawerContent, DrawerPortal, DrawerOverlay } from '@/components/ui/drawer';
+import { toast } from '@/hooks/use-toast';
 
 // --- SETUP FASE 1: ESCOLHER EDITAL ---
 const SetupEdital = ({ concursos, onSelect }: { concursos: ConcursoRow[], onSelect: (id: string) => void }) => (
@@ -317,20 +318,20 @@ const TrilhasDashboard = ({ concursos, onCreateNova, onOpenEdital }: { concursos
   const editalConcurso = trilhaAtiva ? concursos.find(c => c.id === trilhaAtiva.editalId) : null;
   const editalCapa = editalConcurso?.capa;
 
-  const handleDeleteTrilha = (e: React.MouseEvent) => {
+  const handleDeleteTrilha = (e: React.MouseEvent | React.PointerEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (window.confirm("Tem certeza que deseja apagar esta trilha? Todo o seu progresso será perdido.")) {
-      limparTrilha();
-    }
+    haptic.impact();
+    limparTrilha();
+    toast({ title: 'Trilha apagada', description: 'Seu cronograma de edital foi removido.' });
   };
 
-  const handleDeleteAreaTrilha = (e: React.MouseEvent, slug: string) => {
+  const handleDeleteAreaTrilha = (e: React.MouseEvent | React.PointerEvent, slug: string) => {
     e.preventDefault();
     e.stopPropagation();
-    if (window.confirm("Tem certeza que deseja apagar esta trilha? Todo o seu progresso será perdido.")) {
-      limparAreaTrilha(slug);
-    }
+    haptic.impact();
+    limparAreaTrilha(slug);
+    toast({ title: 'Trilha apagada', description: 'A trilha de disciplina foi removida.' });
   };
   
   return (
@@ -401,10 +402,12 @@ const TrilhasDashboard = ({ concursos, onCreateNova, onOpenEdital }: { concursos
               </div>
             </button>
             <button
+              type="button"
+              onPointerDown={(e) => { e.stopPropagation(); }}
               onClick={handleDeleteTrilha}
-              className="absolute top-4 right-4 z-20 p-2 bg-black/30 text-white/50 hover:bg-red-500/20 hover:text-red-500 rounded-full backdrop-blur-md transition-colors"
+              className="absolute top-4 right-4 z-30 p-2.5 bg-black/50 text-white/70 hover:bg-red-500/30 hover:text-red-400 active:bg-red-600/40 active:text-red-300 rounded-full backdrop-blur-md transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
             >
-              <Trash2 className="w-4 h-4" />
+              <Trash2 className="w-5 h-5" />
             </button>
           </div>
         )}
@@ -457,10 +460,12 @@ const TrilhasDashboard = ({ concursos, onCreateNova, onOpenEdital }: { concursos
               </div>
             </button>
             <button
+              type="button"
+              onPointerDown={(e) => { e.stopPropagation(); }}
               onClick={(e) => handleDeleteAreaTrilha(e, areaTrilha.areaSlug)}
-              className="absolute top-4 right-4 z-20 p-2 bg-black/30 text-white/50 hover:bg-red-500/20 hover:text-red-500 rounded-full backdrop-blur-md transition-colors"
+              className="absolute top-4 right-4 z-30 p-2.5 bg-black/50 text-white/70 hover:bg-red-500/30 hover:text-red-400 active:bg-red-600/40 active:text-red-300 rounded-full backdrop-blur-md transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
             >
-              <Trash2 className="w-4 h-4" />
+              <Trash2 className="w-5 h-5" />
             </button>
           </div>
         )})}
