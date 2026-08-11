@@ -13,17 +13,17 @@ import pfLogo from '@/assets/cargos/policia-federal.webp';
 function getCategoriaCargo(cargo: string, orgao: string): string {
   const t = (cargo + " " + orgao).toLowerCase();
   if (t.includes('oab')) return 'OAB';
-  if (t.includes('polÃ­cia') || t.includes('policial') || t.includes('prf') || t.includes('pf') || t.includes('agente')) return 'Carreira Policial';
+  if (t.includes('polícia') || t.includes('policial') || t.includes('prf') || t.includes('pf') || t.includes('agente')) return 'Carreira Policial';
   if (t.includes('juiz') || t.includes('magistratura') || t.includes('tj')) return 'Carreira de Juiz';
   return 'Outros Cargos';
 }
 
 function getLogoAndStyles(cargo: string, orgao: string) {
   const t = (cargo + " " + orgao).toLowerCase();
-  if (t.includes('rodoviÃ¡ria federal') || t.includes('prf')) {
+  if (t.includes('rodoviária federal') || t.includes('prf')) {
     return { logoSrc: prfLogo, iconType: 'image' };
   }
-  if (t.includes('polÃ­cia federal') || t.includes('pf')) {
+  if (t.includes('polícia federal') || t.includes('pf')) {
     return { logoSrc: pfLogo, iconType: 'image' };
   }
   if (t.includes('oab')) {
@@ -107,7 +107,7 @@ export default function FlashcardsCargos() {
             <Input 
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
-              placeholder="Buscar cargo ou ÃƒÂ³rgÃƒÂ£o..."
+              placeholder="Buscar cargo ou órgão..."
               className="pl-12 h-14 rounded-2xl bg-card border-border/50 text-base shadow-sm focus-visible:ring-primary/20"
             />
           </div>
@@ -162,7 +162,7 @@ export default function FlashcardsCargos() {
                               
                               <div className="mt-auto pt-3 border-t border-border/40 flex items-center justify-between">
                                 <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
-                                  {cargo.edital_disciplinas ? `${cargo.edital_disciplinas.length} MatÃ©rias` : 'Edital'}
+                                  {cargo.edital_disciplinas ? `${cargo.edital_disciplinas.length} Matérias` : 'Edital'}
                                 </p>
                                 <ChevronRight className="w-4 h-4 text-primary group-hover:translate-x-0.5 transition-transform" />
                               </div>
