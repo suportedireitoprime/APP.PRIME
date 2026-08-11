@@ -227,11 +227,26 @@ const AdminAudioaulas = () => {
                         </div>
                         <div>
                           <p className="text-xs font-semibold text-muted-foreground mb-1 uppercase">Prompt - O que os narradores devem falar</p>
-                          <Textarea placeholder="Descreva como o narrador deve explicar esse artigo..." className="min-h-[100px] bg-background" />
+                          <Textarea 
+                            defaultValue="Explique este artigo de forma didática para leigos, trazendo exemplos práticos. Dê dicas e macetes para provas." 
+                            className="min-h-[100px] bg-background" 
+                          />
                         </div>
                         <div>
                           <p className="text-xs font-semibold text-muted-foreground mb-1 uppercase">O que deve citar</p>
                           <Textarea placeholder="Ex: Súmula 123 do STF..." className="min-h-[60px] bg-background" />
+                        </div>
+                        <div className="flex gap-2 items-center">
+                          <Link2 className="w-4 h-4 text-muted-foreground shrink-0" />
+                          <Input placeholder="Cole aqui o link do áudio (Drive)" className="bg-background" />
+                        </div>
+                        <div className="flex flex-wrap gap-2 pt-2">
+                          <Button 
+                            size="sm" 
+                            onClick={() => copiar(`TÍTULO: ${art.numero}\n\n=== LEI SECA ===\n${art.texto}\n\n=== PROMPT ===\nExplique este artigo de forma didática para leigos, trazendo exemplos práticos. Dê dicas e macetes para provas.`, 'Conteúdo copiado')}
+                          >
+                            <Copy className="w-3.5 h-3.5 mr-1.5" /> Copiar Tudo (Lei + Prompt)
+                          </Button>
                         </div>
                       </div>
                     )}
@@ -362,7 +377,13 @@ const AdminAudioaulas = () => {
         toast.error('Lei não encontrada no banco Vade Mecum');
         return;
       }
-      const { data: arts } = await supabase.from('vade_mecum_artigos').select('id, numero, texto, ordem').eq('lei_id', leiRef.id).order('ordem', { ascending: true }).limit(500);
+      const { data: arts } = await supabase
+        .from('vade_mecum_artigos')
+        .select('id, numero, texto, ordem')
+        .eq('lei_id', leiRef.id)
+        .ilike('numero', 'art%')
+        .order('ordem', { ascending: true })
+        .limit(500);
       setArtigosLei(arts || []);
     } catch (e: any) {
       toast.error('Erro ao buscar artigos');
