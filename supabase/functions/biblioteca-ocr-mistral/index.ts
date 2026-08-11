@@ -154,8 +154,8 @@ serve(async (req) => {
           .from("biblioteca_leitura_nativa")
           .update({
             status: "processando",
-            etapa: "Refinando com IA (limpeza + destaques)",
-            progresso: 5,
+            etapa: "Preparando processamento no GitHub Actions",
+            progresso: 1,
             total_etapas: 6,
             refino_status: "processando",
             refino_erro: null,
@@ -164,7 +164,23 @@ serve(async (req) => {
           .eq("livro_tabela", livro_tabela)
           .eq("livro_id", livro_id);
 
-        const task = invokeSelf({ action: "refino", livro_id, livro_tabela, force: true })
+        const task = triggerGitHubAction(body)
+          .then(async (r) => {
+            if (!r.ok) {
+              await supabase
+                .from("biblioteca_leitura_nativa")
+                .update({
+                  refino_status: "erro",
+                  refino_erro: `Falha ao acionar GitHub Actions (${r.status})`,
+                  status: "pronto",
+                  etapa: "Finalizado sem refino",
+                  progresso: 6,
+                  total_etapas: 6,
+                })
+                .eq("livro_tabela", livro_tabela)
+                .eq("livro_id", livro_id);
+            }
+          })
           .catch(async (e) => {
             await supabase
               .from("biblioteca_leitura_nativa")
@@ -180,13 +196,13 @@ serve(async (req) => {
               .eq("livro_id", livro_id);
           });
 
-        // @ts-ignore - EdgeRuntime é global no Supabase Edge Functions
+        // @ts-ignore
         if (typeof EdgeRuntime !== "undefined" && EdgeRuntime?.waitUntil) {
           // @ts-ignore
           EdgeRuntime.waitUntil(task);
         }
 
-        return json({ status: "processando", accepted: true, etapa: "refino" }, 202);
+        return json({ status: "processando", accepted: true, etapa: "Iniciando fila no GitHub" }, 202);
       }
 
       const updatedAt = existing?.updated_at ? new Date(existing.updated_at).getTime() : 0;
