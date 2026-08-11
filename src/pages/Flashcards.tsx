@@ -6,7 +6,7 @@ import FlashcardsBottomNav from '@/components/flashcards/FlashcardsBottomNav';
 import AreaTemasSheet from '@/components/flashcards/AreaTemasSheet';
 import { DesafiosCarousel } from '@/components/flashcards/DesafiosCarousel';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Calendar, ChevronRight, Flame, Search, Sparkles, Users, X, Trophy, Layers, Target, BarChart3, FolderPlus } from 'lucide-react';
+import { Calendar, ChevronRight, Flame, Search, Sparkles, Users, X, Trophy, Layers, Target, BarChart3, FolderPlus, RotateCcw } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { getAreaVisual } from '@/lib/flashcardsAreaVisual';
 import { haptic } from '@/lib/nativeHaptics';
@@ -79,19 +79,19 @@ const Flashcards = () => {
           {/* ── Ações Rápidas (3 botões) ───────────────── */}
           <section className="grid grid-cols-3 gap-2">
             <button
-              onClick={() => { haptic.selection(); navigate('/flashcards/progresso'); }}
-              className="flex flex-col items-center justify-center p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-emerald-500/50 transition-colors active:scale-95 gap-3"
-            >
-              <BarChart3 className="w-6 h-6 text-muted-foreground" />
-              <p className="text-xs font-bold text-foreground text-center leading-tight">Meu Progresso</p>
-            </button>
-
-            <button
               onClick={() => { haptic.selection(); navigate('/flashcards/decks'); }}
               className="flex flex-col items-center justify-center p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-emerald-500/50 transition-colors active:scale-95 gap-3"
             >
               <FolderPlus className="w-6 h-6 text-muted-foreground" />
               <p className="text-xs font-bold text-foreground text-center leading-tight">Meus Decks</p>
+            </button>
+
+            <button
+              onClick={() => { haptic.selection(); navigate('/flashcards/revisar'); }}
+              className="flex flex-col items-center justify-center p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-emerald-500/50 transition-colors active:scale-95 gap-3"
+            >
+              <RotateCcw className="w-6 h-6 text-muted-foreground" />
+              <p className="text-xs font-bold text-foreground text-center leading-tight">Minha Revisão</p>
             </button>
 
             <button

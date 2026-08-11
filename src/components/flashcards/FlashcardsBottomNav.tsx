@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { LayoutGrid, FolderPlus, RotateCcw, Route as RouteIcon, Trophy, Briefcase } from 'lucide-react';
+import { LayoutGrid, FolderPlus, RotateCcw, Route as RouteIcon, Trophy, Briefcase, BarChart3 } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
 const TABS = [
@@ -8,7 +8,7 @@ const TABS = [
   { id: 'trilhas', label: 'Trilhas', to: '/flashcards/trilhas', icon: RouteIcon, match: (p: string) => p.startsWith('/flashcards/trilhas') },
   { id: 'cargos', label: 'Cargos', to: '/flashcards/cargos', icon: Briefcase, match: (p: string) => p.startsWith('/flashcards/cargos') },
   { id: 'decks', label: 'Decks', to: '/flashcards/decks', icon: FolderPlus, match: (p: string) => p.startsWith('/flashcards/decks') },
-  { id: 'revisar', label: 'Revisar', to: '/flashcards/revisar', icon: RotateCcw, match: (p: string) => p.startsWith('/flashcards/revisar') },
+  { id: 'progresso', label: 'Progresso', to: '/flashcards/progresso', icon: BarChart3, match: (p: string) => p.startsWith('/flashcards/progresso') },
 ];
 
 
