@@ -363,51 +363,55 @@ const TrilhasDashboard = ({ concursos, onCreateNova, onOpenEdital }: { concursos
                 className="absolute right-0 top-0 h-full w-1/2 object-cover opacity-10 mix-blend-screen pointer-events-none"
               />
             )}
-            <div
-              onClick={() => {
-                haptic.light();
-                onOpenEdital();
-              }}
-              className="w-full cursor-pointer flex flex-col text-left p-4 relative z-10"
-            >
-              <div className="flex items-start justify-between mb-3 w-full">
-                <div className="flex items-center gap-3 pr-10">
-                  <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
-                    <Target className="w-5 h-5 text-primary" />
+            <div className="w-full flex items-stretch">
+              <div
+                onClick={() => {
+                  haptic.light();
+                  onOpenEdital();
+                }}
+                className="flex-1 cursor-pointer flex flex-col text-left p-4 relative z-10 pr-2"
+              >
+                <div className="flex items-start justify-between mb-3 w-full">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                      <Target className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-[9px] font-bold text-primary uppercase tracking-widest">Edital Completo</p>
+                      <p className="text-[13px] leading-snug font-bold text-foreground line-clamp-2">
+                        {editalConcurso?.titulo || 'Edital'}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-[9px] font-bold text-primary uppercase tracking-widest">Edital Completo</p>
-                    <p className="text-[13px] leading-snug font-bold text-foreground line-clamp-2">
-                      {editalConcurso?.titulo || 'Edital'}
+                </div>
+                
+                <div className="mt-auto">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <p className="text-[10px] font-bold text-muted-foreground">
+                      {trilhaAtiva.diasMeta * 2} aulas • {trilhaAtiva.diasMeta} dias
                     </p>
+                    <p className="text-[10px] font-bold text-primary">
+                      {Math.round((trilhaAtiva.diasConcluidos.length / trilhaAtiva.diasMeta) * 100)}%
+                    </p>
+                  </div>
+                  <div className="h-1.5 w-full rounded-full bg-black/40 overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-primary"
+                      style={{ width: `${Math.round((trilhaAtiva.diasConcluidos.length / trilhaAtiva.diasMeta) * 100)}%` }}
+                    />
                   </div>
                 </div>
               </div>
               
-              <div className="mt-auto">
-                <div className="flex items-center justify-between mb-1.5">
-                  <p className="text-[10px] font-bold text-muted-foreground">
-                    {trilhaAtiva.diasMeta * 2} aulas • {trilhaAtiva.diasMeta} dias
-                  </p>
-                  <p className="text-[10px] font-bold text-primary">
-                    {Math.round((trilhaAtiva.diasConcluidos.length / trilhaAtiva.diasMeta) * 100)}%
-                  </p>
-                </div>
-                <div className="h-1.5 w-full rounded-full bg-black/40 overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-primary"
-                    style={{ width: `${Math.round((trilhaAtiva.diasConcluidos.length / trilhaAtiva.diasMeta) * 100)}%` }}
-                  />
-                </div>
+              <div className="shrink-0 flex items-start justify-end p-4 relative z-30">
+                <button
+                  type="button"
+                  onClick={handleDeleteTrilha}
+                  className="p-2.5 bg-black/50 text-white/70 hover:bg-red-500/30 hover:text-red-400 active:bg-red-600/40 active:text-red-300 rounded-full backdrop-blur-md transition-colors flex items-center justify-center"
+                >
+                  <Trash2 className="w-5 h-5" />
+                </button>
               </div>
-              <button
-                type="button"
-                onPointerDown={(e) => { e.stopPropagation(); }}
-                onClick={handleDeleteTrilha}
-                className="absolute top-4 right-4 z-30 p-2.5 bg-black/50 text-white/70 hover:bg-red-500/30 hover:text-red-400 active:bg-red-600/40 active:text-red-300 rounded-full backdrop-blur-md transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
-              >
-                <Trash2 className="w-5 h-5" />
-              </button>
             </div>
           </div>
         )}
@@ -417,55 +421,59 @@ const TrilhasDashboard = ({ concursos, onCreateNova, onOpenEdital }: { concursos
           const capaArea = getCapaDaArea(areaTrilha.areaName);
           return (
           <div key={areaTrilha.areaSlug} className="relative w-full overflow-hidden rounded-3xl shadow-lg border border-border/40 bg-card/60 backdrop-blur-md hover:border-white/20 transition-all active:scale-[0.98]">
-            <div
-              onClick={() => {
-                haptic.light();
-                navigate(`/videoaulas/${areaTrilha.catalogoId}/${areaTrilha.areaSlug}`, { state: { tab: 'trilhas' } });
-              }}
-              className="w-full cursor-pointer flex flex-col text-left p-4 relative z-10"
-            >
-              <div className="flex items-start justify-between mb-3 w-full">
-                <div className="flex items-center gap-3 pr-10">
-                  <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center shrink-0 overflow-hidden">
-                    {capaArea ? (
-                      <img src={capaArea} alt={areaTrilha.areaName} className="w-full h-full object-cover" />
-                    ) : (
-                      <RouteIcon className="w-5 h-5 text-muted-foreground" />
-                    )}
+            <div className="w-full flex items-stretch">
+              <div
+                onClick={() => {
+                  haptic.light();
+                  navigate(`/videoaulas/${areaTrilha.catalogoId}/${areaTrilha.areaSlug}`, { state: { tab: 'trilhas' } });
+                }}
+                className="flex-1 cursor-pointer flex flex-col text-left p-4 relative z-10 pr-2"
+              >
+                <div className="flex items-start justify-between mb-3 w-full">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center shrink-0 overflow-hidden">
+                      {capaArea ? (
+                        <img src={capaArea} alt={areaTrilha.areaName} className="w-full h-full object-cover" />
+                      ) : (
+                        <RouteIcon className="w-5 h-5 text-muted-foreground" />
+                      )}
+                    </div>
+                    <div>
+                      <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Disciplina</p>
+                      <p className="text-[13px] leading-snug font-bold text-foreground line-clamp-2">
+                        {areaTrilha.areaName}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Disciplina</p>
-                    <p className="text-[13px] leading-snug font-bold text-foreground line-clamp-2">
-                      {areaTrilha.areaName}
+                </div>
+                
+                <div className="mt-auto">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <p className="text-[10px] font-bold text-muted-foreground">
+                      {areaTrilha.diasMeta * 2} aulas • {areaTrilha.diasMeta} dias
                     </p>
+                    <p className="text-[10px] font-bold text-primary">
+                      {Math.round((areaTrilha.diasConcluidos.length / areaTrilha.diasMeta) * 100)}%
+                    </p>
+                  </div>
+                  <div className="h-1.5 w-full rounded-full bg-black/40 overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-primary/70"
+                      style={{ width: `${Math.round((areaTrilha.diasConcluidos.length / areaTrilha.diasMeta) * 100)}%` }}
+                    />
                   </div>
                 </div>
               </div>
               
-              <div className="mt-auto">
-                <div className="flex items-center justify-between mb-1.5">
-                  <p className="text-[10px] font-bold text-muted-foreground">
-                    {areaTrilha.diasMeta * 2} aulas • {areaTrilha.diasMeta} dias
-                  </p>
-                  <p className="text-[10px] font-bold text-primary">
-                    {Math.round((areaTrilha.diasConcluidos.length / areaTrilha.diasMeta) * 100)}%
-                  </p>
-                </div>
-                <div className="h-1.5 w-full rounded-full bg-black/40 overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-primary/70"
-                    style={{ width: `${Math.round((areaTrilha.diasConcluidos.length / areaTrilha.diasMeta) * 100)}%` }}
-                  />
-                </div>
+              <div className="shrink-0 flex items-start justify-end p-4 relative z-30">
+                <button
+                  type="button"
+                  onClick={(e) => handleDeleteAreaTrilha(e, areaTrilha.areaSlug)}
+                  className="p-2.5 bg-black/50 text-white/70 hover:bg-red-500/30 hover:text-red-400 active:bg-red-600/40 active:text-red-300 rounded-full backdrop-blur-md transition-colors flex items-center justify-center"
+                >
+                  <Trash2 className="w-5 h-5" />
+                </button>
               </div>
-              <button
-                type="button"
-                onPointerDown={(e) => { e.stopPropagation(); }}
-                onClick={(e) => handleDeleteAreaTrilha(e, areaTrilha.areaSlug)}
-                className="absolute top-4 right-4 z-30 p-2.5 bg-black/50 text-white/70 hover:bg-red-500/30 hover:text-red-400 active:bg-red-600/40 active:text-red-300 rounded-full backdrop-blur-md transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
-              >
-                <Trash2 className="w-5 h-5" />
-              </button>
             </div>
           </div>
         )})}
