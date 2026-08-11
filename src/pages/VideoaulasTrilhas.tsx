@@ -7,7 +7,7 @@ import { useTrilhaStore } from '@/lib/trilhasStore';
 import { useAreaTrilhaStore } from '@/lib/areaTrilhasStore';
 import { loadConcursos, type ConcursoRow } from '@/lib/videoaulasStore';
 import { haptic } from '@/lib/nativeHaptics';
-import { slugify } from '@/lib/videoaulasCatalogos';
+import { slugify, getCapaDaArea } from '@/lib/videoaulasCatalogos';
 import VideoaulasBottomNav from '@/components/videoaulas/VideoaulasBottomNav';
 import { Drawer, DrawerContent, DrawerPortal, DrawerOverlay } from '@/components/ui/drawer';
 
@@ -318,6 +318,7 @@ const TrilhasDashboard = ({ concursos, onCreateNova, onOpenEdital }: { concursos
   const editalCapa = editalConcurso?.capa;
 
   const handleDeleteTrilha = (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
     if (window.confirm("Tem certeza que deseja apagar esta trilha? Todo o seu progresso será perdido.")) {
       limparTrilha();
@@ -325,6 +326,7 @@ const TrilhasDashboard = ({ concursos, onCreateNova, onOpenEdital }: { concursos
   };
 
   const handleDeleteAreaTrilha = (e: React.MouseEvent, slug: string) => {
+    e.preventDefault();
     e.stopPropagation();
     if (window.confirm("Tem certeza que deseja apagar esta trilha? Todo o seu progresso será perdido.")) {
       limparAreaTrilha(slug);
@@ -408,7 +410,9 @@ const TrilhasDashboard = ({ concursos, onCreateNova, onOpenEdital }: { concursos
         )}
 
         {/* Cartões das Trilhas de Disciplina (Área) */}
-        {areasArray.map((areaTrilha) => (
+        {areasArray.map((areaTrilha) => {
+          const capaArea = getCapaDaArea(areaTrilha.areaName);
+          return (
           <div key={areaTrilha.areaSlug} className="relative w-full overflow-hidden rounded-3xl shadow-lg border border-border/40 bg-card/60 backdrop-blur-md hover:border-white/20 transition-all active:scale-[0.98]">
             <button
               onClick={() => {
@@ -419,8 +423,12 @@ const TrilhasDashboard = ({ concursos, onCreateNova, onOpenEdital }: { concursos
             >
               <div className="flex items-start justify-between mb-3 w-full">
                 <div className="flex items-center gap-3 pr-10">
-                  <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center shrink-0">
-                    <RouteIcon className="w-5 h-5 text-muted-foreground" />
+                  <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center shrink-0 overflow-hidden">
+                    {capaArea ? (
+                      <img src={capaArea} alt={areaTrilha.areaName} className="w-full h-full object-cover" />
+                    ) : (
+                      <RouteIcon className="w-5 h-5 text-muted-foreground" />
+                    )}
                   </div>
                   <div>
                     <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Disciplina</p>
@@ -455,7 +463,7 @@ const TrilhasDashboard = ({ concursos, onCreateNova, onOpenEdital }: { concursos
               <Trash2 className="w-4 h-4" />
             </button>
           </div>
-        ))}
+        )})}
       </div>
     </div>
   );
