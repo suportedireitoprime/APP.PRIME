@@ -8,6 +8,7 @@ import { useAreaTrilhaStore } from '@/lib/areaTrilhasStore';
 import { loadConcursos, type ConcursoRow } from '@/lib/videoaulasStore';
 import { haptic } from '@/lib/nativeHaptics';
 import { slugify } from '@/lib/videoaulasCatalogos';
+import VideoaulasBottomNav from '@/components/videoaulas/VideoaulasBottomNav';
 import { Drawer, DrawerContent, DrawerPortal, DrawerOverlay } from '@/components/ui/drawer';
 
 // --- SETUP FASE 1: ESCOLHER EDITAL ---
