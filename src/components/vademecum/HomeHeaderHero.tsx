@@ -61,6 +61,8 @@ import NotificationsSheet, { useUnreadNotifCount } from './NotificationsSheet';
 import { pushRecente } from '@/lib/leisRecentes';
 import { useShortcutBadges } from '@/hooks/useShortcutBadges';
 import { prefetchHeroRoutesIdle, prefetchRoute, type PrefetchKey } from '@/lib/routePrefetch';
+import laurel from '@/assets/landing-tribunal/laurel-leaf.png';
+import scales from '@/assets/landing-tribunal/scales.png';
 
 const TIME_KEY = 'tempo_no_app_segundos';
 const DAILY_GOAL_SECONDS = 60 * 60; // 1h/dia para o anel de progresso
@@ -98,6 +100,13 @@ const HomeHeaderHero = ({ onSearchOpenChange }: { onSearchOpenChange?: (open: bo
   const [subtitleIndex, setSubtitleIndex] = useState(0);
   const [motifTick, setMotifTick] = useState(0);
   const [perfilLabel, setPerfilLabel] = useState<string>('');
+  const reduceMotion = useRef(false);
+
+  // Detecta reduce-motion para economizar bateria se o usuário preferir
+  useEffect(() => {
+    reduceMotion.current = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }, []);
+  const fallingLeaves = Array.from({ length: 8 }, (_, i) => i);
 
   // Prefetch dos 4 chunks das rotas dos atalhos em idle (Radares, Boletim, Blog, Biblioteca)
   useEffect(() => { prefetchHeroRoutesIdle(); }, []);
@@ -393,7 +402,60 @@ const HomeHeaderHero = ({ onSearchOpenChange }: { onSearchOpenChange?: (open: bo
           })()}
         </svg>
 
+        {/* Folhas de louro caindo (teto do painel) */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden z-[2]">
+          {fallingLeaves.map((i) => (
+            <img
+              key={`leaf-${i}`}
+              src={laurel}
+              alt=""
+              aria-hidden="true"
+              className="absolute -top-10 lp-fall"
+              style={{
+                left: `${(i * 12 + 5) % 100}%`,
+                width: `${12 + (i % 4) * 6}px`,
+                animationDuration: `${10 + (i % 4) * 3}s`,
+                animationDelay: `${i * 1.5}s`,
+                opacity: 0.65,
+                filter: 'drop-shadow(0 3px 6px rgba(0,0,0,0.5))',
+              }}
+            />
+          ))}
+        </div>
 
+        {/* Balanças e louros flutuantes de forma elegante */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden z-[2]">
+          <img
+            src={laurel}
+            alt=""
+            aria-hidden="true"
+            className="absolute left-[5%] top-[12%] w-8 md:w-12 lp-float"
+            style={{ opacity: 0.6, animationDuration: '6s' }}
+          />
+          <img
+            src={scales}
+            alt=""
+            aria-hidden="true"
+            className="absolute right-[8%] top-[18%] w-10 md:w-14 lp-float"
+            style={{
+              animationDirection: 'reverse',
+              animationDuration: '7s',
+              opacity: 0.6,
+              filter: 'drop-shadow(0 0 12px hsl(var(--primary) / 0.4))',
+            }}
+          />
+          <img
+            src={scales}
+            alt=""
+            aria-hidden="true"
+            className="absolute bottom-[20%] left-[10%] w-8 md:w-12 lp-float"
+            style={{
+              animationDelay: '1.5s',
+              animationDuration: '6.5s',
+              opacity: 0.4,
+            }}
+          />
+        </div>
 
         {/* Reflexo horizontal passando sobre os ícones esmaecidos */}
         
