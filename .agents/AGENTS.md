@@ -75,6 +75,7 @@
 - **Validação Prática:** Nunca declare conclusão de tarefa sem rodar `tsc.CMD --noEmit` ou o comando de verificação adequado.
 
 ## Validação Estrita de Infraestrutura & UI (Camada de Segurança)
+- **Acesso Direto às Chaves do Supabase:** Nós já possuímos acesso total a todas as chaves de API e Secrets do Supabase (estão no ambiente e no dashboard). Sempre que precisar integrar algo (como GitHub Actions, webhooks ou serviços externos) que dependa do Supabase, **nunca peça ao usuário para configurar chaves manualmente**. Utilize a injeção via código (ex: `Deno.env.get("SUPABASE_URL")` via client_payload) para repassar as credenciais de forma oculta e automatizada.
 - **Supabase (Buckets, Tabelas e Edge Functions):** NUNCA presuma o nome de um bucket ou tabela baseado no contexto de outros arquivos. Antes de implementar qualquer código que dependa da infraestrutura do Supabase, você DEVE consultar os dados reais usando a tool `call_mcp_tool` (ex: rodando `SELECT id, name FROM storage.buckets;` via `execute_sql`). Se não for possível usar o MCP, faça uma busca exaustiva (grep) por definições estáticas do projeto.
 - **Validação Prática com Browser:** Sempre que construir uma nova interface de administração ou fluxo complexo de UI, utilize a tool `browser_subagent` (ou teste manual se necessário) para simular o clique do usuário final, conferindo se os "toasts" de sucesso aparecem e se não ocorrem erros ("Bucket not found", "Unhandled Rejection", etc) antes de considerar a tarefa como concluída.
 
