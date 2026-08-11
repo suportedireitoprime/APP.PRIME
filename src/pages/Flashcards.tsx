@@ -6,10 +6,11 @@ import FlashcardsBottomNav from '@/components/flashcards/FlashcardsBottomNav';
 import AreaTemasSheet from '@/components/flashcards/AreaTemasSheet';
 import { DesafiosCarousel } from '@/components/flashcards/DesafiosCarousel';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Calendar, ChevronRight, Flame, Search, Sparkles, Users, X, Trophy } from 'lucide-react';
+import { Calendar, ChevronRight, Flame, Search, Sparkles, Users, X, Trophy, Layers, Target } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { getAreaVisual } from '@/lib/flashcardsAreaVisual';
 import { haptic } from '@/lib/nativeHaptics';
+import FlashcardsCargoHero from '@/components/flashcards/FlashcardsCargoHero';
 
 type Dash = {
   total_cards: number;
@@ -83,52 +84,50 @@ const Flashcards = () => {
       <div className="mx-auto w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] px-3 sm:px-6 lg:px-8">
         <PageHeader title="Flashcards" onBack={() => navigate('/')} />
 
-        <div className="pt-3 space-y-6">
+        <div className="-mx-3 sm:-mx-6 lg:-mx-8 mb-6 mt-1">
+          <FlashcardsCargoHero 
+            pct={pct} 
+            total={dash?.estudados || 0} 
+            hoje={dash?.hoje || 0} 
+            meta={100} 
+            disponiveis={dash?.total_cards || 0} 
+          />
+        </div>
+        
+        <div className="pt-1 space-y-6">
           {/* ── Desafios ───────────────────────── */}
           <DesafiosCarousel dash={dash} onVerTodos={() => setDesafiosSheet(true)} />
 
-          {/* ── Ações Rápidas (Revisão & Progresso) ───────────────── */}
-          <section className="flex flex-col gap-2">
+          {/* ── Ações Rápidas (3 botões) ───────────────── */}
+          <section className="grid grid-cols-3 gap-2">
             <button
-              onClick={() => {
-                haptic.selection();
-                navigate('/flashcards/revisao-inteligente');
-              }}
-              className="w-full flex items-center justify-between p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-primary/50 transition-colors active:scale-95"
+              onClick={() => { haptic.selection(); navigate('/flashcards/progresso'); }}
+              className="flex flex-col items-center justify-center p-3 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-primary/50 transition-colors active:scale-95 gap-2"
             >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Flame className="w-5 h-5 text-primary" />
-                </div>
-                <div className="text-left">
-                  <p className="text-sm font-bold text-foreground leading-tight">Revisar Cards</p>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">
-                    {paraHoje > 0 ? `${paraHoje} agendados para hoje` : 'Tudo em dia!'}
-                  </p>
-                </div>
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <Trophy className="w-5 h-5 text-primary" />
               </div>
-              <ChevronRight className="w-5 h-5 text-muted-foreground" />
+              <p className="text-xs font-bold text-foreground text-center leading-tight">Meu Progresso</p>
             </button>
 
             <button
-              onClick={() => {
-                haptic.selection();
-                navigate('/flashcards/progresso');
-              }}
-              className="w-full flex items-center justify-between p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-primary/50 transition-colors active:scale-95"
+              onClick={() => { haptic.selection(); navigate('/flashcards/decks'); }}
+              className="flex flex-col items-center justify-center p-3 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-primary/50 transition-colors active:scale-95 gap-2"
             >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Trophy className="w-5 h-5 text-primary" />
-                </div>
-                <div className="text-left">
-                  <p className="text-sm font-bold text-foreground leading-tight">Meu Progresso</p>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">
-                    {pct}% dos cards dominados
-                  </p>
-                </div>
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <Layers className="w-5 h-5 text-primary" />
               </div>
-              <ChevronRight className="w-5 h-5 text-muted-foreground" />
+              <p className="text-xs font-bold text-foreground text-center leading-tight">Meus Decks</p>
+            </button>
+
+            <button
+              onClick={() => { haptic.selection(); navigate('/flashcards/desafios'); }}
+              className="flex flex-col items-center justify-center p-3 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-primary/50 transition-colors active:scale-95 gap-2"
+            >
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <Target className="w-5 h-5 text-primary" />
+              </div>
+              <p className="text-xs font-bold text-foreground text-center leading-tight">Meus Desafios</p>
             </button>
           </section>
 
