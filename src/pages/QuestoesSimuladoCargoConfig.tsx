@@ -5,27 +5,23 @@ import {
   Gavel,
   ChevronRight,
   Loader2,
-  ArrowLeft,
   Play,
-  RotateCcw,
-  CheckCircle2,
-  XCircle,
   Clock,
   Sparkles,
-  BarChart3,
-  BookOpen,
   Sliders,
   Trophy,
   History,
-  AlertCircle
+  AlertCircle,
+  BarChart2
 } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 
 import ResolverPadrao from '@/components/questoes/ResolverPadrao';
-import { useQuestoesCargos, useQuestoesSessao, useQuestoesAreas, type Cargo, type Questao } from '@/hooks/useQuestoes';
+import { useQuestoesCargos, useQuestoesSessao, useQuestoesAreas, type Cargo } from '@/hooks/useQuestoes';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { haptic } from '@/lib/nativeHaptics';
 
 import prfLogo from '@/assets/cargos/policia-rodoviaria-federal.webp';
 import pfLogo from '@/assets/cargos/policia-federal.webp';
@@ -44,7 +40,6 @@ function getCargoLogo(nome?: string | null) {
 }
 
 const db = supabase as any;
-const TAMANHOS = [10, 20, 30, 50, 100];
 
 type SimuladoHistorico = {
   id: string;
@@ -60,18 +55,20 @@ export default function QuestoesSimuladoCargoConfig() {
   const { cargoId } = useParams<{ cargoId: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { cargos, loading: loadingCargos } = useQuestoesCargos();
+  const { cargos } = useQuestoesCargos();
 
   const [cargo, setCargo] = useState<Cargo | null>(null);
-  const [tamanho, setTamanho] = useState(20);
+  const [abaAtiva, setAbaAtiva] = useState<'config' | 'raioX'>('config');
+  const [tamanho, setTamanho] = useState<number>(20);
+  const [isTodasSelected, setIsTodasSelected] = useState(false);
+  const [isCustomSelected, setIsCustomSelected] = useState(false);
+  const [customInput, setCustomInput] = useState('45');
   const [disciplinaSelecionada, setDisciplinaSelecionada] = useState<string | null>(null);
   const [modoTempo, setModoTempo] = useState<'livre' | 'cronometrado'>('cronometrado');
-  const [modoCorrecao, setModoCorrecao] = useState<'imediata' | 'final'>('imediata');
   
   const [rodando, setRodando] = useState(false);
   const [segundos, setSegundos] = useState(0);
   const [historico, setHistorico] = useState<SimuladoHistorico[]>([]);
-  const [loadingHistorico, setLoadingHistorico] = useState(true);
   const [resultadoFinal, setResultadoFinal] = useState<{ acertos: number; total: number; tempo: number } | null>(null);
 
   const simuladoId = useRef<string | null>(null);
@@ -115,7 +112,6 @@ export default function QuestoesSimuladoCargoConfig() {
     if (!user || !cargo) return;
     let cancelado = false;
     (async () => {
-      setLoadingHistorico(true);
       const query = db.from('questoes_simulados').select('*').eq('user_id', user.id);
       if (cargo.id !== 'geral') {
         query.eq('cargo_id', cargo.id);
@@ -124,18 +120,26 @@ export default function QuestoesSimuladoCargoConfig() {
       if (!cancelado && data) {
         setHistorico(data as SimuladoHistorico[]);
       }
-      if (!cancelado) setLoadingHistorico(false);
     })();
     return () => { cancelado = true; };
   }, [user, cargo]);
 
+  // Limpa o nome do cargo (remove números no final como " 1")
+  const cleanNome = cargo?.nome ? cargo.nome.replace(/\s+\d+$/, '') : 'Simulado';
+
   // Hook de sessão de questões para o simulado
+  const finalLimite = isTodasSelected 
+    ? (cargo?.total_questoes || 100) 
+    : isCustomSelected 
+      ? (parseInt(customInput, 10) || 20) 
+      : tamanho;
+
   const { questoes, loading, recarregar, registrar } = useQuestoesSessao(
     rodando
       ? {
           cargoId: cargo?.id !== 'geral' ? cargo?.id : null,
           area: disciplinaSelecionada,
-          limite: tamanho,
+          limite: finalLimite,
         }
       : { limite: 1, cargoId: '00000000-0000-0000-0000-000000000000' }
   );
@@ -156,10 +160,10 @@ export default function QuestoesSimuladoCargoConfig() {
     if (user) {
       const { data } = await db.from('questoes_simulados').insert({
         user_id: user.id,
-        titulo: cargo ? `Simulado ${cargo.nome}` : 'Simulado Geral',
+        titulo: `Simulado ${cleanNome}`,
         cargo_id: cargo?.id !== 'geral' ? cargo?.id : null,
-        cargo: cargo?.nome ?? 'Geral',
-        total: tamanho,
+        cargo: cleanNome,
+        total: finalLimite,
       }).select('id').single();
 
       simuladoId.current = data?.id ?? null;
@@ -200,7 +204,7 @@ export default function QuestoesSimuladoCargoConfig() {
 
     setResultadoFinal({
       acertos: totalResp,
-      total: tamanho,
+      total: finalLimite,
       tempo: tempoGasto,
     });
 
@@ -214,10 +218,12 @@ export default function QuestoesSimuladoCargoConfig() {
     ? Math.round(historico.reduce((acc, curr) => acc + (curr.total > 0 ? (curr.acertos / curr.total) * 100 : 0), 0) / totalSimuladosFatos)
     : 0;
 
+  const totalDisciplinasQuestoes = disciplinas.reduce((acc, d) => acc + Number(d.total || 0), 0);
+
   return (
-    <div className="theme-questoes min-h-screen bg-background pb-[calc(8.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
+    <div className="theme-questoes min-h-screen bg-background pb-[calc(8.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-[calc(0.5rem+var(--sai-top,env(safe-area-inset-top,0px)))]">
       <PageHeader
-        title={cargo ? `Simulado ${cargo.nome}` : 'Configurar Simulado'}
+        title={`Simulado ${cleanNome}`}
         subtitle={rodando ? mmss : 'Personalize sua prova'}
         onBack={() => {
           if (rodando) {
@@ -230,170 +236,296 @@ export default function QuestoesSimuladoCargoConfig() {
         }}
       />
 
-      <div className="mx-auto w-full max-w-3xl px-4 py-5 space-y-6">
+      <div className="mx-auto w-full max-w-3xl px-3.5 sm:px-6 space-y-5 pt-2">
         {!rodando && !resultadoFinal ? (
           <>
             {/* Hero Card do Cargo */}
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-zinc-900 via-zinc-900 to-zinc-950 p-6 shadow-xl"
+              className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-zinc-900 via-zinc-900 to-zinc-950 p-5 sm:p-6 shadow-xl"
             >
               <div className="absolute -right-6 -bottom-6 w-32 h-32 rounded-full bg-primary/10 blur-2xl pointer-events-none" />
               
               <div className="flex items-center gap-4">
                 <div
-                  className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-lg p-2"
-                  style={{ background: cargo?.cor ? `${cargo.cor}25` : 'rgba(230,194,0,0.15)', border: `1px solid ${cargo?.cor || '#E6C200'}40` }}
+                  className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-lg p-2 bg-card/80 border border-white/10"
                 >
                   {getCargoLogo(cargo?.nome) ? (
                     <img src={getCargoLogo(cargo?.nome)!} alt="" className="w-10 h-10 object-contain drop-shadow-sm" />
                   ) : (
-                    <Gavel className="w-7 h-7" style={{ color: cargo?.cor || '#E6C200' }} />
+                    <Gavel className="w-7 h-7 text-primary" />
                   )}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight truncate">
-                    {cargo?.nome || 'Simulado Geral'}
+                  <h1 className="text-lg sm:text-xl font-black text-white tracking-wide uppercase leading-snug">
+                    {cleanNome}
                   </h1>
-                  <p className="text-xs sm:text-sm font-medium text-white/70 mt-0.5">
-                    {cargo?.total_questoes ? cargo.total_questoes.toLocaleString('pt-BR') : '25.000+'} questões oficiais cadastradas
+                  <p className="text-xs font-semibold text-white/70 mt-0.5">
+                    {cargo?.total_questoes ? cargo.total_questoes.toLocaleString('pt-BR') : '1.000+'} questões oficiais cadastradas
                   </p>
                 </div>
               </div>
 
               {/* Quick stats bar */}
-              <div className="grid grid-cols-3 gap-2 mt-5 pt-4 border-t border-white/10 text-center">
-                <div className="bg-white/5 rounded-xl p-2.5">
+              <div className="grid grid-cols-3 gap-2 mt-4 pt-3.5 border-t border-white/10 text-center">
+                <div className="bg-white/5 rounded-xl p-2">
                   <span className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Simulados</span>
                   <span className="text-base font-black text-white">{totalSimuladosFatos}</span>
                 </div>
-                <div className="bg-white/5 rounded-xl p-2.5">
+                <div className="bg-white/5 rounded-xl p-2">
                   <span className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Média</span>
                   <span className="text-base font-black text-emerald-400">{mediaAcertos}%</span>
                 </div>
-                <div className="bg-white/5 rounded-xl p-2.5">
+                <div className="bg-white/5 rounded-xl p-2">
                   <span className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Modo</span>
-                  <span className="text-base font-black text-amber-400">Oficial</span>
+                  <span className="text-base font-black text-purple-400">Oficial</span>
                 </div>
               </div>
             </motion.div>
 
-            {/* Painel de Configurações */}
-            <div className="rounded-3xl border border-border bg-card p-5 space-y-5 shadow-sm">
-              <div className="flex items-center gap-2 text-sm font-bold text-foreground border-b border-border pb-3">
-                <Sliders className="w-4 h-4 text-primary" />
-                <span>Configurações do Simulado</span>
-              </div>
+            {/* Alternância de Abas: Configurações vs Raio-X */}
+            <div className="flex bg-card border border-border/80 p-1 rounded-2xl shadow-sm">
+              <button
+                type="button"
+                onClick={() => { haptic.selection(); setAbaAtiva('config'); }}
+                className={`flex-1 py-2.5 rounded-xl font-extrabold text-xs transition-all flex items-center justify-center gap-2 ${
+                  abaAtiva === 'config'
+                    ? 'bg-purple-600 text-white shadow-md'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <Sliders className="w-4 h-4" />
+                Configurações
+              </button>
+              <button
+                type="button"
+                onClick={() => { haptic.selection(); setAbaAtiva('raioX'); }}
+                className={`flex-1 py-2.5 rounded-xl font-extrabold text-xs transition-all flex items-center justify-center gap-2 ${
+                  abaAtiva === 'raioX'
+                    ? 'bg-purple-600 text-white shadow-md'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <Sparkles className="w-4 h-4" />
+                Raio-X do Cargo
+              </button>
+            </div>
 
-              {/* Qtd de Questões */}
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2.5">
-                  Quantidade de Questões
-                </label>
-                <div className="grid grid-cols-5 gap-2">
-                  {TAMANHOS.map((t) => (
+            {abaAtiva === 'config' ? (
+              /* Painel de Configurações */
+              <div className="rounded-3xl border border-border bg-card p-5 space-y-5 shadow-sm">
+                <div className="flex items-center gap-2 text-sm font-extrabold text-foreground border-b border-border/60 pb-3">
+                  <Sliders className="w-4 h-4 text-purple-500" />
+                  <span>Personalize seu Simulado</span>
+                </div>
+
+                {/* Qtd de Questões */}
+                <div>
+                  <label className="block text-xs font-extrabold uppercase tracking-wider text-muted-foreground mb-2.5">
+                    Quantidade de Questões
+                  </label>
+                  <div className="flex flex-wrap gap-2">
                     <button
-                      key={t}
                       type="button"
-                      onClick={() => setTamanho(t)}
-                      className={`h-11 rounded-xl text-xs sm:text-sm font-extrabold transition-all active:scale-95 flex items-center justify-center ${
-                        tamanho === t
-                          ? 'bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 text-black shadow-md shadow-amber-500/20'
+                      onClick={() => {
+                        haptic.selection();
+                        setIsTodasSelected(true);
+                        setIsCustomSelected(false);
+                      }}
+                      className={`h-11 px-4 rounded-xl text-xs sm:text-sm font-extrabold transition-all active:scale-95 flex items-center justify-center ${
+                        isTodasSelected
+                          ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30 ring-2 ring-purple-500/40'
                           : 'bg-secondary text-foreground hover:bg-secondary/80 border border-border/50'
                       }`}
                     >
-                      {t}
+                      Todas
                     </button>
-                  ))}
-                </div>
-              </div>
 
-              {/* Disciplinas / Áreas */}
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2.5">
-                  Filtrar por Matéria (Opcional)
-                </label>
-                {loadingDisciplinas ? (
-                  <div className="flex justify-center py-4"><Loader2 className="w-5 h-5 animate-spin text-primary" /></div>
-                ) : (
-                  <div className="flex flex-wrap gap-2 max-h-36 overflow-y-auto pr-1">
+                    {[10, 20, 30, 50, 100].map((t) => {
+                      const active = !isTodasSelected && !isCustomSelected && tamanho === t;
+                      return (
+                        <button
+                          key={t}
+                          type="button"
+                          onClick={() => {
+                            haptic.selection();
+                            setIsTodasSelected(false);
+                            setIsCustomSelected(false);
+                            setTamanho(t);
+                          }}
+                          className={`h-11 px-3.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all active:scale-95 flex items-center justify-center ${
+                            active
+                              ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30 ring-2 ring-purple-500/40'
+                              : 'bg-secondary text-foreground hover:bg-secondary/80 border border-border/50'
+                          }`}
+                        >
+                          {t}
+                        </button>
+                      );
+                    })}
+
                     <button
                       type="button"
-                      onClick={() => setDisciplinaSelecionada(null)}
-                      className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${
-                        disciplinaSelecionada === null
-                          ? 'bg-primary text-white shadow-sm'
-                          : 'bg-secondary text-muted-foreground hover:text-foreground'
+                      onClick={() => {
+                        haptic.selection();
+                        setIsTodasSelected(false);
+                        setIsCustomSelected(true);
+                      }}
+                      className={`h-11 px-4 rounded-xl text-xs sm:text-sm font-extrabold transition-all active:scale-95 flex items-center justify-center ${
+                        isCustomSelected
+                          ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30 ring-2 ring-purple-500/40'
+                          : 'bg-secondary text-foreground hover:bg-secondary/80 border border-border/50'
                       }`}
                     >
-                      Todas as matérias
+                      Personalizado
                     </button>
-                    {disciplinas.map((d) => (
+                  </div>
+
+                  {isCustomSelected && (
+                    <div className="mt-3 flex items-center gap-2">
+                      <span className="text-xs font-semibold text-muted-foreground">Número de questões:</span>
+                      <input
+                        type="number"
+                        min="1"
+                        max="200"
+                        value={customInput}
+                        onChange={(e) => setCustomInput(e.target.value)}
+                        className="w-24 h-10 px-3 rounded-xl border border-border bg-muted/60 text-sm font-black text-foreground focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Disciplinas / Áreas */}
+                <div>
+                  <label className="block text-xs font-extrabold uppercase tracking-wider text-muted-foreground mb-2.5">
+                    Filtrar por Matéria (Opcional)
+                  </label>
+                  {loadingDisciplinas ? (
+                    <div className="flex justify-center py-4"><Loader2 className="w-5 h-5 animate-spin text-purple-500" /></div>
+                  ) : (
+                    <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto pr-1">
                       <button
-                        key={d.area}
                         type="button"
-                        onClick={() => setDisciplinaSelecionada(d.area)}
-                        className={`px-3 py-2 rounded-xl text-xs font-bold transition-all truncate max-w-[200px] ${
-                          disciplinaSelecionada === d.area
-                            ? 'bg-primary text-white shadow-sm'
-                            : 'bg-secondary text-muted-foreground hover:text-foreground'
+                        onClick={() => setDisciplinaSelecionada(null)}
+                        className={`px-3.5 py-2 rounded-xl text-xs font-extrabold transition-all ${
+                          disciplinaSelecionada === null
+                            ? 'bg-purple-600 text-white shadow-sm'
+                            : 'bg-secondary text-muted-foreground hover:text-foreground border border-border/50'
                         }`}
                       >
-                        {d.area} ({d.total})
+                        Todas as matérias
                       </button>
-                    ))}
+                      {disciplinas.map((d) => (
+                        <button
+                          key={d.area}
+                          type="button"
+                          onClick={() => setDisciplinaSelecionada(d.area)}
+                          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all truncate max-w-[220px] ${
+                            disciplinaSelecionada === d.area
+                              ? 'bg-purple-600 text-white shadow-sm'
+                              : 'bg-secondary text-muted-foreground hover:text-foreground border border-border/50'
+                          }`}
+                        >
+                          {d.area} ({d.total})
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Modo de Tempo */}
+                <div>
+                  <label className="block text-xs font-extrabold uppercase tracking-wider text-muted-foreground mb-2.5">
+                    Modo do Cronômetro
+                  </label>
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <button
+                      type="button"
+                      onClick={() => setModoTempo('cronometrado')}
+                      className={`p-3.5 rounded-2xl border text-left transition-all ${
+                        modoTempo === 'cronometrado'
+                          ? 'border-purple-500 bg-purple-500/10 text-foreground'
+                          : 'border-border bg-secondary/50 text-muted-foreground'
+                      }`}
+                    >
+                      <span className="flex items-center gap-2 text-xs font-extrabold text-foreground">
+                        <Clock className="w-4 h-4 text-purple-400" /> Cronometrado
+                      </span>
+                      <span className="block text-[11px] text-muted-foreground mt-1">Conta o tempo de resolução</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setModoTempo('livre')}
+                      className={`p-3.5 rounded-2xl border text-left transition-all ${
+                        modoTempo === 'livre'
+                          ? 'border-purple-500 bg-purple-500/10 text-foreground'
+                          : 'border-border bg-secondary/50 text-muted-foreground'
+                      }`}
+                    >
+                      <span className="flex items-center gap-2 text-xs font-extrabold text-foreground">
+                        <Timer className="w-4 h-4 text-emerald-400" /> Sem Pressão
+                      </span>
+                      <span className="block text-[11px] text-muted-foreground mt-1">Treine livremente sem relógio</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              /* Aba Raio-X do Cargo */
+              <div className="rounded-3xl border border-border bg-card p-5 space-y-4 shadow-sm">
+                <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                  <div className="flex items-center gap-2 text-sm font-extrabold text-foreground">
+                    <BarChart2 className="w-4.5 h-4.5 text-purple-400" />
+                    <span>Raio-X de Incidência de Matérias</span>
+                  </div>
+                  <span className="text-xs font-bold text-purple-400 bg-purple-500/10 px-2.5 py-0.5 rounded-full">
+                    {disciplinas.length} disciplinas
+                  </span>
+                </div>
+
+                <p className="text-xs text-muted-foreground">
+                  Proporção de questões por disciplina neste edital/cargo:
+                </p>
+
+                {loadingDisciplinas ? (
+                  <div className="flex justify-center py-6"><Loader2 className="w-6 h-6 animate-spin text-purple-500" /></div>
+                ) : disciplinas.length === 0 ? (
+                  <div className="py-6 text-center text-xs text-muted-foreground">Sem dados de disciplinas ainda.</div>
+                ) : (
+                  <div className="space-y-3 pt-1">
+                    {disciplinas.map((d) => {
+                      const perc = totalDisciplinasQuestoes > 0 ? Math.round((Number(d.total) / totalDisciplinasQuestoes) * 100) : 0;
+                      return (
+                        <div key={d.area} className="space-y-1.5 bg-muted/40 p-3 rounded-2xl border border-border/40">
+                          <div className="flex items-center justify-between text-xs font-bold">
+                            <span className="text-foreground truncate max-w-[220px]">{d.area}</span>
+                            <span className="text-purple-400 font-extrabold">{d.total} q. ({perc}%)</span>
+                          </div>
+                          <div className="w-full bg-secondary h-2 rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-gradient-to-r from-purple-600 to-indigo-500 rounded-full transition-all duration-500" 
+                              style={{ width: `${Math.max(perc, 4)}%` }} 
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </div>
+            )}
 
-              {/* Modo de Tempo */}
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2.5">
-                  Modo do Cronômetro
-                </label>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setModoTempo('cronometrado')}
-                    className={`p-3 rounded-2xl border text-left transition-all ${
-                      modoTempo === 'cronometrado'
-                        ? 'border-primary bg-primary/10 text-foreground'
-                        : 'border-border bg-secondary/50 text-muted-foreground'
-                    }`}
-                  >
-                    <span className="flex items-center gap-2 text-xs font-extrabold text-foreground">
-                      <Clock className="w-4 h-4 text-primary" /> Cronometrado
-                    </span>
-                    <span className="block text-[11px] text-muted-foreground mt-1">Conta o tempo exato de resolução</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setModoTempo('livre')}
-                    className={`p-3 rounded-2xl border text-left transition-all ${
-                      modoTempo === 'livre'
-                        ? 'border-primary bg-primary/10 text-foreground'
-                        : 'border-border bg-secondary/50 text-muted-foreground'
-                    }`}
-                  >
-                    <span className="flex items-center gap-2 text-xs font-extrabold text-foreground">
-                      <Timer className="w-4 h-4 text-emerald-400" /> Sem Pressão
-                    </span>
-                    <span className="block text-[11px] text-muted-foreground mt-1">Treine livremente sem relógio</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Botão Principal de Início */}
+            {/* Botão Principal de Início (Roxo, Responsivo, Destacado) */}
             <motion.button
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.98 }}
-              onClick={iniciar}
-              className="w-full h-15 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 text-black font-black text-base tracking-wide flex items-center justify-center gap-3 shadow-xl shadow-amber-500/25 active:scale-95 transition-all"
+              onClick={() => { haptic.impact(); iniciar(); }}
+              className="w-full h-15 sm:h-16 rounded-2xl bg-purple-600 hover:bg-purple-500 text-white font-black text-base sm:text-lg tracking-wide flex items-center justify-center gap-3 shadow-xl shadow-purple-600/30 active:scale-98 transition-all cursor-pointer"
             >
-              <Play className="w-5 h-5 fill-black" />
-              <span>INICIAR SIMULADO ({tamanho} QUESTÕES)</span>
+              <Play className="w-5 h-5 fill-white" />
+              <span>INICIAR SIMULADO ({finalLimite} QUESTÕES)</span>
             </motion.button>
 
             {/* Histórico Recente do Cargo */}
@@ -401,8 +533,8 @@ export default function QuestoesSimuladoCargoConfig() {
               <div className="rounded-3xl border border-border bg-card p-5 space-y-3">
                 <div className="flex items-center justify-between text-sm font-bold text-foreground border-b border-border pb-2.5">
                   <span className="flex items-center gap-2">
-                    <History className="w-4 h-4 text-primary" />
-                    <span>Últimos Simulados</span>
+                    <History className="w-4 h-4 text-purple-400" />
+                    <span>Últimos Simulados Realizados</span>
                   </span>
                   <span className="text-xs text-muted-foreground font-semibold">{historico.length} recentes</span>
                 </div>
@@ -422,7 +554,7 @@ export default function QuestoesSimuladoCargoConfig() {
                           <span className="block text-[11px] text-muted-foreground mt-0.5">{dataStr}</span>
                         </div>
                         <div className="text-right">
-                          <span className={`block text-xs font-black ${pct >= 70 ? 'text-emerald-400' : 'text-amber-400'}`}>
+                          <span className={`block text-xs font-black ${pct >= 70 ? 'text-emerald-400' : 'text-purple-400'}`}>
                             {h.acertos}/{h.total} ({pct}%)
                           </span>
                           <span className="block text-[10px] text-muted-foreground">
@@ -443,13 +575,13 @@ export default function QuestoesSimuladoCargoConfig() {
             animate={{ opacity: 1, scale: 1 }}
             className="rounded-3xl border border-border bg-card p-6 text-center space-y-6 shadow-xl"
           >
-            <div className="w-20 h-20 rounded-full bg-primary/15 text-primary mx-auto flex items-center justify-center">
-              <Trophy className="w-10 h-10 text-primary" />
+            <div className="w-20 h-20 rounded-full bg-purple-500/15 text-purple-400 mx-auto flex items-center justify-center">
+              <Trophy className="w-10 h-10 text-purple-400" />
             </div>
 
             <div>
-              <h2 className="text-2xl font-black text-foreground">Simulado Finalizado!</h2>
-              <p className="text-sm text-muted-foreground mt-1">Confira o seu resultado no simulado de {cargo?.nome || 'Geral'}:</p>
+              <h2 className="text-2xl font-black text-foreground">Simulado Concluído!</h2>
+              <p className="text-sm text-muted-foreground mt-1">Resultado da sua prova de {cleanNome}:</p>
             </div>
 
             <div className="grid grid-cols-3 gap-3">
@@ -463,7 +595,7 @@ export default function QuestoesSimuladoCargoConfig() {
               </div>
               <div className="bg-secondary/70 rounded-2xl p-4 border border-border/50">
                 <span className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">Aproveitamento</span>
-                <span className="text-2xl font-black text-amber-400">
+                <span className="text-2xl font-black text-purple-400">
                   {Math.round((resultadoFinal.acertos / resultadoFinal.total) * 100)}%
                 </span>
               </div>
@@ -473,7 +605,7 @@ export default function QuestoesSimuladoCargoConfig() {
               <button
                 type="button"
                 onClick={iniciar}
-                className="w-full h-13 rounded-2xl bg-primary text-white font-bold text-sm hover:bg-primary/90 transition-all shadow-md active:scale-95"
+                className="w-full h-14 rounded-2xl bg-purple-600 text-white font-bold text-sm hover:bg-purple-500 transition-all shadow-md active:scale-95"
               >
                 Refazer Simulado
               </button>
@@ -512,3 +644,4 @@ export default function QuestoesSimuladoCargoConfig() {
     </div>
   );
 }
+
