@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Play, Trash2, Sparkles, CheckCircle2, AlertCircle, Settings, Image as ImageIcon, Headphones, Loader2, Pause, Volume2, Wand2, CalendarClock, PenLine, ImagePlus, Bell, ChevronRight, Zap } from 'lucide-react';
+import { Play, Trash2, Sparkles, CheckCircle2, AlertCircle, Settings, Image as ImageIcon, Headphones, Loader2, Pause, Volume2, Wand2, CalendarClock, PenLine, ImagePlus, Bell, ChevronRight, Zap, Edit3, Database, Library } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/PageHeader';
-import GcpMonitorWidget from '@/components/admin/GcpMonitorWidget';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { TEMA_COLORS } from '@/data/blogPosts';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useGoBack } from '@/hooks/useGoBack';
 
@@ -26,6 +26,19 @@ type Tema = {
   audio_duration_seconds?: number | null;
   audio_cost_credits?: number | null;
   imagem_url?: string | null;
+};
+
+type BancoPost = {
+  id: string;
+  titulo: string;
+  categoria: string;
+  conteudo_md: string;
+  imagem_url: string;
+  imagem_path?: string | null;
+  publicado: boolean;
+  created_at: string;
+  audio_url?: string | null;
+  tema_id?: string | null;
 };
 
 type Config = {
@@ -76,7 +89,11 @@ const mesmoDia = (isoOrDate: string | Date | null | undefined) => {
 export default function AdminBlogEdicao() {
   const navigate = useNavigate();
   const goBack = useGoBack();
-  const [tab, setTab] = useState<'biblioteca' | 'em_fila' | 'concluidos'>('em_fila');
+  const [tab, setTab] = useState<'biblioteca' | 'em_fila' | 'concluidos' | 'banco'>('em_fila');
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [bancoPosts, setBancoPosts] = useState<BancoPost[]>([]);
+  const [editingPost, setEditingPost] = useState<BancoPost | null>(null);
+  const [savingPost, setSavingPost] = useState(false);
   const [temas, setTemas] = useState<Tema[]>([]);
   const [config, setConfig] = useState<Config | null>(null);
   const [loading, setLoading] = useState(false);
@@ -128,6 +145,16 @@ export default function AdminBlogEdicao() {
   };
 
   useEffect(() => { load(); }, []);
+
+  const loadBanco = async () => {
+    setLoading(true);
+    const { data } = await supabase.from('blog_edicao_posts').select('*').order('created_at', { ascending: false });
+    if (data) setBancoPosts(data as BancoPost[]);
+    setLoading(false);
+  };
+  useEffect(() => {
+    if (tab === 'banco' && bancoPosts.length === 0) loadBanco();
+  }, [tab]);
 
   useEffect(() => {
     let cancelled = false;
@@ -298,6 +325,40 @@ export default function AdminBlogEdicao() {
     if (!confirm('Remover este tema?')) return;
     await supabase.from('blog_edicao_temas').delete().eq('id', id);
     await load();
+  };
+
+  const salvarPostEditado = async () => {
+    if (!editingPost) return;
+    setSavingPost(true);
+    const updates: any = {
+      titulo: editingPost.titulo,
+      conteudo_md: editingPost.conteudo_md,
+      imagem_url: editingPost.imagem_url,
+    };
+    if (editingPost.imagem_path !== undefined) updates.imagem_path = editingPost.imagem_path;
+    const { error } = await supabase.from('blog_edicao_posts').update(updates).eq('id', editingPost.id);
+    setSavingPost(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success('Artigo salvo com sucesso!');
+    setEditingPost(null);
+    loadBanco();
+  };
+
+  const handleCapaUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || !e.target.files[0] || !editingPost) return;
+    const file = e.target.files[0];
+    const ext = file.name.split('.').pop();
+    const fileName = `${editingPost.id}-${Date.now()}.${ext}`;
+    toast.loading('Enviando imagem...', { id: 'upload-capa' });
+    try {
+      const { error: uploadError } = await supabase.storage.from('blog-capas').upload(fileName, file);
+      if (uploadError) throw uploadError;
+      const { data: { publicUrl } } = supabase.storage.from('blog-capas').getPublicUrl(fileName);
+      setEditingPost({ ...editingPost, imagem_url: publicUrl, imagem_path: fileName });
+      toast.success('Imagem carregada!', { id: 'upload-capa' });
+    } catch (err: any) {
+      toast.error('Erro ao enviar: ' + err.message, { id: 'upload-capa' });
+    }
   };
 
   const salvarConfig = async () => {
@@ -484,17 +545,17 @@ export default function AdminBlogEdicao() {
 
       <div className="p-4 space-y-4">
         {/* Hero: data grande + timeline */}
-        <div className="rounded-2xl bg-gradient-to-br from-primary/25 via-primary/10 to-transparent border border-primary/30 p-5">
-          <div className="text-[10px] uppercase tracking-[0.2em] text-primary/80 font-bold mb-2">
+        <div className="rounded-2xl bg-gradient-to-br from-primary/25 via-primary/10 to-transparent border border-primary/30 p-4">
+          <div className="text-[10px] uppercase tracking-[0.2em] text-primary/80 font-bold mb-1">
             Hoje
           </div>
-          <div className="text-3xl sm:text-4xl font-display font-black tracking-tight text-foreground leading-tight capitalize">
+          <div className="text-xl sm:text-2xl font-display font-black tracking-tight text-foreground leading-tight capitalize">
             {hojeFormatado}
           </div>
 
           {/* Timeline horizontal dos horários */}
           {timelineSlots.length > 0 && (
-            <div className="mt-5 relative">
+            <div className="mt-3 relative">
               {/* linha de fundo */}
               <div className="absolute left-4 right-4 top-4 h-0.5 bg-primary/20" />
               {/* linha preenchida (até último enviado) */}
@@ -545,7 +606,7 @@ export default function AdminBlogEdicao() {
           )}
 
           {proximaGeracao.item && (
-            <div className="mt-5 pt-4 border-t border-primary/20">
+            <div className="mt-3 pt-3 border-t border-primary/20">
               <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Próximo artigo · {proximaGeracao.horario}</div>
               <div className="text-sm font-semibold line-clamp-2">{proximaGeracao.item.titulo_sugerido}</div>
               <div className="text-[11px] text-muted-foreground mt-0.5">{proximaGeracao.item.categoria}</div>
@@ -553,31 +614,47 @@ export default function AdminBlogEdicao() {
           )}
         </div>
 
-        {/* Custos GCP (Gemini, TTS, etc.) */}
-        <GcpMonitorWidget />
-
-        {/* Tabs */}
-        <div className="flex gap-1 p-1 bg-secondary/50 rounded-xl">
+        {/* Menu Principal */}
+        <div className="space-y-2 mt-4">
           {([
-            { id: 'em_fila', label: 'Em fila', count: filaHoje.length },
-            { id: 'biblioteca', label: 'Biblioteca', count: biblioteca.length },
-            { id: 'concluidos', label: 'Concluídos', count: concluidos.length },
-          ] as const).map(t => (
-            <button
-              key={t.id}
-              onClick={() => setTab(t.id)}
-              className={`flex-1 py-2 text-xs font-semibold rounded-lg transition ${tab === t.id ? 'bg-background text-foreground' : 'text-muted-foreground'}`}
-            >
-              {t.label}
-              <span className="ml-1 opacity-60">({t.count})</span>
-            </button>
-          ))}
+            { id: 'em_fila', label: 'Em fila', count: filaHoje.length, icon: CalendarClock, color: 'text-blue-400', bg: 'bg-blue-500/10' },
+            { id: 'biblioteca', label: 'Biblioteca', count: biblioteca.length, icon: Library, color: 'text-purple-400', bg: 'bg-purple-500/10' },
+            { id: 'concluidos', label: 'Concluídos', count: concluidos.length, icon: CheckCircle2, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+            { id: 'banco', label: 'Banco Oficial', count: bancoPosts.length > 0 ? bancoPosts.length : '?', icon: Database, color: 'text-amber-400', bg: 'bg-amber-500/10' },
+          ] as const).map(t => {
+            const Icon = t.icon;
+            return (
+              <button
+                key={t.id}
+                onClick={() => { setTab(t.id as any); setIsDrawerOpen(true); }}
+                className="w-full flex items-center justify-between p-4 rounded-xl bg-secondary/40 border border-border/50 hover:bg-secondary/60 transition active:scale-[0.99]"
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${t.bg}`}>
+                    <Icon className={`w-5 h-5 ${t.color}`} />
+                  </div>
+                  <span className="font-semibold text-foreground">{t.label}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-bold text-muted-foreground">{t.count}</span>
+                  <ChevronRight className="w-5 h-5 text-muted-foreground/50" />
+                </div>
+              </button>
+            )
+          })}
         </div>
 
-        {/* Lista */}
-        <div className="space-y-2">
+      <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+        <DrawerContent className="max-h-[85vh]">
+          <DrawerHeader className="border-b border-border/40 pb-4">
+            <DrawerTitle>
+              {tab === 'em_fila' ? 'Em fila' : tab === 'biblioteca' ? 'Biblioteca' : tab === 'concluidos' ? 'Concluídos' : 'Banco Oficial'}
+            </DrawerTitle>
+          </DrawerHeader>
+          <div className="p-4 overflow-y-auto" style={{ overscrollBehavior: 'contain' }}>
+            <div className="space-y-2">
           {loading && <div className="text-center text-muted-foreground py-8">Carregando…</div>}
-          {!loading && filtered.length === 0 && (
+          {!loading && tab !== 'banco' && filtered.length === 0 && (
             <div className="text-center text-muted-foreground py-8 text-sm">
               {tab === 'em_fila'
                 ? 'Nenhum artigo agendado para hoje.'
@@ -586,7 +663,37 @@ export default function AdminBlogEdicao() {
                 : 'Ainda nada publicado.'}
             </div>
           )}
-          {filtered.map(t => {
+          {!loading && tab === 'banco' && bancoPosts.length === 0 && (
+            <div className="text-center text-muted-foreground py-8 text-sm">
+              Nenhum artigo no banco.
+            </div>
+          )}
+          {tab === 'banco' && bancoPosts.map(p => (
+            <div key={p.id} className="rounded-xl bg-secondary/40 border border-border/50 p-3">
+              <div className="flex items-start gap-3">
+                {p.imagem_url && (
+                  <img src={p.imagem_url} alt={p.titulo} loading="lazy" className="w-20 h-20 rounded-lg object-cover border border-border/50 flex-shrink-0" />
+                )}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${p.publicado ? 'bg-emerald-500/20 text-emerald-300' : 'bg-secondary text-muted-foreground'}`}>{p.publicado ? 'Publicado' : 'Rascunho'}</span>
+                    <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-md bg-secondary text-muted-foreground">{new Date(p.created_at).toLocaleDateString('pt-BR')}</span>
+                  </div>
+                  <div className="text-sm font-semibold text-foreground line-clamp-2">{p.titulo}</div>
+                  <div className="text-xs text-muted-foreground mt-1 line-clamp-2">{p.categoria}</div>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <button onClick={() => setEditingPost(p)} className="p-2 rounded-lg bg-blue-500/10 text-blue-300 hover:bg-blue-500/20" title="Editar">
+                    <Edit3 className="w-3.5 h-3.5" />
+                  </button>
+                  <button onClick={() => { regerarCapa(p.id); }} className="p-2 rounded-lg bg-amber-500/10 text-amber-300 hover:bg-amber-500/20" title="Regerar capa">
+                    <ImageIcon className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+          {tab !== 'banco' && filtered.map(t => {
             const horario = (t as any).horario as string | undefined;
             const isConcluido = t.status === 'concluido';
             return (
@@ -730,7 +837,10 @@ export default function AdminBlogEdicao() {
               </div>
             );
           })}
-        </div>
+            </div>
+          </div>
+        </DrawerContent>
+      </Drawer>
       </div>
 
       {/* Config Sheet */}
@@ -1025,6 +1135,58 @@ export default function AdminBlogEdicao() {
             <div className="flex gap-2 pt-4 sticky bottom-0 bg-background">
               <button onClick={() => setConfigSection(null)}
                 className="flex-1 rounded-xl bg-secondary font-semibold py-2.5 text-sm">Fechar</button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Editar Artigo Dialog */}
+      <Dialog open={!!editingPost} onOpenChange={o => !o && setEditingPost(null)}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl">
+          <DialogHeader><DialogTitle>Editar Artigo</DialogTitle></DialogHeader>
+          {editingPost && (
+            <div className="space-y-4 pt-2">
+              <label className="block">
+                <span className="text-xs text-muted-foreground">Título</span>
+                <input type="text" value={editingPost.titulo} onChange={e => setEditingPost({...editingPost, titulo: e.target.value})} className="w-full mt-1 rounded-lg bg-secondary px-3 py-2 font-semibold" />
+              </label>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="md:col-span-2 space-y-4">
+                  <label className="block">
+                    <span className="text-xs text-muted-foreground">Conteúdo (Markdown)</span>
+                    <textarea value={editingPost.conteudo_md} onChange={e => setEditingPost({...editingPost, conteudo_md: e.target.value})} className="w-full mt-1 rounded-lg bg-secondary px-3 py-2 text-sm font-mono" rows={20} />
+                  </label>
+                </div>
+                <div className="space-y-4">
+                  <label className="block">
+                    <span className="text-xs text-muted-foreground">Capa Atual</span>
+                    {editingPost.imagem_url ? (
+                      <img src={editingPost.imagem_url} alt="Capa" className="w-full h-auto mt-1 rounded-lg object-cover aspect-video border border-border/50" />
+                    ) : (
+                      <div className="w-full mt-1 aspect-video rounded-lg bg-secondary flex items-center justify-center text-xs text-muted-foreground">Sem imagem</div>
+                    )}
+                  </label>
+                  <label className="block">
+                    <span className="text-xs text-muted-foreground">URL da Imagem</span>
+                    <input type="text" value={editingPost.imagem_url || ''} onChange={e => setEditingPost({...editingPost, imagem_url: e.target.value})} className="w-full mt-1 rounded-lg bg-secondary px-3 py-2 text-sm" placeholder="https://..." />
+                  </label>
+                  <div className="pt-2 border-t border-border/50">
+                    <span className="text-xs text-muted-foreground block mb-2">Upload de nova imagem</span>
+                    <input type="file" accept="image/*" onChange={handleCapaUpload} className="text-sm" />
+                  </div>
+                  <div className="pt-2">
+                    <button onClick={() => { regerarCapa(editingPost.id); setEditingPost(null); }} className="w-full p-2 rounded-lg bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 text-sm font-semibold flex items-center justify-center gap-2">
+                      <Wand2 className="w-4 h-4" /> Regerar Capa com IA
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div className="flex gap-2 pt-4 sticky bottom-0 bg-background border-t border-border/50 mt-4">
+                <button onClick={() => setEditingPost(null)} className="flex-1 rounded-xl bg-secondary font-semibold py-2.5 text-sm">Cancelar</button>
+                <button onClick={salvarPostEditado} disabled={savingPost} className="flex-1 rounded-xl bg-primary text-primary-foreground font-semibold py-2.5 text-sm">
+                  {savingPost ? 'Salvando...' : 'Salvar Alterações'}
+                </button>
+              </div>
             </div>
           )}
         </DialogContent>

@@ -33,14 +33,15 @@ Deno.serve(async (req) => {
     const { hour, minute, ymd } = hoursInTz(now, tz);
     const nowMin = hour * 60 + minute;
 
-    // Contagem de posts já gerados hoje
-    const startOfDay = new Date(`${ymd}T00:00:00`);
+    // Contagem de posts já gerados hoje (resiliência de timezone local)
+    // Assume-se UTC-3 (America/Sao_Paulo) para a meia-noite local.
+    const startOfDayStr = `${ymd}T00:00:00-03:00`;
     // Conta apenas posts JÁ PUBLICADOS hoje (posts pré-gerados aguardam liberação)
     const { count: postsHoje } = await supabase
       .from("blog_edicao_posts")
       .select("id", { count: "exact", head: true })
       .eq("publicado", true)
-      .gte("data_publicacao", startOfDay.toISOString());
+      .gte("data_publicacao", startOfDayStr);
 
     if ((postsHoje ?? 0) >= (cfg.posts_por_dia ?? 3)) {
       return json({ ok: true, skipped: "quota diária atingida", postsHoje });
@@ -68,8 +69,8 @@ Deno.serve(async (req) => {
         const [hh, mm] = h.split(":").map(Number);
         return hh * 60 + (mm || 0);
       });
-      // dispara se estamos até 6 minutos após um horário-alvo
-      const proximo = alvos.find((a) => nowMin >= a && nowMin - a < 6);
+      // dispara se estamos até 30 minutos após um horário-alvo (para absorver atrasos no cron)
+      const proximo = alvos.find((a) => nowMin >= a && nowMin - a < 30);
       if (proximo != null) {
         // e ainda não geramos naquele slot (baseado em quantidade do dia)
         if ((postsHoje ?? 0) < alvos.filter((a) => a <= nowMin).length) {
