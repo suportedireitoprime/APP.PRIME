@@ -152,7 +152,7 @@ const CATEGORIES: Category[] = [
       { id: 'boletins', label: 'Boletins Editar', icon: Rss, desc: 'Newsletters e boletins', route: '/newsletter' },
       // Biblioteca
       { id: 'biblioteca-editar', label: 'Biblioteca Editar', icon: BookOpen, desc: 'Sinopse, capa horizontal e análise técnica com IA', route: '/admin-biblioteca-editar' },
-      { id: 'leitura-nativa', label: 'Leitura Nativa (OCR + Gemini)', icon: FileText, desc: 'OCR de PDFs + refino Gemini com capítulos, individual ou em lote', route: '/admin-leitura-nativa' },
+      { id: 'leitura-nativa', label: 'Leitura Nativa', icon: FileText, desc: 'Extração instantânea de PDFs em segundo plano com divisão de capítulos', route: '/admin-leitura-nativa' },
       { id: 'audioaulas', label: 'Audioaulas', icon: PlayCircle, desc: 'Gera títulos e prompts de podcast a partir da leitura nativa', route: '/admin-audioaulas' },
       { id: 'leis-cantadas', label: 'Leis Cantadas Editar', icon: PlayCircle, desc: 'Gera prompts de música (sertanejo, pagode, rock...) e publica as faixas', route: '/admin-leis-cantadas' },
       // Radar Legislativo
