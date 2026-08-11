@@ -106,28 +106,7 @@ const QuestoesSimulado = () => {
             {loadingCargos ? (
               <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
             ) : (
-              <div className="grid grid-cols-2 gap-3">
-                {/* Simulado Geral Card */}
-                <button
-                  type="button"
-                  onClick={() => { haptic.selection(); navigate('/questoes/simulado/geral'); }}
-                  className="group flex flex-col justify-between p-4 rounded-2xl border border-border/80 bg-card hover:border-primary/50 transition-all active:scale-98 shadow-sm text-left gap-3.5 col-span-2 sm:col-span-1"
-                >
-                  <div className="flex items-center justify-between w-full">
-                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                      <Timer className="h-5 w-5 text-primary" />
-                    </div>
-                    <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
-                  </div>
-                  <div>
-                    <span className="block text-sm font-extrabold text-foreground leading-tight">Simulado Geral</span>
-                    <span className="block text-[11px] text-muted-foreground mt-1 line-clamp-2">
-                      Questões mescladas de todos os cargos e exames
-                    </span>
-                  </div>
-                </button>
-
-                {/* Cargo Cards */}
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 items-stretch">
                 {cargos.map((c) => {
                   const logo = getCargoLogo(c.nome);
                   return (
@@ -135,22 +114,24 @@ const QuestoesSimulado = () => {
                       key={c.id}
                       type="button"
                       onClick={() => { haptic.selection(); navigate(`/questoes/simulado/${c.slug || c.id}`); }}
-                      className="group flex flex-col justify-between p-4 rounded-2xl border border-border/80 bg-card hover:border-primary/50 transition-all active:scale-98 shadow-sm text-left gap-3.5"
+                      className="group flex flex-col justify-between h-36 p-4 rounded-2xl border border-border/80 bg-card hover:border-primary/50 transition-all active:scale-98 shadow-sm text-left"
                     >
                       <div className="flex items-center justify-between w-full">
                         {logo ? (
-                          <div className="w-10 h-10 flex items-center justify-center">
+                          <div className="w-10 h-10 flex items-center justify-center shrink-0">
                             <img src={logo} alt={c.nome} className="max-h-9 max-w-9 object-contain drop-shadow-sm" />
                           </div>
                         ) : (
-                          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${c.cor || '#A78BFA'}18` }}>
+                          <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${c.cor || '#A78BFA'}18` }}>
                             <Gavel className="h-5 w-5" style={{ color: c.cor || '#A78BFA' }} />
                           </div>
                         )}
-                        <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
+                        <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-0.5 transition-transform shrink-0" />
                       </div>
-                      <div>
-                        <span className="block text-sm font-extrabold text-foreground leading-tight line-clamp-2">{c.nome}</span>
+                      <div className="min-w-0">
+                        <span className="block text-sm font-extrabold text-foreground leading-tight line-clamp-2 flex items-end min-h-[2.25rem]">
+                          {c.nome}
+                        </span>
                         <span className="block text-[11px] text-muted-foreground mt-1 font-semibold">
                           {c.total_questoes.toLocaleString('pt-BR')} questões
                         </span>
