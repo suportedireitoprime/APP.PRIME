@@ -6,7 +6,7 @@ import FlashcardsBottomNav from '@/components/flashcards/FlashcardsBottomNav';
 import AreaTemasSheet from '@/components/flashcards/AreaTemasSheet';
 import { DesafiosCarousel } from '@/components/flashcards/DesafiosCarousel';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Calendar, ChevronRight, Flame, Search, Sparkles, Users, X, Trophy, Layers, Target } from 'lucide-react';
+import { Calendar, ChevronRight, Flame, Search, Sparkles, Users, X, Trophy, Layers, Target, BarChart3 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { getAreaVisual } from '@/lib/flashcardsAreaVisual';
 import { haptic } from '@/lib/nativeHaptics';
@@ -104,7 +104,7 @@ const Flashcards = () => {
               onClick={() => { haptic.selection(); navigate('/flashcards/progresso'); }}
               className="flex flex-col items-center justify-center p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-primary/50 transition-colors active:scale-95 gap-3"
             >
-              <Trophy className="w-6 h-6 text-primary" />
+              <BarChart3 className="w-6 h-6 text-primary" />
               <p className="text-xs font-bold text-foreground text-center leading-tight">Meu Progresso</p>
             </button>
 
