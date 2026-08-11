@@ -110,6 +110,7 @@ def main():
         markdown_completo = ""
         bucket_name = "biblioteca-obras"
         imagens_folder = f"imagens/{livro_tabela}_{livro_id}"
+        sumario_customizado = []
 
         for page_num in range(total_paginas):
             if page_num % 50 == 0:
@@ -146,12 +147,51 @@ def main():
                     print(f"Erro ao processar imagem na pág {page_num+1}: {upload_err}")
             
             clean_md = page_md.strip()
+            
+            # --- INÍCIO DA HEURÍSTICA DE REFINAMENTO (0 TOKENS) ---
             if clean_md:
+                linhas = clean_md.split('\n')
+                linhas_refinadas = []
+                for linha in linhas:
+                    linha_limpa = linha.strip()
+                    if not linha_limpa:
+                        linhas_refinadas.append(linha)
+                        continue
+                    
+                    is_heading = False
+                    heading_level = 2
+                    
+                    if linha_limpa.startswith('#'):
+                        m = re.match(r'^(#{1,6})\s+(.+)', linha_limpa)
+                        if m:
+                            sumario_customizado.append({"nivel": len(m.group(1)), "titulo": m.group(2).strip(), "pagina": page_num + 1})
+                        linhas_refinadas.append(linha)
+                        continue
+                        
+                    if re.match(r'^(?i)(cap[ií]tulo|parte|se[çc][ãa]o|livro|t[íi]tulo)\s+([IVXLCDM\d]+)', linha_limpa):
+                        is_heading = True
+                        heading_level = 2
+                        
+                    elif linha_limpa.isupper() and 4 < len(linha_limpa) < 70 and not re.search(r'[.,;:]$', linha_limpa):
+                        if not re.match(r'^[\d\W_]+$', linha_limpa):
+                            is_heading = True
+                            heading_level = 3
+                            
+                    if is_heading:
+                        nova_linha = f"{'#' * heading_level} {linha_limpa}"
+                        linhas_refinadas.append(nova_linha)
+                        sumario_customizado.append({"nivel": heading_level, "titulo": linha_limpa, "pagina": page_num + 1})
+                    else:
+                        linhas_refinadas.append(linha)
+                        
+                clean_md = '\n'.join(linhas_refinadas)
                 markdown_completo += f"\n<!-- page:{page_num + 1} -->\n{clean_md}\n\n"
 
-        # 4. Fazer upload do Markdown BRUTO (OCR)
-        md_filename = f"ocr/{livro_tabela}_{livro_id}.md"
-        print(f"Fazendo upload do arquivo Markdown bruto ({len(markdown_completo)} caracteres)...")
+        final_toc = sumario_customizado if len(sumario_customizado) > 3 else sumario_json
+
+        # 4. Fazer upload do Markdown REFINADO (Heurística Python)
+        md_filename = f"refinado/{livro_tabela}_{livro_id}.md"
+        print(f"Fazendo upload do arquivo Markdown refinado heurístico ({len(markdown_completo)} caracteres)...")
         
         try:
             supabase.storage.from_(bucket_name).upload(
@@ -172,38 +212,16 @@ def main():
         import time
         md_public_url += f"?v={int(time.time())}"
 
-        # 5. Salvar de volta no Banco de Dados o texto bruto e avisar que vai refinar
-        print("Atualizando banco de dados (iniciando refino)...")
+        # 5. Salvar de volta no Banco de Dados
+        print("Atualizando banco de dados (pronto!)...")
         supabase.table("biblioteca_leitura_nativa").update({
-            "status": "processando",
-            "refino_status": "processando",
-            "etapa": "Refinando com IA (limpeza + destaques)",
-            "progresso": 5,
-            "conteudo_md_url": md_public_url,
+            "status": "pronto",
+            "refino_status": "pronto",
+            "conteudo_md_refinado_url": md_public_url,
             "total_paginas": total_paginas,
-            "sumario_json": sumario_json,
+            "sumario_json": final_toc,
             "erro_detalhe": None
         }).eq("livro_id", livro_id).eq("livro_tabela", livro_tabela).execute()
-
-        # 6. Acionar a Edge Function para fazer o refino (Gemini/Mistral)
-        print("Acionando a IA para refinamento...")
-        import json
-        req_refino = urllib.request.Request(
-            f"{supabase_url}/functions/v1/biblioteca-ocr-mistral",
-            data=json.dumps({
-                "action": "refino",
-                "livro_id": livro_id,
-                "livro_tabela": livro_tabela,
-                "force": True,
-                "inline": True
-            }).encode('utf-8'),
-            headers={'Content-Type': 'application/json', 'Authorization': f'Bearer {supabase_key}'}
-        )
-        try:
-            with urllib.request.urlopen(req_refino, timeout=300) as res_refino:
-                print("Refinamento concluído:", res_refino.read().decode('utf-8'))
-        except Exception as e_refino:
-            print(f"Erro ao chamar refino (o processo pode continuar em background): {e_refino}")
 
         print("Concluído com sucesso!")
 
