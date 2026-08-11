@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -47,6 +48,7 @@ const copiar = async (texto: string, label: string) => {
 };
 
 const AdminAudioaulas = () => {
+  const navigate = useNavigate();
   const [livros, setLivros] = useState<LivroRow[]>([]);
   const [cursos, setCursos] = useState<CursoRow[]>([]);
   const [prontos, setProntos] = useState<Set<string>>(new Set());
@@ -293,7 +295,7 @@ const AdminAudioaulas = () => {
 
   return (
     <div className="min-h-screen bg-background pb-28">
-      <PageHeader title="Audioaulas" subtitle="Gerar títulos e prompts a partir da leitura nativa" />
+      <PageHeader title="Audioaulas" subtitle="Gerar títulos e prompts a partir da leitura nativa" onBack={() => navigate(-1)} />
       <div className="px-4 pt-4 space-y-4">
         <Input placeholder="Buscar livro ou área..." value={busca} onChange={(e) => setBusca(e.target.value)} />
 
