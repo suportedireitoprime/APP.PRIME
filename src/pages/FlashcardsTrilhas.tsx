@@ -205,7 +205,7 @@ const SetupDetalhes = ({ onBack, onFinish }: { onBack: () => void, onFinish: (di
         </div>
 
         <button 
-          onClick={() => { haptic.impact(); onFinish(dias, cards); }}
+          onClick={() => { haptic.medium(); onFinish(dias, cards); }}
           className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base h-14 rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98] mt-4 flex items-center justify-center gap-2"
         >
           Criar Trilha

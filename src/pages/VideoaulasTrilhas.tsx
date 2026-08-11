@@ -321,7 +321,7 @@ const TrilhasDashboard = ({ concursos, onCreateNova, onOpenEdital }: { concursos
   const handleDeleteTrilha = (e: React.MouseEvent | React.PointerEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    haptic.impact();
+    haptic.medium();
     limparTrilha();
     toast({ title: 'Trilha apagada', description: 'Seu cronograma de edital foi removido.' });
   };
@@ -329,7 +329,7 @@ const TrilhasDashboard = ({ concursos, onCreateNova, onOpenEdital }: { concursos
   const handleDeleteAreaTrilha = (e: React.MouseEvent | React.PointerEvent, slug: string) => {
     e.preventDefault();
     e.stopPropagation();
-    haptic.impact();
+    haptic.medium();
     limparAreaTrilha(slug);
     toast({ title: 'Trilha apagada', description: 'A trilha de disciplina foi removida.' });
   };
