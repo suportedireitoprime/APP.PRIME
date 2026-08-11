@@ -156,10 +156,9 @@ const Flashcards = () => {
                       <div className="flex items-center justify-between gap-3 w-full">
                         <div className="flex items-center gap-4 min-w-0">
                           <div 
-                            className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110" 
-                            style={{ backgroundColor: `${color}20`, boxShadow: `0 4px 14px 0 ${color}40` }}
+                            className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110"
                           >
-                            <Icon className="h-5 w-5" strokeWidth={2.2} style={{ color }} />
+                            <Icon className="h-5 w-5 text-emerald-500" strokeWidth={2.2} />
                           </div>
                           <div className="min-w-0">
                             <p className="truncate text-base font-extrabold text-foreground group-hover:text-emerald-500 transition-colors tracking-tight">

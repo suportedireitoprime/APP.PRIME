@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, Target, Calendar, CheckCircle2, Route as RouteIcon, FileText, Smartphone, Search, Layers, Trophy } from 'lucide-react';
+import { ChevronLeft, Target, Calendar, CheckCircle2, Route as RouteIcon, FileText, Smartphone, Search, Layers, Trophy, Trash2 } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { haptic } from '@/lib/nativeHaptics';
 import { supabase } from '@/integrations/supabase/client';

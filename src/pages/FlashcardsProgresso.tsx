@@ -160,7 +160,7 @@ function Bloco({
               className="group flex w-full items-center gap-3 rounded-2xl border border-border bg-card p-3 text-left transition-all hover:border-emerald-500/40 active:scale-[0.995]"
             >
               <div className="aprender-icon-shine relative flex h-12 w-12 shrink-0 items-center justify-center">
-                <Icon className="h-8 w-8" strokeWidth={1.9} style={{ color }} />
+                <Icon className="h-8 w-8 text-emerald-500" strokeWidth={1.9} />
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
