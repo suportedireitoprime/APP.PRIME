@@ -98,7 +98,11 @@ def main():
         for item in toc:
             if len(item) >= 3:
                 nivel = item[0] if isinstance(item[0], int) else 1
-                titulo = str(item[1]).strip() if item[1] else "Sem Título"
+                titulo = str(item[1]).strip()
+                
+                # Sanitização anti-lixo de PDFs mal gerados (remove ?? e caracteres alienígenas do início)
+                titulo = re.sub(r'^[?\s\ufffd]+', '', titulo)
+                
                 pagina = item[2] if isinstance(item[2], int) else 1
                 sumario_json.append({
                     "nivel": nivel,
