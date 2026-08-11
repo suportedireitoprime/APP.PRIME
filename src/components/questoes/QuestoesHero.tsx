@@ -151,7 +151,7 @@ const QuestoesHero = ({ pct, total, hoje, acertos, disponiveis }: Props) => {
                 <span className="text-[9px] font-extrabold uppercase tracking-wider text-white/60 group-hover:text-white">Taxa de Acerto</span>
                 <ChevronRight className="w-2.5 h-2.5 text-white/40 group-hover:text-white group-hover:translate-x-0.5 transition-transform" />
               </div>
-              <span className="mt-0.5 font-display text-base font-black leading-none text-[hsl(258_90%_78%)]">
+              <span className={`mt-0.5 font-display text-base font-black leading-none ${pct >= 60 ? 'text-emerald-400' : 'text-red-400'}`}>
                 {pct}%
               </span>
             </button>
@@ -166,7 +166,7 @@ const QuestoesHero = ({ pct, total, hoje, acertos, disponiveis }: Props) => {
                 <span className="text-[9px] font-extrabold uppercase tracking-wider text-white/60 group-hover:text-white">Banco Total</span>
                 <ChevronRight className="w-2.5 h-2.5 text-white/40 group-hover:text-white group-hover:translate-x-0.5 transition-transform" />
               </div>
-              <span className="mt-0.5 font-display text-base font-black leading-none text-amber-300">
+              <span className="mt-0.5 font-display text-base font-black leading-none text-purple-400">
                 {disponiveis > 0 ? disponiveis.toLocaleString('pt-BR') : '25.000+'}
               </span>
             </button>

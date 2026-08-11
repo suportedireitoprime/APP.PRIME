@@ -70,7 +70,7 @@ const Questoes = () => {
             <button
               key={location.key}
               onClick={() => { haptic.selection(); setFiltroAberto(true); }}
-              className="btn-attention-shine group mt-4 flex h-16 sm:h-18 min-h-[60px] w-full items-center justify-center gap-3 rounded-2xl bg-[#5B21B6] hover:bg-[#4C1D95] text-white text-base sm:text-lg font-black shadow-xl shadow-[#5B21B6]/35 transition-all active:scale-[0.99] border border-purple-400/30"
+              className="btn-attention-shine group mt-4 flex h-14 sm:h-16 min-h-[56px] w-full items-center justify-center gap-3 rounded-2xl bg-[#5B21B6] hover:bg-[#4C1D95] text-white text-base sm:text-lg font-black shadow-xl shadow-[#5B21B6]/35 transition-all active:scale-[0.99] border border-purple-400/30"
             >
               <Filter className="h-6 w-6 text-white" strokeWidth={2.5} />
               <span className="tracking-wide text-white">Filtro Rápido</span>
@@ -86,10 +86,10 @@ const Questoes = () => {
                 <button
                   key={a.id}
                   onClick={() => { haptic.selection(); navigate(a.route); }}
-                  className="flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-primary/50 transition-all active:scale-95 gap-2 text-center"
+                  className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-primary/50 transition-all active:scale-95 gap-2 text-center"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <Icon className="w-5 h-5 text-primary" strokeWidth={2} />
+                  <div className="w-10 h-10 flex items-center justify-center">
+                    <Icon className="w-7 h-7 sm:w-8 sm:h-8 text-primary transition-all duration-300 group-hover:drop-shadow-[0_0_12px_rgba(139,92,246,0.9)] group-hover:scale-110" strokeWidth={2} />
                   </div>
                   <div>
                     <p className="text-xs font-extrabold text-foreground leading-tight">{a.label}</p>
