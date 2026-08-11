@@ -325,7 +325,12 @@ const FlashcardsEstudo = () => {
             </div>
 
             {loading && (
-              <div className="h-[420px] rounded-3xl bg-muted/40 animate-pulse border border-border/60" />
+              <div className="relative w-full min-h-[380px] sm:min-h-[440px] h-[54dvh] max-h-[540px] rounded-[32px] border border-border/80 bg-card p-6 md:p-8 flex items-center justify-center shadow-lg">
+                <div className="flex flex-col items-center gap-4 text-emerald-500/60">
+                  <div className="h-10 w-10 animate-spin rounded-full border-4 border-current border-t-transparent" />
+                  <p className="text-sm font-semibold uppercase tracking-wider animate-pulse">Preparando Sessão...</p>
+                </div>
+              </div>
             )}
 
             {!loading && cards.length === 0 && (
@@ -345,7 +350,7 @@ const FlashcardsEstudo = () => {
             )}
 
             {atual && (() => {
-              const accent = "#ef4444";
+              const accent = "#10b981";
               const temaKey = atual.tema ?? atual.area ?? atual.pergunta.slice(0, 32);
               const h = hashString(temaKey);
               const angle = h % 360;
@@ -489,7 +494,8 @@ const FlashcardsEstudo = () => {
                     <span>Revisar</span>
                   </Button>
                   <Button
-                    className="h-14 sm:h-16 rounded-2xl text-base font-black gap-2 bg-emerald-500 text-white hover:bg-emerald-500/90 active:scale-95 transition-all shadow-md"
+                    className="h-14 sm:h-16 rounded-2xl text-base font-black gap-2 active:scale-95 transition-all shadow-md hover:opacity-90"
+                    style={{ backgroundColor: '#10b981', color: '#ffffff' }}
                     onClick={() => responder('compreendido')}
                   >
                     <CheckCircle2 className="h-5 w-5 text-white" />

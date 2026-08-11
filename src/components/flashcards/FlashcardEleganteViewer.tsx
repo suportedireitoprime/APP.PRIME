@@ -67,7 +67,7 @@ function triggerConfetti() {
 
 const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
   cards,
-  accent = "#ef4444",
+  accent = "#10B981",
   titulo,
   onComplete,
   footerLastCard,

@@ -138,6 +138,28 @@ const FlashcardsDesafios = () => {
   }, {} as Record<string, FlashcardDesafio[]>);
 
   const categorias = Object.keys(categoriasMap);
+  const [selectedCat, setSelectedCat] = useState<string | null>(null);
+
+  // Próximos desafios: desafios não concluídos, limitados aos primeiros 5 para o carrossel
+  const proximosDesafios = useMemo(() => {
+    return desafios.filter(d => d.status !== 'concluido' && d.desbloqueado).slice(0, 5);
+  }, [desafios]);
+
+  if (selectedCat) {
+    const catDesafios = categoriasMap[selectedCat] || [];
+    return (
+      <div className="min-h-dvh bg-background pb-12 pt-[calc(0.5rem+var(--sai-top,env(safe-area-inset-top,0px)))]">
+        <div className="mx-auto w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] px-3 sm:px-6 lg:px-8">
+          <PageHeader title={selectedCat} onBack={() => setSelectedCat(null)} />
+          <div className="mt-4 space-y-3">
+            {catDesafios.map((d) => (
+              <DesafioCard key={d.desafio_id} d={d} isPremium={isPremium} onPraticar={() => praticar(d)} />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-dvh bg-background pb-12 pt-[calc(0.5rem+var(--sai-top,env(safe-area-inset-top,0px)))]">
@@ -184,41 +206,56 @@ const FlashcardsDesafios = () => {
             </p>
           )}
 
-          {/* Categorias de desafios */}
+          {/* Carrossel de Próximos Desafios */}
+          {!loading && proximosDesafios.length > 0 && (
+            <div className="mt-6">
+              <h2 className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground mb-3 px-1">
+                Seus Próximos Desafios
+              </h2>
+              <div className="flex w-full snap-x snap-mandatory gap-4 overflow-x-auto pb-4 scrollbar-hide -mx-3 px-3 sm:mx-0 sm:px-0">
+                {proximosDesafios.map(d => (
+                  <div key={d.desafio_id} className="w-[85%] sm:w-[320px] shrink-0 snap-center">
+                    <DesafioCard d={d} isPremium={isPremium} onPraticar={() => praticar(d)} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Categorias de desafios (Nova Página) */}
           <div className="mt-6">
-            <h2 className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground mb-3">
-              Categorias de Desafios
+            <h2 className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground mb-3 px-1">
+              Trilhas de Aprendizado
             </h2>
-            <Accordion type="single" collapsible className="space-y-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {categorias.map((cat, idx) => {
                 const des = categoriasMap[cat];
                 const total = des.length;
                 const concl = des.filter(d => d.status === 'concluido').length;
+                const pct = total > 0 ? Math.round((concl / total) * 100) : 0;
                 
                 return (
-                  <AccordionItem key={cat} value={`cat-${idx}`} className="rounded-2xl border border-border bg-card overflow-hidden">
-                    <AccordionTrigger className="px-4 py-4 hover:no-underline hover:bg-muted/50 transition-colors">
-                      <div className="flex items-center gap-3 text-left">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-500">
-                          <Layers className="h-5 w-5" />
-                        </div>
-                        <div>
-                          <p className="text-[15px] font-bold text-foreground">{cat}</p>
-                          <p className="text-[12px] text-muted-foreground">{concl}/{total} desafios concluídos</p>
-                        </div>
+                  <button
+                    key={cat}
+                    onClick={() => { haptic.selection(); setSelectedCat(cat); }}
+                    className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-card p-4 text-left hover:border-emerald-500/50 hover:shadow-md transition-all active:scale-[0.98]"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-500">
+                        <Layers className="h-6 w-6" />
                       </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="px-4 pb-4">
-                      <div className="pt-2 space-y-3">
-                        {des.map((d) => (
-                          <DesafioCard key={d.desafio_id} d={d} isPremium={isPremium} onPraticar={() => praticar(d)} />
-                        ))}
+                      <div>
+                        <p className="text-[15px] font-bold text-foreground line-clamp-1">{cat}</p>
+                        <p className="text-[12px] font-medium text-muted-foreground mt-0.5">{concl}/{total} concluídos</p>
                       </div>
-                    </AccordionContent>
-                  </AccordionItem>
+                    </div>
+                    <div className="flex shrink-0 items-center justify-center h-10 w-10 rounded-full border border-border/80 text-[10px] font-bold tabular-nums text-foreground">
+                      {pct}%
+                    </div>
+                  </button>
                 );
               })}
-            </Accordion>
+            </div>
           </div>
         </div>
       </div>
