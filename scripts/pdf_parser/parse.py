@@ -149,9 +149,9 @@ def main():
             if clean_md:
                 markdown_completo += f"\n<!-- page:{page_num + 1} -->\n{clean_md}\n\n"
 
-        # 4. Fazer upload do Markdown refinado
-        md_filename = f"refinado/{livro_tabela}_{livro_id}.md"
-        print(f"Fazendo upload do arquivo Markdown final ({len(markdown_completo)} caracteres)...")
+        # 4. Fazer upload do Markdown BRUTO (OCR)
+        md_filename = f"ocr/{livro_tabela}_{livro_id}.md"
+        print(f"Fazendo upload do arquivo Markdown bruto ({len(markdown_completo)} caracteres)...")
         
         try:
             supabase.storage.from_(bucket_name).upload(
@@ -160,7 +160,6 @@ def main():
                 file_options={"content-type": "text/markdown;charset=UTF-8", "upsert": "true"}
             )
         except Exception as e:
-            # Em versões mais antigas do client supabase, update pode precisar do método correto
             print(f"Falha no upload do MD, tentando sobrescrever: {e}")
             supabase.storage.from_(bucket_name).remove([md_filename])
             supabase.storage.from_(bucket_name).upload(
@@ -173,16 +172,38 @@ def main():
         import time
         md_public_url += f"?v={int(time.time())}"
 
-        # 5. Salvar de volta no Banco de Dados (incluindo o sumário JSON formatado)
-        print("Atualizando banco de dados...")
+        # 5. Salvar de volta no Banco de Dados o texto bruto e avisar que vai refinar
+        print("Atualizando banco de dados (iniciando refino)...")
         supabase.table("biblioteca_leitura_nativa").update({
-            "status": "pronto",
-            "refino_status": "pronto",
-            "conteudo_md_refinado_url": md_public_url,
+            "status": "processando",
+            "refino_status": "processando",
+            "etapa": "Refinando com IA (limpeza + destaques)",
+            "progresso": 5,
+            "conteudo_md_url": md_public_url,
             "total_paginas": total_paginas,
             "sumario_json": sumario_json,
             "erro_detalhe": None
         }).eq("livro_id", livro_id).eq("livro_tabela", livro_tabela).execute()
+
+        # 6. Acionar a Edge Function para fazer o refino (Gemini/Mistral)
+        print("Acionando a IA para refinamento...")
+        import json
+        req_refino = urllib.request.Request(
+            f"{supabase_url}/functions/v1/biblioteca-ocr-mistral",
+            data=json.dumps({
+                "action": "refino",
+                "livro_id": livro_id,
+                "livro_tabela": livro_tabela,
+                "force": True,
+                "inline": True
+            }).encode('utf-8'),
+            headers={'Content-Type': 'application/json', 'Authorization': f'Bearer {supabase_key}'}
+        )
+        try:
+            with urllib.request.urlopen(req_refino, timeout=300) as res_refino:
+                print("Refinamento concluído:", res_refino.read().decode('utf-8'))
+        except Exception as e_refino:
+            print(f"Erro ao chamar refino (o processo pode continuar em background): {e_refino}")
 
         print("Concluído com sucesso!")
 
