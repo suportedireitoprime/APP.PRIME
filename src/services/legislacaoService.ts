@@ -66,7 +66,7 @@ async function getLegacyToVMIndex(forceRefresh = false): Promise<Map<string, Lei
   return _leiIndexPromise;
 }
 
-async function resolveLeiRef(tabelaNome: string): Promise<LeiRef | undefined> {
+export async function resolveLeiRef(tabelaNome: string): Promise<LeiRef | undefined> {
   const idx = await getLegacyToVMIndex();
   const hit = idx.get(tabelaNome);
   if (hit) return hit;

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LEIS_CATALOG } from '@/data/leisCatalog';
+import { LEIS_CATALOG, resolveLeiRef } from '@/services/legislacaoService';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -357,12 +357,12 @@ const AdminAudioaulas = () => {
     setLeiAberta(lei);
     setCarregandoArtigos(true);
     try {
-      const { data: leiData } = await supabase.from('vade_mecum_leis').select('id').eq('slug', lei.tabela_nome).maybeSingle();
-      if (!leiData) {
+      const leiRef = await resolveLeiRef(lei.tabela_nome);
+      if (!leiRef) {
         toast.error('Lei não encontrada no banco Vade Mecum');
         return;
       }
-      const { data: arts } = await supabase.from('vade_mecum_artigos').select('id, numero, texto, ordem').eq('lei_id', leiData.id).order('ordem', { ascending: true }).limit(500);
+      const { data: arts } = await supabase.from('vade_mecum_artigos').select('id, numero, texto, ordem').eq('lei_id', leiRef.id).order('ordem', { ascending: true }).limit(500);
       setArtigosLei(arts || []);
     } catch (e: any) {
       toast.error('Erro ao buscar artigos');
