@@ -15,9 +15,9 @@ import { visualDaArea } from '@/lib/questoesVisual';
 import { useQuestoesCargos, useQuestoesDesempenho, useQuestoesAreas } from '@/hooks/useQuestoes';
 
 const ATALHOS_3 = [
-  { id: 'cadernos', label: 'Meus Cadernos', desc: 'Blocos de estudo', icon: NotebookPen, route: '/questoes/cadernos' },
-  { id: 'revisar', label: 'Minha Revisão', desc: 'Volte no que errou', icon: RotateCcw, route: '/questoes/revisar' },
-  { id: 'desempenho', label: 'Meu Desempenho', desc: 'Números por área', icon: BarChart3, route: '/questoes/desempenho' },
+  { id: 'cadernos', label: 'Cadernos', desc: 'Blocos de estudo', icon: NotebookPen, route: '/questoes/cadernos' },
+  { id: 'revisar', label: 'Revisão', desc: 'Volte no que errou', icon: RotateCcw, route: '/questoes/revisar' },
+  { id: 'desempenho', label: 'Desempenho', desc: 'Números por área', icon: BarChart3, route: '/questoes/desempenho' },
 ];
 
 const Questoes = () => {
@@ -70,11 +70,11 @@ const Questoes = () => {
             <button
               key={location.key}
               onClick={() => { haptic.selection(); setFiltroAberto(true); }}
-              className="btn-attention-shine group mt-4 flex h-13 w-full items-center justify-center gap-2.5 rounded-2xl bg-primary text-[15px] font-extrabold text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:brightness-110 active:scale-[0.99]"
+              className="btn-attention-shine group mt-4 flex h-15 sm:h-16 w-full items-center justify-center gap-3 rounded-2xl bg-primary text-base sm:text-lg font-black text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:brightness-110 active:scale-[0.99]"
             >
-              <Filter className="h-5 w-5" strokeWidth={2.2} />
+              <Filter className="h-5.5 w-5.5 sm:h-6 sm:w-6" strokeWidth={2.2} />
               <span>Filtro Rápido</span>
-              <ChevronRight className="h-5 w-5 transition-transform group-hover:translate-x-0.5" />
+              <ChevronRight className="h-5.5 w-5.5 sm:h-6 sm:w-6 transition-transform group-hover:translate-x-0.5" />
             </button>
           </div>
 
