@@ -25,6 +25,39 @@ interface Body {
   force?: boolean;
 }
 
+const triggerGitHubAction = async (body: Body) => {
+  const GITHUB_TOKEN = Deno.env.get("GITHUB_PAT");
+  if (!GITHUB_TOKEN) {
+    throw new Error("GITHUB_PAT não configurado. Adicione este token aos secrets do Supabase.");
+  }
+
+  const GITHUB_OWNER = Deno.env.get("GITHUB_OWNER") || "suportedireitoprime";
+  const GITHUB_REPO = Deno.env.get("GITHUB_REPO") || "APP.PRIME";
+  
+  const res = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/dispatches`, {
+    method: "POST",
+    headers: {
+      "Accept": "application/vnd.github.v3+json",
+      "Authorization": `token ${GITHUB_TOKEN}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      event_type: "parse_pdf",
+      client_payload: {
+        livro_id: body.livro_id,
+        livro_tabela: body.livro_tabela,
+        pdf_url: body.pdf_url
+      }
+    })
+  });
+  
+  if (!res.ok) {
+    const txt = await res.text();
+    throw new Error(`GitHub API erro: ${res.status} - ${txt}`);
+  }
+  return { ok: true, status: res.status };
+};
+
 const uploadToStorage = async (supabase: any, path: string, content: string) => {
   const { error } = await supabase.storage.from("biblioteca-obras").upload(path, content, {
     contentType: "text/markdown",
@@ -194,22 +227,15 @@ serve(async (req) => {
             .eq("livro_id", livro_id);
         };
 
-        const task = invokeSelf({ ...body, inline: true })
+        const task = triggerGitHubAction(body)
           .then(async (r) => {
             if (!r.ok) {
-              let detalhe = "";
-              try {
-                const t = await r.text();
-                const j = JSON.parse(t);
-                detalhe = String(j?.error ?? j?.message ?? t ?? "");
-              } catch { /* ignore */ }
-              await marcarFalha(detalhe || `Falha na extração em segundo plano (${r.status}). Tente novamente.`);
+              await marcarFalha(`Falha ao acionar GitHub Actions (${r.status}).`);
             }
           })
           .catch(async (e) => {
             await marcarFalha(String(e?.message ?? e));
           });
-
 
         // @ts-ignore - EdgeRuntime é global no Supabase Edge Functions
         if (typeof EdgeRuntime !== "undefined" && EdgeRuntime?.waitUntil) {

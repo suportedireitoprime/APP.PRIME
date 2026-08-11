@@ -243,9 +243,15 @@ const LeitorNativo = ({ livroId, livroTabela, pdfUrl, titulo, onClose, autor, an
           const res = await fetch(url);
           if (res.ok) {
             contentToUse = await res.text();
+          } else {
+            console.error("Storage fetch falhou com status:", res.status);
+            setStatus('erro');
+            setErro('Não foi possível carregar o texto do livro (Erro ' + res.status + ').');
           }
         } catch (e) {
           console.error("Erro ao baixar conteudo do Storage no leitor nativo", e);
+          setStatus('erro');
+          setErro('Falha de rede ao carregar o texto do livro.');
         }
       }
 
@@ -292,7 +298,7 @@ const LeitorNativo = ({ livroId, livroTabela, pdfUrl, titulo, onClose, autor, an
         .eq('livro_tabela', livroTabela)
         .eq('livro_id', livroId)
         .maybeSingle();
-      if (!error && data) applyRow(data);
+      if (!error && data) await applyRow(data);
       return data;
     };
 
@@ -362,11 +368,13 @@ const LeitorNativo = ({ livroId, livroTabela, pdfUrl, titulo, onClose, autor, an
 
         const existing = await fetchLatest();
         if (cancelled) return;
+        
+        console.log("DEBUG existing:", existing);
 
         // Se qualquer conteúdo já foi extraído (pelo admin ou por outro
         // usuário), não redispara OCR. O applyRow do fetchLatest já colocou
         // o status como 'pronto' e o leitor abre direto.
-        if (existing && (existing.conteudo_md_refinado || existing.conteudo_md)) {
+        if (existing && (existing.status === 'pronto' || existing.conteudo_md_refinado || existing.conteudo_md || existing.conteudo_md_refinado_url || existing.conteudo_md_url)) {
           cacheLeituraOnDemand(livroTabela, livroId);
           // Se o refino ainda está rodando em background, continua ouvindo
           // via realtime para trocar o conteúdo bruto pelo refinado quando
@@ -473,6 +481,9 @@ const LeitorNativo = ({ livroId, livroTabela, pdfUrl, titulo, onClose, autor, an
       const parts = src.split(/<!--\s*page:(\d+)\s*-->/g);
       const raw: Array<{ ocrPage: number; md: string }> = [];
       if (parts.length > 1) {
+        if (parts[0].trim()) {
+          parts[2] = parts[0] + '\n\n' + (parts[2] || '');
+        }
         for (let i = 1; i < parts.length; i += 2) {
           const n = Number(parts[i]);
           const md = cleanArtefatos(parts[i + 1] || '');

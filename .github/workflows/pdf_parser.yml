@@ -1,0 +1,34 @@
+name: PDF Parser Worker
+
+on:
+  repository_dispatch:
+    types: [parse_pdf]
+
+jobs:
+  parse-pdf:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: pip install -r scripts/pdf_parser/requirements.txt
+
+      - name: Run Parser
+        env:
+          SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          echo "Starting PDF Parsing for Livro ID: ${{ github.event.client_payload.livro_id }}"
+          python scripts/pdf_parser/parse.py \
+            "${{ github.event.client_payload.pdf_url }}" \
+            "${{ github.event.client_payload.livro_id }}" \
+            "${{ github.event.client_payload.livro_tabela }}"

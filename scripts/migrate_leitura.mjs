@@ -32,60 +32,70 @@ async function uploadToStorage(filePath, content) {
 async function run() {
   console.log("Iniciando migração de textos longos (TOAST) para o Storage...");
 
-  // Buscar todos que possuem conteudo_md_refinado ou conteudo_md E não possuem _url
-  const { data, error } = await supabase
-    .from('biblioteca_leitura_nativa')
-    .select('id, livro_id, livro_tabela, conteudo_md, conteudo_md_refinado')
-    .or('conteudo_md.not.is.null,conteudo_md_refinado.not.is.null');
+  let continueProcessing = true;
+  let totalProcessed = 0;
 
-  if (error) {
-    console.error("Erro ao buscar livros:", error);
-    return;
-  }
+  while (continueProcessing) {
+    // Buscar um lote de 10
+    const { data, error } = await supabase
+      .from('biblioteca_leitura_nativa')
+      .select('id, livro_id, livro_tabela, conteudo_md, conteudo_md_refinado')
+      .or('conteudo_md.not.is.null,conteudo_md_refinado.not.is.null')
+      .limit(10);
 
-  console.log(`Encontrados ${data.length} registros para processar.`);
+    if (error) {
+      console.error("Erro ao buscar livros:", error);
+      break;
+    }
 
-  let processed = 0;
-  for (const row of data) {
-    console.log(`Processando [${row.livro_tabela}] ${row.livro_id}...`);
-    let ocrUrl = null;
-    let refinoUrl = null;
+    if (!data || data.length === 0) {
+      console.log(`Todos os livros processados. Total limpo: ${totalProcessed}`);
+      continueProcessing = false;
+      break;
+    }
+
+    let batchProcessed = 0;
+    for (const row of data) {
+      console.log(`Processando [${row.livro_tabela}] ${row.livro_id}...`);
+      let ocrUrl = null;
+      let refinoUrl = null;
+      let toUpdate = {};
+
+      if (row.conteudo_md) {
+        const pathStr = `ocr/${row.livro_tabela}_${row.livro_id}.md`;
+        ocrUrl = await uploadToStorage(pathStr, row.conteudo_md);
+        if (ocrUrl) {
+          toUpdate.conteudo_md_url = ocrUrl;
+          toUpdate.conteudo_md = null;
+        }
+      }
+
+      if (row.conteudo_md_refinado) {
+        const pathStr = `refinado/${row.livro_tabela}_${row.livro_id}.md`;
+        refinoUrl = await uploadToStorage(pathStr, row.conteudo_md_refinado);
+        if (refinoUrl) {
+          toUpdate.conteudo_md_refinado_url = refinoUrl;
+          toUpdate.conteudo_md_refinado = null;
+        }
+      }
+
+      if (Object.keys(toUpdate).length > 0) {
+        const { error: updErr } = await supabase
+          .from('biblioteca_leitura_nativa')
+          .update(toUpdate)
+          .eq('id', row.id);
+          
+        if (updErr) {
+          console.error(`Erro ao atualizar linha ${row.id}:`, updErr);
+        } else {
+          batchProcessed++;
+          totalProcessed++;
+        }
+      }
+    }
     
-    let toUpdate = {};
-
-    if (row.conteudo_md) {
-      const pathStr = `ocr/${row.livro_tabela}_${row.livro_id}.md`;
-      ocrUrl = await uploadToStorage(pathStr, row.conteudo_md);
-      if (ocrUrl) {
-        toUpdate.conteudo_md_url = ocrUrl;
-        toUpdate.conteudo_md = null;
-      }
-    }
-
-    if (row.conteudo_md_refinado) {
-      const pathStr = `refinado/${row.livro_tabela}_${row.livro_id}.md`;
-      refinoUrl = await uploadToStorage(pathStr, row.conteudo_md_refinado);
-      if (refinoUrl) {
-        toUpdate.conteudo_md_refinado_url = refinoUrl;
-        toUpdate.conteudo_md_refinado = null;
-      }
-    }
-
-    if (Object.keys(toUpdate).length > 0) {
-      const { error: updErr } = await supabase
-        .from('biblioteca_leitura_nativa')
-        .update(toUpdate)
-        .eq('id', row.id);
-        
-      if (updErr) {
-        console.error(`Erro ao atualizar linha ${row.id}:`, updErr);
-      } else {
-        processed++;
-      }
-    }
+    console.log(`Lote processado (${batchProcessed}). Indo para o próximo...`);
   }
-
-  console.log(`Migração concluída! ${processed} registros processados e limpos do banco de dados.`);
 }
 
 run();
