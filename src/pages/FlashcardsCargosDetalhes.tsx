@@ -8,6 +8,7 @@ import { haptic } from '@/lib/nativeHaptics';
 import { Building, ArrowLeft, Target, Calendar, CheckCircle2, ChevronLeft, Trash2, Layers, Play, Clock, Award, FileText } from 'lucide-react';
 import { useFlashcardsTrilhasStore, type FlashcardTrilhaAtiva } from '@/lib/flashcardsTrilhasStore';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { getAreaVisual } from '@/lib/flashcardsAreaVisual';
 
 type DisciplinaEdital = {
   area: string;
@@ -40,7 +41,7 @@ const SetupRitmo = ({ cargo, onBack, onFinish }: { cargo: Cargo, onBack: () => v
             <Target className="w-8 h-8 text-primary" />
           </div>
           <h2 className="text-xl font-black text-foreground mb-2">Defina sua Meta</h2>
-          <p className="text-sm text-muted-foreground">Em quantos dias vocÃª quer fechar o edital de {cargo.orgao}?</p>
+          <p className="text-sm text-muted-foreground">Em quantos dias vocÃƒÂª quer fechar o edital de {cargo.orgao}?</p>
         </div>
 
         <div className="bg-card border border-border/50 rounded-3xl p-6 shadow-sm">
@@ -185,7 +186,7 @@ const TrilhaMapaEdital = ({ cargo, trilha, onBack }: { cargo: Cargo, trilha: Fla
                 <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-3xl bg-card border border-border/50 shadow-sm transition-all flex flex-col gap-3">
                   <div>
                     <h3 className={`font-bold text-base ${isAccessible ? 'text-foreground' : 'text-muted-foreground'}`}>Dia {dia}</h3>
-                    <p className="text-xs text-muted-foreground mt-0.5">Mix do Edital â€¢ {trilha.cardsPorDia} cards</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">Mix do Edital Ã¢â‚¬Â¢ {trilha.cardsPorDia} cards</p>
                   </div>
                   
                   <button 
@@ -210,7 +211,7 @@ const TrilhaMapaEdital = ({ cargo, trilha, onBack }: { cargo: Cargo, trilha: Fla
 };
 
 
-// --- PÃGINA PRINCIPAL ---
+// --- PÃƒÂGINA PRINCIPAL ---
 
 export default function FlashcardsCargosDetalhes() {
   const { id } = useParams();
@@ -286,11 +287,11 @@ export default function FlashcardsCargosDetalhes() {
     setSheetOpen(false); // Fecha o menu
     const params = new URLSearchParams();
     if (!tema) {
-      // Praticar todas as matérias da Área selecionada
+      // Praticar todas as matÃ©rias da Ãrea selecionada
       params.set('area', areaSelecionada!);
       params.set('modo', 'todos');
     } else {
-      // Praticar um tema específico
+      // Praticar um tema especÃ­fico
       params.set('area', areaSelecionada!);
       params.set('tema', tema);
       params.set('modo', 'todos');
@@ -315,7 +316,7 @@ export default function FlashcardsCargosDetalhes() {
   if (!cargo) {
     return (
       <div className="min-h-screen bg-background text-foreground pb-[120px] md:pb-8 flex flex-col font-sans">
-        <PageHeader title="Cargo nÃ£o encontrado" onBack={() => navigate('/flashcards/cargos')} />
+        <PageHeader title="Cargo nÃƒÂ£o encontrado" onBack={() => navigate('/flashcards/cargos')} />
       </div>
     );
   }
@@ -324,7 +325,7 @@ export default function FlashcardsCargosDetalhes() {
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
       <AnimatePresence mode="wait">
         
-        {/* TAB: LIVRE (Prática Livre) */}
+        {/* TAB: LIVRE (PrÃ¡tica Livre) */}
         {activeTab === 'livre' && (
           <motion.div key="livre" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8 pb-32 flex flex-col relative">
             <div className="flex items-center gap-3 py-4">
@@ -342,21 +343,34 @@ export default function FlashcardsCargosDetalhes() {
             </p>
 
             <div className="space-y-3 pb-8">
-              {cargo.edital_disciplinas?.map((disc, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleAreaClick(disc.area)}
-                  className="w-full text-left bg-card rounded-2xl p-4 border border-border/50 shadow-sm flex items-center justify-between gap-4 group hover:border-primary/50 transition-colors active:scale-[0.98]"
-                >
-                  <div className="flex-1 min-w-0">
-                    <h4 className="font-bold text-base text-foreground mb-1 truncate">{disc.area}</h4>
-                    <p className="text-xs text-muted-foreground">Toque para ver as matérias</p>
-                  </div>
-                  <div className="shrink-0 w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                    <Layers className="w-5 h-5" />
-                  </div>
-                </button>
-              ))}
+              {cargo.edital_disciplinas?.map((disc, index) => {
+                const { icon: Icon, color } = getAreaVisual(disc.area);
+                return (
+                  <button
+                    key={index}
+                    onClick={() => handleAreaClick(disc.area)}
+                    className="group flex flex-col justify-between rounded-2xl border border-border/80 bg-card p-4 text-left transition-all hover:border-primary/50 hover:shadow-md active:scale-[0.99] gap-3 w-full"
+                  >
+                    <div className="flex items-center justify-between gap-3 w-full">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <Icon className="h-6 w-6 shrink-0 transition-transform group-hover:scale-110" strokeWidth={1.8} style={{ color }} />
+                        <div className="min-w-0">
+                          <p className="truncate text-base font-extrabold text-foreground group-hover:text-primary transition-colors tracking-tight">
+                            {disc.area}
+                          </p>
+                          <p className="text-xs text-muted-foreground font-medium">
+                            Toque para ver os tópicos
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 shrink-0">
+                        <ChevronRight className="h-4.5 w-4.5 text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
               
               {(!cargo.edital_disciplinas || cargo.edital_disciplinas.length === 0) && (
                 <div className="text-center py-8 text-muted-foreground bg-card rounded-3xl border border-border/50">
@@ -377,21 +391,21 @@ export default function FlashcardsCargosDetalhes() {
                 <div className="flex-1 overflow-y-auto p-6 space-y-4 pb-safe-offset-12">
                   <button
                     onClick={() => handlePraticarLivre()}
-                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-black text-base h-16 rounded-2xl transition-all active:scale-[0.98] flex items-center justify-center gap-3 shadow-lg shadow-primary/20"
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-black text-sm h-12 rounded-xl transition-all active:scale-[0.98] flex items-center justify-center gap-2 shadow-md shadow-primary/20"
                   >
-                    <Layers className="w-6 h-6 fill-current" />
+                    <Layers className="w-5 h-5 fill-current" />
                     Praticar Todas as Matérias
                   </button>
                   
-                  <div className="flex items-center gap-4 py-3">
+                  <div className="flex items-center gap-3 py-1">
                     <div className="h-px bg-border/50 flex-1" />
                     <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Ou escolha uma matéria</span>
                     <div className="h-px bg-border/50 flex-1" />
                   </div>
 
-                  <div className="space-y-3 pb-8">
+                  <div className="space-y-2.5 pb-8">
                     {temasArea.length === 0 ? (
-                      <div className="text-center py-8 text-muted-foreground">
+                      <div className="text-center py-8 text-muted-foreground text-sm">
                         Carregando matérias...
                       </div>
                     ) : (
@@ -399,16 +413,26 @@ export default function FlashcardsCargosDetalhes() {
                         <button
                           key={index}
                           onClick={() => handlePraticarLivre(t.tema)}
-                          className="w-full text-left bg-card rounded-2xl p-4 border border-border/50 shadow-sm flex items-center justify-between gap-4 group hover:border-primary/50 transition-colors active:scale-[0.98]"
+                          className="group flex flex-col justify-between rounded-xl border border-border/80 bg-card p-3 text-left transition-all hover:border-primary/50 hover:shadow-sm active:scale-[0.99] gap-2 w-full"
                         >
-                          <div className="flex-1 min-w-0">
-                            <h4 className="font-bold text-sm text-foreground mb-1 truncate">{t.tema}</h4>
-                            <span className="inline-block mt-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-                              {t.total} cards
-                            </span>
-                          </div>
-                          <div className="shrink-0 w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                            <Play className="w-4 h-4 fill-current ml-0.5" />
+                          <div className="flex items-center justify-between gap-3 w-full">
+                            <div className="flex items-center gap-3 min-w-0">
+                              <div className="shrink-0 w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                                <Layers className="w-4 h-4" />
+                              </div>
+                              <div className="min-w-0">
+                                <p className="truncate text-sm font-extrabold text-foreground group-hover:text-primary transition-colors tracking-tight">
+                                  {t.tema}
+                                </p>
+                                <p className="text-[11px] text-muted-foreground font-medium">
+                                  {t.total} cards
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-2 shrink-0">
+                              <ChevronRight className="h-4.5 w-4.5 text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
+                            </div>
                           </div>
                         </button>
                       ))
@@ -420,7 +444,7 @@ export default function FlashcardsCargosDetalhes() {
           </motion.div>
         )}
 
-        {/* TAB: EDITAL (InformaÃ§Ãµes, Raio-X e Disciplinas) */}
+        {/* TAB: EDITAL (InformaÃƒÂ§ÃƒÂµes, Raio-X e Disciplinas) */}
         {activeTab === 'edital' && (
           <motion.div key="edital" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8 pb-32">
             <div className="flex items-center gap-3 py-4">
@@ -453,10 +477,10 @@ export default function FlashcardsCargosDetalhes() {
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-bold text-lg flex items-center gap-2">
                   <Layers className="w-5 h-5 text-primary" />
-                  ConteÃºdo ProgramÃ¡tico
+                  ConteÃƒÂºdo ProgramÃƒÂ¡tico
                 </h3>
                 <span className="text-xs font-bold bg-muted text-muted-foreground px-2.5 py-1 rounded-full">
-                  {cargo.edital_disciplinas?.length || 0} MatÃ©rias
+                  {cargo.edital_disciplinas?.length || 0} MatÃƒÂ©rias
                 </span>
               </div>
               
@@ -468,7 +492,7 @@ export default function FlashcardsCargosDetalhes() {
                       {disc.peso && (
                         <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
                           disc.peso.toLowerCase() === 'alta' ? 'bg-red-500/10 text-red-500' :
-                          disc.peso.toLowerCase() === 'mÃ©dia' ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-500' :
+                          disc.peso.toLowerCase() === 'mÃƒÂ©dia' ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-500' :
                           'bg-primary/10 text-primary'
                         }`}>
                           Peso {disc.peso}
@@ -510,19 +534,19 @@ export default function FlashcardsCargosDetalhes() {
           />
         )}
         
-        {/* TAB: REVISÃƒO (Placeholder) */}
+        {/* TAB: REVISÃƒÆ’O (Placeholder) */}
         {activeTab === 'revisao' && (
           <motion.div key="revisao" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 flex flex-col items-center justify-center px-6 text-center pt-24 pb-32">
             <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6">
               <Clock className="w-10 h-10 text-primary" />
             </div>
-            <h2 className="text-2xl font-black mb-3">SessÃ£o de RevisÃ£o</h2>
+            <h2 className="text-2xl font-black mb-3">SessÃƒÂ£o de RevisÃƒÂ£o</h2>
             <p className="text-muted-foreground mb-8 max-w-sm">
-              Revise os flashcards de {cargo.orgao} que estÃ£o agendados para hoje atravÃ©s da repetiÃ§Ã£o espaÃ§ada.
+              Revise os flashcards de {cargo.orgao} que estÃƒÂ£o agendados para hoje atravÃƒÂ©s da repetiÃƒÂ§ÃƒÂ£o espaÃƒÂ§ada.
             </p>
             <button className="h-14 px-8 rounded-2xl bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20 active:scale-95 transition-transform flex items-center gap-2">
               <Play className="w-5 h-5 fill-current" />
-              Iniciar RevisÃ£o
+              Iniciar RevisÃƒÂ£o
             </button>
           </motion.div>
         )}
@@ -535,7 +559,7 @@ export default function FlashcardsCargosDetalhes() {
             </div>
             <h2 className="text-2xl font-black mb-3">Seu Desempenho</h2>
             <p className="text-muted-foreground mb-8 max-w-sm">
-              Acompanhe sua taxa de acertos e evoluÃ§Ã£o no edital {cargo.orgao}. Em breve!
+              Acompanhe sua taxa de acertos e evoluÃƒÂ§ÃƒÂ£o no edital {cargo.orgao}. Em breve!
             </p>
             <button 
               onClick={() => setActiveTab('livre')}
