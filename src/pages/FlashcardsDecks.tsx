@@ -95,11 +95,7 @@ const FlashcardsDecks = () => {
 
   const avançarParaEtapa3 = () => {
     if (!nome.trim()) {
-      if (selTemas.length > 0) {
-        setNome(`Deck: ${selTemas.slice(0, 2).join(' + ')}${selTemas.length > 2 ? '...' : ''}`);
-      } else {
-        setNome(`Deck: ${selAreas.join(' + ')}`);
-      }
+      setNome(`Meu Deck ${decks.length + 1}`);
     }
     setEtapa(3);
   };
@@ -150,14 +146,14 @@ const FlashcardsDecks = () => {
     const areasDeck: string[] = d.filtros?.areas || [];
     const temasDeck: string[] = d.filtros?.temas || [];
     
-    let url = `/flashcards/estudar?deck=${d.id}`;
+    const params = new URLSearchParams();
     if (areasDeck.length > 0) {
-      url += `&areas=${encodeURIComponent(areasDeck.join('|'))}`;
+      params.set('areas', areasDeck.join('|'));
     }
     if (temasDeck.length > 0) {
-      url += `&temas=${encodeURIComponent(temasDeck.join('|'))}`;
+      params.set('temas', temasDeck.join('|'));
     }
-    navigate(url);
+    navigate(`/flashcards/estudar?${params.toString()}`);
   };
 
   return (
@@ -350,22 +346,28 @@ const FlashcardsDecks = () => {
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-2 sm:gap-3">
             {decks.map((d) => (
-              <div key={d.id} className="group rounded-2xl border border-border/80 bg-card p-5 shadow-sm hover:border-primary/50 transition-all flex flex-col justify-between gap-4">
-                <div className="min-w-0">
-                  <p className="truncate text-base font-extrabold text-foreground group-hover:text-primary transition-colors">{d.nome}</p>
-                  <p className="truncate text-xs text-muted-foreground mt-0.5">{d.descricao}</p>
-                  <span className="mt-2.5 inline-block text-xs font-black text-primary bg-primary/10 px-2.5 py-0.5 rounded-full">
-                    {(d.total_cards || 0).toLocaleString('pt-BR')} cards
+              <div key={d.id} className="group rounded-2xl border border-border/80 bg-card p-3 shadow-sm hover:border-primary/50 transition-all flex flex-col gap-2 relative">
+                <div className="absolute -top-2.5 -right-2">
+                  <span className="inline-flex items-center justify-center bg-primary text-white text-[9px] font-black h-5 px-2 rounded-full shadow-md">
+                    {d.total_cards}
                   </span>
                 </div>
-                <div className="flex items-center gap-2 pt-2 border-t border-border/60">
-                  <Button className="flex-1 rounded-xl font-bold gap-2" onClick={() => estudar(d)}>
-                    <Play className="h-4 w-4 fill-white" /> Estudar Agora
+                <div className="flex justify-center mb-1">
+                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                    <FolderPlus className="w-5 h-5 text-primary" />
+                  </div>
+                </div>
+                <div className="text-center min-w-0 flex-1 flex items-center justify-center">
+                  <p className="text-[11px] font-extrabold text-foreground leading-tight line-clamp-2">{d.nome}</p>
+                </div>
+                <div className="flex items-center gap-1 mt-auto pt-2 border-t border-border/60">
+                  <Button size="sm" className="flex-1 h-7 text-[10px] rounded-lg font-bold gap-1 px-0 bg-primary text-white" onClick={() => estudar(d)}>
+                    <Play className="h-3 w-3 fill-white" /> Treinar
                   </Button>
-                  <Button size="icon" variant="outline" className="rounded-xl text-muted-foreground hover:text-destructive hover:border-destructive/40" onClick={() => excluir(d.id)}>
-                    <Trash2 className="h-4 w-4" />
+                  <Button size="icon" variant="outline" className="h-7 w-7 rounded-lg text-muted-foreground hover:text-destructive hover:border-destructive/40 shrink-0" onClick={() => excluir(d.id)}>
+                    <Trash2 className="h-3 w-3" />
                   </Button>
                 </div>
               </div>
