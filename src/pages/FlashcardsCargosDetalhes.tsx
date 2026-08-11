@@ -7,9 +7,12 @@ import FlashcardsCargoHero from '@/components/flashcards/FlashcardsCargoHero';
 import { getAreaVisual } from '@/lib/flashcardsAreaVisual';
 import { supabase } from '@/integrations/supabase/client';
 import { haptic } from '@/lib/nativeHaptics';
-import { Building, ArrowLeft, Target, Calendar, CheckCircle2, ChevronLeft, Trash2, Layers, Play, Clock, Award, FileText, ChevronRight, Scale } from 'lucide-react';
+import { Building, ArrowLeft, Target, Calendar, CheckCircle2, ChevronLeft, Trash2, Layers, Play, Clock, Award, FileText, ChevronRight, Scale, Settings2 } from 'lucide-react';
 import { useFlashcardsTrilhasStore, type FlashcardTrilhaAtiva } from '@/lib/flashcardsTrilhasStore';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { format, addDays } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import prfLogo from '@/assets/cargos/policia-rodoviaria-federal.webp';
 import pfLogo from '@/assets/cargos/policia-federal.webp';
 
@@ -136,6 +139,7 @@ const TrilhaMapaEdital = ({ cargo, trilha, onBack }: { cargo: Cargo, trilha: Fla
   };
 
   const dias = Array.from({ length: trilha.diasMeta }, (_, i) => i + 1);
+  const dataInicioDate = new Date(trilha.dataInicio || new Date().toISOString());
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="w-full flex flex-col bg-background min-h-screen pb-32">
@@ -148,15 +152,35 @@ const TrilhaMapaEdital = ({ cargo, trilha, onBack }: { cargo: Cargo, trilha: Fla
             <h1 className="text-lg font-black text-foreground truncate">{cargo.cargo}</h1>
             <p className="text-xs text-muted-foreground truncate">{cargo.orgao}</p>
           </div>
-          <button 
-            onClick={() => {
-              haptic.medium();
-              limparTrilha(trilha.id);
-            }}
-            className="w-10 h-10 rounded-full flex items-center justify-center bg-destructive/10 text-destructive hover:bg-destructive hover:text-destructive-foreground transition-colors shrink-0"
-          >
-            <Trash2 className="w-5 h-5" />
-          </button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="w-10 h-10 rounded-full flex items-center justify-center bg-card border border-border/50 text-foreground hover:bg-muted transition-colors shrink-0">
+                <Settings2 className="w-5 h-5 text-muted-foreground" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56 rounded-2xl border-border/50 shadow-lg p-2 bg-card">
+              <DropdownMenuItem 
+                onClick={() => {
+                  haptic.medium();
+                  limparTrilha(trilha.id);
+                }}
+                className="rounded-xl font-bold py-3 px-3 text-foreground hover:bg-muted cursor-pointer flex items-center gap-3 transition-colors"
+              >
+                <Settings2 className="w-4.5 h-4.5 text-muted-foreground" />
+                Mudar Trilha
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => {
+                  haptic.medium();
+                  limparTrilha(trilha.id);
+                }}
+                className="text-destructive focus:text-destructive focus:bg-destructive/10 rounded-xl font-bold py-3 px-3 cursor-pointer mt-1 flex items-center gap-3 transition-colors"
+              >
+                <Trash2 className="w-4.5 h-4.5" />
+                Apagar Trilha
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
@@ -184,6 +208,11 @@ const TrilhaMapaEdital = ({ cargo, trilha, onBack }: { cargo: Cargo, trilha: Fla
             const isCompleted = trilha.diasConcluidos.includes(dia);
             const isNext = !isCompleted && (!trilha.diasConcluidos.includes(dia - 1) && dia !== 1 ? false : true);
             const isAccessible = isCompleted || isNext || (dia === 1);
+            
+            const dataDoDia = addDays(dataInicioDate, dia - 1);
+            const dataFormatada = format(dataDoDia, "dd/MM/yyyy", { locale: ptBR });
+            const isHoje = format(dataDoDia, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd");
+            const dataDisplay = isHoje ? `Hoje, ${dataFormatada}` : dataFormatada;
 
             return (
               <div key={dia} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
@@ -205,7 +234,9 @@ const TrilhaMapaEdital = ({ cargo, trilha, onBack }: { cargo: Cargo, trilha: Fla
 
                 <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-3xl bg-card border border-border/50 shadow-sm transition-all flex flex-col gap-3">
                   <div>
-                    <h3 className={`font-bold text-base ${isAccessible ? 'text-foreground' : 'text-muted-foreground'}`}>Dia {dia}</h3>
+                    <h3 className={`font-bold text-base uppercase tracking-tight ${isAccessible ? 'text-foreground' : 'text-muted-foreground'}`}>
+                      Dia {dia} <span className="text-muted-foreground/60 font-medium normal-case text-xs ml-1">• {dataDisplay}</span>
+                    </h3>
                     <p className="text-xs text-muted-foreground mt-0.5">Mix do Edital • {trilha.cardsPorDia} cards</p>
                   </div>
                   
