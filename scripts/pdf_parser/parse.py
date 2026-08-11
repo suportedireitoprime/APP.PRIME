@@ -196,6 +196,10 @@ def main():
                         
                 clean_md = '\n'.join(linhas_refinadas)
                 
+                # Heurística para quebrar diálogos que o OCR aglutinou na mesma linha
+                # Exemplo: "motorista. - Você se importa" -> "motorista.\n\n- Você se importa"
+                clean_md = re.sub(r'([.?!>”"’])\s+(–|—|-)\s+([A-ZÉÀÁÍÓÚa-záéíóú])', r'\1\n\n\2 \3', clean_md)
+                
                 capa_inject = ""
                 if sumario_json and (page_num + 1) in capitulos_por_pagina:
                     titulo_cap = capitulos_por_pagina[page_num + 1]
