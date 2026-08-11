@@ -156,9 +156,9 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
   };
 
   const slideVariants = {
-    enter: (dir: 1 | -1) => ({ x: dir * 60, opacity: 0, scale: 0.96 }),
-    center: { x: 0, opacity: 1, scale: 1 },
-    exit: (dir: 1 | -1) => ({ x: -dir * 60, opacity: 0, scale: 0.96 }),
+    enter: (dir: 1 | -1) => ({ x: dir * 100, y: 20, rotate: dir * 8, opacity: 0, scale: 0.95 }),
+    center: { x: 0, y: 0, rotate: 0, opacity: 1, scale: 1 },
+    exit: (dir: 1 | -1) => ({ x: -dir * 100, y: 20, rotate: -dir * 8, opacity: 0, scale: 0.95 }),
   };
 
   return (
@@ -186,7 +186,26 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
       </div>
 
       {/* Card */}
-      <div className="relative" style={{ perspective: "1500px" }}>
+      <div className="relative w-full min-h-[440px] md:min-h-[500px] mt-6" style={{ perspective: "1500px" }}>
+        
+        {/* Stack Effect (Cards behind) */}
+        {!isLast && (
+          <div className="absolute inset-0 z-0 flex flex-col items-center pointer-events-none">
+            {idx < total - 2 && (
+              <div 
+                className="absolute w-[84%] h-full rounded-2xl bg-card border shadow-sm transition-all duration-300"
+                style={{ top: "-22px", borderColor: `${accent}20`, opacity: 0.4 }}
+              />
+            )}
+            {idx < total - 1 && (
+              <div 
+                className="absolute w-[92%] h-full rounded-2xl bg-card border shadow-sm transition-all duration-300"
+                style={{ top: "-11px", borderColor: `${accent}40`, opacity: 0.7 }}
+              />
+            )}
+          </div>
+        )}
+
         <AnimatePresence mode="wait" custom={dirRef.current}>
           <motion.div
             key={idx}
@@ -196,15 +215,16 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
             animate="center"
             exit="exit"
             transition={{
-              x: { type: "tween", duration: 0.22, ease: [0.32, 0.72, 0, 1] },
-              opacity: { duration: 0.16 },
-              scale: { duration: 0.18 },
+              x: { type: "spring", stiffness: 300, damping: 28 },
+              rotate: { type: "spring", stiffness: 300, damping: 28 },
+              opacity: { duration: 0.2 },
+              scale: { duration: 0.2 },
             }}
-            style={{ willChange: "transform, opacity" }}
-            className="relative w-full min-h-[440px] md:min-h-[500px]"
+            style={{ willChange: "transform, opacity", transformOrigin: "bottom center" }}
+            className="absolute inset-0 z-10"
           >
             <motion.div
-              className="relative w-full min-h-[440px] md:min-h-[500px]"
+              className="absolute inset-0 w-full h-full"
               animate={{ rotateY: flipped ? 180 : 0 }}
               transition={{ duration: 0.42, ease: [0.32, 0.72, 0, 1] }}
               style={{
