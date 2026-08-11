@@ -228,6 +228,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signOut = useCallback(async () => {
+    if (Capacitor.isNativePlatform()) {
+      try {
+        const { GoogleAuth } = await import('@codetrix-studio/capacitor-google-auth');
+        await GoogleAuth.signOut();
+      } catch (e) {
+        console.error('[GoogleAuth] Erro ao fazer signout nativo', e);
+      }
+    }
     await supabase.auth.signOut();
   }, []);
 
@@ -298,7 +306,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Web fallback (OAuth redirect padrão)
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: window.location.origin },
+      options: { 
+        redirectTo: window.location.origin,
+        queryParams: { prompt: 'select_account' }
+      },
     });
     return { error: error as Error | null };
   }, []);
