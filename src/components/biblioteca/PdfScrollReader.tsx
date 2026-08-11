@@ -345,22 +345,41 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId }: Props) => {
     setBuscando(true);
     try {
       const pdf = pdfRef.current;
-      const alvoLower = alvo.toLowerCase();
+      const alvoNormalized = alvo.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
       const achados: Match[] = [];
-      for (let i = 1; i <= pdf.numPages && achados.length < 80; i++) {
+      
+      const fetchPageText = async (i: number) => {
         try {
           const page = await pdf.getPage(i);
           const content = await page.getTextContent();
           const texto = content.items.map((it: any) => it.str).join(' ').replace(/\s+/g, ' ');
-          const pos = texto.toLowerCase().indexOf(alvoLower);
+          const textoNormalized = texto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+          const pos = textoNormalized.indexOf(alvoNormalized);
           if (pos >= 0) {
-            achados.push({
+            return {
               pagina: i,
               trecho: texto.slice(Math.max(0, pos - 50), pos + alvo.length + 60).trim(),
-            });
+            };
           }
         } catch {}
+        return null;
+      };
+
+      const promises = [];
+      for (let i = 1; i <= pdf.numPages; i++) {
+        promises.push(fetchPageText(i));
       }
+      
+      const chunkSize = 20;
+      for (let i = 0; i < promises.length; i += chunkSize) {
+        const chunk = await Promise.all(promises.slice(i, i + chunkSize));
+        chunk.forEach(res => {
+          if (res && achados.length < 80) achados.push(res);
+        });
+        if (achados.length >= 80) break;
+      }
+      
+      achados.sort((a, b) => a.pagina - b.pagina);
       setMatches(achados);
       if (!achados.length) toast.info('Nenhuma ocorrência encontrada');
     } finally {
@@ -485,15 +504,6 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId }: Props) => {
           >
             <Search className="w-5 h-5 text-white" />
           </button>
-          {isNative && (
-            <button
-              onClick={openNativo}
-              title="Abrir no visualizador do sistema"
-              className="w-12 h-12 md:w-11 md:h-11 rounded-full bg-white/[0.06] border border-white/10 hover:bg-white/15 flex items-center justify-center transition"
-            >
-              <ExternalLink className="w-4 h-4 text-white" />
-            </button>
-          )}
         </div>
       </div>
 
@@ -611,7 +621,7 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId }: Props) => {
 
         {/* Controles de zoom */}
         {!loading && !error && (
-          <div className="absolute right-3 bottom-36 z-[4] flex flex-col gap-2">
+          <div className="absolute right-3 bottom-48 z-[4] flex flex-col gap-2">
             <button
               onClick={() => ajustarZoom(0.25)}
               aria-label="Aumentar zoom"
