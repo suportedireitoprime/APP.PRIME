@@ -12,7 +12,7 @@ const corsHeaders = {
 
 const MISTRAL_API_KEY = Deno.env.get("MISTRAL_API_KEY")!;
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const SERVICE_ROLE = Deno.env.get("CUSTOM_SERVICE_ROLE_KEY") ?? Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
 const ADMIN_EMAILS = new Set(["wn7corporation@gmail.com", "suporte.vacatio@gmail.com", "wn7juridico@gmail.com"]);
 const FUNCTION_VERSION = "biblioteca-ocr-mistral-gemini-2-5-flash-lite-v1";
@@ -49,7 +49,7 @@ const triggerGitHubAction = async (body: Body) => {
         pdf_url: body.pdf_url,
         titulo: body.titulo || `livro_${body.livro_id}`,
         supabase_url: Deno.env.get("SUPABASE_URL") ?? "",
-        supabase_key: Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? Deno.env.get("SUPABASE_ANON_KEY") ?? ""
+        supabase_key: Deno.env.get("CUSTOM_SERVICE_ROLE_KEY") ?? Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? Deno.env.get("SUPABASE_ANON_KEY") ?? ""
       }
     })
   });
