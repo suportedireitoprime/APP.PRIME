@@ -13,17 +13,17 @@ import pfLogo from '@/assets/cargos/policia-federal.webp';
 function getCategoriaCargo(cargo: string, orgao: string): string {
   const t = (cargo + " " + orgao).toLowerCase();
   if (t.includes('oab')) return 'OAB';
-  if (t.includes('polícia') || t.includes('policial') || t.includes('prf') || t.includes('pf') || t.includes('agente')) return 'Carreira Policial';
+  if (t.includes('polÃ­cia') || t.includes('policial') || t.includes('prf') || t.includes('pf') || t.includes('agente')) return 'Carreira Policial';
   if (t.includes('juiz') || t.includes('magistratura') || t.includes('tj')) return 'Carreira de Juiz';
   return 'Outros Cargos';
 }
 
 function getLogoAndStyles(cargo: string, orgao: string) {
   const t = (cargo + " " + orgao).toLowerCase();
-  if (t.includes('rodoviária federal') || t.includes('prf')) {
+  if (t.includes('rodoviÃ¡ria federal') || t.includes('prf')) {
     return { logoSrc: prfLogo, iconType: 'image' };
   }
-  if (t.includes('polícia federal') || t.includes('pf')) {
+  if (t.includes('polÃ­cia federal') || t.includes('pf')) {
     return { logoSrc: pfLogo, iconType: 'image' };
   }
   if (t.includes('oab')) {
@@ -33,6 +33,16 @@ function getLogoAndStyles(cargo: string, orgao: string) {
     return { icon: Scale, iconType: 'icon' };
   }
   return { icon: Building, iconType: 'icon' };
+}
+
+function getDisplayTitleAndSub(cargo: string, orgao: string) {
+  if (cargo.includes('RODOVIÁRIO FEDERAL')) {
+    return { title: 'PRF', subtitle: 'Polícia Rodoviária Federal' };
+  }
+  if (cargo.includes('AGENTE DE POLÍCIA FEDERAL')) {
+    return { title: 'PF', subtitle: 'Agente de Polícia Federal' };
+  }
+  return { title: cargo, subtitle: orgao };
 }
 
 type Cargo = {
@@ -97,7 +107,7 @@ export default function FlashcardsCargos() {
             <Input 
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
-              placeholder="Buscar cargo ou Ã³rgÃ£o..."
+              placeholder="Buscar cargo ou ÃƒÂ³rgÃƒÂ£o..."
               className="pl-12 h-14 rounded-2xl bg-card border-border/50 text-base shadow-sm focus-visible:ring-primary/20"
             />
           </div>
@@ -119,6 +129,7 @@ export default function FlashcardsCargos() {
                     <div className="grid grid-cols-2 gap-4">
                       {grupo.itens.map((cargo, i) => {
                         const { icon: Icon, logoSrc, iconType } = getLogoAndStyles(cargo.cargo, cargo.orgao);
+                        const { title, subtitle } = getDisplayTitleAndSub(cargo.cargo, cargo.orgao);
                         return (
                           <motion.button
                             key={cargo.id}
@@ -142,16 +153,16 @@ export default function FlashcardsCargos() {
                                 </div>
                                 
                                 <h2 className="font-display text-base sm:text-lg font-black leading-tight mb-1.5 line-clamp-3">
-                                  {cargo.cargo}
+                                  {title}
                                 </h2>
-                                <p className="text-[10px] text-primary font-bold uppercase tracking-wider mb-2 line-clamp-1">
-                                  {cargo.orgao}
+                                <p className="text-[10px] text-primary font-bold uppercase tracking-wider mb-2 line-clamp-2">
+                                  {subtitle}
                                 </p>
                               </div>
                               
                               <div className="mt-auto pt-3 border-t border-border/40 flex items-center justify-between">
                                 <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
-                                  {cargo.edital_disciplinas ? `${cargo.edital_disciplinas.length} Matérias` : 'Edital'}
+                                  {cargo.edital_disciplinas ? `${cargo.edital_disciplinas.length} MatÃ©rias` : 'Edital'}
                                 </p>
                                 <ChevronRight className="w-4 h-4 text-primary group-hover:translate-x-0.5 transition-transform" />
                               </div>

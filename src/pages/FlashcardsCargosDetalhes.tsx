@@ -41,7 +41,7 @@ const SetupRitmo = ({ cargo, onBack, onFinish }: { cargo: Cargo, onBack: () => v
             <Target className="w-8 h-8 text-primary" />
           </div>
           <h2 className="text-xl font-black text-foreground mb-2">Defina sua Meta</h2>
-          <p className="text-sm text-muted-foreground">Em quantos dias vocÃƒÆ’Ã‚Âª quer fechar o edital de {cargo.orgao}?</p>
+          <p className="text-sm text-muted-foreground">Em quantos dias vocÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âª quer fechar o edital de {cargo.orgao}?</p>
         </div>
 
         <div className="bg-card border border-border/50 rounded-3xl p-6 shadow-sm">
@@ -186,7 +186,7 @@ const TrilhaMapaEdital = ({ cargo, trilha, onBack }: { cargo: Cargo, trilha: Fla
                 <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-3xl bg-card border border-border/50 shadow-sm transition-all flex flex-col gap-3">
                   <div>
                     <h3 className={`font-bold text-base ${isAccessible ? 'text-foreground' : 'text-muted-foreground'}`}>Dia {dia}</h3>
-                    <p className="text-xs text-muted-foreground mt-0.5">Mix do Edital ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ {trilha.cardsPorDia} cards</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">Mix do Edital ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ {trilha.cardsPorDia} cards</p>
                   </div>
                   
                   <button 
@@ -211,7 +211,7 @@ const TrilhaMapaEdital = ({ cargo, trilha, onBack }: { cargo: Cargo, trilha: Fla
 };
 
 
-// --- PÃƒÆ’Ã‚ÂGINA PRINCIPAL ---
+// --- PÃƒÆ’Ã†â€™Ãƒâ€šÃ‚ÂGINA PRINCIPAL ---
 
 export default function FlashcardsCargosDetalhes() {
   const { id } = useParams();
@@ -287,11 +287,11 @@ export default function FlashcardsCargosDetalhes() {
     setSheetOpen(false); // Fecha o menu
     const params = new URLSearchParams();
     if (!tema) {
-      // Praticar todas as matÃƒÂ©rias da ÃƒÂrea selecionada
+      // Praticar todas as matÃƒÆ’Ã‚Â©rias da ÃƒÆ’Ã‚Ârea selecionada
       params.set('area', areaSelecionada!);
       params.set('modo', 'todos');
     } else {
-      // Praticar um tema especÃƒÂ­fico
+      // Praticar um tema especÃƒÆ’Ã‚Â­fico
       params.set('area', areaSelecionada!);
       params.set('tema', tema);
       params.set('modo', 'todos');
@@ -316,7 +316,7 @@ export default function FlashcardsCargosDetalhes() {
   if (!cargo) {
     return (
       <div className="min-h-screen bg-background text-foreground pb-[120px] md:pb-8 flex flex-col font-sans">
-        <PageHeader title="Cargo nÃƒÆ’Ã‚Â£o encontrado" onBack={() => navigate('/flashcards/cargos')} />
+        <PageHeader title="Cargo nÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o encontrado" onBack={() => navigate('/flashcards/cargos')} />
       </div>
     );
   }
@@ -325,7 +325,7 @@ export default function FlashcardsCargosDetalhes() {
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
       <AnimatePresence mode="wait">
         
-        {/* TAB: LIVRE (PrÃƒÂ¡tica Livre) */}
+        {/* TAB: LIVRE (PrÃƒÆ’Ã‚Â¡tica Livre) */}
         {activeTab === 'livre' && (
           <motion.div key="livre" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8 pb-32 flex flex-col relative">
             <div className="flex items-center gap-3 py-4">
@@ -335,11 +335,11 @@ export default function FlashcardsCargosDetalhes() {
               >
                 <ArrowLeft className="w-5 h-5" />
               </button>
-              <h2 className="font-display text-xl font-black">PrÃ¡tica Livre</h2>
+              <h2 className="font-display text-xl font-black">PrÃƒÂ¡tica Livre</h2>
             </div>
             
             <p className="text-muted-foreground text-sm mb-6 px-1">
-              Escolha uma Ã¡rea do edital de <strong>{cargo.orgao}</strong> para praticar flashcards livremente.
+              Escolha uma ÃƒÂ¡rea do edital de <strong>{cargo.orgao}</strong> para praticar flashcards livremente.
             </p>
 
             <div className="space-y-3 pb-8">
@@ -352,14 +352,14 @@ export default function FlashcardsCargosDetalhes() {
                     className="group flex flex-col justify-between rounded-2xl border border-border/80 bg-card p-4 text-left transition-all hover:border-primary/50 hover:shadow-md active:scale-[0.99] gap-3 w-full"
                   >
                     <div className="flex items-center justify-between gap-3 w-full">
-                      <div className="flex items-center gap-3 min-w-0">
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
                         <Icon className="h-6 w-6 shrink-0 transition-transform group-hover:scale-110" strokeWidth={1.8} style={{ color }} />
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
                           <p className="truncate text-base font-extrabold text-foreground group-hover:text-primary transition-colors tracking-tight">
                             {disc.area}
                           </p>
-                          <p className="text-xs text-muted-foreground font-medium">
-                            Toque para ver os tÃ³picos
+                          <p className="text-xs text-muted-foreground font-medium truncate">
+                            Toque para ver os tópicos
                           </p>
                         </div>
                       </div>
@@ -384,7 +384,7 @@ export default function FlashcardsCargosDetalhes() {
                 <div className="p-6 pb-4 border-b border-border/50 shrink-0 relative">
                   <SheetHeader>
                     <SheetTitle className="text-xl font-black text-left">{areaSelecionada}</SheetTitle>
-                    <p className="text-sm text-muted-foreground text-left mt-1">O que vocÃª quer praticar?</p>
+                    <p className="text-sm text-muted-foreground text-left mt-1">O que vocÃƒÂª quer praticar?</p>
                   </SheetHeader>
                 </div>
                 
@@ -393,19 +393,19 @@ export default function FlashcardsCargosDetalhes() {
                     onClick={() => handlePraticarLivre()}
                     className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-black text-sm h-12 rounded-xl transition-all active:scale-[0.98] flex items-center justify-center gap-2 shadow-md shadow-primary/20"
                   >
-                    Praticar Todas as Matérias
+                    Praticar Todas as MatÃ©rias
                   </button>
                   
                   <div className="flex items-center gap-3 py-1">
                     <div className="h-px bg-border/50 flex-1" />
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Ou escolha uma matéria</span>
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Ou escolha uma matÃ©ria</span>
                     <div className="h-px bg-border/50 flex-1" />
                   </div>
 
                   <div className="space-y-2.5 pb-8">
                     {temasArea.length === 0 ? (
                       <div className="text-center py-8 text-muted-foreground text-sm">
-                        Carregando matérias...
+                        Carregando matÃ©rias...
                       </div>
                     ) : (
                       temasArea.map((t, index) => {
@@ -446,7 +446,7 @@ export default function FlashcardsCargosDetalhes() {
           </motion.div>
         )}
 
-        {/* TAB: EDITAL (InformaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes, Raio-X e Disciplinas) */}
+        {/* TAB: EDITAL (InformaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âµes, Raio-X e Disciplinas) */}
         {activeTab === 'edital' && (
           <motion.div key="edital" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8 pb-32">
             <div className="flex items-center gap-3 py-4">
@@ -479,10 +479,10 @@ export default function FlashcardsCargosDetalhes() {
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-bold text-lg flex items-center gap-2">
                   <Layers className="w-5 h-5 text-primary" />
-                  ConteÃƒÆ’Ã‚Âºdo ProgramÃƒÆ’Ã‚Â¡tico
+                  ConteÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºdo ProgramÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡tico
                 </h3>
                 <span className="text-xs font-bold bg-muted text-muted-foreground px-2.5 py-1 rounded-full">
-                  {cargo.edital_disciplinas?.length || 0} MatÃƒÆ’Ã‚Â©rias
+                  {cargo.edital_disciplinas?.length || 0} MatÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©rias
                 </span>
               </div>
               
@@ -494,7 +494,7 @@ export default function FlashcardsCargosDetalhes() {
                       {disc.peso && (
                         <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
                           disc.peso.toLowerCase() === 'alta' ? 'bg-red-500/10 text-red-500' :
-                          disc.peso.toLowerCase() === 'mÃƒÆ’Ã‚Â©dia' ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-500' :
+                          disc.peso.toLowerCase() === 'mÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©dia' ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-500' :
                           'bg-primary/10 text-primary'
                         }`}>
                           Peso {disc.peso}
@@ -536,19 +536,19 @@ export default function FlashcardsCargosDetalhes() {
           />
         )}
         
-        {/* TAB: REVISÃƒÆ’Ã†â€™O (Placeholder) */}
+        {/* TAB: REVISÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢O (Placeholder) */}
         {activeTab === 'revisao' && (
           <motion.div key="revisao" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 flex flex-col items-center justify-center px-6 text-center pt-24 pb-32">
             <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6">
               <Clock className="w-10 h-10 text-primary" />
             </div>
-            <h2 className="text-2xl font-black mb-3">SessÃƒÆ’Ã‚Â£o de RevisÃƒÆ’Ã‚Â£o</h2>
+            <h2 className="text-2xl font-black mb-3">SessÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o de RevisÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o</h2>
             <p className="text-muted-foreground mb-8 max-w-sm">
-              Revise os flashcards de {cargo.orgao} que estÃƒÆ’Ã‚Â£o agendados para hoje atravÃƒÆ’Ã‚Â©s da repetiÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o espaÃƒÆ’Ã‚Â§ada.
+              Revise os flashcards de {cargo.orgao} que estÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o agendados para hoje atravÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©s da repetiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o espaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â§ada.
             </p>
             <button className="h-14 px-8 rounded-2xl bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20 active:scale-95 transition-transform flex items-center gap-2">
               <Play className="w-5 h-5 fill-current" />
-              Iniciar RevisÃƒÆ’Ã‚Â£o
+              Iniciar RevisÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o
             </button>
           </motion.div>
         )}
@@ -561,7 +561,7 @@ export default function FlashcardsCargosDetalhes() {
             </div>
             <h2 className="text-2xl font-black mb-3">Seu Desempenho</h2>
             <p className="text-muted-foreground mb-8 max-w-sm">
-              Acompanhe sua taxa de acertos e evoluÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o no edital {cargo.orgao}. Em breve!
+              Acompanhe sua taxa de acertos e evoluÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o no edital {cargo.orgao}. Em breve!
             </p>
             <button 
               onClick={() => setActiveTab('livre')}
