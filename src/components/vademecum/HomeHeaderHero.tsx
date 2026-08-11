@@ -570,7 +570,7 @@ const HomeHeaderHero = ({ onSearchOpenChange }: { onSearchOpenChange?: (open: bo
               { label: 'Aprender',    icon: GraduationCap, to: '/aprender',     color: '#FFD500', badgeColor: null, badgeKey: null, prefetch: 'aprender' as PrefetchKey },
               { label: 'Flashcards',  icon: Layers,        to: '/flashcards',   color: '#34D399', badgeColor: null, badgeKey: null, prefetch: 'flashcards' as PrefetchKey },
               { label: 'Questões',    icon: ListChecks,    to: '/questoes',     color: '#A78BFA', badgeColor: null, badgeKey: null, prefetch: 'questoes' as PrefetchKey },
-              { label: 'Me Explique', icon: Camera,        to: '/me-explique',  color: '#8B5CF6', badgeColor: null, badgeKey: null, prefetch: 'aprender' as PrefetchKey },
+              { label: 'Me Explique', icon: Camera,        to: '/me-explique',  color: '#F97316', badgeColor: null, badgeKey: null, prefetch: 'aprender' as PrefetchKey },
             ].map((item) => {
               const Icon = item.icon;
               const badgeCount = item.badgeKey ? shortcutBadges.counts[item.badgeKey] : 0;
