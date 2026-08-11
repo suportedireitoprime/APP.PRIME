@@ -125,23 +125,52 @@ type Category = {
 
 const CATEGORIES: Category[] = [
   {
-    id: 'exclusivas-admin',
-    title: 'Funções exclusivas (Admin)',
-    desc: 'Ferramentas em testes, visíveis apenas para admins',
-    icon: Crown,
-    items: [
-      { id: 'admin-newsletter', label: 'Newsletter', icon: Mail, desc: 'Receba um resumo jurídico diário no e-mail', route: '/newsletter' },
-      { id: 'admin-peticao-inicial', label: 'Petição Inicial', icon: FileSignature, desc: 'Gere petições com IA e jurisprudência real do STF/STJ', route: '/ferramentas/peticao-inicial' },
-      { id: 'admin-gravar-aula', label: 'Gravar aula', icon: Mic, desc: 'Grave aulas longas com resumo automático por IA', route: '/anotacoes/audio' },
-    ],
-  },
-  {
     id: 'push',
     title: 'Notificações Push',
     desc: 'Campanhas, agendamento e métricas',
     icon: Send,
     items: [
       { id: 'admin-push', label: 'Painel de Push', icon: BellRing, desc: 'Compor, agendar, campanhas e métricas', route: '/admin-push' },
+    ],
+  },
+  {
+    id: 'geracao-conteudo',
+    title: 'Geração de Conteúdo',
+    desc: 'IA, biblioteca, radar e estudos',
+    icon: Newspaper,
+    items: [
+      // Conteúdo & IA
+      { id: 'blog-edicao', label: 'Blog Editar', icon: Newspaper, desc: 'Geração automática de artigos + push', route: '/admin-blog-edicao' },
+      { id: 'overlay-frases', label: 'Frases Editar', icon: Quote, desc: 'Frases + vozes do overlay de geração', route: '/admin-overlay-frases' },
+      { id: 'design-imagens', label: 'Design de Imagens', icon: Palette, desc: 'Presets de estilo (prompt travado) por categoria', route: '/admin-design-imagens' },
+      { id: 'hero-home', label: 'Imagens Início do App', icon: ImageIcon, desc: 'Personagens do painel amarelo + animações de entrada', route: '/admin-hero-home' },
+      { id: 'home-curiosidades', label: 'Curiosidades da Home', icon: Lightbulb, desc: 'Cards leves misturados aos stats, com capa vazada IA', route: '/admin-home-curiosidades' },
+      { id: 'apresentacao-editar', label: 'Apresentação Editar', icon: Mic, desc: 'Resumo ou lei + PDF → OCR e narração de cada slide', route: '/admin-apresentacao-editar' },
+      { id: 'resumo-livro-audio-editar', label: 'Resumo Livro Áudio Editar', icon: Headphones, desc: 'Adicionar áudio para os resumos dos livros', route: '/admin/resumo-livro-audio' },
+      { id: 'narracao', label: 'Narração Editar', icon: Mic, desc: 'TTS com Gemini', route: '/narracao' },
+      { id: 'explicacao-lei', label: 'Explicações Editar (IA)', icon: Lightbulb, desc: 'Batch de explicações', route: '/explicacao-lei' },
+      { id: 'boletins', label: 'Boletins Editar', icon: Rss, desc: 'Newsletters e boletins', route: '/newsletter' },
+      // Biblioteca
+      { id: 'biblioteca-editar', label: 'Biblioteca Editar', icon: BookOpen, desc: 'Sinopse, capa horizontal e análise técnica com IA', route: '/admin-biblioteca-editar' },
+      { id: 'leitura-nativa', label: 'Leitura Nativa (OCR + Gemini)', icon: FileText, desc: 'OCR de PDFs + refino Gemini com capítulos, individual ou em lote', route: '/admin-leitura-nativa' },
+      { id: 'audioaulas', label: 'Audioaulas', icon: PlayCircle, desc: 'Gera títulos e prompts de podcast a partir da leitura nativa', route: '/admin-audioaulas' },
+      { id: 'leis-cantadas', label: 'Leis Cantadas Editar', icon: PlayCircle, desc: 'Gera prompts de música (sertanejo, pagode, rock...) e publica as faixas', route: '/admin-leis-cantadas' },
+      // Radar Legislativo
+      { id: 'camara-deputados', label: 'Câmara Editar', icon: Building2, desc: 'Radar legislativo', route: '/radar/deputados' },
+      // Estudo & Jogos
+      { id: 'praticar', label: 'Praticar', icon: Target, desc: 'Tiro ao alvo na lei seca (em testes, só admin)', route: '/praticar' },
+      { id: 'dicionario', label: 'Dicionário Editar', icon: BookA, desc: 'Termos e definições' },
+      { id: 'questoes-editar', label: 'Questões Editar', icon: ListChecks, desc: 'Buscar mais questões, novos cargos e importar do Google Sheets', route: '/admin-questoes' },
+    ],
+  },
+  {
+    id: 'questoes',
+    title: 'Questões',
+    desc: 'Importar questões das planilhas, cargos, e visualizar reportes de erros',
+    icon: ListChecks,
+    items: [
+      { id: 'admin-questoes', label: 'Questões — Editar', icon: ListChecks, desc: 'Buscar mais questões, novos cargos e importar do Google Sheets', route: '/admin-questoes' },
+      { id: 'admin-erros-questoes', label: 'Reportes de Erro', icon: ShieldAlert, desc: 'Visualizar e resolver erros em questões reportados por alunos', route: '/admin-erros-questoes' },
     ],
   },
   {
@@ -176,17 +205,6 @@ const CATEGORIES: Category[] = [
     ],
   },
   {
-    id: 'questoes',
-    title: 'Questões',
-    desc: 'Importar questões das planilhas, cargos, e visualizar reportes de erros',
-    icon: ListChecks,
-    items: [
-      { id: 'admin-questoes', label: 'Questões — Editar', icon: ListChecks, desc: 'Buscar mais questões, novos cargos e importar do Google Sheets', route: '/admin-questoes' },
-      { id: 'admin-erros-questoes', label: 'Reportes de Erro', icon: ShieldAlert, desc: 'Visualizar e resolver erros em questões reportados por alunos', route: '/admin-erros-questoes' },
-    ],
-  },
-
-  {
     id: 'jurisprudencia',
     title: 'Jurisprudência',
     desc: 'Mapear leis do Vade Mecum ao Corpus927 (Enfam/STJ)',
@@ -218,8 +236,6 @@ const CATEGORIES: Category[] = [
       { id: 'admin-passo-a-passo-lojas', label: 'Passo a Passo Lojas', icon: Store, desc: 'Guia com 25 passos para publicar no Google Play e App Store', route: '/admin-passo-a-passo-lojas' },
     ],
   },
-
-
   {
     id: 'triagem',
     title: 'Triagem',
@@ -238,36 +254,6 @@ const CATEGORIES: Category[] = [
     icon: MessageCircle,
     items: [
       { id: 'admin-horus', label: 'Painel do Horus', icon: MessageCircle, desc: 'Instância, QR Code, usuários vinculados e conversas', route: '/admin-horus' },
-    ],
-  },
-  {
-    id: 'geracao-conteudo',
-    title: 'Geração de Conteúdo',
-    desc: 'IA, biblioteca, radar e estudos',
-    icon: Newspaper,
-    items: [
-      // Conteúdo & IA
-      { id: 'blog-edicao', label: 'Blog Editar', icon: Newspaper, desc: 'Geração automática de artigos + push', route: '/admin-blog-edicao' },
-      { id: 'overlay-frases', label: 'Frases Editar', icon: Quote, desc: 'Frases + vozes do overlay de geração', route: '/admin-overlay-frases' },
-      { id: 'design-imagens', label: 'Design de Imagens', icon: Palette, desc: 'Presets de estilo (prompt travado) por categoria', route: '/admin-design-imagens' },
-      { id: 'hero-home', label: 'Imagens Início do App', icon: ImageIcon, desc: 'Personagens do painel amarelo + animações de entrada', route: '/admin-hero-home' },
-      { id: 'home-curiosidades', label: 'Curiosidades da Home', icon: Lightbulb, desc: 'Cards leves misturados aos stats, com capa vazada IA', route: '/admin-home-curiosidades' },
-      { id: 'apresentacao-editar', label: 'Apresentação Editar', icon: Mic, desc: 'Resumo ou lei + PDF → OCR e narração de cada slide', route: '/admin-apresentacao-editar' },
-      { id: 'resumo-livro-audio-editar', label: 'Resumo Livro Áudio Editar', icon: Headphones, desc: 'Adicionar áudio para os resumos dos livros', route: '/admin/resumo-livro-audio' },
-      { id: 'narracao', label: 'Narração Editar', icon: Mic, desc: 'TTS com Gemini', route: '/narracao' },
-      { id: 'explicacao-lei', label: 'Explicações Editar (IA)', icon: Lightbulb, desc: 'Batch de explicações', route: '/explicacao-lei' },
-      { id: 'boletins', label: 'Boletins Editar', icon: Rss, desc: 'Newsletters e boletins', route: '/newsletter' },
-      // Biblioteca
-      { id: 'biblioteca-editar', label: 'Biblioteca Editar', icon: BookOpen, desc: 'Sinopse, capa horizontal e análise técnica com IA', route: '/admin-biblioteca-editar' },
-      { id: 'leitura-nativa', label: 'Leitura Nativa (OCR + Gemini)', icon: FileText, desc: 'OCR de PDFs + refino Gemini com capítulos, individual ou em lote', route: '/admin-leitura-nativa' },
-      { id: 'audioaulas', label: 'Audioaulas', icon: PlayCircle, desc: 'Gera títulos e prompts de podcast a partir da leitura nativa', route: '/admin-audioaulas' },
-      { id: 'leis-cantadas', label: 'Leis Cantadas Editar', icon: PlayCircle, desc: 'Gera prompts de música (sertanejo, pagode, rock...) e publica as faixas', route: '/admin-leis-cantadas' },
-      // Radar Legislativo
-      { id: 'camara-deputados', label: 'Câmara Editar', icon: Building2, desc: 'Radar legislativo', route: '/radar/deputados' },
-      // Estudo & Jogos
-      { id: 'praticar', label: 'Praticar', icon: Target, desc: 'Tiro ao alvo na lei seca (em testes, só admin)', route: '/praticar' },
-      { id: 'dicionario', label: 'Dicionário Editar', icon: BookA, desc: 'Termos e definições' },
-      { id: 'questoes-editar', label: 'Questões Editar', icon: ListChecks, desc: 'Buscar mais questões, novos cargos e importar do Google Sheets', route: '/admin-questoes' },
     ],
   },
   {
