@@ -58,9 +58,11 @@ export function DesafiosCarousel({ dash, onVerTodos }: { dash: Dash | null, onVe
               </div>
               <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
                 <div
-                  className="h-full rounded-full bg-primary transition-all duration-500"
+                  className="h-full rounded-full bg-primary transition-all duration-500 relative overflow-hidden"
                   style={{ width: `${(desafio.feito / desafio.meta) * 100}%` }}
-                />
+                >
+                  <div className="absolute top-0 bottom-0 left-0 w-full bg-gradient-to-r from-transparent via-white/40 to-transparent animate-shimmer opacity-80" />
+                </div>
               </div>
             </div>
           </section>
