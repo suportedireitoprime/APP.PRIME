@@ -27,6 +27,22 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { motion, AnimatePresence } from 'framer-motion';
 
+import prfLogo from '@/assets/cargos/policia-rodoviaria-federal.webp';
+import pfLogo from '@/assets/cargos/policia-federal.webp';
+import pcDfLogo from '@/assets/cargos/policia-civil-df.webp';
+import pmSpLogo from '@/assets/cargos/policia-militar-sp.webp';
+import ppRsLogo from '@/assets/cargos/policia-penal-rs.webp';
+
+function getCargoLogo(nome?: string | null) {
+  const n = (nome || '').toLowerCase();
+  if (n.includes('prf') || n.includes('rodoviár') || n.includes('rodoviario')) return prfLogo;
+  if (n.includes('polícia federal') || n.includes('policia federal')) return pfLogo;
+  if (n.includes('polícia civil') || n.includes('policia civil')) return pcDfLogo;
+  if (n.includes('polícia militar') || n.includes('policia militar')) return pmSpLogo;
+  if (n.includes('polícia penal') || n.includes('policia penal')) return ppRsLogo;
+  return null;
+}
+
 const db = supabase as any;
 const TAMANHOS = [10, 20, 30, 50, 100];
 
@@ -227,10 +243,14 @@ export default function QuestoesSimuladoCargoConfig() {
               
               <div className="flex items-center gap-4">
                 <div
-                  className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-lg"
+                  className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-lg p-2"
                   style={{ background: cargo?.cor ? `${cargo.cor}25` : 'rgba(230,194,0,0.15)', border: `1px solid ${cargo?.cor || '#E6C200'}40` }}
                 >
-                  <Gavel className="w-7 h-7" style={{ color: cargo?.cor || '#E6C200' }} />
+                  {getCargoLogo(cargo?.nome) ? (
+                    <img src={getCargoLogo(cargo?.nome)!} alt="" className="w-10 h-10 object-contain drop-shadow-sm" />
+                  ) : (
+                    <Gavel className="w-7 h-7" style={{ color: cargo?.cor || '#E6C200' }} />
+                  )}
                 </div>
                 <div className="min-w-0 flex-1">
                   <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight truncate">

@@ -7,6 +7,23 @@ import ResolverPadrao from '@/components/questoes/ResolverPadrao';
 import { useQuestoesCargos, useQuestoesSessao, type Cargo } from '@/hooks/useQuestoes';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { haptic } from '@/lib/nativeHaptics';
+
+import prfLogo from '@/assets/cargos/policia-rodoviaria-federal.webp';
+import pfLogo from '@/assets/cargos/policia-federal.webp';
+import pcDfLogo from '@/assets/cargos/policia-civil-df.webp';
+import pmSpLogo from '@/assets/cargos/policia-militar-sp.webp';
+import ppRsLogo from '@/assets/cargos/policia-penal-rs.webp';
+
+function getCargoLogo(nome?: string | null) {
+  const n = (nome || '').toLowerCase();
+  if (n.includes('prf') || n.includes('rodoviár') || n.includes('rodoviario')) return prfLogo;
+  if (n.includes('polícia federal') || n.includes('policia federal')) return pfLogo;
+  if (n.includes('polícia civil') || n.includes('policia civil')) return pcDfLogo;
+  if (n.includes('polícia militar') || n.includes('policia militar')) return pmSpLogo;
+  if (n.includes('polícia penal') || n.includes('policia penal')) return ppRsLogo;
+  return null;
+}
 
 const db = supabase as any;
 const TAMANHOS = [10, 20, 30];
@@ -86,44 +103,61 @@ const QuestoesSimulado = () => {
       <div className="mx-auto w-full max-w-3xl px-4 py-5">
         {!rodando ? (
           <>
-            <button
-              type="button"
-              onClick={() => navigate('/questoes/simulado/geral')}
-              className="mb-3 flex w-full items-center gap-3 rounded-2xl border border-border bg-card p-4 text-left hover:border-primary/50 transition-all active:scale-98"
-            >
-              <span className="flex h-11 w-11 items-center justify-center shrink-0">
-                <Timer className="h-6 w-6 text-primary" />
-              </span>
-              <span className="flex-1">
-                <span className="block text-[15px] font-bold text-foreground">Simulado Geral</span>
-                <span className="block text-[12px] text-muted-foreground">Questões mescladas de todos os cargos e exames</span>
-              </span>
-              <ChevronRight className="h-5 w-5 text-muted-foreground shrink-0" />
-            </button>
-
             {loadingCargos ? (
               <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
             ) : (
-              <div className="space-y-2">
-                {cargos.map((c) => (
-                  <button
-                    key={c.id}
-                    type="button"
-                    onClick={() => navigate(`/questoes/simulado/${c.slug || c.id}`)}
-                    className="flex w-full items-center gap-3 rounded-2xl border border-border bg-card p-4 text-left hover:border-primary/50 transition-all active:scale-98"
-                  >
-                    <span className="flex h-11 w-11 items-center justify-center shrink-0">
-                      <Gavel className="h-6 w-6" style={{ color: c.cor }} />
+              <div className="grid grid-cols-2 gap-3">
+                {/* Simulado Geral Card */}
+                <button
+                  type="button"
+                  onClick={() => { haptic.selection(); navigate('/questoes/simulado/geral'); }}
+                  className="group flex flex-col justify-between p-4 rounded-2xl border border-border/80 bg-card hover:border-primary/50 transition-all active:scale-98 shadow-sm text-left gap-3.5 col-span-2 sm:col-span-1"
+                >
+                  <div className="flex items-center justify-between w-full">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                      <Timer className="h-5 w-5 text-primary" />
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
+                  </div>
+                  <div>
+                    <span className="block text-sm font-extrabold text-foreground leading-tight">Simulado Geral</span>
+                    <span className="block text-[11px] text-muted-foreground mt-1 line-clamp-2">
+                      Questões mescladas de todos os cargos e exames
                     </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate text-[15px] font-bold text-foreground">{c.nome}</span>
-                      <span className="block text-[12px] text-muted-foreground">
-                        {c.total_questoes.toLocaleString('pt-BR')} questões disponíveis
-                      </span>
-                    </span>
-                    <ChevronRight className="h-5 w-5 text-muted-foreground shrink-0" />
-                  </button>
-                ))}
+                  </div>
+                </button>
+
+                {/* Cargo Cards */}
+                {cargos.map((c) => {
+                  const logo = getCargoLogo(c.nome);
+                  return (
+                    <button
+                      key={c.id}
+                      type="button"
+                      onClick={() => { haptic.selection(); navigate(`/questoes/simulado/${c.slug || c.id}`); }}
+                      className="group flex flex-col justify-between p-4 rounded-2xl border border-border/80 bg-card hover:border-primary/50 transition-all active:scale-98 shadow-sm text-left gap-3.5"
+                    >
+                      <div className="flex items-center justify-between w-full">
+                        {logo ? (
+                          <div className="w-10 h-10 flex items-center justify-center">
+                            <img src={logo} alt={c.nome} className="max-h-9 max-w-9 object-contain drop-shadow-sm" />
+                          </div>
+                        ) : (
+                          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${c.cor || '#A78BFA'}18` }}>
+                            <Gavel className="h-5 w-5" style={{ color: c.cor || '#A78BFA' }} />
+                          </div>
+                        )}
+                        <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
+                      </div>
+                      <div>
+                        <span className="block text-sm font-extrabold text-foreground leading-tight line-clamp-2">{c.nome}</span>
+                        <span className="block text-[11px] text-muted-foreground mt-1 font-semibold">
+                          {c.total_questoes.toLocaleString('pt-BR')} questões
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             )}
           </>
