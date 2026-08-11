@@ -26,9 +26,9 @@ interface Body {
 }
 
 const triggerGitHubAction = async (body: Body) => {
-  const GITHUB_TOKEN = Deno.env.get("GITHUB_PAT");
+  const GITHUB_TOKEN = Deno.env.get("GITHUB_PAT") || Deno.env.get("GITHUB_API_KEY");
   if (!GITHUB_TOKEN) {
-    throw new Error("GITHUB_PAT não configurado. Adicione este token aos secrets do Supabase.");
+    throw new Error("GITHUB_PAT ou GITHUB_API_KEY não configurado. Adicione este token aos secrets do Supabase.");
   }
 
   const GITHUB_OWNER = Deno.env.get("GITHUB_OWNER") || "suportedireitoprime";
