@@ -46,7 +46,9 @@ const triggerGitHubAction = async (body: Body) => {
       client_payload: {
         livro_id: body.livro_id,
         livro_tabela: body.livro_tabela,
-        pdf_url: body.pdf_url
+        pdf_url: body.pdf_url,
+        supabase_url: Deno.env.get("SUPABASE_URL") ?? "",
+        supabase_key: Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
       }
     })
   });

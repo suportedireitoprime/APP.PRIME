@@ -23,9 +23,8 @@ jobs:
 
       - name: Run Parser
         env:
-          SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          SUPABASE_URL: ${{ github.event.client_payload.supabase_url }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ github.event.client_payload.supabase_key }}
         run: |
           echo "Starting PDF Parsing for Livro ID: ${{ github.event.client_payload.livro_id }}"
           python scripts/pdf_parser/parse.py \
