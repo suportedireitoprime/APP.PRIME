@@ -1,20 +1,24 @@
 import { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { X, ArrowRight } from 'lucide-react';
+import { X, ArrowRight, Play } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { resenhaSelect } from '@/lib/resenhaBackend';
 import { useAuth } from '@/hooks/useAuth';
 import brasaoAsset from '@/assets/brasao-republica.webp';
 import horusAsset from '@/assets/horus/horus-owl.webp';
+import { loadObras } from '@/lib/tematicaStore';
+import { montarAgenda } from '@/lib/tematicaRecomendacoes';
 
-interface NovoAto {
+type OrigemOverlay = 'radar' | 'boletim_noticia' | 'boletim_juridico' | 'recomendacao';
+
+interface OverlayItem {
   id: string;
-  tipo_ato: string;
-  numero_ato: string;
+  origem: OrigemOverlay;
+  tipo_label: string;
   ementa: string;
-  data_dou: string;
-  created_at: string;
+  data_ref: string;
+  url: string;
 }
 
 const LS_KEY = 'radar_leis_last_seen';
@@ -59,7 +63,7 @@ function useTypewriter(text: string, enabled: boolean, speed = 28, startDelay = 
 
 export default function NovidadesRadarOverlay() {
   const [open, setOpen] = useState(false);
-  const [items, setItems] = useState<NovoAto[]>([]);
+  const [items, setItems] = useState<OverlayItem[]>([]);
   const [landed, setLanded] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -78,21 +82,83 @@ export default function NovidadesRadarOverlay() {
         try { return localStorage.getItem(LS_KEY) || new Date(Date.now() - 24 * 3600 * 1000).toISOString(); }
         catch { return new Date(Date.now() - 24 * 3600 * 1000).toISOString(); }
       })();
-      const raw = await resenhaSelect<any>({
-        select: 'id,tipo_ato,numero_ato,ementa,data_dou,created_at',
-        created_at: `gt.${lastSeen}`,
-        order: 'created_at.desc',
-        limit: '8',
-      });
+      
       const seen = new Set(readSeenIds());
-      // Somente atos publicados HOJE no DOU (fuso America/Sao_Paulo)
+      const now = new Date();
       const todayISO = new Intl.DateTimeFormat('en-CA', {
         timeZone: 'America/Sao_Paulo',
         year: 'numeric', month: '2-digit', day: '2-digit',
-      }).format(new Date());
-      const list = raw.filter((it) => !seen.has(it.id) && String(it.data_dou).slice(0, 10) === todayISO);
+      }).format(now);
+
+      const [rawRadar, resBoletins, obras] = await Promise.all([
+        resenhaSelect<any>({
+          select: 'id,tipo_ato,numero_ato,ementa,data_dou,created_at',
+          created_at: `gt.${lastSeen}`,
+          order: 'created_at.desc',
+          limit: '8',
+        }),
+        supabase
+          .from('boletins_juridicos')
+          .select('id,tipo,titulo,subtitulo,data_ref,created_at')
+          .in('status', ['pronto', 'sem_leis'])
+          .gte('created_at', lastSeen)
+          .order('created_at', { ascending: false })
+          .limit(5),
+        now.getDay() === 5 ? loadObras() : Promise.resolve([])
+      ]);
+
+      const list: OverlayItem[] = [];
+
+      // 1) Radar 360
+      const radarFiltrado = rawRadar.filter((it) => !seen.has(it.id) && String(it.data_dou).slice(0, 10) === todayISO);
+      for (const it of radarFiltrado) {
+        list.push({
+          id: it.id,
+          origem: 'radar',
+          tipo_label: it.tipo_ato,
+          ementa: it.ementa,
+          data_ref: it.data_dou,
+          url: '/radar-360',
+        });
+      }
+
+      // 2) Boletins
+      if (resBoletins.data) {
+        const boletinsFiltrados = resBoletins.data.filter((it) => !seen.has(it.id) && String(it.data_ref).slice(0, 10) === todayISO);
+        for (const b of boletinsFiltrados) {
+          const isNoticias = b.tipo === 'noticias';
+          list.push({
+            id: b.id,
+            origem: isNoticias ? 'boletim_noticia' : 'boletim_juridico',
+            tipo_label: isNoticias ? 'Boletim de Notícias' : 'Boletim Jurídico',
+            ementa: b.titulo || b.subtitulo || 'Novo boletim diário',
+            data_ref: b.data_ref,
+            url: `/boletins/${isNoticias ? 'noticias' : 'juridico'}`,
+          });
+        }
+      }
+
+      // 3) Recomendação (Sexta-feira)
+      if (now.getDay() === 5 && obras.length > 0) {
+        const agenda = montarAgenda(obras as any, 1, now);
+        const recHoje = agenda[0];
+        if (recHoje && recHoje.obra) {
+          const recId = `rec-${recHoje.obra.id}-${todayISO}`;
+          if (!seen.has(recId)) {
+            list.push({
+              id: recId,
+              origem: 'recomendacao',
+              tipo_label: 'Temática Jurídica',
+              ementa: `Recomendação da semana: ${recHoje.obra.titulo}`,
+              data_ref: todayISO,
+              url: '/tematica-juridica',
+            });
+          }
+        }
+      }
+
       if (list.length > 0) {
-        setItems(list as NovoAto[]);
+        setItems(list);
         setOpen(true);
       }
     };
@@ -113,28 +179,46 @@ export default function NovidadesRadarOverlay() {
   };
 
   const dismiss = () => { markSeen(); setOpen(false); setLanded(false); };
-  const goTo = () => { markSeen(); setOpen(false); setLanded(false); navigate('/radar-360'); };
+  const first = items[0];
+  const goTo = () => { 
+    markSeen(); 
+    setOpen(false); 
+    setLanded(false); 
+    if (first?.url) {
+      navigate(first.url);
+    } else {
+      navigate('/radar-360');
+    }
+  };
 
   const grupos: Record<string, number> = {};
-  for (const it of items) grupos[it.tipo_ato] = (grupos[it.tipo_ato] ?? 0) + 1;
-  const chips = Object.entries(grupos).slice(0, 3).map(([t, n]) => `${n} ${t}${n > 1 ? 's' : ''}`);
-  const first = items[0];
+  for (const it of items) grupos[it.tipo_label] = (grupos[it.tipo_label] ?? 0) + 1;
+  const chips = Object.entries(grupos).slice(0, 3).map(([t, n]) => `${n} ${t}${n > 1 && t !== 'Temática Jurídica' ? 's' : ''}`);
 
   const speech = useMemo(() => {
     if (!first) return '';
     const hi = firstName ? `Ei, ${firstName}!` : 'Ei!';
     const dataFmt = (() => {
       try {
-        const d = new Date(`${String(first.data_dou).slice(0, 10)}T12:00:00`);
+        const d = new Date(`${String(first.data_ref).slice(0, 10)}T12:00:00`);
         return new Intl.DateTimeFormat('pt-BR', {
           timeZone: 'America/Sao_Paulo',
           day: '2-digit', month: 'long', year: 'numeric',
         }).format(d);
       } catch { return 'hoje'; }
     })();
-    return items.length === 1
-      ? `${hi} Saiu uma nova ${first.tipo_ato.toLowerCase()} no Diário Oficial de hoje, ${dataFmt}. Bora conferir?`
-      : `${hi} Saíram ${items.length} publicações novas no Diário Oficial de hoje, ${dataFmt}. Dá uma olhada comigo?`;
+
+    if (items.length === 1) {
+      if (first.origem === 'boletim_noticia' || first.origem === 'boletim_juridico') {
+        return `${hi} Saiu um novo boletim fresquinho de hoje, ${dataFmt}. Bora escutar?`;
+      }
+      if (first.origem === 'recomendacao') {
+        return `${hi} Sextou! Temos uma recomendação de filme ou série na nossa Temática Jurídica. Bora conferir?`;
+      }
+      return `${hi} Saiu uma nova ${first.tipo_label.toLowerCase()} no Diário Oficial de hoje, ${dataFmt}. Bora conferir?`;
+    } else {
+      return `${hi} Saíram ${items.length} novidades fresquinhas hoje, ${dataFmt}. Dá uma olhada comigo?`;
+    }
   }, [items, first, firstName]);
 
   const typed = useTypewriter(speech, open && landed);
@@ -244,13 +328,17 @@ export default function NovidadesRadarOverlay() {
               <div className="absolute bottom-2 left-4 right-4">
                 <p className="font-display text-lg text-white leading-tight drop-shadow-lg line-clamp-2">
                   {items.length === 1
-                    ? `Nova ${first.tipo_ato.toLowerCase()} publicada hoje`
-                    : `${items.length} publicações novas no Diário Oficial`}
+                    ? first.origem === 'recomendacao' 
+                      ? 'Recomendação de Sexta-feira' 
+                      : first.origem === 'radar' 
+                        ? `Nova ${first.tipo_label.toLowerCase()} publicada hoje`
+                        : `Novo ${first.tipo_label.toLowerCase()} de hoje`
+                    : `${items.length} novidades fresquinhas para você`}
                 </p>
                 <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-primary drop-shadow">
                   {(() => {
                     try {
-                      const d = new Date(`${String(first.data_dou).slice(0, 10)}T12:00:00`);
+                      const d = new Date(`${String(first.data_ref).slice(0, 10)}T12:00:00`);
                       return new Intl.DateTimeFormat('pt-BR', {
                         timeZone: 'America/Sao_Paulo',
                         day: '2-digit', month: 'long', year: 'numeric',
@@ -284,8 +372,8 @@ export default function NovidadesRadarOverlay() {
                   onClick={goTo}
                   className="flex-1 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/30 hover:brightness-110 transition"
                 >
-                  Ver agora
-                  <ArrowRight className="w-4 h-4" />
+                  {first?.origem === 'boletim_noticia' || first?.origem === 'boletim_juridico' ? 'Ouvir agora' : 'Ver agora'}
+                  {first?.origem === 'boletim_noticia' || first?.origem === 'boletim_juridico' ? <Play className="w-4 h-4 fill-current" /> : <ArrowRight className="w-4 h-4" />}
                 </button>
               </div>
             </div>
