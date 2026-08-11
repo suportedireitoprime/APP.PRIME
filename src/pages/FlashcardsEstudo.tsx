@@ -72,9 +72,10 @@ const FlashcardsEstudo = () => {
   const temasParam = params.get('temas') || params.get('tema');
   const deckId = params.get('deck');
   const modo = params.get('modo') || 'todos';
+  const editalId = params.get('editalId');
 
   // Sem nenhum filtro escolhido → tela de categorias.
-  const escolhendo = !areaParam && !areasParam && !deckId;
+  const escolhendo = !areaParam && !areasParam && !deckId && modo !== 'edital';
 
   const [cards, setCards] = useState<Card[]>([]);
   const [idx, setIdx] = useState(0);
@@ -91,15 +92,28 @@ const FlashcardsEstudo = () => {
   const carregar = useCallback(async () => {
     if (escolhendo) { setCards([]); setLoading(false); return; }
     setLoading(true);
-    const listaAreas = areasParam
-      ? areasParam.split('|').filter(Boolean)
-      : areaParam
-        ? [areaParam]
-        : null;
+    
+    let listaAreas = areasParam ? areasParam.split('|').filter(Boolean) : areaParam ? [areaParam] : null;
+    let modoAtual = modo;
+    
+    // Se for modo edital, busca as áreas do edital primeiro
+    if (modo === 'edital' && editalId) {
+      const { data: cargoData } = await supabase
+        .from('flashcards_cargos')
+        .select('edital_disciplinas')
+        .eq('id', editalId)
+        .single();
+        
+      if (cargoData && cargoData.edital_disciplinas) {
+        listaAreas = (cargoData.edital_disciplinas as any[]).map(d => d.area);
+      }
+      modoAtual = 'todos'; // Força 'todos' para puxar cards daquelas áreas, independente do status
+    }
+
     const { data, error } = await supabase.rpc('flashcards_sessao', {
       _areas: listaAreas,
       _temas: temasParam ? temasParam.split('|').filter(Boolean) : null,
-      _modo: modo,
+      _modo: modoAtual,
       _deck_id: deckId,
       _limit: parseInt(params.get('limite') || '30', 10),
     });
@@ -108,7 +122,7 @@ const FlashcardsEstudo = () => {
     setIdx(0);
     setVirado(false);
     setLoading(false);
-  }, [areaParam, areasParam, temasParam, modo, deckId, escolhendo]);
+  }, [areaParam, areasParam, temasParam, modo, editalId, deckId, escolhendo]);
 
   useEffect(() => { carregar(); }, [carregar]);
 

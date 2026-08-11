@@ -9,6 +9,9 @@ export interface FlashcardTrilhaAtiva {
   cardsPorDia: number; // Ex: 20 cards
   diasConcluidos: number[]; // Array of completed day indices (1-indexed)
   dataInicio: string; // ISO date string
+  isEdital?: boolean; // Flag para indicar se é uma trilha de Cargo/Edital completo
+  editalId?: string; // ID do cargo/edital
+  nome?: string; // Nome customizado (ex: "Policial Rodoviário Federal")
 }
 
 interface FlashcardTrilhaState {

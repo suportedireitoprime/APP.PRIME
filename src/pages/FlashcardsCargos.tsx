@@ -63,13 +63,13 @@ export default function FlashcardsCargos() {
             />
           </div>
 
-          <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
             {loading ? (
-              <div className="space-y-4">
-                {[1, 2, 3].map(i => (
-                  <div key={i} className="h-36 bg-card/50 animate-pulse rounded-3xl" />
+              <>
+                {[1, 2, 3, 4].map(i => (
+                  <div key={i} className="aspect-square bg-card/50 animate-pulse rounded-3xl" />
                 ))}
-              </div>
+              </>
             ) : filtered.length > 0 ? (
               filtered.map((cargo, i) => (
                 <motion.button
@@ -81,34 +81,29 @@ export default function FlashcardsCargos() {
                     haptic.selection();
                     navigate(`/flashcards/cargos/${cargo.id}`);
                   }}
-                  className="w-full text-left bg-card rounded-3xl p-5 border border-border/50 shadow-sm active:scale-95 transition-all hover:border-primary/50"
+                  className="w-full text-left bg-card rounded-3xl p-5 border border-border/50 shadow-sm active:scale-95 transition-all hover:border-primary/50 aspect-square flex flex-col relative overflow-hidden"
                 >
-                  <div className="flex justify-between items-start gap-4">
-                    <div>
-                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider mb-3">
-                        <Building className="w-3.5 h-3.5" />
-                        {cargo.orgao}
-                        {cargo.banca && (
-                          <>
-                            <span className="w-1 h-1 rounded-full bg-primary/40 mx-1" />
-                            {cargo.banca}
-                          </>
-                        )}
+                  {/* Fundo suave com logo opaca, etc, opcional. Vamos manter simples */}
+                  
+                  <div className="flex flex-col h-full">
+                    <div className="flex-1">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-3">
+                        <Building className="w-5 h-5 text-primary" />
                       </div>
                       
-                      <h2 className="font-display text-xl sm:text-2xl font-black leading-tight mb-2">
+                      <h2 className="font-display text-lg sm:text-xl font-black leading-tight mb-1 line-clamp-3">
                         {cargo.cargo}
                       </h2>
-                      
-                      {cargo.descricao_geral && (
-                        <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
-                          {cargo.descricao_geral}
-                        </p>
-                      )}
+                      <p className="text-xs text-primary font-bold uppercase tracking-wider mb-2">
+                        {cargo.orgao}
+                      </p>
                     </div>
                     
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                      <ChevronRight className="w-5 h-5 text-primary" />
+                    <div className="mt-auto pt-3 border-t border-border/40 flex items-center justify-between">
+                      <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
+                        {cargo.edital_disciplinas ? `${cargo.edital_disciplinas.length} Matérias` : 'Edital'}
+                      </p>
+                      <ChevronRight className="w-4 h-4 text-primary" />
                     </div>
                   </div>
                 </motion.button>
