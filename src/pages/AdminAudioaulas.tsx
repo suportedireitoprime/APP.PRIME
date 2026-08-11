@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { LEIS_CATALOG } from '@/data/leisCatalog';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -60,6 +61,15 @@ const AdminAudioaulas = () => {
   const [itens, setItens] = useState<ItemRow[]>([]);
   const [carregandoItens, setCarregandoItens] = useState(false);
   const [sheets, setSheets] = useState<'sync' | 'links' | null>(null);
+
+  // Estados para a aba Leis
+  const [abaAtiva, setAbaAtiva] = useState<'materias' | 'leis'>('materias');
+  const [leiAberta, setLeiAberta] = useState<typeof LEIS_CATALOG[0] | null>(null);
+  const [artigosLei, setArtigosLei] = useState<any[]>([]);
+  const [carregandoArtigos, setCarregandoArtigos] = useState(false);
+  
+  // Controle de edição visual para o Robô
+  const [artigoAbertoId, setArtigoAbertoId] = useState<string | null>(null);
 
   async function sincronizar(cursoId?: string) {
     setSheets('sync');
@@ -185,6 +195,56 @@ const AdminAudioaulas = () => {
     setCursoAberto((c) => (c && c.id === curso.id ? { ...c, publicado: novo } : c));
   }
 
+  if (leiAberta) {
+    return (
+      <div className="min-h-screen bg-background pb-28">
+        <PageHeader title="Leis" subtitle={leiAberta.nome} onBack={() => { setLeiAberta(null); setArtigosLei([]); setArtigoAbertoId(null); }} />
+        <div className="px-4 pt-4 space-y-4">
+          {carregandoArtigos ? (
+            <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
+          ) : artigosLei.length === 0 ? (
+            <div className="text-center text-muted-foreground py-10">Nenhum artigo encontrado nesta lei.</div>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {artigosLei.map((art) => {
+                const isExpanded = artigoAbertoId === art.id;
+                return (
+                  <div key={art.id} className="border border-border/60 rounded-xl bg-card overflow-hidden">
+                    <button
+                      onClick={() => setArtigoAbertoId(isExpanded ? null : art.id)}
+                      className="w-full text-left px-4 py-3 font-semibold text-foreground flex items-center justify-between"
+                    >
+                      <span>Artigo {art.numero}</span>
+                      {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                    </button>
+                    {isExpanded && (
+                      <div className="p-4 pt-0 space-y-4 border-t border-border/40 mt-2 bg-muted/20">
+                        <div>
+                          <p className="text-xs font-semibold text-muted-foreground mb-1 uppercase">Lei Seca Bruta</p>
+                          <div className="p-3 bg-background rounded-lg border border-border/50 text-sm leading-relaxed text-foreground max-h-48 overflow-y-auto">
+                            {art.texto}
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-muted-foreground mb-1 uppercase">Prompt - O que os narradores devem falar</p>
+                          <Textarea placeholder="Descreva como o narrador deve explicar esse artigo..." className="min-h-[100px] bg-background" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-muted-foreground mb-1 uppercase">O que deve citar</p>
+                          <Textarea placeholder="Ex: Súmula 123 do STF..." className="min-h-[60px] bg-background" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   if (cursoAberto) {
     return (
       <div className="min-h-screen bg-background pb-28">
@@ -293,13 +353,50 @@ const AdminAudioaulas = () => {
     );
   }
 
+  async function abrirLei(lei: typeof LEIS_CATALOG[0]) {
+    setLeiAberta(lei);
+    setCarregandoArtigos(true);
+    try {
+      const { data: leiData } = await supabase.from('vade_mecum_leis').select('id').eq('slug', lei.tabela_nome).maybeSingle();
+      if (!leiData) {
+        toast.error('Lei não encontrada no banco Vade Mecum');
+        return;
+      }
+      const { data: arts } = await supabase.from('vade_mecum_artigos').select('id, numero, texto, ordem').eq('lei_id', leiData.id).order('ordem', { ascending: true }).limit(500);
+      setArtigosLei(arts || []);
+    } catch (e: any) {
+      toast.error('Erro ao buscar artigos');
+    } finally {
+      setCarregandoArtigos(false);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-background pb-28">
       <PageHeader title="Audioaulas" subtitle="Gerar títulos e prompts a partir da leitura nativa" onBack={() => navigate(-1)} />
-      <div className="px-4 pt-4 space-y-4">
-        <Input placeholder="Buscar livro ou área..." value={busca} onChange={(e) => setBusca(e.target.value)} />
+      
+      <div className="px-4 pt-4">
+        <div className="flex bg-muted/40 p-1 rounded-xl mb-4">
+          <button
+            onClick={() => setAbaAtiva('materias')}
+            className={`flex-1 py-2 text-sm font-semibold rounded-lg transition ${abaAtiva === 'materias' ? 'bg-background shadow text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+          >
+            Matérias
+          </button>
+          <button
+            onClick={() => setAbaAtiva('leis')}
+            className={`flex-1 py-2 text-sm font-semibold rounded-lg transition ${abaAtiva === 'leis' ? 'bg-background shadow text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+          >
+            Leis Secas
+          </button>
+        </div>
+      </div>
 
-        <div className="flex flex-wrap gap-2">
+      {abaAtiva === 'materias' && (
+        <div className="px-4 space-y-4">
+          <Input placeholder="Buscar livro ou área..." value={busca} onChange={(e) => setBusca(e.target.value)} />
+
+          <div className="flex flex-wrap gap-2">
           <Button variant="outline" size="sm" disabled={sheets !== null} onClick={() => sincronizar()}>
             {sheets === 'sync' ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Table2 className="w-4 h-4 mr-1.5" />}
             Enviar tudo à planilha
@@ -361,6 +458,30 @@ const AdminAudioaulas = () => {
           })
         )}
       </div>
+      )}
+
+      {abaAtiva === 'leis' && (
+        <div className="px-4 space-y-4">
+          <div className="grid gap-3 sm:grid-cols-2">
+            {LEIS_CATALOG.map((lei) => (
+              <button
+                key={lei.id}
+                onClick={() => abrirLei(lei)}
+                className="flex items-center gap-3 p-4 rounded-xl border border-border/60 bg-card text-left transition hover:bg-card/80 active:scale-95"
+              >
+                <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: `${lei.iconColor}20`, color: lei.iconColor }}>
+                  <Headphones className="w-5 h-5" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-foreground truncate">{lei.nome}</p>
+                  <p className="text-xs text-muted-foreground truncate">{lei.sigla} • {lei.tipo}</p>
+                </div>
+                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
