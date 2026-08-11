@@ -117,8 +117,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
   const handleItemClick = async (id: string) => {
     if (id === 'sair') {
       await signOut();
-      navigate('/auth');
-      onClose();
+      window.location.href = '/auth';
       return;
     }
 
