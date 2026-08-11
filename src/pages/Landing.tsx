@@ -125,7 +125,7 @@ const Landing = () => {
             </Link>
 
             <Link
-              to="/suporte"
+              to="/suporte-publico"
               className="flex items-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-semibold transition-all active:scale-[0.96] shrink-0 backdrop-blur-md"
               style={{
                 background: 'hsl(0 0% 100% / 0.14)',
