@@ -22,6 +22,15 @@ type Deck = {
 
 type TemaItem = { tema: string; area: string; count: number };
 
+const CORES = [
+  { nome: 'Azul', hex: '#3b82f6' },
+  { nome: 'Esmeralda', hex: '#10b981' },
+  { nome: 'Roxo', hex: '#a855f7' },
+  { nome: 'Laranja', hex: '#f97316' },
+  { nome: 'Rosa', hex: '#ec4899' },
+  { nome: 'Vermelho', hex: '#ef4444' },
+];
+
 const FlashcardsDecks = () => {
   const navigate = useNavigate();
   const [decks, setDecks] = useState<Deck[]>([]);
@@ -34,6 +43,7 @@ const FlashcardsDecks = () => {
   const [temasDisponiveis, setTemasDisponiveis] = useState<TemaItem[]>([]);
   const [selTemas, setSelTemas] = useState<string[]>([]);
   const [nome, setNome] = useState('');
+  const [descricao, setDescricao] = useState('');
   const [loadingTemas, setLoadingTemas] = useState(false);
   const [salvando, setSalvando] = useState(false);
 
@@ -58,6 +68,7 @@ const FlashcardsDecks = () => {
     setTemasDisponiveis([]);
     setSelTemas([]);
     setNome('');
+    setDescricao('');
   };
 
   const avançarParaEtapa2 = async () => {
@@ -120,11 +131,13 @@ const FlashcardsDecks = () => {
 
     const { count } = await query;
 
+    const corEscolhida = CORES[decks.length % CORES.length].hex;
+
     const { error } = await supabase.from('flashcards_decks').insert({
       user_id: auth.user.id,
       nome: nome.trim(),
-      descricao: selTemas.length > 0 ? selTemas.join(' · ') : selAreas.join(' · '),
-      filtros: { areas: selAreas, temas: selTemas },
+      descricao: descricao.trim() || (selTemas.length > 0 ? selTemas.join(' · ') : selAreas.join(' · ')),
+      filtros: { areas: selAreas, temas: selTemas, cor: corEscolhida },
       total_cards: count ?? 0,
     });
 
@@ -145,6 +158,7 @@ const FlashcardsDecks = () => {
   const estudar = (d: Deck) => {
     const areasDeck: string[] = d.filtros?.areas || [];
     const temasDeck: string[] = d.filtros?.temas || [];
+    const corDeck = d.filtros?.cor || '#10b981';
     
     const params = new URLSearchParams();
     if (areasDeck.length > 0) {
@@ -153,6 +167,7 @@ const FlashcardsDecks = () => {
     if (temasDeck.length > 0) {
       params.set('temas', temasDeck.join('|'));
     }
+    params.set('cor', corDeck);
     navigate(`/flashcards/estudar?${params.toString()}`);
   };
 
@@ -163,21 +178,19 @@ const FlashcardsDecks = () => {
           title="Meus Decks Customizados"
           subtitle="Monte combinações personalizadas de matérias para treinar"
           onBack={() => navigate('/flashcards')}
+          rightAction={
+            <button 
+              onClick={() => { haptic.selection(); setAberto(true); }} 
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white shadow-md active:scale-95 transition-transform shrink-0"
+            >
+              <Plus className="h-5 w-5" />
+            </button>
+          }
         />
 
         <div className="space-y-5 pt-3">
-          <div className="flex flex-wrap items-center justify-between gap-3 bg-card p-4 rounded-2xl border border-border/80 shadow-sm">
-            <div>
-              <p className="text-sm font-extrabold text-foreground">Criar Novo Deck Personalizado</p>
-              <p className="text-xs text-muted-foreground">Monte seu deck em 3 etapas simples (Áreas → Matérias → Nome)</p>
-            </div>
-
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <Dialog open={aberto} onOpenChange={(v) => { setAberto(v); if (!v) resetWizard(); }}>
-              <DialogTrigger asChild>
-                <Button className="rounded-xl px-5 font-extrabold gap-2 bg-primary text-white shadow-md">
-                  <Plus className="h-4 w-4" /> Novo Deck
-                </Button>
-              </DialogTrigger>
               <DialogContent className="max-h-[85dvh] overflow-y-auto rounded-3xl border-border sm:max-w-lg">
                 <DialogHeader>
                   <DialogTitle className="flex items-center justify-between text-base font-black">
@@ -286,18 +299,31 @@ const FlashcardsDecks = () => {
                 {/* ETAPA 3: Nome do Deck & Confirmar */}
                 {etapa === 3 && (
                   <div className="space-y-4 pt-2">
-                    <p className="text-xs text-muted-foreground font-medium">
-                      Defina um nome identificador para o seu novo deck:
-                    </p>
-                    <Input
-                      autoFocus
-                      value={nome}
-                      onChange={(e) => setNome(e.target.value)}
-                      placeholder="Ex: Combo Civil + Penal para Prova"
-                      className="rounded-2xl h-12 text-sm font-bold"
-                    />
+                    <div>
+                      <p className="text-xs text-muted-foreground font-medium mb-1.5">
+                        Defina um nome identificador para o seu novo deck:
+                      </p>
+                      <Input
+                        autoFocus
+                        value={nome}
+                        onChange={(e) => setNome(e.target.value)}
+                        placeholder="Ex: Combo Civil + Penal para Prova"
+                        className="rounded-2xl h-12 text-sm font-bold"
+                      />
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground font-medium mb-1.5">
+                        Adicione uma descrição (opcional):
+                      </p>
+                      <Input
+                        value={descricao}
+                        onChange={(e) => setDescricao(e.target.value)}
+                        placeholder="Ex: Focado nos assuntos que mais caem"
+                        className="rounded-2xl h-11 text-xs"
+                      />
+                    </div>
 
-                    <div className="rounded-2xl border border-border bg-muted/40 p-4 space-y-2">
+                    <div className="rounded-2xl border border-border bg-muted/40 p-4 space-y-2 mt-4">
                       <p className="text-xs font-extrabold uppercase text-muted-foreground tracking-widest">Resumo do Deck</p>
                       <p className="text-xs text-foreground font-bold">
                         Áreas: <span className="text-primary">{selAreas.join(', ')}</span>
@@ -346,32 +372,37 @@ const FlashcardsDecks = () => {
             </div>
           )}
 
-          <div className="grid grid-cols-3 gap-2 sm:gap-3">
-            {decks.map((d) => (
-              <div key={d.id} className="group rounded-2xl border border-border/80 bg-card p-3 shadow-sm hover:border-primary/50 transition-all flex flex-col gap-2 relative">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            {decks.map((d) => {
+              const cor = d.filtros?.cor || '#10b981';
+              return (
+              <div key={d.id} style={{ borderColor: `${cor}40` }} className="group rounded-2xl border bg-card p-4 shadow-sm hover:shadow-md transition-all flex flex-col gap-2 relative">
                 <div className="absolute -top-2.5 -right-2">
-                  <span className="inline-flex items-center justify-center bg-primary text-white text-[9px] font-black h-5 px-2 rounded-full shadow-md">
+                  <span style={{ backgroundColor: cor }} className="inline-flex items-center justify-center text-white text-[10px] font-black h-5 px-2 rounded-full shadow-md">
                     {d.total_cards}
                   </span>
                 </div>
                 <div className="flex justify-center mb-1">
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <FolderPlus className="w-5 h-5 text-primary" />
+                  <div style={{ backgroundColor: `${cor}15` }} className="w-12 h-12 rounded-xl flex items-center justify-center">
+                    <FolderPlus style={{ color: cor }} className="w-6 h-6" />
                   </div>
                 </div>
-                <div className="text-center min-w-0 flex-1 flex items-center justify-center">
-                  <p className="text-[11px] font-extrabold text-foreground leading-tight line-clamp-2">{d.nome}</p>
+                <div className="text-center min-w-0 flex-1 flex flex-col items-center justify-center">
+                  <p className="text-[12px] font-extrabold text-foreground leading-tight line-clamp-2">{d.nome}</p>
+                  {d.descricao && (
+                    <p className="text-[10px] text-muted-foreground mt-1 line-clamp-2">{d.descricao}</p>
+                  )}
                 </div>
-                <div className="flex items-center gap-1 mt-auto pt-2 border-t border-border/60">
-                  <Button size="sm" className="flex-1 h-7 text-[10px] rounded-lg font-bold gap-1 px-0 bg-primary text-white" onClick={() => estudar(d)}>
-                    <Play className="h-3 w-3 fill-white" /> Treinar
+                <div className="flex items-center gap-1.5 mt-auto pt-3 border-t border-border/60">
+                  <Button size="sm" style={{ backgroundColor: cor }} className="flex-1 h-8 text-[11px] rounded-lg font-bold gap-1.5 px-0 text-white hover:opacity-90 active:scale-95 transition-all shadow-sm" onClick={() => estudar(d)}>
+                    <Play className="h-3.5 w-3.5 fill-white" /> Treinar
                   </Button>
-                  <Button size="icon" variant="outline" className="h-7 w-7 rounded-lg text-muted-foreground hover:text-destructive hover:border-destructive/40 shrink-0" onClick={() => excluir(d.id)}>
-                    <Trash2 className="h-3 w-3" />
+                  <Button size="icon" variant="outline" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-destructive hover:border-destructive/40 shrink-0" onClick={() => excluir(d.id)}>
+                    <Trash2 className="h-3.5 w-3.5" />
                   </Button>
                 </div>
               </div>
-            ))}
+            )})}
           </div>
         </div>
       </div>

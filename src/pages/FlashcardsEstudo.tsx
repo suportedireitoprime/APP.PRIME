@@ -350,7 +350,8 @@ const FlashcardsEstudo = () => {
             )}
 
             {atual && (() => {
-              const accent = "#10b981";
+              const corParam = params.get('cor');
+              const accent = corParam || "#10b981";
               const temaKey = atual.tema ?? atual.area ?? atual.pergunta.slice(0, 32);
               const h = hashString(temaKey);
               const angle = h % 360;
