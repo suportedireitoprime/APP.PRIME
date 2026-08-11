@@ -114,6 +114,7 @@ def main():
         
         start_img_page = 0
         capitulos_por_pagina = {}
+        capitulos_lista = []
         
         if sumario_json:
             paginas_validas = [item["pagina"] for item in sumario_json if item["pagina"] > 4]
@@ -125,6 +126,7 @@ def main():
                 pg = item["pagina"]
                 if item["nivel"] == 1 and pg not in capitulos_por_pagina:
                     capitulos_por_pagina[pg] = item["titulo"]
+                    capitulos_lista.append(pg)
 
         for page_num in range(total_paginas):
             if page_num % 50 == 0:
@@ -203,7 +205,39 @@ def main():
                 capa_inject = ""
                 if sumario_json and (page_num + 1) in capitulos_por_pagina:
                     titulo_cap = capitulos_por_pagina[page_num + 1]
-                    capa_inject = f"<!-- capa-capitulo -->\n## {titulo_cap}\n"
+                    idx_cap = capitulos_lista.index(page_num + 1) + 1
+                    
+                    # Remover o título e número do topo do texto para não ficar duplicado na página
+                    linhas_md = clean_md.strip().split('\n')
+                    start_idx = 0
+                    import difflib
+                    for i_linha, linha_md in enumerate(linhas_md):
+                        L = linha_md.strip()
+                        if not L:
+                            start_idx = i_linha + 1
+                            continue
+                        if L.isdigit():
+                            start_idx = i_linha + 1
+                            continue
+                        if re.match(r'(?i)^(cap[íi]tulo|parte|se[çc][ãa]o|livro|t[íi]tulo)\s+([IVXLCDM\d]+)$', L):
+                            start_idx = i_linha + 1
+                            continue
+                        
+                        # Normalizar comparando apenas letras
+                        L_norm = re.sub(r'\W+', '', L.lower())
+                        T_norm = re.sub(r'\W+', '', titulo_cap.lower())
+                        if L_norm and T_norm and difflib.SequenceMatcher(None, L_norm, T_norm).ratio() > 0.8:
+                            start_idx = i_linha + 1
+                            continue
+                            
+                        # Não bateu com cabeçalho, então chegamos no texto real
+                        break
+                    
+                    clean_md = '\n'.join(linhas_md[start_idx:])
+                    
+                    # Formatar o titulo real limpando números iniciais, ex: "1. A coisa..." -> "A coisa..."
+                    titulo_limpo = re.sub(r'^[\d\.\s]+', '', titulo_cap)
+                    capa_inject = f"<!-- capa-capitulo -->\n## CAPÍTULO {idx_cap}\n## {titulo_limpo}\n"
                 
                 markdown_completo += f"\n{capa_inject}<!-- page:{page_num + 1} -->\n{clean_md}\n\n"
 
