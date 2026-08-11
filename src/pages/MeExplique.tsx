@@ -420,8 +420,8 @@ export default function MeExplique() {
             className="relative z-30 mx-auto mt-4 w-[90%] max-w-md rounded-3xl border border-purple-500/40 bg-zinc-950/90 p-5 text-white shadow-2xl backdrop-blur-md space-y-4"
           >
             <div className="flex items-center gap-2.5 border-b border-white/10 pb-3">
-              <div className="w-10 h-10 rounded-2xl bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold">
-                <Sparkles className="w-5 h-5 text-purple-400" />
+              <div className="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-500 flex items-center justify-center font-bold">
+                <Sparkles className="w-5 h-5 text-amber-500" />
               </div>
               <div>
                 <h3 className="text-base font-black leading-snug">Como funciona o "Me Explique"?</h3>
@@ -431,22 +431,22 @@ export default function MeExplique() {
 
             <div className="space-y-3 text-xs">
               <div className="flex items-start gap-2.5">
-                <span className="w-6 h-6 rounded-full bg-purple-600/30 text-purple-300 font-bold flex items-center justify-center shrink-0">1</span>
+                <span className="w-6 h-6 rounded-full bg-amber-600/30 text-amber-400 font-bold flex items-center justify-center shrink-0">1</span>
                 <p className="text-white/90"><strong>Aponte a câmera</strong> para seu Vade Mecum, livro, caderno ou tela de estudo.</p>
               </div>
               <div className="flex items-start gap-2.5">
-                <span className="w-6 h-6 rounded-full bg-purple-600/30 text-purple-300 font-bold flex items-center justify-center shrink-0">2</span>
+                <span className="w-6 h-6 rounded-full bg-amber-600/30 text-amber-400 font-bold flex items-center justify-center shrink-0">2</span>
                 <p className="text-white/90"><strong>Fale por voz</strong>. Se você falar durante a explicação, o professor para na hora para te ouvir.</p>
               </div>
               <div className="flex items-start gap-2.5">
-                <span className="w-6 h-6 rounded-full bg-purple-600/30 text-purple-300 font-bold flex items-center justify-center shrink-0">3</span>
+                <span className="w-6 h-6 rounded-full bg-amber-600/30 text-amber-400 font-bold flex items-center justify-center shrink-0">3</span>
                 <p className="text-white/90"><strong>Resumo em PDF</strong>. Toda a sessão gera um resumo estruturado pronto para baixar.</p>
               </div>
             </div>
 
             <button
               onClick={fecharTutorial}
-              className="w-full h-12 rounded-2xl bg-purple-600 hover:bg-purple-500 text-white font-black text-sm tracking-wide shadow-lg shadow-purple-600/30 active:scale-95 transition-all"
+              className="w-full h-12 rounded-2xl bg-amber-600 hover:bg-amber-500 text-white font-black text-sm tracking-wide shadow-lg shadow-amber-600/30 active:scale-95 transition-all"
             >
               ENTENDI, CONTINUAR
             </button>
@@ -493,7 +493,7 @@ export default function MeExplique() {
           })()}
         </AnimatePresence>
 
-        {(erro || erroCamera) && (
+        {!showTutorial && (erro || erroCamera) && (
           <div className="rounded-2xl bg-destructive/90 p-4 text-[14px] leading-snug backdrop-blur shadow-xl border border-white/10">
             <p className="font-medium text-white">{erro ?? erroCamera}</p>
             {erroCamera && !erro && (
@@ -524,8 +524,9 @@ export default function MeExplique() {
       </div>
 
       {/* Controles */}
-      <footer className="relative z-10 flex items-center justify-center gap-4 px-6 pb-[calc(1.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-3">
-        {ativo ? (
+      {!showTutorial && (
+        <footer className="relative z-10 flex items-center justify-center gap-4 px-6 pb-[calc(1.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-3">
+          {ativo ? (
           <>
             <button
               onClick={alternarMic}
@@ -575,7 +576,8 @@ export default function MeExplique() {
             {status === 'erro' || status === 'encerrado' ? 'Tentar de novo' : 'Me explique'}
           </button>
         )}
-      </footer>
+        </footer>
+      )}
 
       {/* Sheet de Transcrição / Resumo Baixável */}
       <TranscricaoSheet
