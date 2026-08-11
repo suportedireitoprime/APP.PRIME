@@ -28,13 +28,19 @@ def resolve_drive_pdf_url(url: str) -> str:
         return url
 
 def main():
-    if len(sys.argv) < 4:
-        print("Uso: python parse.py <pdf_url> <livro_id> <livro_tabela>")
+    if len(sys.argv) < 5:
+        print("Uso: python parse.py <pdf_url> <livro_id> <livro_tabela> <titulo>")
         sys.exit(1)
 
     pdf_url = sys.argv[1]
     livro_id = sys.argv[2]
     livro_tabela = sys.argv[3]
+    titulo_raw = sys.argv[4]
+
+    # Sanitize title for filename
+    titulo_safe = re.sub(r'[^a-zA-Z0-9_\- ]', '', titulo_raw).strip().replace(' ', '_')
+    if not titulo_safe:
+        titulo_safe = f"livro_{livro_id}"
 
     supabase_url = os.environ.get("SUPABASE_URL")
     supabase_key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY") or os.environ.get("SUPABASE_ANON_KEY")
@@ -55,7 +61,7 @@ def main():
         print(f"Baixando PDF de: {direct_url}")
         
         req = urllib.request.Request(direct_url, headers={'User-Agent': 'Mozilla/5.0'})
-        pdf_path = os.path.join(tempfile.gettempdir(), f"livro_{livro_id}.pdf")
+        pdf_path = os.path.join(tempfile.gettempdir(), f"{titulo_safe}.pdf")
         
         with urllib.request.urlopen(req) as response, open(pdf_path, 'wb') as out_file:
             data = response.read()

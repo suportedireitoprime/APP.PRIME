@@ -26,8 +26,9 @@ jobs:
           SUPABASE_URL: ${{ github.event.client_payload.supabase_url }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ github.event.client_payload.supabase_key }}
         run: |
-          echo "Starting PDF Parsing for Livro ID: ${{ github.event.client_payload.livro_id }}"
+          echo "Starting PDF Parsing for Livro ID: ${{ github.event.client_payload.livro_id }} - ${{ github.event.client_payload.titulo }}"
           python scripts/pdf_parser/parse.py \
             "${{ github.event.client_payload.pdf_url }}" \
             "${{ github.event.client_payload.livro_id }}" \
-            "${{ github.event.client_payload.livro_tabela }}"
+            "${{ github.event.client_payload.livro_tabela }}" \
+            "${{ github.event.client_payload.titulo }}"
