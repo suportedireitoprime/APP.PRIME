@@ -37,7 +37,7 @@ const FlashcardsCargoHero = ({ pct = 0, total = 0, hoje = 0, meta = 100, disponi
   return (
     <section
       className="relative isolate overflow-hidden border-b border-black/20"
-      style={{ background: 'linear-gradient(135deg, hsl(350 68% 32%) 0%, hsl(350 74% 42%) 50%, hsl(348 80% 50%) 100%)' }}
+      style={{ background: 'linear-gradient(135deg, hsl(160 84% 20%) 0%, hsl(160 84% 30%) 50%, hsl(160 84% 39%) 100%)' }}
       aria-label="Seu progresso em flashcards"
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.22),transparent_60%)]" />
@@ -55,7 +55,7 @@ const FlashcardsCargoHero = ({ pct = 0, total = 0, hoje = 0, meta = 100, disponi
             style={{ opacity: i === heroIdx ? 1 : 0, filter: 'brightness(0) invert(1)', mixBlendMode: 'soft-light' }}
           />
         ))}
-        <div className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-[#881427] via-[#881427]/60 to-transparent" />
+        <div className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-[#064e3b] via-[#064e3b]/60 to-transparent" />
       </div>
 
       <div className="relative p-4 sm:p-5">
@@ -105,7 +105,7 @@ const FlashcardsCargoHero = ({ pct = 0, total = 0, hoje = 0, meta = 100, disponi
             <Metric label="Revisados" value={total.toLocaleString('pt-BR')} />
             <div className="flex flex-col items-center justify-center px-2 py-2">
               <span className="text-[9px] font-bold uppercase tracking-wider text-white/60">Sua Meta</span>
-              <span className="mt-0.5 font-display text-base font-black leading-none text-primary">
+              <span className="mt-0.5 font-display text-base font-black leading-none text-emerald-500">
                 {hoje.toLocaleString('pt-BR')}
                 <span className="text-white/50">/{meta.toLocaleString('pt-BR')}</span>
               </span>

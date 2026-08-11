@@ -2,7 +2,7 @@
 const PALETA: Record<string, string> = {
   geral: '#8B5CF6',
   constitucional: '#3B82F6',
-  penal: '#EF4444',
+  penal: '#10B981',
   civil: '#22C55E',
   processual_civil: '#14B8A6',
   processual_penal: '#F97316',
@@ -17,7 +17,7 @@ const PALETA: Record<string, string> = {
   internacional: '#0EA5E9',
 };
 
-const FALLBACK = ['#8B5CF6', '#3B82F6', '#EF4444', '#22C55E', '#F97316', '#EC4899', '#14B8A6', '#EAB308'];
+const FALLBACK = ['#8B5CF6', '#3B82F6', '#10B981', '#22C55E', '#F97316', '#EC4899', '#14B8A6', '#EAB308'];
 
 export const corTrilha = (slug?: string | null) => {
   if (!slug) return PALETA.geral;

@@ -78,7 +78,7 @@ const FlashcardsProgresso = () => {
           {/* Resumo geral */}
           <section className="rounded-2xl border border-border bg-card p-4">
             <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-              <BarChart3 className="h-3.5 w-3.5 text-primary" /> Domínio geral
+              <BarChart3 className="h-3.5 w-3.5 text-emerald-500" /> Domínio geral
             </p>
             <div className="mt-2 flex items-end gap-2">
               <span className="font-display text-4xl font-black leading-none text-foreground">{dominioGeral}%</span>
@@ -157,7 +157,7 @@ function Bloco({
             <button
               key={a.area}
               onClick={() => onPick(a.area)}
-              className="group flex w-full items-center gap-3 rounded-2xl border border-border bg-card p-3 text-left transition-all hover:border-primary/40 active:scale-[0.995]"
+              className="group flex w-full items-center gap-3 rounded-2xl border border-border bg-card p-3 text-left transition-all hover:border-emerald-500/40 active:scale-[0.995]"
             >
               <div className="aprender-icon-shine relative flex h-12 w-12 shrink-0 items-center justify-center">
                 <Icon className="h-8 w-8" strokeWidth={1.9} style={{ color }} />
