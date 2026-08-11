@@ -102,31 +102,25 @@ const Flashcards = () => {
           <section className="grid grid-cols-3 gap-2">
             <button
               onClick={() => { haptic.selection(); navigate('/flashcards/progresso'); }}
-              className="flex flex-col items-center justify-center p-3 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-primary/50 transition-colors active:scale-95 gap-2"
+              className="flex flex-col items-center justify-center p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-primary/50 transition-colors active:scale-95 gap-3"
             >
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <Trophy className="w-5 h-5 text-primary" />
-              </div>
+              <Trophy className="w-6 h-6 text-primary" />
               <p className="text-xs font-bold text-foreground text-center leading-tight">Meu Progresso</p>
             </button>
 
             <button
               onClick={() => { haptic.selection(); navigate('/flashcards/decks'); }}
-              className="flex flex-col items-center justify-center p-3 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-primary/50 transition-colors active:scale-95 gap-2"
+              className="flex flex-col items-center justify-center p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-primary/50 transition-colors active:scale-95 gap-3"
             >
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <Layers className="w-5 h-5 text-primary" />
-              </div>
+              <Layers className="w-6 h-6 text-primary" />
               <p className="text-xs font-bold text-foreground text-center leading-tight">Meus Decks</p>
             </button>
 
             <button
               onClick={() => { haptic.selection(); navigate('/flashcards/desafios'); }}
-              className="flex flex-col items-center justify-center p-3 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-primary/50 transition-colors active:scale-95 gap-2"
+              className="flex flex-col items-center justify-center p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-primary/50 transition-colors active:scale-95 gap-3"
             >
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <Target className="w-5 h-5 text-primary" />
-              </div>
+              <Target className="w-6 h-6 text-primary" />
               <p className="text-xs font-bold text-foreground text-center leading-tight">Meus Desafios</p>
             </button>
           </section>
