@@ -168,7 +168,7 @@ def main():
                         linhas_refinadas.append(linha)
                         continue
                         
-                    if re.match(r'^(?i)(cap[ií]tulo|parte|se[çc][ãa]o|livro|t[íi]tulo)\s+([IVXLCDM\d]+)', linha_limpa):
+                    if re.match(r'(?i)^(cap[ií]tulo|parte|se[çc][ãa]o|livro|t[íi]tulo)\s+([IVXLCDM\d]+)', linha_limpa):
                         is_heading = True
                         heading_level = 2
                         
