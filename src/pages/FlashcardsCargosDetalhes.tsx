@@ -5,8 +5,9 @@ import { PageHeader } from '@/components/vademecum/PageHeader';
 import FlashcardsCargoBottomNav, { CargoTab } from '@/components/flashcards/FlashcardsCargoBottomNav';
 import { supabase } from '@/integrations/supabase/client';
 import { haptic } from '@/lib/nativeHaptics';
-import { Building, ArrowLeft, Target, Calendar, CheckCircle2, ChevronLeft, Trash2, Layers, Play, Clock, Award } from 'lucide-react';
+import { Building, ArrowLeft, Target, Calendar, CheckCircle2, ChevronLeft, Trash2, Layers, Play, Clock, Award, FileText } from 'lucide-react';
 import { useFlashcardsTrilhasStore, type FlashcardTrilhaAtiva } from '@/lib/flashcardsTrilhasStore';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 
 type DisciplinaEdital = {
   area: string;
@@ -218,6 +219,7 @@ export default function FlashcardsCargosDetalhes() {
   const [loading, setLoading] = useState(true);
   
   const [activeTab, setActiveTab] = useState<CargoTab>('livre');
+  const [sheetOpen, setSheetOpen] = useState(false);
   const { trilhasAtivas, setTrilhaAtiva } = useFlashcardsTrilhasStore();
   
   const trilhaDoEditalId = Object.keys(trilhasAtivas).find(k => trilhasAtivas[k].isEdital && trilhasAtivas[k].editalId === id);
@@ -263,19 +265,23 @@ export default function FlashcardsCargosDetalhes() {
 
   const handlePraticarLivre = (area: string) => {
     haptic.selection();
+    setSheetOpen(false); // Fecha o menu
     const params = new URLSearchParams();
-    params.set('area', area);
-    params.set('modo', 'todos');
+    if (area === 'todos') {
+      params.set('modo', 'edital');
+      params.set('editalId', cargo!.id);
+    } else {
+      params.set('area', area);
+      params.set('modo', 'todos');
+    }
     params.set('limite', '20');
-    // Adicionamos editalId para que a tela de estudo saiba que é contexto de edital
-    // Mas no modo livre por área, a query vai puxar os flashcards daquela área.
     navigate(`/flashcards/estudar?${params.toString()}`);
   };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-background text-foreground pb-[120px] md:pb-8 flex flex-col font-sans">
-        <PageHeader title="Detalhes do Edital" onBack={() => navigate('/flashcards/cargos')} />
+        <PageHeader title="Carregando Edital" onBack={() => navigate('/flashcards/cargos')} />
         <div className="p-4 space-y-4 pt-10">
           <div className="h-32 bg-card/50 animate-pulse rounded-3xl" />
           <div className="h-24 bg-card/50 animate-pulse rounded-3xl" />
@@ -297,9 +303,95 @@ export default function FlashcardsCargosDetalhes() {
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
       <AnimatePresence mode="wait">
         
-        {/* TAB: LIVRE (Detalhes e Prática por Matéria) */}
+        {/* TAB: LIVRE (Prática Livre) */}
         {activeTab === 'livre' && (
-          <motion.div key="livre" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8 pb-32">
+          <motion.div key="livre" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8 pb-32 flex flex-col relative">
+            <div className="flex items-center gap-3 py-4">
+              <button 
+                onClick={() => { haptic.selection(); navigate('/flashcards/cargos'); }}
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-card border border-border shadow-sm active:scale-95 transition-transform"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex-1 flex flex-col items-center justify-center text-center mt-[-60px]">
+              <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                <Target className="w-12 h-12 text-primary" />
+              </div>
+              
+              <h2 className="font-display text-3xl font-black mb-4">Prática Livre</h2>
+              <p className="text-muted-foreground max-w-sm mx-auto mb-10 leading-relaxed text-sm">
+                Pratique os cards do edital de <strong>{cargo.orgao}</strong> sem compromisso com metas diárias. Você pode praticar todas as matérias juntas ou escolher uma área específica.
+              </p>
+              
+              <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+                <SheetTrigger asChild>
+                  <button 
+                    onClick={() => haptic.selection()}
+                    className="w-full max-w-xs bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base h-16 rounded-3xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98] flex items-center justify-center gap-3"
+                  >
+                    <Play className="w-6 h-6 fill-current" />
+                    Iniciar Sessão
+                  </button>
+                </SheetTrigger>
+                <SheetContent side="bottom" className="rounded-t-3xl border-t-0 p-0 h-[80vh] bg-background flex flex-col focus-visible:outline-none">
+                  <div className="p-6 pb-4 border-b border-border/50 shrink-0">
+                    <SheetHeader>
+                      <SheetTitle className="text-xl font-black text-left">O que vamos praticar?</SheetTitle>
+                    </SheetHeader>
+                  </div>
+                  
+                  <div className="flex-1 overflow-y-auto p-6 space-y-4 pb-safe-offset-12">
+                    <button
+                      onClick={() => handlePraticarLivre('todos')}
+                      className="w-full bg-primary/10 border border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground font-black text-base h-16 rounded-2xl transition-all active:scale-[0.98] flex items-center justify-center gap-3 shadow-sm"
+                    >
+                      <Layers className="w-6 h-6" />
+                      Praticar Todas as Matérias
+                    </button>
+                    
+                    <div className="flex items-center gap-4 py-2">
+                      <div className="h-px bg-border/50 flex-1" />
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Ou escolha uma matéria</span>
+                      <div className="h-px bg-border/50 flex-1" />
+                    </div>
+
+                    <div className="space-y-3 pb-8">
+                      {cargo.edital_disciplinas?.map((disc, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handlePraticarLivre(disc.area)}
+                          className="w-full text-left bg-card rounded-2xl p-4 border border-border/50 shadow-sm flex items-center justify-between gap-4 group hover:border-primary/50 transition-colors active:scale-[0.98]"
+                        >
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-bold text-sm text-foreground mb-1 truncate">{disc.area}</h4>
+                            {disc.peso && (
+                              <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                                disc.peso.toLowerCase() === 'alta' ? 'bg-red-500/10 text-red-500' :
+                                disc.peso.toLowerCase() === 'média' ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-500' :
+                                'bg-primary/10 text-primary'
+                              }`}>
+                                Peso {disc.peso}
+                              </span>
+                            )}
+                          </div>
+                          <div className="shrink-0 w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                            <Play className="w-4 h-4 fill-current ml-0.5" />
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
+          </motion.div>
+        )}
+
+        {/* TAB: EDITAL (Informações, Raio-X e Disciplinas) */}
+        {activeTab === 'edital' && (
+          <motion.div key="edital" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8 pb-32">
             <div className="flex items-center gap-3 py-4">
               <button 
                 onClick={() => { haptic.selection(); navigate('/flashcards/cargos'); }}
@@ -311,9 +403,8 @@ export default function FlashcardsCargosDetalhes() {
 
             <div className="pt-2 pb-6">
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider mb-4">
-                <Building className="w-4 h-4" />
-                {cargo.orgao}
-                {cargo.banca && <> • {cargo.banca}</>}
+                <FileText className="w-4 h-4" />
+                Raio-X do Edital
               </div>
               
               <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-black leading-tight mb-4">
@@ -331,7 +422,7 @@ export default function FlashcardsCargosDetalhes() {
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-bold text-lg flex items-center gap-2">
                   <Layers className="w-5 h-5 text-primary" />
-                  Prática Livre
+                  Conteúdo Programático
                 </h3>
                 <span className="text-xs font-bold bg-muted text-muted-foreground px-2.5 py-1 rounded-full">
                   {cargo.edital_disciplinas?.length || 0} Matérias
@@ -340,34 +431,24 @@ export default function FlashcardsCargosDetalhes() {
               
               <div className="space-y-3">
                 {cargo.edital_disciplinas?.map((disc, index) => (
-                  <div key={index} className="bg-card rounded-2xl p-4 border border-border/50 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 group hover:border-primary/50 transition-colors">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h4 className="font-bold text-base text-foreground">{disc.area}</h4>
-                        {disc.peso && (
-                          <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                            disc.peso.toLowerCase() === 'alta' ? 'bg-red-500/10 text-red-500' :
-                            disc.peso.toLowerCase() === 'média' ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-500' :
-                            'bg-primary/10 text-primary'
-                          }`}>
-                            Peso {disc.peso}
-                          </span>
-                        )}
-                      </div>
-                      {disc.descricao && (
-                        <p className="text-sm text-muted-foreground line-clamp-2">
-                          {disc.descricao}
-                        </p>
+                  <div key={index} className="bg-card rounded-2xl p-4 border border-border/50 shadow-sm flex flex-col gap-1.5 hover:border-primary/50 transition-colors">
+                    <div className="flex justify-between items-start">
+                      <h4 className="font-bold text-base text-foreground">{disc.area}</h4>
+                      {disc.peso && (
+                        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                          disc.peso.toLowerCase() === 'alta' ? 'bg-red-500/10 text-red-500' :
+                          disc.peso.toLowerCase() === 'média' ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-500' :
+                          'bg-primary/10 text-primary'
+                        }`}>
+                          Peso {disc.peso}
+                        </span>
                       )}
                     </div>
-                    
-                    <button
-                      onClick={() => handlePraticarLivre(disc.area)}
-                      className="shrink-0 flex items-center justify-center gap-2 h-10 px-4 rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground font-bold text-sm transition-all active:scale-95"
-                    >
-                      <Play className="w-4 h-4" />
-                      Praticar
-                    </button>
+                    {disc.descricao && (
+                      <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
+                        {disc.descricao}
+                      </p>
+                    )}
                   </div>
                 ))}
                 

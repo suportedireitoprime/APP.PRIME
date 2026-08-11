@@ -1,9 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { haptic } from '@/lib/nativeHaptics';
-import { BookOpen, Route, RotateCcw, TrendingUp } from 'lucide-react';
+import { BookOpen, Route, RotateCcw, TrendingUp, FileText } from 'lucide-react';
 
-export type CargoTab = 'livre' | 'trilhas' | 'revisao' | 'desempenho';
+export type CargoTab = 'livre' | 'trilhas' | 'edital' | 'revisao' | 'desempenho';
 
 interface FlashcardsCargoBottomNavProps {
   activeTab: CargoTab;
@@ -14,6 +14,7 @@ export default function FlashcardsCargoBottomNav({ activeTab, onChangeTab }: Fla
   const tabs = [
     { id: 'livre', label: 'Livre', icon: BookOpen },
     { id: 'trilhas', label: 'Trilhas', icon: Route },
+    { id: 'edital', label: 'Edital', icon: FileText },
     { id: 'revisao', label: 'Revisão', icon: RotateCcw },
     { id: 'desempenho', label: 'Desempenho', icon: TrendingUp },
   ];
