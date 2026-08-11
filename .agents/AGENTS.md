@@ -99,3 +99,7 @@ ALWAYS implement SEO best practices automatically for every page/component.
 ### Coding guidelines
 - ALWAYS generate beautiful and responsive designs.
 - Use toast components to inform the user.
+
+## PDF Parsing & GitHub Actions
+- **Tratamento de Arquivos no GitHub Actions**: Ao criar rotinas (ex: Python/PyMuPDF) em GitHub Actions que processem arquivos pesados ou extraiam JSON (como sumários/TOC), você DEVE envelopar todo o processamento em blocos `try-except`. Se a execução falhar antes do log de erro final, o registro no Supabase ficará eternamente preso em "processando".
+- **Download do Google Drive via Script**: Nunca presuma que uma URL compartilhada do Google Drive fará download direto. Use conversores de URL (ex: `drive.google.com/uc?export=download&id=...`) e cheque a assinatura do byte inicial (`%PDF` vs `<html`) para evitar exceções fatais ao carregar em bibliotecas de extração.
