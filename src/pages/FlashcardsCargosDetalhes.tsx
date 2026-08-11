@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PageHeader } from '@/components/layout/PageHeader';
+import { PageHeader } from '@/components/vademecum/PageHeader';
 import FlashcardsCargoBottomNav, { CargoTab } from '@/components/flashcards/FlashcardsCargoBottomNav';
+import FlashcardsCargoHero from '@/components/flashcards/FlashcardsCargoHero';
 import { getAreaVisual } from '@/lib/getAreaVisual';
 import { supabase } from '@/integrations/supabase/client';
 import { haptic } from '@/lib/nativeHaptics';
@@ -346,22 +347,35 @@ export default function FlashcardsCargosDetalhes() {
         
         {/* TAB: LIVRE (Prática Livre) */}
         {activeTab === 'livre' && (
-          <motion.div key="livre" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8 pb-32 flex flex-col relative">
-            <div className="flex items-center gap-3 py-4">
-              <button 
-                onClick={() => { haptic.selection(); navigate('/flashcards/cargos'); }}
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-card border border-border shadow-sm active:scale-95 transition-transform"
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </button>
-              <h2 className="font-display text-xl font-black">Prática Livre</h2>
-            </div>
+          <motion.div key="livre" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto pb-32 flex flex-col relative">
             
-            <p className="text-muted-foreground text-sm mb-6 px-1">
-              Escolha uma área do edital de <strong>{cargo.orgao}</strong> para praticar flashcards livremente.
-            </p>
+            <div className="px-3 sm:px-6 lg:px-8">
+              <div className="flex items-center gap-3 py-4">
+                <button 
+                  onClick={() => { haptic.selection(); navigate('/flashcards/cargos'); }}
+                  className="w-10 h-10 flex items-center justify-center rounded-full bg-card border border-border shadow-sm active:scale-95 transition-transform"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
+                <h2 className="font-display text-xl font-black">Prática Livre</h2>
+              </div>
+              
+              <p className="text-muted-foreground text-sm mb-6 px-1">
+                Escolha uma área do edital de <strong>{cargo.orgao}</strong> para praticar flashcards livremente.
+              </p>
+            </div>
 
-            <div className="space-y-3 pb-8">
+            <div className="mb-8">
+              <FlashcardsCargoHero 
+                pct={15} 
+                total={1240} 
+                hoje={45} 
+                meta={100} 
+                disponiveis={15000} 
+              />
+            </div>
+
+            <div className="space-y-3 pb-8 px-3 sm:px-6 lg:px-8">
               {cargo.edital_disciplinas?.map((disc, index) => {
                 const { icon: Icon, logoSrc, iconType } = getLogoAndStyles(cargo.cargo, cargo.orgao);
                 return (
