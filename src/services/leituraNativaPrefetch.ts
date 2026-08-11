@@ -141,15 +141,25 @@ async function cacheOne(tabela: string, id: string | number): Promise<boolean> {
   if (await bookAlreadyCached(tabela, id)) return true;
   const { data, error } = await supabase
     .from('biblioteca_leitura_nativa')
-    .select('conteudo_md_refinado, sumario_json, total_paginas, status, refino_status')
+    .select('conteudo_md_refinado, conteudo_md_refinado_url, sumario_json, total_paginas, status, refino_status')
     .eq('livro_tabela', tabela)
     .eq('livro_id', String(id))
     .maybeSingle();
-  if (error || !data || data.status !== 'pronto' || data.refino_status !== 'pronto' || !data.conteudo_md_refinado) return false;
+  if (error || !data || data.status !== 'pronto' || data.refino_status !== 'pronto') return false;
+  
+  let markdown = String(data.conteudo_md_refinado || '').trim();
+  if (!markdown && data.conteudo_md_refinado_url) {
+    try {
+      const res = await fetch(data.conteudo_md_refinado_url);
+      if (res.ok) markdown = await res.text();
+    } catch {}
+  }
+  
+  if (!markdown) return false;
 
   const dir = bookDir(tabela, id);
   await ensureDir(`${dir}/img`);
-  const rewritten = await rewriteMarkdownImages(data.conteudo_md_refinado, dir);
+  const rewritten = await rewriteMarkdownImages(markdown, dir);
   const payload: LeituraNativaLocal = {
     conteudo_md: rewritten,
     sumario_json: (data.sumario_json as any) || null,

@@ -214,7 +214,7 @@ const LeitorNativo = ({ livroId, livroTabela, pdfUrl, titulo, onClose, autor, an
     let pollingId: ReturnType<typeof setInterval> | null = null;
     let restoredIndex = false;
 
-    const applyRow = (data: any) => {
+    const applyRow = async (data: any) => {
       if (!data || cancelled) return;
       if (data.etapa) setEtapa(data.etapa);
       if (typeof data.progresso === 'number') setProgresso(data.progresso);
@@ -234,8 +234,22 @@ const LeitorNativo = ({ livroId, livroTabela, pdfUrl, titulo, onClose, autor, an
       //   direto — independentemente de refino_status. Isso garante que, quando
       //   o admin já extraiu o livro, o usuário normal entra na leitura
       //   nativa sem passar por tela de "processando" nem re-disparar o OCR.
-      const contentToUse = data.conteudo_md_refinado || data.conteudo_md || null;
-      if (data.refino_status === 'erro' && data.conteudo_md && !data.conteudo_md_refinado) {
+      // Resolução de Storage URL
+      let contentToUse = data.conteudo_md_refinado || data.conteudo_md || null;
+      
+      if (!contentToUse && (data.conteudo_md_refinado_url || data.conteudo_md_url)) {
+        try {
+          const url = data.conteudo_md_refinado_url || data.conteudo_md_url;
+          const res = await fetch(url);
+          if (res.ok) {
+            contentToUse = await res.text();
+          }
+        } catch (e) {
+          console.error("Erro ao baixar conteudo do Storage no leitor nativo", e);
+        }
+      }
+
+      if (data.refino_status === 'erro' && (data.conteudo_md || data.conteudo_md_url) && !data.conteudo_md_refinado && !data.conteudo_md_refinado_url) {
         // apenas aviso — o conteúdo bruto será usado
       }
 

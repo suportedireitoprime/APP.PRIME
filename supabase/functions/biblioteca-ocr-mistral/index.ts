@@ -25,6 +25,19 @@ interface Body {
   force?: boolean;
 }
 
+const uploadToStorage = async (supabase: any, path: string, content: string) => {
+  const { error } = await supabase.storage.from("biblioteca-obras").upload(path, content, {
+    contentType: "text/markdown",
+    upsert: true,
+  });
+  if (error) {
+    console.error("[storage] Upload error:", error);
+    return null;
+  }
+  const { data: pubUrl } = supabase.storage.from("biblioteca-obras").getPublicUrl(path);
+  return pubUrl.publicUrl;
+};
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
@@ -501,12 +514,15 @@ serve(async (req) => {
     const pages = { length: processedPages } as any; // compat com uso abaixo
 
     // ============================================================
-    // 5) Salvar OCR bruto (leitura já disponível) e disparar refino
+    // 5) Salvar OCR bruto no Storage e disparar refino
     // ============================================================
+    const ocrUrl = await uploadToStorage(supabase, `ocr/${livro_tabela}_${livro_id}.md`, combinedMd);
+
     await supabase
       .from("biblioteca_leitura_nativa")
       .update({
-        conteudo_md: combinedMd,
+        conteudo_md: null, // Limpando DB para economizar espaço
+        conteudo_md_url: ocrUrl,
         sumario_json: sumario,
         total_paginas: pages.length,
         // NÃO marcamos "pronto" ainda — o overlay precisa exibir as etapas
@@ -836,16 +852,35 @@ async function handleRefino(body: RefinoBody) {
 
   // Só agora baixamos o texto — e apenas o bruto; o refinado só se não houver bruto.
   const { data: bruto } = await supabase
-    .from("biblioteca_leitura_nativa").select("conteudo_md")
+    .from("biblioteca_leitura_nativa").select("conteudo_md, conteudo_md_url")
     .eq("livro_tabela", livro_tabela).eq("livro_id", livro_id).maybeSingle();
+    
   let baseMd = String(bruto?.conteudo_md || "").trim();
+  if (!baseMd && bruto?.conteudo_md_url) {
+    try {
+      const res = await fetch(bruto.conteudo_md_url);
+      if (res.ok) baseMd = (await res.text()).trim();
+    } catch (e) {
+      console.error("[storage fetch error]", e);
+    }
+  }
+  
   if (!baseMd) {
     // Alguns livros só têm o markdown já refinado (ex.: correções manuais) —
     // nesse caso usamos ele como base em vez de falhar.
     const { data: refinado } = await supabase
-      .from("biblioteca_leitura_nativa").select("conteudo_md_refinado")
+      .from("biblioteca_leitura_nativa").select("conteudo_md_refinado, conteudo_md_refinado_url")
       .eq("livro_tabela", livro_tabela).eq("livro_id", livro_id).maybeSingle();
     baseMd = String(refinado?.conteudo_md_refinado || "").trim();
+    
+    if (!baseMd && refinado?.conteudo_md_refinado_url) {
+      try {
+        const res = await fetch(refinado.conteudo_md_refinado_url);
+        if (res.ok) baseMd = (await res.text()).trim();
+      } catch (e) {
+        console.error("[storage fetch error refinado]", e);
+      }
+    }
   }
   if (!baseMd) {
     // 200 de propósito: o cliente precisa ler o status para disparar o OCR.
@@ -1042,9 +1077,12 @@ async function handleRefino(body: RefinoBody) {
 
     const conteudoFinal = capitulos.map((c) => `${c.capa_md}\n\n${c.conteudo_md}`).join("\n\n---\n\n");
 
-    // Um único UPDATE final: grava conteúdo + marca refino/status como pronto
+    const refinoUrl = await uploadToStorage(supabase, `refinado/${livro_tabela}_${livro_id}.md`, conteudoFinal);
+
+    // Um único UPDATE final: grava conteúdo (via URL) + marca refino/status como pronto
     await supabase.from("biblioteca_leitura_nativa").update({
-      conteudo_md_refinado: conteudoFinal,
+      conteudo_md_refinado: null, // Limpa para economizar espaço
+      conteudo_md_refinado_url: refinoUrl,
       capitulos_json: capitulos,
       preliminares_md: preliminaresMd || null,
       refino_status: "pronto", refino_erro: null,
