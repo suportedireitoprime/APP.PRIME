@@ -334,11 +334,11 @@ const TrilhaMapaEstudo = ({ trilha, onBack }: { trilha: FlashcardTrilhaAtiva, on
   );
 };
 
-// --- COMPONENTE PRINCIPAL ---
 export default function FlashcardsTrilhas() {
   const [step, setStep] = useState<'home' | 'area' | 'tema' | 'detalhes' | 'mapa'>('home');
   const [trilhaAtivaTemp, setTrilhaAtivaTemp] = useState<Partial<FlashcardTrilhaAtiva>>({});
   const [trilhaSelecionada, setTrilhaSelecionada] = useState<string | null>(null);
+  const [trilhaParaDeletar, setTrilhaParaDeletar] = useState<string | null>(null);
   const { trilhasAtivas, setTrilhaAtiva, limparTrilha } = useFlashcardsTrilhasStore();
 
   const trilhasArray = Object.values(trilhasAtivas).sort((a,b) => new Date(b.dataInicio).getTime() - new Date(a.dataInicio).getTime());
@@ -398,20 +398,19 @@ export default function FlashcardsTrilhas() {
                           onClick={() => { haptic.selection(); setTrilhaSelecionada(trilha.id); setStep('mapa'); }}
                         >
                           <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-success mb-1">TRILHA ATIVA</p>
-                          <p className="text-base font-bold text-foreground">{trilha.area}</p>
+                          <p className="text-base font-bold text-foreground">{trilha.nome || trilha.area}</p>
                           <p className="text-xs text-muted-foreground line-clamp-1">{trilha.tema}</p>
                         </div>
                         <button 
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            if (window.confirm("Deseja excluir esta trilha? O progresso será perdido.")) {
-                              limparTrilha(trilha.id);
-                            }
+                            haptic.selection();
+                            setTrilhaParaDeletar(trilha.id);
                           }}
-                          className="w-8 h-8 rounded-full flex items-center justify-center bg-destructive/10 text-destructive hover:bg-destructive hover:text-white transition-colors shrink-0 z-10"
+                          className="w-10 h-10 -mr-2 -mt-2 rounded-full flex items-center justify-center text-destructive/60 hover:bg-destructive/10 hover:text-destructive transition-colors shrink-0 z-10 active:scale-95"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="w-5 h-5" />
                         </button>
                       </div>
                       
