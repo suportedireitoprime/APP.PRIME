@@ -111,6 +111,12 @@ def main():
         bucket_name = "biblioteca-obras"
         imagens_folder = f"imagens/{livro_tabela}_{livro_id}"
         sumario_customizado = []
+        
+        start_img_page = 0
+        if sumario_json:
+            paginas_validas = [item["pagina"] for item in sumario_json if item["pagina"] > 4]
+            if paginas_validas:
+                start_img_page = min(paginas_validas)
 
         for page_num in range(total_paginas):
             if page_num % 50 == 0:
@@ -127,24 +133,25 @@ def main():
             except:
                 page_md = page.get_text("text")
 
-            image_list = page.get_images(full=True)
-            for img_index, img in enumerate(image_list):
-                try:
-                    xref = img[0]
-                    base_image = doc.extract_image(xref)
-                    image_bytes = base_image["image"]
-                    image_ext = base_image["ext"]
-                    
-                    img_filename = f"{imagens_folder}/pag_{page_num+1}_img_{img_index+1}.{image_ext}"
-                    supabase.storage.from_(bucket_name).upload(
-                        path=img_filename,
-                        file=image_bytes,
-                        file_options={"content-type": f"image/{image_ext}", "upsert": "true"}
-                    )
-                    public_url = supabase.storage.from_(bucket_name).get_public_url(img_filename)
-                    page_md += f"\n\n![Imagem da página {page_num+1}]({public_url})\n\n"
-                except Exception as upload_err:
-                    print(f"Erro ao processar imagem na pág {page_num+1}: {upload_err}")
+            if start_img_page == 0 or (page_num + 1) >= start_img_page:
+                image_list = page.get_images(full=True)
+                for img_index, img in enumerate(image_list):
+                    try:
+                        xref = img[0]
+                        base_image = doc.extract_image(xref)
+                        image_bytes = base_image["image"]
+                        image_ext = base_image["ext"]
+                        
+                        img_filename = f"{imagens_folder}/pag_{page_num+1}_img_{img_index+1}.{image_ext}"
+                        supabase.storage.from_(bucket_name).upload(
+                            path=img_filename,
+                            file=image_bytes,
+                            file_options={"content-type": f"image/{image_ext}", "upsert": "true"}
+                        )
+                        public_url = supabase.storage.from_(bucket_name).get_public_url(img_filename)
+                        page_md += f"\n\n![Imagem da página {page_num+1}]({public_url})\n\n"
+                    except Exception as upload_err:
+                        print(f"Erro ao processar imagem na pág {page_num+1}: {upload_err}")
             
             clean_md = page_md.strip()
             
@@ -171,11 +178,6 @@ def main():
                     if re.match(r'(?i)^(cap[ií]tulo|parte|se[çc][ãa]o|livro|t[íi]tulo)\s+([IVXLCDM\d]+)', linha_limpa):
                         is_heading = True
                         heading_level = 2
-                        
-                    elif linha_limpa.isupper() and 4 < len(linha_limpa) < 70 and not re.search(r'[.,;:]$', linha_limpa):
-                        if not re.match(r'^[\d\W_]+$', linha_limpa):
-                            is_heading = True
-                            heading_level = 3
                             
                     if is_heading:
                         nova_linha = f"{'#' * heading_level} {linha_limpa}"
@@ -187,7 +189,7 @@ def main():
                 clean_md = '\n'.join(linhas_refinadas)
                 markdown_completo += f"\n<!-- page:{page_num + 1} -->\n{clean_md}\n\n"
 
-        final_toc = sumario_customizado if len(sumario_customizado) > 3 else sumario_json
+        final_toc = sumario_json if len(sumario_json) > 0 else sumario_customizado
 
         # 4. Fazer upload do Markdown REFINADO (Heurística Python)
         md_filename = f"refinado/{livro_tabela}_{livro_id}.md"
