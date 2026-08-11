@@ -30,16 +30,16 @@ const SetupArea = ({ onSelect, onCancel }: { onSelect: (area: string) => void, o
       
       <div className="pt-4 px-4">
         {loading ? (
-          <div className="flex justify-center py-10"><div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>
+          <div className="flex justify-center py-10"><div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" /></div>
         ) : (
           <div className="space-y-3">
             <motion.button
               onClick={() => { haptic.selection(); onSelect('Todas as Áreas'); }}
-              className="w-full flex items-center justify-between p-4 rounded-3xl border border-primary/40 bg-primary/5 shadow-sm hover:border-primary transition-all active:scale-[0.98]"
+              className="w-full flex items-center justify-between p-4 rounded-3xl border border-emerald-500/40 bg-emerald-500/5 shadow-sm hover:border-emerald-500 transition-all active:scale-[0.98]"
             >
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center shrink-0">
-                  <Layers className="w-6 h-6 text-primary" />
+                <div className="w-12 h-12 bg-emerald-500/20 rounded-full flex items-center justify-center shrink-0">
+                  <Layers className="w-6 h-6 text-emerald-500" />
                 </div>
                 <div className="text-left">
                   <p className="text-sm font-bold text-foreground">Todas as Áreas</p>
@@ -49,20 +49,16 @@ const SetupArea = ({ onSelect, onCancel }: { onSelect: (area: string) => void, o
             </motion.button>
 
             {areas.map(area => (
-              <motion.button
-                key={area}
-                onClick={() => { haptic.selection(); onSelect(area); }}
-                className="w-full flex items-center justify-between p-4 rounded-3xl border border-border/40 bg-card/60 backdrop-blur-md shadow-sm hover:border-primary/50 transition-all active:scale-[0.98]"
-              >
+              <button onClick={() => { haptic.selection(); onSelect(area); }} className="w-full rounded-3xl border border-border/40 bg-card/60 backdrop-blur-md shadow-sm p-4 flex items-center justify-between hover:border-emerald-500/50 transition-all active:scale-[0.98]">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
-                    <Layers className="w-6 h-6 text-primary" />
+                  <div className="w-12 h-12 bg-emerald-500/10 rounded-full flex items-center justify-center shrink-0">
+                    <Layers className="w-6 h-6 text-emerald-500" />
                   </div>
                   <div className="text-left">
                     <p className="text-sm font-bold text-foreground">{area}</p>
                   </div>
                 </div>
-              </motion.button>
+              </button>
             ))}
           </div>
         )}
@@ -109,16 +105,16 @@ const SetupTema = ({ area, onSelect, onBack }: { area: string, onSelect: (tema: 
       
       <div className="pt-4 px-4">
         {loading ? (
-          <div className="flex justify-center py-10"><div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>
+          <div className="flex justify-center py-10"><div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" /></div>
         ) : (
           <div className="space-y-3">
             <motion.button
               onClick={() => { haptic.selection(); onSelect('Todos os Temas'); }}
-              className="w-full flex items-center justify-between p-4 rounded-3xl border border-primary/40 bg-primary/5 shadow-sm hover:border-primary transition-all active:scale-[0.98]"
+              className="w-full flex items-center justify-between p-4 rounded-3xl border border-emerald-500/40 bg-emerald-500/5 shadow-sm hover:border-emerald-500 transition-all active:scale-[0.98]"
             >
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center shrink-0">
-                  <Layers className="w-6 h-6 text-primary" />
+                <div className="w-12 h-12 bg-emerald-500/20 rounded-full flex items-center justify-center shrink-0">
+                  <Layers className="w-6 h-6 text-emerald-500" />
                 </div>
                 <div className="text-left">
                   <p className="text-sm font-bold text-foreground">Todos os Temas</p>
@@ -131,11 +127,11 @@ const SetupTema = ({ area, onSelect, onBack }: { area: string, onSelect: (tema: 
               <motion.button
                 key={tema}
                 onClick={() => { haptic.selection(); onSelect(tema); }}
-                className="w-full flex items-center justify-between p-4 rounded-3xl border border-border/40 bg-card/60 backdrop-blur-md shadow-sm hover:border-primary/50 transition-all active:scale-[0.98]"
+                className="w-full flex items-center justify-between p-4 rounded-3xl border border-border/40 bg-card/60 backdrop-blur-md shadow-sm hover:border-emerald-500/50 transition-all active:scale-[0.98]"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
-                    <Layers className="w-6 h-6 text-primary" />
+                  <div className="w-12 h-12 bg-emerald-500/10 rounded-full flex items-center justify-center shrink-0">
+                    <Layers className="w-6 h-6 text-emerald-500" />
                   </div>
                   <div className="text-left">
                     <p className="text-sm font-bold text-foreground">{tema}</p>
@@ -164,8 +160,8 @@ const SetupDetalhes = ({ onBack, onFinish }: { onBack: () => void, onFinish: (di
       </button>
 
       <div className="text-center mb-8">
-        <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Calendar className="w-8 h-8 text-primary" />
+        <div className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Calendar className="w-8 h-8 text-emerald-500" />
         </div>
         <h2 className="text-2xl font-black text-foreground mb-2">Meta de Estudo</h2>
         <p className="text-sm text-muted-foreground mb-4">
@@ -179,11 +175,11 @@ const SetupDetalhes = ({ onBack, onFinish }: { onBack: () => void, onFinish: (di
               key={num}
               onClick={() => { haptic.selection(); setDias(num); }}
               className={`p-3 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-1 ${
-                dias === num ? 'border-primary bg-primary/10 shadow-sm' : 'border-border/50 bg-card/60 hover:border-primary/50'
+                dias === num ? 'border-emerald-500 bg-emerald-500/10 shadow-sm' : 'border-border/50 bg-card/60 hover:border-emerald-500/50'
               }`}
             >
-              <span className={`text-xl font-black ${dias === num ? 'text-primary' : 'text-foreground'}`}>{num}</span>
-              <span className={`text-[10px] uppercase font-bold ${dias === num ? 'text-primary' : 'text-muted-foreground'}`}>Dias</span>
+              <span className={`text-xl font-black ${dias === num ? 'text-emerald-500' : 'text-foreground'}`}>{num}</span>
+              <span className={`text-[10px] uppercase font-bold ${dias === num ? 'text-emerald-500' : 'text-muted-foreground'}`}>Dias</span>
             </button>
           ))}
         </div>
@@ -195,18 +191,18 @@ const SetupDetalhes = ({ onBack, onFinish }: { onBack: () => void, onFinish: (di
               key={num}
               onClick={() => { haptic.selection(); setCards(num); }}
               className={`p-3 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-1 ${
-                cards === num ? 'border-primary bg-primary/10 shadow-sm' : 'border-border/50 bg-card/60 hover:border-primary/50'
+                cards === num ? 'border-emerald-500 bg-emerald-500/10 shadow-sm' : 'border-border/50 bg-card/60 hover:border-emerald-500/50'
               }`}
             >
-              <span className={`text-xl font-black ${cards === num ? 'text-primary' : 'text-foreground'}`}>{num}</span>
-              <span className={`text-[10px] uppercase font-bold ${cards === num ? 'text-primary' : 'text-muted-foreground'}`}>Cards</span>
+              <span className={`text-xl font-black ${cards === num ? 'text-emerald-500' : 'text-foreground'}`}>{num}</span>
+              <span className={`text-[10px] uppercase font-bold ${cards === num ? 'text-emerald-500' : 'text-muted-foreground'}`}>Cards</span>
             </button>
           ))}
         </div>
 
         <button 
           onClick={() => { haptic.medium(); onFinish(dias, cards); }}
-          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base h-14 rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98] mt-4 flex items-center justify-center gap-2"
+          className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-base h-14 rounded-2xl shadow-lg shadow-emerald-500/20 transition-all active:scale-[0.98] mt-4 flex items-center justify-center gap-2"
         >
           Criar Trilha
           <Target className="w-5 h-5" />
@@ -262,9 +258,9 @@ const TrilhaMapaEstudo = ({ trilha, onBack }: { trilha: FlashcardTrilhaAtiva, on
           <div className="w-16 h-16 relative">
             <svg className="w-full h-full -rotate-90 transform" viewBox="0 0 36 36">
               <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="hsl(var(--muted))" strokeWidth="3" />
-              <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="hsl(var(--primary))" strokeWidth="3" strokeDasharray={`${(trilha.diasConcluidos.length / trilha.diasMeta) * 100}, 100`} />
+              <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="hsl(var(--emerald-500))" strokeWidth="3" strokeDasharray={`${(trilha.diasConcluidos.length / trilha.diasMeta) * 100}, 100`} />
             </svg>
-            <div className="absolute inset-0 flex items-center justify-center text-primary font-bold text-xs">
+            <div className="absolute inset-0 flex items-center justify-center text-emerald-500 font-bold text-xs">
               {Math.round((trilha.diasConcluidos.length / trilha.diasMeta) * 100)}%
             </div>
           </div>
@@ -281,11 +277,11 @@ const TrilhaMapaEstudo = ({ trilha, onBack }: { trilha: FlashcardTrilhaAtiva, on
               <div key={dia} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
                 <div className="flex items-center justify-center w-12 h-12 rounded-full border-4 border-background bg-card shadow-sm z-10 md:mx-auto shrink-0 relative transition-colors">
                   {isCompleted ? (
-                    <div className="w-full h-full bg-primary text-primary-foreground rounded-full flex items-center justify-center shadow-lg shadow-primary/20">
+                    <div className="w-full h-full bg-emerald-500 text-white rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/20">
                       <CheckCircle2 className="w-6 h-6" />
                     </div>
                   ) : isAccessible ? (
-                    <div className="w-full h-full bg-background border-2 border-primary text-primary rounded-full flex items-center justify-center shadow-lg shadow-primary/10">
+                    <div className="w-full h-full bg-background border-2 border-emerald-500 text-emerald-500 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/10">
                       <span className="font-bold text-sm">{dia}</span>
                     </div>
                   ) : (
@@ -306,7 +302,7 @@ const TrilhaMapaEstudo = ({ trilha, onBack }: { trilha: FlashcardTrilhaAtiva, on
                       <button
                         onClick={() => handlePraticarDia(dia)}
                         className={`flex-1 py-2 px-4 rounded-xl text-xs font-bold transition-all ${
-                          isCompleted ? 'bg-muted text-muted-foreground hover:bg-muted/80' : 'bg-primary text-primary-foreground shadow-md shadow-primary/20 active:scale-95'
+                          isCompleted ? 'bg-muted text-muted-foreground hover:bg-muted/80' : 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20 active:scale-95'
                         }`}
                       >
                         Estudar
@@ -321,7 +317,7 @@ const TrilhaMapaEstudo = ({ trilha, onBack }: { trilha: FlashcardTrilhaAtiva, on
                           }
                         }}
                         className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all ${
-                          isCompleted ? 'bg-destructive/10 text-destructive' : 'bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground'
+                          isCompleted ? 'bg-destructive/10 text-destructive' : 'bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white'
                         }`}
                       >
                         {isCompleted ? <Trash2 className="w-4 h-4" /> : <CheckCircle2 className="w-5 h-5" />}
@@ -371,11 +367,11 @@ export default function FlashcardsTrilhas() {
             <div className="px-4 mt-6">
               <button 
                 onClick={() => { haptic.selection(); setStep('area'); setTrilhaAtivaTemp({}); }}
-                className="w-full bg-card hover:bg-card/80 border border-primary/30 p-4 rounded-3xl flex items-center justify-between transition-all active:scale-[0.98] shadow-sm mb-8"
+                className="w-full bg-card hover:bg-card/80 border border-emerald-500/30 p-4 rounded-3xl flex items-center justify-between transition-all active:scale-[0.98] shadow-sm mb-8"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    <RouteIcon className="w-6 h-6 text-primary" />
+                  <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center">
+                    <RouteIcon className="w-6 h-6 text-emerald-500" />
                   </div>
                   <div className="text-left">
                     <p className="text-base font-bold text-foreground">Criar Nova Trilha</p>
@@ -401,17 +397,19 @@ export default function FlashcardsTrilhas() {
                           className="flex-1 cursor-pointer"
                           onClick={() => { haptic.selection(); setTrilhaSelecionada(trilha.id); setStep('mapa'); }}
                         >
-                          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary mb-1">TRILHA ATIVA</p>
+                          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-500 mb-1">TRILHA ATIVA</p>
                           <p className="text-base font-bold text-foreground">{trilha.area}</p>
                           <p className="text-xs text-muted-foreground line-clamp-1">{trilha.tema}</p>
                         </div>
                         <button 
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
                             if (window.confirm("Deseja excluir esta trilha? O progresso será perdido.")) {
                               limparTrilha(trilha.id);
                             }
                           }}
-                          className="w-8 h-8 rounded-full flex items-center justify-center bg-destructive/10 text-destructive hover:bg-destructive hover:text-destructive-foreground transition-colors shrink-0"
+                          className="w-8 h-8 rounded-full flex items-center justify-center bg-destructive/10 text-destructive hover:bg-destructive hover:text-white transition-colors shrink-0 z-10"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -426,7 +424,7 @@ export default function FlashcardsTrilhas() {
                         </p>
                         <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
                           <div 
-                            className="h-full bg-primary transition-all duration-500 rounded-full"
+                            className="h-full bg-emerald-500 transition-all duration-500 rounded-full"
                             style={{ width: `${(trilha.diasConcluidos.length / trilha.diasMeta) * 100}%` }}
                           />
                         </div>
