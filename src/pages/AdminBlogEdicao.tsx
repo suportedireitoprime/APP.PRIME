@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Play, Trash2, Sparkles, CheckCircle2, AlertCircle, Settings, Image as ImageIcon, Headphones, Loader2, Pause, Volume2, Wand2, CalendarClock, PenLine, ImagePlus, Bell, ChevronRight, Zap, Edit3, Database, Library } from 'lucide-react';
+import { Play, Trash2, Sparkles, CheckCircle2, AlertCircle, Settings, Image as ImageIcon, Headphones, Loader2, Pause, Volume2, Wand2, CalendarClock, PenLine, ImagePlus, Bell, ChevronRight, Zap, Edit3, Database, Library, Plus } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -98,6 +98,7 @@ export default function AdminBlogEdicao() {
   const [config, setConfig] = useState<Config | null>(null);
   const [loading, setLoading] = useState(false);
   const [configOpen, setConfigOpen] = useState(false);
+  const [editingTema, setEditingTema] = useState<Tema | null>(null);
   const [configSection, setConfigSection] = useState<null | 'acoes' | 'agenda' | 'conteudo' | 'capa' | 'narracao' | 'push'>(null);
   const [running, setRunning] = useState(false);
   const [vozes, setVozes] = useState<Voz[]>([]);
@@ -330,16 +331,27 @@ export default function AdminBlogEdicao() {
   const salvarPostEditado = async () => {
     if (!editingPost) return;
     setSavingPost(true);
-    const updates: any = {
+    const isNew = !editingPost.id;
+    const payload: Record<string, unknown> = {
       titulo: editingPost.titulo,
       conteudo_md: editingPost.conteudo_md,
       imagem_url: editingPost.imagem_url,
+      categoria: editingPost.categoria,
     };
-    if (editingPost.imagem_path !== undefined) updates.imagem_path = editingPost.imagem_path;
-    const { error } = await supabase.from('blog_edicao_posts').update(updates).eq('id', editingPost.id);
+    if (editingPost.imagem_path !== undefined) payload.imagem_path = editingPost.imagem_path;
+
+    let error: { message: string } | null = null;
+    if (isNew) {
+      (payload as Record<string, unknown>).publicado = editingPost.publicado;
+      const res = await supabase.from('blog_edicao_posts').insert(payload as any);
+      error = res.error;
+    } else {
+      const res = await supabase.from('blog_edicao_posts').update(payload as any).eq('id', editingPost.id);
+      error = res.error;
+    }
     setSavingPost(false);
     if (error) { toast.error(error.message); return; }
-    toast.success('Artigo salvo com sucesso!');
+    toast.success(isNew ? 'Artigo criado!' : 'Artigo salvo com sucesso!');
     setEditingPost(null);
     loadBanco();
   };
@@ -545,37 +557,22 @@ export default function AdminBlogEdicao() {
 
       <div className="p-4 space-y-4">
         {/* Hero: data grande + timeline */}
-        <div className="rounded-2xl bg-gradient-to-br from-primary/25 via-primary/10 to-transparent border border-primary/30 p-4">
-          <div className="text-[10px] uppercase tracking-[0.2em] text-primary/80 font-bold mb-1">
-            Hoje
-          </div>
-          <div className="text-xl sm:text-2xl font-display font-black tracking-tight text-foreground leading-tight capitalize">
-            {hojeFormatado}
-          </div>
-
-          {/* Timeline horizontal dos horários */}
-          {timelineSlots.length > 0 && (
-            <div className="mt-3 relative">
-              {/* linha de fundo */}
-              <div className="absolute left-4 right-4 top-4 h-0.5 bg-primary/20" />
-              {/* linha preenchida (até último enviado) */}
-              {(() => {
-                const lastDoneIdx = timelineSlots.map(s => s.enviado).lastIndexOf(true);
-                if (lastDoneIdx < 0) return null;
-                const pct = timelineSlots.length > 1 ? (lastDoneIdx / (timelineSlots.length - 1)) * 100 : 0;
-                return (
-                  <div
-                    className="absolute left-4 top-4 h-0.5 bg-primary transition-all"
-                    style={{ width: `calc((100% - 2rem) * ${pct / 100})` }}
-                  />
-                );
-              })()}
-              <div className="relative flex items-start justify-between">
+        <div className="rounded-2xl bg-gradient-to-br from-primary/25 via-primary/10 to-transparent border border-primary/30 px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-[9px] uppercase tracking-[0.2em] text-primary/80 font-bold">Hoje</div>
+              <div className="text-base sm:text-lg font-display font-black tracking-tight text-foreground leading-tight capitalize">
+                {hojeFormatado}
+              </div>
+            </div>
+            {/* Timeline inline compacta */}
+            {timelineSlots.length > 0 && (
+              <div className="flex items-center gap-2">
                 {timelineSlots.map((s) => (
-                  <div key={s.horario} className="flex flex-col items-center gap-1.5 flex-1">
+                  <div key={s.horario} className="flex flex-col items-center gap-0.5">
                     <div
                       className={
-                        'w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all ' +
+                        'w-7 h-7 rounded-full flex items-center justify-center border-2 transition-all ' +
                         (s.enviado
                           ? 'bg-primary border-primary text-primary-foreground'
                           : s.atrasado
@@ -586,30 +583,27 @@ export default function AdminBlogEdicao() {
                       }
                     >
                       {s.enviado ? (
-                        <CheckCircle2 className="w-4 h-4" />
+                        <CheckCircle2 className="w-3.5 h-3.5" />
                       ) : s.atrasado ? (
-                        <AlertCircle className="w-4 h-4" />
+                        <AlertCircle className="w-3.5 h-3.5" />
                       ) : (
-                        <Loader2 className={'w-4 h-4 ' + (s.isNext ? 'animate-spin' : '')} />
+                        <Loader2 className={'w-3.5 h-3.5 ' + (s.isNext ? 'animate-spin' : '')} />
                       )}
                     </div>
-                    <div className={'text-sm font-bold ' + (s.enviado ? 'text-primary' : s.isNext ? 'text-foreground' : 'text-muted-foreground')}>
+                    <div className={'text-[10px] font-bold ' + (s.enviado ? 'text-primary' : s.isNext ? 'text-foreground' : 'text-muted-foreground')}>
                       {s.label}
-                    </div>
-                    <div className="text-[9px] uppercase tracking-wider text-muted-foreground">
-                      {s.enviado ? 'Enviado' : s.atrasado ? 'Atrasado' : s.isNext ? 'Próximo' : 'Pendente'}
                     </div>
                   </div>
                 ))}
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
           {proximaGeracao.item && (
-            <div className="mt-3 pt-3 border-t border-primary/20">
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Próximo artigo · {proximaGeracao.horario}</div>
-              <div className="text-sm font-semibold line-clamp-2">{proximaGeracao.item.titulo_sugerido}</div>
-              <div className="text-[11px] text-muted-foreground mt-0.5">{proximaGeracao.item.categoria}</div>
+            <div className="mt-2 pt-2 border-t border-primary/20 flex items-center gap-2">
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground whitespace-nowrap">{proximaGeracao.horario}</div>
+              <div className="text-xs font-semibold line-clamp-1 flex-1">{proximaGeracao.item.titulo_sugerido}</div>
+              <span className="text-[10px] text-muted-foreground whitespace-nowrap">{proximaGeracao.item.categoria}</span>
             </div>
           )}
         </div>
@@ -654,6 +648,29 @@ export default function AdminBlogEdicao() {
           <div className="p-4 overflow-y-auto" style={{ overscrollBehavior: 'contain' }}>
             <div className="space-y-2">
           {loading && <div className="text-center text-muted-foreground py-8">Carregando…</div>}
+
+          {/* Botão de criar artigo manual na Biblioteca */}
+          {tab === 'biblioteca' && !loading && (
+            <button
+              onClick={() => {
+                setIsDrawerOpen(false);
+                setEditingPost({
+                  id: '',
+                  titulo: '',
+                  categoria: '',
+                  conteudo_md: '',
+                  imagem_url: '',
+                  publicado: false,
+                  created_at: new Date().toISOString(),
+                });
+              }}
+              className="w-full flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-dashed border-primary/40 text-primary hover:bg-primary/10 transition font-semibold text-sm mb-2"
+            >
+              <Plus className="w-4 h-4" />
+              Criar artigo manual
+            </button>
+          )}
+
           {!loading && tab !== 'banco' && filtered.length === 0 && (
             <div className="text-center text-muted-foreground py-8 text-sm">
               {tab === 'em_fila'
@@ -749,6 +766,15 @@ export default function AdminBlogEdicao() {
                     )}
                   </div>
                   <div className="flex flex-col gap-1">
+                    {tab === 'em_fila' && !isConcluido && (
+                      <button
+                        onClick={() => setEditingTema(t)}
+                        className="p-2 rounded-lg bg-blue-500/10 text-blue-300 hover:bg-blue-500/20"
+                        title="Editar tema"
+                      >
+                        <Edit3 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
                     {!isConcluido && (
                       <button
                         onClick={() => rodarAgora(t.id)}
@@ -1185,6 +1211,66 @@ export default function AdminBlogEdicao() {
                 <button onClick={() => setEditingPost(null)} className="flex-1 rounded-xl bg-secondary font-semibold py-2.5 text-sm">Cancelar</button>
                 <button onClick={salvarPostEditado} disabled={savingPost} className="flex-1 rounded-xl bg-primary text-primary-foreground font-semibold py-2.5 text-sm">
                   {savingPost ? 'Salvando...' : 'Salvar Alterações'}
+                </button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog para editar Tema (Em fila) */}
+      <Dialog open={!!editingTema} onOpenChange={(o) => { if (!o) setEditingTema(null); }}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto bg-background border-border">
+          <DialogHeader>
+            <DialogTitle>Editar Tema</DialogTitle>
+          </DialogHeader>
+          {editingTema && (
+            <div className="space-y-4 pt-2">
+              <label className="block">
+                <span className="text-xs text-muted-foreground">Título sugerido</span>
+                <input
+                  type="text"
+                  value={editingTema.titulo_sugerido}
+                  onChange={e => setEditingTema({...editingTema, titulo_sugerido: e.target.value})}
+                  className="w-full mt-1 rounded-lg bg-secondary px-3 py-2 text-sm"
+                />
+              </label>
+              <label className="block">
+                <span className="text-xs text-muted-foreground">Categoria</span>
+                <input
+                  type="text"
+                  value={editingTema.categoria}
+                  onChange={e => setEditingTema({...editingTema, categoria: e.target.value})}
+                  className="w-full mt-1 rounded-lg bg-secondary px-3 py-2 text-sm"
+                />
+              </label>
+              <label className="block">
+                <span className="text-xs text-muted-foreground">Resumo / Briefing</span>
+                <textarea
+                  value={editingTema.resumo_briefing || ''}
+                  onChange={e => setEditingTema({...editingTema, resumo_briefing: e.target.value})}
+                  rows={5}
+                  className="w-full mt-1 rounded-lg bg-secondary px-3 py-2 text-sm resize-y"
+                />
+              </label>
+              <div className="flex gap-2 pt-2">
+                <button onClick={() => setEditingTema(null)} className="flex-1 rounded-xl bg-secondary font-semibold py-2.5 text-sm">Cancelar</button>
+                <button
+                  onClick={async () => {
+                    if (!editingTema) return;
+                    const { error } = await supabase.from('blog_edicao_temas').update({
+                      titulo_sugerido: editingTema.titulo_sugerido,
+                      categoria: editingTema.categoria,
+                      resumo_briefing: editingTema.resumo_briefing,
+                    }).eq('id', editingTema.id);
+                    if (error) { toast.error('Erro ao salvar: ' + error.message); return; }
+                    toast.success('Tema atualizado!');
+                    setTemas(prev => prev.map(t => t.id === editingTema.id ? { ...t, titulo_sugerido: editingTema.titulo_sugerido, categoria: editingTema.categoria, resumo_briefing: editingTema.resumo_briefing } : t));
+                    setEditingTema(null);
+                  }}
+                  className="flex-1 rounded-xl bg-primary text-primary-foreground font-semibold py-2.5 text-sm"
+                >
+                  Salvar
                 </button>
               </div>
             </div>
