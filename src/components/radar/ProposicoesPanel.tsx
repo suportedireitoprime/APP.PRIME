@@ -5,7 +5,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { fetchProposicoes } from '@/services/radarService';
+import { AuthorAvatar } from './AuthorAvatar';
+
+const TIPO_FILTERS = ['TODOS', 'PL', 'PEC', 'PLP'];
 
 interface Props {
   searchQuery?: string;
@@ -52,18 +56,20 @@ const ProposicoesPanel = ({ searchQuery = '', dataInicial }: Props) => {
   const [loading, setLoading] = useState(true);
   const [pagina, setPagina] = useState(1);
   const [busca, setBusca] = useState(searchQuery);
+  const [tipoFiltro, setTipoFiltro] = useState('TODOS');
 
-  const load = useCallback(async (p: number, append: boolean) => {
+  const load = useCallback(async (p: number, append: boolean, tipo: string, dt: string | undefined) => {
     setLoading(true);
-    const data = await fetchProposicoes(undefined, undefined, p);
+    const tipoVal = tipo === 'TODOS' ? undefined : tipo;
+    const data = await fetchProposicoes(tipoVal, undefined, p, dt, dt);
     setItens((prev) => (append ? [...prev, ...data] : data));
     setLoading(false);
   }, []);
 
   useEffect(() => {
-    void load(1, false);
+    void load(1, false, tipoFiltro, dataInicial);
     setPagina(1);
-  }, [load, dataInicial]);
+  }, [load, dataInicial, tipoFiltro]);
 
   const termo = busca.trim().toLowerCase();
   const filtrados = termo
@@ -75,7 +81,21 @@ const ProposicoesPanel = ({ searchQuery = '', dataInicial }: Props) => {
     : itens;
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
+      <ScrollArea className="w-full">
+        <div className="flex gap-2 pb-2">
+          {TIPO_FILTERS.map(t => (
+            <button
+              key={t}
+              onClick={() => setTipoFiltro(t)}
+              className={`whitespace-nowrap text-[13px] font-body px-4 py-2 min-h-[36px] rounded-full transition-colors ${
+                tipoFiltro === t ? 'bg-primary text-primary-foreground font-semibold' : 'bg-secondary text-foreground hover:bg-secondary/80'
+              }`}
+            >{t === 'TODOS' ? 'Todos' : t}</button>
+          ))}
+        </div>
+      </ScrollArea>
+
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <Input
@@ -101,7 +121,8 @@ const ProposicoesPanel = ({ searchQuery = '', dataInicial }: Props) => {
                 onClick={() => id && navigate(`/radar/pl/${id}`)}
               >
                 <CardContent className="p-3.5 flex items-start gap-3">
-                  <div className="flex-1 min-w-0">
+                  <AuthorAvatar proposicaoId={id} />
+                  <div className="flex-1 min-w-0 pt-0.5">
                     <p className="text-[13px] font-bold text-primary mb-1">{plLabel(p)}</p>
                     {extractTags(p.ementa ?? p.dados_json?.ementa).length > 0 && (
                       <div className="flex flex-wrap gap-1.5 mb-2">
@@ -134,7 +155,7 @@ const ProposicoesPanel = ({ searchQuery = '', dataInicial }: Props) => {
               onClick={() => {
                 const next = pagina + 1;
                 setPagina(next);
-                void load(next, true);
+                void load(next, true, tipoFiltro, dataInicial);
               }}
             >
               {loading ? 'Carregando…' : 'Carregar mais'}

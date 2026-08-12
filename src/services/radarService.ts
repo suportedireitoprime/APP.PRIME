@@ -120,20 +120,29 @@ export async function fetchSenadores(busca?: string, partido?: string, uf?: stri
 }
 
 // ---- PROPOSIÇÕES ----
-export async function fetchProposicoes(tipo?: string, ano?: number, pagina = 1) {
-  const { data, error } = await (supabase as any).from('radar_proposicoes')
-    .select('*')
-    .order('atualizado_em', { ascending: false })
-    .range((pagina - 1) * 20, pagina * 20 - 1);
+export async function fetchProposicoes(tipo?: string, ano?: number, pagina = 1, dataInicio?: string, dataFim?: string) {
+  let data = null;
+  let error = null;
+  
+  if (!dataInicio && !dataFim) {
+    const { data: sbData, error: sbError } = await (supabase as any).from('radar_proposicoes')
+      .select('*')
+      .order('atualizado_em', { ascending: false })
+      .range((pagina - 1) * 20, pagina * 20 - 1);
+    data = sbData;
+    error = sbError;
+  }
   
   if (error || !data || data.length === 0) {
     let url = `${CAMARA_API}/proposicoes?ordem=DESC&ordenarPor=id&itens=20&pagina=${pagina}`;
     if (tipo) {
-      url += `&siglaTipo=${tipo}`;
+      if (tipo !== 'TODOS') url += `&siglaTipo=${tipo}`;
     } else {
       url += `&siglaTipo=PL,PEC,PLP`;
     }
     if (ano) url += `&ano=${ano}`;
+    if (dataInicio) url += `&dataInicio=${dataInicio}`;
+    if (dataFim) url += `&dataFim=${dataFim}`;
     
     const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
     if (!res.ok) return [];
@@ -170,6 +179,19 @@ export async function fetchProposicaoTramitacoes(id: string) {
   const hit = cached<any[]>(cacheKey);
   if (hit) return hit;
   const url = `${CAMARA_API}/proposicoes/${id}/tramitacoes`;
+  const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+  if (!res.ok) return [];
+  const json = await res.json();
+  const result = json.dados || [];
+  setCache(cacheKey, result);
+  return result;
+}
+
+export async function fetchProposicaoAutores(id: string) {
+  const cacheKey = `propAutores:${id}`;
+  const hit = cached<any[]>(cacheKey);
+  if (hit) return hit;
+  const url = `${CAMARA_API}/proposicoes/${id}/autores`;
   const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
   if (!res.ok) return [];
   const json = await res.json();
