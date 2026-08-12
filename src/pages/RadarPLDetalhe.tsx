@@ -89,7 +89,10 @@ function EmentaExplicacao({ detalhe }: { detalhe: any }) {
       const texto = `Proposição: ${detalhe.siglaTipo} ${detalhe.numero}/${detalhe.ano}\nEmenta: ${detalhe.ementa}\nEmenta detalhada: ${detalhe.ementaDetalhada || ''}`;
       
       const { data, error } = await supabase.functions.invoke('assistente-juridica', {
-        body: { messages: [{ role: 'user', content: `Explique este projeto de lei em português claro para leigos, usando analogias do dia a dia se necessário. Texto:\n\n${texto}` }] },
+        body: { 
+          mode: 'analise_pl',
+          ementa: texto,
+        },
       });
 
       if (error) throw error;
