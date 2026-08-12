@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Radar, LayoutGrid, Heart, Newspaper, Plus, BarChart3, Trophy, X } from 'lucide-react';
+import { Radar, LayoutGrid, TrendingUp, Newspaper, Plus, BarChart3, Trophy, X, ChevronRight } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
 type Tab = {
@@ -29,11 +29,11 @@ const TABS: Tab[] = [
     match: (p) => p.startsWith('/radar/categorias'),
   },
   {
-    id: 'favoritos',
-    label: 'Favoritos',
-    to: '/vade-mecum/favoritos', // mantendo o caminho dos favoritos que pode agrupar tudo
-    icon: Heart,
-    match: (p) => p.startsWith('/vade-mecum/favoritos'),
+    id: 'em-alta',
+    label: 'Em alta',
+    to: '/radar/em-alta',
+    icon: TrendingUp,
+    match: (p) => p.startsWith('/radar/em-alta'),
   },
   {
     id: 'boletins',
@@ -126,10 +126,10 @@ const RadarBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="fixed bottom-0 left-0 right-0 z-[70] bg-card border-t border-border rounded-t-3xl pb-[calc(1.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] px-6 pt-6 shadow-2xl"
+              className="fixed bottom-0 left-0 right-0 z-[70] bg-card border-t border-border rounded-t-3xl pb-[calc(1.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] px-5 pt-5 shadow-2xl"
             >
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-display font-bold text-foreground">Mais Opções</h3>
+              <div className="flex items-center justify-between mb-5 px-1">
+                <h3 className="text-[19px] font-display font-bold text-foreground">Mais Opções</h3>
                 <button
                   onClick={() => setShowMore(false)}
                   className="w-8 h-8 flex items-center justify-center rounded-full bg-muted/50 text-muted-foreground hover:bg-muted transition-colors"
@@ -138,31 +138,37 @@ const RadarBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
                 </button>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="flex flex-col gap-2">
                 <button 
                   onClick={() => { haptic.selection(); setShowMore(false); }}
-                  className="flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-secondary border border-border/50 hover:bg-secondary/80 transition-colors"
+                  className="flex items-center justify-between gap-4 p-4 rounded-2xl bg-secondary/60 border border-border/50 hover:bg-secondary transition-colors"
                 >
-                  <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
-                    <BarChart3 className="w-6 h-6 text-primary" />
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center">
+                      <BarChart3 className="w-5 h-5 text-blue-500" />
+                    </div>
+                    <div className="text-left">
+                      <p className="font-semibold text-[15px] text-foreground">Estatísticas</p>
+                      <p className="text-[12px] text-muted-foreground mt-0.5">Em breve na API</p>
+                    </div>
                   </div>
-                  <div className="text-center">
-                    <p className="font-semibold text-sm text-foreground">Estatísticas</p>
-                    <p className="text-[11px] text-muted-foreground">Em breve na API</p>
-                  </div>
+                  <ChevronRight className="w-5 h-5 text-muted-foreground/50" />
                 </button>
 
                 <button 
-                  onClick={() => { haptic.selection(); setShowMore(false); }}
-                  className="flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-secondary border border-border/50 hover:bg-secondary/80 transition-colors"
+                  onClick={() => { haptic.selection(); setShowMore(false); navigate('/radar/em-alta'); }}
+                  className="flex items-center justify-between gap-4 p-4 rounded-2xl bg-secondary/60 border border-border/50 hover:bg-secondary transition-colors"
                 >
-                  <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
-                    <Trophy className="w-6 h-6 text-primary" />
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center">
+                      <Trophy className="w-5 h-5 text-amber-500" />
+                    </div>
+                    <div className="text-left">
+                      <p className="font-semibold text-[15px] text-foreground">Ranking de Deputados</p>
+                      <p className="text-[12px] text-muted-foreground mt-0.5">Veja quem mais propõe leis</p>
+                    </div>
                   </div>
-                  <div className="text-center">
-                    <p className="font-semibold text-sm text-foreground">Ranking</p>
-                    <p className="text-[11px] text-muted-foreground">Em breve na API</p>
-                  </div>
+                  <ChevronRight className="w-5 h-5 text-muted-foreground/50" />
                 </button>
               </div>
             </motion.div>
