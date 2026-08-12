@@ -757,7 +757,7 @@ const AuthFormScreen = ({ onBack }: { onBack: () => void }) => {
           >
             <div className="flex items-center gap-3 mb-4">
               <img
-                src={logoOABnaRisca}
+                src="/logo-prime.png"
                 alt="Direito Prime"
                 className="w-11 h-11 rounded-xl shadow-2xl object-cover border-2 border-primary/50"
               />

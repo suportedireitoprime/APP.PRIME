@@ -579,14 +579,14 @@ const HomeHeaderHero = ({ onSearchOpenChange }: { onSearchOpenChange?: (open: bo
           <div className="flex flex-col items-center text-center gap-2 pt-1">
             <div className="relative w-20 h-20 rounded-full border border-white/90 bg-primary flex items-center justify-center overflow-hidden shadow-[0_6px_18px_rgba(0,0,0,0.45)] logo-shine">
               <img
-                src={logoVacatio}
-                alt="OAB na Risca"
+                src="/logo-prime.png"
+                alt="Direito Prime"
                 width={80}
                 height={80}
                 loading="eager"
                 decoding="sync"
                 {...({ fetchpriority: 'high' } as any)}
-                className="w-full h-full object-cover object-center scale-[1.38]"
+                className="w-full h-full object-cover object-center scale-110"
               />
 
             </div>
