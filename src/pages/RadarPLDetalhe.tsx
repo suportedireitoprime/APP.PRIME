@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { fetchProposicaoDetalhe, fetchProposicaoTramitacoes, fetchProposicaoAutores, fetchDeputadoDetalhe, extractTags } from '@/services/radarService';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { isOffline } from '@/lib/offlineFeatures';
 import { useGoBack } from '@/hooks/useGoBack';
 import { toast } from 'sonner';
