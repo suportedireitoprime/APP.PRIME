@@ -237,14 +237,7 @@ export async function fetchVotacaoVotos(id: string) {
   return json.dados || [];
 }
 
-// ---- AUTORES DE PROPOSIÇÃO ----
-export async function fetchProposicaoAutores(id: string) {
-  const url = `${CAMARA_API}/proposicoes/${id}/autores`;
-  const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
-  if (!res.ok) return [];
-  const json = await res.json();
-  return json.dados || [];
-}
+
 
 // ---- HELPER: UFs e Partidos ----
 export const UFS = [
