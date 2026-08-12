@@ -759,7 +759,7 @@ const AuthFormScreen = ({ onBack }: { onBack: () => void }) => {
               <img
                 src="/logo-prime.png"
                 alt="Direito Prime"
-                className="w-11 h-11 rounded-xl shadow-2xl object-cover border-2 border-primary/50"
+                className="w-auto h-12 object-contain drop-shadow-xl"
               />
               <div className="h-px flex-1 bg-gradient-to-r from-primary/60 to-transparent" />
             </div>

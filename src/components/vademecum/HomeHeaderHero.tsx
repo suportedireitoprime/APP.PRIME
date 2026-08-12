@@ -577,18 +577,15 @@ const HomeHeaderHero = ({ onSearchOpenChange }: { onSearchOpenChange?: (open: bo
         <div className="relative px-4 pt-5 pb-5 min-h-[240px] flex flex-col gap-4">
           {/* Centered brand block */}
           <div className="flex flex-col items-center text-center gap-2 pt-1">
-            <div className="relative w-20 h-20 rounded-full border border-white/90 bg-primary flex items-center justify-center overflow-hidden shadow-[0_6px_18px_rgba(0,0,0,0.45)] logo-shine">
+            <div className="relative h-24 mb-2 flex items-center justify-center">
               <img
                 src="/logo-prime.png"
                 alt="Direito Prime"
-                width={80}
-                height={80}
                 loading="eager"
                 decoding="sync"
                 {...({ fetchpriority: 'high' } as any)}
-                className="w-full h-full object-cover object-center scale-110"
+                className="w-auto h-full object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)]"
               />
-
             </div>
             <h1 className="font-serif italic text-white text-[24px] leading-[1.05] font-semibold tracking-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)]">
               Estudos Jurídicos
