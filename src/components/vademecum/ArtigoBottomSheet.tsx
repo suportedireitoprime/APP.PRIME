@@ -3487,24 +3487,26 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                   else if (voicePhase === 'idle') voicePanelRef.current?.start();
                 }}
                 disabled={voicePhase === 'processing'}
-                className="relative z-[80] flex flex-col items-center justify-end gap-1.5 -mt-11 min-h-[6.25rem] min-w-[5.75rem] touch-manipulation select-none"
+                className="relative z-[80] flex flex-col items-center justify-end gap-1.5 py-1.5 touch-manipulation select-none"
                 aria-label={voicePhase === 'recording' ? 'Parar gravação' : 'Gravar voz'}
               >
-                <span className={`relative w-[4.5rem] h-[4.5rem] sm:w-20 sm:h-20 rounded-full flex items-center justify-center shadow-lg ring-4 ring-card transition-all duration-300 ${voicePhase === 'recording' ? 'bg-red-500 shadow-red-500/40 scale-105' : voicePhase === 'processing' ? 'bg-secondary' : 'bg-primary shadow-primary/40'}`}>
-                  {voicePhase === 'recording' && (
-                    <>
-                      <span className="absolute inset-0 rounded-full bg-red-500/40 animate-ping" style={{ animationDuration: '1.2s' }} />
-                      <span className="absolute -inset-1 rounded-full bg-red-500/20 animate-ping" style={{ animationDuration: '1.8s', animationDelay: '0.2s' }} />
-                    </>
-                  )}
-                  {voicePhase === 'processing' ? (
-                    <Loader2 className="w-8 h-8 sm:w-9 sm:h-9 text-foreground animate-spin relative z-20" />
-                  ) : voicePhase === 'recording' ? (
-                    <Square className="w-7 h-7 sm:w-8 sm:h-8 text-white fill-white relative z-20" />
-                  ) : (
-                    <Mic className="w-8 h-8 sm:w-9 sm:h-9 text-black relative z-20" />
-                  )}
-                </span>
+                <div className="absolute bottom-[28px] pointer-events-none">
+                  <span className={`relative w-[4.5rem] h-[4.5rem] sm:w-20 sm:h-20 rounded-full flex items-center justify-center shadow-lg ring-4 ring-card transition-all duration-300 pointer-events-auto ${voicePhase === 'recording' ? 'bg-red-500 shadow-red-500/40 scale-105' : voicePhase === 'processing' ? 'bg-secondary' : 'bg-primary shadow-primary/40'}`}>
+                    {voicePhase === 'recording' && (
+                      <>
+                        <span className="absolute inset-0 rounded-full bg-red-500/40 animate-ping" style={{ animationDuration: '1.2s' }} />
+                        <span className="absolute -inset-1 rounded-full bg-red-500/20 animate-ping" style={{ animationDuration: '1.8s', animationDelay: '0.2s' }} />
+                      </>
+                    )}
+                    {voicePhase === 'processing' ? (
+                      <Loader2 className="w-8 h-8 sm:w-9 sm:h-9 text-foreground animate-spin relative z-20" />
+                    ) : voicePhase === 'recording' ? (
+                      <Square className="w-7 h-7 sm:w-8 sm:h-8 text-white fill-white relative z-20" />
+                    ) : (
+                      <Mic className="w-8 h-8 sm:w-9 sm:h-9 text-black relative z-20" />
+                    )}
+                  </span>
+                </div>
                 <span className="font-body text-[11px] sm:text-[12px] font-semibold text-primary leading-tight">
                   {voicePhase === 'recording' ? 'Parar' : voicePhase === 'processing' ? 'Analisando' : 'Gravar'}
                 </span>
@@ -3515,38 +3517,40 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 onTouchStart={handleNarrarButtonPress}
                 onClick={handleNarrarButtonPress}
                 disabled={narracaoLoading}
-                className="relative z-[80] flex flex-col items-center justify-end gap-1.5 -mt-11 min-h-[6.25rem] min-w-[5.75rem] touch-manipulation select-none"
+                className="relative z-[80] flex flex-col items-center justify-end gap-1.5 py-1.5 touch-manipulation select-none"
                 aria-label="Narrar"
               >
-                <span className={`relative w-[4.5rem] h-[4.5rem] sm:w-20 sm:h-20 rounded-full flex items-center justify-center shadow-lg ring-4 ring-card transition-all duration-300 ${narracaoPlaying ? 'bg-primary shadow-primary/40 scale-105' : 'bg-primary shadow-primary/30 hover:bg-primary/90'}`}>
-                  {narracaoPlaying && (
-                    <>
-                      <span className="absolute inset-0 rounded-full bg-primary/30 animate-ping" style={{ animationDuration: '1.5s' }} />
-                      <span className="absolute -inset-1 rounded-full bg-primary/15 animate-ping" style={{ animationDuration: '2s', animationDelay: '0.3s' }} />
-                    </>
-                  )}
-                  {narracaoPlaying && (
-                    <svg className="absolute inset-0 w-full h-full -rotate-90 z-10 pointer-events-none" viewBox="0 0 56 56">
-                      <circle cx="28" cy="28" r="26" fill="none" stroke="hsl(var(--primary-foreground))" strokeWidth="3" strokeOpacity="0.2" />
-                      <circle
-                        ref={narracaoRingRef}
-                        cx="28" cy="28" r="26" fill="none"
-                        stroke="hsl(var(--primary-foreground))"
-                        strokeWidth="3"
-                        strokeLinecap="round"
-                        strokeDasharray={`${RING_CIRCUMFERENCE}`}
-                        strokeDashoffset={`${RING_CIRCUMFERENCE}`}
-                      />
-                    </svg>
-                  )}
-                  {narracaoLoading ? (
-                    <Loader2 className="w-8 h-8 sm:w-9 sm:h-9 text-primary-foreground animate-spin relative z-20" />
-                  ) : narracaoPlaying ? (
-                    <Pause className="w-8 h-8 sm:w-9 sm:h-9 text-primary-foreground relative z-20" />
-                  ) : (
-                    <Volume2 className="w-8 h-8 sm:w-9 sm:h-9 text-primary-foreground relative z-20" />
-                  )}
-                </span>
+                <div className="absolute bottom-[28px] pointer-events-none">
+                  <span className={`relative w-[4.5rem] h-[4.5rem] sm:w-20 sm:h-20 rounded-full flex items-center justify-center shadow-lg ring-4 ring-card transition-all duration-300 pointer-events-auto ${narracaoPlaying ? 'bg-primary shadow-primary/40 scale-105' : 'bg-primary shadow-primary/30 hover:bg-primary/90'}`}>
+                    {narracaoPlaying && (
+                      <>
+                        <span className="absolute inset-0 rounded-full bg-primary/30 animate-ping" style={{ animationDuration: '1.5s' }} />
+                        <span className="absolute -inset-1 rounded-full bg-primary/15 animate-ping" style={{ animationDuration: '2s', animationDelay: '0.3s' }} />
+                      </>
+                    )}
+                    {narracaoPlaying && (
+                      <svg className="absolute inset-0 w-full h-full -rotate-90 z-10 pointer-events-none" viewBox="0 0 56 56">
+                        <circle cx="28" cy="28" r="26" fill="none" stroke="hsl(var(--primary-foreground))" strokeWidth="3" strokeOpacity="0.2" />
+                        <circle
+                          ref={narracaoRingRef}
+                          cx="28" cy="28" r="26" fill="none"
+                          stroke="hsl(var(--primary-foreground))"
+                          strokeWidth="3"
+                          strokeLinecap="round"
+                          strokeDasharray={`${RING_CIRCUMFERENCE}`}
+                          strokeDashoffset={`${RING_CIRCUMFERENCE}`}
+                        />
+                      </svg>
+                    )}
+                    {narracaoLoading ? (
+                      <Loader2 className="w-8 h-8 sm:w-9 sm:h-9 text-primary-foreground animate-spin relative z-20" />
+                    ) : narracaoPlaying ? (
+                      <Pause className="w-8 h-8 sm:w-9 sm:h-9 text-primary-foreground relative z-20" />
+                    ) : (
+                      <Volume2 className="w-8 h-8 sm:w-9 sm:h-9 text-primary-foreground relative z-20" />
+                    )}
+                  </span>
+                </div>
                 <span className="font-body text-[11px] sm:text-[12px] font-semibold text-primary leading-tight">
                   {narracaoPlaying ? 'Pausar' : narracaoUrl ? 'Ouvir' : 'Narrar'}
                 </span>
