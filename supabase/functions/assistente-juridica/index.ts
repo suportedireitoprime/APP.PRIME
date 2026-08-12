@@ -642,7 +642,7 @@ Regras:
 
       if (!geminiDisabled) {
         const keyToUse = geminiKeys[attempt % geminiKeys.length];
-        const modelsToTry = ["gemini-3.1-flash-lite", "gemini-2.0-flash", "gemini-1.5-flash"];
+        const modelsToTry = ["gemini-3.1-flash-lite"];
         const modelToUse = modelsToTry[attempt % modelsToTry.length];
         const res = await geminiFetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelToUse}:generateContent?key=${keyToUse}`,
           { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(geminiBody) }
@@ -675,6 +675,9 @@ Regras:
       if (data) {
         _lastUsage = data?.usageMetadata || null;
         const candidateReply = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+        if (!candidateReply && res.ok) {
+            _lastErr = `Empty candidateReply! Data: ${JSON.stringify(data).slice(0, 300)}`;
+        }
 
         // Extract grounding sources when web search is on
         if (useWebSearch) {
@@ -804,7 +807,12 @@ Regras:
       }
     }
 
-    return new Response(JSON.stringify({ reply, sources }), {
+    let finalReply = reply;
+    if (!finalReply || finalReply.includes('consegui gerar uma resposta')) {
+        finalReply = `${finalReply} | Detalhes: ${_lastErr}`;
+    }
+
+    return new Response(JSON.stringify({ reply: finalReply, sources }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (err) {
