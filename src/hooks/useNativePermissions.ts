@@ -59,7 +59,7 @@ export function useNativePermissions() {
           window.setTimeout(() => {
             flushPendingNativePushToken();
             // Só re-registra se já autorizado
-            PushNotifications.checkPermissions().then((p) => {
+            FirebaseMessaging.checkPermissions().then((p) => {
               if (p.receive === 'granted') registerNativePushToken();
             });
           }, 250);

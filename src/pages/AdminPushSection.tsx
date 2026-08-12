@@ -492,7 +492,6 @@ export default function AdminPushSection() {
                     </div>
                   </div>
                 </label>
-              </div>
               <div>
                 <Label>Destino ao tocar (opcional)</Label>
                 <Select
