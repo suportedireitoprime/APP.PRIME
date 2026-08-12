@@ -258,11 +258,20 @@ export default function NoticiaViewerSheet({ noticia, onClose }: Props) {
                     prose-img:hidden
                   "
                 >
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {cleanMd(fullMd || noticia.conteudo_md || noticia.conteudo || noticia.resumo || 'Conteúdo não disponível.')}
-                  </ReactMarkdown>
-                  {loadingMd && !fullMd && (
-                    <p className="text-xs text-muted-foreground italic mt-3">Carregando conteúdo completo…</p>
+                  {loadingMd && !fullMd ? (
+                    <div className="space-y-4 py-4 animate-pulse">
+                      <div className="h-4 bg-muted-foreground/20 rounded w-full"></div>
+                      <div className="h-4 bg-muted-foreground/20 rounded w-11/12"></div>
+                      <div className="h-4 bg-muted-foreground/20 rounded w-full"></div>
+                      <div className="h-4 bg-muted-foreground/20 rounded w-5/6"></div>
+                      <div className="h-4 bg-muted-foreground/20 rounded w-4/5"></div>
+                      <div className="h-4 bg-muted-foreground/20 rounded w-full"></div>
+                      <div className="h-4 bg-muted-foreground/20 rounded w-3/4 mt-8"></div>
+                    </div>
+                  ) : (
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {cleanMd(fullMd || noticia.conteudo_md || noticia.conteudo || noticia.resumo || 'Conteúdo não disponível.')}
+                    </ReactMarkdown>
                   )}
                 </article>
 
