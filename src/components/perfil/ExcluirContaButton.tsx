@@ -25,7 +25,6 @@ export function ExcluirContaButton() {
       });
       if (res.error) throw res.error;
       await signOut();
-      window.location.href = '/auth';
       toast.success('Conta excluída');
     } catch {
       toast.error('Erro ao excluir conta');

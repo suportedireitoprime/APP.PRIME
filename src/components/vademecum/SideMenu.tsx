@@ -116,8 +116,9 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
 
   const handleItemClick = async (id: string) => {
     if (id === 'sair') {
-      await signOut();
-      window.location.href = '/auth';
+      onClose();
+      // Pequeno delay para o menu fechar antes de desmontar os providers.
+      setTimeout(() => signOut(), 200);
       return;
     }
 

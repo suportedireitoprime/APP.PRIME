@@ -40,7 +40,6 @@ import OfflineStatusBadge from "@/components/OfflineStatusBadge";
 import OfflineWatcher from "@/components/OfflineWatcher";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClientProvider, useQueryClient } from "@tanstack/react-query";
-import { AnimatePresence } from 'framer-motion';
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { usePresenceTracker } from "@/hooks/usePresenceTracker";
 import { useNativePermissions } from "@/hooks/useNativePermissions";
@@ -460,8 +459,7 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
 
 
   if (!user) {
-    const target = location.pathname === '/' ? '/landing' : '/auth';
-    return <Navigate to={target} replace state={{ from: location.pathname }} />;
+    return <Navigate to="/landing" replace state={{ from: location.pathname }} />;
   }
 
   // A checagem de triagem roda em segundo plano: a tela protegida abre na hora

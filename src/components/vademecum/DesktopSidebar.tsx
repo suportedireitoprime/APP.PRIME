@@ -95,7 +95,6 @@ const DesktopSidebar = ({ activeTab, onTabChange }: DesktopSidebarProps) => {
     console.log('[DesktopSidebar] click', item.id, '→', item.route ?? '(sem rota)');
     if (item.id === 'sair') {
       await signOut();
-      window.location.href = '/auth';
       return;
     }
     if (item.id === 'explicacao') {
