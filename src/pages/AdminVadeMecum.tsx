@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { Save, Loader2, Sparkles } from 'lucide-react';
@@ -144,3 +144,5 @@ const AdminVadeMecum = () => {
 };
 
 export default AdminVadeMecum;
+
+// HMR trigger
