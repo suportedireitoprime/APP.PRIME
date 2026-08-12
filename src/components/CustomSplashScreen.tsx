@@ -1,12 +1,14 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
+import { Landmark, Scale, BookOpen, GraduationCap } from 'lucide-react';
 import laurel from '@/assets/landing-tribunal/laurel-leaf.png';
 import scales from '@/assets/landing-tribunal/scales.png';
 
 export function CustomSplashScreen({ onComplete }: { onComplete: () => void }) {
   const text = "Estudos Jurídicos";
   const [typed, setTyped] = useState("");
-  const fallingLeaves = Array.from({ length: 8 }, (_, i) => i);
+  // Aumentando o número de folhas caindo
+  const fallingLeaves = Array.from({ length: 24 }, (_, i) => i);
   const reduceMotion = useRef(false);
 
   useEffect(() => {
@@ -38,6 +40,15 @@ export function CustomSplashScreen({ onComplete }: { onComplete: () => void }) {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.5),transparent_65%)]" />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
+      {/* SVGs Flutuantes (Pretos, fundo) */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden z-[1]">
+        <Landmark className="absolute left-[15%] top-[8%] w-24 h-24 text-black/10 lp-float" style={{ animationDuration: '8s' }} />
+        <Scale className="absolute right-[20%] top-[30%] w-32 h-32 text-black/10 lp-float" style={{ animationDirection: 'reverse', animationDuration: '10s' }} />
+        <BookOpen className="absolute left-[10%] bottom-[25%] w-20 h-20 text-black/10 lp-float" style={{ animationDelay: '1s', animationDuration: '7s' }} />
+        <GraduationCap className="absolute right-[12%] bottom-[15%] w-28 h-28 text-black/10 lp-float" style={{ animationDirection: 'reverse', animationDelay: '2s', animationDuration: '9s' }} />
+        <Landmark className="absolute right-[5%] top-[5%] w-16 h-16 text-black/10 lp-float" style={{ animationDelay: '3s', animationDuration: '6s' }} />
+      </div>
+
       {/* Folhas de louro caindo */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden z-[2]">
         {fallingLeaves.map((i) => (
@@ -48,10 +59,10 @@ export function CustomSplashScreen({ onComplete }: { onComplete: () => void }) {
             aria-hidden="true"
             className="absolute -top-10 lp-fall"
             style={{
-              left: `${(i * 12 + 5) % 100}%`,
-              width: `${16 + (i % 4) * 8}px`,
+              left: `${(i * 9 + 3) % 100}%`,
+              width: `${14 + (i % 4) * 8}px`,
               animationDuration: reduceMotion.current ? '0s' : `${10 + (i % 4) * 3}s`,
-              animationDelay: `${i * 1.5}s`,
+              animationDelay: `${i * 0.8}s`,
               opacity: 0.65,
               filter: 'drop-shadow(0 3px 6px rgba(0,0,0,0.5))',
             }}
@@ -59,7 +70,7 @@ export function CustomSplashScreen({ onComplete }: { onComplete: () => void }) {
         ))}
       </div>
 
-      {/* Balanças e louros flutuantes */}
+      {/* Balanças e louros (originais) flutuantes */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden z-[2]">
         <img
           src={laurel}

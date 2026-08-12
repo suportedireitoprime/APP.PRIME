@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import {
   Info, LogOut, ChevronRight,
   User, LifeBuoy, Lock, Star, Gem, MessageSquareHeart,
-  Pencil, Sparkles, Bell as BellIcon,
+  Pencil, Sparkles, Bell as BellIcon, Crown,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfileSummary } from '@/hooks/useProfileSummary';
@@ -33,13 +33,7 @@ interface Item {
 }
 interface Group { title?: string; items: Item[]; }
 
-// Destaques — Meu Espaço, Planos, Meus Lembretes, Avaliar o app
-const HIGHLIGHT_TRIO: Item[] = [
-  { id: 'meu-espaco', label: 'Meu Espaço', icon: User },
-  { id: 'planos',  label: 'Planos',  icon: Gem },
-  { id: 'lembretes', label: 'Meus lembretes', icon: BellIcon },
-  { id: 'avaliar', label: 'Avaliar o app', icon: Star },
-];
+// Destaques base, agora calculados dinamicamente no render
 
 const GROUPS: Group[] = [
   {
@@ -113,6 +107,13 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
     .map((n: string) => n[0]?.toUpperCase())
     .join('') || 'U');
   const isAdmin = isAdminEmail(userEmail);
+
+  const highlightTrio: Item[] = [
+    { id: 'meu-espaco', label: 'Meu Espaço', icon: User },
+    { id: 'planos',  label: isPremium ? 'Minha assinatura' : 'Planos',  icon: Gem },
+    { id: 'lembretes', label: 'Meus lembretes', icon: BellIcon },
+    { id: 'avaliar', label: 'Avaliar o app', icon: Star },
+  ];
 
   const handleItemClick = async (id: string) => {
     if (id === 'sair') {
@@ -212,8 +213,8 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
                     <div className="flex items-center gap-2 flex-wrap">
                       <h2 className="font-display text-base font-bold text-foreground leading-tight truncate">{displayName}</h2>
                       {isPremium ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/20 border border-primary/40 text-[10px] font-body font-bold uppercase tracking-wider text-primary">
-                          <Sparkles className="w-3 h-3" /> Premium
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-500/20 border border-yellow-500/40 text-[10px] font-body font-bold uppercase tracking-wider text-yellow-500">
+                          <Crown className="w-3 h-3" /> Premium
                         </span>
                       ) : (
                         <span className="px-2 py-0.5 rounded-full bg-muted border border-border text-[10px] font-body font-bold uppercase tracking-wider text-muted-foreground">
@@ -254,7 +255,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
 
               {/* Perfil · Planos · Suporte como itens de lista (mesmo estilo de "Meus lembretes"). */}
               <GroupCard>
-                {HIGHLIGHT_TRIO.map((it) => (
+                {highlightTrio.map((it) => (
                   <MenuRow
                     key={it.id}
                     icon={it.icon}

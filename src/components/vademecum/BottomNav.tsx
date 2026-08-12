@@ -227,11 +227,9 @@ const BottomNav = () => {
 
           {/* Slot 3: Vade Mecum (destaque flutuante central) */}
           <button
-            onPointerDown={(e) => {
-              // Navega já no toque (sem esperar o click ~100-300ms depois)
-              if (e.button === 0) { haptic.light(); if (!path.startsWith('/vade-mecum')) navigate('/vade-mecum'); }
-            }}
-            onClick={() => { if (!path.startsWith('/vade-mecum')) navigate('/vade-mecum'); }}
+            onPointerDown={() => prefetchRoute('vade-mecum')}
+            onMouseEnter={() => prefetchRoute('vade-mecum')}
+            onClick={() => { haptic.light(); if (!path.startsWith('/vade-mecum')) navigate('/vade-mecum'); }}
             data-track="bottom_nav_click"
             data-track-destino="vade-mecum"
             className="relative flex flex-col items-center justify-end gap-1 py-2"
@@ -257,7 +255,9 @@ const BottomNav = () => {
 
           {/* Slot 4: Ferramentas */}
           <button
-            onPointerDown={() => {
+            onPointerDown={() => prefetchRoute('ferramentas')}
+            onMouseEnter={() => prefetchRoute('ferramentas')}
+            onClick={() => {
               haptic.light();
               navigate('/ferramentas');
             }}
