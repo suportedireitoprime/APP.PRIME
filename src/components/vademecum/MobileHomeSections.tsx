@@ -302,7 +302,7 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
                     className={`absolute inset-0 rounded-full shadow-lg shadow-black/20 ${
                       emAltaLeis
                         ? 'bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500'
-                        : 'bg-hero-panel'
+                        : 'bg-hero-panel-yellow'
                     }`}
                   />
                 )}

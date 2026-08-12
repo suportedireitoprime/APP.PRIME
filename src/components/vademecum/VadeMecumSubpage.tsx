@@ -15,7 +15,7 @@ const VadeMecumSubpage = ({ titulo, descricao, children }: Props) => {
 
   return (
     <div className="theme-vademecum min-h-dvh bg-background pb-28">
-      <header className="bg-hero-panel-green px-4 pt-[calc(var(--sai-top,env(safe-area-inset-top,0px))+14px)] pb-6 rounded-b-3xl">
+      <header className="bg-hero-panel-yellow px-4 pt-[calc(var(--sai-top,env(safe-area-inset-top,0px))+14px)] pb-6 rounded-b-3xl">
         <div className="max-w-5xl mx-auto">
           <button
             onClick={() => navigate('/vade-mecum')}
