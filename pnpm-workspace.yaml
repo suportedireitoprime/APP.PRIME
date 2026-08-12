@@ -1,2 +1,4 @@
 allowBuilds:
   electron: set this to true or false
+minimumReleaseAgeExclude:
+  - '@capacitor-firebase/authentication@8.4.0'

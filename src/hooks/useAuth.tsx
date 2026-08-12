@@ -3,9 +3,9 @@ import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
+import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 import { App as CapacitorApp } from '@capacitor/app';
 
-let nativeGoogleAuthInit: Promise<void> | null = null;
 
 // Client ID Web — mesmo valor de capacitor.config.ts. Serve como audience
 // do idToken para o Supabase (signInWithIdToken).
@@ -230,10 +230,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = useCallback(async () => {
     if (Capacitor.isNativePlatform()) {
       try {
-        const { GoogleAuth } = await import('@codetrix-studio/capacitor-google-auth');
-        await GoogleAuth.signOut();
+        await FirebaseAuthentication.signOut();
       } catch (e) {
-        console.error('[GoogleAuth] Erro ao fazer signout nativo', e);
+        console.error('[FirebaseAuth] Erro ao fazer signout nativo', e);
       }
     }
     await supabase.auth.signOut();
@@ -264,29 +263,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const isNative = Capacitor.isNativePlatform();
 
     if (isNative) {
-      // Login Google nativo via GoogleAuth (sem Credential Manager).
-      // O Credential Manager foi removido porque disparava o prompt de
-      // "Ativar login por biometria" e o dialog herdava o windowBackground
-      // amarelo do splash.
       try {
-        const { GoogleAuth } = await import('@codetrix-studio/capacitor-google-auth');
-
-        if (!nativeGoogleAuthInit) {
-          nativeGoogleAuthInit = GoogleAuth.initialize({
-            scopes: ['profile', 'email'],
-            grantOfflineAccess: false,
-          }).then(() => undefined).catch((error) => {
-            nativeGoogleAuthInit = null;
-            throw error;
-          });
-        }
-        await nativeGoogleAuthInit;
-
-        const result = await GoogleAuth.signIn();
-        const idToken = (result as any)?.authentication?.idToken;
+        const result = await FirebaseAuthentication.signInWithGoogle();
+        const idToken = result.credential?.idToken;
 
         if (!idToken) {
-          return { error: new Error('Google não retornou idToken. Verifique o SHA-1 no Google Cloud Console.') };
+          return { error: new Error('Google não retornou idToken via Firebase.') };
         }
 
         const { error } = await supabase.auth.signInWithIdToken({
@@ -322,31 +304,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const platform = Capacitor.getPlatform();
 
     if (platform === 'ios') {
-      // iOS: login NATIVO da Apple (ASAuthorization) via
-      // @capacitor-community/apple-sign-in. Envia o identityToken pro Supabase
-      // com signInWithIdToken — sem abrir navegador.
       try {
-        const { SignInWithApple } = await import('@capacitor-community/apple-sign-in');
-        const nonce = gerarNonce();
-        const hashedNonce = await sha256Hex(nonce);
+        const result = await FirebaseAuthentication.signInWithApple();
+        const idToken = result.credential?.idToken;
+        const nonce = result.credential?.nonce;
 
-        const result: any = await SignInWithApple.authorize({
-          clientId: APPLE_IOS_BUNDLE_ID,
-          redirectURI: OAUTH_DEEP_LINK,
-          scopes: 'email name',
-          state: hashedNonce,
-          nonce: hashedNonce,
-        });
-
-        const identityToken = result?.response?.identityToken;
-        if (!identityToken) {
-          return { error: new Error('Apple não retornou identityToken.') };
+        if (!idToken) {
+          return { error: new Error('Apple não retornou identityToken via Firebase.') };
         }
 
         const { error } = await supabase.auth.signInWithIdToken({
           provider: 'apple',
-          token: identityToken,
-          nonce,
+          token: idToken,
+          nonce: nonce || undefined,
         });
         if (error) {
           console.error('[Apple/iOS] Supabase rejeitou identityToken', error);

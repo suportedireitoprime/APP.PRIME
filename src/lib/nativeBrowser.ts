@@ -15,22 +15,6 @@ export async function openExternal(
   if (!url) return;
 
   if (Capacitor.isNativePlatform()) {
-    // 1) InAppBrowser moderno (recomendado — Browser clássico está em manutenção)
-    try {
-      const { InAppBrowser } = await import('@capacitor/inappbrowser');
-      await InAppBrowser.openInSystemBrowser?.({
-        url,
-        options: {
-          // Compat cross-platform: opções default modernas.
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } as any,
-      });
-      return;
-    } catch {
-      /* segue para browser clássico */
-    }
-
-    // 2) Browser clássico (fallback)
     try {
       const { Browser } = await import('@capacitor/browser');
       await Browser.open({

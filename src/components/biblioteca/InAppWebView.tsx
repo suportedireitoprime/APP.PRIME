@@ -72,11 +72,6 @@ const InAppWebView = ({ url, titulo, onClose, autoFallback = false }: InAppWebVi
     });
     if (Capacitor.isNativePlatform()) {
       try {
-        const { InAppBrowser } = await import('@capacitor/inappbrowser');
-        await InAppBrowser.openInSystemBrowser?.({ url, options: {} as any });
-        return;
-      } catch {}
-      try {
         const { Browser } = await import('@capacitor/browser');
         await Browser.open({ url });
         return;
