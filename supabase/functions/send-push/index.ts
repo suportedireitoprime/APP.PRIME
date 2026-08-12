@@ -344,12 +344,14 @@ Deno.serve(async (req) => {
           if (resp.ok) return { ok: true, r };
           const errText = await resp.text();
           const isInvalid = resp.status === 404 ||
-            /UNREGISTERED|INVALID_ARGUMENT|not.*registered/i.test(errText);
+            /UNREGISTERED|INVALID_ARGUMENT|not.*registered|SenderId mismatch/i.test(errText);
           if (isInvalid) {
             invalidTokens.push({
               token: r.token,
               reason: /UNREGISTERED|not.*registered/i.test(errText) || resp.status === 404
                 ? "unregistered"
+                : /SenderId mismatch/i.test(errText)
+                ? "sender_id_mismatch"
                 : "invalid_argument",
             });
           }
