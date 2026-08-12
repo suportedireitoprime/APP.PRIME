@@ -39,8 +39,39 @@ function extractTags(ementa: string | null): string[] {
   if (text.includes('código de trânsito') || text.includes('lei nº 9.503') || text.includes('lei n° 9.503')) tags.push('CTB');
   if (text.includes('estatuto da pessoa idosa') || text.includes('estatuto do idoso') || text.includes('lei nº 10.741')) tags.push('Estatuto da Pessoa Idosa');
 
-  // Retorna apenas tags únicas
-  return [...new Set(tags)];
+  // Regex para extrair referências a leis genéricas (ex: Lei nº 12.345, Lei Complementar n° 123)
+  // Ignora leis famosas já capturadas para evitar duplicatas, mas o Set abaixo já ajuda
+  const leiMatch = text.match(/lei (?:complementar )?n[º°]\s*([\d.]+)/gi);
+  if (leiMatch) {
+    leiMatch.forEach(m => {
+      // Normalizar para "Lei nº X.XXX"
+      const num = m.match(/n[º°]\s*([\d.]+)/i)?.[1];
+      const isComp = m.toLowerCase().includes('complementar');
+      if (num) {
+        tags.push(`${isComp ? 'Lei Complementar' : 'Lei'} nº ${num}`);
+      }
+    });
+  }
+
+  // Retorna apenas tags únicas, filtrando possíveis duplicatas semânticas
+  // (ex: "Código Penal" e "Lei nº 2.848")
+  const uniqueTags = [...new Set(tags)];
+  const tagsFinais = uniqueTags.filter(t => {
+    // Filtros de exclusão mútua se a tag "famosa" já estiver lá
+    if (t === 'Lei nº 2.848' && uniqueTags.includes('Código Penal')) return false;
+    if (t === 'Lei nº 3.689' && uniqueTags.includes('Cód. Processo Penal')) return false;
+    if (t === 'Lei nº 10.406' && uniqueTags.includes('Código Civil')) return false;
+    if (t === 'Lei nº 13.105' && uniqueTags.includes('Cód. Processo Civil')) return false;
+    if (t === 'Lei nº 8.078' && uniqueTags.includes('CDC')) return false;
+    if (t === 'Lei nº 8.069' && uniqueTags.includes('ECA')) return false;
+    if (t === 'Lei nº 11.340' && uniqueTags.includes('Maria da Penha')) return false;
+    if (t === 'Lei nº 11.343' && uniqueTags.includes('Lei de Drogas')) return false;
+    if (t === 'Lei nº 9.503' && uniqueTags.includes('CTB')) return false;
+    if (t === 'Lei nº 10.741' && uniqueTags.includes('Estatuto da Pessoa Idosa')) return false;
+    return true;
+  });
+
+  return tagsFinais;
 }
 
 function plLabel(p: any): string {
