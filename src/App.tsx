@@ -357,9 +357,27 @@ const queryClient = new QueryClient({
 const queryPersister = typeof window !== 'undefined'
   ? createAsyncStoragePersister({
       storage: {
-        getItem: (key) => idbGet(key).then((v) => (v == null ? null : v as string)),
-        setItem: (key, value) => idbSet(key, value).then(() => undefined),
-        removeItem: (key) => idbDel(key).then(() => undefined),
+        getItem: async (key) => {
+          if (Capacitor.isNativePlatform()) {
+            const { localDb } = await import('@/services/localDb');
+            if (localDb.available) return localDb.getKv(key);
+          }
+          return idbGet(key).then((v) => (v == null ? null : v as string));
+        },
+        setItem: async (key, value) => {
+          if (Capacitor.isNativePlatform()) {
+            const { localDb } = await import('@/services/localDb');
+            if (localDb.available) return localDb.setKv(key, value);
+          }
+          return idbSet(key, value).then(() => undefined);
+        },
+        removeItem: async (key) => {
+          if (Capacitor.isNativePlatform()) {
+            const { localDb } = await import('@/services/localDb');
+            if (localDb.available) return localDb.delKv(key);
+          }
+          return idbDel(key).then(() => undefined);
+        },
       },
       key: 'rq-cache-v1',
       throttleTime: 1500,

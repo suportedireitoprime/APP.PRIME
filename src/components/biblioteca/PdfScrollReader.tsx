@@ -226,10 +226,17 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId }: Props) => {
             if (entry.isIntersecting) {
               renderPage(idx, el);
               if (entry.intersectionRatio > 0.5) setCurrentPage(idx);
+            } else {
+              // Virtualização: limpa a página se ela sair da viewport
+              if (renderedRef.current.has(idx)) {
+                el.style.minHeight = `${el.clientHeight}px`;
+                el.innerHTML = `<div class="text-neutral-400 text-xs py-8 w-full h-full flex items-center justify-center">Página ${idx}</div>`;
+                renderedRef.current.delete(idx);
+              }
             }
           });
         },
-        { root: container, rootMargin: '400px 0px', threshold: [0, 0.5] }
+        { root: container, rootMargin: '800px 0px', threshold: [0, 0.5] }
       );
       pages.forEach((p) => observer!.observe(p));
     });
@@ -241,9 +248,14 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId }: Props) => {
   }, [loading, error, totalPages, dualPage]);
 
   // Persiste página atual
+  const finishedRef = useRef(false);
   useEffect(() => {
     if (currentPage > 0) localStorage.setItem(PAGE_KEY(url), String(currentPage));
-  }, [currentPage, url]);
+    if (currentPage > 0 && currentPage === totalPages && !finishedRef.current) {
+      finishedRef.current = true;
+      import('@/lib/nativeHaptics').then(m => m.haptic.success());
+    }
+  }, [currentPage, url, totalPages]);
 
   // Navegação por teclado
   useEffect(() => {

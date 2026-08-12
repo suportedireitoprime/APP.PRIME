@@ -127,6 +127,10 @@ export const localDb = {
     return rows[0]?.v ?? null;
   },
 
+  async delKv(key: string): Promise<void> {
+    await this.run('DELETE FROM kv WHERE k=?', [key]);
+  },
+
   async logSearch(query: string): Promise<void> {
     const q = query.trim().toLowerCase();
     if (!q) return;
