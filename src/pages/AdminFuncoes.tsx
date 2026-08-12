@@ -61,6 +61,7 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   '/admin-leis-cantadas': () => import('./AdminLeisCantadas'),
   '/narracao': () => import('./NarracaoLei'),
   '/admin-apresentacao-editar': () => import('./AdminApresentacaoEditar'),
+  '/admin-vade-mecum': () => import('./AdminVadeMecum'),
   '/explicacao-lei': () => import('./ExplicacaoLei'),
   '/radar/deputados': () => import('./RadarDeputados'),
   '/newsletter': () => import('./Newsletter'),
@@ -162,6 +163,16 @@ const CATEGORIES: Category[] = [
       { id: 'praticar', label: 'Praticar', icon: Target, desc: 'Tiro ao alvo na lei seca (em testes, só admin)', route: '/praticar' },
       { id: 'dicionario', label: 'Dicionário Editar', icon: BookA, desc: 'Termos e definições' },
       { id: 'questoes-editar', label: 'Questões Editar', icon: ListChecks, desc: 'Buscar mais questões, novos cargos e importar do Google Sheets', route: '/admin-questoes' },
+    ],
+  },
+  {
+    id: 'vade-mecum-ia',
+    title: 'Vade Mecum IA',
+    desc: 'Configuração de prompts para Histórico, Narração e Exemplos Práticos',
+    icon: Sparkles,
+    route: '/admin-vade-mecum',
+    items: [
+      { id: 'admin-vade-mecum', label: 'Admin Vade Mecum', icon: Sparkles, desc: 'Gerenciar prompts e modelos de IA do Vade Mecum', route: '/admin-vade-mecum' },
     ],
   },
   {

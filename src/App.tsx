@@ -249,6 +249,7 @@ import BibliotecaTrilhas from "./pages/BibliotecaTrilhas.tsx";
 
 const CompressaoImagens = lazy(() => import("./pages/CompressaoImagens.tsx"));
 const AdminFuncoesAssinantes = lazy(() => import("./pages/AdminFuncoesAssinantes.tsx"));
+const AdminVadeMecum = lazy(() => import("./pages/AdminVadeMecum.tsx"));
 const AdminLembretes = lazy(() => import("./pages/AdminLembretes.tsx"));
 const AdminLembretesBiblioteca = lazy(() => import("./pages/AdminLembretesBiblioteca.tsx"));
 const AdminNarracaoConteudo = lazy(() => import("./pages/AdminNarracaoConteudo.tsx"));
@@ -866,6 +867,7 @@ function AnimatedRoutes() {
           <Route path="/compressao-imagens" element={<ProtectedRoute><PageTransition><CompressaoImagens /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-funcoes" element={<ProtectedRoute><PageTransition><AdminFuncoes /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-funcoes-assinantes" element={<ProtectedRoute><PageTransition><AdminFuncoesAssinantes /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin-vade-mecum" element={<ProtectedRoute><PageTransition><AdminVadeMecum /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-lembretes" element={<ProtectedRoute><PageTransition><AdminLembretes /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-lembretes/biblioteca" element={<ProtectedRoute><PageTransition><AdminLembretesBiblioteca /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-narracao" element={<ProtectedRoute><PageTransition><AdminNarracaoConteudo /></PageTransition></ProtectedRoute>} />
