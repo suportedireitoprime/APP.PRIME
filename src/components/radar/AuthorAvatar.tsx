@@ -42,15 +42,15 @@ export function AuthorAvatar({ proposicaoId }: AuthorAvatarProps) {
 
   if (loading) {
     return (
-      <div className="w-10 h-10 rounded-full bg-muted/50 animate-pulse shrink-0 flex items-center justify-center">
-        <User className="w-5 h-5 text-muted-foreground/30" />
+      <div className="w-14 h-14 rounded-full bg-muted/50 animate-pulse shrink-0 flex items-center justify-center">
+        <User className="w-6 h-6 text-muted-foreground/30" />
       </div>
     );
   }
 
   if (photoUrl) {
     return (
-      <div className="w-10 h-10 rounded-full bg-muted overflow-hidden shrink-0 border border-border">
+      <div className="w-14 h-14 rounded-full bg-muted overflow-hidden shrink-0 border border-border">
         <img 
           src={photoUrl} 
           alt="Autor" 
@@ -66,8 +66,8 @@ export function AuthorAvatar({ proposicaoId }: AuthorAvatarProps) {
   }
 
   return (
-    <div className="w-10 h-10 rounded-full bg-secondary shrink-0 flex items-center justify-center border border-border">
-      <User className="w-5 h-5 text-muted-foreground" />
+    <div className="w-14 h-14 rounded-full bg-secondary shrink-0 flex items-center justify-center border border-border">
+      <User className="w-6 h-6 text-muted-foreground" />
     </div>
   );
 }

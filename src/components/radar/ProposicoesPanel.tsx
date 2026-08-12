@@ -83,26 +83,26 @@ const ProposicoesPanel = ({ searchQuery = '', dataInicial }: Props) => {
   return (
     <div className="space-y-4">
       <ScrollArea className="w-full">
-        <div className="flex gap-2 pb-2">
+        <div className="flex justify-between w-full gap-1.5 pb-2">
           {TIPO_FILTERS.map(t => (
             <button
               key={t}
               onClick={() => setTipoFiltro(t)}
-              className={`whitespace-nowrap text-[13px] font-body px-4 py-2 min-h-[36px] rounded-full transition-colors ${
-                tipoFiltro === t ? 'bg-primary text-primary-foreground font-semibold' : 'bg-secondary text-foreground hover:bg-secondary/80'
+              className={`flex-1 whitespace-nowrap text-[14px] font-body px-2 py-2 min-h-[44px] rounded-full transition-colors ${
+                tipoFiltro === t ? 'bg-primary text-primary-foreground font-semibold shadow-md' : 'bg-secondary text-foreground hover:bg-secondary/80'
               }`}
             >{t === 'TODOS' ? 'Todos' : t}</button>
           ))}
         </div>
       </ScrollArea>
 
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+      <div className="relative w-full">
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
         <Input
           value={busca}
           onChange={(e) => setBusca(e.target.value)}
           placeholder="Buscar por número ou ementa"
-          className="pl-9 h-11 text-[15px]"
+          className="w-full pl-11 h-12 text-[16px] rounded-xl bg-card border-border/50 shadow-sm"
         />
       </div>
 
