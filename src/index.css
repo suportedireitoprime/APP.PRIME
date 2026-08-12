@@ -681,7 +681,30 @@ body {
   transform: translateX(-150%) skewX(-18deg);
   animation: shimmer-reflect 1.4s ease-out 1 forwards;
   pointer-events: none;
+  z-index: 1;
   mix-blend-mode: screen;
+}
+
+/* === Reflexo apenas nas linhas do SVG (marca d'água) === */
+.svg-shine {
+  -webkit-mask-image: linear-gradient(60deg, transparent 35%, black 50%, transparent 65%);
+  mask-image: linear-gradient(60deg, transparent 35%, black 50%, transparent 65%);
+  -webkit-mask-size: 300% 100%;
+  mask-size: 300% 100%;
+  -webkit-mask-position: 150% 0;
+  mask-position: 150% 0;
+  animation: svg-mask-shine 1.5s ease-in-out 0.3s 1 forwards;
+}
+
+@keyframes svg-mask-shine {
+  0% {
+    -webkit-mask-position: 150% 0;
+    mask-position: 150% 0;
+  }
+  100% {
+    -webkit-mask-position: -50% 0;
+    mask-position: -50% 0;
+  }
 }
 
 /* === Reflexo horizontal (esquerda → direita) percorrendo cada item da lista, em sequência descendente === */

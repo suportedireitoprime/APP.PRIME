@@ -88,7 +88,7 @@ const VadeMecumHero = ({ onBuscar }: Props) => {
 
   return (
     <div
-      className="bg-hero-panel-yellow relative overflow-hidden rounded-b-[36px] border-b border-white/10 shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))]"
+      className="bg-hero-panel relative overflow-hidden rounded-b-[36px] border-b border-white/10 shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))]"
       style={{ transform: 'translateZ(0)', isolation: 'isolate', contain: 'paint' }}
     >
       {/* Overlays radiais */}
@@ -218,7 +218,7 @@ const VadeMecumHero = ({ onBuscar }: Props) => {
           <span className="relative z-[2] font-body text-white/70 text-[15px] font-medium truncate text-left">
             Pesquise a lei...
           </span>
-          <div className="absolute right-1.5 top-1/2 -translate-y-1/2 h-12 px-5 rounded-xl bg-hero-panel-yellow text-white font-display text-[13px] font-bold tracking-wider flex items-center justify-center shadow-md shadow-black/30 active:scale-95 transition">
+          <div className="absolute right-1.5 top-1/2 -translate-y-1/2 h-12 px-5 rounded-xl bg-hero-panel text-white font-display text-[13px] font-bold tracking-wider flex items-center justify-center shadow-md shadow-black/30 active:scale-95 transition">
             PESQUISAR
           </div>
         </button>

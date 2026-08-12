@@ -39,6 +39,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import OfflineStatusBadge from "@/components/OfflineStatusBadge";
 import OfflineWatcher from "@/components/OfflineWatcher";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClientProvider, useQueryClient } from "@tanstack/react-query";
+import { AnimatePresence } from 'framer-motion';
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { usePresenceTracker } from "@/hooks/usePresenceTracker";
 import { useNativePermissions } from "@/hooks/useNativePermissions";
@@ -684,6 +686,14 @@ function AnimatedRoutes() {
 
 
 
+  const getRouteKey = (path: string) => {
+    // Agrupa abas do Vade Mecum para não acionar a transição de página inteira
+    if (path.match(/^\/vade-mecum(\/areas|\/categorias|\/favoritos)?$/)) {
+      return '/vade-mecum-tabs';
+    }
+    return path;
+  };
+
   return (
     <div className="overflow-x-hidden">
       <NativeBootstrap />
@@ -696,7 +706,7 @@ function AnimatedRoutes() {
       <PersistentHome />
       <Suspense fallback={<LazyFallback />}>
         <AnimatePresence mode="wait">
-          <Routes location={location} key={location.pathname}>
+          <Routes location={location} key={getRouteKey(location.pathname)}>
           <Route path="/auth" element={<Auth />} />
           <Route path="/landing" element={<Landing />} />
 
@@ -764,9 +774,11 @@ function AnimatedRoutes() {
           <Route path="/compartilhado" element={<ProtectedRoute><PageTransition><Compartilhado /></PageTransition></ProtectedRoute>} />
           <Route path="/estudos" element={<ProtectedRoute><PageTransition><EstudosRouter /></PageTransition></ProtectedRoute>} />
           <Route path="/vade-mecum" element={<ProtectedRoute><PageTransition><VadeMecum /></PageTransition></ProtectedRoute>} />
+          <Route path="/vade-mecum/areas" element={<ProtectedRoute><PageTransition><VadeMecum /></PageTransition></ProtectedRoute>} />
+          <Route path="/vade-mecum/categorias" element={<ProtectedRoute><PageTransition><VadeMecum /></PageTransition></ProtectedRoute>} />
           <Route path="/vade-mecum/codigos" element={<ProtectedRoute><PageTransition><VadeMecumCodigos /></PageTransition></ProtectedRoute>} />
           <Route path="/vade-mecum/sumulas" element={<ProtectedRoute><PageTransition><VadeMecumSumulas /></PageTransition></ProtectedRoute>} />
-          <Route path="/vade-mecum/favoritos" element={<ProtectedRoute><PageTransition><VadeMecumFavoritos /></PageTransition></ProtectedRoute>} />
+          <Route path="/vade-mecum/favoritos" element={<ProtectedRoute><PageTransition><VadeMecum /></PageTransition></ProtectedRoute>} />
           <Route path="/vade-mecum/recentes" element={<ProtectedRoute><PageTransition><VadeMecumRecentes /></PageTransition></ProtectedRoute>} />
           <Route path="/aprender" element={<ProtectedRoute><PageTransition><Aprender /></PageTransition></ProtectedRoute>} />
           <Route path="/gamificacao/forca" element={<ProtectedRoute><PageTransition><ForcaPage /></PageTransition></ProtectedRoute>} />
@@ -982,6 +994,18 @@ function AnimatedRoutes() {
   );
 }
 
+// Importação do AppBootSplash
+import { CustomSplashScreen } from "@/components/CustomSplashScreen";
+
+function AppBootSplash() {
+  const [show, setShow] = useState(true);
+  return (
+    <AnimatePresence>
+      {show && <CustomSplashScreen onComplete={() => setShow(false)} />}
+    </AnimatePresence>
+  );
+}
+
 const App = () => (
   <ErrorBoundary>
     <PersistQueryClientProvider
@@ -1001,6 +1025,7 @@ const App = () => (
       <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <AuthProvider>
           <ThemeProvider>
+            <AppBootSplash />
             <TooltipProvider>
               <SkipToContent />
               <Sonner />

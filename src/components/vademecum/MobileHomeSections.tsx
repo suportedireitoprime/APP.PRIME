@@ -13,7 +13,7 @@ import {
   PiggyBank, Plane, PocketKnife, RadioTower, ReceiptText, Scale, Scroll, ScrollText, Search,
   Shield, ShieldAlert, ShieldCheck, ShieldX, Ship, ShoppingCart, Siren, Award, Sprout, Stamp, Store,
   Tractor, TreePine, Users, Vote, Wallet, Wifi, X, type LucideIcon,
-  Presentation, FolderOpen, RefreshCw, MessageCircle,
+  Presentation, FolderOpen, RefreshCw, MessageCircle, Heart, Newspaper, Radar, History,
 } from 'lucide-react';
 import { estiloPasta } from '@/lib/documentosTipos';
 import { usePastasDocumentos } from '@/hooks/useDocumentosDrive';
@@ -50,21 +50,21 @@ interface Cat {
 }
 
 const GRID_CATS: Cat[] = [
-  { id: 'constituicao',    label: 'Constituição',    sublabel: 'CF/88',                     icon: Landmark,   color: '#FFD400' },
-  { id: 'codigo',          label: 'Códigos',         sublabel: 'Civil, Penal, Processo…',   icon: Gavel,      color: '#FB923C' },
-  { id: 'estatuto',        label: 'Estatutos',       sublabel: 'ECA, Idoso, OAB…',          icon: BookMarked, color: '#3B82F6' },
-  { id: 'jurisprudencia',  label: 'Jurisprudência',  sublabel: 'STF, STJ, Vinculantes',     icon: Stamp, color: '#EC4899' },
-  { id: 'lei-ordinaria',   label: 'Leis Ordinárias', sublabel: 'Federais complementares',   icon: Columns3,   color: '#38BDF8' },
-  { id: 'lei-especial',    label: 'Penal Especial',  sublabel: 'Leis penais extravagantes', icon: Scale,      color: '#FB923C' },
+  { id: 'constituicao',    label: 'Constituição',    sublabel: 'CF/88',                     icon: Landmark,   color: '#d97706' },
+  { id: 'codigo',          label: 'Códigos',         sublabel: 'Civil, Penal, Processo…',   icon: Gavel,      color: '#dc2626' },
+  { id: 'estatuto',        label: 'Estatutos',       sublabel: 'ECA, Idoso, OAB…',          icon: BookMarked, color: '#0284c7' },
+  { id: 'jurisprudencia',  label: 'Jurisprudência',  sublabel: 'STF, STJ, Vinculantes',     icon: Scale,      color: '#059669' },
+  { id: 'lei-ordinaria',   label: 'Leis Ordinárias', sublabel: 'Federais complementares',   icon: Columns3,   color: '#ea580c' },
+  { id: 'lei-especial',    label: 'Penal Especial',  sublabel: 'Leis penais extravagantes', icon: PocketKnife, color: '#475569' },
 ];
 
 // Cards de "Outras normas" que apontam para o Radar 360 com filtro pré-selecionado
 type RadarCat = Cat & { radarTipo: string; normaSlug: string };
 const RADAR_CATS: RadarCat[] = [
   { id: 'radar-lei',       label: 'Leis Ordinárias',     sublabel: 'Leis ordinárias publicadas no DOU',   icon: Scroll,     color: 'hsl(348 78% 38%)', radarTipo: 'Lei',                normaSlug: 'leis' },
-  { id: 'radar-lc',        label: 'Leis Complementares', sublabel: 'Complementares à Constituição',       icon: Stamp, color: '#DC2626', radarTipo: 'Lei Complementar',   normaSlug: 'leis-complementares' },
+  { id: 'radar-lc',        label: 'Leis Complementares', sublabel: 'Complementares à Constituição',       icon: Stamp,      color: 'hsl(348 78% 38%)', radarTipo: 'Lei Complementar',   normaSlug: 'leis-complementares' },
   { id: 'radar-decreto',   label: 'Decretos',            sublabel: 'Regulamentos do Executivo',           icon: Stamp,      color: 'hsl(348 78% 38%)', radarTipo: 'Decreto',            normaSlug: 'decretos' },
-  { id: 'radar-mp',        label: 'Medidas Provisórias', sublabel: 'Editadas pelo Presidente',            icon: FileWarning,color: '#FB923C', radarTipo: 'Medida Provisória',  normaSlug: 'medidas-provisorias' },
+  { id: 'radar-mp',        label: 'Medidas Provisórias', sublabel: 'Editadas pelo Presidente',            icon: FileWarning,color: 'hsl(348 78% 38%)', radarTipo: 'Medida Provisória',  normaSlug: 'medidas-provisorias' },
 ];
 
 const LIST_CATS: Cat[] = [
@@ -173,9 +173,13 @@ interface Props {
   noticiasAutoplay?: boolean;
   /** Na aba "Em Alta", mostra categorias de leis em vez das funções de estudo. */
   emAltaLeis?: boolean;
+  /** Oculta o menu de abas do topo */
+  hideTabs?: boolean;
+  /** Força a aba ativa */
+  activeTab?: Tab;
 }
 
-const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, hideNoticias = false, noticiasAutoplay = true, emAltaLeis = false }: Props = {}) => {
+const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, hideNoticias = false, noticiasAutoplay = true, emAltaLeis = false, hideTabs = false, activeTab }: Props = {}) => {
   const navigate = useNavigate();
   const [juriOpen, setJuriOpen] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState<Cat | AreaCat | CategoriaFormal | null>(null);
@@ -188,6 +192,7 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
   const [categorySearch, setCategorySearch] = useState('');
   const activeTabs = useMemo(() => (emAltaLeis ? TABS_VADEMECUM : TABS_HOME), [emAltaLeis]);
   const [tab, setTab] = useState<Tab>(() => (emAltaLeis ? 'emalta' : 'estudos'));
+  const currentTab = activeTab || tab;
 
   const handleVoiceSearch = useCallback((text: string) => {
     setCategorySearch(text);
@@ -284,11 +289,12 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
       )}
 
       {/* Segmented toggle */}
+      {!hideTabs && (
       <div>
         <div className="relative flex items-center gap-1 p-1 rounded-full bg-secondary/60 border border-border/60">
           {activeTabs.map(t => {
             const Icon = t.icon;
-            const isActive = tab === t.id;
+            const isActive = currentTab === t.id;
             return (
               <button
                 key={t.id}
@@ -298,17 +304,11 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
                 className="relative flex-1 flex items-center justify-center gap-2 h-10 rounded-full font-display text-[13px] font-bold uppercase tracking-wide transition-colors"
               >
                 {isActive && (
-                  <span
-                    className={`absolute inset-0 rounded-full shadow-lg shadow-black/20 ${
-                      emAltaLeis
-                        ? 'bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500'
-                        : 'bg-hero-panel-yellow'
-                    }`}
-                  />
+                  <span className="absolute inset-0 rounded-full shadow-lg shadow-black/20 bg-hero-panel" />
                 )}
                 <span className={`relative flex items-center gap-2 ${
                   isActive
-                    ? (emAltaLeis ? 'text-black font-black' : 'text-white font-bold')
+                    ? 'text-white font-bold'
                     : 'text-muted-foreground'
                 }`}>
                   <Icon className="w-5 h-5" />
@@ -319,9 +319,10 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
           })}
         </div>
       </div>
+      )}
 
       <AnimatePresence mode="wait" initial={false}>
-        {tab === 'categorias' && (
+        {currentTab === 'categorias' && (
           <motion.div
             key="categorias"
             initial={{ opacity: 0, y: 16 }}
@@ -366,7 +367,7 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
           </motion.div>
         )}
 
-        {tab === 'emalta' && (
+        {currentTab === 'emalta' && (
           <motion.div
             key="emalta"
             initial={{ opacity: 0, y: 16 }}
@@ -375,18 +376,61 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
             transition={{ duration: 0.24, ease: [0.22, 0.61, 0.36, 1] }}
             className="space-y-4 px-1 pb-8"
           >
-            <div>
-              <div className="flex items-center gap-2">
+            {/* Acesso Rápido */}
+            <style>{`
+              @keyframes icon-shine-mask {
+                0% { -webkit-mask-position: 250% center; mask-position: 250% center; }
+                100% { -webkit-mask-position: -250% center; mask-position: -250% center; }
+              }
+            `}</style>
+            <div className="grid grid-cols-4 gap-2 sm:gap-3 mb-12 w-full">
+              {/* Favoritos */}
+              <button onClick={() => navigate('/vade-mecum/favoritos')} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl bg-[#1A1D21] border border-border/40 hover:bg-[#23272B] transition-colors w-full group" data-track="quick_access_favoritos">
+                <div className="relative w-5 h-5 shrink-0">
+                  <Heart className="w-5 h-5 absolute inset-0" style={{ color: 'hsl(348,78%,38%)', filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))' }} strokeWidth={1.15} />
+                  <Heart className="w-5 h-5 absolute inset-0 text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ WebkitMaskImage: 'linear-gradient(-60deg, transparent 30%, white 50%, transparent 70%)', WebkitMaskSize: '250% 100%', WebkitMaskRepeat: 'no-repeat', animation: 'icon-shine-mask 1.5s infinite linear' }} strokeWidth={1.5} />
+                </div>
+                <span className="text-[10px] sm:text-[11px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">Favoritos</span>
+              </button>
+              
+              {/* Anotações */}
+              <button onClick={() => toast({ title: 'Em breve', description: 'Suas anotações estarão aqui em breve.' })} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl bg-[#1A1D21] border border-border/40 hover:bg-[#23272B] transition-colors w-full group" data-track="quick_access_anotacoes">
+                <div className="relative w-5 h-5 shrink-0">
+                  <NotebookPen className="w-5 h-5 absolute inset-0" style={{ color: 'hsl(348,78%,38%)', filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))' }} strokeWidth={1.15} />
+                  <NotebookPen className="w-5 h-5 absolute inset-0 text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ WebkitMaskImage: 'linear-gradient(-60deg, transparent 30%, white 50%, transparent 70%)', WebkitMaskSize: '250% 100%', WebkitMaskRepeat: 'no-repeat', animation: 'icon-shine-mask 1.5s infinite linear' }} strokeWidth={1.5} />
+                </div>
+                <span className="text-[10px] sm:text-[11px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">Anotações</span>
+              </button>
+
+              {/* Radares */}
+              <button onClick={() => navigate('/radares')} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl bg-[#1A1D21] border border-border/40 hover:bg-[#23272B] transition-colors w-full group" data-track="quick_access_radares">
+                <div className="relative w-5 h-5 shrink-0">
+                  <Radar className="w-5 h-5 absolute inset-0" style={{ color: 'hsl(348,78%,38%)', filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))' }} strokeWidth={1.15} />
+                  <Radar className="w-5 h-5 absolute inset-0 text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ WebkitMaskImage: 'linear-gradient(-60deg, transparent 30%, white 50%, transparent 70%)', WebkitMaskSize: '250% 100%', WebkitMaskRepeat: 'no-repeat', animation: 'icon-shine-mask 1.5s infinite linear' }} strokeWidth={1.5} />
+                </div>
+                <span className="text-[10px] sm:text-[11px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">Radares</span>
+              </button>
+
+              {/* Histórico */}
+              <button onClick={() => navigate('/vade-mecum/recentes')} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl bg-[#1A1D21] border border-border/40 hover:bg-[#23272B] transition-colors w-full group" data-track="quick_access_historico">
+                <div className="relative w-5 h-5 shrink-0">
+                  <History className="w-5 h-5 absolute inset-0" style={{ color: 'hsl(348,78%,38%)', filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))' }} strokeWidth={1.15} />
+                  <History className="w-5 h-5 absolute inset-0 text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ WebkitMaskImage: 'linear-gradient(-60deg, transparent 30%, white 50%, transparent 70%)', WebkitMaskSize: '250% 100%', WebkitMaskRepeat: 'no-repeat', animation: 'icon-shine-mask 1.5s infinite linear' }} strokeWidth={1.5} />
+                </div>
+                <span className="text-[10px] sm:text-[11px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">Histórico</span>
+              </button>
+            </div>
+
+            <div className="mb-4">
+              <h3 className="font-display text-foreground text-[18px] font-bold flex items-center gap-2">
                 <span className="w-1 h-5 rounded-full bg-primary" />
-                <h2 className="font-body text-foreground text-2xl sm:text-3xl font-bold tracking-tight">
-                  Em Alta
-                </h2>
-              </div>
-              <p className="font-body text-muted-foreground text-[13px] leading-snug mt-1 ml-3">
-                As principais leis, códigos, estatutos e jurisprudências mais consultados.
+                Em Alta
+              </h3>
+              <p className="font-body text-sm text-muted-foreground mt-1 ml-3">
+                As leis e normas mais acessadas no momento
               </p>
             </div>
-            <div className="h-[1.5px] bg-border/70 w-full -mt-2" />
+            
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
               {GRID_CATS.map((c, i) => (
                 <HomeCard
@@ -396,6 +440,7 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
                   sublabel={c.sublabel}
                   color={c.color}
                   delay={i * 0.05}
+                  solidColor={true}
                   onClick={() => { setCategorySearch(''); setCategoryOpen(c); }}
                   data-track="home_card_click"
                   data-track-name={c.label}
@@ -403,10 +448,57 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
                 />
               ))}
             </div>
+
+            <div className="pt-6 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
+              <AprendaSobreLeis titleClassName="px-4 sm:px-6 md:px-8 lg:px-12" />
+            </div>
+
+            <div className="pt-6">
+              <div className="mb-4">
+                <h3 className="font-display text-foreground text-[18px] font-bold flex items-center gap-2">
+                  <span className="w-1 h-5 rounded-full bg-primary" />
+                  Outras Normas
+                </h3>
+                <p className="font-body text-sm text-muted-foreground mt-1 ml-3">
+                  Acompanhe publicações diárias, radares e boletins jurídicos
+                </p>
+              </div>
+              <div className="space-y-2.5">
+                {RADAR_CATS.map((c) => {
+                  const Icon = c.icon;
+                  return (
+                    <button
+                      key={c.id}
+                      onClick={() => handle(c.id)}
+                      data-track="home_radar_cat_click"
+                      className="w-full flex items-center gap-3 px-4 py-5 min-h-[76px] rounded-2xl bg-card border border-border/60 shadow-sm active:scale-[0.99] transition"
+                    >
+                      <Icon
+                        className="w-8 h-8 shrink-0"
+                        style={{
+                          color: c.color,
+                          filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))',
+                        }}
+                        strokeWidth={1.15}
+                      />
+                      <div className="flex-1 min-w-0 text-left">
+                        <p className="font-display text-foreground text-[15.5px] font-bold leading-tight truncate">
+                          {c.label}
+                        </p>
+                        <p className="font-body text-muted-foreground text-[12px] leading-tight truncate mt-0.5">
+                          {c.sublabel}
+                        </p>
+                      </div>
+                      <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </motion.div>
         )}
 
-        {tab === 'areas' && (
+        {currentTab === 'areas' && (
           <motion.div
             key="areas"
             initial={{ opacity: 0, y: 16 }}
@@ -449,7 +541,7 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
           </motion.div>
         )}
 
-        {tab === 'locais' && (
+        {currentTab === 'locais' && (
           <motion.div
             key="locais"
             initial={{ opacity: 0, y: 16 }}
@@ -489,10 +581,9 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
           </motion.div>
         )}
 
-        {tab === 'estudos' && (
+        {currentTab === 'estudos' && (
           <motion.div
             key="estudos"
-
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
@@ -654,7 +745,7 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
           </motion.div>
         )}
 
-        {tab === 'documentos' && (
+        {currentTab === 'documentos' && (
           <motion.div
             key="documentos"
             initial={{ opacity: 0, y: 16 }}

@@ -100,9 +100,18 @@ const VadeMecumFavoritos = () => {
     navigate(
       `/legislacao/${tipoToSlug(lei.tipo)}/${leiToSlug(lei)}/${encodeURIComponent(numero)}`,
     );
-
   return (
-    <VadeMecumSubpage titulo="Favoritos" descricao="Suas leis e artigos salvos para acesso rápido">
+    <div className="space-y-4">
+      <div className="mb-4">
+        <h3 className="font-display text-foreground text-[18px] font-bold flex items-center gap-2">
+          <span className="w-1 h-5 rounded-full bg-primary" />
+          Favoritos
+        </h3>
+        <p className="font-body text-sm text-muted-foreground mt-1 ml-3">
+          Suas leis e artigos salvos para acesso rápido
+        </p>
+      </div>
+
       {/* Alternância Leis / Artigos */}
       <div className="flex items-center gap-2 p-1 rounded-full bg-muted/40 border border-border w-full max-w-xs mx-auto mb-5">
         {([
@@ -148,79 +157,82 @@ const VadeMecumFavoritos = () => {
                 className="w-full flex items-center gap-3 p-4 rounded-2xl bg-card border border-border text-left hover:border-primary/50 transition-colors"
               >
                 <LeiIcon id={l.leiId} />
-                <span className="min-w-0 flex-1">
-                  <span className="block text-foreground font-semibold text-sm truncate">{l.nome}</span>
-                  <span className="block text-muted-foreground text-xs truncate">{l.descricao}</span>
-                </span>
-                <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-display font-bold text-foreground text-[15px] truncate">
+                    {l.nome}
+                  </h3>
+                  <p className="font-body text-xs text-muted-foreground truncate mt-0.5">
+                    {l.tipo === 'codigo' ? 'Código' : 'Lei Especial'}
+                  </p>
+                </div>
+                <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
               </button>
             ))}
           </div>
         )
-      ) : loadingArtigos ? (
-        <div className="flex items-center justify-center py-16">
-          <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
-        </div>
-      ) : grupos.length === 0 ? (
-        <div className="text-center py-16 space-y-2">
-          <Heart className="w-10 h-10 text-muted-foreground mx-auto mb-1" />
-          <p className="text-muted-foreground text-sm">Você ainda não favoritou nenhum artigo.</p>
-          <p className="text-xs text-muted-foreground">
-            Abra uma lei e toque no coração dentro do artigo.
-          </p>
-        </div>
       ) : (
-        <div className="space-y-6">
-          {grupos.map((g) => (
-            <section key={g.lei.id}>
-              <button
-                onClick={() => abrirLei({ tipo: g.lei.tipo, id: g.lei.id, nome: g.lei.nome })}
-                className="w-full flex items-center gap-3 text-left mb-2"
-              >
-                <LeiIcon id={g.lei.id} size={22} />
-                <span className="min-w-0 flex-1">
-                  <span className="block text-foreground font-semibold text-sm truncate">
-                    {g.lei.nome}
+        loadingArtigos ? (
+          <div className="py-12 flex flex-col items-center justify-center">
+            <Loader2 className="w-8 h-8 text-primary animate-spin mb-3" />
+            <p className="text-sm text-muted-foreground font-medium">Carregando artigos...</p>
+          </div>
+        ) : grupos.length === 0 ? (
+          <div className="text-center py-16">
+            <HeartOff className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+            <p className="text-muted-foreground text-sm">Você ainda não favoritou nenhum artigo.</p>
+          </div>
+        ) : (
+          <div className="space-y-6 pb-6">
+            {grupos.map((g) => (
+              <div key={g.lei.id} className="space-y-3">
+                <button
+                  onClick={() => abrirLei({ tipo: g.lei.tipo, id: g.lei.id, nome: g.lei.nome })}
+                  className="w-full flex items-center gap-3 text-left px-1"
+                >
+                  <LeiIcon id={g.lei.id} size={22} />
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-foreground font-semibold text-sm truncate">
+                      {g.lei.nome}
+                    </span>
+                    <span className="block text-muted-foreground text-[11px]">
+                      {g.artigos.length} {g.artigos.length === 1 ? 'artigo favoritado' : 'artigos favoritados'}
+                    </span>
                   </span>
-                  <span className="block text-muted-foreground text-[11px]">
-                    {g.artigos.length} {g.artigos.length === 1 ? 'artigo favoritado' : 'artigos favoritados'}
-                  </span>
-                </span>
-                <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
-              </button>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+                </button>
 
-              {/* Carrossel de quadradinhos com os números dos artigos */}
-              <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 overflow-x-auto no-scrollbar">
-                <div className="flex gap-2.5 pb-1">
-                  {g.artigos.map((a, i) => (
-                    <motion.button
-                      key={`${a.tabela_codigo}-${a.numero_artigo}`}
-                      initial={{ opacity: 0, y: 6 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: Math.min(i, 12) * 0.02 }}
-                      onClick={() => abrirArtigo(g.lei, a.numero_artigo)}
-                      className="shrink-0 w-[76px] h-[76px] rounded-2xl bg-card border border-border hover:border-primary/60 transition-colors flex flex-col items-center justify-center gap-0.5"
-                      title={a.conteudo_preview ?? `Art. ${a.numero_artigo}`}
-                    >
-                      <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
-                        Art.
-                      </span>
-                      <span
-                        className="font-display text-lg font-bold leading-none truncate max-w-[64px]"
-                        style={{ color: colorById(g.lei.id) }}
+                <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 overflow-x-auto no-scrollbar">
+                  <div className="flex gap-2.5 pb-1">
+                    {g.artigos.map((a, i) => (
+                      <motion.button
+                        key={`${a.tabela_codigo}-${a.numero_artigo}`}
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: Math.min(i, 12) * 0.02 }}
+                        onClick={() => abrirArtigo(g.lei, a.numero_artigo)}
+                        className="shrink-0 w-[76px] h-[76px] rounded-2xl bg-card border border-border hover:border-primary/60 transition-colors flex flex-col items-center justify-center gap-0.5"
+                        title={a.conteudo_preview ?? `Art. ${a.numero_artigo}`}
                       >
-                        {a.numero_artigo}
-                      </span>
-                      <Heart className="w-3 h-3 text-primary fill-primary mt-0.5" />
-                    </motion.button>
-                  ))}
+                        <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                          Art.
+                        </span>
+                        <span
+                          className="font-display text-lg font-bold leading-none truncate max-w-[64px]"
+                          style={{ color: colorById(g.lei.id) }}
+                        >
+                          {a.numero_artigo}
+                        </span>
+                        <Heart className="w-3 h-3 text-primary fill-primary mt-0.5" />
+                      </motion.button>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </section>
-          ))}
-        </div>
+            ))}
+          </div>
+        )
       )}
-    </VadeMecumSubpage>
+    </div>
   );
 };
 

@@ -237,6 +237,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     }
     await supabase.auth.signOut();
+    // Não fazer window.location.replace — o onAuthStateChange já seta
+    // user=null e loading=false, e o ProtectedRoute/HomeGate redireciona
+    // automaticamente para /landing sem recarregar a página inteira (que
+    // causava tela preta no WebView nativo).
   }, []);
 
   const resetPassword = useCallback(async (email: string) => {

@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Search, Scale, Heart, History, X } from 'lucide-react';
+import { ArrowLeft, Search, Scale, Heart, History, X, BookOpen, Gavel } from 'lucide-react';
 import { LEIS_CATALOG, type LeiCatalogItem } from '@/data/leisCatalog';
 import { LEI_ICON_MAP, LEI_ICON_DEFAULT_COLOR } from '@/lib/leiIcons';
 import { getFavoritos, type LeiFavorita } from '@/lib/leisFavoritos';
 import { getRecentes, type LeiRecente } from '@/lib/leisRecentes';
+import ConteudoBusca from './ConteudoBusca';
 import type { LucideIcon } from 'lucide-react';
 
 
@@ -16,7 +17,7 @@ export type LeiSelecionada = {
   tabela_nome: string;
 };
 
-type Modo = 'leis' | 'favoritos' | 'recentes';
+type Modo = 'artigos' | 'leis' | 'jurisprudencia';
 
 interface Props {
   open: boolean;
@@ -104,7 +105,8 @@ const colorById = (id: string): string => {
 
 const BuscaLeisOverlay = ({ open, onClose, onSelectLei }: Props) => {
   const [query, setQuery] = useState('');
-  const [modo, setModo] = useState<Modo>('leis');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
+  const [modo, setModo] = useState<Modo>('artigos');
   const [favoritos, setFavoritos] = useState<LeiFavorita[]>([]);
   const [recentes, setRecentes] = useState<LeiRecente[]>([]);
 
@@ -117,9 +119,17 @@ const BuscaLeisOverlay = ({ open, onClose, onSelectLei }: Props) => {
   useEffect(() => {
     if (!open) {
       setQuery('');
-      setModo('leis');
+      setDebouncedQuery('');
+      setModo('artigos');
     }
   }, [open]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedQuery(query);
+    }, 400);
+    return () => clearTimeout(handler);
+  }, [query]);
 
   const leis = useMemo(() => {
     const q = norm(query.trim());
@@ -139,9 +149,9 @@ const BuscaLeisOverlay = ({ open, onClose, onSelectLei }: Props) => {
   };
 
   const TABS: Array<{ id: Modo; label: string; icon: typeof Scale }> = [
+    { id: 'artigos', label: 'Artigos', icon: BookOpen },
     { id: 'leis', label: 'Leis', icon: Scale },
-    { id: 'favoritos', label: 'Favoritos', icon: Heart },
-    { id: 'recentes', label: 'Recentes', icon: History },
+    { id: 'jurisprudencia', label: 'Jurisprudência', icon: Gavel },
   ];
 
   return (
@@ -193,7 +203,7 @@ const BuscaLeisOverlay = ({ open, onClose, onSelectLei }: Props) => {
                         : 'bg-muted text-muted-foreground'
                     }`}
                   >
-                    <Icon className={`w-4 h-4 ${ativo && t.id === 'favoritos' ? 'fill-current' : ''}`} />
+                    <Icon className={`w-4 h-4`} />
                     {t.label}
                   </button>
                 );
@@ -244,47 +254,13 @@ const BuscaLeisOverlay = ({ open, onClose, onSelectLei }: Props) => {
                   </button>
                 ))}
 
-              {modo === 'favoritos' &&
-                (listaFiltrada(favoritos).length === 0 ? (
-                  <p className="py-10 text-center font-body text-sm text-muted-foreground">
-                    Nenhuma lei favoritada ainda.
-                  </p>
-                ) : (
-                  listaFiltrada(favoritos).map((f) => (
-                    <button
-                      key={f.leiId}
-                      onClick={() => onSelectLei(f)}
-                      className="w-full text-left p-3.5 rounded-2xl bg-card border border-border flex items-center gap-3 active:scale-[0.99] transition"
-                    >
-                      <LeiIcon icon={iconById(f.leiId)} color={colorById(f.leiId)} />
-                      <div className="min-w-0">
-                        <p className="font-display text-[15px] font-bold text-foreground truncate">{f.nome}</p>
-                        <p className="font-body text-[12.5px] text-muted-foreground truncate">{f.descricao}</p>
-                      </div>
-                    </button>
-                  ))
-                ))}
+              {modo === 'artigos' && (
+                <ConteudoBusca query={debouncedQuery} onNavigate={onClose} />
+              )}
 
-              {modo === 'recentes' &&
-                (listaFiltrada(recentes).length === 0 ? (
-                  <p className="py-10 text-center font-body text-sm text-muted-foreground">
-                    Você ainda não abriu nenhuma lei.
-                  </p>
-                ) : (
-                  listaFiltrada(recentes).map((r) => (
-                    <button
-                      key={r.leiId}
-                      onClick={() => onSelectLei(r)}
-                      className="w-full text-left p-3.5 rounded-2xl bg-card border border-border flex items-center gap-3 active:scale-[0.99] transition"
-                    >
-                      <LeiIcon icon={iconById(r.leiId)} color={colorById(r.leiId)} />
-                      <div className="min-w-0">
-                        <p className="font-display text-[15px] font-bold text-foreground truncate">{r.nome}</p>
-                        <p className="font-body text-[12.5px] text-muted-foreground truncate">{r.descricao}</p>
-                      </div>
-                    </button>
-                  ))
-                ))}
+              {modo === 'jurisprudencia' && (
+                <ConteudoBusca query={debouncedQuery} onNavigate={onClose} grupo="jurisprudencia" />
+              )}
             </div>
           </motion.div>
         </>

@@ -15,8 +15,7 @@ const WS_URLS = [
 
 /** Primeira instrução falada: faz o professor comentar o que está vendo. */
 const ABERTURA =
-  "Estou apontando a câmera agora. Olhe a imagem e comece falando em português do Brasil: diga em uma frase o que você está vendo (se for uma pessoa, um rosto ou algo que não seja material de estudo, diga isso com bom humor e peça para apontar para o livro, slide, caderno ou tela). Se for material de estudo, diga o tema e comece a explicar. Fale sempre em voz alta.";
-
+  "Estou apontando a câmera agora. Olhe a imagem e fale em português do Brasil. REGRA ESTRITA: Se você não enxergar NENHUM texto legível ou material de estudo claro (por exemplo, se estiver vendo apenas uma mesa vazia, parede, teto, tela preta, rosto, ou imagem muito borrada), NÃO invente NADA. Apenas diga: 'Ainda não estou vendo o material. Por favor, aponte a câmera para o livro, caderno ou tela que você está estudando.' MAS, se você realmente vir um material de estudo ou texto, identifique o tema exato que está escrito e comece a explicar. Fale sempre em voz alta.";
 
 export type StatusLive =
   | "inativo"
