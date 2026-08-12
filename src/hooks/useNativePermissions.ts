@@ -50,8 +50,8 @@ export function useNativePermissions() {
       //    o token se a permissão já foi concedida (evita popup na 1ª abertura).
       try {
         await ensureNativePushListeners();
-        const { PushNotifications } = await import('@capacitor/push-notifications');
-        const perm = await PushNotifications.checkPermissions();
+        const { FirebaseMessaging } = await import('@capacitor-firebase/messaging');
+        const perm = await FirebaseMessaging.checkPermissions();
         if (perm.receive === 'granted') {
           await registerNativePushToken();
         }

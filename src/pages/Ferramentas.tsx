@@ -111,9 +111,14 @@ const Ferramentas = () => {
                   />
                   <ChevronRight className="w-5 h-5 text-muted-foreground/40 group-hover:text-primary transition-colors shrink-0" />
                 </div>
-                <span className="font-display text-[14px] font-bold leading-tight text-foreground line-clamp-2 w-full mt-auto">
-                  {tool.label}
-                </span>
+                <div className="flex flex-col items-start w-full mt-auto gap-0.5">
+                  <span className="font-display text-[14px] font-bold leading-tight text-foreground line-clamp-1 w-full">
+                    {tool.label}
+                  </span>
+                  <span className="text-[11px] font-medium text-muted-foreground line-clamp-1 w-full text-left">
+                    {tool.desc}
+                  </span>
+                </div>
               </motion.button>
             );
           })}

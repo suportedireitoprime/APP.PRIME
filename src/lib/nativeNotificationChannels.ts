@@ -9,7 +9,7 @@
  * (`aps.sound: "oab_estudante.caf"`).
  */
 import { Capacitor } from "@capacitor/core";
-import { PushNotifications } from "@capacitor/push-notifications";
+import { FirebaseMessaging } from "@capacitor-firebase/messaging";
 
 export type PerfilUsuario = "estudante" | "concurseiro" | "advogado";
 
@@ -25,7 +25,7 @@ export async function configurarCanaisDeNotificacao() {
   if (!Capacitor.isNativePlatform() || Capacitor.getPlatform() !== "android") return;
 
   try {
-    await PushNotifications.createChannel({
+    await FirebaseMessaging.createChannel({
       id: DEFAULT_PUSH_CHANNEL_ID,
       name: "Direito Prime · Alertas",
       description: "Alertas principais do app.",
@@ -41,7 +41,7 @@ export async function configurarCanaisDeNotificacao() {
   for (const perfil of Object.keys(CANAIS_POR_PERFIL) as PerfilUsuario[]) {
     const cfg = CANAIS_POR_PERFIL[perfil];
     try {
-      await PushNotifications.createChannel({
+      await FirebaseMessaging.createChannel({
         id: cfg.id,
         name: `OAB · ${perfil.charAt(0).toUpperCase() + perfil.slice(1)}`,
         description: `Notificações personalizadas para ${perfil}.`,

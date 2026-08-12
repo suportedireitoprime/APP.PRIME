@@ -381,7 +381,7 @@ const AdminAudioaulas = () => {
         .from('vade_mecum_artigos')
         .select('id, numero, texto, ordem')
         .eq('lei_id', leiRef.id)
-        .ilike('numero', 'art%')
+        .ilike('texto', 'Art%')
         .order('ordem', { ascending: true })
         .limit(500);
       setArtigosLei(arts || []);

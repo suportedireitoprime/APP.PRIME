@@ -1,5 +1,7 @@
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { motion } from 'framer-motion';
+import { Scale, Leaf } from 'lucide-react';
 import type { Tema } from '@/hooks/useLeitorPrefs';
 
 export interface PaginaData {
@@ -36,39 +38,73 @@ const PaginaConteudo = ({ pagina, tema, fonte, fontSize, lineHeight, alinhamento
         data-reader-article
         className={
           isMobileFlip
-            ? 'w-full h-full max-w-none px-4 pt-20 pb-24 flex flex-col justify-start text-left gap-5 box-border overflow-hidden'
+            ? 'relative w-full h-full max-w-none px-6 pt-20 pb-24 flex flex-col justify-center items-center text-center gap-6 box-border overflow-hidden'
             : compact
-              ? 'w-full h-full max-w-none px-6 pt-20 pb-24 flex flex-col justify-start text-left gap-5 box-border overflow-hidden'
-              : 'mx-auto max-w-2xl md:max-w-3xl lg:max-w-4xl px-6 md:px-10 h-full min-h-[70vh] flex flex-col items-center justify-center text-center gap-6 py-16'
+              ? 'relative w-full h-full max-w-none px-8 pt-20 pb-24 flex flex-col justify-center items-center text-center gap-6 box-border overflow-hidden'
+              : 'relative mx-auto max-w-2xl md:max-w-3xl lg:max-w-4xl px-6 md:px-10 h-full min-h-[70vh] flex flex-col items-center justify-center text-center gap-8 py-16 overflow-hidden'
         }
       >
-        <div className={`w-16 h-[2px] rounded-full ${dark ? 'bg-primary/80' : 'bg-primary'}`} />
+        {/* Background Animations */}
+        <motion.div
+          className="absolute inset-0 flex items-center justify-center pointer-events-none"
+          style={{ opacity: dark ? 0.04 : 0.03 }}
+          animate={{ rotate: [-2, 2, -2], y: [-8, 8, -8] }}
+          transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
+        >
+          <Scale className="w-[85vw] max-w-[450px] h-auto" />
+        </motion.div>
+
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          {[...Array(5)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute"
+              style={{ opacity: dark ? 0.08 : 0.06 }}
+              initial={{ top: -50, left: `${20 + i * 15}%`, rotate: 0 }}
+              animate={{ 
+                top: '110%', 
+                left: `${10 + i * 20}%`,
+                rotate: 360 
+              }}
+              transition={{ 
+                duration: 18 + i * 4, 
+                repeat: Infinity, 
+                ease: 'linear',
+                delay: i * 3
+              }}
+            >
+              <Leaf className={`w-${6 + (i % 3)} h-${6 + (i % 3)}`} />
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Content */}
+        <div className={`w-12 h-[1px] rounded-full z-10 ${dark ? 'bg-primary/60' : 'bg-primary/80'}`} />
         {pagina.cover.numero && (
           <p
-            className="uppercase tracking-[0.3em] text-xs opacity-70"
+            className="uppercase tracking-[0.35em] text-[11px] opacity-60 z-10 font-medium"
             style={{ fontFamily: fonte.family }}
           >
             {pagina.cover.numero}
           </p>
         )}
         <h1
-          className="font-bold leading-[1.1] break-words hyphens-none max-w-full"
+          className="font-medium leading-[1.25] break-words hyphens-none max-w-full z-10 text-center"
           style={{
             fontFamily: fonte.family,
             fontSize: isMobileFlip
-              ? `clamp(1.55rem, ${Math.round(fontSize * 1.45)}px, 2.15rem)`
-              : `clamp(1.6rem, ${Math.round(fontSize * 1.55)}px, 2.4rem)`,
+              ? `clamp(1.6rem, ${Math.round(fontSize * 1.55)}px, 2.3rem)`
+              : `clamp(1.75rem, ${Math.round(fontSize * 1.7)}px, 2.75rem)`,
             wordBreak: 'normal',
             overflowWrap: 'break-word',
-            hyphens: 'none',
-            WebkitHyphens: 'none',
+            letterSpacing: '-0.02em',
           }}
           lang="pt-BR"
         >
           {pagina.cover.titulo}
         </h1>
-        <div className={`w-16 h-[2px] rounded-full ${dark ? 'bg-primary/80' : 'bg-primary'}`} />
-        <p className="opacity-50 text-xs mt-2">Deslize para começar o capítulo</p>
+        <div className={`w-12 h-[1px] rounded-full z-10 ${dark ? 'bg-primary/60' : 'bg-primary/80'}`} />
+        <p className="opacity-40 text-[11px] mt-6 z-10 tracking-wide">Deslize para começar</p>
       </div>
     );
   }

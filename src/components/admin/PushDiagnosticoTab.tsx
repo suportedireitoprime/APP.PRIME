@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Capacitor } from "@capacitor/core";
-import { PushNotifications } from "@capacitor/push-notifications";
+import { FirebaseMessaging } from "@capacitor-firebase/messaging";
 import { LocalNotifications } from "@capacitor/local-notifications";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -33,10 +33,18 @@ export default function PushDiagnosticoTab() {
       const d: Diag = { platform, isNative };
 
       if (isNative) {
-        try { d.pushPerm = (await PushNotifications.checkPermissions()).receive; } catch (e) { d.pushPerm = `err:${e}`; }
+        try {
+          const { receive } = await FirebaseMessaging.checkPermissions();
+          let currentPerm = receive;
+          if (currentPerm === 'prompt') {
+            const { receive: newReceive } = await FirebaseMessaging.requestPermissions();
+            currentPerm = newReceive;
+          }
+          d.pushPerm = currentPerm;
+        } catch (e) { d.pushPerm = `err:${e}`; }
         try { d.localPerm = (await LocalNotifications.checkPermissions()).display; } catch (e) { d.localPerm = `err:${e}`; }
         try {
-          const r = await PushNotifications.listChannels();
+          const r = await FirebaseMessaging.listChannels();
           d.channels = (r.channels ?? []).map((c: any) => ({ id: c.id, importance: c.importance, name: c.name, sound: c.sound }));
           d.hasDefaultChannel = d.channels.some((c) => c.id === "vacatio-alertas-v2" && (c.importance ?? 0) >= 4);
         } catch (e) { d.channels = []; }

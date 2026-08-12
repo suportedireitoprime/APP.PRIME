@@ -493,10 +493,7 @@ export default function ObraDetailSheet({ obra, open, onClose }: Props) {
                     )}
 
                     <section className="mt-6">
-                      <div className="flex items-center gap-2 mb-3">
-                        <div className="w-8 h-8 rounded-lg bg-primary/15 flex items-center justify-center">
-                          <Sparkles className="w-4 h-4 text-primary" strokeWidth={2} />
-                        </div>
+                      <div className="mb-3">
                         <h3 className="font-display font-bold text-base text-foreground">
                           Por que um estudante de Direito deveria assistir?
                         </h3>

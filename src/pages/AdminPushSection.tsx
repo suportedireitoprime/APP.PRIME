@@ -459,9 +459,7 @@ export default function AdminPushSection() {
                 <Label className="text-sm font-semibold">Canal de envio</Label>
                 <div className="grid grid-cols-3 gap-2 mt-2">
                   {([
-                    { v: "app", label: "App", desc: "Push" },
-                    { v: "horus", label: "Horus", desc: "WhatsApp" },
-                    { v: "both", label: "Ambos", desc: "App + WhatsApp" },
+                    { v: "app", label: "App", desc: "Push Exclusivo" },
                   ] as { v: Channel; label: string; desc: string }[]).map((opt) => (
                     <button
                       key={opt.v}
@@ -478,6 +476,7 @@ export default function AdminPushSection() {
                     </button>
                   ))}
                 </div>
+              </div>
                 <label className="mt-3 flex items-start gap-2 rounded-lg border border-border p-3 cursor-pointer hover:bg-secondary/40 transition-colors">
                   <input
                     type="checkbox"

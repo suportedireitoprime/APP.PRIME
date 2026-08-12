@@ -1,5 +1,5 @@
 import { Capacitor } from '@capacitor/core';
-import { PushNotifications } from '@capacitor/push-notifications';
+import { FirebaseMessaging } from '@capacitor-firebase/messaging';
 import { supabase } from '@/integrations/supabase/client';
 import { DEFAULT_PUSH_CHANNEL_ID, configurarCanaisDeNotificacao } from '@/lib/nativeNotificationChannels';
 
@@ -192,21 +192,18 @@ export async function ensureNativePushListeners() {
   if (listenersReady) return listenersReady;
 
   listenersReady = (async () => {
-    await PushNotifications.addListener('registration', async (token) => {
-      const result = await saveNativePushToken(token.value);
-      waitingForRegistration?.({ ...result, token: token.value });
-      waitingForRegistration = null;
-    });
-
-    await PushNotifications.addListener('registrationError', (err) => {
-      console.warn('Push registration error', err);
-      waitingForRegistration?.({ ok: false, reason: JSON.stringify(err) });
+    await FirebaseMessaging.addListener('tokenReceived', async (event) => {
+      const result = await saveNativePushToken(event.token);
+      waitingForRegistration?.({ ...result, token: event.token });
       waitingForRegistration = null;
     });
 
     // Toque na notificação (app em background/fechado ou aberto)
-    await PushNotifications.addListener('pushNotificationActionPerformed', (action) => {
-      const data = (action.notification?.data ?? {}) as Record<string, string>;
+    await FirebaseMessaging.addListener('notificationActionPerformed', (event) => {
+      const notif = event.notification;
+      const data = (notif?.data ?? {}) as Record<string, string>;
+      const actionId = event.actionId; // Ex: 'read_now', 'dismiss'
+      
       const url = data.url;
       const campaignId = data.campaign_id;
 
@@ -247,7 +244,8 @@ export async function ensureNativePushListeners() {
     });
 
     // Notificação chegou com app aberto — mostramos nosso Popup In-App customizado
-    await PushNotifications.addListener('pushNotificationReceived', async (notif) => {
+    await FirebaseMessaging.addListener('notificationReceived', async (event) => {
+      const notif = event.notification;
       const data = (notif.data ?? {}) as Record<string, string>;
       const campaignId = data.campaign_id;
 
@@ -269,12 +267,9 @@ export async function ensureNativePushListeners() {
     });
 
     // Cold-start recovery: quando o app abre a partir de uma notificação
-    // (killed → foreground), o evento `pushNotificationActionPerformed`
-    // costuma disparar antes do listener anexar. Percorremos as notificações
-    // ainda entregues e registramos como abertas — o backend deduplica por
-    // install_id, então não conta em dobro.
+    // (killed → foreground), o evento costuma disparar antes do listener anexar. 
     try {
-      const { notifications } = await PushNotifications.getDeliveredNotifications();
+      const { notifications } = await FirebaseMessaging.getDeliveredNotifications();
       for (const n of notifications ?? []) {
         const data = ((n as any).data ?? {}) as Record<string, string>;
         const campaignId = data.campaign_id;
@@ -299,9 +294,9 @@ export async function registerNativePushToken(timeoutMs = 5000): Promise<Registe
   await ensureNativePushListeners();
   await flushPendingNativePushToken();
 
-  let permission = await PushNotifications.checkPermissions();
+  let permission = await FirebaseMessaging.checkPermissions();
   if (permission.receive === 'prompt' || permission.receive === 'prompt-with-rationale') {
-    permission = await PushNotifications.requestPermissions();
+    permission = await FirebaseMessaging.requestPermissions();
   }
 
   if (permission.receive !== 'granted') {
@@ -321,6 +316,32 @@ export async function registerNativePushToken(timeoutMs = 5000): Promise<Registe
     }, timeoutMs);
   });
 
-  await PushNotifications.register();
-  return registration;
+  try {
+    const { token } = await FirebaseMessaging.getToken();
+    const result = await saveNativePushToken(token);
+    
+    // Resolve o timeout
+    if (waitingForRegistration) {
+      waitingForRegistration(result);
+      waitingForRegistration = null;
+    }
+    return result;
+  } catch (e: any) {
+    if (waitingForRegistration) {
+      waitingForRegistration({ ok: false, reason: e?.message });
+      waitingForRegistration = null;
+    }
+    return { ok: false, reason: e?.message };
+  }
+}
+
+// Bônus: Suporte a Tópicos (Firebase Messaging)
+export async function subscribeToTopic(topicName: string) {
+  if (!Capacitor.isNativePlatform()) return;
+  try { await FirebaseMessaging.subscribeToTopic({ topic: topicName }); } catch (e) { console.warn(e); }
+}
+
+export async function unsubscribeFromTopic(topicName: string) {
+  if (!Capacitor.isNativePlatform()) return;
+  try { await FirebaseMessaging.unsubscribeFromTopic({ topic: topicName }); } catch (e) { console.warn(e); }
 }

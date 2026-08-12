@@ -198,7 +198,7 @@ async function fetchObra(
   tmdb_id: number,
   tipo: "movie" | "tv",
 ): Promise<any | null> {
-  const url = `https://api.themoviedb.org/3/${tipo}/${tmdb_id}?language=pt-BR&append_to_response=videos,credits,watch/providers`;
+  const url = `https://api.themoviedb.org/3/${tipo}/${tmdb_id}?language=pt-BR&append_to_response=videos,credits,watch/providers&include_video_language=pt-BR,pt,en-US,en,null`;
   const res = await fetch(url, {
     headers: {
       Authorization: `Bearer ${tmdbToken}`,

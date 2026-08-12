@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/sheet";
 import {
   Loader2, RefreshCw, Clock, CheckCircle2, CircleDashed, Eye, Send, Smartphone, MessageCircle, Sparkles,
-  AlertCircle, Check, Bell, MailOpen, XCircle,
+  AlertCircle, Check, Bell, MailOpen, XCircle, ChevronLeft, ChevronRight, Calendar
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -35,15 +35,13 @@ interface EventoBase {
   deep_link?: string;
 }
 
-// Plano A — 6 disparos/dia, sempre com principal + complemento no par.
-// Todos os horários em BRT (America/Sao_Paulo).
 const EVENTOS_FIXOS: EventoBase[] = [
   {
     hora: 7, minuto: 0, automation_key: "boletim_leis_matinal",
     nome: "Boletim de Leis matinal", emoji: "📜", canal: "app",
-    papel: "principal", complemento: "horus", deep_link: "/radar-360",
-    descricao: "Push do app é o principal. Horus manda o complemento com o link que abre o app.",
-    publico: "Todos com opt-in de push (+ opt-in Horus para o complemento)",
+    papel: "unico", deep_link: "/radar-360",
+    descricao: "Push exclusivo pelo App com as novas leis do dia.",
+    publico: "Todos com opt-in de push",
     regra: "Só envia se houver ao menos 1 lei nova na resenha de 24h. Senão marca como 'não enviado'.",
     titulo_exemplo: "📜 3 leis novas pra você ler",
     corpo_exemplo: "• Lei nº X\n• Decreto nº Y\n• Medida Provisória Z",
@@ -51,8 +49,8 @@ const EVENTOS_FIXOS: EventoBase[] = [
   {
     hora: 8, minuto: 30, automation_key: "blog_post_manha",
     nome: "Blog — post da manhã", emoji: "📰", canal: "app",
-    papel: "principal", complemento: "horus", deep_link: "/blog/:id",
-    descricao: "Push do app é o principal. Horus complementa no WhatsApp com o link do post.",
+    papel: "unico", deep_link: "/blog/:id",
+    descricao: "Push pelo App para avisar sobre o novo post do blog.",
     publico: "Todos com push habilitado",
     regra: "Envia o primeiro post pendente do dia. Se nenhum, pula sem enviar.",
     titulo_exemplo: "📰 Novo post no Blog Direito Prime",
@@ -60,29 +58,29 @@ const EVENTOS_FIXOS: EventoBase[] = [
   },
   {
     hora: 12, minuto: 30, automation_key: "noticias_dia",
-    nome: "Notícias jurídicas do dia", emoji: "📰", canal: "horus",
-    papel: "principal", complemento: "app", deep_link: "/noticias",
-    descricao: "Horus é o principal (curadoria com 3 manchetes). Push do app reforça em seguida.",
-    publico: "Horus: opt-in de leis. Push: todos com push habilitado.",
+    nome: "Notícias jurídicas do dia", emoji: "📰", canal: "app",
+    papel: "unico", deep_link: "/noticias",
+    descricao: "Push do app com as 3 manchetes principais.",
+    publico: "Todos com push habilitado.",
     regra: "1 disparo único por dia. Se o dia não tem notícias, pula.",
     titulo_exemplo: "📰 Notícias jurídicas de hoje",
     corpo_exemplo: "1. STF decide sobre...\n2. Nova lei sobre...\n3. Reforma tributária...",
   },
   {
     hora: 16, minuto: 0, automation_key: "personalizada_horus",
-    nome: "Lembrete de estudo (Horus)", emoji: "🦉", canal: "horus",
-    papel: "principal", complemento: "app", deep_link: "/aprender",
-    descricao: "Horus é o principal — mensagem personalizada com o nome. App complementa com um push discreto.",
+    nome: "Lembrete de estudo", emoji: "🦉", canal: "app",
+    papel: "unico", deep_link: "/aprender",
+    descricao: "Push discreto pelo App lembrando do cronograma de estudos.",
     publico: "Cada usuário no seu horário-pico individual (16h é referência do slot).",
     regra: "Baseado no que a pessoa mais estuda. Cap 1x/dia por usuário.",
     titulo_exemplo: "Rafael, separei o Art. 5º pra você",
-    corpo_exemplo: "Quer que eu te mande a videoaula complementar?",
+    corpo_exemplo: "Quer continuar de onde parou?",
   },
   {
     hora: 19, minuto: 30, automation_key: "boletim_noticias_diario",
     nome: "Boletim de Notícias (curadoria)", emoji: "🎙️", canal: "app",
-    papel: "principal", complemento: "horus", deep_link: "/boletins-noticias",
-    descricao: "Push do app com o boletim editado do dia. Horus reforça no WhatsApp.",
+    papel: "unico", deep_link: "/boletins-noticias",
+    descricao: "Push do app com o boletim editado do dia.",
     publico: "Todos com opt-in",
     regra: "Roda diariamente às 19:30 BRT.",
     titulo_exemplo: "🎙️ Boletim de Notícias pronto",
@@ -92,7 +90,7 @@ const EVENTOS_FIXOS: EventoBase[] = [
     hora: 21, minuto: 0, automation_key: "personalizada_app",
     nome: "Nudge personalizado (App)", emoji: "✨", canal: "app",
     papel: "unico", deep_link: "/",
-    descricao: "Push discreto no horário-pico do usuário. Sem complemento, para fechar o dia sem excesso.",
+    descricao: "Push discreto no horário-pico do usuário para fechar o dia.",
     publico: "Cada usuário no seu horário-pico individual.",
     regra: "Analisa artigos/leis mais acessados nos últimos 30 dias. Cap 1x/dia.",
     titulo_exemplo: "Rafael, o Art. 5º te espera 👀",
@@ -150,12 +148,15 @@ export default function PushCronogramaTab() {
   const [logs, setLogs] = useState<LogRow[]>([]);
   const [detalhe, setDetalhe] = useState<EventoBase | null>(null);
   const [testando, setTestando] = useState<string | null>(null);
+  const [reportType, setReportType] = useState<"enviadas" | "abertas" | "entregues" | "falhas" | null>(null);
+
+  const [dataFiltro, setDataFiltro] = useState(new Date());
 
   async function load() {
     setLoading(true);
     try {
-      const inicio = new Date(); inicio.setHours(0, 0, 0, 0);
-      const fim = new Date(); fim.setHours(23, 59, 59, 999);
+      const inicio = new Date(dataFiltro); inicio.setHours(0, 0, 0, 0);
+      const fim = new Date(dataFiltro); fim.setHours(23, 59, 59, 999);
       const [campRes, logRes] = await Promise.all([
         supabase
           .from("push_campaigns")
@@ -178,10 +179,22 @@ export default function PushCronogramaTab() {
     }
   }
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [dataFiltro]);
 
+  const isToday = dataFiltro.toDateString() === new Date().toDateString();
   const agora = new Date();
-  const horaAtual = agora.getHours() + agora.getMinutes() / 60;
+  const horaAtual = isToday ? agora.getHours() + agora.getMinutes() / 60 : 25; // Se não for hoje, não destaca "próximo"
+
+  // Gerar dias para o calendário (últimos 7 dias, hoje + 2 futuros se quiser, vamos focar nos últimos 7 e hoje)
+  const dias = useMemo(() => {
+    const list = [];
+    for (let i = -7; i <= 2; i++) {
+      const d = new Date();
+      d.setDate(d.getDate() + i);
+      list.push(d);
+    }
+    return list;
+  }, []);
 
   const eventos = useMemo(() => {
     type EventoView = EventoBase & {
@@ -280,37 +293,72 @@ export default function PushCronogramaTab() {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
+      {/* Calendário Horizontal */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-none snap-x">
+        {dias.map((d, i) => {
+          const selecionado = d.toDateString() === dataFiltro.toDateString();
+          const hoje = d.toDateString() === new Date().toDateString();
+          return (
+            <button
+              key={i}
+              onClick={() => setDataFiltro(d)}
+              className={`snap-center flex flex-col items-center justify-center min-w-[64px] h-16 rounded-xl border transition-all ${
+                selecionado
+                  ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                  : hoje
+                  ? "bg-primary/10 border-primary/30 text-primary"
+                  : "bg-background border-border text-muted-foreground hover:bg-secondary"
+              }`}
+            >
+              <div className="text-[10px] uppercase font-semibold">{d.toLocaleDateString("pt-BR", { weekday: "short" }).replace(".", "")}</div>
+              <div className="text-xl font-bold leading-none mt-1">{d.getDate()}</div>
+            </button>
+          );
+        })}
+      </div>
+
       {/* Cards de resumo do dia */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-        <Card className="p-3">
-          <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground uppercase tracking-wide">
-            <Send className="w-3 h-3" /> Enviadas
-          </div>
-          <div className="text-2xl font-bold mt-1">{resumo.enviadas}</div>
-          <div className="text-[10px] text-muted-foreground">{resumo.campanhasSent} campanha{resumo.campanhasSent === 1 ? "" : "s"}</div>
-        </Card>
-        <Card className="p-3">
-          <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground uppercase tracking-wide">
-            <MailOpen className="w-3 h-3" /> Abertas
-          </div>
-          <div className="text-2xl font-bold mt-1 text-emerald-600">{resumo.abertas}</div>
-          <div className="text-[10px] text-muted-foreground">{resumo.taxaAbertura}% de taxa</div>
-        </Card>
-        <Card className="p-3">
-          <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground uppercase tracking-wide">
-            <Check className="w-3 h-3" /> Entregues
-          </div>
-          <div className="text-2xl font-bold mt-1">{resumo.entregues}</div>
-          <div className="text-[10px] text-muted-foreground">confirmadas pelo dispositivo</div>
-        </Card>
-        <Card className={`p-3 ${resumo.falhas > 0 ? "border-red-500/40" : ""}`}>
-          <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground uppercase tracking-wide">
-            <XCircle className="w-3 h-3" /> Falhas
-          </div>
-          <div className={`text-2xl font-bold mt-1 ${resumo.falhas > 0 ? "text-red-500" : ""}`}>{resumo.falhas}</div>
-          <div className="text-[10px] text-muted-foreground">{resumo.comErro} campanha{resumo.comErro === 1 ? "" : "s"} c/ erro</div>
-        </Card>
+      <div className="grid grid-cols-4 gap-2">
+        <button type="button" onClick={() => setReportType("enviadas")} className="text-left outline-none rounded-xl focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all hover:scale-[1.02] active:scale-95">
+          <Card className="p-3 h-full hover:border-primary/50 transition-colors">
+            <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground uppercase tracking-wide">
+              <Send className="w-3 h-3" /> Enviadas
+            </div>
+            <div className="text-2xl font-bold mt-1">{resumo.enviadas}</div>
+            <div className="text-[10px] text-muted-foreground">{resumo.campanhasSent} campanha{resumo.campanhasSent === 1 ? "" : "s"}</div>
+          </Card>
+        </button>
+
+        <button type="button" onClick={() => setReportType("abertas")} className="text-left outline-none rounded-xl focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 transition-all hover:scale-[1.02] active:scale-95">
+          <Card className="p-3 h-full hover:border-emerald-500/50 transition-colors">
+            <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground uppercase tracking-wide">
+              <MailOpen className="w-3 h-3" /> Abertas
+            </div>
+            <div className="text-2xl font-bold mt-1 text-emerald-600">{resumo.abertas}</div>
+            <div className="text-[10px] text-muted-foreground">{resumo.taxaAbertura}% de taxa</div>
+          </Card>
+        </button>
+
+        <button type="button" onClick={() => setReportType("entregues")} className="text-left outline-none rounded-xl focus:ring-2 focus:ring-sky-500/40 focus:border-sky-500 transition-all hover:scale-[1.02] active:scale-95">
+          <Card className="p-3 h-full hover:border-sky-500/50 transition-colors">
+            <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground uppercase tracking-wide">
+              <Check className="w-3 h-3" /> Entregues
+            </div>
+            <div className="text-2xl font-bold mt-1">{resumo.entregues}</div>
+            <div className="text-[10px] text-muted-foreground">confirmadas</div>
+          </Card>
+        </button>
+
+        <button type="button" onClick={() => setReportType("falhas")} className="text-left outline-none rounded-xl focus:ring-2 focus:ring-red-500/40 focus:border-red-500 transition-all hover:scale-[1.02] active:scale-95">
+          <Card className={`p-3 h-full hover:border-red-500/50 transition-colors ${resumo.falhas > 0 ? "border-red-500/40" : ""}`}>
+            <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground uppercase tracking-wide">
+              <XCircle className="w-3 h-3" /> Falhas
+            </div>
+            <div className={`text-2xl font-bold mt-1 ${resumo.falhas > 0 ? "text-red-500" : ""}`}>{resumo.falhas}</div>
+            <div className="text-[10px] text-muted-foreground">{resumo.comErro} com erro</div>
+          </Card>
+        </button>
       </div>
 
       {resumo.enviadas > 0 && resumo.entregues === 0 && (
@@ -326,7 +374,7 @@ export default function PushCronogramaTab() {
 
       <div className="flex items-center justify-between">
         <p className="text-xs text-muted-foreground flex items-center gap-1">
-          <Clock className="w-3 h-3 text-primary" /> Linha do tempo das notificações do dia.
+          <Clock className="w-3 h-3 text-primary" /> Linha do tempo: {dataFiltro.toLocaleDateString("pt-BR")}
         </p>
         <Button size="sm" variant="ghost" onClick={load} disabled={loading}>
           {loading ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : <RefreshCw className="w-3 h-3 mr-1" />}
@@ -456,11 +504,21 @@ export default function PushCronogramaTab() {
                   <div>{detalhe.regra}</div>
                 </div>
                 <div>
-                  <div className="text-xs font-semibold text-muted-foreground mb-1">Prévia da mensagem</div>
-                  <Card className="p-3 bg-muted/40">
-                    <div className="font-semibold">{detalhe.titulo_exemplo}</div>
-                    <div className="text-muted-foreground whitespace-pre-line mt-1">{detalhe.corpo_exemplo}</div>
-                  </Card>
+                  <div className="text-xs font-semibold text-muted-foreground mb-1">Prévia de como será visto (Android)</div>
+                  <div className="bg-black rounded-3xl p-4 overflow-hidden border border-zinc-800 relative mx-auto max-w-[320px] shadow-2xl">
+                    <div className="bg-[#242424] rounded-2xl p-3 shadow-lg flex gap-3 text-white">
+                      <div className="w-10 h-10 bg-gradient-to-br from-[#1c1c1e] to-[#2c2c2e] rounded-xl flex items-center justify-center shrink-0 border border-zinc-700/50">
+                        <img src="/icons/icon-72x72.png" alt="Icon" className="w-6 h-6 rounded shadow-sm" onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" fill="%23fff" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L2 22h20L12 2z"/></svg>' }} />
+                      </div>
+                      <div className="flex-1 min-w-0 flex flex-col justify-center">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="font-semibold text-[13px] text-zinc-100 truncate flex items-center gap-1">Direito Prime <span className="text-[10px] text-zinc-400 font-normal">agora</span></span>
+                        </div>
+                        <div className="font-medium text-[13px] text-zinc-100 mt-0.5 leading-tight">{detalhe.titulo_exemplo}</div>
+                        <div className="text-[12px] text-zinc-300 line-clamp-2 mt-0.5 leading-snug">{detalhe.corpo_exemplo}</div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <Button
                   className="w-full" disabled={testando === detalhe.automation_key}
@@ -476,6 +534,86 @@ export default function PushCronogramaTab() {
           )}
         </SheetContent>
       </Sheet>
+
+      <DailyReportSheet type={reportType} date={dataFiltro} onClose={() => setReportType(null)} />
     </div>
+  );
+}
+
+function DailyReportSheet({ type, date, onClose }: { type: "enviadas"|"abertas"|"entregues"|"falhas"|null; date: Date; onClose: () => void }) {
+  const [loading, setLoading] = useState(false);
+  const [rows, setRows] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (!type) return;
+    setLoading(true);
+    (async () => {
+      const inicio = new Date(date); inicio.setHours(0, 0, 0, 0);
+      const fim = new Date(date); fim.setHours(23, 59, 59, 999);
+      
+      let eventFilter = "";
+      if (type === "enviadas") eventFilter = "sent";
+      else if (type === "abertas") eventFilter = "opened";
+      else if (type === "entregues") eventFilter = "delivered";
+      else if (type === "falhas") eventFilter = "failed";
+
+      const { data, error } = await supabase
+        .from("push_events")
+        .select("id, user_id, platform, event_type, error, created_at, metadata")
+        .eq("event_type", eventFilter)
+        .gte("created_at", inicio.toISOString())
+        .lte("created_at", fim.toISOString())
+        .order("created_at", { ascending: false })
+        .limit(300);
+
+      if (error) toast.error(error.message);
+      
+      const list = data ?? [];
+      const userIds = Array.from(new Set(list.filter(x => x.user_id).map(x => x.user_id)));
+      if (userIds.length > 0) {
+        const { data: profs } = await supabase.from("profiles").select("id, display_name").in("id", userIds);
+        const pMap = new Map(profs?.map(p => [p.id, p.display_name]) ?? []);
+        list.forEach(item => {
+           (item as any).display_name = pMap.get(item.user_id);
+        });
+      }
+      
+      setRows(list);
+      setLoading(false);
+    })();
+  }, [type, date]);
+
+  const titles = { enviadas: "Disparos Realizados", abertas: "Notificações Abertas", entregues: "Entregas Confirmadas", falhas: "Relatório de Falhas" };
+
+  return (
+    <Sheet open={!!type} onOpenChange={(o) => !o && onClose()}>
+      <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto">
+        <SheetHeader>
+          <SheetTitle>{type ? titles[type] : ""}</SheetTitle>
+          <SheetDescription>Eventos detalhados do dia {date.toLocaleDateString("pt-BR")}</SheetDescription>
+        </SheetHeader>
+        
+        {loading ? (
+          <div className="flex justify-center p-8"><Loader2 className="w-5 h-5 animate-spin" /></div>
+        ) : (
+          <div className="space-y-2 mt-4 pb-12">
+            {rows.length === 0 && <p className="text-muted-foreground text-center py-4 text-sm">Nenhum registro encontrado para este dia.</p>}
+            {rows.map((r, i) => (
+              <div key={i} className={`p-3 border rounded-lg bg-card text-sm flex flex-col gap-1.5 ${type === "falhas" ? "border-red-500/20 bg-red-500/5" : ""}`}>
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold truncate flex-1">{r.display_name || r.user_id || "Aparelho Anônimo"}</span>
+                  <span className="text-xs text-muted-foreground font-mono ml-2 shrink-0">{new Date(r.created_at).toLocaleTimeString("pt-BR")}</span>
+                </div>
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span className="capitalize px-2 py-0.5 rounded-full bg-secondary text-[10px] font-semibold">{r.platform || "app"}</span>
+                  {type === "falhas" && <span className="text-red-500 font-mono truncate text-right flex-1 ml-2">{r.error || "Erro desconhecido"}</span>}
+                  {type === "abertas" && r.metadata?.time_on_screen && <span className="text-emerald-500 flex items-center gap-1"><Clock className="w-3 h-3"/> +{r.metadata.time_on_screen}s em tela</span>}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </SheetContent>
+    </Sheet>
   );
 }

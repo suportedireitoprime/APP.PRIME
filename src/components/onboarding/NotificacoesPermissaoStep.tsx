@@ -62,13 +62,14 @@ export default function NotificacoesPermissaoStep({
     let granted = false;
     try {
       if (Capacitor.isNativePlatform()) {
-        const { PushNotifications } = await import('@capacitor/push-notifications');
-        const { LocalNotifications } = await import('@capacitor/local-notifications');
-        try { await LocalNotifications.requestPermissions(); } catch {}
-        const p = await PushNotifications.requestPermissions();
-        granted = p.receive === 'granted';
+        const { FirebaseMessaging } = await import('@capacitor-firebase/messaging');
+        let permStatus = await FirebaseMessaging.checkPermissions();
+        
+        if (permStatus.receive === 'prompt') {
+          permStatus = await FirebaseMessaging.requestPermissions();
+        }
+        granted = permStatus.receive === 'granted';
         if (granted) {
-          await PushNotifications.register();
           try {
             const { registerNativePushToken } = await import('@/lib/nativePush');
             await registerNativePushToken();

@@ -23,6 +23,7 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   '/admin-monitor-apis': () => import('./AdminMonitorApis'),
   '/admin-push': () => import('./AdminPush'),
   '/admin-horus': () => import('./AdminHorus'),
+  '/admin-horus-template': () => import('./AdminHorusTemplate'),
   '/admin-triagem': () => import('./AdminTriagem'),
   '/admin-triagem-entrada': () => import('./AdminTriagemEntrada'),
   '/teste-push': () => import('./TestePush'),
@@ -254,6 +255,8 @@ const CATEGORIES: Category[] = [
     icon: MessageCircle,
     items: [
       { id: 'admin-horus', label: 'Painel do Horus', icon: MessageCircle, desc: 'Instância, QR Code, usuários vinculados e conversas', route: '/admin-horus' },
+      { id: 'admin-horus-template', label: 'Horus Templates 3D', icon: ImageIcon, desc: 'Pré-visualização e guias de cenas 3D do Horus', route: '/admin-horus-template' },
+      { id: 'admin-triagem', label: 'Triagem de Entrada', icon: Target, desc: 'Onboarding com Horus, metas e curadoria', route: '/admin-triagem' },
     ],
   },
   {

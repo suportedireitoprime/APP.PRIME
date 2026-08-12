@@ -266,8 +266,9 @@ const AdminNativeAssets = lazy(() => import("./pages/AdminNativeAssets.tsx"));
 const AdminAprender = lazy(() => import("./pages/AdminAprender.tsx"));
 const AdminAprenderArea = lazy(() => import("./pages/AdminAprenderArea.tsx"));
 const AdminJurisprudencia = lazy(() => import("./pages/AdminJurisprudencia.tsx"));
-const AdminHorus = lazy(() => import("./pages/AdminHorus.tsx"));
-const AdminTriagem = lazy(() => import("./pages/AdminTriagem.tsx"));
+const AdminHorus = lazy(() => import('./pages/AdminHorus'));
+const AdminHorusTemplate = lazy(() => import('./pages/AdminHorusTemplate'));
+const AdminTriagem = lazy(() => import('./pages/AdminTriagem'));
 const AdminTriagemEntrada = lazy(() => import("./pages/AdminTriagemEntrada.tsx"));
 const AdminTriagemHub = lazy(() => import("./pages/AdminTriagemHub.tsx"));
 const HorusWhatsApp = lazy(() => import("./pages/HorusWhatsApp.tsx"));
@@ -695,6 +696,7 @@ function AnimatedRoutes() {
           <Routes location={location} key={location.pathname}>
           <Route path="/auth" element={<Auth />} />
           <Route path="/landing" element={<Landing />} />
+
           <Route path="/ir/*" element={<SmartLink />} />
           <Route path="/privacidade" element={<Privacidade />} />
           <Route path="/termos" element={<Termos />} />
@@ -889,6 +891,7 @@ function AnimatedRoutes() {
 
           <Route path="/admin-push/:section" element={<ProtectedRoute><PageTransition><AdminPushSection /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-horus" element={<ProtectedRoute><PageTransition><AdminHorus /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin-horus-template" element={<ProtectedRoute><PageTransition><AdminHorusTemplate /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-triagem" element={<ProtectedRoute><PageTransition><AdminTriagem /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-triagem-entrada" element={<ProtectedRoute><PageTransition><AdminTriagemEntrada /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-triagem-hub" element={<ProtectedRoute><PageTransition><AdminTriagemHub /></PageTransition></ProtectedRoute>} />
