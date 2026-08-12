@@ -128,7 +128,11 @@ export async function fetchProposicoes(tipo?: string, ano?: number, pagina = 1) 
   
   if (error || !data || data.length === 0) {
     let url = `${CAMARA_API}/proposicoes?ordem=DESC&ordenarPor=id&itens=20&pagina=${pagina}`;
-    if (tipo) url += `&siglaTipo=${tipo}`;
+    if (tipo) {
+      url += `&siglaTipo=${tipo}`;
+    } else {
+      url += `&siglaTipo=PL,PEC,PLP`;
+    }
     if (ano) url += `&ano=${ano}`;
     
     const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
