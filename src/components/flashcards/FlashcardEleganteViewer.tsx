@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback, memo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
 import {
   BookOpen,
   Scale,
@@ -11,6 +11,7 @@ import {
 import { getTemaCover } from "@/lib/flashcards-tema-cover";
 import laurel from '@/assets/landing-tribunal/laurel-leaf.png';
 import scales from '@/assets/landing-tribunal/scales.png';
+import { haptic } from "@/lib/nativeHaptics";
 
 export interface FlashcardElegante {
   pergunta: string;
@@ -76,6 +77,9 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
   const [flipped, setFlipped] = useState(false);
   const dirRef = useRef<1 | -1>(1);
   const completedRef = useRef(false);
+
+  const x = useMotionValue(0);
+  const dragRotate = useTransform(x, [-200, 200], [-10, 10]);
 
   const flipSoundRef = useRef<HTMLAudioElement | null>(null);
   const slideSoundRef = useRef<HTMLAudioElement | null>(null);
@@ -155,6 +159,17 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
     setFlipped((v) => !v);
   };
 
+  const handleDragEnd = (e: any, { offset }: any) => {
+    const swipe = offset.x;
+    if (swipe > 100) {
+      haptic.success();
+      goNext();
+    } else if (swipe < -100) {
+      haptic.heavy();
+      goNext();
+    }
+  };
+
   const slideVariants = {
     enter: (dir: 1 | -1) => ({ x: dir * 100, y: 20, rotate: dir * 8, opacity: 0, scale: 0.95 }),
     center: { x: 0, y: 0, rotate: 0, opacity: 1, scale: 1 },
@@ -220,8 +235,17 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
               opacity: { duration: 0.2 },
               scale: { duration: 0.2 },
             }}
-            style={{ willChange: "transform, opacity", transformOrigin: "bottom center" }}
+            style={{ 
+              willChange: "transform, opacity", 
+              transformOrigin: "bottom center",
+              x,
+              rotate: dragRotate 
+            }}
             className="absolute inset-0 z-10"
+            drag={!isLast ? "x" : false}
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.7}
+            onDragEnd={handleDragEnd}
           >
             <motion.div
               className="absolute inset-0 w-full h-full"
