@@ -23,7 +23,7 @@ function AuthorInfo({ proposicaoId }: { proposicaoId: string }) {
         if (autores[0].uri) {
           const match = autores[0].uri.match(/\/deputados\/(\d+)/);
           if (match && match[1]) {
-            const dep = await fetchDeputadoDetalhe(match[1]);
+            const dep = await fetchDeputadoDetalhe(Number(match[1]));
             if (isMounted && dep) {
               setDeputado(dep);
             }

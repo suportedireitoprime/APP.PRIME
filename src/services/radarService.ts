@@ -208,19 +208,6 @@ export function extractTags(ementa: string | null): string[] {
   return tagsFinais;
 }
 
-export async function fetchDeputadoDetalhe(id: string) {
-  const cacheKey = `deputadoDetalhe:${id}`;
-  const hit = cached<any>(cacheKey);
-  if (hit) return hit;
-  const url = `${CAMARA_API}/deputados/${id}`;
-  const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
-  if (!res.ok) return null;
-  const json = await res.json();
-  const result = json.dados;
-  if (result) setCache(cacheKey, result);
-  return result;
-}
-
 export async function fetchProposicaoDetalhe(id: string) {
   const cacheKey = `propDetalhe:${id}`;
   const hit = cached<any>(cacheKey);
