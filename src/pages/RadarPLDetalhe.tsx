@@ -79,15 +79,24 @@ function AuthorInfo({ proposicaoId }: { proposicaoId: string }) {
   );
 }
 
+import { GeracaoAnimacaoOverlay } from '@/components/vademecum/GeracaoAnimacaoOverlay';
+
 function EmentaExplicacao({ detalhe }: { detalhe: any }) {
   const [explicacao, setExplicacao] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('original');
+  const [stepIdx, setStepIdx] = useState(0);
 
   const gerar = async () => {
     setLoading(true);
+    setStepIdx(0);
     try {
       const texto = `Proposição: ${detalhe.siglaTipo} ${detalhe.numero}/${detalhe.ano}\nEmenta: ${detalhe.ementa}\nEmenta detalhada: ${detalhe.ementaDetalhada || ''}`;
       
+      const interval = setInterval(() => {
+        setStepIdx(prev => Math.min(prev + 1, 2));
+      }, 3500);
+
       const { data, error } = await supabase.functions.invoke('assistente-juridica', {
         body: { 
           mode: 'analise_pl',
@@ -95,72 +104,93 @@ function EmentaExplicacao({ detalhe }: { detalhe: any }) {
         },
       });
 
+      clearInterval(interval);
+      setStepIdx(3);
+
       if (error) throw error;
-      if (!data?.reply) throw new Error('Sem resposta da IA');
+      if (!data?.reply || data.reply.includes('Desculpe, não consegui')) {
+        throw new Error('Serviço de IA indisponível no momento. Tente novamente.');
+      }
       
       setExplicacao(data.reply);
       toast.success('Explicação gerada com sucesso!');
     } catch (e: any) {
       toast.error(e?.message || 'Falha ao gerar explicação');
+      setActiveTab('original');
     } finally {
-      setLoading(false);
+      setTimeout(() => setLoading(false), 500);
     }
   };
 
   return (
-    <Card className="bg-card/50 border-border/50">
-      <CardContent className="p-4 space-y-4">
-        <Tabs defaultValue="original" className="w-full">
-          <TabsList className="bg-secondary/60 rounded-xl h-11 grid grid-cols-2 w-full mb-4">
-            <TabsTrigger value="original" className="rounded-lg text-[13px] font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-4 py-2">Ementa</TabsTrigger>
-            <TabsTrigger value="explicacao" className="rounded-lg text-[13px] font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-4 py-2">Explicação</TabsTrigger>
-          </TabsList>
+    <>
+      <GeracaoAnimacaoOverlay
+        open={loading}
+        titulo="Gerando explicação do PL"
+        steps={[
+          'Lendo o texto do projeto',
+          'Simplificando termos jurídicos',
+          'Formatando análise',
+          'Pronto para ler',
+        ]}
+        stepIdx={stepIdx}
+        stepRanges={[[0, 20], [20, 85], [85, 98], [100, 100]]}
+        estTotalSec={8}
+      />
+      <Card className="bg-card/50 border-border/50">
+        <CardContent className="p-4 space-y-4">
+          <Tabs 
+            value={activeTab} 
+            onValueChange={(v) => {
+              setActiveTab(v);
+              if (v === 'explicacao' && !explicacao && !loading) {
+                gerar();
+              }
+            }} 
+            className="w-full"
+          >
+            <TabsList className="bg-secondary/60 rounded-xl h-11 grid grid-cols-2 w-full mb-4">
+              <TabsTrigger value="original" className="rounded-lg text-[13px] font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-4 py-2">Ementa</TabsTrigger>
+              <TabsTrigger value="explicacao" className="rounded-lg text-[13px] font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-4 py-2">Explicação</TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="original" className="space-y-2">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-primary">Ementa Original</p>
-            <p className="text-[14px] leading-relaxed text-muted-foreground">
-              {detalhe.ementa || 'Sem ementa disponível.'}
-            </p>
-            {detalhe.ementaDetalhada && (
-              <p className="text-[13px] leading-relaxed text-muted-foreground/80">{detalhe.ementaDetalhada}</p>
-            )}
-          </TabsContent>
+            <TabsContent value="original" className="space-y-2">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-primary">Ementa Original</p>
+              <p className="text-[14px] leading-relaxed text-muted-foreground">
+                {detalhe.ementa || 'Sem ementa disponível.'}
+              </p>
+              {detalhe.ementaDetalhada && (
+                <p className="text-[13px] leading-relaxed text-muted-foreground/80">{detalhe.ementaDetalhada}</p>
+              )}
+            </TabsContent>
 
-          <TabsContent value="explicacao">
-            {explicacao ? (
-              <div className="prose prose-sm dark:prose-invert max-w-none font-body text-sm [&_p]:my-2 [&_ul]:my-2 [&_ol]:my-2 [&_li]:my-1 [&_strong]:text-foreground text-muted-foreground">
-                <ReactMarkdown>{explicacao}</ReactMarkdown>
-              </div>
-            ) : loading ? (
-              <div className="flex flex-col items-center justify-center py-8 gap-4 text-center">
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <Loader2 className="w-6 h-6 text-primary animate-spin" />
+            <TabsContent value="explicacao">
+              {explicacao ? (
+                <div className="prose prose-sm dark:prose-invert max-w-none font-body text-sm [&_p]:my-2 [&_ul]:my-2 [&_ol]:my-2 [&_li]:my-1 [&_strong]:text-foreground text-muted-foreground">
+                  <ReactMarkdown>{explicacao}</ReactMarkdown>
                 </div>
-                <p className="text-sm text-muted-foreground font-body max-w-[250px]">
-                  Lendo o projeto e simplificando o texto para você...
-                </p>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center py-6 gap-3 text-center">
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <Sparkles className="w-6 h-6 text-primary" />
+              ) : (
+                <div className="flex flex-col items-center justify-center py-6 gap-3 text-center">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                    <Sparkles className="w-6 h-6 text-primary" />
+                  </div>
+                  <p className="text-sm text-muted-foreground font-body max-w-[280px]">
+                    Entenda o que este projeto de lei significa na prática.
+                  </p>
+                  <button
+                    onClick={gerar}
+                    className="mt-1 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-display text-sm font-semibold shadow-md active:scale-[0.98] transition-all"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    Gerar Explicação
+                  </button>
                 </div>
-                <p className="text-sm text-muted-foreground font-body max-w-[280px]">
-                  Entenda o que este projeto de lei significa na prática.
-                </p>
-                <button
-                  onClick={gerar}
-                  className="mt-1 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-display text-sm font-semibold shadow-md active:scale-[0.98] transition-all"
-                >
-                  <Sparkles className="w-4 h-4" />
-                  Gerar Explicação
-                </button>
-              </div>
-            )}
-          </TabsContent>
-        </Tabs>
-      </CardContent>
-    </Card>
+              )}
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
+    </>
   );
 }
 
