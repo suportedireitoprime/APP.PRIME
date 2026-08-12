@@ -161,6 +161,66 @@ export async function fetchProposicoes(tipo?: string, ano?: number, pagina = 1, 
   return data;
 }
 
+export function extractTags(ementa: string | null): string[] {
+  if (!ementa) return [];
+  const tags: string[] = [];
+  const text = ementa.toLowerCase();
+
+  if (text.includes('código penal') || text.includes('decreto-lei nº 2.848') || text.includes('decreto-lei n° 2.848')) tags.push('Código Penal');
+  if (text.includes('processo penal') || text.includes('decreto-lei nº 3.689') || text.includes('decreto-lei n° 3.689')) tags.push('Cód. Processo Penal');
+  if (text.includes('código civil') || text.includes('lei nº 10.406') || text.includes('lei n° 10.406')) tags.push('Código Civil');
+  if (text.includes('processo civil') || text.includes('lei nº 13.105') || text.includes('lei n° 13.105')) tags.push('Cód. Processo Civil');
+  if (text.includes('constituição') || text.includes('constituição federal') || text.match(/\bcf\b/)) tags.push('Constituição Federal');
+  if (text.includes('consolidação das leis do trabalho') || text.match(/\bclt\b/)) tags.push('CLT');
+  if (text.includes('código de defesa do consumidor') || text.includes('lei nº 8.078') || text.includes('lei n° 8.078')) tags.push('CDC');
+  if (text.includes('estatuto da criança e do adolescente') || text.includes('lei nº 8.069') || text.includes('lei n° 8.069')) tags.push('ECA');
+  if (text.includes('maria da penha') || text.includes('lei nº 11.340') || text.includes('lei n° 11.340')) tags.push('Maria da Penha');
+  if (text.includes('lei de drogas') || text.includes('lei nº 11.343') || text.includes('lei n° 11.343')) tags.push('Lei de Drogas');
+  if (text.includes('código de trânsito') || text.includes('lei nº 9.503') || text.includes('lei n° 9.503')) tags.push('CTB');
+  if (text.includes('estatuto da pessoa idosa') || text.includes('estatuto do idoso') || text.includes('lei nº 10.741')) tags.push('Estatuto da Pessoa Idosa');
+
+  const leiMatch = text.match(/lei (?:complementar )?n[º°]\s*([\d.]+)/gi);
+  if (leiMatch) {
+    leiMatch.forEach(m => {
+      const num = m.match(/n[º°]\s*([\d.]+)/i)?.[1];
+      const isComp = m.toLowerCase().includes('complementar');
+      if (num) {
+        tags.push(`${isComp ? 'Lei Complementar' : 'Lei'} nº ${num}`);
+      }
+    });
+  }
+
+  const uniqueTags = [...new Set(tags)];
+  const tagsFinais = uniqueTags.filter(t => {
+    if (t === 'Lei nº 2.848' && uniqueTags.includes('Código Penal')) return false;
+    if (t === 'Lei nº 3.689' && uniqueTags.includes('Cód. Processo Penal')) return false;
+    if (t === 'Lei nº 10.406' && uniqueTags.includes('Código Civil')) return false;
+    if (t === 'Lei nº 13.105' && uniqueTags.includes('Cód. Processo Civil')) return false;
+    if (t === 'Lei nº 8.078' && uniqueTags.includes('CDC')) return false;
+    if (t === 'Lei nº 8.069' && uniqueTags.includes('ECA')) return false;
+    if (t === 'Lei nº 11.340' && uniqueTags.includes('Maria da Penha')) return false;
+    if (t === 'Lei nº 11.343' && uniqueTags.includes('Lei de Drogas')) return false;
+    if (t === 'Lei nº 9.503' && uniqueTags.includes('CTB')) return false;
+    if (t === 'Lei nº 10.741' && uniqueTags.includes('Estatuto da Pessoa Idosa')) return false;
+    return true;
+  });
+
+  return tagsFinais;
+}
+
+export async function fetchDeputadoDetalhe(id: string) {
+  const cacheKey = `deputadoDetalhe:${id}`;
+  const hit = cached<any>(cacheKey);
+  if (hit) return hit;
+  const url = `${CAMARA_API}/deputados/${id}`;
+  const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+  if (!res.ok) return null;
+  const json = await res.json();
+  const result = json.dados;
+  if (result) setCache(cacheKey, result);
+  return result;
+}
+
 export async function fetchProposicaoDetalhe(id: string) {
   const cacheKey = `propDetalhe:${id}`;
   const hit = cached<any>(cacheKey);

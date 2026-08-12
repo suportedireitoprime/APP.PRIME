@@ -1,11 +1,79 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Loader2, ExternalLink, WifiOff } from 'lucide-react';
+import { Loader2, ExternalLink, WifiOff, User } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { Card, CardContent } from '@/components/ui/card';
-import { fetchProposicaoDetalhe, fetchProposicaoTramitacoes } from '@/services/radarService';
+import { Badge } from '@/components/ui/badge';
+import { fetchProposicaoDetalhe, fetchProposicaoTramitacoes, fetchProposicaoAutores, fetchDeputadoDetalhe, extractTags } from '@/services/radarService';
 import { isOffline } from '@/lib/offlineFeatures';
 import { useGoBack } from '@/hooks/useGoBack';
+
+function AuthorInfo({ proposicaoId }: { proposicaoId: string }) {
+  const [deputado, setDeputado] = useState<any | null>(null);
+  const [nomeAutor, setNomeAutor] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    setLoading(true);
+    fetchProposicaoAutores(proposicaoId).then(async (autores) => {
+      if (!isMounted) return;
+      if (autores && autores.length > 0) {
+        setNomeAutor(autores[0].nome);
+        if (autores[0].uri) {
+          const match = autores[0].uri.match(/\/deputados\/(\d+)/);
+          if (match && match[1]) {
+            const dep = await fetchDeputadoDetalhe(match[1]);
+            if (isMounted && dep) {
+              setDeputado(dep);
+            }
+          }
+        }
+      }
+      if (isMounted) setLoading(false);
+    }).catch(() => {
+      if (isMounted) setLoading(false);
+    });
+
+    return () => { isMounted = false; };
+  }, [proposicaoId]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center gap-3 animate-pulse mb-4">
+        <div className="w-12 h-12 rounded-full bg-muted/50" />
+        <div className="space-y-2">
+          <div className="w-32 h-3 bg-muted/50 rounded" />
+          <div className="w-20 h-3 bg-muted/50 rounded" />
+        </div>
+      </div>
+    );
+  }
+
+  if (!nomeAutor) return null;
+
+  const foto = deputado?.ultimoStatus?.urlFoto || null;
+  const partido = deputado?.ultimoStatus?.siglaPartido || 'Sem partido';
+  const uf = deputado?.ultimoStatus?.siglaUf || '';
+
+  return (
+    <div className="flex items-center gap-3 mb-4">
+      <div className="w-12 h-12 rounded-full bg-muted overflow-hidden shrink-0 border border-border flex items-center justify-center">
+        {foto ? (
+          <img src={foto} alt={nomeAutor} className="w-full h-full object-cover" />
+        ) : (
+          <User className="w-5 h-5 text-muted-foreground" />
+        )}
+      </div>
+      <div>
+        <p className="text-[14px] font-bold text-foreground leading-snug">{nomeAutor}</p>
+        <p className="text-[12px] text-muted-foreground font-medium">
+          {partido}{uf ? ` - ${uf}` : ''}
+        </p>
+      </div>
+    </div>
+  );
+}
 
 export default function RadarPLDetalhe() {
   const { id = '' } = useParams<{ id: string }>();
@@ -41,6 +109,8 @@ export default function RadarPLDetalhe() {
   const titulo = detalhe
     ? `${detalhe.siglaTipo ?? 'PL'} ${detalhe.numero ?? ''}/${detalhe.ano ?? ''}`.trim()
     : 'Projeto de Lei';
+  
+  const tags = detalhe ? extractTags(detalhe.ementa) : [];
 
   return (
     <div className="min-h-dvh bg-background text-foreground">
@@ -70,6 +140,18 @@ export default function RadarPLDetalhe() {
 
         {detalhe && (
           <>
+            <AuthorInfo proposicaoId={id} />
+            
+            {tags.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mb-2">
+                {tags.map((tag) => (
+                  <Badge key={tag} variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/20 text-[11px] px-2 py-0.5">
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            )}
+
             <Card className="bg-card/50 border-border/50">
               <CardContent className="p-4 space-y-2">
                 <p className="text-[11px] font-bold uppercase tracking-wider text-primary">Ementa</p>
