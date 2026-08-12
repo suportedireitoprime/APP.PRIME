@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Scale, Radar, BellRing, Heart, Newspaper } from 'lucide-react';
+import { Scale, Radar, BellRing, Heart, Newspaper, History } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
 type Tab = {
@@ -41,11 +41,11 @@ const TABS: Tab[] = [
     match: (p) => p.startsWith('/radares'),
   },
   {
-    id: 'lembretes',
-    label: 'Lembretes',
-    to: '/meus-lembretes',
-    icon: BellRing,
-    match: (p) => p.startsWith('/meus-lembretes'),
+    id: 'historico',
+    label: 'Histórico',
+    to: '/vade-mecum/recentes',
+    icon: History,
+    match: (p) => p.startsWith('/vade-mecum/recentes'),
   },
 ];
 

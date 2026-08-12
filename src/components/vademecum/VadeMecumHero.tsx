@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Search, Scale } from 'lucide-react';
+import { ChevronLeft, Search, Scale, BellRing } from 'lucide-react';
 import { pickAsset, srcOf } from '@/lib/assetUrl';
 import brasaoImg from '@/assets/brasao-republica.webp';
 
@@ -147,7 +147,7 @@ const VadeMecumHero = ({ onBuscar }: Props) => {
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent" />
 
       {/* Topo */}
-      <header className="relative px-3 pt-3 md:px-6 md:pt-6 flex items-center gap-2">
+      <header className="relative px-3 pt-3 md:px-6 md:pt-6 flex items-center justify-between gap-2">
         <button
           onClick={() => {
             haptic.selection();
@@ -157,6 +157,17 @@ const VadeMecumHero = ({ onBuscar }: Props) => {
           className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-black/40 border border-white/20 backdrop-blur-md flex items-center justify-center active:scale-95 transition touch-manipulation"
         >
           <ChevronLeft className="w-7 h-7 sm:w-8 sm:h-8 text-white" strokeWidth={2.4} />
+        </button>
+
+        <button
+          onClick={() => {
+            haptic.selection();
+            navigate('/meus-lembretes');
+          }}
+          aria-label="Lembretes"
+          className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-black/40 border border-white/20 backdrop-blur-md flex items-center justify-center active:scale-95 transition touch-manipulation"
+        >
+          <BellRing className="w-6 h-6 sm:w-7 sm:h-7 text-white" strokeWidth={2.2} />
         </button>
       </header>
 

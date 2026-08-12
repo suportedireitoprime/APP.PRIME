@@ -14,7 +14,7 @@ const VadeMecumRecentes = () => {
   }, []);
 
   return (
-    <VadeMecumSubpage titulo="Recentes" descricao="Últimas leis que você consultou">
+    <VadeMecumSubpage titulo="Histórico" descricao="Últimas leis que você consultou">
       {recentes.length === 0 ? (
         <div className="text-center py-16">
           <History className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
