@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import ProposicoesPanel from '@/components/radar/ProposicoesPanel';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { useGoBack } from '@/hooks/useGoBack';
-import VadeMecumBottomNav from '@/components/vademecum/VadeMecumBottomNav';
+import RadarBottomNav from '@/components/radar/RadarBottomNav';
 
 const WEEKDAYS = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
 const MONTHS = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
@@ -39,6 +39,9 @@ const RadarProposicoes = () => {
   const dayList = useMemo(() => getDayList(new Date(), 3), []);
   const selectedDateKey = toDateKey(selectedDate);
   const dataInicial = selectedDateKey;
+
+  // Se tiver busca via URL (ex: das Categorias), pega e repassa
+  const buscaInicial = searchParams.get('busca') || '';
 
   return (
     <div className="min-h-dvh bg-background text-foreground pb-[100px]">
@@ -90,10 +93,10 @@ const RadarProposicoes = () => {
       </div>
 
       <div className="p-0">
-        <ProposicoesPanel searchQuery="" dataInicial={dataInicial} />
+        <ProposicoesPanel searchQuery={buscaInicial} dataInicial={dataInicial} />
       </div>
 
-      <VadeMecumBottomNav />
+      <RadarBottomNav />
     </div>
   );
 };
