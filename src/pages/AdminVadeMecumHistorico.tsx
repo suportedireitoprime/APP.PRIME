@@ -326,18 +326,7 @@ export default function AdminVadeMecumHistorico() {
 
         {/* VIEW 4: DETAILS & IA COMPARISON */}
         {view === 'details' && selectedArticle && (
-           <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4">
-               {/* Header Responsivo */}
-               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                   <Button variant="ghost" onClick={() => { setView('scraper'); setSelectedArticle(null); setIaAnalysis('pending'); }} className="text-gray-400 hover:text-white px-0 -ml-2">
-                       <ArrowLeft className="w-4 h-4 mr-2" />
-                       Voltar para Lista
-                   </Button>
-                   <div className="bg-[#1A1A1A] border border-white/5 px-4 py-2 rounded-lg flex items-center gap-3">
-                       <Scale className="w-5 h-5 text-gray-500" />
-                       <span className="font-bold text-white text-lg">{selectedArticle.artigo}</span>
-                   </div>
-               </div>
+           <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 pt-4">
 
                {/* Badge de Data e Motivo */}
                <div className="bg-gradient-to-r from-blue-900/20 to-transparent border-l-4 border-blue-500 p-5 rounded-r-lg">
