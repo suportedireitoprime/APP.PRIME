@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Scale, Search, Loader2, RefreshCcw, FileText, ChevronRight, BookOpen, ExternalLink, Bot, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { LEIS_CATALOG, type LeiCatalogItem } from '@/data/leisCatalog';
