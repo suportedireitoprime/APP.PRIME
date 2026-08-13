@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { Cpu, Github, Loader2, Sparkles, Wand2, Plus, MessageSquare, Send, X, FileText, CheckCircle2, Circle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,6 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { motion, AnimatePresence } from 'framer-motion';
 import { fetchArtigosLei } from '@/services/legislacaoService';
 import type { ArtigoLei } from '@/data/mockData';
+
+// Carregamento normal, mas adicionaremos Suspense caso o ThreeJS seja custoso
 import AnimacaoExemplo3DScene from './AnimacaoExemplo3DScene';
 
 export default function AIGeneratorPanel() {
@@ -35,16 +37,13 @@ export default function AIGeneratorPanel() {
     const carregarCP = async () => {
       try {
         setLoadingArtigos(true);
-        // Trazendo o Código Penal
         const artigos = await fetchArtigosLei('CP_CODIGO_PENAL', 'CP_CODIGO_PENAL');
         setArtigosCP(artigos);
         
-        // Simulação: Alguns artigos já estão "gerados" no localStorage ou mock
         const salvos = localStorage.getItem('agentes_cenas_geradas');
         if (salvos) {
           setGeradosState(JSON.parse(salvos));
         } else {
-          // Inicializa mock - ex: artigo 121 gerado
           const initMock = {
             [artigos.find(a => a.numero.includes('121'))?.id || 'fake-121']: true
           };
@@ -79,13 +78,9 @@ export default function AIGeneratorPanel() {
     setShowFormModal(false);
     setStatus('dispatching');
     
-    // Simula disparo pro GitHub (dispatch event)
     setTimeout(() => {
       setStatus('actions_working');
-      
-      // Simula tempo do Agente trabalhando
       setTimeout(() => {
-        // Marca como gerado
         if (activeArtigoId) {
           const novoState = { ...geradosState, [activeArtigoId]: true };
           setGeradosState(novoState);
@@ -98,7 +93,6 @@ export default function AIGeneratorPanel() {
 
   const handleImprove = (mode: 'auto' | 'manual') => {
     if (mode === 'manual' && !improveText) return;
-    
     setStatus('dispatching');
     setImproveMode(false);
     setImproveText('');
@@ -112,8 +106,8 @@ export default function AIGeneratorPanel() {
   };
 
   return (
-    <div className="w-full h-full flex flex-col bg-[#0f172a] relative text-slate-200 font-sans overflow-hidden">
-      <div className="bg-[#1e293b] p-4 sm:p-6 border-b border-border/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-20 shadow-md shrink-0">
+    <div className="w-full h-full flex flex-col bg-[#0f172a] text-slate-200 font-sans">
+      <div className="bg-[#1e293b] p-4 sm:p-6 border-b border-border/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-md shrink-0">
         <div>
           <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2 text-white">
             <Cpu className="text-indigo-400" />
@@ -122,7 +116,7 @@ export default function AIGeneratorPanel() {
           <p className="text-sm text-muted-foreground mt-1">Gere as animações a partir da Lei Seca do Código Penal.</p>
         </div>
         
-        <div className="flex items-center gap-2 w-full sm:w-auto">
+        <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
           <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Modelo IA:</span>
           <Select 
             value={formData.model} 
@@ -140,7 +134,7 @@ export default function AIGeneratorPanel() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto relative p-4 sm:p-6 custom-scrollbar z-10">
+      <div className="flex-1 overflow-y-auto p-4 sm:p-6 custom-scrollbar block">
         {status === 'idle' && (
           <div className="max-w-5xl mx-auto space-y-6">
             <div className="flex items-center justify-between mb-4">
@@ -212,7 +206,7 @@ export default function AIGeneratorPanel() {
         )}
 
         {(status === 'dispatching' || status === 'actions_working') && (
-          <div className="w-full min-h-full flex flex-col items-center justify-center space-y-6">
+          <div className="w-full h-full flex flex-col items-center justify-center min-h-[400px] space-y-6">
             <div className="relative">
               <div className="absolute inset-0 bg-indigo-500 rounded-full blur-2xl opacity-30 animate-pulse"></div>
               <Cpu className={`relative z-10 w-24 h-24 text-indigo-400 drop-shadow-[0_0_15px_rgba(99,102,241,0.5)] ${status === 'actions_working' ? 'animate-bounce' : 'animate-pulse'}`} />
@@ -237,41 +231,48 @@ export default function AIGeneratorPanel() {
         )}
 
         {status === 'done' && (
-          <div className="w-full min-h-full flex flex-col items-center py-6 space-y-8 animate-in fade-in zoom-in duration-500 pb-10">
-            <div className="text-center space-y-2 mt-4">
-              <div className="inline-flex items-center justify-center bg-emerald-500/10 border border-emerald-500/20 rounded-full p-4 mb-4 shadow-[0_0_40px_rgba(16,185,129,0.2)]">
+          <div className="w-full flex flex-col items-center pb-16 pt-4 space-y-10 animate-in fade-in zoom-in duration-500">
+            <div className="text-center space-y-4">
+              <div className="inline-flex items-center justify-center bg-emerald-500/10 border border-emerald-500/20 rounded-full p-4 shadow-[0_0_40px_rgba(16,185,129,0.2)]">
                 <Wand2 className="w-8 h-8 text-emerald-400" />
               </div>
-              <h3 className="text-3xl font-display font-bold text-white uppercase tracking-wider">Cena Gerada com Sucesso!</h3>
-              <p className="text-slate-400 text-lg">O código da cena foi injetado pelo Agente via Actions.</p>
+              <h3 className="text-2xl sm:text-3xl font-display font-bold text-white uppercase tracking-wider">Cena Gerada com Sucesso!</h3>
+              <p className="text-slate-400 text-base sm:text-lg px-4">O código da cena foi injetado pelo Agente via Actions.</p>
             </div>
 
             {/* Visualizador 3D da Cena Gerada */}
-            <div className="w-full max-w-4xl h-[400px] rounded-3xl overflow-hidden border border-slate-700/50 shadow-2xl relative bg-slate-900 group">
+            <div className="w-full max-w-4xl h-[300px] sm:h-[450px] rounded-3xl overflow-hidden border border-slate-700/50 shadow-2xl relative bg-slate-900 shrink-0">
               <div className="absolute top-4 left-4 z-10 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                 <span className="text-xs font-bold text-emerald-100 uppercase tracking-wider">Preview Engine 3D</span>
               </div>
-              {/* Renderiza a cena de exemplo - usando step 1 para ação */}
-              <AnimacaoExemplo3DScene step={1} />
+              
+              <Suspense fallback={
+                <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 gap-4">
+                  <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+                  <span>Carregando Cena 3D...</span>
+                </div>
+              }>
+                <AnimacaoExemplo3DScene step={1} />
+              </Suspense>
             </div>
 
             {/* Loop de Melhoria */}
-            <div className="w-full max-w-4xl bg-slate-800/40 border border-slate-700/50 p-8 rounded-3xl flex flex-col items-center gap-6 shadow-2xl backdrop-blur-sm">
-              <h4 className="font-bold text-indigo-300 text-xl uppercase tracking-wider">A cena precisa de ajustes?</h4>
+            <div className="w-full max-w-4xl bg-slate-800/40 border border-slate-700/50 p-6 sm:p-8 rounded-3xl flex flex-col items-center gap-6 shadow-2xl backdrop-blur-sm shrink-0">
+              <h4 className="font-bold text-indigo-300 text-lg sm:text-xl uppercase tracking-wider text-center">A cena precisa de ajustes?</h4>
               
               {!improveMode ? (
                 <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
                   <Button 
                     variant="outline" 
-                    className="flex-1 max-w-[280px] py-6 border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/10 hover:text-indigo-200 transition-colors"
+                    className="flex-1 w-full max-w-xs mx-auto sm:mx-0 py-6 border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/10 hover:text-indigo-200 transition-colors"
                     onClick={() => setImproveMode('auto')}
                   >
                     <Sparkles className="w-5 h-5 mr-2" />
                     Auto Melhorar (IA)
                   </Button>
                   <Button 
-                    className="flex-1 max-w-[280px] py-6 bg-slate-700 hover:bg-slate-600 text-white transition-colors"
+                    className="flex-1 w-full max-w-xs mx-auto sm:mx-0 py-6 bg-slate-700 hover:bg-slate-600 text-white transition-colors"
                     onClick={() => setImproveMode('manual')}
                   >
                     <MessageSquare className="w-5 h-5 mr-2" />
@@ -280,7 +281,7 @@ export default function AIGeneratorPanel() {
                 </div>
               ) : improveMode === 'auto' ? (
                 <div className="w-full text-center space-y-5 animate-in fade-in">
-                  <p className="text-slate-300 text-base">A IA vai reavaliar a cena, melhorar câmera, luzes e fidelidade.</p>
+                  <p className="text-slate-300 text-sm sm:text-base">A IA vai reavaliar a cena, melhorar câmera, luzes e fidelidade.</p>
                   <div className="flex gap-3 justify-center">
                     <Button variant="ghost" onClick={() => setImproveMode(false)} className="text-slate-400 hover:text-white">Cancelar</Button>
                     <Button className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-6" onClick={() => handleImprove('auto')}>
@@ -297,10 +298,10 @@ export default function AIGeneratorPanel() {
                     value={improveText}
                     onChange={e => setImproveText(e.target.value)}
                   />
-                  <div className="flex gap-3 justify-end">
-                    <Button variant="ghost" onClick={() => setImproveMode(false)} className="text-slate-400 hover:text-white">Cancelar</Button>
+                  <div className="flex flex-col sm:flex-row gap-3 justify-end">
+                    <Button variant="ghost" onClick={() => setImproveMode(false)} className="text-slate-400 hover:text-white w-full sm:w-auto">Cancelar</Button>
                     <Button 
-                      className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-6"
+                      className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-6 w-full sm:w-auto"
                       disabled={!improveText}
                       onClick={() => handleImprove('manual')}
                     >
@@ -332,7 +333,7 @@ export default function AIGeneratorPanel() {
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="bg-[#1e293b] border border-slate-700 shadow-2xl rounded-2xl w-full max-w-5xl max-h-full flex flex-col overflow-hidden"
+              className="bg-[#1e293b] border border-slate-700 shadow-2xl rounded-2xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden"
             >
               <div className="flex items-center justify-between p-5 border-b border-slate-700/50 bg-[#0f172a]/50 shrink-0">
                 <div className="flex items-center gap-3">
