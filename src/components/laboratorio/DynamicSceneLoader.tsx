@@ -62,7 +62,7 @@ export default function DynamicSceneLoader({ codigo_nome, artigo_numero }: { cod
     return (
       <div className="w-full h-full flex flex-col items-center justify-center text-white bg-black/50 backdrop-blur-sm rounded-xl">
         <Loader2 className="w-12 h-12 text-amber-500 animate-spin mb-4" />
-        <h3 className="text-xl font-bold font-display">Conectando ao Gemini 2.0 Flash</h3>
+        <h3 className="text-xl font-bold font-display">Conectando ao Gemini 3.1 Flash Lite</h3>
         <p className="text-sm text-muted-foreground mt-2 max-w-sm text-center">
           O Agente de IA está desenhando a linha do tempo, a cinematografia e o posicionamento dos Voxel Actors em tempo real para o Art. {artigo_numero}...
         </p>

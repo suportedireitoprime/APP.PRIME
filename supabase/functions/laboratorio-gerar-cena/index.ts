@@ -49,40 +49,50 @@ serve(async (req) => {
       throw new Error("GEMINI_API_KEY nao configurada");
     }
 
-    const prompt = `Você é um diretor de animação 3D de cenas criminais educacionais para o app Direito Prime.
-Seu objetivo é transformar o texto de um artigo penal em um roteiro JSON estruturado para ser renderizado pelo motor Voxel 3D.
+    const prompt = `Você é um diretor de cinema de animações 3D educacionais para o app Direito Prime.
+Seu trabalho é criar um EXEMPLO PRÁTICO (caso concreto fictício) que ilustre o crime descrito no artigo penal.
+
+REGRAS ABSOLUTAS PARA O TEXTO:
+- NÃO use linguagem jurídica abstrata. NÃO cite "princípios" ou "regras de ouro".
+- CRIE UMA HISTÓRIA CONCRETA com personagens fictícios (ex: "Carlos", "Maria").
+- Descreva AÇÕES VISÍVEIS que acontecem na cena: quem faz o quê, onde, como.
+- Exemplo BOM: "Carlos se aproxima de Maria por trás no beco escuro e arranca sua bolsa à força."
+- Exemplo RUIM: "O princípio da especialidade prevalece sobre a norma geral."
+- O texto de cada step deve narrar a cena como se fosse um documentário policial.
 
 CONTEXTO:
 Código: ${codigo_nome}
 Artigo: ${artigo_numero}
-Texto Legal (se disponível, senao use seu conhecimento): ${artigo_texto || "Gere baseado no que voce sabe do artigo " + artigo_numero + " do " + codigo_nome}
+Texto Legal (se disponível): ${artigo_texto || "Gere baseado no que você sabe do artigo " + artigo_numero + " do " + codigo_nome}
 
 INSTRUÇÕES DO ROTEIRO:
-1. Crie uma linha do tempo (timeline) com no máximo 5 passos (steps 0 a 4).
-2. O "ambiente" deve ser uma das opções: "alley" (beco escuro), "park" (praça à noite), "office" (repartição pública) ou "generic" (sala limpa).
-3. Cada step da timeline deve conter:
-   - "step": numero sequencial começando em 0.
-   - "duration": duracao em milisegundos (ex: 4000 a 6000), dependendo do tamanho do texto.
-   - "text": A fala de narração ou descrição que vai aparecer no balão.
-   - "cam": Posição e alvo da câmera: { "x": number, "y": number, "z": number, "lookX": number, "lookY": number, "fov": number }. Use valores para focar nos personagens (personagens ficam perto de x=0, z=0).
-   - "agent_pos": Posição do Agente Infrator (personagem 1): { "x": number, "z": number, "rotY": number (em radianos) }
-   - "victim_pos": Posição da Vítima/Objeto (personagem 2): { "x": number, "z": number, "rotY": number } (use null se nao houver vítima visivel)
+1. Crie uma timeline com 3 a 5 passos (steps 0 a 4).
+2. O "ambiente" deve ser: "alley" (beco), "park" (praça), "office" (repartição) ou "generic".
+3. Cada step deve conter:
+   - "step": número sequencial começando em 0.
+   - "duration": duração em ms (4000 a 6000).
+   - "text": A narração do que está acontecendo NA CENA (exemplo prático, NÃO teoria).
+   - "cam": { "x": number, "y": number, "z": number, "lookX": number, "lookY": number, "fov": number }
+   - "agent_pos": { "x": number, "z": number, "rotY": number } (posição do infrator)
+   - "victim_pos": { "x": number, "z": number, "rotY": number } ou null
 
-O RETORNO DEVE SER EXCLUSIVAMENTE UM JSON VÁLIDO (sem markdown envolta), seguindo essa interface:
+MOVIMENTAÇÃO: Faça os personagens se moverem entre steps! O infrator deve se aproximar da vítima. Use coordenadas diferentes em cada step para criar movimento.
+
+RETORNO: JSON puro, sem markdown, seguindo esta interface:
 {
   "environment": "alley",
   "timeline": [
     {
       "step": 0,
       "duration": 5000,
-      "text": "Cena 1: Descrição inicial do artigo...",
-      "cam": { "x": 4, "y": 5, "z": 10, "lookX": 0, "lookY": 1.5, "fov": 50 },
-      "agent_pos": { "x": 2, "z": 2, "rotY": 0 },
-      "victim_pos": { "x": -2, "z": 2, "rotY": 3.14 }
+      "text": "Carlos observa Maria saindo do banco, sozinha, carregando uma bolsa...",
+      "cam": { "x": 6, "y": 5, "z": 12, "lookX": 0, "lookY": 1.5, "fov": 50 },
+      "agent_pos": { "x": 5, "z": 4, "rotY": -1.57 },
+      "victim_pos": { "x": -3, "z": 2, "rotY": 0 }
     }
   ]
-}
-Gere a cena focando nos verbos do crime. Formate estritamente em JSON puro.`;
+}`;
+
 
     const geminiRes = await geminiFetch(buildGeminiTextUrl(geminiKey),
       {

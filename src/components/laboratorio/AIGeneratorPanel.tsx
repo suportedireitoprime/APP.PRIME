@@ -295,7 +295,7 @@ export default function AIGeneratorPanel() {
             </div>
 
             {/* Visualizador 3D da Cena Gerada */}
-            <div className="w-full max-w-4xl h-[300px] sm:h-[450px] rounded-3xl overflow-hidden border border-slate-700/50 shadow-2xl relative bg-slate-900 shrink-0">
+            <div className="w-full max-w-4xl h-[450px] sm:h-[600px] rounded-3xl overflow-hidden border border-slate-700/50 shadow-2xl relative bg-slate-900 shrink-0">
               <div className="absolute top-4 left-4 z-10 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                 <span className="text-xs font-bold text-emerald-100 uppercase tracking-wider">Preview Engine 3D</span>
