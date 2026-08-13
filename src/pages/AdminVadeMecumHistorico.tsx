@@ -177,6 +177,22 @@ export default function AdminVadeMecumHistorico() {
       }
   };
 
+  const extractAutoria = (texto: string) => {
+      if (!texto) return { textoLimpo: '', autoria: null };
+      const regex = /\s*(\(?(?:INCLUÍD[OA]|ALTERAD[OA]|REDAÇÃO DADA|REVOGAD[OA]).+?(?:LEI|DECRETO|EMENDA).*?\d{4}\)?)\s*$/i;
+      const match = texto.match(regex);
+      if (match) {
+          return { 
+              textoLimpo: texto.replace(match[0], '').trim(), 
+              autoria: match[1].replace(/^\(|\)$/g, '').trim()
+          };
+      }
+      return { textoLimpo: texto, autoria: null };
+  };
+
+  const { textoLimpo: textoNovoLimpo, autoria: autoriaNovo } = extractAutoria(selectedArticle?.texto_novo || '');
+  const { textoLimpo: textoAntigoLimpo } = extractAutoria(selectedArticle?.texto_antigo || '');
+
   return (
     <div className="min-h-screen bg-[#0D0D0D] text-white">
       {/* Header */}
@@ -335,12 +351,19 @@ export default function AdminVadeMecumHistorico() {
 
                {/* Card de Data Solitário no Topo */}
                <div className="flex">
-                   <div className="bg-[#1A1A1A] border border-white/10 rounded-xl px-5 py-2.5 flex items-center gap-2 shadow-lg">
-                       <Clock className="w-4 h-4 text-gray-400" />
-                       <span className="text-gray-400 text-sm font-medium uppercase tracking-wider">
-                           {selectedArticle.data_completa ? selectedArticle.data_completa : `Atualização do Ano de `}
-                           <strong className="text-white ml-1">{selectedArticle.ano}</strong>
-                       </span>
+                   <div className="bg-[#1A1A1A] border border-white/10 rounded-xl px-5 py-3 flex flex-col sm:flex-row items-start sm:items-center gap-3 shadow-lg">
+                       <div className="flex items-center gap-2">
+                           <Clock className="w-4 h-4 text-gray-400" />
+                           <span className="text-gray-400 text-sm font-medium uppercase tracking-wider">
+                               {selectedArticle.data_completa ? selectedArticle.data_completa : `ATUALIZAÇÃO DO ANO DE `}
+                               <strong className="text-white ml-1">{selectedArticle.ano}</strong>
+                           </span>
+                       </div>
+                       {autoriaNovo && (
+                           <div className="text-orange-400 text-[11px] sm:text-xs font-bold uppercase bg-orange-900/20 px-3 py-1 rounded-full border border-orange-500/20">
+                               {autoriaNovo}
+                           </div>
+                       )}
                    </div>
                </div>
 
@@ -359,18 +382,17 @@ export default function AdminVadeMecumHistorico() {
                            </div>
                            <h3 className="text-white text-lg font-medium leading-snug">{selectedArticle.motivo}</h3>
                        </div>
-                       <button 
-                           onClick={() => {
-                               const url = selectedArticle.link_lei || selectedLaw?.url_planalto;
-                               if (url) window.open(url, '_blank');
-                           }}
-                           className={`shrink-0 flex items-center gap-2 px-4 py-2 bg-[#222] hover:bg-[#333] transition-colors border border-white/10 rounded-lg text-sm text-gray-300`}
+                       <a 
+                           href={selectedArticle.link_lei || selectedLaw?.url_planalto || '#'}
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           className={`relative z-10 shrink-0 flex items-center gap-2 px-4 py-2 bg-[#222] hover:bg-[#333] transition-colors border border-white/10 rounded-lg text-sm text-gray-300`}
                        >
                            Ver Lei no Planalto
                            <ExternalLink className={`w-4 h-4 ${
                                selectedArticle.motivo.toLowerCase().includes('incluíd') ? 'text-blue-400' : 'text-orange-400'
                            }`} />
-                       </button>
+                       </a>
                    </div>
                </div>
 
@@ -392,7 +414,7 @@ export default function AdminVadeMecumHistorico() {
                                <FileText className="w-4 h-4" />
                                TEXTO ANTIGO (REVOGADO/ALTERADO)
                            </h4>
-                           <p className="text-gray-400 font-serif leading-relaxed line-through decoration-red-900/50">{selectedArticle.texto_antigo || "Não foi possível extrair o texto revogado com exatidão."}</p>
+                           <p className="text-gray-400 font-serif leading-relaxed line-through decoration-red-900/50">{textoAntigoLimpo || "Não foi possível extrair o texto revogado com exatidão."}</p>
                        </div>
                    )}
                    
@@ -402,7 +424,7 @@ export default function AdminVadeMecumHistorico() {
                            <FileText className="w-4 h-4" />
                            TEXTO NOVO (PLANALTO)
                        </h4>
-                       <p className="text-gray-200 font-serif leading-relaxed text-lg">{selectedArticle.texto_novo}</p>
+                       <p className="text-gray-200 font-serif leading-relaxed text-lg">{textoNovoLimpo}</p>
                    </div>
                </div>
 
