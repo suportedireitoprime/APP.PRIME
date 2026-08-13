@@ -1,5 +1,5 @@
-import React, { useState, useEffect, Suspense } from 'react';
-import { Cpu, Github, Loader2, Sparkles, Wand2, Plus, MessageSquare, Send, X, FileText, CheckCircle2, Circle, Play } from 'lucide-react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
+import { Cpu, Github, Loader2, Sparkles, Wand2, Plus, MessageSquare, Send, X, FileText, CheckCircle2, Circle, PlayCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -8,8 +8,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { fetchArtigosLei } from '@/services/legislacaoService';
 import type { ArtigoLei } from '@/data/mockData';
 
-// Carregamento normal, mas adicionaremos Suspense caso o ThreeJS seja custoso
-import AnimacaoExemplo3DScene from './AnimacaoExemplo3DScene';
+// Lazy load the 3D scene to prevent top-level runtime errors or heavy bundle issues
+const AnimacaoExemplo3DScene = lazy(() => import('./AnimacaoExemplo3DScene'));
 
 export default function AIGeneratorPanel() {
   const [status, setStatus] = useState<'idle' | 'dispatching' | 'actions_working' | 'done'>('idle');
@@ -44,7 +44,12 @@ export default function AIGeneratorPanel() {
         
         const salvos = localStorage.getItem('agentes_cenas_geradas');
         if (salvos) {
-          setGeradosState(JSON.parse(salvos));
+          try {
+            setGeradosState(JSON.parse(salvos));
+          } catch (e) {
+            console.error('Erro ao fazer parse das cenas', e);
+            setGeradosState({});
+          }
         } else {
           const initMock = {
             [artigos.find(a => a.numero.includes('121'))?.id || 'fake-121']: true
@@ -201,7 +206,7 @@ export default function AIGeneratorPanel() {
                               className="w-full md:w-auto bg-emerald-600 hover:bg-emerald-500 text-white font-semibold shadow-lg shadow-emerald-900/20"
                             >
                               Assistir Animação
-                              <Play className="w-4 h-4 ml-2" />
+                              <PlayCircle className="w-4 h-4 ml-2" />
                             </Button>
                             <Button 
                               onClick={() => handleOpenArtigo(artigo)}
