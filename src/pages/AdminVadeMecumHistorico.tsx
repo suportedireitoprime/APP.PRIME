@@ -23,6 +23,7 @@ export default function AdminVadeMecumHistorico() {
   const [iaReason, setIaReason] = useState<string>('');
   const [bancoText, setBancoText] = useState<string>('');
   const [lastScrapeDate, setLastScrapeDate] = useState<string | null>(null);
+  const [selectedYear, setSelectedYear] = useState<string>('Todos');
 
   useEffect(() => {
       if (selectedLaw) {
@@ -59,6 +60,16 @@ export default function AdminVadeMecumHistorico() {
       setIaReason('');
       setView('details');
   };
+
+  const availableYears = useMemo(() => {
+      const years = new Set(scrapedUpdates.map(u => u.ano));
+      return ['Todos', ...Array.from(years).sort((a, b) => Number(b) - Number(a)).map(String)];
+  }, [scrapedUpdates]);
+
+  const filteredUpdates = useMemo(() => {
+      if (selectedYear === 'Todos') return scrapedUpdates;
+      return scrapedUpdates.filter(u => String(u.ano) === selectedYear);
+  }, [scrapedUpdates, selectedYear]);
 
   const goBack = () => {
       if (view === 'details') setView('scraper');
