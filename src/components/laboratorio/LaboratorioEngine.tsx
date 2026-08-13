@@ -252,11 +252,7 @@ export default function GenericLaboratorioScene({ config }: { config: SceneJSON 
   const [popup, setPopup] = useState<{label: string, x: number, y: number} | null>(null);
   const [ttsEnabled, setTtsEnabled] = useState(false);
 
-  if (!config || !config.timeline || config.timeline.length === 0) {
-    return <div className="w-full h-full flex items-center justify-center text-white">Carregando Cena...</div>;
-  }
-
-  const timeline = config.timeline;
+  const timeline = config?.timeline || [];
 
   useEffect(() => {
     if (isExploring) {
@@ -295,6 +291,10 @@ export default function GenericLaboratorioScene({ config }: { config: SceneJSON 
       return () => clearTimeout(timeout);
     }
   }, [currentIdx, isExploring, ttsEnabled, timeline]);
+
+  if (!config || !config.timeline || config.timeline.length === 0) {
+    return <div className="w-full h-full flex items-center justify-center text-white">Carregando Cena...</div>;
+  }
 
   return (
     <div className="w-full relative flex flex-col items-center">
