@@ -311,10 +311,11 @@ const LaboratorioEngineCore = ({ config, step, isExploring, setPopup }: { config
         camera.fov = damp(camera.fov, stepData.cam?.fov ?? 50, 2, dt);
         camera.updateProjectionMatrix();
         camera.position.x = damp(camera.position.x, stepData.cam?.x ?? 0, 2, dt);
-        camera.position.y = damp(camera.position.y, stepData.cam?.y ?? 5, 2, dt);
-        camera.position.z = damp(camera.position.z, stepData.cam?.z ?? 10, 2, dt);
+        // Força a câmera a ficar mais alta (mínimo 8) e mais afastada para não cortar os personagens
+        camera.position.y = damp(camera.position.y, Math.max((stepData.cam?.y ?? 5) + 4, 8), 2, dt);
+        camera.position.z = damp(camera.position.z, Math.max((stepData.cam?.z ?? 10) + 4, 12), 2, dt);
         camTarget.x = damp(camTarget.x, stepData.cam?.lookX ?? 0, 2, dt);
-        camTarget.y = damp(camTarget.y, stepData.cam?.lookY ?? 1.5, 2, dt);
+        camTarget.y = damp(camTarget.y, (stepData.cam?.lookY ?? 1.5) - 0.5, 2, dt); // Olha um pouco mais para baixo
         camera.lookAt(camTarget);
         
         // Drift cinematográfico
