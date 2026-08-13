@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { geminiFetch } from "../_shared/geminiFetch.ts";
+import { buildGeminiTextUrl } from "../_shared/ai-models.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -83,7 +84,7 @@ O RETORNO DEVE SER EXCLUSIVAMENTE UM JSON VÁLIDO (sem markdown envolta), seguin
 }
 Gere a cena focando nos verbos do crime. Formate estritamente em JSON puro.`;
 
-    const geminiRes = await geminiFetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,
+    const geminiRes = await geminiFetch(buildGeminiTextUrl(geminiKey),
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
