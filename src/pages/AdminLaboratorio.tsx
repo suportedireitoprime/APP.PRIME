@@ -6,6 +6,7 @@ import AnimacaoExemplo from '@/components/laboratorio/AnimacaoExemplo';
 import AnimacaoPixi from '@/components/laboratorio/AnimacaoPixi';
 import AnimacaoThreeJs from '@/components/laboratorio/AnimacaoThreeJs';
 import DynamicSceneLoader from '@/components/laboratorio/DynamicSceneLoader';
+import AIGeneratorPanel from '@/components/laboratorio/AIGeneratorPanel';
 
 const CenaArtigo2 = lazy(() => import('@/components/laboratorio/cenas/CenaArtigo2'));
 const CenaArtigo3 = lazy(() => import('@/components/laboratorio/cenas/CenaArtigo3'));
@@ -16,6 +17,7 @@ const CenaArtigo312 = lazy(() => import('@/components/laboratorio/cenas/CenaArti
 
 const AdminLaboratorio = () => {
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<'cenas' | 'generator'>('cenas');
   const [activeEngine, setActiveEngine] = useState('threejs');
   const [activeArtigoId, setActiveArtigoId] = useState<number | null>(null);
 
@@ -44,23 +46,61 @@ const AdminLaboratorio = () => {
     <div className="min-h-dvh bg-background pb-8">
       <PageHeader title="Laboratório de Animações" onBack={() => navigate('/')} />
       
-      <div className="px-0 sm:px-4 py-4 space-y-6 w-full max-w-full overflow-x-hidden">
+      <div className="px-2 sm:px-4 py-4 space-y-4 w-full max-w-full overflow-x-hidden flex flex-col items-center">
         
-        <div className="bg-secondary/20 border border-border/50 rounded-xl p-4 mx-2 sm:mx-0">
-          <h2 className="text-xl font-display font-semibold mb-2">Motores Gráficos Oficiais</h2>
-          <p className="text-sm text-muted-foreground mb-6">
-            Estes são os três motores selecionados para a produção em massa das animações legais.
-          </p>
-          
-          <div className="flex flex-wrap gap-3 mb-8 justify-between items-center">
-            <div className="flex flex-wrap gap-3">
+        {/* Navegação Principal do Laboratório (Abas Responsivas) */}
+        <div className="w-full max-w-5xl bg-secondary/30 p-1.5 rounded-xl sm:rounded-full border border-border/50 flex flex-col sm:flex-row gap-2">
+          <button
+            onClick={() => setActiveTab('cenas')}
+            className={`flex-1 py-3 px-4 rounded-lg sm:rounded-full text-sm font-bold transition-all duration-300 flex items-center justify-center gap-2 ${
+              activeTab === 'cenas' 
+              ? 'bg-primary text-primary-foreground shadow-md scale-[1.02]' 
+              : 'text-muted-foreground hover:bg-secondary/80 hover:text-foreground'
+            }`}
+          >
+            <Book size={18} />
+            Cenas Curadas & Motores
+          </button>
+          <button
+            onClick={() => setActiveTab('generator')}
+            className={`flex-1 py-3 px-4 rounded-lg sm:rounded-full text-sm font-bold transition-all duration-300 flex items-center justify-center gap-2 ${
+              activeTab === 'generator' 
+              ? 'bg-indigo-600 text-white shadow-[0_0_15px_rgba(79,70,229,0.5)] scale-[1.02]' 
+              : 'text-muted-foreground hover:bg-secondary/80 hover:text-foreground'
+            }`}
+          >
+            <Cpu size={18} />
+            Gerador Automático (Agent IA)
+          </button>
+        </div>
+
+        {/* Tab 1: Cenas Curadas */}
+        {activeTab === 'cenas' && (
+          <div className="bg-secondary/20 border border-border/50 rounded-xl p-3 sm:p-4 w-full max-w-5xl">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+              <div>
+                <h2 className="text-xl font-display font-semibold mb-1">Visualizador de Cenas</h2>
+                <p className="text-sm text-muted-foreground">
+                  Explore animações oficiais criadas pelos motores 3D e 2D.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowPenalModal(true)}
+                className="w-full sm:w-auto flex justify-center items-center gap-2 px-6 py-3 rounded-full text-sm font-bold bg-amber-500 text-black hover:bg-amber-400 transition-all shadow-[0_0_15px_rgba(245,158,11,0.4)]"
+              >
+                <Book size={18} />
+                Código Penal 3D (Cenas)
+              </button>
+            </div>
+            
+            <div className="flex flex-wrap gap-2 mb-4">
               {engines.map(engine => (
                 <button
                   key={engine.id}
                   onClick={() => { setActiveEngine(engine.id); setActiveArtigoId(null); }}
-                  className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-300 ${
+                  className={`flex-1 min-w-[120px] px-3 py-2.5 rounded-lg sm:rounded-full text-xs sm:text-sm font-bold transition-all duration-300 ${
                     activeEngine === engine.id 
-                    ? 'bg-primary text-primary-foreground shadow-[0_0_20px_rgba(var(--primary),0.6)] scale-105' 
+                    ? 'bg-primary text-primary-foreground shadow-md' 
                     : 'bg-secondary/50 text-muted-foreground hover:bg-secondary border border-border/30'
                   }`}
                 >
@@ -76,7 +116,6 @@ const AdminLaboratorio = () => {
               <Book size={18} />
               Código Penal 3D
             </button>
-          </div>
 
           {/* Área de Visualização */}
           <div className="bg-background border-y sm:border sm:rounded-xl border-border/50 min-h-[500px] w-full shadow-inner relative flex items-center justify-center">
@@ -112,7 +151,16 @@ const AdminLaboratorio = () => {
             </div>
           )}
 
-        </div>
+          </div>
+        )}
+
+        {/* Tab 2: Gerador de IA */}
+        {activeTab === 'generator' && (
+          <div className="w-full max-w-5xl h-[80vh] min-h-[600px]">
+            <AIGeneratorPanel />
+          </div>
+        )}
+
       </div>
 
       {/* Modal Código Penal (Curados + Dinâmicos) */}
@@ -165,32 +213,25 @@ const AdminLaboratorio = () => {
 
               <hr className="border-border/30" />
 
-              {/* Seção 2: Dinâmicos (IA via Edge Function) */}
+              {/* Seção 2: Gerador Antigo (Link para aba nova) */}
               <div>
                 <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
                   <Cpu className="text-indigo-400" size={20} />
-                  Gerador de Cenas IA (Gemini 2.0 Flash)
+                  Deseja gerar uma cena inédita?
                 </h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Escolha qualquer artigo da Parte Especial do Código Penal. Nossa IA criará a cinematografia, o balão de fala e a posição dos Voxel Actors em tempo real.
+                  O antigo gerador dinâmico foi substituído. Acesse o novo Laboratório de Agentes (Aba Gerador Automático).
                 </p>
-
-                <div className="flex flex-wrap gap-2">
-                  {artigosGerais.map((num) => (
-                    <button
-                      key={num}
-                      onClick={() => {
-                        setActiveEngine('dynamic');
-                        setActiveArtigoId(num);
-                        setShowPenalModal(false);
-                      }}
-                      className="w-14 h-10 rounded-md bg-secondary/40 border border-border/40 text-xs font-mono font-bold text-slate-300 hover:bg-indigo-600 hover:text-white hover:border-indigo-400 transition-all flex items-center justify-center"
-                      title={`Gerar cena para o Artigo ${num}`}
-                    >
-                      {num}
-                    </button>
-                  ))}
-                </div>
+                <button
+                  onClick={() => {
+                    setShowPenalModal(false);
+                    setActiveTab('generator');
+                  }}
+                  className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 px-6 rounded-lg w-full transition-colors flex items-center justify-center gap-2"
+                >
+                  <Wand2 size={18} />
+                  Ir para Gerador de IA Avançado
+                </button>
               </div>
 
             </div>
