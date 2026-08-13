@@ -357,8 +357,11 @@ export default function AdminVadeMecumHistorico() {
                        <div className="flex items-center gap-2">
                            <Clock className="w-4 h-4 text-gray-400" />
                            <span className="text-gray-400 text-sm font-medium uppercase tracking-wider">
-                               {selectedArticle.data_completa ? selectedArticle.data_completa : `ANO DA PUBLICAÇÃO: `}
-                               <strong className="text-white ml-1">{selectedArticle.ano}</strong>
+                               {selectedArticle.data_completa ? (
+                                   <strong className="text-white">{selectedArticle.data_completa}</strong>
+                               ) : (
+                                   <>ANO DA PUBLICAÇÃO: <strong className="text-white ml-1">{selectedArticle.ano}</strong></>
+                               )}
                            </span>
                        </div>
                        {autoriaNovo && (
