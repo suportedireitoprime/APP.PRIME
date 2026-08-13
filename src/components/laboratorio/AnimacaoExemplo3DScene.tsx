@@ -32,7 +32,7 @@ const AnimacaoExemplo3DScene: React.FC<AnimacaoExemplo3DSceneProps> = ({ step })
     scene.fog = new THREE.FogExp2('#0D0D0D', 0.04);
 
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-    camera.position.set(0, 4, 12);
+    camera.position.set(0, 6, 15);
 
     const renderer = new THREE.WebGLRenderer({ 
       antialias: false, // Desligado porque o SMAAPass cuida disso
@@ -67,6 +67,9 @@ const AnimacaoExemplo3DScene: React.FC<AnimacaoExemplo3DSceneProps> = ({ step })
     // --- ILUMINAÇÃO ---
     const ambientLight = new THREE.AmbientLight('#ffffff', 0.1);
     scene.add(ambientLight);
+
+    const hemiLight = new THREE.HemisphereLight('#ffffff', '#111122', 0.4); // Luz de preenchimento global p/ evitar áreas 100% pretas
+    scene.add(hemiLight);
 
     const directionalLight = new THREE.DirectionalLight('#ffffff', 1.5);
     directionalLight.position.set(10, 15, 10);
@@ -205,8 +208,8 @@ const AnimacaoExemplo3DScene: React.FC<AnimacaoExemplo3DSceneProps> = ({ step })
 
       // 1. Câmera
       const camTargetX = currentStep === 0 ? 0 : currentStep === 1 ? 1.5 : -1.5;
-      const camTargetY = currentStep === 0 ? 4 : currentStep === 1 ? 2.5 : 2.5;
-      const camTargetZ = currentStep === 0 ? 12 : currentStep === 1 ? 7 : 7.5;
+      const camTargetY = currentStep === 0 ? 6 : currentStep === 1 ? 4.5 : 4.5;
+      const camTargetZ = currentStep === 0 ? 15 : currentStep === 1 ? 10 : 10.5;
       
       camera.position.x = damp(camera.position.x, camTargetX, 2.5, delta);
       camera.position.y = damp(camera.position.y, camTargetY, 2.5, delta);
