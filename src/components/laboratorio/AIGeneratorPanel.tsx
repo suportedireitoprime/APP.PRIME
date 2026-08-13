@@ -309,7 +309,7 @@ export default function AIGeneratorPanel() {
                   </div>
                 }>
                   {previewArtigo && (
-                    <DynamicSceneLoader codigo_nome="CP_CODIGO_PENAL" artigo_numero={parseInt(previewArtigo.numero)} />
+                    <DynamicSceneLoader codigo_nome="CP_CODIGO_PENAL" artigo_numero={parseInt(previewArtigo.numero.replace(/\D/g, '')) || 1} />
                   )}
                 </Suspense>
               </ErrorBoundary>
