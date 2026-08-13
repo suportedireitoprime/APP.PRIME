@@ -1,25 +1,50 @@
-import React, { useState, useEffect } from 'react';
-import { Canvas } from '@react-three/fiber';
+import React, { useState, useEffect, useRef } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { Environment, ContactShadows, PerspectiveCamera } from '@react-three/drei';
-import { motion } from 'framer-motion-3d';
-import { AnimatePresence } from 'framer-motion';
+import * as THREE from 'three';
 
-// --- Sub-componentes 3D ---
+// --- Sub-componentes 3D Animados via useFrame ---
 
 const Robber = ({ step }: { step: number }) => {
+  const groupRef = useRef<THREE.Group>(null);
+  const rightArmRef = useRef<THREE.Group>(null);
+  const leftArmRef = useRef<THREE.Group>(null);
+
+  useFrame((state, delta) => {
+    if (!groupRef.current) return;
+    
+    // Interpolação suave de posição X e Rotação Y
+    const targetX = step === 0 ? -2 : step === 1 ? -1.5 : 8;
+    const targetRotY = step === 2 ? Math.PI / 8 : 0;
+    
+    groupRef.current.position.x = THREE.MathUtils.damp(groupRef.current.position.x, targetX, 4, delta);
+    groupRef.current.rotation.y = THREE.MathUtils.damp(groupRef.current.rotation.y, targetRotY, 4, delta);
+    
+    // Pulinho da corrida no step 2
+    if (step === 2) {
+      groupRef.current.position.y = Math.abs(Math.sin(state.clock.elapsedTime * 10)) * 0.5;
+    } else {
+      groupRef.current.position.y = THREE.MathUtils.damp(groupRef.current.position.y, 0, 4, delta);
+    }
+
+    // Levantar a arma no braço direito (step >= 1)
+    if (rightArmRef.current) {
+      const targetArmX = step >= 1 ? -Math.PI / 2 : 0;
+      rightArmRef.current.rotation.x = THREE.MathUtils.damp(rightArmRef.current.rotation.x, targetArmX, 6, delta);
+    }
+
+    // Balançar o braço esquerdo na corrida
+    if (leftArmRef.current) {
+      if (step === 2) {
+        leftArmRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 10) * 0.8;
+      } else {
+        leftArmRef.current.rotation.x = THREE.MathUtils.damp(leftArmRef.current.rotation.x, 0, 6, delta);
+      }
+    }
+  });
+
   return (
-    <motion.group
-      initial={{ x: -8 }}
-      animate={{
-        x: step === 0 ? -2 : step === 1 ? -1.5 : 8,
-        rotateY: step === 2 ? Math.PI / 8 : 0,
-        y: step === 2 ? [0, 0.5, 0] : 0, // Pulinho de corrida
-      }}
-      transition={{
-        x: { type: 'spring', stiffness: 50, damping: 15 },
-        y: { repeat: step === 2 ? Infinity : 0, duration: 0.3 }
-      }}
-    >
+    <group ref={groupRef} position={[-8, 0, 0]}>
       {/* Corpo */}
       <mesh position={[0, 1, 0]}>
         <boxGeometry args={[0.8, 2, 0.8]} />
@@ -39,60 +64,55 @@ const Robber = ({ step }: { step: number }) => {
       </mesh>
 
       {/* Braço Direito (Arma) */}
-      <motion.group 
-        position={[0.5, 1.5, 0]}
-        animate={{
-          rotateX: step >= 1 ? -Math.PI / 2 : 0 // Levanta o braço
-        }}
-      >
+      <group ref={rightArmRef} position={[0.5, 1.5, 0]}>
         <mesh position={[0, -0.4, 0]}>
           <boxGeometry args={[0.2, 0.8, 0.2]} />
           <meshStandardMaterial color="#ef4444" />
         </mesh>
-        
-        {/* A arma só aparece a partir do step 1 */}
         {step >= 1 && (
           <mesh position={[0, -0.9, 0.2]}>
             <boxGeometry args={[0.15, 0.15, 0.4]} />
             <meshStandardMaterial color="#9ca3af" />
           </mesh>
         )}
-      </motion.group>
+      </group>
 
       {/* Braço Esquerdo */}
-      <motion.group 
-        position={[-0.5, 1.5, 0]}
-        animate={{
-          rotateX: step === 2 ? [Math.PI/4, -Math.PI/4, Math.PI/4] : 0 // Balança o braço ao correr
-        }}
-        transition={{ repeat: step === 2 ? Infinity : 0, duration: 0.6 }}
-      >
+      <group ref={leftArmRef} position={[-0.5, 1.5, 0]}>
         <mesh position={[0, -0.4, 0]}>
           <boxGeometry args={[0.2, 0.8, 0.2]} />
           <meshStandardMaterial color="#ef4444" />
         </mesh>
-
-        {/* Bolsa roubada na mão esquerda (a partir do step 1) */}
         {step >= 1 && (
           <mesh position={[0, -0.9, 0]}>
             <boxGeometry args={[0.5, 0.6, 0.3]} />
             <meshStandardMaterial color="#b45309" />
           </mesh>
         )}
-      </motion.group>
-    </motion.group>
+      </group>
+    </group>
   );
 };
 
 const Victim = ({ step }: { step: number }) => {
+  const groupRef = useRef<THREE.Group>(null);
+  const armsRef = useRef<THREE.Group>(null);
+
+  useFrame((state, delta) => {
+    if (!groupRef.current) return;
+    // Vítima recua um pouco no step 1
+    const targetX = step >= 1 ? 2.5 : 2;
+    groupRef.current.position.x = THREE.MathUtils.damp(groupRef.current.position.x, targetX, 5, delta);
+
+    if (armsRef.current) {
+      // Levanta as mãos no step >= 1
+      const targetArmZ = step >= 1 ? Math.PI : 0;
+      armsRef.current.rotation.z = THREE.MathUtils.damp(armsRef.current.rotation.z, targetArmZ, 5, delta);
+    }
+  });
+
   return (
-    <motion.group
-      initial={{ x: 2 }}
-      animate={{
-        x: step >= 1 ? 2.5 : 2, // Recua um pouco de medo
-      }}
-      transition={{ type: 'spring', stiffness: 100 }}
-    >
+    <group ref={groupRef} position={[2, 0, 0]}>
       {/* Corpo */}
       <mesh position={[0, 1, 0]}>
         <boxGeometry args={[0.8, 2, 0.8]} />
@@ -105,22 +125,17 @@ const Victim = ({ step }: { step: number }) => {
         <meshStandardMaterial color="#eab308" />
       </mesh>
 
-      {/* Braços (Levantam no step >= 1) */}
-      {[0.5, -0.5].map((x, i) => (
-        <motion.group 
-          key={i}
-          position={[x, 1.5, 0]}
-          animate={{
-            rotateZ: step >= 1 ? (x > 0 ? Math.PI : -Math.PI) : 0, // Mãos pra cima
-            rotateX: step >= 1 ? 0 : 0
-          }}
-        >
-          <mesh position={[0, -0.4, 0]}>
-            <boxGeometry args={[0.2, 0.8, 0.2]} />
-            <meshStandardMaterial color="#eab308" />
-          </mesh>
-        </motion.group>
-      ))}
+      {/* Braços (juntos no mesmo grupo para simplificar) */}
+      <group ref={armsRef} position={[0, 1.5, 0]}>
+        <mesh position={[0.5, -0.4, 0]}>
+          <boxGeometry args={[0.2, 0.8, 0.2]} />
+          <meshStandardMaterial color="#eab308" />
+        </mesh>
+        <mesh position={[-0.5, -0.4, 0]}>
+          <boxGeometry args={[0.2, 0.8, 0.2]} />
+          <meshStandardMaterial color="#eab308" />
+        </mesh>
+      </group>
 
       {/* Bolsa da vítima (Apenas no step 0) */}
       {step === 0 && (
@@ -129,16 +144,45 @@ const Victim = ({ step }: { step: number }) => {
           <meshStandardMaterial color="#b45309" />
         </mesh>
       )}
-    </motion.group>
+    </group>
   );
 };
+
+const PrisonBars = ({ step }: { step: number }) => {
+  const barsRef = useRef<THREE.Group>(null);
+  
+  useFrame((state, delta) => {
+    if (!barsRef.current) return;
+    const targetY = step === 2 ? 0 : 8;
+    barsRef.current.position.y = THREE.MathUtils.damp(barsRef.current.position.y, targetY, 3, delta);
+  });
+
+  return (
+    <group ref={barsRef} position={[0, 8, 3]}>
+      {[...Array(7)].map((_, i) => (
+        <mesh key={i} position={[-3 + i * 1, 2, 0]}>
+          <cylinderGeometry args={[0.05, 0.05, 5, 16]} />
+          <meshStandardMaterial color="#71717a" metalness={0.8} roughness={0.2} />
+        </mesh>
+      ))}
+      <mesh position={[0, 4, 0]}>
+        <boxGeometry args={[8, 0.1, 0.1]} />
+        <meshStandardMaterial color="#71717a" metalness={0.8} />
+      </mesh>
+      <mesh position={[0, 0.5, 0]}>
+        <boxGeometry args={[8, 0.1, 0.1]} />
+        <meshStandardMaterial color="#71717a" metalness={0.8} />
+      </mesh>
+    </group>
+  );
+}
 
 // --- Componente Principal ---
 
 const AnimacaoExemplo = () => {
   const [step, setStep] = useState(0);
 
-  // Simula o andamento da animação (tempo da explicação)
+  // Simula o andamento da animação
   useEffect(() => {
     const timer = setInterval(() => {
       setStep((prev) => (prev < 2 ? prev + 1 : 0));
@@ -162,33 +206,9 @@ const AnimacaoExemplo = () => {
           <directionalLight position={[10, 10, 5]} intensity={1.5} castShadow />
           <Environment preset="city" />
 
-          {/* Sombras de Contato Realistas */}
+          {/* Sombras e Cenário */}
           <ContactShadows position={[0, 0, 0]} opacity={0.5} scale={20} blur={2} far={4} />
-
-          {/* Grades da prisão (Apenas Step 2) */}
-          <group position={[0, 0, 3]}>
-             {[...Array(7)].map((_, i) => (
-                <motion.mesh 
-                  key={i} 
-                  position={[-3 + i * 1, 2, 0]}
-                  initial={{ y: 8 }}
-                  animate={{ y: step === 2 ? 2 : 8 }}
-                  transition={{ type: 'spring', damping: 12, delay: 0.1 * i }}
-                >
-                  <cylinderGeometry args={[0.05, 0.05, 5, 16]} />
-                  <meshStandardMaterial color="#71717a" metalness={0.8} roughness={0.2} />
-                </motion.mesh>
-             ))}
-             {/* Barra horizontal superior e inferior */}
-             <motion.mesh position={[0, 4, 0]} initial={{ y: 8 }} animate={{ y: step === 2 ? 4 : 8 }} transition={{ delay: 0.8 }}>
-               <boxGeometry args={[8, 0.1, 0.1]} />
-               <meshStandardMaterial color="#71717a" metalness={0.8} />
-             </motion.mesh>
-             <motion.mesh position={[0, 0.5, 0]} initial={{ y: 8 }} animate={{ y: step === 2 ? 0.5 : 8 }} transition={{ delay: 0.8 }}>
-               <boxGeometry args={[8, 0.1, 0.1]} />
-               <meshStandardMaterial color="#71717a" metalness={0.8} />
-             </motion.mesh>
-          </group>
+          <PrisonBars step={step} />
 
           {/* Personagens */}
           <Robber step={step} />
@@ -211,7 +231,7 @@ const AnimacaoExemplo = () => {
         )}
       </div>
 
-      {/* Texto Explicativo (Sincronizado) */}
+      {/* Texto Explicativo */}
       <div className="mt-6 text-center h-20 w-full px-2">
         <p className="text-lg font-body font-medium text-foreground transition-opacity duration-300">
           {stepsText[step]}
