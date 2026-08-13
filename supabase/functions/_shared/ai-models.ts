@@ -13,8 +13,8 @@
  */
 
 export const MODELS = {
-  text: "gemini-3.1-flash-lite",
-  textGateway: 'gemini-3.1-flash-lite',
+  text: "gemini-3.1-flash",
+  textGateway: 'gemini-3.1-flash',
   image: "gemini-2.5-flash-image",
   imageGateway: 'gemini-2.5-flash-image',
   tts: "gemini-2.5-flash-preview-tts",
@@ -27,8 +27,8 @@ export const TEXT_MODEL_FALLBACKS = [
 ] as const;
 
 export const ALLOWED_TEXT_MODELS = new Set<string>([
-  "gemini-3.1-flash-lite",
   "gemini-3.1-flash",
+  "gemini-3.1-flash-lite",
   "gemini-3.5-flash",
   "gemini-2.5-flash",
 ]);
