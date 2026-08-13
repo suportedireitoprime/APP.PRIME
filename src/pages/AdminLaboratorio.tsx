@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const CenaArtigo2 = lazy(() => import('@/components/laboratorio/cenas/CenaArtigo2'));
 const CenaArtigo3 = lazy(() => import('@/components/laboratorio/cenas/CenaArtigo3'));
+const CenaArtigo4 = lazy(() => import('@/components/laboratorio/cenas/CenaArtigo4'));
 const CenaArtigo121 = lazy(() => import('@/components/laboratorio/cenas/CenaArtigo121'));
 const CenaArtigo155 = lazy(() => import('@/components/laboratorio/cenas/CenaArtigo155'));
 const CenaArtigo171 = lazy(() => import('@/components/laboratorio/cenas/CenaArtigo171'));
@@ -33,6 +34,7 @@ const AdminLaboratorio = () => {
   const artigosCurados = [
     { artigo: 'Art. 2º - Abolitio Criminis', desc: 'Ninguém pode ser punido por fato que lei posterior deixa de considerar crime.', engineId: 'art2' },
     { artigo: 'Art. 3º - Lei Temporária', desc: 'Aplica-se ao fato praticado durante sua vigência, mesmo após revogada.', engineId: 'art3' },
+    { artigo: 'Art. 4º - Tempo do Crime', desc: 'Considera-se praticado o crime no momento da ação ou omissão.', engineId: 'art4' },
     { artigo: 'Art. 121 - Homicídio', desc: 'Matar alguém.', engineId: 'art121' },
     { artigo: 'Art. 155 - Furto', desc: 'Subtrair, para si ou para outrem, coisa alheia móvel.', engineId: 'art155' },
     { artigo: 'Art. 157 - Roubo (Cel-Shading)', desc: 'Subtrair coisa móvel alheia, mediante grave ameaça ou violência.', engineId: 'threejs' },
@@ -156,6 +158,7 @@ const AdminLaboratorio = () => {
                     <Suspense fallback={<div className="w-full h-full flex items-center justify-center text-muted-foreground">Carregando cena curada...</div>}>
                       {activeEngine === 'art2' && <CenaArtigo2 />}
                       {activeEngine === 'art3' && <CenaArtigo3 />}
+                      {activeEngine === 'art4' && <CenaArtigo4 />}
                       {activeEngine === 'art121' && <CenaArtigo121 />}
                       {activeEngine === 'art155' && <CenaArtigo155 />}
                       {activeEngine === 'art171' && <CenaArtigo171 />}
