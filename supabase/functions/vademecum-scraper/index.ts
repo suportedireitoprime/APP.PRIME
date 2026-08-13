@@ -147,23 +147,23 @@ serve(async (req) => {
     const uncompiledUrl = targetUrl.replace(/compilad[oa]/i, '');
     let uncompiledHtml = "";
     
-    // 1. Busca a versão HTML não compilada via FETCH simples (sem Puppeteer, ultra rápido para o Deno)
+    // Como o Planalto usa SSL ICP-Brasil, o Fetch no Deno crashea com ECONNRESET / TLS Error.
+    // Usaremos a mesma instância do Puppeteer (browser) abrindo UMA ÚNICA ABA extra.
+    const pageSec = await browser.newPage();
+    await pageSec.setExtraHTTPHeaders({ 'User-Agent': 'Mozilla/5.0' });
+    
+    // 1. Busca a versão HTML não compilada 
     if (uncompiledUrl !== targetUrl) {
        try {
-           console.log(`Buscando versão não compilada via Fetch (Fast Mode): ${uncompiledUrl}`);
-           const resp = await fetch(uncompiledUrl, {
-               headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' }
-           });
-           if (resp.ok) {
-               uncompiledHtml = await resp.text();
-           }
+           console.log(`Buscando versão não compilada via Puppeteer: ${uncompiledUrl}`);
+           await pageSec.goto(uncompiledUrl, { waitUntil: 'domcontentloaded', timeout: 25000 });
+           uncompiledHtml = await pageSec.content(); // Salva o HTML sujo inteiro
        } catch (e) {
            console.log("Falha ao buscar HTML da versão não compilada:", e.message);
        }
     }
 
     const getOldTextFromHtml = (artNum: string, html: string) => {
-        // Procura "Art. 10" e captura o strike subsequente
         const artRegex = new RegExp(`Art\\.\\s*${artNum}\\b[\\s\\S]{0,1500}?<strike>([\\s\\S]*?)</strike>`, 'i');
         const match = html.match(artRegex);
         if (match && match[1]) {
@@ -172,8 +172,50 @@ serve(async (req) => {
         return null;
     };
 
-    // 2. Extrai data completa e texto antigo iterando sobre updates (Processamento Paralelo Rápido)
-    const processUpdate = async (update: any) => {
+    // 2. Extrai data completa (apenas URLs únicas para otimização)
+    // Extrai URLs únicas e as torna absolutas
+    const uniqueLinksMap: Record<string, string> = {};
+    updates.forEach(u => {
+        if (u.link_lei) {
+             let linkFinal = u.link_lei;
+             if (linkFinal.startsWith('..') || linkFinal.startsWith('/')) {
+                 const baseUrl = new URL(targetUrl);
+                 linkFinal = new URL(u.link_lei, baseUrl.href).href;
+             }
+             if (linkFinal.includes('planalto.gov.br')) {
+                 u.link_lei = linkFinal; // Seta de volta
+                 uniqueLinksMap[linkFinal] = linkFinal;
+             }
+        }
+    });
+
+    const uniqueLinks = Object.values(uniqueLinksMap);
+    console.log(`Deep Scrape em ${uniqueLinks.length} links únicos...`);
+
+    // Visita cada link único apenas UMA vez reutilizando a mesma aba (Super rápido)
+    for (const link of uniqueLinks) {
+         try {
+             await pageSec.goto(link, { waitUntil: 'domcontentloaded', timeout: 15000 });
+             const dateData = await pageSec.evaluate(() => {
+                   const regexData = /de\s+(\d{1,2})\s+de\s+([a-zçA-Z]+)\s+de\s+(\d{4})/i;
+                   let titleMatch = document.title.match(regexData);
+                   if (titleMatch) return `${titleMatch[1]} DE ${titleMatch[2].toUpperCase()} DE ${titleMatch[3]}`;
+                   
+                   const firstText = document.body.innerText.substring(0, 3000);
+                   let bodyMatch = firstText.match(regexData);
+                   if (bodyMatch) return `${bodyMatch[1]} DE ${bodyMatch[2].toUpperCase()} DE ${bodyMatch[3]}`;
+                   
+                   return null;
+             });
+             cacheLeisAcessadas[link] = dateData;
+         } catch(e) {
+             console.log(`Erro SSL/Timeout ao ler link da lei ${link}:`, e.message);
+             cacheLeisAcessadas[link] = null;
+         }
+    }
+
+    // 3. Mescla tudo de volta no Array
+    for (const update of updates) {
        if (!update.texto_antigo && uncompiledHtml) {
            const artNumber = update.artigo.replace(/[^0-9]/g, '');
            if (artNumber) {
@@ -181,53 +223,13 @@ serve(async (req) => {
                if (oldText) update.texto_antigo = oldText;
            }
        }
-
-       if (update.link_lei) {
-             let linkFinal = update.link_lei;
-             if (linkFinal.startsWith('..') || linkFinal.startsWith('/')) {
-                 const baseUrl = new URL(targetUrl);
-                 linkFinal = new URL(update.link_lei, baseUrl.href).href;
-                 update.link_lei = linkFinal;
-             }
-             
-             if (linkFinal && linkFinal.includes('planalto.gov.br')) {
-                if (cacheLeisAcessadas[linkFinal] !== undefined) {
-                    if (cacheLeisAcessadas[linkFinal]) update.data_completa = cacheLeisAcessadas[linkFinal];
-                    return;
-                }
-                
-                try {
-                    const resp = await fetch(linkFinal, { headers: { 'User-Agent': 'Mozilla/5.0' } });
-                    if (resp.ok) {
-                        const htmlLei = await resp.text();
-                        const regexData = /de\s+(\d{1,2})\s+de\s+([a-zçA-Z]+)\s+de\s+(\d{4})/i;
-                        
-                        const titleMatch = htmlLei.match(/<title>([^<]+)<\/title>/i);
-                        let match = titleMatch ? titleMatch[1].match(regexData) : null;
-                        
-                        if (!match) {
-                            match = htmlLei.substring(0, 5000).match(regexData);
-                        }
-
-                        if (match) {
-                            const dateData = `${match[1]} DE ${match[2].toUpperCase()} DE ${match[3]}`;
-                            cacheLeisAcessadas[linkFinal] = dateData;
-                            update.data_completa = dateData;
-                        } else {
-                            cacheLeisAcessadas[linkFinal] = null;
-                        }
-                    } else {
-                        cacheLeisAcessadas[linkFinal] = null;
-                    }
-                } catch(e) {
-                    cacheLeisAcessadas[linkFinal] = null;
-                }
-             }
+       if (update.link_lei && cacheLeisAcessadas[update.link_lei]) {
+           update.data_completa = cacheLeisAcessadas[update.link_lei];
        }
-    };
+    }
 
-    // Aguarda todas as atualizações dispararem seu processamento de rede 
-    await Promise.all(updates.map(update => processUpdate(update)));
+    // Fecha a aba de scrape
+    await pageSec.close();
     // --- FIM DEEP SCRAPE BLOCK ---    await browser.close();
 
     return new Response(JSON.stringify({ success: true, articles: updates }), {
