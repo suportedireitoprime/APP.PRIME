@@ -187,7 +187,11 @@ export default function AIGeneratorPanel() {
               </div>
             ) : (
               <div className="flex flex-col">
-                {artigosCP.filter(art => art.numero.toLowerCase().startsWith('art')).map((artigo) => {
+                {artigosCP.filter(art => {
+                  const n = art.numero.toLowerCase().trim();
+                  const excluir = ['parte ', 'título ', 'titulo ', 'livro ', 'capítulo ', 'capitulo ', 'seção ', 'secao ', 'preâmbulo', 'preambulo'];
+                  return n.length > 0 && !excluir.some(e => n.startsWith(e));
+                }).map((artigo) => {
                   const isGerado = !!geradosState[artigo.id];
                   return (
                     <motion.div
