@@ -11,8 +11,8 @@ import { Button } from '@/components/ui/button';
 import { Compass, Volume2, VolumeX } from 'lucide-react';
 
 const COLORS = {
-  bg: 0x020205,
-  sidewalk: 0x111827,
+  bg: 0x090f1a, // Lapidação: Azul noturno (menos escuro)
+  sidewalk: 0x1e293b,
   road: 0x0f172a,
   building: 0x0f172a,
   neonRed: 0xff003c,
@@ -24,11 +24,11 @@ const COLORS = {
 };
 
 const TIMELINE = [
-  { step: 0, duration: 5500, text: "Cena 1: Madrugada chuvosa. Uma pessoa caminha sozinha por um beco escuro e deserto...", cam: { x: 2, y: 3, z: 12, lookX: 0, lookY: 1.5, fov: 50 } },
-  { step: 1, duration: 4500, text: "O Agente surge das sombras, aproximando-se silenciosamente com intenção homicida (animus necandi).", cam: { x: -3, y: 2.5, z: 8, lookX: -1, lookY: 1.2, fov: 55 } },
-  { step: 2, duration: 5500, text: "O Agente desfere o golpe letal contra a vítima, utilizando uma faca.", cam: { x: -1, y: 2.0, z: 5.5, lookX: -0.5, lookY: 1.5, fov: 60 } },
-  { step: 3, duration: 5000, text: "A vítima cai ao solo. O crime de homicídio está consumado com o óbito.", cam: { x: 0, y: 4, z: 6, lookX: -1.5, lookY: 0.5, fov: 50 } },
-  { step: 4, duration: 6500, text: "Configurado o Artigo 121: Matar alguém. (Sirenes da polícia se aproximam).", cam: { x: 4, y: 3.5, z: 5, lookX: -1, lookY: 0.5, fov: 65 } },
+  { step: 0, duration: 5500, text: "Cena 1: Madrugada chuvosa. Uma pessoa caminha sozinha por um beco escuro e deserto...", cam: { x: 3, y: 3.5, z: 12, lookX: 0, lookY: 1.5, fov: 45 } },
+  { step: 1, duration: 4500, text: "O Agente surge das sombras, aproximando-se silenciosamente com intenção homicida (animus necandi).", cam: { x: -3.5, y: 2.2, z: 8.5, lookX: -1, lookY: 1.2, fov: 50 } },
+  { step: 2, duration: 5500, text: "O Agente desfere o golpe letal contra a vítima, utilizando uma faca.", cam: { x: -1.2, y: 1.8, z: 4.5, lookX: -0.6, lookY: 1.2, fov: 60 } },
+  { step: 3, duration: 5000, text: "A vítima cai ao solo. O crime de homicídio está consumado com o óbito.", cam: { x: 1, y: 0.5, z: 3.5, lookX: -1, lookY: 0.1, fov: 55 } }, // Câmera no chão focando no sangue
+  { step: 4, duration: 6500, text: "Configurado o Artigo 121: Matar alguém. (Sirenes da polícia se aproximam).", cam: { x: 5, y: 4.5, z: 7, lookX: -1, lookY: 1.0, fov: 65 } },
 ];
 
 const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isExploring: boolean, setPopup: any }) => {
@@ -79,11 +79,11 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
 
     composer.addPass(new OutputPass());
 
-    // Iluminação Base
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
+    // Iluminação Base Lapidada (Melhor visibilidade)
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
     scene.add(ambientLight);
 
-    const moonLight = new THREE.DirectionalLight(0x4b5563, 0.8);
+    const moonLight = new THREE.DirectionalLight(0x738cb5, 1.8);
     moonLight.position.set(-15, 25, -10);
     moonLight.castShadow = true;
     moonLight.shadow.mapSize.set(2048, 2048);
@@ -211,10 +211,10 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
     lp.add(cone);
     scene.add(lp);
 
-    // Poça de sangue
+    // Poça de sangue (Lapidação: Alta refletividade para refletir os neons e sirenes)
     const bloodPool = new THREE.Mesh(
       new THREE.CircleGeometry(1.2, 32),
-      new THREE.MeshStandardMaterial({ color: COLORS.blood, roughness: 0.1, metalness: 0.2, transparent: true, opacity: 0 })
+      new THREE.MeshStandardMaterial({ color: COLORS.blood, roughness: 0.05, metalness: 0.8, transparent: true, opacity: 0 })
     );
     bloodPool.rotation.x = -Math.PI / 2;
     bloodPool.position.set(-0.5, 0.02, 1.5);
@@ -382,11 +382,13 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
       const isExp = elementsRef.current.isExploring;
       const camData = TIMELINE[elementsRef.current.stepIdx ?? 0]?.cam ?? TIMELINE[0].cam;
 
-      // Animação da Chuva
+      // Animação da Chuva (Lapidação: Vento oblíquo e variação de tamanho)
       const positions = rain.geometry.attributes.position.array as Float32Array;
       for(let i=0; i<rainCount; i++) {
-        positions[i*3+1] -= 15 * dt; // velocidade de queda
+        positions[i*3] += 5 * dt; // Vento X
+        positions[i*3+1] -= (15 + Math.random() * 5) * dt; // velocidade de queda
         if (positions[i*3+1] < 0) {
+          positions[i*3] = (Math.random() - 0.5) * 40; // reseta a posição X também para evitar que todas fujam para a direita
           positions[i*3+1] = 20;
         }
       }
@@ -436,24 +438,40 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
         policeConeB.material.opacity = 0;
       }
 
-      // Victim kinematics
+      // Victim kinematics (Lapidação: Queda mais dramática com recoil e pernas espalhadas)
       if (!isExp && s < 3) {
         victim.group.rotation.y = damp(victim.group.rotation.y, Math.PI / 2, 4, dt);
         victim.bodyGroup.position.y = 1.4 + Math.sin(t * 2) * 0.02;
         victim.group.position.x = damp(victim.group.position.x, -1, 4, dt);
         victim.group.rotation.z = damp(victim.group.rotation.z, 0, 4, dt);
+        victim.group.rotation.x = damp(victim.group.rotation.x, 0, 4, dt);
         victim.group.position.y = damp(victim.group.position.y, 0, 4, dt);
+        victim.legR.rotation.z = damp(victim.legR.rotation.z, 0, 4, dt);
+        victim.legL.rotation.z = damp(victim.legL.rotation.z, 0, 4, dt);
+        
+        // Impacto do golpe
+        if (s === 2) {
+           victim.bodyGroup.rotation.z = damp(victim.bodyGroup.rotation.z, -0.2, 10, dt);
+           victim.headGroup.rotation.y = damp(victim.headGroup.rotation.y, 0.4, 10, dt);
+        }
       } else if (!isExp && s >= 3) {
-        // Vítima caindo
-        victim.group.rotation.z = damp(victim.group.rotation.z, -Math.PI / 2, 6, dt);
+        // Vítima caindo morta
+        victim.group.rotation.z = damp(victim.group.rotation.z, -Math.PI / 2.2, 6, dt);
+        victim.group.rotation.x = damp(victim.group.rotation.x, -0.3, 6, dt); // Torce o corpo
         victim.group.position.y = damp(victim.group.position.y, 0.4, 6, dt);
-        victim.armL.rotation.z = damp(victim.armL.rotation.z, 0.5, 4, dt);
-        victim.armR.rotation.z = damp(victim.armR.rotation.z, -0.5, 4, dt);
+        victim.armL.rotation.z = damp(victim.armL.rotation.z, 0.8, 4, dt);
+        victim.armR.rotation.z = damp(victim.armR.rotation.z, -0.2, 4, dt);
+        victim.legR.rotation.z = damp(victim.legR.rotation.z, 0.4, 4, dt); // Perna aberta
+        victim.legL.rotation.z = damp(victim.legL.rotation.z, -0.2, 4, dt);
+        victim.bodyGroup.rotation.z = damp(victim.bodyGroup.rotation.z, 0, 5, dt);
       } else if (isExp) {
         victim.group.rotation.z = 0;
+        victim.group.rotation.x = 0;
         victim.group.position.y = 0;
         victim.armL.rotation.z = 0;
         victim.armR.rotation.z = 0;
+        victim.legR.rotation.z = 0;
+        victim.legL.rotation.z = 0;
       }
 
       const vEyeL = victim.headGroup.children.find((c:any) => c.name === 'eyeL');
@@ -484,7 +502,7 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
         bloodPool.scale.setScalar(0.1);
       }
 
-      // Agent Kinematics
+      // Agent Kinematics (Lapidação: Inclinação do corpo ao esfaquear e fuga mais orgânica)
       const aTargetX = s === 0 ? -8 : s >= 1 && s <= 3 ? -2.2 : 2.5;
       const aTargetZ = s === 0 ? 3 : s >= 1 && s <= 3 ? 1.5 : -1;
       
@@ -492,19 +510,27 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
       agent.group.position.z = damp(agent.group.position.z, aTargetZ, s === 4 ? 2 : 4, dt);
 
       if (!isExp && (s === 1 || s === 4)) {
-        // Andando
+        // Andando/Correndo
         agent.bodyGroup.position.y = 1.4 + Math.abs(Math.sin(t * 12)) * 0.15;
         agent.legR.rotation.x = Math.sin(t * 12) * 0.6;
         agent.legL.rotation.x = -Math.sin(t * 12) * 0.6;
         agent.armL.rotation.x = Math.sin(t * 12) * 0.4;
         agent.bodyGroup.rotation.z = Math.sin(t * 12) * 0.05;
         if (s !== 2) agent.armR.rotation.x = -Math.sin(t * 12) * 0.4;
+        agent.bodyGroup.rotation.x = damp(agent.bodyGroup.rotation.x, 0.2, 5, dt); // Inclinado ao correr
       } else {
         agent.bodyGroup.position.y = damp(agent.bodyGroup.position.y, 1.4 + (isExp ? 0 : Math.sin(t * 2.5) * 0.02), 4, dt);
         agent.legR.rotation.x = damp(agent.legR.rotation.x, 0, 5, dt);
         agent.legL.rotation.x = damp(agent.legL.rotation.x, 0, 5, dt);
         agent.armL.rotation.x = damp(agent.armL.rotation.x, 0, 5, dt);
         agent.bodyGroup.rotation.z = damp(agent.bodyGroup.rotation.z, 0, 5, dt);
+        
+        // Inclina o corpo violentamente para frente no golpe (Step 2)
+        if (s === 2) {
+          agent.bodyGroup.rotation.x = damp(agent.bodyGroup.rotation.x, 0.35, 8, dt);
+        } else {
+          agent.bodyGroup.rotation.x = damp(agent.bodyGroup.rotation.x, 0, 5, dt);
+        }
       }
 
       let aRotY = Math.PI / 2;
@@ -512,7 +538,7 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
       agent.group.rotation.y = damp(agent.group.rotation.y, aRotY, 5, dt);
 
       // Movimento de esfaqueamento violento
-      const armRotX = s === 2 ? -Math.PI / 1.5 : 0;
+      const armRotX = s === 2 ? -Math.PI / 1.5 + (Math.sin(t*20)*0.1) : 0; // Tremor de força
       if (s < 4) agent.armR.rotation.x = damp(agent.armR.rotation.x, armRotX, 12, dt);
       
       knifeGroup.visible = s > 0 || isExp;

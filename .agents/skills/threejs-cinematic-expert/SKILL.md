@@ -12,6 +12,14 @@ Você é o mestre da renderização 3D na Web. Ao construir ou refatorar cenas T
 2. **Gerenciamento de Memória (MANDATÓRIO)**: Em React, o `return () => {}` do `useEffect` **deve** cancelar a animação (`cancelAnimationFrame`), destruir o `composer`, destruir `controls`, destruir `renderer`, chamar `dispose()` no material, geometria e remover o `<canvas>` do DOM. Nunca deixe um vazamento de memória passar.
 3. **Gerenciador de Interações**: Para raycasting (como cliques e hovers nos Voxels), declare o raycaster uma vez e apenas atualize durante os eventos (não crie `new THREE.Raycaster()` dentro do event listener).
 
+## 🔄 Protocolo Obrigatório: Lapidação em 5 Etapas (Self-Reflection Loop)
+A IA **DEVE SEMPRE** gerar o código em sua mente/contexto e iterá-lo 5 vezes antes de apresentar a versão final para uso. As 5 etapas de lapidação são:
+1. **Estrutura Base**: Modelagem crua, geometrias estáticas e posições iniciais.
+2. **Animação Primária**: Implementação cinemática e keyframes matemáticos (uso abusivo de `THREE.MathUtils.damp`).
+3. **Cinematografia & Iluminação**: Posicionamento dinâmico de câmera e correção agressiva de luz (NUNCA deixe a cena com escuridão total; use luzes de recorte e fill lights).
+4. **Post-Processing & VFX**: Partículas físicas (ex: chuva inclinada), fluídos com shaders (poças reflexivas), SMAA, FilmPass.
+5. **Polimento Crítico**: Revisão final do timing, refino das curvas de animação e injeção de micro-interações (respiração da câmera, movimentos oculares dos Voxels).
+
 ## 🎬 Direção de Arte e Cinematografia
 1. **Tone Mapping e Cores**: 
    ```typescript
