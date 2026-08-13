@@ -79,16 +79,16 @@ export default function AdminVadeMecumHistorico() {
     setScrapedUpdates([]);
     try {
       const { data, error } = await supabase.functions.invoke('vademecum-scraper', {
-          body: { url: selectedLaw.url_planalto }
+          body: { targetUrl: selectedLaw.url_planalto, maxAgeYears: 5 }
       });
       
       if (error) throw error;
       
-      setScrapedUpdates(data.updates || []);
+      setScrapedUpdates(data.articles || []);
       const today = new Date().toLocaleDateString('pt-BR');
       setLastScrapeDate(today);
       localStorage.setItem(`vade_scrape_${selectedLaw.tabela_nome}`, today);
-      toast.success(`${data.updates.length} alterações recentes encontradas no Diário Oficial.`, { id: "scraper-toast" });
+      toast.success(`${data.articles?.length || 0} alterações recentes encontradas no Diário Oficial.`, { id: "scraper-toast" });
     } catch (err: any) {
       console.error(err);
       toast.error(err.message || "Falha na varredura.");
