@@ -138,6 +138,7 @@ export default function AdminVadeMecumHistorico() {
           });
 
           if (iaError) throw iaError;
+          if (iaResult?.error) throw new Error(iaResult.error);
 
           if (iaResult?.status === 'match') {
               setIaAnalysis('match');

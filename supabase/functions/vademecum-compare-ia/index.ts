@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { buildGeminiTextUrl } from "../_shared/ai-models.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -40,7 +41,8 @@ Responda ESTRITAMENTE em formato JSON, seguindo esta estrutura, analisando se no
 "diff" significa que o banco de dados está desatualizado (possui a redação antiga ou algo totalmente diferente).
 `;
 
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+    const url = buildGeminiTextUrl(apiKey);
+    const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -53,7 +55,10 @@ Responda ESTRITAMENTE em formato JSON, seguindo esta estrutura, analisando se no
     if (aiData.error) throw new Error(aiData.error.message);
 
     const textResponse = aiData.candidates[0].content.parts[0].text;
-    const result = JSON.parse(textResponse);
+    
+    // Limpeza de possíveis blocos de markdown antes do parser
+    const cleanText = textResponse.replace(/```json/gi, '').replace(/```/g, '').trim();
+    const result = JSON.parse(cleanText);
 
     return new Response(JSON.stringify(result), {
       status: 200,
@@ -61,8 +66,9 @@ Responda ESTRITAMENTE em formato JSON, seguindo esta estrutura, analisando se no
     });
 
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
+    // Retorna HTTP 200 para passar pela barreira do supabase.invoke no front, enviando a msg de erro no payload
+    return new Response(JSON.stringify({ error: error.message || String(error) }), {
+      status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
