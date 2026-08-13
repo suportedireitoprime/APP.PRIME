@@ -96,11 +96,11 @@ export default function AIGeneratorPanel() {
       model: '3.1 Flash Light',
       artigo: artigo.numero,
       textoLeiSeca: artigo.caput,
-      coreAction: `Descreva a ação core para o artigo: ${artigo.caput.substring(0, 80)}...`,
-      background: 'Instrução para a IA: Defina os elementos de fundo, ambiente, texturas e atmosfera do cenário de forma BEM DETALHADA.',
-      secondary: 'Instrução para a IA: Defina elementos secundários (ex: viaturas, pedestres, objetos cênicos, fumaça) de forma BEM DETALHADA.',
-      lighting: 'Instrução para a IA: Defina a iluminação da cena, tipo de luz, ambient occlusion, cor e sombras de forma BEM DETALHADA.',
-      camera: 'Instrução para a IA: Defina o posicionamento, ângulo (ex: plongeé), movimentos e FOV da câmera de forma BEM DETALHADA.'
+      coreAction: `Descreva detalhadamente a infração penal ocorrendo. Ex: "O infrator (voxel 1) avança furtivamente e ataca a vítima (voxel 2) por trás. Ambos interagem sob a mecânica de animação senoide..."`,
+      background: 'Instrução para a IA: Gere a matriz da cidade procedural, definindo o tipo de bairro (subúrbio escuro, centro urbano) e a distribuição dos arranha-céus. Insira ruas de asfalto gasto e calçadas. Use o padrão Toon Shading Outline.',
+      secondary: 'Instrução para a IA: Gere props cênicos imersivos: postes de iluminação amarela, viaturas policiais com luzes neon e uma delegacia (jail) pronta para o desfecho da cena.',
+      lighting: 'Instrução para a IA: Padrão Noir/Cinematic. Utilize luz global direcional prateada (moonLight) simulando luar em -15, 25, -10. Ative o EffectComposer com UnrealBloomPass para as luzes das janelas e neon.',
+      camera: 'Instrução para a IA: Direção de Fotografia: Posicione a câmera inicial em Plongeé (4, 5, 10). Mova suavemente a FOV e as coordenadas de (x,y,z) usando interpolação durante a ação criminal para close-ups dramáticos.'
     });
     setShowFormModal(true);
   };
@@ -187,18 +187,14 @@ export default function AIGeneratorPanel() {
               </div>
             ) : (
               <div className="flex flex-col">
-                {artigosCP.filter(art => art.numero.toLowerCase().includes('art')).map((artigo) => {
+                {artigosCP.filter(art => art.numero.toLowerCase().startsWith('art')).map((artigo) => {
                   const isGerado = !!geradosState[artigo.id];
                   return (
                     <motion.div
                       key={artigo.id}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className={`group relative border-b p-4 sm:px-6 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between transition-all ${
-                        isGerado 
-                          ? 'bg-emerald-950/20 border-emerald-900/50 hover:bg-emerald-900/20' 
-                          : 'bg-transparent border-slate-700/50 hover:bg-slate-800/40'
-                      }`}
+                      className={`group relative border-b border-slate-800 p-4 sm:px-6 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between transition-all bg-transparent hover:bg-slate-900/50`}
                     >
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-2">
