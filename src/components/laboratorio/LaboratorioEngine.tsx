@@ -5,8 +5,12 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { SMAAPass } from 'three/addons/postprocessing/SMAAPass.js';
+import { FilmPass } from 'three/addons/postprocessing/FilmPass.js';
+import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
 import { Button } from '@/components/ui/button';
 import { Compass, Volume2, VolumeX } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 
 export interface SceneJSON {
   environment: 'alley' | 'park' | 'office' | 'generic';
@@ -21,33 +25,38 @@ export interface SceneJSON {
 }
 
 const COLORS = {
-  bg: 0x0f172a,
-  agent: 0x1e293b,
-  victim: 0x3b82f6,
-  skin: 0xfcd34d,
+  bg: 0x0a1128,
+  sidewalk: 0x334155,
+  road: 0x1e293b,
+  building: 0x1e293b,
+  windowLight: 0xfef08a,
+  robber: 0xdc2626,
+  victim: 0xf59e0b,
+  skin: 0xfcbca0,
 };
 
-const LaboratorioEngine = ({ config, step, isExploring, setPopup }: { config: SceneJSON; step: number; isExploring: boolean; setPopup: any }) => {
+const LaboratorioEngineCore = ({ config, step, isExploring, setPopup }: { config: SceneJSON; step: number; isExploring: boolean; setPopup: any }) => {
   const mountRef = useRef<HTMLDivElement>(null);
   const elementsRef = useRef<Record<string, any>>({});
 
   useEffect(() => {
     if (!mountRef.current || !config || !config.timeline) return;
     const container = mountRef.current;
+    const width = container.clientWidth;
+    const height = container.clientHeight;
 
     const scene = new THREE.Scene();
-    
-    const isDark = config.environment === 'alley' || config.environment === 'park';
-    scene.background = new THREE.Color(isDark ? 0x020617 : 0xe2e8f0);
-    scene.fog = new THREE.FogExp2(isDark ? 0x020617 : 0xe2e8f0, 0.015);
+    scene.background = new THREE.Color(COLORS.bg);
+    scene.fog = new THREE.FogExp2(COLORS.bg, 0.015);
 
-    const camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 200);
+    const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 200);
     camera.position.set(4, 5, 10);
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+    const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true, powerPreference: 'high-performance' });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setSize(width, height);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.4;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     container.appendChild(renderer.domElement);
@@ -58,76 +67,198 @@ const LaboratorioEngine = ({ config, step, isExploring, setPopup }: { config: Sc
     controls.enabled = false;
     controls.maxPolarAngle = Math.PI / 2;
 
+    // --- POST-PROCESSING STACK ---
     const composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
     
-    if (isDark) {
-      composer.addPass(new UnrealBloomPass(new THREE.Vector2(container.clientWidth, container.clientHeight), 0.6, 0.3, 0.8));
-    }
+    const smaaPass = new SMAAPass(width * renderer.getPixelRatio(), height * renderer.getPixelRatio());
+    composer.addPass(smaaPass);
+
+    const bloomPass = new UnrealBloomPass(new THREE.Vector2(width, height), 1.2, 0.5, 0.85);
+    composer.addPass(bloomPass);
+
+    const filmPass = new FilmPass(0.35, 0.025, 648, false);
+    composer.addPass(filmPass);
+
+    // Contorno de Quadrinhos / HQ
+    const outlinePass = new OutlinePass(new THREE.Vector2(width, height), scene, camera);
+    outlinePass.edgeStrength = 4.0;
+    outlinePass.edgeGlow = 0.0;
+    outlinePass.edgeThickness = 1.5;
+    outlinePass.pulsePeriod = 0;
+    outlinePass.visibleEdgeColor.set('#000000');
+    outlinePass.hiddenEdgeColor.set('#000000');
+    composer.addPass(outlinePass);
+
     composer.addPass(new OutputPass());
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, isDark ? 0.3 : 0.7);
+    // Toon Shading Map
+    const colors = new Uint8Array([50, 150, 255]);
+    const gradientMap = new THREE.DataTexture(colors, colors.length, 1, THREE.RedFormat);
+    gradientMap.needsUpdate = true;
+
+    // Iluminação Global
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
     scene.add(ambientLight);
 
-    const dirLight = new THREE.DirectionalLight(0xffffff, isDark ? 0.8 : 1.2);
-    dirLight.position.set(5, 15, 5);
-    dirLight.castShadow = true;
-    scene.add(dirLight);
+    const moonLight = new THREE.DirectionalLight(0xbfdbfe, 2.0);
+    moonLight.position.set(-15, 25, -10);
+    moonLight.castShadow = true;
+    moonLight.shadow.mapSize.set(2048, 2048);
+    moonLight.shadow.camera.near = 0.5;
+    moonLight.shadow.camera.far = 100;
+    moonLight.shadow.camera.left = -20;
+    moonLight.shadow.camera.right = 20;
+    moonLight.shadow.camera.top = 20;
+    moonLight.shadow.camera.bottom = -20;
+    moonLight.shadow.bias = -0.0005;
+    scene.add(moonLight);
 
-    if (isDark) {
-      const spot = new THREE.SpotLight(0x3b82f6, 50);
-      spot.position.set(0, 8, 0);
-      spot.angle = Math.PI / 6;
-      spot.penumbra = 0.5;
-      spot.castShadow = true;
-      scene.add(spot);
-    }
+    const moonGeo = new THREE.SphereGeometry(1.5, 32, 32);
+    const moonMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const moon = new THREE.Mesh(moonGeo, moonMat);
+    moon.position.set(-20, 25, -30);
+    scene.add(moon);
 
-    const floor = new THREE.Mesh(
-      new THREE.BoxGeometry(40, 0.25, 40),
-      new THREE.MeshStandardMaterial({ color: isDark ? 0x1e293b : 0xcbd5e1, roughness: 0.8 })
+    // Cenário: Chão
+    const sidewalk = new THREE.Mesh(
+      new THREE.BoxGeometry(120, 0.25, 6),
+      new THREE.MeshToonMaterial({ color: COLORS.sidewalk, gradientMap })
     );
-    floor.position.y = -0.12;
-    floor.receiveShadow = true;
-    scene.add(floor);
+    sidewalk.position.set(0, -0.12, 0);
+    sidewalk.receiveShadow = true;
+    scene.add(sidewalk);
 
+    const road = new THREE.Mesh(
+      new THREE.BoxGeometry(120, 0.12, 25),
+      new THREE.MeshToonMaterial({ color: COLORS.road, gradientMap })
+    );
+    road.position.set(0, -0.18, 15.5);
+    road.receiveShadow = true;
+    scene.add(road);
+
+    // Cenário: Prédios Procedurais da Cidade
+    const cityGroup = new THREE.Group();
+    cityGroup.position.set(0, 0, -5);
+    for (let i = -20; i < 20; i++) {
+      const h = 8 + Math.random() * 30;
+      const w = 4 + Math.random() * 6;
+      const d = 4 + Math.random() * 6;
+      const bMat = new THREE.MeshToonMaterial({ color: COLORS.building, gradientMap });
+      const bldg = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), bMat);
+      bldg.position.set(i * 5 + Math.random() * 2, h / 2, -d / 2 - Math.random() * 4);
+      bldg.castShadow = true;
+      bldg.receiveShadow = true;
+
+      const winMat = new THREE.MeshBasicMaterial({ color: COLORS.windowLight }); 
+      const winDarkMat = new THREE.MeshToonMaterial({ color: 0x334155, gradientMap });
+      for (let wy = 2; wy < h - 1; wy += 2.5) {
+        for (let wx = -w / 2 + 0.8; wx < w / 2 - 0.5; wx += 1.5) {
+          const isLit = Math.random() > 0.6;
+          const win = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 1.2), isLit ? winMat : winDarkMat);
+          win.position.set(wx, -h / 2 + wy, d / 2 + 0.01);
+          bldg.add(win);
+        }
+      }
+      cityGroup.add(bldg);
+    }
+    scene.add(cityGroup);
+
+    // Construtor Voxel Actor Biomecânico
     const createSquareHumanoid = (color: number, startX: number, startZ: number, rotY: number, label: string) => {
       const group = new THREE.Group();
       group.position.set(startX, 0, startZ);
       group.rotation.y = rotY;
       group.userData = { label };
       
+      const c = document.createElement('canvas'); c.width = 64; c.height = 64;
+      const ctx = c.getContext('2d');
+      if (ctx) {
+        const gr = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+        gr.addColorStop(0, 'rgba(0,0,0,0.6)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = gr; ctx.fillRect(0, 0, 64, 64);
+      }
+      const shadow = new THREE.Mesh(new THREE.PlaneGeometry(2.0, 2.0), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false }));
+      shadow.rotation.x = -Math.PI / 2; shadow.position.y = 0.02;
+      group.add(shadow);
+
       const bodyGroup = new THREE.Group();
       bodyGroup.position.y = 1.4;
       group.add(bodyGroup);
 
-      const torso = new THREE.Mesh(new THREE.BoxGeometry(1.0, 1.3, 0.6), new THREE.MeshStandardMaterial({ color, roughness: 0.8 }));
+      const bodyMat = new THREE.MeshToonMaterial({ color, gradientMap });
+      const skinMat = new THREE.MeshToonMaterial({ color: COLORS.skin, gradientMap });
+      const darkMat = new THREE.MeshToonMaterial({ color: 0x111111, gradientMap });
+
+      const torso = new THREE.Mesh(new THREE.BoxGeometry(1.0, 1.3, 0.6), bodyMat);
+      torso.position.y = 0.1;
       torso.castShadow = true;
       bodyGroup.add(torso);
 
-      const head = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.8), new THREE.MeshStandardMaterial({ color: COLORS.skin }));
-      head.position.y = 1.1; head.castShadow = true;
-      bodyGroup.add(head);
+      const headGroup = new THREE.Group();
+      headGroup.position.y = 1.1;
+      bodyGroup.add(headGroup);
 
-      const legR = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.9, 0.35), new THREE.MeshStandardMaterial({ color: 0x111111 }));
-      legR.position.set(0.25, 0.45, 0); legR.castShadow = true;
+      const head = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.8), skinMat);
+      head.castShadow = true;
+      headGroup.add(head);
+      
+      const hair = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.3, 0.85), new THREE.MeshToonMaterial({ color: 0x3f3f46, gradientMap }));
+      hair.position.y = 0.4;
+      headGroup.add(hair);
+      
+      const eMat = new THREE.MeshBasicMaterial({ color: 0x18181b });
+      const eL = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.12, 0.1), eMat);
+      eL.position.set(-0.18, 0.1, 0.41);
+      const eR = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.12, 0.1), eMat);
+      eR.position.set(0.18, 0.1, 0.41);
+      headGroup.add(eL, eR);
+
+      const armR = new THREE.Group();
+      armR.position.set(0.65, 0.6, 0);
+      const armRM = new THREE.Mesh(new THREE.BoxGeometry(0.3, 1.2, 0.3), bodyMat);
+      armRM.position.y = -0.4; armRM.castShadow = true;
+      armR.add(armRM);
+      bodyGroup.add(armR);
+
+      const armL = new THREE.Group();
+      armL.position.set(-0.65, 0.6, 0);
+      const armLM = new THREE.Mesh(new THREE.BoxGeometry(0.3, 1.2, 0.3), bodyMat);
+      armLM.position.y = -0.4; armLM.castShadow = true;
+      armL.add(armLM);
+      bodyGroup.add(armL);
+
+      const legR = new THREE.Group();
+      legR.position.set(0.25, 0.8, 0);
+      const legRM = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.9, 0.35), darkMat);
+      legRM.position.y = -0.35; legRM.castShadow = true;
+      const shoeR = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.15, 0.5), darkMat);
+      shoeR.position.set(0, -0.85, 0.07);
+      legR.add(legRM, shoeR);
       group.add(legR);
 
-      const legL = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.9, 0.35), new THREE.MeshStandardMaterial({ color: 0x111111 }));
-      legL.position.set(-0.25, 0.45, 0); legL.castShadow = true;
+      const legL = new THREE.Group();
+      legL.position.set(-0.25, 0.8, 0);
+      const legLM = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.9, 0.35), darkMat);
+      legLM.position.y = -0.35; legLM.castShadow = true;
+      const shoeL = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.15, 0.5), darkMat);
+      shoeL.position.set(0, -0.85, 0.07);
+      legL.add(legLM, shoeL);
       group.add(legL);
 
       scene.add(group);
-      return { group, legR, legL };
+      return { group, bodyGroup, headGroup, armR, armL, legR, legL };
     };
 
     const firstStep = config.timeline[0];
-    const agent = createSquareHumanoid(COLORS.agent, firstStep.agent_pos?.x ?? 2, firstStep.agent_pos?.z ?? 2, firstStep.agent_pos?.rotY ?? 0, 'Infrator/Agente');
+    const agent = createSquareHumanoid(COLORS.robber, firstStep.agent_pos?.x ?? 2, firstStep.agent_pos?.z ?? 2, firstStep.agent_pos?.rotY ?? 0, 'Infrator/Agente');
     
     let victim = null;
     if (firstStep.victim_pos) {
       victim = createSquareHumanoid(COLORS.victim, firstStep.victim_pos.x, firstStep.victim_pos.z, firstStep.victim_pos.rotY, 'Vítima/Objeto');
     }
+
+    outlinePass.selectedObjects = victim ? [agent.group, victim.group] : [agent.group];
 
     elementsRef.current = { agent, victim, camera, controls, composer, isExploring, config };
 
@@ -165,6 +296,7 @@ const LaboratorioEngine = ({ config, step, isExploring, setPopup }: { config: Sc
     const animate = () => {
       animationId = requestAnimationFrame(animate);
       const dt = clock.getDelta();
+      const t = clock.getElapsedTime();
       const s = elementsRef.current.stepIdx ?? 0;
       const isExp = elementsRef.current.isExploring;
       const cfg = elementsRef.current.config;
@@ -184,21 +316,45 @@ const LaboratorioEngine = ({ config, step, isExploring, setPopup }: { config: Sc
         camTarget.x = damp(camTarget.x, stepData.cam?.lookX ?? 0, 2, dt);
         camTarget.y = damp(camTarget.y, stepData.cam?.lookY ?? 1.5, 2, dt);
         camera.lookAt(camTarget);
+        
+        // Drift cinematográfico
+        camera.position.x += Math.sin(t * 1.8) * 0.005;
+        camera.position.y += Math.cos(t * 2.2) * 0.004;
       }
 
-      const ag = elementsRef.current.agent;
-      if (ag && stepData.agent_pos) {
-        ag.group.position.x = damp(ag.group.position.x, stepData.agent_pos.x, 3, dt);
-        ag.group.position.z = damp(ag.group.position.z, stepData.agent_pos.z, 3, dt);
-        ag.group.rotation.y = damp(ag.group.rotation.y, stepData.agent_pos.rotY, 4, dt);
-      }
+      const updateHumanoid = (hum: any, targetPos: {x: number, z: number, rotY: number} | undefined) => {
+        if (!hum || !targetPos) return;
+        
+        const distToTarget = Math.sqrt(
+          Math.pow(hum.group.position.x - targetPos.x, 2) + 
+          Math.pow(hum.group.position.z - targetPos.z, 2)
+        );
 
-      const vic = elementsRef.current.victim;
-      if (vic && stepData.victim_pos) {
-        vic.group.position.x = damp(vic.group.position.x, stepData.victim_pos.x, 3, dt);
-        vic.group.position.z = damp(vic.group.position.z, stepData.victim_pos.z, 3, dt);
-        vic.group.rotation.y = damp(vic.group.rotation.y, stepData.victim_pos.rotY, 4, dt);
-      }
+        hum.group.position.x = damp(hum.group.position.x, targetPos.x, 3, dt);
+        hum.group.position.z = damp(hum.group.position.z, targetPos.z, 3, dt);
+        hum.group.rotation.y = damp(hum.group.rotation.y, targetPos.rotY, 4, dt);
+
+        const isMoving = distToTarget > 0.05 && !isExp;
+        
+        if (isMoving) {
+          hum.bodyGroup.position.y = 1.4 + Math.abs(Math.sin(t * 18)) * 0.25;
+          hum.legR.rotation.x = Math.sin(t * 18) * 0.8;
+          hum.legL.rotation.x = -Math.sin(t * 18) * 0.8;
+          hum.armL.rotation.x = Math.sin(t * 18) * 0.6;
+          hum.armR.rotation.x = -Math.sin(t * 18) * 0.5;
+          hum.bodyGroup.rotation.z = Math.sin(t * 18) * 0.05;
+        } else {
+          hum.bodyGroup.position.y = damp(hum.bodyGroup.position.y, 1.4 + (isExp ? 0 : Math.sin(t * 2.5) * 0.02), 4, dt);
+          hum.legR.rotation.x = damp(hum.legR.rotation.x, 0, 5, dt);
+          hum.legL.rotation.x = damp(hum.legL.rotation.x, 0, 5, dt);
+          hum.armL.rotation.x = damp(hum.armL.rotation.x, 0, 5, dt);
+          hum.armR.rotation.x = damp(hum.armR.rotation.x, 0, 7, dt);
+          hum.bodyGroup.rotation.z = damp(hum.bodyGroup.rotation.z, 0, 5, dt);
+        }
+      };
+
+      updateHumanoid(elementsRef.current.agent, stepData.agent_pos);
+      updateHumanoid(elementsRef.current.victim, stepData.victim_pos);
 
       composer.render();
     };
@@ -246,7 +402,7 @@ const LaboratorioEngine = ({ config, step, isExploring, setPopup }: { config: Sc
   return <div ref={mountRef} className="w-full h-full cursor-pointer" />;
 };
 
-export default function GenericLaboratorioScene({ config }: { config: SceneJSON }) {
+export default function LaboratorioEngine({ config }: { config: SceneJSON }) {
   const [currentIdx, setCurrentIdx] = useState(0);
   const [isExploring, setIsExploring] = useState(false);
   const [popup, setPopup] = useState<{label: string, x: number, y: number} | null>(null);
@@ -297,16 +453,16 @@ export default function GenericLaboratorioScene({ config }: { config: SceneJSON 
   }
 
   return (
-    <div className="w-full relative flex flex-col items-center">
-      <div className="w-full max-w-full flex justify-between items-center mb-4 px-2 sm:px-0">
+    <div className="w-full h-full relative flex flex-col items-center justify-center p-0 m-0">
+      <div className="absolute top-4 right-20 z-50 flex gap-2">
         <Button 
           variant={ttsEnabled ? "default" : "outline"}
           size="sm"
           onClick={() => setTtsEnabled(!ttsEnabled)}
-          className={`gap-2 transition-all ${ttsEnabled ? 'bg-amber-600 hover:bg-amber-700 shadow-[0_0_15px_rgba(217,119,6,0.5)]' : 'border-white/10 text-muted-foreground'}`}
+          className={`gap-2 transition-all shadow-lg ${ttsEnabled ? 'bg-amber-600 hover:bg-amber-700 shadow-[0_0_15px_rgba(217,119,6,0.5)]' : 'bg-black/60 backdrop-blur-md border-white/10 text-white hover:bg-white/20'}`}
         >
           {ttsEnabled ? <Volume2 className="w-4 h-4 text-white" /> : <VolumeX className="w-4 h-4" />}
-          {ttsEnabled ? 'Narração Ativa' : 'Áudio'}
+          {ttsEnabled ? 'Narração Ativa' : 'Áudio Mudo'}
         </Button>
 
         <Button 
@@ -316,16 +472,15 @@ export default function GenericLaboratorioScene({ config }: { config: SceneJSON 
             setIsExploring(!isExploring);
             setPopup(null);
           }}
-          className={`gap-2 transition-all ${isExploring ? 'bg-indigo-600 hover:bg-indigo-700 shadow-[0_0_15px_rgba(79,70,229,0.5)]' : 'border-white/10 text-muted-foreground'}`}
+          className={`gap-2 transition-all shadow-lg ${isExploring ? 'bg-indigo-600 hover:bg-indigo-700 shadow-[0_0_15px_rgba(79,70,229,0.5)]' : 'bg-black/60 backdrop-blur-md border-white/10 text-white hover:bg-white/20'}`}
         >
           <Compass className={`w-4 h-4 ${isExploring ? 'animate-spin-slow text-white' : ''}`} />
-          {isExploring ? '360º Ativo' : 'Explorar 360º'}
+          {isExploring ? 'Desativar 360º' : 'Explorar 360º'}
         </Button>
       </div>
 
-      <div className="relative w-full max-w-full h-[65vh] min-h-[500px] sm:rounded-xl border-y sm:border border-border/50 shadow-2xl overflow-hidden bg-[#e2e8f0]">
-        
-        <LaboratorioEngine 
+      <div className="relative w-full h-full overflow-hidden bg-[#e2e8f0]">
+        <LaboratorioEngineCore 
           config={config}
           step={timeline[currentIdx]?.step || 0} 
           isExploring={isExploring} 
@@ -333,16 +488,24 @@ export default function GenericLaboratorioScene({ config }: { config: SceneJSON 
         />
 
         {!isExploring && (
-          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 w-[95%] sm:w-[90%] max-w-2xl z-30">
-            <div className="bg-white/95 backdrop-blur-md text-slate-900 p-4 sm:p-5 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] border-b-4 border-slate-600">
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 w-6 h-6 bg-white/95 border-t border-l border-white/20 rotate-45"></div>
-              <p className="text-[17px] sm:text-xl font-bold text-center leading-relaxed font-sans tracking-tight">
-                {timeline[currentIdx]?.text}
-              </p>
-            </div>
+          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 w-[95%] sm:w-[90%] max-w-2xl z-30 pointer-events-none">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={timeline[currentIdx]?.text}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="bg-white/95 backdrop-blur-md text-slate-900 p-4 sm:p-5 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] border-b-4 border-indigo-600 relative"
+              >
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 w-6 h-6 bg-white/95 border-t border-l border-white/20 rotate-45"></div>
+                <p className="text-[17px] sm:text-xl font-bold text-center leading-relaxed font-sans tracking-tight">
+                  {timeline[currentIdx]?.text}
+                </p>
+              </motion.div>
+            </AnimatePresence>
             <div className="flex justify-center gap-2 mt-4 opacity-70 drop-shadow-md">
               {timeline.map((_, i) => (
-                <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i === currentIdx ? 'w-8 bg-slate-600 shadow-[0_0_8px_rgba(71,85,105,1)]' : 'w-2 bg-white/50'}`} />
+                <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i === currentIdx ? 'w-8 bg-indigo-600 shadow-[0_0_8px_rgba(79,70,229,1)]' : 'w-2 bg-white/50'}`} />
               ))}
             </div>
           </div>

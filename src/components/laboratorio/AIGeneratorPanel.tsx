@@ -31,7 +31,7 @@ class ErrorBoundary extends Component<{children: React.ReactNode}, {hasError: bo
 }
 
 // Lazy load the 3D scene to prevent top-level runtime errors or heavy bundle issues
-const AnimacaoExemplo3DScene = lazy(() => import('./AnimacaoExemplo3DScene'));
+const DynamicSceneLoader = lazy(() => import('./DynamicSceneLoader'));
 
 export default function AIGeneratorPanel() {
   const [status, setStatus] = useState<'idle' | 'dispatching' | 'actions_working' | 'done'>('idle');
@@ -39,9 +39,6 @@ export default function AIGeneratorPanel() {
   const [showFormModal, setShowFormModal] = useState(false);
   const [previewModalOpen, setPreviewModalOpen] = useState(false);
   const [previewArtigo, setPreviewArtigo] = useState<ArtigoLei | null>(null);
-  const [playbackStep, setPlaybackStep] = useState(0);
-  const [currentSubtitle, setCurrentSubtitle] = useState('');
-  const [isExploring, setIsExploring] = useState(false);
   const [artigosCP, setArtigosCP] = useState<ArtigoLei[]>([]);
   const [loadingArtigos, setLoadingArtigos] = useState(true);
   const [geradosState, setGeradosState] = useState<Record<string, boolean>>({});
@@ -91,43 +88,7 @@ export default function AIGeneratorPanel() {
     carregarCP();
   }, []);
 
-  // Effect para controlar o Playback Multimídia + Voz do Artigo no Modal
-  useEffect(() => {
-    if (previewModalOpen && previewArtigo) {
-      setPlaybackStep(0);
-      setCurrentSubtitle(`🎬 Preparando cena para ${previewArtigo.numero}...`);
-      
-      const roteiro = [
-        { step: 0, text: `${previewArtigo.numero}. ${previewArtigo.caput}`, time: 1000 },
-        { step: 1, text: "Ocorreu a infração. O agente avança...", time: 7000 },
-        { step: 2, text: previewArtigo.paragrafos ? previewArtigo.paragrafos[0] : "Pena aplicável: reclusão ou multa.", time: 11000 },
-      ];
-
-      const synth = window.speechSynthesis;
-      synth.cancel(); // Para fala anterior
-
-      const speakText = (text: string) => {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'pt-BR';
-        utterance.rate = 1.0;
-        utterance.pitch = 1.0;
-        synth.speak(utterance);
-      };
-
-      const timers = roteiro.map((cena) => {
-        return setTimeout(() => {
-          setPlaybackStep(cena.step);
-          setCurrentSubtitle(cena.text);
-          speakText(cena.text);
-        }, cena.time);
-      });
-
-      return () => {
-        timers.forEach(clearTimeout);
-        synth.cancel(); // Cala a boca se fechar o modal
-      };
-    }
-  }, [previewModalOpen, previewArtigo]);
+  // Removido TTS de teste (agora é delegado ao DynamicSceneLoader)
 
   const handleOpenArtigo = (artigo: ArtigoLei) => {
     setActiveArtigoId(artigo.id);
@@ -346,7 +307,9 @@ export default function AIGeneratorPanel() {
                     <span>Carregando Cena 3D...</span>
                   </div>
                 }>
-                  <AnimacaoExemplo3DScene step={1} />
+                  {previewArtigo && (
+                    <DynamicSceneLoader codigo_nome="CP_CODIGO_PENAL" artigo_numero={parseInt(previewArtigo.numero)} />
+                  )}
                 </Suspense>
               </ErrorBoundary>
             </div>
@@ -549,53 +512,13 @@ export default function AIGeneratorPanel() {
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
               className="bg-slate-900 border border-slate-700 shadow-2xl rounded-3xl w-full max-w-5xl h-[80vh] flex flex-col overflow-hidden relative"
             >
-              <div className="absolute top-4 left-4 z-10 bg-black/60 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-xs font-bold text-emerald-100 uppercase tracking-wider">{previewArtigo?.numero} - Playback Automático</span>
-              </div>
-              
-              <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
-                <Button 
-                  variant={isExploring ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setIsExploring(!isExploring)}
-                  className={`gap-2 transition-all ${isExploring ? 'bg-indigo-600 hover:bg-indigo-700 shadow-[0_0_15px_rgba(79,70,229,0.5)]' : 'bg-black/60 backdrop-blur-md border-white/10 text-white hover:bg-white/20'}`}
+              <div className="flex-1 w-full h-full relative bg-black rounded-b-3xl overflow-hidden">
+                <button 
+                  onClick={() => setPreviewModalOpen(false)}
+                  className="absolute top-4 right-4 z-50 p-3 bg-black/60 backdrop-blur-md border border-white/10 rounded-full hover:bg-red-500 text-white transition-colors"
                 >
-                  <Compass className={`w-4 h-4 ${isExploring ? 'animate-spin-slow text-white' : ''}`} />
-                  {isExploring ? 'Desativar 360º' : 'Explorar 360º'}
-                </Button>
-              </div>
-
-              <button 
-                onClick={() => setPreviewModalOpen(false)}
-                className="absolute top-4 right-4 z-20 p-3 bg-black/60 backdrop-blur-md border border-white/10 rounded-full hover:bg-red-500 text-white transition-colors"
-              >
-                <X size={20} />
-              </button>
-
-              <div className="flex-1 w-full h-full relative bg-black">
-                {/* OVERLAY DE NARRAÇÃO (SUBTITLES) */}
-                {!isExploring && (
-                  <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 w-[95%] sm:w-[90%] max-w-2xl z-30 pointer-events-none">
-                    <AnimatePresence mode="wait">
-                      {currentSubtitle && (
-                        <motion.div
-                          key={currentSubtitle}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -20 }}
-                          className="bg-white/95 backdrop-blur-md text-slate-900 p-4 sm:p-5 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] border-b-4 border-emerald-600 relative"
-                        >
-                          <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 w-6 h-6 bg-white/95 border-t border-l border-white/20 rotate-45"></div>
-                          <p className="text-[17px] sm:text-xl font-bold text-center leading-relaxed font-sans tracking-tight">
-                            {currentSubtitle}
-                          </p>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                )}
-
+                  <X size={20} />
+                </button>
                 <ErrorBoundary>
                   <Suspense fallback={
                     <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 gap-4">
@@ -603,7 +526,9 @@ export default function AIGeneratorPanel() {
                       <span>Carregando Engine 3D...</span>
                     </div>
                   }>
-                    <AnimacaoExemplo3DScene step={playbackStep} isExploring={isExploring} />
+                    {previewArtigo && (
+                      <DynamicSceneLoader codigo_nome="CP_CODIGO_PENAL" artigo_numero={parseInt(previewArtigo.numero.replace(/\D/g, ''))} />
+                    )}
                   </Suspense>
                 </ErrorBoundary>
               </div>
