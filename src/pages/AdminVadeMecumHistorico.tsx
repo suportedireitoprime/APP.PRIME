@@ -122,7 +122,7 @@ export default function AdminVadeMecumHistorico() {
               .from('vademecum')
               .select('id, texto')
               .eq('tabela_nome', selectedLaw?.tabela_nome)
-              .eq('artigo', selectedArticle.artigo)
+              .ilike('artigo', `${selectedArticle.artigo}%`) // Usa ilike para ignorar pontuação como "Art. 92."
               .maybeSingle();
           
           const textoNoBanco = dbData?.texto || "Artigo não encontrado no banco de dados.";
@@ -329,18 +329,26 @@ export default function AdminVadeMecumHistorico() {
            <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 pt-4">
 
                {/* Badge de Data e Motivo */}
-               <div className="bg-gradient-to-r from-blue-900/20 to-transparent border-l-4 border-blue-500 p-5 rounded-r-lg">
+               <div className={`bg-gradient-to-r to-transparent border-l-4 p-5 rounded-r-lg ${
+                   selectedArticle.motivo.toLowerCase().includes('incluíd')
+                   ? 'from-blue-900/30 border-blue-500'
+                   : 'from-orange-900/20 border-orange-500'
+               }`}>
                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                        <div>
-                           <div className="text-blue-400 font-bold text-sm uppercase tracking-wider mb-1">
-                               Alteração Oficial • Ano {selectedArticle.ano}
+                           <div className={`font-bold text-sm uppercase tracking-wider mb-1 ${
+                               selectedArticle.motivo.toLowerCase().includes('incluíd') ? 'text-blue-400' : 'text-orange-400'
+                           }`}>
+                               {selectedArticle.motivo.toLowerCase().includes('incluíd') ? 'INCLUSÃO OFICIAL' : 'ALTERAÇÃO OFICIAL'} • ANO {selectedArticle.ano}
                            </div>
                            <h3 className="text-white text-lg font-medium leading-snug">{selectedArticle.motivo}</h3>
                        </div>
                        {selectedArticle.link_lei && (
-                           <a href={selectedArticle.link_lei} target="_blank" rel="noreferrer" className="shrink-0 flex items-center gap-2 px-4 py-2 bg-[#222] hover:bg-[#333] transition-colors border border-white/10 rounded-lg text-sm text-gray-300">
+                           <a href={selectedArticle.link_lei} target="_blank" rel="noreferrer" className={`shrink-0 flex items-center gap-2 px-4 py-2 bg-[#222] hover:bg-[#333] transition-colors border border-white/10 rounded-lg text-sm text-gray-300`}>
                                Ver Lei no Planalto
-                               <ExternalLink className="w-4 h-4 text-blue-400" />
+                               <ExternalLink className={`w-4 h-4 ${
+                                   selectedArticle.motivo.toLowerCase().includes('incluíd') ? 'text-blue-400' : 'text-orange-400'
+                               }`} />
                            </a>
                        )}
                    </div>
