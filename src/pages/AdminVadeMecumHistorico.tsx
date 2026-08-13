@@ -119,7 +119,7 @@ export default function AdminVadeMecumHistorico() {
       try {
           // 1. Fetch current text from database
           const { data: dbData, error: dbError } = await supabase
-              .from('vademecum')
+              .from(selectedLaw.tabela_nome)
               .select('id, texto')
               .eq('tabela_nome', selectedLaw?.tabela_nome)
               .ilike('artigo', `${selectedArticle.artigo}%`) // Usa ilike para ignorar pontuação como "Art. 92."
@@ -157,7 +157,7 @@ export default function AdminVadeMecumHistorico() {
       try {
           toast.loading("Atualizando banco...", { id: "update-banco" });
           const { error } = await supabase
-              .from('vademecum')
+              .from(selectedLaw.tabela_nome)
               .update({ texto: selectedArticle.texto_novo })
               .eq('tabela_nome', selectedLaw.tabela_nome)
               .eq('artigo', selectedArticle.artigo);
