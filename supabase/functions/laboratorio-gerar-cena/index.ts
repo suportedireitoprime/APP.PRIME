@@ -14,7 +14,7 @@ serve(async (req) => {
   }
 
   try {
-    const { codigo_nome, artigo_numero, artigo_texto } = await req.json();
+    const { codigo_nome, artigo_numero, artigo_texto, force_regenerate } = await req.json();
     if (!codigo_nome || artigo_numero === undefined) {
       return new Response(JSON.stringify({ error: "codigo_nome e artigo_numero sao obrigatorios" }), {
         status: 400,
@@ -27,20 +27,22 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Verifica no cache (banco de dados)
-    const { data: cached } = await supabase
-      .from("laboratorio_cenas")
-      .select("cena_json")
-      .eq("codigo_nome", codigo_nome)
-      .eq("artigo_numero", artigo_numero)
-      .maybeSingle();
+    if (!force_regenerate) {
+      const { data: cached } = await supabase
+        .from("laboratorio_cenas")
+        .select("cena_json")
+        .eq("codigo_nome", codigo_nome)
+        .eq("artigo_numero", artigo_numero)
+        .maybeSingle();
 
-    if (cached?.cena_json) {
-      return new Response(JSON.stringify({
-        cena_json: cached.cena_json,
-        from_cache: true,
-      }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      if (cached?.cena_json) {
+        return new Response(JSON.stringify({
+          cena_json: cached.cena_json,
+          from_cache: true,
+        }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
     }
 
     // Se nao tem cache, pede para o Gemini gerar
@@ -86,18 +88,19 @@ MOVIMENTAÇÃO: Faça os personagens se moverem entre steps! O infrator deve se 
 
 RETORNO: JSON puro, sem markdown, seguindo esta interface:
 {
-  "environment": "prison",
-  "has_female_character": true,
-  "props": ["crib", "mobile"],
+  "environment": "alley",
+  "has_female_character": false,
+  "props": [],
   "timeline": [
     {
       "step": 0,
       "duration": 6000,
-      "text": "Maria aguarda na cela de trânsito sua transferência...",
+      "text": "Descreva a cena concreta, como: Carlos anda pela rua à noite...",
       "cam": { "x": 0, "y": 3, "z": 8, "lookX": 0, "lookY": 1, "fov": 50 },
       "agent_pos": { "x": 0, "z": 0, "rotY": 0 },
       "victim_pos": null,
-      "agent_emotion": "sad"
+      "agent_emotion": "neutral",
+      "victim_emotion": "neutral"
     }
   ]
 }`;
@@ -120,7 +123,7 @@ RETORNO: JSON puro, sem markdown, seguindo esta interface:
     if (!geminiRes.ok) {
       const err = await geminiRes.text();
       console.error("Gemini error:", err);
-      throw new Error("Erro na API do Gemini");
+      throw new Error(`Erro na API do Gemini: ${err}`);
     }
 
     const geminiData = await geminiRes.json();
@@ -129,14 +132,21 @@ RETORNO: JSON puro, sem markdown, seguindo esta interface:
     // Clean potential markdown blocks
     textResponse = textResponse.replace(/```json/g, "").replace(/```/g, "").trim();
     
-    const cena_json = JSON.parse(textResponse);
+    let cena_json;
+    try {
+      cena_json = JSON.parse(textResponse);
+    } catch (parseError) {
+      throw new Error(`Erro ao fazer parse do JSON do Gemini. Texto recebido: ${textResponse}`);
+    }
 
-    // Save to cache
-    await supabase.from("laboratorio_cenas").insert({
+    // Save or update to cache
+    const { error: upsertError } = await supabase.from("laboratorio_cenas").upsert({
       codigo_nome,
       artigo_numero,
       cena_json,
-    });
+    }, { onConflict: 'codigo_nome,artigo_numero' });
+    
+    if (upsertError) console.error("Erro ao salvar no cache:", upsertError);
 
     return new Response(JSON.stringify({ cena_json, from_cache: false }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

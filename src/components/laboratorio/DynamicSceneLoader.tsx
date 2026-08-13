@@ -4,14 +4,19 @@ import LaboratorioEngine, { SceneJSON } from './LaboratorioEngine';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
+// Cache simples em memória para evitar loading da tela vermelha toda vez que reabre a mesma cena
+const sceneCache: Record<string, SceneJSON> = {};
+
 export default function DynamicSceneLoader({ codigo_nome, artigo_numero }: { codigo_nome: string, artigo_numero: number }) {
-  const [config, setConfig] = useState<SceneJSON | null>(null);
-  const [loading, setLoading] = useState(true);
+  const cacheKey = `${codigo_nome}_${artigo_numero}`;
+  const [config, setConfig] = useState<SceneJSON | null>(sceneCache[cacheKey] || null);
+  const [loading, setLoading] = useState(!sceneCache[cacheKey]);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
     async function loadScene() {
+      if (sceneCache[cacheKey]) return; // Já está no cache
       setLoading(true);
       setError(null);
       setConfig(null);
@@ -27,6 +32,7 @@ export default function DynamicSceneLoader({ codigo_nome, artigo_numero }: { cod
         }
 
         if (data?.cena_json) {
+          sceneCache[cacheKey] = data.cena_json;
           setConfig(data.cena_json);
           toast({
             title: data.from_cache ? "Cena Carregada do Cache" : "Nova Cena Gerada pela IA",
