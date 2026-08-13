@@ -333,6 +333,17 @@ export default function AdminVadeMecumHistorico() {
         {view === 'details' && selectedArticle && (
            <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 pt-4">
 
+               {/* Card de Data Solitário no Topo */}
+               <div className="flex">
+                   <div className="bg-[#1A1A1A] border border-white/10 rounded-xl px-5 py-2.5 flex items-center gap-2 shadow-lg">
+                       <Clock className="w-4 h-4 text-gray-400" />
+                       <span className="text-gray-400 text-sm font-medium uppercase tracking-wider">
+                           {selectedArticle.data_completa ? selectedArticle.data_completa : `Atualização do Ano de `}
+                           <strong className="text-white ml-1">{selectedArticle.ano}</strong>
+                       </span>
+                   </div>
+               </div>
+
                {/* Badge de Data e Motivo */}
                <div className={`bg-gradient-to-r to-transparent border-l-4 p-5 rounded-r-lg ${
                    selectedArticle.motivo.toLowerCase().includes('incluíd')
@@ -344,18 +355,22 @@ export default function AdminVadeMecumHistorico() {
                            <div className={`font-bold text-sm uppercase tracking-wider mb-1 ${
                                selectedArticle.motivo.toLowerCase().includes('incluíd') ? 'text-blue-400' : 'text-orange-400'
                            }`}>
-                               {selectedArticle.motivo.toLowerCase().includes('incluíd') ? 'INCLUSÃO OFICIAL' : 'ALTERAÇÃO OFICIAL'} • ANO {selectedArticle.ano}
+                               {selectedArticle.motivo.toLowerCase().includes('incluíd') ? 'INCLUSÃO OFICIAL' : 'ALTERAÇÃO OFICIAL'}
                            </div>
                            <h3 className="text-white text-lg font-medium leading-snug">{selectedArticle.motivo}</h3>
                        </div>
-                       {selectedArticle.link_lei && (
-                           <a href={selectedArticle.link_lei} target="_blank" rel="noreferrer" className={`shrink-0 flex items-center gap-2 px-4 py-2 bg-[#222] hover:bg-[#333] transition-colors border border-white/10 rounded-lg text-sm text-gray-300`}>
-                               Ver Lei no Planalto
-                               <ExternalLink className={`w-4 h-4 ${
-                                   selectedArticle.motivo.toLowerCase().includes('incluíd') ? 'text-blue-400' : 'text-orange-400'
-                               }`} />
-                           </a>
-                       )}
+                       <button 
+                           onClick={() => {
+                               const url = selectedArticle.link_lei || selectedLaw?.url_planalto;
+                               if (url) window.open(url, '_blank');
+                           }}
+                           className={`shrink-0 flex items-center gap-2 px-4 py-2 bg-[#222] hover:bg-[#333] transition-colors border border-white/10 rounded-lg text-sm text-gray-300`}
+                       >
+                           Ver Lei no Planalto
+                           <ExternalLink className={`w-4 h-4 ${
+                               selectedArticle.motivo.toLowerCase().includes('incluíd') ? 'text-blue-400' : 'text-orange-400'
+                           }`} />
+                       </button>
                    </div>
                </div>
 
