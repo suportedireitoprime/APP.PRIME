@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { ContactShadows, PerspectiveCamera } from '@react-three/drei';
+import { PerspectiveCamera } from '@react-three/drei';
 import * as THREE from 'three';
 
 // --- Sub-componentes 3D Animados via useFrame ---
@@ -184,7 +184,8 @@ const AnimacaoExemplo3DScene = ({ step }: { step: number }) => {
           (reading "S")' when the fetch failed or the shader compiler
           barfed.  Plain ambient + directional light is enough for this POC. */}
 
-      <ContactShadows position={[0, 0, 0]} opacity={0.5} scale={20} blur={2} far={4} />
+      {/* ContactShadows removed to prevent WebGL crashes on some devices */}
+      
       <PrisonBars step={step} />
 
       <Robber step={step} />
