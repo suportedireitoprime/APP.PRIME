@@ -1,7 +1,7 @@
 import { cloneElement, isValidElement, useState, useCallback, useRef, useEffect, useMemo, lazy, Suspense } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Eye, EyeOff, Star, Heart, Highlighter, Copy, Plus, Minus, Type, MessageSquare, ChevronUp, ChevronDown, ChevronRight, ExternalLink, Volume2, Pause, Target, StickyNote, MessageCircle, Loader2, Share2, Network, BookOpen, Layers, Sparkles, GraduationCap, Play, Camera, Feather, History, LayoutGrid, Mic, Square, Bell, Scale, Download, Trash2 } from 'lucide-react';
+import { X, Eye, EyeOff, Star, Heart, Highlighter, Copy, Plus, Minus, Type, MessageSquare, ChevronUp, ChevronDown, ChevronRight, ExternalLink, Volume2, Pause, Target, StickyNote, MessageCircle, Loader2, Share2, Network, BookOpen, Layers, Sparkles, GraduationCap, Play, Camera, Feather, History, LayoutGrid, Mic, Square, Bell, Scale, Download, Trash2, Box } from 'lucide-react';
 const LembretesArtigoSheet = lazy(() => import('./LembretesArtigoSheet'));
 const QuizView = lazy(() => import('@/components/estudar/QuizView'));
 const JurisprudenciaArtigoView = lazy(() => import('@/pages/JurisprudenciaArtigo'));
@@ -50,6 +50,7 @@ import { requireOnline } from '@/lib/offlineFeatures';
 import { readArtigoGrifos, writeArtigoGrifos } from '@/lib/artigoGrifosSnapshot';
 import { parseAiSections, buildLineSegmentMap, type AiSection } from '@/lib/artigoSegments';
 import ArtigoIAFullscreen from './ArtigoIAFullscreen';
+const Cena3dFullscreen = lazy(() => import('./Cena3dFullscreen'));
 
 import { setupMediaSession, clearMediaSession } from '@/lib/mediaSession';
 import GrifoMagicoLoader from '@/components/vademecum/GrifoMagicoLoader';
@@ -548,6 +549,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
   const [aiContent, setAiContent] = useState<Record<string, string>>({});
   const [aiLoading, setAiLoading] = useState<Record<string, boolean>>({});
   const [aiGeneratingMode, setAiGeneratingMode] = useState<null | 'explicacao' | 'exemplo' | 'termos'>(null);
+  const [showCena3d, setShowCena3d] = useState(false);
   const [aiGeneratingStep, setAiGeneratingStep] = useState(0);
   const [commentPrompt, setCommentPrompt] = useState<{ id: string; show: boolean; mode: 'create' | 'view' } | null>(null);
   const [commentText, setCommentText] = useState('');
@@ -3436,12 +3438,25 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
               document.body
           )}
           {!isDesktop && (
-            <button
-              onClick={() => { setShowFontControls(!showFontControls); setShowCommentPanel(false); }}
-              className="w-11 h-11 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center hover:bg-primary/90 transition-colors"
-            >
-              <Type className="w-5 h-5" />
-            </button>
+            <>
+              <button
+                onClick={() => setShowCena3d(true)}
+                className="relative w-11 h-11 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-lg shadow-purple-500/30 flex items-center justify-center hover:scale-105 transition-transform"
+                aria-label="Abrir Visualizador 3D do Laboratório"
+              >
+                <Box className="w-5 h-5" />
+                <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-purple-500"></span>
+                </span>
+              </button>
+              <button
+                onClick={() => { setShowFontControls(!showFontControls); setShowCommentPanel(false); }}
+                className="w-11 h-11 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center hover:bg-primary/90 transition-colors"
+              >
+                <Type className="w-5 h-5" />
+              </button>
+            </>
           )}
         </div>
 
@@ -4094,6 +4109,17 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         portalContainer={sheetNode}
         onClose={() => { setIaFull(null); setActiveTab('artigo'); }}
       />
+      
+      <Suspense fallback={null}>
+        {showCena3d && artigo && tabelaNome && (
+           <Cena3dFullscreen
+              open={showCena3d}
+              codigo_nome={tabelaNome}
+              artigo_numero={artigo.numero}
+              onClose={() => setShowCena3d(false)}
+           />
+        )}
+      </Suspense>
 
       </>
 
