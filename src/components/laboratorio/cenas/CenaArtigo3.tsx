@@ -412,7 +412,7 @@ export default function CenaArtigo3() {
   const [currentIdx, setCurrentIdx] = useState(0);
   const [isExploring, setIsExploring] = useState(false);
   const [popup, setPopup] = useState<{label: string, x: number, y: number} | null>(null);
-  const [ttsEnabled, setTtsEnabled] = useState(false);
+  const [ttsEnabled, setTtsEnabled] = useState(true);
 
   useEffect(() => {
     if (isExploring) {

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import DynamicSceneLoader from '@/components/laboratorio/DynamicSceneLoader';
+import CenaArtigo3 from '@/components/laboratorio/cenas/CenaArtigo3';
 import CenaArtigo37 from '@/components/laboratorio/cenas/CenaArtigo37';
 import CenaArtigo4 from '@/components/laboratorio/cenas/CenaArtigo4';
 
@@ -11,6 +12,7 @@ function resolveCenaCurada(codigo_nome: string, artigo_numero: number | string) 
    const artNum = typeof artigo_numero === 'string' ? parseInt(artigo_numero.replace(/\D/g, ''), 10) : artigo_numero;
 
    if (codigo_nome === 'CP_CODIGO_PENAL' || codigo_nome === 'CP') {
+      if (artNum === 3) return <CenaArtigo3 />;
       if (artNum === 37) return <CenaArtigo37 />;
       if (artNum === 4) return <CenaArtigo4 />; 
    }
