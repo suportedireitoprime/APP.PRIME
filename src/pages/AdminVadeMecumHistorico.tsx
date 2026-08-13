@@ -192,6 +192,8 @@ export default function AdminVadeMecumHistorico() {
 
   const { textoLimpo: textoNovoLimpo, autoria: autoriaNovo } = extractAutoria(selectedArticle?.texto_novo || '');
   const { textoLimpo: textoAntigoLimpo } = extractAutoria(selectedArticle?.texto_antigo || '');
+  const { autoria: autoriaMotivo } = extractAutoria(selectedArticle?.motivo || '');
+  const motivoLimpo = autoriaMotivo || selectedArticle?.motivo || 'Alteração não especificada';
 
   return (
     <div className="min-h-screen bg-[#0D0D0D] text-white">
@@ -355,7 +357,7 @@ export default function AdminVadeMecumHistorico() {
                        <div className="flex items-center gap-2">
                            <Clock className="w-4 h-4 text-gray-400" />
                            <span className="text-gray-400 text-sm font-medium uppercase tracking-wider">
-                               {selectedArticle.data_completa ? selectedArticle.data_completa : `ATUALIZAÇÃO DO ANO DE `}
+                               {selectedArticle.data_completa ? selectedArticle.data_completa : `ANO DA PUBLICAÇÃO: `}
                                <strong className="text-white ml-1">{selectedArticle.ano}</strong>
                            </span>
                        </div>
@@ -380,7 +382,7 @@ export default function AdminVadeMecumHistorico() {
                            }`}>
                                {selectedArticle.motivo.toLowerCase().includes('incluíd') ? 'INCLUSÃO OFICIAL' : 'ALTERAÇÃO OFICIAL'}
                            </div>
-                           <h3 className="text-white text-lg font-medium leading-snug">{selectedArticle.motivo}</h3>
+                            <h3 className="text-white text-lg font-medium leading-snug">{motivoLimpo}</h3>
                        </div>
                        <a 
                            href={selectedArticle.link_lei || selectedLaw?.url_planalto || '#'}
