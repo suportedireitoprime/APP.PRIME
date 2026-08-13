@@ -220,11 +220,15 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
 
   const handleFile = async (file: File) => {
     if (file.size > 8 * 1024 * 1024) { toast.error('Arquivo maior que 8MB'); return; }
-    const buf = await file.arrayBuffer();
-    const b64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
-    setAttachment({ mime: file.type || 'application/octet-stream', data: b64, name: file.name });
-    setAttachOpen(false);
-    toast.success('Documento anexado');
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64String = (reader.result as string).split(',')[1];
+      setAttachment({ mime: file.type || 'application/octet-stream', data: base64String, name: file.name });
+      setAttachOpen(false);
+      toast.success('Documento anexado');
+    };
+    reader.onerror = () => toast.error('Erro ao processar arquivo');
+    reader.readAsDataURL(file);
   };
 
   const abrirAnexos = () => {
