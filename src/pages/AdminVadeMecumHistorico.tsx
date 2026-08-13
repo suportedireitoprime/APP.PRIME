@@ -27,8 +27,12 @@ export default function AdminVadeMecumHistorico() {
 
   useEffect(() => {
       if (selectedLaw) {
-          const stored = localStorage.getItem(`vade_scrape_${selectedLaw.tabela_nome}`);
-          if (stored) setLastScrapeDate(stored);
+          const date = localStorage.getItem(`vade_scrape_${selectedLaw.tabela_nome}`);
+          setLastScrapeDate(date || null);
+          const cachedData = localStorage.getItem(`vade_scrape_data_${selectedLaw.tabela_nome}`);
+          if (cachedData) {
+              try { setScrapedUpdates(JSON.parse(cachedData)); } catch (e) { console.error(e); }
+          }
       }
   }, [selectedLaw]);
 
@@ -51,6 +55,7 @@ export default function AdminVadeMecumHistorico() {
   const handleLawClick = (law: LeiCatalogItem) => {
       setSelectedLaw(law);
       setScrapedUpdates([]);
+      setSelectedYear('Todos'); // Reseta o filtro
       setView('scraper');
   };
 
@@ -99,6 +104,7 @@ export default function AdminVadeMecumHistorico() {
       const today = new Date().toLocaleDateString('pt-BR');
       setLastScrapeDate(today);
       localStorage.setItem(`vade_scrape_${selectedLaw.tabela_nome}`, today);
+      localStorage.setItem(`vade_scrape_data_${selectedLaw.tabela_nome}`, JSON.stringify(data.articles || []));
       toast.success(`${data.articles?.length || 0} alterações recentes encontradas no Diário Oficial.`, { id: "scraper-toast" });
     } catch (err: any) {
       console.error(err);
@@ -233,20 +239,23 @@ export default function AdminVadeMecumHistorico() {
         {/* VIEW 3: SCRAPER */}
         {view === 'scraper' && (
            <div className="space-y-6">
-              <section className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
-                <div className="flex justify-between items-start">
+              <section className="bg-[#151515] border border-white/5 rounded-2xl p-6 space-y-5">
+                <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
                     <div>
-                        <h2 className="font-bold text-xl">{selectedLaw?.nome}</h2>
-                        <a href={selectedLaw?.url_planalto} target="_blank" rel="noreferrer" className="text-sm text-blue-400 hover:underline flex items-center gap-1 mt-2">
-                         <p className="text-gray-400 mt-1">Acessar fonte (Planalto) <ExternalLink className="w-3 h-3 inline" /></p>
-                         {lastScrapeDate && (
-                             <div className="mt-4 inline-flex items-center gap-2 bg-black/40 px-3 py-1.5 rounded-full border border-white/5">
-                                 <Clock className="w-4 h-4 text-gray-400" />
-                                 <span className="text-xs text-gray-300">Última varredura: {lastScrapeDate}</span>
-                             </div>
-                         )}
+                        <h2 className="font-black text-2xl uppercase text-white tracking-wider">{selectedLaw?.nome}</h2>
+                        <a href={selectedLaw?.url_planalto} target="_blank" rel="noreferrer" className="text-sm text-gray-400 hover:text-blue-400 hover:underline flex items-center gap-1 mt-1">
+                         Acessar fonte (Planalto) <ExternalLink className="w-3 h-3" />
                         </a>
                     </div>
+                    {lastScrapeDate && (
+                        <div className="inline-flex items-center gap-2 bg-black/50 px-4 py-2 rounded-xl border border-white/5">
+                            <Clock className="w-4 h-4 text-gray-500" />
+                            <div className="flex flex-col">
+                                <span className="text-[10px] text-gray-500 uppercase font-bold tracking-widest leading-none">Última varredura</span>
+                                <span className="text-sm text-gray-300 font-medium">{lastScrapeDate}</span>
+                            </div>
+                        </div>
+                    )}
                 </div>
                 
                 <button 
@@ -261,21 +270,51 @@ export default function AdminVadeMecumHistorico() {
 
               {scrapedUpdates.length > 0 && (
                  <section className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                     <h3 className="font-bold text-gray-300">Atualizações Recentes Identificadas:</h3>
+                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-8 mb-4">
+                         <h3 className="font-black text-gray-300 uppercase tracking-widest text-sm">Atualizações Recentes:</h3>
+                         
+                         <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0 hide-scrollbar w-full sm:w-auto">
+                             {availableYears.map(year => (
+                                 <button
+                                     key={year}
+                                     onClick={() => setSelectedYear(year)}
+                                     className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase transition-colors whitespace-nowrap border ${
+                                         selectedYear === year
+                                             ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-500/20'
+                                             : 'bg-[#151515] border-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+                                     }`}
+                                 >
+                                     {year}
+                                 </button>
+                             ))}
+                         </div>
+                     </div>
+                     
+                     {filteredUpdates.length === 0 && (
+                         <div className="text-center p-8 bg-[#1A1A1A] rounded-xl border border-white/5">
+                             <p className="text-gray-400">Nenhuma atualização em {selectedYear}.</p>
+                         </div>
+                     )}
+
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                         {scrapedUpdates.map((item, idx) => (
+                         {filteredUpdates.map((item, idx) => (
                              <button
                                 key={idx}
                                 onClick={() => handleArticleClick(item)}
-                                className="bg-[#1A1A1A] border border-orange-500/20 hover:border-orange-500/50 rounded-2xl p-5 text-left transition-all"
+                                className="bg-[#1A1A1A] border border-orange-500/10 hover:border-orange-500/30 hover:bg-[#1f1f1f] rounded-2xl p-5 text-left transition-all group flex flex-col h-full"
                              >
-                                 <h4 className="font-bold text-white text-lg">{item.artigo}</h4>
-                                 <p className="text-sm text-gray-400 mt-2 line-clamp-3 leading-relaxed">
+                                 <div className="flex justify-between items-start mb-3">
+                                     <h4 className="font-black text-white text-lg group-hover:text-orange-400 transition-colors">{item.artigo}</h4>
+                                     <span className="text-[10px] font-bold text-gray-400 bg-black/40 px-2 py-1 rounded border border-white/5 uppercase tracking-wider">
+                                         Ano {item.ano}
+                                     </span>
+                                 </div>
+                                 <p className="text-sm text-gray-400 line-clamp-3 leading-relaxed flex-grow">
                                      <span className="text-orange-400 font-medium">{item.motivo}</span>
                                      <br/>{item.texto_novo}
                                  </p>
-                                 <div className="mt-4 flex items-center text-purple-400 text-sm font-semibold gap-1">
-                                     Analisar com IA <ChevronRight className="w-4 h-4" />
+                                 <div className="mt-5 flex items-center text-gray-500 text-xs font-bold uppercase tracking-wider group-hover:text-white transition-colors">
+                                     Analisar Sincronia <ChevronRight className="w-4 h-4 ml-1" />
                                  </div>
                              </button>
                          ))}
