@@ -14,13 +14,17 @@ Esta skill deve ser ativada toda vez que o usuário pedir para gerar a cena de u
 - Animação feita via função `damp` do Three.js (interpolação suave) baseada em uma constante `TIMELINE`.
 
 ## 2. Nível de Detalhe e Geometria Prática (Matemática)
-- **Não economize nos detalhes geométricos.** Se precisar criar uma arma, construa o cano, a mira e o gatilho usando combinações de `BoxGeometry` e `CylinderGeometry`.
-- Se precisar criar um móvel (berço, cama, mesa), crie as pernas, o tampo, os lençóis. Use `Group` para organizar.
+- **Não economize nos detalhes geométricos.** Construa móveis complexos (berços, camas, janelas) combinando `BoxGeometry` e `CylinderGeometry`.
+- **Cenários Fechados:** NUNCA deixe a câmera olhar para o "vazio" (fog/background puro) em cenas de interiores. Construa chão amplo e paredes (backWall, sideWall) para criar um cômodo fechado. Evite cores de fundo puramente brancas que causam efeito de "void".
 - **Micro-detalhes:** Adicione sombras (`castShadow = true`, `receiveShadow = true`) em tudo.
 
-## 3. Emoções e Expressões Faciais
-- Os personagens humanoides devem ter expressões faciais que mudam dinamicamente no `animate()`.
-- **Olhos:** Ao invés de blocos estáticos, permita que os olhos mudem de escala ou rotação.
+## 3. Design de Personagens Específicos
+- **Personagens Femininas:** 
+  - Use geometria extra para o cabelo (ex: franja longa, rabo de cavalo ou volume lateral).
+  - Ajuste a proporção (torso ligeiramente menor/acinturado).
+  - Se for detenta, prefira **rosa** (`0xec4899`) em vez do laranja clássico, para distinguir bem a silhueta.
+- **Expressões Faciais:**
+  - Os humanoides devem ter expressões que mudam no `animate()`.
   - *Bravo:* Olhos inclinados (`eyeL.rotation.z = 0.2`, `eyeR.rotation.z = -0.2`).
   - *Triste:* Olhos caídos (`eyeL.rotation.z = -0.2`, `eyeR.rotation.z = 0.2`).
   - *Surpreso:* Olhos arregalados (`eye.scale.y = 1.5`).

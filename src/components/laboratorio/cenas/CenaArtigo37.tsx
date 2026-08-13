@@ -13,10 +13,10 @@ import { Compass, Volume2, VolumeX } from 'lucide-react';
 
 const COLORS = {
   bgTransit: 0x0f172a, // Cela de trânsito (escura, fria)
-  bgWomens: 0xfdf4ff, // Estabelecimento feminino (claro, acolhedor)
+  bgWomens: 0xe8ccd7, // Estabelecimento feminino (rosa mais suave/escuro para evitar void branco)
   floorTransit: 0x334155, 
-  floorWomens: 0xfbcfe8, 
-  inmate: 0xf97316, // Uniforme laranja
+  floorWomens: 0xd6b4c2, // Chão rosa queimado
+  inmate: 0xec4899, // Uniforme rosa
   guard: 0x1e3a8a, // Farda azul escuro
   skin: 0xfcbca0,
   bars: 0x475569,
@@ -98,9 +98,9 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
     spotLight.castShadow = true;
     scene.add(spotLight);
 
-    // Chão
+    // Chão gigante para evitar void
     const floorMat = new THREE.MeshToonMaterial({ color: COLORS.floorTransit, gradientMap });
-    const floor = new THREE.Mesh(new THREE.BoxGeometry(100, 0.5, 100), floorMat);
+    const floor = new THREE.Mesh(new THREE.BoxGeometry(200, 0.5, 200), floorMat);
     floor.position.y = -0.25;
     floor.receiveShadow = true;
     scene.add(floor);
@@ -110,22 +110,32 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
     const barMat = new THREE.MeshToonMaterial({ color: COLORS.bars, gradientMap });
     const wallMat = new THREE.MeshToonMaterial({ color: 0x1e293b, gradientMap });
 
-    // Grades
-    for(let i=-3; i<=3; i++) {
-        const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 4), barMat);
-        bar.position.set(i * 0.8, 2, 2);
+    // Grades largas para não cortar a câmera
+    for(let i=-6; i<=6; i++) {
+        const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 8), barMat);
+        bar.position.set(i * 0.8, 4, 3);
         bar.castShadow = true;
         transitGroup.add(bar);
     }
-    const crossBar = new THREE.Mesh(new THREE.BoxGeometry(5.5, 0.1, 0.1), barMat);
-    crossBar.position.set(0, 2, 2);
+    const crossBar = new THREE.Mesh(new THREE.BoxGeometry(12, 0.1, 0.1), barMat);
+    crossBar.position.set(0, 2, 3);
     transitGroup.add(crossBar);
 
-    // Paredes
-    const backWall = new THREE.Mesh(new THREE.BoxGeometry(6, 4, 0.5), wallMat);
-    backWall.position.set(0, 2, -2);
+    // Paredes enormes para fechar o cômodo
+    const backWall = new THREE.Mesh(new THREE.BoxGeometry(40, 20, 0.5), wallMat);
+    backWall.position.set(0, 10, -4);
     backWall.receiveShadow = true;
     transitGroup.add(backWall);
+
+    const sideWallL = new THREE.Mesh(new THREE.BoxGeometry(0.5, 20, 40), wallMat);
+    sideWallL.position.set(-10, 10, 0);
+    sideWallL.receiveShadow = true;
+    transitGroup.add(sideWallL);
+
+    const sideWallR = new THREE.Mesh(new THREE.BoxGeometry(0.5, 20, 40), wallMat);
+    sideWallR.position.set(10, 10, 0);
+    sideWallR.receiveShadow = true;
+    transitGroup.add(sideWallR);
 
     // Cama de pedra
     const stoneBed = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.5, 3), wallMat);
@@ -136,13 +146,30 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
 
     // === ESTABELECIMENTO FEMININO (BOM) ===
     const womensGroup = new THREE.Group();
-    womensGroup.position.y = -10; // Escondido no início
+    womensGroup.position.y = -20; // Escondido no início bem abaixo
 
     const wallWomens = new THREE.MeshToonMaterial({ color: 0xfce7f3, gradientMap });
-    const backWallW = new THREE.Mesh(new THREE.BoxGeometry(8, 4, 0.5), wallWomens);
-    backWallW.position.set(0, 2, -3);
+    // Paredes enormes para evitar o void branco
+    const backWallW = new THREE.Mesh(new THREE.BoxGeometry(40, 20, 0.5), wallWomens);
+    backWallW.position.set(0, 10, -5);
     backWallW.receiveShadow = true;
     womensGroup.add(backWallW);
+
+    const sideWallWL = new THREE.Mesh(new THREE.BoxGeometry(0.5, 20, 40), wallWomens);
+    sideWallWL.position.set(-15, 10, 0);
+    sideWallWL.receiveShadow = true;
+    womensGroup.add(sideWallWL);
+
+    const sideWallWR = new THREE.Mesh(new THREE.BoxGeometry(0.5, 20, 40), wallWomens);
+    sideWallWR.position.set(15, 10, 0);
+    sideWallWR.receiveShadow = true;
+    womensGroup.add(sideWallWR);
+
+    // Tapete no berçário
+    const rug = new THREE.Mesh(new THREE.CylinderGeometry(3, 3, 0.1, 32), new THREE.MeshToonMaterial({ color: 0xfbcfe8, gradientMap }));
+    rug.position.set(1.5, 0.05, -1);
+    rug.receiveShadow = true;
+    womensGroup.add(rug);
 
     // Berço (Matemática Geométrica)
     const crib = new THREE.Group();
@@ -202,31 +229,38 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
         const shoeMat = new THREE.MeshToonMaterial({ color: 0x111111, gradientMap });
 
         // Torso um pouco mais acinturado
-        const torso = new THREE.Mesh(new THREE.BoxGeometry(0.9, 1.2, 0.5), clothMat);
+        const torso = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.1, 0.45), clothMat);
         torso.position.y = 0.1; torso.castShadow = true;
         bodyGroup.add(torso);
 
         const headGroup = new THREE.Group();
-        headGroup.position.y = 1.0;
+        headGroup.position.y = 0.95;
         bodyGroup.add(headGroup);
 
         const head = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.7, 0.7), skinMat);
         head.castShadow = true;
         headGroup.add(head);
 
-        // Cabelo
-        const hair = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.2, 0.8), shoeMat);
-        hair.position.y = 0.4; headGroup.add(hair);
-        // Rabo de cavalo longo
-        const ponyTail = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.6, 0.2), shoeMat);
-        ponyTail.position.set(0, 0, -0.4);
-        headGroup.add(ponyTail);
+        // Cabelo mais detalhado para parecer mulher
+        const hairBase = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.3, 0.8), shoeMat);
+        hairBase.position.y = 0.35; 
+        headGroup.add(hairBase);
+        
+        // Franja longa lateral
+        const bangs = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.4, 0.2), shoeMat);
+        bangs.position.set(0, 0.2, 0.35);
+        headGroup.add(bangs);
+        
+        // Cabelo comprido atrás
+        const longHair = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.3), shoeMat);
+        longHair.position.set(0, -0.2, -0.3);
+        headGroup.add(longHair);
 
         if (hasHat) {
             const hat = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.45, 0.2, 8), new THREE.MeshToonMaterial({ color: 0x111111, gradientMap }));
-            hat.position.y = 0.55;
+            hat.position.y = 0.6;
             const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.6, 0.05, 8), new THREE.MeshToonMaterial({ color: 0x111111, gradientMap }));
-            brim.position.set(0, 0.45, 0.2);
+            brim.position.set(0, 0.5, 0.2);
             headGroup.add(hat, brim);
         }
 
