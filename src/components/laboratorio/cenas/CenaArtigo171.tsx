@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { PerspectiveCamera } from '@react-three/drei';
 import * as THREE from 'three';
 
 const TIMELINE = [
@@ -174,8 +173,7 @@ export default function CenaArtigo171() {
   return (
     <div className="w-full relative flex flex-col items-center">
       <div className="relative w-full max-w-full h-[65vh] min-h-[500px] sm:rounded-xl border-y sm:border border-border/50 shadow-2xl overflow-hidden bg-[#f8fafc]">
-        <Canvas shadows dpr={[1, 2]} gl={{ powerPreference: "high-performance", antialias: true }}>
-          <PerspectiveCamera makeDefault position={[0, 4, 12]} fov={45} />
+        <Canvas shadows dpr={[1, 2]} gl={{ powerPreference: "high-performance", antialias: true }} camera={{ position: [0, 4, 12], fov: 45 }}>
           <CameraController step={currentIdx} />
           <Scenery />
           <Personagem step={currentIdx} isAgent={true} />

@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
-import { X, Copy, Check, Book, Wand2 } from 'lucide-react';
+import React, { useState, Suspense, lazy } from 'react';
+import { X, Book, Wand2 } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import AnimacaoExemplo from '@/components/laboratorio/AnimacaoExemplo';
 import AnimacaoPixi from '@/components/laboratorio/AnimacaoPixi';
 import AnimacaoThreeJs from '@/components/laboratorio/AnimacaoThreeJs';
-import CenaArtigo121 from '@/components/laboratorio/cenas/CenaArtigo121';
-import CenaArtigo155 from '@/components/laboratorio/cenas/CenaArtigo155';
-import CenaArtigo171 from '@/components/laboratorio/cenas/CenaArtigo171';
-import CenaArtigo312 from '@/components/laboratorio/cenas/CenaArtigo312';
+
+const CenaArtigo121 = lazy(() => import('@/components/laboratorio/cenas/CenaArtigo121'));
+const CenaArtigo155 = lazy(() => import('@/components/laboratorio/cenas/CenaArtigo155'));
+const CenaArtigo171 = lazy(() => import('@/components/laboratorio/cenas/CenaArtigo171'));
+const CenaArtigo312 = lazy(() => import('@/components/laboratorio/cenas/CenaArtigo312'));
 
 const AdminLaboratorio = () => {
   const navigate = useNavigate();
@@ -89,11 +90,13 @@ const AdminLaboratorio = () => {
             {activeEngine === 'pixi' && <AnimacaoPixi />}
             {activeEngine === 'css' && <AnimacaoExemplo />}
             
-            {activeEngine === 'art121' && <CenaArtigo121 />}
-            {activeEngine === 'art155' && <CenaArtigo155 />}
-            {activeEngine === 'art157' && <AnimacaoThreeJs />}
-            {activeEngine === 'art171' && <CenaArtigo171 />}
-            {activeEngine === 'art312' && <CenaArtigo312 />}
+            <Suspense fallback={<div className="w-full h-full flex items-center justify-center text-muted-foreground">Carregando cena...</div>}>
+              {activeEngine === 'art121' && <CenaArtigo121 />}
+              {activeEngine === 'art155' && <CenaArtigo155 />}
+              {activeEngine === 'art157' && <AnimacaoThreeJs />}
+              {activeEngine === 'art171' && <CenaArtigo171 />}
+              {activeEngine === 'art312' && <CenaArtigo312 />}
+            </Suspense>
             
             <div className="absolute top-4 left-4 right-4 flex justify-between pointer-events-none opacity-40">
               <span className="text-[10px] font-mono tracking-widest text-primary">RENDER_TARGET: {activeEngine.toUpperCase()}</span>

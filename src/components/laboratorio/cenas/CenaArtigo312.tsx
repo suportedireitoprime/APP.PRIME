@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { PerspectiveCamera } from '@react-three/drei';
 import * as THREE from 'three';
 
 const TIMELINE = [
@@ -192,8 +191,7 @@ export default function CenaArtigo312() {
           REC - CAM 01
         </div>
 
-        <Canvas shadows dpr={[1, 2]} gl={{ powerPreference: "high-performance", antialias: true }}>
-          <PerspectiveCamera makeDefault position={[0, 3, 10]} fov={60} />
+        <Canvas shadows dpr={[1, 2]} gl={{ powerPreference: "high-performance", antialias: true }} camera={{ position: [0, 3, 10], fov: 60 }}>
           <CameraController step={currentIdx} />
           <Scenery />
           <Funcionario step={currentIdx} />
