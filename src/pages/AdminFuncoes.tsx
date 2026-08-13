@@ -68,6 +68,7 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   '/configuracoes': () => import('./Configuracoes'),
   '/ferramentas/peticao-inicial': () => import('./PeticaoInicial'),
   '/anotacoes/audio': () => import('./AnotacoesAudio'),
+  '/admin-laboratorio': () => import('./AdminLaboratorio'),
 };
 const prefetched = new Set<string>();
 const prefetching = new Map<string, Promise<unknown>>();
@@ -376,6 +377,15 @@ const CATEGORIES: Category[] = [
     icon: Bug,
     items: [
       { id: 'crashlytics-test', label: 'Disparar crash de teste', icon: Bug, desc: 'Envia crash pro Firebase Crashlytics (só native)' },
+    ],
+  },
+  {
+    id: 'laboratorio',
+    title: 'Laboratório',
+    desc: 'Ambiente de testes, POCs e novas interfaces',
+    icon: Gamepad2,
+    items: [
+      { id: 'admin-laboratorio', label: 'Laboratório', icon: Gamepad2, desc: 'Provas de conceito de UI/UX, animações e mini-games', route: '/admin-laboratorio' },
     ],
   },
 ];
