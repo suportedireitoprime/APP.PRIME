@@ -5,6 +5,8 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { SMAAPass } from 'three/addons/postprocessing/SMAAPass.js';
+import { FilmPass } from 'three/addons/postprocessing/FilmPass.js';
 import { Button } from '@/components/ui/button';
 import { Compass, Volume2, VolumeX } from 'lucide-react';
 
@@ -16,7 +18,7 @@ const COLORS = {
   windowLight: 0xfef08a,
   robber: 0xdc2626,
   victim: 0xf59e0b,
-  police: 0x1d4ed8, // Azul da polícia
+  police: 0x1d4ed8, 
   bars: 0x94a3b8,
   alarm: 0xff0000,
   alarmBlue: 0x0000ff,
@@ -48,13 +50,14 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
     const camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 200);
     camera.position.set(2, 3, 14);
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+    // Renderer SEM antialias nativo, para usar SMAA via Post-processing
+    const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true, powerPreference: 'high-performance' });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(container.clientWidth, container.clientHeight);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.4;
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Soft shadows
     container.appendChild(renderer.domElement);
 
     const controls = new OrbitControls(camera, renderer.domElement);
@@ -63,21 +66,28 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
     controls.enabled = false;
     controls.maxPolarAngle = Math.PI / 2;
 
+    // --- CINEMATIC POST-PROCESSING STACK ---
     const composer = new EffectComposer(renderer);
-    const renderPass = new RenderPass(scene, camera);
-    composer.addPass(renderPass);
+    composer.addPass(new RenderPass(scene, camera));
     
-    const bloomPass = new UnrealBloomPass(
-      new THREE.Vector2(container.clientWidth, container.clientHeight),
-      1.2, 0.5, 0.85
-    );
+    // SMAA Pass (Superior Antialiasing)
+    const smaaPass = new SMAAPass(container.clientWidth * renderer.getPixelRatio(), container.clientHeight * renderer.getPixelRatio());
+    composer.addPass(smaaPass);
+
+    // Bloom Pass
+    const bloomPass = new UnrealBloomPass(new THREE.Vector2(container.clientWidth, container.clientHeight), 1.2, 0.5, 0.85);
     composer.addPass(bloomPass);
 
-    const outputPass = new OutputPass();
-    composer.addPass(outputPass);
+    // Film Pass (Grain & Scanlines for analogue cinematic look)
+    // intensity, grayscale, scanlines
+    const filmPass = new FilmPass(0.35, 0.025, 648, false);
+    composer.addPass(filmPass);
+
+    composer.addPass(new OutputPass());
+    // ---------------------------------------
 
     // Iluminação
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
     scene.add(ambientLight);
 
     const moonLight = new THREE.DirectionalLight(0xbfdbfe, 2.0);
@@ -100,21 +110,38 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
     moon.userData = { label: 'Ambiente Noturno' };
     scene.add(moon);
 
-    // Luzes da sirene
+    // Luzes da Sirene Policial (Volumétricas)
+    const policeGroup = new THREE.Group();
+    policeGroup.position.set(15, 0, 0);
+    scene.add(policeGroup);
+
     const pointLightRed = new THREE.PointLight(COLORS.alarm, 0, 30, 2);
     pointLightRed.position.set(-2, 5, 3);
-    scene.add(pointLightRed);
+    policeGroup.add(pointLightRed);
 
     const pointLightBlue = new THREE.PointLight(COLORS.alarmBlue, 0, 30, 2);
-    pointLightBlue.position.set(6, 5, 3);
-    scene.add(pointLightBlue);
+    pointLightBlue.position.set(2, 5, 3);
+    policeGroup.add(pointLightBlue);
+
+    // Cones de Sirene Volumétricos (Aditivos)
+    const coneMatRed = new THREE.MeshBasicMaterial({ color: COLORS.alarm, transparent: true, opacity: 0.15, blending: THREE.AdditiveBlending, depthWrite: false });
+    const coneRed = new THREE.Mesh(new THREE.ConeGeometry(5, 12, 32), coneMatRed);
+    coneRed.position.set(-2, 5, 8);
+    coneRed.rotation.x = Math.PI / 2;
+    policeGroup.add(coneRed);
+
+    const coneMatBlue = new THREE.MeshBasicMaterial({ color: COLORS.alarmBlue, transparent: true, opacity: 0.15, blending: THREE.AdditiveBlending, depthWrite: false });
+    const coneBlue = new THREE.Mesh(new THREE.ConeGeometry(5, 12, 32), coneMatBlue);
+    coneBlue.position.set(2, 5, 8);
+    coneBlue.rotation.x = Math.PI / 2;
+    policeGroup.add(coneBlue);
 
     const spotlight = new THREE.SpotLight(0xffffff, 0, 40, Math.PI / 6, 0.8, 1);
-    spotlight.position.set(4, 12, 8);
-    spotlight.target.position.set(4, 0, 0);
+    spotlight.position.set(0, 12, 8);
+    spotlight.target.position.set(0, 0, -2);
     spotlight.castShadow = true;
-    scene.add(spotlight);
-    scene.add(spotlight.target);
+    policeGroup.add(spotlight);
+    policeGroup.add(spotlight.target);
 
     // Environment
     const sidewalk = new THREE.Mesh(
@@ -181,10 +208,9 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
     };
     const streetLights = [createLampPost(-3, -1.5), createLampPost(5, -1.5), createLampPost(13, -1.5)];
 
-    // Personagens
-    const createSquareHumanoid = (color: number, startX: number, isRobber: boolean, isPolice: boolean = false) => {
+    // Personagens Voxelizados
+    const createSquareHumanoid = (color: number, isRobber: boolean, isPolice: boolean = false) => {
       const group = new THREE.Group();
-      group.position.set(startX, 0, 0);
       
       const c = document.createElement('canvas'); c.width = 64; c.height = 64;
       const ctx = c.getContext('2d');
@@ -210,7 +236,6 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
       torso.castShadow = true;
       bodyGroup.add(torso);
 
-      // Adiciona cinto e distintivo no policial
       if (isPolice) {
         const belt = new THREE.Mesh(new THREE.BoxGeometry(1.02, 0.15, 0.62), new THREE.MeshStandardMaterial({ color: 0x050505 }));
         belt.position.y = -0.4;
@@ -240,7 +265,6 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
         eR.position.set(0.16, 0, 0.41); eR.name = 'eyeR';
         headGroup.add(eL, eR);
       } else {
-        // Cabelo ou Quepe Policial
         const hairGeo = isPolice ? new THREE.BoxGeometry(0.85, 0.25, 0.85) : new THREE.BoxGeometry(0.85, 0.3, 0.85);
         const hairColor = isPolice ? 0x0f172a : 0x3f3f46;
         const hair = new THREE.Mesh(hairGeo, new THREE.MeshStandardMaterial({ color: hairColor }));
@@ -321,13 +345,17 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
       return { group, bodyGroup, headGroup, armR, armL, legR, legL };
     };
 
-    const robber = createSquareHumanoid(COLORS.robber, -8, true);
-    const victim = createSquareHumanoid(COLORS.victim, 0, false);
-    const police = createSquareHumanoid(COLORS.police, 15, false, true); // Policial fora da tela
+    const robber = createSquareHumanoid(COLORS.robber, true);
+    const victim = createSquareHumanoid(COLORS.victim, false);
+    const policeModel = createSquareHumanoid(COLORS.police, false, true); 
+    
+    // Anexando o modelo policial ao grupo da sirene para andarem juntos
+    policeGroup.add(policeModel.group);
+    policeModel.group.position.set(0, 0, 0); // Zera pois o pai (policeGroup) já se move
     
     robber.group.userData = { label: 'Agente Infrator (Assaltante)' };
     victim.group.userData = { label: 'Vítima' };
-    police.group.userData = { label: 'Força Policial (Estado)' };
+    policeModel.group.userData = { label: 'Força Policial (Estado)' };
 
     // Armas
     const gMat = new THREE.MeshStandardMaterial({ color: 0x222222, metalness: 0.9, roughness: 0.2 });
@@ -348,7 +376,7 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
     copGun.add(copGrip);
     copGun.position.set(0, -0.9, 0.35);
     copGun.userData = { label: 'Arma (Polícia)' };
-    police.armR.add(copGun);
+    policeModel.armR.add(copGun);
 
     // Bag Quadrada
     const bagGroup = new THREE.Group();
@@ -376,8 +404,8 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
     scene.add(jail);
 
     elementsRef.current = {
-      robber, gunGroup, victim, police, copGun, bagGroup, jail, camera, controls,
-      pointLightRed, pointLightBlue, spotlight, ambientLight, moonLight,
+      robber, gunGroup, victim, policeModel, policeGroup, copGun, bagGroup, jail, camera, controls,
+      pointLightRed, pointLightBlue, coneRed, coneBlue, spotlight, ambientLight, moonLight,
       streetLights, composer, isExploring
     };
 
@@ -421,7 +449,7 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
       const isExp = elementsRef.current.isExploring;
       const camData = TIMELINE[elementsRef.current.stepIdx ?? 0]?.cam ?? TIMELINE[0].cam;
 
-      // Câmera
+      // Câmera Cinematográfica "Handheld"
       if (isExp) {
         controls.enabled = true;
         controls.update();
@@ -437,8 +465,9 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
         camTarget.y = damp(camTarget.y, camData.lookY, 2, dt);
         camera.lookAt(camTarget);
 
-        camera.position.x += Math.sin(t * 1.5) * 0.008;
-        camera.position.y += Math.cos(t * 2.1) * 0.005;
+        // O drift sutil (Respiração da Câmera)
+        camera.position.x += Math.sin(t * 1.8) * 0.005;
+        camera.position.y += Math.cos(t * 2.2) * 0.004;
       }
 
       // Ladrão Kinematics
@@ -456,16 +485,16 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
         robber.bodyGroup.position.y = damp(robber.bodyGroup.position.y, 1.4 + (isExp ? 0 : Math.sin(t * 2.5) * 0.02), 4, dt);
         robber.legR.rotation.x = damp(robber.legR.rotation.x, 0, 5, dt);
         robber.legL.rotation.x = damp(robber.legL.rotation.x, 0, 5, dt);
-        robber.armL.rotation.x = damp(robber.armL.rotation.x, 0, 5, dt);
+        robber.armL.rotation.x = damp(robber.armL.rotation.x, s >= 5 ? Math.PI - 0.5 : 0, 5, dt); // Braços pra cima se render
         robber.bodyGroup.rotation.z = damp(robber.bodyGroup.rotation.z, 0, 5, dt);
       }
 
       let rRotY = s >= 4 ? Math.PI / 2 : 0;
       if (s >= 5) {
-        // Ladrão encurralado, vira para a polícia e levanta os braços
+        // Ladrão encurralado, vira e se rende
         rRotY = Math.PI / 4;
-        robber.armR.rotation.x = damp(robber.armR.rotation.x, Math.PI - 0.5, 5, dt);
-        robber.armL.rotation.x = damp(robber.armL.rotation.x, Math.PI - 0.5, 5, dt);
+        robber.armR.rotation.x = damp(robber.armR.rotation.x, Math.PI - 0.5, 8, dt);
+        gunGroup.rotation.x = damp(gunGroup.rotation.x, Math.PI / 2, 8, dt); // Arma cai ou fica pendurada
       }
       robber.group.rotation.y = damp(robber.group.rotation.y, rRotY, 5, dt);
 
@@ -475,7 +504,6 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
          if (rEyeL) { rEyeL.rotation.z = damp(rEyeL.rotation.z, -0.4, 5, dt); rEyeL.scale.y = damp(rEyeL.scale.y, 0.4, 5, dt); }
          if (rEyeR) { rEyeR.rotation.z = damp(rEyeR.rotation.z, 0.4, 5, dt); rEyeR.scale.y = damp(rEyeR.scale.y, 0.4, 5, dt); }
       } else { 
-         // Assustado com a polícia no s>=5
          if (rEyeL) { rEyeL.rotation.z = damp(rEyeL.rotation.z, 0, 5, dt); rEyeL.scale.y = damp(rEyeL.scale.y, s>=5?1.5:1, 5, dt); }
          if (rEyeR) { rEyeR.rotation.z = damp(rEyeR.rotation.z, 0, 5, dt); rEyeR.scale.y = damp(rEyeR.scale.y, s>=5?1.5:1, 5, dt); }
       }
@@ -490,7 +518,7 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
       if (phone) phone.visible = s === 0 || isExp;
 
       if (!isExp && s >= 2 && s <= 4) {
-        victim.group.position.z = Math.sin(t * 35) * 0.05;
+        victim.group.position.z = Math.sin(t * 35) * 0.03;
         victim.headGroup.rotation.x = -0.25;
         victim.headGroup.rotation.y = Math.sin(t * 8) * 0.15;
         victim.armR.rotation.x = damp(victim.armR.rotation.x, Math.PI - 0.2, 6, dt);
@@ -512,39 +540,24 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
         victim.legL.rotation.x = damp(victim.legL.rotation.x, 0, 5, dt);
       }
 
-      const vEyeL = victim.headGroup.children.find((c:any) => c.name === 'eyeL');
-      const vEyeR = victim.headGroup.children.find((c:any) => c.name === 'eyeR');
-      const vMouth = victim.headGroup.children.find((c:any) => c.name === 'mouth');
-      if (s >= 2 && s <= 4) { 
-         if (vEyeL) vEyeL.scale.set(1.5, 2.5, 1);
-         if (vEyeR) vEyeR.scale.set(1.5, 2.5, 1);
-         if (vMouth) {
-           vMouth.scale.x = damp(vMouth.scale.x, 0.6, 10, dt);
-           vMouth.scale.y = damp(vMouth.scale.y, 3.5, 10, dt);
-         }
-      } else { 
-         if (vEyeL) vEyeL.scale.set(1, 1, 1);
-         if (vEyeR) vEyeR.scale.set(1, 1, 1);
-         if (vMouth) {
-           vMouth.scale.x = damp(vMouth.scale.x, 1, 5, dt);
-           vMouth.scale.y = damp(vMouth.scale.y, 1, 5, dt);
-         }
-      }
-
-      // Cop Kinematics (Policial chegando e apontando a arma)
+      // Viatura Policial Kinematics
       if (s >= 5) {
-        police.group.position.x = damp(police.group.position.x, 8.5, 6, dt);
-        police.group.rotation.y = damp(police.group.rotation.y, -Math.PI / 4, 7, dt);
-        police.armR.rotation.x = damp(police.armR.rotation.x, -Math.PI / 2 + 0.1, 7, dt);
-        police.armL.rotation.x = damp(police.armL.rotation.x, -Math.PI / 3, 7, dt);
+        policeGroup.position.x = damp(policeGroup.position.x, 8.5, 6, dt);
+        policeModel.group.rotation.y = damp(policeModel.group.rotation.y, -Math.PI / 4, 7, dt);
+        policeModel.armR.rotation.x = damp(policeModel.armR.rotation.x, -Math.PI / 2 + 0.1, 7, dt);
+        policeModel.armL.rotation.x = damp(policeModel.armL.rotation.x, -Math.PI / 3, 7, dt);
         copGun.visible = true;
       } else {
-        police.group.position.x = 15;
-        police.group.rotation.y = -Math.PI / 2;
-        police.armR.rotation.x = 0;
-        police.armL.rotation.x = 0;
+        policeGroup.position.x = 20;
+        policeModel.group.rotation.y = -Math.PI / 2;
+        policeModel.armR.rotation.x = 0;
+        policeModel.armL.rotation.x = 0;
         copGun.visible = false;
       }
+
+      // Sirenes Giratórias (Volumétricas)
+      coneRed.rotation.z = t * -5;
+      coneBlue.rotation.z = t * 5;
 
       // Bolsa
       if (s <= 1) {
@@ -559,26 +572,30 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
         bagGroup.rotation.z = -0.2;
       }
 
-      // Grades
+      // Grades da Reclusão
       jail.position.x = 4.5;
       const jY = s === 6 ? 0 : 25;
       jail.position.y = damp(jail.position.y, jY, s === 6 ? 12 : 5, dt);
 
-      // Luzes
+      // Luzes Dinâmicas e Sirenes
       if (s >= 5) {
-        ambientLight.intensity = 0.2;
-        moonLight.intensity = 0.6;
-        streetLights.forEach(sl => sl.intensity = damp(sl.intensity, 0.2, 5, dt));
-        pointLightRed.intensity = (Math.sin(t * 15) > 0 ? 1 : 0) * 80;
-        pointLightBlue.intensity = (Math.cos(t * 15) > 0 ? 1 : 0) * 80;
-        spotlight.intensity = 50;
+        ambientLight.intensity = 0.1;
+        moonLight.intensity = 0.4;
+        streetLights.forEach(sl => sl.intensity = damp(sl.intensity, 0.1, 5, dt));
+        pointLightRed.intensity = (Math.sin(t * 15) > 0 ? 1 : 0) * 100;
+        pointLightBlue.intensity = (Math.cos(t * 15) > 0 ? 1 : 0) * 100;
+        spotlight.intensity = 100;
+        coneRed.material.opacity = (Math.sin(t * 15) > 0 ? 0.3 : 0);
+        coneBlue.material.opacity = (Math.cos(t * 15) > 0 ? 0.3 : 0);
       } else {
-        ambientLight.intensity = 0.6;
+        ambientLight.intensity = 0.4;
         moonLight.intensity = 2.0;
         streetLights.forEach(sl => sl.intensity = damp(sl.intensity, 2.0, 3, dt));
         pointLightRed.intensity = 0;
         pointLightBlue.intensity = 0;
         spotlight.intensity = 0;
+        coneRed.material.opacity = 0;
+        coneBlue.material.opacity = 0;
       }
 
       composer.render();
@@ -704,7 +721,7 @@ export const AnimacaoThreeJs = () => {
         />
         
         {!isExploring && (
-          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 w-[95%] sm:w-[90%] max-w-2xl">
+          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 w-[95%] sm:w-[90%] max-w-2xl z-30">
             <div className="bg-white/95 backdrop-blur-md text-slate-900 p-4 sm:p-5 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] border-b-4 border-primary">
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 w-6 h-6 bg-white/95 border-t border-l border-white/20 rotate-45"></div>
               <p className="text-[17px] sm:text-xl font-bold text-center leading-relaxed font-sans tracking-tight">
@@ -734,7 +751,7 @@ export const AnimacaoThreeJs = () => {
         <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md border border-white/10 px-3 py-1.5 rounded-full z-10 pointer-events-none hidden sm:flex">
           <span className="text-[10px] font-bold text-white/90 uppercase tracking-widest flex items-center gap-2">
             <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-            Three.js (Voxel Mode)
+            Art. 157 - Roubo (Cinematic Mode)
           </span>
         </div>
       </div>
