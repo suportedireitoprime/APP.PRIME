@@ -1,5 +1,5 @@
-import React, { useState, useEffect, Suspense, lazy } from 'react';
-import { Cpu, Github, Loader2, Sparkles, Wand2, Plus, MessageSquare, Send, X, FileText, CheckCircle2, Circle, PlayCircle } from 'lucide-react';
+import React, { useState, useEffect, Suspense, lazy, Component } from 'react';
+import { Cpu, Github, Loader2, Sparkles, Wand2, Plus, MessageSquare, Send, X, FileText, CheckCircle2, Circle, PlayCircle, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -7,6 +7,28 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { motion, AnimatePresence } from 'framer-motion';
 import { fetchArtigosLei } from '@/services/legislacaoService';
 import type { ArtigoLei } from '@/data/mockData';
+
+class ErrorBoundary extends Component<{children: React.ReactNode}, {hasError: boolean, errorMsg: string}> {
+  constructor(props: {children: React.ReactNode}) {
+    super(props);
+    this.state = { hasError: false, errorMsg: '' };
+  }
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, errorMsg: error.message || 'Erro desconhecido' };
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="w-full h-full flex flex-col items-center justify-center bg-red-950/20 text-red-400 p-6 rounded-3xl border border-red-900/50">
+          <AlertTriangle className="w-12 h-12 mb-4 text-red-500" />
+          <h3 className="font-bold text-lg mb-2">Falha ao Carregar Cena 3D</h3>
+          <p className="text-sm opacity-80">{this.state.errorMsg}</p>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 // Lazy load the 3D scene to prevent top-level runtime errors or heavy bundle issues
 const AnimacaoExemplo3DScene = lazy(() => import('./AnimacaoExemplo3DScene'));
@@ -276,14 +298,16 @@ export default function AIGeneratorPanel() {
                 <span className="text-xs font-bold text-emerald-100 uppercase tracking-wider">Preview Engine 3D</span>
               </div>
               
-              <Suspense fallback={
-                <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 gap-4">
-                  <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
-                  <span>Carregando Cena 3D...</span>
-                </div>
-              }>
-                <AnimacaoExemplo3DScene step={1} />
-              </Suspense>
+              <ErrorBoundary>
+                <Suspense fallback={
+                  <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 gap-4">
+                    <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+                    <span>Carregando Cena 3D...</span>
+                  </div>
+                }>
+                  <AnimacaoExemplo3DScene step={1} />
+                </Suspense>
+              </ErrorBoundary>
             </div>
 
             {/* Loop de Melhoria */}
@@ -497,14 +521,16 @@ export default function AIGeneratorPanel() {
               </button>
 
               <div className="flex-1 w-full h-full relative bg-black">
-                <Suspense fallback={
-                  <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 gap-4">
-                    <Loader2 className="w-10 h-10 animate-spin text-emerald-500" />
-                    <span>Carregando Engine 3D...</span>
-                  </div>
-                }>
-                  <AnimacaoExemplo3DScene step={1} />
-                </Suspense>
+                <ErrorBoundary>
+                  <Suspense fallback={
+                    <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 gap-4">
+                      <Loader2 className="w-10 h-10 animate-spin text-emerald-500" />
+                      <span>Carregando Engine 3D...</span>
+                    </div>
+                  }>
+                    <AnimacaoExemplo3DScene step={1} />
+                  </Suspense>
+                </ErrorBoundary>
               </div>
             </motion.div>
           </motion.div>

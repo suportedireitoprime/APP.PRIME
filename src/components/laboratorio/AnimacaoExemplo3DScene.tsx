@@ -3,6 +3,10 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { PerspectiveCamera } from '@react-three/drei';
 import * as THREE from 'three';
 
+const damp = (current: number, target: number, lambda: number, delta: number) => {
+  return THREE.MathUtils.damp ? THREE.MathUtils.damp(current, target, lambda, delta) : current + (target - current) * (lambda * delta);
+};
+
 const CameraController = ({ step }: { step: number }) => {
   const vec = new THREE.Vector3();
   useFrame((state, delta) => {
@@ -12,9 +16,9 @@ const CameraController = ({ step }: { step: number }) => {
     const targetZ = step === 0 ? 12 : step === 1 ? 7 : 7.5;
     
     // Suaviza a posição
-    state.camera.position.x = THREE.MathUtils.damp(state.camera.position.x, targetX, 2.5, delta);
-    state.camera.position.y = THREE.MathUtils.damp(state.camera.position.y, targetY, 2.5, delta);
-    state.camera.position.z = THREE.MathUtils.damp(state.camera.position.z, targetZ, 2.5, delta);
+    state.camera.position.x = damp(state.camera.position.x, targetX, 2.5, delta);
+    state.camera.position.y = damp(state.camera.position.y, targetY, 2.5, delta);
+    state.camera.position.z = damp(state.camera.position.z, targetZ, 2.5, delta);
     
     // Configura o lookAt suavizado indiretamente focando num ponto fixo de interesse
     const lookAtX = step === 0 ? 0 : step === 1 ? 1 : -1;
@@ -60,25 +64,25 @@ const Robber = ({ step }: { step: number }) => {
     const targetX = step === 0 ? -2 : step === 1 ? -1.5 : 8;
     const targetRotY = step === 2 ? Math.PI / 8 : 0;
     
-    groupRef.current.position.x = THREE.MathUtils.damp(groupRef.current.position.x, targetX, 4, delta);
-    groupRef.current.rotation.y = THREE.MathUtils.damp(groupRef.current.rotation.y, targetRotY, 4, delta);
+    groupRef.current.position.x = damp(groupRef.current.position.x, targetX, 4, delta);
+    groupRef.current.rotation.y = damp(groupRef.current.rotation.y, targetRotY, 4, delta);
     
     if (step === 2) {
       groupRef.current.position.y = Math.abs(Math.sin(state.clock.elapsedTime * 10)) * 0.5;
     } else {
-      groupRef.current.position.y = THREE.MathUtils.damp(groupRef.current.position.y, 0, 4, delta);
+      groupRef.current.position.y = damp(groupRef.current.position.y, 0, 4, delta);
     }
 
     if (rightArmRef.current) {
       const targetArmX = step >= 1 ? -Math.PI / 2 : 0;
-      rightArmRef.current.rotation.x = THREE.MathUtils.damp(rightArmRef.current.rotation.x, targetArmX, 6, delta);
+      rightArmRef.current.rotation.x = damp(rightArmRef.current.rotation.x, targetArmX, 6, delta);
     }
 
     if (leftArmRef.current) {
       if (step === 2) {
         leftArmRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 10) * 0.8;
       } else {
-        leftArmRef.current.rotation.x = THREE.MathUtils.damp(leftArmRef.current.rotation.x, 0, 6, delta);
+        leftArmRef.current.rotation.x = damp(leftArmRef.current.rotation.x, 0, 6, delta);
       }
     }
   });
@@ -141,11 +145,11 @@ const Victim = ({ step }: { step: number }) => {
   useFrame((_state, delta) => {
     if (!groupRef.current) return;
     const targetX = step >= 1 ? 2.5 : 2;
-    groupRef.current.position.x = THREE.MathUtils.damp(groupRef.current.position.x, targetX, 5, delta);
+    groupRef.current.position.x = damp(groupRef.current.position.x, targetX, 5, delta);
 
     if (armsRef.current) {
       const targetArmZ = step >= 1 ? Math.PI : 0;
-      armsRef.current.rotation.z = THREE.MathUtils.damp(armsRef.current.rotation.z, targetArmZ, 5, delta);
+      armsRef.current.rotation.z = damp(armsRef.current.rotation.z, targetArmZ, 5, delta);
     }
   });
 
@@ -192,7 +196,7 @@ const PrisonBars = ({ step }: { step: number }) => {
   useFrame((_state, delta) => {
     if (!barsRef.current) return;
     const targetY = step === 2 ? 0 : 8;
-    barsRef.current.position.y = THREE.MathUtils.damp(barsRef.current.position.y, targetY, 3, delta);
+    barsRef.current.position.y = damp(barsRef.current.position.y, targetY, 3, delta);
   });
 
   return (
@@ -232,7 +236,6 @@ const AnimacaoExemplo3DScene = ({ step }: { step: number }) => {
         position={[10, 10, 5]} 
         intensity={1.5} 
         castShadow 
-        shadow-mapSize={[1024, 1024]} 
       />
       
       <Scenery />
