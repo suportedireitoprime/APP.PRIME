@@ -167,13 +167,13 @@ const CATEGORIES: Category[] = [
     ],
   },
   {
-    id: 'vade-mecum-ia',
-    title: 'Vade Mecum IA',
-    desc: 'Configuração de prompts para Histórico, Narração e Exemplos Práticos',
-    icon: Sparkles,
-    route: '/admin-vade-mecum',
+    id: 'vade-mecum',
+    title: 'Vade Mecum',
+    desc: 'Varredura de leis (Planalto) e atualização do histórico de artigos',
+    icon: Scale,
+    route: '/admin-vade-mecum-historico',
     items: [
-      { id: 'admin-vade-mecum', label: 'Admin Vade Mecum', icon: Sparkles, desc: 'Gerenciar prompts e modelos de IA do Vade Mecum', route: '/admin-vade-mecum' },
+      { id: 'admin-vade-mecum-historico', label: 'Histórico de Atualizações', icon: Scale, desc: 'Rastreador de leis e sincronização com Supabase', route: '/admin-vade-mecum-historico' },
     ],
   },
   {

@@ -31,50 +31,76 @@ async function run() {
     console.warn("Aviso: Falha ao ler um dos arquivos de template/regras.", err.message);
   }
 
-  const prompt = `
-Você é uma IA Programadora Elite Especialista em Three.js e React.
-O objetivo é gerar um código-fonte COMPLETO em TypeScript/React para o componente da Cena 3D do Código Penal Brasileiro.
+  console.log("🧠 Passo 1: Pensando no Roteiro e Enredo (Brainstorming)...");
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`;
+  
+  const promptRoteiro = `Você é um diretor de arte 3D. Crie um resumo e roteiro para a Cena 3D do Código Penal Brasileiro, Artigo ${articleNumber}.
+Baseie-se na DIRETIVA SUPREMA:
+${rulesText}
+Descreva:
+1. Cenário
+2. Atores e posições iniciais
+3. Os passos exatos da animação (quem fala o que, para onde andam, efeitos de câmera).
+Responda de forma concisa em texto.`;
+
+  const roteiroRes = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      contents: [{ role: "user", parts: [{ text: promptRoteiro }] }],
+      generationConfig: { temperature: 0.3 }
+    })
+  });
+
+  if (!roteiroRes.ok) {
+    console.error(`Erro ao gerar roteiro (${roteiroRes.status})`);
+    process.exit(1);
+  }
+
+  const roteiroData = await roteiroRes.json();
+  const roteiroFinal = roteiroData.candidates?.[0]?.content?.parts?.[0]?.text || "Sem roteiro gerado";
+  console.log("📜 Roteiro gerado com sucesso. Indo para o Passo 2 (Codificação)...");
+
+  const promptCodigo = `Você é uma IA Programadora Elite Especialista em Three.js e React.
+O objetivo é gerar o código-fonte COMPLETO em TypeScript/React para o componente da Cena 3D do Código Penal Brasileiro.
 
 Artigo alvo: Art. ${articleNumber}.
 
-INSTRUÇÕES (DIRETIVA SUPREMA):
-${rulesText}
+ROTEIRO E ENREDO PLANEJADO (Siga os passos definidos aqui):
+${roteiroFinal}
 
-TEMPLATE DE REFERÊNCIA (Para estilo, imports, shaders e arquitetura):
+TEMPLATE DE REFERÊNCIA (Para estilo, imports, shaders e arquitetura exata):
 \`\`\`tsx
 ${templateCode}
 \`\`\`
 
 SUA MISSÃO:
 Crie o arquivo CenaArtigo${articleNumber}.tsx do zero.
-- Use a cena do Artigo ${articleNumber} como tema da narrativa. (O que diz a lei nesse artigo? Crie uma cena de caso concreto demonstrando esse crime/lei).
 - O nome do componente DEVE SER "CenaArtigo${articleNumber}".
-- Certifique-se de importar tudo que usar (THREE, framer-motion, @react-three/fiber, etc).
+- Certifique-se de importar tudo que usar e não cortar o código.
 - Coloque os passos do enredo na constante 'sceneSteps'.
-- Adicione comentários explicando o código.
-
-Responda APENAS com o código-fonte válido dentro de um bloco \`\`\`tsx. Nenhuma palavra a mais antes ou depois do bloco.
+- Responda APENAS com o código-fonte válido dentro de um bloco \`\`\`tsx. Nenhuma palavra a mais antes ou depois do bloco.
 `;
 
-  console.log("🧠 Pensando e codando... (isso pode levar alguns segundos)");
+  console.log("💻 Passo 2: Escrevendo o Código React/Three.js...");
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`;
-  const response = await fetch(url, {
+  const codigoRes = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 0.2 }
+      contents: [{ role: "user", parts: [{ text: promptCodigo }] }],
+      generationConfig: { temperature: 0.1, maxOutputTokens: 8192 }
     })
   });
 
-  if (!response.ok) {
-    const errText = await response.text();
-    console.error(`Erro da API do Gemini (${response.status}):`, errText);
+  if (!codigoRes.ok) {
+    const errText = await codigoRes.text();
+    console.error(`Erro da API do Gemini no Código (${codigoRes.status}):`, errText);
     process.exit(1);
   }
 
-  const data = await response.json();
+  const data = await codigoRes.json();
   const textOutput = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
   if (!textOutput) {

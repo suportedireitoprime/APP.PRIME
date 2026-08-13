@@ -2,9 +2,9 @@ const https = require('https');
 
 const data = JSON.stringify({
   codigo_nome: "CP_CODIGO_PENAL",
-  artigo_numero: 8,
+  artigo_numero: 5,
   artigo_texto: "",
-  force_regenerate: "SHOW_MODELS"
+  force_regenerate: true
 });
 
 const options = {
@@ -23,21 +23,13 @@ const req = https.request(options, res => {
   let body = '';
   res.on('data', d => body += d);
   res.on('end', () => {
-    try {
-      const parsed = JSON.parse(body);
-      if (parsed.models) {
-        console.log("Modelos suportados:", parsed.models.map(m => m.name).join(', '));
-      } else {
-        console.log("Output:", body);
-      }
-    } catch(e) {
-      console.log("Raw output:", body);
-    }
+    console.log("Status Code:", res.statusCode);
+    console.log("Response:", body);
   });
 });
 
 req.on('error', error => {
-  console.error(error);
+  console.error("Erro de req:", error);
 });
 
 req.write(data);

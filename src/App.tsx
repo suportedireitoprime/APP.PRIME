@@ -85,6 +85,7 @@ import AdminPush from "./pages/AdminPush.tsx";
 import AdminPushSection from "./pages/AdminPushSection.tsx";
 import AdminResumoLivroAudioEditar from "./pages/AdminResumoLivroAudioEditar.tsx";
 import AdminErrosQuestoes from "./pages/AdminErrosQuestoes.tsx";
+import AdminVadeMecumHistorico from './pages/AdminVadeMecumHistorico.tsx';
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -899,6 +900,7 @@ function AnimatedRoutes() {
           <Route path="/admin-funcoes" element={<ProtectedRoute><PageTransition><AdminFuncoes /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-funcoes-assinantes" element={<ProtectedRoute><PageTransition><AdminFuncoesAssinantes /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-vade-mecum" element={<ProtectedRoute><PageTransition><AdminVadeMecum /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin-vade-mecum-historico" element={<ProtectedRoute><PageTransition><AdminVadeMecumHistorico /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-lembretes" element={<ProtectedRoute><PageTransition><AdminLembretes /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-lembretes/biblioteca" element={<ProtectedRoute><PageTransition><AdminLembretesBiblioteca /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-narracao" element={<ProtectedRoute><PageTransition><AdminNarracaoConteudo /></PageTransition></ProtectedRoute>} />
