@@ -54,32 +54,53 @@ serve(async (req) => {
         // Pega todos os links (tags <a>) na página
         const elements = document.querySelectorAll('a, span, p, font');
         
-        // Helper para descobrir de qual Artigo essa alteração pertence
-        const findParentArticle = (element) => {
-           let prev = element.previousElementSibling;
+        // Helper para descobrir de qual Artigo essa alteração pertence e extrair os textos
+        const extractArticleData = (element) => {
+           let parent = element.parentElement;
            let count = 0;
-           // Sobe irmãos até achar "Art."
+           // Vamos tentar achar a tag âncora name="artX" ou subir pro body do artigo
+           while (parent && count < 10) {
+               if (parent.tagName === 'P' && parent.textContent?.trim().startsWith('Art.')) {
+                   break;
+               }
+               parent = parent.parentElement;
+               count++;
+           }
+           
+           // Se não achou um parágrafo começando com Art., tenta olhar os irmãos anteriores (como estava antes)
+           let startElement = parent || element;
+           let prev = startElement.previousElementSibling;
+           let artNum = null;
+           count = 0;
            while (prev && count < 20) {
               if (prev.textContent && prev.textContent.trim().startsWith('Art.')) {
-                 return prev.textContent.trim().split(' ')[1]?.replace('.', '');
+                 artNum = prev.textContent.trim().split(' ')[1]?.replace('.', '');
+                 break;
               }
               prev = prev.previousElementSibling;
               count++;
            }
            
-           // Se não achou nos irmãos, tenta subir pro parent e ver os irmãos dele
-           if (element.parentElement) {
-               prev = element.parentElement.previousElementSibling;
-               count = 0;
-               while (prev && count < 10) {
-                   if (prev.textContent && prev.textContent.trim().startsWith('Art.')) {
-                       return prev.textContent.trim().split(' ')[1]?.replace('.', '');
-                   }
-                   prev = prev.previousElementSibling;
-                   count++;
+           if (!artNum) return null;
+
+           // Capturar o texto Antigo (strike) e Novo (resto) que ficam perto deste elemento alterado
+           let textoAntigo = "";
+           let textoNovo = "";
+           
+           if (element.parentElement && element.parentElement.tagName === 'P') {
+               const p = element.parentElement;
+               const strike = p.querySelector('strike');
+               if (strike) {
+                   textoAntigo = strike.textContent.trim();
+                   textoNovo = p.textContent.replace(textoAntigo, '').trim();
+               } else {
+                   textoNovo = p.textContent.trim();
                }
+           } else {
+               textoNovo = element.textContent.trim();
            }
-           return null;
+
+           return { artNum, textoAntigo, textoNovo };
         };
 
         elements.forEach(el => {
@@ -87,17 +108,18 @@ serve(async (req) => {
             const isChange = text.includes('Redação dada pela Lei') || text.includes('Incluído pela Lei');
             
             if (isChange) {
-                // Tenta extrair o ano da Lei (ex: "...de 2021")
                 const yearMatch = text.match(/de\s+(\d{4})/);
                 if (yearMatch) {
                     const ano = parseInt(yearMatch[1], 10);
                     if (currentYear - ano <= maxAge) {
-                        const artNum = findParentArticle(el);
-                        if (artNum) {
+                        const data = extractArticleData(el);
+                        if (data) {
                             found.push({
-                                artigo: `Art. ${artNum}`,
+                                artigo: `Art. ${data.artNum}`,
                                 motivo: text.trim().replace(/[()]/g, ''),
-                                ano: ano
+                                ano: ano,
+                                texto_antigo: data.textoAntigo,
+                                texto_novo: data.textoNovo
                             });
                         }
                     }
