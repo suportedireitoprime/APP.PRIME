@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Scale, Search, Loader2, RefreshCcw, FileText, ChevronRight, BookOpen, ExternalLink, Bot, CheckCircle2, AlertTriangle, Clock } from 'lucide-react';
 import { LEIS_CATALOG, type LeiCatalogItem } from '@/data/leisCatalog';
+import { fetchArtigosLei } from '@/services/legislacaoService';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,7 @@ export default function AdminVadeMecumHistorico() {
   const [iaAnalysis, setIaAnalysis] = useState<'pending'|'analyzing'|'match'|'diff'|'updated'>('pending');
   const [iaReason, setIaReason] = useState<string>('');
   const [bancoText, setBancoText] = useState<string>('');
+  const [dbArticleId, setDbArticleId] = useState<string | null>(null);
   const [lastScrapeDate, setLastScrapeDate] = useState<string | null>(null);
   const [selectedYear, setSelectedYear] = useState<string>('Todos');
 
@@ -117,16 +119,17 @@ export default function AdminVadeMecumHistorico() {
   const runIAComparison = async () => {
       setIaAnalysis('analyzing');
       try {
-          // 1. Fetch current text from database
-          const { data: dbData, error: dbError } = await supabase
-              .from(selectedLaw.tabela_nome)
-              .select('id, texto')
-              .eq('tabela_nome', selectedLaw?.tabela_nome)
-              .ilike('artigo', `${selectedArticle.artigo}%`) // Usa ilike para ignorar pontuação como "Art. 92."
-              .maybeSingle();
-          
-          const textoNoBanco = dbData?.texto || "Artigo não encontrado no banco de dados.";
+          // 1. Fetch current text from database unificada
+          setDbArticleId(null);
+          const artigosDoBanco = await fetchArtigosLei(selectedLaw?.id || '', selectedLaw?.tabela_nome);
+          const rawNumStr = selectedArticle.artigo.replace(/[^0-9]/g, '');
+          const matchingDbArt = artigosDoBanco.find(a => String(a.numero).replace(/[^0-9]/g, '') === rawNumStr);
+
+          const textoNoBanco = matchingDbArt?.texto || "Artigo não encontrado no banco de dados.";
           setBancoText(textoNoBanco);
+          if (matchingDbArt?.id) {
+             setDbArticleId(matchingDbArt.id);
+          }
 
           // 2. Invoke Gemini Edge Function
           const { data: iaResult, error: iaError } = await supabase.functions.invoke('vademecum-compare-ia', {
@@ -156,12 +159,13 @@ export default function AdminVadeMecumHistorico() {
   const applyUpdate = async () => {
       if (!selectedLaw || !selectedArticle) return;
       try {
+          if (!dbArticleId) throw new Error("ID do artigo nativo não encontrado para update.");
+          
           toast.loading("Atualizando banco...", { id: "update-banco" });
           const { error } = await supabase
-              .from(selectedLaw.tabela_nome)
+              .from('vade_mecum_artigos')
               .update({ texto: selectedArticle.texto_novo })
-              .eq('tabela_nome', selectedLaw.tabela_nome)
-              .eq('artigo', selectedArticle.artigo);
+              .eq('id', dbArticleId);
           
           if (error) throw error;
           
