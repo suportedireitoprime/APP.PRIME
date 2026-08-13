@@ -143,95 +143,91 @@ serve(async (req) => {
     }, maxAgeYears);
 
     // --- DEEP SCRAPE BLOCK ---
-    // 1. Obter a versão não compilada para resgatar os textos antigos com mais fidelidade
+    const cacheLeisAcessadas: Record<string, string | null> = {};
     const uncompiledUrl = targetUrl.replace(/compilad[oa]/i, '');
-    let oldTextsMap: Record<string, string> = {};
+    let uncompiledHtml = "";
+    
+    // 1. Busca a versão HTML não compilada via FETCH simples (sem Puppeteer, ultra rápido para o Deno)
     if (uncompiledUrl !== targetUrl) {
        try {
-           console.log(`Buscando versão não compilada para texto antigo: ${uncompiledUrl}`);
-           const pageOriginal = await browser.newPage();
-           await pageOriginal.setExtraHTTPHeaders({ 'User-Agent': 'Mozilla/5.0' });
-           await pageOriginal.goto(uncompiledUrl, { waitUntil: 'domcontentloaded', timeout: 20000 });
-           
-           // Extrai um mapa { 'Art. 10': 'texto_antigo_riscado' }
-           oldTextsMap = await pageOriginal.evaluate(() => {
-               const map: Record<string, string> = {};
-               const paragraphs = document.querySelectorAll('p');
-               for (const p of paragraphs) {
-                   if (p.textContent && p.textContent.trim().startsWith('Art.')) {
-                       const artNum = p.textContent.trim().split(' ')[1]?.replace('.', '');
-                       const strike = p.querySelector('strike');
-                       if (strike && artNum) {
-                           map[`Art. ${artNum}`] = strike.textContent.trim();
-                       }
-                   }
-               }
-               return map;
+           console.log(`Buscando versão não compilada via Fetch (Fast Mode): ${uncompiledUrl}`);
+           const resp = await fetch(uncompiledUrl, {
+               headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' }
            });
-           await pageOriginal.close();
+           if (resp.ok) {
+               uncompiledHtml = await resp.text();
+           }
        } catch (e) {
-           console.log("Aviso: Falha ao carregar versão não-compilada. ", e.message);
+           console.log("Falha ao buscar HTML da versão não compilada:", e.message);
        }
     }
 
-    // Cache de links acessados para não visitar a mesma lei 100 vezes e estourar o Timeout do Deno
-    const cacheLeisAcessadas: Record<string, string | null> = {};
+    const getOldTextFromHtml = (artNum: string, html: string) => {
+        // Procura "Art. 10" e captura o strike subsequente
+        const artRegex = new RegExp(`Art\\.\\s*${artNum}\\b[\\s\\S]{0,1500}?<strike>([\\s\\S]*?)</strike>`, 'i');
+        const match = html.match(artRegex);
+        if (match && match[1]) {
+             return match[1].replace(/<[^>]+>/g, '').trim();
+        }
+        return null;
+    };
 
-    // 2. Navegar nas leis de autoria para extrair a data_completa
-    for (const update of updates) {
-       // Atualiza texto antigo se a versão não compilada achou algo melhor
-       if (oldTextsMap && oldTextsMap[update.artigo] && !update.texto_antigo) {
-           update.texto_antigo = oldTextsMap[update.artigo];
+    // 2. Extrai data completa e texto antigo iterando sobre updates (Processamento Paralelo Rápido)
+    const processUpdate = async (update: any) => {
+       if (!update.texto_antigo && uncompiledHtml) {
+           const artNumber = update.artigo.replace(/[^0-9]/g, '');
+           if (artNumber) {
+               const oldText = getOldTextFromHtml(artNumber, uncompiledHtml);
+               if (oldText) update.texto_antigo = oldText;
+           }
        }
 
        if (update.link_lei) {
-          try {
-             // Formatar URL absoluto se for relativo
              let linkFinal = update.link_lei;
              if (linkFinal.startsWith('..') || linkFinal.startsWith('/')) {
                  const baseUrl = new URL(targetUrl);
                  linkFinal = new URL(update.link_lei, baseUrl.href).href;
-                 update.link_lei = linkFinal; // salva absoluto
+                 update.link_lei = linkFinal;
              }
+             
              if (linkFinal && linkFinal.includes('planalto.gov.br')) {
-                // Se já acessamos essa lei antes, reaproveitar a data! (Evita 50 abas pro mesmo link)
                 if (cacheLeisAcessadas[linkFinal] !== undefined) {
-                    if (cacheLeisAcessadas[linkFinal]) {
-                        update.data_completa = cacheLeisAcessadas[linkFinal];
-                    }
-                    continue; // pula para o próximo artigo!
+                    if (cacheLeisAcessadas[linkFinal]) update.data_completa = cacheLeisAcessadas[linkFinal];
+                    return;
                 }
-
-                console.log(`Raspando data em: ${linkFinal}`);
-                const pageLei = await browser.newPage();
-                await pageLei.setExtraHTTPHeaders({ 'User-Agent': 'Mozilla/5.0' });
-                await pageLei.goto(linkFinal, { waitUntil: 'domcontentloaded', timeout: 15000 });
-                const dateData = await pageLei.evaluate(() => {
-                   const regexData = /de\s+(\d{1,2})\s+de\s+([a-zçA-Z]+)\s+de\s+(\d{4})/i;
-                   const dTitle = document.title;
-                   let match = dTitle.match(regexData);
-                   if (match) return `${match[1]} DE ${match[2].toUpperCase()} DE ${match[3]}`;
-                   
-                   const p = document.querySelector('p');
-                   if (p && p.textContent) {
-                      match = p.textContent.match(regexData);
-                      if (match) return `${match[1]} DE ${match[2].toUpperCase()} DE ${match[3]}`;
-                   }
-                   return null;
-                });
                 
-                cacheLeisAcessadas[linkFinal] = dateData; // Guarda no cache em memória da request
-                if (dateData) {
-                    update.data_completa = dateData;
+                try {
+                    const resp = await fetch(linkFinal, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+                    if (resp.ok) {
+                        const htmlLei = await resp.text();
+                        const regexData = /de\s+(\d{1,2})\s+de\s+([a-zçA-Z]+)\s+de\s+(\d{4})/i;
+                        
+                        const titleMatch = htmlLei.match(/<title>([^<]+)<\/title>/i);
+                        let match = titleMatch ? titleMatch[1].match(regexData) : null;
+                        
+                        if (!match) {
+                            match = htmlLei.substring(0, 5000).match(regexData);
+                        }
+
+                        if (match) {
+                            const dateData = `${match[1]} DE ${match[2].toUpperCase()} DE ${match[3]}`;
+                            cacheLeisAcessadas[linkFinal] = dateData;
+                            update.data_completa = dateData;
+                        } else {
+                            cacheLeisAcessadas[linkFinal] = null;
+                        }
+                    } else {
+                        cacheLeisAcessadas[linkFinal] = null;
+                    }
+                } catch(e) {
+                    cacheLeisAcessadas[linkFinal] = null;
                 }
-                await pageLei.close();
              }
-          } catch(e) {
-              console.log("Erro ao visitar lei inclusora: " + e.message);
-              cacheLeisAcessadas[update.link_lei] = null; // Marca como nulo pra não tentar de novo no próximo loop
-          }
        }
-    }
+    };
+
+    // Aguarda todas as atualizações dispararem seu processamento de rede 
+    await Promise.all(updates.map(update => processUpdate(update)));
     // --- FIM DEEP SCRAPE BLOCK ---    await browser.close();
 
     return new Response(JSON.stringify({ success: true, articles: updates }), {
