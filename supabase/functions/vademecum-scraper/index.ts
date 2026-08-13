@@ -114,12 +114,22 @@ serve(async (req) => {
                     if (currentYear - ano <= maxAge) {
                         const data = extractArticleData(el);
                         if (data) {
+                            // Tenta achar um link para a lei
+                            let linkLei = "";
+                            const aTag = el.tagName === 'A' ? el : el.querySelector('a');
+                            if (aTag && aTag.href) {
+                                linkLei = aTag.href;
+                            } else if (el.parentElement && el.parentElement.tagName === 'A') {
+                                linkLei = el.parentElement.href;
+                            }
+
                             found.push({
                                 artigo: `Art. ${data.artNum}`,
                                 motivo: text.trim().replace(/[()]/g, ''),
                                 ano: ano,
                                 texto_antigo: data.textoAntigo,
-                                texto_novo: data.textoNovo
+                                texto_novo: data.textoNovo,
+                                link_lei: linkLei
                             });
                         }
                     }

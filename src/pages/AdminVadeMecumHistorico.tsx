@@ -22,6 +22,14 @@ export default function AdminVadeMecumHistorico() {
   const [iaAnalysis, setIaAnalysis] = useState<'pending'|'analyzing'|'match'|'diff'|'updated'>('pending');
   const [iaReason, setIaReason] = useState<string>('');
   const [bancoText, setBancoText] = useState<string>('');
+  const [lastScrapeDate, setLastScrapeDate] = useState<string | null>(null);
+
+  useEffect(() => {
+      if (selectedLaw) {
+          const stored = localStorage.getItem(`vade_scrape_${selectedLaw.tabela_nome}`);
+          if (stored) setLastScrapeDate(stored);
+      }
+  }, [selectedLaw]);
 
   // 1. Derivando categorias únicas do catálogo
   const categories = useMemo(() => {
@@ -71,14 +79,16 @@ export default function AdminVadeMecumHistorico() {
     setScrapedUpdates([]);
     try {
       const { data, error } = await supabase.functions.invoke('vademecum-scraper', {
-          body: { targetUrl: selectedLaw.url_planalto, maxAgeYears: 5 }
+          body: { url: selectedLaw.url_planalto }
       });
       
       if (error) throw error;
-      if (data?.articles) {
-          setScrapedUpdates(data.articles);
-          toast.success(`Varredura concluída. ${data.articles.length} atualizações encontradas.`);
-      }
+      
+      setScrapedUpdates(data.updates || []);
+      const today = new Date().toLocaleDateString('pt-BR');
+      setLastScrapeDate(today);
+      localStorage.setItem(`vade_scrape_${selectedLaw.tabela_nome}`, today);
+      toast.success(`${data.updates.length} alterações recentes encontradas no Diário Oficial.`, { id: "scraper-toast" });
     } catch (err: any) {
       console.error(err);
       toast.error(err.message || "Falha na varredura.");
@@ -217,7 +227,13 @@ export default function AdminVadeMecumHistorico() {
                     <div>
                         <h2 className="font-bold text-xl">{selectedLaw?.nome}</h2>
                         <a href={selectedLaw?.url_planalto} target="_blank" rel="noreferrer" className="text-sm text-blue-400 hover:underline flex items-center gap-1 mt-2">
-                           Acessar fonte (Planalto) <ExternalLink className="w-3 h-3" />
+                         <p className="text-gray-400 mt-1">Acessar fonte (Planalto) <ExternalLink className="w-3 h-3 inline" /></p>
+                         {lastScrapeDate && (
+                             <div className="mt-4 inline-flex items-center gap-2 bg-black/40 px-3 py-1.5 rounded-full border border-white/5">
+                                 <Clock className="w-4 h-4 text-gray-400" />
+                                 <span className="text-xs text-gray-300">Última varredura: {lastScrapeDate}</span>
+                             </div>
+                         )}
                         </a>
                     </div>
                 </div>
@@ -260,43 +276,76 @@ export default function AdminVadeMecumHistorico() {
 
         {/* VIEW 4: DETAILS & IA COMPARISON */}
         {view === 'details' && selectedArticle && (
-           <div className="space-y-6">
-               
-               {/* Side-by-side texts */}
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                   <div className="bg-red-950/20 border border-red-500/20 rounded-2xl p-5 space-y-3">
-                       <h3 className="font-bold text-red-400 flex items-center gap-2">
-                           <FileText className="w-4 h-4" /> Texto Antigo (Revogado/Alterado)
-                       </h3>
-                       <p className="text-sm text-gray-300 leading-relaxed font-serif line-through decoration-red-500/50">
-                           {selectedArticle.texto_antigo || "Não foi possível extrair o texto revogado com exatidão."}
-                       </p>
-                   </div>
-                   <div className="bg-green-950/20 border border-green-500/20 rounded-2xl p-5 space-y-3">
-                       <h3 className="font-bold text-green-400 flex items-center gap-2">
-                           <FileText className="w-4 h-4" /> Texto Novo (Planalto)
-                       </h3>
-                       <p className="text-sm text-gray-300 leading-relaxed font-serif">
-                           {selectedArticle.texto_novo || "Não extraído."}
-                       </p>
-                       <div className="mt-4 inline-block bg-white/10 px-3 py-1 rounded-full text-xs text-orange-300">
-                           {selectedArticle.motivo}
-                       </div>
+           <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4">
+               {/* Header Responsivo */}
+               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                   <Button variant="ghost" onClick={() => { setView('scraper'); setSelectedArticle(null); setIaAnalysis('pending'); }} className="text-gray-400 hover:text-white px-0 -ml-2">
+                       <ArrowLeft className="w-4 h-4 mr-2" />
+                       Voltar para Lista
+                   </Button>
+                   <div className="bg-[#1A1A1A] border border-white/5 px-4 py-2 rounded-lg flex items-center gap-3">
+                       <Scale className="w-5 h-5 text-gray-500" />
+                       <span className="font-bold text-white text-lg">{selectedArticle.artigo}</span>
                    </div>
                </div>
 
-               {/* IA Module */}
-               <div className="bg-blue-950/20 border border-blue-500/20 rounded-2xl p-6 text-center space-y-4">
-                   <Bot className="w-10 h-10 text-blue-400 mx-auto" />
-                   <h3 className="font-bold text-lg text-blue-100">Análise de Sincronia (Gemini IA)</h3>
-                   <p className="text-sm text-blue-200/70 max-w-lg mx-auto">
-                       A Inteligência Artificial irá ler o texto oficial do Planalto e comparar com o que temos atualmente no nosso Banco de Dados para ver se você precisa aplicar esta atualização.
-                   </p>
+               {/* Badge de Data e Motivo */}
+               <div className="bg-gradient-to-r from-blue-900/20 to-transparent border-l-4 border-blue-500 p-5 rounded-r-lg">
+                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                       <div>
+                           <div className="text-blue-400 font-bold text-sm uppercase tracking-wider mb-1">
+                               Alteração Oficial • Ano {selectedArticle.ano}
+                           </div>
+                           <h3 className="text-white text-lg font-medium leading-snug">{selectedArticle.motivo}</h3>
+                       </div>
+                       {selectedArticle.link_lei && (
+                           <a href={selectedArticle.link_lei} target="_blank" rel="noreferrer" className="shrink-0 flex items-center gap-2 px-4 py-2 bg-[#222] hover:bg-[#333] transition-colors border border-white/10 rounded-lg text-sm text-gray-300">
+                               Ver Lei no Planalto
+                               <ExternalLink className="w-4 h-4 text-blue-400" />
+                           </a>
+                       )}
+                   </div>
+               </div>
+
+               {/* Comparação dos Textos (Antigo vs Novo) */}
+               <div className="grid grid-cols-1 gap-6">
+                   <div className="bg-[#111111] border border-red-900/30 rounded-xl p-5 relative overflow-hidden">
+                       <div className="absolute top-0 left-0 w-1 h-full bg-red-900/50" />
+                       <h4 className="flex items-center gap-2 font-bold text-red-500 text-sm mb-4">
+                           <FileText className="w-4 h-4" />
+                           TEXTO ANTIGO (REVOGADO/ALTERADO)
+                       </h4>
+                       <p className="text-gray-400 font-serif leading-relaxed line-through decoration-red-900/50">{selectedArticle.texto_antigo || "Não foi possível extrair o texto revogado com exatidão."}</p>
+                   </div>
+                   
+                   <div className="bg-[#111111] border border-green-900/30 rounded-xl p-5 relative overflow-hidden">
+                       <div className="absolute top-0 left-0 w-1 h-full bg-green-900/50" />
+                       <h4 className="flex items-center gap-2 font-bold text-green-500 text-sm mb-4">
+                           <FileText className="w-4 h-4" />
+                           TEXTO NOVO (PLANALTO)
+                       </h4>
+                       <p className="text-gray-200 font-serif leading-relaxed text-lg">{selectedArticle.texto_novo}</p>
+                   </div>
+               </div>
+
+               {/* Caixa do Gemini IA */}
+               <div className="bg-[#151515] border border-white/10 rounded-xl p-6 sm:p-8 mt-4 shadow-xl">
+                   <div className="text-center mb-8">
+                       <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-gray-800 to-gray-700 flex items-center justify-center mx-auto mb-4">
+                           <Bot className="w-7 h-7 text-white" />
+                       </div>
+                       <h3 className="font-black text-xl text-white uppercase tracking-wider">Análise de Sincronia (IA)</h3>
+                       <p className="text-gray-400 mt-2 max-w-2xl mx-auto">
+                           A Inteligência Artificial irá cruzar o texto oficial do Planalto com a base de dados do aplicativo.
+                       </p>
+                   </div>
                    
                    {iaAnalysis === 'pending' && (
-                       <Button onClick={runIAComparison} className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-8">
-                           Comparar com o Banco
-                       </Button>
+                       <div className="flex justify-center">
+                         <Button onClick={runIAComparison} className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-8">
+                             Comparar com o Banco
+                         </Button>
+                       </div>
                    )}
                    
                    {iaAnalysis === 'analyzing' && (
@@ -307,34 +356,44 @@ export default function AdminVadeMecumHistorico() {
                    )}
 
                    {iaAnalysis === 'diff' && (
-                       <div className="bg-[#1A1A1A] border-l-4 border-orange-500 rounded-lg p-4 text-left animate-in zoom-in-95">
-                           <div className="flex items-start gap-3">
-                               <AlertTriangle className="w-5 h-5 text-orange-500 shrink-0 mt-0.5" />
-                               <div>
-                                   <h4 className="font-bold text-white text-lg">Banco Desatualizado</h4>
-                                   <p className="text-gray-400 text-sm mt-1 leading-relaxed">{iaReason}</p>
-                                   <div className="mt-4 bg-black/40 p-3 rounded-lg border border-white/5">
-                                       <span className="text-xs font-bold text-gray-500 block mb-1">Como está hoje no seu app:</span>
-                                       <p className="text-sm text-gray-400 font-serif line-clamp-3">{bancoText}</p>
+                       <div className="bg-orange-500/10 border border-orange-500/20 rounded-xl p-5 sm:p-6 text-left animate-in zoom-in-95">
+                           <div className="flex flex-col sm:flex-row items-start gap-4">
+                               <div className="bg-orange-500/20 p-2 rounded-lg shrink-0">
+                                   <AlertTriangle className="w-6 h-6 text-orange-400" />
+                               </div>
+                               <div className="flex-1 w-full">
+                                   <h4 className="font-bold text-orange-400 text-lg">Banco Desatualizado</h4>
+                                   <p className="text-orange-200/70 text-sm mt-2 leading-relaxed">{iaReason}</p>
+                                   
+                                   <div className="mt-5 bg-black/60 p-4 rounded-lg border border-orange-500/10">
+                                       <span className="text-xs font-bold text-orange-500/50 block mb-2 uppercase tracking-wider">Redação Atual (No App):</span>
+                                       <p className="text-sm text-gray-400 font-serif leading-relaxed line-clamp-4">{bancoText}</p>
                                    </div>
-                                   <Button onClick={applyUpdate} className="mt-4 bg-orange-600 hover:bg-orange-700 w-full md:w-auto text-white">
-                                       Aplicar Atualização no Banco
-                                   </Button>
+
+                                   <div className="mt-6 flex justify-end">
+                                       <Button onClick={applyUpdate} size="lg" className="bg-orange-600 hover:bg-orange-700 w-full sm:w-auto text-white font-bold shadow-lg shadow-orange-900/20 transition-all">
+                                           Aplicar Atualização
+                                       </Button>
+                                   </div>
                                </div>
                            </div>
                        </div>
                    )}
 
                    {iaAnalysis === 'updated' && (
-                       <div className="bg-[#1A1A1A] border-l-4 border-purple-500 rounded-lg p-4 text-left animate-in zoom-in-95">
-                           <div className="flex items-center gap-3">
-                               <CheckCircle2 className="w-5 h-5 text-purple-500 shrink-0" />
-                               <div>
-                                   <h4 className="font-bold text-white">Banco Sincronizado!</h4>
-                                   <p className="text-gray-400 text-sm mt-1">O Vade Mecum já reflete a alteração do Planalto para seus alunos.</p>
-                                   <Button onClick={goBack} variant="outline" className="mt-4 bg-transparent border-purple-500/50 hover:bg-purple-900/20 text-white">
-                                       Voltar para a Lista
-                                   </Button>
+                       <div className="bg-purple-500/10 border border-purple-500/20 rounded-xl p-5 sm:p-6 text-left animate-in zoom-in-95">
+                           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left">
+                               <div className="bg-purple-500/20 p-3 rounded-full shrink-0">
+                                   <CheckCircle2 className="w-8 h-8 text-purple-400" />
+                               </div>
+                               <div className="flex-1">
+                                   <h4 className="font-bold text-purple-300 text-xl">Banco Sincronizado!</h4>
+                                   <p className="text-purple-200/60 text-sm mt-2">A alteração do Planalto foi gravada no banco e já está visível para os alunos.</p>
+                                   <div className="mt-6 flex justify-center sm:justify-start">
+                                       <Button onClick={() => setView('scraper')} variant="outline" className="bg-transparent border-purple-500/30 hover:bg-purple-900/20 text-purple-300">
+                                           Voltar para a Lista de Alterações
+                                       </Button>
+                                   </div>
                                </div>
                            </div>
                        </div>
