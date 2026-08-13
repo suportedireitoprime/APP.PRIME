@@ -38,12 +38,32 @@ const supabase = createClient(URL, KEY, { auth: { persistSession: false } });
 const OUT = path.resolve('public/offline-bundle');
 await mkdir(OUT, { recursive: true });
 
-async function fetchAll(table, select, orderCol = null) {
+async function fetchDistinct(table, column) {
+  const step = 1000;
+  let from = 0;
+  const values = new Set();
+  while (true) {
+    const { data, error } = await supabase
+      .from(table)
+      .select(column)
+      .not(column, 'is', null)
+      .range(from, from + step - 1);
+    if (error) throw new Error(`${table} (distinct ${column}): ${error.message}`);
+    if (!data || data.length === 0) break;
+    for (const row of data) values.add(row[column]);
+    if (data.length < step) break;
+    from += step;
+  }
+  return [...values].filter(Boolean);
+}
+
+async function fetchAll(table, select, filter = null, orderCol = null) {
   const step = 1000;
   let from = 0;
   const rows = [];
   while (true) {
     let q = supabase.from(table).select(select).range(from, from + step - 1);
+    if (filter) q = q.eq(filter.col, filter.val);
     if (orderCol) q = q.order(orderCol, { ascending: true });
     const { data, error } = await q;
     if (error) throw new Error(`${table}: ${error.message}`);
@@ -117,7 +137,22 @@ const TARGETS = [
     name: 'biblioteca-pesquisa-cientifica',
     fn: () => fetchAll('biblioteca_pesquisa_cientifica', '*'),
   },
+  { name: 'flashcards-decks', fn: () => fetchAll('flashcards_decks', '*') },
 ];
+
+console.log('[offline-bundle] Mapeando áreas de flashcards...');
+const flashcardAreas = await fetchDistinct('flashcards_cards', 'area');
+for (const area of flashcardAreas) {
+  const safeName = `flashcards-cards_${area.replace(/[^a-zA-Z0-9_-]/g, '_')}`;
+  TARGETS.push({ name: safeName, fn: () => fetchAll('flashcards_cards', '*', { col: 'area', val: area }) });
+}
+
+console.log('[offline-bundle] Mapeando disciplinas de questões...');
+const questaoDisciplinas = await fetchDistinct('questoes', 'disciplina');
+for (const disc of questaoDisciplinas) {
+  const safeName = `questoes_${disc.replace(/[^a-zA-Z0-9_-]/g, '_')}`;
+  TARGETS.push({ name: safeName, fn: () => fetchAll('questoes', '*', { col: 'disciplina', val: disc }) });
+}
 
 const manifest = { generated_at: new Date().toISOString(), files: {} };
 

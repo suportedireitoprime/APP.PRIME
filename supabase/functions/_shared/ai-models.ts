@@ -24,13 +24,11 @@ export const MODELS = {
 export const TEXT_MODEL_FALLBACKS = [
   "gemini-2.5-flash",
   "gemini-2.0-flash",
-  "gemini-1.5-flash",
 ] as const;
 
 export const ALLOWED_TEXT_MODELS = new Set<string>([
   "gemini-2.5-flash",
   "gemini-2.0-flash",
-  "gemini-1.5-flash",
 ]);
 
 // Aliases/modelos proibidos — se algum bater aqui, forçamos o modelo permitido.

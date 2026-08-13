@@ -16,7 +16,16 @@ import { PageHeader } from '@/components/vademecum/PageHeader';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 import OpiniaoSheet from '@/components/menu/OpiniaoSheet';
 import AvaliarAppSheet from '@/components/vademecum/AvaliarAppSheet';
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 interface SideMenuProps {
   open: boolean;
@@ -60,6 +69,7 @@ const GROUPS: Group[] = [
 const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
   const [opiniaoOpen, setOpiniaoOpen] = useState(false);
   const [avaliarOpen, setAvaliarOpen] = useState(false);
+  const [logoutPrompt, setLogoutPrompt] = useState(false);
   useEscapeKey(open, onClose);
   const navigate = useNavigate();
   const { signOut, user } = useAuth();
@@ -117,9 +127,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
 
   const handleItemClick = async (id: string) => {
     if (id === 'sair') {
-      onClose();
-      // Pequeno delay para o menu fechar antes de desmontar os providers.
-      setTimeout(() => signOut(), 200);
+      setLogoutPrompt(true);
       return;
     }
 
@@ -313,6 +321,25 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
         onClose={() => setAvaliarOpen(false)}
         onFeedback={() => { navigate('/suporte'); onClose(); }}
       />
+      <AlertDialog open={logoutPrompt} onOpenChange={setLogoutPrompt}>
+        <AlertDialogContent className="w-11/12 max-w-md rounded-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Sair da conta</AlertDialogTitle>
+            <AlertDialogDescription>
+              Você quer realmente sair da conta?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col gap-2 sm:flex-row">
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={() => {
+              onClose();
+              setTimeout(() => signOut(), 200);
+            }} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Sim, sair
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>,
     document.body,
   );

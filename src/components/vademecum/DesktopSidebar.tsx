@@ -12,6 +12,16 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { isAdminEmail } from '@/lib/adminEmails';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 type Tab = 'legislacao' | 'noticias' | 'ferramentas';
 
@@ -73,6 +83,7 @@ const DesktopSidebar = ({ activeTab, onTabChange }: DesktopSidebarProps) => {
   const [catSheet, setCatSheet] = useState<{ tipo: string; label: string; color?: string } | null>(null);
   const [profile, setProfile] = useState<{ display_name?: string; perfil_tipos?: string[] } | null>(null);
   const [avatarBroken, setAvatarBroken] = useState(false);
+  const [logoutPrompt, setLogoutPrompt] = useState(false);
 
   const rawAvatarUrl =
     ((user?.user_metadata as any)?.avatar_url as string | undefined) ||
@@ -94,7 +105,7 @@ const DesktopSidebar = ({ activeTab, onTabChange }: DesktopSidebarProps) => {
   const handleItemClick = async (item: { id: string; route?: string }) => {
     console.log('[DesktopSidebar] click', item.id, '→', item.route ?? '(sem rota)');
     if (item.id === 'sair') {
-      await signOut();
+      setLogoutPrompt(true);
       return;
     }
     if (item.id === 'explicacao') {
@@ -360,6 +371,24 @@ const DesktopSidebar = ({ activeTab, onTabChange }: DesktopSidebarProps) => {
       color={catSheet?.color}
       onClose={() => setCatSheet(null)}
     />
+    <AlertDialog open={logoutPrompt} onOpenChange={setLogoutPrompt}>
+      <AlertDialogContent className="w-11/12 max-w-md rounded-2xl">
+        <AlertDialogHeader>
+          <AlertDialogTitle>Sair da conta</AlertDialogTitle>
+          <AlertDialogDescription>
+            Você quer realmente sair da conta?
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter className="flex-col gap-2 sm:flex-row">
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction onClick={() => {
+            setTimeout(() => signOut(), 200);
+          }} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            Sim, sair
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
     </>
   );
 };
