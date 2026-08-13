@@ -46,12 +46,13 @@ const config: CapacitorConfig = {
   },
   plugins: {
     SplashScreen: {
-      // Zerado: usamos apenas o splash nativo do Android 12+ (estático),
-      // sem animação custom do plugin sobre ele.
-      launchShowDuration: 0,
-      launchFadeOutDuration: 0,
-      launchAutoHide: true,
-      backgroundColor: '#8C1220',
+      // Configuramos para não fechar sozinho. O hook useHideSplashScreen 
+      // vai fechar o splash nativo assim que o React estiver montado,
+      // prevenindo a tela preta entre o splash nativo e o CustomSplashScreen.
+      launchShowDuration: 3000,
+      launchFadeOutDuration: 300,
+      launchAutoHide: false,
+      backgroundColor: '#0D0D0D',
       androidSplashResourceName: 'splash',
       showSpinner: false,
       splashFullScreen: false,
@@ -107,7 +108,10 @@ const config: CapacitorConfig = {
     // herdava o windowBackground amarelo do splash. Login social agora vai só
     // pelo GoogleAuth (Android) e pelo fluxo OAuth via Browser (iOS/Apple).
 
-
+    FirebaseAuthentication: {
+      skipNativeAuth: false,
+      providers: ['google.com', 'apple.com'],
+    },
   },
 };
 

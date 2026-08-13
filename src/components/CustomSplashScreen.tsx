@@ -6,29 +6,33 @@ import scales from '@/assets/landing-tribunal/scales.png';
 
 export function CustomSplashScreen({ onComplete }: { onComplete: () => void }) {
   const text = "Estudos Jurídicos";
-  const [typed, setTyped] = useState("");
   // Aumentando o número de folhas caindo
   const fallingLeaves = Array.from({ length: 24 }, (_, i) => i);
   const reduceMotion = useRef(false);
 
   useEffect(() => {
     reduceMotion.current = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let i = 0;
-    const interval = setInterval(() => {
-      setTyped(text.substring(0, i + 1));
-      i++;
-      if (i >= text.length) clearInterval(interval);
-    }, 80);
 
     const timeout = setTimeout(() => {
       onComplete();
     }, 3200);
 
-    return () => {
-      clearInterval(interval);
-      clearTimeout(timeout);
-    };
+    return () => clearTimeout(timeout);
   }, [onComplete]);
+
+  // Variaveis para a animação do texto
+  const container = {
+    hidden: { opacity: 0 },
+    visible: (i = 1) => ({
+      opacity: 1,
+      transition: { staggerChildren: 0.08, delayChildren: 0.5 * i },
+    }),
+  };
+
+  const child = {
+    visible: { opacity: 1, y: 0, transition: { type: 'spring', damping: 12, stiffness: 100 } },
+    hidden: { opacity: 0, y: -20, transition: { type: 'spring', damping: 12, stiffness: 100 } },
+  };
 
   return (
     <motion.div
@@ -127,24 +131,23 @@ export function CustomSplashScreen({ onComplete }: { onComplete: () => void }) {
       {/* Textos */}
       <div className="flex flex-col items-center relative z-10 overflow-hidden px-4">
         <div className="h-14 flex items-center justify-center relative">
-          <span 
-            className={`text-white font-serif italic text-[36px] sm:text-5xl font-semibold tracking-tight drop-shadow-lg text-center relative ${typed === text ? 'text-shimmer' : ''}`}
-            style={typed === text ? { animationIterationCount: 'infinite', animationDuration: '3s' } : {}}
+          <motion.span 
+            className="text-white font-serif italic text-[36px] sm:text-5xl font-semibold tracking-tight drop-shadow-lg text-center relative flex"
+            variants={container}
+            initial="hidden"
+            animate="visible"
           >
-            {typed}
-            <motion.span
-              animate={{ opacity: [1, 0] }}
-              transition={{ repeat: Infinity, duration: 0.8, ease: "linear" }}
-              className="ml-[2px] inline-block text-white"
-            >
-              |
-            </motion.span>
-          </span>
+            {text.split("").map((char, index) => (
+              <motion.span variants={child} key={index} className="inline-block">
+                {char === " " ? "\u00A0" : char}
+              </motion.span>
+            ))}
+          </motion.span>
         </div>
         <motion.div 
           initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: typed.length === text.length ? 1 : 0, y: typed.length === text.length ? 0 : 10 }}
-          transition={{ duration: 0.4 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 1.8 }}
           className="mt-3"
         >
           <span className="text-white/90 font-sans text-xs sm:text-sm font-bold tracking-[0.25em] uppercase">

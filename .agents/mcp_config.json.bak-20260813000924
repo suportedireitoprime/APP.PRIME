@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "supabase": {
+      "command": "C:\\Users\\ext_wpereira\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\bin\\fallback\\pnpm.cmd",
+      "args": [
+        "dlx",
+        "mcp-remote",
+        "https://mcp.supabase.com/mcp?project_ref=dnjrgpldcwcpoywamorr&read_only=true&features=docs%2Cdatabase%2Cdebugging%2Cdevelopment%2Cfunctions"
+      ]
+    }
+  }
+}
