@@ -376,14 +376,25 @@ export default function AdminVadeMecumHistorico() {
 
                {/* Comparação dos Textos (Antigo vs Novo) */}
                <div className="grid grid-cols-1 gap-6">
-                   <div className="bg-[#111111] border border-red-900/30 rounded-xl p-5 relative overflow-hidden">
-                       <div className="absolute top-0 left-0 w-1 h-full bg-red-900/50" />
-                       <h4 className="flex items-center gap-2 font-bold text-red-500 text-sm mb-4">
-                           <FileText className="w-4 h-4" />
-                           TEXTO ANTIGO (REVOGADO/ALTERADO)
-                       </h4>
-                       <p className="text-gray-400 font-serif leading-relaxed line-through decoration-red-900/50">{selectedArticle.texto_antigo || "Não foi possível extrair o texto revogado com exatidão."}</p>
-                   </div>
+                   {selectedArticle.motivo.toLowerCase().includes('incluíd') ? (
+                       <div className="bg-[#111111] border border-blue-900/30 rounded-xl p-5 relative overflow-hidden">
+                           <div className="absolute top-0 left-0 w-1 h-full bg-blue-900/50" />
+                           <h4 className="flex items-center gap-2 font-bold text-blue-500 text-sm mb-4">
+                               <FileText className="w-4 h-4" />
+                               DISPOSITIVO INCLUÍDO
+                           </h4>
+                           <p className="text-gray-400 font-serif leading-relaxed">Trata-se de uma inclusão de novo dispositivo inédito. Não há texto anterior (revogado) para ser comparado.</p>
+                       </div>
+                   ) : (
+                       <div className="bg-[#111111] border border-red-900/30 rounded-xl p-5 relative overflow-hidden">
+                           <div className="absolute top-0 left-0 w-1 h-full bg-red-900/50" />
+                           <h4 className="flex items-center gap-2 font-bold text-red-500 text-sm mb-4">
+                               <FileText className="w-4 h-4" />
+                               TEXTO ANTIGO (REVOGADO/ALTERADO)
+                           </h4>
+                           <p className="text-gray-400 font-serif leading-relaxed line-through decoration-red-900/50">{selectedArticle.texto_antigo || "Não foi possível extrair o texto revogado com exatidão."}</p>
+                       </div>
+                   )}
                    
                    <div className="bg-[#111111] border border-green-900/30 rounded-xl p-5 relative overflow-hidden">
                        <div className="absolute top-0 left-0 w-1 h-full bg-green-900/50" />
