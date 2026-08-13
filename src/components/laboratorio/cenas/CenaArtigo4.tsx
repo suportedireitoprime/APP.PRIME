@@ -95,6 +95,20 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
     floor.receiveShadow = true;
     scene.add(floor);
 
+    // Chuva (Partículas)
+    const rainCount = 1500;
+    const rainGeo = new THREE.BufferGeometry();
+    const rainPos = new Float32Array(rainCount * 3);
+    for(let i=0;i<rainCount;i++){
+        rainPos[i*3] = (Math.random()-0.5)*40;
+        rainPos[i*3+1] = Math.random()*20;
+        rainPos[i*3+2] = (Math.random()-0.5)*30;
+    }
+    rainGeo.setAttribute('position', new THREE.BufferAttribute(rainPos, 3));
+    const rainMat = new THREE.PointsMaterial({ color: 0x94a3b8, size: 0.1, transparent: true, opacity: 0.6 });
+    const rainSystem = new THREE.Points(rainGeo, rainMat);
+    scene.add(rainSystem);
+
     // Árvores da Praça
     const parkGroup = new THREE.Group();
     const treeTrunkMat = new THREE.MeshToonMaterial({ color: 0x78350f, gradientMap });
@@ -110,7 +124,7 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
     }
     scene.add(parkGroup);
 
-    // Hospital Props (Cama e Monitor)
+    // Hospital Props (Cama, Monitor, Soro)
     const hospitalGroup = new THREE.Group();
     hospitalGroup.position.y = -10; // Escondido no começo
     const bed = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1, 3), new THREE.MeshToonMaterial({ color: 0xe2e8f0, gradientMap }));
@@ -122,6 +136,14 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
     const screen = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 0.4), new THREE.MeshBasicMaterial({ color: 0x22c55e }));
     screen.position.set(0, 0.4, 0.26); monitor.add(screen);
     hospitalGroup.add(monitor);
+
+    // Soro (IV Pole)
+    const ivPole = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 4), new THREE.MeshToonMaterial({ color: 0x94a3b8, gradientMap }));
+    ivPole.position.set(1.2, 2, -1);
+    const ivBag = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.4, 0.1), new THREE.MeshToonMaterial({ color: 0xffffff, transparent: true, opacity: 0.8, gradientMap }));
+    ivBag.position.set(1.2, 3.5, -0.8);
+    hospitalGroup.add(ivPole, ivBag);
+    
     scene.add(hospitalGroup);
 
     const createHumanoid = (color: number, label: string) => {
@@ -161,6 +183,26 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
         armRM.position.y = -0.4; armRM.castShadow = true;
         const sleeveR = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.4, 0.32), clothMat);
         sleeveR.position.y = 0.4; armRM.add(sleeveR);
+        
+        // Arma (só para o Carlos)
+        if (color === COLORS.agent) {
+            const gun = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.4, 0.6), new THREE.MeshToonMaterial({ color: 0x334155, gradientMap }));
+            gun.position.set(0, -0.6, 0.2);
+            const barrel = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 0.4), new THREE.MeshToonMaterial({ color: 0x1e293b, gradientMap }));
+            barrel.position.set(0, 0.1, 0.4);
+            gun.add(barrel);
+            
+            // Fogo do tiro (muzzle flash)
+            const flashMat = new THREE.MeshBasicMaterial({ color: 0xfef08a });
+            const flash = new THREE.Mesh(new THREE.SphereGeometry(0.4, 8, 8), flashMat);
+            flash.position.set(0, 0, 0.8);
+            flash.visible = false; // Começa invisível
+            gun.add(flash);
+            
+            armRM.add(gun);
+            group.userData.flash = flash; // Salva referência para animar depois
+        }
+        
         armR.add(armRM); bodyGroup.add(armR);
 
         const armL = new THREE.Group(); armL.position.set(-0.65, 0.6, 0);
@@ -283,6 +325,21 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
         sunLight.position.z = damp(sunLight.position.z, -10, 2, dt);
       }
 
+      // Animação da Chuva (só cai na praça)
+      if (s < 2) {
+        const positions = rainSystem.geometry.attributes.position.array as Float32Array;
+        for(let i=0; i<rainCount; i++) {
+            positions[i*3+1] -= dt * (10 + Math.random()*5);
+            if(positions[i*3+1] < 0) {
+                positions[i*3+1] = 20;
+            }
+        }
+        rainSystem.geometry.attributes.position.needsUpdate = true;
+        rainSystem.visible = true;
+      } else {
+        rainSystem.visible = false;
+      }
+
       // Cinemática
       if (s === 0) {
         // Preparando pra atirar
@@ -291,10 +348,23 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
         victim.armL.rotation.x = damp(victim.armL.rotation.x, 0, 4, dt);
         victim.bodyGroup.position.y = damp(victim.bodyGroup.position.y, 1.4, 4, dt);
         victim.group.rotation.x = damp(victim.group.rotation.x, 0, 4, dt);
+        if (agent.group.userData.flash) agent.group.userData.flash.visible = false;
       } else if (s === 1) {
         // Atirou e foge
         agent.group.position.x = damp(agent.group.position.x, -10, 2, dt); // Foge
-        agent.armR.rotation.x = damp(agent.armR.rotation.x, Math.sin(t*10), 4, dt);
+        
+        // Tremor do braço e Muzzle Flash aleatório para dar efeito de tiro contínuo ou susto
+        const isShooting = agent.group.position.x > -5; // Só atira no começo da fuga
+        if (isShooting) {
+          agent.armR.rotation.x = -Math.PI/2 + (Math.random() - 0.5) * 0.2;
+          if (agent.group.userData.flash) {
+            agent.group.userData.flash.visible = Math.random() > 0.5;
+            agent.group.userData.flash.scale.setScalar(1 + Math.random() * 0.5);
+          }
+        } else {
+          agent.armR.rotation.x = damp(agent.armR.rotation.x, Math.sin(t*10), 4, dt); // Braço correndo
+          if (agent.group.userData.flash) agent.group.userData.flash.visible = false;
+        }
         
         // Vítima cai
         victim.group.rotation.x = damp(victim.group.rotation.x, -Math.PI/2, 5, dt);
