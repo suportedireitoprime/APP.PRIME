@@ -1,0 +1,46 @@
+name: AI Scene Coder
+
+on:
+  workflow_dispatch:
+    inputs:
+      article_number:
+        description: 'Número do Artigo Penal (ex: 5)'
+        required: true
+        type: string
+
+jobs:
+  code-scene:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Rodar IA Programadora (Gerar Cena)
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          node scripts/ai-scene-generator.mjs ${{ github.event.inputs.article_number }}
+
+      - name: Checar alterações
+        id: check_changes
+        run: |
+          if [[ -z $(git status -s) ]]; then
+            echo "Nenhuma mudança (código não gerado). Abortando."
+            echo "has_changes=false" >> $GITHUB_ENV
+          else
+            echo "has_changes=true" >> $GITHUB_ENV
+          fi
+
+      - name: Commit e Push
+        if: env.has_changes == 'true'
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "feat(cenas): Autocodificação da Cena do Art. ${{ github.event.inputs.article_number }} por IA"
+          git push

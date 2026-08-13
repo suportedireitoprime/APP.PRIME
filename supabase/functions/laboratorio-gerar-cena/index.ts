@@ -51,6 +51,12 @@ serve(async (req) => {
       throw new Error("GEMINI_API_KEY nao configurada");
     }
 
+    if (force_regenerate === "SHOW_MODELS") {
+      const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${geminiKey}`);
+      const j = await resp.json();
+      return new Response(JSON.stringify(j), { headers: { ...corsHeaders, "Content-Type": "application/json" }});
+    }
+
     const prompt = `Você é um diretor de cinema de animações 3D educacionais para o app Direito Prime.
 Seu trabalho é criar um EXEMPLO PRÁTICO (caso concreto fictício) que ilustre o crime descrito no artigo penal seguindo a DIRETIVA SUPREMA DE CENAS 3D (skill-cena-artigo).
 

@@ -27,13 +27,15 @@ export const TEXT_MODEL_FALLBACKS = [
 ] as const;
 
 export const ALLOWED_TEXT_MODELS = new Set<string>([
+  "gemini-3.1-flash-lite",
+  "gemini-3.1-flash",
+  "gemini-3.5-flash",
   "gemini-2.5-flash",
-  "gemini-2.0-flash",
 ]);
 
 // Aliases/modelos proibidos — se algum bater aqui, forçamos o modelo permitido.
 const DENY_PATTERNS: RegExp[] = [
-  /-latest$/i,               // qualquer alias -latest
+  // /-latest$/i,               // qualquer alias -latest
   /gemini-2\.5-pro/i,        // 2.5 Pro
 ];
 
