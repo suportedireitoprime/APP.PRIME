@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Suspense } from 'react';
-import { Cpu, Github, Loader2, Sparkles, Wand2, Plus, MessageSquare, Send, X, FileText, CheckCircle2, Circle } from 'lucide-react';
+import { Cpu, Github, Loader2, Sparkles, Wand2, Plus, MessageSquare, Send, X, FileText, CheckCircle2, Circle, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -15,6 +15,8 @@ export default function AIGeneratorPanel() {
   const [status, setStatus] = useState<'idle' | 'dispatching' | 'actions_working' | 'done'>('idle');
   const [improveMode, setImproveMode] = useState<false | 'auto' | 'manual'>(false);
   const [showFormModal, setShowFormModal] = useState(false);
+  const [previewModalOpen, setPreviewModalOpen] = useState(false);
+  const [previewArtigo, setPreviewArtigo] = useState<ArtigoLei | null>(null);
   const [artigosCP, setArtigosCP] = useState<ArtigoLei[]>([]);
   const [loadingArtigos, setLoadingArtigos] = useState(true);
   const [geradosState, setGeradosState] = useState<Record<string, boolean>>({});
@@ -72,6 +74,11 @@ export default function AIGeneratorPanel() {
       camera: 'Instrução para a IA: Defina o posicionamento, ângulo (ex: plongeé), movimentos e FOV da câmera de forma BEM DETALHADA.'
     });
     setShowFormModal(true);
+  };
+
+  const handleAssistir = (artigo: ArtigoLei) => {
+    setPreviewArtigo(artigo);
+    setPreviewModalOpen(true);
   };
 
   const handleGenerate = () => {
@@ -186,16 +193,33 @@ export default function AIGeneratorPanel() {
                         </p>
                       </div>
                       
-                      <div className="flex-shrink-0 w-full md:w-auto mt-2 md:mt-0">
-                        <Button 
-                          onClick={() => handleOpenArtigo(artigo)}
-                          className={isGerado 
-                            ? "w-full bg-slate-700 hover:bg-slate-600 text-white border border-slate-600" 
-                            : "w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold shadow-lg shadow-indigo-900/20"}
-                        >
-                          {isGerado ? 'Revisar Cena' : 'Gerar Cena (IA)'}
-                          <Wand2 className="w-4 h-4 ml-2" />
-                        </Button>
+                      <div className="flex-shrink-0 w-full md:w-auto mt-4 md:mt-0 flex flex-col md:flex-row gap-2">
+                        {isGerado ? (
+                          <>
+                            <Button 
+                              onClick={() => handleAssistir(artigo)}
+                              className="w-full md:w-auto bg-emerald-600 hover:bg-emerald-500 text-white font-semibold shadow-lg shadow-emerald-900/20"
+                            >
+                              Assistir Animação
+                              <Play className="w-4 h-4 ml-2" />
+                            </Button>
+                            <Button 
+                              onClick={() => handleOpenArtigo(artigo)}
+                              className="w-full md:w-auto bg-slate-700 hover:bg-slate-600 text-white border border-slate-600"
+                            >
+                              Revisar
+                              <Wand2 className="w-4 h-4 ml-2" />
+                            </Button>
+                          </>
+                        ) : (
+                          <Button 
+                            onClick={() => handleOpenArtigo(artigo)}
+                            className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold shadow-lg shadow-indigo-900/20"
+                          >
+                            Gerar Cena (IA)
+                            <Wand2 className="w-4 h-4 ml-2" />
+                          </Button>
+                        )}
                       </div>
                     </motion.div>
                   );
@@ -434,6 +458,48 @@ export default function AIGeneratorPanel() {
                   <Wand2 className="mr-2 h-5 w-5" />
                   Gerar Cena via Agente IA
                 </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* MODAL DE PLAYER DE ANIMAÇÃO */}
+      <AnimatePresence>
+        {previewModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="bg-slate-900 border border-slate-700 shadow-2xl rounded-3xl w-full max-w-5xl h-[80vh] flex flex-col overflow-hidden relative"
+            >
+              <div className="absolute top-4 left-4 z-10 bg-black/60 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-xs font-bold text-emerald-100 uppercase tracking-wider">{previewArtigo?.numero} - Playback Automático</span>
+              </div>
+              
+              <button 
+                onClick={() => setPreviewModalOpen(false)}
+                className="absolute top-4 right-4 z-20 p-3 bg-black/60 backdrop-blur-md border border-white/10 rounded-full hover:bg-red-500 text-white transition-colors"
+              >
+                <X size={20} />
+              </button>
+
+              <div className="flex-1 w-full h-full relative bg-black">
+                <Suspense fallback={
+                  <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 gap-4">
+                    <Loader2 className="w-10 h-10 animate-spin text-emerald-500" />
+                    <span>Carregando Engine 3D...</span>
+                  </div>
+                }>
+                  <AnimacaoExemplo3DScene step={1} />
+                </Suspense>
               </div>
             </motion.div>
           </motion.div>
