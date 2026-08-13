@@ -7,6 +7,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { SMAAPass } from 'three/addons/postprocessing/SMAAPass.js';
 import { FilmPass } from 'three/addons/postprocessing/FilmPass.js';
+import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
 import { Button } from '@/components/ui/button';
 import { Compass, Volume2, VolumeX } from 'lucide-react';
 
@@ -83,8 +84,23 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
     const filmPass = new FilmPass(0.35, 0.025, 648, false);
     composer.addPass(filmPass);
 
+    // Outline Pass (Traço de HQ Preto)
+    const outlinePass = new OutlinePass(new THREE.Vector2(container.clientWidth, container.clientHeight), scene, camera);
+    outlinePass.edgeStrength = 4.0;
+    outlinePass.edgeGlow = 0.0;
+    outlinePass.edgeThickness = 1.5;
+    outlinePass.pulsePeriod = 0;
+    outlinePass.visibleEdgeColor.set('#000000');
+    outlinePass.hiddenEdgeColor.set('#000000');
+    composer.addPass(outlinePass);
+
     composer.addPass(new OutputPass());
     // ---------------------------------------
+
+    // Toon Shading Gradient Map (Degraus de luz)
+    const colors = new Uint8Array([50, 150, 255]);
+    const gradientMap = new THREE.DataTexture(colors, colors.length, 1, THREE.RedFormat);
+    gradientMap.needsUpdate = true;
 
     // Iluminação
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
@@ -146,7 +162,7 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
     // Environment
     const sidewalk = new THREE.Mesh(
       new THREE.BoxGeometry(120, 0.25, 6),
-      new THREE.MeshStandardMaterial({ color: COLORS.sidewalk, roughness: 0.9 })
+      new THREE.MeshToonMaterial({ color: COLORS.sidewalk, gradientMap })
     );
     sidewalk.position.set(0, -0.12, 0);
     sidewalk.receiveShadow = true;
@@ -154,7 +170,7 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
 
     const road = new THREE.Mesh(
       new THREE.BoxGeometry(120, 0.12, 25),
-      new THREE.MeshStandardMaterial({ color: COLORS.road, roughness: 0.8 })
+      new THREE.MeshToonMaterial({ color: COLORS.road, gradientMap })
     );
     road.position.set(0, -0.18, 15.5);
     road.receiveShadow = true;
@@ -166,14 +182,14 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
       const h = 8 + Math.random() * 30;
       const w = 4 + Math.random() * 6;
       const d = 4 + Math.random() * 6;
-      const bMat = new THREE.MeshStandardMaterial({ color: COLORS.building, roughness: 0.9 });
+      const bMat = new THREE.MeshToonMaterial({ color: COLORS.building, gradientMap });
       const bldg = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), bMat);
       bldg.position.set(i * 5 + Math.random() * 2, h / 2, -d / 2 - Math.random() * 4);
       bldg.castShadow = true;
       bldg.receiveShadow = true;
 
       const winMat = new THREE.MeshBasicMaterial({ color: COLORS.windowLight }); 
-      const winDarkMat = new THREE.MeshStandardMaterial({ color: 0x334155 });
+      const winDarkMat = new THREE.MeshToonMaterial({ color: 0x334155, gradientMap });
       for (let wy = 2; wy < h - 1; wy += 2.5) {
         for (let wx = -w / 2 + 0.8; wx < w / 2 - 0.5; wx += 1.5) {
           const isLit = Math.random() > 0.6;
@@ -189,10 +205,10 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
     const createLampPost = (px: number, pz: number) => {
       const lp = new THREE.Group();
       lp.position.set(px, 0, pz);
-      const pole = new THREE.Mesh(new THREE.BoxGeometry(0.2, 8, 0.2), new THREE.MeshStandardMaterial({ color: 0x222222 }));
+      const pole = new THREE.Mesh(new THREE.BoxGeometry(0.2, 8, 0.2), new THREE.MeshToonMaterial({ color: 0x222222, gradientMap }));
       pole.position.y = 4;
       pole.castShadow = true;
-      const arm = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.2, 0.2), new THREE.MeshStandardMaterial({ color: 0x222222 }));
+      const arm = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.2, 0.2), new THREE.MeshToonMaterial({ color: 0x222222, gradientMap }));
       arm.position.set(0.9, 7.9, 0);
       
       const bulbMesh = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.2, 0.4), new THREE.MeshBasicMaterial({ color: 0xfffbeb }));
@@ -227,9 +243,9 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
       bodyGroup.position.y = 1.4;
       group.add(bodyGroup);
 
-      const bodyMat = new THREE.MeshStandardMaterial({ color, roughness: 0.8 });
-      const skinMat = new THREE.MeshStandardMaterial({ color: COLORS.skin, roughness: 0.6 });
-      const darkMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.9 });
+      const bodyMat = new THREE.MeshToonMaterial({ color, gradientMap });
+      const skinMat = new THREE.MeshToonMaterial({ color: COLORS.skin, gradientMap });
+      const darkMat = new THREE.MeshToonMaterial({ color: 0x111111, gradientMap });
 
       const torso = new THREE.Mesh(new THREE.BoxGeometry(1.0, 1.3, 0.6), bodyMat);
       torso.position.y = 0.1;
@@ -237,10 +253,10 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
       bodyGroup.add(torso);
 
       if (isPolice) {
-        const belt = new THREE.Mesh(new THREE.BoxGeometry(1.02, 0.15, 0.62), new THREE.MeshStandardMaterial({ color: 0x050505 }));
+        const belt = new THREE.Mesh(new THREE.BoxGeometry(1.02, 0.15, 0.62), new THREE.MeshToonMaterial({ color: 0x050505, gradientMap }));
         belt.position.y = -0.4;
         bodyGroup.add(belt);
-        const badge = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.2, 0.05), new THREE.MeshStandardMaterial({ color: 0xeab308, metalness: 1 }));
+        const badge = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.2, 0.05), new THREE.MeshToonMaterial({ color: 0xeab308, gradientMap }));
         badge.position.set(-0.25, 0.4, 0.31);
         bodyGroup.add(badge);
       }
@@ -267,11 +283,11 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
       } else {
         const hairGeo = isPolice ? new THREE.BoxGeometry(0.85, 0.25, 0.85) : new THREE.BoxGeometry(0.85, 0.3, 0.85);
         const hairColor = isPolice ? 0x0f172a : 0x3f3f46;
-        const hair = new THREE.Mesh(hairGeo, new THREE.MeshStandardMaterial({ color: hairColor }));
+        const hair = new THREE.Mesh(hairGeo, new THREE.MeshToonMaterial({ color: hairColor, gradientMap }));
         hair.position.y = 0.4;
         
         if (isPolice) {
-          const visor = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.05, 0.35), new THREE.MeshStandardMaterial({ color: 0x050505 }));
+          const visor = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.05, 0.35), new THREE.MeshToonMaterial({ color: 0x050505, gradientMap }));
           visor.position.set(0, 0.25, 0.45);
           headGroup.add(visor);
         }
@@ -289,7 +305,7 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
         headGroup.add(mouth);
         
         if (!isPolice) {
-          const phone = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.35, 0.05), new THREE.MeshStandardMaterial({ color: 0x18181b, metalness: 0.8 }));
+          const phone = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.35, 0.05), new THREE.MeshToonMaterial({ color: 0x18181b, gradientMap }));
           const phoneScreen = new THREE.Mesh(new THREE.PlaneGeometry(0.16, 0.28), new THREE.MeshBasicMaterial({ color: 0x38bdf8 }));
           phoneScreen.position.z = 0.03;
           phone.add(phoneScreen);
@@ -301,7 +317,7 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
 
       const armR = new THREE.Group();
       armR.position.set(0.65, 0.6, 0);
-      const armRM = new THREE.Mesh(new THREE.BoxGeometry(0.3, 1.2, 0.3), isPolice ? new THREE.MeshStandardMaterial({ color: COLORS.skin }) : bodyMat);
+      const armRM = new THREE.Mesh(new THREE.BoxGeometry(0.3, 1.2, 0.3), isPolice ? new THREE.MeshToonMaterial({ color: COLORS.skin, gradientMap }) : bodyMat);
       if (isPolice) {
         const sleeveR = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.4, 0.32), bodyMat);
         sleeveR.position.y = 0.4;
@@ -313,7 +329,7 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
 
       const armL = new THREE.Group();
       armL.position.set(-0.65, 0.6, 0);
-      const armLM = new THREE.Mesh(new THREE.BoxGeometry(0.3, 1.2, 0.3), isPolice ? new THREE.MeshStandardMaterial({ color: COLORS.skin }) : bodyMat);
+      const armLM = new THREE.Mesh(new THREE.BoxGeometry(0.3, 1.2, 0.3), isPolice ? new THREE.MeshToonMaterial({ color: COLORS.skin, gradientMap }) : bodyMat);
       if (isPolice) {
         const sleeveL = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.4, 0.32), bodyMat);
         sleeveL.position.y = 0.4;
@@ -358,7 +374,7 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
     policeModel.group.userData = { label: 'Força Policial (Estado)' };
 
     // Armas
-    const gMat = new THREE.MeshStandardMaterial({ color: 0x222222, metalness: 0.9, roughness: 0.2 });
+    const gMat = new THREE.MeshToonMaterial({ color: 0x222222, gradientMap });
     
     const gunGroup = new THREE.Group();
     gunGroup.add(new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 0.5), gMat));
@@ -380,7 +396,7 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
 
     // Bag Quadrada
     const bagGroup = new THREE.Group();
-    const bagBody = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.65, 0.25), new THREE.MeshStandardMaterial({ color: 0x854d0e }));
+    const bagBody = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.65, 0.25), new THREE.MeshToonMaterial({ color: 0x854d0e, gradientMap }));
     bagBody.castShadow = true;
     bagGroup.add(bagBody);
     bagGroup.userData = { label: 'Mochila (Objeto do Roubo)' };
@@ -388,20 +404,23 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
 
     // Jail Quadrada
     const jail = new THREE.Group();
-    const barMat = new THREE.MeshStandardMaterial({ color: COLORS.bars, metalness: 0.7, roughness: 0.3 });
+    const barMat = new THREE.MeshToonMaterial({ color: COLORS.bars, gradientMap });
     for (let i = 0; i < 8; i++) {
       const bar = new THREE.Mesh(new THREE.BoxGeometry(0.15, 10, 0.15), barMat);
       bar.position.set(-4.5 + i * 1.3, 5, 0);
       bar.castShadow = true;
       jail.add(bar);
     }
-    const tB = new THREE.Mesh(new THREE.BoxGeometry(10, 0.5, 0.5), new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.5 }));
+    const tB = new THREE.Mesh(new THREE.BoxGeometry(10, 0.5, 0.5), new THREE.MeshToonMaterial({ color: 0x475569, gradientMap }));
     tB.position.set(0, 9.8, 0);
-    const bB = new THREE.Mesh(new THREE.BoxGeometry(10, 0.5, 0.5), new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.5 }));
+    const bB = new THREE.Mesh(new THREE.BoxGeometry(10, 0.5, 0.5), new THREE.MeshToonMaterial({ color: 0x475569, gradientMap }));
     bB.position.set(0, 0.2, 0);
     jail.add(tB, bB);
     jail.userData = { label: 'Pena (Reclusão)' };
     scene.add(jail);
+
+    // Adiciona personagens e armas no OutlinePass para ganharem contorno de Cartoon
+    outlinePass.selectedObjects = [robber.group, victim.group, policeModel.group, gunGroup, copGun, bagGroup];
 
     elementsRef.current = {
       robber, gunGroup, victim, policeModel, policeGroup, copGun, bagGroup, jail, camera, controls,
