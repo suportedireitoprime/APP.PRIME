@@ -50,15 +50,20 @@ serve(async (req) => {
     }
 
     const prompt = `Você é um diretor de cinema de animações 3D educacionais para o app Direito Prime.
-Seu trabalho é criar um EXEMPLO PRÁTICO (caso concreto fictício) que ilustre o crime descrito no artigo penal.
+Seu trabalho é criar um EXEMPLO PRÁTICO (caso concreto fictício) que ilustre o crime descrito no artigo penal seguindo a DIRETIVA SUPREMA DE CENAS 3D (skill-cena-artigo).
 
-REGRAS ABSOLUTAS PARA O TEXTO:
+REGRAS ABSOLUTAS DE DIREÇÃO DE ARTE E CONTEÚDO:
 - NÃO use linguagem jurídica abstrata. NÃO cite "princípios" ou "regras de ouro".
 - CRIE UMA HISTÓRIA CONCRETA com personagens fictícios (ex: "Carlos", "Maria").
 - Descreva AÇÕES VISÍVEIS que acontecem na cena: quem faz o quê, onde, como.
 - Exemplo BOM: "Carlos se aproxima de Maria por trás no beco escuro e arranca sua bolsa à força."
-- Exemplo RUIM: "O princípio da especialidade prevalece sobre a norma geral."
 - O texto de cada step deve narrar a cena como se fosse um documentário policial.
+
+DIRETIVAS NATIVAS DE CENA 3D (skill-cena-artigo):
+1. **Cenários Fechados & Atmosfera:** Escolha um ambiente rico: "alley" (beco), "park" (praça com chuva), "office" (repartição), "hospital" (com monitor EKG/leito) ou "prison" (cela/ala feminina). Evite vazios.
+2. **Adereços e Props:** Indique adereços específicos para os personagens e para a cena: "gun" (arma com muzzle flash), "crib" (berço), "iv_pole" (soro), "rain" (chuva), "car", "knife".
+3. **Emoções Faciais:** Especifique o estado emocional dos personagens em cada passo: "sad" (triste/olhos caídos), "angry" (bravo/olhos inclinados), "fearful" (assustado), "relieved" (aliviado), "neutral".
+4. **Caracterização Feminina:** Se houver personagem feminina (ex: Maria), defina "has_female_character": true para usar vestimenta rosa (0xec4899), traços acinturados e cabelo longo.
 
 CONTEXTO:
 Código: ${codigo_nome}
@@ -67,28 +72,32 @@ Texto Legal (se disponível): ${artigo_texto || "Gere baseado no que você sabe 
 
 INSTRUÇÕES DO ROTEIRO:
 1. Crie uma timeline com 3 a 5 passos (steps 0 a 4).
-2. O "ambiente" deve ser: "alley" (beco), "park" (praça), "office" (repartição) ou "generic".
-3. Cada step deve conter:
+2. Cada step deve conter:
    - "step": número sequencial começando em 0.
-   - "duration": duração em ms (4000 a 6000).
-   - "text": A narração do que está acontecendo NA CENA (exemplo prático, NÃO teoria).
+   - "duration": duração em ms (5000 a 8000).
+   - "text": A narração do que está acontecendo NA CENA (exemplo prático).
    - "cam": { "x": number, "y": number, "z": number, "lookX": number, "lookY": number, "fov": number }
-   - "agent_pos": { "x": number, "z": number, "rotY": number } (posição do infrator)
+   - "agent_pos": { "x": number, "z": number, "rotY": number } (posição do infrator/agente)
    - "victim_pos": { "x": number, "z": number, "rotY": number } ou null
+   - "agent_emotion": "angry" | "fearful" | "sad" | "neutral"
+   - "victim_emotion": "sad" | "relieved" | "fearful" | "neutral"
 
-MOVIMENTAÇÃO: Faça os personagens se moverem entre steps! O infrator deve se aproximar da vítima. Use coordenadas diferentes em cada step para criar movimento.
+MOVIMENTAÇÃO: Faça os personagens se moverem entre steps! O infrator deve se aproximar da vítima. Use coordenadas diferentes em cada step.
 
 RETORNO: JSON puro, sem markdown, seguindo esta interface:
 {
-  "environment": "alley",
+  "environment": "prison",
+  "has_female_character": true,
+  "props": ["crib", "mobile"],
   "timeline": [
     {
       "step": 0,
-      "duration": 5000,
-      "text": "Carlos observa Maria saindo do banco, sozinha, carregando uma bolsa...",
-      "cam": { "x": 6, "y": 5, "z": 12, "lookX": 0, "lookY": 1.5, "fov": 50 },
-      "agent_pos": { "x": 5, "z": 4, "rotY": -1.57 },
-      "victim_pos": { "x": -3, "z": 2, "rotY": 0 }
+      "duration": 6000,
+      "text": "Maria aguarda na cela de trânsito sua transferência...",
+      "cam": { "x": 0, "y": 3, "z": 8, "lookX": 0, "lookY": 1, "fov": 50 },
+      "agent_pos": { "x": 0, "z": 0, "rotY": 0 },
+      "victim_pos": null,
+      "agent_emotion": "sad"
     }
   ]
 }`;
