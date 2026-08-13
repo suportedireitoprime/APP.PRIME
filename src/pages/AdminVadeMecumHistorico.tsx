@@ -388,15 +388,20 @@ export default function AdminVadeMecumHistorico() {
                             <h3 className="text-white text-lg font-medium leading-snug">{motivoLimpo}</h3>
                        </div>
                        <a 
-                           href={selectedArticle.link_lei || selectedLaw?.url_planalto || '#'}
+                           href={selectedArticle.link_lei ? selectedArticle.link_lei : (selectedLaw?.url_planalto || '#')}
                            target="_blank"
                            rel="noopener noreferrer"
-                           className={`relative z-10 shrink-0 flex items-center gap-2 px-4 py-2 bg-[#222] hover:bg-[#333] transition-colors border border-white/10 rounded-lg text-sm text-gray-300`}
+                           title={selectedArticle.link_lei ? `Acessar Lei Inclusora/Alteradora no site oficial` : `Link específico não disponibilizado pelo Planalto`}
+                           className={`relative z-10 shrink-0 flex flex-col items-center justify-center gap-1 px-4 py-2 ${
+                               selectedArticle.link_lei ? 'bg-[#222] hover:bg-[#333] cursor-pointer' : 'bg-[#111] opacity-70 cursor-not-allowed'
+                           } transition-colors border border-white/10 rounded-lg text-sm text-gray-300`}
                        >
-                           Ver Lei no Planalto
-                           <ExternalLink className={`w-4 h-4 ${
-                               selectedArticle.motivo.toLowerCase().includes('incluíd') ? 'text-blue-400' : 'text-orange-400'
-                           }`} />
+                           <div className="flex items-center gap-2">
+                               {selectedArticle.link_lei ? 'Acessar Lei Modificadora' : 'Lei Modificadora (Sem Link)'}
+                               <ExternalLink className={`w-4 h-4 ${
+                                   selectedArticle.link_lei ? (selectedArticle.motivo.toLowerCase().includes('incluíd') ? 'text-blue-400' : 'text-orange-400') : 'text-gray-600'
+                               }`} />
+                           </div>
                        </a>
                    </div>
                </div>
