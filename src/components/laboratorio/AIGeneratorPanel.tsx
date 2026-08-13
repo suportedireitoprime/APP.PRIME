@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { motion, AnimatePresence } from 'framer-motion';
 import { fetchArtigosLei } from '@/services/legislacaoService';
 import type { ArtigoLei } from '@/data/mockData';
+import AnimacaoExemplo3DScene from './AnimacaoExemplo3DScene';
 
 export default function AIGeneratorPanel() {
   const [status, setStatus] = useState<'idle' | 'dispatching' | 'actions_working' | 'done'>('idle');
@@ -111,8 +112,8 @@ export default function AIGeneratorPanel() {
   };
 
   return (
-    <div className="w-full h-full flex flex-col bg-[#0f172a] relative text-slate-200 font-sans">
-      <div className="bg-[#1e293b] p-4 sm:p-6 border-b border-border/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-10 shadow-md">
+    <div className="w-full h-full flex flex-col bg-[#0f172a] relative text-slate-200 font-sans overflow-hidden">
+      <div className="bg-[#1e293b] p-4 sm:p-6 border-b border-border/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-20 shadow-md shrink-0">
         <div>
           <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2 text-white">
             <Cpu className="text-indigo-400" />
@@ -139,7 +140,7 @@ export default function AIGeneratorPanel() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto relative p-4 sm:p-6 custom-scrollbar">
+      <div className="flex-1 overflow-y-auto relative p-4 sm:p-6 custom-scrollbar z-10">
         {status === 'idle' && (
           <div className="max-w-5xl mx-auto space-y-6">
             <div className="flex items-center justify-between mb-4">
@@ -211,7 +212,7 @@ export default function AIGeneratorPanel() {
         )}
 
         {(status === 'dispatching' || status === 'actions_working') && (
-          <div className="w-full h-full flex flex-col items-center justify-center space-y-6">
+          <div className="w-full min-h-full flex flex-col items-center justify-center space-y-6">
             <div className="relative">
               <div className="absolute inset-0 bg-indigo-500 rounded-full blur-2xl opacity-30 animate-pulse"></div>
               <Cpu className={`relative z-10 w-24 h-24 text-indigo-400 drop-shadow-[0_0_15px_rgba(99,102,241,0.5)] ${status === 'actions_working' ? 'animate-bounce' : 'animate-pulse'}`} />
@@ -236,32 +237,41 @@ export default function AIGeneratorPanel() {
         )}
 
         {status === 'done' && (
-          <div className="w-full h-full flex flex-col items-center justify-center space-y-8 animate-in fade-in zoom-in duration-500 pb-10">
-            <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-full w-28 h-28 flex items-center justify-center shadow-[0_0_40px_rgba(16,185,129,0.3)]">
-              <Wand2 className="w-14 h-14 text-emerald-400" />
-            </div>
-
-            <div className="text-center space-y-2">
-              <h3 className="text-3xl font-display font-bold text-white">Cena Gerada com Sucesso!</h3>
+          <div className="w-full min-h-full flex flex-col items-center py-6 space-y-8 animate-in fade-in zoom-in duration-500 pb-10">
+            <div className="text-center space-y-2 mt-4">
+              <div className="inline-flex items-center justify-center bg-emerald-500/10 border border-emerald-500/20 rounded-full p-4 mb-4 shadow-[0_0_40px_rgba(16,185,129,0.2)]">
+                <Wand2 className="w-8 h-8 text-emerald-400" />
+              </div>
+              <h3 className="text-3xl font-display font-bold text-white uppercase tracking-wider">Cena Gerada com Sucesso!</h3>
               <p className="text-slate-400 text-lg">O código da cena foi injetado pelo Agente via Actions.</p>
             </div>
 
+            {/* Visualizador 3D da Cena Gerada */}
+            <div className="w-full max-w-4xl h-[400px] rounded-3xl overflow-hidden border border-slate-700/50 shadow-2xl relative bg-slate-900 group">
+              <div className="absolute top-4 left-4 z-10 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-xs font-bold text-emerald-100 uppercase tracking-wider">Preview Engine 3D</span>
+              </div>
+              {/* Renderiza a cena de exemplo - usando step 1 para ação */}
+              <AnimacaoExemplo3DScene step={1} />
+            </div>
+
             {/* Loop de Melhoria */}
-            <div className="w-full max-w-xl bg-slate-800/40 border border-slate-700/50 p-8 rounded-3xl flex flex-col items-center gap-6 shadow-2xl backdrop-blur-sm">
-              <h4 className="font-bold text-indigo-300 text-xl">A cena precisa de ajustes?</h4>
+            <div className="w-full max-w-4xl bg-slate-800/40 border border-slate-700/50 p-8 rounded-3xl flex flex-col items-center gap-6 shadow-2xl backdrop-blur-sm">
+              <h4 className="font-bold text-indigo-300 text-xl uppercase tracking-wider">A cena precisa de ajustes?</h4>
               
               {!improveMode ? (
-                <div className="flex flex-col sm:flex-row gap-4 w-full">
+                <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
                   <Button 
                     variant="outline" 
-                    className="flex-1 py-6 border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/10 hover:text-indigo-200 transition-colors"
+                    className="flex-1 max-w-[280px] py-6 border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/10 hover:text-indigo-200 transition-colors"
                     onClick={() => setImproveMode('auto')}
                   >
                     <Sparkles className="w-5 h-5 mr-2" />
                     Auto Melhorar (IA)
                   </Button>
                   <Button 
-                    className="flex-1 py-6 bg-slate-700 hover:bg-slate-600 text-white transition-colors"
+                    className="flex-1 max-w-[280px] py-6 bg-slate-700 hover:bg-slate-600 text-white transition-colors"
                     onClick={() => setImproveMode('manual')}
                   >
                     <MessageSquare className="w-5 h-5 mr-2" />
@@ -279,7 +289,7 @@ export default function AIGeneratorPanel() {
                   </div>
                 </div>
               ) : (
-                <div className="w-full space-y-5 animate-in slide-in-from-bottom-2">
+                <div className="w-full max-w-2xl space-y-5 animate-in slide-in-from-bottom-2">
                   <Textarea 
                     autoFocus
                     placeholder="O que você quer mudar? (Ex: 'A iluminação está muito clara, coloque luzes vermelhas e chovendo')" 
@@ -324,7 +334,7 @@ export default function AIGeneratorPanel() {
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
               className="bg-[#1e293b] border border-slate-700 shadow-2xl rounded-2xl w-full max-w-5xl max-h-full flex flex-col overflow-hidden"
             >
-              <div className="flex items-center justify-between p-5 border-b border-slate-700/50 bg-[#0f172a]/50">
+              <div className="flex items-center justify-between p-5 border-b border-slate-700/50 bg-[#0f172a]/50 shrink-0">
                 <div className="flex items-center gap-3">
                   <FileText className="text-indigo-400" size={24} />
                   <h3 className="text-xl font-bold text-white">Parâmetros Detalhados para Geração da Cena</h3>
@@ -407,7 +417,7 @@ export default function AIGeneratorPanel() {
                 </div>
               </div>
 
-              <div className="p-5 border-t border-slate-700/50 bg-[#0f172a]/50 flex justify-end gap-4">
+              <div className="p-5 border-t border-slate-700/50 bg-[#0f172a]/50 flex justify-end gap-4 shrink-0">
                 <Button 
                   variant="ghost" 
                   onClick={() => setShowFormModal(false)}
