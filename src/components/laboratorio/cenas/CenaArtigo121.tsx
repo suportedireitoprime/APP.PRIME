@@ -9,11 +9,12 @@ import { Button } from '@/components/ui/button';
 import { Compass, Volume2, VolumeX } from 'lucide-react';
 
 const COLORS = {
-  bg: 0x050510,
-  sidewalk: 0x334155,
-  road: 0x1e293b,
+  bg: 0x020205,
+  sidewalk: 0x111827,
+  road: 0x0f172a,
   building: 0x0f172a,
-  windowLight: 0xfef08a,
+  neonRed: 0xff003c,
+  neonBlue: 0x00d8ff,
   agent: 0x991b1b,
   victim: 0xf59e0b,
   skin: 0xfcbca0,
@@ -21,11 +22,11 @@ const COLORS = {
 };
 
 const TIMELINE = [
-  { step: 0, duration: 5000, text: "Cena 1: Madrugada. Uma pessoa caminha sozinha por um beco escuro e deserto...", cam: { x: 2, y: 3, z: 12, lookX: 0, lookY: 1.5, fov: 50 } },
+  { step: 0, duration: 5500, text: "Cena 1: Madrugada chuvosa. Uma pessoa caminha sozinha por um beco escuro e deserto...", cam: { x: 2, y: 3, z: 12, lookX: 0, lookY: 1.5, fov: 50 } },
   { step: 1, duration: 4500, text: "O Agente surge das sombras, aproximando-se silenciosamente com intenção homicida (animus necandi).", cam: { x: -3, y: 2.5, z: 8, lookX: -1, lookY: 1.2, fov: 55 } },
   { step: 2, duration: 5500, text: "O Agente desfere o golpe letal contra a vítima, utilizando uma faca.", cam: { x: -1, y: 2.0, z: 5.5, lookX: -0.5, lookY: 1.5, fov: 60 } },
   { step: 3, duration: 5000, text: "A vítima cai ao solo. O crime de homicídio está consumado com o óbito.", cam: { x: 0, y: 4, z: 6, lookX: -1.5, lookY: 0.5, fov: 50 } },
-  { step: 4, duration: 6500, text: "Configurado o Artigo 121: Matar alguém. A pena prevista é de Reclusão de 6 a 20 anos.", cam: { x: 3.5, y: 2.8, z: 4.5, lookX: -1, lookY: 0.5, fov: 65 } },
+  { step: 4, duration: 6500, text: "Configurado o Artigo 121: Matar alguém. (Sirenes da polícia se aproximam).", cam: { x: 4, y: 3.5, z: 5, lookX: -1, lookY: 0.5, fov: 65 } },
 ];
 
 const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isExploring: boolean, setPopup: any }) => {
@@ -38,7 +39,7 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(COLORS.bg);
-    scene.fog = new THREE.FogExp2(COLORS.bg, 0.02);
+    scene.fog = new THREE.FogExp2(COLORS.bg, 0.025);
 
     const camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 200);
     camera.position.set(2, 3, 14);
@@ -47,7 +48,7 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(container.clientWidth, container.clientHeight);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
+    renderer.toneMappingExposure = 1.0;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     container.appendChild(renderer.domElement);
@@ -59,39 +60,60 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
     controls.maxPolarAngle = Math.PI / 2;
 
     const composer = new EffectComposer(renderer);
-    const renderPass = new RenderPass(scene, camera);
-    composer.addPass(renderPass);
+    composer.addPass(new RenderPass(scene, camera));
     
     const bloomPass = new UnrealBloomPass(
       new THREE.Vector2(container.clientWidth, container.clientHeight),
-      1.0, 0.6, 0.85
+      1.5, 0.4, 0.85
     );
     composer.addPass(bloomPass);
+    composer.addPass(new OutputPass());
 
-    const outputPass = new OutputPass();
-    composer.addPass(outputPass);
-
-    // Iluminação
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+    // Iluminação Base
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
     scene.add(ambientLight);
 
-    const moonLight = new THREE.DirectionalLight(0xbfdbfe, 1.0);
+    const moonLight = new THREE.DirectionalLight(0x4b5563, 0.8);
     moonLight.position.set(-15, 25, -10);
     moonLight.castShadow = true;
     moonLight.shadow.mapSize.set(2048, 2048);
-    moonLight.shadow.camera.near = 0.5;
-    moonLight.shadow.camera.far = 100;
-    moonLight.shadow.camera.left = -20;
-    moonLight.shadow.camera.right = 20;
-    moonLight.shadow.camera.top = 20;
-    moonLight.shadow.camera.bottom = -20;
     scene.add(moonLight);
 
+    // Sistema de Chuva (Rain System)
+    const rainCount = 2000;
+    const rainGeo = new THREE.BufferGeometry();
+    const rainPos = new Float32Array(rainCount * 3);
+    for(let i=0;i<rainCount;i++) {
+      rainPos[i*3] = (Math.random() - 0.5) * 40;
+      rainPos[i*3+1] = Math.random() * 20;
+      rainPos[i*3+2] = (Math.random() - 0.5) * 40;
+    }
+    rainGeo.setAttribute('position', new THREE.BufferAttribute(rainPos, 3));
+    const rainMat = new THREE.PointsMaterial({
+      color: 0x94a3b8,
+      size: 0.05,
+      transparent: true,
+      opacity: 0.6
+    });
+    const rain = new THREE.Points(rainGeo, rainMat);
+    scene.add(rain);
+
+    // Luz de Sirene de Polícia (Oculta até o step 4)
+    const policeSirenR = new THREE.PointLight(0xff0000, 0, 20, 2);
+    policeSirenR.position.set(0, 2, 10);
+    scene.add(policeSirenR);
+    
+    const policeSirenB = new THREE.PointLight(0x0000ff, 0, 20, 2);
+    policeSirenB.position.set(2, 2, 10);
+    scene.add(policeSirenB);
+
     // Environment (Beco)
-    const sidewalk = new THREE.Mesh(
-      new THREE.BoxGeometry(40, 0.25, 20),
-      new THREE.MeshStandardMaterial({ color: COLORS.sidewalk, roughness: 0.9 })
-    );
+    const sidewalkMat = new THREE.MeshStandardMaterial({ 
+      color: COLORS.sidewalk, 
+      roughness: 0.2, // Chão molhado
+      metalness: 0.4 
+    });
+    const sidewalk = new THREE.Mesh(new THREE.BoxGeometry(40, 0.25, 20), sidewalkMat);
     sidewalk.position.set(0, -0.12, 0);
     sidewalk.receiveShadow = true;
     scene.add(sidewalk);
@@ -99,23 +121,50 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
     const cityGroup = new THREE.Group();
     cityGroup.position.set(0, 0, -5);
     
-    // Paredão do Beco
-    const wallLeft = new THREE.Mesh(new THREE.BoxGeometry(5, 15, 30), new THREE.MeshStandardMaterial({ color: COLORS.building }));
+    // Paredões
+    const wallMat = new THREE.MeshStandardMaterial({ color: COLORS.building, roughness: 0.8 });
+    const wallLeft = new THREE.Mesh(new THREE.BoxGeometry(5, 15, 30), wallMat);
     wallLeft.position.set(-6, 7.5, 5); wallLeft.castShadow = true; wallLeft.receiveShadow = true;
-    const wallRight = new THREE.Mesh(new THREE.BoxGeometry(5, 15, 30), new THREE.MeshStandardMaterial({ color: COLORS.building }));
+    const wallRight = new THREE.Mesh(new THREE.BoxGeometry(5, 15, 30), wallMat);
     wallRight.position.set(6, 7.5, 5); wallRight.castShadow = true; wallRight.receiveShadow = true;
-    const wallBack = new THREE.Mesh(new THREE.BoxGeometry(15, 15, 5), new THREE.MeshStandardMaterial({ color: COLORS.building }));
+    const wallBack = new THREE.Mesh(new THREE.BoxGeometry(15, 15, 5), wallMat);
     wallBack.position.set(0, 7.5, -8); wallBack.castShadow = true; wallBack.receiveShadow = true;
     
     cityGroup.add(wallLeft, wallRight, wallBack);
+
+    // Letreiro Neon (HOTEL)
+    const neonGroup = new THREE.Group();
+    const neonBg = new THREE.Mesh(new THREE.BoxGeometry(0.2, 3, 1), new THREE.MeshStandardMaterial({ color: 0x111111 }));
+    neonBg.position.set(-3.4, 6, 2);
+    
+    const neonTextMat = new THREE.MeshBasicMaterial({ color: COLORS.neonRed });
+    const neonT1 = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.4, 0.4), neonTextMat);
+    neonT1.position.set(-3.3, 7, 2);
+    const neonT2 = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.4, 0.4), neonTextMat);
+    neonT2.position.set(-3.3, 6.2, 2);
+    const neonT3 = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.4, 0.4), neonTextMat);
+    neonT3.position.set(-3.3, 5.4, 2);
+    
+    const neonLight = new THREE.PointLight(COLORS.neonRed, 2.0, 10, 2);
+    neonLight.position.set(-3.0, 6, 2);
+    
+    neonGroup.add(neonBg, neonT1, neonT2, neonT3, neonLight);
+    cityGroup.add(neonGroup);
+    
     scene.add(cityGroup);
 
     // Lixeira e lixo
-    const dumpster = new THREE.Mesh(new THREE.BoxGeometry(2, 1.5, 1.5), new THREE.MeshStandardMaterial({ color: 0x14532d, metalness: 0.6 }));
+    const dumpster = new THREE.Mesh(new THREE.BoxGeometry(2, 1.5, 1.5), new THREE.MeshStandardMaterial({ color: 0x14532d, metalness: 0.6, roughness: 0.3 }));
     dumpster.position.set(-2.5, 0.75, -5); dumpster.castShadow = true;
     scene.add(dumpster);
+    
+    // Sacos de lixo
+    const trash = new THREE.Mesh(new THREE.SphereGeometry(0.5, 16, 16), new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.9 }));
+    trash.position.set(-3.5, 0.3, -4);
+    trash.scale.set(1, 0.6, 1);
+    scene.add(trash);
 
-    // Poste quebrado
+    // Poste com luz falhando
     const lp = new THREE.Group();
     lp.position.set(2, 0, -3);
     const pole = new THREE.Mesh(new THREE.BoxGeometry(0.2, 8, 0.2), new THREE.MeshStandardMaterial({ color: 0x222222 }));
@@ -128,18 +177,24 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
     const sl = new THREE.PointLight(0xfffbeb, 1.5, 15, 2); 
     sl.position.set(-1.8, 7.4, 0); sl.castShadow = true;
     lp.add(sl);
+    
+    // Cone de luz volumetrica simples (fog plane)
+    const coneMat = new THREE.MeshBasicMaterial({ color: 0xfffbeb, transparent: true, opacity: 0.1, depthWrite: false });
+    const cone = new THREE.Mesh(new THREE.ConeGeometry(3, 8, 16), coneMat);
+    cone.position.set(-1.8, 3.5, 0);
+    lp.add(cone);
     scene.add(lp);
 
     // Poça de sangue
     const bloodPool = new THREE.Mesh(
       new THREE.CircleGeometry(1.2, 32),
-      new THREE.MeshStandardMaterial({ color: COLORS.blood, roughness: 0.1, transparent: true, opacity: 0 })
+      new THREE.MeshStandardMaterial({ color: COLORS.blood, roughness: 0.1, metalness: 0.2, transparent: true, opacity: 0 })
     );
     bloodPool.rotation.x = -Math.PI / 2;
-    bloodPool.position.set(-0.5, 0.05, 1.5);
+    bloodPool.position.set(-0.5, 0.02, 1.5);
     scene.add(bloodPool);
 
-    // Personagens
+    // Personagens Voxels Avançados
     const createSquareHumanoid = (color: number, startX: number, isAgent: boolean) => {
       const group = new THREE.Group();
       group.position.set(startX, 0, 0);
@@ -148,7 +203,7 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
       const ctx = c.getContext('2d');
       if (ctx) {
         const gr = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-        gr.addColorStop(0, 'rgba(0,0,0,0.6)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+        gr.addColorStop(0, 'rgba(0,0,0,0.8)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
         ctx.fillStyle = gr; ctx.fillRect(0, 0, 64, 64);
       }
       const shadow = new THREE.Mesh(new THREE.PlaneGeometry(2.0, 2.0), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false }));
@@ -159,7 +214,7 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
       bodyGroup.position.y = 1.4;
       group.add(bodyGroup);
 
-      const bodyMat = new THREE.MeshStandardMaterial({ color, roughness: 0.8 });
+      const bodyMat = new THREE.MeshStandardMaterial({ color, roughness: 0.8, metalness: 0.1 }); // Roupa molhada
       const skinMat = new THREE.MeshStandardMaterial({ color: COLORS.skin, roughness: 0.6 });
       const darkMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.9 });
 
@@ -242,14 +297,14 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
     const victim = createSquareHumanoid(COLORS.victim, 0, false);
     victim.group.position.set(-1, 0, 1.5);
     
-    agent.group.userData = { label: 'Agente Infrator (Assassino)' };
+    agent.group.userData = { label: 'Agente Infrator (Animus Necandi)' };
     victim.group.userData = { label: 'Vítima' };
 
-    // Faca
+    // Faca (Arma Branca) com textura metalica aprimorada
     const knifeGroup = new THREE.Group();
     const handle = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.3, 0.1), new THREE.MeshStandardMaterial({ color: 0x111111 }));
     handle.position.set(0, -0.15, 0);
-    const blade = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.5, 0.15), new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.9 }));
+    const blade = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.5, 0.15), new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 1.0, roughness: 0.1 }));
     blade.position.set(0, -0.55, 0);
     knifeGroup.add(handle, blade);
     knifeGroup.position.set(0, -0.9, 0.15);
@@ -258,10 +313,10 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
     agent.armR.add(knifeGroup);
 
     elementsRef.current = {
-      agent, victim, knifeGroup, camera, controls, sl, composer, isExploring, bloodPool
+      agent, victim, knifeGroup, camera, controls, sl, cone, composer, isExploring, bloodPool, rain, neonLight, policeSirenR, policeSirenB
     };
 
-    // Interaction
+    // Interaction Raycaster
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
 
@@ -301,7 +356,17 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
       const isExp = elementsRef.current.isExploring;
       const camData = TIMELINE[elementsRef.current.stepIdx ?? 0]?.cam ?? TIMELINE[0].cam;
 
-      // Câmera
+      // Animação da Chuva
+      const positions = rain.geometry.attributes.position.array as Float32Array;
+      for(let i=0; i<rainCount; i++) {
+        positions[i*3+1] -= 15 * dt; // velocidade de queda
+        if (positions[i*3+1] < 0) {
+          positions[i*3+1] = 20;
+        }
+      }
+      rain.geometry.attributes.position.needsUpdate = true;
+
+      // Câmera Cinematográfica
       if (isExp) {
         controls.enabled = true;
         controls.update();
@@ -317,12 +382,27 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
         camTarget.y = damp(camTarget.y, camData.lookY, 2, dt);
         camera.lookAt(camTarget);
 
-        camera.position.x += Math.sin(t * 1.5) * 0.008;
-        camera.position.y += Math.cos(t * 2.1) * 0.005;
+        // Camera drift (efeito handheld)
+        camera.position.x += Math.sin(t * 1.5) * 0.005;
+        camera.position.y += Math.cos(t * 2.1) * 0.003;
       }
 
-      // Luz piscando (beco sinistro)
-      sl.intensity = damp(sl.intensity, Math.random() > 0.95 ? 0.2 : 1.5, 10, dt);
+      // Efeitos Especiais de Iluminação
+      // 1. Poste piscando
+      sl.intensity = damp(sl.intensity, Math.random() > 0.95 ? 0.2 : 2.5, 10, dt);
+      cone.material.opacity = damp(cone.material.opacity, sl.intensity > 1 ? 0.15 : 0.05, 5, dt);
+      
+      // 2. Neon piscando
+      neonLight.intensity = damp(neonLight.intensity, Math.random() > 0.98 ? 0.5 : 2.0, 8, dt);
+
+      // 3. Sirene da Polícia (Apenas no step final)
+      if (s === 4) {
+        policeSirenR.intensity = (Math.sin(t * 10) > 0) ? 5 : 0;
+        policeSirenB.intensity = (Math.cos(t * 10) > 0) ? 5 : 0;
+      } else {
+        policeSirenR.intensity = 0;
+        policeSirenB.intensity = 0;
+      }
 
       // Victim kinematics
       if (!isExp && s < 3) {
@@ -332,7 +412,7 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
         victim.group.rotation.z = damp(victim.group.rotation.z, 0, 4, dt);
         victim.group.position.y = damp(victim.group.position.y, 0, 4, dt);
       } else if (!isExp && s >= 3) {
-        // Victim falls over
+        // Vítima caindo
         victim.group.rotation.z = damp(victim.group.rotation.z, -Math.PI / 2, 6, dt);
         victim.group.position.y = damp(victim.group.position.y, 0.4, 6, dt);
         victim.armL.rotation.z = damp(victim.armL.rotation.z, 0.5, 4, dt);
@@ -363,10 +443,10 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
          }
       }
 
-      // Blood pool
+      // Poça de sangue
       if (s >= 3) {
         bloodPool.material.opacity = damp(bloodPool.material.opacity, 0.9, 1, dt);
-        bloodPool.scale.setScalar(damp(bloodPool.scale.x, 1.2, 1, dt));
+        bloodPool.scale.setScalar(damp(bloodPool.scale.x, 1.5, 1, dt)); // Expande mais rápido
       } else {
         bloodPool.material.opacity = 0;
         bloodPool.scale.setScalar(0.1);
@@ -380,7 +460,7 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
       agent.group.position.z = damp(agent.group.position.z, aTargetZ, s === 4 ? 2 : 4, dt);
 
       if (!isExp && (s === 1 || s === 4)) {
-        // Walking
+        // Andando
         agent.bodyGroup.position.y = 1.4 + Math.abs(Math.sin(t * 12)) * 0.15;
         agent.legR.rotation.x = Math.sin(t * 12) * 0.6;
         agent.legL.rotation.x = -Math.sin(t * 12) * 0.6;
@@ -399,7 +479,7 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
       if (s === 4) aRotY = 0;
       agent.group.rotation.y = damp(agent.group.rotation.y, aRotY, 5, dt);
 
-      // Stabbing motion
+      // Movimento de esfaqueamento violento
       const armRotX = s === 2 ? -Math.PI / 1.5 : 0;
       if (s < 4) agent.armR.rotation.x = damp(agent.armR.rotation.x, armRotX, 12, dt);
       
@@ -518,7 +598,7 @@ export default function CenaArtigo121() {
         </Button>
       </div>
 
-      <div className="relative w-full max-w-full h-[65vh] min-h-[500px] sm:rounded-xl border-y sm:border border-border/50 shadow-2xl overflow-hidden bg-[#050510]">
+      <div className="relative w-full max-w-full h-[65vh] min-h-[500px] sm:rounded-xl border-y sm:border border-border/50 shadow-2xl overflow-hidden bg-[#020205]">
         
         <VanillaThreeScene 
           step={TIMELINE[currentIdx].step} 
@@ -557,7 +637,7 @@ export default function CenaArtigo121() {
         <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md border border-red-900/50 px-3 py-1.5 rounded-full z-10 pointer-events-none hidden sm:flex">
           <span className="text-[10px] font-bold text-white/90 uppercase tracking-widest flex items-center gap-2">
             <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-            Art. 121 - Homicídio (Voxel Mode)
+            Art. 121 - Homicídio (Cinematic Voxel Mode)
           </span>
         </div>
       </div>
