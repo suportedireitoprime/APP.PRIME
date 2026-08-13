@@ -92,6 +92,7 @@ export default function AIGeneratorPanel() {
 
   const handleOpenArtigo = (artigo: ArtigoLei) => {
     setActiveArtigoId(artigo.id);
+    setPreviewArtigo(artigo);
     setFormData({
       model: '3.1 Flash Light',
       artigo: artigo.numero,
