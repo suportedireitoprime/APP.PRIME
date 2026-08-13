@@ -23,11 +23,11 @@ const COLORS = {
 };
 
 const TIMELINE = [
-  { step: 0, duration: 5500, text: "O réu cumpre pena em regime fechado após ter sido condenado por um fato criminoso.", cam: { x: 0, y: 2, z: 8, lookX: 0, lookY: 1.5, fov: 50 } },
-  { step: 1, duration: 5500, text: "O Congresso Nacional aprova uma nova Lei, a qual revoga aquele tipo penal.", cam: { x: 0, y: 10, z: 6, lookX: 0, lookY: 1.5, fov: 65 } },
-  { step: 2, duration: 5500, text: "Configura-se a Abolitio Criminis. A lei penal mais benigna sempre retroage para beneficiar o réu.", cam: { x: -4, y: 2, z: 6, lookX: 0, lookY: 1.5, fov: 50 } },
-  { step: 3, duration: 5500, text: "Com a nova lei, cessam imediatamente a execução e os efeitos penais da condenação.", cam: { x: 3, y: 1.5, z: 4, lookX: 0, lookY: 1.0, fov: 60 } },
-  { step: 4, duration: 7000, text: "Art. 2º: Ninguém pode ser punido por fato que lei posterior deixa de considerar crime.", cam: { x: 0, y: 3, z: 12, lookX: 0, lookY: 2, fov: 55 } },
+  { step: 0, duration: 7500, text: "O réu cumpre pena em regime fechado após ter sido condenado por um fato criminoso.", cam: { x: 0, y: 2, z: 8, lookX: 0, lookY: 1.5, fov: 50 } },
+  { step: 1, duration: 7500, text: "O Congresso Nacional aprova uma nova Lei, a qual revoga aquele tipo penal.", cam: { x: 0, y: 10, z: 6, lookX: 0, lookY: 1.5, fov: 65 } },
+  { step: 2, duration: 7500, text: "Configura-se a Abolitio Criminis. A lei penal mais benigna sempre retroage para beneficiar o réu.", cam: { x: -4, y: 2, z: 6, lookX: 0, lookY: 1.5, fov: 50 } },
+  { step: 3, duration: 7500, text: "Com a nova lei, cessam imediatamente a execução e os efeitos penais da condenação.", cam: { x: 3, y: 1.5, z: 4, lookX: 0, lookY: 1.0, fov: 60 } },
+  { step: 4, duration: 8000, text: "Art. 2º: Ninguém pode ser punido por fato que lei posterior deixa de considerar crime.", cam: { x: 0, y: 3, z: 12, lookX: 0, lookY: 2, fov: 55 } },
 ];
 
 const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isExploring: boolean, setPopup: any }) => {
@@ -83,12 +83,20 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
     scene.add(ambientLight);
 
-    const dirLight = new THREE.DirectionalLight(0xbfdbfe, 2.0);
+    const dirLight = new THREE.DirectionalLight(0xbfdbfe, 3.0);
     dirLight.position.set(5, 15, 5);
     dirLight.castShadow = true;
     dirLight.shadow.mapSize.set(2048, 2048);
     dirLight.shadow.bias = -0.0005;
     scene.add(dirLight);
+
+    const windowLight = new THREE.SpotLight(0xffffff, 5.0, 50, Math.PI / 4, 1.0, 1.0);
+    windowLight.position.set(-6, 8, -6);
+    windowLight.target.position.set(0, 0, 0);
+    windowLight.castShadow = true;
+    windowLight.shadow.mapSize.set(1024, 1024);
+    scene.add(windowLight);
+    scene.add(windowLight.target);
 
     const floor = new THREE.Mesh(
       new THREE.BoxGeometry(100, 0.5, 100),
@@ -97,6 +105,49 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
     floor.position.y = -0.25;
     floor.receiveShadow = true;
     scene.add(floor);
+
+    const prisonRoom = new THREE.Group();
+    const wallMat = new THREE.MeshToonMaterial({ color: COLORS.walls, gradientMap });
+    
+    // Parede Fundo (com Janela)
+    const backWallLeft = new THREE.Mesh(new THREE.BoxGeometry(3.5, 10, 1), wallMat);
+    backWallLeft.position.set(-2.25, 5, -2.5); backWallLeft.castShadow = true; backWallLeft.receiveShadow = true;
+    const backWallRight = new THREE.Mesh(new THREE.BoxGeometry(3.5, 10, 1), wallMat);
+    backWallRight.position.set(2.25, 5, -2.5); backWallRight.castShadow = true; backWallRight.receiveShadow = true;
+    const backWallTop = new THREE.Mesh(new THREE.BoxGeometry(1.0, 3.0, 1), wallMat);
+    backWallTop.position.set(0, 8.5, -2.5); backWallTop.castShadow = true; backWallTop.receiveShadow = true;
+    const backWallBottom = new THREE.Mesh(new THREE.BoxGeometry(1.0, 4.0, 1), wallMat);
+    backWallBottom.position.set(0, 2, -2.5); backWallBottom.castShadow = true; backWallBottom.receiveShadow = true;
+    
+    // Grades da janela
+    for(let i=0; i<3; i++) {
+        const wBar = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 3), new THREE.MeshToonMaterial({ color: 0x475569, gradientMap }));
+        wBar.position.set(-0.3 + (i * 0.3), 5.5, -2.5);
+        wBar.castShadow = true;
+        prisonRoom.add(wBar);
+    }
+    
+    // Paredes laterais
+    const wallLeft = new THREE.Mesh(new THREE.BoxGeometry(1, 10, 8), wallMat);
+    wallLeft.position.set(-4.5, 5, 1); wallLeft.castShadow = true; wallLeft.receiveShadow = true;
+    const wallRight = new THREE.Mesh(new THREE.BoxGeometry(1, 10, 8), wallMat);
+    wallRight.position.set(4.5, 5, 1); wallRight.castShadow = true; wallRight.receiveShadow = true;
+    
+    // Cama
+    const bedFrame = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.8, 5), new THREE.MeshToonMaterial({ color: 0x1e293b, gradientMap }));
+    bedFrame.position.set(-2.5, 0.4, 1); bedFrame.castShadow = true; bedFrame.receiveShadow = true;
+    const bedMattress = new THREE.Mesh(new THREE.BoxGeometry(2.3, 0.3, 4.8), new THREE.MeshToonMaterial({ color: 0x94a3b8, gradientMap }));
+    bedMattress.position.set(-2.5, 0.95, 1); bedMattress.castShadow = true; bedMattress.receiveShadow = true;
+    
+    // Privada
+    const toiletBase = new THREE.Mesh(new THREE.BoxGeometry(1, 1.2, 1.5), new THREE.MeshToonMaterial({ color: 0xe2e8f0, gradientMap }));
+    toiletBase.position.set(3.5, 0.6, -1); toiletBase.castShadow = true; toiletBase.receiveShadow = true;
+    const toiletTank = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.5, 0.6), new THREE.MeshToonMaterial({ color: 0xe2e8f0, gradientMap }));
+    toiletTank.position.set(3.5, 1.95, -1.45); toiletTank.castShadow = true; toiletTank.receiveShadow = true;
+    
+    prisonRoom.add(backWallLeft, backWallRight, backWallTop, backWallBottom, wallLeft, wallRight, bedFrame, bedMattress, toiletBase, toiletTank);
+    prisonRoom.userData = { label: 'Ambiente Prisional' };
+    scene.add(prisonRoom);
 
     // Personagem (Prisioneiro)
     const prisoner = new THREE.Group();
@@ -201,9 +252,9 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
     waveRing.position.y = 0.05;
     scene.add(waveRing);
 
-    outlinePass.selectedObjects = [prisoner, jailGroup, docGroup];
+    outlinePass.selectedObjects = [prisoner, jailGroup, docGroup, prisonRoom];
 
-    elementsRef.current = { prisoner, pHeadGroup, pBodyGroup, pArmL, pArmR, pLegR, pLegL, jailGroup, bars, tB, bB, docGroup, waveRing, ringMat, camera, controls, composer, isExploring };
+    elementsRef.current = { prisoner, pHeadGroup, pBodyGroup, pArmL, pArmR, pLegR, pLegL, jailGroup, bars, tB, bB, docGroup, waveRing, ringMat, prisonRoom, windowLight, camera, controls, composer, isExploring };
 
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
@@ -290,7 +341,7 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
         ringMat.opacity = 0;
       }
 
-      // Efeitos das grades
+      // Efeitos das grades e sala da prisão
       if (s >= 3) {
         bars.forEach((bar: any, i: number) => {
           bar.position.y = damp(bar.position.y, -10, 2 + i * 0.5, dt);
@@ -298,6 +349,8 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
         });
         tB.position.y = damp(tB.position.y, -10, 4, dt);
         bB.position.y = damp(bB.position.y, -10, 4, dt);
+        prisonRoom.position.y = damp(prisonRoom.position.y, -15, 3, dt); // Paredes afundam também
+        windowLight.intensity = damp(windowLight.intensity, 0, 4, dt); // Luz dramática some ao ficar livre
       } else {
         bars.forEach((bar: any) => {
           bar.position.y = damp(bar.position.y, 4, 8, dt);
@@ -305,6 +358,8 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
         });
         tB.position.y = damp(tB.position.y, 7.8, 8, dt);
         bB.position.y = damp(bB.position.y, 0.2, 8, dt);
+        prisonRoom.position.y = damp(prisonRoom.position.y, 0, 8, dt);
+        windowLight.intensity = damp(windowLight.intensity, 5.0, 4, dt);
       }
 
       // Cinemática do Réu Beneficiado
