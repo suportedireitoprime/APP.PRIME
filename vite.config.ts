@@ -15,6 +15,9 @@ export default defineConfig(({ mode }) => ({
     hmr: {
       overlay: false,
     },
+    watch: {
+      ignored: ["**/android/**", "**/ios/**"]
+    }
   },
   plugins: [
     react(),
@@ -55,7 +58,9 @@ export default defineConfig(({ mode }) => ({
   optimizeDeps: {
     include: ["jeep-sqlite/loader", "jeep-sqlite"],
     exclude: ["@capacitor-community/sqlite"],
+    entries: ["index.html", "src/**/*.{js,jsx,ts,tsx}"],
   },
+
   build: {
     // Split heavy vendors so initial route doesn't ship them.
     rollupOptions: {

@@ -9,6 +9,8 @@ import { prefetchNearby } from "@/lib/nearbyPrefetch";
 // import IntroOverlay from "@/components/IntroOverlay";
 import { SkipToContent } from "@/components/a11y/SkipToContent";
 import AnalyticsDebugPanel from "@/components/AnalyticsDebugPanel";
+import { Capacitor } from '@capacitor/core';
+
 
 
 
