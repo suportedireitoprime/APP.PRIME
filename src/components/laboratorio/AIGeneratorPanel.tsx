@@ -170,13 +170,13 @@ export default function AIGeneratorPanel() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 sm:p-6 custom-scrollbar block">
+      <div className="flex-1 overflow-y-auto custom-scrollbar block">
         {status === 'idle' && (
-          <div className="max-w-5xl mx-auto space-y-6">
-            <div className="flex items-center justify-between mb-4">
+          <div className="w-full">
+            <div className="flex items-center justify-between p-4 sm:p-6 mb-2">
               <h3 className="text-2xl font-bold text-white">Código Penal - Artigos</h3>
               <p className="text-sm font-semibold text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
-                {artigosCP.length > 0 && `${Object.values(geradosState).filter(Boolean).length} de ${artigosCP.length} cenas geradas`}
+                {artigosCP.length > 0 && `${Object.values(geradosState).filter(Boolean).length} cenas geradas`}
               </p>
             </div>
 
@@ -186,18 +186,18 @@ export default function AIGeneratorPanel() {
                 <p className="font-semibold">Buscando Código Penal no Vade Mecum (Tabela Supabase)...</p>
               </div>
             ) : (
-              <div className="flex flex-col gap-3 pb-8">
-                {artigosCP.map((artigo) => {
+              <div className="flex flex-col">
+                {artigosCP.filter(art => art.numero.toLowerCase().includes('art')).map((artigo) => {
                   const isGerado = !!geradosState[artigo.id];
                   return (
                     <motion.div
                       key={artigo.id}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className={`group relative border rounded-xl p-4 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between transition-all shadow-md ${
+                      className={`group relative border-b p-4 sm:px-6 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between transition-all ${
                         isGerado 
-                          ? 'bg-emerald-950/20 border-emerald-900/50 hover:border-emerald-700/50' 
-                          : 'bg-slate-800/40 border-slate-700/50 hover:border-indigo-500/50'
+                          ? 'bg-emerald-950/20 border-emerald-900/50 hover:bg-emerald-900/20' 
+                          : 'bg-transparent border-slate-700/50 hover:bg-slate-800/40'
                       }`}
                     >
                       <div className="flex-1 min-w-0">
