@@ -5,6 +5,8 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { SMAAPass } from 'three/addons/postprocessing/SMAAPass.js';
+import { FilmPass } from 'three/addons/postprocessing/FilmPass.js';
 import { Button } from '@/components/ui/button';
 import { Compass, Volume2, VolumeX } from 'lucide-react';
 
@@ -44,7 +46,8 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
     const camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 200);
     camera.position.set(2, 3, 14);
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+    // Renderer SEM antialias nativo, usando SMAA via post-processing (Padrão Cinematic)
+    const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true, powerPreference: 'high-performance' });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(container.clientWidth, container.clientHeight);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -62,11 +65,18 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
     const composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
     
+    const smaaPass = new SMAAPass(container.clientWidth * renderer.getPixelRatio(), container.clientHeight * renderer.getPixelRatio());
+    composer.addPass(smaaPass);
+
     const bloomPass = new UnrealBloomPass(
       new THREE.Vector2(container.clientWidth, container.clientHeight),
       1.5, 0.4, 0.85
     );
     composer.addPass(bloomPass);
+
+    const filmPass = new FilmPass(0.35, 0.025, 648, false);
+    composer.addPass(filmPass);
+
     composer.addPass(new OutputPass());
 
     // Iluminação Base
@@ -98,14 +108,30 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
     const rain = new THREE.Points(rainGeo, rainMat);
     scene.add(rain);
 
-    // Luz de Sirene de Polícia (Oculta até o step 4)
+    // Luz e Cones Volumétricos da Polícia (Oculta até o step 4)
+    const policeGroup = new THREE.Group();
+    policeGroup.position.set(0, 0, 0); // Controlaremos a intensidade e opacidade ao invés da posição
+    scene.add(policeGroup);
+
     const policeSirenR = new THREE.PointLight(0xff0000, 0, 20, 2);
     policeSirenR.position.set(0, 2, 10);
-    scene.add(policeSirenR);
+    policeGroup.add(policeSirenR);
     
     const policeSirenB = new THREE.PointLight(0x0000ff, 0, 20, 2);
     policeSirenB.position.set(2, 2, 10);
-    scene.add(policeSirenB);
+    policeGroup.add(policeSirenB);
+
+    const coneMatRed = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false });
+    const policeConeR = new THREE.Mesh(new THREE.ConeGeometry(5, 12, 32), coneMatRed);
+    policeConeR.position.set(0, 2, 10);
+    policeConeR.rotation.x = Math.PI / 2;
+    policeGroup.add(policeConeR);
+
+    const coneMatBlue = new THREE.MeshBasicMaterial({ color: 0x0000ff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false });
+    const policeConeB = new THREE.Mesh(new THREE.ConeGeometry(5, 12, 32), coneMatBlue);
+    policeConeB.position.set(2, 2, 10);
+    policeConeB.rotation.x = Math.PI / 2;
+    policeGroup.add(policeConeB);
 
     // Environment (Beco)
     const sidewalkMat = new THREE.MeshStandardMaterial({ 
@@ -313,7 +339,7 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
     agent.armR.add(knifeGroup);
 
     elementsRef.current = {
-      agent, victim, knifeGroup, camera, controls, sl, cone, composer, isExploring, bloodPool, rain, neonLight, policeSirenR, policeSirenB
+      agent, victim, knifeGroup, camera, controls, sl, cone, composer, isExploring, bloodPool, rain, neonLight, policeSirenR, policeSirenB, policeConeR, policeConeB
     };
 
     // Interaction Raycaster
@@ -395,13 +421,19 @@ const VanillaThreeScene = ({ step, isExploring, setPopup }: { step: number, isEx
       // 2. Neon piscando
       neonLight.intensity = damp(neonLight.intensity, Math.random() > 0.98 ? 0.5 : 2.0, 8, dt);
 
-      // 3. Sirene da Polícia (Apenas no step final)
+      // 3. Sirene da Polícia e Cones (Apenas no step final)
       if (s === 4) {
         policeSirenR.intensity = (Math.sin(t * 10) > 0) ? 5 : 0;
         policeSirenB.intensity = (Math.cos(t * 10) > 0) ? 5 : 0;
+        policeConeR.material.opacity = (Math.sin(t * 10) > 0) ? 0.3 : 0;
+        policeConeB.material.opacity = (Math.cos(t * 10) > 0) ? 0.3 : 0;
+        policeConeR.rotation.z = t * -5;
+        policeConeB.rotation.z = t * 5;
       } else {
         policeSirenR.intensity = 0;
         policeSirenB.intensity = 0;
+        policeConeR.material.opacity = 0;
+        policeConeB.material.opacity = 0;
       }
 
       // Victim kinematics
