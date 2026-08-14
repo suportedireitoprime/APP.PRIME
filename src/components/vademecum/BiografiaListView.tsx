@@ -26,14 +26,8 @@ export const BiografiaListView = ({ categoriaId, categoriaLabel, onBack, onSelec
   return (
     <div className="w-full max-w-4xl mx-auto px-4 py-6 md:py-8 space-y-6 pb-32">
       <div className="flex items-center gap-4 mb-6">
-        <button 
-          onClick={() => { haptic.selection(); onBack(); }}
-          className="w-10 h-10 flex items-center justify-center rounded-full bg-secondary/50 hover:bg-secondary text-foreground transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
         <div>
-          <h2 className="text-2xl font-display font-bold text-foreground tracking-tight">
+          <h2 className="text-2xl font-display font-bold text-foreground tracking-tight uppercase">
             {categoriaLabel}
           </h2>
           <p className="text-sm font-body text-muted-foreground leading-relaxed">
