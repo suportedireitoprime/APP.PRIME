@@ -6,6 +6,8 @@ export const socratesData: BiografiaData = {
   nome: 'Sócrates de Atenas',
   subtitulo: 'O homem que foi condenado por fazer perguntas e ensinar os jovens a pensar.',
   imagemUrl: '/biografias/socrates-capa.jpg',
+  epoca: 'Antiguidade Clássica',
+  ordemEpoca: 1,
   tabs: [
     {
       id: 'historia',

@@ -45,46 +45,74 @@ export const BiografiaListView = ({ categoriaId, categoriaLabel, onBack, onSelec
           <p className="text-sm text-muted-foreground">Novas biografias de {categoriaLabel} serão adicionadas em breve.</p>
         </div>
       ) : (
-        <motion.div 
-          variants={containerVariants}
-          initial="hidden"
-          animate="show"
-          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4"
-        >
-          {biografias.map((bio) => (
-            <motion.div
-              key={bio.id}
-              variants={itemVariants}
-              onClick={() => { haptic.selection(); onSelectPersonagem(bio.id); }}
-              className="group cursor-pointer rounded-2xl md:rounded-3xl bg-card border border-border/40 overflow-hidden shadow-sm hover:shadow-lg transition-all"
-            >
-              <div className="aspect-square md:aspect-[4/3] bg-secondary relative overflow-hidden">
-                {bio.imagemUrl ? (
-                  <img 
-                    src={bio.imagemUrl} 
-                    alt={bio.nome} 
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-zinc-800">
-                    <UserRound className="w-12 h-12 text-zinc-600" />
-                  </div>
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
-                <div className="absolute bottom-0 left-0 p-3 md:p-5 w-full">
-                  <h3 className="font-display font-bold text-sm md:text-lg text-white group-hover:text-primary transition-colors leading-tight">
-                    {bio.nome}
-                  </h3>
-                </div>
+        <div className="space-y-12">
+          {Object.entries(
+            biografias.reduce((acc, bio) => {
+              const epoca = bio.epoca || 'Outras Épocas';
+              if (!acc[epoca]) acc[epoca] = [];
+              acc[epoca].push(bio);
+              return acc;
+            }, {} as Record<string, typeof biografias>)
+          )
+          .sort((a, b) => {
+            const aOrdem = a[1][0]?.ordemEpoca ?? 999;
+            const bOrdem = b[1][0]?.ordemEpoca ?? 999;
+            return aOrdem - bOrdem;
+          })
+          .map(([epoca, bios]) => (
+            <div key={epoca}>
+              {/* Divider Marrom Claro com Título da Época */}
+              <div className="flex items-center gap-4 mb-6">
+                <div className="h-px w-6 md:w-12 bg-[#B98758]/50" />
+                <h3 className="text-sm md:text-base font-display font-bold text-[#B98758] uppercase tracking-widest whitespace-nowrap">
+                  {epoca}
+                </h3>
+                <div className="h-px flex-1 bg-border/60" />
               </div>
-              <div className="p-3 md:p-5 hidden md:block">
-                <p className="text-xs md:text-sm font-body text-muted-foreground line-clamp-2">
-                  {bio.subtitulo}
-                </p>
-              </div>
-            </motion.div>
+
+              <motion.div 
+                variants={containerVariants}
+                initial="hidden"
+                animate="show"
+                className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4"
+              >
+                {bios.map((bio) => (
+                  <motion.div
+                    key={bio.id}
+                    variants={itemVariants}
+                    onClick={() => { haptic.selection(); onSelectPersonagem(bio.id); }}
+                    className="group cursor-pointer rounded-2xl md:rounded-3xl bg-card border border-border/40 overflow-hidden shadow-sm hover:shadow-lg transition-all"
+                  >
+                    <div className="aspect-square md:aspect-[4/3] bg-secondary relative overflow-hidden">
+                      {bio.imagemUrl ? (
+                        <img 
+                          src={bio.imagemUrl} 
+                          alt={bio.nome} 
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-zinc-800">
+                          <UserRound className="w-12 h-12 text-zinc-600" />
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+                      <div className="absolute bottom-0 left-0 p-3 md:p-5 w-full">
+                        <h3 className="font-display font-bold text-sm md:text-lg text-white group-hover:text-primary transition-colors leading-tight">
+                          {bio.nome}
+                        </h3>
+                      </div>
+                    </div>
+                    <div className="p-3 md:p-5 hidden md:block">
+                      <p className="text-xs md:text-sm font-body text-muted-foreground line-clamp-2">
+                        {bio.subtitulo}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
+              </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
       )}
     </div>
   );

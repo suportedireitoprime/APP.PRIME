@@ -1,8 +1,10 @@
 import { BiografiaData } from '@/types/biografia';
 import { socratesData } from './socrates';
+import { hansKelsenData } from './hansKelsen';
 
 export const todasBiografias: BiografiaData[] = [
   socratesData,
+  hansKelsenData,
 ];
 
 export const getBiografiasByCategoria = (categoriaId: string) => {
