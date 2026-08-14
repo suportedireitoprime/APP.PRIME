@@ -175,7 +175,7 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, 
   if (youtubeUrl) {
     const videoId = youtubeUrl.replace(/.*(?:youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/, '$1');
     return (
-      <div className="fixed inset-0 z-50 bg-black flex flex-col">
+      <div className="fixed inset-0 z-50 bg-black flex flex-col pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
         <div className="relative z-10 flex items-center justify-end p-4 pt-6">
           <button
             onClick={onClose}
@@ -305,8 +305,8 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, 
   })();
 
   return (
-    <div className="fixed inset-0 z-50 bg-black flex flex-col">
-      {/* Fundo: para intro mantém imagem em tela cheia; para norma usa gradiente sutil */}
+    <div className="fixed inset-0 z-[100] bg-black overflow-hidden pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
+      {/* Botão de Fechar */}
       <AnimatePresence mode="wait">
         <motion.div
           key={`bg-${idx}`}
@@ -524,21 +524,27 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, 
                 {scene.kind === 'norma' && (
                   <motion.div
                     key={`hero-img-${idx}`}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, ease: 'easeOut' }}
-                    className="relative mb-5 w-full max-w-md mx-auto aspect-[16/10] rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-black/40"
+                    initial={{ opacity: 0, scale: 1.05 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                    className="absolute inset-0 flex flex-col items-center justify-center p-6 sm:p-12 text-center"
                   >
+                    <div className="relative w-full max-w-sm aspect-square mx-auto mb-10 rounded-3xl overflow-hidden shadow-2xl border border-white/10 bg-white/5 backdrop-blur-xl">
+                      <div className="absolute inset-0 bg-gradient-to-tr from-primary/30 to-purple-600/30 mix-blend-overlay" />
+                      <img src={brasaoImg} alt="Brasão" className="absolute inset-0 w-full h-full object-contain p-8 drop-shadow-2xl" />
+                    </div>
                     <motion.img
                       key={`hero-img-inner-${idx}`}
                       src={scene.imagem_url}
                       alt=""
                       initial={{ scale: 1 }}
-                      animate={{ scale: 1.18 }}
+                      animate={{ scale: 1.15 }}
                       transition={{ duration: scene.duracao_s || 8, ease: 'linear' }}
                       className="absolute inset-0 w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent mix-blend-multiply" />
+                    <div className="absolute inset-0 ring-1 ring-inset ring-white/10 rounded-3xl" />
                     {fonteLabel && (
                       <button
                         type="button"
@@ -678,7 +684,7 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, 
         )}
       </AnimatePresence>
 
-      <div className="absolute inset-x-0 bottom-0 z-10 pb-6 pt-4 px-6 bg-gradient-to-t from-black via-black/85 to-transparent">
+      <div className="absolute inset-x-0 bottom-0 z-10 pb-[calc(1.5rem+env(safe-area-inset-bottom))] pt-8 px-6 bg-gradient-to-t from-black via-black/90 to-transparent">
         <div className="flex items-center justify-center gap-8">
           <button
             onClick={() => goTo(idx - 1)}

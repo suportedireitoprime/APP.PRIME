@@ -10,8 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { Loader2, Sparkles, Play, Film, Download, Youtube, RefreshCw, ExternalLink } from 'lucide-react';
-import { useSharedGithubRepo } from '@/hooks/useSharedGithubRepo';
+import { Loader2, Sparkles, Play } from 'lucide-react';
 import BoletimPlayer, { type BoletimScene } from '@/components/boletim/BoletimPlayer';
 
 const VOZES = [
@@ -35,8 +34,6 @@ export default function AdminBoletins() {
   const [gerando, setGerando] = useState(false);
   const [boletins, setBoletins] = useState<any[]>([]);
   const [player, setPlayer] = useState<{ id: string; scenes: any[]; youtubeUrl?: string; data_ref?: string } | null>(null);
-  const { repo, setRepo } = useSharedGithubRepo('');
-  const [rendering, setRendering] = useState<string | null>(null);
 
   const load = async () => {
     const [c, b] = await Promise.all([
@@ -74,9 +71,28 @@ export default function AdminBoletins() {
       noticias_max_itens: cfg.noticias_max_itens,
       noticias_prompt_tts_extra: cfg.noticias_prompt_tts_extra,
     }).eq('id', 1);
+
+    if (error) {
+      toast.error(error.message);
+      setSaving(false);
+      return;
+    }
+
+    // Após salvar, chama a Edge Function para atualizar o pg_cron
+    toast.info('Atualizando horários de notificação no servidor...');
+    const { error: cronError } = await supabase.functions.invoke('boletim-cron-deploy', {
+      body: {
+        juridico_cron: cfg.horario_geracao,
+        noticias_cron: cfg.noticias_horario,
+      }
+    });
+    
     setSaving(false);
-    if (error) toast.error(error.message);
-    else toast.success('Configuração salva');
+    if (cronError) {
+      toast.error('Erro ao atualizar cron: ' + cronError.message);
+    } else {
+      toast.success('Configuração e Cron atualizados com sucesso!');
+    }
   };
 
   const gerarAgora = async () => {
@@ -100,35 +116,6 @@ export default function AdminBoletins() {
     load();
   };
 
-
-  const renderizarMp4 = async (boletim_id: string) => {
-    if (!repo) { toast.error('Configure o repositório GitHub abaixo (ex.: usuario/repo)'); return; }
-    setRendering(boletim_id);
-    const { data, error } = await supabase.functions.invoke('boletim-render-trigger', { body: { boletim_id, repo } });
-    setRendering(null);
-    if (error) { toast.error(error.message); return; }
-    toast.success('Render disparado no GitHub Actions. Aguarde ~5 min e recarregue.');
-    load();
-  };
-
-  const reuploadYoutube = async (boletim_id: string) => {
-    setRendering(boletim_id);
-    const { error } = await supabase.functions.invoke('boletim-youtube-upload', { body: { boletim_id } });
-    setRendering(null);
-    if (error) { toast.error(error.message); return; }
-    toast.success('Upload para YouTube disparado. Aguarde ~2 min e recarregue.');
-    load();
-  };
-
-  const resetarStatus = async (boletim_id: string) => {
-    const { error } = await supabase
-      .from('boletins_juridicos')
-      .update({ status: 'pronto' })
-      .eq('id', boletim_id);
-    if (error) { toast.error(error.message); return; }
-    toast.success('Status resetado. Você pode disparar o render novamente.');
-    load();
-  };
 
   const header = <PageHeader title="Boletins Jurídicos" subtitle="Configuração e geração" onBack={() => navigate('/admin-funcoes')} />;
 
@@ -193,19 +180,9 @@ export default function AdminBoletins() {
             <Label>Ativo (gera todo dia automaticamente)</Label>
             <Switch checked={!!cfg.noticias_ativo} onCheckedChange={(v) => setCfg({ ...cfg, noticias_ativo: v })} />
           </div>
-        </div>
-
-        {/* Render MP4 (GitHub Actions) */}
-        <div className="rounded-2xl p-5 bg-card border border-border space-y-3">
-          <div className="flex items-center gap-2">
-            <Film className="w-5 h-5 text-primary" />
-            <p className="font-display font-bold">Render MP4 (Remotion + GitHub Actions)</p>
-          </div>
-          <p className="text-xs text-muted-foreground">Gera um arquivo MP4 vertical (1080×1920) do boletim para compartilhar.</p>
-          <div>
-            <Label>Repositório GitHub</Label>
-            <Input placeholder="usuario/repositorio" value={repo} onChange={(e) => setRepo(e.target.value)} />
-          </div>
+          <Button onClick={salvar} disabled={saving} className="w-full">
+            {saving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Salvando & Fazendo Deploy…</> : 'Salvar & Fazer Deploy dos Horários'}
+          </Button>
         </div>
 
         {/* Configuração */}
@@ -250,46 +227,6 @@ export default function AdminBoletins() {
           <Button onClick={salvar} disabled={saving} className="w-full">
             {saving ? 'Salvando…' : 'Salvar configuração'}
           </Button>
-        </div>
-
-        {/* Repositório GitHub (compartilhado com Secrets/Native Assets) */}
-        <div className="rounded-2xl p-5 bg-card border border-border space-y-3">
-          <div className="flex items-center justify-between">
-            <p className="font-display font-bold">Repositório GitHub</p>
-            {repo && <span className="text-[10px] bg-emerald-500/15 text-emerald-500 px-2 py-0.5 rounded font-bold">VINCULADO</span>}
-          </div>
-          <p className="text-xs text-muted-foreground">
-            Usado pelo GitHub Actions para renderizar o MP4. Compartilhado com Secrets e Native Assets — configure em um lugar só.
-          </p>
-          <div className="flex gap-2">
-            <Input
-              placeholder="usuario/repo"
-              value={repo}
-              onChange={(e) => setRepo(e.target.value)}
-              onBlur={(e) => setRepo(e.target.value, { normalize: true })}
-              className="flex-1"
-            />
-            <Button
-              variant="outline"
-              size="sm"
-              type="button"
-              onClick={() => {
-                const saved = (typeof window !== 'undefined' && localStorage.getItem('admin_github_repo')) || '';
-                if (!saved) { toast.error('Nenhum repositório salvo em Secrets ainda.'); return; }
-                setRepo(saved, { normalize: true });
-                toast.success(`Vinculado: ${saved}`);
-              }}
-            >
-              Usar o de Secrets
-            </Button>
-          </div>
-          <button
-            type="button"
-            onClick={() => navigate('/admin-secrets-download')}
-            className="text-xs text-primary hover:underline"
-          >
-            Abrir painel de Secrets →
-          </button>
         </div>
 
         {/* Últimos boletins */}
@@ -337,33 +274,9 @@ export default function AdminBoletins() {
 
                   {/* Ações */}
                   <div className="flex flex-wrap gap-2">
-                    {Array.isArray(b.roteiro_json) && b.roteiro_json.length > 0 && (
-                      <Button size="sm" variant="secondary" className="flex-1 sm:flex-none min-w-[110px]" onClick={() => setPlayer({ id: b.id, scenes: b.roteiro_json, youtubeUrl: b.youtube_url })}>
-                        <Play className="w-4 h-4 mr-1.5" /> Ouvir
-                      </Button>
-                    )}
-                    {b.youtube_url ? (
-                      <a href={b.youtube_url} target="_blank" rel="noreferrer" className="flex-1 sm:flex-none">
-                        <Button size="sm" variant="outline" className="w-full min-w-[130px]">
-                          <ExternalLink className="w-4 h-4 mr-1.5" /> Ver no YouTube
-                        </Button>
-                      </a>
-                    ) : b.video_url ? (
-                      <a href={b.video_url} target="_blank" rel="noreferrer" className="flex-1 sm:flex-none">
-                        <Button size="sm" variant="outline" className="w-full min-w-[130px]">
-                          <Download className="w-4 h-4 mr-1.5" /> Baixar vídeo
-                        </Button>
-                      </a>
-                    ) : (
-                      <Button size="sm" variant="outline" className="flex-1 sm:flex-none min-w-[130px]" disabled={rendering === b.id} onClick={() => renderizarMp4(b.id)}>
-                        {rendering === b.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Film className="w-4 h-4 mr-1.5" /> Renderizar vídeo</>}
-                      </Button>
-                    )}
-                    {(b.youtube_url || b.video_url || b.status === 'renderizando' || b.status === 'erro') && (
-                      <Button size="sm" variant="ghost" className="flex-1 sm:flex-none" disabled={rendering === b.id} onClick={() => (b.youtube_url || b.video_url) ? reuploadYoutube(b.id) : resetarStatus(b.id)}>
-                        {(b.youtube_url || b.video_url) ? <><RefreshCw className="w-3.5 h-3.5 mr-1.5" /> Reenviar ao YouTube</> : 'Resetar status'}
-                      </Button>
-                    )}
+                    <Button size="sm" variant="secondary" className="flex-1 sm:flex-none" onClick={() => setPlayer({ id: b.id, scenes: Array.isArray(b.roteiro_json) ? b.roteiro_json : [], youtubeUrl: b.youtube_url })}>
+                      <Play className="w-4 h-4 mr-1.5" /> Ouvir
+                    </Button>
                   </div>
 
                   {b.status === 'erro' && b.erro && (
