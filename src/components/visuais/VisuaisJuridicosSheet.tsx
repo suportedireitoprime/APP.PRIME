@@ -31,6 +31,7 @@ import {
 } from '@/lib/visuaisJuridicos/materias';
 import { listarFavoritos, listarRecentes, registrarRecente, toggleFavorito } from '@/lib/visuaisJuridicos/prefs';
 import { useDictation } from '@/hooks/useDictation';
+import { haptic } from '@/lib/nativeHaptics';
 
 
 
@@ -136,7 +137,7 @@ function AbasFiltro({ valor, onChange }: { valor: Filtro; onChange: (f: Filtro) 
       {FILTROS.map(({ id, label, Icone }) => (
         <button
           key={id}
-          onClick={() => onChange(id)}
+          onClick={() => { haptic.selection(); onChange(id); }}
           className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-semibold transition-all ${
             valor === id ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
           }`}
@@ -156,6 +157,7 @@ function EstrelaFavorito({ ativo, onToggle }: { ativo: boolean; onToggle: () => 
     <button
       onClick={(e) => {
         e.stopPropagation();
+        haptic.light();
         onToggle();
       }}
       aria-label={ativo ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
@@ -616,7 +618,7 @@ export default function VisuaisJuridicosSheet({
                   <div className="flex items-center justify-between gap-3 px-5 pb-3">
                     {passo > 1 && (
                       <button
-                        onClick={voltar}
+                        onClick={() => { haptic.light(); voltar(); }}
                         aria-label="Voltar"
                         className="w-11 h-11 shrink-0 rounded-full bg-secondary/70 flex items-center justify-center active:scale-95 transition-transform"
                       >
@@ -632,7 +634,7 @@ export default function VisuaisJuridicosSheet({
                       </p>
                     </div>
                     <button
-                      onClick={onClose}
+                      onClick={() => { haptic.light(); onClose(); }}
                       aria-label="Fechar"
                       className="w-11 h-11 shrink-0 rounded-full bg-secondary/70 flex items-center justify-center active:scale-95 transition-transform"
                     >
@@ -665,7 +667,7 @@ export default function VisuaisJuridicosSheet({
                 </nav>
               )}
 
-              <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-3 lg:mx-auto lg:w-full lg:max-w-[900px] lg:px-8">
+              <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-3 lg:mx-auto lg:w-full lg:max-w-[900px] lg:px-8">
                 {/* 1 — tipo */}
                 {passo === 1 && (
                   <div className="space-y-2">
@@ -677,7 +679,10 @@ export default function VisuaisJuridicosSheet({
                           initial={{ opacity: 0, y: 12 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: Math.min(i * 0.025, 0.25), duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}
-                          onClick={() => (onEscolherTipo ? onEscolherTipo(t) : setTipo(t))}
+                          onClick={() => {
+                            haptic.selection();
+                            if (onEscolherTipo) onEscolherTipo(t); else setTipo(t);
+                          }}
                           className="w-full flex items-center gap-4 px-4 h-[84px] rounded-2xl bg-secondary/40 border border-border/50 active:scale-[0.99] transition"
                         >
                           <div className="relative overflow-hidden rounded-xl shrink-0">
@@ -717,7 +722,7 @@ export default function VisuaisJuridicosSheet({
                           initial={{ opacity: 0, y: 12 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: Math.min(i * 0.025, 0.25), duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}
-                          onClick={() => setCategoria(c)}
+                          onClick={() => { haptic.selection(); setCategoria(c); }}
                           className="w-full flex items-center gap-4 px-4 h-[84px] rounded-2xl bg-secondary/40 border border-border/50 active:scale-[0.99] transition"
                         >
                           <div className="relative overflow-hidden rounded-xl shrink-0">
@@ -777,6 +782,7 @@ export default function VisuaisJuridicosSheet({
                           <button
                             disabled={gerando}
                             onClick={() => {
+                              haptic.selection();
                               setArtigo('');
                               setBuscaArtigo('');
                               setFiltro('todos');

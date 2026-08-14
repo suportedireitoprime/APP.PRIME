@@ -1,5 +1,6 @@
 import { ArrowLeft } from 'lucide-react';
 import { ReactNode } from 'react';
+import { haptic } from '@/lib/nativeHaptics';
 
 interface PageHeaderProps {
   title: string;
@@ -31,7 +32,7 @@ export function PageHeader({
     <header
       className={`flex items-center gap-3 py-3.5 shrink-0 ${baseBg} border-b ${borderColor} ${className}`}
       style={{
-        paddingTop: 'calc(var(--sai-top, env(safe-area-inset-top, 0px)) + 0.875rem)',
+        paddingTop: 'calc(var(--sai-top, env(safe-area-inset-top, 0px)) + 1.25rem)',
         // Notch/curvatura em landscape: respeita insets laterais além dos 16px base.
         paddingLeft: 'calc(1rem + var(--sai-left, env(safe-area-inset-left, 0px)))',
         paddingRight: 'calc(1rem + var(--sai-right, env(safe-area-inset-right, 0px)))',
@@ -41,7 +42,7 @@ export function PageHeader({
       {onBack ? (
         <button
           type="button"
-          onClick={(e) => { e.preventDefault(); e.stopPropagation(); onBack(); }}
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); haptic.light(); onBack(); }}
           aria-label="Voltar"
           className={`w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full ${buttonBg} flex items-center justify-center shrink-0 active:scale-95 transition-transform touch-manipulation select-none`}
         >

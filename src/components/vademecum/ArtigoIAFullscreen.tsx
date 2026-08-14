@@ -5,6 +5,8 @@ import { X, ChevronLeft, ChevronRight, Loader2, Lightbulb, Scale, AlertTriangle,
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { resolveSectionIndex, type AiSection } from '@/lib/artigoSegments';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
+import { haptic } from '@/lib/nativeHaptics';
 
 type Props = {
   open: boolean;
@@ -40,10 +42,23 @@ const ArtigoIAFullscreen = ({
   const chipsRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
 
+  useBodyScrollLock(open);
+
+  const handleSetIndex = (newIndex: number | ((prev: number) => number)) => {
+    setIndex((prev) => {
+      const next = typeof newIndex === 'function' ? newIndex(prev) : newIndex;
+      if (next !== prev) haptic.selection();
+      return next;
+    });
+  };
+
   // Posiciona na seção pedida sempre que abrir ou o conteúdo chegar.
   useEffect(() => {
     if (!open) return;
-    setIndex(resolveSectionIndex(sections, initialSectionId));
+    setIndex((prev) => {
+      const resolved = resolveSectionIndex(sections, initialSectionId);
+      return resolved !== prev ? resolved : prev;
+    });
   }, [open, initialSectionId, sections]);
 
   // Mantém o chip ativo visível.
@@ -53,13 +68,16 @@ const ArtigoIAFullscreen = ({
     bodyRef.current?.scrollTo({ top: 0, behavior: 'auto' });
   }, [index]);
 
-  // Fecha com Esc e trava o scroll do fundo.
+  // Fecha com Esc e atalhos de teclado.
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-      if (e.key === 'ArrowRight') setIndex((i) => Math.min(i + 1, sections.length - 1));
-      if (e.key === 'ArrowLeft') setIndex((i) => Math.max(i - 1, 0));
+      if (e.key === 'Escape') {
+        haptic.light();
+        onClose();
+      }
+      if (e.key === 'ArrowRight') handleSetIndex((i) => Math.min(i + 1, sections.length - 1));
+      if (e.key === 'ArrowLeft') handleSetIndex((i) => Math.max(i - 1, 0));
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
@@ -129,7 +147,7 @@ const ArtigoIAFullscreen = ({
               <span className={`h-6 w-1 shrink-0 rounded-r-full ${meta.bar}`} />
               <Icon className={`h-4 w-4 shrink-0 ${meta.tone}`} />
               <span
-                className={`font-heading text-[0.95em] font-bold leading-tight tracking-[0.01em] ${meta.tone}`}
+                className={`font-heading text-[0.95em] font-bold uppercase leading-tight tracking-[0.08em] ${meta.tone}`}
               >
                 {children}
               </span>
@@ -157,13 +175,13 @@ const ArtigoIAFullscreen = ({
           transition={{ type: 'spring', damping: 30, stiffness: 300 }}
           style={{ pointerEvents: 'auto' }}
           data-artigo-ia-fullscreen
-          className="absolute inset-0 z-[10020] flex min-h-0 flex-col bg-[#0f0f0f]"
+          className="absolute inset-0 z-[10020] flex min-h-0 flex-col bg-[#0f0f0f] w-full max-w-full overflow-x-hidden"
           role="dialog"
           aria-modal="true"
           aria-label={isExemplo ? 'Exemplos práticos' : 'Explicação do artigo'}
         >
           {/* Cabeçalho */}
-          <header className="shrink-0 border-b border-border bg-[#0f0f0f]/95 px-4 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-3 backdrop-blur-md">
+          <header className="shrink-0 border-b border-border bg-[#0f0f0f]/95 px-4 pt-[calc(1.25rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-3 backdrop-blur-md">
             <div className="mx-auto flex w-full max-w-2xl items-center gap-3">
               {isExemplo ? (
                 <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-secondary ${accent}`}>
@@ -180,7 +198,7 @@ const ArtigoIAFullscreen = ({
                 </p>
               </div>
               <button
-                onClick={onClose}
+                onClick={() => { haptic.light(); onClose(); }}
                 aria-label="Fechar"
                 className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-secondary/70 text-foreground/80 transition-colors hover:bg-secondary active:scale-95"
               >
@@ -198,7 +216,7 @@ const ArtigoIAFullscreen = ({
                   <button
                     key={s.id}
                     data-chip-idx={i}
-                    onClick={() => setIndex(i)}
+                    onClick={() => handleSetIndex(i)}
                     className={[
                       'inline-flex min-h-[44px] shrink-0 items-center rounded-full px-4 text-[14px] font-bold transition-colors active:scale-95',
                       i === index
@@ -255,7 +273,7 @@ const ArtigoIAFullscreen = ({
             <footer className="shrink-0 border-t border-border bg-[#0f0f0f]/95 px-4 py-3 pb-[calc(0.75rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] backdrop-blur-md">
               <div className="mx-auto flex w-full max-w-2xl items-center justify-between gap-3">
                 <button
-                  onClick={() => setIndex((i) => Math.max(i - 1, 0))}
+                  onClick={() => { haptic.light(); handleSetIndex((i) => Math.max(i - 1, 0)); }}
                   disabled={index === 0}
                   className="inline-flex min-h-[48px] items-center gap-1.5 rounded-full bg-secondary px-5 text-[15px] font-semibold text-foreground active:scale-95 disabled:opacity-35"
                 >
@@ -266,7 +284,7 @@ const ArtigoIAFullscreen = ({
                   {index + 1} / {sections.length}
                 </span>
                 <button
-                  onClick={() => setIndex((i) => Math.min(i + 1, sections.length - 1))}
+                  onClick={() => { haptic.light(); handleSetIndex((i) => Math.min(i + 1, sections.length - 1)); }}
                   disabled={index >= sections.length - 1}
                   className="inline-flex min-h-[48px] items-center gap-1.5 rounded-full bg-primary px-5 text-[15px] font-semibold text-primary-foreground active:scale-95 disabled:opacity-35"
                 >

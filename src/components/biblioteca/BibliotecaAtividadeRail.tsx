@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { BookOpen, Heart, Clock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { BookOpen, Heart, Clock, Highlighter, ChevronRight } from 'lucide-react';
 import type { LivroNormalizado } from '@/lib/bibliotecaColecoes';
 import {
   getFavoritos,
@@ -40,6 +41,7 @@ const ABAS: { id: Aba; label: string; icon: typeof BookOpen }[] = [
  * leitura em andamento, favoritos e histórico recente.
  */
 const BibliotecaAtividadeRail = ({ onAbrirLivro }: Props) => {
+  const navigate = useNavigate();
   const [aba, setAba] = useState<Aba>('lendo');
   const [tick, setTick] = useState(0);
 
@@ -96,7 +98,7 @@ const BibliotecaAtividadeRail = ({ onAbrirLivro }: Props) => {
         </div>
       </div>
 
-      <div className="mt-3 max-h-[58vh] overflow-y-auto pb-2">
+      <div className="mt-3 max-h-[50vh] overflow-y-auto pb-2">
         {lista.length === 0 ? (
           <p className="px-4 py-8 text-xs text-muted-foreground text-center leading-relaxed">
             {aba === 'lendo'
@@ -113,9 +115,13 @@ const BibliotecaAtividadeRail = ({ onAbrirLivro }: Props) => {
               onClick={() => onAbrirLivro(snapToNormalizado(snap))}
               className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-secondary/50 transition-colors group"
             >
-              <span className="w-9 h-12 rounded-md overflow-hidden shrink-0 bg-muted">
-                {snap.capa && (
+              <span className="w-9 h-12 rounded-md overflow-hidden shrink-0 bg-muted border border-border/50">
+                {snap.capa ? (
                   <img src={snap.capa} alt="" loading="lazy" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <BookOpen className="w-4 h-4 text-muted-foreground" />
+                  </div>
                 )}
               </span>
               <span className="min-w-0 flex-1">
@@ -137,6 +143,24 @@ const BibliotecaAtividadeRail = ({ onAbrirLivro }: Props) => {
             </button>
           ))
         )}
+      </div>
+
+      <div className="p-3 border-t border-border/50 bg-secondary/10">
+        <button
+          onClick={() => navigate('/biblioteca/caderno')}
+          className="w-full flex items-center justify-between p-3 rounded-xl bg-card hover:bg-secondary/50 border border-border/50 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+              <Highlighter className="w-4 h-4" />
+            </div>
+            <div className="text-left">
+              <p className="text-[13px] font-bold text-foreground">Meu Caderno</p>
+              <p className="text-[10px] text-muted-foreground">Todos os seus grifos</p>
+            </div>
+          </div>
+          <ChevronRight className="w-4 h-4 text-muted-foreground" />
+        </button>
       </div>
     </div>
   );

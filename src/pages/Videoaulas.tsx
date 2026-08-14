@@ -25,6 +25,9 @@ import {
   warmVideoaulasCache,
 } from '@/lib/videoaulasStore';
 import { haptic } from '@/lib/nativeHaptics';
+import { useIsDesktop } from '@/hooks/use-desktop';
+import { VideoaulasDesktop } from './VideoaulasDesktop';
+import ContinuarAssistindoCarousel from '@/components/videoaulas/ContinuarAssistindoCarousel';
 
 function escapeRegExp(string: string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -60,6 +63,7 @@ const Highlight = ({ text, query }: { text: string; query: string }) => {
 
 const Videoaulas = () => {
   const navigate = useNavigate();
+  const isDesktop = useIsDesktop();
   // Render instantâneo: se o cache em memória já tem os catálogos, pinta na hora.
   const [data, setData] = useState<ResumoVideoaulas>(() => resumoVideoaulasSincrono() ?? RESUMO_VAZIO);
   const [loading, setLoading] = useState(() => !resumoVideoaulasSincrono());
@@ -173,18 +177,36 @@ const Videoaulas = () => {
     return buscaAulas.filter(a => a.area === drawerCategoria);
   }, [buscaAulas, drawerCategoria]);
 
-  const pct = data.pctGeral;
-  const size = 72;
-  const stroke = 7;
-  const r = (size - stroke) / 2;
+  const pct = Math.min(100, Math.round((emAndamentoCount / Math.max(areasDireito.length, 1)) * 100));
+  const size = 120;
+  const r = 50;
+  const stroke = 8;
   const c = 2 * Math.PI * r;
   const dash = c - (pct / 100) * c;
+
+  if (isDesktop) {
+    return (
+      <VideoaulasDesktop
+        data={data}
+        filtro={filtro}
+        setFiltro={setFiltro}
+        busca={busca}
+        setBusca={setBusca}
+        lista={lista}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
       <PageHeader title="Videoaulas" onBack={() => navigate('/')} />
 
       <div className="mx-auto w-full max-w-3xl pb-32 lg:max-w-[1400px] lg:px-10 lg:pt-6 2xl:max-w-[1600px]">
+        {/* Continuar Assistindo no Mobile */}
+        <div className="px-4">
+           <ContinuarAssistindoCarousel />
+        </div>
+
         {/* Painel — mesmo do Aprender */}
         <section
           className="bg-hero-yellow relative isolate overflow-hidden border-b border-black/10 lg:rounded-3xl lg:border lg:border-black/10 lg:shadow-xl"

@@ -41,6 +41,7 @@ import ShareButtons from './ShareButtons';
 const VideoaulaSheet = lazy(() => import('./VideoaulaSheet'));
 const VideoaulasListSheet = lazy(() => import('./VideoaulasListSheet'));
 import type { VideoaulaItem } from './VideoaulasListSheet';
+import { LEIS_CATALOG } from '@/data/leisCatalog';
 
 import { useSubscription } from '@/hooks/useSubscription';
 import { usePremiumUsage } from '@/hooks/usePremiumUsage';
@@ -4088,7 +4089,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         open={Boolean(iaFull && artigo)}
         mode={iaFull?.mode || 'explicacao'}
         artigoNumero={artigo ? (/^\d/.test((artigo.numero || '').trim()) ? `Art. ${artigo.numero}` : artigo.numero) : ''}
-        leiNome={tabelaNome}
+        leiNome={LEIS_CATALOG.find(l => l.tabela_nome === tabelaNome)?.nome || tabelaNome}
         sections={iaFullSections}
         loading={iaFull ? Boolean(aiLoading[iaFull.mode]) : false}
         initialSectionId={iaFull?.sectionId ?? null}

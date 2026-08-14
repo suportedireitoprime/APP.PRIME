@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useQueryClient } from '@tanstack/react-query';
 import { type LivroNormalizado } from '@/lib/bibliotecaColecoes';
 import { scheduleWarmBiblioteca } from '@/services/bibliotecaWarmup';
@@ -44,7 +45,7 @@ const BibliotecasDesktop = () => {
           </aside>
 
           {/* ── Centro: hero, atalhos, recomendações e acervo ── */}
-          <div className="col-span-12 xl:col-span-6 2xl:col-span-7 min-w-0 space-y-8">
+          <div className="col-span-12 xl:col-span-5 2xl:col-span-6 min-w-0 space-y-8">
             <section>
               <div className="rounded-3xl overflow-hidden">
                 <FilosofosPanel>
@@ -133,18 +134,39 @@ const BibliotecasDesktop = () => {
             </section>
           </div>
 
-          {/* ── Coluna direita: atividade do usuário ── */}
-          <aside className="hidden lg:block col-span-12 lg:col-span-4 xl:col-span-3">
-            <BibliotecaAtividadeRail onAbrirLivro={(l) => setLivroAberto(l)} />
+          {/* ── Coluna direita: atividade do usuário ou detalhe do livro ── */}
+          <aside className="hidden lg:block col-span-12 lg:col-span-4 xl:col-span-4 2xl:col-span-4 h-[calc(100vh-6rem)] sticky top-6">
+            <AnimatePresence mode="wait">
+              {livroAberto ? (
+                <motion.div
+                  key="detalhe"
+                  className="h-full"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                >
+                  <LivroDetailSheet
+                    livro={livroAberto}
+                    open={true}
+                    onClose={() => setLivroAberto(null)}
+                    inline={true}
+                  />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="atividade"
+                  className="h-full"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <BibliotecaAtividadeRail onAbrirLivro={(l) => setLivroAberto(l)} />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </aside>
         </div>
       </main>
-
-      <LivroDetailSheet
-        livro={livroAberto}
-        open={!!livroAberto}
-        onClose={() => setLivroAberto(null)}
-      />
     </div>
   );
 };

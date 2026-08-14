@@ -24,6 +24,7 @@ import ContinuarLeituraCarousel from '@/components/biblioteca/ContinuarLeituraCa
 import { useIsDesktop } from '@/hooks/use-desktop';
 import { track } from '@/lib/analyticsEvents';
 import { useTrackArea } from "@/hooks/useTrackArea";
+import { Highlighter, ChevronRight, Library, BookOpen, Gauge, X } from 'lucide-react';
 
 const BibliotecasDesktop = lazy(() => import('./BibliotecasDesktop'));
 
@@ -137,6 +138,28 @@ const Bibliotecas = () => {
         </FilosofosPanel>
         {/* Painéis hospedados pelo rodapé (Leitura, Favoritos, Recentes, Offline) */}
         <BibliotecaAtalhosBar onAbrirLivro={(l) => setLivroAberto(l)} />
+
+        <div className="px-4 mt-6">
+          <button
+            onClick={() => navigate('/biblioteca/caderno')}
+            className="w-full flex items-center justify-between p-4 rounded-2xl bg-card hover:bg-secondary/50 border border-border/50 shadow-sm transition-colors"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                <Highlighter className="w-5 h-5" />
+              </div>
+              <div className="text-left">
+                <p className="text-[15px] font-bold text-foreground">Meu Caderno</p>
+                <p className="text-[12px] text-muted-foreground mt-0.5">Acesse seus grifos e marcações</p>
+              </div>
+            </div>
+            <ChevronRight className="w-5 h-5 text-muted-foreground" />
+          </button>
+        </div>
+
+        <div className="mt-8">
+          <ContinuarLeituraCarousel onAbrirLivro={(l) => setLivroAberto(l)} />
+        </div>
 
         <div className="mt-8">
           <RecomendacoesCarousel onAbrirLivro={(l) => setLivroAberto(l)} />

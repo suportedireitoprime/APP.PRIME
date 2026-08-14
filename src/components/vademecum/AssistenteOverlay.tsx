@@ -30,6 +30,7 @@ import PremiumGate, { type PremiumFeatureKey } from '@/components/PremiumGate';
 import { useFeatureLimit } from '@/hooks/useFeatureLimit';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 import { baixarBlob } from '@/lib/nativo';
+import { haptic } from '@/lib/nativeHaptics';
 
 
 type ArtifactKind = 'flashcards' | 'questoes' | 'mapa' | 'termos';
@@ -389,7 +390,7 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
                   <p className="text-[10px] text-muted-foreground">Assistente Jurídico • IA</p>
                 </div>
                 <button
-                  onClick={onClose}
+                  onClick={() => { haptic.light(); onClose(); }}
                   aria-label="Fechar"
                   className="w-8 h-8 rounded-full bg-secondary hover:bg-muted flex items-center justify-center"
                 >
@@ -397,7 +398,7 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
                 </button>
               </div>
               <button
-                onClick={newSession}
+                onClick={() => { haptic.selection(); newSession(); }}
                 className="mx-3 mt-3 py-2.5 rounded-xl border border-border bg-background hover:bg-accent/10 text-sm font-body font-semibold flex items-center justify-center gap-2 transition-colors"
               >
                 <Plus className="w-4 h-4" /> Nova conversa
@@ -406,7 +407,7 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
               <div className="px-3 mt-3">
                 <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2 px-2">Ferramentas</p>
                 <button
-                  onClick={() => toggleWebSearch()}
+                  onClick={() => { haptic.selection(); toggleWebSearch(); }}
                   aria-pressed={webSearch}
                   className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-xs font-body transition-colors ${
                     webSearch
@@ -436,13 +437,13 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
                       {list.map(s => (
                         <div key={s.id} className="group flex items-center rounded-lg hover:bg-accent/10">
                           <button
-                            onClick={() => openSession(s)}
+                            onClick={() => { haptic.selection(); openSession(s); }}
                             className={`flex-1 min-w-0 text-left px-2.5 py-2 text-xs font-body truncate ${s.id === sessionId ? 'text-accent font-semibold' : 'text-foreground'}`}
                           >
                             {s.title || 'Conversa'}
                           </button>
                           <button
-                            onClick={() => deleteSession(s.id)}
+                            onClick={() => { haptic.warning(); deleteSession(s.id); }}
                             aria-label="Excluir"
                             className="opacity-0 group-hover:opacity-100 p-1.5 mr-1 rounded hover:bg-muted transition-opacity"
                           >
@@ -466,7 +467,7 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
             onBack={onClose}
             rightAction={
               <button
-                onClick={() => setHistoryOpen(true)}
+                onClick={() => { haptic.selection(); setHistoryOpen(true); }}
                 aria-label="Histórico"
                 className="w-12 h-12 md:w-11 md:h-11 rounded-full bg-muted flex items-center justify-center active:scale-95 transition-transform"
               >
@@ -490,7 +491,7 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
                 </p>
                 <div className="w-full max-w-md flex flex-col gap-2.5 mt-1 px-2">
                   {suggestions.map(q => (
-                    <button key={q} onClick={() => setInput(q)}
+                    <button key={q} onClick={() => { haptic.selection(); setInput(q); }}
                       className="w-full px-5 py-4 rounded-2xl bg-secondary text-sm font-body text-foreground border border-border text-left hover:bg-accent/15 hover:border-accent/40 active:scale-[0.99] transition">
                       {q}
                     </button>
@@ -620,7 +621,7 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
           <div className={
             isDesktop
               ? 'relative px-6 pt-2 pb-6 bg-gradient-to-t from-background via-background to-transparent'
-              : 'relative px-3 pt-3 pb-[calc(0.75rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] border-t border-border bg-card/95 backdrop-blur-md'
+              : 'relative px-3 pt-3 pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] border-t border-border bg-card/95 backdrop-blur-md'
           }>
             <div className={isDesktop ? 'max-w-3xl mx-auto w-full rounded-3xl bg-secondary/95 border border-border shadow-[0_8px_32px_-8px_rgba(0,0,0,0.5)] p-2' : 'contents'}>
             {attachment && (
@@ -632,7 +633,7 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
             )}
             <div className="flex items-end gap-2 relative">
               <button
-                onClick={() => abrirAnexos()}
+                onClick={() => { haptic.selection(); abrirAnexos(); }}
                 aria-label="Anexar"
                 aria-expanded={attachOpen}
                 className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 transition-transform ${attachOpen ? 'bg-accent text-accent-foreground rotate-45' : isDesktop ? 'bg-background/60 text-foreground hover:bg-background' : 'bg-secondary text-foreground'}`}
@@ -653,7 +654,7 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
               {/* Botão híbrido: microfone quando input vazio, enviar quando há texto */}
               {(input.trim() || attachment) ? (
                 <button
-                  onClick={sendMessage}
+                  onClick={() => { haptic.light(); sendMessage(); }}
                   disabled={loading}
                   aria-label="Enviar"
                   className="w-11 h-11 rounded-full bg-accent flex items-center justify-center disabled:opacity-40 shrink-0"
@@ -662,7 +663,7 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
                 </button>
               ) : (
                 <button
-                  onClick={toggleMic}
+                  onClick={() => { haptic.selection(); toggleMic(); }}
                   aria-label={voice.listening ? 'Parar gravação' : 'Falar'}
                   className={`relative w-11 h-11 rounded-full flex items-center justify-center shrink-0 transition-colors active:scale-95 ${
                     voice.listening ? 'bg-red-500 text-white' : 'bg-accent text-accent-foreground'
@@ -678,7 +679,7 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
             {/* Web search toggle abaixo do campo de texto (mobile apenas — no desktop, fica na sidebar) */}
             {!isDesktop && <div className="mt-2 flex items-center justify-start">
               <button
-                onClick={() => toggleWebSearch()}
+                onClick={() => { haptic.selection(); toggleWebSearch(); }}
                 aria-pressed={webSearch}
                 className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-full border text-xs font-body transition-colors ${
                   webSearch
@@ -773,7 +774,7 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
                     return (
                       <button
                         key={opt.key}
-                        onClick={opt.onClick}
+                        onClick={() => { haptic.light(); opt.onClick(); }}
                         className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-accent/15 active:bg-accent/25 transition text-left"
                       >
                         <span className="w-9 h-9 rounded-full bg-accent/20 flex items-center justify-center shrink-0">

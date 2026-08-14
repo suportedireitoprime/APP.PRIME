@@ -1,9 +1,11 @@
 import { BiografiaData } from '@/types/biografia';
 import { socratesData } from './socrates';
 import { hansKelsenData } from './hansKelsen';
+import { plataoData } from './platao';
 
 export const todasBiografias: BiografiaData[] = [
   socratesData,
+  plataoData,
   hansKelsenData,
 ];
 

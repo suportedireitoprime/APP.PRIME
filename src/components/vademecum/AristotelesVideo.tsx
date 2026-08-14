@@ -3,17 +3,17 @@ import { AbsoluteFill, useVideoConfig, useCurrentFrame, spring, interpolate, Img
 import { TransitionSeries, springTiming, linearTiming } from '@remotion/transitions';
 import { wipe } from '@remotion/transitions/wipe';
 import { fade } from '@remotion/transitions/fade';
-import { Sparkles as SparklesIcon, Scale, Flame, ArrowRight, BookOpen, Quote, Eye, Skull, Compass, MessageCircle, Landmark } from 'lucide-react';
+import { BookOpen, Scale, Sparkles as SparklesIcon, Landmark, Eye, Compass, Flame, ArrowRight, BrainCircuit, Library } from 'lucide-react';
 
-export const SOCRATES_FPS = 30;
-export const SOCRATES_DURATION_FRAMES = 3825; // 8.5s * 15 cenas
-export const SOCRATES_WIDTH = 1080;
-export const SOCRATES_HEIGHT = 1920;
+export const ARISTOTELES_FPS = 30;
+export const ARISTOTELES_DURATION_FRAMES = 3825; // 8.5s * 15 cenas
+export const ARISTOTELES_WIDTH = 1080;
+export const ARISTOTELES_HEIGHT = 1920;
 
 // Paleta
-const PRIMARY_COLOR = '#E5E5E5';
-const ACCENT_COLOR = '#A3A3A3';
-const BG_COLOR = '#0A0A0A';
+const COPPER = '#B87333';
+const LIGHT_COPPER = '#E5A570';
+const OFF_WHITE = '#FAF7EF';
 
 const displayFont = '"Outfit", "Inter", ui-sans-serif, system-ui, sans-serif';
 const bodyFont = '"Inter", ui-sans-serif, system-ui, sans-serif';
@@ -34,7 +34,7 @@ const SceneTimeline: React.FC<{ year: number; event: string; color: string; vers
       <div style={{ position: 'absolute', left: '15%', top: 0, height: `${progress * 100}%`, width: version === 3 ? 1 : 4, backgroundColor: color, boxShadow: version === 3 ? 'none' : `0 0 20px ${color}` }} />
       
       {/* Círculo do ponto no tempo */}
-      <div style={{ position: 'absolute', left: `calc(15% - ${version === 3 ? 12 : 16}px)`, top: '50%', width: version === 3 ? 25 : 36, height: version === 3 ? 25 : 36, borderRadius: '50%', backgroundColor: BG_COLOR, border: `${version === 3 ? 2 : 4}px solid ${color}`, transform: `scale(${progress}) translateY(-50%)`, boxShadow: version === 3 ? 'none' : `0 0 20px ${color}`, zIndex: 20 }} />
+      <div style={{ position: 'absolute', left: `calc(15% - ${version === 3 ? 12 : 16}px)`, top: '50%', width: version === 3 ? 25 : 36, height: version === 3 ? 25 : 36, borderRadius: '50%', backgroundColor: '#0A0A0A', border: `${version === 3 ? 2 : 4}px solid ${color}`, transform: `scale(${progress}) translateY(-50%)`, boxShadow: version === 3 ? 'none' : `0 0 20px ${color}`, zIndex: 20 }} />
 
       {/* Conteúdo na direita */}
       <div style={{ position: 'absolute', left: '25%', right: '10%', top: '50%', transform: `translateY(-50%)`, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', opacity: progress }}>
@@ -50,7 +50,7 @@ const SceneTimeline: React.FC<{ year: number; event: string; color: string; vers
   );
 };
 
-const Sparkles: React.FC<{ count?: number, color?: string }> = ({ count = 25, color = PRIMARY_COLOR }) => {
+const Sparkles: React.FC<{ count?: number, color?: string }> = ({ count = 25, color = COPPER }) => {
   const frame = useCurrentFrame();
   return (
     <AbsoluteFill style={{ pointerEvents: 'none' }}>
@@ -84,7 +84,6 @@ const Sparkles: React.FC<{ count?: number, color?: string }> = ({ count = 25, co
 };
 
 const FilmGrain: React.FC = () => {
-  const frame = useCurrentFrame();
   const opacity = 0.08 + Math.random() * 0.04; 
   return (
     <AbsoluteFill
@@ -102,7 +101,7 @@ const FilmGrain: React.FC = () => {
 const LightLeak: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const t = (frame % (fps * 4)) / (fps * 4); // Loop de 4 segundos
+  const t = (frame % (fps * 4)) / (fps * 4); 
   const x = interpolate(t, [0, 1], [-50, 150]);
   const opacity = interpolate(t, [0, 0.5, 1], [0, 0.15, 0]);
   
@@ -130,11 +129,8 @@ const GeometricLines: React.FC = () => {
 
   return (
     <AbsoluteFill style={{ pointerEvents: 'none', zIndex: 10 }}>
-      {/* Linha Vertical Direita */}
       <div style={{ position: 'absolute', right: '10%', top: 0, width: 1, height: `${height}%`, backgroundColor: 'rgba(255,255,255,0.1)' }} />
-      {/* Linha Horizontal Inferior */}
       <div style={{ position: 'absolute', bottom: '15%', right: '10%', width: `${width}%`, height: 1, backgroundColor: 'rgba(255,255,255,0.1)' }} />
-      {/* Círculo Minimalista */}
       <div style={{ position: 'absolute', top: '20%', left: '10%', width: 300, height: 300, borderRadius: '50%', border: '1px solid rgba(255,255,255,0.05)', transform: `rotate(${frame * 0.2}deg) scale(${1 + Math.sin(frame/30)*0.02})` }} />
     </AbsoluteFill>
   );
@@ -148,7 +144,7 @@ const Eyebrow: React.FC<{ text: string; delay?: number; version: number }> = ({ 
   if (version === 3) {
     return (
       <div style={{ opacity: s, transform: `translateY(${interpolate(s, [0, 1], [20, 0])}px)`, marginBottom: 30 }}>
-         <span style={{ fontFamily: bodyFont, fontSize: 24, color: ACCENT_COLOR, fontWeight: 300, letterSpacing: '0.3em', textTransform: 'uppercase' }}>
+         <span style={{ fontFamily: bodyFont, fontSize: 24, color: LIGHT_COPPER, fontWeight: 300, letterSpacing: '0.3em', textTransform: 'uppercase' }}>
             {text}
          </span>
       </div>
@@ -163,16 +159,16 @@ const Eyebrow: React.FC<{ text: string; delay?: number; version: number }> = ({ 
         gap: 14,
         padding: '12px 26px',
         borderRadius: 999,
-        background: version === 2 ? 'transparent' : 'rgba(255, 255, 255, 0.05)',
-        border: version === 2 ? 'none' : '2px solid rgba(255, 255, 255, 0.1)',
+        background: version === 2 ? 'transparent' : 'rgba(184, 115, 51, 0.1)',
+        border: version === 2 ? 'none' : '2px solid rgba(184, 115, 51, 0.4)',
         transform: `translateY(${interpolate(s, [0, 1], [20, 0])}px)`,
         opacity: s,
         marginBottom: 30,
         boxShadow: version === 2 ? 'none' : '0 10px 30px rgba(0,0,0,0.5)',
       }}
     >
-      <div style={{ width: 10, height: 10, borderRadius: '50%', background: PRIMARY_COLOR, boxShadow: `0 0 12px ${PRIMARY_COLOR}` }} />
-      <span style={{ fontFamily: bodyFont, fontSize: 26, color: ACCENT_COLOR, fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase' }}>
+      <div style={{ width: 10, height: 10, borderRadius: '50%', background: COPPER, boxShadow: `0 0 12px ${COPPER}` }} />
+      <span style={{ fontFamily: bodyFont, fontSize: 26, color: LIGHT_COPPER, fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase' }}>
         {text}
       </span>
     </div>
@@ -213,27 +209,39 @@ const Scene1Intro: React.FC<{ version: number }> = ({ version }) => {
   const zoomEnd = version === 2 ? 1.15 : (version === 3 ? 1.05 : 1.3);
   const imgScale = interpolate(frame, [0, 180], [1.0, zoomEnd]);
   
-  const letters = 'SÓCRATES'.split('');
+  const letters = 'ARISTÓTELES'.split('');
   const subSpring = spring({ frame: frame - 15, fps, config: { damping: 14 } });
 
   return (
     <AbsoluteFill style={{ backgroundColor: '#000' }}>
-      <Img src="/biografias/socrates-capa.jpg" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: version === 3 ? 0.1 : 0.4, transform: `scale(${imgScale})`, transformOrigin: 'top center' }} />
+      <Img src="/biografias/scene-academia.jpg" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: version === 3 ? 0.1 : 0.4, transform: `scale(${imgScale})`, transformOrigin: 'top center' }} />
       <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.85) 100%)' }} />
       
       {version === 1 && (
         <>
-          <FloatingIcon IconComponent={Quote} size={250} color={PRIMARY_COLOR} delay={10} startX={10} startY={20} />
-          <FloatingIcon IconComponent={MessageCircle} size={180} color={PRIMARY_COLOR} delay={40} startX={70} startY={60} />
-          <FloatingIcon IconComponent={SparklesIcon} size={150} color={ACCENT_COLOR} delay={60} startX={80} startY={20} />
-          <Sparkles count={30} color={ACCENT_COLOR} />
+          <FloatingIcon IconComponent={BrainCircuit} size={250} color={COPPER} delay={10} startX={10} startY={20} />
+          <FloatingIcon IconComponent={Library} size={180} color={COPPER} delay={40} startX={70} startY={60} />
+          <FloatingIcon IconComponent={Compass} size={150} color={LIGHT_COPPER} delay={60} startX={80} startY={20} />
+          <Sparkles count={30} color={LIGHT_COPPER} />
         </>
+      )}
+
+      {version === 2 && (
+        <>
+          <FilmGrain />
+          <LightLeak />
+          <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.6) 100%)', pointerEvents: 'none' }} />
+        </>
+      )}
+
+      {version === 3 && (
+        <GeometricLines />
       )}
 
       <AbsoluteFill style={{ alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ display: 'flex', gap: 6, marginBottom: 20 }}>
           {letters.map((L, i) => {
-            const delay = version === 2 ? i * 12 : i * 8;
+            const delay = version === 2 ? i * 12 : i * 8; 
             const s = spring({ frame: frame - 15 - delay, fps, config: { damping: version === 3 ? 20 : 12, stiffness: 180 } });
             const y = interpolate(s, [0, 1], [80, 0]);
             const rotateX = interpolate(s, [0, 1], [90, 0]);
@@ -243,13 +251,13 @@ const Scene1Intro: React.FC<{ version: number }> = ({ version }) => {
                 style={{
                   fontFamily: displayFont, 
                   fontWeight: version === 3 ? 300 : 900, 
-                  fontSize: 140, 
+                  fontSize: 130, 
                   lineHeight: 1, 
-                  color: PRIMARY_COLOR,
+                  color: OFF_WHITE,
                   transform: version === 3 ? `translateY(${y}px)` : `translateY(${y}px) rotateX(${rotateX}deg)`, 
                   opacity: s, 
                   letterSpacing: version === 3 ? '0.1em' : '-0.02em',
-                  textShadow: version === 3 ? 'none' : `0 10px 50px rgba(255, 255, 255, 0.3)`,
+                  textShadow: version === 3 ? 'none' : `0 10px 50px rgba(184, 115, 51, 0.5)`,
                 }}
               >
                 {L}
@@ -261,14 +269,14 @@ const Scene1Intro: React.FC<{ version: number }> = ({ version }) => {
         <p style={{
           fontSize: version === 3 ? 40 : 48, 
           fontWeight: version === 3 ? 300 : 500, 
-          color: PRIMARY_COLOR, 
+          color: COPPER, 
           opacity: subSpring,
           transform: `translateY(${interpolate(subSpring, [0, 1], [40, 0])}px)`,
           textTransform: 'uppercase', 
           letterSpacing: '0.2em', 
           textShadow: version === 3 ? 'none' : '0 4px 20px rgba(0,0,0,0.8)'
         }}>
-          O Mártir de Atenas
+          O Pai da Lógica
         </p>
       </AbsoluteFill>
     </AbsoluteFill>
@@ -318,22 +326,17 @@ const SceneGeneric: React.FC<{ imgSrc: string, eyebrow: string, title: string, d
       
       {version === 1 && (
         <>
-          <div style={{ position: 'absolute', top: '20%', left: '10%', width: 120, height: 120, border: `2px solid ${PRIMARY_COLOR}`, borderRadius: '50%', opacity: 0.15, transform: `scale(${1 + Math.sin(frame / 15) * 0.1})` }} />
-          <div style={{ position: 'absolute', bottom: '25%', right: '20%', width: 250, height: 250, border: `1px dashed ${PRIMARY_COLOR}`, borderRadius: '50%', opacity: 0.08, transform: `rotate(${frame}deg)` }} />
-          <div style={{ position: 'absolute', top: '40%', left: '85%', width: 2, height: 300, backgroundColor: PRIMARY_COLOR, opacity: 0.15, transform: `rotate(35deg) translateY(${Math.sin(frame / 20) * 80}px)` }} />
+          <div style={{ position: 'absolute', top: '20%', left: '10%', width: 120, height: 120, border: `2px solid ${COPPER}`, borderRadius: '50%', opacity: 0.15, transform: `scale(${1 + Math.sin(frame / 15) * 0.1})` }} />
+          <div style={{ position: 'absolute', bottom: '25%', right: '20%', width: 250, height: 250, border: `1px dashed ${COPPER}`, borderRadius: '50%', opacity: 0.08, transform: `rotate(${frame}deg)` }} />
+          <div style={{ position: 'absolute', top: '40%', left: '85%', width: 2, height: 300, backgroundColor: COPPER, opacity: 0.15, transform: `rotate(35deg) translateY(${Math.sin(frame / 20) * 80}px)` }} />
 
-          {/* Dinâmicos e menores nos cantos (Ex: Balança da Justiça) */}
-          <div style={{ position: 'absolute', right: '8%', top: '12%', opacity: 0.2, transform: `translateY(${floatIcon}px) rotate(15deg)`, color: PRIMARY_COLOR }}>
-            <Scale size={90} />
+          <div style={{ position: 'absolute', right: '-5%', top: '15%', opacity: 0.08, transform: `translateY(${floatIcon}px)`, color: COPPER }}>
+            <Icon1 size={650} />
           </div>
-          <div style={{ position: 'absolute', left: '8%', bottom: '12%', opacity: 0.2, transform: `translateY(${floatIcon * -1}px) rotate(-15deg)`, color: ACCENT_COLOR }}>
-            <Scale size={75} />
+          <div style={{ position: 'absolute', left: '40%', bottom: '-5%', opacity: 0.05, transform: `translateY(${floatIcon * -1}px) rotate(${15 + rotateIcon}deg)`, color: LIGHT_COPPER }}>
+            <Icon2 size={400} />
           </div>
-          <div style={{ position: 'absolute', right: '15%', bottom: '15%', opacity: 0.15, transform: `translateY(${floatIcon * 0.5}px) rotate(${rotateIcon}deg)`, color: PRIMARY_COLOR }}>
-            <Icon1 size={110} />
-          </div>
-          
-          <Sparkles count={40} color={PRIMARY_COLOR} />
+          <Sparkles count={40} color={OFF_WHITE} />
         </>
       )}
 
@@ -348,13 +351,13 @@ const SceneGeneric: React.FC<{ imgSrc: string, eyebrow: string, title: string, d
       {version === 3 && (
         <GeometricLines />
       )}
-
+      
       <AbsoluteFill style={{ justifyContent: 'center', padding: '0 8%', textAlign: version === 3 ? 'center' : 'left', alignItems: version === 3 ? 'center' : 'flex-start' }}>
         <Eyebrow text={eyebrow} delay={10} version={version} />
         <h2 style={{ 
           fontSize: version === 3 ? 90 : 80, 
           fontWeight: version === 3 ? 300 : 800, 
-          color: PRIMARY_COLOR, 
+          color: OFF_WHITE, 
           marginBottom: 40, 
           lineHeight: 1.1, 
           opacity: titleSpring, 
@@ -372,25 +375,26 @@ const SceneGeneric: React.FC<{ imgSrc: string, eyebrow: string, title: string, d
   );
 };
 
-const SOCRATES_SCENES = [
+const ARISTOTELES_SCENES = [
   { type: 'intro' }, // Cena 1
-  { type: 'generic', img: '/biografias/scene-sofistas.jpg', eyebrow: 'O Ponto de Virada', title: 'A Revolução', d1: 'Imagine o homem que mudou o mundo...', d2: 'sem nunca ter escrito uma única palavra.', icon1: BookOpen, icon2: Eye },
-  { type: 'generic', img: '/biografias/scene-atenas.jpg', eyebrow: 'A Ferramenta', title: 'A Ironia', d1: 'Nas ruas de Atenas, ele usava a ironia...', d2: 'para expor a ignorância dos poderosos.', icon1: MessageCircle, icon2: Flame },
-  { type: 'generic', img: '/biografias/scene-atenas.jpg', eyebrow: 'O Método', title: 'Maiêutica', d1: 'O parto das ideias.', d2: 'Ele fazia os outros pensarem por si mesmos.', icon1: ArrowRight, icon2: SparklesIcon },
-  { type: 'generic', img: '/biografias/scene-sofistas.jpg', eyebrow: 'O Incômodo', title: 'A Verdade', d1: 'Sua sabedoria era perigosa.', d2: 'Ele não aceitava respostas prontas.', icon1: Eye, icon2: Compass },
-  { type: 'timeline', year: 470, event: 'Nascimento de Sócrates' }, // Cena 6
-  { type: 'generic', img: '/biografias/scene-julgamento.jpg', eyebrow: 'O Limite', title: 'O Julgamento', d1: 'Mas em 399 a.C.,', d2: 'Atenas não aguentou mais.', icon1: Scale, icon2: Flame },
-  { type: 'generic', img: '/biografias/scene-julgamento.jpg', eyebrow: 'A Acusação', title: 'O Tribunal', d1: 'Acusado de corromper a juventude', d2: 'e ofender os deuses.', icon1: Landmark, icon2: Scale },
-  { type: 'generic', img: '/biografias/scene-julgamento.jpg', eyebrow: 'A Escolha', title: 'O Desafio', d1: 'Ele poderia ter pedido perdão.', d2: 'Poderia ter fugido.', icon1: ArrowRight, icon2: BookOpen },
-  { type: 'generic', img: '/biografias/scene-julgamento.jpg', eyebrow: 'O Deboche', title: 'A Coragem', d1: 'Mas preferiu debochar', d2: 'dos seus próprios juízes!', icon1: Flame, icon2: Eye },
-  { type: 'timeline', year: 399, event: 'A Condenação' }, // Cena 11
-  { type: 'generic', img: '/biografias/scene-cicuta.jpg', eyebrow: 'O Veneno', title: 'A Cicuta', d1: 'A pena foi severa:', d2: 'Beber cicuta mortal.', icon1: Skull, icon2: ArrowRight },
-  { type: 'generic', img: '/biografias/scene-cicuta.jpg', eyebrow: 'Os Momentos Finais', title: 'A Serenidade', d1: 'Na prisão, aguardou o fim.', d2: 'Ensinando seus discípulos até o último suspiro.', icon1: Compass, icon2: SparklesIcon },
-  { type: 'timeline', year: 399, event: 'A Execução' }, // Cena 14
-  { type: 'generic', img: '/biografias/socrates-capa.jpg', eyebrow: 'A Lição Maior', title: 'A Justiça', d1: 'Tomou o veneno, respeitando as leis.', d2: 'Melhor sofrer injustiça do que cometê-la.', icon1: Scale, icon2: Flame },
+  { type: 'generic', img: '/biografias/scene-academia.jpg', eyebrow: 'O Aluno', title: 'O Prodígio', d1: 'Aristóteles foi o aluno', d2: 'mais brilhante de Platão.', icon1: Library, icon2: BookOpen },
+  { type: 'generic', img: '/biografias/scene-atenas.jpg', eyebrow: 'A Divergência', title: 'O Realista', d1: 'Enquanto Platão olhava', d2: 'para os céus ideais...', icon1: Eye, icon2: BrainCircuit },
+  { type: 'generic', img: '/biografias/scene-atenas.jpg', eyebrow: 'O Chão', title: 'A Matéria', d1: 'Aristóteles apontou', d2: 'suas mãos para a terra.', icon1: ArrowRight, icon2: Scale },
+  { type: 'generic', img: '/biografias/scene-sofistas.jpg', eyebrow: 'O Tutor', title: 'O Império', d1: 'Foi tutor de ninguém menos', d2: 'que Alexandre, o Grande.', icon1: Compass, icon2: Landmark },
+  { type: 'timeline', year: 384, event: 'Nascimento de Aristóteles' }, // Cena 6
+  { type: 'generic', img: '/biografias/scene-academia.jpg', eyebrow: 'A Própria Escola', title: 'O Liceu', d1: 'Fundou o Liceu e ensinava', d2: 'caminhando com seus alunos.', icon1: Library, icon2: BookOpen },
+  { type: 'generic', img: '/biografias/scene-sofistas.jpg', eyebrow: 'O Legado Lógico', title: 'O Silogismo', d1: 'Ele inventou a Lógica.', d2: 'A base do pensamento racional.', icon1: BrainCircuit, icon2: Eye },
+  { type: 'generic', img: '/biografias/scene-republica.jpg', eyebrow: 'A Justiça', title: 'Equidade', d1: 'Justiça é tratar os desiguais', d2: 'na medida de suas desigualdades.', icon1: Scale, icon2: Compass },
+  { type: 'generic', img: '/biografias/scene-leis.jpg', eyebrow: 'A Ética', title: 'O Meio-Termo', d1: 'A virtude não está nos extremos.', d2: 'A virtude é a justa medida.', icon1: Compass, icon2: Scale },
+  { type: 'timeline', year: 335, event: 'Fundação do Liceu' }, // Cena 11
+  { type: 'generic', img: '/biografias/scene-republica.jpg', eyebrow: 'A Política', title: 'O Animal Político', d1: 'Definiu que o ser humano', d2: 'só é pleno vivendo em sociedade.', icon1: Landmark, icon2: ArrowRight },
+  { type: 'generic', img: '/biografias/scene-leis.jpg', eyebrow: 'O Direito Natural', title: 'A Ordem', d1: 'A lei deve buscar sempre', d2: 'o bem comum da Pólis.', icon1: Scale, icon2: BookOpen },
+  { type: 'timeline', year: 322, event: 'Morte no Exílio' }, // Cena 14
+  { type: 'generic', img: '/biografias/aristoteles-capa.jpg', eyebrow: 'O Eterno Mestre', title: 'A Razão', d1: 'Sua mente organizou', d2: 'praticamente tudo o que sabemos.', icon1: BrainCircuit, icon2: SparklesIcon },
 ];
 
-export const SocratesVideo: React.FC<{ customAudioUrl?: string, version?: number, roteiro?: Array<{frame: number, text: string, duration: number}> }> = ({ customAudioUrl, version = 1, roteiro }) => {
+export const AristotelesVideo: React.FC<{ customAudioUrl?: string, version?: number, roteiro?: Array<{frame: number, text: string, duration: number}> }> = ({ customAudioUrl, version = 1, roteiro }) => {
+  // Transição baseada na versão: Wipe veloz para TikTok, Fade lento para Cinematic/Minimalista
   const getTransition = () => {
     if (version === 1) return <TransitionSeries.Transition presentation={wipe()} timing={springTiming({ config: { damping: 15 } })} />;
     if (version === 2) return <TransitionSeries.Transition presentation={fade()} timing={linearTiming({ durationInFrames: 30 })} />;
@@ -398,14 +402,14 @@ export const SocratesVideo: React.FC<{ customAudioUrl?: string, version?: number
   };
 
   return (
-    <AbsoluteFill style={{ backgroundColor: BG_COLOR, fontFamily: bodyFont }}>
+    <AbsoluteFill style={{ backgroundColor: '#0A0A0A', fontFamily: bodyFont }}>
       <Audio src={customAudioUrl || staticFile('trilha-sonora.mp3')} volume={0.3} />
       <TransitionSeries>
-        {SOCRATES_SCENES.map((scene, i) => (
+        {ARISTOTELES_SCENES.map((scene, i) => (
           <React.Fragment key={i}>
             <TransitionSeries.Sequence durationInFrames={roteiro ? roteiro[i]?.duration || 255 : 255}>
               {scene.type === 'intro' && <Scene1Intro version={version} />}
-              {scene.type === 'timeline' && <SceneTimeline year={scene.year!} event={scene.event!} color={PRIMARY_COLOR} version={version} />}
+              {scene.type === 'timeline' && <SceneTimeline year={scene.year!} event={scene.event!} color={COPPER} version={version} />}
               {scene.type === 'generic' && (
                 <SceneGeneric 
                   imgSrc={scene.img!}
@@ -419,7 +423,7 @@ export const SocratesVideo: React.FC<{ customAudioUrl?: string, version?: number
                 />
               )}
             </TransitionSeries.Sequence>
-            {i < SOCRATES_SCENES.length - 1 && getTransition()}
+            {i < ARISTOTELES_SCENES.length - 1 && getTransition()}
           </React.Fragment>
         ))}
       </TransitionSeries>

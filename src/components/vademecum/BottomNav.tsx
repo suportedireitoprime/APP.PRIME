@@ -330,7 +330,7 @@ const BottomNav = () => {
                 <h3 className="font-display text-lg text-foreground">Estudos</h3>
               </div>
               <button
-                onClick={() => setEstudosOpen(false)}
+                onClick={() => { haptic.light(); setEstudosOpen(false); }}
                 aria-label="Fechar estudos"
                 className="w-12 h-12 rounded-full touch-manipulation bg-secondary flex items-center justify-center"
               >
@@ -402,7 +402,7 @@ const BottomNav = () => {
                 </div>
               </div>
               <button
-                onClick={() => setFerramentasOpen(false)}
+                onClick={() => { haptic.light(); setFerramentasOpen(false); }}
                 aria-label="Fechar ferramentas"
                 className="w-12 h-12 rounded-full touch-manipulation bg-secondary flex items-center justify-center"
               >

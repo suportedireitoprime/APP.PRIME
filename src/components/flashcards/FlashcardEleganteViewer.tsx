@@ -5,8 +5,12 @@ import {
   Scale,
   Lightbulb,
   RotateCw,
-  ChevronLeft,
   ChevronRight,
+  Sparkles,
+  BrainCircuit,
+  Loader2,
+  Headphones,
+  Pause,
 } from "lucide-react";
 import { getTemaCover } from "@/lib/flashcards-tema-cover";
 import laurel from '@/assets/landing-tribunal/laurel-leaf.png';
@@ -80,6 +84,24 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
 
   const x = useMotionValue(0);
   const dragRotate = useTransform(x, [-200, 200], [-10, 10]);
+  const stampErreiOpacity = useTransform(x, [0, -100], [0, 1]);
+  const stampAcerteiOpacity = useTransform(x, [0, 100], [0, 1]);
+
+  const total = cards?.length ?? 0;
+  const [progresso, setProgresso] = useState({ novos: total, erros: 0, acertos: 0 });
+  
+  const [isAutoPlaying, setIsAutoPlaying] = useState(false);
+  const synthRef = useRef<SpeechSynthesis | null>(typeof window !== 'undefined' ? window.speechSynthesis : null);
+
+  useEffect(() => {
+    return () => {
+      if (synthRef.current) synthRef.current.cancel();
+    };
+  }, []);
+
+  useEffect(() => {
+    setProgresso({ novos: total, erros: 0, acertos: 0 });
+  }, [total]);
 
   const flipSoundRef = useRef<HTMLAudioElement | null>(null);
   const slideSoundRef = useRef<HTMLAudioElement | null>(null);
@@ -118,7 +140,6 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
     } catch {}
   }, []);
 
-  const total = cards?.length ?? 0;
   const card = cards?.[idx];
   const isLast = idx === total - 1;
 
@@ -132,6 +153,106 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
     }
   }, [isLast, flipped, onComplete]);
 
+  const goNext = useCallback(() => {
+    if (idx >= total - 1) return;
+    playSlide();
+    dirRef.current = 1;
+    setFlipped(false);
+    setTimeout(() => setIdx((i) => i + 1), 40);
+  }, [idx, total, playSlide]);
+
+  const goPrev = useCallback(() => {
+    if (idx <= 0) return;
+    playSlide();
+    dirRef.current = -1;
+    setFlipped(false);
+    setTimeout(() => setIdx((i) => i - 1), 40);
+  }, [idx, playSlide]);
+
+  const handleFlip = useCallback(() => {
+    playFlip();
+    setFlipped((v) => !v);
+  }, [playFlip]);
+
+  useEffect(() => {
+    if (!isAutoPlaying || !card || (isLast && flipped && completedRef.current)) return;
+    
+    let timeout: ReturnType<typeof setTimeout>;
+    let isCancelled = false;
+    
+    const speak = (text: string, callback: () => void) => {
+      if (!synthRef.current || isCancelled) return;
+      synthRef.current.cancel(); // Interromper som anterior
+      
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'pt-BR';
+      // Tentativa de achar voz nativa pt-BR se disponível
+      const voices = synthRef.current.getVoices();
+      const ptBrVoice = voices.find(v => v.lang.includes('pt-BR'));
+      if (ptBrVoice) utterance.voice = ptBrVoice;
+      
+      utterance.onend = () => {
+        if (isCancelled) return;
+        timeout = setTimeout(() => {
+          if (!isCancelled) callback();
+        }, 2000);
+      };
+      
+      utterance.onerror = (e) => {
+         console.error('SpeechSynthesis Error', e);
+         if (!isCancelled) setIsAutoPlaying(false);
+      };
+      
+      synthRef.current.speak(utterance);
+    };
+
+    if (!flipped) {
+      speak(card.pergunta, () => {
+        playFlip();
+        setFlipped(true);
+      });
+    } else {
+      speak(card.resposta, () => {
+        if (!isLast) {
+          goNext();
+        } else {
+           completedRef.current = true;
+           triggerConfetti();
+           if (onComplete) onComplete();
+           setIsAutoPlaying(false);
+        }
+      });
+    }
+
+    return () => {
+      isCancelled = true;
+      clearTimeout(timeout);
+      if (synthRef.current) synthRef.current.cancel();
+    };
+  }, [isAutoPlaying, idx, flipped, card, isLast, goNext, playFlip, onComplete]);
+
+  const handleDragEnd = useCallback((e: any, { offset }: any) => {
+    const swipe = offset.x;
+    if (swipe < -100) {
+      setProgresso((p) => ({ ...p, erros: p.erros + 1 }));
+      goNext();
+    } else if (swipe > 100) {
+      setProgresso((p) => ({ ...p, acertos: p.acertos + 1 }));
+      goNext();
+    }
+  }, [goNext]);
+
+  const currentThemeVariant = useMemo(() => {
+    const fallbacks = [
+      { start: "#F87171", end: "#DC2626" },
+      { start: "#60A5FA", end: "#2563EB" },
+      { start: "#34D399", end: "#059669" },
+      { start: "#FBBF24", end: "#D97706" },
+      { start: "#A78BFA", end: "#7C3AED" },
+    ];
+    return fallbacks[idx % fallbacks.length];
+  }, [idx]);
+
   if (!total || !card) {
     return (
       <div className="p-8 text-center text-muted-foreground">
@@ -140,34 +261,108 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
     );
   }
 
-  const goNext = () => {
+  const goNext = useCallback(() => {
     if (idx >= total - 1) return;
     playSlide();
     dirRef.current = 1;
     setFlipped(false);
     setTimeout(() => setIdx((i) => i + 1), 40);
-  };
-  const goPrev = () => {
+  }, [idx, total, playSlide]);
+
+  const goPrev = useCallback(() => {
     if (idx <= 0) return;
     playSlide();
     dirRef.current = -1;
     setFlipped(false);
     setTimeout(() => setIdx((i) => i - 1), 40);
-  };
-  const handleFlip = () => {
+  }, [idx, playSlide]);
+
+  const handleFlip = useCallback(() => {
     playFlip();
     setFlipped((v) => !v);
-  };
+  }, [playFlip]);
+
+  useEffect(() => {
+    if (!isAutoPlaying || !card || (isLast && flipped && completedRef.current)) return;
+    
+    let timeout: ReturnType<typeof setTimeout>;
+    let isCancelled = false;
+    
+    const speak = (text: string, callback: () => void) => {
+      if (!synthRef.current || isCancelled) return;
+      synthRef.current.cancel(); // Interromper som anterior
+      
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'pt-BR';
+      // Tentativa de achar voz nativa pt-BR se disponível
+      const voices = synthRef.current.getVoices();
+      const ptBrVoice = voices.find(v => v.lang.includes('pt-BR'));
+      if (ptBrVoice) utterance.voice = ptBrVoice;
+      
+      utterance.onend = () => {
+        if (isCancelled) return;
+        timeout = setTimeout(() => {
+          if (!isCancelled) callback();
+        }, 2000);
+      };
+      
+      utterance.onerror = (e) => {
+         console.error('SpeechSynthesis Error', e);
+         if (!isCancelled) setIsAutoPlaying(false);
+      };
+      
+      synthRef.current.speak(utterance);
+    };
+
+    if (!flipped) {
+      speak(card.pergunta, () => {
+        playFlip();
+        setFlipped(true);
+      });
+    } else {
+      speak(card.resposta, () => {
+        if (!isLast) {
+          // Marca como "Aprender" no automático pra simular revisão? Ou apenas pula.
+          // Vamos apenas pular sem contar erro/acerto para o progresso, ou mockar:
+          goNext();
+        } else {
+           completedRef.current = true;
+           triggerConfetti();
+           if (onComplete) onComplete();
+           setIsAutoPlaying(false);
+        }
+      });
+    }
+
+    return () => {
+      isCancelled = true;
+      clearTimeout(timeout);
+      if (synthRef.current) synthRef.current.cancel();
+    };
+  }, [isAutoPlaying, idx, flipped, card, isLast, goNext, playFlip, onComplete]);
 
   const handleDragEnd = (e: any, { offset }: any) => {
     const swipe = offset.x;
     if (swipe > 100) {
       haptic.success();
+      setProgresso(p => ({ ...p, novos: Math.max(0, p.novos - 1), acertos: p.acertos + 1 }));
       goNext();
     } else if (swipe < -100) {
       haptic.heavy();
+      setProgresso(p => ({ ...p, novos: Math.max(0, p.novos - 1), erros: p.erros + 1 }));
       goNext();
     }
+  };
+
+  const handleManualAction = (type: 'acerto' | 'erro') => {
+    if (type === 'acerto') {
+      haptic.success();
+      setProgresso(p => ({ ...p, novos: Math.max(0, p.novos - 1), acertos: p.acertos + 1 }));
+    } else {
+      haptic.heavy();
+      setProgresso(p => ({ ...p, novos: Math.max(0, p.novos - 1), erros: p.erros + 1 }));
+    }
+    goNext();
   };
 
   const slideVariants = {
@@ -178,26 +373,38 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
 
   return (
     <div className="space-y-4">
-      {/* Progresso */}
-      <div className="flex items-center gap-3">
-        <div
-          className="relative flex-1 h-1.5 rounded-full overflow-hidden"
-          style={{ background: `${accent}1f` }}
-        >
-          <motion.div
-            className="absolute inset-y-0 left-0 rounded-full"
-            initial={false}
-            animate={{ width: `${((idx + 1) / total) * 100}%` }}
-            transition={{ type: "spring", stiffness: 180, damping: 26 }}
-            style={{
-              background: `linear-gradient(90deg, ${accent}, color-mix(in oklab, ${accent} 60%, white))`,
-              boxShadow: `0 0 12px ${accent}80`,
-            }}
-          />
+      {/* HUD de Progresso Gamificado & Auto-Play Toggle */}
+      <div className="flex items-center justify-between pb-2">
+        <div className="flex-1 flex items-center justify-center gap-6">
+          <div className="flex flex-col items-center">
+            <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider mb-1">Novos</span>
+            <span className="text-sm font-bold text-blue-500 tabular-nums">{progresso.novos}</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <span className="text-[10px] font-bold text-red-400 uppercase tracking-wider mb-1">Aprender</span>
+            <span className="text-sm font-bold text-red-500 tabular-nums">{progresso.erros}</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <span className="text-[10px] font-bold text-green-400 uppercase tracking-wider mb-1">Revisar</span>
+            <span className="text-sm font-bold text-green-500 tabular-nums">{progresso.acertos}</span>
+          </div>
         </div>
-        <span className="text-xs text-muted-foreground tabular-nums shrink-0">
-          {idx + 1} / {total}
-        </span>
+        
+        {/* Toggle Auto-Play */}
+        <button
+          onClick={() => {
+            if (isAutoPlaying && synthRef.current) synthRef.current.cancel();
+            setIsAutoPlaying(!isAutoPlaying);
+          }}
+          className={`shrink-0 flex items-center justify-center w-10 h-10 rounded-full transition-all ${
+            isAutoPlaying 
+              ? 'bg-amber-500/20 text-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.3)]' 
+              : 'bg-secondary/50 text-muted-foreground hover:bg-secondary'
+          }`}
+          aria-label={isAutoPlaying ? "Pausar Modo Passivo" : "Iniciar Modo Passivo"}
+        >
+          {isAutoPlaying ? <Pause className="w-4 h-4 fill-current" /> : <Headphones className="w-4 h-4" />}
+        </button>
       </div>
 
       {/* Card */}
@@ -247,6 +454,24 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
             dragElastic={0.7}
             onDragEnd={handleDragEnd}
           >
+            <motion.div
+              style={{ opacity: stampErreiOpacity }}
+              className="absolute top-12 right-12 z-50 pointer-events-none"
+            >
+              <div className="border-[6px] border-red-500 text-red-500 rounded-2xl px-6 py-2 rotate-[15deg] font-black text-4xl tracking-widest opacity-80 uppercase" style={{ boxShadow: "0 0 16px rgba(239,68,68,0.4)" }}>
+                Errei
+              </div>
+            </motion.div>
+            
+            <motion.div
+              style={{ opacity: stampAcerteiOpacity }}
+              className="absolute top-12 left-12 z-50 pointer-events-none"
+            >
+              <div className="border-[6px] border-green-500 text-green-500 rounded-2xl px-6 py-2 -rotate-[15deg] font-black text-4xl tracking-widest opacity-80 uppercase" style={{ boxShadow: "0 0 16px rgba(34,197,94,0.4)" }}>
+                Lembrei
+              </div>
+            </motion.div>
+
             <motion.div
               className="absolute inset-0 w-full h-full"
               animate={{ rotateY: flipped ? 180 : 0 }}
@@ -340,67 +565,50 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
         </AnimatePresence>
       </div>
 
-      {/* Navegação */}
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex items-center justify-between gap-2 mt-4 px-2">
         <button
           onClick={goPrev}
           disabled={idx === 0}
-          className="h-10 px-3 rounded-xl text-sm font-semibold inline-flex items-center gap-1 disabled:opacity-30 transition-colors hover:bg-white/5 text-foreground shrink-0"
+          className="h-12 w-12 rounded-full flex items-center justify-center disabled:opacity-30 transition-colors hover:bg-white/5 text-foreground shrink-0 bg-secondary/30"
         >
-          <ChevronLeft className="w-4 h-4" /> Anterior
+          <ChevronLeft className="w-5 h-5" />
         </button>
 
-        <div className="hidden md:flex items-center gap-1.5">
-          {cards.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => {
-                dirRef.current = i > idx ? 1 : -1;
-                setFlipped(false);
-                setTimeout(() => setIdx(i), 40);
-              }}
-              aria-label={`Card ${i + 1}`}
-              className="h-2 rounded-full transition-all"
-              style={{
-                width: i === idx ? 16 : 8,
-                background:
-                  i === idx ? accent : "color-mix(in oklab, var(--muted-foreground) 35%, transparent)",
-              }}
-            />
-          ))}
-        </div>
-
         {flipped && idx < total - 1 ? (
-          <motion.button
-            initial={{ opacity: 0, x: 8 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.2 }}
-            onClick={goNext}
-            className="h-10 px-4 rounded-xl text-sm font-bold inline-flex items-center gap-1 transition-all active:scale-95 text-white shadow-md shrink-0"
-            style={{
-              background: `linear-gradient(90deg, ${accent}, color-mix(in oklab, ${accent} 70%, white))`,
-              boxShadow: `0 4px 16px ${accent}66`,
-            }}
-          >
-            Próximo <ChevronRight className="w-4 h-4" />
-          </motion.button>
+          <div className="flex gap-4">
+            <motion.button
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              onClick={() => handleManualAction('erro')}
+              className="h-12 px-6 rounded-xl text-sm font-bold inline-flex items-center justify-center gap-2 transition-all active:scale-95 text-white shadow-lg bg-red-500 hover:bg-red-600"
+            >
+              Errei
+            </motion.button>
+            <motion.button
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              onClick={() => handleManualAction('acerto')}
+              className="h-12 px-6 rounded-xl text-sm font-bold inline-flex items-center justify-center gap-2 transition-all active:scale-95 text-white shadow-lg bg-green-500 hover:bg-green-600"
+            >
+              Lembrei
+            </motion.button>
+          </div>
         ) : flipped && isLast ? (
           <motion.button
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="h-10 px-4 rounded-xl text-sm font-bold inline-flex items-center gap-1 text-white shadow-md shrink-0 cursor-default"
-            style={{
-              background: `linear-gradient(90deg, #16a34a, #22c55e)`,
-              boxShadow: `0 4px 16px rgba(34, 197, 94, 0.4)`,
-            }}
+            className="h-12 px-8 rounded-xl text-sm font-bold inline-flex items-center justify-center gap-1 text-white shadow-md cursor-default bg-gradient-to-r from-green-600 to-green-500"
           >
-            Concluído 🎉
+            Sessão Concluída 🎉
           </motion.button>
         ) : (
-          <span className="h-10 px-4 inline-flex items-center text-xs text-muted-foreground/60 select-none shrink-0 whitespace-nowrap">
-            {idx === total - 1 ? "Último" : "Vire o card →"}
+          <span className="h-12 px-4 inline-flex items-center text-sm font-medium text-muted-foreground select-none shrink-0">
+            {idx === total - 1 ? "Vire o último card" : "Toque no card para ver a resposta"}
           </span>
         )}
+        
+        {/* Placeholder for symmetry */}
+        <div className="h-12 w-12 shrink-0" />
       </div>
 
       {isLast && footerLastCard ? <div className="pt-2">{footerLastCard}</div> : null}
@@ -592,8 +800,6 @@ function FrenteCard({
 
 /* ============================ Abas Extra ============================ */
 
-type AbaKey = "explicacao" | "exemplo" | "dica";
-
 function AbasExtra({
   card,
   accent,
@@ -601,81 +807,130 @@ function AbasExtra({
   card: FlashcardElegante;
   accent: string;
 }) {
-  const abas: { key: AbaKey; label: string; icon: typeof BookOpen; content?: string | null }[] = [
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedMnemonic, setGeneratedMnemonic] = useState<string | null>(null);
+
+  const abas: { key: AbaKey | "mnemonico"; label: string; icon: any; content?: string | null }[] = [
     { key: "explicacao", label: "Explicação", icon: BookOpen, content: card.explicacao },
     { key: "exemplo", label: "Exemplo", icon: Sparkles, content: card.exemplo },
     { key: "dica", label: "Dica", icon: Lightbulb, content: card.dica },
   ];
+  
+  if (generatedMnemonic) {
+    abas.push({ key: "mnemonico", label: "Mnemônico (IA)", icon: BrainCircuit, content: generatedMnemonic });
+  }
+
   const disponiveis = abas.filter((a) => a.content && a.content.trim().length > 0);
-  const [ativa, setAtiva] = useState<AbaKey>(disponiveis[0]?.key ?? "explicacao");
+  const [ativa, setAtiva] = useState<AbaKey | "mnemonico">(disponiveis[0]?.key ?? "explicacao");
 
   useEffect(() => {
     if (!disponiveis.find((a) => a.key === ativa) && disponiveis[0]) {
       setAtiva(disponiveis[0].key);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [card.pergunta, disponiveis, ativa]);
+
+  // Limpa o mnemônico gerado ao mudar de card
+  useEffect(() => {
+    setGeneratedMnemonic(null);
   }, [card.pergunta]);
 
-  if (disponiveis.length === 0) return null;
+  const handleGenerateMnemonic = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsGenerating(true);
+    // Mock AI delay
+    setTimeout(() => {
+      setGeneratedMnemonic(`Mnemônico gerado pela IA:\nPara lembrar de "${card.tema || 'esse conceito'}", pense em...\n(Aqui viria a chamada real para a Edge Function do Supabase)`);
+      setAtiva("mnemonico");
+      setIsGenerating(false);
+      haptic.success();
+    }, 1500);
+  };
+
   const atual = disponiveis.find((a) => a.key === ativa) ?? disponiveis[0];
 
   return (
     <div className="space-y-3">
-      <div
-        role="tablist"
-        className="inline-flex p-1 rounded-xl gap-1 w-full"
-        style={{
-          background: `${accent}10`,
-          boxShadow: `inset 0 0 0 1px ${accent}30`,
-        }}
-      >
-        {disponiveis.map((a) => {
-          const ativo = a.key === atual.key;
-          const Icon = a.icon;
-          return (
-            <button
-              key={a.key}
-              role="tab"
-              aria-selected={ativo}
-              onClick={(e) => {
-                e.stopPropagation();
-                setAtiva(a.key);
-              }}
-              className="relative flex-1 h-9 rounded-lg text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition-colors"
-              style={{ color: ativo ? accent : "hsl(var(--muted-foreground))" }}
-            >
-              {ativo && (
-                <motion.div
-                  layoutId="fc-aba-ativa-bg"
-                  className="absolute inset-0 rounded-lg"
-                  style={{
-                    background: `${accent}22`,
-                    boxShadow: `inset 0 0 0 1px ${accent}55`,
+      <div className="flex items-center justify-between gap-2">
+        {disponiveis.length > 0 ? (
+          <div
+            role="tablist"
+            className="inline-flex p-1 rounded-xl gap-1"
+            style={{
+              background: `${accent}10`,
+              boxShadow: `inset 0 0 0 1px ${accent}30`,
+            }}
+          >
+            {disponiveis.map((a) => {
+              const ativo = a.key === atual.key;
+              const Icon = a.icon;
+              return (
+                <button
+                  key={a.key}
+                  role="tab"
+                  aria-selected={ativo}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setAtiva(a.key);
                   }}
-                  transition={{ type: "spring", stiffness: 380, damping: 32 }}
-                />
-              )}
-              <Icon className="h-3.5 w-3.5 relative" />
-              <span className="relative">{a.label}</span>
-            </button>
-          );
-        })}
+                  className="relative h-9 px-3 rounded-lg text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition-colors"
+                  style={{ color: ativo ? accent : "hsl(var(--muted-foreground))" }}
+                >
+                  {ativo && (
+                    <motion.div
+                      layoutId="fc-aba-ativa-bg"
+                      className="absolute inset-0 rounded-lg"
+                      style={{
+                        background: `${accent}22`,
+                        boxShadow: `inset 0 0 0 1px ${accent}55`,
+                      }}
+                      transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                    />
+                  )}
+                  <Icon className="h-3.5 w-3.5 relative" />
+                  <span className="relative">{a.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="flex-1" />
+        )}
+
+        {!generatedMnemonic && (
+          <button
+            onClick={handleGenerateMnemonic}
+            disabled={isGenerating}
+            className="h-9 px-3 rounded-xl text-xs font-bold inline-flex items-center justify-center gap-1.5 transition-all text-white shadow-md disabled:opacity-70 bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300"
+          >
+            {isGenerating ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <>
+                <BrainCircuit className="w-4 h-4" /> 
+                <span className="hidden sm:inline">Gerar Mnemônico</span>
+                <span className="sm:hidden">IA</span>
+              </>
+            )}
+          </button>
+        )}
       </div>
 
       <AnimatePresence mode="wait" initial={false}>
-        <motion.div
-          key={atual.key}
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -6 }}
-          transition={{ duration: 0.2 }}
-          className="rounded-xl p-3 border"
-          style={{ background: `${accent}0d`, borderColor: `${accent}33` }}
-        >
-          <p className="text-sm text-foreground/85 leading-relaxed whitespace-pre-wrap">
-            {atual.content}
-          </p>
-        </motion.div>
+        {atual && (
+          <motion.div
+            key={atual.key}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.2 }}
+            className="rounded-xl p-3 border"
+            style={{ background: `${accent}0d`, borderColor: `${accent}33` }}
+          >
+            <p className="text-sm text-foreground/85 leading-relaxed whitespace-pre-wrap">
+              {atual.content}
+            </p>
+          </motion.div>
+        )}
       </AnimatePresence>
     </div>
   );

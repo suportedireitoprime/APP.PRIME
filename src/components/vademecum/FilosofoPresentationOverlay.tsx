@@ -3,6 +3,9 @@ import { Player, type PlayerRef } from '@remotion/player';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
+import { Capacitor } from '@capacitor/core';
+import { TextToSpeech } from '@capacitor-community/text-to-speech';
+
 import {
   SocratesVideo,
   SOCRATES_DURATION_FRAMES,
@@ -11,28 +14,75 @@ import {
   SOCRATES_WIDTH,
 } from './SocratesVideo';
 
+import {
+  PlataoVideo,
+  PLATAO_DURATION_FRAMES,
+  PLATAO_FPS,
+  PLATAO_HEIGHT,
+  PLATAO_WIDTH,
+} from './PlataoVideo';
+
+import {
+  AristotelesVideo,
+  ARISTOTELES_DURATION_FRAMES,
+  ARISTOTELES_FPS,
+  ARISTOTELES_HEIGHT,
+  ARISTOTELES_WIDTH,
+} from './AristotelesVideo';
+
 type Props = {
   open: boolean;
+  personagemId?: string;
+  customAudioUrl?: string;
+  version?: number;
   onFinished: () => void;
 };
 
-const ROTEIRO = [
-  { frame: 10, text: "Sócrates não deixou uma única linha escrita. Soldado valente de Atenas e filósofo andante, sua missão não era dar as respostas, mas ajudar os jovens a darem à luz as suas próprias ideias." },
-  { frame: 450, text: "Diferente dos sofistas, que cobravam para ensinar a retórica vazia, Sócrates andava pelas ruas em busca da verdade. Com sua famosa ironia, ele demonstrava aos intelectuais arrogantes que eles nada sabiam." },
-  { frame: 900, text: "Sua guerra contra a ignorância criou inimigos letais. Acusado de corromper a juventude e de impiedade, ele foi condenado à morte. Um cálice de cicuta selaria o seu destino." },
-  { frame: 1350, text: "Recusando-se a fugir para não trair as leis de sua cidade, Sócrates bebeu o veneno voluntariamente. Tornou-se o primeiro mártir do pensamento. Como ele disse: nada escrevi, mas serei lido para sempre." }
-];
+import { SOCRATES_ROTEIROS, PLATAO_ROTEIROS, ARISTOTELES_ROTEIROS } from './roteiros';
 
-export default function FilosofoPresentationOverlay({ open, onFinished }: Props) {
+const VIDEO_CONFIGS: Record<string, { component: React.FC; durationInFrames: number; fps: number; width: number; height: number; getRoteiro: (v: number) => Array<{frame: number; text: string}> }> = {
+  socrates: {
+    component: SocratesVideo,
+    durationInFrames: SOCRATES_DURATION_FRAMES,
+    fps: SOCRATES_FPS,
+    width: SOCRATES_WIDTH,
+    height: SOCRATES_HEIGHT,
+    getRoteiro: (v) => SOCRATES_ROTEIROS[v] || SOCRATES_ROTEIROS[1],
+  },
+  platao: {
+    component: PlataoVideo,
+    durationInFrames: PLATAO_DURATION_FRAMES,
+    fps: PLATAO_FPS,
+    width: PLATAO_WIDTH,
+    height: PLATAO_HEIGHT,
+    getRoteiro: (v) => PLATAO_ROTEIROS[v] || PLATAO_ROTEIROS[1],
+  },
+  aristoteles: {
+    component: AristotelesVideo,
+    durationInFrames: ARISTOTELES_DURATION_FRAMES,
+    fps: ARISTOTELES_FPS,
+    width: ARISTOTELES_WIDTH,
+    height: ARISTOTELES_HEIGHT,
+    getRoteiro: (v) => ARISTOTELES_ROTEIROS[v] || ARISTOTELES_ROTEIROS[1],
+  }
+};
+
+export default function FilosofoPresentationOverlay({ open, personagemId, customAudioUrl, version = 1, onFinished }: Props) {
+  const config = VIDEO_CONFIGS[personagemId || 'socrates'] || VIDEO_CONFIGS['socrates'];
+  const roteiro = config.getRoteiro(version);
+  const totalDuration = roteiro.length > 0 ? roteiro[roteiro.length - 1].frame + roteiro[roteiro.length - 1].duration : config.durationInFrames;
+
   const playerRef = useRef<PlayerRef>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const lastSpokenIndex = useRef(-1);
+  const lastSceneIndex = useRef(-1);
 
   // Auto-play e Reset
   useEffect(() => {
     if (!open) {
       if ('speechSynthesis' in window) window.speechSynthesis.cancel();
       lastSpokenIndex.current = -1;
+      lastSceneIndex.current = -1;
       return;
     }
     const p = playerRef.current;
@@ -42,7 +92,7 @@ export default function FilosofoPresentationOverlay({ open, onFinished }: Props)
     return () => clearTimeout(t);
   }, [open]);
 
-  // Loop de Verificação (TTS Narrator Sincronizado aos Frames)
+  // Loop de Verificação (TTS Narrator Sincronizado aos Frames e Haptics)
   useEffect(() => {
     if (!open) return;
     const p = playerRef.current;
@@ -58,38 +108,79 @@ export default function FilosofoPresentationOverlay({ open, onFinished }: Props)
          setIsPlaying(playingStatus);
       }
 
-      // Se passou por um gatilho de cena novo enquanto roda, aciona o TTS
-      if (playingStatus && 'speechSynthesis' in window) {
-        for (let i = 0; i < ROTEIRO.length; i++) {
-          if (f >= ROTEIRO[i].frame && i > lastSpokenIndex.current) {
-            lastSpokenIndex.current = i;
-            window.speechSynthesis.cancel(); // Para a fala anterior
-            const utterance = new SpeechSynthesisUtterance(ROTEIRO[i].text);
-            utterance.lang = 'pt-BR';
-            utterance.rate = 1.0; 
-            utterance.pitch = 1.0;
-            window.speechSynthesis.speak(utterance);
+        // Logica 1: Haptic Feedback Rítmico de Mudança de Cena (Dinâmico)
+        let currentSceneIndex = 0;
+        for (let i = 0; i < roteiro.length; i++) {
+          if (f >= roteiro[i].frame) currentSceneIndex = i;
+        }
+
+        if (currentSceneIndex > lastSceneIndex.current && f > 0) {
+          lastSceneIndex.current = currentSceneIndex;
+          
+          // As cenas 6 (idx 5), 11 (idx 10) e 14 (idx 13) são Timelines em todos os roteiros
+          const isTimeline = [5, 10, 13].includes(currentSceneIndex);
+          if (isTimeline) {
+            haptic.heavy();
+          } else {
+            haptic.selection();
           }
         }
-      }
+
+        // Lógica 2: TTS Sincronizado com os "Hooks" (Gatilhos de texto)
+        for (let i = 0; i < roteiro.length; i++) {
+          if (f >= roteiro[i].frame && i > lastSpokenIndex.current) {
+            lastSpokenIndex.current = i;
+            
+            // Se o usuário fez upload de áudio customizado, o TTS Nativo fica mudo
+            if (customAudioUrl) continue;
+
+            const ttsText = roteiro[i].text;
+            
+            if (Capacitor.isNativePlatform()) {
+              TextToSpeech.stop().then(() => {
+                TextToSpeech.speak({
+                  text: ttsText,
+                  lang: 'pt-BR',
+                  rate: 1.15, 
+                  pitch: 1.0,
+                }).catch(e => console.error("TTS Native Error:", e));
+              });
+            } else if ('speechSynthesis' in window) {
+              window.speechSynthesis.cancel();
+              const utterance = new SpeechSynthesisUtterance(ttsText);
+              utterance.lang = 'pt-BR';
+              utterance.rate = 1.15; 
+              utterance.pitch = 1.0;
+              window.speechSynthesis.speak(utterance);
+            }
+          }
+        }
 
       raf = requestAnimationFrame(checkFrames);
     };
 
     raf = requestAnimationFrame(checkFrames);
     return () => cancelAnimationFrame(raf);
-  }, [open, isPlaying]);
+  }, [open, isPlaying, config, version]); // dependência adicionada
 
-  // Se o video for pausado manualmente, cancela a voz e volta os dados
+  // Se o video for pausado manualmente, cancela a voz
   useEffect(() => {
-     if (!isPlaying && 'speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
+     if (!isPlaying) {
+        if (Capacitor.isNativePlatform()) {
+           TextToSpeech.stop().catch(console.error);
+        } else if ('speechSynthesis' in window) {
+           window.speechSynthesis.cancel();
+        }
      }
   }, [isPlaying]);
 
   const handleClose = () => {
     haptic.selection(); 
-    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    if (Capacitor.isNativePlatform()) {
+       TextToSpeech.stop().catch(console.error);
+    } else if ('speechSynthesis' in window) {
+       window.speechSynthesis.cancel();
+    }
     onFinished();
   };
 
@@ -115,11 +206,12 @@ export default function FilosofoPresentationOverlay({ open, onFinished }: Props)
           <div className="relative w-full h-full max-w-[1080px] mx-auto flex items-center justify-center bg-black">
             <Player
               ref={playerRef}
-              component={SocratesVideo}
-              durationInFrames={SOCRATES_DURATION_FRAMES}
-              fps={SOCRATES_FPS}
-              compositionWidth={SOCRATES_WIDTH}
-              compositionHeight={SOCRATES_HEIGHT}
+              component={config.component}
+              durationInFrames={totalDuration}
+              fps={config.fps}
+              compositionWidth={config.width}
+              compositionHeight={config.height}
+              inputProps={{ customAudioUrl, version, roteiro: config.getRoteiro(version) }}
               style={{
                 width: '100%',
                 height: '100%',
@@ -128,7 +220,25 @@ export default function FilosofoPresentationOverlay({ open, onFinished }: Props)
               controls={true}
               autoPlay={false}
               loop={false}
+              clickToPlay={true}
             />
+
+            {/* Big Play Button Overlay */}
+            {!isPlaying && (
+              <button
+                onClick={() => {
+                  playerRef.current?.play();
+                  setIsPlaying(true);
+                  haptic.selection();
+                }}
+                className="absolute inset-0 z-[205] flex flex-col items-center justify-center bg-black/40 backdrop-blur-sm transition-all"
+              >
+                <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-white/20 border-2 border-white/50 flex items-center justify-center shadow-2xl hover:scale-110 hover:bg-white/30 transition-all">
+                   <div className="w-0 h-0 border-t-[20px] border-t-transparent border-l-[35px] border-l-white border-b-[20px] border-b-transparent ml-3 drop-shadow-xl" />
+                </div>
+                <span className="mt-6 text-white font-bold tracking-widest uppercase text-xl drop-shadow-md">Tocar Documentário</span>
+              </button>
+            )}
           </div>
         </motion.div>
       )}

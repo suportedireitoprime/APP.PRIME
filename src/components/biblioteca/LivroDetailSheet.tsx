@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { ChevronDown, BookOpen, Heart, Info, FileText, Bell, Clock, Layers, Calendar } from 'lucide-react';
+import { ChevronDown, BookOpen, Heart, Info, FileText, Bell, Clock, Layers, Calendar, X } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { formatarSobreLivro, estimarMinutosLeitura, formatarDuracao } from '@/lib/livroSobreFormat';
@@ -37,9 +37,10 @@ interface LivroDetailSheetProps {
   livro: LivroNormalizado | null;
   open: boolean;
   onClose: () => void;
+  inline?: boolean;
 }
 
-const LivroDetailSheet = ({ livro, open, onClose }: LivroDetailSheetProps) => {
+const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProps) => {
   useEscapeKey(open, onClose);
   const navigate = useNavigate();
   const isDesktop = useIsDesktop();
@@ -104,8 +105,8 @@ const LivroDetailSheet = ({ livro, open, onClose }: LivroDetailSheetProps) => {
     return () => unsub();
   }, [livro, open]);
 
-  // Trava scroll do fundo enquanto a folha estiver aberta sem alterar position:fixed no body
-  useBodyScrollLock(open);
+  // Trava scroll do fundo enquanto a folha estiver aberta, exceto se for renderizado inline
+  useBodyScrollLock(open && !inline);
 
   // Reset síncrono do scroll no mount/troca de livro. O `key={livro.id}` no
   // container abaixo força remount, então este effect roda com scrollTop já 0.
@@ -184,11 +185,10 @@ const LivroDetailSheet = ({ livro, open, onClose }: LivroDetailSheetProps) => {
     }
   };
 
-
-  return createPortal((
+  const renderContent = () => (
     <>
       <AnimatePresence>
-        {open && (
+        {open && !inline && (
           <motion.div
             key="backdrop"
             initial={{ opacity: 0 }}
@@ -203,17 +203,20 @@ const LivroDetailSheet = ({ livro, open, onClose }: LivroDetailSheetProps) => {
           />
         )}
       </AnimatePresence>
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {open && (
           <motion.div
             key="sheet"
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '100%', pointerEvents: 'none' }}
-            transition={{ type: 'spring', stiffness: 260, damping: 30 }}
-            className="fixed inset-x-0 bottom-0 z-[1001] h-[90dvh] mx-auto w-full md:max-w-[720px] bg-background flex flex-col overflow-hidden rounded-t-3xl md:border md:border-border md:border-b-0 shadow-[0_-8px_32px_-8px_rgba(0,0,0,0.5)]"
+            initial={inline ? { opacity: 0, scale: 0.98 } : { y: '100%' }}
+            animate={inline ? { opacity: 1, scale: 1 } : { y: 0 }}
+            exit={inline ? { opacity: 0, scale: 0.98 } : { y: '100%', pointerEvents: 'none' }}
+            transition={inline ? { duration: 0.2 } : { type: 'spring', stiffness: 260, damping: 30 }}
+            className={
+              inline
+                ? "relative w-full h-full flex flex-col overflow-hidden rounded-3xl bg-card border border-border/50 shadow-xl"
+                : "fixed inset-x-0 bottom-0 z-[1001] h-[90dvh] mx-auto w-full md:max-w-[720px] bg-background flex flex-col overflow-hidden rounded-t-3xl md:border md:border-border md:border-b-0 shadow-[0_-8px_32px_-8px_rgba(0,0,0,0.5)]"
+            }
           >
-
 
             {/* Header flutuante — botão chevron-down + favoritar */}
             <div className="absolute top-[calc(var(--sai-top,0px)+0.75rem)] left-4 z-20 flex gap-2">
@@ -222,7 +225,7 @@ const LivroDetailSheet = ({ livro, open, onClose }: LivroDetailSheetProps) => {
                 aria-label="Fechar"
                 className="w-11 h-11 rounded-full bg-white/15 hover:bg-white/25 backdrop-blur-xl backdrop-saturate-150 transition-colors flex items-center justify-center border border-white/25 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.25)]"
               >
-                <ChevronDown className="w-5 h-5 text-white" />
+                {inline ? <X className="w-5 h-5 text-white" /> : <ChevronDown className="w-5 h-5 text-white" />}
               </button>
             </div>
             <div className="absolute top-[calc(var(--sai-top,0px)+0.75rem)] right-4 z-20 flex gap-2">
@@ -526,7 +529,13 @@ const LivroDetailSheet = ({ livro, open, onClose }: LivroDetailSheetProps) => {
         livroCapa={capaUrl}
       />
     </>
-  ), document.body);
+  );
+
+  if (inline) {
+    return renderContent();
+  }
+
+  return createPortal(renderContent(), document.body);
 };
 
 const InfoBlock = ({ label, value }: { label: string; value: string }) => (

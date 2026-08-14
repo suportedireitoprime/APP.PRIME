@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Clock, ChevronRight, Trash2, ScrollText } from 'lucide-react';
 import { getRecentes, clearRecentes, type LeiRecente } from '@/lib/leisRecentes';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
+import { haptic } from '@/lib/nativeHaptics';
 
 interface Props {
   open: boolean;
@@ -39,10 +40,10 @@ const RecentesOverlay = ({ open, onClose, onSelectLei }: Props) => {
           exit={{ opacity: 0, x: 40 }}
           transition={{ type: 'spring', stiffness: 200, damping: 25 }}
         >
-          <header className="sticky top-0 z-10 bg-[#1c1c1c] border-b border-white/5 pt-[var(--sai-top,env(safe-area-inset-top,0px))]">
+          <header className="sticky top-0 z-10 bg-[#1c1c1c] border-b border-white/5 pt-[calc(1.25rem+var(--sai-top,env(safe-area-inset-top,0px)))]">
             <div className="flex items-center gap-3 px-4 h-20 md:h-[76px]">
               <button
-                onClick={onClose}
+                onClick={() => { haptic.light(); onClose(); }}
                 aria-label="Fechar"
                 className="w-12 h-12 md:w-11 md:h-11 rounded-full bg-white/[0.06] border border-white/10 flex items-center justify-center active:scale-95 transition"
               >
@@ -58,7 +59,7 @@ const RecentesOverlay = ({ open, onClose, onSelectLei }: Props) => {
               </div>
               {list.length > 0 ? (
                 <button
-                  onClick={() => { clearRecentes(); setList([]); }}
+                  onClick={() => { haptic.warning(); clearRecentes(); setList([]); }}
                   aria-label="Limpar histórico"
                   className="w-12 h-12 md:w-11 md:h-11 rounded-full bg-white/[0.06] border border-white/10 flex items-center justify-center active:scale-95 transition"
                 >
@@ -91,7 +92,7 @@ const RecentesOverlay = ({ open, onClose, onSelectLei }: Props) => {
                     transition={{ delay: i * 0.02, duration: 0.2 }}
                   >
                     <button
-                      onClick={() => onSelectLei(lei)}
+                      onClick={() => { haptic.selection(); onSelectLei(lei); }}
                       className="w-full flex items-center gap-3 p-3 rounded-2xl bg-card/50 border border-border/60 hover:border-primary/40 active:scale-[0.98] transition text-left"
                     >
                       <div
