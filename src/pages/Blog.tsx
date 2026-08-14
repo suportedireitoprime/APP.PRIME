@@ -13,6 +13,7 @@ import { useFeatureLimit } from '@/hooks/useFeatureLimit';
 import PremiumGate from '@/components/PremiumGate';
 import { supabase } from '@/integrations/supabase/client';
 import BloggerBottomNav, { type BloggerTab } from '@/components/vademecum/BloggerBottomNav';
+import BiografiaCategoriasView from '@/components/vademecum/BiografiaCategoriasView';
 import { Input } from '@/components/ui/input';
 import { useIsDesktop } from '@/hooks/use-desktop';
 import { LoadingState, EmptyState } from '@/components/ui/states';
@@ -127,7 +128,7 @@ const Blog = () => {
         base = base.filter((p) => cur.has(p.id));
       } catch { /* ignore */ }
     } else if (bottomTab === 'biografia') {
-      base = base.filter((p) => p.tema === 'Filosofia' || p.tema === 'Clássicos');
+      base = []; // A aba de biografia tem sua própria view.
     } else if (bottomTab === 'legislativo') {
       base = base.filter((p) => p.tema === 'Leis');
     } else if (selectedFilter === 'trending') {
@@ -275,10 +276,13 @@ const Blog = () => {
       </div>
 
 
-      <div className={isDesktop ? 'mx-auto w-full max-w-7xl px-6 py-4 pb-16 flex gap-6 items-start' : 'max-w-3xl mx-auto px-4 py-4 space-y-3 pb-40'}>
-        <div className={isDesktop ? 'w-[420px] shrink-0 space-y-3 max-h-[calc(100dvh-260px)] overflow-y-auto pr-2 -mr-2' : 'w-full space-y-3'}>
-        <AnimatePresence mode="wait">
-          <motion.div
+      {bottomTab === 'biografia' ? (
+        <BiografiaCategoriasView />
+      ) : (
+        <div className={isDesktop ? 'mx-auto w-full max-w-7xl px-6 py-4 pb-16 flex gap-6 items-start' : 'max-w-3xl mx-auto px-4 py-4 space-y-3 pb-40'}>
+          <div className={isDesktop ? 'w-[420px] shrink-0 space-y-3 max-h-[calc(100dvh-260px)] overflow-y-auto pr-2 -mr-2' : 'w-full space-y-3'}>
+          <AnimatePresence mode="wait">
+            <motion.div
             key={selectedFilter}
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -437,6 +441,7 @@ const Blog = () => {
           </div>
         )}
       </div>
+      )}
 
       {!isDesktop && (
         <BlogPostSheet post={selectedPost} onClose={() => setSelectedPost(null)} />
