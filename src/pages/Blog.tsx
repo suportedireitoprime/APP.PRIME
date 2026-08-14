@@ -14,6 +14,8 @@ import PremiumGate from '@/components/PremiumGate';
 import { supabase } from '@/integrations/supabase/client';
 import BloggerBottomNav, { type BloggerTab } from '@/components/vademecum/BloggerBottomNav';
 import BiografiaCategoriasView from '@/components/vademecum/BiografiaCategoriasView';
+import BiografiaListView from '@/components/vademecum/BiografiaListView';
+import BiografiaArtigoView from '@/components/vademecum/BiografiaArtigoView';
 import BlogCategoriasView from '@/components/vademecum/BlogCategoriasView';
 import { Input } from '@/components/ui/input';
 import { useIsDesktop } from '@/hooks/use-desktop';
@@ -57,6 +59,8 @@ const Blog = () => {
   const [gateOpen, setGateOpen] = useState(false);
   const [trendingIds, setTrendingIds] = useState<string[] | null>(null);
   const [bottomTab, setBottomTab] = useState<BloggerTab>('blogger');
+  const [selectedBioCategory, setSelectedBioCategory] = useState<string | null>(null);
+  const [selectedBioPerson, setSelectedBioPerson] = useState<string | null>(null);
   const { canUse, register, used, config } = useFeatureLimit('blog_read');
 
   // Carrega posts do Blog Edição com stale-while-revalidate (localStorage cache).
@@ -279,7 +283,33 @@ const Blog = () => {
       )}
 
       {bottomTab === 'biografia' ? (
-        <BiografiaCategoriasView />
+        selectedBioPerson ? (
+          <BiografiaArtigoView 
+            personagemId={selectedBioPerson}
+            onBack={() => {
+              window.scrollTo({ top: 0 });
+              setSelectedBioPerson(null);
+            }} 
+          />
+        ) : selectedBioCategory ? (
+          <BiografiaListView 
+            categoriaId={selectedBioCategory}
+            categoriaLabel={selectedBioCategory.charAt(0).toUpperCase() + selectedBioCategory.slice(1)}
+            onBack={() => {
+              window.scrollTo({ top: 0 });
+              setSelectedBioCategory(null);
+            }}
+            onSelectPersonagem={(id) => {
+              window.scrollTo({ top: 0 });
+              setSelectedBioPerson(id);
+            }}
+          />
+        ) : (
+          <BiografiaCategoriasView onSelectCategoria={(id) => {
+             window.scrollTo({ top: 0 });
+             setSelectedBioCategory(id);
+          }} />
+        )
       ) : bottomTab === 'categorias' ? (
         <BlogCategoriasView 
           onSelectCategoria={(tema) => {
@@ -478,6 +508,8 @@ const Blog = () => {
           } else if (tab === 'categorias') {
             window.scrollTo({ top: 0, behavior: 'smooth' });
           } else if (tab === 'biografia') {
+            setSelectedBioCategory(null);
+            setSelectedBioPerson(null);
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }
         }} 

@@ -30,10 +30,14 @@ const containerVariants = {
 
 const itemVariants = {
   hidden: { opacity: 0, y: 15 },
-  show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } }
+  show: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 300, damping: 24 } }
 };
 
-export const BiografiaCategoriasView = () => {
+interface Props {
+  onSelectCategoria: (id: string) => void;
+}
+
+export const BiografiaCategoriasView = ({ onSelectCategoria }: Props) => {
   return (
     <div className="w-full max-w-4xl mx-auto px-4 py-6 md:py-8 space-y-6 pb-32">
       <div className="space-y-2 text-center max-w-2xl mx-auto">
@@ -59,7 +63,7 @@ export const BiografiaCategoriasView = () => {
               variants={itemVariants}
               onClick={() => {
                 haptic.selection();
-                toast.info(`Categoria "${cat.label}" em construção. Em breve!`);
+                onSelectCategoria(cat.id);
               }}
               className="flex flex-col items-center justify-center p-5 gap-3 rounded-2xl bg-card border border-border/40 shadow-sm hover:shadow-md hover:border-primary/30 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary group text-center"
             >
