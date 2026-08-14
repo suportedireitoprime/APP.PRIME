@@ -12,6 +12,8 @@ import { useBlogPostsCache } from '@/hooks/useBlogPostsCache';
 import { useFeatureLimit } from '@/hooks/useFeatureLimit';
 import PremiumGate from '@/components/PremiumGate';
 import { supabase } from '@/integrations/supabase/client';
+import BloggerBottomNav, { type BloggerTab } from '@/components/vademecum/BloggerBottomNav';
+import { Input } from '@/components/ui/input';
 import { useIsDesktop } from '@/hooks/use-desktop';
 import { LoadingState, EmptyState } from '@/components/ui/states';
 import { BookOpenText, Share2, Copy, Star } from 'lucide-react';
@@ -52,6 +54,8 @@ const Blog = () => {
   const [infoOpen, setInfoOpen] = useState(false);
   const [gateOpen, setGateOpen] = useState(false);
   const [trendingIds, setTrendingIds] = useState<string[] | null>(null);
+  const [bottomTab, setBottomTab] = useState<BloggerTab>('blogger');
+  const [searchQuery, setSearchQuery] = useState("");
   const { canUse, register, used, config } = useFeatureLimit('blog_read');
 
   // Carrega posts do Blog Edição com stale-while-revalidate (localStorage cache).
@@ -115,20 +119,36 @@ const Blog = () => {
     const byDate = [...allPosts].sort(
       (a, b) => new Date(b.data_publicacao).getTime() - new Date(a.data_publicacao).getTime(),
     );
-    if (selectedFilter === 'trending') {
+    let base = byDate;
+
+    // Filter by bottom tab contexts
+    if (bottomTab === 'favoritos') {
+      try {
+        const cur = new Set<string>(JSON.parse(localStorage.getItem('blog:favorites') || '[]'));
+        base = base.filter((p) => cur.has(p.id));
+      } catch { /* ignore */ }
+    } else if (bottomTab === 'pesquisar' && searchQuery.length > 2) {
+      const q = searchQuery.toLowerCase();
+      base = base.filter(
+        (p) => p.titulo.toLowerCase().includes(q) || p.resumo.toLowerCase().includes(q)
+      );
+    } else if (bottomTab === 'legislativo') {
+      base = base.filter((p) => p.tema === 'Leis');
+    } else if (selectedFilter === 'trending') {
       if (!trendingIds || trendingIds.length === 0) return byDate; // fallback
       const map = new Map(allPosts.map((p) => [p.id, p]));
       const ordered = trendingIds.map((id) => map.get(id)).filter(Boolean) as BlogPost[];
-      // completa com posts não ranqueados no final por data
       const seen = new Set(ordered.map((p) => p.id));
       byDate.forEach((p) => { if (!seen.has(p.id)) ordered.push(p); });
-      return ordered;
+      base = ordered;
+    } else if (selectedFilter !== 'todos') {
+      base = base.filter((p) => p.tema === selectedFilter);
     }
-    if (selectedFilter === 'todos') return byDate;
-    return byDate.filter((p) => p.tema === selectedFilter);
-  }, [allPosts, selectedFilter, trendingIds]);
+    
+    return base;
+  }, [allPosts, selectedFilter, trendingIds, bottomTab, searchQuery]);
 
-  const visiblePosts = blogLoaded ? posts : [];
+  const visiblePosts = useMemo(() => blogLoaded ? posts : [], [blogLoaded, posts]);
 
   // Preload das 3 primeiras thumbs — força o browser a começar o download
   // antes do React montar os <img>, deixando o "acima da dobra" quase instantâneo.
@@ -204,11 +224,27 @@ const Blog = () => {
       </AnimatePresence>
 
       {/* Capa grande contextual (Todos + por categoria) */}
-      <BlogHeroHeader selectedTema={selectedFilter === 'trending' || selectedFilter === 'todos' ? null : selectedFilter} />
+      {bottomTab !== 'pesquisar' && bottomTab !== 'favoritos' && (
+        <BlogHeroHeader selectedTema={selectedFilter === 'trending' || selectedFilter === 'todos' ? null : selectedFilter} />
+      )}
 
+      {/* Busca */}
+      {bottomTab === 'pesquisar' && (
+        <div className="max-w-3xl mx-auto px-4 py-4">
+          <Input
+            id="blog-search"
+            type="search"
+            placeholder="Pesquisar artigos por título ou assunto..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="rounded-2xl border-primary/20 bg-card/60 backdrop-blur-sm shadow-inner"
+            autoFocus
+          />
+        </div>
+      )}
 
       {/* Chips de tema */}
-      <div className="bg-background border-b border-border/40">
+      <div id="blog-filters" className="bg-background border-b border-border/40">
         <div role="tablist" aria-label="Filtros de temas do blog" className="flex gap-2 overflow-x-auto no-scrollbar px-4 py-3 max-w-3xl mx-auto">
           <button
             role="tab"
@@ -431,6 +467,29 @@ const Blog = () => {
         title="Limite de leituras atingido"
         description="Assinantes leem todos os artigos do Blog Jurídico sem limites."
         usageLabel={config ? `Você leu ${used} de ${config.limit_value} artigos este mês` : undefined}
+      />
+      
+      <BloggerBottomNav 
+        active={bottomTab} 
+        onChange={(tab) => {
+          setBottomTab(tab);
+          if (tab === 'blogger') {
+            setSelectedFilter('todos');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          } else if (tab === 'legislativo') {
+            setSelectedFilter('Leis');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          } else if (tab === 'categorias') {
+            const el = document.getElementById('blog-filters');
+            if (el) {
+              const y = el.getBoundingClientRect().top + window.scrollY - 100;
+              window.scrollTo({ top: y, behavior: 'smooth' });
+            }
+          } else if (tab === 'pesquisar') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setTimeout(() => document.getElementById('blog-search')?.focus(), 100);
+          }
+        }} 
       />
     </div>
   );
