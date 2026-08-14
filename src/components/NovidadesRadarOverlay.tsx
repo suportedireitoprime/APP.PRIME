@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { X, ArrowRight, Play } from 'lucide-react';
@@ -7,6 +7,7 @@ import { resenhaSelect } from '@/lib/resenhaBackend';
 import { useAuth } from '@/hooks/useAuth';
 import brasaoAsset from '@/assets/brasao-republica.webp';
 import horusAsset from '@/assets/horus/horus-owl.webp';
+import tecladoSfx from '@/assets/teclado.mp3';
 import { loadObras } from '@/lib/tematicaStore';
 import { montarAgenda } from '@/lib/tematicaRecomendacoes';
 
@@ -25,6 +26,9 @@ const LS_KEY = 'radar_leis_last_seen';
 const SEEN_IDS_KEY = 'radar_leis_seen_ids';
 const MAX_SEEN_IDS = 500;
 
+/** Per-user + per-topic+date key for deduplication */
+const SEEN_TOPICS_PREFIX = 'radar_topics_seen_';
+
 function readSeenIds(): string[] {
   try {
     const raw = localStorage.getItem(SEEN_IDS_KEY);
@@ -38,6 +42,39 @@ function writeSeenIds(ids: string[]) {
   try {
     const trimmed = ids.slice(-MAX_SEEN_IDS);
     localStorage.setItem(SEEN_IDS_KEY, JSON.stringify(trimmed));
+  } catch { /* ignore */ }
+}
+
+/** Reads topics already seen by this user today. Key format: "tipo_label::YYYY-MM-DD" */
+function readSeenTopics(userId: string): Set<string> {
+  try {
+    const raw = localStorage.getItem(SEEN_TOPICS_PREFIX + userId);
+    if (!raw) return new Set();
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object') return new Set();
+    // Purge old dates (keep only today)
+    const todayISO = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'America/Sao_Paulo',
+      year: 'numeric', month: '2-digit', day: '2-digit',
+    }).format(new Date());
+    const keys = Object.keys(parsed).filter((k) => k.endsWith(todayISO));
+    return new Set(keys);
+  } catch { return new Set(); }
+}
+
+function markTopicSeen(userId: string, topicKeys: string[]) {
+  try {
+    const todayISO = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'America/Sao_Paulo',
+      year: 'numeric', month: '2-digit', day: '2-digit',
+    }).format(new Date());
+    // Only keep today's entries to avoid localStorage bloat
+    const obj: Record<string, boolean> = {};
+    for (const k of topicKeys) obj[k] = true;
+    // Merge with existing today entries
+    const existing = readSeenTopics(userId);
+    for (const e of existing) obj[e] = true;
+    localStorage.setItem(SEEN_TOPICS_PREFIX + userId, JSON.stringify(obj));
   } catch { /* ignore */ }
 }
 
@@ -65,6 +102,7 @@ export default function NovidadesRadarOverlay() {
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<OverlayItem[]>([]);
   const [landed, setLanded] = useState(false);
+  const tecladoRef = useRef<HTMLAudioElement | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
@@ -84,6 +122,7 @@ export default function NovidadesRadarOverlay() {
       })();
       
       const seen = new Set(readSeenIds());
+      const seenTopics = user?.id ? readSeenTopics(user.id) : new Set<string>();
       const now = new Date();
       const todayISO = new Intl.DateTimeFormat('en-CA', {
         timeZone: 'America/Sao_Paulo',
@@ -110,7 +149,14 @@ export default function NovidadesRadarOverlay() {
       const list: OverlayItem[] = [];
 
       // 1) Radar 360
-      const radarFiltrado = rawRadar.filter((it) => !seen.has(it.id) && String(it.data_dou).slice(0, 10) === todayISO);
+      const radarFiltrado = rawRadar.filter((it) => {
+        if (seen.has(it.id)) return false;
+        if (String(it.data_dou).slice(0, 10) !== todayISO) return false;
+        // Per-user topic dedup: skip if this topic was already shown today
+        const topicKey = `${it.tipo_ato}::${todayISO}`;
+        if (seenTopics.has(topicKey)) return false;
+        return true;
+      });
       for (const it of radarFiltrado) {
         list.push({
           id: it.id,
@@ -124,7 +170,14 @@ export default function NovidadesRadarOverlay() {
 
       // 2) Boletins
       if (resBoletins.data) {
-        const boletinsFiltrados = resBoletins.data.filter((it) => !seen.has(it.id) && String(it.data_ref).slice(0, 10) === todayISO);
+        const boletinsFiltrados = resBoletins.data.filter((it) => {
+          if (seen.has(it.id)) return false;
+          if (String(it.data_ref).slice(0, 10) !== todayISO) return false;
+          const isN = it.tipo === 'noticias';
+          const topicKey = `${isN ? 'Boletim de Notícias' : 'Boletim Jurídico'}::${todayISO}`;
+          if (seenTopics.has(topicKey)) return false;
+          return true;
+        });
         for (const b of boletinsFiltrados) {
           const isNoticias = b.tipo === 'noticias';
           list.push({
@@ -144,7 +197,8 @@ export default function NovidadesRadarOverlay() {
         const recHoje = agenda[0];
         if (recHoje && recHoje.obra) {
           const recId = `rec-${recHoje.obra.id}-${todayISO}`;
-          if (!seen.has(recId)) {
+          const recTopicKey = `Temática Jurídica::${todayISO}`;
+          if (!seen.has(recId) && !seenTopics.has(recTopicKey)) {
             list.push({
               id: recId,
               origem: 'recomendacao',
@@ -176,9 +230,24 @@ export default function NovidadesRadarOverlay() {
     const prev = readSeenIds();
     const merged = Array.from(new Set([...prev, ...items.map((i) => i.id)]));
     writeSeenIds(merged);
+    // Per-user topic dedup: mark all topics in this batch as seen for today
+    if (user?.id) {
+      const todayISO = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'America/Sao_Paulo',
+        year: 'numeric', month: '2-digit', day: '2-digit',
+      }).format(new Date());
+      const topicKeys = items.map((i) => `${i.tipo_label}::${todayISO}`);
+      markTopicSeen(user.id, topicKeys);
+    }
   };
 
-  const dismiss = () => { markSeen(); setOpen(false); setLanded(false); };
+  const dismiss = () => {
+    markSeen();
+    setOpen(false);
+    setLanded(false);
+    // Stop keyboard sound on dismiss
+    if (tecladoRef.current) { tecladoRef.current.pause(); tecladoRef.current = null; }
+  };
   const first = items[0];
   const goTo = () => { 
     markSeen(); 
@@ -254,7 +323,16 @@ export default function NovidadesRadarOverlay() {
               scale: [ 0.9, 1.08, 0.98, 1 ],
             }}
             transition={{ duration: 0.7, times: [0, 0.55, 0.8, 1], ease: ['easeIn','easeOut','easeOut','easeOut'] }}
-            onAnimationComplete={() => setLanded(true)}
+            onAnimationComplete={() => {
+              setLanded(true);
+              // Play keyboard typing sound when Horus lands
+              try {
+                const audio = new Audio(tecladoSfx);
+                audio.volume = 0.5;
+                audio.play().catch(() => {});
+                tecladoRef.current = audio;
+              } catch { /* ignore on web fallback */ }
+            }}
             className="absolute -top-24 -left-4 z-20 w-32 h-32 sm:w-36 sm:h-36 drop-shadow-[0_18px_20px_rgba(0,0,0,0.55)]"
           >
             <img src={horusAsset} alt="Horus" className="w-full h-full object-contain" />
