@@ -11,6 +11,7 @@ set "BOT_DIR=%ROBO_DIR%bot-audioaulas"
 set "CHROME_PROFILE=C:\chrome-robo-audioaulas"
 set "DEBUG_PORT=9222"
 set "CHROME_EXE="
+if /i "%~1"=="--background" set "BACKGROUND=1"
 
 where node >nul 2>nul
 if errorlevel 1 (
@@ -57,7 +58,11 @@ mkdir "%CHROME_PROFILE%" 2>nul
 
 echo.
 echo Iniciando o Chrome com porta de depuracao %DEBUG_PORT% aberta...
-start "Chrome Robo Audioaulas" "%CHROME_EXE%" --remote-debugging-port=%DEBUG_PORT% --user-data-dir="%CHROME_PROFILE%" --no-first-run --no-default-browser-check
+if defined BACKGROUND (
+  start "Chrome Robo Audioaulas" /min "%CHROME_EXE%" --remote-debugging-port=%DEBUG_PORT% --user-data-dir="%CHROME_PROFILE%" --no-first-run --no-default-browser-check
+) else (
+  start "Chrome Robo Audioaulas" "%CHROME_EXE%" --remote-debugging-port=%DEBUG_PORT% --user-data-dir="%CHROME_PROFILE%" --no-first-run --no-default-browser-check
+)
 
 echo.
 echo Aguardando o Chrome responder na porta %DEBUG_PORT%...

@@ -91,26 +91,38 @@ export default function AdminSuporte() {
             {loading ? (
               <div className="flex justify-center p-4"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
             ) : (
-              filteredTickets.map(ticket => (
-                <div 
-                  key={ticket.id}
-                  onClick={() => setSelectedTicket(ticket)}
-                  className={`p-3 rounded-lg border cursor-pointer transition-colors ${selectedTicket?.id === ticket.id ? 'bg-primary/10 border-primary' : 'bg-card border-border hover:border-primary/50'}`}
-                >
-                  <div className="flex justify-between items-start mb-1">
-                    <span className="text-xs font-semibold truncate max-w-[70%]">{ticket.email}</span>
-                    {ticket.respondido ? (
-                      <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
-                    ) : (
-                      <Circle className="w-4 h-4 text-yellow-500 shrink-0" />
-                    )}
+              filteredTickets.map(ticket => {
+                const getAssuntoTagStyle = (assunto: string) => {
+                  const lower = assunto.toLowerCase();
+                  if (lower.includes('financeiro') || lower.includes('assinatura')) return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
+                  if (lower.includes('bug') || lower.includes('erro')) return 'bg-red-500/10 text-red-500 border-red-500/20';
+                  if (lower.includes('tutorial') || lower.includes('como usar')) return 'bg-purple-500/10 text-purple-500 border-purple-500/20';
+                  return 'bg-gray-500/10 text-gray-400 border-gray-500/20';
+                };
+
+                return (
+                  <div 
+                    key={ticket.id}
+                    onClick={() => setSelectedTicket(ticket)}
+                    className={`p-3 rounded-xl border cursor-pointer transition-colors ${selectedTicket?.id === ticket.id ? 'bg-[#1f2328] border-primary/50' : 'bg-[#1A1D21] border-border/40 hover:border-primary/50'}`}
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <span className="text-xs font-semibold truncate max-w-[70%]">{ticket.email}</span>
+                      {ticket.respondido ? (
+                        <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
+                      ) : (
+                        <Circle className="w-4 h-4 text-yellow-500 shrink-0" />
+                      )}
+                    </div>
+                    <span className={`inline-block text-[9px] font-bold px-2 py-0.5 rounded-full border uppercase tracking-wider ${getAssuntoTagStyle(ticket.assunto)}`}>
+                      {ticket.assunto}
+                    </span>
+                    <div className="text-[10px] text-muted-foreground mt-2 font-medium">
+                      {new Date(ticket.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                    </div>
                   </div>
-                  <h4 className="text-sm font-medium line-clamp-1">{ticket.assunto}</h4>
-                  <div className="text-[10px] text-muted-foreground mt-2">
-                    {new Date(ticket.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
-                  </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </div>
@@ -200,6 +212,16 @@ function AdminChatView({ ticket, onUpdate }: { ticket: Ticket, onUpdate: () => v
         onUpdate(); // Atualiza a lista lateral
       }
       
+      // 3. Notificar usuário via e-mail
+      supabase.functions.invoke('enviar-suporte', {
+        body: {
+          assunto: ticket.assunto,
+          mensagem: novaMensagem.trim(),
+          email: ticket.email,
+          isReply: true
+        }
+      }).catch(console.error);
+
       setNovaMensagem('');
       scrollToBottom();
     } catch (e) {

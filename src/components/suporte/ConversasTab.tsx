@@ -72,6 +72,14 @@ export function ConversasTab() {
     );
   }
 
+  const getAssuntoTagStyle = (assunto: string) => {
+    const lower = assunto.toLowerCase();
+    if (lower.includes('financeiro') || lower.includes('assinatura')) return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
+    if (lower.includes('bug') || lower.includes('erro')) return 'bg-red-500/10 text-red-500 border-red-500/20';
+    if (lower.includes('tutorial') || lower.includes('como usar')) return 'bg-purple-500/10 text-purple-500 border-purple-500/20';
+    return 'bg-gray-500/10 text-gray-400 border-gray-500/20';
+  };
+
   return (
     <div className="space-y-3">
       {tickets.map(ticket => (
@@ -80,8 +88,10 @@ export function ConversasTab() {
           onClick={() => setSelectedTicket(ticket)}
           className="p-5 rounded-3xl bg-[#1A1D21] border border-border/40 cursor-pointer hover:border-primary/50 hover:bg-[#1f2328] transition-all shadow-sm"
         >
-          <div className="flex justify-between items-start mb-2">
-            <h4 className="font-semibold text-sm line-clamp-1 pr-2">{ticket.assunto}</h4>
+          <div className="flex justify-between items-start mb-3">
+            <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border uppercase tracking-wider ${getAssuntoTagStyle(ticket.assunto)}`}>
+              {ticket.assunto}
+            </span>
             <span className={`text-[10px] px-2.5 py-1 rounded-full font-semibold shrink-0 ${ticket.respondido ? 'bg-green-500/10 text-green-500 border border-green-500/20' : 'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20'}`}>
               {ticket.respondido ? 'Respondido' : 'Aguardando'}
             </span>
