@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { withBundleFallback, bundle } from '@/services/offlineBundle';
 
 export type FlashcardsDash = {
   total_cards: number;
@@ -52,9 +53,12 @@ export const useFlashcardsResumoAreas = () => {
   return useQuery({
     queryKey: ['flashcards_resumo_areas'],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc('flashcards_resumo_areas');
-      if (error) throw error;
-      return (data || []) as unknown as FlashcardsAreaRow[];
+      const onlineFn = async () => {
+        const { data, error } = await supabase.rpc('flashcards_resumo_areas');
+        if (error) throw error;
+        return (data || []) as unknown as FlashcardsAreaRow[];
+      };
+      return withBundleFallback(onlineFn(), () => bundle.flashcardsResumoAreas<FlashcardsAreaRow>());
     },
     staleTime: 5 * 60 * 1000,
   });
@@ -70,15 +74,32 @@ export const useFlashcardsSessao = (params: {
   return useQuery({
     queryKey: ['flashcards_sessao', params],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc('flashcards_sessao', {
-        _areas: params.areas,
-        _temas: params.temas,
-        _modo: params.modo,
-        _deck_id: params.deckId,
-        _limit: params.limit,
-      });
-      if (error) throw error;
-      return (data || []) as unknown as FlashcardCard[];
+      const onlineFn = async () => {
+        const { data, error } = await supabase.rpc('flashcards_sessao', {
+          _areas: params.areas,
+          _temas: params.temas,
+          _modo: params.modo,
+          _deck_id: params.deckId,
+          _limit: params.limit,
+        });
+        if (error) throw error;
+        return (data || []) as unknown as FlashcardCard[];
+      };
+      
+      const offlineFn = async () => {
+        if (!params.areas || params.areas.length === 0) return [];
+        let allCards: FlashcardCard[] = [];
+        for (const area of params.areas) {
+          const cards = await bundle.flashcardsCardsPorArea<FlashcardCard>(area);
+          allCards = allCards.concat(cards);
+        }
+        if (params.temas && params.temas.length > 0) {
+          allCards = allCards.filter(c => params.temas!.includes(c.tema || ''));
+        }
+        return allCards.sort(() => 0.5 - Math.random()).slice(0, params.limit);
+      };
+
+      return withBundleFallback(onlineFn(), offlineFn);
     },
     staleTime: 10 * 60 * 1000, // 10 minutes for session cards to stay cached
     enabled,

@@ -56,7 +56,7 @@ export function PageHeader({
 
       <div className="flex-1 min-w-0 text-center">
         <h1
-          className={`font-display text-[18px] md:text-[17px] font-semibold ${textColor} tracking-wide truncate`}
+          className={`text-[17px] sm:text-[18px] font-bold ${textColor} tracking-tight truncate`}
         >
           {title}
         </h1>

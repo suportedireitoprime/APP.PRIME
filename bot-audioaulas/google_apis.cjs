@@ -123,7 +123,8 @@ class GoogleServices {
         return [];
       }
 
-      if (rows.length === 0) {
+      const needsHeader = rows.length === 0;
+      if (needsHeader) {
          rows = [["Artigo", "Status", "Link", "Data/Hora", "Supabase_ID", "Texto_Lei"]];
       }
       
@@ -151,11 +152,14 @@ class GoogleServices {
         });
       }
 
+      const startRow = needsHeader ? 1 : currentRowIndex + 1;
+      const valuesForSheet = needsHeader ? [rows[0], ...valuesToInsert] : valuesToInsert;
+
       await this.sheets.spreadsheets.values.update({
         spreadsheetId: this.sheetId,
-        range: `'${firstSheetName}'!A1:F${currentRowIndex + todosArtigos.length}`,
+        range: `'${firstSheetName}'!A${startRow}:F${startRow + valuesForSheet.length - 1}`,
         valueInputOption: 'USER_ENTERED',
-        resource: { values: rows.length === 0 ? [rows[0], ...valuesToInsert] : valuesToInsert }
+        resource: { values: valuesForSheet }
       });
 
       if (formattingRequests.length > 0) {

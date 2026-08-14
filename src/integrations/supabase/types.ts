@@ -6776,6 +6776,38 @@ export type Database = {
         }
         Relationships: []
       }
+      mensagens_suporte_respostas: {
+        Row: {
+          created_at: string
+          id: string
+          mensagem: string
+          mensagem_id: string
+          sender_type: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          mensagem: string
+          mensagem_id: string
+          sender_type: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          mensagem?: string
+          mensagem_id?: string
+          sender_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mensagens_suporte_respostas_mensagem_id_fkey"
+            columns: ["mensagem_id"]
+            isOneToOne: false
+            referencedRelation: "mensagens_suporte"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       mentor_conversas: {
         Row: {
           created_at: string

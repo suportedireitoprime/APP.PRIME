@@ -138,6 +138,13 @@ const TARGETS = [
     fn: () => fetchAll('biblioteca_pesquisa_cientifica', '*'),
   },
   { name: 'flashcards-decks', fn: () => fetchAll('flashcards_decks', '*') },
+  {
+    name: 'flashcards-resumo-areas',
+    fn: async () => {
+      const { data } = await supabase.rpc('flashcards_resumo_areas');
+      return data ?? [];
+    },
+  },
 ];
 
 console.log('[offline-bundle] Mapeando áreas de flashcards...');

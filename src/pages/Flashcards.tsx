@@ -74,7 +74,7 @@ const Flashcards = () => {
           {/* ── Card Principal com Botão "Filtro Rápido" ───────────────── */}
           <div className="bg-card/60 border border-border/80 p-5 rounded-3xl backdrop-blur-md shadow-xl">
             <div className="flex items-center gap-2">
-              <span className="h-5 w-1 rounded-full bg-primary" />
+              <span className="h-5 w-1 rounded-full bg-[#36AF85]" />
               <h2 className="text-lg font-extrabold leading-tight text-foreground sm:text-xl">Praticar Flashcards</h2>
             </div>
             <p className="ml-3 mt-1 text-xs text-muted-foreground">
@@ -83,7 +83,7 @@ const Flashcards = () => {
 
             <button
               onClick={() => { haptic.selection(); navigate('/flashcards/estudar'); }}
-              className="btn-attention-shine group mt-4 flex h-14 sm:h-16 min-h-[56px] w-full items-center justify-center gap-3 rounded-2xl bg-[#5B21B6] hover:bg-[#4C1D95] text-white text-base sm:text-lg font-black shadow-xl shadow-[#5B21B6]/35 transition-all active:scale-[0.99] border border-purple-400/30"
+              className="btn-attention-shine group mt-4 flex h-14 sm:h-16 min-h-[56px] w-full items-center justify-center gap-3 rounded-2xl bg-[#36AF85] hover:bg-[#2C9570] text-white text-base sm:text-lg font-black shadow-xl shadow-[#36AF85]/35 transition-all active:scale-[0.99] border border-[#36AF85]/30"
             >
               <Filter className="h-6 w-6 text-white" strokeWidth={2.5} />
               <span className="tracking-wide text-white">Filtro Rápido</span>
@@ -154,7 +154,7 @@ const Flashcards = () => {
               </div>
             ) : lista.length === 0 ? (
               <div className="rounded-2xl border border-border bg-card p-10 text-center text-muted-foreground">
-                <Sparkles className="mx-auto mb-2 h-7 w-7 text-success" />
+                <Sparkles className="mx-auto mb-2 h-7 w-7 text-[#36AF85]" />
                 Nenhuma matéria encontrada.
               </div>
             ) : (
@@ -166,17 +166,17 @@ const Flashcards = () => {
                     <button
                       key={a.area}
                       onClick={() => { haptic.selection(); setAreaSheet(a.area); }}
-                      className="group flex flex-col justify-between rounded-2xl border border-border/80 bg-card p-4 text-left transition-all hover:border-success/50 hover:shadow-md active:scale-[0.99] gap-3"
+                      className="group flex flex-col justify-between rounded-2xl border border-border/80 bg-card p-4 text-left transition-all hover:border-[#36AF85]/50 hover:shadow-md active:scale-[0.99] gap-3"
                     >
                       <div className="flex items-center justify-between gap-3 w-full">
                         <div className="flex items-center gap-4 min-w-0">
                           <div 
                             className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110"
                           >
-                            <Icon className="h-5 w-5 text-success" strokeWidth={2.2} />
+                            <Icon className="h-7 w-7 text-[#36AF85] transition-all duration-300 group-hover:drop-shadow-[0_0_12px_rgba(54,175,133,0.9)]" strokeWidth={1.5} />
                           </div>
                           <div className="min-w-0">
-                            <p className="truncate text-base font-extrabold text-foreground group-hover:text-success transition-colors tracking-tight">
+                            <p className="truncate text-base font-extrabold text-foreground group-hover:text-[#36AF85] transition-colors tracking-tight">
                               {a.area}
                             </p>
                             <p className="text-xs text-muted-foreground font-medium mt-0.5">

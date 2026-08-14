@@ -2,7 +2,16 @@ const { chromium } = require('playwright');
 const { createClient } = require('@supabase/supabase-js');
 require('dotenv').config({ path: '../.env' });
 
-const supabase = createClient(process.env.VITE_SUPABASE_URL, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRuanJncGxkY3djcG95d2Ftb3JyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MjY4NjEzMywiZXhwIjoyMDk4MjYyMTMzfQ.M4cllbXRDvqgCt5T7_yFjnT4seIYU-Va7Bs6PhRDu-w');
+const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
+const BATCH_LIMIT = Number(process.env.ROBO_LIMIT || '10');
+
+if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+  console.error('❌ Configure VITE_SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY no arquivo .env antes de iniciar o robô.');
+  process.exit(1);
+}
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
 async function run() {
   console.log('=============================================');
@@ -31,14 +40,17 @@ async function run() {
 
   // 1. Pega a Lei do Código Penal
   console.log('🔍 Buscando 10 artigos pendentes do Código Penal...');
-  const { data: lei } = await supabase.from('vade_mecum_leis').select('id, slug').eq('slug', 'cp').single();
+  const { data: lei, error: leiError } = await supabase.from('vade_mecum_leis').select('id, slug').eq('slug', 'cp').single();
+  if (leiError || !lei) {
+    throw new Error(`Não encontrei a lei com slug "cp" no Supabase: ${leiError?.message || 'sem dados'}`);
+  }
   
   const googleApi = require('./google_apis.cjs');
   const fs = require('fs');
   const path = require('path');
 
   console.log('🔍 Sincronizando com a Planilha para buscar os próximos 10 artigos pendentes...');
-  const artigos = await googleApi.syncAndGetPending(lei.id, supabase, 10);
+  const artigos = await googleApi.syncAndGetPending(lei.id, supabase, BATCH_LIMIT);
 
   if (!artigos || artigos.length === 0) {
     console.log('✅ Nenhum artigo pendente na planilha para o Código Penal. O robô vai descansar.');
@@ -48,7 +60,10 @@ async function run() {
 
   
   // Buscar o nome real da Lei no banco para criar as pastas com o nome correto
-  const { data: leiCompleta } = await supabase.from('vade_mecum_leis').select('nome').eq('id', lei.id).single();
+  const { data: leiCompleta, error: leiCompletaError } = await supabase.from('vade_mecum_leis').select('nome').eq('id', lei.id).single();
+  if (leiCompletaError) {
+    console.warn(`⚠️ Não consegui buscar o nome completo da lei. Usando slug: ${leiCompletaError.message}`);
+  }
   const nomeDaLei = leiCompleta ? leiCompleta.nome : lei.slug.toUpperCase();
 
   console.log('\n=============================================');
@@ -95,11 +110,17 @@ async function run() {
     await page.getByText(/Texto copiado|Texto colado|Colar/i).first().click();
 
     console.log('📝 Colando a Lei Seca (já limpa de sujeiras)...');
-    await page.getByPlaceholder('Cole o texto aqui').fill(leiSeca);
-    await page.getByText('Inserir').first().click();
+    const sourceTextarea = page.getByPlaceholder(/Cole o texto aqui|Cole seu texto aqui/i).first();
+    await sourceTextarea.waitFor({ state: 'visible', timeout: 20000 });
+    await sourceTextarea.fill(leiSeca);
+    await page.getByRole('button', { name: /Inserir|Adicionar/i }).first().click();
 
     console.log('⏳ Aguardando a interface do Estúdio e o título automático carregarem...');
-    await page.waitForTimeout(8000);
+    await page.waitForFunction(() => {
+      const text = document.body.innerText || '';
+      return /1 fonte|1 fontes|Fontes[\s\S]*Art\./i.test(text) && !text.includes('As fontes salvas vão aparecer aqui');
+    }, null, { timeout: 90000 });
+    await page.waitForTimeout(2500);
 
     console.log('✏️ Renomeando o Notebook para: ' + novoTitulo);
     await page.evaluate(() => {
@@ -160,7 +181,7 @@ async function run() {
     });
     
     // Digita naturalmente usando o teclado virtual para o React/NotebookLM reconhecer a mudança
-    await page.keyboard.type(novoTitulo, { delay: 50 });
+    await page.locator('input').first().fill(novoTitulo);
     await page.keyboard.press('Enter');
     await page.waitForTimeout(1000);
     // Clica fora para forçar o blur (salvamento)
@@ -168,26 +189,33 @@ async function run() {
     await page.waitForTimeout(2000);
 
     console.log('🎧 Clicando em "Resumo em Áudio"...');
-    await page.getByText('Resumo em Áudio').first().click();
+    await page.getByLabel('Resumo em Áudio').first().click();
+    await page.waitForTimeout(1500);
+    const sourcePickerOpen = await page.locator('.cdk-overlay-container').filter({ hasText: /Crie Resumos em Áudio|Texto copiado|Enviar arquivos/i }).count();
+    if (sourcePickerOpen > 0) {
+      throw new Error(`O NotebookLM abriu o seletor de fontes para ${novoTitulo}; a fonte ainda não está disponível para o áudio.`);
+    }
 
     console.log('🗣️ Preenchendo o Prompt mágico dos narradores...');
-    await page.locator('textarea').last().fill(prompt);
+    const audioPrompt = page.locator('textarea').last();
+    await audioPrompt.waitFor({ state: 'visible', timeout: 30000 });
+    await audioPrompt.fill(prompt);
 
     console.log('🚀 Dando a ignição em "Gerar"...');
-    await page.evaluate(() => {
-      const els = Array.from(document.querySelectorAll('*'));
-      const btn = els.find(el => (el.tagName === 'BUTTON' || el.getAttribute('role') === 'button') && el.textContent.trim() === 'Gerar');
-      if (btn) btn.click();
-    });
+    await page.getByRole('button', { name: /^Gerar$/i }).last().click();
 
     // Aguarda um pouco para garantir que a requisição de gerar áudio e o salvamento do título foram enviados
     console.log('⏳ Garantindo que o salvamento e a geração iniciaram...');
     await page.waitForTimeout(5000);
+    await page.waitForFunction(() => {
+      const text = document.body.innerText || '';
+      return /gerando|preparando|Deep Dive|áudio/i.test(text);
+    }, null, { timeout: 30000 });
 
     // Salvar URL
     const urlAtual = page.url();
     console.log(`✅ ${novoTitulo} deixado no forno! URL: ${urlAtual}`);
-    notebooksCriados.push({ id: art.id, numero: art.numero, url: urlAtual, titulo: novoTitulo });
+    notebooksCriados.push({ id: art.id, rowNumber: art.rowNumber, numero: art.numero, url: urlAtual, titulo: novoTitulo });
     
     // Pequena pausa antes de criar o próximo
     await page.waitForTimeout(2000);
@@ -363,18 +391,26 @@ async function run() {
     console.log(`☁️ Upload no Drive concluído! Link: ${linkDrive}`);
 
     // Fase Planilha (Atualizar para Verde e OK)
+    if (typeof notebook.rowNumber !== 'number') {
+      throw new Error(`Linha da planilha ausente para ${notebook.titulo}. Não é seguro marcar como OK.`);
+    }
     await googleApi.updateRowToSuccess(notebook.rowNumber, `Artigo ${notebook.numero}`, linkDrive);
 
     // Fase Supabase - Marcar como concluído
     console.log(`💾 Atualizando status no Supabase...`);
-    await supabase.from('vade_mecum_artigos').update({
+    const { error: updateError } = await supabase.from('vade_mecum_artigos').update({
       narracao_url: linkDrive
     }).eq('id', notebook.id);
+    if (updateError) {
+      throw new Error(`Falha ao atualizar Supabase para ${notebook.titulo}: ${updateError.message}`);
+    }
     
     console.log(`🎉 Artigo ${notebook.numero} finalizado 100%!`);
     
     // Apaga o arquivo local para não lotar o PC
-    fs.unlinkSync(downloadPath);
+    if (fs.existsSync(downloadPath)) {
+      fs.unlinkSync(downloadPath);
+    }
   }
 
   console.log('\n=============================================');
@@ -384,4 +420,10 @@ async function run() {
   await browser.close();
 }
 
-run();
+run().catch((err) => {
+  console.error('\n=============================================');
+  console.error('❌ ROBÔ FINALIZADO COM ERRO');
+  console.error('=============================================');
+  console.error(err?.stack || err?.message || err);
+  process.exitCode = 1;
+});

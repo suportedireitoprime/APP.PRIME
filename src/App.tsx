@@ -274,6 +274,7 @@ const AdminAprender = lazy(() => import("./pages/AdminAprender.tsx"));
 const AdminLaboratorio = lazy(() => import("./pages/AdminLaboratorio.tsx"));
 const AdminAprenderArea = lazy(() => import("./pages/AdminAprenderArea.tsx"));
 const AdminJurisprudencia = lazy(() => import("./pages/AdminJurisprudencia.tsx"));
+const TribunalSimulado = lazy(() => import("./pages/TribunalSimulado.tsx"));
 const AdminHorus = lazy(() => import('./pages/AdminHorus'));
 const AdminHorusTemplate = lazy(() => import('./pages/AdminHorusTemplate'));
 const AdminTriagem = lazy(() => import('./pages/AdminTriagem'));
@@ -336,6 +337,7 @@ const LembretesLeitura = lazy(() => import("./pages/lembretes/LembretesLeitura.t
 const LembretesQuestoesTab = lazy(() => import("./pages/lembretes/LembretesQuestoes.tsx"));
 const Suporte = lazy(() => import("./pages/Suporte.tsx"));
 const SuportePublico = lazy(() => import("./pages/SuportePublico.tsx"));
+const AdminSuporte = lazy(() => import("./pages/AdminSuporte.tsx"));
 const Opiniao = lazy(() => import("./pages/Opiniao.tsx"));
 const LembretesLocal = lazy(() => import("./pages/LembretesLocal.tsx"));
 const PreferenciasLembretes = lazy(() => import("./pages/PreferenciasLembretes.tsx"));
@@ -791,6 +793,7 @@ function AnimatedRoutes() {
           <Route path="/praticar/area/:areaSlug" element={<ProtectedRoute><PageTransition><PraticarArea /></PageTransition></ProtectedRoute>} />
           <Route path="/praticar/:leiSlug" element={<ProtectedRoute><PageTransition><PraticarLei /></PageTransition></ProtectedRoute>} />
           <Route path="/praticar/:leiSlug/sessao" element={<ProtectedRoute><PageTransition><PraticarSessao /></PageTransition></ProtectedRoute>} />
+          <Route path="/tribunal-simulado" element={<ProtectedRoute><PageTransition><TribunalSimulado /></PageTransition></ProtectedRoute>} />
           <Route path="/compartilhado" element={<ProtectedRoute><PageTransition><Compartilhado /></PageTransition></ProtectedRoute>} />
           <Route path="/estudos" element={<ProtectedRoute><PageTransition><EstudosRouter /></PageTransition></ProtectedRoute>} />
           <Route path="/vade-mecum" element={<ProtectedRoute><PageTransition><VadeMecum /></PageTransition></ProtectedRoute>} />
@@ -921,6 +924,7 @@ function AnimatedRoutes() {
           <Route path="/suporte" element={<ProtectedRoute><PageTransition><Suporte /></PageTransition></ProtectedRoute>} />
           <Route path="/opiniao" element={<ProtectedRoute><PageTransition><Opiniao /></PageTransition></ProtectedRoute>} />
           <Route path="/planos/ativos" element={<ProtectedRoute><PageTransition><PlanosAtivos /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin-suporte" element={<ProtectedRoute><PageTransition><AdminSuporte /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-atualizacao" element={<ProtectedRoute><PageTransition><AdminAtualizacao /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-native-assets" element={<ProtectedRoute><PageTransition><AdminNativeAssets /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-aprender" element={<ProtectedRoute><PageTransition><AdminAprender /></PageTransition></ProtectedRoute>} />
