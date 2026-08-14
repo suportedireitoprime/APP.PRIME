@@ -366,27 +366,36 @@ const AuthFormScreen = ({ onBack }: { onBack: () => void }) => {
   }, [mode]);
 
 
-  const handleGoogle = async () => {
+  const handleGoogle = () => {
     setGoogleLoading(true);
-    try {
-      const { error } = await signInWithGoogle();
-      if (error) throw error;
-    } catch (err: any) {
-      toastErroAuth(err.message || 'Não consegui entrar com o Google.');
-      setGoogleLoading(false);
-    }
+    // Desacopla a chamada nativa pesada da renderização do spinner (evita engasgos)
+    requestAnimationFrame(() => {
+      requestAnimationFrame(async () => {
+        try {
+          const { error } = await signInWithGoogle();
+          if (error) throw error;
+        } catch (err: any) {
+          toastErroAuth(err.message || 'Não consegui entrar com o Google.');
+          setGoogleLoading(false);
+        }
+      });
+    });
   };
 
   const [appleLoading, setAppleLoading] = useState(false);
-  const handleApple = async () => {
+  const handleApple = () => {
     setAppleLoading(true);
-    try {
-      const { error } = await signInWithApple();
-      if (error) throw error;
-    } catch (err: any) {
-      toastErroAuth(err.message || 'Não consegui entrar com a Apple.');
-      setAppleLoading(false);
-    }
+    requestAnimationFrame(() => {
+      requestAnimationFrame(async () => {
+        try {
+          const { error } = await signInWithApple();
+          if (error) throw error;
+        } catch (err: any) {
+          toastErroAuth(err.message || 'Não consegui entrar com a Apple.');
+          setAppleLoading(false);
+        }
+      });
+    });
   };
 
 

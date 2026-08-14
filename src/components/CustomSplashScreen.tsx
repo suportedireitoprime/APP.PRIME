@@ -6,8 +6,8 @@ import scales from '@/assets/landing-tribunal/scales.png';
 
 export function CustomSplashScreen({ onComplete }: { onComplete: () => void }) {
   const text = "Estudos Jurídicos";
-  // Aumentando o número de folhas caindo
-  const fallingLeaves = Array.from({ length: 24 }, (_, i) => i);
+  // Reduzido para 12 folhas (antes 24) para otimizar a GPU no mobile
+  const fallingLeaves = Array.from({ length: 12 }, (_, i) => i);
   const reduceMotion = useRef(false);
 
   useEffect(() => {
@@ -63,12 +63,13 @@ export function CustomSplashScreen({ onComplete }: { onComplete: () => void }) {
             aria-hidden="true"
             className="absolute -top-10 lp-fall"
             style={{
-              left: `${(i * 9 + 3) % 100}%`,
+              left: `${(i * 12 + 5) % 100}%`,
               width: `${14 + (i % 4) * 8}px`,
-              animationDuration: reduceMotion.current ? '0s' : `${10 + (i % 4) * 3}s`,
-              animationDelay: `${i * 0.8}s`,
-              opacity: 0.65,
-              filter: 'drop-shadow(0 3px 6px rgba(0,0,0,0.5))',
+              animationDuration: reduceMotion.current ? '0s' : `${8 + (i % 3) * 3}s`,
+              animationDelay: `${i * 0.5}s`,
+              opacity: 0.45,
+              // Removido drop-shadow pesado, usando opacidade simples p/ fluidez
+              willChange: 'transform, opacity',
             }}
           />
         ))}
@@ -81,7 +82,7 @@ export function CustomSplashScreen({ onComplete }: { onComplete: () => void }) {
           alt=""
           aria-hidden="true"
           className="absolute left-[5%] top-[12%] w-12 sm:w-16 lp-float"
-          style={{ opacity: 0.6, animationDuration: '6s' }}
+          style={{ opacity: 0.4, animationDuration: '6s', willChange: 'transform' }}
         />
         <img
           src={scales}
@@ -91,8 +92,8 @@ export function CustomSplashScreen({ onComplete }: { onComplete: () => void }) {
           style={{
             animationDirection: 'reverse',
             animationDuration: '7s',
-            opacity: 0.6,
-            filter: 'drop-shadow(0 0 12px hsl(var(--primary) / 0.4))',
+            opacity: 0.4,
+            willChange: 'transform',
           }}
         />
         <img
@@ -103,7 +104,8 @@ export function CustomSplashScreen({ onComplete }: { onComplete: () => void }) {
           style={{
             animationDelay: '1.5s',
             animationDuration: '6.5s',
-            opacity: 0.4,
+            opacity: 0.3,
+            willChange: 'transform',
           }}
         />
       </div>
@@ -132,16 +134,13 @@ export function CustomSplashScreen({ onComplete }: { onComplete: () => void }) {
       <div className="flex flex-col items-center relative z-10 overflow-hidden px-4">
         <div className="h-14 flex items-center justify-center relative">
           <motion.span 
-            className="text-white font-serif italic text-[36px] sm:text-5xl font-semibold tracking-tight drop-shadow-lg text-center relative flex"
-            variants={container}
-            initial="hidden"
-            animate="visible"
+            className="text-white font-serif italic text-[36px] sm:text-5xl font-semibold tracking-tight text-center relative flex"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: 'easeOut' }}
+            style={{ textShadow: '0 4px 12px rgba(0,0,0,0.5)', willChange: 'transform, opacity' }}
           >
-            {text.split("").map((char, index) => (
-              <motion.span variants={child} key={index} className="inline-block">
-                {char === " " ? "\u00A0" : char}
-              </motion.span>
-            ))}
+            {text}
           </motion.span>
         </div>
         <motion.div 
