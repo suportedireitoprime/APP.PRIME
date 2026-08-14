@@ -336,8 +336,13 @@ export default function MeExplique() {
           autoPlay
           muted
           disablePictureInPicture
-          className={`h-full w-full ${aoVivo ? 'object-contain' : 'object-cover'}`}
+          className={`h-full w-full ${aoVivo ? 'object-contain' : 'object-cover'} transition-opacity duration-300 ${!previewPronto ? 'opacity-0' : 'opacity-100'}`}
         />
+        {!previewPronto && !erro && !erroCamera && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black">
+            <Loader2 className="h-8 w-8 animate-spin text-white/50" />
+          </div>
+        )}
         <AnimatePresence>
           {foco && (
             <motion.span
@@ -454,17 +459,7 @@ export default function MeExplique() {
         )}
       </AnimatePresence>
 
-      {/* Guia de mira quando tutorial fechado */}
-      {!ativo && !showTutorial && (
-        <div className="pointer-events-none relative z-10 mx-auto mt-4 w-[85%] max-w-sm rounded-2xl border-2 border-dashed border-white/40 bg-black/30 p-5 text-center backdrop-blur-sm">
-          <Camera className="mx-auto h-8 w-8 text-white/80" />
-          <p className="mt-2.5 text-[15px] font-semibold">Aponte para o livro, slide ou caderno</p>
-          <p className="mt-1 text-[13px] leading-snug text-white/70">
-            Toque na tela para focar{recursos.zoom ? ' e use dois dedos para aproximar' : ''}. Depois
-            toque em “Me explique” e o professor começa a explicar em voz alta.
-          </p>
-        </div>
-      )}
+      {/* Guia de mira removido para evitar confusão com 'tela de erro de câmera' */}
 
       {/* Transcrição e Erros */}
       <div className="relative z-10 mt-auto space-y-3 px-4 mb-2">

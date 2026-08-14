@@ -414,8 +414,8 @@ export class SessaoMeExplique {
     if (!this.pronto || this.ws?.readyState !== WebSocket.OPEN) return;
     if (!video.videoWidth || !video.videoHeight) return;
 
-    // Até 1280px no lado maior: legível para texto de livro sem estourar a Live API.
-    const MAIOR = 1280;
+    // Até 1920px no lado maior: resolução Full HD de texto limpo para leitura perfeita.
+    const MAIOR = 1920;
     const escala = Math.min(1, MAIOR / Math.max(video.videoWidth, video.videoHeight));
     const largura = Math.round(video.videoWidth * escala);
     const altura = Math.round(video.videoHeight * escala);
@@ -425,7 +425,8 @@ export class SessaoMeExplique {
     if (!ctx) return;
     ctx.imageSmoothingQuality = "high";
     ctx.drawImage(video, 0, 0, largura, altura);
-    const dataUrl = this.canvas.toDataURL("image/jpeg", 0.85);
+    // Qualidade 1.0 (100%) para não borrar texto!
+    const dataUrl = this.canvas.toDataURL("image/jpeg", 1.0);
     const base64 = dataUrl.split(",")[1];
     if (!base64) return;
 
