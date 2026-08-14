@@ -21,6 +21,8 @@ interface Props {
   artigoNumero: string;
   leiNome: string;
   onBack: () => void;
+  isSumula?: boolean;
+  conteudoTexto?: string;
 }
 
 interface HistoryEntry { total: number; correct: number; created_at: string }
@@ -77,7 +79,13 @@ const QuizView = ({ tabelaNome, artigoNumero, leiNome, onBack }: Props) => {
         }
       }
       const { data, error: fnErr } = await supabase.functions.invoke('gerar-estudo', {
-        body: { tabela_nome: tabelaNome, artigo_numero: artigoNumero, mode: 'questoes' },
+        body: { 
+          tabela_nome: tabelaNome, 
+          artigo_numero: artigoNumero, 
+          mode: 'questoes',
+          isSumula: props.isSumula,
+          conteudo_texto: props.conteudoTexto
+        },
       });
       if (fnErr) throw fnErr;
       if (data?.error) throw new Error(data.error);

@@ -15,6 +15,7 @@ interface Payload {
   descricao?: string;
   lei?: string;
   artigo?: string;
+  modo?: string;
 }
 
 const SYSTEM = `Você é um professor de Direito brasileiro. Explique de forma DETALHADA, didática e completa um item de jurisprudência (tema, tese, súmula ou julgado) para um estudante ou operador do Direito.
@@ -54,9 +55,30 @@ function buildUserPrompt(p: Payload): string {
   if (p.tese) parts.push(`\n**TESE:**\n${p.tese}`);
   if (p.ementa) parts.push(`\n**EMENTA:**\n${p.ementa}`);
   if (p.descricao && !p.tese && !p.ementa) parts.push(`\n**Descrição:**\n${p.descricao}`);
-  parts.push('\nAgora produza a explicação seguindo estritamente o formato pedido.');
+  parts.push('\nAgora produza a resposta seguindo estritamente o formato pedido.');
   return parts.join('\n');
 }
+
+const SYSTEM_SUMULA_TABS = `Você é um professor de Direito brasileiro (voltado para preparação de alto nível e estudantes de Direito).
+Seu objetivo é explicar de forma DETALHADA, didática e acessível uma Súmula ou Súmula Vinculante.
+
+Você deve retornar APENAS UM OBJETO JSON válido com 3 propriedades: "explicacao", "exemplo" e "termos".
+Cada campo deve conter texto formatado em Markdown. NÃO USE CITAÇÕES (blockquotes \`>\`) no texto principal para manter o estilo visual limpo, use apenas negrito e títulos \`###\`.
+
+ESTRUTURA DO JSON:
+{
+  "explicacao": "## Do que se trata\\nResumo claro e direto do tema...\\n\\n## Contexto e Fundamentos\\nComo chegamos a essa súmula? O que a motivou? Como os tribunais raciocinaram?\\n\\n## Impacto Prático\\nO que muda na vida real ou no processo...",
+  "exemplo": "## Caso Concreto\\nCrie uma situação hipotética (ex: 'João, um servidor público...') que ilustre PERFEITAMENTE a aplicação desta súmula.\\n\\n## Solução do Caso\\nAplicação da súmula no caso...",
+  "termos": "## Glossário da Súmula\\n- **Termo 1:** Explicação super simples e jurídica.\\n- **Termo 2:** Explicação..."
+}
+
+REGRAS OBRIGATÓRIAS:
+- Retorne APENAS o JSON válido.
+- A "explicacao" deve focar na clareza. Use parágrafos curtos.
+- O "exemplo" deve ser narrativo, como um caso de prova ou do cotidiano.
+- Os "termos" devem destrinchar os jargões encontrados no enunciado (no mínimo 2 termos essenciais).
+- Se a súmula estiver cancelada ou superada (se isso for notório), mencione na explicação.`;
+
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
@@ -85,7 +107,7 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         model: MODEL,
         messages: [
-          { role: 'system', content: SYSTEM },
+          { role: 'system', content: payload.modo === 'sumula-tabs' ? SYSTEM_SUMULA_TABS : SYSTEM },
           { role: 'user', content: buildUserPrompt(payload) },
         ],
       }),
@@ -110,8 +132,26 @@ Deno.serve(async (req) => {
     }
 
     const data = await resp.json();
-    const explicacao: string = data?.choices?.[0]?.message?.content ?? '';
-    return new Response(JSON.stringify({ explicacao, model: MODEL }), {
+    const rawContent: string = data?.choices?.[0]?.message?.content ?? '';
+
+    if (payload.modo === 'sumula-tabs') {
+      try {
+        let cleaned = rawContent.trim()
+          .replace(/^```(?:json)?\s*/i, "")
+          .replace(/\s*```$/i, "")
+          .trim();
+        const parsed = JSON.parse(cleaned);
+        return new Response(JSON.stringify({ data: parsed, model: MODEL }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      } catch (err) {
+        return new Response(JSON.stringify({ error: 'Falha ao processar JSON da IA', details: rawContent }), {
+          status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
+    return new Response(JSON.stringify({ explicacao: rawContent, model: MODEL }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (e) {

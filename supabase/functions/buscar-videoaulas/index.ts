@@ -31,11 +31,23 @@ function norm(s: string): string {
     .trim();
 }
 
-// Verifica se o título menciona explicitamente o artigo pedido (evita trazer Art. 5º quando o usuário pediu Art. 1º)
-function titleMatchesArticle(titulo: string, numero: string): boolean {
+// Verifica se o título menciona explicitamente o artigo/súmula pedido
+function titleMatchesArticle(titulo: string, numero: string, isSumula: boolean = false): boolean {
   const n = norm(numero).replace(/\s+/g, '');
   if (!n) return true;
   const t = norm(titulo);
+  
+  if (isSumula) {
+    const patterns = [
+      new RegExp(`\\bsumula\\s*0*${n}\\b`),
+      new RegExp(`\\bs\\.?\\s*0*${n}\\b`),
+      new RegExp(`\\bsum\\.?\\s*0*${n}\\b`),
+      new RegExp(`\\bsv\\.?\\s*0*${n}\\b`),
+    ];
+    if (patterns.some((r) => r.test(t))) return true;
+    return new RegExp(`(?:^|\\s|#)0*${n}(?:\\s|$|[^0-9])`).test(t);
+  }
+
   // Aceita variações: "art 1", "artigo 1", "art. 1", "art1", "artigo1"
   const patterns = [
     new RegExp(`\\bart(?:igo)?\\s*0*${n}\\b`),
@@ -46,8 +58,12 @@ function titleMatchesArticle(titulo: string, numero: string): boolean {
   return new RegExp(`(?:^|\\s|#)0*${n}(?:\\s|$|[^0-9])`).test(t);
 }
 
-function buildQuery(artigoNumero: string, leiNome?: string) {
-  const lei = (leiNome || 'legislação brasileira').trim();
+function buildQuery(artigoNumero: string, leiNome?: string, isSumula: boolean = false) {
+  const lei = (leiNome || (isSumula ? 'Súmula' : 'legislação brasileira')).trim();
+  if (isSumula) {
+    // Para súmulas: "Súmula Vinculante 14" explicação
+    return `"${lei} ${artigoNumero}" explicação aula`;
+  }
   // Query mais específica com aspas e sinônimos
   return `"artigo ${artigoNumero}" ${lei} explicação aula`;
 }
@@ -153,6 +169,7 @@ Deno.serve(async (req) => {
       : (body.artigoNumero || '').toString().trim();
     const leiNome: string | undefined = body.leiNome;
     const force: boolean = Boolean(body.force);
+    const isSumula: boolean = body.isSumula || body.is_sumula || tabelaCodigo.toLowerCase().includes('sumula');
 
     if (!tabelaCodigo || !artigoNumero) {
       return new Response(JSON.stringify({ error: 'tabelaNome e artigoNumero são obrigatórios' }), {
@@ -194,9 +211,7 @@ Deno.serve(async (req) => {
     }
 
     // 2. Fresh fetch — busca 10 por ordenação para ter fallback
-    const q = tema
-      ? `${tema} aula explicação direito`
-      : buildQuery(artigoNumero, leiNome);
+    const q = tema ? `${tema} concurso aula explicação` : buildQuery(artigoNumero, leiNome, isSumula);
     const publishedAfter = new Date(
       Date.now() - RECENT_WINDOW_DAYS * 24 * 60 * 60 * 1000,
     ).toISOString();
@@ -242,7 +257,7 @@ Deno.serve(async (req) => {
       if (!info) return false;
       if (tema) return true;
       const title = info.snippet?.title || '';
-      return titleMatchesArticle(title, artigoNumero);
+      return titleMatchesArticle(title, artigoNumero, isSumula);
     };
 
     // Escolhe 1 vídeo por slot respeitando ordem e evitando duplicatas

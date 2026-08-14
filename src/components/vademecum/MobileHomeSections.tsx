@@ -441,7 +441,13 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
                   color={c.color}
                   delay={i * 0.05}
                   solidColor={true}
-                  onClick={() => { setCategorySearch(''); setCategoryOpen(c); }}
+                  onClick={() => {
+                    if (c.id === 'jurisprudencia') {
+                      navigate('/jurisprudencia');
+                    } else {
+                      setCategorySearch(''); setCategoryOpen(c);
+                    }
+                  }}
                   data-track="home_card_click"
                   data-track-name={c.label}
                   data-track-section="emalta"
@@ -601,7 +607,13 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
                       sublabel={c.sublabel}
                       color={c.color}
                       delay={i * 0.05}
-                      onClick={() => { setCategorySearch(''); setCategoryOpen(c); }}
+                      onClick={() => {
+                        if (c.id === 'jurisprudencia') {
+                          navigate('/jurisprudencia');
+                        } else {
+                          setCategorySearch(''); setCategoryOpen(c);
+                        }
+                      }}
                       data-track="home_card_click"
                       data-track-name={c.label}
                       data-track-section="estudos"

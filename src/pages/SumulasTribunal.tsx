@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Search, Loader2, Gavel, Scale, ChevronRight, Ban, BadgeCheck, Heart, Clock, List, RefreshCw, XCircle } from 'lucide-react';
+import { ArrowLeft, Search, Loader2, Gavel, Scale, ChevronRight, Ban, BadgeCheck, Heart, Clock, List, RefreshCw, XCircle, Mic, ListMusic, StickyNote, History, Radar } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { fetchSumulas, getSumulasCached, subscribeSumulas, fetchSumulasFavoritas, syncSumulasFavoritas, toggleSumulaFavorita, SUMULA_TRIBUNAIS, type Sumula } from '@/services/sumulasService';
 import SumulaVinculanteSheet from '@/components/vademecum/SumulaVinculanteSheet';
 import ArtigoBottomSheet from '@/components/vademecum/ArtigoBottomSheet';
+import HeroOrnaments from '@/components/vademecum/HeroOrnaments';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 
@@ -160,62 +161,102 @@ const SumulasTribunal = ({ tribunal }: Props) => {
 
   return (
     <div className="min-h-dvh bg-background pb-20 lg:pb-0">
-      <div className={`bg-gradient-to-br ${GRADIENT[tribunal]} px-4 pt-10 pb-6 sm:px-6 md:px-8`}>
-        <div className="max-w-5xl mx-auto lg:max-w-[1500px] lg:px-6 2xl:px-10">
+      <div
+        className={`bg-hero-panel relative overflow-hidden rounded-b-[36px] border-b border-white/10 shadow-2xl shadow-black/60 pt-[calc(var(--sai-top,env(safe-area-inset-top,0px))+0.5rem)]`}
+        style={{
+          background: `linear-gradient(150deg, ${
+            tribunal === 'STF_VINCULANTE' ? 'hsl(348 78% 28%), hsl(348 78% 18%)' :
+            tribunal === 'STF' ? 'hsl(200 80% 28%), hsl(200 80% 18%)' :
+            'hsl(150 45% 25%), hsl(150 45% 15%)'
+          })`,
+          transform: 'translateZ(0)',
+        }}
+      >
+        <div className="absolute inset-0 opacity-70 pointer-events-none [filter:hue-rotate(0deg)_saturate(0.85)] mix-blend-overlay">
+          <HeroOrnaments />
+        </div>
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.1),transparent_50%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.5),transparent_65%)]" />
+
+        <div className="relative px-4 pb-8 pt-6 sm:px-6 md:px-8 max-w-5xl mx-auto lg:max-w-[1500px] lg:px-12 lg:pb-12 lg:pt-12 2xl:px-16 flex flex-col items-center lg:items-start text-center lg:text-left">
           <button
             onClick={() => navigate('/jurisprudencia')}
-            className="flex items-center gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-sm text-white font-medium transition-all text-sm px-3 py-1.5 rounded-lg mb-4 touch-manipulation select-none"
+            aria-label="Voltar"
+            className="absolute left-4 top-6 lg:left-12 w-11 h-11 rounded-full bg-black/25 hover:bg-black/35 backdrop-blur-sm flex items-center justify-center transition-colors"
           >
-            <ArrowLeft className="w-4 h-4" />
-            Voltar
+            <ArrowLeft className="w-5 h-5 text-white" />
           </button>
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-white/15 backdrop-blur-sm flex items-center justify-center">
-              <Gavel className="w-6 h-6 text-white" />
+          
+          <div className="mt-14 lg:mt-0 flex flex-col items-center lg:items-start">
+            <div className="w-[76px] h-[76px] rounded-full p-[2px] bg-white/10 shadow-[0_10px_30px_-8px_rgba(0,0,0,0.7)] mb-4">
+              <div className="w-full h-full rounded-full bg-black/30 border border-white/15 backdrop-blur-sm flex items-center justify-center">
+                <Gavel className="w-8 h-8 text-white/90" strokeWidth={1.5} />
+              </div>
             </div>
-            <div>
-              <h1 className="font-display text-2xl text-white font-bold">{info?.nome || tribunal}</h1>
-              <p className="text-white/70 text-sm">{sumulas.length} súmulas</p>
-            </div>
+            
+            <p className="font-display uppercase tracking-[0.24em] text-[11px] text-white/70">
+              Coleção de Súmulas
+            </p>
+            <h1 className="mt-1 font-display uppercase tracking-wider text-white text-[28px] leading-tight font-bold drop-shadow lg:text-[40px]">
+              {info?.nome || tribunal}
+            </h1>
+            <p className="mt-2 text-white/90 text-[16px] leading-relaxed max-w-md font-body lg:max-w-xl lg:text-[17px]">
+              {sumulas.length} súmulas disponíveis para consulta rápida.
+            </p>
           </div>
         </div>
       </div>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 py-4 space-y-4 lg:max-w-[1500px] lg:px-12 lg:py-6 2xl:px-16">
-        <div className="lg:flex lg:items-center lg:gap-4">
-        <div className="flex items-center gap-1 p-1 bg-secondary/60 rounded-xl lg:w-auto lg:shrink-0">
-          {TABS.map((t) => {
-            const Icon = t.icon;
-            const active = tab === t.id;
-            return (
-              <button
-                key={t.id}
-                onClick={() => setTab(t.id)}
-                className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                  active
-                    ? 'bg-card text-primary-light shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                <Icon className="w-3.5 h-3.5" />
-                {t.label}
-                <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${active ? 'bg-primary/15 text-primary-light' : 'bg-background/60'}`}>
-                  {t.count}
-                </span>
-              </button>
-            );
-          })}
-        </div>
 
-        <div className="relative mt-4 lg:mt-0 lg:flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input
-            placeholder="Buscar por número ou enunciado..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 bg-secondary border-border"
-          />
-        </div>
+        <div className="lg:flex lg:items-center lg:gap-4 space-y-4 lg:space-y-0">
+          <form
+            className="flex items-center gap-2.5 min-w-0 lg:flex-1"
+            onSubmit={(e) => { e.preventDefault(); }}
+          >
+            <div className="relative flex-1 min-w-0">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-muted-foreground" />
+              <Input
+                placeholder="Buscar por número ou enunciado..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="rounded-2xl bg-secondary border-border pl-10 pr-4 text-sm font-medium h-12"
+              />
+            </div>
+            <button
+              type="button"
+              className="relative overflow-hidden shrink-0 rounded-full flex items-center justify-center shadow-lg active:scale-[0.95] transition w-12 h-12 lg:w-11 lg:h-11 bg-hero-panel text-white shadow-red-950/40"
+              onClick={() => toast.info('A busca por voz está disponível no Vade Mecum.')}
+            >
+              <Mic className="relative z-[2] w-5 h-5" strokeWidth={2.5} />
+            </button>
+          </form>
+
+          <div className="grid grid-cols-3 gap-2 lg:w-auto lg:shrink-0">
+            {TABS.map((t) => {
+              const Icon = t.icon;
+              const active = tab === t.id;
+              return (
+                <button
+                  key={t.id}
+                  onClick={() => setTab(t.id)}
+                  className={`flex items-center justify-center gap-1.5 px-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all py-3 md:py-3.5 ${
+                    active
+                      ? 'bg-hero-panel text-white shadow-md shadow-red-950/40'
+                      : 'bg-secondary text-foreground hover:bg-secondary/80'
+                  }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span>{t.label}</span>
+                  {active && (
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-white/20 text-white ml-1">
+                      {t.count}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {loading ? (
@@ -234,21 +275,27 @@ const SumulasTribunal = ({ tribunal }: Props) => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: Math.min(i * 0.01, 0.5) }}
                 onClick={() => { pushRecente(sumula.id); setOpen(sumula); }}
-                className="w-full text-left rounded-2xl bg-card hover:bg-secondary/60 transition-all group flex overflow-hidden min-h-[82px] cursor-pointer"
+                className="group w-full flex text-left items-stretch bg-[#14171A] hover:bg-[#1A1E22] border border-border/40 rounded-2xl transition-all cursor-pointer overflow-hidden min-h-[92px]"
               >
                 <div
-                  className="w-1.5 rounded-l-2xl shrink-0"
+                  className="w-1.5 shrink-0"
                   style={{ backgroundColor: SITUACAO_STYLE[sumula.situacao]?.barColor || info?.iconColor || 'hsl(var(--primary))' }}
                 />
                 <div className="flex items-center gap-3 p-4 flex-1 min-w-0">
-                  <div className="w-9 h-9 rounded-lg bg-primary/15 flex items-center justify-center shrink-0">
-                    <Scale className="w-4 h-4 text-primary-light" />
+                  <div
+                    className="w-[46px] h-[46px] sm:w-[50px] sm:h-[50px] shrink-0 rounded-[14px] flex flex-col items-center justify-center text-white shadow-[0_4px_12px_rgba(0,0,0,0.4)] relative overflow-hidden group-hover:scale-[1.03] transition-transform"
+                    style={{ background: SITUACAO_STYLE[sumula.situacao]?.barColor || info?.iconColor || '#e11d48' }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
+                    <span className="font-display font-black text-[15px] sm:text-[16px] leading-none tracking-tight">
+                      {sumula.numero}º
+                    </span>
+                    <span className="font-body font-bold text-[8.5px] uppercase tracking-widest mt-[1px] opacity-80">
+                      {tribunal === 'STF_VINCULANTE' ? 'VINC' : 'SÚM'}
+                    </span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <h4 className="font-display text-[15px] font-bold text-primary-light">
-                        Súmula {tribunal === 'STF_VINCULANTE' ? 'Vinculante ' : ''}{sumula.numero}
-                      </h4>
+                    <div className="flex items-center gap-2 mb-1">
                       {(() => {
                         const st = SITUACAO_STYLE[sumula.situacao];
                         if (!st) return null;
@@ -290,26 +337,51 @@ const SumulasTribunal = ({ tribunal }: Props) => {
         )}
       </div>
 
-      {open && tribunal === 'STF_VINCULANTE' && (
+      {open && (
         <SumulaVinculanteSheet
           sumula={open}
+          tribunal={tribunal}
           isFavorita={favoritas.includes(open.id)}
           onToggleFavorita={() => void toggleFav(open)}
           onClose={() => setOpen(null)}
         />
       )}
-      {open && tribunal !== 'STF_VINCULANTE' && (
-        <ArtigoBottomSheet
-          artigo={{
-            id: open.id,
-            numero: `Súmula ${open.numero}`,
-            caput: open.enunciado,
-          }}
-          isFavorito={favoritas.includes(open.id)}
-          onToggleFavorito={() => void toggleFav(open)}
-          onClose={() => setOpen(null)}
-        />
-      )}
+      <motion.nav
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.26, ease: [0.22, 0.61, 0.36, 1] }}
+        className="fixed bottom-0 left-0 right-0 z-[58] lg:hidden"
+      >
+        <div className="bg-secondary/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-[0_-12px_40px_-8px_rgba(0,0,0,0.45)] pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))]">
+          <div className="grid grid-cols-5 items-end px-1 pt-3.5 pb-3.5 max-w-lg mx-auto">
+            {[
+              { key: 'todas', icon: History, label: 'Histórico' },
+              { key: 'playlist', icon: ListMusic, label: 'Playlist' },
+              { key: 'anotacoes', icon: StickyNote, label: 'Anotações' },
+              { key: 'radar', icon: Radar, label: 'Radar' },
+              { key: 'favoritas', icon: Heart, label: 'Favoritos' },
+            ].map((bt) => {
+              const active = tab === bt.key;
+              return (
+                <button
+                  key={bt.key}
+                  onClick={() => {
+                    if (bt.key === 'todas' || bt.key === 'favoritas') setTab(bt.key);
+                    else toast.info('Recurso em desenvolvimento para Súmulas.');
+                  }}
+                  type="button"
+                  className={`flex flex-col items-center justify-end gap-1.5 py-1.5 transition-colors ${
+                    active ? 'text-primary' : 'text-foreground hover:text-primary'
+                  }`}
+                >
+                  <bt.icon className="w-7 h-7 sm:w-8 sm:h-8" strokeWidth={2} fill="none" />
+                  <span className="font-body text-[11px] sm:text-[12px] leading-tight">{bt.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </motion.nav>
     </div>
   );
 };

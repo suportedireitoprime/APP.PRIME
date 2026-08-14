@@ -185,7 +185,7 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { tabela_nome, artigo_numero, mode } = await req.json();
+    const { tabela_nome, artigo_numero, mode, isSumula, conteudo_texto } = await req.json();
     if (!tabela_nome || !artigo_numero || !mode) {
       return new Response(JSON.stringify({ error: "Parâmetros obrigatórios: tabela_nome, artigo_numero, mode" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
@@ -223,11 +223,16 @@ Deno.serve(async (req) => {
     }
 
     // Fetch article text
-    const articleText = await fetchArticleText(tabela_nome, artigo_numero);
+    let articleText = conteudo_texto;
+    if (!articleText) {
+      articleText = await fetchArticleText(tabela_nome, artigo_numero);
+    }
 
     let prompt: string;
+    const baseSubject = isSumula ? 'Súmula' : 'artigo de lei';
+    
     if (mode === "questoes") {
-      prompt = `Você é um professor de Direito brasileiro. Com base no artigo de lei abaixo, gere EXATAMENTE 40 questões distribuídas em 6 tipos diferentes. Retorne um array JSON com objetos, cada um tendo um campo "tipo" que identifica o tipo.
+      prompt = `Você é um professor de Direito brasileiro. Com base no texto (${baseSubject}) abaixo, gere EXATAMENTE 40 questões distribuídas em 6 tipos diferentes. Retorne um array JSON com objetos, cada um tendo um campo "tipo" que identifica o tipo.
 
 ## TIPOS E QUANTIDADES:
 
@@ -258,10 +263,10 @@ O frontend embaralha os itens; o aluno reordena.
 
 Cubra TODOS os incisos, parágrafos e alíneas do artigo. Retorne APENAS um array JSON válido.
 
-ARTIGO:
+## TEXTO BASE (${baseSubject}):
 ${articleText}`;
     } else if (mode === "mapa_mental") {
-      prompt = `Você é um professor de Direito brasileiro especialista em mapas mentais didáticos. Com base no artigo de lei abaixo, gere um mapa mental hierárquico completo.
+      prompt = `Você é um professor de Direito especializado em resumos visuais. Transforme o texto (${baseSubject}) abaixo em um mapa mental estruturado em JSON.
 
 Retorne um objeto JSON com a seguinte estrutura:
 {
@@ -293,10 +298,10 @@ Retorne um objeto JSON com a seguinte estrutura:
 
 Retorne APENAS o objeto JSON válido, sem texto antes ou depois.
 
-ARTIGO:
+## TEXTO BASE (${baseSubject}):
 ${articleText}`;
     } else {
-      prompt = `Você é um professor de Direito brasileiro. Com base no artigo de lei abaixo, gere entre 10 e 25 flashcards para estudo. Gere mais flashcards para artigos mais longos, cobrindo TODOS os incisos, parágrafos e alíneas.
+      prompt = `Você é um professor de Direito brasileiro. Com base no texto (${baseSubject}) abaixo, gere entre 10 e 25 flashcards para estudo. Gere mais flashcards para artigos mais longos, cobrindo TODOS os incisos, parágrafos e alíneas.
 
 Para cada flashcard inclua:
 - "frente": o conceito, pergunta ou termo jurídico (curto e direto)
@@ -305,7 +310,7 @@ Para cada flashcard inclua:
 
 Retorne APENAS um array JSON válido. Sem texto antes ou depois.
 
-ARTIGO:
+## TEXTO BASE (${baseSubject}):
 ${articleText}`;
     }
 

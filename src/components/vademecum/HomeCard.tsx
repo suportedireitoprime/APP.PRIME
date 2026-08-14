@@ -57,9 +57,9 @@ const HomeCardImpl = ({ icon: Icon, label, sublabel, color, delay = 0, onClick, 
     {solidColor && (
       <div className="absolute -right-3 -bottom-3 w-[84px] h-[84px] pointer-events-none">
         {/* Base (sempre visível) */}
-        <Icon className="w-full h-full text-white/15" strokeWidth={1.2} />
+        <Icon className="w-full h-full text-white/30" strokeWidth={1.5} />
         {/* Brilho animado */}
-        <Icon className="absolute inset-0 w-full h-full text-white/50 svg-shine" strokeWidth={1.2} />
+        <Icon className="absolute inset-0 w-full h-full text-white/70 svg-shine" strokeWidth={1.5} />
       </div>
     )}
     <div className="w-full mt-3 relative z-10">

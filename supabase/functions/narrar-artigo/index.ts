@@ -538,13 +538,15 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { tabela_nome, artigo_numero, artigo_texto, lei_nome, titulo_artigo, hierarquia, epigrafe, force_regenerate } = await req.json();
+    const { tabela_nome, artigo_numero, artigo_texto, lei_nome, titulo_artigo, hierarquia, epigrafe, force_regenerate, is_sumula } = await req.json();
 
     if (!tabela_nome || !artigo_numero || !artigo_texto || !lei_nome) {
       return new Response(JSON.stringify({ error: "Campos obrigatórios faltando" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    const isSumula = is_sumula === true || String(tabela_nome).toLowerCase().includes("sumula");
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
@@ -619,9 +621,14 @@ Deno.serve(async (req) => {
     const epigrafeLabel = cleanLabel(epigrafe);
 
     const partesPrefixo: string[] = [];
-    if (hierFala) partesPrefixo.push(`${hierFala}.`);
-    if (epigrafeLabel) partesPrefixo.push(`${epigrafeLabel}.`);
-    partesPrefixo.push(`artigo ${artigoExtenso}.`);
+    if (isSumula) {
+      const tipoSumula = String(tabela_nome).toUpperCase() === 'STF_VINCULANTE' ? 'Súmula Vinculante' : 'Súmula';
+      partesPrefixo.push(`${tipoSumula} ${artigoExtenso}.`);
+    } else {
+      if (hierFala) partesPrefixo.push(`${hierFala}.`);
+      if (epigrafeLabel) partesPrefixo.push(`${epigrafeLabel}.`);
+      partesPrefixo.push(`artigo ${artigoExtenso}.`);
+    }
     const prefixo = partesPrefixo.join(" ") + " ";
     const textoCompleto = prefixo + textoLimpo;
 

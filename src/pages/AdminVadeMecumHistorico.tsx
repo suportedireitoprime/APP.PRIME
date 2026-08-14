@@ -162,12 +162,40 @@ export default function AdminVadeMecumHistorico() {
           if (!dbArticleId) throw new Error("ID do artigo nativo não encontrado para update.");
           
           toast.loading("Atualizando banco...", { id: "update-banco" });
-          const { error } = await supabase
+          const { error: errUpdate } = await supabase
               .from('vade_mecum_artigos')
               .update({ texto: selectedArticle.texto_novo })
               .eq('id', dbArticleId);
           
-          if (error) throw error;
+          if (errUpdate) throw errUpdate;
+          
+          let detectadoEm = new Date().toISOString();
+          if (selectedArticle.data_completa) {
+              const parts = selectedArticle.data_completa.toLowerCase().split(' ');
+              if (parts.length >= 5) {
+                 const d = parts[0];
+                 const mStr = parts[2];
+                 const y = parts[4];
+                 const months: Record<string, number> = { 'janeiro':0, 'fevereiro':1, 'março':2, 'abril':3, 'maio':4, 'junho':5, 'julho':6, 'agosto':7, 'setembro':8, 'outubro':9, 'novembro':10, 'dezembro':11 };
+                 const mIndex = months[mStr] !== undefined ? months[mStr] : 0;
+                 const dDate = new Date(parseInt(y), mIndex, parseInt(d));
+                 if (!isNaN(dDate.getTime())) detectadoEm = dDate.toISOString();
+              }
+          }
+
+          const { error: errHistory } = await supabase
+              .from('legislacao_alteracoes')
+              .insert({
+                  tabela_nome: selectedLaw.tabela_nome,
+                  tipo_alteracao: selectedArticle.texto_antigo ? 'texto_alterado' : 'artigo_novo',
+                  artigo_numero: selectedArticle.artigo,
+                  texto_anterior: selectedArticle.texto_antigo || '',
+                  texto_atual: selectedArticle.texto_novo || '',
+                  detectado_em: detectadoEm,
+                  revisado: true
+              });
+          
+          if (errHistory) console.warn("Erro ao salvar histórico na legislacao_alteracoes:", errHistory.message);
           
           toast.success("Banco de Dados Atualizado com Sucesso!", { id: "update-banco" });
           setIaAnalysis('updated');

@@ -11,6 +11,18 @@ serve(async (req) => {
   }
 
   try {
+    if (req.method === 'GET') {
+      const url = new URL(req.url);
+      const tabela_nome = url.searchParams.get('tabela_nome');
+      if (tabela_nome) {
+        const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2.45.6");
+        const supabase = createClient(Deno.env.get('SUPABASE_URL') || '', Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '');
+        const { data, error } = await supabase.from('legislacao_alteracoes').select('*').eq('tabela_nome', tabela_nome).eq('revisado', true);
+        if (error) throw error;
+        return new Response(JSON.stringify(data), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+    }
+
     const { targetUrl, maxAgeYears = 5 } = await req.json();
 
     if (!targetUrl || !targetUrl.includes('planalto.gov.br')) {

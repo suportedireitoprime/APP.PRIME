@@ -1,9 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowLeft, Search, Shield, Landmark, Scale, ChevronRight, Gavel, FileText, ListChecks } from 'lucide-react';
+import { ArrowLeft, Search, Shield, Landmark, Scale, ChevronRight, Gavel, FileText, ListChecks, Heart, NotebookPen, Radar, History } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 import JurisBlogCarousel from '@/components/vademecum/JurisBlogCarousel';
 import HeroOrnaments from '@/components/vademecum/HeroOrnaments';
+import HomeCard from '@/components/vademecum/HomeCard';
 import { heroFigures } from '@/assets/hero-figures';
 import { assetUrl } from '@/lib/assetUrl';
 import { prefetchRoute } from '@/lib/routePrefetch';
@@ -60,66 +62,75 @@ const JURIS_FIGURES = JURIS_FIGURE_ALTS
 const CATEGORIAS = [
   {
     id: 'STF_VINCULANTE',
-    label: 'Súmulas Vinculantes',
-    desc: 'Vinculantes para todo o Judiciário e Administração Pública',
+    label: 'SÚMULAS VINCULANTES',
+    desc: 'Vinculantes para todo o Judiciário e Administração',
     icon: Shield,
     tag: 'VINCULANTE',
+    color: '#059669', // Emerald
   },
   {
     id: 'STF',
-    label: 'Súmulas do STF',
-    desc: 'Supremo Tribunal Federal — jurisprudência constitucional',
+    label: 'SÚMULAS DO STF',
+    desc: 'Supremo Tribunal Federal — constitucional',
     icon: Landmark,
     tag: 'STF',
+    color: '#0284c7', // Sky
   },
   {
     id: 'STJ',
-    label: 'Súmulas do STJ',
-    desc: 'Superior Tribunal de Justiça — uniformização infraconstitucional',
+    label: 'SÚMULAS DO STJ',
+    desc: 'Superior Tribunal de Justiça — infraconstitucional',
     icon: Scale,
     tag: 'STJ',
+    color: '#d97706', // Amber
   },
   {
     id: 'PRONTAS_STF',
-    label: 'Jurisprudências prontas — STF',
+    label: 'PRONTAS — STF',
     desc: 'Coletâneas temáticas do Supremo Tribunal Federal',
     icon: Gavel,
     tag: 'STF · PRONTAS',
+    color: '#475569', // Slate
   },
   {
     id: 'PRONTAS_STJ',
-    label: 'Jurisprudências prontas — STJ',
+    label: 'PRONTAS — STJ',
     desc: 'Coletâneas temáticas do Superior Tribunal de Justiça',
     icon: Gavel,
     tag: 'STJ · PRONTAS',
+    color: '#475569', // Slate
   },
   {
     id: 'INFORMATIVOS_STJ',
-    label: 'Informativos do STJ',
-    desc: 'Boletins periódicos com os principais julgados do STJ',
+    label: 'INFORMATIVOS — STJ',
+    desc: 'Boletins periódicos com julgados',
     icon: FileText,
     tag: 'STJ · INFORMATIVOS',
+    color: '#2563eb', // Blue
   },
   {
     id: 'INFORMATIVOS_STF',
-    label: 'Informativos do STF',
-    desc: 'Boletins periódicos com os principais julgados do STF',
+    label: 'INFORMATIVOS — STF',
+    desc: 'Boletins periódicos com julgados',
     icon: FileText,
     tag: 'STF · INFORMATIVOS',
+    color: '#2563eb', // Blue
   },
   {
     id: 'TESES_STJ',
-    label: 'Jurisprudência em Teses — STJ',
-    desc: 'Teses consolidadas do STJ organizadas por edição e ramo do direito',
+    label: 'TESES — STJ',
+    desc: 'Teses consolidadas do STJ',
     icon: ListChecks,
     tag: 'STJ · TESES',
+    color: '#9333ea', // Purple
   },
   {
     id: 'TESES_STF',
-    label: 'Jurisprudência em Teses — STF',
-    desc: 'Teses consolidadas do STF organizadas por edição e ramo do direito',
+    label: 'TESES — STF',
+    desc: 'Teses consolidadas do STF',
     icon: ListChecks,
     tag: 'STF · TESES',
+    color: '#9333ea', // Purple
   },
 ] as const;
 
@@ -202,10 +213,10 @@ const Jurisprudencia = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-[1200] w-screen h-[100dvh] overflow-y-auto overscroll-contain bg-background pb-[calc(env(safe-area-inset-bottom,0px)+1.5rem)] lg:static lg:z-auto lg:h-auto lg:min-h-dvh lg:overflow-visible lg:pb-12">
+    <div className="w-full min-h-dvh bg-background pb-[calc(env(safe-area-inset-bottom,0px)+5rem)] lg:pb-12">
       {/* Painel verde (mirror do painel amarelo do início) */}
       <div
-        className="relative overflow-hidden border-b border-emerald-500/30 shadow-2xl shadow-black/50 lg:rounded-b-[36px]"
+        className="bg-hero-panel relative overflow-hidden rounded-b-[36px] border-b border-white/10 shadow-2xl shadow-black/60 pt-[calc(var(--sai-top,env(safe-area-inset-top,0px))+0.5rem)]"
 
         style={{
           background:
@@ -262,7 +273,7 @@ const Jurisprudencia = () => {
         <div className="absolute -bottom-20 -left-10 w-64 h-64 rounded-full bg-teal-300/10 blur-3xl pointer-events-none" />
 
         {/* Header com voltar */}
-        <div className="relative flex items-center justify-between px-4 pt-[calc(var(--sai-top,env(safe-area-inset-top,0px))+0.875rem)] pb-2 lg:hidden">
+        <div className="relative flex items-center justify-between px-4 pb-2 lg:hidden">
           <button
             onClick={() => navigate('/')}
             aria-label="Voltar"
@@ -317,8 +328,52 @@ const Jurisprudencia = () => {
 
       </div>
 
-      {/* Categorias divididas em Súmulas e Jurisprudências prontas */}
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-6 lg:max-w-[1500px] lg:px-12 lg:py-10 lg:space-y-10 2xl:px-16">
+        {/* Acesso Rápido */}
+        <style>{`
+          @keyframes icon-shine-mask {
+            0% { -webkit-mask-position: 250% center; mask-position: 250% center; }
+            100% { -webkit-mask-position: -250% center; mask-position: -250% center; }
+          }
+        `}</style>
+        <div className="grid grid-cols-4 gap-2 sm:gap-3 w-full">
+          {/* Favoritos */}
+          <button onClick={() => navigate('/vade-mecum/favoritos')} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl bg-[#1A1D21] border border-border/40 hover:bg-[#23272B] transition-colors w-full group" data-track="quick_access_favoritos">
+            <div className="relative w-5 h-5 shrink-0">
+              <Heart className="w-5 h-5 absolute inset-0" style={{ color: 'hsl(348,78%,38%)', filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))' }} strokeWidth={1.15} />
+              <Heart className="w-5 h-5 absolute inset-0 text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ WebkitMaskImage: 'linear-gradient(-60deg, transparent 30%, white 50%, transparent 70%)', WebkitMaskSize: '250% 100%', WebkitMaskRepeat: 'no-repeat', animation: 'icon-shine-mask 1.5s infinite linear' }} strokeWidth={1.5} />
+            </div>
+            <span className="text-[10px] sm:text-[11px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">Favoritos</span>
+          </button>
+          
+          {/* Anotações */}
+          <button onClick={() => toast({ title: 'Em breve', description: 'Suas anotações estarão aqui em breve.' })} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl bg-[#1A1D21] border border-border/40 hover:bg-[#23272B] transition-colors w-full group" data-track="quick_access_anotacoes">
+            <div className="relative w-5 h-5 shrink-0">
+              <NotebookPen className="w-5 h-5 absolute inset-0" style={{ color: 'hsl(348,78%,38%)', filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))' }} strokeWidth={1.15} />
+              <NotebookPen className="w-5 h-5 absolute inset-0 text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ WebkitMaskImage: 'linear-gradient(-60deg, transparent 30%, white 50%, transparent 70%)', WebkitMaskSize: '250% 100%', WebkitMaskRepeat: 'no-repeat', animation: 'icon-shine-mask 1.5s infinite linear' }} strokeWidth={1.5} />
+            </div>
+            <span className="text-[10px] sm:text-[11px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">Anotações</span>
+          </button>
+
+          {/* Radares */}
+          <button onClick={() => navigate('/radares')} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl bg-[#1A1D21] border border-border/40 hover:bg-[#23272B] transition-colors w-full group" data-track="quick_access_radares">
+            <div className="relative w-5 h-5 shrink-0">
+              <Radar className="w-5 h-5 absolute inset-0" style={{ color: 'hsl(348,78%,38%)', filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))' }} strokeWidth={1.15} />
+              <Radar className="w-5 h-5 absolute inset-0 text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ WebkitMaskImage: 'linear-gradient(-60deg, transparent 30%, white 50%, transparent 70%)', WebkitMaskSize: '250% 100%', WebkitMaskRepeat: 'no-repeat', animation: 'icon-shine-mask 1.5s infinite linear' }} strokeWidth={1.5} />
+            </div>
+            <span className="text-[10px] sm:text-[11px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">Radares</span>
+          </button>
+
+          {/* Histórico */}
+          <button onClick={() => navigate('/vade-mecum/recentes')} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl bg-[#1A1D21] border border-border/40 hover:bg-[#23272B] transition-colors w-full group" data-track="quick_access_historico">
+            <div className="relative w-5 h-5 shrink-0">
+              <History className="w-5 h-5 absolute inset-0" style={{ color: 'hsl(348,78%,38%)', filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))' }} strokeWidth={1.15} />
+              <History className="w-5 h-5 absolute inset-0 text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ WebkitMaskImage: 'linear-gradient(-60deg, transparent 30%, white 50%, transparent 70%)', WebkitMaskSize: '250% 100%', WebkitMaskRepeat: 'no-repeat', animation: 'icon-shine-mask 1.5s infinite linear' }} strokeWidth={1.5} />
+            </div>
+            <span className="text-[10px] sm:text-[11px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">Histórico</span>
+          </button>
+        </div>
+
         {(() => {
           const sumulas = CATEGORIAS.filter(
             (c) => !c.id.startsWith('PRONTAS_') && !c.id.startsWith('INFORMATIVOS_') && !c.id.startsWith('TESES_'),
@@ -326,64 +381,86 @@ const Jurisprudencia = () => {
           const prontas = CATEGORIAS.filter((c) => c.id.startsWith('PRONTAS_'));
           const informativos = CATEGORIAS.filter((c) => c.id.startsWith('INFORMATIVOS_'));
           const teses = CATEGORIAS.filter((c) => c.id.startsWith('TESES_'));
-          const renderCard = (op: typeof CATEGORIAS[number]) => {
+          const renderListCard = (op: typeof CATEGORIAS[number]) => {
             const Icon = op.icon;
             return (
               <button
                 key={op.id}
-                onClick={() => abrir(op.id)}
-                onPointerEnter={() => prefetchTarget(op.id)}
-                onTouchStart={() => prefetchTarget(op.id)}
+                onClick={() => {
+                  prefetchTarget(op.id);
+                  abrir(op.id);
+                }}
                 data-track="jurisprudencia_category_click"
                 data-category-id={op.id}
-                data-category-label={op.label}
-                className="group w-full h-[104px] flex items-stretch gap-3 rounded-2xl bg-secondary/60 border border-border hover:border-primary/50 hover:bg-secondary transition-all text-left overflow-hidden shadow-sm shadow-black/5 hover:shadow-md hover:shadow-primary/10"
+                className="group w-full h-[96px] flex items-stretch gap-3 rounded-2xl bg-card border border-border hover:border-primary/50 hover:bg-secondary transition-all text-left overflow-hidden shadow-sm shadow-black/5"
               >
                 <div
-                  className="relative w-[92px] h-full shrink-0 overflow-hidden flex items-center justify-center"
-                  style={{ backgroundColor: '#0f2a20' }}
+                  className="relative w-[84px] h-full shrink-0 overflow-hidden flex items-center justify-center"
+                  style={{ backgroundColor: '#1A1D21' }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/20 via-transparent to-black/25 pointer-events-none" />
-                  <Icon className="relative w-10 h-10 text-emerald-300" strokeWidth={2} />
-                  <span className="absolute left-1.5 bottom-1.5 px-1.5 py-0.5 rounded-sm bg-black/60 text-white text-[10px] font-body font-bold tracking-wider">
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-black/40 pointer-events-none" />
+                  <Icon className="relative w-8 h-8 drop-shadow-md" style={{ color: op.color }} strokeWidth={2} />
+                  <span className="absolute left-1.5 bottom-1.5 px-1.5 py-0.5 rounded-sm bg-black/60 text-white text-[9px] font-body font-bold tracking-wider">
                     {op.tag}
                   </span>
                 </div>
-                <div className="flex-1 min-w-0 py-3 pr-2 flex flex-col justify-center">
-                  <p className="font-display text-[16px] font-bold text-foreground leading-snug tracking-wide line-clamp-2">
+                <div className="flex-1 min-w-0 py-2.5 pr-2 flex flex-col justify-center">
+                  <p className="font-display text-[15px] font-bold text-foreground leading-snug tracking-wide line-clamp-1">
                     {op.label}
                   </p>
-                  <p className="font-body text-[13.5px] text-muted-foreground leading-snug mt-1 line-clamp-2">
+                  <p className="font-body text-[12.5px] text-muted-foreground leading-snug mt-0.5 line-clamp-2">
                     {op.desc}
                   </p>
                 </div>
-                <div className="w-11 h-11 mr-3 self-center rounded-full bg-muted/60 border border-border/60 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                <div className="w-10 h-10 mr-3 self-center rounded-full bg-muted/60 border border-border/60 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                   <ChevronRight className="w-5 h-5" />
                 </div>
               </button>
             );
           };
-          const secClass = 'space-y-3 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-4 2xl:grid-cols-3';
+
+          const renderGridCard = (op: typeof CATEGORIAS[number], i: number) => {
+            return (
+              <HomeCard
+                key={op.id}
+                icon={op.icon}
+                label={op.label}
+                sublabel={op.desc}
+                color={op.color}
+                delay={i * 0.05}
+                badge={op.tag}
+                solidColor={false}
+                onClick={() => {
+                  prefetchTarget(op.id);
+                  abrir(op.id);
+                }}
+                data-track="jurisprudencia_category_click"
+                data-track-name={op.label}
+                data-track-section="jurisprudencia"
+              />
+            );
+          };
+          const gridClass = 'grid grid-cols-2 gap-3 lg:gap-4 2xl:grid-cols-3';
+          const listClass = 'space-y-3 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-4 2xl:grid-cols-3';
           const tituloClass =
-            'px-1 text-[13px] uppercase tracking-widest text-muted-foreground font-body font-semibold lg:col-span-full lg:mb-1 lg:text-[12px]';
+            'px-1 text-[13px] uppercase tracking-widest text-muted-foreground font-body font-semibold col-span-full mb-1 lg:text-[12px]';
           return (
             <>
-              <section className={secClass}>
+              <section className={listClass}>
                 <p className={tituloClass}>Súmulas</p>
-                {sumulas.map(renderCard)}
+                {sumulas.map(renderListCard)}
               </section>
-              <div className="-mx-4 lg:mx-0"><JurisBlogCarousel /></div>
-              <section className={secClass}>
+              <section className={gridClass}>
                 <p className={tituloClass}>Jurisprudências prontas</p>
-                {prontas.map(renderCard)}
+                {prontas.map(renderGridCard)}
               </section>
-              <section className={secClass}>
+              <section className={gridClass}>
                 <p className={tituloClass}>Informativos</p>
-                {informativos.map(renderCard)}
+                {informativos.map(renderGridCard)}
               </section>
-              <section className={secClass}>
+              <section className={gridClass}>
                 <p className={tituloClass}>Jurisprudência em Teses</p>
-                {teses.map(renderCard)}
+                {teses.map(renderGridCard)}
               </section>
             </>
           );

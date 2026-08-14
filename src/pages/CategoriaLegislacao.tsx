@@ -269,9 +269,25 @@ const CategoriaLegislacao = () => {
   // Fetch DB alteracoes when novidades panel opens
   useEffect(() => {
     if (overlayPanel !== 'novidades' || !selectedTabelaNome) return;
-    // legislacao_alteracoes table not available in this deployment
-    setDbAlteracoes([]);
-    setLoadingDbAlteracoes(false);
+    
+    setLoadingDbAlteracoes(true);
+    fetch(
+      `${LEIS_SUPABASE_URL}/functions/v1/vademecum-scraper?tabela_nome=${encodeURIComponent(selectedTabelaNome)}`,
+      { headers: leisAuthHeaders() }
+    )
+      .then(async (res) => {
+        if (!res.ok) return [];
+        return res.json();
+      })
+      .then((data) => {
+        setDbAlteracoes(Array.isArray(data) ? data : []);
+        setLoadingDbAlteracoes(false);
+      })
+      .catch((e) => {
+        console.error('Erro ao carregar alterações legislativas:', e);
+        setDbAlteracoes([]);
+        setLoadingDbAlteracoes(false);
+      });
   }, [overlayPanel, selectedTabelaNome]);
 
   // Fetch narrations when playlist tab is active
@@ -1951,21 +1967,27 @@ const CategoriaLegislacao = () => {
       // Merge DB alteracoes (from monitoramento)
       const parsedKeys = new Set(items.map(i => `${i.artigo.numero}::${i.ano}`));
       for (const dbItem of dbAlteracoes) {
-        const ano = dbItem.detectado_em ? new Date(dbItem.detectado_em).getFullYear() : 0;
+        const d = dbItem.detectado_em ? new Date(dbItem.detectado_em) : new Date();
+        const ano = d.getFullYear() || 0;
         const key = `${dbItem.artigo_numero}::${ano}`;
         if (parsedKeys.has(key)) continue; // skip duplicates
+        
         const matchingArtigo = artigos.find(a => a.numero === dbItem.artigo_numero);
         const tipoLabel = dbItem.tipo_alteracao === 'artigo_revogado' ? 'Revogado'
           : dbItem.tipo_alteracao === 'artigo_novo' ? 'Incluído'
           : dbItem.tipo_alteracao === 'texto_alterado' ? 'Alterada'
           : 'Alteração';
+          
+        const options = { day: 'numeric', month: 'long', year: 'numeric' } as const;
+        const dataFormatada = d.toLocaleDateString('pt-BR', options);
+
         items.push({
           artigo: matchingArtigo || { id: dbItem.artigo_numero, numero: dbItem.artigo_numero, caput: dbItem.texto_atual || dbItem.texto_anterior || '' },
           tipo: tipoLabel,
-          referencia: `Detectado pelo monitoramento em ${new Date(dbItem.detectado_em).toLocaleDateString('pt-BR')}`,
+          referencia: `Em ${dataFormatada} (Monitoramento)`,
           ano,
           parteModificada: 'Artigo inteiro',
-          leiNome: 'Monitoramento automático',
+          leiNome: 'Atualização Oficial do Planalto',
           linhasModificadas: [],
           fromMonitor: true,
         });
