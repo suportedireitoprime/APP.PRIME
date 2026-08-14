@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ChevronDown } from 'lucide-react';
+import { ArrowLeft, ChevronDown, Play } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { haptic } from '@/lib/nativeHaptics';
 import { getBiografiaById } from '@/data/biografias';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 import { useBodyScrollLock, resetBodyScrollLock } from '@/hooks/useBodyScrollLock';
 import { useIsDesktop } from '@/hooks/use-desktop';
+import FilosofoPresentationOverlay from './FilosofoPresentationOverlay';
 
 interface Props {
   personagemId: string;
@@ -17,6 +18,7 @@ interface Props {
 export const BiografiaArtigoView = ({ personagemId, onBack }: Props) => {
   const bio = getBiografiaById(personagemId);
   const [activeTab, setActiveTab] = useState(bio?.tabs[0]?.id || '');
+  const [showPresentation, setShowPresentation] = useState(false);
   const isDesktop = useIsDesktop();
 
   useBodyScrollLock(true);
@@ -195,7 +197,31 @@ export const BiografiaArtigoView = ({ personagemId, onBack }: Props) => {
             </div>
           </div>
         </div>
+
+        {/* Floating Action Button para a Apresentação Dinâmica */}
+        {bio.id === 'socrates' && (
+          <motion.div 
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.5, type: 'spring' }}
+            className="absolute bottom-8 right-6 md:right-10 z-[60]"
+          >
+            <button
+              onClick={() => { haptic.medium(); setShowPresentation(true); }}
+              className="w-16 h-16 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-2xl shadow-primary/50 hover:bg-primary/90 active:scale-95 transition-all group"
+              aria-label="Ver Apresentação"
+            >
+              <Play className="w-7 h-7 ml-1 fill-current group-hover:scale-110 transition-transform" />
+            </button>
+          </motion.div>
+        )}
       </motion.div>
+
+      {/* Overlay da Apresentação Remotion */}
+      <FilosofoPresentationOverlay
+        open={showPresentation}
+        onFinished={() => setShowPresentation(false)}
+      />
     </div>,
     document.body
   );
