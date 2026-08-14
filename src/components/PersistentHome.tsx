@@ -19,6 +19,11 @@ const PersistentHome = () => {
   // efeitos da Home no fluxo público (auth/landing/etc).
   if (loading || !user) return null;
 
+  // Se o usuário acabou de se cadastrar, a triagem vai assumir a tela.
+  // Esconde a Home proativamente para evitar piscar antes do redirecionamento.
+  const justSignedUp = typeof window !== 'undefined' && window.sessionStorage.getItem('just_signed_up') === '1';
+  if (justSignedUp) return null;
+
   const publicPaths = new Set([
     "/auth",
     "/landing",

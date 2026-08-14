@@ -487,10 +487,9 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
     return <Navigate to="/landing" replace state={{ from: location.pathname }} />;
   }
 
-  // A checagem de triagem roda em segundo plano: a tela protegida abre na hora
-  // e, se o perfil indicar triagem pendente, o redirect acontece logo depois.
-  void initialCheckDone;
-
+  if (requireOnboarding && !initialCheckDone) {
+    return null; // Aguarda a checagem terminar antes de renderizar a rota ou navegar. Evita o travamento do AnimatePresence.
+  }
 
   if (requireOnboarding && needsOnboarding) {
     return <Navigate to="/onboarding" replace />;
@@ -742,7 +741,7 @@ function AnimatedRoutes() {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/desktop-link/:token" element={<DesktopLinkConfirm />} />
           <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
-          <Route path="/" element={<HomeGate />} />
+          <Route path="/" element={<ProtectedRoute><HomeGate /></ProtectedRoute>} />
 
           <Route path="/legislacao/:tipo" element={<ProtectedRoute><PageTransition><CategoriaLegislacao /></PageTransition></ProtectedRoute>} />
           <Route path="/legislacao/:tipo/:leiSlug" element={<ProtectedRoute><PageTransition><CategoriaLegislacao /></PageTransition></ProtectedRoute>} />
