@@ -49,16 +49,16 @@ export const BiografiaListView = ({ categoriaId, categoriaLabel, onBack, onSelec
           variants={containerVariants}
           initial="hidden"
           animate="show"
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4"
         >
           {biografias.map((bio) => (
             <motion.div
               key={bio.id}
               variants={itemVariants}
               onClick={() => { haptic.selection(); onSelectPersonagem(bio.id); }}
-              className="group cursor-pointer rounded-3xl bg-card border border-border/40 overflow-hidden shadow-sm hover:shadow-lg transition-all"
+              className="group cursor-pointer rounded-2xl md:rounded-3xl bg-card border border-border/40 overflow-hidden shadow-sm hover:shadow-lg transition-all"
             >
-              <div className="aspect-[4/3] bg-secondary relative overflow-hidden">
+              <div className="aspect-square md:aspect-[4/3] bg-secondary relative overflow-hidden">
                 {bio.imagemUrl ? (
                   <img 
                     src={bio.imagemUrl} 
@@ -70,15 +70,15 @@ export const BiografiaListView = ({ categoriaId, categoriaLabel, onBack, onSelec
                     <UserRound className="w-12 h-12 text-zinc-600" />
                   </div>
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                <div className="absolute bottom-0 left-0 p-5">
-                  <h3 className="font-display font-bold text-lg text-white group-hover:text-primary transition-colors">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+                <div className="absolute bottom-0 left-0 p-3 md:p-5 w-full">
+                  <h3 className="font-display font-bold text-sm md:text-lg text-white group-hover:text-primary transition-colors leading-tight">
                     {bio.nome}
                   </h3>
                 </div>
               </div>
-              <div className="p-5">
-                <p className="text-sm font-body text-muted-foreground line-clamp-2">
+              <div className="p-3 md:p-5 hidden md:block">
+                <p className="text-xs md:text-sm font-body text-muted-foreground line-clamp-2">
                   {bio.subtitulo}
                 </p>
               </div>
