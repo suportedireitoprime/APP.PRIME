@@ -56,9 +56,10 @@ const Flashcards = () => {
   const criticos = (dash?.temas_criticos ?? []).slice(0, 4);
 
   return (
-    <div className="min-h-dvh overflow-x-hidden bg-background pb-28 lg:pb-12 pt-[calc(0.5rem+var(--sai-top,env(safe-area-inset-top,0px)))]">
+    <div className="min-h-dvh overflow-x-hidden bg-background pb-28 lg:pb-12">
+      <PageHeader title="Flashcards" onBack={() => navigate('/')} />
       <div className="mx-auto w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] px-3 sm:px-6 lg:px-8">
-        <PageHeader title="Flashcards" onBack={() => navigate('/')} />
+
 
         <div className="-mx-3 sm:-mx-6 lg:-mx-8 mb-6 mt-1">
           <FlashcardsCargoHero 
