@@ -55,7 +55,6 @@ const Blog = () => {
   const [gateOpen, setGateOpen] = useState(false);
   const [trendingIds, setTrendingIds] = useState<string[] | null>(null);
   const [bottomTab, setBottomTab] = useState<BloggerTab>('blogger');
-  const [searchQuery, setSearchQuery] = useState("");
   const { canUse, register, used, config } = useFeatureLimit('blog_read');
 
   // Carrega posts do Blog Edição com stale-while-revalidate (localStorage cache).
@@ -127,11 +126,8 @@ const Blog = () => {
         const cur = new Set<string>(JSON.parse(localStorage.getItem('blog:favorites') || '[]'));
         base = base.filter((p) => cur.has(p.id));
       } catch { /* ignore */ }
-    } else if (bottomTab === 'pesquisar' && searchQuery.length > 2) {
-      const q = searchQuery.toLowerCase();
-      base = base.filter(
-        (p) => p.titulo.toLowerCase().includes(q) || p.resumo.toLowerCase().includes(q)
-      );
+    } else if (bottomTab === 'biografia') {
+      base = base.filter((p) => p.tema === 'Filosofia' || p.tema === 'Clássicos');
     } else if (bottomTab === 'legislativo') {
       base = base.filter((p) => p.tema === 'Leis');
     } else if (selectedFilter === 'trending') {
@@ -146,7 +142,7 @@ const Blog = () => {
     }
     
     return base;
-  }, [allPosts, selectedFilter, trendingIds, bottomTab, searchQuery]);
+  }, [allPosts, selectedFilter, trendingIds, bottomTab]);
 
   const visiblePosts = useMemo(() => blogLoaded ? posts : [], [blogLoaded, posts]);
 
@@ -224,23 +220,8 @@ const Blog = () => {
       </AnimatePresence>
 
       {/* Capa grande contextual (Todos + por categoria) */}
-      {bottomTab !== 'pesquisar' && bottomTab !== 'favoritos' && (
+      {bottomTab !== 'favoritos' && bottomTab !== 'biografia' && (
         <BlogHeroHeader selectedTema={selectedFilter === 'trending' || selectedFilter === 'todos' ? null : selectedFilter} />
-      )}
-
-      {/* Busca */}
-      {bottomTab === 'pesquisar' && (
-        <div className="max-w-3xl mx-auto px-4 py-4">
-          <Input
-            id="blog-search"
-            type="search"
-            placeholder="Pesquisar artigos por título ou assunto..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="rounded-2xl border-primary/20 bg-card/60 backdrop-blur-sm shadow-inner"
-            autoFocus
-          />
-        </div>
       )}
 
       {/* Chips de tema */}
@@ -485,9 +466,8 @@ const Blog = () => {
               const y = el.getBoundingClientRect().top + window.scrollY - 100;
               window.scrollTo({ top: y, behavior: 'smooth' });
             }
-          } else if (tab === 'pesquisar') {
+          } else if (tab === 'biografia') {
             window.scrollTo({ top: 0, behavior: 'smooth' });
-            setTimeout(() => document.getElementById('blog-search')?.focus(), 100);
           }
         }} 
       />
