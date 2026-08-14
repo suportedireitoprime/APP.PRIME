@@ -37,29 +37,31 @@ export function SugerirTab() {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="text-center mb-6">
-        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
-          <Lightbulb className="w-6 h-6 text-primary" />
+    <div className="space-y-6">
+      <div className="bg-[#1A1D21] p-6 rounded-3xl border border-border/40 shadow-sm text-center">
+        <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+          <Lightbulb className="w-8 h-8 text-primary" />
         </div>
-        <h3 className="font-semibold text-lg">Tem uma ideia legal?</h3>
-        <p className="text-sm text-muted-foreground px-4 mt-1">
+        <h3 className="font-display font-bold text-xl text-foreground mb-2">Tem uma ideia legal?</h3>
+        <p className="text-sm text-muted-foreground/90 font-body">
           O Direito Prime cresce com a sua ajuda. Sugira novas funcionalidades ou melhorias que você gostaria de ver no app!
         </p>
       </div>
 
-      <Textarea
-        value={sugestao}
-        onChange={e => setSugestao(e.target.value)}
-        placeholder="Eu adoraria se o app tivesse..."
-        rows={6}
-        className="resize-none"
-      />
-      
-      <Button onClick={handleSubmit} disabled={sending || !sugestao.trim()} className="w-full gap-2">
-        {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-        Enviar Sugestão
-      </Button>
+      <div className="bg-[#1A1D21] p-5 rounded-3xl border border-border/40 shadow-sm space-y-4">
+        <Textarea
+          value={sugestao}
+          onChange={e => setSugestao(e.target.value)}
+          placeholder="Eu adoraria se o app tivesse..."
+          rows={6}
+          className="resize-none rounded-2xl bg-black/20 border-border/50 p-4"
+        />
+        
+        <Button onClick={handleSubmit} disabled={sending || !sugestao.trim()} className="w-full gap-2 rounded-2xl h-12 font-semibold text-base shadow-lg shadow-primary/20">
+          {sending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-4 h-4 ml-[-4px] mt-[2px]" />}
+          Enviar Sugestão
+        </Button>
+      </div>
     </div>
   );
 }

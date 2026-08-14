@@ -20,12 +20,12 @@ export function NovidadesTab() {
             <div className="flex items-center justify-center w-5 h-5 rounded-full border-2 border-background bg-primary text-primary-foreground font-bold text-[10px] shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-sm z-10 ml-[3px] md:ml-0">
               {i+1}
             </div>
-            <div className="w-[calc(100%-2rem)] md:w-[calc(50%-2rem)] p-3 rounded-xl bg-card border border-border shadow-sm">
-              <div className="flex items-center justify-between mb-1">
+            <div className="w-[calc(100%-2rem)] md:w-[calc(50%-2rem)] p-5 rounded-3xl bg-[#1A1D21] border border-border/40 shadow-sm transition-transform hover:-translate-y-1 hover:shadow-md hover:border-primary/30">
+              <div className="flex items-center justify-between mb-2">
                 <h4 className="font-semibold text-sm">{n.title}</h4>
-                <span className="text-[10px] font-medium text-muted-foreground">{n.date}</span>
+                <span className="text-[10px] font-medium text-muted-foreground/80">{n.date}</span>
               </div>
-              <p className="text-xs text-muted-foreground">{n.desc}</p>
+              <p className="text-xs text-muted-foreground leading-relaxed">{n.desc}</p>
             </div>
           </div>
         ))}

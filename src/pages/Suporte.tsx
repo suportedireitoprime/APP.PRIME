@@ -7,6 +7,8 @@ import { NovidadesTab } from '@/components/suporte/NovidadesTab';
 import { SugerirTab } from '@/components/suporte/SugerirTab';
 import { AjudaTab } from '@/components/suporte/AjudaTab';
 import { Home, MessageSquare, Bell, Lightbulb, HelpCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { haptic } from '@/lib/nativeHaptics';
 
 type Tab = 'inicio' | 'conversas' | 'novidades' | 'sugerir' | 'ajuda';
 
@@ -14,8 +16,16 @@ export default function Suporte() {
   const goBack = useGoBack();
   const [activeTab, setActiveTab] = useState<Tab>('inicio');
 
+  const tabs = [
+    { id: 'inicio', label: 'Início', icon: Home },
+    { id: 'conversas', label: 'Conversas', icon: MessageSquare },
+    { id: 'novidades', label: 'Novidades', icon: Bell },
+    { id: 'sugerir', label: 'Sugerir', icon: Lightbulb },
+    { id: 'ajuda', label: 'Ajuda', icon: HelpCircle },
+  ];
+
   return (
-    <div className="min-h-[100dvh] flex flex-col bg-background pb-20">
+    <div className="min-h-[100dvh] flex flex-col bg-[#14171A] pb-[100px]">
       <PageHeader title="Fale com o Suporte" onBack={() => goBack()} />
       
       <div className="flex-1 overflow-y-auto p-4 max-w-2xl lg:max-w-3xl w-full mx-auto">
@@ -27,25 +37,51 @@ export default function Suporte() {
       </div>
 
       {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 h-16 bg-background border-t border-border z-50 flex items-center justify-around px-2 pb-[env(safe-area-inset-bottom,0px)]">
-        <NavButton icon={Home} label="Início" isActive={activeTab === 'inicio'} onClick={() => setActiveTab('inicio')} />
-        <NavButton icon={MessageSquare} label="Conversas" isActive={activeTab === 'conversas'} onClick={() => setActiveTab('conversas')} />
-        <NavButton icon={Bell} label="Novidades" isActive={activeTab === 'novidades'} onClick={() => setActiveTab('novidades')} />
-        <NavButton icon={Lightbulb} label="Sugerir" isActive={activeTab === 'sugerir'} onClick={() => setActiveTab('sugerir')} />
-        <NavButton icon={HelpCircle} label="Ajuda" isActive={activeTab === 'ajuda'} onClick={() => setActiveTab('ajuda')} />
-      </div>
-    </div>
-  );
-}
+      <motion.nav
+        aria-label="Navegação Suporte"
+        initial={{ y: 0, opacity: 1 }}
+        className="fixed bottom-0 left-0 right-0 z-50 lg:hidden md:bottom-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-auto"
+      >
+        <div className="bg-[#1A1D21]/95 backdrop-blur-md border-t border-border/40 rounded-t-3xl shadow-lg shadow-black/10 pb-[calc(0.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] md:border md:rounded-full md:shadow-2xl md:shadow-black/30 md:pb-0">
+          <div className="grid grid-cols-5 items-end px-1 pt-3.5 pb-3.5 max-w-lg mx-auto md:gap-1 md:px-3 md:py-2">
+            {tabs.map((tab) => {
+              const active = activeTab === tab.id;
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => {
+                    haptic.selection();
+                    setActiveTab(tab.id as Tab);
+                  }}
+                  className={`relative flex flex-col items-center justify-end gap-1 py-1.5 px-1 rounded-2xl transition-colors ${
+                    active ? 'text-primary' : 'text-muted-foreground hover:text-white/80'
+                  }`}
+                  aria-label={tab.label}
+                >
+                  {active && (
+                    <motion.span
+                      layoutId="suporte-nav-active-pill"
+                      className="absolute inset-0 rounded-2xl bg-primary/10 ring-1 ring-primary/20"
+                      transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                      aria-hidden="true"
+                    />
+                  )}
 
-function NavButton({ icon: Icon, label, isActive, onClick }: { icon: any, label: string, isActive: boolean, onClick: () => void }) {
-  return (
-    <button 
-      onClick={onClick}
-      className={`flex flex-col items-center justify-center w-full h-full gap-1 transition-colors ${isActive ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
-    >
-      <Icon className={`w-5 h-5 ${isActive ? 'fill-primary/20' : ''}`} />
-      <span className="text-[10px] font-medium">{label}</span>
-    </button>
+                  <Icon className="relative w-7 h-7 sm:w-8 sm:h-8" strokeWidth={active ? 1.9 : 1.5} />
+                  <span
+                    className={`relative text-[10px] sm:text-[11px] leading-none ${
+                      active ? 'font-bold' : 'font-medium'
+                    }`}
+                  >
+                    {tab.label}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </motion.nav>
+    </div>
   );
 }

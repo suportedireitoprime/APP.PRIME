@@ -62,9 +62,12 @@ export function ConversasTab() {
 
   if (tickets.length === 0) {
     return (
-      <div className="text-center p-8 text-muted-foreground">
-        <MessageSquare className="w-12 h-12 mx-auto mb-4 opacity-20" />
-        <p>Você ainda não abriu nenhum ticket de suporte.</p>
+      <div className="flex flex-col items-center justify-center p-8 text-center text-muted-foreground/60 h-[40vh]">
+        <div className="w-20 h-20 rounded-full bg-[#1A1D21] border border-border/20 flex items-center justify-center mb-6 shadow-sm">
+          <MessageSquare className="w-8 h-8 opacity-40" />
+        </div>
+        <p className="font-display text-base">Você ainda não abriu nenhum ticket.</p>
+        <p className="text-xs mt-1 max-w-[200px]">Suas conversas com o suporte aparecerão aqui.</p>
       </div>
     );
   }
@@ -75,16 +78,16 @@ export function ConversasTab() {
         <div 
           key={ticket.id} 
           onClick={() => setSelectedTicket(ticket)}
-          className="p-4 rounded-xl bg-card border border-border cursor-pointer hover:border-primary/50 transition-colors"
+          className="p-5 rounded-3xl bg-[#1A1D21] border border-border/40 cursor-pointer hover:border-primary/50 hover:bg-[#1f2328] transition-all shadow-sm"
         >
           <div className="flex justify-between items-start mb-2">
-            <h4 className="font-semibold text-sm line-clamp-1">{ticket.assunto}</h4>
-            <span className={`text-[10px] px-2 py-0.5 rounded-full ${ticket.respondido ? 'bg-green-500/20 text-green-500' : 'bg-yellow-500/20 text-yellow-500'}`}>
+            <h4 className="font-semibold text-sm line-clamp-1 pr-2">{ticket.assunto}</h4>
+            <span className={`text-[10px] px-2.5 py-1 rounded-full font-semibold shrink-0 ${ticket.respondido ? 'bg-green-500/10 text-green-500 border border-green-500/20' : 'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20'}`}>
               {ticket.respondido ? 'Respondido' : 'Aguardando'}
             </span>
           </div>
-          <p className="text-xs text-muted-foreground line-clamp-2">{ticket.mensagem}</p>
-          <div className="text-[10px] text-muted-foreground/50 mt-3">
+          <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">{ticket.mensagem}</p>
+          <div className="text-[10px] text-muted-foreground/50 mt-4 font-medium">
             {new Date(ticket.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
           </div>
         </div>

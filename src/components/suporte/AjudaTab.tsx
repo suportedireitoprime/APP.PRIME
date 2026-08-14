@@ -27,17 +27,22 @@ export function AjudaTab() {
   ];
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-2 mb-4 text-primary">
-        <HelpCircle className="w-5 h-5" />
-        <h3 className="font-semibold">Dúvidas Frequentes</h3>
+    <div className="space-y-6">
+      <div className="flex items-center gap-3 mb-6 bg-primary/10 p-4 rounded-3xl border border-primary/20">
+        <div className="p-2 bg-primary rounded-full text-primary-foreground">
+          <HelpCircle className="w-5 h-5" />
+        </div>
+        <div>
+          <h3 className="font-bold font-display text-foreground">Dúvidas Frequentes</h3>
+          <p className="text-xs text-muted-foreground font-body">Encontre respostas rápidas aqui</p>
+        </div>
       </div>
       
-      <Accordion type="single" collapsible className="w-full">
+      <Accordion type="single" collapsible className="w-full space-y-3">
         {faqs.map((faq, i) => (
-          <AccordionItem key={i} value={`item-${i}`}>
-            <AccordionTrigger className="text-sm font-medium text-left">{faq.q}</AccordionTrigger>
-            <AccordionContent className="text-muted-foreground text-sm">
+          <AccordionItem key={i} value={`item-${i}`} className="bg-[#1A1D21] border border-border/40 rounded-3xl px-5 overflow-hidden data-[state=open]:border-primary/50 transition-colors">
+            <AccordionTrigger className="text-sm font-semibold text-left py-4 hover:no-underline">{faq.q}</AccordionTrigger>
+            <AccordionContent className="text-muted-foreground/90 text-sm leading-relaxed pb-4 pt-1">
               {faq.a}
             </AccordionContent>
           </AccordionItem>

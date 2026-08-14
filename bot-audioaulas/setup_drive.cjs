@@ -43,10 +43,10 @@ async function setup() {
     console.log('📋 Configurando colunas da planilha...');
     await sheets.spreadsheets.values.update({
       spreadsheetId: sheetId,
-      range: 'A1:B1',
+      range: 'A1:E1',
       valueInputOption: 'RAW',
       resource: {
-        values: [['Artigo', 'Link']],
+        values: [['Artigos', 'Status', 'Lei seca', 'Link da audioaula', 'Índice']],
       },
     });
 
