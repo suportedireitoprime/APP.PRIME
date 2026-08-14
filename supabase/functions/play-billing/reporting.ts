@@ -335,9 +335,16 @@ export const handler = (async (req) => {
     let serviceAccountEmail: string | null = null;
     try { serviceAccountEmail = JSON.parse(SERVICE_ACCOUNT_JSON).client_email ?? null; } catch { /* ignore */ }
 
+    // Fetch legacy subscribers bypassing RLS
+    const { data: legacy } = await admin
+      .from('legacy_subscribers')
+      .select('*')
+      .order('created_at', { ascending: false });
+
     return new Response(JSON.stringify({
       sync,
       local,
+      legacy: legacy ?? [],
       packageName: PACKAGE_NAME,
       serviceAccountEmail,
     }), {

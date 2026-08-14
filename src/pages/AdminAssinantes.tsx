@@ -78,6 +78,7 @@ type Payload = {
     stats: { total: number; active: number; test: number; byPlan: Record<string, number> };
     metrics: Metrics;
   };
+  legacy: LegacySubscriber[];
   packageName: string;
   serviceAccountEmail: string | null;
 };
@@ -141,17 +142,7 @@ const AdminAssinantes = () => {
       setError(err.message ?? 'Erro ao carregar Google Play');
     } else {
       setData(res as Payload);
-    }
-
-    const { data: legacy, error: errLegacy } = await supabase
-      .from('legacy_subscribers')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (errLegacy) {
-      toast.error('Erro ao carregar assinantes legados: ' + errLegacy.message);
-    } else {
-      setLegacyData(legacy as LegacySubscriber[]);
+      setLegacyData((res as Payload).legacy ?? []);
     }
 
     setLoading(false);
@@ -184,6 +175,7 @@ const AdminAssinantes = () => {
     const list: CombinedRow[] = [];
     if (data?.local?.rows) {
       for (const r of data.local.rows) {
+        if (isAdminEmail(r.email)) continue; // Remove testes do admin
         list.push({
           id: `${r.user_id}-${r.purchase_token}`,
           source: 'play',
@@ -201,6 +193,7 @@ const AdminAssinantes = () => {
       }
     }
     for (const r of legacyData) {
+      if (isAdminEmail(r.email)) continue; // Remove testes do admin
       list.push({
         id: r.id,
         source: 'asaas',
@@ -250,12 +243,12 @@ const AdminAssinantes = () => {
   }, [combinedRows, q, statusFilter]);
 
   const sync = data?.sync ?? null;
-  const syncErrors = sync?.errors ?? [];
+  const syncErrors = sync?.errors?.filter(e => e.status !== 400 && e.status !== 404 && e.status !== 410) ?? [];
   const syncFatal = sync?.error ?? null;
   const sync403 = syncErrors.some((e) => e.status === 401 || e.status === 403);
 
   const metrics = data?.local.metrics ?? EMPTY_METRICS;
-  const activeToday = metrics.ativosHoje + legacyData.filter(r => r.status === 'active').length;
+  const activeToday = metrics.ativosHoje + legacyData.filter(r => r.status === 'active' && !isAdminEmail(r.email)).length;
   const newLast7 = metrics.novos7;
   const canceledLast7 = metrics.cancelados7;
   const renewals30 = metrics.renovacoes30;
