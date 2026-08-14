@@ -2,7 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, BadgeCheck, Ban, Copy, Check, Heart, Volume2, Pause, 
   Target, Play, LayoutGrid, Loader2, Sparkles, BookOpen, Layers, 
-  ChevronRight, ExternalLink 
+  ChevronRight, ExternalLink, Calendar, RotateCw 
 } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useEffect, useState, useRef, useCallback, lazy, Suspense } from 'react';
@@ -94,6 +94,42 @@ function formatTime(seconds: number): string {
   const m = Math.floor(seconds / 60);
   const s = Math.floor(seconds % 60);
   return `${m}:${s < 10 ? '0' : ''}${s}`;
+}
+
+function formatarDataPublicacao(dataStr: string | null | undefined): string | null {
+  if (!dataStr) return null;
+  const limpo = dataStr.trim();
+  if (!limpo) return null;
+
+  // Formato ISO: YYYY-MM-DD
+  const isoMatch = limpo.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (isoMatch) {
+    const ano = parseInt(isoMatch[1], 10);
+    const mes = parseInt(isoMatch[2], 10);
+    const dia = parseInt(isoMatch[3], 10);
+    const meses = [
+      'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
+      'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'
+    ];
+    const mesNome = meses[mes - 1] || `${mes}`;
+    return `${dia < 10 ? '0' : ''}${dia} de ${mesNome} de ${ano}`;
+  }
+
+  // Formato DD/MM/YYYY
+  const dmyMatch = limpo.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if (dmyMatch) {
+    const dia = parseInt(dmyMatch[1], 10);
+    const mes = parseInt(dmyMatch[2], 10);
+    const ano = parseInt(dmyMatch[3], 10);
+    const meses = [
+      'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
+      'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'
+    ];
+    const mesNome = meses[mes - 1] || `${mes}`;
+    return `${dia < 10 ? '0' : ''}${dia} de ${mesNome} de ${ano}`;
+  }
+
+  return limpo;
 }
 
 export function SumulaVinculanteSheet({ sumula, tribunal, isFavorita = false, onToggleFavorita, onClose }: Props) {
@@ -435,6 +471,25 @@ export function SumulaVinculanteSheet({ sumula, tribunal, isFavorita = false, on
                   <p className="text-[15.5px] leading-relaxed text-foreground whitespace-pre-wrap font-sans">
                     {sumula.enunciado || 'Enunciado não disponível.'}
                   </p>
+
+                  {/* Data de Publicação / Aprovação */}
+                  {(sumula.data_publicacao || sumula.referencia) && (
+                    <div className="mt-3.5 pt-3 border-t border-white/5 flex flex-wrap items-center justify-between gap-2 text-[12.5px] text-muted-foreground">
+                      {sumula.data_publicacao && (
+                        <div className="flex items-center gap-1.5">
+                          <Calendar className="w-3.5 h-3.5 text-primary-light shrink-0" />
+                          <span>
+                            Publicação: <strong className="font-medium text-foreground/90">{formatarDataPublicacao(sumula.data_publicacao)}</strong>
+                          </span>
+                        </div>
+                      )}
+                      {sumula.referencia && (
+                        <span className="text-[11px] text-muted-foreground/80 bg-white/5 px-2 py-0.5 rounded-md" title={sumula.referencia}>
+                          {sumula.referencia}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <Section title="Precedentes Representativos" items={extras.precedentes_representativos} />
                 <Section title="Teses de Repercussão Geral" items={extras.teses_repercussao_geral} />
@@ -453,8 +508,16 @@ export function SumulaVinculanteSheet({ sumula, tribunal, isFavorita = false, on
                     <ReactMarkdown>{aiContent.explicacao}</ReactMarkdown>
                   </div>
                 ) : (
-                  <div className="flex items-center justify-center py-16 text-muted-foreground text-sm">
-                    Falha ao carregar explicação.
+                  <div className="flex flex-col items-center justify-center py-12 gap-3 text-center">
+                    <p className="text-muted-foreground text-sm">Não foi possível carregar a explicação.</p>
+                    <button
+                      onClick={fetchAiData}
+                      disabled={aiLoading}
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary-light text-xs font-semibold transition-colors border border-primary/20"
+                    >
+                      <RotateCw className={`w-3.5 h-3.5 ${aiLoading ? 'animate-spin' : ''}`} />
+                      Tentar novamente
+                    </button>
                   </div>
                 )}
               </TabsContent>
@@ -470,8 +533,16 @@ export function SumulaVinculanteSheet({ sumula, tribunal, isFavorita = false, on
                     <ReactMarkdown>{aiContent.exemplo}</ReactMarkdown>
                   </div>
                 ) : (
-                  <div className="flex items-center justify-center py-16 text-muted-foreground text-sm">
-                    Falha ao carregar exemplo prático.
+                  <div className="flex flex-col items-center justify-center py-12 gap-3 text-center">
+                    <p className="text-muted-foreground text-sm">Não foi possível carregar o exemplo prático.</p>
+                    <button
+                      onClick={fetchAiData}
+                      disabled={aiLoading}
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary-light text-xs font-semibold transition-colors border border-primary/20"
+                    >
+                      <RotateCw className={`w-3.5 h-3.5 ${aiLoading ? 'animate-spin' : ''}`} />
+                      Tentar novamente
+                    </button>
                   </div>
                 )}
               </TabsContent>
@@ -487,8 +558,16 @@ export function SumulaVinculanteSheet({ sumula, tribunal, isFavorita = false, on
                     <ReactMarkdown>{aiContent.termos}</ReactMarkdown>
                   </div>
                 ) : (
-                  <div className="flex items-center justify-center py-16 text-muted-foreground text-sm">
-                    Falha ao carregar termos.
+                  <div className="flex flex-col items-center justify-center py-12 gap-3 text-center">
+                    <p className="text-muted-foreground text-sm">Não foi possível carregar os termos.</p>
+                    <button
+                      onClick={fetchAiData}
+                      disabled={aiLoading}
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary-light text-xs font-semibold transition-colors border border-primary/20"
+                    >
+                      <RotateCw className={`w-3.5 h-3.5 ${aiLoading ? 'animate-spin' : ''}`} />
+                      Tentar novamente
+                    </button>
                   </div>
                 )}
               </TabsContent>
