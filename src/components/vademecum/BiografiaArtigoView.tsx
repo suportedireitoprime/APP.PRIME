@@ -61,7 +61,7 @@ export const BiografiaArtigoView = ({ personagemId, onBack }: Props) => {
         exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 30, stiffness: 340 }}
         className={`relative bg-background flex flex-col overflow-hidden shadow-2xl mx-auto w-full max-w-3xl pb-[var(--sai-bottom,0px)] ${
-          isDesktop ? 'h-[85vh] mt-auto rounded-t-3xl' : 'h-[92vh] rounded-t-3xl'
+          isDesktop ? 'h-[100dvh] mt-auto' : 'h-[100dvh]'
         }`}
       >
         <div className="flex-1 overflow-y-auto overflow-x-hidden relative pb-10">
@@ -70,9 +70,9 @@ export const BiografiaArtigoView = ({ personagemId, onBack }: Props) => {
           <button
             onClick={handleClose}
             aria-label="Fechar"
-            className="absolute top-4 left-4 w-11 h-11 flex items-center justify-center rounded-full bg-black/20 backdrop-blur-md border border-white/20 text-white shadow-lg hover:bg-black/40 active:scale-95 transition-all z-20"
+            className="absolute top-4 left-4 w-12 h-12 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/60 text-white shadow-xl hover:bg-white/30 active:scale-95 transition-all z-30 mt-[var(--sai-top,0px)]"
           >
-            <ChevronDown className="w-5 h-5" strokeWidth={2.5} />
+            <ChevronDown className="w-6 h-6 text-white" strokeWidth={3} />
           </button>
 
           {/* Hero Header */}
