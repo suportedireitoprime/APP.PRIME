@@ -4,9 +4,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import FlashcardsBottomNav from '@/components/flashcards/FlashcardsBottomNav';
 import AreaTemasSheet from '@/components/flashcards/AreaTemasSheet';
-import { DesafiosCarousel } from '@/components/flashcards/DesafiosCarousel';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Calendar, ChevronRight, Flame, Search, Sparkles, Users, X, Trophy, Layers, Target, BarChart3, FolderPlus, RotateCcw } from 'lucide-react';
+import { Calendar, ChevronRight, Flame, Search, Sparkles, Users, X, Layers, Target, BarChart3, FolderPlus, RotateCcw, Filter } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { getAreaVisual } from '@/lib/flashcardsAreaVisual';
 import { haptic } from '@/lib/nativeHaptics';
@@ -31,7 +30,6 @@ const Flashcards = () => {
   const [busca, setBusca] = useState('');
   const [buscaAberta, setBuscaAberta] = useState(false);
   const [areaSheet, setAreaSheet] = useState<string | null>(null);
-  const [desafiosSheet, setDesafiosSheet] = useState(false);
 
   const loading = loadingDash || loadingAreas;
 
@@ -73,8 +71,25 @@ const Flashcards = () => {
         </div>
         
         <div className="pt-1 space-y-6">
-          {/* ── Desafios ───────────────────────── */}
-          <DesafiosCarousel dash={dash} onVerTodos={() => setDesafiosSheet(true)} />
+          {/* ── Card Principal com Botão "Filtro Rápido" ───────────────── */}
+          <div className="bg-card/60 border border-border/80 p-5 rounded-3xl backdrop-blur-md shadow-xl">
+            <div className="flex items-center gap-2">
+              <span className="h-5 w-1 rounded-full bg-primary" />
+              <h2 className="text-lg font-extrabold leading-tight text-foreground sm:text-xl">Praticar Flashcards</h2>
+            </div>
+            <p className="ml-3 mt-1 text-xs text-muted-foreground">
+              Escolha filtros personalizados e comece sua rotina de revisão.
+            </p>
+
+            <button
+              onClick={() => { haptic.selection(); navigate('/flashcards/estudar'); }}
+              className="btn-attention-shine group mt-4 flex h-14 sm:h-16 min-h-[56px] w-full items-center justify-center gap-3 rounded-2xl bg-[#5B21B6] hover:bg-[#4C1D95] text-white text-base sm:text-lg font-black shadow-xl shadow-[#5B21B6]/35 transition-all active:scale-[0.99] border border-purple-400/30"
+            >
+              <Filter className="h-6 w-6 text-white" strokeWidth={2.5} />
+              <span className="tracking-wide text-white">Filtro Rápido</span>
+              <ChevronRight className="h-6 w-6 text-white transition-transform group-hover:translate-x-1" strokeWidth={2.5} />
+            </button>
+          </div>
 
           {/* ── Ações Rápidas (3 botões) ───────────────── */}
           <section className="grid grid-cols-3 gap-2">
@@ -188,27 +203,6 @@ const Flashcards = () => {
         open={!!areaSheet}
         onOpenChange={(v) => !v && setAreaSheet(null)}
       />
-
-      <Sheet open={desafiosSheet} onOpenChange={setDesafiosSheet}>
-        <SheetContent side="bottom" className="h-[80vh] rounded-t-3xl sm:max-w-md mx-auto">
-          <SheetHeader className="text-left pb-4 border-b border-border/50">
-            <SheetTitle className="text-xl font-black flex items-center gap-2">
-              <Trophy className="w-5 h-5 text-success" />
-              Todos os Desafios
-            </SheetTitle>
-          </SheetHeader>
-          <div className="pt-4 overflow-y-auto space-y-3 pb-20">
-            <div className="p-4 rounded-2xl bg-card border border-border shadow-sm active:scale-95 transition-all cursor-pointer">
-              <h3 className="font-bold text-sm mb-1">Desafio 1</h3>
-              <p className="text-xs text-muted-foreground">Estude 15 cards de Constitucional</p>
-            </div>
-            <div className="p-4 rounded-2xl bg-card border border-border shadow-sm active:scale-95 transition-all cursor-pointer">
-              <h3 className="font-bold text-sm mb-1">Desafio 2</h3>
-              <p className="text-xs text-muted-foreground">Domine a Lei Seca (20 cards)</p>
-            </div>
-          </div>
-        </SheetContent>
-      </Sheet>
 
       <FlashcardsBottomNav />
     </div>
