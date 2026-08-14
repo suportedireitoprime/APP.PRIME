@@ -1,18 +1,21 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, BadgeCheck, Ban, ExternalLink, Copy, Check, Heart, Volume2, Target, Play } from 'lucide-react';
+import { 
+  X, BadgeCheck, Ban, Copy, Check, Heart, Volume2, Pause, 
+  Target, Play, LayoutGrid, Loader2, Sparkles, BookOpen, Layers, 
+  ChevronRight, ExternalLink 
+} from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { useEffect, useState, useRef, lazy, Suspense } from 'react';
+import { useEffect, useState, useRef, useCallback, lazy, Suspense } from 'react';
 import { toast } from 'sonner';
 import type { Sumula } from '@/services/sumulasService';
 import { copiarTexto } from '@/lib/nativo/copiar';
 import { supabase } from '@/integrations/supabase/client';
 import ReactMarkdown from 'react-markdown';
-import { Loader2 } from 'lucide-react';
+import brasaoImgAsset from '@/assets/brasao-republica.webp';
 
 const VideoaulasListSheet = lazy(() => import('./VideoaulasListSheet'));
 const VideoaulaSheet = lazy(() => import('./VideoaulaSheet'));
 const QuizView = lazy(() => import('@/components/estudar/QuizView'));
-
 
 interface Props {
   sumula: Sumula;
@@ -23,14 +26,10 @@ interface Props {
 }
 
 // Renders inline text with markdown-style links [label](url), **bold**, *italic*, _italic_.
-// Also cleans up whitespace inside a broken pattern like "[label]\n(url)" and stray marker artifacts.
 function renderInline(text: string): (string | JSX.Element)[] {
-  // Normalize "[label] (url)" or "[label]\n(url)" -> "[label](url)"
   let normalized = text.replace(/\]\s+\(/g, '](');
-  // Collapse "** **" (bold around whitespace) and orphan bold markers glued to punctuation
   normalized = normalized.replace(/\*\*\s+\*\*/g, ' ');
 
-  // Token regex: link | bold | italic(*) | italic(_)
   const regex = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|\*\*([\s\S]+?)\*\*|(?<![*\w])\*([^*\n]+?)\*(?!\*)|(?<![_\w])_([^_\n]+?)_(?!_)/g;
   const parts: (string | JSX.Element)[] = [];
   let lastIndex = 0;
@@ -58,17 +57,14 @@ function renderInline(text: string): (string | JSX.Element)[] {
           {renderInline(match[3])}
         </strong>
       );
-    } else if (match[4] !== undefined) {
-      parts.push(<em key={key++}>{renderInline(match[4])}</em>);
-    } else if (match[5] !== undefined) {
-      parts.push(<em key={key++}>{renderInline(match[5])}</em>);
+    } else if (match[4] !== undefined || match[5] !== undefined) {
+      parts.push(<em key={key++}>{renderInline(match[4] ?? match[5] ?? '')}</em>);
     }
     lastIndex = match.index + match[0].length;
   }
   if (lastIndex < normalized.length) {
     parts.push(normalized.slice(lastIndex));
   }
-  // Final safety: strip any remaining stray "**" from plain string parts
   return parts.map((p) => (typeof p === 'string' ? p.replace(/\*\*/g, '') : p));
 }
 
@@ -83,7 +79,7 @@ function Section({ title, items }: { title: string; items?: string[] }) {
         {items.map((it, idx) => (
           <p
             key={idx}
-            className="text-[14px] leading-relaxed text-foreground/85 whitespace-pre-wrap"
+            className="text-[14.5px] leading-relaxed text-foreground/85 whitespace-pre-wrap"
           >
             {renderInline(it)}
           </p>
@@ -91,6 +87,13 @@ function Section({ title, items }: { title: string; items?: string[] }) {
       </div>
     </section>
   );
+}
+
+function formatTime(seconds: number): string {
+  if (!seconds || isNaN(seconds)) return '0:00';
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m}:${s < 10 ? '0' : ''}${s}`;
 }
 
 export function SumulaVinculanteSheet({ sumula, tribunal, isFavorita = false, onToggleFavorita, onClose }: Props) {
@@ -104,16 +107,131 @@ export function SumulaVinculanteSheet({ sumula, tribunal, isFavorita = false, on
   const [narracaoPlaying, setNarracaoPlaying] = useState(false);
   const [narracaoUrl, setNarracaoUrl] = useState<string | null>(null);
   const narracaoAudioRef = useRef<HTMLAudioElement | null>(null);
-  
-  // Estados de Vídeo-Aulas
+  const narracaoProgressFillRef = useRef<HTMLDivElement | null>(null);
+  const narracaoTimeRef = useRef<HTMLSpanElement | null>(null);
+  const narracaoTotalTimeRef = useRef<HTMLSpanElement | null>(null);
+  const animFrameRef = useRef<number | null>(null);
+
+  // Estados de Sheets Secundários
+  const [showFuncoesSheet, setShowFuncoesSheet] = useState(false);
   const [showVideoaulasListSheet, setShowVideoaulasListSheet] = useState(false);
   const [showVideoaulaSheet, setShowVideoaulaSheet] = useState(false);
   const [videoaula, setVideoaula] = useState<any>(null);
-  
-  // Praticar (Quiz)
   const [showQuiz, setShowQuiz] = useState(false);
 
   const extras = sumula.extras ?? {};
+  const isVinculante = tribunal === 'STF_VINCULANTE';
+  const sumulaTitulo = `${isVinculante ? 'Súmula Vinculante' : 'Súmula'} ${sumula.numero}`;
+
+  const stopProgressTracking = useCallback(() => {
+    if (animFrameRef.current !== null) {
+      cancelAnimationFrame(animFrameRef.current);
+      animFrameRef.current = null;
+    }
+  }, []);
+
+  const clearAudioState = useCallback(() => {
+    setNarracaoPlaying(false);
+    stopProgressTracking();
+    if (narracaoProgressFillRef.current) narracaoProgressFillRef.current.style.width = '0%';
+    if (narracaoTimeRef.current) narracaoTimeRef.current.textContent = '0:00';
+  }, [stopProgressTracking]);
+
+  const startProgressTracking = useCallback((audio: HTMLAudioElement) => {
+    stopProgressTracking();
+    const update = () => {
+      if (audio && audio.duration && !audio.paused) {
+        const cur = audio.currentTime;
+        const dur = audio.duration;
+        const pct = Math.min(100, Math.max(0, (cur / dur) * 100));
+        if (narracaoProgressFillRef.current) narracaoProgressFillRef.current.style.width = `${pct}%`;
+        if (narracaoTimeRef.current) narracaoTimeRef.current.textContent = formatTime(cur);
+        if (narracaoTotalTimeRef.current) narracaoTotalTimeRef.current.textContent = formatTime(dur);
+        animFrameRef.current = requestAnimationFrame(update);
+      }
+    };
+    animFrameRef.current = requestAnimationFrame(update);
+  }, [stopProgressTracking]);
+
+  const playAudio = useCallback(async (url: string) => {
+    let audio = narracaoAudioRef.current;
+    if (!audio) {
+      audio = new Audio(url);
+      narracaoAudioRef.current = audio;
+    } else if (audio.src !== url) {
+      audio.src = url;
+    }
+
+    audio.onended = () => clearAudioState();
+    audio.onerror = () => {
+      clearAudioState();
+      toast.error('Falha ao reproduzir áudio da narração.');
+    };
+
+    audio.onloadedmetadata = () => {
+      if (narracaoTotalTimeRef.current && audio) {
+        narracaoTotalTimeRef.current.textContent = formatTime(audio.duration);
+      }
+    };
+
+    try {
+      await audio.play();
+      setNarracaoPlaying(true);
+      startProgressTracking(audio);
+    } catch (err: any) {
+      clearAudioState();
+      if (err instanceof DOMException && err.name === 'NotAllowedError') {
+        toast.info('Narração pronta! Toque em Ouvir para iniciar.');
+      } else {
+        toast.error('Toque em Ouvir para reproduzir.');
+      }
+    }
+  }, [clearAudioState, startProgressTracking]);
+
+  const handleNarrar = async () => {
+    if (narracaoPlaying) {
+      if (narracaoAudioRef.current) {
+        narracaoAudioRef.current.pause();
+      }
+      clearAudioState();
+      return;
+    }
+
+    if (narracaoUrl) {
+      await playAudio(narracaoUrl);
+      return;
+    }
+
+    setNarracaoLoading(true);
+    try {
+      const payload = {
+        tabela_nome: isVinculante ? 'sumulas_vinculantes' : 'sumulas',
+        artigo_numero: sumula.numero,
+        artigo_texto: sumula.enunciado,
+        lei_nome: isVinculante ? 'Súmula Vinculante' : 'Súmula',
+        is_sumula: true
+      };
+
+      const { data: json, error } = await supabase.functions.invoke('narrar-artigo', {
+        body: payload
+      });
+
+      if (error) throw error;
+      if (json?.error) throw new Error(json.error);
+
+      if (json?.audio_url) {
+        setNarracaoUrl(json.audio_url);
+        await playAudio(json.audio_url);
+      } else {
+        toast.error('Áudio não gerado pela IA.');
+      }
+    } catch (e: any) {
+      console.error('Erro na narração:', e);
+      toast.error('Erro na narração: ' + (e?.message || 'Falha na conexão'));
+    } finally {
+      setNarracaoLoading(false);
+    }
+  };
 
   const fetchAiData = async () => {
     if (aiContent || aiLoading) return;
@@ -141,77 +259,24 @@ export function SumulaVinculanteSheet({ sumula, tribunal, isFavorita = false, on
     }
   };
 
-  const handleNarrar = async () => {
-    if (narracaoPlaying) {
-      if (narracaoAudioRef.current) {
-        narracaoAudioRef.current.pause();
-      }
-      setNarracaoPlaying(false);
-      return;
-    }
-
-    if (narracaoUrl) {
-      playAudio(narracaoUrl);
-      return;
-    }
-
-    setNarracaoLoading(true);
-    try {
-      const payload = {
-        tabela_nome: tribunal === 'STF_VINCULANTE' ? 'sumulas_vinculantes' : 'sumulas',
-        artigo_numero: sumula.numero,
-        artigo_texto: sumula.enunciado,
-        lei_nome: tribunal === 'STF_VINCULANTE' ? 'Súmula Vinculante' : 'Súmula',
-        is_sumula: true
-      };
-
-      const { data: json, error } = await supabase.functions.invoke('narrar-artigo', {
-        body: payload
-      });
-
-      if (error) throw error;
-      if (json?.error) throw new Error(json.error);
-
-      if (json?.audio_url) {
-        setNarracaoUrl(json.audio_url);
-        playAudio(json.audio_url);
-      } else {
-        toast.error('Áudio não gerado pela IA.');
-      }
-    } catch (e: any) {
-      console.error('Erro na narração:', e);
-      toast.error('Erro na narração: ' + (e?.message || 'Falha na conexão'));
-    } finally {
-      setNarracaoLoading(false);
-    }
-  };
-
-  const playAudio = (url: string) => {
-    if (!narracaoAudioRef.current) {
-      const audio = new Audio(url);
-      audio.onended = () => setNarracaoPlaying(false);
-      audio.onerror = () => { setNarracaoPlaying(false); toast.error('Falha ao reproduzir áudio.'); };
-      narracaoAudioRef.current = audio;
-    } else {
-      narracaoAudioRef.current.src = url;
-    }
-    narracaoAudioRef.current.play().then(() => setNarracaoPlaying(true)).catch(() => {
-      setNarracaoPlaying(false);
-      toast.error('Sem permissão para autoplay.');
-    });
-  };
-
   useEffect(() => {
     document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = ''; };
-  }, []);
+    return () => {
+      document.body.style.overflow = '';
+      if (narracaoAudioRef.current) {
+        narracaoAudioRef.current.pause();
+        narracaoAudioRef.current = null;
+      }
+      stopProgressTracking();
+    };
+  }, [stopProgressTracking]);
 
   async function copyEnunciado() {
     try {
-      await copiarTexto(`${tribunal === 'STF_VINCULANTE' ? 'Súmula Vinculante' : 'Súmula'} ${sumula.numero}\n\n${sumula.enunciado}`);
+      await copiarTexto(`${sumulaTitulo}\n\n${sumula.enunciado}`);
       setCopied(true);
-      toast.success('Enunciado copiado');
-      setTimeout(() => setCopied(false), 1500);
+      toast.success('Enunciado copiado para a área de transferência');
+      setTimeout(() => setCopied(false), 2000);
     } catch {
       toast.error('Falha ao copiar');
     }
@@ -230,67 +295,144 @@ export function SumulaVinculanteSheet({ sumula, tribunal, isFavorita = false, on
           initial={{ y: '100%' }}
           animate={{ y: 0 }}
           exit={{ y: '100%' }}
-          transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-          className="absolute inset-x-0 bottom-0 top-4 bg-background rounded-t-3xl flex flex-col"
+          transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+          className="absolute inset-x-0 bottom-0 top-[5%] md:top-[8%] bg-[#0f0f0f] text-foreground rounded-t-3xl border-t border-white/10 shadow-2xl flex flex-col max-w-4xl mx-auto overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Header */}
-          <div className="shrink-0 border-b border-border/60 px-4 pt-3 pb-4">
-            <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-muted-foreground/30" />
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h2 className="font-display text-xl font-bold text-primary-light">
-                    {tribunal === 'STF_VINCULANTE' ? 'Súmula Vinculante' : 'Súmula'} {sumula.numero}
-                  </h2>
-                  {sumula.situacao === 'cancelada' ? (
-                    <span className="text-[11px] bg-destructive/15 text-destructive px-2 py-0.5 rounded-full font-semibold flex items-center gap-1">
-                      <Ban className="w-3 h-3" /> Cancelada
-                    </span>
-                  ) : (
-                    <span className="text-[11px] bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-full font-semibold flex items-center gap-1">
-                      <BadgeCheck className="w-3 h-3" /> Vigente
-                    </span>
-                  )}
-                </div>
-                {sumula.data_publicacao && (
-                  <p className="text-[12px] text-muted-foreground mt-1">{sumula.data_publicacao}</p>
-                )}
-              </div>
-              <div className="flex items-center gap-2 shrink-0">
-                <button
-                  onClick={onToggleFavorita}
-                  className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors ${isFavorita ? 'bg-rose-500/15' : 'bg-secondary hover:bg-secondary/70'}`}
-                  aria-label={isFavorita ? 'Remover favorito' : 'Adicionar aos favoritos'}
+          {/* Pílula de arrasto */}
+          <div className="shrink-0 flex justify-center pt-3 pb-1 bg-[#0f0f0f]">
+            <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
+          </div>
+
+          {/* Top bar (Favorito + Fechar) idêntico ao Código Penal */}
+          <div className="px-4 pt-1 pb-2 flex items-center justify-between shrink-0">
+            <div className="flex items-center gap-2">
+              <motion.button
+                onClick={onToggleFavorita}
+                whileTap={{ scale: 0.85 }}
+                className={`w-11 h-11 rounded-full flex items-center justify-center transition-colors ${isFavorita ? 'bg-rose-500/15' : 'hover:bg-secondary active:bg-secondary'}`}
+                title={isFavorita ? 'Remover favorito' : 'Favoritar'}
+                aria-label={isFavorita ? 'Remover favorito' : 'Favoritar'}
+              >
+                <motion.span
+                  key={isFavorita ? 'on' : 'off'}
+                  initial={{ scale: isFavorita ? 0.6 : 1 }}
+                  animate={{ scale: isFavorita ? [0.6, 1.35, 1] : 1 }}
+                  transition={{ duration: 0.45, ease: [0.34, 1.56, 0.64, 1] }}
+                  className="inline-flex"
                 >
-                  <Heart className={`w-4 h-4 ${isFavorita ? 'fill-rose-500 text-rose-500' : 'text-muted-foreground'}`} />
-                </button>
-                <button
-                  onClick={onClose}
-                  className="w-9 h-9 rounded-full bg-secondary hover:bg-secondary/70 flex items-center justify-center"
-                  aria-label="Fechar"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
+                  <Heart
+                    className={`w-6 h-6 transition-colors ${isFavorita ? 'text-rose-500 fill-rose-500 drop-shadow-[0_0_8px_rgba(244,63,94,0.55)]' : 'text-muted-foreground'}`}
+                    strokeWidth={2}
+                  />
+                </motion.span>
+              </motion.button>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={onClose} 
+                className="w-11 h-11 rounded-full bg-primary hover:bg-primary/90 transition-colors flex items-center justify-center shadow-md shadow-primary/20" 
+                aria-label="Fechar"
+              >
+                <X className="w-5 h-5 text-primary-foreground" />
+              </button>
             </div>
           </div>
 
-          {/* Body and Tabs */}
-          <Tabs value={activeTab} onValueChange={(v) => { setActiveTab(v); if (v !== 'sumula') fetchAiData(); }} className="flex-1 overflow-hidden flex flex-col min-h-0 relative">
-            <div className="shrink-0 mt-4 mb-2">
-              <TabsList className="mx-5 bg-secondary/60 rounded-2xl h-11 grid grid-cols-4 w-auto p-1">
-                <TabsTrigger value="sumula" className="rounded-xl text-[11px] sm:text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-1 sm:px-4 py-2">Súmula</TabsTrigger>
-                <TabsTrigger value="explicacao" className="rounded-xl text-[11px] sm:text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-1 sm:px-4 py-2">Explicação</TabsTrigger>
-                <TabsTrigger value="exemplo" className="rounded-xl text-[11px] sm:text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-1 sm:px-4 py-2">Exemplo</TabsTrigger>
-                <TabsTrigger value="termos" className="rounded-xl text-[11px] sm:text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-1 sm:px-4 py-2">Termos</TabsTrigger>
+          {/* Título Principal */}
+          <div className="px-5 pt-1 pb-3 flex items-center justify-between gap-3 shrink-0">
+            <div className="flex items-center gap-3 flex-wrap">
+              <h2 className="font-display text-2xl sm:text-3xl font-bold text-foreground">
+                {sumulaTitulo}
+              </h2>
+              {sumula.situacao === 'cancelada' ? (
+                <span className="text-[11px] bg-destructive/15 text-destructive px-2.5 py-0.5 rounded-full font-semibold flex items-center gap-1">
+                  <Ban className="w-3 h-3" /> Cancelada
+                </span>
+              ) : (
+                <span className="text-[11px] bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 px-2.5 py-0.5 rounded-full font-semibold flex items-center gap-1">
+                  <BadgeCheck className="w-3.5 h-3.5" /> Vigente
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Menu de Alternância (Tabs) idêntico ao Código Penal */}
+          <Tabs 
+            value={activeTab} 
+            onValueChange={(v) => { 
+              setActiveTab(v); 
+              if (v !== 'sumula') fetchAiData(); 
+            }} 
+            className="flex-1 overflow-hidden flex flex-col min-h-0 relative"
+          >
+            <div className="shrink-0 mx-5 mb-3">
+              <TabsList className="bg-secondary/60 rounded-2xl h-11 grid grid-cols-4 w-full p-1 border border-white/5">
+                <TabsTrigger value="sumula" className="rounded-xl text-[12px] sm:text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-2 py-2 transition-all">
+                  Súmula
+                </TabsTrigger>
+                <TabsTrigger value="explicacao" className="rounded-xl text-[12px] sm:text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-2 py-2 transition-all">
+                  Explicação
+                </TabsTrigger>
+                <TabsTrigger value="exemplo" className="rounded-xl text-[12px] sm:text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-2 py-2 transition-all">
+                  Exemplo
+                </TabsTrigger>
+                <TabsTrigger value="termos" className="rounded-xl text-[12px] sm:text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-2 py-2 transition-all">
+                  Termos
+                </TabsTrigger>
               </TabsList>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-5 pb-[calc(7rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-2 relative">
-              <TabsContent value="sumula" className="mt-0 outline-none space-y-6">
-                <div className="rounded-2xl bg-secondary/50 p-4 border border-border/40">
-                  <p className="text-[15px] leading-relaxed text-foreground whitespace-pre-wrap">
+            {/* Conteúdo rolável */}
+            <div className="flex-1 overflow-y-auto px-5 pb-[calc(7.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] relative overscroll-contain">
+              
+              {/* Barra de progresso de áudio sticky no topo idêntica ao Código Penal */}
+              {narracaoPlaying && (
+                <div className="sticky top-0 z-30 -mx-5 -mt-2 mb-4 bg-[#0f0f0f]/95 backdrop-blur-md border-b border-white/10 px-5 py-2.5 shadow-lg">
+                  <div className="flex items-center gap-2.5">
+                    <button
+                      onClick={handleNarrar}
+                      className="flex-shrink-0 w-7 h-7 rounded-full bg-primary hover:bg-primary/90 flex items-center justify-center transition-colors"
+                      aria-label="Pausar narração"
+                    >
+                      <Pause className="w-3.5 h-3.5 text-primary-foreground" />
+                    </button>
+                    <div className="flex-1 min-w-0">
+                      <div
+                        className="h-1.5 rounded-full bg-white/10 overflow-hidden cursor-pointer"
+                        onClick={(e) => {
+                          const audio = narracaoAudioRef.current;
+                          if (!audio || !audio.duration) return;
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                          audio.currentTime = pct * audio.duration;
+                        }}
+                      >
+                        <div
+                          ref={narracaoProgressFillRef}
+                          className="h-full bg-gradient-to-r from-primary to-primary-light transition-[width] duration-100 ease-out"
+                          style={{ width: '0%' }}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex-shrink-0 text-[10.5px] font-mono text-foreground/70 tabular-nums">
+                      <span ref={narracaoTimeRef}>0:00</span>
+                      <span className="text-foreground/40"> / </span>
+                      <span ref={narracaoTotalTimeRef}>0:00</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Marca d'água brasão */}
+              <div className="sticky top-1/2 -translate-y-1/2 left-0 right-0 flex items-center justify-center pointer-events-none z-0" style={{ height: 0 }}>
+                <img src={brasaoImgAsset} alt="" className="w-48 h-48 opacity-[0.05] object-contain" />
+              </div>
+
+              <TabsContent value="sumula" className="mt-0 outline-none space-y-5 relative z-10">
+                <div className="rounded-2xl bg-secondary/40 p-4 border border-white/5 shadow-inner">
+                  <p className="text-[15.5px] leading-relaxed text-foreground whitespace-pre-wrap font-sans">
                     {sumula.enunciado || 'Enunciado não disponível.'}
                   </p>
                 </div>
@@ -300,101 +442,241 @@ export function SumulaVinculanteSheet({ sumula, tribunal, isFavorita = false, on
                 <Section title="Observação" items={extras.observacao} />
               </TabsContent>
 
-              <TabsContent value="explicacao" className="mt-0 outline-none h-full">
+              <TabsContent value="explicacao" className="mt-0 outline-none h-full relative z-10">
                 {aiLoading && !aiContent ? (
-                  <div className="flex flex-col items-center justify-center h-full gap-3 text-primary">
-                    <Loader2 className="w-6 h-6 animate-spin" />
-                    <p className="text-sm font-medium">Gerando explicação...</p>
+                  <div className="flex flex-col items-center justify-center py-16 gap-3 text-primary">
+                    <Loader2 className="w-8 h-8 animate-spin" />
+                    <p className="text-sm font-medium text-muted-foreground">Gerando explicação com IA...</p>
                   </div>
                 ) : aiContent?.explicacao ? (
                   <div className="prose prose-sm dark:prose-invert max-w-none font-body leading-relaxed [&_p]:my-2 [&_ul]:my-2 [&_ol]:my-2 [&_li]:my-1 pb-10">
                     <ReactMarkdown>{aiContent.explicacao}</ReactMarkdown>
                   </div>
                 ) : (
-                  <div className="flex items-center justify-center h-full"><p className="text-muted-foreground text-sm">Falha ao gerar explicação.</p></div>
+                  <div className="flex items-center justify-center py-16 text-muted-foreground text-sm">
+                    Falha ao carregar explicação.
+                  </div>
                 )}
               </TabsContent>
-              <TabsContent value="exemplo" className="mt-0 outline-none h-full">
+
+              <TabsContent value="exemplo" className="mt-0 outline-none h-full relative z-10">
                 {aiLoading && !aiContent ? (
-                  <div className="flex flex-col items-center justify-center h-full gap-3 text-primary">
-                    <Loader2 className="w-6 h-6 animate-spin" />
-                    <p className="text-sm font-medium">Gerando exemplo prático...</p>
+                  <div className="flex flex-col items-center justify-center py-16 gap-3 text-primary">
+                    <Loader2 className="w-8 h-8 animate-spin" />
+                    <p className="text-sm font-medium text-muted-foreground">Gerando exemplo prático...</p>
                   </div>
                 ) : aiContent?.exemplo ? (
                   <div className="prose prose-sm dark:prose-invert max-w-none font-body leading-relaxed [&_p]:my-2 [&_ul]:my-2 [&_ol]:my-2 [&_li]:my-1 pb-10">
                     <ReactMarkdown>{aiContent.exemplo}</ReactMarkdown>
                   </div>
                 ) : (
-                  <div className="flex items-center justify-center h-full"><p className="text-muted-foreground text-sm">Falha ao gerar exemplo.</p></div>
+                  <div className="flex items-center justify-center py-16 text-muted-foreground text-sm">
+                    Falha ao carregar exemplo prático.
+                  </div>
                 )}
               </TabsContent>
-              <TabsContent value="termos" className="mt-0 outline-none h-full">
+
+              <TabsContent value="termos" className="mt-0 outline-none h-full relative z-10">
                 {aiLoading && !aiContent ? (
-                  <div className="flex flex-col items-center justify-center h-full gap-3 text-primary">
-                    <Loader2 className="w-6 h-6 animate-spin" />
-                    <p className="text-sm font-medium">Desvendando termos...</p>
+                  <div className="flex flex-col items-center justify-center py-16 gap-3 text-primary">
+                    <Loader2 className="w-8 h-8 animate-spin" />
+                    <p className="text-sm font-medium text-muted-foreground">Analisando termos jurídicos...</p>
                   </div>
                 ) : aiContent?.termos ? (
                   <div className="prose prose-sm dark:prose-invert max-w-none font-body leading-relaxed [&_p]:my-2 [&_ul]:my-2 [&_ol]:my-2 [&_li]:my-1 pb-10">
                     <ReactMarkdown>{aiContent.termos}</ReactMarkdown>
                   </div>
                 ) : (
-                  <div className="flex items-center justify-center h-full"><p className="text-muted-foreground text-sm">Falha ao gerar dicionário.</p></div>
+                  <div className="flex items-center justify-center py-16 text-muted-foreground text-sm">
+                    Falha ao carregar termos.
+                  </div>
                 )}
               </TabsContent>
             </div>
           </Tabs>
 
-          {/* Floating actions menu (Rodapé) idêntico ao Vade Mecum (Ilha) */}
-          <div className="fixed bottom-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 mb-4 z-[10002] transition-all duration-300 pointer-events-auto">
-            <div className="bg-[#18181b]/80 backdrop-blur-xl border border-white/10 rounded-full shadow-2xl p-1.5 flex items-center gap-1">
+          {/* Rodapé de Ações com 5 colunas IDÊNTICO ao Código Penal */}
+          <div className="shrink-0 relative z-[55] bg-card/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-lg shadow-black/20 pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))]">
+            <div className="relative grid grid-cols-5 items-end px-1 pt-3 pb-3 max-w-lg mx-auto">
+              {/* 1. Funções */}
               <button
-                onClick={() => toast.info('Menu de Funções extra em desenvolvimento.')}
-                className="w-[46px] h-[46px] rounded-full flex items-center justify-center transition-colors hover:bg-white/10 text-white/90"
+                onClick={() => setShowFuncoesSheet(true)}
+                className="flex flex-col items-center justify-end gap-1.5 py-1.5 text-foreground hover:text-primary transition-colors"
                 aria-label="Funções"
               >
-                <div className="flex flex-col items-center gap-0.5">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
-                </div>
+                <LayoutGrid className="w-7 h-7 sm:w-8 sm:h-8" />
+                <span className="font-body text-[11px] sm:text-[12px] leading-tight">Funções</span>
               </button>
+
+              {/* 2. Praticar */}
+              <button
+                onClick={() => setShowQuiz(true)}
+                className="flex flex-col items-center justify-end gap-1.5 py-1.5 text-foreground hover:text-primary transition-colors"
+                aria-label="Praticar"
+              >
+                <Target className="w-7 h-7 sm:w-8 sm:h-8" />
+                <span className="font-body text-[11px] sm:text-[12px] leading-tight">Praticar</span>
+              </button>
+
+              {/* 3. FAB Central: Narrar / Ouvir / Pausar */}
               <button
                 onClick={handleNarrar}
                 disabled={narracaoLoading}
-                className={`w-[46px] h-[46px] rounded-full flex items-center justify-center transition-colors hover:bg-white/10 ${narracaoPlaying ? 'bg-emerald-500/20 text-emerald-400' : 'text-emerald-400'}`}
+                className="relative z-[80] flex flex-col items-center justify-end gap-1.5 py-1.5 touch-manipulation select-none"
                 aria-label="Narrar"
               >
-                {narracaoLoading ? (
-                  <Loader2 className="w-[20px] h-[20px] animate-spin" />
-                ) : (
-                  <Volume2 className="w-[20px] h-[20px]" strokeWidth={2.5} />
-                )}
+                <div className="absolute bottom-[28px] pointer-events-none">
+                  <span className={`relative w-[4.5rem] h-[4.5rem] sm:w-20 sm:h-20 rounded-full flex items-center justify-center shadow-lg ring-4 ring-card transition-all duration-300 pointer-events-auto ${narracaoPlaying ? 'bg-primary shadow-primary/40 scale-105' : 'bg-primary shadow-primary/30 hover:bg-primary/90'}`}>
+                    {narracaoPlaying && (
+                      <>
+                        <span className="absolute inset-0 rounded-full bg-primary/30 animate-ping" style={{ animationDuration: '1.5s' }} />
+                        <span className="absolute -inset-1 rounded-full bg-primary/15 animate-ping" style={{ animationDuration: '2s', animationDelay: '0.3s' }} />
+                      </>
+                    )}
+                    {narracaoLoading ? (
+                      <Loader2 className="w-8 h-8 sm:w-9 sm:h-9 text-primary-foreground animate-spin relative z-20" />
+                    ) : narracaoPlaying ? (
+                      <Pause className="w-8 h-8 sm:w-9 sm:h-9 text-primary-foreground relative z-20" />
+                    ) : (
+                      <Volume2 className="w-8 h-8 sm:w-9 sm:h-9 text-primary-foreground relative z-20" />
+                    )}
+                  </span>
+                </div>
+                <span className="font-body text-[11px] sm:text-[12px] font-semibold text-primary leading-tight">
+                  {narracaoPlaying ? 'Pausar' : narracaoUrl ? 'Ouvir' : 'Narrar'}
+                </span>
               </button>
+
+              {/* 4. Vídeo-aulas */}
               <button
                 onClick={() => setShowVideoaulasListSheet(true)}
-                className="w-[46px] h-[46px] rounded-full flex items-center justify-center transition-colors hover:bg-white/10 text-rose-500"
-                aria-label="Vídeo-Aulas"
+                className="flex flex-col items-center justify-end gap-1.5 py-1.5 text-foreground hover:text-primary transition-colors"
+                aria-label="Vídeo-aulas"
               >
-                <Play className="w-[20px] h-[20px] fill-current" strokeWidth={2.5} />
+                <Play className="w-7 h-7 sm:w-8 sm:h-8" />
+                <span className="font-body text-[11px] sm:text-[12px] leading-tight">Vídeos</span>
               </button>
+
+              {/* 5. Copiar Enunciado */}
               <button
-                onClick={() => setShowQuiz(true)}
-                className="w-[46px] h-[46px] rounded-full flex items-center justify-center transition-colors hover:bg-white/10 text-purple-400"
-                aria-label="Praticar"
+                onClick={copyEnunciado}
+                className="flex flex-col items-center justify-end gap-1.5 py-1.5 text-foreground hover:text-primary transition-colors"
+                aria-label="Copiar"
               >
-                <Target className="w-[20px] h-[20px]" strokeWidth={2.5} />
+                {copied ? (
+                  <Check className="w-7 h-7 sm:w-8 sm:h-8 text-emerald-400" />
+                ) : (
+                  <Copy className="w-7 h-7 sm:w-8 sm:h-8" />
+                )}
+                <span className="font-body text-[11px] sm:text-[12px] leading-tight">
+                  {copied ? 'Copiado' : 'Copiar'}
+                </span>
               </button>
             </div>
           </div>
         </motion.div>
 
+        {/* Funções Sheet */}
+        <AnimatePresence>
+          {showFuncoesSheet && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-black/50 z-[10040]"
+                onClick={() => setShowFuncoesSheet(false)}
+              />
+              <motion.div
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                className="fixed bottom-0 left-0 right-0 z-[10041] bg-card rounded-t-3xl border-t border-border pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] max-h-[85vh] overflow-y-auto mx-auto max-w-lg flex flex-col"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="pt-3 pb-2 flex justify-center">
+                  <span className="w-10 h-1 rounded-full bg-border" />
+                </div>
+                <div className="flex items-center justify-between px-5 pb-3 border-b border-border">
+                  <div className="flex items-center gap-2">
+                    <LayoutGrid className="w-5 h-5 text-primary" />
+                    <h3 className="font-heading text-base font-semibold text-foreground">Funções da Súmula</h3>
+                  </div>
+                  <button
+                    onClick={() => setShowFuncoesSheet(false)}
+                    className="w-8 h-8 rounded-full hover:bg-secondary flex items-center justify-center text-foreground/70"
+                    aria-label="Fechar"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+                <div className="py-2">
+                  {[
+                    {
+                      icon: Target,
+                      label: 'Praticar Quiz',
+                      desc: 'Desafios e questões geradas por IA sobre a súmula',
+                      color: '#DC2626',
+                      onClick: () => {
+                        setShowFuncoesSheet(false);
+                        setShowQuiz(true);
+                      }
+                    },
+                    {
+                      icon: Play,
+                      label: 'Vídeo-aulas no YouTube',
+                      desc: 'Aulas e comentários em vídeo dos principais professores',
+                      color: '#DC2626',
+                      onClick: () => {
+                        setShowFuncoesSheet(false);
+                        setShowVideoaulasListSheet(true);
+                      }
+                    },
+                    {
+                      icon: Copy,
+                      label: 'Copiar Enunciado',
+                      desc: 'Copiar texto integral formatado com número',
+                      color: '#DC2626',
+                      onClick: () => {
+                        setShowFuncoesSheet(false);
+                        copyEnunciado();
+                      }
+                    }
+                  ].map((item, i) => {
+                    const Icon = item.icon;
+                    return (
+                      <button
+                        key={i}
+                        onClick={item.onClick}
+                        className="w-full flex items-center gap-4 px-5 py-4 transition-colors text-left hover:bg-secondary/60 border-b border-border/40 last:border-0"
+                      >
+                        <span className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center shrink-0" style={{ color: item.color }}>
+                          <Icon className="w-5 h-5" />
+                        </span>
+                        <span className="flex-1 min-w-0">
+                          <span className="block text-[14.5px] font-medium text-foreground">{item.label}</span>
+                          <span className="block text-[12px] text-foreground/60 mt-0.5">{item.desc}</span>
+                        </span>
+                        <ChevronRight className="w-5 h-5 text-foreground/40 shrink-0" />
+                      </button>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+
+        {/* Sub-sheets carregadas sob demanda */}
         <Suspense fallback={null}>
           {showVideoaulasListSheet && (
             <VideoaulasListSheet
               open={showVideoaulasListSheet}
               onClose={() => setShowVideoaulasListSheet(false)}
-              tabelaNome={tribunal === 'STF_VINCULANTE' ? 'sumulas_vinculantes' : 'sumulas'}
+              tabelaNome={isVinculante ? 'sumulas_vinculantes' : 'sumulas'}
               artigoNumero={sumula.numero}
-              leiNome={tribunal === 'STF_VINCULANTE' ? 'Súmula Vinculante' : 'Súmula'}
+              leiNome={isVinculante ? 'Súmula Vinculante' : 'Súmula'}
               onSelectVideo={(v) => {
                 setVideoaula(v);
                 setShowVideoaulasListSheet(false);
@@ -408,7 +690,7 @@ export function SumulaVinculanteSheet({ sumula, tribunal, isFavorita = false, on
               open={showVideoaulaSheet}
               onClose={() => setShowVideoaulaSheet(false)}
               video={videoaula}
-              tabelaNome={tribunal === 'STF_VINCULANTE' ? 'sumulas_vinculantes' : 'sumulas'}
+              tabelaNome={isVinculante ? 'sumulas_vinculantes' : 'sumulas'}
               artigoNumero={sumula.numero}
               artigoTexto={sumula.enunciado}
             />
@@ -419,12 +701,12 @@ export function SumulaVinculanteSheet({ sumula, tribunal, isFavorita = false, on
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 50 }}
-              className="absolute inset-0 z-50 bg-[#0d0f12] overflow-hidden rounded-t-[1.5rem]"
+              className="absolute inset-0 z-50 bg-[#0d0f12] overflow-hidden rounded-t-3xl"
             >
               <QuizView
-                tabelaNome={tribunal === 'STF_VINCULANTE' ? 'sumulas_vinculantes' : 'sumulas'}
+                tabelaNome={isVinculante ? 'sumulas_vinculantes' : 'sumulas'}
                 artigoNumero={sumula.numero}
-                leiNome={tribunal === 'STF_VINCULANTE' ? 'Súmula Vinculante' : 'Súmula'}
+                leiNome={isVinculante ? 'Súmula Vinculante' : 'Súmula'}
                 onBack={() => setShowQuiz(false)}
                 isSumula={true}
                 conteudoTexto={sumula.enunciado}
