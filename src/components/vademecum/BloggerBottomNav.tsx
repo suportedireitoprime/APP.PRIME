@@ -1,13 +1,13 @@
 import { motion } from 'framer-motion';
-import { BookOpenText, LayoutGrid, Landmark, Heart, Feather } from 'lucide-react';
+import { BookOpenText, LayoutGrid, Briefcase, Heart, Feather } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
-export type BloggerTab = 'blogger' | 'categorias' | 'legislativo' | 'biografia' | 'favoritos';
+export type BloggerTab = 'blogger' | 'categorias' | 'carreiras' | 'biografia' | 'favoritos';
 
 const TABS: { id: BloggerTab; label: string; icon: any }[] = [
   { id: 'blogger', label: 'Blogger', icon: BookOpenText },
   { id: 'categorias', label: 'Categorias', icon: LayoutGrid },
-  { id: 'legislativo', label: 'Legislativo', icon: Landmark },
+  { id: 'carreiras', label: 'Carreiras', icon: Briefcase },
   { id: 'biografia', label: 'Biografia', icon: Feather },
   { id: 'favoritos', label: 'Favoritos', icon: Heart },
 ];

@@ -14,6 +14,7 @@ import PremiumGate from '@/components/PremiumGate';
 import { supabase } from '@/integrations/supabase/client';
 import BloggerBottomNav, { type BloggerTab } from '@/components/vademecum/BloggerBottomNav';
 import BiografiaCategoriasView from '@/components/vademecum/BiografiaCategoriasView';
+import BlogCategoriasView from '@/components/vademecum/BlogCategoriasView';
 import { Input } from '@/components/ui/input';
 import { useIsDesktop } from '@/hooks/use-desktop';
 import { LoadingState, EmptyState } from '@/components/ui/states';
@@ -129,8 +130,8 @@ const Blog = () => {
       } catch { /* ignore */ }
     } else if (bottomTab === 'biografia') {
       base = []; // A aba de biografia tem sua própria view.
-    } else if (bottomTab === 'legislativo') {
-      base = base.filter((p) => p.tema === 'Leis');
+    } else if (bottomTab === 'carreiras') {
+      base = base.filter((p) => p.tema === 'Carreiras Jurídicas');
     } else if (selectedFilter === 'trending') {
       if (!trendingIds || trendingIds.length === 0) return byDate; // fallback
       const map = new Map(allPosts.map((p) => [p.id, p]));
@@ -221,12 +222,12 @@ const Blog = () => {
       </AnimatePresence>
 
       {/* Capa grande contextual (Todos + por categoria) */}
-      {bottomTab !== 'favoritos' && bottomTab !== 'biografia' && (
+      {bottomTab !== 'favoritos' && bottomTab !== 'biografia' && bottomTab !== 'categorias' && (
         <BlogHeroHeader selectedTema={selectedFilter === 'trending' || selectedFilter === 'todos' ? null : selectedFilter} />
       )}
 
       {/* Chips de tema */}
-      {bottomTab !== 'biografia' && (
+      {bottomTab !== 'biografia' && bottomTab !== 'categorias' && (
         <div id="blog-filters" className="bg-background border-b border-border/40">
           <div role="tablist" aria-label="Filtros de temas do blog" className="flex gap-2 overflow-x-auto no-scrollbar px-4 py-3 max-w-3xl mx-auto">
           <button
@@ -279,6 +280,14 @@ const Blog = () => {
 
       {bottomTab === 'biografia' ? (
         <BiografiaCategoriasView />
+      ) : bottomTab === 'categorias' ? (
+        <BlogCategoriasView 
+          onSelectCategoria={(tema) => {
+            setSelectedFilter(tema);
+            setBottomTab('blogger');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+        />
       ) : (
         <div className={isDesktop ? 'mx-auto w-full max-w-7xl px-6 py-4 pb-16 flex gap-6 items-start' : 'max-w-3xl mx-auto px-4 py-4 space-y-3 pb-40'}>
           <div className={isDesktop ? 'w-[420px] shrink-0 space-y-3 max-h-[calc(100dvh-260px)] overflow-y-auto pr-2 -mr-2' : 'w-full space-y-3'}>
@@ -463,15 +472,11 @@ const Blog = () => {
           if (tab === 'blogger') {
             setSelectedFilter('todos');
             window.scrollTo({ top: 0, behavior: 'smooth' });
-          } else if (tab === 'legislativo') {
-            setSelectedFilter('Leis');
+          } else if (tab === 'carreiras') {
+            setSelectedFilter('Carreiras Jurídicas');
             window.scrollTo({ top: 0, behavior: 'smooth' });
           } else if (tab === 'categorias') {
-            const el = document.getElementById('blog-filters');
-            if (el) {
-              const y = el.getBoundingClientRect().top + window.scrollY - 100;
-              window.scrollTo({ top: y, behavior: 'smooth' });
-            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
           } else if (tab === 'biografia') {
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }
