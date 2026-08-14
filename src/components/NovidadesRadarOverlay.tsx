@@ -18,8 +18,8 @@ interface OverlayItem {
   origem: OrigemOverlay;
   tipo_label: string;
   ementa: string;
-  data_ref: string;
   url: string;
+  imagem_capa?: string;
 }
 
 const LS_KEY = 'radar_leis_last_seen';
@@ -205,7 +205,8 @@ export default function NovidadesRadarOverlay() {
               tipo_label: 'Temática Jurídica',
               ementa: `Recomendação da semana: ${recHoje.obra.titulo}`,
               data_ref: todayISO,
-              url: '/tematica-juridica',
+              url: `/tematica-juridica?tab=recomendacoes`,
+              imagem_capa: recHoje.obra.poster_url || undefined,
             });
           }
         }
@@ -428,9 +429,20 @@ export default function NovidadesRadarOverlay() {
             </div>
 
             <div className="px-5 pt-3 pb-4 space-y-3 bg-background/95">
-              <p className="text-sm font-body text-foreground/85 line-clamp-3 leading-relaxed">
-                {first.ementa}
-              </p>
+              {first.imagem_capa ? (
+                <div className="flex gap-3 items-center">
+                  <div className="shrink-0 w-12 aspect-[2/3] rounded-md overflow-hidden bg-muted border border-border/50">
+                    <img src={first.imagem_capa} alt="Capa" className="w-full h-full object-cover" />
+                  </div>
+                  <p className="text-sm font-body text-foreground/85 line-clamp-3 leading-relaxed">
+                    {first.ementa}
+                  </p>
+                </div>
+              ) : (
+                <p className="text-sm font-body text-foreground/85 line-clamp-3 leading-relaxed">
+                  {first.ementa}
+                </p>
+              )}
               <div className="flex flex-wrap gap-1.5">
                 {chips.map((c) => (
                   <span key={c} className="text-[10px] font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full bg-primary/15 text-primary border border-primary/20">

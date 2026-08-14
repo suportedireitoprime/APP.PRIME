@@ -55,7 +55,11 @@ export default function TematicaJuridica() {
     new Map((rankingInicial ?? []).map((r: any) => [r.obra_id, r as RankingRow])),
   );
   const [loading, setLoading] = useState(!cacheInicial?.length);
-  const [atalho, setAtalho] = useState<Atalho>("todos");
+  const [atalho, setAtalho] = useState<Atalho>(() => {
+    const search = new URLSearchParams(window.location.search);
+    const tab = search.get("tab") as Atalho;
+    return ATALHOS.some((a) => a.id === tab) ? tab : "todos";
+  });
   const [busca, setBusca] = useState("");
   const [habilidade, setHabilidade] = useState<HabilidadeId | null>(null);
   const [selecionada, setSelecionada] = useState<Obra | null>(null);

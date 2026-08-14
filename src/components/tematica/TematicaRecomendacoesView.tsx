@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { CalendarDays, Film, MapPin, Sparkles, Star, UtensilsCrossed } from "lucide-react";
+import { CalendarDays, Film, MapPin, Sparkles, Star, UtensilsCrossed, ExternalLink, Play } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Obra } from "./ObraDetailSheet";
 import {
@@ -127,15 +127,45 @@ export default function TematicaRecomendacoesView({ obras, onAbrirObra }: Props)
                   <p className="text-[12px] text-muted-foreground mt-0.5">{destaque.categoria.descricao} {destaque.categoria.clima}</p>
                 </div>
               </div>
-              <div className="flex items-start gap-2 rounded-xl bg-muted/60 p-3">
+              <a
+                href={destaque.obra.providers?.link || undefined}
+                target={destaque.obra.providers?.link ? "_blank" : undefined}
+                rel="noreferrer"
+                className={cn(
+                  "flex items-start gap-2 rounded-xl bg-muted/60 p-3 transition-colors",
+                  destaque.obra.providers?.link ? "hover:bg-muted/80 cursor-pointer" : "cursor-default"
+                )}
+                onClick={(e) => { if (!destaque.obra.providers?.link) e.preventDefault(); }}
+              >
                 <MapPin className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-[11px] font-bold text-foreground uppercase tracking-wider">Onde assistir</p>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <p className="text-[11px] font-bold text-foreground uppercase tracking-wider">Onde assistir</p>
+                    {destaque.obra.providers?.link && <ExternalLink className="w-3 h-3 text-muted-foreground" />}
+                  </div>
                   <p className="text-[12px] text-muted-foreground mt-0.5">
                     {ondeAssistir(destaque.obra).join(" · ") || "Confira disponibilidade nas plataformas."}
                   </p>
                 </div>
-              </div>
+              </a>
+
+              {destaque.obra.trailer_youtube_id && (
+                <a
+                  href={`https://www.youtube.com/watch?v=${destaque.obra.trailer_youtube_id}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-start gap-2 rounded-xl bg-muted/60 p-3 transition-colors hover:bg-muted/80 cursor-pointer"
+                >
+                  <Play className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <p className="text-[11px] font-bold text-foreground uppercase tracking-wider">Trailer</p>
+                      <ExternalLink className="w-3 h-3 text-muted-foreground" />
+                    </div>
+                    <p className="text-[12px] text-muted-foreground mt-0.5">Assista ao trailer oficial.</p>
+                  </div>
+                </a>
+              )}
               <div className="flex items-start gap-2 rounded-xl bg-muted/60 p-3">
                 <UtensilsCrossed className="w-4 h-4 text-primary shrink-0 mt-0.5" />
                 <div>
