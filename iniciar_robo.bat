@@ -86,5 +86,5 @@ echo.
 if not "%ROBO_EXIT%"=="0" (
   echo O robo terminou com erro. Codigo: %ROBO_EXIT%
 )
-pause
+if not defined BACKGROUND pause
 exit /b %ROBO_EXIT%

@@ -1,11 +1,12 @@
-const { google } = require('googleapis');
+﻿const { google } = require('googleapis');
 const path = require('path');
 const fs = require('fs');
 
-const HEADER = ['Artigos', 'Status', 'Lei seca', 'Link da audioaula', 'Índice'];
+const HEADER = ['Artigos', 'Status', 'Lei seca', 'Link da audioaula', 'Ãndice'];
 const STATUS_PROCESSING = 'Processando...';
 const STATUS_DONE = 'Finalizado';
-const DONE_STATUSES = new Set(['ok', 'finalizado', 'concluido', 'concluído']);
+const DONE_STATUSES = new Set(['ok', 'finalizado', 'concluido', 'concluÃ­do']);
+const PENDING_STATUSES = new Set(['', 'pendente', '0', 'zerado']);
 
 class GoogleServices {
   constructor() {
@@ -47,7 +48,7 @@ class GoogleServices {
 
     if (res.data.files.length > 0) return res.data.files[0].id;
 
-    console.log(`📁 Criando pasta: ${folderName}`);
+    console.log(`ðŸ“ Criando pasta: ${folderName}`);
     const folder = await this.drive.files.create({
       resource: { name: folderName, mimeType: 'application/vnd.google-apps.folder', parents: [parentFolderId] },
       fields: 'id',
@@ -59,9 +60,9 @@ class GoogleServices {
     await this.init();
     let category = 'Leis Diversas';
     const lowerName = lawName.toLowerCase();
-    if (lowerName.includes('código') || lowerName.includes('codigo')) category = 'Códigos';
+    if (lowerName.includes('cÃ³digo') || lowerName.includes('codigo')) category = 'CÃ³digos';
     else if (lowerName.includes('estatuto')) category = 'Estatutos';
-    else if (lowerName.includes('constituição')) category = 'Constituição';
+    else if (lowerName.includes('constituiÃ§Ã£o')) category = 'ConstituiÃ§Ã£o';
 
     const categoryFolderId = await this.getOrCreateFolder(category, this.rootFolderId);
     return await this.getOrCreateFolder(lawName, categoryFolderId);
@@ -69,7 +70,7 @@ class GoogleServices {
 
   async uploadAudio(filePath, lawFolderId, articleName) {
     await this.init();
-    console.log(`☁️ Fazendo upload do ${articleName} para o Drive...`);
+    console.log(`â˜ï¸ Fazendo upload do ${articleName} para o Drive...`);
 
     const file = await this.drive.files.create({
       resource: { name: `${articleName}.wav`, parents: [lawFolderId] },
@@ -94,7 +95,7 @@ class GoogleServices {
 
     await this.writeSchemaColumns(sheetName, sheetRealId, normalizedRows);
 
-    console.log(`🔍 Lendo a planilha... Buscando os próximos ${limit} artigos pendentes.`);
+    console.log(`ðŸ” Lendo a planilha... Buscando os prÃ³ximos ${limit} artigos pendentes.`);
     const pendentes = [];
     const rowsToProcess = [];
 
@@ -106,7 +107,7 @@ class GoogleServices {
       const id = row[4] || '';
       const isDone = DONE_STATUSES.has(status) && link;
 
-      if (!isDone && id && leiSeca) {
+      if (!isDone && PENDING_STATUSES.has(status) && id && leiSeca) {
         pendentes.push({
           rowNumber: i,
           id,
@@ -122,6 +123,38 @@ class GoogleServices {
     if (pendentes.length === 0) return [];
     await this.markRowsAsProcessing(sheetName, sheetRealId, rowsToProcess);
     return pendentes;
+  }
+
+  async getProcessingRows(leiId, supabase, limit = 10) {
+    await this.init();
+    const { name: sheetName, id: sheetRealId } = await this.getSheetInfo();
+    const todosArtigos = await this.fetchAllArticles(leiId, supabase);
+    const rows = await this.readRows(sheetName);
+    const normalizedRows = this.normalizeRows(rows, todosArtigos);
+
+    await this.writeSchemaColumns(sheetName, sheetRealId, normalizedRows);
+
+    const processing = [];
+    for (let i = 1; i < normalizedRows.length; i++) {
+      const row = normalizedRows[i];
+      const status = String(row[1] || '').trim().toLowerCase();
+      const leiSeca = row[2] || '';
+      const link = String(row[3] || '').trim();
+      const id = row[4] || '';
+
+      if (status === STATUS_PROCESSING.toLowerCase() && !link && id && leiSeca) {
+        processing.push({
+          rowNumber: i,
+          id,
+          numero: String(row[0] || '').replace(/^Artigo\s+/i, ''),
+          titulo: row[0],
+          texto: leiSeca,
+        });
+        if (processing.length >= limit) break;
+      }
+    }
+
+    return processing;
   }
 
   async updateRowToSuccess(rowNumber, artigoStr, link) {
@@ -154,7 +187,7 @@ class GoogleServices {
   }
 
   async fetchAllArticles(leiId, supabase) {
-    console.log('📊 Sincronizando artigos do banco com a planilha...');
+    console.log('ðŸ“Š Sincronizando artigos do banco com a planilha...');
     const { data, error } = await supabase
       .from('vade_mecum_artigos')
       .select('id, numero, texto')
@@ -224,7 +257,7 @@ class GoogleServices {
   }
 
   looksLikeLawText(value) {
-    return /^Art\.|^Parágrafo|^§|^I\s*-|^II\s*-/i.test(String(value || '').trim());
+    return /^Art\.|^ParÃ¡grafo|^Â§|^I\s*-|^II\s*-/i.test(String(value || '').trim());
   }
 
   async writeSchemaColumns(sheetName, sheetRealId, rows) {
@@ -295,3 +328,4 @@ class GoogleServices {
 }
 
 module.exports = new GoogleServices();
+

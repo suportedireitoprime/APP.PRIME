@@ -13,11 +13,12 @@ import {
   PiggyBank, Plane, PocketKnife, RadioTower, ReceiptText, Scale, Scroll, ScrollText, Search,
   Shield, ShieldAlert, ShieldCheck, ShieldX, Ship, ShoppingCart, Siren, Award, Sprout, Stamp, Store,
   Tractor, TreePine, Users, Vote, Wallet, Wifi, X, type LucideIcon,
-  Presentation, FolderOpen, RefreshCw, MessageCircle, Heart, Newspaper, Radar, History,
+  Presentation, FolderOpen, RefreshCw, MessageCircle, Heart, Newspaper, Radar, History, ChevronLeft,
 } from 'lucide-react';
 import { estiloPasta } from '@/lib/documentosTipos';
 import { usePastasDocumentos } from '@/hooks/useDocumentosDrive';
 import DocumentosSheet from '@/components/documentos/DocumentosSheet';
+import { CalendarCheck } from 'lucide-react';
 
 
 import { LEIS_CATALOG } from '@/data/leisCatalog';
@@ -124,24 +125,10 @@ const EMALTA_CATS: EmAltaCat[] = [
 ];
 
 
-// Aba "Locais" — locais jurídicos (mesmas categorias da página /ferramentas/locais)
-type LocalCat = Cat;
-const LOCAIS_CATS: LocalCat[] = [
-  { id: 'tribunais',          label: 'Tribunais & Fóruns', sublabel: 'Fóruns, varas e tribunais',      icon: Scale,      color: '#FFD400' },
-  { id: 'cartorios',          label: 'Cartórios',          sublabel: 'Registros, notas e protestos',   icon: Stamp, color: '#FB923C' },
-  { id: 'delegacias',         label: 'Delegacias',         sublabel: 'Polícia Civil e especializadas', icon: Siren,      color: '#3B82F6' },
-  { id: 'oab',                label: 'OAB',                sublabel: 'Seccionais e subseções',         icon: Award,      color: 'hsl(348 78% 38%)' },
-  { id: 'defensoria',         label: 'Defensoria',         sublabel: 'Defensoria Pública',             icon: Shield,     color: '#14B8A6' },
-  { id: 'ministerio_publico', label: 'Ministério Público', sublabel: 'Promotorias e procuradorias',    icon: BookMarked, color: '#8B5CF6' },
-  { id: 'presidios',          label: 'Presídios',          sublabel: 'Unidades prisionais',            icon: Building,   color: '#64748B' },
-  { id: 'universidades',      label: 'Faculdades',         sublabel: 'Cursos de Direito',              icon: GraduationCap, color: '#22C55E' },
-  { id: 'museus',             label: 'Museus',             sublabel: 'Memória e cultura jurídica',     icon: Landmark,   color: '#EC4899' },
-];
-
-type Tab = 'locais' | 'estudos' | 'documentos' | 'categorias' | 'emalta' | 'areas';
+type Tab = 'agenda' | 'estudos' | 'documentos' | 'categorias' | 'emalta' | 'areas';
 
 const TABS_HOME: { id: Tab; label: string; icon: any }[] = [
-  { id: 'locais',     label: 'Locais',     icon: MapPin },
+  { id: 'agenda',     label: 'Agenda',     icon: CalendarCheck },
   { id: 'estudos',    label: 'Estudos',    icon: GraduationCap },
   { id: 'documentos', label: 'Documentos', icon: FolderOpen },
 ];
@@ -161,6 +148,29 @@ const normalizeSearch = (value: string) =>
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '');
+
+const DAYS_OF_WEEK = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+
+function generateCalendar(year: number, month: number) {
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const startOffset = firstDay.getDay();
+  const daysInMonth = lastDay.getDate();
+  
+  const days = [];
+  const prevMonthLastDay = new Date(year, month, 0).getDate();
+  for (let i = startOffset - 1; i >= 0; i--) {
+    days.push({ day: prevMonthLastDay - i, currentMonth: false, date: new Date(year, month - 1, prevMonthLastDay - i) });
+  }
+  for (let i = 1; i <= daysInMonth; i++) {
+    days.push({ day: i, currentMonth: true, date: new Date(year, month, i) });
+  }
+  const remaining = 42 - days.length;
+  for (let i = 1; i <= remaining; i++) {
+    days.push({ day: i, currentMonth: false, date: new Date(year, month + 1, i) });
+  }
+  return days;
+}
 
 interface Props {
   onTabChange?: (tab: Tab) => void;
@@ -187,6 +197,32 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
   const [docPasta, setDocPasta] = useState<{ id: string; nome: string } | null>(null);
   const docPastas = usePastasDocumentos();
   const [areasOpen, setAreasOpen] = useState(false);
+  const [agendaOffset, setAgendaOffset] = useState(0);
+  const [calendarMonthOffset, setCalendarMonthOffset] = useState(0);
+
+  const todayStr = useMemo(() => {
+    const d = new Date();
+    d.setHours(0,0,0,0);
+    return d.getTime();
+  }, []);
+
+  const calendarDate = useMemo(() => {
+    const d = new Date();
+    return new Date(d.getFullYear(), d.getMonth() + calendarMonthOffset, 1);
+  }, [calendarMonthOffset]);
+
+  const calendarDays = useMemo(() => {
+    return generateCalendar(calendarDate.getFullYear(), calendarDate.getMonth());
+  }, [calendarDate]);
+
+  const daysWithTasks = useMemo(() => {
+    const set = new Set<number>();
+    set.add(todayStr);
+    set.add(todayStr + 86400000); // amanhã
+    set.add(todayStr + 86400000 * 3);
+    set.add(todayStr - 86400000 * 2);
+    return set;
+  }, [todayStr]);
 
 
   const [categorySearch, setCategorySearch] = useState('');
@@ -547,42 +583,145 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
           </motion.div>
         )}
 
-        {currentTab === 'locais' && (
+        {currentTab === 'agenda' && (
           <motion.div
-            key="locais"
+            key="agenda"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.24, ease: [0.22, 0.61, 0.36, 1] }}
-            className="space-y-4"
+            className="space-y-4 px-1"
           >
-            <div className="px-1">
+            <div>
               <div className="flex items-center gap-2">
                 <span className="w-1 h-5 rounded-full bg-primary" />
                 <h2 className="font-body text-foreground text-2xl sm:text-3xl font-bold tracking-tight">
-                  Locais
+                  Agenda
                 </h2>
               </div>
               <p className="font-body text-muted-foreground text-[13px] leading-snug mt-1 ml-3">
-                Locais jurídicos perto de você: tribunais, cartórios, delegacias, OAB, Defensoria e mais.
+                Suas tarefas e metas diárias de estudo.
               </p>
             </div>
-            <div className="px-1 h-[1.5px] bg-border/70 w-full -mt-2" />
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4 px-1 pb-8">
-              {LOCAIS_CATS.map((c, i) => (
-                <HomeCard
-                  key={c.id}
-                  icon={c.icon}
-                  label={c.label}
-                  sublabel={c.sublabel}
-                  color={c.color}
-                  delay={i * 0.05}
-                  onClick={() => navigate(`/ferramentas/locais?categoria=${c.id}`)}
-                  data-track="home_card_click"
-                  data-track-name={c.label}
-                  data-track-section="locais"
-                />
-              ))}
+            
+            <div className="mt-4 rounded-2xl bg-card border border-border/60 overflow-hidden pb-4">
+              <div className="bg-muted/30 px-3 py-2 border-b border-border/50 flex justify-between items-center">
+                <button onClick={() => setAgendaOffset(prev => prev - 1)} className="p-1.5 active:scale-95 text-muted-foreground hover:text-foreground">
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <div className="flex flex-col items-center">
+                  <h3 className="font-display font-bold text-foreground text-[15px]">
+                    {agendaOffset === 0 ? 'Hoje' : agendaOffset === 1 ? 'Amanhã' : agendaOffset === -1 ? 'Ontem' : ''}
+                    {agendaOffset === 0 || agendaOffset === 1 || agendaOffset === -1 ? ', ' : ''}
+                    {new Date(Date.now() + agendaOffset * 86400000).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })}
+                  </h3>
+                  <span className="text-[10px] font-bold text-[#ef4444] uppercase tracking-wider">4 pendentes</span>
+                </div>
+                <button onClick={() => setAgendaOffset(prev => prev + 1)} className="p-1.5 active:scale-95 text-muted-foreground hover:text-foreground">
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </div>
+              
+              <div className="relative overflow-hidden">
+                <AnimatePresence mode="popLayout" initial={false}>
+                  <motion.div
+                    key={agendaOffset}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.2 }}
+                    className="divide-y divide-border/40"
+                  >
+                    <button onClick={() => navigate('/aprender')} className="w-full text-left px-5 py-4 flex items-center gap-4 hover:bg-muted/50 transition-colors active:bg-muted">
+                      <FileCheck className="w-7 h-7 text-[#a855f7] shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[15px] font-semibold text-foreground truncate">Resolver 15 questões</p>
+                        <p className="text-[13px] text-muted-foreground truncate mt-0.5">Direito Penal Geral</p>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground opacity-50 shrink-0" />
+                    </button>
+                    
+                    <button onClick={() => navigate('/flashcards')} className="w-full text-left px-5 py-4 flex items-center gap-4 hover:bg-muted/50 transition-colors active:bg-muted">
+                      <Library className="w-7 h-7 text-[#22c55e] shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[15px] font-semibold text-foreground truncate">Revisar Flashcards</p>
+                        <p className="text-[13px] text-muted-foreground truncate mt-0.5">Constitucional (12 pendentes)</p>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground opacity-50 shrink-0" />
+                    </button>
+
+                    <button onClick={() => navigate('/aprender')} className="w-full text-left px-5 py-4 flex items-center gap-4 hover:bg-muted/50 transition-colors active:bg-muted">
+                      <Map className="w-7 h-7 text-[#3b82f6] shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[15px] font-semibold text-foreground truncate">Avançar na Trilha</p>
+                        <p className="text-[13px] text-muted-foreground truncate mt-0.5">Licitações e Contratos</p>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground opacity-50 shrink-0" />
+                    </button>
+
+                    <button onClick={() => navigate('/resumos-juridicos')} className="w-full text-left px-5 py-4 flex items-center gap-4 hover:bg-muted/50 transition-colors active:bg-muted">
+                      <BookOpen className="w-7 h-7 text-[#d97706] shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[15px] font-semibold text-foreground truncate">Leitura de Resumo</p>
+                        <p className="text-[13px] text-muted-foreground truncate mt-0.5">Dolo e Culpa</p>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground opacity-50 shrink-0" />
+                    </button>
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+            </div>
+            
+            {/* Calendário */}
+            <div className="rounded-2xl bg-card border border-border/60 p-4">
+              <div className="flex items-center justify-between mb-4">
+                <button onClick={() => setCalendarMonthOffset(p => p - 1)} className="p-1.5 active:scale-95 text-muted-foreground hover:text-foreground">
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <h3 className="font-display font-bold text-foreground text-[16px] capitalize">
+                  {calendarDate.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
+                </h3>
+                <button onClick={() => setCalendarMonthOffset(p => p + 1)} className="p-1.5 active:scale-95 text-muted-foreground hover:text-foreground">
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-7 mb-2">
+                {DAYS_OF_WEEK.map(day => (
+                  <div key={day} className="text-center text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                    {day}
+                  </div>
+                ))}
+              </div>
+
+              <div className="grid grid-cols-7 gap-y-1 gap-x-1">
+                {calendarDays.map((d, i) => {
+                  const ts = d.date.getTime();
+                  const isToday = ts === todayStr;
+                  // targetOffset é a diferença em dias entre essa data e "hoje"
+                  const targetOffset = Math.round((ts - todayStr) / 86400000);
+                  const isSelected = targetOffset === agendaOffset;
+                  const hasTasks = daysWithTasks.has(ts);
+
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => setAgendaOffset(targetOffset)}
+                      className={`
+                        relative flex items-center justify-center h-10 rounded-full text-[14px] font-medium transition-all
+                        ${!d.currentMonth ? 'text-muted-foreground/30' : 'text-foreground hover:bg-muted'}
+                        ${isSelected ? 'bg-primary text-primary-foreground hover:bg-primary font-bold shadow-md shadow-primary/20 scale-105' : ''}
+                        ${isToday && !isSelected ? 'ring-1 ring-primary text-primary' : ''}
+                      `}
+                    >
+                      {d.day}
+                      {hasTasks && (
+                        <div className={`absolute bottom-1 w-1 h-1 rounded-full ${isSelected ? 'bg-white' : 'bg-primary'}`} />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </motion.div>
         )}

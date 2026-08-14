@@ -38,11 +38,12 @@ type LegacySubscriber = {
   expires_at: string | null;
   status: string;
   created_at: string;
+  observacao?: string | null;
 };
 
 type CombinedRow = {
   id: string;
-  source: 'play' | 'asaas';
+  source: 'play' | 'asaas' | 'old' | 'apple';
   email: string | null;
   display_name: string | null;
   product_id: string | null;
@@ -52,6 +53,7 @@ type CombinedRow = {
   avatar_url: string | null;
   start_time: string | null;
   expires_at: string | null;
+  observacao?: string | null;
   raw?: any;
 };
 
@@ -121,6 +123,17 @@ const fmtDate = (iso: string | null) => {
   catch { return '—'; }
 };
 
+const fmtDateTime = (iso: string | null) => {
+  if (!iso) return '—';
+  try { return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(',', ' às'); }
+  catch { return '—'; }
+};
+
+const parseObservacao = (obs: string | null) => {
+  if (!obs) return null;
+  try { return JSON.parse(obs); } catch { return null; }
+};
+
 const EMPTY_METRICS: Metrics = { ativosHoje: 0, novos7: 0, cancelados7: 0, renovacoes30: 0, timeline: [] };
 
 const AdminAssinantes = () => {
@@ -133,13 +146,17 @@ const AdminAssinantes = () => {
   const [error, setError] = useState<string | null>(null);
   const [q, setQ] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [dateFilter, setDateFilter] = useState<string>('all');
+  const [activeChart, setActiveChart] = useState<'mrr' | 'gross' | 'sales' | 'subs'>('mrr');
+  const [selectedMonthId, setSelectedMonthId] = useState<string>('');
   const [syncingAsaas, setSyncingAsaas] = useState(false);
+  const [modalDetails, setModalDetails] = useState<'mrr' | 'gross' | null>(null);
 
-  const load = async () => {
+  const load = async (syncPlay = false) => {
     setLoading(true); setError(null);
-    const { data: res, error: err } = await supabase.functions.invoke('play-billing', { body: { fn: 'reporting' } });
+    const { data: res, error: err } = await supabase.functions.invoke('play-billing', { body: { fn: 'reporting', sync: syncPlay } });
     if (err) {
-      setError(err.message ?? 'Erro ao carregar Google Play');
+      setError(err.message ?? 'Erro ao carregar dados locais');
     } else {
       setData(res as Payload);
       setLegacyData((res as Payload).legacy ?? []);
@@ -148,22 +165,26 @@ const AdminAssinantes = () => {
     setLoading(false);
   };
 
-  const handleSyncAsaas = async () => {
+  const handleSyncAll = async () => {
     setSyncingAsaas(true);
     try {
+      // 1. Sincronizar Asaas
       const { data: syncData, error: syncErr } = await supabase.functions.invoke('legacy-sync', {
         body: { action: 'sync', apply: true, sources: ['asaas', 'old'] }
       });
       if (syncErr) throw syncErr;
+      
+      // 2. Sincronizar Google Play e carregar tudo
+      await load(true);
+      
       if (syncData?.errors?.asaas || syncData?.errors?.old) {
-        toast.warning('Sincronizou, mas com alguns avisos (ver console)');
-        console.warn('Erros de sync:', syncData.errors);
+        toast.warning('Sincronizado (Play + Asaas), mas com alguns avisos (ver console)');
+        console.warn('Erros de sync Asaas:', syncData.errors);
       } else {
-        toast.success(`Sincronização concluída! ${syncData.inseridos ?? 0} inseridos, ${syncData.atualizados ?? 0} atualizados.`);
+        toast.success(`Sincronização completa concluída! Play & Asaas atualizados.`);
       }
-      load();
-    } catch (e: any) {
-      toast.error('Erro ao sincronizar Asaas: ' + e.message);
+    } catch (err: any) {
+      toast.error(err.message ?? 'Erro ao sincronizar plataformas');
     } finally {
       setSyncingAsaas(false);
     }
@@ -196,7 +217,7 @@ const AdminAssinantes = () => {
       if (isAdminEmail(r.email)) continue; // Remove testes do admin
       list.push({
         id: r.id,
-        source: 'asaas',
+        source: r.asaas_subscription_id ? 'asaas' : 'old',
         email: r.email,
         display_name: r.nome,
         product_id: r.tipo,
@@ -206,6 +227,7 @@ const AdminAssinantes = () => {
         avatar_url: null,
         start_time: r.created_at,
         expires_at: r.expires_at,
+        observacao: r.observacao,
         raw: r
       });
     }
@@ -235,12 +257,28 @@ const AdminAssinantes = () => {
         }
       }
       if (!matchesStatus) return false;
+      
+      // Date filter
+      if (dateFilter !== 'all') {
+        const now = new Date();
+        const d = r.start_time ? new Date(r.start_time) : null;
+        if (!d) return false;
+        
+        if (dateFilter === 'today') {
+          if (d.getDate() !== now.getDate() || d.getMonth() !== now.getMonth() || d.getFullYear() !== now.getFullYear()) return false;
+        } else if (dateFilter === 'month') {
+          if (d.getMonth() !== now.getMonth() || d.getFullYear() !== now.getFullYear()) return false;
+        } else if (dateFilter === 'year') {
+          if (d.getFullYear() !== now.getFullYear()) return false;
+        }
+      }
+
       if (!term) return true;
       return [r.email, r.display_name, r.product_id, r.order_id].some((v) =>
         (v ?? '').toLowerCase().includes(term),
       );
     });
-  }, [combinedRows, q, statusFilter]);
+  }, [combinedRows, q, statusFilter, dateFilter]);
 
   const sync = data?.sync ?? null;
   const syncErrors = sync?.errors?.filter(e => e.status !== 400 && e.status !== 404 && e.status !== 410) ?? [];
@@ -261,24 +299,60 @@ const AdminAssinantes = () => {
     );
     let mrr = 0;
     let lifetimeGross = 0;
-    const planAgg: Record<string, { plan: string; count: number; mrr: number }> = {};
+    const planAgg: Record<string, { plan: string; count: number; mrr: number; gross: number }> = {};
+    const mrrUsers: any[] = [];
+    const grossUsers: any[] = [];
     
-    active.forEach((r) => {
+    combinedRows.filter(r => !r.is_test).forEach((r) => {
+      let monthly = 0;
+      let sticker = 0;
       const p = priceFor(r.product_id);
-      if (!p) return;
-      mrr += p.monthly;
-      lifetimeGross += p.sticker;
+      
+      if (p) {
+        monthly = p.monthly;
+        sticker = p.sticker;
+      }
+      
+      // Override with actual Asaas values if available
+      if (r.source === 'asaas' && r.observacao) {
+        const obs = parseObservacao(r.observacao);
+        if (obs && typeof obs.value === 'number') {
+           sticker = obs.value;
+           const prodId = r.product_id?.toLowerCase() ?? '';
+           if (prodId.includes('anual')) monthly = sticker / 12;
+           else if (prodId.includes('semestral')) monthly = sticker / 6;
+           else if (prodId.includes('vitalicio')) monthly = 0; // MRR remains 0 for lifetime
+           else monthly = sticker; // Assume monthly by default
+        }
+      }
+
+      if (!p && sticker === 0) return; // Skip completely unknown plans with 0 value
+
+      if (sticker > 0) {
+        grossUsers.push({ ...r, value: sticker, plan: r.product_id ?? 'desconhecido' });
+      }
+
+      const isActive = r.status === 'SUBSCRIPTION_STATE_ACTIVE' || r.status === 'SUBSCRIPTION_STATE_IN_GRACE_PERIOD' || r.status === 'active';
+      if (!isActive) return;
+
+      mrr += monthly;
+      lifetimeGross += sticker;
       const key = r.product_id ?? 'desconhecido';
-      const cur = planAgg[key] ?? { plan: key, count: 0, mrr: 0 };
+      const cur = planAgg[key] ?? { plan: key, count: 0, mrr: 0, gross: 0 };
       cur.count += 1;
-      cur.mrr += p.monthly;
+      cur.mrr += monthly;
+      cur.gross += sticker;
       planAgg[key] = cur;
+
+      if (monthly > 0) {
+        mrrUsers.push({ ...r, value: monthly, plan: key });
+      }
     });
 
     // Soma a receita bruta de quem foi cancelado também
     combinedRows.filter((r) => !r.is_test).forEach((r) => {
       const p = priceFor(r.product_id);
-      if (p) lifetimeGross += 0; // já somamos, mas a métrica de Gross totaliza aqui
+      if (p) lifetimeGross += 0; // já somamos no loop anterior, gross acumulado está abaixo
     });
 
     return {
@@ -288,6 +362,8 @@ const AdminAssinantes = () => {
       avgTicket: active.length ? mrr / active.length : 0,
       lifetimeGross,
       byPlan: Object.values(planAgg).sort((a, b) => b.mrr - a.mrr),
+      mrrUsers: mrrUsers.sort((a, b) => b.value - a.value),
+      grossUsers: grossUsers.sort((a, b) => b.value - a.value),
     };
   }, [combinedRows]);
 
@@ -296,6 +372,68 @@ const AdminAssinantes = () => {
       .filter((r) => !r.is_test)
       .reduce((sum, r) => sum + (priceFor(r.product_id)?.sticker ?? 0), 0);
   }, [combinedRows]);
+
+  const subsByMonth = useMemo(() => {
+    const active = combinedRows.filter(r => !r.is_test);
+    const agg: Record<string, number> = {};
+    active.forEach(r => {
+      if (!r.start_time) return;
+      const d = new Date(r.start_time);
+      const m = d.toLocaleString('pt-BR', { month: 'short', year: 'numeric' });
+      agg[m] = (agg[m] ?? 0) + 1;
+    });
+    return Object.entries(agg).map(([month, count]) => ({ month, count })).reverse();
+  }, [combinedRows]);
+
+  const monthlyRevenueData = useMemo(() => {
+    const active = combinedRows.filter(r => !r.is_test);
+    const monthsMap = new Map<string, { monthId: string; label: string; date: Date; plans: Record<string, number>; total: number }>();
+
+    active.forEach(r => {
+      if (!r.start_time) return;
+      const d = new Date(r.start_time);
+      const monthId = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      const label = d.toLocaleString('pt-BR', { month: 'short', year: 'numeric' });
+      
+      let sticker = 0;
+      const p = priceFor(r.product_id);
+      if (p) sticker = p.sticker;
+
+      if (r.source === 'asaas' && r.observacao) {
+        const obs = parseObservacao(r.observacao);
+        if (obs && typeof obs.value === 'number') {
+           sticker = obs.value;
+        }
+      }
+
+      if (sticker === 0) return;
+
+      const planName = r.product_id ?? 'desconhecido';
+      let m = monthsMap.get(monthId);
+      if (!m) {
+        m = { monthId, label, date: new Date(d.getFullYear(), d.getMonth(), 1), plans: {}, total: 0 };
+        monthsMap.set(monthId, m);
+      }
+      
+      m.plans[planName] = (m.plans[planName] ?? 0) + sticker;
+      m.total += sticker;
+    });
+
+    return Array.from(monthsMap.values()).sort((a, b) => b.date.getTime() - a.date.getTime());
+  }, [combinedRows]);
+
+  const currentMonthData = useMemo(() => {
+    if (monthlyRevenueData.length === 0) return null;
+    const targetId = selectedMonthId || monthlyRevenueData[0].monthId;
+    return monthlyRevenueData.find(m => m.monthId === targetId) || monthlyRevenueData[0];
+  }, [monthlyRevenueData, selectedMonthId]);
+
+  const currentMonthChartData = useMemo(() => {
+    if (!currentMonthData) return [];
+    return Object.entries(currentMonthData.plans)
+      .map(([plan, gross]) => ({ plan, gross }))
+      .sort((a, b) => b.gross - a.gross);
+  }, [currentMonthData]);
 
   if (!isAdmin) {
     return (
@@ -312,7 +450,7 @@ const AdminAssinantes = () => {
         subtitle="Asaas (Legado) + Google Play Billing"
         onBack={() => navigate('/admin-funcoes')}
         rightAction={
-          <button onClick={load} disabled={loading} aria-label="Recarregar" className="w-11 h-11 rounded-full bg-muted flex items-center justify-center disabled:opacity-50">
+          <button onClick={() => load(false)} disabled={loading} aria-label="Recarregar Tela" className="w-11 h-11 rounded-full bg-muted flex items-center justify-center disabled:opacity-50">
             <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
           </button>
         }
@@ -341,18 +479,18 @@ const AdminAssinantes = () => {
             </div>
           ) : sync ? (
             <div className="rounded-lg border border-border bg-card p-3 text-xs text-muted-foreground flex-1">
-              Sincronizado Google Play: <strong className="text-foreground">{sync.checked ?? 0}</strong> compra(s),{' '}
+              Última Sincronização Google Play: <strong className="text-foreground">{sync.checked ?? 0}</strong> compra(s),{' '}
               <strong className="text-foreground">{sync.updated ?? 0}</strong> atualizada(s).
             </div>
           ) : <div className="flex-1" />}
 
           <button
-            onClick={handleSyncAsaas}
+            onClick={handleSyncAll}
             disabled={syncingAsaas}
             className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600/10 text-blue-500 border border-blue-500/20 hover:bg-blue-600/20 disabled:opacity-50 text-sm font-medium transition-colors"
           >
             {syncingAsaas ? <RefreshCw className="w-4 h-4 animate-spin" /> : <DownloadCloud className="w-4 h-4" />}
-            Sincronizar Asaas
+            Sincronizar (Play + Asaas)
           </button>
         </div>
 
@@ -371,10 +509,10 @@ const AdminAssinantes = () => {
             <span className="text-[10px] px-2 py-1 rounded-full bg-background/60 text-muted-foreground">BRL</span>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <RevenueCard label="MRR" value={fmtBRL(revenue.mrr)} hint="mensal" accent="from-amber-500 to-orange-500" />
+            <RevenueCard label="MRR" value={fmtBRL(revenue.mrr)} hint="mensal" accent="from-amber-500 to-orange-500" onClick={() => setModalDetails('mrr')} />
             <RevenueCard label="ARR" value={fmtBRL(revenue.arr)} hint="anualizado" accent="from-emerald-500 to-teal-500" />
             <RevenueCard label="Ticket médio" value={fmtBRL(revenue.avgTicket)} hint="por assinante/mês" accent="from-blue-500 to-cyan-500" />
-            <RevenueCard label="Bruto acumulado" value={fmtBRL(grossAccumulated)} hint="ciclos vendidos" accent="from-purple-500 to-fuchsia-500" />
+            <RevenueCard label="Bruto acumulado" value={fmtBRL(grossAccumulated)} hint="ciclos vendidos" accent="from-purple-500 to-fuchsia-500" onClick={() => setModalDetails('gross')} />
           </div>
         </section>
 
@@ -429,33 +567,103 @@ const AdminAssinantes = () => {
           </div>
           {revenue.byPlan.length > 0 && (
             <div className="rounded-2xl border border-border bg-card p-4">
-              <div className="flex items-center gap-2 mb-3">
-                <PieIcon className="w-4 h-4 text-primary" />
-                <h3 className="text-sm font-semibold">Receita por plano (MRR)</h3>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+                <div className="flex items-center gap-2">
+                  <PieIcon className="w-4 h-4 text-primary" />
+                  <h3 className="text-sm font-semibold">Análise de Assinaturas</h3>
+                </div>
+                <div className="flex items-center rounded-lg bg-muted p-1 text-xs">
+                  <button onClick={() => setActiveChart('mrr')} className={`px-2 py-1 rounded-md transition-colors ${activeChart === 'mrr' ? 'bg-background shadow-sm font-medium text-foreground' : 'text-muted-foreground hover:text-foreground'}`}>MRR</button>
+                  <button onClick={() => setActiveChart('gross')} className={`px-2 py-1 rounded-md transition-colors ${activeChart === 'gross' ? 'bg-background shadow-sm font-medium text-foreground' : 'text-muted-foreground hover:text-foreground'}`}>Faturamento</button>
+                  <button onClick={() => setActiveChart('sales')} className={`px-2 py-1 rounded-md transition-colors ${activeChart === 'sales' ? 'bg-background shadow-sm font-medium text-foreground' : 'text-muted-foreground hover:text-foreground'}`}>Vendas Mês</button>
+                  <button onClick={() => setActiveChart('subs')} className={`px-2 py-1 rounded-md transition-colors ${activeChart === 'subs' ? 'bg-background shadow-sm font-medium text-foreground' : 'text-muted-foreground hover:text-foreground'}`}>Volume</button>
+                </div>
               </div>
-              <div className="h-40">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={revenue.byPlan} layout="vertical" margin={{ left: 4, right: 12 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
-                    <XAxis type="number" fontSize={10} stroke="hsl(var(--muted-foreground))" tickFormatter={(v) => `R$${v.toFixed(0)}`} />
-                    <YAxis type="category" dataKey="plan" fontSize={10} width={110} stroke="hsl(var(--muted-foreground))" />
-                    <Tooltip
-                      contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 12 }}
-                      formatter={(v: any, k) => (k === 'mrr' ? fmtBRL(Number(v)) : v)}
-                    />
-                    <Bar dataKey="mrr" name="MRR" radius={[0, 6, 6, 0]}>
-                      {revenue.byPlan.map((_, i) => (
-                        <Cell key={i} fill={['hsl(0 96% 56%)', 'hsl(160 84% 45%)', 'hsl(217 91% 60%)', 'hsl(280 65% 60%)'][i % 4]} />
+
+              {activeChart === 'sales' && currentMonthData && (
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <select
+                      value={selectedMonthId || currentMonthData.monthId}
+                      onChange={(e) => setSelectedMonthId(e.target.value)}
+                      className="text-xs bg-muted border border-border rounded-md px-2 py-1 outline-none"
+                    >
+                      {monthlyRevenueData.map(m => (
+                        <option key={m.monthId} value={m.monthId}>{m.label}</option>
                       ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="mt-2 space-y-1">
+                    </select>
+                    <span className="text-xs font-bold text-primary">Faturamento Total: {fmtBRL(currentMonthData.total)}</span>
+                  </div>
+                  <div className="h-44">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={currentMonthChartData} layout="vertical" margin={{ left: 4, right: 12 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
+                        <XAxis type="number" fontSize={10} stroke="hsl(var(--muted-foreground))" tickFormatter={(v) => `R$${v.toFixed(0)}`} />
+                        <YAxis type="category" dataKey="plan" fontSize={10} width={110} stroke="hsl(var(--muted-foreground))" />
+                        <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 12 }} formatter={(v: any) => fmtBRL(Number(v))} />
+                        <Bar dataKey="gross" name="Vendas (Bruto)" radius={[0, 6, 6, 0]}>
+                          {currentMonthChartData.map((_, i) => <Cell key={i} fill={['hsl(280 65% 60%)', 'hsl(217 91% 60%)', 'hsl(160 84% 45%)', 'hsl(0 96% 56%)'][i % 4]} />)}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              )}
+
+              {activeChart === 'mrr' && (
+                <div className="h-44">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={revenue.byPlan.filter(p => p.mrr > 0)} layout="vertical" margin={{ left: 4, right: 12 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
+                      <XAxis type="number" fontSize={10} stroke="hsl(var(--muted-foreground))" tickFormatter={(v) => `R$${v.toFixed(0)}`} />
+                      <YAxis type="category" dataKey="plan" fontSize={10} width={110} stroke="hsl(var(--muted-foreground))" />
+                      <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 12 }} formatter={(v: any) => fmtBRL(Number(v))} />
+                      <Bar dataKey="mrr" name="MRR Mensal" radius={[0, 6, 6, 0]}>
+                        {revenue.byPlan.map((_, i) => <Cell key={i} fill={['hsl(0 96% 56%)', 'hsl(160 84% 45%)', 'hsl(217 91% 60%)', 'hsl(280 65% 60%)'][i % 4]} />)}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+
+              {activeChart === 'gross' && (
+                <div className="h-44">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={revenue.byPlan.filter(p => p.gross > 0)} layout="vertical" margin={{ left: 4, right: 12 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
+                      <XAxis type="number" fontSize={10} stroke="hsl(var(--muted-foreground))" tickFormatter={(v) => `R$${v.toFixed(0)}`} />
+                      <YAxis type="category" dataKey="plan" fontSize={10} width={110} stroke="hsl(var(--muted-foreground))" />
+                      <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 12 }} formatter={(v: any) => fmtBRL(Number(v))} />
+                      <Bar dataKey="gross" name="Faturamento Total" radius={[0, 6, 6, 0]}>
+                        {revenue.byPlan.map((_, i) => <Cell key={i} fill={['hsl(217 91% 60%)', 'hsl(160 84% 45%)', 'hsl(280 65% 60%)', 'hsl(0 96% 56%)'][i % 4]} />)}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+
+              {activeChart === 'subs' && (
+                <div className="h-44">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={subsByMonth} margin={{ left: 4, right: 4, top: 10 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                      <XAxis dataKey="month" fontSize={10} stroke="hsl(var(--muted-foreground))" />
+                      <YAxis fontSize={10} stroke="hsl(var(--muted-foreground))" width={30} />
+                      <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 12 }} cursor={{ fill: 'var(--muted)' }} />
+                      <Bar dataKey="count" name="Novas Assinaturas" radius={[4, 4, 0, 0]} fill="hsl(160 84% 45%)" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+
+              <div className="mt-4 space-y-1.5 border-t border-border pt-4">
                 {revenue.byPlan.map((p) => (
-                  <div key={p.plan} className="flex justify-between text-xs">
+                  <div key={p.plan} className="flex justify-between items-center text-xs">
                     <span className="text-muted-foreground">{p.plan}</span>
-                    <span className="font-medium">{p.count} · {fmtBRL(p.mrr)}/mês</span>
+                    <div className="flex flex-col items-end">
+                      <span className="font-medium">{p.count} assinaturas{p.mrr > 0 ? ` · ${fmtBRL(p.mrr)}/mês` : ''}</span>
+                      {p.gross > 0 && <span className="text-[10px] text-muted-foreground">Faturamento: {fmtBRL(p.gross)}</span>}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -480,10 +688,20 @@ const AdminAssinantes = () => {
               onChange={(e) => setStatusFilter(e.target.value)}
               className="px-2 py-2 rounded-lg border border-border bg-background text-sm"
             >
-              <option value="all">Todos</option>
+              <option value="all">Status</option>
               {Object.entries(STATUS_LABEL).map(([k, v]) => (
                 <option key={k} value={k}>{v.label}</option>
               ))}
+            </select>
+            <select
+              value={dateFilter}
+              onChange={(e) => setDateFilter(e.target.value)}
+              className="px-2 py-2 rounded-lg border border-border bg-background text-sm min-w-[100px]"
+            >
+              <option value="all">Todas as datas</option>
+              <option value="today">Hoje</option>
+              <option value="month">Este Mês</option>
+              <option value="year">Este Ano</option>
             </select>
           </div>
 
@@ -495,41 +713,67 @@ const AdminAssinantes = () => {
             {!loading && filtered.map((r) => {
               const status = STATUS_LABEL[r.status] ?? { label: r.status, cls: 'bg-muted text-muted-foreground' };
               const isAsaas = r.source === 'asaas';
+              const asaasData = isAsaas ? parseObservacao(r.observacao ?? null) : null;
               
               return (
                 <div key={r.id} className="flex items-center gap-3 p-3 border-b border-border last:border-0 hover:bg-muted/50 transition-colors">
                   {r.avatar_url ? (
-                    <img src={r.avatar_url} alt="" className="w-9 h-9 rounded-full object-cover bg-muted" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                    <img src={r.avatar_url} alt="" className="w-9 h-9 rounded-full object-cover bg-muted border border-border/50" onError={(e) => (e.currentTarget.style.display = 'none')} />
                   ) : (
-                    <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center text-xs font-medium">
-                      {(r.display_name ?? r.email ?? '?').slice(0, 1).toUpperCase()}
+                    <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-sm font-semibold uppercase border border-border/50 shrink-0">
+                      {(r.display_name ?? r.email ?? '?').slice(0, 1)}
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="text-sm font-medium truncate">{r.display_name ?? r.email ?? 'Usuário'}</span>
+                    <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
+                      <span className="text-[15px] font-semibold truncate tracking-tight">{r.display_name ?? r.email ?? 'Usuário'}</span>
                       {r.is_test && (
-                        <span className="inline-flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded-full bg-purple-500/15 text-purple-500">
+                        <span className="inline-flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded-md bg-purple-500 text-white font-medium">
                           <FlaskConical className="w-2.5 h-2.5" /> teste
                         </span>
                       )}
-                      {isAsaas && (
+                      {r.source === 'asaas' && (
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest bg-blue-500 text-white shadow-sm">
+                          Asaas
+                        </span>
+                      )}
+                      {r.source === 'old' && (
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest bg-amber-500 text-white shadow-sm">
+                          Antigo
+                        </span>
+                      )}
+                      {r.source === 'play' && (
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest bg-[#3DDC84] text-black shadow-sm">
+                          Google Play
+                        </span>
+                      )}
+                      {r.source === 'apple' && (
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest bg-zinc-700 text-white shadow-sm">
+                          Apple
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-xs text-muted-foreground truncate font-medium">{r.email ?? '—'}</div>
+                    <div className="text-xs text-muted-foreground flex flex-wrap items-center gap-1 mt-1 font-medium">
+                      <span className={`font-bold ${r.product_id?.toLowerCase().includes('mensal') ? 'text-primary' : 'text-foreground'}`}>
+                        {r.product_id?.replace(/_/g, ' ') ?? '—'}
+                      </span>
+                      <span>·</span>
+                      <span>início {fmtDateTime(r.start_time)}</span>
+                      <span>·</span>
+                      <span>renova em {fmtDate(r.expires_at)}</span>
+                      {isAsaas && asaasData && (
                         <>
-                          <span className="inline-flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded-full bg-blue-500/15 text-blue-500 font-semibold border border-blue-500/30">
-                            Asaas
-                          </span>
-                          <span className="inline-flex items-center gap-0.5 text-[9px] px-1.5 py-0.5 rounded-full bg-slate-500/15 text-slate-400 font-semibold uppercase tracking-wider">
-                            Antigo
+                          <span>·</span>
+                          <span className="text-foreground/80">{fmtBRL(asaasData.value)}</span>
+                          <span className="text-[10px] uppercase tracking-wider bg-muted px-1.5 py-0.5 rounded text-foreground/70">
+                            {asaasData.billingType === 'CREDIT_CARD' ? 'Cartão' : asaasData.billingType === 'PIX' ? 'PIX' : asaasData.billingType}
                           </span>
                         </>
                       )}
                     </div>
-                    <div className="text-xs text-muted-foreground truncate">{r.email ?? '—'}</div>
-                    <div className="text-[11px] text-muted-foreground mt-0.5">
-                      <span className="font-semibold text-foreground/80 capitalize">{r.product_id ?? '—'}</span> · início {fmtDate(r.start_time)} · expira {fmtDate(r.expires_at)}
-                    </div>
                   </div>
-                  <span className={`text-[10px] px-2 py-1 rounded-full font-medium whitespace-nowrap ${status.cls}`}>
+                  <span className={`text-[10px] px-2.5 py-1 rounded-md font-bold uppercase tracking-widest whitespace-nowrap shadow-sm ${r.status === 'active' || r.status === 'SUBSCRIPTION_STATE_ACTIVE' ? 'bg-emerald-500 text-white' : status.cls}`}>
                     {status.label}
                   </span>
                 </div>
@@ -538,6 +782,67 @@ const AdminAssinantes = () => {
           </div>
         </section>
       </div>
+
+      {/* Modal Details */}
+      {modalDetails && (
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-background/80 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-card w-full sm:max-w-2xl sm:rounded-2xl border-t sm:border border-border/50 shadow-2xl flex flex-col h-[85vh] sm:h-[80vh] animate-in slide-in-from-bottom-8 sm:slide-in-from-bottom-4">
+            <div className="flex items-center justify-between p-4 border-b border-border/50 shrink-0">
+              <div>
+                <h3 className="font-bold text-lg">
+                  {modalDetails === 'mrr' ? 'Composição do MRR' : 'Composição do Bruto Acumulado'}
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  {modalDetails === 'mrr' ? 'Apenas assinaturas ativas com valor mensal' : 'Todas as vendas (inclui cancelados e vitalício)'}
+                </p>
+              </div>
+              <button onClick={() => setModalDetails(null)} className="p-2 hover:bg-muted rounded-full">
+                <AlertTriangle className="w-5 h-5 text-muted-foreground hidden" />
+                <span className="sr-only">Fechar</span>
+                &times;
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-4 space-y-2">
+              {(modalDetails === 'mrr' ? revenue.mrrUsers : revenue.grossUsers).map((u: any) => (
+                <div key={u.id} className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-muted/20 hover:bg-muted/40 transition-colors">
+                  <div className="flex flex-col gap-0.5 min-w-0 flex-1">
+                    <span className="text-sm font-medium truncate">{u.display_name || u.email || 'Usuário'}</span>
+                    <span className="text-xs text-muted-foreground truncate">{u.email}</span>
+                    <div className="flex items-center gap-1 mt-1">
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-background border border-border text-foreground">
+                        {u.plan}
+                      </span>
+                      <span className={`text-[9px] px-1.5 py-0.5 rounded uppercase tracking-wider font-bold ${
+                        u.source === 'asaas' ? 'bg-blue-500 text-white' :
+                        u.source === 'old' ? 'bg-amber-500 text-white' :
+                        u.source === 'play' ? 'bg-[#3DDC84] text-black' :
+                        'bg-zinc-700 text-white'
+                      }`}>
+                        {u.source}
+                      </span>
+                      {u.status !== 'active' && u.status !== 'SUBSCRIPTION_STATE_ACTIVE' && (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-destructive/20 text-destructive font-bold uppercase tracking-wider">
+                          Inativo
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="text-right shrink-0 ml-3">
+                    <div className="font-bold text-foreground">{fmtBRL(u.value)}</div>
+                    <div className="text-[10px] text-muted-foreground">{modalDetails === 'mrr' ? '/mês' : 'total'}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="p-4 border-t border-border/50 shrink-0 bg-muted/10 flex justify-between items-center rounded-b-2xl">
+              <span className="text-sm font-medium text-muted-foreground">Total Listado:</span>
+              <span className="text-lg font-bold">
+                {fmtBRL((modalDetails === 'mrr' ? revenue.mrrUsers : revenue.grossUsers).reduce((acc: number, u: any) => acc + u.value, 0))}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -553,15 +858,30 @@ function StatCard({ icon: Icon, label, value, tint }: { icon: any; label: string
   );
 }
 
-function RevenueCard({ label, value, hint, accent }: { label: string; value: string; hint?: string; accent: string }) {
-  return (
-    <div className="relative rounded-xl border border-border bg-background/60 backdrop-blur p-3 overflow-hidden">
-      <div className={`absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r ${accent}`} />
-      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</div>
-      <div className="text-lg md:text-xl font-bold mt-1 tabular-nums">{value}</div>
-      {hint && <div className="text-[10px] text-muted-foreground mt-0.5">{hint}</div>}
+const RevenueCard = ({
+  label,
+  value,
+  hint,
+  accent,
+  onClick,
+}: {
+  label: string;
+  value: string;
+  hint: string;
+  accent: string;
+  onClick?: () => void;
+}) => (
+  <div
+    onClick={onClick}
+    className={`rounded-xl border border-border/50 bg-card p-3 relative overflow-hidden group ${onClick ? 'cursor-pointer hover:border-border transition-colors' : ''}`}
+  >
+    <div className={`absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r ${accent} opacity-50`} />
+    <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-medium mb-1">
+      {label}
     </div>
-  );
-}
+    <div className="text-lg font-bold tracking-tight text-foreground">{value}</div>
+    <div className="text-[10px] text-muted-foreground mt-1">{hint}</div>
+  </div>
+);
 
 export default AdminAssinantes;

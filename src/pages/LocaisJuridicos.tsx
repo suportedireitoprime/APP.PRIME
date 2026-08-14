@@ -99,6 +99,8 @@ export default function LocaisJuridicos() {
   const [carregandoContagens, setCarregandoContagens] = useState(true);
   const [locais, setLocais] = useState<Local[]>([]);
   const [carregandoLocais, setCarregandoLocais] = useState(false);
+  const [locaisProximosGeral, setLocaisProximosGeral] = useState<Local[]>([]);
+  const [carregandoGeral, setCarregandoGeral] = useState(false);
   const [selecionado, setSelecionado] = useState<Local | null>(null);
   const [wikiInfo, setWikiInfo] = useState<{ extract: string; url?: string } | null>(null);
   const [wikiLoading, setWikiLoading] = useState(false);
@@ -185,11 +187,13 @@ export default function LocaisJuridicos() {
   // Hidrata fotos dos locais exibidos e do local selecionado no modal
   const idsParaFoto = useMemo(() => {
     const ids = locais.slice(0, 50).map((l) => l.id);
+    const idsGerais = locaisProximosGeral.map((l) => l.id);
+    ids.push(...idsGerais);
     if (selecionado && !ids.includes(selecionado.id)) {
       ids.push(selecionado.id);
     }
-    return ids;
-  }, [locais, selecionado]);
+    return [...new Set(ids)];
+  }, [locais, selecionado, locaisProximosGeral]);
   const photos = useLocaisPhotos(idsParaFoto);
 
   const carregarContagens = useCallback(async () => {
@@ -258,17 +262,32 @@ export default function LocaisJuridicos() {
     carregarContagens();
   }, [carregarContagens]);
 
-  // Ao abrir uma categoria, pede localização automaticamente (uma vez).
+  // Pede localização automaticamente logo que a tela abre
   useEffect(() => {
-    if (!categoriaAtiva) {
-      autoLocPedidoRef.current = false;
-      return;
-    }
     if (!location && !autoLocPedidoRef.current) {
       autoLocPedidoRef.current = true;
       request();
     }
-  }, [categoriaAtiva, location, request]);
+  }, [location, request]);
+
+  useEffect(() => {
+    if (!coordsAtivas || categoriaAtiva) return;
+    let cancel = false;
+    setCarregandoGeral(true);
+    const todasCategorias = CATEGORIAS_LOCAIS.map((c) => c.id);
+    supabase.rpc('locais_proximos', {
+      _lat: coordsAtivas.lat,
+      _lng: coordsAtivas.lng,
+      _categorias: todasCategorias,
+      _limite: 12,
+      _raio_km: 200,
+    }).then(({ data, error }) => {
+      if (cancel) return;
+      if (!error) setLocaisProximosGeral((data as Local[]) ?? []);
+      setCarregandoGeral(false);
+    });
+    return () => { cancel = true; };
+  }, [coordsAtivas?.lat, coordsAtivas?.lng, categoriaAtiva]);
 
   useEffect(() => {
     if (!categoriaAtiva) return;
@@ -331,11 +350,73 @@ export default function LocaisJuridicos() {
   );
 
   const categoriasContent = (
-    <div className="px-4 py-4 lg:px-0 lg:py-0">
-      <p className="font-body text-[12px] text-muted-foreground mb-3 px-1">
-        Toque em uma categoria para ver os locais mais próximos com fotos reais.
-      </p>
-      <div className="rounded-2xl border border-border/60 bg-secondary/30 divide-y divide-border/50 overflow-hidden">
+    <div className="pb-10 lg:px-0 lg:py-0">
+      {/* Carrossel de locais próximos globais */}
+      {locaisProximosGeral.length > 0 && !categoriaAtiva && (
+        <div className="mb-6 mt-2">
+          <div className="px-4 mb-3 flex items-center justify-between">
+            <h3 className="font-display text-lg font-bold text-foreground">Perto de você</h3>
+            {carregandoGeral && <Loader2 className="w-4 h-4 text-muted-foreground animate-spin" />}
+          </div>
+          <div className="flex overflow-x-auto gap-4 px-4 pb-4 snap-x snap-mandatory hide-scrollbar">
+            {locaisProximosGeral.map((local, idx) => {
+              const km = formatKm(local.dist_km);
+              const metaCategoria = CATEGORIAS_LOCAIS.find(c => c.id === local.categoria);
+              const Icon = metaCategoria?.icon ?? MapPin;
+              return (
+                <motion.button
+                  key={local.id}
+                  initial={{ opacity: 0, scale: 0.96 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: idx * 0.04 }}
+                  onClick={() => setSelecionado(local)}
+                  className="relative snap-start shrink-0 w-[62vw] max-w-[280px] text-left active:scale-95 transition-transform"
+                >
+                  <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-muted">
+                    <img
+                      src={obterCapaLocal(local, photos[local.id]?.photo_url)}
+                      alt={local.nome}
+                      loading="lazy"
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                      onError={(e) => {
+                        const fallbackUrl = obterCapaLocal(local, null);
+                        if (e.currentTarget.src !== fallbackUrl) e.currentTarget.src = fallbackUrl;
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+                  </div>
+                  {/* Badges no topo */}
+                  <div className="absolute top-3 left-3 right-3 flex items-start justify-between gap-2">
+                    {km && (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur text-white text-[11px] font-semibold">
+                        <Navigation className="w-3 h-3" /> {km}
+                      </span>
+                    )}
+                    <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-white/90 text-black text-[10px] font-semibold uppercase tracking-wider">
+                      <Icon className="w-3 h-3" /> {labelCategoria(local.categoria)}
+                    </span>
+                  </div>
+                  {/* Texto no rodapé */}
+                  <div className="absolute bottom-0 left-0 right-0 p-3">
+                    <p className="font-display text-[15px] font-bold text-white leading-tight line-clamp-2 drop-shadow">
+                      {local.nome}
+                    </p>
+                    {(local.cidade || local.endereco) && (
+                      <p className="text-xs text-white/85 mt-1 line-clamp-1">
+                        {local.endereco ?? `${local.cidade}${local.uf ? '/' + local.uf : ''}`}
+                      </p>
+                    )}
+                  </div>
+                </motion.button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      <div className="px-4">
+        <h3 className="font-display text-lg font-bold text-foreground mb-3">Categorias</h3>
+        <div className="rounded-2xl border border-border/60 bg-secondary/30 divide-y divide-border/50 overflow-hidden">
         {CATEGORIAS_LOCAIS.map((categoria) => {
           const total = contagens[categoria.id] ?? 0;
           const disponivel = total > 0;
@@ -374,6 +455,7 @@ export default function LocaisJuridicos() {
             </button>
           );
         })}
+      </div>
       </div>
     </div>
   );

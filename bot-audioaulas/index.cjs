@@ -2,9 +2,37 @@ const { chromium } = require('playwright');
 const { createClient } = require('@supabase/supabase-js');
 require('dotenv').config({ path: '../.env' });
 
+const logFs = require('fs');
+const logPath = require('path');
+const logsDir = logPath.join(__dirname, 'logs');
+logFs.mkdirSync(logsDir, { recursive: true });
+const logFile = logPath.join(
+  logsDir,
+  `robo-audioaulas-${new Date().toISOString().replace(/[:.]/g, '-')}.log`
+);
+
+for (const method of ['log', 'warn', 'error']) {
+  const original = console[method].bind(console);
+  console[method] = (...args) => {
+    const line = args.map((arg) => {
+      if (arg instanceof Error) return arg.stack || arg.message;
+      if (typeof arg === 'string') return arg;
+      try {
+        return JSON.stringify(arg);
+      } catch {
+        return String(arg);
+      }
+    }).join(' ');
+
+    logFs.appendFileSync(logFile, `[${new Date().toISOString()}] ${line}\n`, 'utf8');
+    original(...args);
+  };
+}
+
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
 const BATCH_LIMIT = Number(process.env.ROBO_LIMIT || '10');
+const WAIT_BEFORE_DOWNLOAD_MS = Number(process.env.ROBO_DOWNLOAD_WAIT_MS || String(10 * 60 * 1000));
 
 if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
   console.error('❌ Configure VITE_SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY no arquivo .env antes de iniciar o robô.');
@@ -13,7 +41,98 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+async function clickVisibleOption(page, pattern, label, timeout = 30000) {
+  await page.waitForFunction((source) => {
+    const re = new RegExp(source, 'i');
+    const elements = Array.from(document.querySelectorAll('button, [role="button"], mat-card, [role="option"], div, span'));
+    return elements.some((el) => {
+      const rect = el.getBoundingClientRect();
+      const area = rect.width * rect.height;
+      const text = `${el.getAttribute('aria-label') || ''} ${el.innerText || el.textContent || ''}`.trim();
+      return rect.width > 0 && rect.height > 0 && area < 300000 && re.test(text);
+    });
+  }, pattern, { timeout });
+
+  const clicked = await page.evaluate((source) => {
+    const re = new RegExp(source, 'i');
+    const elements = Array.from(document.querySelectorAll('button, [role="button"], mat-card, [role="option"], div, span'));
+    const visibleMatches = elements.filter((el) => {
+      const rect = el.getBoundingClientRect();
+      const area = rect.width * rect.height;
+      const text = `${el.getAttribute('aria-label') || ''} ${el.innerText || el.textContent || ''}`.trim();
+      if (rect.width <= 0 || rect.height <= 0 || area > 300000 || !re.test(text)) return false;
+      if (['HTML', 'BODY', 'APP-ROOT'].includes(el.tagName)) return false;
+      return true;
+    }).sort((a, b) => {
+      const rectA = a.getBoundingClientRect();
+      const rectB = b.getBoundingClientRect();
+      const rank = (el) => {
+        if (el.tagName === 'BUTTON' || el.getAttribute('role') === 'button') return 0;
+        if (el.tagName === 'MAT-CARD' || el.getAttribute('role') === 'option') return 1;
+        return 2;
+      };
+      return rank(a) - rank(b) || (rectA.width * rectA.height) - (rectB.width * rectB.height);
+    });
+
+    const target = visibleMatches[0];
+
+    if (!target) return false;
+    const rect = target.getBoundingClientRect();
+    target.dispatchEvent(new MouseEvent('mouseover', { bubbles: true, clientX: rect.left + rect.width / 2, clientY: rect.top + rect.height / 2 }));
+    target.click();
+    return true;
+  }, pattern);
+
+  if (!clicked) throw new Error(`Nao encontrei a opcao visivel: ${label}`);
+}
+
+async function findNotebookUrlByTitle(page, title) {
+  console.log(`🔎 Procurando notebook ja criado: ${title}`);
+  await page.goto('https://notebook.google.com/');
+  await page.waitForTimeout(4000);
+
+  const targetPoint = await page.evaluate((targetTitle) => {
+    const normalize = (value) => String(value || '').replace(/\s+/g, ' ').trim().toLowerCase();
+    const wanted = normalize(targetTitle);
+    const elements = Array.from(document.querySelectorAll('*'));
+    const matches = elements.filter((el) => {
+      const rect = el.getBoundingClientRect();
+      const rawText = el.innerText || el.textContent || '';
+      const normalizedText = normalize(rawText);
+      const hasExactLine = rawText
+        .split(/\r?\n/)
+        .some((line) => normalize(line) === wanted);
+      return rect.width > 0 &&
+        rect.height > 0 &&
+        (normalizedText === wanted || hasExactLine);
+    });
+    matches.sort((a, b) => {
+      const rectA = a.getBoundingClientRect();
+      const rectB = b.getBoundingClientRect();
+      return (rectA.width * rectA.height) - (rectB.width * rectB.height);
+    });
+    const textNode = matches[0];
+
+    if (!textNode) return null;
+    const rect = textNode.getBoundingClientRect();
+    return {
+      x: rect.left + Math.min(Math.max(rect.width / 2, 20), Math.max(rect.width - 10, 20)),
+      y: rect.top + rect.height / 2,
+    };
+  }, title);
+
+  if (!targetPoint) {
+    throw new Error(`Nao achei o notebook "${title}" na lista recente do NotebookLM.`);
+  }
+
+  await page.mouse.click(targetPoint.x, targetPoint.y);
+  await page.waitForURL(/notebook\.google\.com\/notebook\//, { timeout: 30000, waitUntil: 'domcontentloaded' });
+  await page.waitForTimeout(1500);
+  return page.url();
+}
+
 async function run() {
+  console.log(`Log desta execucao: ${logFile}`);
   console.log('=============================================');
   console.log('🤖 FÁBRICA DE ÁUDIO AULAS - INICIADA');
   console.log('=============================================');
@@ -21,7 +140,7 @@ async function run() {
   console.log('🔌 Conectando ao Google Chrome via porta 9222...');
   let browser;
   try {
-    browser = await chromium.connectOverCDP('http://localhost:9222');
+    browser = await chromium.connectOverCDP('http://127.0.0.1:9222');
   } catch (e) {
     console.error('❌ Falha ao conectar no Chrome. Feche tudo e abra o iniciar_robo.bat');
     process.exit(1);
@@ -49,11 +168,17 @@ async function run() {
   const fs = require('fs');
   const path = require('path');
 
-  console.log('🔍 Sincronizando com a Planilha para buscar os próximos 10 artigos pendentes...');
-  const artigos = await googleApi.syncAndGetPending(lei.id, supabase, BATCH_LIMIT);
+  console.log('🔍 Verificando artigos que ja estao Processando na planilha...');
+  const artigosProcessando = await googleApi.getProcessingRows(lei.id, supabase, BATCH_LIMIT);
+  const vagasParaCriar = Math.max(0, BATCH_LIMIT - artigosProcessando.length);
 
-  if (!artigos || artigos.length === 0) {
-    console.log('✅ Nenhum artigo pendente na planilha para o Código Penal. O robô vai descansar.');
+  console.log(`🔍 ${artigosProcessando.length} artigo(s) ja estavam Processando. Vagas para criar agora: ${vagasParaCriar}.`);
+  const artigos = vagasParaCriar > 0
+    ? await googleApi.syncAndGetPending(lei.id, supabase, vagasParaCriar)
+    : [];
+
+  if ((!artigos || artigos.length === 0) && artigosProcessando.length === 0) {
+    console.log('✅ Nenhum artigo pendente/processando na planilha para o Código Penal. O robô vai descansar.');
     return;
   }
 
@@ -74,21 +199,51 @@ async function run() {
 
   const notebooksCriados = [];
 
+  for (const art of artigosProcessando) {
+    const titulo = `Artigo ${art.numero} ${lei.slug.toUpperCase()}`;
+    const titulosPossiveis = [titulo];
+    if (String(art.numero).startsWith('7')) {
+      titulosPossiveis.push('Extraterritorialidade da Lei Penal Brasileira');
+    }
+
+    try {
+      let url = null;
+      let tituloEncontrado = titulo;
+      let ultimoErro = null;
+
+      for (const candidato of titulosPossiveis) {
+        try {
+          url = await findNotebookUrlByTitle(page, candidato);
+          tituloEncontrado = candidato;
+          break;
+        } catch (err) {
+          ultimoErro = err;
+        }
+      }
+
+      if (!url) throw ultimoErro || new Error(`Nao achei o notebook "${titulo}".`);
+      notebooksCriados.push({ id: art.id, rowNumber: art.rowNumber, numero: art.numero, url, titulo });
+      console.log(`✅ Notebook em processamento encontrado: ${tituloEncontrado} -> ${url}`);
+    } catch (err) {
+      console.warn(`⚠️ ${err.message} Vou manter na planilha como Processando para nao recriar.`);
+    }
+  }
+
   for (let i = 0; i < artigos.length; i++) {
     const art = artigos[i];
     const leiSeca = art.texto.replace(/\s*\([^)]*\)/g, '');
     const novoTitulo = `Artigo ${art.numero} ${lei.slug.toUpperCase()}`;
-    const prompt = `Atuem como dois juristas especialistas e objetivos realizando uma análise técnica da "lei seca" fornecida nos documentos. O tom da conversa deve ser estritamente profissional, analítico e preciso, evitando o estilo de "podcast de entretenimento". Regras fundamentais para esta análise:
-1. **Adesão Estrita ao Texto (Lei Seca):** Sua explicação deve se basear EXCLUSIVAMENTE no que está escrito nos artigos fornecidos. Não adicionem interpretações doutrinárias externas, jurisprudência que não esteja no texto, opiniões pessoais ou analogias do mundo real. Se o texto não diz, vocês não dizem.
-2. **Clareza Técnica:** O objetivo é traduzir o "juridiquês" para uma linguagem clara, mas mantendo a precisão técnica. Expliquem o significado dos termos legais conforme definidos na própria lei.
-3. **Estrutura da Análise:**
-* Comecem identificando qual lei ou conjunto de artigos estão analisando (${novoTitulo}).
-* Sigam artigo por artigo, parágrafo por parágrafo, inciso por inciso de forma ordenada e cronológica.
-* Um apresentador deve introduzir e ler o dispositivo legal por completo, exatamente na forma que ele está escrito (ex: ler o caput inteiro).
-* O segundo apresentador deve destrinchar os elementos objetivos desse trecho recém-lido, explicando seus requisitos, exceções listadas e penalidades.
-* IMPORTANTE: Vocês devem destrinchar lendo e explicando ao mesmo tempo, em blocos! Exemplo: Leiam o "caput", e em seguida já expliquem o que é o caput. Depois vão para o "inciso I", leiam completo na forma que é, e expliquem o inciso. Se tiver "alínea", leiam a alínea completa e expliquem. Façam isso passo a passo, dissecando toda a estrutura do artigo em ordem.
-4. **Foco nos Elementos:** Destaquem verbos núcleos do tipo penal (se for criminal), prazos, condições e qualificadoras que estejam expressas no texto.
-5. **Sem Rodeios:** Evitem introduções longas, piadas internas ou entusiasmo excessivo. Vão direto ao ponto da letra da lei.`;
+    const prompt = `Atuem como dois apresentadores juristas, objetivos, didáticos e dinâmicos, para uma aula de áudio baseada exclusivamente na lei seca fornecida.
+
+Comecem imediatamente com uma saudação curta e digam: "A aula de hoje é sobre ${novoTitulo}". Depois já entrem na explicação, sem enrolação.
+
+Estilo da aula:
+1. Foquem no texto legal: leiam e expliquem a lei seca com clareza, precisão e ritmo.
+2. Trabalhem em blocos curtos, na ordem do texto: caput, parágrafos, incisos e alíneas, quando existirem.
+3. Depois de cada trecho, expliquem o sentido daquele trecho de forma simples, técnica e direta.
+4. Destaquem prazos, condições, exceções, penas, requisitos e verbos importantes que aparecerem no artigo.
+5. Mantenham a conversa dinâmica e objetiva, como uma aula bem conduzida: sem introdução longa, sem conversa paralela e sem fechamento demorado.
+6. Se o artigo for curto, façam uma aula curta e proporcional ao conteúdo.`;
 
     console.log(`\n=============================================`);
     console.log(`⚙️ INICIANDO O ARTIGO ${i + 1}/${artigos.length} -> ${novoTitulo}`);
@@ -101,17 +256,22 @@ async function run() {
     // Pode haver um loading inicial
     await page.waitForTimeout(3000);
     
-    // Tenta clicar usando a API nativa do Playwright que espera o elemento ficar visível
-    await page.getByText(/Criar novo|Criar notebook/i).first().click();
+    await clickVisibleOption(page, 'Criar novo|Criar notebook', 'Criar novo');
 
     console.log('🖱️ Selecionando "Texto copiado"...');
     await page.waitForTimeout(1000);
-    // Tenta 'Texto copiado' ou outras variações comuns que o Google pode usar
-    await page.getByText(/Texto copiado|Texto colado|Colar/i).first().click();
+    // Tenta 'Texto copiado' ou outras variações comuns que o Google pode usar.
+    await clickVisibleOption(page, 'Texto copiado|Texto colado|Colar texto|Colar|Texto', 'Texto copiado');
 
     console.log('📝 Colando a Lei Seca (já limpa de sujeiras)...');
     const sourceTextarea = page.getByPlaceholder(/Cole o texto aqui|Cole seu texto aqui/i).first();
-    await sourceTextarea.waitFor({ state: 'visible', timeout: 20000 });
+    try {
+      await sourceTextarea.waitFor({ state: 'visible', timeout: 20000 });
+    } catch (err) {
+      console.warn('⚠️ Campo de texto não apareceu. Tentando selecionar "Texto copiado" novamente...');
+      await clickVisibleOption(page, '^\\s*(Texto copiado|Texto colado|Colar texto)\\s*$', 'Texto copiado', 10000);
+      await sourceTextarea.waitFor({ state: 'visible', timeout: 20000 });
+    }
     await sourceTextarea.fill(leiSeca);
     await page.getByRole('button', { name: /Inserir|Adicionar/i }).first().click();
 
@@ -222,10 +382,15 @@ async function run() {
   }
 
   console.log('\n=============================================');
-  console.log('🎉 TODOS OS 10 ARTIGOS ESTÃO NO FORNO!');
-  console.log('As URLs dos notebooks criados são:');
+  console.log(`🎉 ${notebooksCriados.length} ARTIGO(S) ESTAO NO FORNO OU FORAM RETOMADOS!`);
+  console.log('As URLs dos notebooks da leva sao:');
   console.log(notebooksCriados);
   console.log('=============================================');
+
+  if (notebooksCriados.length === 0) {
+    console.log('⚠️ Nenhum notebook foi encontrado para baixar. Mantive a planilha como Processando para evitar duplicacao.');
+    return;
+  }
   
   console.log('\n=============================================');
   console.log('📂 FASE 1.5: ORGANIZANDO NA COLEÇÃO');
@@ -343,6 +508,12 @@ async function run() {
   } catch (err) {
     console.error('❌ Erro na fase de coleções. Continuando para a fila de downloads...', err.message);
   }
+
+  if (artigos.length > 0 && WAIT_BEFORE_DOWNLOAD_MS > 0) {
+    const waitMinutes = Math.round(WAIT_BEFORE_DOWNLOAD_MS / 60000);
+    console.log(`⏳ Aguardando ${waitMinutes} minuto(s) antes de procurar e baixar os áudios gerados...`);
+    await page.waitForTimeout(WAIT_BEFORE_DOWNLOAD_MS);
+  }
   
   console.log('\n=============================================');
   console.log('📥 INICIANDO FASE 2: AGUARDAR E BAIXAR (DOWNLOAD/UPLOAD)');
@@ -387,8 +558,16 @@ async function run() {
     console.log(`✅ Áudio baixado localmente: ${downloadPath}`);
 
     // Fase Google Drive
-    const linkDrive = await googleApi.uploadAudio(downloadPath, lawFolderId, notebook.titulo);
-    console.log(`☁️ Upload no Drive concluído! Link: ${linkDrive}`);
+    let linkDrive;
+    try {
+      linkDrive = await googleApi.uploadAudio(downloadPath, lawFolderId, notebook.titulo);
+      console.log(`☁️ Upload no Drive concluído! Link: ${linkDrive}`);
+    } catch (uploadError) {
+      console.error(`❌ Falha no upload do ${notebook.titulo} para o Drive: ${uploadError.message}`);
+      console.error(`💾 Mantive o arquivo baixado em: ${downloadPath}`);
+      console.error('A planilha vai continuar como Processando para evitar marcar como finalizado sem link do Drive.');
+      continue;
+    }
 
     // Fase Planilha (Atualizar para Verde e OK)
     if (typeof notebook.rowNumber !== 'number') {

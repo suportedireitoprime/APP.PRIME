@@ -170,10 +170,16 @@ function buildMetrics(rows: any[]) {
   const now = Date.now();
   const dayMs = 24 * 60 * 60 * 1000;
   const days: string[] = [];
-  for (let i = 29; i >= 0; i--) days.push(new Date(now - i * dayMs).toISOString().slice(0, 10));
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(now - i * dayMs);
+    // Ajuste para BRT (UTC-3)
+    const brt = new Date(d.getTime() - 3 * 60 * 60 * 1000);
+    days.push(brt.toISOString().slice(0, 10));
+  }
 
   const timeline = days.map((date) => {
-    const dayStart = new Date(`${date}T00:00:00.000Z`).getTime();
+    // dayStart como meia-noite no fuso horário do Brasil (-03:00)
+    const dayStart = new Date(`${date}T00:00:00.000-03:00`).getTime();
     const dayEnd = dayStart + dayMs;
     let novos = 0, cancelados = 0, ativos = 0;
     rows.forEach((r) => {
@@ -184,7 +190,8 @@ function buildMetrics(rows: any[]) {
       if (canceladoEm >= dayStart && canceladoEm < dayEnd) cancelados++;
       if (st && st < dayEnd && (!ex || ex >= dayStart)) ativos++;
     });
-    return { date, label: date.slice(5).replace('-', '/'), ativos, novos, cancelados, renovacoes: 0 };
+    const [y, m, d] = date.split('-');
+    return { date, label: `${d}/${m}`, ativos, novos, cancelados, renovacoes: 0 };
   });
 
   const since7 = now - 7 * dayMs;
@@ -233,7 +240,9 @@ async function fetchSubscribersLocal(supabase: ReturnType<typeof createClient>) 
     }
   }
 
-  const enriched = (rows ?? []).map((r) => {
+  const validRows = (rows ?? []).filter(r => !r.product_id?.toLowerCase().includes('vade_mecum'));
+  
+  const enriched = validRows.map((r) => {
     const p = profilesMap.get(r.user_id) ?? {};
     const startMs = r.start_time ? new Date(r.start_time).getTime() : 0;
     const expMs = r.expires_at ? new Date(r.expires_at).getTime() : 0;
@@ -336,10 +345,12 @@ export const handler = (async (req) => {
     try { serviceAccountEmail = JSON.parse(SERVICE_ACCOUNT_JSON).client_email ?? null; } catch { /* ignore */ }
 
     // Fetch legacy subscribers bypassing RLS
-    const { data: legacy } = await admin
+    const { data: legacyData } = await admin
       .from('legacy_subscribers')
       .select('*')
       .order('created_at', { ascending: false });
+      
+    const legacy = (legacyData ?? []).filter((r: any) => !r.tipo?.toLowerCase().includes('vade_mecum'));
 
     return new Response(JSON.stringify({
       sync,

@@ -154,6 +154,10 @@ async function fromAsaas() {
         asaas_customer_id: sub.customer,
         asaas_subscription_id: sub.id,
         expires_at: due ? due.toISOString() : null,
+        observacao: JSON.stringify({
+          value: sub.value,
+          billingType: sub.billingType
+        }),
         _source: 'asaas',
       });
     }
