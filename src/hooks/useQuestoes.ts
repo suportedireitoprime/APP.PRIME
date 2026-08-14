@@ -56,6 +56,7 @@ export function useQuestoesCargos() {
   }, []);
   return { cargos, loading };
 }
+import { bundle, withBundleFallback } from '@/services/offlineBundle';
 
 export function useQuestoesAreas(nivel?: string | null, cargoId?: string | null) {
   const cacheKey = `questoes_areas_cache:${nivel ?? 'todos'}:${cargoId ?? 'todos'}`;
@@ -71,14 +72,21 @@ export function useQuestoesAreas(nivel?: string | null, cargoId?: string | null)
 
   useEffect(() => {
     if (areas.length === 0) setLoading(true);
-    db.rpc('questoes_areas', { _nivel: nivel ?? null, _cargo_id: cargoId ?? null })
-      .then(({ data }: any) => {
-        if (data) {
-          setAreas(data);
-          try { localStorage.setItem(cacheKey, JSON.stringify(data)); } catch {}
-        }
-        setLoading(false);
-      });
+
+    const onlineReq = db.rpc('questoes_areas', { _nivel: nivel ?? null, _cargo_id: cargoId ?? null })
+      .then(({ data }) => data);
+
+    // Fallback: se online falhar ou vier vazio (e.g. offline), usa o bundle instantâneo
+    withBundleFallback(
+      onlineReq,
+      () => bundle.questoesAreas()
+    ).then((data: any) => {
+      if (data) {
+        setAreas(data);
+        try { localStorage.setItem(cacheKey, JSON.stringify(data)); } catch {}
+      }
+      setLoading(false);
+    });
   }, [nivel, cargoId]);
   return { areas, loading };
 }

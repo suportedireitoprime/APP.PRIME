@@ -41,10 +41,10 @@ const Questoes = () => {
   }, [areas, busca]);
 
   return (
-    <div className="theme-questoes min-h-screen bg-background pb-32 pt-[calc(0.5rem+var(--sai-top,env(safe-area-inset-top,0px)))]">
-      <div className="mx-auto w-full max-w-3xl lg:max-w-7xl 2xl:max-w-[1600px] px-3.5 sm:px-6 lg:px-8">
-        <PageHeader title="Questões" onBack={() => navigate('/')} />
+    <div className="theme-questoes min-h-screen bg-background">
+      <PageHeader title="Questões" onBack={() => navigate('/')} />
 
+      <div className="mx-auto w-full max-w-3xl lg:max-w-7xl 2xl:max-w-[1600px] px-3.5 sm:px-6 lg:px-8 pb-32 pt-2">
         <div className="space-y-6">
           {/* ── Banner de Desempenho ───────────────── */}
           <div className="-mx-3.5 sm:-mx-6 lg:-mx-8">

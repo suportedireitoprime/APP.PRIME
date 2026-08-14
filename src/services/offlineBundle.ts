@@ -41,6 +41,7 @@ export const bundle = {
   tematicaObras: <T = any>() => fetchBundle<T>('tematica-obras'),
   bibliotecaClassicos: <T = any>() => fetchBundle<T>('biblioteca-classicos'),
   bibliotecaOab: <T = any>() => fetchBundle<T>('biblioteca-oab'),
+  questoesAreas: <T = any>() => fetchBundle<T>('questoes-areas'),
   flashcardsResumoAreas: <T = any>() => fetchBundle<T>('flashcards-resumo-areas'),
   flashcardsCardsPorArea: <T = any>(area: string) => {
     const safeName = area.replace(/[^a-zA-Z0-9_-]/g, '_');

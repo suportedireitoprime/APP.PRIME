@@ -145,6 +145,13 @@ const TARGETS = [
       return data ?? [];
     },
   },
+  {
+    name: 'questoes-areas',
+    fn: async () => {
+      const { data } = await supabase.rpc('questoes_areas', { _nivel: null, _cargo_id: null });
+      return data ?? [];
+    },
+  },
 ];
 
 console.log('[offline-bundle] Mapeando áreas de flashcards...');
