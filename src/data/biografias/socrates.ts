@@ -104,6 +104,28 @@ Mais de dois milênios antes de Hobbes, Locke e Rousseau teorizarem sobre o **Co
       `
     },
     {
+      id: 'direito',
+      label: 'Direito',
+      conteudo_md: `
+## A Relação de Sócrates com o Direito
+
+Embora Sócrates não fosse um legislador nem um jurista profissional, sua contribuição para a Filosofia do Direito é fundacional. Ele foi o primeiro a tentar ancorar as leis em uma **moralidade objetiva e racional**, resgatando o Direito das garras do relativismo dos sofistas, que acreditavam que "o homem é a medida de todas as coisas".
+
+### Nomos (Lei Humana) versus Physis (Ordem Natural)
+Antes de Sócrates, o debate jurídico grego era focado na tensão entre as leis dos homens (*Nomos*) — que são convenções culturais mutáveis — e as leis da natureza (*Physis*). Os sofistas mais radicais, como Cálicles e Trasímaco, defendiam que pela "lei da natureza" os mais fortes deveriam dominar os mais fracos, e que o *Nomos* era apenas um truque dos fracos para amarrar os fortes através de regras democráticas.
+
+Sócrates inverte essa lógica destrutiva. Ele insere a **Razão (Logos)** e a **Virtude (Areté)** no coração do Direito. Para ele, uma lei não é justa apenas porque a maioria da Assembleia votou a favor. Ela deve refletir a Justiça Universal e imutável. Ele acreditava que o verdadeiro propósito da Lei não é garantir o egoísmo, mas sim "tornar os cidadãos melhores", ou seja, conduzi-los ao bem moral.
+
+### Crítica Radical à Democracia Sorteada
+Sócrates frequentemente atacava o sistema jurídico e político ateniense, que permitia que magistrados, generais e jurados fossem escolhidos por "sorteio" em vez de competência. Ele usava a analogia do navio: *"Se você está em um navio durante uma tempestade, você escolhe o capitão por sorteio entre os passageiros ignorantes, ou você entrega o leme ao piloto treinado?"*.
+Essa visão cimentou a premissa de que o Direito e a condução do Estado exigem preparo técnico, sabedoria moral e não apenas vontade popular. Esse pensamento lançou a semente para o que mais tarde a ciência política chamaria de necessidade de "juízes imparciais" e legisladores qualificados.
+
+### Jusnaturalismo Moral e Obediência
+Ao se recusar a fugir da prisão e aceitar beber a cicuta, Sócrates não validou a sentença dos juízes como justa. Pelo contrário, ele manteve que a sentença foi baseada em mentiras. Mas ele separou a **validade da lei** da **injustiça da decisão**.
+Ele argumentou que se cada pessoa que fosse injustiçada por uma corte resolvesse quebrar as leis fugindo, o Estado colapsaria em anarquia e a "Lei da Selva" retornaria. Ele preferiu sofrer uma injustiça do que cometer uma injustiça. Sua morte não foi um suicídio, mas sim o **sacrifício supremo pela preservação do Estado de Direito e da Segurança Jurídica**.
+      `
+    },
+    {
       id: 'linha_do_tempo',
       label: 'Timeline',
       timeline: [

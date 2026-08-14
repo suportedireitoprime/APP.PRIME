@@ -1,4 +1,4 @@
-export type BioTabType = 'historia' | 'obras' | 'tabela' | 'linha_do_tempo' | 'legado';
+export type BioTabType = 'historia' | 'obras' | 'tabela' | 'linha_do_tempo' | 'legado' | 'direito';
 
 export interface BioTimelineItem {
   ano: string;
