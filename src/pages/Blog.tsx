@@ -226,8 +226,9 @@ const Blog = () => {
       )}
 
       {/* Chips de tema */}
-      <div id="blog-filters" className="bg-background border-b border-border/40">
-        <div role="tablist" aria-label="Filtros de temas do blog" className="flex gap-2 overflow-x-auto no-scrollbar px-4 py-3 max-w-3xl mx-auto">
+      {bottomTab !== 'biografia' && (
+        <div id="blog-filters" className="bg-background border-b border-border/40">
+          <div role="tablist" aria-label="Filtros de temas do blog" className="flex gap-2 overflow-x-auto no-scrollbar px-4 py-3 max-w-3xl mx-auto">
           <button
             role="tab"
             aria-selected={selectedFilter === 'todos'}
@@ -272,9 +273,9 @@ const Blog = () => {
               </button>
             );
           })}
+          </div>
         </div>
-      </div>
-
+      )}
 
       {bottomTab === 'biografia' ? (
         <BiografiaCategoriasView />
