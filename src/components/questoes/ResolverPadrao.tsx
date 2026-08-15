@@ -14,7 +14,7 @@ import { toast } from 'sonner';
 import { QuestaoAcoesBar, ComentarioSheet } from '@/components/questoes/QuestaoAcoesBar';
 import { useGatedFeature } from '@/hooks/useGatedFeature';
 import { CartaoRespostaSheet } from './CartaoRespostaSheet';
-import { MeExpliqueSheet } from './MeExpliqueSheet';
+import { ProfessoraInline } from './ProfessoraInline';
 
 const db = supabase as any;
 
@@ -404,26 +404,26 @@ const ResolverPadrao = ({
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 className={cn(
                   "relative rounded-t-3xl border-t px-5 pb-safe-nav pt-7 shadow-2xl",
-                  resp.acertou ? "bg-emerald-500 border-emerald-400" : "bg-[#1f0a0a] border-red-500/30"
+                  resp.acertou ? "bg-[#0f1f14] border-green-500/30" : "bg-[#1f0a0a] border-red-500/30"
                 )}
               >
                 <button
                   onClick={() => setFeedbackOculto(true)}
-                  className={cn("absolute right-4 top-4 rounded-full p-2 transition-colors hover:bg-black/10", resp.acertou ? "text-emerald-50 hover:text-white" : "text-white/30 hover:text-white")}
+                  className={cn("absolute right-4 top-4 rounded-full p-2 transition-colors hover:bg-black/10", resp.acertou ? "text-green-500/50 hover:text-green-400" : "text-white/30 hover:text-white")}
                 >
                   <X className="h-5 w-5" />
                 </button>
                 <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
                   <div className="flex items-center gap-4">
-                    <div className={cn("flex h-12 w-12 shrink-0 items-center justify-center rounded-full", resp.acertou ? "bg-white/20 text-white shadow-inner" : "bg-red-500/20 text-red-400")}>
+                    <div className={cn("flex h-12 w-12 shrink-0 items-center justify-center rounded-full", resp.acertou ? "bg-green-500/20 text-green-500" : "bg-red-500/20 text-red-400")}>
                       {resp.acertou ? <CheckCircle2 className="h-7 w-7" /> : <XCircle className="h-7 w-7" />}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className={cn("text-[22px] font-extrabold tracking-tight", resp.acertou ? "text-white" : "text-red-400")}>
+                      <p className={cn("text-[22px] font-extrabold tracking-tight", resp.acertou ? "text-green-500" : "text-red-400")}>
                         {resp.acertou ? 'Resposta correta!' : 'Resposta incorreta'}
                       </p>
                       {resp.acertou ? (
-                        <p className="text-[14px] font-medium text-emerald-50">
+                        <p className="text-[14px] font-medium text-green-500/80">
                           Você mandou bem.
                         </p>
                       ) : (
@@ -431,9 +431,9 @@ const ResolverPadrao = ({
                           O gabarito é a <strong className="rounded bg-red-500/20 px-2 py-0.5 text-red-300">Alternativa {correta}</strong>
                         </p>
                       )}
-                      <div className={cn("mt-2 text-[12px] font-medium flex items-center gap-1.5", resp.acertou ? "text-emerald-50" : "text-white/50")}>
-                        <div className="h-1 flex-1 bg-black/10 rounded-full overflow-hidden max-w-[100px]">
-                          <div className={cn("h-full rounded-full transition-all duration-1000", resp.acertou ? "bg-white" : "bg-red-500/50")} style={{ width: `${percentualAcerto}%` }} />
+                      <div className={cn("mt-2 text-[12px] font-medium flex items-center gap-1.5", resp.acertou ? "text-green-500/70" : "text-white/50")}>
+                        <div className="h-1 flex-1 bg-black/20 rounded-full overflow-hidden max-w-[100px]">
+                          <div className={cn("h-full rounded-full transition-all duration-1000", resp.acertou ? "bg-green-500" : "bg-red-500/50")} style={{ width: `${percentualAcerto}%` }} />
                         </div>
                         {percentualAcerto}% acertaram
                       </div>
@@ -443,7 +443,7 @@ const ResolverPadrao = ({
                     <div className="flex gap-2">
                       <button
                         onClick={() => { if (gateFuncoes.blocked) { gateFuncoes.openGate(); return; } setComentarioAberto(true); }}
-                        className={cn("flex h-[56px] flex-1 items-center justify-between rounded-2xl border px-4", resp.acertou ? "bg-white/10 border-white/20 text-white hover:bg-white/20" : "bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20")}
+                        className={cn("flex h-[56px] flex-1 items-center justify-between rounded-2xl border px-4", resp.acertou ? "bg-green-500/10 border-green-500/20 text-green-500 hover:bg-green-500/20" : "bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20")}
                       >
                         <div className="flex items-center gap-3"><MessageSquare className="h-5 w-5" /> <span className="font-bold">Comentário</span></div>
                         <ChevronRight className="h-5 w-5 opacity-50" />
@@ -472,16 +472,20 @@ const ResolverPadrao = ({
                     </div>
 
                     <div className="flex gap-2">
-                      <button
-                        onClick={() => {
-                          if (gateFuncoes.blocked) { gateFuncoes.openGate(); return; }
-                          setProfessoraAberta(true);
-                        }}
-                        className={cn("flex h-[56px] flex-1 items-center justify-between rounded-2xl border px-4 shadow-lg", resp.acertou ? "bg-white text-emerald-600 border-white/50 shadow-black/10 hover:bg-emerald-50" : "bg-blue-600 border-blue-500 text-white shadow-blue-500/10 hover:bg-blue-500")}
-                      >
-                        <div className="flex items-center gap-3"><Mic className="h-5 w-5 animate-pulse" /> <span className="font-bold">Professora</span></div>
-                        <ChevronRight className="h-5 w-5 opacity-50" />
-                      </button>
+                      {professoraAberta ? (
+                        <ProfessoraInline questao={atual} onClose={() => setProfessoraAberta(false)} />
+                      ) : (
+                        <button
+                          onClick={() => {
+                            if (gateFuncoes.blocked) { gateFuncoes.openGate(); return; }
+                            setProfessoraAberta(true);
+                          }}
+                          className={cn("flex h-[56px] flex-1 items-center justify-between rounded-2xl border px-4 shadow-lg", resp.acertou ? "bg-green-600 text-white border-green-500 shadow-green-500/10 hover:bg-green-500" : "bg-blue-600 border-blue-500 text-white shadow-blue-500/10 hover:bg-blue-500")}
+                        >
+                          <div className="flex items-center gap-3"><Mic className="h-5 w-5 animate-pulse" /> <span className="font-bold">Professora</span></div>
+                          <ChevronRight className="h-5 w-5 opacity-50" />
+                        </button>
+                      )}
                     </div>
 
                     <div className="w-full">
@@ -563,11 +567,7 @@ const ResolverPadrao = ({
         onClose={() => setComentarioAberto(false)}
       />
 
-      <MeExpliqueSheet
-        aberto={professoraAberta}
-        onClose={() => setProfessoraAberta(false)}
-        questao={atual}
-      />
+
 
       <CartaoRespostaSheet
         aberto={gradeAberta}
