@@ -200,6 +200,7 @@ const ResolverPadrao = ({
       };
       if (mapaLetras[key] && !resp && alternativas.some((a) => a.letra === mapaLetras[key])) {
         e.preventDefault();
+        haptic.selection?.();
         setSelecao(mapaLetras[key]);
       } else if (e.key === 'Enter') {
         e.preventDefault();
@@ -400,7 +401,7 @@ const ResolverPadrao = ({
               <button
                 key={op.letra}
                 disabled={!!resp}
-                onClick={() => { haptic.light?.(); setSelecao(op.letra); }}
+                onClick={() => { haptic.selection?.(); setSelecao(op.letra); }}
                 className={cn(
                   'flex min-h-[60px] w-full items-center gap-4 rounded-2xl border p-4 text-left transition-all',
                   revela ? 'border-green-500 bg-green-500/10'
