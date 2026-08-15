@@ -116,27 +116,13 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
 
   const handleItemClick = async (id: string) => {
     if (id === 'sair') {
-      // 1. Fecha o menu PRIMEIRO para não bloquear o diálogo nativo
+      // Fecha o menu e limpa locks imediatamente
       purgeBodyLocks();
       onClose();
-
-      // 2. Espera o menu desmontar e só então exibe o confirm
-      setTimeout(async () => {
-        try {
-          const { confirmar } = await import('@/lib/nativo/dialogos');
-          const confirmed = await confirmar({
-            titulo: 'Sair da conta',
-            mensagem: 'Você quer realmente sair da conta?',
-            okTexto: 'Sim, sair',
-            cancelarTexto: 'Cancelar',
-          });
-          if (confirmed) {
-            signOut();
-          }
-        } catch {
-          // fallback silencioso
-        }
-      }, 300);
+      // signOut direto — não depende do componente estar montado
+      setTimeout(() => {
+        signOut().catch(() => {});
+      }, 200);
       return;
     }
 
