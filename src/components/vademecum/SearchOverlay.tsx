@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Search, Scale, BookOpen, Clock, Gavel, Mic, MicOff, X, Loader2, Heart } from 'lucide-react';
+import { 
+  ArrowLeft, Search, Scale, BookOpen, Clock, Gavel, Mic, MicOff, X, Loader2, Heart,
+  Play, PenLine, FileText, Newspaper, Film, BookMarked, Stamp, ListChecks 
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/hooks/useDebounce';
@@ -296,6 +299,27 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
           <div className="flex gap-2 overflow-x-auto hide-scrollbar px-4 pt-2 pb-3">
             {UNIFIED_TABS.map((tab) => {
               const active = activeTab === tab;
+              
+              const getTabIcon = () => {
+                switch (tab) {
+                  case 'tudo': return <Search className="w-4 h-4" />;
+                  case 'leis': return <Scale className="w-4 h-4" />;
+                  case 'jurisprudencia': return <Gavel className="w-4 h-4" />;
+                  case 'videoaula': return <Play className="w-4 h-4" />;
+                  case 'livro': return <BookOpen className="w-4 h-4" />;
+                  case 'blog': return <PenLine className="w-4 h-4" />;
+                  case 'resumo': return <FileText className="w-4 h-4" />;
+                  case 'noticia': return <Newspaper className="w-4 h-4" />;
+                  case 'obra': return <Film className="w-4 h-4" />;
+                  case 'dicionario': return <BookMarked className="w-4 h-4" />;
+                  case 'sumula': return <Stamp className="w-4 h-4" />;
+                  case 'tese': return <ListChecks className="w-4 h-4" />;
+                  case 'informativo': return <Gavel className="w-4 h-4" />;
+                  case 'pesquisa': return <Search className="w-4 h-4" />;
+                  default: return null;
+                }
+              };
+
               return (
                 <button
                   key={tab}
@@ -303,12 +327,13 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
                     track('search_tab_selecionada', { tab });
                     setActiveTab(tab);
                   }}
-                  className={`shrink-0 px-4 py-2.5 rounded-full text-xs font-bold transition-all border ${
+                  className={`shrink-0 px-4 py-2.5 rounded-full text-xs font-bold transition-all border flex items-center gap-2 ${
                     active
                       ? 'bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20'
                       : 'bg-muted text-muted-foreground border-transparent hover:bg-muted/80'
                   }`}
                 >
+                  {getTabIcon()}
                   {TAB_LABELS[tab]}
                 </button>
               );
@@ -322,44 +347,17 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
               const leisPorTexto = temTextoSemNumero ? leiResults : [];
               return (
               <div className="space-y-2 mb-4">
-                {!artigoQueryDigits && !temTextoSemNumero && (
-                  <>
-                    <p className="text-xs uppercase tracking-wider text-muted-foreground py-3 px-3 font-semibold mt-1">
-                      Leis mais procuradas
-                    </p>
-                    {getRankedTopLeis(6).map((lei, i) => {
-                      const fav = isFavorito(lei.id);
-                      return (
-                      <motion.div
-                        key={lei.id + ':' + favVersion}
-                        initial={{ opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.025 }}
-                        className="w-full flex items-center gap-3 p-3.5 rounded-xl bg-card border border-border hover:border-primary/40 transition-all"
-                      >
-                        <button
-                          onClick={() => emitSelect(lei)}
-                          className="flex items-center gap-4 flex-1 min-w-0 text-left"
-                        >
-                          <div className="w-12 h-12 rounded-lg bg-red-500/10 flex items-center justify-center shrink-0">
-                            <span className="text-xs font-bold text-red-500">{lei.sigla}</span>
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-base font-semibold text-foreground truncate">{lei.nome}</p>
-                            <p className="text-sm text-muted-foreground truncate">{lei.descricao}</p>
-                          </div>
-                        </button>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); toggleFavorito({ tipo: lei.tipo, leiId: lei.id, nome: lei.nome, descricao: lei.descricao, tabela_nome: lei.tabela_nome }); }}
-                          aria-label={fav ? 'Remover dos favoritos' : 'Favoritar lei'}
-                          className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 active:scale-90 transition-transform ${fav ? 'text-primary' : 'text-muted-foreground'}`}
-                        >
-                          <Heart className={`w-6 h-6 ${fav ? 'fill-current' : ''}`} />
-                        </button>
-                      </motion.div>
-                      );
-                    })}
-                  </>
+                {!artigoQueryDigits && !temTextoSemNumero && activeTab === 'leis' && (
+                  <div className="px-4 py-8 space-y-4">
+                    <div className="text-center space-y-2">
+                      <div className="w-14 h-14 mx-auto rounded-2xl bg-primary/10 flex items-center justify-center">
+                        <Search className="w-7 h-7 text-primary" />
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        Pesquise por qualquer lei ou código. Você pode usar siglas (ex: CF, CP, CDC) ou o número da lei (ex: 8078).
+                      </p>
+                    </div>
+                  </div>
                 )}
                 {temTextoSemNumero && (
                   <>
