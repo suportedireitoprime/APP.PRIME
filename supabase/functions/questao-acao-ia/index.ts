@@ -79,7 +79,10 @@ function hashChave(texto: string) {
   return `h:${h}`;
 }
 
-async function gerar(tipo: Tipo, questao: any) {
+const FALLBACK_MODEL = "gemini-2.5-flash";
+const MAX_RETRIES = 3;
+
+async function chamarApi(model: string, tipo: Tipo, questao: any) {
   const r = await fetch(GATEWAY, {
     method: "POST",
     headers: {
@@ -87,8 +90,8 @@ async function gerar(tipo: Tipo, questao: any) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: MODEL,
-      reasoning_effort: "none",
+      model,
+      ...(model.startsWith("openai/") ? { reasoning_effort: "none" } : {}),
       response_format: { type: "json_object" },
       messages: [
         { role: "system", content: `${BASE}\n\n${INSTRUCOES[tipo]}` },
@@ -107,6 +110,32 @@ async function gerar(tipo: Tipo, questao: any) {
     if (m) return JSON.parse(m[0]);
     throw new Error("Resposta da IA não é JSON válido");
   }
+}
+
+async function gerar(tipo: Tipo, questao: any) {
+  const modelos = [MODEL, FALLBACK_MODEL];
+  for (const modelo of modelos) {
+    for (let tentativa = 0; tentativa < MAX_RETRIES; tentativa++) {
+      try {
+        return await chamarApi(modelo, tipo, questao);
+      } catch (e) {
+        const msg = String((e as Error)?.message ?? "");
+        const isOverloaded = msg.includes("overloaded") || msg.includes("503") || msg.includes("529") || msg.includes("rate");
+        if (isOverloaded && tentativa < MAX_RETRIES - 1) {
+          const delay = 1000 * (tentativa + 1);
+          console.warn(`[questao-acao-ia] ${modelo} tentativa ${tentativa + 1} falhou (overloaded), retry em ${delay}ms`);
+          await new Promise(r => setTimeout(r, delay));
+          continue;
+        }
+        if (isOverloaded) {
+          console.warn(`[questao-acao-ia] ${modelo} esgotou retries, tentando próximo modelo`);
+          break; // tenta o próximo modelo
+        }
+        throw e; // erro não-recuperável, lança imediatamente
+      }
+    }
+  }
+  throw new Error("Todos os modelos estão indisponíveis no momento. Tente novamente em alguns segundos.");
 }
 
 Deno.serve(async (req) => {
