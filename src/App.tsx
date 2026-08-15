@@ -405,17 +405,16 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
     : false;
 
   // Otimista pós-cadastro: se acabou de criar conta nesta sessão, já assume
-  // que precisa passar pela triagem — evita spinner de 3-5s enquanto o
-  // Supabase ainda não respondeu com o perfil recém-criado.
+  // que precisa passar pela triagem — evita query desnecessária de 1.2s+
+  // enquanto o Supabase ainda não criou o perfil.
   const justSignedUp =
     typeof window !== 'undefined' && window.sessionStorage.getItem('just_signed_up') === '1';
 
   const [needsOnboarding, setNeedsOnboarding] = useState(justSignedUp);
-  // Só libera a tela quando souber se a triagem está pendente. Antes começava
-  // como `true` e o app abria antes da resposta do Supabase — por isso a
-  // triagem às vezes só aparecia depois, ao navegar/interagir.
+  // Se justSignedUp, já sabemos que precisa de triagem — não travar a tela
+  // esperando a query do perfil que ainda nem existe.
   const [initialCheckDone, setInitialCheckDone] = useState(
-    () => !user || cachedDone || (typeof navigator !== 'undefined' && navigator.onLine === false),
+    () => !user || cachedDone || justSignedUp || (typeof navigator !== 'undefined' && navigator.onLine === false),
   );
 
   useEffect(() => {
@@ -430,6 +429,15 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
       setInitialCheckDone(true);
       setNeedsOnboarding(false);
       try { window.sessionStorage.removeItem('just_signed_up'); } catch {}
+      return;
+    }
+
+    // Acabou de criar conta — não precisa consultar o Supabase para saber
+    // se a triagem foi feita (ainda nem existe o perfil). Libera a tela
+    // imediatamente e deixa o Onboarding resolver o resto.
+    if (justSignedUp) {
+      setInitialCheckDone(true);
+      setNeedsOnboarding(true);
       return;
     }
 
@@ -476,7 +484,7 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
     })();
 
     return () => { cancelled = true; };
-  }, [user, cacheKey, cachedDone]);
+  }, [user, cacheKey, cachedDone, justSignedUp]);
 
   if (loading) {
     // Sem tela preta com spinner: só um frame vazio enquanto o retorno de
@@ -493,7 +501,10 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
     return null; // Aguarda a checagem terminar antes de renderizar a rota ou navegar. Evita o travamento do AnimatePresence.
   }
 
-  if (requireOnboarding && needsOnboarding) {
+  // Redireciona para /onboarding se a triagem está pendente, MAS apenas quando
+  // NÃO estamos já em /onboarding (senão o <Onboarding /> nunca renderizaria
+  // porque o Navigate vem antes do return children).
+  if (requireOnboarding && needsOnboarding && location.pathname !== '/onboarding') {
     return <Navigate to="/onboarding" replace />;
   }
 
