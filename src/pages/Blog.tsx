@@ -280,7 +280,9 @@ const Blog = () => {
             );
           })}
           </div>
-        <KeepAlive active={bottomTab === 'biografia'}>
+        </div>
+      )}
+      <KeepAlive active={bottomTab === 'biografia'}>
         {selectedBioPerson ? (
           <BiografiaArtigoView 
             personagemId={selectedBioPerson}
