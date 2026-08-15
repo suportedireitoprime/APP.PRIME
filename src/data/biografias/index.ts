@@ -5,11 +5,13 @@ import { plataoData } from './platao';
 import { aristotelesData } from './aristoteles';
 import { kantData } from './kant';
 import { maquiavelData } from './maquiavel';
+import { santoAgostinhoData } from './santoAgostinho';
 
 export const todasBiografias: BiografiaData[] = [
   socratesData,
   plataoData,
   aristotelesData,
+  santoAgostinhoData,
   maquiavelData,
   kantData,
   hansKelsenData,

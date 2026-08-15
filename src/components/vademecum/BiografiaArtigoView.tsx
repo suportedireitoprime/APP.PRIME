@@ -94,7 +94,7 @@ export const BiografiaArtigoView = ({ personagemId, onBack }: Props) => {
           </button>
 
           {/* Hero Header */}
-          <div className="relative w-full h-[280px] md:h-[350px]">
+          <div className="relative w-full h-[400px] md:h-[500px]">
             {bio.imagemUrl ? (
               <>
                 <div className="absolute inset-0 bg-cover bg-top" style={{ backgroundImage: `url(${bio.imagemUrl})` }} />
