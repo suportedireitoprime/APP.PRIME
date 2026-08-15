@@ -34,7 +34,7 @@ function formatarTempo(seg: number) {
 
 /** Player padrão de resolução: seleção → Responder → feedback → comentário + recursos. */
 const ResolverPadrao = ({
-  questoes, loading, contexto = 'pratica', onRegistrar, onNovoBloco, vazioTexto,
+  questoes, loading, contexto = 'pratica', onRegistrar, onNovoBloco, onBack, vazioTexto,
 }: Props) => {
   const { user } = useAuth();
   const [idx, setIdx] = useState(0);
