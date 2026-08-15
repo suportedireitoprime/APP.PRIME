@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ListChecks, ChevronRight, Trophy, Award, BarChart2, Sparkles, UserCheck } from 'lucide-react';
+import { ListChecks, ChevronRight, Trophy, Award, BarChart2, Sparkles, UserCheck, ArrowLeft } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { haptic } from '@/lib/nativeHaptics';
 import { useQuestoesAreas } from '@/hooks/useQuestoes';
@@ -20,6 +20,8 @@ interface Props {
   acertos: number;
   /** total de questões disponíveis no banco */
   disponiveis: number;
+  /** Função para voltar (header) */
+  onBack?: () => void;
 }
 
 const RANKING_RESPONDIDAS = [
@@ -40,7 +42,7 @@ const RANKING_PRECISAO = [
   { pos: 6, nome: 'Marcelo Souza', pct: 89.6, total: 5980, avatar: '⭐' },
 ];
 
-const QuestoesHero = ({ pct, total, hoje, acertos, disponiveis }: Props) => {
+const QuestoesHero = ({ pct, total, hoje, acertos, disponiveis, onBack }: Props) => {
   const [heroIdx, setHeroIdx] = useState(0);
   const [sheetAberto, setSheetAberto] = useState<'respondidas' | 'precisao' | 'banco' | null>(null);
   const { areas, loading: loadingAreas } = useQuestoesAreas();
@@ -59,11 +61,25 @@ const QuestoesHero = ({ pct, total, hoje, acertos, disponiveis }: Props) => {
   const totalSumAreas = areas.reduce((acc, a) => acc + Number(a.total || 0), 0);
 
   return (
-    <section
-      className="relative isolate overflow-hidden border-b border-black/20"
-      style={{ background: 'linear-gradient(135deg, hsl(0 72% 38%) 0%, hsl(0 80% 55%) 100%)' }}
-      aria-label="Seu progresso em questões"
-    >
+    <div className="flex flex-col rounded-b-3xl overflow-hidden shadow-2xl">
+      {/* ── Cabeçalho Vade Mecum ───────────────── */}
+      <div className="bg-zinc-950 px-4 pb-4 pt-safe-header flex items-center justify-between">
+        <button 
+          onClick={() => { haptic.selection(); onBack?.(); }} 
+          className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 active:scale-95"
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </button>
+        <h1 className="font-display text-[18px] font-black uppercase tracking-widest text-white text-center flex-1 pr-11">
+          Questões
+        </h1>
+      </div>
+
+      <section
+        className="relative isolate overflow-hidden"
+        style={{ background: 'linear-gradient(135deg, hsl(0 72% 38%) 0%, hsl(0 80% 55%) 100%)' }}
+        aria-label="Seu progresso em questões"
+      >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.22),transparent_60%)]" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.28),transparent_65%)]" />
 
@@ -318,6 +334,7 @@ const QuestoesHero = ({ pct, total, hoje, acertos, disponiveis }: Props) => {
         </SheetContent>
       </Sheet>
     </section>
+    </div>
   );
 };
 

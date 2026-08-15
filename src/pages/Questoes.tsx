@@ -5,7 +5,6 @@ import {
   RotateCcw, BarChart3, ChevronRight, ListChecks, NotebookPen, 
   Search, X, Sparkles, Filter, History
 } from 'lucide-react';
-import { PageHeader } from '@/components/vademecum/PageHeader';
 import QuestoesHero from '@/components/questoes/QuestoesHero';
 import QuestoesBottomNav from '@/components/questoes/QuestoesBottomNav';
 import QuestoesFiltroSheet from '@/components/questoes/QuestoesFiltroSheet';
@@ -45,21 +44,21 @@ const Questoes = () => {
 
   return (
     <div className="theme-questoes min-h-screen bg-background">
-      <PageHeader title="Questões" onBack={() => navigate('/')} />
-
-      <div className="mx-auto w-full max-w-3xl lg:max-w-7xl 2xl:max-w-[1600px] px-3.5 sm:px-6 lg:px-8 pb-32 pt-2">
+      <div className="mx-auto w-full max-w-3xl lg:max-w-7xl 2xl:max-w-[1600px] px-0 lg:px-8 pb-32">
         <div className="space-y-6">
           {/* ── Banner de Desempenho ───────────────── */}
-          <div className="-mx-3.5 sm:-mx-6 lg:-mx-8">
+          <div className="w-full">
             <QuestoesHero
               pct={pct}
               total={dados?.total ?? 0}
               hoje={dados?.hoje ?? 0}
               acertos={dados?.acertos ?? 0}
               disponiveis={disponiveis}
+              onBack={() => navigate('/')}
             />
           </div>
 
+          <div className="px-3.5 sm:px-6 lg:px-0 space-y-6">
           {/* ── Card Principal com Botão "Filtro Rápido" ───────────────── */}
           <div className="bg-card/60 border border-border/80 p-5 rounded-3xl backdrop-blur-md shadow-xl">
             <div className="flex items-center gap-2">
@@ -157,25 +156,32 @@ const Questoes = () => {
                         haptic.selection();
                         setMateriaSheet({ aberto: true, materia: a.area });
                       }}
-                      className="group flex w-full items-center gap-3.5 rounded-2xl border border-border/80 bg-card p-4 text-left transition-all hover:border-primary/50 hover:shadow-md active:scale-[0.99]"
+                      className="group relative overflow-hidden flex w-full items-center gap-4 rounded-2xl border border-border/80 bg-card p-4 text-left transition-all hover:border-primary/50 hover:shadow-md active:scale-[0.99]"
                     >
-                      <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl" style={{ backgroundColor: `${color}18` }}>
-                        <Icon className="h-6 w-6" style={{ color }} strokeWidth={2} />
+                      <motion.div
+                        initial={{ x: '-150%' }}
+                        animate={{ x: '250%' }}
+                        transition={{ duration: 2.5, ease: "easeInOut", repeat: Infinity, repeatDelay: 4 }}
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent skew-x-12 pointer-events-none"
+                      />
+                      <div className="relative flex shrink-0 items-center justify-center">
+                        <Icon className="h-8 w-8 drop-shadow-md transition-transform group-hover:scale-110" style={{ color }} strokeWidth={2.2} />
                       </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-extrabold text-foreground group-hover:text-primary transition-colors">
+                      <div className="min-w-0 flex-1 z-10">
+                        <p className="truncate text-[15px] font-extrabold text-foreground group-hover:text-primary transition-colors">
                           {a.area}
                         </p>
-                        <p className="mt-0.5 text-xs text-muted-foreground font-semibold">
+                        <p className="mt-0.5 text-[13px] text-muted-foreground font-semibold">
                           {totalFormatted} questões
                         </p>
                       </div>
-                      <ChevronRight className="h-4.5 w-4.5 shrink-0 text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
+                      <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground group-hover:translate-x-0.5 transition-transform z-10" />
                     </button>
                   );
                 })}
               </div>
             )}
+          </div>
           </div>
         </div>
       </div>
