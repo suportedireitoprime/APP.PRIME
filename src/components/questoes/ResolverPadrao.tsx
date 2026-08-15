@@ -45,6 +45,7 @@ const ResolverPadrao = ({
   const [favoritos, setFavoritos] = useState<Set<string>>(new Set());
   const [segundos, setSegundos] = useState(0);
   const [recursosAberto, setRecursosAberto] = useState(false);
+  const [feedbackOculto, setFeedbackOculto] = useState(false);
   const [gradeAberta, setGradeAberta] = useState(false);
   const [meExpliqueAberto, setMeExpliqueAberto] = useState(false);
   const [isScanningIa, setIsScanningIa] = useState(false);
