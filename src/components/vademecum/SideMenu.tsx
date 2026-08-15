@@ -127,7 +127,8 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
 
   const handleItemClick = async (id: string) => {
     if (id === 'sair') {
-      setLogoutPrompt(true);
+      onClose();
+      setTimeout(() => setLogoutPrompt(true), 180);
       return;
     }
 

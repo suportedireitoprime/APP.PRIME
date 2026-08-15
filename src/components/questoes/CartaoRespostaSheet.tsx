@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Check, X as XIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { haptic } from '@/lib/nativeHaptics';
+import { CartaoRespostaGrid } from './CartaoRespostaGrid';
 
 type Props = {
   aberto: boolean;
@@ -59,43 +60,16 @@ export const CartaoRespostaSheet = ({
 
               {/* Grid */}
               <div className="max-h-[60vh] overflow-y-auto px-6 pb-8">
-                <div className="grid grid-cols-5 gap-3 sm:grid-cols-8 md:grid-cols-10">
-                  {Array.from({ length: questoesCount }).map((_, i) => {
-                    const qId = questoesIdMap[i];
-                    const resp = qId ? respostas[qId] : undefined;
-                    const isAtual = i === idxAtual;
-                    
-                    let bgClass = "bg-muted text-muted-foreground border-transparent";
-                    if (resp) {
-                      bgClass = resp.acertou 
-                        ? "bg-green-500 text-white border-green-600 shadow-green-500/20 shadow-lg" 
-                        : "bg-red-500 text-white border-red-600 shadow-red-500/20 shadow-lg";
-                    } else if (isAtual) {
-                      bgClass = "bg-primary/20 text-primary border-primary shadow-primary/20 shadow-lg";
-                    }
-
-                    return (
-                      <button
-                        key={i}
-                        onClick={() => {
-                          haptic.light?.();
-                          onSelect(i);
-                          onClose();
-                        }}
-                        className={cn(
-                          "relative flex aspect-square w-full items-center justify-center rounded-full border-2 text-[15px] font-bold transition-transform active:scale-90",
-                          bgClass
-                        )}
-                      >
-                        {resp ? (
-                          resp.acertou ? <Check className="h-5 w-5" /> : <XIcon className="h-5 w-5" />
-                        ) : (
-                          String(i + 1)
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
+                <CartaoRespostaGrid
+                  questoesCount={questoesCount}
+                  idxAtual={idxAtual}
+                  respostas={respostas}
+                  questoesIdMap={questoesIdMap}
+                  onSelect={(i) => {
+                    onSelect(i);
+                    onClose();
+                  }}
+                />
               </div>
             </div>
           </motion.div>

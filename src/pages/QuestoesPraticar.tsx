@@ -17,10 +17,12 @@ const QuestoesPraticar = () => {
   const qtdParam = Number(params.get('qtd'));
   const limite = Number.isFinite(qtdParam) && qtdParam > 0 ? qtdParam : undefined;
 
+  const sessaoId = params.get('sessao');
+
   const filtro = useMemo(() => (usaFiltro ? lerFiltroSalvo() : null), [usaFiltro]);
 
-  const { questoes, loading, recarregar, registrar } = useQuestoesSessao({
-    area, nivel, cargoId, limite, novas: !filtro, filtro,
+  const { questoes, loading, recarregar, registrar, sessaoIdAtiva } = useQuestoesSessao({
+    area, nivel, cargoId, limite, novas: !filtro, filtro, sessaoId,
   });
 
   return (
@@ -33,6 +35,7 @@ const QuestoesPraticar = () => {
         onNovoBloco={recarregar}
         onBack={() => goBack()}
         vazioTexto="Nenhuma questão encontrada com esses filtros. Ajuste o filtro e tente de novo."
+        sessaoId={sessaoIdAtiva}
       />
     </div>
   );

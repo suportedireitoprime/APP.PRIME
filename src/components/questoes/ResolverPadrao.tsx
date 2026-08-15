@@ -14,7 +14,9 @@ import { toast } from 'sonner';
 import { QuestaoAcoesBar, ComentarioSheet } from '@/components/questoes/QuestaoAcoesBar';
 import { useGatedFeature } from '@/hooks/useGatedFeature';
 import { CartaoRespostaSheet } from './CartaoRespostaSheet';
+import { CartaoRespostaGrid } from './CartaoRespostaGrid';
 import { ProfessoraInline } from './ProfessoraInline';
+import { getSessaoById, saveSessao } from '@/lib/questoesSessoes';
 
 const db = supabase as any;
 
@@ -26,6 +28,7 @@ type Props = {
   onNovoBloco: () => void;
   onBack?: () => void;
   vazioTexto?: string;
+  sessaoId?: string | null;
 };
 
 function formatarTempo(seg: number) {
@@ -36,7 +39,7 @@ function formatarTempo(seg: number) {
 
 /** Player padrão de resolução: seleção → Responder → feedback → comentário + recursos. */
 const ResolverPadrao = ({
-  questoes, loading, contexto = 'pratica', onRegistrar, onNovoBloco, onBack, vazioTexto,
+  questoes, loading, contexto = 'pratica', onRegistrar, onNovoBloco, onBack, vazioTexto, sessaoId,
 }: Props) => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -59,27 +62,44 @@ const ResolverPadrao = ({
 
   useEffect(() => {
     if (questoes.length === 0) return;
-    try {
-      const saved = localStorage.getItem('APP_PRIME_LAST_SESSION');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (parsed.contexto === contexto && parsed.questoesHash === questoes.length) {
-          setRespostas(parsed.respostas || {});
-          setIdx(parsed.idx || 0);
-          setStreak(parsed.streak || 0);
-          setSelecao(parsed.respostas?.[questoes[parsed.idx || 0]?.id]?.escolha || null);
-          setSegundos(0);
-          setFeedbackOculto(false);
-          return;
-        }
+
+    if (sessaoId) {
+      const sessao = getSessaoById(sessaoId);
+      if (sessao && sessao.questoes.length === questoes.length && sessao.contexto === contexto) {
+        setRespostas(sessao.respostas || {});
+        setIdx(sessao.idx || 0);
+        setStreak(sessao.streak || 0);
+        setSelecao(sessao.respostas?.[questoes[sessao.idx || 0]?.id]?.escolha || null);
+        setSegundos(0);
+        setFeedbackOculto(false);
+        return;
       }
-    } catch(e) {}
+    } else {
+      // Tentar carregar da LAST_SESSION (legado) ou de sessao sem ID (fallback)
+      try {
+        const saved = localStorage.getItem('APP_PRIME_LAST_SESSION');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed.contexto === contexto && parsed.questoesHash === questoes.length) {
+            setRespostas(parsed.respostas || {});
+            setIdx(parsed.idx || 0);
+            setStreak(parsed.streak || 0);
+            setSelecao(parsed.respostas?.[questoes[parsed.idx || 0]?.id]?.escolha || null);
+            setSegundos(0);
+            setFeedbackOculto(false);
+            return;
+          }
+        }
+      } catch(e) {}
+    }
     
     setIdx(0); setRespostas({}); setSelecao(null); setSegundos(0); setFeedbackOculto(false); setStreak(0);
-  }, [questoes, contexto]);
+  }, [questoes, contexto, sessaoId]);
 
   useEffect(() => {
     if (questoes.length === 0) return;
+    
+    // Atualiza a ultima sessao generica
     try {
       localStorage.setItem('APP_PRIME_LAST_SESSION', JSON.stringify({
         contexto,
@@ -89,7 +109,34 @@ const ResolverPadrao = ({
         streak
       }));
     } catch(e) {}
-  }, [respostas, idx, streak, contexto, questoes.length]);
+
+    // Salva na aba de historico
+    if (sessaoId) {
+      const searchParams = new URLSearchParams(window.location.search);
+      const area = searchParams.get('area') || '';
+      const filtroFlag = searchParams.get('filtro') === '1' ? 'Filtro Personalizado' : '';
+      const filtroAplicado = area || filtroFlag || 'Sessão Rápida';
+
+      const s = getSessaoById(sessaoId) || {
+        id: sessaoId,
+        dataInicio: new Date().toISOString(),
+        dataUltimoAcesso: new Date().toISOString(),
+        filtroAplicado,
+        questoes,
+        respostas: {},
+        idx: 0,
+        streak: 0,
+        contexto
+      };
+
+      s.dataUltimoAcesso = new Date().toISOString();
+      s.respostas = respostas;
+      s.idx = idx;
+      s.streak = streak;
+
+      saveSessao(s);
+    }
+  }, [respostas, idx, streak, contexto, questoes, sessaoId]);
 
   useEffect(() => {
     const t = setInterval(() => setSegundos((s) => s + 1), 1000);
@@ -246,8 +293,10 @@ const ResolverPadrao = ({
         </button>
       </div>
 
-      <div className={cn("relative mx-auto w-full max-w-3xl flex-1 px-4 sm:px-6 pt-6 sm:pt-8", feedbackOculto ? "pb-24" : "pb-32")}>
-
+      <div className={cn("relative mx-auto w-full max-w-7xl px-0 lg:px-8 lg:grid lg:grid-cols-[1fr_320px] lg:gap-8 lg:items-start flex-1 transition-all", feedbackOculto ? "pb-24 lg:pb-8" : "pb-32 lg:pb-8")}>
+        
+        {/* Main Content Column */}
+        <div className="relative w-full max-w-3xl mx-auto lg:max-w-none lg:mx-0 px-4 sm:px-6 pt-6 sm:pt-8 flex flex-col min-w-0">
         <AnimatePresence mode="wait">
           <motion.div
             key={atual.id}
@@ -265,7 +314,7 @@ const ResolverPadrao = ({
             <span className="text-[16px] font-medium text-muted-foreground">de {questoes.length}</span>
           </div>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 lg:hidden">
             <button
               onClick={() => { if (gateFuncoes.blocked) { gateFuncoes.openGate(); return; } setRecursosAberto(!recursosAberto); }}
               className="relative overflow-hidden flex h-10 items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-4 text-[14px] font-semibold text-primary transition-colors hover:bg-primary/20 active:scale-95"
@@ -349,6 +398,35 @@ const ResolverPadrao = ({
         </div>
         </motion.div>
         </AnimatePresence>
+        </div>
+
+        {/* Desktop Sidebar Column */}
+        <div className="hidden lg:flex lg:flex-col lg:gap-6 lg:pt-8 lg:sticky lg:top-24 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto w-full shrink-0 hide-scrollbar pb-8">
+          
+          {/* Cartão de Resposta Desktop */}
+          <div className="bg-muted/30 rounded-2xl border border-border p-5 flex flex-col shadow-sm">
+            <h3 className="text-[13px] font-bold text-foreground/70 mb-4 uppercase tracking-wider flex items-center gap-2">
+              <Grid2X2 className="w-4 h-4" /> Cartão Resposta
+            </h3>
+            <CartaoRespostaGrid
+              questoesCount={questoes.length}
+              idxAtual={idx}
+              respostas={respostas}
+              questoesIdMap={questoes.map(q => q.id)}
+              onSelect={setIdx}
+              className="grid-cols-5 gap-2"
+            />
+          </div>
+
+          {/* Recursos Desktop */}
+          <div className="bg-muted/30 rounded-2xl border border-border p-5 flex flex-col shadow-sm">
+            <h3 className="text-[13px] font-bold text-foreground/70 mb-4 uppercase tracking-wider flex items-center gap-2">
+              <Plus className="w-4 h-4" /> Recursos
+            </h3>
+            <QuestaoAcoesBar source={atual.id} chaveRevisao={atual.id} layout="vertical" />
+          </div>
+        </div>
+
       </div>
 
       <AnimatePresence>
@@ -363,7 +441,8 @@ const ResolverPadrao = ({
         )}
       </AnimatePresence>
 
-      <div className="fixed inset-x-0 bottom-0 z-40">
+      <div className="fixed inset-x-0 bottom-0 z-40 pointer-events-none">
+        <div className="mx-auto w-full max-w-7xl lg:px-8">
           <AnimatePresence mode="wait">
             {!resp ? (
               <motion.div
@@ -372,7 +451,7 @@ const ResolverPadrao = ({
                 animate={{ y: 0 }}
                 exit={{ y: '100%' }}
                 transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                className="rounded-t-3xl border-t border-border/50 bg-background/80 px-4 pb-safe-nav pt-4 shadow-2xl backdrop-blur-xl"
+                className="pointer-events-auto rounded-t-3xl border-t border-border/50 bg-background/80 px-4 pb-safe-nav pt-4 shadow-2xl backdrop-blur-xl lg:rounded-2xl lg:border lg:mb-8 lg:max-w-[calc(100%-320px-2rem)]"
               >
                 <div className="mx-auto flex max-w-3xl items-center gap-2">
                   <button
@@ -389,7 +468,7 @@ const ResolverPadrao = ({
                   </button>
                   <button 
                     onClick={() => setGradeAberta(true)}
-                    className="flex h-12 items-center justify-center rounded-xl bg-muted/50 px-4 text-foreground/60 transition-colors hover:bg-muted active:scale-[0.97]"
+                    className="flex h-12 items-center justify-center rounded-xl bg-muted/50 px-4 text-foreground/60 transition-colors hover:bg-muted active:scale-[0.97] lg:hidden"
                   >
                     <Grid2X2 className="h-5 w-5" />
                   </button>
@@ -403,7 +482,7 @@ const ResolverPadrao = ({
                 exit={{ y: '100%' }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 className={cn(
-                  "relative rounded-t-3xl border-t px-5 pb-safe-nav pt-7 shadow-2xl",
+                  "pointer-events-auto relative rounded-t-3xl border-t px-5 pb-safe-nav pt-7 shadow-2xl lg:rounded-2xl lg:border lg:mb-8 lg:max-w-[calc(100%-320px-2rem)]",
                   resp.acertou ? "bg-[#0f1f14] border-green-500/30" : "bg-[#1f0a0a] border-red-500/30"
                 )}
               >
@@ -514,7 +593,7 @@ const ResolverPadrao = ({
                     )}
                     <button 
                       onClick={() => setGradeAberta(true)}
-                      className="flex h-12 items-center justify-center rounded-xl bg-white/5 px-4 text-foreground/60 transition-colors hover:bg-white/10 active:scale-[0.97]"
+                      className="flex h-12 items-center justify-center rounded-xl bg-white/5 px-4 text-foreground/60 transition-colors hover:bg-white/10 active:scale-[0.97] lg:hidden"
                     >
                       <Grid2X2 className="h-5 w-5" />
                     </button>
@@ -528,7 +607,7 @@ const ResolverPadrao = ({
                 animate={{ y: 0 }}
                 exit={{ y: '100%' }}
                 transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                className="rounded-t-3xl border-t border-border/50 bg-background/80 px-4 pb-safe-nav pt-4 shadow-2xl backdrop-blur-xl"
+                className="pointer-events-auto rounded-t-3xl border-t border-border/50 bg-background/80 px-4 pb-safe-nav pt-4 shadow-2xl backdrop-blur-xl lg:rounded-2xl lg:border lg:mb-8 lg:max-w-[calc(100%-320px-2rem)]"
               >
                 <div className="mx-auto flex max-w-3xl items-center gap-2">
                   <button
@@ -557,6 +636,7 @@ const ResolverPadrao = ({
             )}
           </AnimatePresence>
         </div>
+      </div>
 
       <ComentarioSheet
         aberto={comentarioAberto && !!resp}
@@ -566,8 +646,12 @@ const ResolverPadrao = ({
 
       <AnimatePresence>
         {professoraAberta && (
-          <div className="fixed inset-x-4 bottom-[110px] z-[60] pointer-events-auto">
-            <ProfessoraInline questao={atual} onClose={() => setProfessoraAberta(false)} />
+          <div className="fixed inset-x-0 bottom-[110px] z-[60] pointer-events-none lg:bottom-8">
+            <div className="mx-auto w-full max-w-7xl lg:px-8">
+              <div className="pointer-events-auto w-full lg:w-[400px]">
+                <ProfessoraInline questao={atual} onClose={() => setProfessoraAberta(false)} />
+              </div>
+            </div>
           </div>
         )}
       </AnimatePresence>      <CartaoRespostaSheet

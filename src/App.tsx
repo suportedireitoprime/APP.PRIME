@@ -80,6 +80,7 @@ import Landing from "./pages/Landing.tsx";
 import SmartLink from "./pages/SmartLink.tsx";
 import ResetPassword from "./pages/ResetPassword.tsx";
 import Onboarding from "./pages/Onboarding.tsx";
+import QuestoesHistorico from '@/pages/QuestoesHistorico';
 import AdminFuncoes from "./pages/AdminFuncoes.tsx";
 import AdminPush from "./pages/AdminPush.tsx";
 import AdminPushSection from "./pages/AdminPushSection.tsx";
@@ -883,6 +884,7 @@ function AnimatedRoutes() {
           <Route path="/questoes/desafios/conquistas" element={<ProtectedRoute><PageTransition><QuestoesConquistas /></PageTransition></ProtectedRoute>} />
 
           <Route path="/questoes/desempenho" element={<ProtectedRoute><PageTransition><QuestoesDesempenho /></PageTransition></ProtectedRoute>} />
+          <Route path="/questoes/historico" element={<ProtectedRoute><PageTransition><QuestoesHistorico /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-questoes" element={<ProtectedRoute><PageTransition><AdminQuestoes /></PageTransition></ProtectedRoute>} />
           <Route path="/admin/resumo-livro-audio" element={<ProtectedRoute><PageTransition><AdminResumoLivroAudioEditar /></PageTransition></ProtectedRoute>} />
 

@@ -38,6 +38,8 @@ export default function GlobalVideoaulaMiniPlayer() {
     setTentouTocar(false);
   }, [atual?.video_id]);
 
+
+
   const salvarProgresso = useCallback(
     async (t: number, d: number, forcarConclusao = false) => {
       if (!userId || !atual || !atual.catalogoId || salvandoRef.current) return;
@@ -83,6 +85,10 @@ export default function GlobalVideoaulaMiniPlayer() {
       salvarProgresso(duracao, duracao, true);
     },
   });
+
+  useEffect(() => {
+    if (playing) setTentouTocar(false);
+  }, [playing]);
 
   // Registrar Media Session
   useEffect(() => {

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { getSessaoById } from '@/lib/questoesSessoes';
 import { useAuth } from '@/hooks/useAuth';
 
 export type Questao = {
@@ -109,6 +110,7 @@ type SortearOpts = {
   modo?: 'sortear' | 'revisar';
   /** Filtro avançado (sheet "Filtrar questões"). Tem prioridade sobre os demais. */
   filtro?: FiltroAvancado | null;
+  sessaoId?: string | null;
 };
 
 /** Carrega um bloco de questões e mantém o estado de resposta local. */
@@ -119,9 +121,24 @@ export function useQuestoesSessao(opts: SortearOpts) {
   const key = JSON.stringify(opts);
   const inicio = useRef<number>(Date.now());
 
+  const [sessaoIdAtiva, setSessaoIdAtiva] = useState<string | null>(null);
+
   const carregar = useCallback(async () => {
     setLoading(true);
     const o = JSON.parse(key) as SortearOpts;
+    
+    // Se foi passado um ID de sessão, carrega do histórico local
+    if (o.sessaoId) {
+      const sessao = getSessaoById(o.sessaoId);
+      if (sessao && sessao.questoes && sessao.questoes.length > 0) {
+        setQuestoes(sessao.questoes);
+        setSessaoIdAtiva(sessao.id);
+        inicio.current = Date.now();
+        setLoading(false);
+        return;
+      }
+    }
+
     const f = o.filtro;
     const { data, error } = f
       ? await db.rpc('questoes_filtrar', {
@@ -130,9 +147,6 @@ export function useQuestoesSessao(opts: SortearOpts) {
           _assuntos: f.assuntos?.length ? f.assuntos : null,
           _anos: f.anos?.length ? f.anos.map(Number) : null,
           _bancas: null,
-          _status: f.status ?? 'todos',
-          _ordem: f.ordem ?? 'embaralhado',
-          _limit: f.quantidade && f.quantidade > 0 ? f.quantidade : LIMITE_PADRAO,
         })
       : o.modo === 'revisar'
       ? await db.rpc('questoes_para_revisar', { _limit: o.limite ?? LIMITE_PADRAO })
@@ -145,7 +159,22 @@ export function useQuestoesSessao(opts: SortearOpts) {
         });
 
     if (error) console.error('[questoes] sortear', error);
-    setQuestoes((data ?? []) as Questao[]);
+    
+    let res = (data ?? []) as Questao[];
+    
+    // Aplica o limite e ordem localmente para o filtro (pois a func SQL antiga não tem os parâmetros novos)
+    if (f) {
+      const limit = f?.quantidade && f.quantidade > 0 ? f.quantidade : LIMITE_PADRAO;
+      if (f.ordem === 'embaralhado') {
+        res = res.sort(() => Math.random() - 0.5);
+      }
+      if (res.length > limit) {
+        res = res.slice(0, limit);
+      }
+    }
+
+    setQuestoes(res);
+    setSessaoIdAtiva(Date.now().toString());
     inicio.current = Date.now();
     setLoading(false);
   }, [key]);
@@ -161,7 +190,7 @@ export function useQuestoesSessao(opts: SortearOpts) {
     });
   }, [user]);
 
-  return { questoes, loading, recarregar: carregar, registrar };
+  return { questoes, loading, recarregar: carregar, registrar, sessaoIdAtiva };
 }
 
 /** Gera (ou lê do cache) o comentário da IA de uma questão. */
