@@ -13,7 +13,7 @@ export const maquiavelData: BiografiaData = {
     {
       id: 'historia',
       label: 'História',
-      conteudo_md: `
+      conteudo_md: \\\
 ## Introdução: O Anatomista da Realidade Política
 
 Poucas figuras na história do pensamento ocidental foram tão profundamente incompreendidas, vilipendiadas e, simultaneamente, tão determinantes para a gênese da modernidade quanto Nicolau Maquiavel (Niccolò di Bernardo dei Machiavelli, 1469–1527). Adjetivado precocemente pela posteridade com o pejorativo "maquiavélico" — sinônimo vulgar de perfídia, cinismo e cálculo amoral —, o pensador florentino operou, em verdade, uma das mais radicais revoluções epistemológicas da filosofia política. Ao romper em definitivo com a tradição teleológica clássica herdada de Platão e Aristóteles e com o moralismo teológico da escolástica medieval, Maquiavel não se propôs a descrever como os homens *deveriam* viver ou governar em repúblicas ideais concebidas no éter da imaginação, mas sim a dissecar como os homens *efetivamente* agem na arena crua da disputa pelo poder.
@@ -88,7 +88,7 @@ Foi nesse santuário epistêmico, no diálogo solitário com as sombras ilustres
 
 ## As Obras Fundamentais: A Ruptura com o Idealismo Clássico
 
-```
+\\\\\\\\\
                              ┌───────────────────────────────────────┐
                              │       A REALIDADE POLÍTICA PURA       │
                              │ (Verità Effettuale della Cosa)        │
@@ -108,7 +108,7 @@ Foi nesse santuário epistêmico, no diálogo solitário com as sombras ilustres
                              │      A ESTABILIDADE DO ESTADO         │
                              │  Ordem, Liberdade Cívica e Soberania  │
                              └───────────────────────────────────────┘
-```
+\\\\\\\\\
 
 ### *O Príncipe*: A Verdade Efetiva da Coisa (*Verità Effettuale*)
 
@@ -125,7 +125,7 @@ O arcabouço conceitual de *O Príncipe* organiza-se primordialmente em torno da
 1. **A Fortuna**: Representa a contingência cega, o imponderável, o acaso, as conjunturas históricas imprevisíveis e as forças que escapam à vontade direta do indivíduo. Maquiavel recorre a duas metáforas magistrais para ilustrá-la: compara a fortuna a um rio torrencial que, enfurecido, inunda planícies e destrói cidades, mas cujos estragos podem ser prevenidos ou atenuados se os homens sábios construírem diques e canais em tempos de calmaria; e compara-a a uma mulher que, para ser dominada, precisa ser tratada com audácia, firmeza e vigor por jovens resolutos.
 2. **A Virtù**: Longe de equivaler à "virtude" no sentido cristão de pureza d'alma ou submissão à vontade de Deus, a *virtù* maquiavélica é a energia vital, a inteligência estratégica, a flexibilidade moral e a coragem cívico-militar necessárias para agir tempestivamente conforme a ocasião exige (*o tempo*). O príncipe virtuoso é aquele capaz de modelar o fluxo caótico da *fortuna* a favor da estabilidade política e da grandeza do Estado.
 
-```
+\\\\\\\\\
                            MATRIZ DIALÉTICA MAQUIAVÉLICA
 
   Conceito                 Definição Tradicional/Cristã       Redefinição por Maquiavel
@@ -138,7 +138,7 @@ O arcabouço conceitual de *O Príncipe* organiza-se primordialmente em torno da
 
   ÉTICA                    Universal, deontológica e          Contextual, orientada à salvaguarda
                            subordinada à salvação da alma.    da comunidade política e do Estado.
-```
+\\\\\\\\\
 
 Para Maquiavel, o príncipe deve ser dotado de uma natureza híbrida, mesclando o homem e a besta, conforme a antiga alegoria do centauro Quíron: deve saber operar como o leão (usando a força bruta e a autoridade para aterrorizar os lobos) e como a raposa (utilizando a astúcia e o disfarce para reconhecer as armadilhas).
 
@@ -168,7 +168,7 @@ A fertilidade intelectual do exílio não se esgotou nos tratados de teoria pol�
 
 ## Legado Histórico: Entre o Maquiavelismo e a Ciência Política Moderna
 
-```
+\\\\\\\\\
                                   LINHAGEM DA RECEPÇÃO CRÍTICA
                                                 │
                  ┌──────────────────────────────┴──────────────────────────────┐
@@ -180,7 +180,7 @@ A fertilidade intelectual do exílio não se esgotou nos tratados de teoria pol�
   • Cardeal Reginald Pole                                       • Jean-Jacques Rousseau (Do Contrato Social)
   • Inclusão no *Index Librorum Prohibitorum* (1559)            • Antonio Gramsci (O Moderno Príncipe)
   • Frederico II da Prússia / Voltaire                          • Leo Strauss, Quentin Skinner, Pocock
-```
+\\\\\\\\\
 
 ### O Mito do "Maquiavélico" e as Leituras Distorcidas
 
@@ -199,12 +199,12 @@ Simultaneamente à demonização vulgar do pensador, as mentes mais brilhantes d
 No século XX, o filósofo marxista Antonio Gramsci reinterpretou a teoria de Maquiavel sob o prisma da práxis revolucionária, concebendo o partido político da vanguarda proletária como o "Moderno Príncipe" — a encarnação coletiva da *virtù* encarregada de mobilizar a vontade popular e fundar uma nova ordem estatal e civilizatória. Contemporaneamente, as análises de historiadores e teóricos como Isaiah Berlin, Quentin Skinner e J.G.A. Pocock (associados à escola do republicanismo cívico de Cambridge) resgataram Maquiavel como o grande teórico da liberdade republicana, que desvelou a trágica e incontornável pluralidade de valores éticos: a descoberta de que os ideais da moralidade individual cristã e os imperativos da liderança política republicana são, em última análise, incomensuráveis e irreconciliáveis.
 
 Nicolau Maquiavel desfez para sempre a aura mística e idealista em torno da dominação estatal. Seu legado imperecível repousa na coragem intelectual de fitar o abismo da condição política humana sem véus, ilusões ou falsas consolações transcendentais. Ao revelar a mecânica nua do poder, o chanceler florentino legou à posteridade o instrumento cognitivo indispensável não apenas para aqueles que pretendem governar, mas, primordialmente, para os cidadãos que almejam compreender, vigiar e preservar a sua própria e frágil liberdade diante dos arroubos da tirania.
-      `
+      \\\
     },
     {
       id: 'obras',
       label: 'Principais Obras',
-      conteudo_md: `
+      conteudo_md: \\\
 > "É muito mais seguro ser temido do que amado, quando se tem de abrir mão de uma das duas opções."
 
 Maquiavel produziu uma bibliografia densa que abrange teoria política, estratégia militar, história e até mesmo comédia e literatura. Seus principais trabalhos, escritos majoritariamente durante o seu amargo exílio, contrastam e se complementam, mostrando um homem de intelecto ágil e pragmático:
@@ -213,7 +213,7 @@ Maquiavel produziu uma bibliografia densa que abrange teoria política, estraté
 * **Comentários sobre a Primeira Década de Tito Lívio (Discorsi):** Enquanto "O Príncipe" lida com lideranças autocráticas em tempos de crise, os *Discursos* representam o verdadeiro coração ideológico de Maquiavel: o Republicanismo. Analisando a história do Império Romano, ele defende que repúblicas populares são formas de governo muito mais estáveis e eficientes a longo prazo do que as monarquias, pois acomodam melhor os conflitos naturais entre a elite e o povo. Ele defende a ideia do Estado de Direito e dos exércitos cidadãos em vez de mercenários.
 * **A Arte da Guerra (1521):** O único trabalho de teoria militar e política que Maquiavel viu ser impresso durante a sua vida. Nele, Maquiavel detalha a necessidade de exércitos permanentes (milícias compostas pelos próprios cidadãos armados) em contraste às perigosas e desleais tropas mercenárias. Ele entende a guerra não como um acidente, mas como a extensão máxima da política e da soberania estatal.
 * **A Mandrágora (1518):** Surpreendentemente, Maquiavel foi também um aclamado dramaturgo. Esta peça de comédia é considerada uma das obras primas do teatro renascentista. Cheia de cinismo, corrupção e sagacidade, a peça funciona como uma alegoria hilária, mas sombria, sobre a própria natureza corrompida do ser humano, mostrando que na vida civil, assim como na política de Florença, a fraude e a astúcia frequentemente derrotam a ingenuidade.
-      `
+      \\\
     },
     {
       id: 'tabela',
@@ -247,18 +247,18 @@ Maquiavel produziu uma bibliografia densa que abrange teoria política, estraté
     {
       id: 'legado',
       label: 'Legado na Ciência Política',
-      conteudo_md: `
+      conteudo_md: \\\
 ## O Divórcio entre Ética e Política
 O legado mais duradouro de Maquiavel foi a fundação da **Ciência Política Moderna**. Até o Renascimento, a política era vista como um subcapítulo da moral, da religião e da filosofia (desde Aristóteles até Santo Tomás de Aquino). Maquiavel inaugurou a perspectiva empírica: para ele, a política tem regras próprias, totalmente independentes das normas de santidade ou justiça moral. Essa visão de *Realpolitik* tornou-se o mapa de navegação das Relações Internacionais até os dias atuais.
 
 ### O Arquétipo do Líder Pragmatico
 Maquiavel introduziu a dicotomia do **Leão e da Raposa**. Um príncipe deve ser "leão para afugentar os lobos e raposa para conhecer os laços". O governante precisa aliar a força letal e intimidadora ao calculismo de não cair em armadilhas e quebrar suas próprias promessas quando cumpri-las se tornar uma desvantagem ao Estado. Esse pragmatismo descarnado serviu de base silenciosa para a ação de inúmeros estadistas seculares, de Napoleão a Otto von Bismarck.
-      `
+      \\\
     },
     {
       id: 'direito',
       label: 'Direito',
-      conteudo_md: `
+      conteudo_md: \\\
 ## A "Razão de Estado" e o Direito Público Moderno
 
 Embora Maquiavel seja o terror dos defensores dos direitos humanos naturais (Jusnaturalismo), sua obra possui um impacto nuclear no desenvolvimento do Direito Público, do Direito Administrativo e do Constitucionalismo Moderno. Ele foi um dos primeiros teóricos a visualizar o **Estado (Lo Stato)** como um ente artificial secular, distinto da figura física do monarca e que necessita sobreviver a qualquer custo.
@@ -270,7 +270,7 @@ A premissa maquiavélica de que a sobrevivência da nação justifica o abandono
 Apesar da fama de "O Príncipe", nos seus *Discorsi*, Maquiavel estabelece fundamentos jurídicos do Republicanismo que seriam usados pelos Pais Fundadores americanos séculos depois. Ele argumentou que **"Boas leis precisam de boas armas"** — ou seja, uma legislação perfeita sem o monopólio da força estatal para executá-la é apenas papel morto.
 
 Além disso, ele chocou pensadores da época ao argumentar que os conflitos sociais (como a luta de classes entre patrícios e plebeus na Roma Antiga) não são doenças no corpo social, mas sim a *garantia da liberdade*, desde que institucionalizados pelas leis. O conflito forçava o Estado a criar novos direitos jurídicos, como o cargo do Tribuno da Plebe. Assim, para Maquiavel, o Direito não vem da paz celestial, mas sim de canalizar o conflito humano na criação de um ordenamento jurídico dinâmico.
-      `
+      \\\
     },
     {
       id: 'linha_do_tempo',

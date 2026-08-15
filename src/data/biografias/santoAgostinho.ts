@@ -13,7 +13,7 @@ export const santoAgostinhoData: BiografiaData = {
     {
       id: 'historia',
       label: 'História',
-      conteudo_md: `
+      conteudo_md: \\\
 # Aurelius Augustinus: O Arquiteto da Interioridade e o Filósofo da Graça
 
 ## Introdução: O Guardião na Encruzilhada das Eras
@@ -38,7 +38,7 @@ Aos dezessete anos, graças ao patrocínio financeiro de Romaniano, um abastado 
 
 Foi precisamente durante esses anos de juventude turbulenta que ocorreu a primeira grande guinada existencial de Agostinho. Aos dezenove anos, ao ler o *Hortênsio*, diálogo ciceroniano hoje perdido que exortava à vida contemplativa e ao amor pela sabedoria (*philosophia*), Agostinho sentiu uma súbita aversão às ambições ocas da glória retórica. O texto acendeu em seu peito um desejo ardente pela Verdade eterna. Entretanto, ao tentar saciar essa sede nas Escrituras cristãs, desiludiu-se profundamente: o estilo rude e rústico das antigas traduções latinas da Bíblia chocou seu refinado gosto literário latino, e as narrativas antropomórficas do Antigo Testamento pareceram-lhe filosoficamente inaceitáveis e moralmente primitivas.
 
-```
+\\\\\\\\\
                   ┌───────────────────────────────┐
                   │    Inquietação Existencial    │
                   │     (Leitura de Hortênsio)    │
@@ -61,7 +61,7 @@ Foi precisamente durante esses anos de juventude turbulenta que ocorreu a primei
                   ┌───────────────────────────────┐
                   │ Conversão: Graça e Fé Cristã  │
                   └───────────────────────────────┘
-```
+\\\\\\\\\
 
 ---
 
@@ -120,7 +120,7 @@ O combate intelectual mais árduo da maturidade de Agostinho deu-se contra Pelá
 
 Agostinho combateu essa doutrina com veemência inaudita, recebendo o título de *Doctor Gratiae* (Doutor da Graça). Ele estruturou a doutrina do **Pecado Original**:
 
-```
+\\\\\\\\\
            Estado Pré-Queda (Adão)
              Posse do Livre-Arbítrio
            [Posse do Posse non peccare]
@@ -140,7 +140,7 @@ Agostinho combateu essa doutrina com veemência inaudita, recebendo o título de
                        ▼ (Glória Eterna / Escatologia)
              Graça Consumada no Céu
             [Non posse peccare]
-```
+\\\\\\\\\
 
 Segundo a concepção agostiniana, toda a humanidade encontrava-se ontologicamente unida em Adão, constituindo, após a queda primordial, uma *massa damnata* (massa decaída e condenada). A vontade humana não foi aniquilada, mas tornou-se cativa do pecado e da concupiscência, incapaz de querer eficazmente o bem supremo por si mesma sem a regeneração operada pela graça divina imerecida (*gratia gratis data*). Agostinho distinguiu rigorosamente o **Livre-Arbítrio** (*liberum arbitrium* — a faculdade psicológica de fazer escolhas) da verdadeira **Liberdade** (*libertas* — o uso reto do arbítrio direcionado ao Sumo Bem). O homem caído mantém o livre-arbítrio, mas perdeu a liberdade autêntica, a qual só pode ser restaurada pela graça operante e cooperante de Cristo. Dessa visão radical derivou igualmente a sua complexa e controversa reflexão sobre a predestinação divina.
 
@@ -167,7 +167,7 @@ Nos livros subsequentes, Agostinho expõe sua grandiosa visão metahistórica da
 
 Ambas as cidades encontram-se historicamente entrelaçadas e entremeadas (*permixtae*) ao longo do tempo presente secular (*saeculum*), e sua separação ontológica e definitiva só ocorrerá no Juízo Final.
 
-```
+\\\\\\\\\
 ┌─────────────────────────────────────────────────────────────┐
 │                      HISTÓRIA HUMANA                        │
 │                   (O "Saeculum" Presente)                   │
@@ -181,7 +181,7 @@ Ambas as cidades encontram-se historicamente entrelaçadas e entremeadas (*permi
 │ • Destino: Ruína temporal    │ • Destino: Redenção e        │
 │   e condenação               │   Paz eterna                 │
 └──────────────────────────────┴──────────────────────────────┘
-```
+\\\\\\\\\
 
 ### 3. *De Trinitate* (Sobre a Trindade, 399–420)
 
@@ -238,7 +238,7 @@ Em 28 de agosto de 430, cercado pelas orações de seus clérigos e discípulos 
 
 A influência de Santo Agostinho sobre a civilização ocidental é incomensurável. Ele não apenas estabeleceu a gramática intelectual da Igreja Latina, mas forneceu as bases conceituais a partir das quais os maiores intelectuais dos séculos vindouros dialogaram, debateram e construíram seus sistemas:
 
-```
+\\\\\\\\\
                             SANTO AGOSTINHO
                      (Síntese Clássico-Cristã)
                                   │
@@ -254,7 +254,7 @@ ERA MEDIEVAL              REFORMA PROTESTANTE          MODERNIDADE E ALÉM
 • Jusnaturalismo                                         (Amor mundi)
   Escolástico                                          • Martin Heidegger
                                                          (Fenomenologia da Vida)
-```
+\\\\\\\\\
 
 1. **Escolástica Medieval:** A máxima agostiniana *"Crede ut intelligas; intellige ut credas"* ("Crê para compreender; compreende para crer") definiu a metodologia de pensadores medievais como Anselmo de Cantuária e Boaventura de Bagnoregio. Mesmo quando São Tomás de Aquino introduziu o aristotelismo no século XIII, a substância dogmática permaneceu predominantemente tributária da autoridade de Agostinho.
 2. **A Reforma e a Contrarreforma:** No século XVI, a teologia da graça e do pecado de Agostinho foi reivindicada com igual intensidade por ambos os lados da fratura religiosa europeia. Martinho Lutero, ele próprio um monge agostiniano, e João Calvino basearam seus princípios da *Sola Gratia* e da predestinação nos escritos tardios do bispo de Hipona; ao mesmo tempo, o Concílio de Trento apoiou-se amplamente em sua obra para estruturar a resposta católica sobre a justificação e os sacramentos.
@@ -262,12 +262,12 @@ ERA MEDIEVAL              REFORMA PROTESTANTE          MODERNIDADE E ALÉM
 4. **Tradição Jurídica e Política:** A reflexão agostiniana sobre a separação entre o poder espiritual e o poder secular, a subordinação do Estado às exigências éticas do Direito Natural e a teoria moral da Guerra Justa continuam sendo fontes primordiais do Direito Internacional contemporâneo, da Jurisprudência e da Filosofia Política.
 
 Santo Agostinho permanece vivo não como uma relíquia arcaica do passado, mas como uma voz perene e vibrante da condição humana. Sua vida e seu pensamento continuam a nos recordar que a busca pela verdade não é um mero exercício intelectivo abstrato, mas uma dramática peregrinação da alma, em que o intelecto e o coração devem unir-se para desvelar o mistério supremo do homem e de seu Criador.
-      `
+      \\\
     },
     {
       id: 'obras',
       label: 'Principais Obras',
-      conteudo_md: `
+      conteudo_md: \\\
 ## A Cidade de Deus (De Civitate Dei)
 Escrita entre 413 e 426, é uma das obras mais influentes da história política e teológica. Agostinho defende que o verdadeiro cidadão cristão pertence à Cidade Celestial, e que a queda de Roma não é a queda do mundo. Esta obra fundou a filosofia da história, vendo o tempo de forma linear, guiado pela providência divina.
 
@@ -276,7 +276,7 @@ A primeira autobiografia psicológica do Ocidente. Nela, Agostinho explora sua i
 
 ## Da Doutrina Cristã (De Doctrina Christiana)
 Um manual de teologia e exegese bíblica, onde Agostinho estabelece os princípios da hermenêutica (interpretação de textos). Ele defende que todo conhecimento secular útil (como a lógica e a retórica clássica) deve ser apropriado pelo cristão para a compreensão da verdade divina.
-      `
+      \\\
     },
     {
       id: 'tabela',
@@ -341,7 +341,7 @@ Um manual de teologia e exegese bíblica, onde Agostinho estabelece os princípi
     {
       id: 'legado',
       label: 'Legado Filosófico',
-      conteudo_md: `
+      conteudo_md: \\\
 ## A Interioridade e a Memória
 Antes de Descartes afirmar "Penso, logo existo", Agostinho formulou: "Se me engano, existo" (*Si fallor, sum*). Ele foi o primeiro grande pensador a voltar o foco filosófico para a **interioridade humana**, explorando a psicologia da memória e a experiência subjetiva do tempo nas *Confissões*.
 
@@ -350,12 +350,12 @@ O grande triunfo de Agostinho foi "batizar" Platão. Ele tomou o Mundo das Ideia
 
 ## A Vontade e o Livre Arbítrio
 Diferente dos filósofos gregos clássicos que viam o mal como pura ignorância (Sócrates), Agostinho destacou o papel da **Vontade**. O ser humano, dotado de livre arbítrio, pode escolher virar as costas ao bem superior em favor de bens inferiores. O mal nasce da escolha corrompida da vontade, não de uma força criadora maléfica.
-      `
+      \\\
     },
     {
       id: 'direito',
       label: 'O Pensamento Jurídico',
-      conteudo_md: `
+      conteudo_md: \\\
 ## Lei Eterna e Lei Temporal
 No campo do pensamento jurídico e político, Agostinho estabeleceu uma distinção crucial. A **Lei Eterna** é a razão e a vontade divina que ordena a preservação da ordem natural. A **Lei Temporal** (ou lei humana) deriva sua legitimidade apenas na medida em que reflete a justiça da Lei Eterna. 
 
@@ -367,7 +367,7 @@ Agostinho lançou uma provocação célebre em *A Cidade de Deus*:
 Para ele, o Estado não é o ápice moral do homem (como era para Aristóteles), mas um mal necessário, uma consequência do pecado original, cuja função primária é manter a ordem e a paz terrena temporária através da coação. O Estado pune os injustos, mas a verdadeira justiça e felicidade só podem ser encontradas na Cidade de Deus.
 
 Esta visão desmistificou o poder político sagrado de Roma e lançou a semente intelectual que justificaria, durante a Idade Média, a supremacia do poder espiritual (a Igreja) sobre o poder temporal (o Estado).
-      `
+      \\\
     }
   ]
 };
