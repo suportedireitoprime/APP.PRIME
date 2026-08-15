@@ -259,6 +259,15 @@ const ResolverPadrao = ({
               <strong className="font-semibold text-foreground/80">Assunto:</strong> {atual.assunto}
             </div>
           )}
+          
+          <div className="relative my-5 h-[1px] w-full overflow-hidden bg-border/30">
+            <motion.div
+              initial={{ x: '-100%' }}
+              animate={{ x: '100%' }}
+              transition={{ repeat: Infinity, duration: 2.5, ease: 'linear' }}
+              className="absolute inset-0 w-1/2 bg-gradient-to-r from-transparent via-primary/70 to-transparent"
+            />
+          </div>
         </div>
 
         {/* Textos da Questão */}
@@ -350,22 +359,9 @@ const ResolverPadrao = ({
         </motion.div>
         </AnimatePresence>
 
-      {/* feedback + navegação após responder */}
-      {resp && (
-        <div className={cn(
-          'flex items-center gap-2 rounded-xl border p-4 text-[15px] font-semibold sm:text-[16px]',
-          resp.acertou ? 'border-green-500/50 bg-green-500/10 text-green-700 dark:text-green-400'
-            : 'border-red-500/50 bg-red-500/10 text-red-700 dark:text-red-400',
-        )}>
-          {resp.acertou ? <CheckCircle2 className="h-5 w-5" /> : <XCircle className="h-5 w-5" />}
-          {resp.acertou ? 'Resposta correta!' : `Você errou — o gabarito é ${correta}`}
-        </div>
-      )}
-
-
-
+      {/* feedback estático anterior removido. Apenas a barra inferior fará o feedback. */}
       {todasRespondidas && (
-        <div className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4">
+        <div className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4 mt-6">
           <Trophy className="h-6 w-6 text-primary" />
           <p className="text-[14px] text-muted-foreground">
             {acertos} de {questoes.length} ({Math.round((acertos / questoes.length) * 100)}% de aproveitamento)
@@ -373,71 +369,127 @@ const ResolverPadrao = ({
         </div>
       )}
 
-        {/* 5. Barra Fixa Inferior (Bottom Navigation) */}
-        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border/60 bg-background/95 px-4 pb-safe-nav pt-3 backdrop-blur-md shadow-[0_-4px_24px_rgba(0,0,0,0.04)]">
-          <div className="mx-auto flex w-full max-w-3xl flex-col gap-3">
-            
-            <AnimatePresence>
-              {resp && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  className="overflow-hidden"
-                >
-                  <div className="mb-2 space-y-3">
-                    <button
-                      onClick={() => { if (gateFuncoes.blocked) { gateFuncoes.openGate(); return; } setComentarioAberto(true); }}
-                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary/10 py-3.5 text-[15.5px] font-bold text-primary transition-colors hover:bg-primary/20"
-                    >
-                      <Sparkles className="h-5 w-5" /> Ver comentário do professor
-                    </button>
-                    <div className="pt-1 border-t border-border/50">
-                      <QuestaoAcoesBar source={atual.id} chaveRevisao={atual.id} />
+        {/* 5. Barra Fixa Inferior (Bottom Navigation) com Feedback Animado */}
+        <div className="fixed inset-x-0 bottom-0 z-40">
+          
+          <AnimatePresence>
+            {resp ? (
+              <motion.div
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                className={cn(
+                  "border-t px-4 pb-safe-nav pt-4 shadow-2xl",
+                  resp.acertou 
+                    ? "bg-green-500/15 border-green-500/30 backdrop-blur-xl" 
+                    : "bg-red-500/15 border-red-500/30 backdrop-blur-xl"
+                )}
+              >
+                <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className={cn(
+                      "flex h-10 w-10 shrink-0 items-center justify-center rounded-full",
+                      resp.acertou ? "bg-green-500/20 text-green-500" : "bg-red-500/20 text-red-500"
+                    )}>
+                      {resp.acertou ? <CheckCircle2 className="h-6 w-6" /> : <XCircle className="h-6 w-6" />}
+                    </div>
+                    <div className="flex-1">
+                      <p className={cn(
+                        "text-[18px] font-extrabold tracking-tight",
+                        resp.acertou ? "text-green-600 dark:text-green-500" : "text-red-600 dark:text-red-500"
+                      )}>
+                        {resp.acertou ? 'Excelente!' : 'Não foi dessa vez.'}
+                      </p>
+                      <p className={cn(
+                        "text-[14px] font-medium",
+                        resp.acertou ? "text-green-700/80 dark:text-green-400/80" : "text-red-700/80 dark:text-red-400/80"
+                      )}>
+                        {resp.acertou ? 'Você acertou a questão.' : `O gabarito correto é a alternativa ${correta}.`}
+                      </p>
                     </div>
                   </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <div className="flex items-center justify-between gap-3">
-              <button
-                onClick={() => setIdx((i) => i - 1)}
-                disabled={idx === 0}
-                className="flex h-12 flex-1 items-center justify-center gap-1.5 text-[15px] font-semibold text-muted-foreground transition-colors hover:text-foreground disabled:opacity-30"
+                  
+                  <div className="flex flex-col gap-2.5">
+                    <button
+                      onClick={() => { if (gateFuncoes.blocked) { gateFuncoes.openGate(); return; } setComentarioAberto(true); }}
+                      className={cn(
+                        "flex h-12 w-full items-center justify-center gap-2 rounded-xl text-[15px] font-bold transition-all active:scale-95",
+                        resp.acertou 
+                          ? "bg-green-500/20 text-green-700 hover:bg-green-500/30 dark:text-green-400" 
+                          : "bg-red-500/20 text-red-700 hover:bg-red-500/30 dark:text-red-400"
+                      )}
+                    >
+                      <MessageSquare className="h-5 w-5" /> Ver comentário
+                    </button>
+                    
+                    {idx === questoes.length - 1 ? (
+                      <button
+                        onClick={onNovoBloco}
+                        className={cn(
+                          "flex h-12 w-full items-center justify-center gap-1.5 rounded-xl text-[16px] font-extrabold text-white shadow-lg transition-all active:scale-95",
+                          resp.acertou ? "bg-green-600 hover:bg-green-500 shadow-green-600/25" : "bg-red-600 hover:bg-red-500 shadow-red-600/25"
+                        )}
+                      >
+                        <RotateCw className="h-5 w-5" /> Novo bloco
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => setIdx((i) => i + 1)}
+                        className={cn(
+                          "flex h-12 w-full items-center justify-center gap-1.5 rounded-xl text-[16px] font-extrabold text-white shadow-lg transition-all active:scale-95",
+                          resp.acertou ? "bg-green-600 hover:bg-green-500 shadow-green-600/25" : "bg-red-600 hover:bg-red-500 shadow-red-600/25"
+                        )}
+                      >
+                        Próxima questão
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                className="border-t border-border/60 bg-background/95 px-4 pb-safe-nav pt-3 backdrop-blur-md shadow-[0_-4px_24px_rgba(0,0,0,0.04)]"
               >
-                <ChevronLeft className="h-5 w-5" /> Anterior
-              </button>
-              
-              {!resp && selecao ? (
-                <button
-                  onClick={responder}
-                  className="flex h-12 flex-1 items-center justify-center rounded-xl bg-primary text-[15px] font-bold text-primary-foreground shadow-lg shadow-primary/25 active:scale-95 transition-all"
-                >
-                  Responder
-                </button>
-              ) : resp && idx === questoes.length - 1 ? (
-                <button
-                  onClick={onNovoBloco}
-                  className="flex h-12 flex-1 items-center justify-center gap-1.5 rounded-xl bg-primary text-[15px] font-bold text-primary-foreground shadow-lg shadow-primary/25 active:scale-95 transition-all"
-                >
-                  <RotateCw className="h-4 w-4" /> Novo bloco
-                </button>
-              ) : (
-                <button className="flex h-12 flex-1 items-center justify-center rounded-xl bg-muted/60 text-[14.5px] font-bold text-foreground hover:bg-muted transition-colors">
-                  Ir para questão
-                </button>
-              )}
+                <div className="mx-auto flex w-full max-w-3xl flex-col gap-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <button
+                      onClick={() => setIdx((i) => i - 1)}
+                      disabled={idx === 0}
+                      className="flex h-12 flex-1 items-center justify-center gap-1.5 text-[15px] font-semibold text-muted-foreground transition-colors hover:text-foreground disabled:opacity-30"
+                    >
+                      <ChevronLeft className="h-5 w-5" /> Anterior
+                    </button>
+                    
+                    {selecao ? (
+                      <button
+                        onClick={responder}
+                        className="flex h-12 flex-1 items-center justify-center rounded-xl bg-primary text-[15px] font-bold text-primary-foreground shadow-lg shadow-primary/25 active:scale-95 transition-all"
+                      >
+                        Responder
+                      </button>
+                    ) : (
+                      <button className="flex h-12 flex-1 items-center justify-center rounded-xl bg-muted/60 text-[14.5px] font-bold text-foreground hover:bg-muted transition-colors">
+                        Ir para questão
+                      </button>
+                    )}
 
-              <button
-                onClick={() => setIdx((i) => i + 1)}
-                disabled={idx === questoes.length - 1}
-                className="flex h-12 flex-1 items-center justify-center gap-1.5 text-[15px] font-semibold text-muted-foreground transition-colors hover:text-foreground disabled:opacity-30"
-              >
-                Próximo <ChevronRight className="h-5 w-5" />
-              </button>
-            </div>
-          </div>
+                    <button
+                      onClick={() => setIdx((i) => i + 1)}
+                      disabled={idx === questoes.length - 1}
+                      className="flex h-12 flex-1 items-center justify-center gap-1.5 text-[15px] font-semibold text-muted-foreground transition-colors hover:text-foreground disabled:opacity-30"
+                    >
+                      Próximo <ChevronRight className="h-5 w-5" />
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
 

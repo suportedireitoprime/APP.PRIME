@@ -105,13 +105,13 @@ body {
 @layer base {
   :root {
     /* Direito Prime — Preto + Vermelho + Cinza Neutro */
-    --background: 0 0% 5%;              /* #0D0D0D */
+    --background: 220 5% 11%;              /* #1A1B1E - cinza elegante */
     --foreground: 0 0% 98%;
 
-    --card: 0 0% 12%;                   /* #1F1F1F */
+    --card: 220 5% 15%;                   /* #25262B */
     --card-foreground: 0 0% 98%;
 
-    --popover: 0 0% 12%;
+    --popover: 220 5% 15%;
     --popover-foreground: 0 0% 98%;
 
     --primary: 348 80% 50%;
