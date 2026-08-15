@@ -78,9 +78,7 @@ export const BiografiaArtigoView = ({ personagemId, onBack }: Props) => {
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 30, stiffness: 340 }}
-        className={`relative bg-background flex flex-col overflow-hidden shadow-2xl mx-auto w-full max-w-3xl pb-[var(--sai-bottom,0px)] ${
-          isDesktop ? 'h-[100dvh] mt-auto' : 'h-[100dvh]'
-        }`}
+        className={`relative bg-background flex flex-col overflow-hidden shadow-2xl mx-auto w-full max-w-3xl pb-[var(--sai-bottom,0px)] rounded-t-[32px] h-[95dvh] mt-auto`}
       >
         <div className="flex-1 overflow-y-auto overflow-x-hidden relative pb-10">
           
