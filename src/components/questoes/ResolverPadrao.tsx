@@ -151,7 +151,7 @@ const ResolverPadrao = ({
     .filter(Boolean) as string[];
 
   return (
-    <div ref={topoRef} className="flex min-h-screen flex-col bg-background pb-32">
+    <div ref={topoRef} className={cn("flex min-h-screen flex-col bg-background", resp ? "pb-[260px]" : "pb-32")}>
       {gateQuestoes.gateNode}
       {gateFuncoes.gateNode}
 
@@ -311,43 +311,68 @@ const ResolverPadrao = ({
 
         {/* 5. Barra Fixa Inferior (Bottom Navigation) */}
         <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border/60 bg-background/95 px-4 pb-safe-nav pt-3 backdrop-blur-md shadow-[0_-4px_24px_rgba(0,0,0,0.04)]">
-          <div className="mx-auto flex w-full max-w-3xl items-center justify-between gap-3">
-            <button
-              onClick={() => setIdx((i) => i - 1)}
-              disabled={idx === 0}
-              className="flex h-12 flex-1 items-center justify-center gap-1.5 text-[15px] font-semibold text-muted-foreground transition-colors hover:text-foreground disabled:opacity-30"
-            >
-              <ChevronLeft className="h-5 w-5" /> Anterior
-            </button>
+          <div className="mx-auto flex w-full max-w-3xl flex-col gap-3">
             
-            {/* Se ainda não respondeu mas escolheu uma alternativa, mostrar botão Responder no meio. Se já respondeu ou não escolheu, mostrar navegação "Ir para questão" */}
-            {!resp && selecao ? (
-              <button
-                onClick={responder}
-                className="flex h-12 flex-1 items-center justify-center rounded-xl bg-primary text-[15px] font-bold text-primary-foreground shadow-lg shadow-primary/25 active:scale-95 transition-all"
-              >
-                Responder
-              </button>
-            ) : resp && idx === questoes.length - 1 ? (
-              <button
-                onClick={onNovoBloco}
-                className="flex h-12 flex-1 items-center justify-center gap-1.5 rounded-xl bg-primary text-[15px] font-bold text-primary-foreground shadow-lg shadow-primary/25 active:scale-95 transition-all"
-              >
-                <RotateCw className="h-4 w-4" /> Novo bloco
-              </button>
-            ) : (
-              <button className="flex h-12 flex-1 items-center justify-center rounded-xl bg-muted/60 text-[14.5px] font-bold text-foreground hover:bg-muted transition-colors">
-                Ir para questão
-              </button>
-            )}
+            <AnimatePresence>
+              {resp && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="mb-2 space-y-3">
+                    <button
+                      onClick={() => { if (gateFuncoes.blocked) { gateFuncoes.openGate(); return; } setComentarioAberto(true); }}
+                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary/10 py-3.5 text-[15.5px] font-bold text-primary transition-colors hover:bg-primary/20"
+                    >
+                      <MessageSquare className="h-5 w-5" /> Ver comentário do professor
+                    </button>
+                    <div className="pt-1 border-t border-border/50">
+                      <QuestaoAcoesBar source={atual.id} chaveRevisao={atual.id} />
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-            <button
-              onClick={() => setIdx((i) => i + 1)}
-              disabled={idx === questoes.length - 1}
-              className="flex h-12 flex-1 items-center justify-center gap-1.5 text-[15px] font-semibold text-muted-foreground transition-colors hover:text-foreground disabled:opacity-30"
-            >
-              Próximo <ChevronRight className="h-5 w-5" />
-            </button>
+            <div className="flex items-center justify-between gap-3">
+              <button
+                onClick={() => setIdx((i) => i - 1)}
+                disabled={idx === 0}
+                className="flex h-12 flex-1 items-center justify-center gap-1.5 text-[15px] font-semibold text-muted-foreground transition-colors hover:text-foreground disabled:opacity-30"
+              >
+                <ChevronLeft className="h-5 w-5" /> Anterior
+              </button>
+              
+              {!resp && selecao ? (
+                <button
+                  onClick={responder}
+                  className="flex h-12 flex-1 items-center justify-center rounded-xl bg-primary text-[15px] font-bold text-primary-foreground shadow-lg shadow-primary/25 active:scale-95 transition-all"
+                >
+                  Responder
+                </button>
+              ) : resp && idx === questoes.length - 1 ? (
+                <button
+                  onClick={onNovoBloco}
+                  className="flex h-12 flex-1 items-center justify-center gap-1.5 rounded-xl bg-primary text-[15px] font-bold text-primary-foreground shadow-lg shadow-primary/25 active:scale-95 transition-all"
+                >
+                  <RotateCw className="h-4 w-4" /> Novo bloco
+                </button>
+              ) : (
+                <button className="flex h-12 flex-1 items-center justify-center rounded-xl bg-muted/60 text-[14.5px] font-bold text-foreground hover:bg-muted transition-colors">
+                  Ir para questão
+                </button>
+              )}
+
+              <button
+                onClick={() => setIdx((i) => i + 1)}
+                disabled={idx === questoes.length - 1}
+                className="flex h-12 flex-1 items-center justify-center gap-1.5 text-[15px] font-semibold text-muted-foreground transition-colors hover:text-foreground disabled:opacity-30"
+              >
+                Próximo <ChevronRight className="h-5 w-5" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
