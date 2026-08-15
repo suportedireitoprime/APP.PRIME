@@ -347,6 +347,15 @@ const ResolverPadrao = ({
                       <p className={cn("text-[22px] font-extrabold tracking-tight", resp.acertou ? "text-green-400" : "text-red-400")}>
                         {resp.acertou ? 'Resposta correta!' : 'Resposta incorreta'}
                       </p>
+                      {resp.acertou ? (
+                        <p className="text-[14px] font-medium text-green-400/80">
+                          Você mandou bem.
+                        </p>
+                      ) : (
+                        <p className="mt-1 text-[14.5px] font-medium text-red-400/80">
+                          O gabarito é a <strong className="rounded bg-red-500/20 px-2 py-0.5 text-red-300">Alternativa {correta}</strong>
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className="flex flex-col gap-5 py-1">
@@ -356,6 +365,37 @@ const ResolverPadrao = ({
                     >
                       <div className="flex items-center gap-3"><MessageSquare className="h-5 w-5" /> <span className="font-bold">Ver comentário</span></div>
                       <ChevronRight className="h-5 w-5" />
+                    </button>
+
+                    <div className="w-full">
+                      <QuestaoAcoesBar source={atual.id} chaveRevisao={atual.id} layout="horizontal" />
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2.5 pt-2">
+                    {idx === questoes.length - 1 ? (
+                      <button
+                        onClick={onNovoBloco}
+                        className={cn(
+                          "flex h-12 flex-1 items-center justify-center gap-2 rounded-xl text-[15px] font-extrabold text-white shadow-lg transition-all active:scale-[0.97]",
+                          resp.acertou ? "bg-green-600 hover:bg-green-500 shadow-green-600/25" : "bg-red-600 hover:bg-red-500 shadow-red-600/25"
+                        )}
+                      >
+                        <RotateCw className="h-5 w-5" /> Novo bloco
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => setIdx((i) => i + 1)}
+                        className={cn(
+                          "flex h-12 flex-1 items-center justify-center gap-2 rounded-xl text-[15px] font-extrabold text-white shadow-lg transition-all active:scale-[0.97]",
+                          resp.acertou ? "bg-green-600 hover:bg-green-500 shadow-green-600/25" : "bg-red-600 hover:bg-red-500 shadow-red-600/25"
+                        )}
+                      >
+                        Próxima questão <ChevronRight className="h-5 w-5" />
+                      </button>
+                    )}
+                    <button className="flex h-12 items-center justify-center rounded-xl bg-white/5 px-4 text-foreground/60 transition-colors hover:bg-white/10 active:scale-[0.97]">
+                      <Grid2X2 className="h-5 w-5" />
                     </button>
                   </div>
                 </div>
