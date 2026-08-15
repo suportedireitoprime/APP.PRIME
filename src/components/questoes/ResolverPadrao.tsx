@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  ChevronLeft, ChevronRight, CheckCircle2, XCircle, Clock, Heart,
-  Trophy, RotateCw, Sparkles, MessageSquare,
+  ChevronLeft, ChevronRight, Clock, Heart, Loader2, PlayCircle, CheckCircle2, XCircle, RotateCw, Sparkles, AlertTriangle, ScanText, FileText,
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -44,6 +43,8 @@ const ResolverPadrao = ({
   const [favoritos, setFavoritos] = useState<Set<string>>(new Set());
   const [segundos, setSegundos] = useState(0);
   const [recursosAberto, setRecursosAberto] = useState(false);
+  const [ocrLoading, setOcrLoading] = useState<Record<string, boolean>>({});
+  const [ocrText, setOcrText] = useState<Record<string, string>>({});
   const topoRef = useRef<HTMLDivElement>(null);
   const gateQuestoes = useGatedFeature('questoes', 'questoes');
   const gateFuncoes = useGatedFeature('questao_funcoes', 'questao_funcoes');
@@ -135,6 +136,27 @@ const ResolverPadrao = ({
 
   if (loading) return <div className="h-[520px] animate-pulse rounded-2xl bg-muted" />;
 
+  const extrairOcr = async (url: string, id: string) => {
+    setOcrLoading((p) => ({ ...p, [id]: true }));
+    try {
+      const Tesseract = await import('tesseract.js');
+      const { data: { text } } = await Tesseract.recognize(url, 'por');
+      setOcrText((p) => ({ ...p, [id]: text }));
+    } catch (err) {
+      console.error('OCR Error:', err);
+    } finally {
+      setOcrLoading((p) => ({ ...p, [id]: false }));
+    }
+  };
+
+  const agendarNotificacaoErro = () => {
+    // Ação do ícone de atenção (reportar erro)
+    // Pode abrir um sheet ou alert. Por enquanto apenas feedback visual:
+    if (typeof window !== 'undefined') {
+      import('sonner').then(({ toast }) => toast.info('Função de reportar erro em breve!'));
+    }
+  };
+
   if (!questoes.length) {
     return (
       <div className="mx-auto flex w-full max-w-3xl flex-col items-center gap-3 rounded-2xl border border-border bg-muted/40 p-8 text-center mt-10">
@@ -164,8 +186,8 @@ const ResolverPadrao = ({
           <p className="text-[17px] font-bold">Questão Q{atual.id.substring(0, 6).toUpperCase()}</p>
           <p className="text-[13px] font-medium opacity-90">{atual.disciplina}</p>
         </div>
-        <button className="grid h-11 w-11 shrink-0 place-items-center rounded-full hover:bg-black/10 transition-colors">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" /></svg>
+        <button onClick={agendarNotificacaoErro} aria-label="Reportar Erro" className="grid h-11 w-11 shrink-0 place-items-center rounded-full hover:bg-black/10 transition-colors">
+          <AlertTriangle className="h-5 w-5" />
         </button>
       </div>
 
@@ -182,17 +204,11 @@ const ResolverPadrao = ({
           </div>
 
           <div className="flex items-center gap-1">
-            <button className="grid h-10 w-10 place-items-center rounded-full text-primary hover:bg-primary/10 transition-colors">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            </button>
-            <button onClick={() => setComentarioAberto(true)} className="grid h-10 w-10 place-items-center rounded-full text-primary hover:bg-primary/10 transition-colors">
-              <MessageSquare className="h-5 w-5" />
-            </button>
             <button
               onClick={() => setRecursosAberto(!recursosAberto)}
               className="ml-1 flex h-9 items-center gap-1.5 rounded-full border border-primary px-3 text-[13px] font-bold text-primary hover:bg-primary/5 transition-colors"
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+              <Sparkles className="h-4 w-4" />
               Recursos
             </button>
           </div>
@@ -230,7 +246,29 @@ const ResolverPadrao = ({
           )}
 
           {atual.imagem_url && (
-            <img src={atual.imagem_url} alt="Imagem da questão" loading="lazy" className="w-full rounded-xl border border-border" />
+            <div className="space-y-3">
+              {!ocrText[atual.id] && (
+                <img src={atual.imagem_url} alt="Imagem da questão" loading="lazy" className="w-full rounded-xl border border-border" />
+              )}
+              {ocrText[atual.id] && (
+                <div className="max-h-96 overflow-y-auto rounded-xl border border-border bg-card p-5 text-[16px] leading-[1.7] text-foreground shadow-sm">
+                  <div className="mb-3 flex items-center gap-2 border-b border-border/50 pb-2 text-[12px] font-bold uppercase tracking-wider text-muted-foreground">
+                    <FileText className="h-4 w-4" /> Texto extraído da imagem
+                  </div>
+                  <div className="whitespace-pre-wrap">{ocrText[atual.id]}</div>
+                </div>
+              )}
+              {!ocrText[atual.id] && (
+                <button
+                  onClick={() => extrairOcr(atual.imagem_url!, atual.id)}
+                  disabled={ocrLoading[atual.id]}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-accent/50 py-3.5 text-[14px] font-semibold text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                >
+                  {ocrLoading[atual.id] ? <Loader2 className="h-4 w-4 animate-spin" /> : <ScanText className="h-4 w-4" />}
+                  {ocrLoading[atual.id] ? 'Lendo texto da imagem...' : 'Extrair texto com IA (OCR)'}
+                </button>
+              )}
+            </div>
           )}
 
           <p className="text-[16.5px] font-normal leading-[1.7] text-foreground sm:text-[17.5px]">
@@ -326,7 +364,7 @@ const ResolverPadrao = ({
                       onClick={() => { if (gateFuncoes.blocked) { gateFuncoes.openGate(); return; } setComentarioAberto(true); }}
                       className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary/10 py-3.5 text-[15.5px] font-bold text-primary transition-colors hover:bg-primary/20"
                     >
-                      <MessageSquare className="h-5 w-5" /> Ver comentário do professor
+                      <Sparkles className="h-5 w-5" /> Ver comentário do professor
                     </button>
                     <div className="pt-1 border-t border-border/50">
                       <QuestaoAcoesBar source={atual.id} chaveRevisao={atual.id} />
