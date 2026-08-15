@@ -472,20 +472,17 @@ const ResolverPadrao = ({
                     </div>
 
                     <div className="flex gap-2">
-                      {professoraAberta ? (
-                        <ProfessoraInline questao={atual} onClose={() => setProfessoraAberta(false)} />
-                      ) : (
-                        <button
-                          onClick={() => {
-                            if (gateFuncoes.blocked) { gateFuncoes.openGate(); return; }
-                            setProfessoraAberta(true);
-                          }}
-                          className={cn("flex h-[56px] flex-1 items-center justify-between rounded-2xl border px-4 shadow-lg", resp.acertou ? "bg-green-600 text-white border-green-500 shadow-green-500/10 hover:bg-green-500" : "bg-blue-600 border-blue-500 text-white shadow-blue-500/10 hover:bg-blue-500")}
-                        >
-                          <div className="flex items-center gap-3"><Mic className="h-5 w-5 animate-pulse" /> <span className="font-bold">Professora</span></div>
-                          <ChevronRight className="h-5 w-5 opacity-50" />
-                        </button>
-                      )}
+                      <button
+                        onClick={() => {
+                          if (gateFuncoes.blocked) { gateFuncoes.openGate(); return; }
+                          setProfessoraAberta(true);
+                          setFeedbackOculto(true);
+                        }}
+                        className={cn("flex h-[56px] flex-1 items-center justify-between rounded-2xl border px-4 shadow-lg", resp.acertou ? "bg-green-600 text-white border-green-500 shadow-green-500/10 hover:bg-green-500" : "bg-blue-600 border-blue-500 text-white shadow-blue-500/10 hover:bg-blue-500")}
+                      >
+                        <div className="flex items-center gap-3"><Mic className="h-5 w-5 animate-pulse" /> <span className="font-bold">Professora</span></div>
+                        <ChevronRight className="h-5 w-5 opacity-50" />
+                      </button>
                     </div>
 
                     <div className="w-full">
@@ -567,9 +564,13 @@ const ResolverPadrao = ({
         onClose={() => setComentarioAberto(false)}
       />
 
-
-
-      <CartaoRespostaSheet
+      <AnimatePresence>
+        {professoraAberta && (
+          <div className="fixed inset-x-4 bottom-[110px] z-[60] pointer-events-auto">
+            <ProfessoraInline questao={atual} onClose={() => setProfessoraAberta(false)} />
+          </div>
+        )}
+      </AnimatePresence>      <CartaoRespostaSheet
         aberto={gradeAberta}
         onClose={() => setGradeAberta(false)}
         questoesCount={questoes.length}
