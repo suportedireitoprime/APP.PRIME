@@ -490,7 +490,7 @@ const QuestoesFiltroSheet = ({
           <motion.div
             initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%', pointerEvents: 'none' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="theme-questoes fixed inset-0 z-[71] flex flex-col overflow-hidden bg-zinc-950 text-foreground"
+            className="theme-questoes fixed inset-0 z-[71] flex flex-col overflow-hidden bg-zinc-950 text-foreground md:inset-y-0 md:left-auto md:right-0 md:w-full md:max-w-md md:border-l md:border-zinc-800/80 md:shadow-2xl"
           >
             <div className="flex items-center gap-3 px-4 pb-4 pt-safe-header border-b border-zinc-800/80 bg-zinc-900/90 backdrop-blur-md">
               <button onClick={onFechar} aria-label="Voltar" className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-zinc-800/80 hover:bg-zinc-700/80 text-zinc-200 transition-colors active:scale-95">
