@@ -22,6 +22,7 @@ import { useIsDesktop } from '@/hooks/use-desktop';
 import { LoadingState, EmptyState } from '@/components/ui/states';
 import { BookOpenText, Share2, Copy, Star } from 'lucide-react';
 import { toast } from 'sonner';
+import { KeepAlive } from '@/components/ui/KeepAlive';
 import {
   ContextMenu,
   ContextMenuContent,
@@ -279,11 +280,8 @@ const Blog = () => {
             );
           })}
           </div>
-        </div>
-      )}
-
-      {bottomTab === 'biografia' ? (
-        selectedBioPerson ? (
+        <KeepAlive active={bottomTab === 'biografia'}>
+        {selectedBioPerson ? (
           <BiografiaArtigoView 
             personagemId={selectedBioPerson}
             onBack={() => {
@@ -309,8 +307,10 @@ const Blog = () => {
              window.scrollTo({ top: 0 });
              setSelectedBioCategory(id);
           }} />
-        )
-      ) : bottomTab === 'categorias' ? (
+        )}
+      </KeepAlive>
+
+      <KeepAlive active={bottomTab === 'categorias'}>
         <BlogCategoriasView 
           onSelectCategoria={(tema) => {
             setSelectedFilter(tema);
@@ -318,7 +318,9 @@ const Blog = () => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
         />
-      ) : (
+      </KeepAlive>
+
+      <KeepAlive active={bottomTab !== 'biografia' && bottomTab !== 'categorias'}>
         <div className={isDesktop ? 'mx-auto w-full max-w-7xl px-6 py-4 pb-16 flex gap-6 items-start' : 'max-w-3xl mx-auto px-4 py-4 space-y-3 pb-40'}>
           <div className={isDesktop ? 'w-[420px] shrink-0 space-y-3 max-h-[calc(100dvh-260px)] overflow-y-auto pr-2 -mr-2' : 'w-full space-y-3'}>
           <AnimatePresence mode="wait">
@@ -444,7 +446,7 @@ const Blog = () => {
             })}
 
           </motion.div>
-        </AnimatePresence>
+          </AnimatePresence>
 
 
         {!blogLoaded && (
@@ -481,7 +483,7 @@ const Blog = () => {
           </div>
         )}
       </div>
-      )}
+      </KeepAlive>
 
       {!isDesktop && (
         <BlogPostSheet post={selectedPost} onClose={() => setSelectedPost(null)} />
