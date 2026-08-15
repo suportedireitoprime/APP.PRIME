@@ -88,7 +88,7 @@ Foi nesse santuário epistêmico, no diálogo solitário com as sombras ilustres
 
 ## As Obras Fundamentais: A Ruptura com o Idealismo Clássico
 
-```
+\`\`\`
                              ┌───────────────────────────────────────┐
                              │       A REALIDADE POLÍTICA PURA       │
                              │ (Verità Effettuale della Cosa)        │
@@ -108,7 +108,7 @@ Foi nesse santuário epistêmico, no diálogo solitário com as sombras ilustres
                              │      A ESTABILIDADE DO ESTADO         │
                              │  Ordem, Liberdade Cívica e Soberania  │
                              └───────────────────────────────────────┘
-```
+\`\`\`
 
 ### *O Príncipe*: A Verdade Efetiva da Coisa (*Verità Effettuale*)
 
@@ -125,7 +125,7 @@ O arcabouço conceitual de *O Príncipe* organiza-se primordialmente em torno da
 1. **A Fortuna**: Representa a contingência cega, o imponderável, o acaso, as conjunturas históricas imprevisíveis e as forças que escapam à vontade direta do indivíduo. Maquiavel recorre a duas metáforas magistrais para ilustrá-la: compara a fortuna a um rio torrencial que, enfurecido, inunda planícies e destrói cidades, mas cujos estragos podem ser prevenidos ou atenuados se os homens sábios construírem diques e canais em tempos de calmaria; e compara-a a uma mulher que, para ser dominada, precisa ser tratada com audácia, firmeza e vigor por jovens resolutos.
 2. **A Virtù**: Longe de equivaler à "virtude" no sentido cristão de pureza d'alma ou submissão à vontade de Deus, a *virtù* maquiavélica é a energia vital, a inteligência estratégica, a flexibilidade moral e a coragem cívico-militar necessárias para agir tempestivamente conforme a ocasião exige (*o tempo*). O príncipe virtuoso é aquele capaz de modelar o fluxo caótico da *fortuna* a favor da estabilidade política e da grandeza do Estado.
 
-```
+\`\`\`
                            MATRIZ DIALÉTICA MAQUIAVÉLICA
 
   Conceito                 Definição Tradicional/Cristã       Redefinição por Maquiavel
@@ -138,7 +138,7 @@ O arcabouço conceitual de *O Príncipe* organiza-se primordialmente em torno da
 
   ÉTICA                    Universal, deontológica e          Contextual, orientada à salvaguarda
                            subordinada à salvação da alma.    da comunidade política e do Estado.
-```
+\`\`\`
 
 Para Maquiavel, o príncipe deve ser dotado de uma natureza híbrida, mesclando o homem e a besta, conforme a antiga alegoria do centauro Quíron: deve saber operar como o leão (usando a força bruta e a autoridade para aterrorizar os lobos) e como a raposa (utilizando a astúcia e o disfarce para reconhecer as armadilhas).
 
@@ -168,7 +168,7 @@ A fertilidade intelectual do exílio não se esgotou nos tratados de teoria pol�
 
 ## Legado Histórico: Entre o Maquiavelismo e a Ciência Política Moderna
 
-```
+\`\`\`
                                   LINHAGEM DA RECEPÇÃO CRÍTICA
                                                 │
                  ┌──────────────────────────────┴──────────────────────────────┐
@@ -180,7 +180,7 @@ A fertilidade intelectual do exílio não se esgotou nos tratados de teoria pol�
   • Cardeal Reginald Pole                                       • Jean-Jacques Rousseau (Do Contrato Social)
   • Inclusão no *Index Librorum Prohibitorum* (1559)            • Antonio Gramsci (O Moderno Príncipe)
   • Frederico II da Prússia / Voltaire                          • Leo Strauss, Quentin Skinner, Pocock
-```
+\`\`\`
 
 ### O Mito do "Maquiavélico" e as Leituras Distorcidas
 

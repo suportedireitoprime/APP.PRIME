@@ -38,7 +38,7 @@ Aos dezessete anos, graças ao patrocínio financeiro de Romaniano, um abastado 
 
 Foi precisamente durante esses anos de juventude turbulenta que ocorreu a primeira grande guinada existencial de Agostinho. Aos dezenove anos, ao ler o *Hortênsio*, diálogo ciceroniano hoje perdido que exortava à vida contemplativa e ao amor pela sabedoria (*philosophia*), Agostinho sentiu uma súbita aversão às ambições ocas da glória retórica. O texto acendeu em seu peito um desejo ardente pela Verdade eterna. Entretanto, ao tentar saciar essa sede nas Escrituras cristãs, desiludiu-se profundamente: o estilo rude e rústico das antigas traduções latinas da Bíblia chocou seu refinado gosto literário latino, e as narrativas antropomórficas do Antigo Testamento pareceram-lhe filosoficamente inaceitáveis e moralmente primitivas.
 
-```
+\`\`\`
                   ┌───────────────────────────────┐
                   │    Inquietação Existencial    │
                   │     (Leitura de Hortênsio)    │
@@ -61,7 +61,7 @@ Foi precisamente durante esses anos de juventude turbulenta que ocorreu a primei
                   ┌───────────────────────────────┐
                   │ Conversão: Graça e Fé Cristã  │
                   └───────────────────────────────┘
-```
+\`\`\`
 
 ---
 
@@ -120,7 +120,7 @@ O combate intelectual mais árduo da maturidade de Agostinho deu-se contra Pelá
 
 Agostinho combateu essa doutrina com veemência inaudita, recebendo o título de *Doctor Gratiae* (Doutor da Graça). Ele estruturou a doutrina do **Pecado Original**:
 
-```
+\`\`\`
            Estado Pré-Queda (Adão)
              Posse do Livre-Arbítrio
            [Posse do Posse non peccare]
@@ -140,7 +140,7 @@ Agostinho combateu essa doutrina com veemência inaudita, recebendo o título de
                        ▼ (Glória Eterna / Escatologia)
              Graça Consumada no Céu
             [Non posse peccare]
-```
+\`\`\`
 
 Segundo a concepção agostiniana, toda a humanidade encontrava-se ontologicamente unida em Adão, constituindo, após a queda primordial, uma *massa damnata* (massa decaída e condenada). A vontade humana não foi aniquilada, mas tornou-se cativa do pecado e da concupiscência, incapaz de querer eficazmente o bem supremo por si mesma sem a regeneração operada pela graça divina imerecida (*gratia gratis data*). Agostinho distinguiu rigorosamente o **Livre-Arbítrio** (*liberum arbitrium* — a faculdade psicológica de fazer escolhas) da verdadeira **Liberdade** (*libertas* — o uso reto do arbítrio direcionado ao Sumo Bem). O homem caído mantém o livre-arbítrio, mas perdeu a liberdade autêntica, a qual só pode ser restaurada pela graça operante e cooperante de Cristo. Dessa visão radical derivou igualmente a sua complexa e controversa reflexão sobre a predestinação divina.
 
@@ -167,7 +167,7 @@ Nos livros subsequentes, Agostinho expõe sua grandiosa visão metahistórica da
 
 Ambas as cidades encontram-se historicamente entrelaçadas e entremeadas (*permixtae*) ao longo do tempo presente secular (*saeculum*), e sua separação ontológica e definitiva só ocorrerá no Juízo Final.
 
-```
+\`\`\`
 ┌─────────────────────────────────────────────────────────────┐
 │                      HISTÓRIA HUMANA                        │
 │                   (O "Saeculum" Presente)                   │
@@ -181,7 +181,7 @@ Ambas as cidades encontram-se historicamente entrelaçadas e entremeadas (*permi
 │ • Destino: Ruína temporal    │ • Destino: Redenção e        │
 │   e condenação               │   Paz eterna                 │
 └──────────────────────────────┴──────────────────────────────┘
-```
+\`\`\`
 
 ### 3. *De Trinitate* (Sobre a Trindade, 399–420)
 
@@ -238,7 +238,7 @@ Em 28 de agosto de 430, cercado pelas orações de seus clérigos e discípulos 
 
 A influência de Santo Agostinho sobre a civilização ocidental é incomensurável. Ele não apenas estabeleceu a gramática intelectual da Igreja Latina, mas forneceu as bases conceituais a partir das quais os maiores intelectuais dos séculos vindouros dialogaram, debateram e construíram seus sistemas:
 
-```
+\`\`\`
                             SANTO AGOSTINHO
                      (Síntese Clássico-Cristã)
                                   │
@@ -254,7 +254,7 @@ ERA MEDIEVAL              REFORMA PROTESTANTE          MODERNIDADE E ALÉM
 • Jusnaturalismo                                         (Amor mundi)
   Escolástico                                          • Martin Heidegger
                                                          (Fenomenologia da Vida)
-```
+\`\`\`
 
 1. **Escolástica Medieval:** A máxima agostiniana *"Crede ut intelligas; intellige ut credas"* ("Crê para compreender; compreende para crer") definiu a metodologia de pensadores medievais como Anselmo de Cantuária e Boaventura de Bagnoregio. Mesmo quando São Tomás de Aquino introduziu o aristotelismo no século XIII, a substância dogmática permaneceu predominantemente tributária da autoridade de Agostinho.
 2. **A Reforma e a Contrarreforma:** No século XVI, a teologia da graça e do pecado de Agostinho foi reivindicada com igual intensidade por ambos os lados da fratura religiosa europeia. Martinho Lutero, ele próprio um monge agostiniano, e João Calvino basearam seus princípios da *Sola Gratia* e da predestinação nos escritos tardios do bispo de Hipona; ao mesmo tempo, o Concílio de Trento apoiou-se amplamente em sua obra para estruturar a resposta católica sobre a justificação e os sacramentos.
