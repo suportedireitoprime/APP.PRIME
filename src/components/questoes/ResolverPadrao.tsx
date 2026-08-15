@@ -108,6 +108,18 @@ const ResolverPadrao = ({
   const resp = atual ? respostas[atual.id] : undefined;
   const correta = letraGabarito(atual?.gabarito_oficial);
 
+  const handleMeExpliqueClick = () => {
+    if (gateFuncoes.blocked) { gateFuncoes.openGate(); return; }
+    haptic.selection?.();
+    setIsScanningIa(true);
+    setFeedbackOculto(true);
+    
+    setTimeout(() => {
+      setIsScanningIa(false);
+      setMeExpliqueAberto(true);
+    }, 1500);
+  };
+
   useEffect(() => {
     setSelecao(resp?.escolha ?? null);
     setFeedbackOculto(false);
