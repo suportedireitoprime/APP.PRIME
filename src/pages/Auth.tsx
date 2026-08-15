@@ -1,22 +1,20 @@
-import { useState, useEffect, useRef } from 'react';
-import {pickAsset, srcOf } from '@/lib/assetUrl';
+import { useState, useEffect } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Mail, Lock, User, Eye, EyeOff, ArrowRight, Loader2,
-  KeyRound, ArrowLeft, BookOpen, Scale, Video, Star, Brain, Radar, CheckCircle
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Mail, Lock, User, Eye, EyeOff, ArrowRight, Loader2, ArrowLeft, KeyRound, CheckCircle, ChevronDown, HelpCircle, Leaf, Scale } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { useHideSplashScreen } from '@/hooks/useHideSplashScreen';
-import GoogleIcon from '@/components/GoogleIcon';
-import AppleIcon from '@/components/AppleIcon';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { LegalSheet } from '@/components/auth/LegalSheet';
 import { track } from '@/lib/analyticsEvents';
+
+import { pickAsset, srcOf } from '@/lib/assetUrl';
+import logoOABnaRiscaAsset from '@/assets/logo-vacatio-v2.png.asset.json';
+import logoOABnaRiscaBundled from '@/assets/bundled/logo-vacatio-v2.webp';
+const logoOABnaRisca = pickAsset(logoOABnaRiscaBundled, srcOf(logoOABnaRiscaAsset));
+
+import authJudgeScene from '@/assets/auth-judge-scene.jpeg';
 
 /** Traduz mensagens de erro comuns do Supabase Auth para PT-BR. */
 const traduzirErroAuth = (raw?: string): string => {
@@ -43,302 +41,20 @@ const traduzirErroAuth = (raw?: string): string => {
   return raw || 'Ocorreu um erro. Tente novamente.';
 };
 
-/** Toast de erro flutuante centralizado no topo, estilo card. */
 const toastErroAuth = (raw?: string) =>
   toast.error(traduzirErroAuth(raw), {
     position: 'top-center',
     duration: 5000,
     className:
-      'rounded-2xl border border-red-400/30 bg-neutral-900/95 backdrop-blur-xl shadow-2xl text-white px-4 py-3',
+      'rounded-2xl border border-red-400/30 bg-neutral-900/95 backdrop-blur-xl shadow-2xl text-white px-4 py-3 z-[9999]',
     style: { minWidth: '320px', maxWidth: '92vw' },
   });
-import { useIsDesktop } from '@/hooks/use-desktop';
-import DesktopQrLogin from '@/components/auth/DesktopQrLogin';
-const isElectronApp =
-  typeof window !== 'undefined' && Boolean((window as any).desktopApp?.isElectron);
-import { LEIS_CATALOG } from '@/data/leisCatalog';
-import logoOABnaRiscaAsset from '@/assets/logo-vacatio-v2.png.asset.json';
-import logoOABnaRiscaBundled from '@/assets/bundled/logo-vacatio-v2.webp';
-const logoOABnaRisca = pickAsset(logoOABnaRiscaBundled, srcOf(logoOABnaRiscaAsset));
-import themisBgAsset from '@/assets/themis-bg.webp';
-const themisBg = themisBgAsset;
-import themisAuthYellowAsset from '@/assets/themis-auth-yellow.webp.asset.json';
-import themisAuthYellowBundled from '@/assets/bundled/themis-auth-yellow.webp';
-const themisAuthYellow = pickAsset(themisAuthYellowBundled, srcOf(themisAuthYellowAsset));
-import authBgLeftAsset from '@/assets/auth-bg-left.webp';
-const authBgLeft = authBgLeftAsset;
-import authBgRightAsset from '@/assets/auth-bg-right.webp';
-const authBgRight = authBgRightAsset;
-import authCourtroomScene from '@/assets/auth-courtroom-scene.webp';
-import authThemisImpact from '@/assets/auth-themis-impact-horizontal.jpg';
-import brasaoRepublica from '@/assets/brasao-republica.webp';
-import landingBibliotecaAsset from '@/assets/landing-biblioteca.webp.asset.json';
-import landingBibliotecaBundled from '@/assets/bundled/landing-biblioteca.webp';
-const landingBiblioteca = pickAsset(landingBibliotecaBundled, srcOf(landingBibliotecaAsset));
-import landingVademecumAsset from '@/assets/landing-vademecum.webp';
-const landingVademecum = landingVademecumAsset;
-import landingVideoaulasAsset from '@/assets/landing-videoaulas.webp.asset.json';
-import landingVideoaulasBundled from '@/assets/bundled/landing-videoaulas.webp';
-const landingVideoaulas = pickAsset(landingVideoaulasBundled, srcOf(landingVideoaulasAsset));
-import landingEstudarAsset from '@/assets/landing-estudar.webp';
-const landingEstudar = landingEstudarAsset;
-import landingRadarAsset from '@/assets/landing-radar.webp.asset.json';
-import landingRadarBundled from '@/assets/bundled/landing-radar.webp';
-const landingRadar = pickAsset(landingRadarBundled, srcOf(landingRadarAsset));
 
-const FEATURES = [
-  { label: 'Vade Mecum', desc: 'Lei seca comentada', img: landingVademecum },
-  { label: 'Biblioteca', desc: 'Livros jurídicos', img: landingBiblioteca },
-  { label: 'Videoaulas', desc: 'Aulas em vídeo', img: landingVideoaulas },
-  { label: 'Estudar', desc: 'Flashcards e questões', img: landingEstudar },
-  { label: 'Radar', desc: 'Monitoramento legislativo', img: landingRadar },
-];
-
-/* CSS for shine animation injected once */
-const shineStyleId = 'shine-anim-style';
-if (typeof document !== 'undefined' && !document.getElementById(shineStyleId)) {
-  const style = document.createElement('style');
-  style.id = shineStyleId;
-  style.textContent = `
-    @keyframes shineSlide {
-      0% { transform: translateX(-100%) rotate(25deg); }
-      100% { transform: translateX(250%) rotate(25deg); }
-    }
-    .shine-effect { position: relative; overflow: hidden; }
-    .shine-effect::after {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 40%;
-      height: 200%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
-      transform: translateX(-100%) rotate(25deg);
-      animation: shineSlide 3s ease-in-out infinite;
-      pointer-events: none;
-    }
-    @keyframes floatSlow {
-      0%, 100% { transform: translateY(0) rotate(var(--rot, 0deg)); }
-      50% { transform: translateY(-14px) rotate(calc(var(--rot, 0deg) + 4deg)); }
-    }
-    @keyframes floatSlower {
-      0%, 100% { transform: translateY(0) rotate(var(--rot, 0deg)); }
-      50% { transform: translateY(10px) rotate(calc(var(--rot, 0deg) - 3deg)); }
-    }
-    .float-slow { animation: floatSlow 6s ease-in-out infinite; }
-    .float-slower { animation: floatSlower 8s ease-in-out infinite; }
-    @keyframes ringPulse {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.55), 0 0 24px 0 rgba(239,68,68,0.25); }
-      50% { box-shadow: 0 0 0 8px rgba(239,68,68,0), 0 0 32px 4px rgba(239,68,68,0.35); }
-    }
-    .ring-pulse { animation: ringPulse 2.6s ease-in-out infinite; }
-    @keyframes badgeShine {
-      0% { background-position: -200% 0; }
-      100% { background-position: 200% 0; }
-    }
-    .badge-shine {
-      background: linear-gradient(100deg, hsl(var(--primary)) 0%, hsl(var(--primary)) 40%, #fff8b8 50%, hsl(var(--primary)) 60%, hsl(var(--primary)) 100%);
-      background-size: 200% 100%;
-      animation: badgeShine 3.2s linear infinite;
-    }
-    @keyframes tagsMarquee {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-    .tags-marquee-track {
-      animation: tagsMarquee 28s linear infinite;
-      will-change: transform;
-    }
-  `;
-  document.head.appendChild(style);
-}
-
-function InfiniteCarousel() {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const animRef = useRef<number>(0);
-
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    let pos = 0;
-    const speed = 0.4;
-
-    const tick = () => {
-      pos += speed;
-      if (pos >= 820) pos = 0;
-      el.style.transform = `translateX(-${pos}px)`;
-      animRef.current = requestAnimationFrame(tick);
-    };
-
-    animRef.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(animRef.current);
-  }, []);
-
-  const items = [...FEATURES, ...FEATURES];
-
-  return (
-    <div className="overflow-hidden px-4 lg:px-0">
-      <div ref={scrollRef} className="flex gap-3 lg:gap-4 will-change-transform" style={{ width: 'max-content' }}>
-        {items.map((f, i) => (
-          <div
-            key={`${f.label}-${i}`}
-            className="flex-shrink-0 w-[110px] lg:w-[160px] rounded-2xl overflow-hidden border border-primary/20 shadow-lg shine-effect"
-          >
-            <div className="relative h-[140px] lg:h-[200px]">
-              <img
-                src={f.img}
-                alt={f.label}
-                className="w-full h-full object-cover"
-                loading="lazy"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/30 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-3">
-                <p className="text-sm lg:text-base font-body font-bold text-foreground drop-shadow-lg">{f.label}</p>
-                <p className="text-[10px] lg:text-xs font-body text-foreground/70 mt-0.5">{f.desc}</p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/* ─── Landing Screen ─── */
-const LandingScreen = ({ onStart }: { onStart: () => void }) => (
-  <motion.main
-    key="landing"
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    exit={{ opacity: 0, x: '-30%' }}
-    transition={{ duration: 0.35 }}
-    className="min-h-dvh relative flex flex-col overflow-hidden"
-  >
-    {/* Background */}
-    <div className="absolute inset-0 z-0">
-      <img src={themisBg} alt="" loading="eager" decoding="sync" fetchPriority="high" className="w-full h-full object-cover opacity-40" />
-      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/40 lg:bg-gradient-to-r lg:from-background lg:via-background/75 lg:to-background/30" />
-    </div>
-
-    {/* Content — centered on mobile, left-aligned on desktop */}
-    <div className="relative z-10 flex-1 flex flex-col lg:flex-row items-center lg:items-center justify-center px-6 lg:px-16 xl:px-24 2xl:px-32 text-center lg:text-left">
-      {/* Left column — text */}
-      <div className="lg:flex-1 lg:max-w-2xl">
-        {/* Logo */}
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.1 }}
-          className="shine-effect rounded-2xl inline-block"
-        >
-          <img
-            src={logoOABnaRisca}
-            alt="Direito Prime"
-            className="w-20 h-20 lg:w-24 lg:h-24 rounded-2xl shadow-xl object-cover mb-4"
-          />
-        </motion.div>
-
-        <motion.h1
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.15 }}
-          className="font-display text-3xl lg:text-5xl xl:text-6xl font-bold text-foreground"
-        >
-          Direito Prime
-        </motion.h1>
-        <motion.p
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="text-sm lg:text-lg font-body text-muted-foreground mt-1 mb-8"
-        >
-          Vade Mecum Jurídico Profissional
-        </motion.p>
-
-        {/* Headline */}
-        <motion.h2
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.25 }}
-          className="font-display text-xl lg:text-3xl xl:text-4xl font-semibold text-foreground leading-relaxed max-w-xs lg:max-w-lg"
-        >
-          Toda a{' '}
-          <span className="text-primary border-b-2 border-primary/50">legislação brasileira</span>{' '}
-          comentada e{' '}
-          <span className="text-primary border-b-2 border-primary/50">explicada</span>.
-        </motion.h2>
-
-        <motion.p
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="text-sm lg:text-lg font-body text-muted-foreground mt-4 max-w-xs lg:max-w-md leading-relaxed"
-        >
-          Lei seca, comentários, explicações artigo por artigo, narração, resumos e muito mais para você{' '}
-          <strong className="text-foreground">dominar a legislação</strong>.
-        </motion.p>
-
-        {/* CTA */}
-        <motion.button
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          onClick={onStart}
-          className="mt-8 px-8 lg:px-12 py-3.5 lg:py-4 bg-primary text-primary-foreground rounded-full font-body font-semibold text-base lg:text-lg flex items-center gap-2 shadow-lg hover:opacity-90 transition-opacity mx-auto lg:mx-0"
-        >
-          Iniciar Agora
-          <ArrowRight className="w-5 h-5 lg:w-6 lg:h-6" />
-        </motion.button>
-
-        {/* Social proof */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="mt-6 flex items-center gap-1.5 text-xs lg:text-sm font-body text-muted-foreground justify-center lg:justify-start"
-        >
-          <Star className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-yellow-500 fill-yellow-500" />
-          +10.000 alunos já estudam com a gente
-        </motion.div>
-      </div>
-
-      {/* Right column — decorative logo (desktop only) */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.3, type: 'spring', stiffness: 150, damping: 20 }}
-        className="hidden lg:flex items-center justify-center lg:flex-1"
-      >
-        <div className="relative">
-          <div className="absolute inset-0 blur-3xl bg-primary/15 rounded-full scale-150" />
-          <div className="relative w-48 h-48 xl:w-56 xl:h-56 2xl:w-64 2xl:h-64 rounded-3xl overflow-hidden shadow-2xl border-2 border-primary/20 shine-effect">
-            <img src={logoOABnaRisca} alt="Direito Prime" className="w-full h-full object-cover" />
-          </div>
-        </div>
-      </motion.div>
-    </div>
-
-    {/* Infinite Auto-Scrolling Feature Carousel */}
-    <motion.div
-      initial={{ y: 40, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ delay: 0.55 }}
-      className="relative z-10 pb-6 overflow-hidden"
-    >
-      <InfiniteCarousel />
-    </motion.div>
-
-    <p className="relative z-10 text-center text-[10px] lg:text-xs font-body text-muted-foreground pb-4">
-      Direito Prime — Vade Mecum © 2026
-    </p>
-  </motion.main>
-);
-
-/* ─── Auth Form Screen ─── */
-const AuthFormScreen = ({ onBack }: { onBack: () => void }) => {
+/* ─── Auth Form Screen (Dynamic Drawer) ─── */
+const AuthDrawer = ({ mode, setMode, onClose }: { mode: 'login' | 'signup' | 'forgot' | null; setMode: (m: 'login' | 'signup' | 'forgot' | null) => void; onClose: () => void }) => {
   const { signIn, signUp, resetPassword, verifyOtp, updatePassword, signInWithGoogle, signInWithApple } = useAuth();
   const navigateForm = useNavigate();
-  const [mode, setMode] = useState<'login' | 'signup' | 'forgot'>('login');
+  const [showEmailForm, setShowEmailForm] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
   const [resetCode, setResetCode] = useState('');
   const [resetNewPassword, setResetNewPassword] = useState('');
@@ -349,26 +65,26 @@ const AuthFormScreen = ({ onBack }: { onBack: () => void }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [appleLoading, setAppleLoading] = useState(false);
   const [legalOpen, setLegalOpen] = useState<null | 'privacidade' | 'termos'>(null);
 
-  // SEO & Título dinâmico por modo de autenticação
   useEffect(() => {
     if (mode === 'login') document.title = 'Entrar na sua Conta | Direito Prime';
     else if (mode === 'signup') document.title = 'Criar Nova Conta | Direito Prime';
     else if (mode === 'forgot') document.title = 'Recuperar Senha | Direito Prime';
+    
+    // Se abrir o drawer e for "forgot", já força mostrar form.
+    if (mode === 'forgot') setShowEmailForm(true);
   }, [mode]);
 
-  // Pré-carrega o bundle da triagem para abrir sem delay logo após signup.
   useEffect(() => {
     if (mode !== 'signup') return;
     import('@/components/onboarding/CadastroOnboardingOverlay').catch(() => {});
     import('@/components/onboarding/CadastroFeaturesReel').catch(() => {});
   }, [mode]);
 
-
   const handleGoogle = () => {
     setGoogleLoading(true);
-    // Desacopla a chamada nativa pesada da renderização do spinner (evita engasgos)
     requestAnimationFrame(() => {
       requestAnimationFrame(async () => {
         try {
@@ -382,7 +98,6 @@ const AuthFormScreen = ({ onBack }: { onBack: () => void }) => {
     });
   };
 
-  const [appleLoading, setAppleLoading] = useState(false);
   const handleApple = () => {
     setAppleLoading(true);
     requestAnimationFrame(() => {
@@ -398,7 +113,6 @@ const AuthFormScreen = ({ onBack }: { onBack: () => void }) => {
     });
   };
 
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
@@ -412,7 +126,6 @@ const AuthFormScreen = ({ onBack }: { onBack: () => void }) => {
           toast.success('Enviamos o código de recuperação para seu email.');
           setResetEmailSent(true);
         } else {
-          // Verify OTP and then update password
           if (!resetCode || !resetNewPassword) {
             toastErroAuth('Preencha o código e a nova senha.');
             setSubmitting(false);
@@ -423,16 +136,12 @@ const AuthFormScreen = ({ onBack }: { onBack: () => void }) => {
             setSubmitting(false);
             return;
           }
-          
           const { error: otpError } = await verifyOtp(email, resetCode.trim(), 'recovery');
           if (otpError) throw otpError;
-          
           const { error: updateError } = await updatePassword(resetNewPassword);
           if (updateError) throw updateError;
-          
           toast.success('Senha atualizada com sucesso! Entrando...');
           track('password_reset_success', { email_domain: email.split('@')[1] ?? 'unknown' });
-          
           let sessao = null as Awaited<ReturnType<typeof supabase.auth.getSession>>['data']['session'];
           for (let i = 0; i < 6 && !sessao; i++) {
             const { data: sess } = await supabase.auth.getSession();
@@ -454,14 +163,8 @@ const AuthFormScreen = ({ onBack }: { onBack: () => void }) => {
         const { error } = await signUp(email, password, displayName);
         if (error) throw error;
         track('signup_success', { method: 'email', has_display_name: Boolean(displayName) });
-        // Ao criar conta, o usuário aceita os Termos e a Política de Privacidade,
-        // incluindo o uso de analytics anônimo (LGPD — Consent Mode v2).
         try { (await import('@/lib/analytics')).grantConsent(); } catch {}
         toast.success('Conta criada! Verifique seu email para confirmar.');
-        // Se a sessão já foi criada (confirmação de email desativada), leva
-        // direto pra triagem — sem depender de nova interação do usuário.
-        // A sessão pode demorar alguns ms pra ser persistida — tenta algumas
-        // vezes antes de desistir, pra triagem abrir sozinha após o cadastro.
         let sessao = null as Awaited<ReturnType<typeof supabase.auth.getSession>>['data']['session'];
         for (let i = 0; i < 6 && !sessao; i++) {
           const { data: sess } = await supabase.auth.getSession();
@@ -480,247 +183,266 @@ const AuthFormScreen = ({ onBack }: { onBack: () => void }) => {
 
   const inputCls = "w-full pl-5 pr-14 py-4 bg-white/[0.04] border border-white/10 rounded-2xl text-base font-body text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-primary/60 focus:border-primary/40 transition-all";
 
-  const isDesktop = useIsDesktop();
+  if (!mode) return null;
 
-  /* ── Shared form content ── */
-  const formContent = (
+  return (
     <>
-      {/* Tabs */}
-      {mode !== 'forgot' && (
-        <div role="tablist" aria-label="Modo de autenticação" className="flex mb-5 bg-white/[0.04] border border-white/10 rounded-2xl p-1">
-          {(['login', 'signup'] as const).map((m) => (
-            <button
-              key={m}
-              role="tab"
-              aria-selected={mode === m}
-              aria-label={m === 'login' ? 'Acessar tela de Login' : 'Acessar tela de Cadastro'}
-              onClick={() => setMode(m)}
-              className={`flex-1 py-3 text-sm font-body font-medium rounded-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
-                mode === m
-                  ? 'bg-primary text-primary-foreground shadow-md'
-                  : 'text-white/60 hover:text-white'
-              }`}
-            >
-              {m === 'login' ? 'Entrar' : 'Cadastrar'}
-            </button>
-          ))}
+      {/* Backdrop */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+        className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+      />
+
+      {/* Drawer */}
+      <motion.div
+        initial={{ y: '100%' }}
+        animate={{ y: 0 }}
+        exit={{ y: '100%' }}
+        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+        className="fixed bottom-0 left-0 right-0 z-50 bg-[#0d0f12] rounded-t-[32px] border-t border-white/10 shadow-[0_-10px_40px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col max-h-[90vh]"
+      >
+        {/* Handle bar */}
+        <div className="w-full pt-4 pb-2 flex justify-center shrink-0 cursor-grab active:cursor-grabbing" onClick={onClose}>
+          <div className="w-12 h-1.5 rounded-full bg-white/20" />
         </div>
-      )}
 
-      {/* Google sign in */}
-      {mode !== 'forgot' && (
-        <>
-          {(() => {
-            const googleBtn = (
-              <button
-                key="google"
-                type="button"
-                onClick={handleGoogle}
-                disabled={googleLoading}
-                className="w-full py-4 mb-3 rounded-2xl bg-white text-neutral-900 font-body font-semibold text-base flex items-center justify-center gap-2.5 border border-neutral-200 hover:bg-neutral-50 transition-colors disabled:opacity-50 shadow-sm"
-              >
-                {googleLoading ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <>
-                    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
-                      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.99.66-2.25 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                      <path fill="#FBBC05" d="M5.84 14.1c-.22-.66-.35-1.36-.35-2.1s.13-1.44.35-2.1V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l3.66-2.84z"/>
-                      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z"/>
-                    </svg>
-                    Continuar com Google
-                  </>
-                )}
-              </button>
-            );
-            const appleBtn = (
-              <button
-                key="apple"
-                type="button"
-                onClick={handleApple}
-                disabled={appleLoading}
-                className="w-full py-4 mb-3 rounded-2xl bg-white text-neutral-900 font-body font-semibold text-base flex items-center justify-center gap-2.5 border border-neutral-200 hover:bg-neutral-50 transition-colors disabled:opacity-50 shadow-sm"
-              >
-                {appleLoading ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                      <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.92 15.35 3.71 7.56 9.6 7.23c1.27.07 2.17.74 2.92.8 1.17-.24 2.29-.93 3.57-.84 1.36.1 2.36.66 3.05 1.68-2.76 1.68-2.29 5.98.22 7.13-.57 1.5-1.31 2.99-2.31 4.28zm-5.85-15.1c.07-2.04 1.76-3.79 3.74-3.95.29 2.32-1.93 4.48-3.74 3.95z"/>
-                    </svg>
-                    Continuar com Apple
-                  </>
-                )}
-              </button>
-            );
-            // No iOS (App Store guideline), Apple aparece primeiro.
-            const isIOS = Capacitor.getPlatform() === 'ios';
-            return isIOS ? [appleBtn, googleBtn] : [googleBtn, appleBtn];
-          })()}
-
-          <div className="relative mb-4 flex items-center gap-3">
-            <div className="flex-1 h-px bg-border" />
-            <span className="text-[11px] font-body uppercase tracking-widest text-muted-foreground">ou</span>
-            <div className="flex-1 h-px bg-border" />
-          </div>
-        </>
-      )}
-
-      {/* Mode title (desktop) */}
-      {isDesktop && mode !== 'forgot' && (
-        <div className="text-center mb-4">
-          <h2 className="font-display text-xl font-bold text-foreground">
-            {mode === 'login' ? 'Entrar' : 'Criar Conta'}
-          </h2>
-          <p className="text-xs font-body text-muted-foreground mt-1">
-            {mode === 'login' ? 'Entre com suas credenciais para acessar' : 'Preencha os dados para criar sua conta'}
-          </p>
-        </div>
-      )}
-
-      <AnimatePresence mode="wait">
-        <motion.form
-          key={mode + (resetEmailSent ? '-sent' : '')}
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -20 }}
-          transition={{ duration: 0.2 }}
-          onSubmit={handleSubmit}
-          className="space-y-4"
-        >
-          {mode === 'forgot' && (
-            <div className="text-center mb-4">
-              <div className="w-12 h-12 rounded-full bg-primary/15 flex items-center justify-center mx-auto mb-3">
-                {resetEmailSent ? <CheckCircle className="w-6 h-6 text-primary" /> : <KeyRound className="w-6 h-6 text-primary" />}
-              </div>
-              <h2 className="font-display text-lg font-bold text-foreground">
-                {resetEmailSent ? 'Email enviado' : 'Recuperar Senha'}
+        <div className="px-6 pb-[max(var(--sai-bottom,env(safe-area-inset-bottom,0px)),2rem)] overflow-y-auto no-scrollbar">
+          
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="font-display text-xl font-bold text-white">
+                {mode === 'login' ? 'Entrar' : mode === 'signup' ? 'Criar Conta' : 'Recuperar Senha'}
               </h2>
-              <p className="text-xs font-body text-muted-foreground mt-1">
-                {resetEmailSent
-                  ? `Abra o link enviado para ${email} para criar uma nova senha.`
-                  : 'Informe seu email para receber o link de redefinição'}
+              <p className="text-sm font-body text-white/60 mt-1">
+                {mode === 'login' && 'Bem-vindo de volta.'}
+                {mode === 'signup' && 'Comece sua jornada jurídica.'}
+                {mode === 'forgot' && 'Não se preocupe, vamos recuperar.'}
               </p>
             </div>
-          )}
-
-          {mode === 'signup' && (
-            <div className="relative">
-              <input type="text" name="name" autoComplete="name" placeholder="Nome de exibição" value={displayName} onChange={(e) => setDisplayName(e.target.value)} className={inputCls} />
-              <User className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            </div>
-          )}
-
-          {(mode !== 'forgot' || !resetEmailSent) && (
-            <div className="relative">
-              <input type="email" name="email" autoComplete="email" inputMode="email" autoCapitalize="none" autoCorrect="off" placeholder="E-mail" value={email} onChange={(e) => setEmail(e.target.value)} required className={inputCls} />
-              <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            </div>
-          )}
-
-          {mode !== 'forgot' && (
-            <div className="relative">
-              <input type={showPassword ? 'text' : 'password'} name={mode === 'signup' ? 'new-password' : 'current-password'} autoComplete={mode === 'signup' ? 'new-password' : 'current-password'} placeholder="Senha" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} className={inputCls} />
-              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
-                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            {showEmailForm && mode !== 'forgot' && (
+              <button 
+                onClick={() => setShowEmailForm(false)}
+                className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-white/10"
+              >
+                <ArrowLeft className="w-5 h-5" />
               </button>
-            </div>
-          )}
+            )}
+          </div>
 
-          {mode === 'signup' && (
-            <div className="relative">
-              <input type={showPassword ? 'text' : 'password'} name="confirm-password" autoComplete="new-password" placeholder="Confirmar senha" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={6} className={inputCls} />
-              <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            </div>
-          )}
+          <AnimatePresence mode="wait">
+            {!showEmailForm && mode !== 'forgot' ? (
+              <motion.div
+                key="social-options"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-3"
+              >
+                {(() => {
+                  const googleBtn = (
+                    <button
+                      key="google"
+                      type="button"
+                      onClick={handleGoogle}
+                      disabled={googleLoading}
+                      className="w-full py-4 rounded-2xl bg-white text-neutral-900 font-body font-semibold text-base flex items-center justify-center gap-3 hover:bg-neutral-50 transition-colors disabled:opacity-50"
+                    >
+                      {googleLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
+                        <>
+                          <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.99.66-2.25 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.1c-.22-.66-.35-1.36-.35-2.1s.13-1.44.35-2.1V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l3.66-2.84z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z"/>
+                          </svg>
+                          Continuar com Google
+                        </>
+                      )}
+                    </button>
+                  );
+                  const appleBtn = (
+                    <button
+                      key="apple"
+                      type="button"
+                      onClick={handleApple}
+                      disabled={appleLoading}
+                      className="w-full py-4 rounded-2xl bg-white text-neutral-900 font-body font-semibold text-base flex items-center justify-center gap-3 hover:bg-neutral-50 transition-colors disabled:opacity-50"
+                    >
+                      {appleLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
+                        <>
+                          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.92 15.35 3.71 7.56 9.6 7.23c1.27.07 2.17.74 2.92.8 1.17-.24 2.29-.93 3.57-.84 1.36.1 2.36.66 3.05 1.68-2.76 1.68-2.29 5.98.22 7.13-.57 1.5-1.31 2.99-2.31 4.28zm-5.85-15.1c.07-2.04 1.76-3.79 3.74-3.95.29 2.32-1.93 4.48-3.74 3.95z"/>
+                          </svg>
+                          Continuar com Apple
+                        </>
+                      )}
+                    </button>
+                  );
+                  const isIOS = Capacitor.getPlatform() === 'ios';
+                  return isIOS ? [appleBtn, googleBtn] : [googleBtn, appleBtn];
+                })()}
 
-          {mode === 'forgot' && resetEmailSent && (
-            <>
-              <div className="relative">
-                <input type="text" name="code" placeholder="Código de 6 dígitos" value={resetCode} onChange={(e) => setResetCode(e.target.value)} required className={inputCls} maxLength={6} />
-                <KeyRound className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              </div>
-              <div className="relative">
-                <input type={showPassword ? 'text' : 'password'} name="new-password" placeholder="Nova senha (mín. 6 caracteres)" value={resetNewPassword} onChange={(e) => setResetNewPassword(e.target.value)} required minLength={6} className={inputCls} />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                <div className="relative py-3 flex items-center gap-4">
+                  <div className="flex-1 h-px bg-white/10" />
+                  <span className="text-xs font-body font-medium text-white/40">ou</span>
+                  <div className="flex-1 h-px bg-white/10" />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setShowEmailForm(true)}
+                  className="w-full py-4 rounded-2xl bg-white/5 border border-white/10 text-white font-body font-semibold text-base flex items-center justify-center gap-3 hover:bg-white/10 transition-colors"
+                >
+                  <Mail className="w-5 h-5 opacity-70" />
+                  Usar E-mail
                 </button>
-              </div>
-            </>
-          )}
-
-          {!resetEmailSent && (
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-body font-bold text-base flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50 shadow-lg shadow-primary/25"
-            >
-              {submitting ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                <>
-                  {mode === 'login' && 'Entrar'}
-                  {mode === 'signup' && 'Criar Conta'}
-                  {mode === 'forgot' && 'Enviar link de recuperação'}
-                  <ArrowRight className="w-5 h-5" />
-                </>
-              )}
-            </button>
-          )}
-
-          {resetEmailSent && (
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-body font-bold text-base flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50 shadow-lg shadow-primary/25"
-            >
-              {submitting ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                <>
-                  Redefinir Senha
-                  <CheckCircle className="w-5 h-5" />
-                </>
-              )}
-            </button>
-          )}
-
-          {mode === 'signup' && (
-            <p className="text-[11px] leading-relaxed font-body text-white/60 text-center px-2">
-              Ao criar sua conta, você concorda com os{' '}
-              <button
-                type="button"
-                onClick={() => setLegalOpen('termos')}
-                className="text-primary font-semibold underline underline-offset-2 hover:text-primary/80"
+              </motion.div>
+            ) : (
+              <motion.form
+                key="email-form"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.2 }}
+                onSubmit={handleSubmit}
+                className="space-y-4"
               >
-                Termos de Uso
-              </button>{' '}
-              e com a{' '}
-              <button
-                type="button"
-                onClick={() => setLegalOpen('privacidade')}
-                className="text-primary font-semibold underline underline-offset-2 hover:text-primary/80"
-              >
-                Política de Privacidade
-              </button>
-              , incluindo o uso de dados anônimos (Google Analytics) para melhorar o Direito Prime. Nada é vinculado à sua identidade sem permissão.
-            </p>
-          )}
+                {mode === 'forgot' && (
+                  <div className="text-center mb-4">
+                    <div className="w-12 h-12 rounded-full bg-primary/15 flex items-center justify-center mx-auto mb-3">
+                      {resetEmailSent ? <CheckCircle className="w-6 h-6 text-primary" /> : <KeyRound className="w-6 h-6 text-primary" />}
+                    </div>
+                    <p className="text-sm font-body text-muted-foreground mt-1">
+                      {resetEmailSent
+                        ? `Abra o link enviado para ${email} para criar uma nova senha.`
+                        : 'Informe seu email para receber o link de redefinição'}
+                    </p>
+                  </div>
+                )}
 
-          {mode === 'login' && (
-            <button type="button" onClick={() => { setMode('forgot'); setResetEmailSent(false); }} className="w-full text-center text-xs font-body text-primary hover:underline">
-              Esqueci minha senha
-            </button>
-          )}
+                {mode === 'signup' && (
+                  <div className="relative">
+                    <input type="text" name="name" autoComplete="name" placeholder="Nome de exibição" value={displayName} onChange={(e) => setDisplayName(e.target.value)} className={inputCls} />
+                    <User className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  </div>
+                )}
 
-          {mode === 'forgot' && (
-            <button type="button" onClick={() => { setMode('login'); setResetEmailSent(false); }} className="w-full text-center text-xs font-body text-primary hover:underline">
-              {resetEmailSent ? 'Entendi, voltar ao login' : 'Voltar ao login'}
-            </button>
-          )}
-        </motion.form>
-      </AnimatePresence>
+                {(mode !== 'forgot' || !resetEmailSent) && (
+                  <div className="relative">
+                    <input type="email" name="email" autoComplete="email" inputMode="email" autoCapitalize="none" autoCorrect="off" placeholder="E-mail" value={email} onChange={(e) => setEmail(e.target.value)} required className={inputCls} />
+                    <Mail className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  </div>
+                )}
+
+                {mode !== 'forgot' && (
+                  <div className="relative">
+                    <input type={showPassword ? 'text' : 'password'} name={mode === 'signup' ? 'new-password' : 'current-password'} autoComplete={mode === 'signup' ? 'new-password' : 'current-password'} placeholder="Senha" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} className={inputCls} />
+                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-white transition-colors">
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                )}
+
+                {mode === 'signup' && (
+                  <div className="relative">
+                    <input type={showPassword ? 'text' : 'password'} name="confirm-password" autoComplete="new-password" placeholder="Confirmar senha" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={6} className={inputCls} />
+                    <Lock className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  </div>
+                )}
+
+                {mode === 'forgot' && resetEmailSent && (
+                  <>
+                    <div className="relative">
+                      <input type="text" name="code" placeholder="Código de 6 dígitos" value={resetCode} onChange={(e) => setResetCode(e.target.value)} required className={inputCls} maxLength={6} />
+                      <KeyRound className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    </div>
+                    <div className="relative">
+                      <input type={showPassword ? 'text' : 'password'} name="new-password" placeholder="Nova senha (mín. 6 caracteres)" value={resetNewPassword} onChange={(e) => setResetNewPassword(e.target.value)} required minLength={6} className={inputCls} />
+                      <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-white transition-colors">
+                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </>
+                )}
+
+                {!resetEmailSent && (
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-body font-bold text-base flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50 mt-2"
+                  >
+                    {submitting ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <>
+                        {mode === 'login' && 'Acessar'}
+                        {mode === 'signup' && 'Criar Conta'}
+                        {mode === 'forgot' && 'Enviar link de recuperação'}
+                        <ArrowRight className="w-5 h-5" />
+                      </>
+                    )}
+                  </button>
+                )}
+
+                {resetEmailSent && (
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-body font-bold text-base flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50 mt-2"
+                  >
+                    {submitting ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <>
+                        Redefinir Senha
+                        <CheckCircle className="w-5 h-5" />
+                      </>
+                    )}
+                  </button>
+                )}
+
+                {mode === 'signup' && (
+                  <p className="text-[11px] leading-relaxed font-body text-white/50 text-center px-2 mt-4">
+                    Ao criar sua conta, você concorda com os{' '}
+                    <button
+                      type="button"
+                      onClick={() => setLegalOpen('termos')}
+                      className="text-white font-medium underline hover:text-primary transition-colors"
+                    >
+                      Termos de Uso
+                    </button>{' '}
+                    e com a{' '}
+                    <button
+                      type="button"
+                      onClick={() => setLegalOpen('privacidade')}
+                      className="text-white font-medium underline hover:text-primary transition-colors"
+                    >
+                      Política de Privacidade
+                    </button>
+                    .
+                  </p>
+                )}
+
+                {mode === 'login' && (
+                  <button type="button" onClick={() => { setMode('forgot'); setResetEmailSent(false); }} className="w-full text-center text-sm font-body text-white/60 hover:text-white mt-2 transition-colors">
+                    Esqueceu sua senha?
+                  </button>
+                )}
+
+                {mode === 'forgot' && (
+                  <button type="button" onClick={() => { setMode('login'); setResetEmailSent(false); }} className="w-full text-center text-sm font-body text-white/60 hover:text-white mt-2 transition-colors">
+                    {resetEmailSent ? 'Entendi, voltar ao login' : 'Voltar ao login'}
+                  </button>
+                )}
+              </motion.form>
+            )}
+          </AnimatePresence>
+        </div>
+      </motion.div>
 
       <LegalSheet
         open={legalOpen !== null}
@@ -729,237 +451,68 @@ const AuthFormScreen = ({ onBack }: { onBack: () => void }) => {
       />
     </>
   );
+};
 
-  /* ── Desktop: split-screen layout ── */
-  if (isDesktop) {
-    const lawItems = LEIS_CATALOG.map(l => ({ sigla: l.sigla, nome: l.nome }));
-    const lawItemsLoop = [...lawItems, ...lawItems];
+const LEGAL_TERMS = [
+  "DOLO", "CULPA", "HABEAS CORPUS", "JURISPRUDÊNCIA", "VADE MECUM",
+  "PETIÇÃO INICIAL", "LIMINAR", "AGRAVO", "RECURSO", "SÚMULA",
+  "CONSTITUIÇÃO", "PROCESSO", "ACÓRDÃO", "EMBARGOS", "SENTENÇA",
+  "MÉRITO", "TRÂNSITO EM JULGADO", "JURISDIÇÃO", "USUCAPIÃO", "CONTRATO",
+  "DOLO EVENTUAL", "PRESCRIÇÃO", "DECADÊNCIA", "CITAÇÃO", "INTIMAÇÃO"
+];
 
-    return (
-      <motion.main
-        key="auth-desktop"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.3 }}
-        className="h-dvh max-h-dvh relative overflow-hidden bg-black flex items-center justify-center"
-      >
-        {/* ── Left half: courtroom scene + title ── */}
-        <div className="absolute inset-y-0 left-0 w-1/2 overflow-hidden">
-          <img
-            src={authCourtroomScene}
-            alt="Sala de tribunal"
-            loading="eager"
-            decoding="sync"
-            fetchPriority="high"
-            className="absolute inset-0 w-full h-full object-cover object-center"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/45 to-black/55" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/70" />
+const AuthDecorations = () => {
+  const [items, setItems] = useState<{ id: number; word: string; x: number; duration: number; delay: number; size: number; maxOpacity: number }[]>([]);
 
-          {/* Big title — bottom-left, hierarquia harmônica */}
-          <motion.div
-            initial={{ y: 30, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.2, duration: 0.6, ease: 'easeOut' }}
-            className="absolute bottom-[16%] left-10 right-10 z-10 max-w-xl"
-          >
-            <div className="flex items-center gap-3 mb-4">
-              <img
-                src="/logo-prime.png"
-                alt="Direito Prime"
-                className="w-auto h-12 object-contain drop-shadow-xl"
-              />
-              <div className="h-px flex-1 bg-gradient-to-r from-primary/60 to-transparent" />
-            </div>
+  useEffect(() => {
+    // Reduzido para 8 itens para um visual mais limpo e elegante
+    const newItems = Array.from({ length: 8 }).map((_, i) => {
+      return {
+        id: i,
+        word: LEGAL_TERMS[Math.floor(Math.random() * LEGAL_TERMS.length)],
+        x: Math.random() * 80 + 10, // Evita ficar muito nos cantos
+        duration: 40 + Math.random() * 40, // Bem mais lento para dar um ar premium
+        delay: Math.random() * -80, 
+        size: 16 + Math.random() * 20, 
+        maxOpacity: 0.08 + Math.random() * 0.12 // Opacidade ainda mais sutil
+      };
+    });
+    setItems(newItems);
+  }, []);
 
-            {/* Hierarquia principal */}
-            <h1 className="font-display text-[clamp(2.5rem,4.4vw,3.75rem)] font-black text-primary leading-[0.9] tracking-tight drop-shadow-2xl">
-              ESTUDOS JURÍDICOS
-            </h1>
-            <h2 className="font-display text-[clamp(1rem,1.5vw,1.5rem)] font-semibold text-white/85 leading-tight mt-2 tracking-wide">
-              Estude Direito com método
-            </h2>
-
-            {/* Subheadline única, mais respiro */}
-            <p className="mt-4 font-display text-[clamp(0.95rem,1.25vw,1.25rem)] font-medium text-white/90 leading-snug max-w-md">
-              Legislação, resumos, mapas mentais e questões para você{' '}
-              <span className="text-primary font-bold">estudar todos os dias</span>.
-            </p>
-          </motion.div>
-        </div>
-
-        {/* ── Right half: Themis + cascading laws ── */}
-        <div className="absolute inset-y-0 right-0 w-1/2 overflow-hidden">
-          <img
-            src={authThemisImpact}
-            alt="Deusa Themis"
-            loading="eager"
-            decoding="sync"
-            fetchPriority="high"
-            className="absolute inset-0 w-full h-full object-cover"
-            style={{ objectPosition: 'center' }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-black via-black/65 to-black/25" />
-          <div className="absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-black to-transparent" />
-
-          {/* Brasão da Justiça + título — topo da coluna direita */}
-          <motion.div
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.25, duration: 0.6, ease: 'easeOut' }}
-            className="absolute top-10 left-[45%] right-10 z-10 flex flex-col items-center text-center"
-          >
-            <img
-              src={brasaoRepublica}
-              alt="Brasão da República"
-              className="w-16 xl:w-20 h-auto opacity-95 drop-shadow-[0_4px_16px_rgba(250,204,21,0.35)]"
-            />
-            <h3 className="mt-3 font-display text-lg xl:text-xl font-bold text-white tracking-wide">
-              Toda a <span className="text-primary">legislação brasileira</span>
-            </h3>
-            <p className="mt-1 font-body text-xs xl:text-sm text-white/60">
-              em um só lugar, comentada e atualizada
-            </p>
-          </motion.div>
-
-          {/* Cascading laws list — começa de baixo, abaixo do brasão */}
-          <div
-            className="absolute right-10 left-[45%] top-[42%] bottom-8 overflow-hidden pointer-events-none"
-            style={{
-              maskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)',
-              WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)',
-            }}
-          >
-            <div className="auth-laws-track flex flex-col gap-2">
-              {lawItemsLoop.map((law, i) => (
-                <div
-                  key={`${law.sigla}-${i}`}
-                  className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-black/55 backdrop-blur-sm border border-primary/20"
-                >
-                  <span className="font-display text-sm font-bold text-primary min-w-[70px] tracking-wider">
-                    {law.sigla}
-                  </span>
-                  <span className="font-body text-sm text-white/85 truncate">{law.nome}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-        </div>
-
-        {/* Back button */}
-        <button
-          onClick={onBack}
-          className="absolute top-6 left-6 z-30 w-11 h-11 rounded-full bg-black/60 backdrop-blur-md border border-white/15 flex items-center justify-center hover:bg-black/80 transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5 text-white" />
-        </button>
-
-        {/* Form / QR card */}
-        <motion.div
-          initial={{ scale: 0.96, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.15, type: 'spring', stiffness: 200, damping: 24 }}
-          className={`relative z-20 mx-4 my-4 bg-neutral-950/85 backdrop-blur-xl border border-primary/20 rounded-3xl shadow-[0_25px_80px_-20px_rgba(0,0,0,0.9)] w-full max-w-[440px] max-h-[calc(100dvh-2rem)] overflow-hidden p-6 xl:p-7`}
-        >
-          <DesktopQrLogin />
-
-        </motion.div>
-      </motion.main>
-    );
-  }
-
-
-  /* ── Mobile: dark gray layout with cinematic hero ── */
   return (
-    <motion.main
-      key="auth-mobile"
-      initial={{ x: '100%' }}
-      animate={{ x: 0 }}
-      exit={{ x: '100%' }}
-      transition={{ type: 'spring', stiffness: 260, damping: 30 }}
-      className="min-h-dvh flex flex-col bg-[#0e0e0c] overflow-x-hidden"
-    >
-      {/* ── Top hero: cinematic image with headline overlay ── */}
-      <div className="relative w-full h-[46vh] min-h-[320px] max-h-[420px] flex-shrink-0 overflow-hidden">
-        {/* Full-bleed hero image */}
-        <img
-          src={themisAuthYellow}
-          alt="Themis e a advocacia"
-          loading="eager"
-          decoding="sync"
-          fetchPriority="high"
-          className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none"
-        />
-
-        {/* Bottom gradient wash — black only at the very beginning, lighter above */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/25 to-[#0e0e0c]" />
-        {/* Left-to-right subtle darken for headline legibility */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/15 to-black/30" />
-
-        {/* Back button */}
-        <button
-          onClick={onBack}
-          aria-label="Voltar"
-          className="absolute top-[max(var(--sai-top,env(safe-area-inset-top,0px)),1rem)] left-4 z-20 w-11 h-11 rounded-full bg-black/50 backdrop-blur-md border border-white/15 flex items-center justify-center active:scale-95 transition"
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-[5]">
+      {items.map(item => (
+        <motion.div
+          key={item.id}
+          className="absolute text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] font-display font-bold tracking-[0.2em] whitespace-nowrap"
+          style={{ fontSize: item.size }}
+          initial={{ y: '-10vh', x: `${item.x}vw`, opacity: 0 }}
+          animate={{
+            y: '110vh',
+            opacity: [0, item.maxOpacity, item.maxOpacity, 0]
+          }}
+          transition={{
+            y: { duration: item.duration, repeat: Infinity, ease: 'linear', delay: item.delay },
+            opacity: { duration: item.duration, repeat: Infinity, ease: 'easeInOut', delay: item.delay, times: [0, 0.3, 0.7, 1] }
+          }}
         >
-          <ArrowLeft className="w-5 h-5 text-white" />
-        </button>
-
-        {/* Headline block — brand on top, then title */}
-        <div className="absolute inset-x-0 bottom-0 z-10 px-6 pb-6">
-          {/* Brand row — logo + Direito Prime, above the headline */}
-          <div className="flex items-center gap-3 mb-4">
-            <div className="relative shrink-0">
-              <div className="absolute inset-0 rounded-2xl ring-pulse" />
-              <img
-                src={logoOABnaRisca}
-                alt="Direito Prime"
-                className="relative w-12 h-12 rounded-2xl object-cover border-2 border-primary/60"
-              />
-            </div>
-            <div className="min-w-0">
-              <h2 className="font-display text-white text-lg font-bold leading-none drop-shadow">Direito Prime</h2>
-              <p className="font-body text-white/70 text-[11px] mt-1 drop-shadow">Vade Mecum Jurídico Profissional</p>
-            </div>
-          </div>
-
-
-
-
-          <h1 className="font-display text-white text-[28px] leading-[1.05] font-bold drop-shadow-lg max-w-[90%]">
-            A justiça começa nos <span className="text-primary">seus estudos</span>.
-          </h1>
-          <p className="font-body text-white/85 text-sm mt-2 leading-snug max-w-[85%] drop-shadow">
-            Toda a legislação brasileira comentada, na sua mão.
-          </p>
-        </div>
-
-      </div>
-
-      {/* ── Form area ── */}
-      <div className="flex-1 px-5 pt-6 pb-[max(var(--sai-bottom,env(safe-area-inset-bottom,0px)),1.5rem)] w-full max-w-[440px] mx-auto">
-
-
-        {formContent}
-      </div>
-
-      <p className="text-center text-[10px] font-body text-white/70 pb-[max(var(--sai-bottom,env(safe-area-inset-bottom,0px)),1rem)]">
-        Direito Prime — Vade Mecum © 2026
-      </p>
-    </motion.main>
+          {item.word}
+        </motion.div>
+      ))}
+    </div>
   );
 };
 
-/* ─── Main Auth Page ─── */
+/* ─── Main Auth Page (Cakto Style) ─── */
 const Auth = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const [drawerMode, setDrawerMode] = useState<'login' | 'signup' | 'forgot' | null>(null);
 
   if (loading) {
     return (
-      <main className="min-h-dvh flex items-center justify-center bg-background">
+      <main className="min-h-dvh flex items-center justify-center bg-[#0d0f12]">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </main>
     );
@@ -968,9 +521,115 @@ const Auth = () => {
   if (user) return <Navigate to="/" replace />;
 
   return (
-    <AnimatePresence mode="wait">
-      <AuthFormScreen key="auth" onBack={() => navigate('/landing')} />
-    </AnimatePresence>
+    <main className="min-h-dvh w-full relative flex flex-col bg-[#0d0f12] overflow-hidden">
+      {/* Background Image full screen */}
+      <div className="absolute inset-0 w-full h-full">
+        <img
+          src={authJudgeScene}
+          alt="Tribunal de Justiça"
+          loading="eager"
+          decoding="sync"
+          fetchPriority="high"
+          className="w-full h-full object-cover object-center"
+        />
+        {/* Remover escurecimento excessivo, deixando a cor real - só gradient pra legibilidade no final */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent h-[40%] top-auto" />
+      </div>
+
+      <AuthDecorations />
+
+      {/* Botão de voltar */}
+      <button
+        onClick={() => navigate('/landing')}
+        aria-label="Voltar"
+        className="absolute top-[max(var(--sai-top,env(safe-area-inset-top,0px)),1rem)] left-4 z-20 w-11 h-11 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-black/60 transition active:scale-95"
+      >
+        <ArrowLeft className="w-5 h-5 text-white" />
+      </button>
+
+      {/* Conteúdo Topo */}
+      <div className="relative z-10 w-full pt-[max(var(--sai-top,env(safe-area-inset-top,0px)),3.5rem)] px-6 text-center flex-1">
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="flex flex-col items-center gap-4"
+        >
+          {/* Logo transparente e reflexo, fonte tipografia idêntica ao app */}
+          <div className="flex flex-col items-center justify-center gap-4">
+            <div className="relative rounded-full overflow-hidden border-2 border-primary/40 shadow-[0_8px_32px_rgba(225,29,72,0.4)] bg-[#2b181b] logo-shine">
+              <img
+                src="/logo-prime.png"
+                alt="Logo Direito Prime"
+                className="w-20 h-20 xl:w-24 xl:h-24 object-contain bg-black/20 relative z-10"
+              />
+            </div>
+            
+            <div className="flex flex-col items-center justify-center gap-1 mt-1 w-full">
+              <h1 className="font-serif italic font-bold text-[28px] xl:text-[32px] text-white tracking-tight leading-none drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)] whitespace-nowrap">
+                Estudos Jurídicos
+              </h1>
+              <span className="font-sans font-medium text-white/90 text-[10px] xl:text-xs tracking-[0.3em] uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)] whitespace-nowrap">
+                Uso Profissional
+              </span>
+            </div>
+          </div>
+          
+          {/* Subtítulo eficiente e focado na dor, sem ser caixa alta */}
+          <p className="font-body text-white/95 text-base leading-snug font-medium max-w-[280px] drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] mt-2 bg-black/30 backdrop-blur-sm px-4 py-2 rounded-2xl border border-white/10">
+            A plataforma que entende quem vive de estudar e <span className="text-primary font-bold drop-shadow-md">não tem tempo a perder.</span>
+          </p>
+        </motion.div>
+      </div>
+
+      {/* Área dos Botões Inferiores */}
+      <div className="relative z-10 w-full px-5 pb-[max(var(--sai-bottom,env(safe-area-inset-bottom,0px)),2rem)] flex flex-col gap-4">
+        
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+          className="flex flex-col gap-3"
+        >
+          <button
+            onClick={() => setDrawerMode('login')}
+            className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-body font-bold text-[17px] shadow-[0_8px_32px_rgba(225,29,72,0.6)] active:scale-[0.98] transition-transform overflow-hidden relative shine-effect"
+          >
+            <span className="relative z-10">Acessar conta</span>
+          </button>
+          
+          <button
+            onClick={() => setDrawerMode('signup')}
+            className="w-full py-4 bg-black/40 backdrop-blur-lg border-2 border-white/20 text-white rounded-2xl font-body font-bold text-[17px] active:scale-[0.98] transition-all hover:bg-black/60 shadow-xl"
+          >
+            Criar uma conta
+          </button>
+        </motion.div>
+
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4, duration: 0.5 }}
+          className="mt-2 text-center"
+        >
+          <button className="inline-flex items-center gap-2 text-sm font-body text-white/70 hover:text-white transition-colors p-2 drop-shadow">
+            Precisa de ajuda?
+            <HelpCircle className="w-4 h-4" />
+          </button>
+        </motion.div>
+
+      </div>
+
+      <AnimatePresence>
+        {drawerMode && (
+          <AuthDrawer 
+            mode={drawerMode} 
+            setMode={setDrawerMode} 
+            onClose={() => setDrawerMode(null)} 
+          />
+        )}
+      </AnimatePresence>
+    </main>
   );
 };
 

@@ -11,6 +11,7 @@ import { getAreaVisual } from '@/lib/flashcardsAreaVisual';
 import { haptic } from '@/lib/nativeHaptics';
 import FlashcardsCargoHero from '@/components/flashcards/FlashcardsCargoHero';
 import { useFlashcardsDashboard, useFlashcardsResumoAreas, FlashcardsAreaRow, FlashcardsDash } from '@/lib/flashcardsQueries';
+import FlashcardsFiltroSheet, { FlashcardsFiltro } from '@/components/flashcards/FlashcardsFiltroSheet';
 
 type AreaRow = {
   area: string;
@@ -30,6 +31,7 @@ const Flashcards = () => {
   const [busca, setBusca] = useState('');
   const [buscaAberta, setBuscaAberta] = useState(false);
   const [areaSheet, setAreaSheet] = useState<string | null>(null);
+  const [filtroAberto, setFiltroAberto] = useState(false);
 
   const loading = loadingDash || loadingAreas;
 
@@ -83,7 +85,7 @@ const Flashcards = () => {
             </p>
 
             <button
-              onClick={() => { haptic.selection(); navigate('/flashcards/estudar'); }}
+              onClick={() => { haptic.selection(); setFiltroAberto(true); }}
               className="btn-attention-shine group mt-4 flex h-14 sm:h-16 min-h-[56px] w-full items-center justify-center gap-3 rounded-2xl bg-[#36AF85] hover:bg-[#2C9570] text-white text-base sm:text-lg font-black shadow-xl shadow-[#36AF85]/35 transition-all active:scale-[0.99] border border-[#36AF85]/30"
             >
               <Filter className="h-6 w-6 text-white" strokeWidth={2.5} />
@@ -203,6 +205,21 @@ const Flashcards = () => {
         area={areaSheet}
         open={!!areaSheet}
         onOpenChange={(v) => !v && setAreaSheet(null)}
+      />
+
+      <FlashcardsFiltroSheet
+        aberto={filtroAberto}
+        onFechar={() => setFiltroAberto(false)}
+        onAplicar={(f) => {
+          setFiltroAberto(false);
+          const p = new URLSearchParams();
+          if (f.disciplinas.length) p.set('areas', f.disciplinas.join('|'));
+          if (f.assuntos.length) p.set('temas', f.assuntos.join('|'));
+          if (f.status.length) p.set('modo', f.status[0]);
+          if (f.quantidade) p.set('limite', String(f.quantidade));
+          
+          navigate(`/flashcards/estudar?${p.toString()}`);
+        }}
       />
 
       <FlashcardsBottomNav />

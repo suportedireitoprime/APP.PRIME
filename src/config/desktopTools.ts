@@ -48,7 +48,14 @@ export type DesktopToolGroup = {
  * garantindo que nenhuma função fique acessível só no mobile.
  */
 export const DESKTOP_TOOL_GROUPS: DesktopToolGroup[] = [
-
+  {
+    id: 'aprender',
+    label: 'Aprender Rápido',
+    hint: 'Consuma conhecimento de forma dinâmica',
+    tools: [
+      { id: 'pilulas', label: 'Pílulas Jurídicas', desc: 'Cards interativos estilo Tinder', icon: Sparkles, route: '/pilulas', color: '#10B981' },
+    ],
+  },
   {
     id: 'monitoramento',
     label: 'Monitoramento',

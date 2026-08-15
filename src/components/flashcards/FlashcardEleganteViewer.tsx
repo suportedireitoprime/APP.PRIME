@@ -176,6 +176,7 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
 
   const goNext = useCallback(() => {
     if (idx >= total - 1) return;
+    haptic.selection(); // Vibração ao passar card
     playSlide();
     dirRef.current = 1;
     setFlipped(false);
@@ -184,6 +185,7 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
 
   const goPrev = useCallback(() => {
     if (idx <= 0) return;
+    haptic.selection(); // Vibração ao voltar card
     playSlide();
     dirRef.current = -1;
     setFlipped(false);

@@ -321,6 +321,8 @@ const BoletinsJuridicos = lazy(routePrefetch.boletins);
 const AdminBoletins = lazy(() => import("./pages/AdminBoletins.tsx"));
 const AdminModelos = lazy(() => import("./pages/AdminModelos.tsx"));
 const AdminDesktop = lazy(() => import("./pages/AdminDesktop.tsx"));
+const PilulasHome = lazy(() => import("./pages/pilulas/PilulasHome.tsx"));
+const PilulasViewer = lazy(() => import("./pages/pilulas/PilulasViewer.tsx"));
 
 const Privacidade = lazy(() => import("./pages/Privacidade.tsx"));
 const Termos = lazy(() => import("./pages/Termos.tsx"));
@@ -798,6 +800,8 @@ function AnimatedRoutes() {
           <Route path="/ferramentas/peticao-inicial" element={<ProtectedRoute><PageTransition><PeticaoInicial /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/peticao-inicial/:id" element={<ProtectedRoute><PageTransition><PeticaoInicialEditor /></PageTransition></ProtectedRoute>} />
           <Route path="/admin/locais" element={<ProtectedRoute><PageTransition><AdminLocais /></PageTransition></ProtectedRoute>} />
+          <Route path="/pilulas" element={<ProtectedRoute><PageTransition><PilulasHome /></PageTransition></ProtectedRoute>} />
+          <Route path="/pilulas/deck/:deckId" element={<ProtectedRoute><PageTransition><PilulasViewer /></PageTransition></ProtectedRoute>} />
           <Route path="/tematica-juridica" element={<ProtectedRoute><PageTransition><TematicaJuridica /></PageTransition></ProtectedRoute>} />
           <Route path="/radar-360" element={<ProtectedRoute><PageTransition><Radar360 /></PageTransition></ProtectedRoute>} />
           <Route path="/normas/:slug" element={<ProtectedRoute><PageTransition><OutrasNormasLista /></PageTransition></ProtectedRoute>} />

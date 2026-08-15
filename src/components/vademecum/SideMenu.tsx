@@ -36,6 +36,12 @@ interface Group { title?: string; items: Item[]; }
 
 const GROUPS: Group[] = [
   {
+    title: 'Aprender',
+    items: [
+      { id: 'pilulas', label: 'Pílulas Jurídicas', icon: Sparkles },
+    ],
+  },
+  {
     title: 'Conta',
     items: [
       { id: 'opiniao', label: 'Opinião', icon: MessageSquareHeart },
@@ -159,6 +165,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
       'biblioteca': '/biblioteca',
       'sobre': '/sobre',
       'lembretes': '/meus-lembretes',
+      'pilulas': '/pilulas',
     };
 
     if (directRoutes[id]) {
