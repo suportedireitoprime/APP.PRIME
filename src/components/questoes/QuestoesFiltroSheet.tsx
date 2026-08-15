@@ -362,10 +362,39 @@ const QuestoesFiltroSheet = ({
     () => Object.keys(counts.disciplinas).sort((a, b) => counts.disciplinas[b] - counts.disciplinas[a]),
     [counts.disciplinas],
   );
-  const assuntos = useMemo(
-    () => Object.keys(counts.assuntos).sort((a, b) => counts.assuntos[b] - counts.assuntos[a]),
-    [counts.assuntos],
-  );
+
+  const { assuntosPrincipais, contagensAssuntos, mapaAssuntos, mapaInverso } = useMemo(() => {
+    const principais = new Set<string>();
+    const contagens: Record<string, number> = {};
+    const mapa: Record<string, string[]> = {}; // principal -> raw[]
+    const inverso: Record<string, string> = {}; // raw -> principal
+
+    Object.entries(counts.assuntos).forEach(([raw, count]) => {
+      const parts = raw.split(' > ');
+      const main = parts[0].trim();
+      
+      principais.add(main);
+      contagens[main] = (contagens[main] || 0) + count;
+      
+      if (!mapa[main]) mapa[main] = [];
+      mapa[main].push(raw);
+      inverso[raw] = main;
+    });
+
+    const lista = Array.from(principais).sort((a, b) => contagens[b] - contagens[a]);
+    
+    return { assuntosPrincipais: lista, contagensAssuntos: contagens, mapaAssuntos: mapa, mapaInverso: inverso };
+  }, [counts.assuntos]);
+
+  const assuntosSelecionadosPrincipais = useMemo(() => {
+    const selecionados = new Set<string>();
+    f.assuntos.forEach(raw => {
+      const main = mapaInverso[raw] || raw.split(' > ')[0].trim();
+      selecionados.add(main);
+    });
+    return Array.from(selecionados);
+  }, [f.assuntos, mapaInverso]);
+
   const anos = useMemo(
     () => Object.keys(counts.anos).sort((a, b) => Number(b) - Number(a)),
     [counts.anos],
@@ -456,9 +485,9 @@ const QuestoesFiltroSheet = ({
               />
               <StepRow
                 step={3} label="Assuntos"
-                hint={f.assuntos.length ? `${f.assuntos.length} selecionado(s)` : 'Todos os assuntos'}
+                hint={assuntosSelecionadosPrincipais.length ? `${assuntosSelecionadosPrincipais.length} selecionado(s)` : 'Todos os assuntos'}
                 locked={!f.disciplinas.length} active={proximo === 'assuntos'} done={!!f.assuntos.length}
-                badge={f.assuntos.length}
+                badge={assuntosSelecionadosPrincipais.length || undefined}
                 lockedMessage="Escolha as disciplinas primeiro."
                 onClick={() => setPasso('assuntos')}
               />
@@ -550,10 +579,20 @@ const QuestoesFiltroSheet = ({
               {passo === 'assuntos' && (
                 <SelecaoSheet
                   key="ass" titulo="Assuntos" buscavel
-                  opcoes={assuntos} contagens={counts.assuntos}
-                  selecionado={f.assuntos}
+                  opcoes={assuntosPrincipais} contagens={contagensAssuntos}
+                  selecionado={assuntosSelecionadosPrincipais}
                   onFechar={() => setPasso(null)}
-                  onConfirmar={(v) => setF((p) => ({ ...p, assuntos: v, anos: [] }))}
+                  onConfirmar={(v) => {
+                    const newRawAssuntos: string[] = [];
+                    v.forEach(main => {
+                      if (mapaAssuntos[main]) {
+                        newRawAssuntos.push(...mapaAssuntos[main]);
+                      } else {
+                        newRawAssuntos.push(main);
+                      }
+                    });
+                    setF((p) => ({ ...p, assuntos: newRawAssuntos, anos: [] }));
+                  }}
                 />
               )}
               {passo === 'anos' && (
