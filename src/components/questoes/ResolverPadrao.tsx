@@ -353,8 +353,20 @@ const ResolverPadrao = ({
         </div>
       )}
 
-        {/* 5. Barra Fixa Inferior — Bottom Sheet com Feedback + Ações */}
-        <div className="fixed inset-x-0 bottom-0 z-40">
+      {/* 5. Barra Fixa Inferior — Bottom Sheet com Feedback + Ações */}
+      <AnimatePresence>
+        {resp && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-30 bg-black/70 backdrop-blur-sm"
+            onClick={() => {}} // Bloqueia cliques no fundo
+          />
+        )}
+      </AnimatePresence>
+
+      <div className="fixed inset-x-0 bottom-0 z-40">
           
           <AnimatePresence mode="wait">
             {resp ? (
@@ -396,16 +408,24 @@ const ResolverPadrao = ({
                     </div>
                   </div>
                   
-                  {/* Lista de Ações e Recursos (Vertical) */}
-                  <div className="flex max-h-[35vh] flex-col gap-2 overflow-y-auto px-1 py-1 scrollbar-none">
+                  {/* Ações rápidas: Comentário (lista) + Recursos (horizontal) */}
+                  <div className="flex flex-col gap-4 py-2">
                     <button
                       onClick={() => { if (gateFuncoes.blocked) { gateFuncoes.openGate(); return; } setComentarioAberto(true); }}
-                      className="flex h-12 w-full shrink-0 items-center gap-3 rounded-xl border border-white/5 bg-black/20 px-4 text-left transition-all hover:bg-black/30 active:scale-[0.98]"
+                      className={cn(
+                        "flex h-[52px] w-full shrink-0 items-center gap-3 rounded-xl border px-4 text-left transition-all active:scale-[0.98]",
+                        resp.acertou 
+                          ? "bg-green-500/10 border-green-500/20 hover:bg-green-500/20 text-green-400" 
+                          : "bg-red-500/10 border-red-500/20 hover:bg-red-500/20 text-red-400"
+                      )}
                     >
-                      <MessageSquare className="h-5 w-5 text-primary" />
-                      <span className="text-[15px] font-semibold text-white/90">Comentário</span>
+                      <MessageSquare className="h-5 w-5" />
+                      <span className="text-[15px] font-bold">Ver comentário</span>
                     </button>
-                    <QuestaoAcoesBar source={atual.id} chaveRevisao={atual.id} layout="vertical" />
+                    
+                    <div className="w-full">
+                      <QuestaoAcoesBar source={atual.id} chaveRevisao={atual.id} layout="horizontal" />
+                    </div>
                   </div>
 
                   {/* Navegação */}
