@@ -253,10 +253,10 @@ function SelecaoSheet({
               <span className={cn(
                 'grid h-6 w-6 shrink-0 place-items-center rounded-md border-2 transition-all',
                 isAllSelected
-                  ? 'border-[#F87171] bg-[#F87171] text-white shadow-md shadow-[#F87171]/25'
+                  ? 'border-[#DC2626] bg-[#DC2626] text-white shadow-md shadow-[#DC2626]/25 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]'
                   : 'border-zinc-700 bg-zinc-900/50 group-hover:border-zinc-500',
               )}>
-                {isAllSelected && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
+                {isAllSelected && <Check className="h-3.5 w-3.5 drop-shadow-md" strokeWidth={3} />}
               </span>
             </button>
           </li>
@@ -289,10 +289,10 @@ function SelecaoSheet({
                   'grid h-6 w-6 shrink-0 place-items-center border-2 transition-all',
                   single ? 'rounded-full' : 'rounded-md',
                   ativo
-                    ? 'border-[#F87171] bg-[#F87171] text-white shadow-md shadow-[#F87171]/25'
+                    ? 'border-[#DC2626] bg-[#DC2626] text-white shadow-md shadow-[#DC2626]/25 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]'
                     : 'border-zinc-700 bg-zinc-900/50 group-hover:border-zinc-500',
                 )}>
-                  {ativo && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
+                  {ativo && <Check className="h-3.5 w-3.5 drop-shadow-md" strokeWidth={3} />}
                 </span>
               </button>
             </li>
