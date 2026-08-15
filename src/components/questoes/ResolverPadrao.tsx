@@ -369,65 +369,90 @@ const ResolverPadrao = ({
         </div>
       )}
 
-        {/* 5. Barra Fixa Inferior (Bottom Navigation) com Feedback Animado */}
+        {/* 5. Barra Fixa Inferior — Bottom Sheet com Feedback + Ações */}
         <div className="fixed inset-x-0 bottom-0 z-40">
           
-          <AnimatePresence>
+          <AnimatePresence mode="wait">
             {resp ? (
               <motion.div
+                key="feedback"
                 initial={{ y: '100%' }}
                 animate={{ y: 0 }}
                 exit={{ y: '100%' }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 className={cn(
-                  "border-t px-4 pb-safe-nav pt-4 shadow-2xl",
+                  "rounded-t-3xl border-t px-5 pb-safe-nav pt-5 shadow-2xl",
                   resp.acertou 
-                    ? "bg-green-500/15 border-green-500/30 backdrop-blur-xl" 
-                    : "bg-red-500/15 border-red-500/30 backdrop-blur-xl"
+                    ? "bg-[#0a1f10] border-green-500/30" 
+                    : "bg-[#1f0a0a] border-red-500/30"
                 )}
               >
                 <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
+                  {/* Resultado */}
                   <div className="flex items-center gap-3">
                     <div className={cn(
-                      "flex h-10 w-10 shrink-0 items-center justify-center rounded-full",
-                      resp.acertou ? "bg-green-500/20 text-green-500" : "bg-red-500/20 text-red-500"
+                      "flex h-11 w-11 shrink-0 items-center justify-center rounded-full",
+                      resp.acertou ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"
                     )}>
                       {resp.acertou ? <CheckCircle2 className="h-6 w-6" /> : <XCircle className="h-6 w-6" />}
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <p className={cn(
                         "text-[18px] font-extrabold tracking-tight",
-                        resp.acertou ? "text-green-600 dark:text-green-500" : "text-red-600 dark:text-red-500"
+                        resp.acertou ? "text-green-400" : "text-red-400"
                       )}>
                         {resp.acertou ? 'Excelente!' : 'Não foi dessa vez.'}
                       </p>
                       <p className={cn(
-                        "text-[14px] font-medium",
-                        resp.acertou ? "text-green-700/80 dark:text-green-400/80" : "text-red-700/80 dark:text-red-400/80"
+                        "text-[13px] font-medium",
+                        resp.acertou ? "text-green-400/70" : "text-red-400/70"
                       )}>
                         {resp.acertou ? 'Você acertou a questão.' : `O gabarito correto é a alternativa ${correta}.`}
                       </p>
                     </div>
                   </div>
                   
-                  <div className="flex flex-col gap-2.5">
+                  {/* Ações rápidas: Comentário + Recursos */}
+                  <div className="flex gap-2">
                     <button
                       onClick={() => { if (gateFuncoes.blocked) { gateFuncoes.openGate(); return; } setComentarioAberto(true); }}
                       className={cn(
-                        "flex h-12 w-full items-center justify-center gap-2 rounded-xl text-[15px] font-bold transition-all active:scale-95",
+                        "flex h-11 flex-1 items-center justify-center gap-2 rounded-xl text-[14px] font-bold transition-all active:scale-[0.97]",
                         resp.acertou 
-                          ? "bg-green-500/20 text-green-700 hover:bg-green-500/30 dark:text-green-400" 
-                          : "bg-red-500/20 text-red-700 hover:bg-red-500/30 dark:text-red-400"
+                          ? "bg-green-500/15 text-green-400 hover:bg-green-500/25" 
+                          : "bg-red-500/15 text-red-400 hover:bg-red-500/25"
                       )}
                     >
-                      <MessageSquare className="h-5 w-5" /> Ver comentário
+                      <MessageSquare className="h-4 w-4" /> Comentário
                     </button>
-                    
+                    <button
+                      onClick={() => { if (gateFuncoes.blocked) { gateFuncoes.openGate(); return; } setRecursosAberto(!recursosAberto); }}
+                      className={cn(
+                        "flex h-11 flex-1 items-center justify-center gap-2 rounded-xl text-[14px] font-bold transition-all active:scale-[0.97]",
+                        resp.acertou 
+                          ? "bg-green-500/15 text-green-400 hover:bg-green-500/25" 
+                          : "bg-red-500/15 text-red-400 hover:bg-red-500/25"
+                      )}
+                    >
+                      <Sparkles className="h-4 w-4" /> Funções IA
+                    </button>
+                  </div>
+
+                  {/* Navegação */}
+                  <div className="flex gap-2.5">
+                    {idx > 0 && (
+                      <button
+                        onClick={() => setIdx((i) => i - 1)}
+                        className="flex h-12 items-center justify-center gap-1 rounded-xl bg-white/5 px-4 text-[14px] font-semibold text-foreground/60 transition-colors hover:bg-white/10 active:scale-[0.97]"
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </button>
+                    )}
                     {idx === questoes.length - 1 ? (
                       <button
                         onClick={onNovoBloco}
                         className={cn(
-                          "flex h-12 w-full items-center justify-center gap-1.5 rounded-xl text-[16px] font-extrabold text-white shadow-lg transition-all active:scale-95",
+                          "flex h-12 flex-1 items-center justify-center gap-2 rounded-xl text-[15px] font-extrabold text-white shadow-lg transition-all active:scale-[0.97]",
                           resp.acertou ? "bg-green-600 hover:bg-green-500 shadow-green-600/25" : "bg-red-600 hover:bg-red-500 shadow-red-600/25"
                         )}
                       >
@@ -437,11 +462,11 @@ const ResolverPadrao = ({
                       <button
                         onClick={() => setIdx((i) => i + 1)}
                         className={cn(
-                          "flex h-12 w-full items-center justify-center gap-1.5 rounded-xl text-[16px] font-extrabold text-white shadow-lg transition-all active:scale-95",
+                          "flex h-12 flex-1 items-center justify-center gap-2 rounded-xl text-[15px] font-extrabold text-white shadow-lg transition-all active:scale-[0.97]",
                           resp.acertou ? "bg-green-600 hover:bg-green-500 shadow-green-600/25" : "bg-red-600 hover:bg-red-500 shadow-red-600/25"
                         )}
                       >
-                        Próxima questão
+                        Próxima questão <ChevronRight className="h-5 w-5" />
                       </button>
                     )}
                   </div>
@@ -449,43 +474,42 @@ const ResolverPadrao = ({
               </motion.div>
             ) : (
               <motion.div
+                key="nav"
                 initial={{ y: '100%' }}
                 animate={{ y: 0 }}
                 exit={{ y: '100%' }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                className="border-t border-border/60 bg-background/95 px-4 pb-safe-nav pt-3 backdrop-blur-md shadow-[0_-4px_24px_rgba(0,0,0,0.04)]"
+                className="border-t border-border/40 bg-background/95 px-4 pb-safe-nav pt-3 backdrop-blur-md shadow-[0_-4px_24px_rgba(0,0,0,0.15)]"
               >
-                <div className="mx-auto flex w-full max-w-3xl flex-col gap-3">
-                  <div className="flex items-center justify-between gap-3">
+                <div className="mx-auto flex w-full max-w-3xl items-center justify-between gap-3">
+                  <button
+                    onClick={() => setIdx((i) => i - 1)}
+                    disabled={idx === 0}
+                    className="flex h-12 flex-1 items-center justify-center gap-1.5 text-[15px] font-semibold text-muted-foreground transition-colors hover:text-foreground disabled:opacity-30"
+                  >
+                    <ChevronLeft className="h-5 w-5" /> Anterior
+                  </button>
+                  
+                  {selecao ? (
                     <button
-                      onClick={() => setIdx((i) => i - 1)}
-                      disabled={idx === 0}
-                      className="flex h-12 flex-1 items-center justify-center gap-1.5 text-[15px] font-semibold text-muted-foreground transition-colors hover:text-foreground disabled:opacity-30"
+                      onClick={responder}
+                      className="flex h-12 flex-[1.3] items-center justify-center rounded-xl bg-primary text-[15px] font-bold text-primary-foreground shadow-lg shadow-primary/25 active:scale-95 transition-all"
                     >
-                      <ChevronLeft className="h-5 w-5" /> Anterior
+                      Responder
                     </button>
-                    
-                    {selecao ? (
-                      <button
-                        onClick={responder}
-                        className="flex h-12 flex-1 items-center justify-center rounded-xl bg-primary text-[15px] font-bold text-primary-foreground shadow-lg shadow-primary/25 active:scale-95 transition-all"
-                      >
-                        Responder
-                      </button>
-                    ) : (
-                      <button className="flex h-12 flex-1 items-center justify-center rounded-xl bg-muted/60 text-[14.5px] font-bold text-foreground hover:bg-muted transition-colors">
-                        Ir para questão
-                      </button>
-                    )}
+                  ) : (
+                    <div className="flex h-12 flex-[1.3] items-center justify-center rounded-xl bg-muted/40 text-[13px] font-semibold text-muted-foreground/60">
+                      Selecione uma alternativa
+                    </div>
+                  )}
 
-                    <button
-                      onClick={() => setIdx((i) => i + 1)}
-                      disabled={idx === questoes.length - 1}
-                      className="flex h-12 flex-1 items-center justify-center gap-1.5 text-[15px] font-semibold text-muted-foreground transition-colors hover:text-foreground disabled:opacity-30"
-                    >
-                      Próximo <ChevronRight className="h-5 w-5" />
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => setIdx((i) => i + 1)}
+                    disabled={idx === questoes.length - 1}
+                    className="flex h-12 flex-1 items-center justify-center gap-1.5 text-[15px] font-semibold text-muted-foreground transition-colors hover:text-foreground disabled:opacity-30"
+                  >
+                    Próximo <ChevronRight className="h-5 w-5" />
+                  </button>
                 </div>
               </motion.div>
             )}
