@@ -630,7 +630,7 @@ const HomeHeaderHero = ({ onSearchOpenChange }: { onSearchOpenChange?: (open: bo
               { label: 'Flashcards',  icon: Layers,        to: '/flashcards',   color: '#34D399', badgeColor: null, badgeKey: null, prefetch: 'flashcards' as PrefetchKey },
               { label: 'Questões',    icon: ListChecks,    to: '/questoes',     color: '#F87171', badgeColor: null, badgeKey: null, prefetch: 'questoes' as PrefetchKey },
               { label: 'Me Explique', icon: Camera,        to: '/me-explique',  color: '#F97316', badgeColor: null, badgeKey: null, prefetch: 'aprender' as PrefetchKey },
-            ].map((item) => {
+            ].map((item, index) => {
               const Icon = item.icon;
               const badgeCount = item.badgeKey ? shortcutBadges.counts[item.badgeKey] : 0;
               return (
@@ -643,7 +643,8 @@ const HomeHeaderHero = ({ onSearchOpenChange }: { onSearchOpenChange?: (open: bo
                     if (item.badgeKey) shortcutBadges.markSeen(item.badgeKey);
                     navigate(item.to);
                   }}
-                  className="group relative flex flex-col items-center justify-center gap-1 h-[72px] rounded-2xl bg-black/45 backdrop-blur-md border border-white/15 shadow-lg shadow-black/30 active:scale-[0.96] transition"
+                  style={{ '--shimmer-delay': `${index * 150}ms` } as React.CSSProperties}
+                  className="group relative flex flex-col items-center justify-center gap-1 h-[72px] rounded-2xl bg-black/45 backdrop-blur-md border border-white/15 shadow-lg shadow-black/30 active:scale-[0.96] transition shortcut-button-shine"
                 >
                   {badgeCount > 0 && item.badgeColor && (
                     <span

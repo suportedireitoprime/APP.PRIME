@@ -16,16 +16,6 @@ import { PageHeader } from '@/components/vademecum/PageHeader';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 import OpiniaoSheet from '@/components/menu/OpiniaoSheet';
 import AvaliarAppSheet from '@/components/vademecum/AvaliarAppSheet';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
 
 interface SideMenuProps {
   open: boolean;
@@ -69,7 +59,6 @@ const GROUPS: Group[] = [
 const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
   const [opiniaoOpen, setOpiniaoOpen] = useState(false);
   const [avaliarOpen, setAvaliarOpen] = useState(false);
-  const [logoutPrompt, setLogoutPrompt] = useState(false);
   useEscapeKey(open, onClose);
   const navigate = useNavigate();
   const { signOut, user } = useAuth();
@@ -127,7 +116,27 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
 
   const handleItemClick = async (id: string) => {
     if (id === 'sair') {
-      setTimeout(() => setLogoutPrompt(true), 180);
+      // 1. Fecha o menu PRIMEIRO para não bloquear o diálogo nativo
+      purgeBodyLocks();
+      onClose();
+
+      // 2. Espera o menu desmontar e só então exibe o confirm
+      setTimeout(async () => {
+        try {
+          const { confirmar } = await import('@/lib/nativo/dialogos');
+          const confirmed = await confirmar({
+            titulo: 'Sair da conta',
+            mensagem: 'Você quer realmente sair da conta?',
+            okTexto: 'Sim, sair',
+            cancelarTexto: 'Cancelar',
+          });
+          if (confirmed) {
+            signOut();
+          }
+        } catch {
+          // fallback silencioso
+        }
+      }, 300);
       return;
     }
 
@@ -338,36 +347,6 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
         onClose={() => setAvaliarOpen(false)}
         onFeedback={() => { navigate('/suporte'); onClose(); }}
       />
-      <AlertDialog open={logoutPrompt} onOpenChange={setLogoutPrompt}>
-        <AlertDialogContent className="w-11/12 max-w-md rounded-2xl">
-          <AlertDialogHeader>
-            <AlertDialogTitle>Sair da conta</AlertDialogTitle>
-            <AlertDialogDescription>
-              Você quer realmente sair da conta?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="flex-col gap-2 sm:flex-row">
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={(e) => {
-              e.preventDefault();
-              // 1. Fecha o AlertDialog primeiro — dá ao Radix tempo de limpar seus locks
-              setLogoutPrompt(false);
-
-              // 2. Espera o Radix processar a remoção dos seus estilos do body,
-              //    e só depois desmonta o SideMenu (que destrói o portal inteiro).
-              setTimeout(() => {
-                purgeBodyLocks();
-                onClose();
-
-                // 3. signOut após o menu já ter sido removido da árvore
-                setTimeout(() => signOut(), 150);
-              }, 250);
-            }} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Sim, sair
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>,
     document.body,
   );

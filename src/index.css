@@ -670,6 +670,33 @@ body {
   mix-blend-mode: screen;
 }
 
+/* === Reflexo sequencial nos botões de atalho (Aprender, Flashcards, etc) === */
+.shortcut-button-shine {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.shortcut-button-shine::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    105deg,
+    transparent 20%,
+    hsla(0, 0%, 100%, 0.2) 45%,
+    hsla(0, 0%, 100%, 0.4) 50%,
+    hsla(0, 0%, 100%, 0.2) 55%,
+    transparent 80%
+  );
+  transform: translateX(-150%) skewX(-15deg);
+  animation: shimmer-reflect 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: var(--shimmer-delay, 0ms);
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: screen;
+}
+
 /* === Reflexo suave no ícone do card (varredura diagonal) === */
 .icon-shine {
   background: linear-gradient(

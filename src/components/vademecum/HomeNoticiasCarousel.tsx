@@ -239,7 +239,7 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
     (async () => {
       const { data } = await supabase
         .from('biblioteca_classicos')
-        .select('id, livro, autor, area, imagem, sobre, link, download, capa_horizontal, ano_lancamento, editora, curiosidades, analise_detalhada')
+        .select('id, livro, autor, area, imagem, sobre, link, download, capa_horizontal, ano_lancamento, editora, curiosidades, analise_detalhada, audio_resumo_url, paginas, minutos_leitura')
         .not('imagem', 'is', null)
         .limit(MAX_LIVROS);
       if (data) setLivros((data as unknown) as Livro[]);
