@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  ChevronLeft, ChevronRight, Clock, Heart, Loader2, PlayCircle, CheckCircle2, XCircle, RotateCw, Sparkles, AlertTriangle, ScanText, FileText,
+  ChevronLeft, ChevronRight, Clock, Heart, Loader2, PlayCircle, CheckCircle2, XCircle, RotateCw, Sparkles, AlertTriangle, ScanText, FileText, Plus,
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -183,8 +183,7 @@ const ResolverPadrao = ({
           <ChevronLeft className="h-6 w-6" />
         </button>
         <div className="flex-1 px-3 text-center">
-          <p className="line-clamp-1 text-[16px] font-bold leading-tight">{atual.assunto || atual.disciplina}</p>
-          {atual.assunto && <p className="text-[12px] font-medium opacity-90">{atual.disciplina}</p>}
+          <p className="line-clamp-1 text-[16px] font-bold leading-tight">{atual.disciplina}</p>
         </div>
         <button onClick={agendarNotificacaoErro} aria-label="Reportar Erro" className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-black/15 hover:bg-black/25 transition-colors">
           <AlertTriangle className="h-5 w-5" />
@@ -206,10 +205,19 @@ const ResolverPadrao = ({
           <div className="flex items-center gap-1">
             <button
               onClick={() => setRecursosAberto(!recursosAberto)}
-              className="ml-1 flex h-9 items-center gap-1.5 rounded-full border border-primary px-3 text-[13px] font-bold text-primary hover:bg-primary/5 transition-colors"
+              className="relative ml-1 flex h-9 items-center gap-1.5 overflow-hidden rounded-full border border-primary px-3 text-[13px] font-bold text-primary hover:bg-primary/5 transition-colors"
             >
-              <Sparkles className="h-4 w-4" />
-              Recursos
+              <Plus className="h-4 w-4 z-10" />
+              <span className="z-10">Recursos</span>
+              
+              {/* Animação de reflexo brilhante a cada nova questão */}
+              <motion.div
+                key={atual.id}
+                initial={{ x: '-150%' }}
+                animate={{ x: '200%' }}
+                transition={{ duration: 0.7, ease: "easeInOut", delay: 0.3 }}
+                className="absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-transparent via-primary/30 to-transparent skew-x-12 z-0"
+              />
             </button>
           </div>
         </div>
@@ -230,11 +238,18 @@ const ResolverPadrao = ({
           )}
         </AnimatePresence>
 
-        {/* 3. Metadados (Ano, Banca, Órgão) */}
-        <div className="flex flex-wrap gap-x-4 gap-y-1.5 pt-4 pb-5 text-[14px] text-muted-foreground/90">
-          {atual.ano && <span><strong className="font-semibold text-foreground/80">Ano:</strong> {atual.ano}</span>}
-          {atual.banca && <span><strong className="font-semibold text-foreground/80">Banca:</strong> {atual.banca}</span>}
-          {atual.orgao && <span><strong className="font-semibold text-foreground/80">Órgão:</strong> {atual.orgao}</span>}
+        {/* 3. Metadados (Ano, Banca, Órgão, Assunto) */}
+        <div className="flex flex-col gap-1.5 pt-4 pb-5 text-[14px] text-muted-foreground/90">
+          <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+            {atual.ano && <span><strong className="font-semibold text-foreground/80">Ano:</strong> {atual.ano}</span>}
+            {atual.banca && <span><strong className="font-semibold text-foreground/80">Banca:</strong> {atual.banca}</span>}
+            {atual.orgao && <span><strong className="font-semibold text-foreground/80">Órgão:</strong> {atual.orgao}</span>}
+          </div>
+          {atual.assunto && (
+            <div>
+              <strong className="font-semibold text-foreground/80">Assunto:</strong> {atual.assunto}
+            </div>
+          )}
         </div>
 
         {/* Textos da Questão */}
@@ -304,7 +319,7 @@ const ResolverPadrao = ({
                   revela ? 'border-green-500 bg-green-500/10 shadow-sm shadow-green-500/10'
                     : errou ? 'border-red-500 bg-red-500/10 shadow-sm shadow-red-500/10'
                     : escolhida ? 'border-primary bg-primary/5 shadow-sm shadow-primary/10'
-                    : 'border-border/60 bg-card hover:border-border hover:bg-accent/50',
+                    : 'border-border/60 bg-muted/40 hover:border-border hover:bg-accent/50',
                 )}
               >
                 <span className={cn(
@@ -312,7 +327,7 @@ const ResolverPadrao = ({
                   revela ? 'bg-green-500 text-white'
                     : errou ? 'bg-red-500 text-white'
                     : escolhida ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted text-foreground/70',
+                    : 'bg-foreground/5 text-foreground/60',
                 )}>
                   {op.letra}
                 </span>
