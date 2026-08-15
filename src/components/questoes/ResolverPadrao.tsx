@@ -22,6 +22,7 @@ type Props = {
   contexto?: string;
   onRegistrar: (questaoId: string, alternativa: string, acertou: boolean, contexto?: string) => void;
   onNovoBloco: () => void;
+  onBack?: () => void;
   vazioTexto?: string;
 };
 
@@ -42,6 +43,7 @@ const ResolverPadrao = ({
   const [comentarioAberto, setComentarioAberto] = useState(false);
   const [favoritos, setFavoritos] = useState<Set<string>>(new Set());
   const [segundos, setSegundos] = useState(0);
+  const [recursosAberto, setRecursosAberto] = useState(false);
   const topoRef = useRef<HTMLDivElement>(null);
   const gateQuestoes = useGatedFeature('questoes', 'questoes');
   const gateFuncoes = useGatedFeature('questao_funcoes', 'questao_funcoes');
@@ -135,7 +137,7 @@ const ResolverPadrao = ({
 
   if (!questoes.length) {
     return (
-      <div className="flex flex-col items-center gap-3 rounded-2xl border border-border bg-muted/40 p-8 text-center">
+      <div className="mx-auto flex w-full max-w-3xl flex-col items-center gap-3 rounded-2xl border border-border bg-muted/40 p-8 text-center mt-10">
         <Sparkles className="h-8 w-8 text-muted-foreground" />
         <p className="text-[15px] font-semibold text-foreground">Nada por aqui ainda</p>
         <p className="max-w-sm text-[14px] text-muted-foreground">
@@ -149,83 +151,140 @@ const ResolverPadrao = ({
     .filter(Boolean) as string[];
 
   return (
-    <div ref={topoRef} className={cn('flex flex-col gap-4', resp ? 'pb-52' : 'pb-28')}>
+    <div ref={topoRef} className="flex min-h-screen flex-col bg-background pb-32">
       {gateQuestoes.gateNode}
       {gateFuncoes.gateNode}
-      {/* topo: contador, tempo, favorito */}
-      <div className="flex items-center justify-between">
-        <span className="text-[14px] font-bold tabular-nums text-foreground sm:text-[15px]">
-          {String(idx + 1).padStart(2, '0')} <span className="text-muted-foreground">de {questoes.length}</span>
-        </span>
-        <div className="flex items-center gap-2">
-          <span className="inline-flex min-h-[32px] items-center gap-1 rounded-full bg-muted px-3 text-[13px] tabular-nums text-muted-foreground">
-            <Clock className="h-4 w-4" /> {formatarTempo(segundos)}
-          </span>
-          <span className="text-[13px] tabular-nums text-muted-foreground">{acertos} acertos</span>
-          <button
-            onClick={favoritar}
-            aria-label="Favoritar questão"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground hover:text-primary"
-          >
-            <Heart className={cn('h-6 w-6', favoritos.has(atual.id) && 'fill-primary text-primary')} />
-          </button>
+
+      {/* 1. Cabeçalho Laranja */}
+      <div className="sticky top-0 z-50 flex items-center justify-between bg-primary px-4 pb-4 pt-safe-header text-primary-foreground shadow-sm">
+        <button onClick={onBack} aria-label="Voltar" className="grid h-11 w-11 shrink-0 place-items-center rounded-full hover:bg-black/10 transition-colors">
+          <ChevronLeft className="h-6 w-6" />
+        </button>
+        <div className="flex-1 text-center">
+          <p className="text-[17px] font-bold">Questão Q{atual.id.substring(0, 6).toUpperCase()}</p>
+          <p className="text-[13px] font-medium opacity-90">{atual.disciplina}</p>
         </div>
+        <button className="grid h-11 w-11 shrink-0 place-items-center rounded-full hover:bg-black/10 transition-colors">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" /></svg>
+        </button>
       </div>
 
-      {/* tags */}
-      {tags.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
-          {tags.map((t, i) => (
-            <span key={`${t}-${i}`} className="rounded-full bg-primary/10 px-3 py-1.5 text-[12px] font-semibold text-primary sm:text-[13px]">
-              {t}
+      <div className="mx-auto w-full max-w-3xl px-4 pt-5 sm:px-6">
+        {/* 2. Sub-cabeçalho (Numeração e Recursos) */}
+        <div className="flex items-end justify-between border-b border-border/50 pb-4">
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-[36px] font-extrabold leading-none text-foreground tracking-tight">
+              {String(idx + 1).padStart(2, '0')}
             </span>
-          ))}
-        </div>
-      )}
+            <span className="text-[15px] font-medium text-muted-foreground mb-1">
+              de {questoes.length}
+            </span>
+          </div>
 
-      {atual.texto_associado && (
-        <div className="max-h-60 overflow-y-auto rounded-xl bg-muted/50 p-4 text-[15px] leading-[1.7] text-muted-foreground sm:text-[16px]">
-          {atual.texto_associado}
-        </div>
-      )}
-
-      {atual.imagem_url && (
-        <img src={atual.imagem_url} alt="Imagem da questão" loading="lazy" className="w-full rounded-xl border border-border" />
-      )}
-
-      <p className="text-[16px] font-normal leading-[1.65] text-foreground sm:text-[17px]">{atual.enunciado}</p>
-
-      <div className="space-y-2.5">
-        {alternativas.map((op) => {
-          const escolhida = selecao === op.letra;
-          const revela = !!resp && op.letra === correta;
-          const errou = !!resp && resp.escolha === op.letra && !resp.acertou;
-          return (
-            <button
-              key={op.letra}
-              disabled={!!resp}
-              onClick={() => { haptic.light?.(); setSelecao(op.letra); }}
-              className={cn(
-                'flex min-h-[56px] w-full items-start gap-3 rounded-xl border p-4 text-left text-[16px] leading-[1.65] transition-colors sm:text-[17px]',
-                revela ? 'border-green-500/60 bg-green-500/10'
-                  : errou ? 'border-red-500/60 bg-red-500/10'
-                  : escolhida ? 'border-primary bg-primary/10'
-                  : 'border-border hover:border-primary/50 hover:bg-accent',
-              )}
-            >
-              <span className={cn(
-                'flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-[15px] font-bold',
-                escolhida && !resp ? 'border-primary bg-primary text-primary-foreground' : 'border-border',
-              )}>
-                {op.letra}
-              </span>
-              <span className="flex-1">{op.texto}</span>
-              {revela && <CheckCircle2 className="h-6 w-6 shrink-0 text-green-600" />}
-              {errou && <XCircle className="h-6 w-6 shrink-0 text-red-600" />}
+          <div className="flex items-center gap-1">
+            <button className="grid h-10 w-10 place-items-center rounded-full text-primary hover:bg-primary/10 transition-colors">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             </button>
-          );
-        })}
-      </div>
+            <button onClick={() => setComentarioAberto(true)} className="grid h-10 w-10 place-items-center rounded-full text-primary hover:bg-primary/10 transition-colors">
+              <MessageSquare className="h-5 w-5" />
+            </button>
+            <button
+              onClick={() => setRecursosAberto(!recursosAberto)}
+              className="ml-1 flex h-9 items-center gap-1.5 rounded-full border border-primary px-3 text-[13px] font-bold text-primary hover:bg-primary/5 transition-colors"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+              Recursos
+            </button>
+          </div>
+        </div>
+
+        {/* Questões Ações Bar - Slide Down when Recursos is open */}
+        <AnimatePresence>
+          {recursosAberto && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="overflow-hidden border-b border-border/50"
+            >
+              <div className="py-4">
+                <QuestaoAcoesBar source={atual.id} chaveRevisao={atual.id} />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* 3. Metadados (Ano, Banca, Órgão) */}
+        <div className="flex flex-wrap gap-x-4 gap-y-1.5 pt-4 pb-5 text-[14px] text-muted-foreground/90">
+          {atual.ano && <span><strong className="font-semibold text-foreground/80">Ano:</strong> {atual.ano}</span>}
+          {atual.banca && <span><strong className="font-semibold text-foreground/80">Banca:</strong> {atual.banca}</span>}
+          {atual.orgao && <span><strong className="font-semibold text-foreground/80">Órgão:</strong> {atual.orgao}</span>}
+        </div>
+
+        {/* Textos da Questão */}
+        <div className="flex flex-col gap-4 pb-6">
+          {atual.texto_associado && (
+            <div className="max-h-60 overflow-y-auto rounded-xl bg-muted/40 p-4 text-[15.5px] leading-[1.65] text-muted-foreground sm:text-[16px]">
+              {atual.texto_associado}
+            </div>
+          )}
+
+          {atual.imagem_url && (
+            <img src={atual.imagem_url} alt="Imagem da questão" loading="lazy" className="w-full rounded-xl border border-border" />
+          )}
+
+          <p className="text-[16.5px] font-normal leading-[1.7] text-foreground sm:text-[17.5px]">
+            {atual.enunciado}
+          </p>
+        </div>
+
+        {/* 4. Alternativas */}
+        <div className="space-y-3">
+          {alternativas.map((op) => {
+            const escolhida = selecao === op.letra;
+            const revela = !!resp && op.letra === correta;
+            const errou = !!resp && resp.escolha === op.letra && !resp.acertou;
+            
+            // Auto responder logic:
+            const handleSelect = () => {
+              haptic.light?.(); 
+              setSelecao(op.letra);
+              // Na nova UI, como não temos o botão enorme de responder, podemos ativar a resposta automática
+              // ou manter a seleção para responder depois se ainda formos implementar isso.
+              // Como no QConcursos a resposta é imediata ou tem um botão fixo, vamos manter o fluxo atual onde ele clica 
+              // e aparece o "Responder" em baixo, mas com o botão "Responder" embutido na barra inferior?
+              // Vamos manter o setSelecao por enquanto.
+            };
+
+            return (
+              <button
+                key={op.letra}
+                disabled={!!resp}
+                onClick={handleSelect}
+                className={cn(
+                  'flex min-h-[60px] w-full items-center gap-4 rounded-2xl border p-4 text-left transition-all',
+                  revela ? 'border-green-500 bg-green-500/10 shadow-sm shadow-green-500/10'
+                    : errou ? 'border-red-500 bg-red-500/10 shadow-sm shadow-red-500/10'
+                    : escolhida ? 'border-primary bg-primary/5 shadow-sm shadow-primary/10'
+                    : 'border-border/60 bg-card hover:border-border hover:bg-accent/50',
+                )}
+              >
+                <span className={cn(
+                  'flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[15px] font-bold transition-colors',
+                  revela ? 'bg-green-500 text-white'
+                    : errou ? 'bg-red-500 text-white'
+                    : escolhida ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-foreground/70',
+                )}>
+                  {op.letra}
+                </span>
+                <span className="flex-1 text-[16px] leading-[1.5] text-foreground/90">{op.texto}</span>
+                {revela && <CheckCircle2 className="h-6 w-6 shrink-0 text-green-600" />}
+                {errou && <XCircle className="h-6 w-6 shrink-0 text-red-600" />}
+              </button>
+            );
+          })}
+        </div>
 
       {/* feedback + navegação após responder */}
       {resp && (
@@ -250,74 +309,48 @@ const ResolverPadrao = ({
         </div>
       )}
 
-      {/* botão flutuante Responder */}
-      <AnimatePresence>
-        {!resp && selecao && (
-          <motion.div
-            initial={{ y: 90, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 90, opacity: 0, pointerEvents: 'none' }}
-            transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
-            className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 px-4 pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-3 backdrop-blur"
-          >
-            <div className="mx-auto w-full max-w-3xl">
+        {/* 5. Barra Fixa Inferior (Bottom Navigation) */}
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border/60 bg-background/95 px-4 pb-safe-nav pt-3 backdrop-blur-md shadow-[0_-4px_24px_rgba(0,0,0,0.04)]">
+          <div className="mx-auto flex w-full max-w-3xl items-center justify-between gap-3">
+            <button
+              onClick={() => setIdx((i) => i - 1)}
+              disabled={idx === 0}
+              className="flex h-12 flex-1 items-center justify-center gap-1.5 text-[15px] font-semibold text-muted-foreground transition-colors hover:text-foreground disabled:opacity-30"
+            >
+              <ChevronLeft className="h-5 w-5" /> Anterior
+            </button>
+            
+            {/* Se ainda não respondeu mas escolheu uma alternativa, mostrar botão Responder no meio. Se já respondeu ou não escolheu, mostrar navegação "Ir para questão" */}
+            {!resp && selecao ? (
               <button
                 onClick={responder}
-                className="h-14 w-full rounded-2xl bg-primary text-[16px] font-bold text-primary-foreground shadow-lg active:scale-[0.98] transition-transform"
+                className="flex h-12 flex-1 items-center justify-center rounded-xl bg-primary text-[15px] font-bold text-primary-foreground shadow-lg shadow-primary/25 active:scale-95 transition-all"
               >
                 Responder
               </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            ) : resp && idx === questoes.length - 1 ? (
+              <button
+                onClick={onNovoBloco}
+                className="flex h-12 flex-1 items-center justify-center gap-1.5 rounded-xl bg-primary text-[15px] font-bold text-primary-foreground shadow-lg shadow-primary/25 active:scale-95 transition-all"
+              >
+                <RotateCw className="h-4 w-4" /> Novo bloco
+              </button>
+            ) : (
+              <button className="flex h-12 flex-1 items-center justify-center rounded-xl bg-muted/60 text-[14.5px] font-bold text-foreground hover:bg-muted transition-colors">
+                Ir para questão
+              </button>
+            )}
 
-      {/* barra fixa: navegação + trilho de recursos — só depois de responder */}
-      <AnimatePresence>
-        {resp && (
-          <motion.div
-            initial={{ y: 120, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 120, opacity: 0, pointerEvents: 'none' }}
-            transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
-            className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 px-2 pb-[calc(0.75rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-2 backdrop-blur"
-          >
-            <div className="mx-auto w-full max-w-3xl space-y-2">
-              <div className="flex items-center gap-2 px-1">
-                <button
-                  onClick={() => setIdx((i) => i - 1)}
-                  disabled={idx === 0}
-                  className="inline-flex h-12 flex-1 items-center justify-center gap-1 rounded-xl border border-border bg-card text-[15px] font-semibold text-foreground disabled:opacity-40"
-                >
-                  <ChevronLeft className="h-5 w-5" /> Anterior
-                </button>
-                <button
-                  onClick={() => { if (gateFuncoes.blocked) { gateFuncoes.openGate(); return; } setComentarioAberto(true); }}
-                  className="inline-flex h-12 flex-1 items-center justify-center gap-1.5 rounded-xl border border-border bg-card text-[15px] font-semibold text-foreground"
-                >
-                  <MessageSquare className="h-5 w-5" /> Comentário
-                </button>
-                {idx < questoes.length - 1 ? (
-                  <button
-                    onClick={() => setIdx((i) => i + 1)}
-                    className="inline-flex h-12 flex-1 items-center justify-center gap-1 rounded-xl bg-primary text-[15px] font-bold text-primary-foreground"
-                  >
-                    Próxima <ChevronRight className="h-5 w-5" />
-                  </button>
-                ) : (
-                  <button
-                    onClick={onNovoBloco}
-                    className="inline-flex h-12 flex-1 items-center justify-center gap-1.5 rounded-xl bg-primary text-[15px] font-bold text-primary-foreground"
-                  >
-                    <RotateCw className="h-5 w-5" /> Novo bloco
-                  </button>
-                )}
-              </div>
-              <QuestaoAcoesBar source={atual.id} chaveRevisao={atual.id} />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <button
+              onClick={() => setIdx((i) => i + 1)}
+              disabled={idx === questoes.length - 1}
+              className="flex h-12 flex-1 items-center justify-center gap-1.5 text-[15px] font-semibold text-muted-foreground transition-colors hover:text-foreground disabled:opacity-30"
+            >
+              Próximo <ChevronRight className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+      </div>
 
 
       <ComentarioSheet

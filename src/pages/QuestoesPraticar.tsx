@@ -26,23 +26,18 @@ const QuestoesPraticar = () => {
   });
 
   return (
-    <div className="theme-questoes min-h-screen bg-background pb-8">
+    <div className="theme-questoes min-h-screen bg-background pb-safe">
       {contando && <ContagemRegressiva onFim={() => setContando(false)} />}
-      <PageHeader
-        title={area ?? (nivel === 'iniciante' ? 'Iniciante' : 'Praticar')}
-        subtitle="Questões comentadas"
+      
+      <ResolverPadrao
+        questoes={questoes}
+        loading={loading || contando}
+        contexto="pratica"
+        onRegistrar={registrar}
+        onNovoBloco={recarregar}
         onBack={() => goBack()}
+        vazioTexto="Nenhuma questão encontrada com esses filtros. Ajuste o filtro e tente de novo."
       />
-      <div className="mx-auto w-full max-w-3xl px-4 py-5 sm:px-6">
-        <ResolverPadrao
-          questoes={questoes}
-          loading={loading || contando}
-          contexto="pratica"
-          onRegistrar={registrar}
-          onNovoBloco={recarregar}
-          vazioTexto="Nenhuma questão encontrada com esses filtros. Ajuste o filtro e tente de novo."
-        />
-      </div>
     </div>
   );
 };
