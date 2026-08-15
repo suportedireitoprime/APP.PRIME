@@ -59,12 +59,11 @@ export function marcarResultado(granted: boolean) {
   logPermEvent(granted ? 'permission_granted' : 'permission_denied');
 }
 
-/** Já temos permissão concedida no sistema? */
 export async function permissaoConcedida(): Promise<boolean> {
   try {
     if (Capacitor.isNativePlatform()) {
       const { FirebaseMessaging } = await import('@capacitor-firebase/messaging');
-      const p = await FirebaseMessaging.requestPermissions();
+      const p = await FirebaseMessaging.checkPermissions();
       return p.receive === 'granted';
     }
     if (typeof Notification !== 'undefined') return Notification.permission === 'granted';

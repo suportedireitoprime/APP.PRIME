@@ -34,8 +34,12 @@ export default function NotificacoesPermissaoStep({
   const { supported: webSupported, subscribe } = useWebPush();
   const { user } = useAuth();
   
+  const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 1024;
+  const isNative = Capacitor.isNativePlatform();
+  const platformText = isNative ? 'no celular' : isDesktop ? 'no seu computador' : 'aqui';
+
   const firstName = user?.user_metadata?.full_name?.split(' ')[0] || user?.user_metadata?.name?.split(' ')[0] || '';
-  const rawText = 'Ei [Nome]! Ativa as notificações aí pra eu te avisar rapidão quando sair lei nova ou tiver novidade importante. Bora?';
+  const rawText = `Ei [Nome]! Ativa as notificações ${platformText} pra eu te avisar rapidão quando sair lei nova ou tiver novidade importante. Bora?`;
   const personalizedGuideText = rawText.replace('[Nome]!', firstName ? `${firstName}!` : '!');
 
   const [out, setOut] = useState('');
