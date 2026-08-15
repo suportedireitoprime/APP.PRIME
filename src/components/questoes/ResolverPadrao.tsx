@@ -191,7 +191,16 @@ const ResolverPadrao = ({
       </div>
 
       <div className="mx-auto w-full max-w-3xl px-4 pt-5 sm:px-6">
-        {/* 2. Sub-cabeçalho (Numeração e Recursos) */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={atual.id}
+            initial={{ opacity: 0, x: 15 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -15 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+            className="flex flex-col"
+          >
+            {/* 2. Sub-cabeçalho (Numeração e Recursos) */}
         <div className="flex items-end justify-between border-b border-border/50 pb-4">
           <div className="flex items-baseline gap-1.5">
             <span className="text-[36px] font-extrabold leading-none text-foreground tracking-tight">
@@ -338,6 +347,8 @@ const ResolverPadrao = ({
             );
           })}
         </div>
+        </motion.div>
+        </AnimatePresence>
 
       {/* feedback + navegação após responder */}
       {resp && (
