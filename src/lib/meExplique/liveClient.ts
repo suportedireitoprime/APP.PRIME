@@ -35,7 +35,7 @@ export interface OpcoesLive {
   modelo: string;
   /** Setup completo quando o token não trava a configuração no servidor. */
   setup?: Record<string, unknown> | null;
-  video: HTMLVideoElement;
+  video?: HTMLVideoElement;
   /** Stream de vídeo já aberto pelo preview (evita reabrir a câmera). */
   streamVideo?: MediaStream | null;
 
@@ -122,23 +122,31 @@ export class SessaoMeExplique {
       // Preview já está no ar: só abrimos o microfone.
       this.streamProprio = false;
       this.stream = await this.abrirMicrofone();
-    } else {
+    } else if (this.opcoes.video) {
       this.streamProprio = true;
       this.stream = await this.abrirCamera();
       this.opcoes.video.srcObject = this.stream;
       this.opcoes.video.muted = true;
       this.opcoes.video.playsInline = true;
       await this.opcoes.video.play().catch(() => undefined);
+    } else {
+      // Sessão apenas com áudio, sem vídeo/câmera.
+      this.streamProprio = true;
+      this.stream = await this.abrirMicrofone();
     }
 
     await this.conectar();
     // Libera o áudio de saída ainda dentro do gesto do usuário (autoplay iOS).
     this.garantirSaida();
     this.iniciarAudio();
-    this.iniciarFrames();
+    if (this.opcoes.video) this.iniciarFrames();
 
-    // Depois do primeiro frame, pede que o professor comente o que está vendo.
-    window.setTimeout(() => this.enviarTexto(ABERTURA, true), 900);
+    // Depois de 900ms, pede que o professor comente o que está vendo (ou o que recebeu em texto).
+    window.setTimeout(() => {
+      if (this.opcoes.video) {
+        this.enviarTexto(ABERTURA, true);
+      }
+    }, 900);
   }
 
   private get restricoesAudio() {
@@ -411,6 +419,7 @@ export class SessaoMeExplique {
   /** Captura o quadro atual em alta definição e envia ao modelo. */
   enviarFrame() {
     const video = this.opcoes.video;
+    if (!video) return;
     if (!this.pronto || this.ws?.readyState !== WebSocket.OPEN) return;
     if (!video.videoWidth || !video.videoHeight) return;
 
@@ -475,8 +484,8 @@ export class SessaoMeExplique {
     this.pararFala();
     this.stream?.getTracks().forEach((t) => t.stop());
     this.stream = null;
-    // Só desligamos o preview quando a câmera foi aberta por esta sessão.
-    if (this.streamProprio && this.opcoes.video.srcObject) this.opcoes.video.srcObject = null;
+    // Só desligamos o preview quando a câmera foi aberta por esta sessão e há um elemento de vídeo.
+    if (this.streamProprio && this.opcoes.video?.srcObject) this.opcoes.video.srcObject = null;
 
     this.ws?.close();
     this.ws = null;

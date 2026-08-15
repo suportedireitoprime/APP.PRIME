@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import { QuestaoAcoesBar, ComentarioSheet } from '@/components/questoes/QuestaoAcoesBar';
 import { useGatedFeature } from '@/hooks/useGatedFeature';
 import { CartaoRespostaSheet } from './CartaoRespostaSheet';
+import { MeExpliqueSheet } from './MeExpliqueSheet';
 
 const db = supabase as any;
 
@@ -43,6 +44,7 @@ const ResolverPadrao = ({
   const [selecao, setSelecao] = useState<string | null>(null);
   const [respostas, setRespostas] = useState<Record<string, { escolha: string; acertou: boolean }>>({});
   const [comentarioAberto, setComentarioAberto] = useState(false);
+  const [professoraAberta, setProfessoraAberta] = useState(false);
   const [favoritos, setFavoritos] = useState<Set<string>>(new Set());
   const [segundos, setSegundos] = useState(0);
   const [recursosAberto, setRecursosAberto] = useState(false);
@@ -471,7 +473,10 @@ const ResolverPadrao = ({
 
                     <div className="flex gap-2">
                       <button
-                        onClick={() => navigate('/me-explique', { state: { questaoId: atual.id } })}
+                        onClick={() => {
+                          if (gateFuncoes.blocked) { gateFuncoes.openGate(); return; }
+                          setProfessoraAberta(true);
+                        }}
                         className={cn("flex h-[56px] flex-1 items-center justify-between rounded-2xl border px-4 shadow-lg", resp.acertou ? "bg-white text-emerald-600 border-white/50 shadow-black/10 hover:bg-emerald-50" : "bg-blue-600 border-blue-500 text-white shadow-blue-500/10 hover:bg-blue-500")}
                       >
                         <div className="flex items-center gap-3"><Mic className="h-5 w-5 animate-pulse" /> <span className="font-bold">Professora</span></div>
@@ -556,6 +561,12 @@ const ResolverPadrao = ({
         aberto={comentarioAberto && !!resp}
         source={atual.id}
         onClose={() => setComentarioAberto(false)}
+      />
+
+      <MeExpliqueSheet
+        aberto={professoraAberta}
+        onClose={() => setProfessoraAberta(false)}
+        questao={atual}
       />
 
       <CartaoRespostaSheet
