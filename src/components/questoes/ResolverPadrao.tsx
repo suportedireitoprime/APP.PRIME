@@ -220,20 +220,30 @@ const ResolverPadrao = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [alternativas, idx, questoes.length, responder, resp, selecao]);
 
-  if (loading) return <div className="h-[520px] animate-pulse rounded-2xl bg-muted" />;
+  const [countdown, setCountdown] = useState(3);
 
-  const extrairOcr = async (url: string, id: string) => {
-    setOcrLoading((p) => ({ ...p, [id]: true }));
-    try {
-      const Tesseract = await import('tesseract.js');
-      const { data: { text } } = await Tesseract.recognize(url, 'por');
-      setOcrText((p) => ({ ...p, [id]: text }));
-    } catch (err) {
-      console.error('OCR Error:', err);
-    } finally {
-      setOcrLoading((p) => ({ ...p, [id]: false }));
+  useEffect(() => {
+    if (loading) {
+      setCountdown(3);
     }
-  };
+  }, [loading]);
+
+  useEffect(() => {
+    if (countdown > 0) {
+      const t = setInterval(() => {
+        setCountdown((c) => {
+          if (c > 1) {
+            haptic.selection?.();
+            return c - 1;
+          }
+          clearInterval(t);
+          haptic.success?.();
+          return 0;
+        });
+      }, 700);
+      return () => clearInterval(t);
+    }
+  }, [countdown]);
 
   const agendarNotificacaoErro = () => {
     if (typeof window !== 'undefined') {
@@ -241,10 +251,24 @@ const ResolverPadrao = ({
     }
   };
 
-  if (loading) {
+  const isBuscando = loading || countdown > 0;
+
+  if (isBuscando) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      <div className="flex min-h-screen flex-col items-center justify-center bg-background px-6">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={countdown}
+            initial={{ opacity: 0, scale: 0.5, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 1.5 }}
+            transition={{ type: 'spring', damping: 15, stiffness: 200 }}
+            className="flex h-32 w-32 items-center justify-center rounded-full bg-[#DC2626]/10 text-6xl font-black text-[#DC2626] shadow-[0_0_40px_rgba(220,38,38,0.2)]"
+          >
+            {countdown > 0 ? countdown : <Loader2 className="h-12 w-12 animate-spin text-[#DC2626]" />}
+          </motion.div>
+        </AnimatePresence>
+        <p className="mt-8 text-lg font-bold text-zinc-400 animate-pulse">Preparando suas questões...</p>
       </div>
     );
   }

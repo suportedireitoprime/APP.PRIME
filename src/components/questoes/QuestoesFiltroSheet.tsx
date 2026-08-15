@@ -384,6 +384,22 @@ const QuestoesFiltroSheet = ({
   const limpar = () => setF({ ...FILTRO_VAZIO });
 
   const aplicar = () => {
+    if (!f.segmentos.length) {
+      haptic.error();
+      toast('Escolha o segmento primeiro', { description: 'O segmento é obrigatório para aplicar filtros.' });
+      return;
+    }
+    if (!f.disciplinas.length) {
+      haptic.error();
+      toast('Escolha as disciplinas', { description: 'Você precisa selecionar pelo menos uma disciplina.' });
+      return;
+    }
+    if (!f.assuntos.length) {
+      haptic.error();
+      toast('Escolha os assuntos', { description: 'Você precisa selecionar pelo menos um assunto.' });
+      return;
+    }
+
     haptic.success?.();
     try { sessionStorage.setItem(FILTRO_KEY, JSON.stringify(f)); } catch { /* noop */ }
     onAplicar(f);
