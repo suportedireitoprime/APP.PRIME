@@ -61,7 +61,7 @@ const QuestoesHero = ({ pct, total, hoje, acertos, disponiveis }: Props) => {
   return (
     <section
       className="relative isolate overflow-hidden border-b border-black/20"
-      style={{ background: 'linear-gradient(135deg, hsl(258 62% 42%) 0%, hsl(258 72% 58%) 100%)' }}
+      style={{ background: 'linear-gradient(135deg, hsl(0 72% 38%) 0%, hsl(0 80% 55%) 100%)' }}
       aria-label="Seu progresso em questões"
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.22),transparent_60%)]" />
@@ -79,7 +79,7 @@ const QuestoesHero = ({ pct, total, hoje, acertos, disponiveis }: Props) => {
             style={{ opacity: i === heroIdx ? 1 : 0, filter: 'brightness(0) invert(1)', mixBlendMode: 'soft-light' }}
           />
         ))}
-        <div className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-[hsl(258_62%_42%)] via-[hsl(258_62%_42%)]/60 to-transparent" />
+        <div className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-[hsl(0_72%_38%)] via-[hsl(0_72%_38%)]/60 to-transparent" />
       </div>
 
       <div className="relative p-4 sm:p-5">
@@ -166,7 +166,7 @@ const QuestoesHero = ({ pct, total, hoje, acertos, disponiveis }: Props) => {
                 <span className="text-[9px] font-extrabold uppercase tracking-wider text-white/60 group-hover:text-white">Banco Total</span>
                 <ChevronRight className="w-2.5 h-2.5 text-white/40 group-hover:text-white group-hover:translate-x-0.5 transition-transform" />
               </div>
-              <span className="mt-0.5 font-display text-base font-black leading-none text-purple-400">
+              <span className="mt-0.5 font-display text-base font-black leading-none text-red-400">
                 {disponiveis > 0 ? disponiveis.toLocaleString('pt-BR') : '25.000+'}
               </span>
             </button>
@@ -195,15 +195,15 @@ const QuestoesHero = ({ pct, total, hoje, acertos, disponiveis }: Props) => {
 
             <div className="space-y-2">
               {/* Sua Posição */}
-              <div className="flex items-center justify-between p-3.5 rounded-2xl bg-purple-600/15 border border-purple-500/40">
+              <div className="flex items-center justify-between p-3.5 rounded-2xl bg-red-600/15 border border-red-500/40">
                 <div className="flex items-center gap-3">
-                  <span className="w-7 text-center font-black text-sm text-purple-400">#4</span>
+                  <span className="w-7 text-center font-black text-sm text-red-400">#4</span>
                   <div>
                     <span className="block text-xs font-black text-foreground">Você</span>
                     <span className="block text-[10px] text-muted-foreground">{total} questões respondidas</span>
                   </div>
                 </div>
-                <span className="text-xs font-black text-purple-400 bg-purple-500/20 px-2.5 py-1 rounded-full">
+                <span className="text-xs font-black text-red-400 bg-red-500/20 px-2.5 py-1 rounded-full">
                   {pct}% acerto
                 </span>
               </div>
@@ -232,7 +232,7 @@ const QuestoesHero = ({ pct, total, hoje, acertos, disponiveis }: Props) => {
         <SheetContent side="bottom" className="max-h-[85dvh] overflow-y-auto rounded-t-3xl border-t border-border bg-card">
           <SheetHeader>
             <SheetTitle className="flex items-center gap-2 text-lg font-black text-foreground">
-              <Award className="w-5 h-5 text-purple-400" />
+              <Award className="w-5 h-5 text-red-400" />
               Ranking de Taxa de Acerto
             </SheetTitle>
           </SheetHeader>
@@ -244,9 +244,9 @@ const QuestoesHero = ({ pct, total, hoje, acertos, disponiveis }: Props) => {
 
             <div className="space-y-2">
               {/* Sua Posição */}
-              <div className="flex items-center justify-between p-3.5 rounded-2xl bg-purple-600/15 border border-purple-500/40">
+              <div className="flex items-center justify-between p-3.5 rounded-2xl bg-red-600/15 border border-red-500/40">
                 <div className="flex items-center gap-3">
-                  <span className="w-7 text-center font-black text-sm text-purple-400">#7</span>
+                  <span className="w-7 text-center font-black text-sm text-red-400">#7</span>
                   <div>
                     <span className="block text-xs font-black text-foreground">Você</span>
                     <span className="block text-[10px] text-muted-foreground">{total} praticadas</span>

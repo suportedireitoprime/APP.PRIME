@@ -291,12 +291,12 @@ body {
     --primary-light: 348 80% 60%;
     --ring: 348 80% 50%;
   }
-  /* Escopo de tema roxo do módulo Questões */
+  /* Escopo de tema do módulo Questões — alinhado à cor de Direito Penal (#F87171) */
   .theme-questoes {
-    --primary: 258 90% 74%;
-    --primary-foreground: 258 60% 12%;
-    --primary-light: 258 92% 82%;
-    --ring: 258 90% 74%;
+    --primary: 0 91% 71%;
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 0 92% 82%;
+    --ring: 0 91% 71%;
   }
 
   .bg-tab-active {

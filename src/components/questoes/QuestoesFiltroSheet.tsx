@@ -22,7 +22,7 @@ export const FILTRO_KEY = 'questoes:filtro';
 
 export const FILTRO_VAZIO: QuestoesFiltro = {
   segmentos: [], disciplinas: [], assuntos: [], anos: [],
-  status: 'todos', ordem: 'embaralhado', quantidade: null,
+  status: '', ordem: 'embaralhado', quantidade: null,
 };
 
 export function lerFiltroSalvo(): QuestoesFiltro | null {
@@ -97,41 +97,58 @@ function StepRow({
       onClick={onClick}
       className={cn(
         'flex w-full items-center gap-4 rounded-2xl border px-4 py-3.5 text-left transition-all',
-        'bg-card/50 shadow-sm backdrop-blur-md',
-        active ? 'border-primary/50 bg-primary/5 shadow-primary/10' : done ? 'border-emerald-500/20 bg-emerald-500/5' : 'border-border/50',
-        !locked && 'hover:bg-foreground/[0.04] active:scale-[0.98]',
-        locked && 'cursor-not-allowed opacity-50 grayscale-[0.5]',
+        locked
+          ? 'border-zinc-900 bg-zinc-950/40 opacity-40 cursor-not-allowed'
+          : active
+            ? 'border-[#F87171]/60 bg-[#F87171]/8 shadow-lg shadow-[#F87171]/10'
+            : done
+              ? 'border-emerald-500/30 bg-zinc-900/90 shadow-sm'
+              : 'border-zinc-800/80 bg-zinc-900/70 hover:border-zinc-700 hover:bg-zinc-800/60 active:scale-[0.98]',
       )}
     >
       <span className={cn(
-        'grid h-10 w-10 shrink-0 place-items-center rounded-full text-[14px] font-bold tabular-nums transition-colors',
-        done ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20'
-          : active ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/30'
-          : 'bg-foreground/[0.06] text-foreground/50',
+        'grid h-10 w-10 shrink-0 place-items-center rounded-full text-[14px] font-black tabular-nums transition-all',
+        locked
+          ? 'bg-zinc-900 text-zinc-600'
+          : done
+            ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/25'
+            : active
+              ? 'bg-[#F87171] text-white shadow-md shadow-[#F87171]/30'
+              : 'bg-zinc-800 text-zinc-300',
       )}>
         {done ? <Check className="h-5 w-5" strokeWidth={3} /> : step}
       </span>
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-2">
-          <span className="text-[15.5px] font-bold text-foreground">{label}</span>
+          <span className={cn(
+            'text-[15.5px] font-bold transition-colors',
+            locked ? 'text-zinc-500' : 'text-zinc-100',
+          )}>
+            {label}
+          </span>
           {active && (
-            <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-widest text-primary">
+            <span className="rounded-full bg-[#F87171]/20 border border-[#F87171]/30 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-[#F87171]">
               Aberto
             </span>
           )}
         </span>
-        <span className="mt-0.5 block truncate text-[13px] text-muted-foreground/80">{hint}</span>
+        <span className={cn(
+          'mt-0.5 block truncate text-[13px]',
+          locked ? 'text-zinc-600' : done ? 'text-zinc-300' : 'text-zinc-400',
+        )}>
+          {hint}
+        </span>
       </span>
       {locked ? (
-        <Lock className="h-5 w-5 shrink-0 text-foreground/30" />
+        <Lock className="h-5 w-5 shrink-0 text-zinc-600" />
       ) : (
         <span className="flex shrink-0 items-center gap-2">
           {!!badge && (
-            <span className="grid h-6 min-w-[24px] place-items-center rounded-full bg-primary px-2 text-[12px] font-bold text-primary-foreground">
+            <span className="grid h-6 min-w-[24px] place-items-center rounded-full bg-[#F87171] px-2 text-[12px] font-black text-white shadow-sm shadow-[#F87171]/30">
               {badge}
             </span>
           )}
-          <ChevronRight className="h-5 w-5 text-foreground/40" />
+          <ChevronRight className="h-5 w-5 text-zinc-400" />
         </span>
       )}
     </button>
@@ -161,55 +178,86 @@ function SelecaoSheet({
     return base;
   }, [opcoes, q]);
 
+  const isAllSelected = !single && opcoes.length > 0 && opcoes.every((o) => local.includes(o));
+
+  const toggleAll = () => {
+    haptic.selection?.();
+    if (isAllSelected) {
+      setLocal([]);
+    } else {
+      setLocal([...opcoes]);
+    }
+  };
+
   const toggle = (o: string) => {
     haptic.selection?.();
-    setLocal((p) => (single ? (p[0] === o ? [] : [o]) : p.includes(o) ? p.filter((x) => x !== o) : [...p, o]));
+    if (single) {
+      setLocal((p) => (p[0] === o ? [] : [o]));
+    } else {
+      setLocal((p) => (p.includes(o) ? p.filter((x) => x !== o) : [...p, o]));
+    }
   };
 
   return (
     <motion.div
       initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
       transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-      className="absolute inset-0 z-20 flex flex-col bg-background/95 backdrop-blur-xl"
+      className="absolute inset-0 z-20 flex flex-col bg-zinc-950/98 backdrop-blur-2xl text-foreground"
     >
-      <div className="flex items-center gap-2 border-b border-border/50 px-3 pt-safe-header pb-3 bg-background/80">
-        <button onClick={onFechar} aria-label="Voltar" className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-foreground/5 hover:bg-foreground/10 text-foreground transition-colors">
+      <div className="flex items-center gap-2 border-b border-zinc-800/80 px-3 pt-safe-header pb-3 bg-zinc-900/90 backdrop-blur-md">
+        <button
+          onClick={onFechar}
+          aria-label="Voltar"
+          className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-zinc-800/80 hover:bg-zinc-700/80 text-zinc-200 transition-colors active:scale-95"
+        >
           <ChevronLeft className="h-6 w-6" />
         </button>
-        <p className="flex-1 text-center text-[18px] font-bold text-foreground">{titulo}</p>
-        <button onClick={() => setLocal([])} className="px-3 text-[14px] font-medium text-primary hover:text-primary-light active:scale-95">
+        <p className="flex-1 text-center text-[18px] font-extrabold text-zinc-100">{titulo}</p>
+        <button
+          onClick={() => { haptic.selection?.(); setLocal([]); }}
+          className="px-3 text-[14px] font-bold text-[#F87171] hover:text-[#FCA5A5] active:scale-95 transition-colors"
+        >
           Limpar
         </button>
       </div>
 
       {buscavel && (
-        <div className="border-b border-border px-4 py-2.5">
-          <div className="flex items-center gap-2 rounded-xl bg-muted/50 px-3">
-            <Search className="h-4 w-4 text-muted-foreground" />
+        <div className="border-b border-zinc-800/80 px-4 py-2.5 bg-zinc-900/40">
+          <div className="flex items-center gap-2 rounded-xl bg-zinc-900 border border-zinc-800 px-3">
+            <Search className="h-4 w-4 text-zinc-400" />
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder={`Buscar ${titulo.toLowerCase()}`}
               aria-label={`Buscar ${titulo}`}
-              className="h-10 flex-1 bg-transparent text-[14px] text-foreground outline-none placeholder:text-muted-foreground"
+              className="h-10 flex-1 bg-transparent text-[14px] text-zinc-100 outline-none placeholder:text-zinc-500"
             />
+            {q && (
+              <button onClick={() => setQ('')} className="p-1 text-zinc-400 hover:text-zinc-200">
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
           </div>
         </div>
       )}
 
-      <ul className="flex-1 divide-y divide-border overflow-y-auto px-4">
+      <ul className="flex-1 divide-y divide-zinc-800/60 overflow-y-auto px-4">
         {!single && (
           <li>
             <button
-              onClick={() => setLocal([])}
-              className="flex min-h-[56px] w-full items-center gap-3 py-3.5 text-left"
+              onClick={toggleAll}
+              className="flex min-h-[56px] w-full items-center gap-3 py-3.5 text-left group"
             >
-              <span className="flex-1 text-[15px] font-semibold text-foreground">Todos</span>
+              <span className="flex-1 text-[15px] font-bold text-zinc-100 group-hover:text-white transition-colors">
+                Todos
+              </span>
               <span className={cn(
-                'grid h-6 w-6 shrink-0 place-items-center rounded-full border-2',
-                local.length === 0 ? 'border-primary bg-primary text-primary-foreground' : 'border-foreground/30',
+                'grid h-6 w-6 shrink-0 place-items-center rounded-md border-2 transition-all',
+                isAllSelected
+                  ? 'border-[#F87171] bg-[#F87171] text-white shadow-md shadow-[#F87171]/25'
+                  : 'border-zinc-700 bg-zinc-900/50 group-hover:border-zinc-500',
               )}>
-                {local.length === 0 && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
+                {isAllSelected && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
               </span>
             </button>
           </li>
@@ -218,22 +266,32 @@ function SelecaoSheet({
           const ativo = local.includes(o);
           return (
             <li key={o}>
-              <button onClick={() => toggle(o)} className="flex min-h-[60px] w-full items-center gap-3 py-3.5 text-left">
+              <button
+                onClick={() => toggle(o)}
+                className="flex min-h-[60px] w-full items-center gap-3 py-3.5 text-left group"
+              >
                 <span className="min-w-0 flex-1">
-                  <span className="block text-[15px] leading-tight text-foreground">{o}</span>
+                  <span className={cn(
+                    'block text-[15px] font-semibold leading-tight transition-colors',
+                    ativo ? 'text-white' : 'text-zinc-200 group-hover:text-white',
+                  )}>
+                    {o}
+                  </span>
                   {descricoes?.[o] && (
-                    <span className="mt-1 block text-[12px] leading-snug text-foreground/55">{descricoes[o]}</span>
+                    <span className="mt-1 block text-[12px] leading-snug text-zinc-400">{descricoes[o]}</span>
                   )}
                 </span>
                 {contagens?.[o] !== undefined && (
-                  <span className="grid h-6 min-w-[44px] place-items-center rounded-full bg-primary/15 px-2 text-[11px] font-bold tabular-nums text-primary">
+                  <span className="grid h-6 min-w-[44px] place-items-center rounded-full bg-[#F87171]/15 px-2 text-[11px] font-extrabold tabular-nums text-[#F87171]">
                     {fmt(contagens[o])}
                   </span>
                 )}
                 <span className={cn(
-                  'grid h-6 w-6 shrink-0 place-items-center border-2 transition-colors',
+                  'grid h-6 w-6 shrink-0 place-items-center border-2 transition-all',
                   single ? 'rounded-full' : 'rounded-md',
-                  ativo ? 'border-primary bg-primary text-primary-foreground' : 'border-foreground/30',
+                  ativo
+                    ? 'border-[#F87171] bg-[#F87171] text-white shadow-md shadow-[#F87171]/25'
+                    : 'border-zinc-700 bg-zinc-900/50 group-hover:border-zinc-500',
                 )}>
                   {ativo && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
                 </span>
@@ -242,14 +300,18 @@ function SelecaoSheet({
           );
         })}
         {lista.length === 0 && (
-          <li className="py-10 text-center text-[13px] text-muted-foreground">Nada encontrado.</li>
+          <li className="py-12 text-center text-[13px] text-zinc-500">Nada encontrado.</li>
         )}
       </ul>
 
-      <div className="border-t border-border/50 bg-background/80 backdrop-blur-md px-5 pb-safe-nav pt-4">
+      <div className="border-t border-zinc-800/80 bg-zinc-950/90 backdrop-blur-md px-5 pb-safe-nav pt-4">
         <button
-          onClick={() => { onConfirmar(local); onFechar(); }}
-          className="h-14 w-full rounded-2xl bg-primary shadow-lg shadow-primary/25 text-[16px] font-bold text-primary-foreground active:scale-[0.98] transition-all"
+          onClick={() => {
+            haptic.selection?.();
+            onConfirmar(local);
+            onFechar();
+          }}
+          className="h-14 w-full rounded-2xl bg-[#DC2626] hover:bg-[#B91C1C] text-white font-black text-[16px] shadow-lg shadow-[#DC2626]/30 active:scale-[0.98] transition-all"
         >
           Confirmar seleção
         </button>
@@ -311,11 +373,12 @@ const QuestoesFiltroSheet = ({
   const proximo = !f.segmentos.length ? 'segmento'
     : !f.disciplinas.length ? 'disciplinas'
     : !f.assuntos.length ? 'assuntos'
-    : 'status';
+    : null;
 
   const selecionados =
     f.segmentos.length + f.disciplinas.length + f.assuntos.length + f.anos.length +
-    (f.status !== 'todos' ? 1 : 0);
+    (f.status && f.status !== 'todos' ? 1 : 0) +
+    (f.quantidade ? 1 : 0);
 
   const limpar = () => setF({ ...FILTRO_VAZIO });
 
@@ -334,34 +397,34 @@ const QuestoesFiltroSheet = ({
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, pointerEvents: 'none' }}
             onClick={onFechar}
-            className="fixed inset-0 z-[70] bg-black/65 backdrop-blur-sm"
+            className="fixed inset-0 z-[70] bg-black/75 backdrop-blur-sm"
           />
           <motion.div
             initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%', pointerEvents: 'none' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="theme-questoes fixed inset-0 z-[71] flex flex-col overflow-hidden bg-background"
+            className="theme-questoes fixed inset-0 z-[71] flex flex-col overflow-hidden bg-zinc-950 text-foreground"
           >
-            <div className="flex items-center gap-3 px-4 pb-4 pt-safe-header border-b border-border/50 bg-background/80 backdrop-blur-md">
-              <button onClick={onFechar} aria-label="Voltar" className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-foreground/5 hover:bg-foreground/10 text-foreground transition-colors active:scale-95">
+            <div className="flex items-center gap-3 px-4 pb-4 pt-safe-header border-b border-zinc-800/80 bg-zinc-900/90 backdrop-blur-md">
+              <button onClick={onFechar} aria-label="Voltar" className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-zinc-800/80 hover:bg-zinc-700/80 text-zinc-200 transition-colors active:scale-95">
                 <ChevronLeft className="h-6 w-6" />
               </button>
               <div className="min-w-0 flex-1">
-                <p className="flex items-center gap-2 text-[20px] font-bold text-foreground tracking-tight">
-                  <Filter className="h-5 w-5 text-primary" /> Filtrar questões
+                <p className="flex items-center gap-2 text-[20px] font-extrabold text-zinc-100 tracking-tight">
+                  <Filter className="h-5 w-5 text-[#F87171]" /> Filtrar questões
                 </p>
-                <p className="mt-0.5 text-[13px] leading-snug text-muted-foreground/80 truncate">
+                <p className="mt-0.5 text-[13px] leading-snug text-zinc-400 truncate">
                   Refine por segmento, disciplina, assunto e mais.
                 </p>
               </div>
-              <button onClick={limpar} className="px-3 text-[14px] font-medium text-primary hover:text-primary-light active:scale-95">
+              <button onClick={limpar} className="px-3 text-[14px] font-bold text-[#F87171] hover:text-[#FCA5A5] active:scale-95 transition-colors">
                 Limpar
               </button>
             </div>
 
-            <div className="flex-1 space-y-2.5 overflow-y-auto px-4 pb-4">
+            <div className="flex-1 space-y-2.5 overflow-y-auto px-4 pb-4 pt-2">
               <StepRow
                 step={1} label="Segmento"
-                hint={f.segmentos.length ? f.segmentos.map((s) => SEGMENTOS.find((x) => x.id === s)?.label ?? s).join(', ') : 'Escolha em qual base você quer praticar'}
+                hint={f.segmentos.length ? (f.segmentos.length === SEGMENTOS.length ? 'Todos os segmentos' : f.segmentos.map((s) => SEGMENTOS.find((x) => x.id === s)?.label ?? s).join(', ')) : 'Escolha em qual base você quer praticar'}
                 active={proximo === 'segmento'} done={!!f.segmentos.length}
                 badge={f.segmentos.length}
                 onClick={() => setPasso('segmento')}
@@ -382,13 +445,14 @@ const QuestoesFiltroSheet = ({
               />
               <StepRow
                 step={4} label="Status"
-                hint={STATUS.find((s) => s.id === f.status)?.label ?? 'Todos'}
-                locked={!f.segmentos.length} done={f.status !== 'todos'}
+                hint={f.status ? (STATUS.find((s) => s.id === f.status)?.label ?? 'Todos') : 'Todos os status'}
+                locked={!f.segmentos.length} done={!!f.status && f.status !== 'todos'}
+                badge={f.status && f.status !== 'todos' ? 1 : undefined}
                 onClick={() => setPasso('status')}
               />
               <StepRow
                 step={5} label="Ano"
-                hint={f.anos.length ? f.anos.join(', ') : 'Todos os anos'}
+                hint={f.anos.length ? (f.anos.length === anos.length && anos.length > 0 ? 'Todos os anos' : f.anos.join(', ')) : 'Todos os anos'}
                 locked={!f.segmentos.length} done={!!f.anos.length}
                 badge={f.anos.length}
                 onClick={() => setPasso('anos')}
@@ -400,16 +464,16 @@ const QuestoesFiltroSheet = ({
                 onClick={() => setPasso('quantidade')}
               />
 
-              <div className="flex items-center gap-2 rounded-2xl border border-border bg-foreground/[0.04] px-3.5 py-3">
-                <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Ordem</span>
-                <div className="ml-auto flex gap-1 rounded-full bg-muted/50 p-1">
+              <div className="flex items-center gap-2 rounded-2xl border border-zinc-800/80 bg-zinc-900/50 px-3.5 py-3">
+                <span className="text-[11px] font-extrabold uppercase tracking-widest text-zinc-400">Ordem</span>
+                <div className="ml-auto flex gap-1 rounded-full bg-zinc-900 border border-zinc-800 p-1">
                   {(['embaralhado', 'original'] as const).map((o) => (
                     <button
                       key={o}
                       onClick={() => setF((p) => ({ ...p, ordem: o }))}
                       className={cn(
-                        'h-8 rounded-full px-3 text-[12.5px] font-semibold transition-colors',
-                        f.ordem === o ? 'bg-primary text-primary-foreground' : 'text-muted-foreground',
+                        'h-8 rounded-full px-3 text-[12.5px] font-bold transition-all',
+                        f.ordem === o ? 'bg-[#DC2626] text-white shadow-md shadow-[#DC2626]/20' : 'text-zinc-400 hover:text-zinc-200',
                       )}
                     >
                       {o === 'embaralhado' ? 'Embaralhado' : 'Ordem original'}
@@ -419,19 +483,19 @@ const QuestoesFiltroSheet = ({
               </div>
             </div>
 
-            <div className="flex items-center gap-3 border-t border-border/50 bg-background/80 backdrop-blur-md px-5 pb-safe-nav pt-4">
+            <div className="flex items-center gap-3 border-t border-zinc-800/80 bg-zinc-900/90 backdrop-blur-md px-5 pb-safe-nav pt-4">
               <button
                 onClick={aplicar}
-                className="flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl bg-primary text-[16px] font-bold text-primary-foreground shadow-lg shadow-primary/25 active:scale-[0.98] transition-all"
+                className="flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl bg-[#DC2626] hover:bg-[#B91C1C] text-[16px] font-black text-white shadow-lg shadow-[#DC2626]/30 active:scale-[0.98] transition-all"
               >
                 {carregando ? <Loader2 className="h-5 w-5 animate-spin" /> : <Filter className="h-5 w-5" fill="currentColor" />}
                 Aplicar filtros
-                <span className="ml-2 rounded-full bg-black/20 px-2.5 py-0.5 text-[13px] tabular-nums font-extrabold tracking-wide">
+                <span className="ml-2 rounded-full bg-black/30 px-2.5 py-0.5 text-[13px] tabular-nums font-extrabold tracking-wide">
                   {fmt(counts.total)}
                 </span>
               </button>
               {selecionados > 0 && (
-                <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-primary/15 text-[15px] font-bold text-primary">
+                <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-[#F87171]/15 border border-[#F87171]/30 text-[15px] font-black text-[#F87171]">
                   {selecionados}
                 </span>
               )}
@@ -484,9 +548,9 @@ const QuestoesFiltroSheet = ({
                 <SelecaoSheet
                   key="status" titulo="Status" single
                   opcoes={STATUS.map((s) => s.label)}
-                  selecionado={[STATUS.find((s) => s.id === f.status)?.label ?? 'Todos']}
+                  selecionado={f.status ? [STATUS.find((s) => s.id === f.status)?.label ?? f.status] : []}
                   onFechar={() => setPasso(null)}
-                  onConfirmar={(v) => setF((p) => ({ ...p, status: STATUS.find((s) => s.label === v[0])?.id ?? 'todos' }))}
+                  onConfirmar={(v) => setF((p) => ({ ...p, status: v[0] ? (STATUS.find((s) => s.label === v[0])?.id ?? 'todos') : '' }))}
                 />
               )}
               {passo === 'quantidade' && (

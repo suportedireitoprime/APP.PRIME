@@ -32,7 +32,7 @@ const QuestoesDesempenho = () => {
           <>
             <div
               className="rounded-3xl p-5 text-white"
-              style={{ background: 'linear-gradient(135deg, #4C1D95 0%, #6D28D9 55%, #8B5CF6 100%)' }}
+              style={{ background: 'linear-gradient(135deg, #7F1D1D 0%, #DC2626 55%, #F87171 100%)' }}
             >
               <p className="text-[13px] font-semibold uppercase tracking-wider opacity-80">Aproveitamento</p>
               <p className="mt-1 text-4xl font-extrabold tabular-nums">{pct}%</p>

@@ -229,7 +229,7 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
   const agendaTasks = useMemo(() => {
     if (agendaOffset === 0) {
       return [
-        { id: 1, type: 'questoes', title: 'Resolver 15 questões', subtitle: 'Direito Penal Geral', icon: FileCheck, color: 'text-[#a855f7]', route: '/aprender' },
+        { id: 1, type: 'questoes', title: 'Resolver 15 questões', subtitle: 'Direito Penal Geral', icon: FileCheck, color: 'text-[#F87171]', route: '/aprender' },
         { id: 2, type: 'flashcards', title: 'Revisar Flashcards', subtitle: 'Constitucional (12 pendentes)', icon: Library, color: 'text-[#22c55e]', route: '/flashcards' },
         { id: 3, type: 'trilha', title: 'Avançar na Trilha', subtitle: 'Licitações e Contratos', icon: Map, color: 'text-[#3b82f6]', route: '/aprender' },
         { id: 4, type: 'resumo', title: 'Leitura de Resumo', subtitle: 'Dolo e Culpa', icon: BookOpen, color: 'text-[#d97706]', route: '/resumos-juridicos' }
@@ -237,7 +237,7 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
     }
     if (agendaOffset === 1) {
       return [
-        { id: 5, type: 'questoes', title: 'Resolver 15 questões', subtitle: 'Direito Penal Geral', icon: FileCheck, color: 'text-[#a855f7]', route: '/aprender' },
+        { id: 5, type: 'questoes', title: 'Resolver 15 questões', subtitle: 'Direito Penal Geral', icon: FileCheck, color: 'text-[#F87171]', route: '/aprender' },
         { id: 6, type: 'flashcards', title: 'Revisar Flashcards', subtitle: 'Constitucional (12 pendentes)', icon: Library, color: 'text-[#22c55e]', route: '/flashcards' },
         { id: 7, type: 'trilha', title: 'Avançar na Trilha', subtitle: 'Licitações e Contratos', icon: Map, color: 'text-[#3b82f6]', route: '/aprender' },
         { id: 8, type: 'resumo', title: 'Leitura de Resumo', subtitle: 'Dolo e Culpa', icon: BookOpen, color: 'text-[#d97706]', route: '/resumos-juridicos' }
