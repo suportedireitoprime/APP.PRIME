@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { haptic } from '@/lib/nativeHaptics';
 import { cn } from '@/lib/utils';
+import { useDebounce } from '@/hooks/useDebounce';
 
 const db = supabase as any;
 
@@ -173,12 +174,13 @@ function SelecaoSheet({
 }) {
   const [local, setLocal] = useState<string[]>(selecionado);
   const [q, setQ] = useState('');
+  const debouncedQ = useDebounce(q, 200);
 
   const lista = useMemo(() => {
-    const termo = q.trim().toLowerCase();
+    const termo = debouncedQ.trim().toLowerCase();
     const base = termo ? opcoes.filter((o) => o.toLowerCase().includes(termo)) : opcoes;
     return base;
-  }, [opcoes, q]);
+  }, [opcoes, debouncedQ]);
 
   const isAllSelected = !single && opcoes.length > 0 && opcoes.every((o) => local.includes(o));
 
