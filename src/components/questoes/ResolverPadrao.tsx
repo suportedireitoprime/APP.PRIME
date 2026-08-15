@@ -9,11 +9,12 @@ import type { Questao } from '@/hooks/useQuestoes';
 import { letraGabarito } from '@/lib/questoesVisual';
 import { haptic } from '@/lib/nativeHaptics';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 import { QuestaoAcoesBar, ComentarioSheet } from '@/components/questoes/QuestaoAcoesBar';
 import { useGatedFeature } from '@/hooks/useGatedFeature';
 import { CartaoRespostaSheet } from './CartaoRespostaSheet';
 import { MeExpliqueSheet } from './MeExpliqueSheet';
-import { Wand2 } from 'lucide-react';
+import { Wand2, Layers } from 'lucide-react';
 
 const db = supabase as any;
 
