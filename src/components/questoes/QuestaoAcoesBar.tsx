@@ -258,10 +258,11 @@ function Carregando({ label }: { label: string }) {
 }
 
 
-function Erro({ onRetry }: { onRetry: () => void }) {
+function Erro({ onRetry, msg }: { onRetry: () => void; msg?: string }) {
   return (
-    <div className="flex flex-col items-center gap-3 py-8 text-center">
+    <div className="flex flex-col items-center gap-3 py-8 text-center px-4">
       <p className="text-sm text-destructive">Não foi possível gerar o conteúdo.</p>
+      {msg && <p className="text-xs text-muted-foreground break-all">{msg}</p>}
       <button onClick={onRetry} className="text-xs text-primary underline">Tentar de novo</button>
     </div>
   );
@@ -270,7 +271,7 @@ function Erro({ onRetry }: { onRetry: () => void }) {
 function PainelAcao({ source, tipo }: { source: Fonte; tipo: AcaoTipo }) {
   const { data, isLoading, error, refetch } = useQuestaoAcao(source, tipo, true);
   if (isLoading) return <Carregando label={`Gerando ${TITULOS[tipo].toLowerCase()}…`} />;
-  if (error || !data) return <Erro onRetry={() => refetch()} />;
+  if (error || !data) return <Erro msg={error?.message} onRetry={() => refetch()} />;
 
   if (tipo === 'aula') {
     const slides = data.slides ?? [];
