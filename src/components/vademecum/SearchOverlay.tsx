@@ -13,9 +13,8 @@ import { LEIS_CATALOG } from '@/data/leisCatalog';
 import { getRecentes, getPopularLeiIds, bumpLeiSearch } from '@/lib/leisRecentes';
 import { isFavorito, toggleFavorito, LEIS_FAVORITOS_EVENT } from '@/lib/leisFavoritos';
 import { useBuscaConteudo, type ConteudoTipo } from '@/hooks/useBuscaConteudo';
-import CategoriaFiltroBar, { type CategoriaKey } from './CategoriaFiltroBar';
-import ResultadoConteudoCard from './ResultadoConteudoCard';
 import ConteudoBusca from './ConteudoBusca';
+import type { CategoriaKey } from './CategoriaFiltroBar'; // Still used for type, but we could redefine it
 
 interface SearchOverlayProps {
   open: boolean;
@@ -23,7 +22,29 @@ interface SearchOverlayProps {
   onSelectLei: (lei: { tipo: string; leiId: string; nome: string; descricao: string; tabela_nome: string; artigoNumero?: string }) => void;
 }
 
-type SearchMode = 'conteudo' | 'leis' | 'jurisprudencia';
+type UnifiedTab = 'tudo' | 'leis' | 'videoaula' | 'livro' | 'jurisprudencia' | 'blog' | 'resumo' | 'noticia' | 'obra' | 'dicionario' | 'sumula' | 'tese' | 'informativo' | 'pesquisa';
+
+const TAB_LABELS: Record<UnifiedTab, string> = {
+  tudo: 'Tudo',
+  leis: 'Leis',
+  videoaula: 'Videoaulas',
+  livro: 'Livros',
+  jurisprudencia: 'Jurisprudência',
+  blog: 'Blog',
+  resumo: 'Resumos',
+  noticia: 'Notícias',
+  obra: 'Filmes',
+  dicionario: 'Dicionário',
+  sumula: 'Súmulas',
+  tese: 'Teses',
+  informativo: 'Informativos',
+  pesquisa: 'Pesquisas prontas',
+};
+
+const UNIFIED_TABS: UnifiedTab[] = [
+  'tudo', 'leis', 'videoaula', 'livro', 'jurisprudencia', 'blog', 'resumo', 
+  'noticia', 'obra', 'dicionario', 'sumula', 'tese', 'informativo', 'pesquisa'
+];
 
 // Prioridade padrão de relevância (fallback quando não há histórico de buscas)
 const DEFAULT_ORDER = ['cf88', 'cp', 'cc', 'cpc', 'cpp', 'ctn', 'cdc', 'clt', 'eca', 'ctb', 'ei', 'epd'];
@@ -54,13 +75,11 @@ const sortByRelevance = <T extends { id: string }>(list: T[]) => {
   });
 };
 
-
 const identificarLeiPorTexto = (text: string) => {
   const artMatch = text.match(/art(?:igo)?\.?\s*(\d+[-a-zA-Z]*)/i);
   const artigoNumero = artMatch ? artMatch[1] : undefined;
   const upper = text.toUpperCase();
 
-  // Ordena por sigla mais longa primeiro para evitar match parcial (ex: CPC antes de CP)
   const catalog = [...LEIS_CATALOG].sort((a, b) => b.sigla.length - a.sigla.length);
   for (const lei of catalog) {
     const sigla = lei.sigla.toUpperCase();
@@ -77,11 +96,13 @@ const identificarLeiPorTexto = (text: string) => {
 const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebounce(query, 100);
-  const [mode, setMode] = useState<SearchMode>('conteudo');
+  const [activeTab, setActiveTab] = useState<UnifiedTab>('tudo');
+  
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const voice = useVoiceInput((text) => setQuery((prev) => (prev ? prev + ' ' : '') + text));
   const [favVersion, setFavVersion] = useState(0);
+
   useEffect(() => {
     const h = () => setFavVersion((v) => v + 1);
     window.addEventListener(LEIS_FAVORITOS_EVENT, h);
@@ -91,7 +112,6 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
   useEffect(() => {
     if (open) {
       setQuery('');
-      // Sem autofocus: evita abrir teclado do celular ao subir o sheet
     }
   }, [open]);
 
@@ -104,17 +124,16 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
     return () => window.removeEventListener('search:sugestao', handler);
   }, []);
 
-  // Usamos query DIRETO (sem debounce) para busca no catálogo local (LEIS_CATALOG),
-  // garantindo resposta instantânea (0ms) ao digitar.
-  const filteredByNumero = useFuzzySearch(LEIS_CATALOG, mode === 'leis' ? query : '', {
+  const isLeisMode = activeTab === 'leis' || activeTab === 'tudo';
+
+  const filteredByNumero = useFuzzySearch(LEIS_CATALOG, isLeisMode ? query : '', {
     keys: ['descricao', 'sigla', 'nome', 'tags'],
     threshold: 0.35,
     limit: 40,
   });
 
-  // Casa por número puro ou sigla exata (ex.: "8078", "8.078", "8112", "CF", "CPC")
   const leiNumericResults = useMemo(() => {
-    if (mode !== 'leis') return [] as typeof LEIS_CATALOG;
+    if (!isLeisMode) return [] as typeof LEIS_CATALOG;
     const raw = query.trim();
     if (!raw) return [];
     
@@ -131,26 +150,22 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
       }
       return false;
     });
-  }, [mode, query]);
+  }, [isLeisMode, query]);
 
   const leiResults = useMemo(() => {
-    if (mode !== 'leis' || !query.trim()) return [] as typeof LEIS_CATALOG;
+    if (!isLeisMode || !query.trim()) return [] as typeof LEIS_CATALOG;
     const seen = new Set<string>();
     const merged: typeof LEIS_CATALOG = [];
     
-    // 1. Adiciona resultados por número ou sigla exata
     for (const l of leiNumericResults) {
       if (!seen.has(l.id)) { seen.add(l.id); merged.push(l); }
     }
-    // 2. Adiciona resultados do fuzzy search
     for (const l of filteredByNumero) {
       if (!seen.has(l.id)) { seen.add(l.id); merged.push(l); }
     }
     return merged.slice(0, 40);
-  }, [mode, query, leiNumericResults, filteredByNumero]);
+  }, [isLeisMode, query, leiNumericResults, filteredByNumero]);
 
-
-  // Modo artigo: extrai apenas o número, e o restante do texto para detectar o nome da lei
   const artigoQueryDigits = useMemo(() => (query.match(/\d+[-a-zA-Z]*/)?.[0] || '').replace(/^[a-zA-Z]+/, ''), [query]);
   const leiSearchTerm = useMemo(() => query
     .toLowerCase()
@@ -164,7 +179,7 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
   ), []);
 
   const artigoLeis = useMemo(() => {
-    if (mode !== 'leis' || !artigoQueryDigits) return [];
+    if (!isLeisMode || !artigoQueryDigits) return [];
     if (!leiSearchTerm) return baseArtigoLeis;
     const matched = baseArtigoLeis.filter((l) =>
       l.nome.toLowerCase().includes(leiSearchTerm) ||
@@ -173,25 +188,18 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
       l.sigla.toLowerCase() === leiSearchTerm
     );
     return matched.length > 0 ? matched : baseArtigoLeis;
-  }, [mode, artigoQueryDigits, leiSearchTerm, baseArtigoLeis]);
+  }, [isLeisMode, artigoQueryDigits, leiSearchTerm, baseArtigoLeis]);
 
-
-
-  const placeholder =
-    voice.listening
-      ? 'Ouvindo…'
-      : mode === 'leis'
-      ? 'Digite o nome ou nº da lei (ex.: CF, 8.078, art 5 CP)…'
-      : mode === 'conteudo'
-      ? 'Pesquise qualquer termo (ex.: dolo, boa-fé, art. 5º)…'
-      : 'Pesquise súmulas, teses e informativos…';
+  const placeholder = voice.listening
+    ? 'Ouvindo…'
+    : 'Pesquise artigos, leis, conteúdo, jurisprudência...';
 
   const emitSelect = (lei: typeof LEIS_CATALOG[number], artigoNumero?: string) => {
     bumpLeiSearch(lei.id);
     track('search_lei_selecionada', {
       lei_id: lei.id,
       lei_nome: lei.nome,
-      modo: mode,
+      modo: activeTab,
       artigo_numero: artigoNumero,
       query: debouncedQuery.trim().slice(0, 80),
     });
@@ -208,6 +216,17 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
 
   const openArtigoInLei = (lei: typeof LEIS_CATALOG[number]) => emitSelect(lei, artigoQueryDigits);
 
+  const getConteudoBuscaProps = () => {
+    if (activeTab === 'tudo') return { grupo: 'conteudo' as const, categoria: 'tudo' as CategoriaKey };
+    if (activeTab === 'jurisprudencia') return { grupo: 'jurisprudencia' as const, categoria: 'tudo' as CategoriaKey };
+    
+    // É uma categoria específica
+    const isJurisCategory = ['sumula', 'tese', 'informativo', 'pesquisa'].includes(activeTab);
+    return {
+      grupo: (isJurisCategory ? 'jurisprudencia' : 'conteudo') as 'conteudo' | 'jurisprudencia',
+      categoria: activeTab as CategoriaKey
+    };
+  };
 
   return (
     <AnimatePresence>
@@ -242,46 +261,8 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
             <div className="w-12 shrink-0" />
           </div>
 
-          {/* Mode toggle: Conteúdo | Leis | Jurisprudência */}
-          <div className="flex gap-2 px-4 py-3">
-            <button
-              onClick={() => { track('search_modo_trocado', { modo: 'conteudo' }); setMode('conteudo'); }}
-              data-track="search_modo_trocado"
-              data-modo="conteudo"
-              className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-semibold transition-all ${
-                mode === 'conteudo' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
-              }`}
-            >
-              <BookOpen className="w-5 h-5" />
-              <span className="whitespace-nowrap">Conteúdo</span>
-            </button>
-            <button
-              onClick={() => { track('search_modo_trocado', { modo: 'leis' }); setMode('leis'); }}
-              data-track="search_modo_trocado"
-              data-modo="leis"
-              className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-semibold transition-all ${
-                mode === 'leis' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
-              }`}
-            >
-              <Scale className="w-5 h-5" />
-              <span className="whitespace-nowrap">Leis</span>
-            </button>
-            <button
-              onClick={() => { track('search_modo_trocado', { modo: 'jurisprudencia' }); setMode('jurisprudencia'); }}
-              data-track="search_modo_trocado"
-              data-modo="jurisprudencia"
-              className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-semibold transition-all ${
-                mode === 'jurisprudencia' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
-              }`}
-            >
-              <Gavel className="w-5 h-5" />
-              <span className="whitespace-nowrap">Jurisprudência</span>
-            </button>
-          </div>
-
-
-          {/* Barra de pesquisa — sempre visível nos três modos */}
-          <div className="flex items-center gap-3 px-4 pt-3 pb-2">
+          {/* Barra de pesquisa */}
+          <div className="flex items-center gap-3 px-4 pt-4 pb-2">
             <div className="flex-1 relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <Input
@@ -311,19 +292,42 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
             </button>
           </div>
 
+          {/* Unified Tabs Menu (substituindo CategoriaFiltroBar e Mode Toggle) */}
+          <div className="flex gap-2 overflow-x-auto hide-scrollbar px-4 pt-2 pb-3">
+            {UNIFIED_TABS.map((tab) => {
+              const active = activeTab === tab;
+              return (
+                <button
+                  key={tab}
+                  onClick={() => {
+                    track('search_tab_selecionada', { tab });
+                    setActiveTab(tab);
+                  }}
+                  className={`shrink-0 px-4 py-2.5 rounded-full text-xs font-bold transition-all border ${
+                    active
+                      ? 'bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20'
+                      : 'bg-muted text-muted-foreground border-transparent hover:bg-muted/80'
+                  }`}
+                >
+                  {TAB_LABELS[tab]}
+                </button>
+              );
+            })}
+          </div>
+
           {/* Results */}
-          <div className="flex-1 overflow-y-auto px-2 pb-6 relative">
-            {mode === 'leis' && (() => {
+          <div className="flex-1 overflow-y-auto px-2 pb-6 relative border-t border-border/50">
+            {isLeisMode && (() => {
               const temTextoSemNumero = !artigoQueryDigits && query.trim().length >= 1;
               const leisPorTexto = temTextoSemNumero ? leiResults : [];
               return (
-              <div className="space-y-2">
+              <div className="space-y-2 mb-4">
                 {!artigoQueryDigits && !temTextoSemNumero && (
                   <>
-                    <p className="text-xs uppercase tracking-wider text-muted-foreground py-2 px-3 font-semibold mt-2">
+                    <p className="text-xs uppercase tracking-wider text-muted-foreground py-3 px-3 font-semibold mt-1">
                       Leis mais procuradas
                     </p>
-                    {getRankedTopLeis(12).map((lei, i) => {
+                    {getRankedTopLeis(6).map((lei, i) => {
                       const fav = isFavorito(lei.id);
                       return (
                       <motion.div
@@ -331,14 +335,14 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
                         initial={{ opacity: 0, y: 6 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.025 }}
-                        className="w-full flex items-center gap-3 p-4 rounded-xl bg-card border border-border hover:border-primary/40 transition-all"
+                        className="w-full flex items-center gap-3 p-3.5 rounded-xl bg-card border border-border hover:border-primary/40 transition-all"
                       >
                         <button
                           onClick={() => emitSelect(lei)}
                           className="flex items-center gap-4 flex-1 min-w-0 text-left"
                         >
-                          <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                            <span className="text-xs font-bold text-primary">{lei.sigla}</span>
+                          <div className="w-12 h-12 rounded-lg bg-red-500/10 flex items-center justify-center shrink-0">
+                            <span className="text-xs font-bold text-red-500">{lei.sigla}</span>
                           </div>
                           <div className="min-w-0 flex-1">
                             <p className="text-base font-semibold text-foreground truncate">{lei.nome}</p>
@@ -359,25 +363,24 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
                 )}
                 {temTextoSemNumero && (
                   <>
-                    <p className="text-xs uppercase tracking-wider text-muted-foreground py-2 px-3 font-semibold mt-2">
-                      Leis encontradas
-                    </p>
-                    {leisPorTexto.length === 0 && (
-                      <p className="text-center text-muted-foreground text-base py-8">Nenhuma lei encontrada</p>
+                    {leisPorTexto.length > 0 && (
+                      <p className="text-xs uppercase tracking-wider text-muted-foreground py-2 px-3 font-semibold mt-2">
+                        Leis encontradas
+                      </p>
                     )}
                     {leisPorTexto.map((lei) => {
                       const fav = isFavorito(lei.id);
                       return (
                       <div
                         key={lei.id + ':' + favVersion}
-                        className="w-full flex items-center gap-3 p-4 rounded-xl bg-card border border-border hover:border-primary/40 transition-all"
+                        className="w-full flex items-center gap-3 p-3.5 rounded-xl bg-card border border-border hover:border-primary/40 transition-all"
                       >
                         <button
                           onClick={() => emitSelect(lei)}
                           className="flex items-center gap-4 flex-1 min-w-0 text-left"
                         >
-                          <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                            <span className="text-xs font-bold text-primary">{lei.sigla}</span>
+                          <div className="w-12 h-12 rounded-lg bg-red-500/10 flex items-center justify-center shrink-0">
+                            <span className="text-xs font-bold text-red-500">{lei.sigla}</span>
                           </div>
                           <div className="min-w-0 flex-1">
                             <p className="text-base font-semibold text-foreground truncate">{lei.nome}</p>
@@ -410,10 +413,10 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.02, type: 'spring', stiffness: 260, damping: 22 }}
                         onClick={() => openArtigoInLei(lei)}
-                        className="w-full flex items-center gap-4 p-4 rounded-xl bg-card border border-border hover:border-primary/40 transition-all text-left"
+                        className="w-full flex items-center gap-4 p-3.5 rounded-xl bg-card border border-border hover:border-primary/40 transition-all text-left"
                       >
-                        <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                          <span className="text-xs font-bold text-primary">{lei.sigla}</span>
+                        <div className="w-12 h-12 rounded-lg bg-red-500/10 flex items-center justify-center shrink-0">
+                          <span className="text-xs font-bold text-red-500">{lei.sigla}</span>
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="text-base font-semibold text-foreground truncate">{lei.nome}</p>
@@ -431,13 +434,13 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
               );
             })()}
 
-
-            {mode === 'conteudo' && (
-              <ConteudoBusca query={debouncedQuery} onNavigate={onClose} />
-            )}
-
-            {mode === 'jurisprudencia' && (
-              <ConteudoBusca query={debouncedQuery} onNavigate={onClose} grupo="jurisprudencia" />
+            {/* Conteúdo dinâmico da busca do Supabase (Videoaulas, Livros, Jurisprudência, etc) */}
+            {activeTab !== 'leis' && (
+              <ConteudoBusca 
+                query={debouncedQuery} 
+                onNavigate={onClose} 
+                {...getConteudoBuscaProps()} 
+              />
             )}
 
           </div>

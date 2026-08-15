@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sparkles } from 'lucide-react';
 import { useBuscaConteudo, prefetchBusca, type ConteudoGrupo } from '@/hooks/useBuscaConteudo';
 import { resolveRotaResultado } from '@/lib/buscaRotas';
-import CategoriaFiltroBar, { type CategoriaKey } from './CategoriaFiltroBar';
+import type { CategoriaKey } from './CategoriaFiltroBar';
 import ResultadoConteudoCard from './ResultadoConteudoCard';
 import BuscaChecklist from './BuscaChecklist';
 import SugestoesAprendidas from './SugestoesAprendidas';
@@ -13,9 +13,8 @@ const SUGESTOES_CONTEUDO = ['princípios', 'dolo', 'boa-fé', 'devido processo l
 const SUGESTOES_JURIS = ['dano moral', 'prescrição', 'usucapião', 'alimentos', 'improbidade', 'tráfico', 'execução fiscal'];
 
 export default function ConteudoBusca({
-  query, onNavigate, grupo = 'conteudo',
-}: { query: string; onNavigate?: () => void; grupo?: ConteudoGrupo }) {
-  const [categoria, setCategoria] = useState<CategoriaKey>('tudo');
+  query, onNavigate, grupo = 'conteudo', categoria = 'tudo'
+}: { query: string; onNavigate?: () => void; grupo?: ConteudoGrupo, categoria?: CategoriaKey }) {
   const { resultados: brutos, loading } = useBuscaConteudo(query, grupo);
 
   // Pré-aquece as sugestões em background sem impactar a UI
@@ -39,18 +38,10 @@ export default function ConteudoBusca({
   const { sugestoes } = useSugestoesBusca(query, query.trim().length >= 2);
   const navigate = useNavigate();
 
-  const counts = useMemo(() => {
-    const c: Record<string, number> = {};
-    for (const r of resultados) c[r.entity_type] = (c[r.entity_type] || 0) + 1;
-    return c;
-  }, [resultados]);
-
   const filtrados = useMemo(
     () => categoria === 'tudo' ? resultados : resultados.filter((r) => r.entity_type === categoria),
     [resultados, categoria],
   );
-
-  useEffect(() => { setCategoria('tudo'); }, [grupo]);
 
   const termoCurto = query.trim().length < 2;
 
@@ -60,11 +51,7 @@ export default function ConteudoBusca({
   };
 
   return (
-    <div className="space-y-3">
-      {!termoCurto && (
-        <CategoriaFiltroBar ativo={categoria} counts={counts} onChange={setCategoria} grupo={grupo} />
-      )}
-
+    <div className="space-y-3 pt-2">
       {!termoCurto && sugestoes.length > 0 && (
         <SugestoesAprendidas
           sugestoes={sugestoes}

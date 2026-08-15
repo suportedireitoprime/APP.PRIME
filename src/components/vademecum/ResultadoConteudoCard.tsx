@@ -20,6 +20,21 @@ const ICONS: Record<ConteudoTipo, React.ComponentType<{ className?: string }>> =
   pesquisa: Search,
 };
 
+const COLORS: Record<ConteudoTipo, string> = {
+  videoaula: '#3B82F6', // blue-500
+  livro: '#F59E0B', // amber-500
+  blog: '#10B981', // emerald-500
+  resumo: '#8B5CF6', // violet-500
+  noticia: '#06B6D4', // cyan-500
+  obra: '#F43F5E', // rose-500
+  dicionario: '#EAB308', // yellow-500
+  artigo: '#EF4444', // red-500
+  sumula: '#A855F7', // purple-500
+  tese: '#D946EF', // fuchsia-500
+  informativo: '#6366F1', // indigo-500
+  pesquisa: '#14B8A6', // teal-500
+};
+
 const LABELS: Record<ConteudoTipo, string> = {
   videoaula: 'Videoaula',
   livro: 'Livro',
@@ -34,7 +49,6 @@ const LABELS: Record<ConteudoTipo, string> = {
   informativo: 'Informativo',
   pesquisa: 'Pesquisa pronta',
 };
-
 
 function highlight(text: string, termo: string) {
   if (!text || !termo) return text;
@@ -55,6 +69,8 @@ export default function ResultadoConteudoCard({
   item, termo, onClick, index = 0,
 }: { item: ConteudoResultado; termo: string; onClick: () => void; index?: number }) {
   const Icon = ICONS[item.entity_type] || FileText;
+  const color = COLORS[item.entity_type] || '#EF4444'; // fallback red
+  
   return (
     <motion.button
       layout
@@ -62,18 +78,21 @@ export default function ResultadoConteudoCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.02 }}
       onClick={onClick}
-      className="w-full flex items-stretch gap-3 p-3 rounded-xl bg-card border border-border hover:border-primary/40 transition-all text-left"
+      className="w-full flex items-stretch gap-4 p-3.5 rounded-xl bg-card border border-border hover:border-primary/40 transition-all text-left"
     >
-      <div className="w-14 h-14 rounded-lg overflow-hidden bg-primary/10 flex items-center justify-center shrink-0 relative">
+      <div className="w-12 flex items-center justify-center shrink-0">
         {item.thumb_url ? (
-          <img src={item.thumb_url} alt="" className="w-full h-full object-cover" loading="lazy" />
+          <img src={item.thumb_url} alt="" className="w-10 h-10 object-cover rounded-md" loading="lazy" />
         ) : (
-          <Icon className="w-6 h-6 text-primary" />
+          <Icon className="w-6 h-6" style={{ color }} />
         )}
       </div>
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2 mb-0.5">
-          <span className="text-[10px] uppercase tracking-wider font-bold text-primary/80">
+      <div className="min-w-0 flex-1 py-0.5">
+        <div className="flex items-center gap-2 mb-1">
+          <span 
+            className="text-[10px] uppercase tracking-wider font-bold" 
+            style={{ color }}
+          >
             {LABELS[item.entity_type] || item.entity_type}
           </span>
           {item.subtitle && (
@@ -84,7 +103,7 @@ export default function ResultadoConteudoCard({
           {highlight(item.title || '', termo)}
         </p>
         {item.snippet && (
-          <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
+          <p className="text-xs text-muted-foreground line-clamp-2 mt-1.5 leading-relaxed">
             {highlight(item.snippet, termo)}
           </p>
         )}
