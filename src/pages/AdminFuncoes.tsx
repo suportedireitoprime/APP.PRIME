@@ -25,7 +25,6 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   '/admin-horus': () => import('./AdminHorus'),
   '/admin-horus-template': () => import('./AdminHorusTemplate'),
   '/admin-triagem': () => import('./AdminTriagem'),
-  '/admin-triagem-entrada': () => import('./AdminTriagemEntrada'),
   '/teste-push': () => import('./TestePush'),
   '/admin-atualizacao': () => import('./AdminAtualizacao'),
   '/admin-native-assets': () => import('./AdminNativeAssets'),
@@ -252,13 +251,9 @@ const CATEGORIES: Category[] = [
   {
     id: 'triagem',
     title: 'Triagem',
-    desc: 'Intro do app e triagem de cadastro',
+    desc: 'Triagem de cadastro do app',
     icon: Sparkles,
-    route: '/admin-triagem-hub',
-    items: [
-      { id: 'admin-triagem-entrada', label: 'Triagem de Entrada', icon: Sparkles, desc: 'Intro Vade Mecum · Direito Prime ao abrir o app (MP4 Remotion)', route: '/admin-triagem-entrada' },
-      { id: 'admin-triagem-cadastro', label: 'Triagem de Cadastro', icon: UserPlus, desc: 'Apresentação Remotion no primeiro cadastro do usuário', route: '/admin-triagem' },
-    ],
+    route: '/admin-triagem',
   },
   {
     id: 'horus-exclusivo',
