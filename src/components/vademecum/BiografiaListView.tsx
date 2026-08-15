@@ -97,9 +97,14 @@ export const BiografiaListView = ({ categoriaId, categoriaLabel, onBack, onSelec
                       )}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
                       <div className="absolute bottom-0 left-0 p-3 md:p-5 w-full">
-                        <h3 className="font-display font-bold text-sm md:text-lg text-white group-hover:text-primary transition-colors leading-tight">
+                        <h3 className="font-display font-bold text-sm md:text-lg text-white group-hover:text-primary transition-colors leading-tight drop-shadow-md">
                           {bio.nome}
                         </h3>
+                        {bio.datasVida && (
+                          <p className="text-xs text-white/80 font-body mt-1 drop-shadow-md">
+                            {bio.datasVida}
+                          </p>
+                        )}
                       </div>
                     </div>
                     <div className="p-3 md:p-5 hidden md:block">

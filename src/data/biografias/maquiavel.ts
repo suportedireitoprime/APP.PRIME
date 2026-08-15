@@ -8,6 +8,7 @@ export const maquiavelData: BiografiaData = {
   imagemUrl: '/biografias/maquiavel-capa.jpg',
   epoca: 'Renascimento',
   ordemEpoca: 4,
+  datasVida: '(1469 – 1527)',
   tabs: [
     {
       id: 'historia',

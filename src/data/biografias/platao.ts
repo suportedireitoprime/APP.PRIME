@@ -8,6 +8,7 @@ export const plataoData: BiografiaData = {
   imagemUrl: '/biografias/platao-capa.jpg',
   epoca: 'Antiguidade Clássica',
   ordemEpoca: 2,
+  datasVida: '(428 a.C. – 348 a.C.)',
   tabs: [
     {
       id: 'historia',

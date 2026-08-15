@@ -8,6 +8,7 @@ export const socratesData: BiografiaData = {
   imagemUrl: '/biografias/socrates-capa.jpg',
   epoca: 'Antiguidade Clássica',
   ordemEpoca: 1,
+  datasVida: '(470 a.C. – 399 a.C.)',
   tabs: [
     {
       id: 'historia',

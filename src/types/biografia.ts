@@ -31,5 +31,6 @@ export interface BiografiaData {
   imagemUrl?: string;
   epoca?: string;
   ordemEpoca?: number;
+  datasVida?: string;
   tabs: BioTab[];
 }

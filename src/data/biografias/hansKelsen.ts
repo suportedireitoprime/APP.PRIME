@@ -5,9 +5,10 @@ export const hansKelsenData: BiografiaData = {
   categoriaId: 'filosofos',
   nome: 'Hans Kelsen',
   subtitulo: 'O arquiteto do Positivismo Jurídico moderno e criador da Teoria Pura do Direito.',
-  imagemUrl: '/biografias/hanskelsen-capa.jpg',
-  epoca: 'Positivismo Moderno',
-  ordemEpoca: 5,
+  imagemUrl: '/kelsen.jpg',
+  epoca: 'Idade Contemporânea',
+  ordemEpoca: 6,
+  datasVida: '(1881 – 1973)',
   tabs: [
     {
       id: 'historia',
