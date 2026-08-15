@@ -486,7 +486,7 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
 
 
   if (!user) {
-    return <Navigate to="/landing" replace state={{ from: location.pathname }} />;
+    return <Navigate to="/auth" replace state={{ from: location.pathname }} />;
   }
 
   if (requireOnboarding && !initialCheckDone) {

@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { db } from '@/lib/supabase';
+import { supabase as db } from '@/integrations/supabase/client';
 import { 
   Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, 
   DrawerFooter, DrawerClose 
@@ -8,7 +8,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Loader2, BookOpen, Layers } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { haptic } from '@/lib/haptic';
+import { haptic } from '@/lib/nativeHaptics';
 
 interface QuestoesMateriaSheetProps {
   materia: string | null;

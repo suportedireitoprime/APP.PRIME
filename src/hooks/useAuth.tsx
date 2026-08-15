@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
+import { createContext, useContext, useEffect, useState, startTransition, ReactNode, useCallback } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { Capacitor } from '@capacitor/core';
@@ -124,9 +124,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
+      startTransition(() => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
+      });
       // Crashlytics: associa relatórios de crash ao usuário (ou limpa no logout)
       import('@/lib/nativeCrashlytics').then((m) => m.setCrashlyticsUserId(session?.user?.id ?? null));
 
@@ -238,7 +240,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut();
     // Não fazer window.location.replace — o onAuthStateChange já seta
     // user=null e loading=false, e o ProtectedRoute/HomeGate redireciona
-    // automaticamente para /landing sem recarregar a página inteira (que
+    // automaticamente para /auth sem recarregar a página inteira (que
     // causava tela preta no WebView nativo).
   }, []);
 

@@ -127,7 +127,6 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
 
   const handleItemClick = async (id: string) => {
     if (id === 'sair') {
-      onClose();
       setTimeout(() => setLogoutPrompt(true), 180);
       return;
     }
@@ -312,6 +311,23 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
 
   );
 
+  // Purge agressivo de todos os locks de scroll/pointer que o Radix
+  // ou outros modais possam deixar no body ao desmontar abruptamente.
+  const purgeBodyLocks = () => {
+    document.body.style.pointerEvents = '';
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    document.body.style.paddingRight = '';
+    document.body.removeAttribute('data-scroll-locked');
+    delete document.body.dataset.sideMenuOpen;
+    // Remove qualquer data-scroll-locked residual de elementos filhos
+    document.querySelectorAll('[data-scroll-locked]').forEach((el) =>
+      el.removeAttribute('data-scroll-locked'),
+    );
+  };
+
   if (typeof document === 'undefined') return null;
   return createPortal(
     <>
@@ -334,12 +350,18 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction onClick={(e) => {
               e.preventDefault();
+              // 1. Fecha o AlertDialog primeiro — dá ao Radix tempo de limpar seus locks
               setLogoutPrompt(false);
-              onClose();
-              // Evita o congelamento (freeze) da tela forçando a limpeza do lock do Radix antes do unmount
-              document.body.style.pointerEvents = '';
-              document.body.removeAttribute('data-scroll-locked');
-              setTimeout(() => signOut(), 300);
+
+              // 2. Espera o Radix processar a remoção dos seus estilos do body,
+              //    e só depois desmonta o SideMenu (que destrói o portal inteiro).
+              setTimeout(() => {
+                purgeBodyLocks();
+                onClose();
+
+                // 3. signOut após o menu já ter sido removido da árvore
+                setTimeout(() => signOut(), 150);
+              }, 250);
             }} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
               Sim, sair
             </AlertDialogAction>
