@@ -1,14 +1,11 @@
 import { useState, useEffect, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { supabase as db } from '@/integrations/supabase/client';
-import { 
-  Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, 
-  DrawerFooter, DrawerClose 
-} from '@/components/ui/drawer';
-import { Button } from '@/components/ui/button';
-import { Loader2, BookOpen, Layers } from 'lucide-react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Loader2, BookOpen, ChevronLeft } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
+import { StepRow, SelecaoSheet } from './QuestoesFiltroSheet';
 
 interface QuestoesMateriaSheetProps {
   materia: string | null;
@@ -20,13 +17,14 @@ export function QuestoesMateriaSheet({ materia, aberto, onOpenChange }: Questoes
   const navigate = useNavigate();
   const [assuntos, setAssuntos] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(false);
-  const [assuntoSelecionado, setAssuntoSelecionado] = useState<string>('todos');
+  const [assuntoSelecionado, setAssuntoSelecionado] = useState<string[]>([]);
   const [qtd, setQtd] = useState<string>('10');
+  const [passo, setPasso] = useState<null | 'tema' | 'quantidade'>(null);
 
   useEffect(() => {
     if (aberto && materia) {
       setLoading(true);
-      setAssuntoSelecionado('todos');
+      setAssuntoSelecionado([]);
       setQtd('10');
       db.rpc('questoes_filtro_counts', {
         _segmentos: null,
@@ -43,15 +41,15 @@ export function QuestoesMateriaSheet({ materia, aberto, onOpenChange }: Questoes
     }
   }, [aberto, materia]);
 
-  const listaAssuntos = useMemo(() => {
+  const listaAssuntosObj = useMemo(() => {
     return Object.entries(assuntos)
       .sort((a, b) => b[1] - a[1])
       .map(([nome, count]) => ({ nome, count }));
   }, [assuntos]);
 
   const totalMateria = useMemo(() => {
-    return listaAssuntos.reduce((acc, a) => acc + a.count, 0);
-  }, [listaAssuntos]);
+    return listaAssuntosObj.reduce((acc, a) => acc + a.count, 0);
+  }, [listaAssuntosObj]);
 
   const handlePraticar = () => {
     if (!materia) return;
@@ -59,20 +57,21 @@ export function QuestoesMateriaSheet({ materia, aberto, onOpenChange }: Questoes
     const params = new URLSearchParams();
     params.set('area', materia);
     
-    if (assuntoSelecionado !== 'todos') {
+    // Se o usuário selecionou temas específicos (não vazio)
+    if (assuntoSelecionado.length > 0 && !assuntoSelecionado.includes('Todos os temas')) {
       params.set('filtro', '1');
       const filtroData = {
         segmentos: [],
         disciplinas: [materia],
-        assuntos: [assuntoSelecionado],
+        assuntos: assuntoSelecionado,
         anos: [],
         status: [],
         ordem: 'embaralhado',
-        quantidade: qtd === 'todas' ? null : Number(qtd),
+        quantidade: qtd === 'Todas' ? null : Number(qtd),
       };
       localStorage.setItem('questoes:filtro', JSON.stringify(filtroData));
     } else {
-      if (qtd !== 'todas') {
+      if (qtd !== 'Todas') {
         params.set('qtd', qtd);
       }
     }
@@ -81,86 +80,105 @@ export function QuestoesMateriaSheet({ materia, aberto, onOpenChange }: Questoes
     navigate(`/questoes/praticar?${params.toString()}`);
   };
 
-  return (
-    <Drawer open={aberto} onOpenChange={onOpenChange}>
-      <DrawerContent className="bg-background max-h-[90vh]">
-        <DrawerHeader className="text-left">
-          <DrawerTitle className="text-xl font-bold flex items-center gap-2">
-            <BookOpen className="h-5 w-5 text-primary" />
-            {materia}
-          </DrawerTitle>
-          <DrawerDescription>
-            Configure sua sessão de estudos para esta matéria.
-          </DrawerDescription>
-        </DrawerHeader>
+  if (typeof document === 'undefined') return null;
 
-        <div className="p-4 space-y-6 overflow-y-auto">
-          {loading ? (
-            <div className="flex items-center justify-center p-8">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </div>
-          ) : (
-            <>
-              <div className="space-y-3">
-                <label className="text-sm font-semibold flex items-center gap-2">
-                  <Layers className="h-4 w-4" />
-                  Escolha o Tema
-                </label>
-                <Select value={assuntoSelecionado} onValueChange={setAssuntoSelecionado}>
-                  <SelectTrigger className="w-full h-12 bg-card rounded-xl border-border/80">
-                    <SelectValue placeholder="Selecione um tema" />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-[300px]">
-                    <SelectItem value="todos">
-                      Todos os temas ({totalMateria})
-                    </SelectItem>
-                    {listaAssuntos.map((a) => (
-                      <SelectItem key={a.nome} value={a.nome}>
-                        {a.nome} <span className="text-muted-foreground ml-1">({a.count})</span>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-3">
-                <label className="text-sm font-semibold">Quantas questões?</label>
-                <div className="grid grid-cols-4 gap-2">
-                  {['10', '20', '50', 'todas'].map((v) => (
-                    <button
-                      key={v}
-                      onClick={() => {
-                        haptic.selection();
-                        setQtd(v);
-                      }}
-                      className={`h-12 rounded-xl border font-semibold transition-all ${
-                        qtd === v 
-                          ? 'bg-primary text-primary-foreground border-primary' 
-                          : 'bg-card text-muted-foreground border-border/80 hover:border-primary/50'
-                      }`}
-                    >
-                      {v === 'todas' ? 'Todas' : v}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </>
-          )}
-        </div>
-
-        <DrawerFooter className="pt-2 pb-safe">
-          <Button 
-            onClick={handlePraticar} 
-            disabled={loading}
-            className="w-full h-14 rounded-2xl text-lg font-bold shadow-lg shadow-primary/20"
+  return createPortal(
+    <AnimatePresence>
+      {aberto && (
+        <>
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, pointerEvents: 'none' }}
+            onClick={() => onOpenChange(false)}
+            className="fixed inset-0 z-[70] bg-black/75 backdrop-blur-sm"
+          />
+          <motion.div
+            initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%', pointerEvents: 'none' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="theme-questoes fixed inset-0 z-[71] flex flex-col overflow-hidden bg-zinc-950 text-foreground md:inset-y-0 md:left-auto md:right-0 md:w-full md:max-w-md md:border-l md:border-zinc-800/80 md:shadow-2xl"
           >
-            Começar a Praticar
-          </Button>
-          <DrawerClose asChild>
-            <Button variant="ghost" className="h-12 rounded-xl">Cancelar</Button>
-          </DrawerClose>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+            <div className="flex items-center gap-3 px-4 pb-4 pt-safe-header border-b border-zinc-800/80 bg-zinc-900/90 backdrop-blur-md">
+              <button onClick={() => onOpenChange(false)} aria-label="Voltar" className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-zinc-800/80 hover:bg-zinc-700/80 text-zinc-200 transition-colors active:scale-95">
+                <ChevronLeft className="h-6 w-6" />
+              </button>
+              <div className="min-w-0 flex-1">
+                <p className="flex items-center gap-2 text-[22px] font-display font-bold text-zinc-100 tracking-wide uppercase">
+                  <BookOpen className="h-5 w-5 text-[#F87171]" />
+                  <span className="truncate">{materia}</span>
+                </p>
+                <p className="mt-0.5 text-[13px] leading-snug text-zinc-400 truncate">
+                  Configure sua sessão de estudos para esta matéria.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex-1 space-y-3 overflow-y-auto px-4 pb-4 pt-4">
+              {loading ? (
+                <div className="flex flex-col items-center justify-center py-12 text-zinc-500">
+                  <Loader2 className="h-8 w-8 animate-spin text-[#F87171] mb-4" />
+                  <p className="text-sm">Carregando temas...</p>
+                </div>
+              ) : (
+                <>
+                  <StepRow
+                    step={1} label="Tema"
+                    hint={assuntoSelecionado.length ? `${assuntoSelecionado.length} selecionado(s)` : 'Todos os temas'}
+                    active={passo === 'tema'}
+                    done={assuntoSelecionado.length > 0}
+                    badge={assuntoSelecionado.length || undefined}
+                    onClick={() => setPasso('tema')}
+                  />
+                  <StepRow
+                    step={2} label="Quantas questões?"
+                    hint={qtd === 'Todas' ? 'Todas as questões disponíveis' : `${qtd} questões`}
+                    active={passo === 'quantidade'}
+                    done={true}
+                    onClick={() => setPasso('quantidade')}
+                  />
+                </>
+              )}
+            </div>
+
+            <div className="flex items-center gap-3 border-t border-zinc-800/80 bg-zinc-900/90 backdrop-blur-md px-5 pb-safe-nav pt-4">
+              <button
+                onClick={handlePraticar}
+                disabled={loading}
+                className="flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl bg-[#DC2626] hover:bg-[#B91C1C] text-[16px] font-black text-white shadow-lg shadow-[#DC2626]/30 active:scale-[0.98] transition-all disabled:opacity-50 disabled:active:scale-100"
+              >
+                Começar a Praticar
+              </button>
+            </div>
+
+            <AnimatePresence>
+              {passo === 'tema' && (
+                <SelecaoSheet
+                  key="tema" titulo="Tema" buscavel
+                  opcoes={listaAssuntosObj.map((a) => a.nome)}
+                  contagens={Object.fromEntries(listaAssuntosObj.map((a) => [a.nome, a.count]))}
+                  selecionado={assuntoSelecionado}
+                  onFechar={() => setPasso(null)}
+                  onConfirmar={(v) => setAssuntoSelecionado(v)}
+                />
+              )}
+              {passo === 'quantidade' && (
+                <SelecaoSheet
+                  key="qtd" titulo="Quantidade" single
+                  opcoes={['10 questões', '20 questões', '50 questões', 'Todas']}
+                  selecionado={[qtd === 'Todas' ? 'Todas' : `${qtd} questões`]}
+                  onFechar={() => setPasso(null)}
+                  onConfirmar={(v) => {
+                    const sel = v[0];
+                    if (sel) {
+                      if (sel === 'Todas') setQtd('Todas');
+                      else setQtd(sel.split(' ')[0]);
+                    }
+                  }}
+                />
+              )}
+            </AnimatePresence>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>,
+    document.body,
   );
 }

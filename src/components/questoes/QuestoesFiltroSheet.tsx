@@ -86,7 +86,7 @@ function getInitialCounts(): Counts {
 const fmt = (n: number) => n.toLocaleString('pt-BR');
 
 /* -------------------------------------------------- passo numerado */
-function StepRow({
+export function StepRow({
   step, label, hint, onClick, locked, active, done, badge, lockedMessage,
 }: {
   step: number; label: string; hint: string; onClick: () => void;
@@ -159,7 +159,7 @@ function StepRow({
 }
 
 /* -------------------------------------------------- sub-sheet de seleção */
-function SelecaoSheet({
+export function SelecaoSheet({
   titulo, opcoes, contagens, descricoes, selecionado, single, onFechar, onConfirmar, buscavel,
 }: {
   titulo: string;
