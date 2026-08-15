@@ -4,7 +4,7 @@
 import { corsHeaders, json, adminClient } from "../_shared/questoes-sheets.ts";
 
 const GATEWAY = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
-const MODEL = "openai/gpt-5.6-sol";
+const MODEL = "gemini-3.1-flash-lite";
 
 type Tipo =
   | "comentario" | "lei-erradas" | "aula" | "flashcards"
@@ -79,7 +79,7 @@ function hashChave(texto: string) {
   return `h:${h}`;
 }
 
-const FALLBACK_MODEL = "gemini-2.5-flash";
+const FALLBACK_MODEL = "gemini-2.5-flash-lite";
 const MAX_RETRIES = 3;
 
 async function chamarApi(model: string, tipo: Tipo, questao: any) {
