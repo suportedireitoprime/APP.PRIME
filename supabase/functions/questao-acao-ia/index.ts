@@ -8,11 +8,11 @@ const MODEL = "gemini-3.1-flash-lite";
 
 type Tipo =
   | "comentario" | "lei-erradas" | "aula" | "flashcards"
-  | "lei" | "pegadinhas" | "mapa" | "cornell" | "termos";
+  | "lei" | "pegadinhas" | "mapa" | "cornell" | "termos" | "me-explique";
 
 const TIPOS: Tipo[] = [
   "comentario", "lei-erradas", "aula", "flashcards",
-  "lei", "pegadinhas", "mapa", "cornell", "termos",
+  "lei", "pegadinhas", "mapa", "cornell", "termos", "me-explique",
 ];
 
 const BASE = `Você é professor de cursinho jurídico especialista em concursos e OAB.
@@ -50,6 +50,14 @@ JSON: { "markdown": "lista markdown aninhada com no máximo 3 níveis" }`,
 JSON: { "perguntas": ["..."], "notas": "markdown com as anotações", "sintese": "3 a 5 frases de síntese" }`,
   termos: `Explique o vocabulário jurídico da questão.
 JSON: { "termos": [ { "termo": "...", "definicao": "1 a 3 frases", "exemplo": "exemplo curto ou string vazia" } ] } — de 3 a 6 termos.`,
+  "me-explique": `Aja como um tutor particular de cursinho jurídico conversando com o aluno.
+Seu objetivo é dar UMA EXPLICAÇÃO COMPLETA E DIDÁTICA da questão.
+Passos obrigatórios na sua resposta em formato texto:
+1. Comece resumindo o ENUNCIADO e qual é o núcleo do problema (ex: "Aqui a banca quer saber...").
+2. Analise TODAS as alternativas erradas informando rapidamente por que estão erradas (cite o dispositivo de lei ou erro lógico se houver).
+3. Analise a alternativa correta explicando por que ela é o gabarito.
+Formatação: Escreva em parágrafos fluidos e linguagem conversacional (não use listas robóticas). Use markdown.
+JSON: { "markdown": "Seu texto completo em markdown, entre 150 e 400 palavras." }`,
 };
 
 function alternativas(q: any) {

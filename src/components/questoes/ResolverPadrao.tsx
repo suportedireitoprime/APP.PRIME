@@ -9,10 +9,11 @@ import type { Questao } from '@/hooks/useQuestoes';
 import { letraGabarito } from '@/lib/questoesVisual';
 import { haptic } from '@/lib/nativeHaptics';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
 import { QuestaoAcoesBar, ComentarioSheet } from '@/components/questoes/QuestaoAcoesBar';
 import { useGatedFeature } from '@/hooks/useGatedFeature';
 import { CartaoRespostaSheet } from './CartaoRespostaSheet';
+import { MeExpliqueSheet } from './MeExpliqueSheet';
+import { Wand2 } from 'lucide-react';
 
 const db = supabase as any;
 
@@ -44,8 +45,9 @@ const ResolverPadrao = ({
   const [favoritos, setFavoritos] = useState<Set<string>>(new Set());
   const [segundos, setSegundos] = useState(0);
   const [recursosAberto, setRecursosAberto] = useState(false);
-  const [feedbackOculto, setFeedbackOculto] = useState(false);
   const [gradeAberta, setGradeAberta] = useState(false);
+  const [meExpliqueAberto, setMeExpliqueAberto] = useState(false);
+  const [isScanningIa, setIsScanningIa] = useState(false);
   const [streak, setStreak] = useState(0);
   const [ocrLoading, setOcrLoading] = useState<Record<string, boolean>>({});
   const [ocrText, setOcrText] = useState<Record<string, string>>({});
@@ -233,7 +235,18 @@ const ResolverPadrao = ({
         </button>
       </div>
 
-      <div className="mx-auto w-full max-w-3xl px-4 pt-5 sm:px-6">
+      <div className={cn("relative mx-auto w-full max-w-3xl flex-1 px-4 sm:px-6", feedbackOculto ? "pb-24" : "pb-32", isScanningIa && "overflow-hidden rounded-xl ring-2 ring-blue-500/50 shadow-[0_0_20px_rgba(59,130,246,0.3)] transition-all")}>
+        <AnimatePresence>
+          {isScanningIa && (
+            <motion.div
+              initial={{ top: '-10%' }}
+              animate={{ top: '110%' }}
+              transition={{ duration: 1.5, ease: 'linear' }}
+              className="absolute left-0 right-0 z-10 h-32 bg-gradient-to-b from-transparent to-blue-500/30 border-b-2 border-blue-400 pointer-events-none"
+            />
+          )}
+        </AnimatePresence>
+
         <AnimatePresence mode="wait">
           <motion.div
             key={atual.id}
@@ -428,10 +441,20 @@ const ResolverPadrao = ({
                   <div className="flex flex-col gap-5 py-1">
                     <div className="flex gap-2">
                       <button
+                        onClick={handleMeExpliqueClick}
+                        className={cn("flex h-[56px] flex-1 items-center justify-between rounded-2xl border px-4 shadow-lg shadow-blue-500/10", "bg-blue-600 border-blue-500 text-white")}
+                      >
+                        <div className="flex items-center gap-3"><Wand2 className="h-5 w-5 animate-pulse" /> <span className="font-bold">Me Explique</span></div>
+                        <ChevronRight className="h-5 w-5 opacity-50" />
+                      </button>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <button
                         onClick={() => { if (gateFuncoes.blocked) { gateFuncoes.openGate(); return; } setComentarioAberto(true); }}
                         className={cn("flex h-[56px] flex-1 items-center justify-between rounded-2xl border px-4", resp.acertou ? "bg-green-500/10 border-green-500/20 text-green-400" : "bg-red-500/10 border-red-500/20 text-red-400")}
                       >
-                        <div className="flex items-center gap-3"><MessageSquare className="h-5 w-5" /> <span className="font-bold">Ver comentário</span></div>
+                        <div className="flex items-center gap-3"><MessageSquare className="h-5 w-5" /> <span className="font-bold">Comentário</span></div>
                         <ChevronRight className="h-5 w-5" />
                       </button>
                       
@@ -544,6 +567,12 @@ const ResolverPadrao = ({
         respostas={respostas}
         questoesIdMap={questoes.map(q => q.id)}
         onSelect={setIdx}
+      />
+
+      <MeExpliqueSheet
+        aberto={meExpliqueAberto}
+        onClose={() => setMeExpliqueAberto(false)}
+        questao={atual}
       />
     </div>
   );
