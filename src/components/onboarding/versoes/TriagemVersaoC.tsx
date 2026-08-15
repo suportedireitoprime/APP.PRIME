@@ -254,7 +254,7 @@ function AberturaCinematografica({
               loading="eager"
               decoding="async"
               initial={{ opacity: 0 }}
-              animate={{ opacity: [0, 0.8, 0.8, 0] }}
+              animate={{ opacity: [0, 0.25, 0.25, 0] }}
               transition={{
                 duration: 2.4,
                 delay: i * 0.18,
@@ -266,7 +266,6 @@ function AberturaCinematografica({
                 ...f,
                 width: f.size,
                 height: 'auto',
-                filter: 'brightness(0) invert(1)',
                 transform: `rotate(${f.rot}deg) translateZ(0)`,
                 willChange: 'opacity, transform',
               }}
@@ -384,9 +383,8 @@ function FilosofosTextura({ seed = 0 }: { seed?: number }) {
             left: s.left,
             right: s.right,
             width: s.size,
-            opacity: s.op,
+            opacity: s.op * 1.5, // slightly more visible since it's dark
             transform: `rotate(${s.rot}deg)`,
-            filter: 'brightness(0) invert(1)',
           }}
         />
       ))}

@@ -381,9 +381,13 @@ const DesktopSidebar = ({ activeTab, onTabChange }: DesktopSidebarProps) => {
         </AlertDialogHeader>
         <AlertDialogFooter className="flex-col gap-2 sm:flex-row">
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <AlertDialogAction onClick={() => {
-            setTimeout(() => signOut(), 200);
-          }} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            <AlertDialogAction onClick={(e) => {
+              e.preventDefault();
+              setLogoutPrompt(false);
+              document.body.style.pointerEvents = '';
+              document.body.removeAttribute('data-scroll-locked');
+              setTimeout(() => signOut(), 300);
+            }} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
             Sim, sair
           </AlertDialogAction>
         </AlertDialogFooter>

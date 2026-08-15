@@ -278,8 +278,6 @@ const TribunalSimulado = lazy(() => import("./pages/TribunalSimulado.tsx"));
 const AdminHorus = lazy(() => import('./pages/AdminHorus'));
 const AdminHorusTemplate = lazy(() => import('./pages/AdminHorusTemplate'));
 const AdminTriagem = lazy(() => import('./pages/AdminTriagem'));
-const AdminTriagemEntrada = lazy(() => import("./pages/AdminTriagemEntrada.tsx"));
-const AdminTriagemHub = lazy(() => import("./pages/AdminTriagemHub.tsx"));
 const HorusWhatsApp = lazy(() => import("./pages/HorusWhatsApp.tsx"));
 const AdminBlogEdicao = lazy(() => import("./pages/AdminBlogEdicao.tsx"));
 const AdminDesignImagens = lazy(() => import("./pages/AdminDesignImagens.tsx"));
@@ -465,7 +463,10 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
         if (ok) {
           setNeedsOnboarding(!done);
           if (done && cacheKey) {
-            try { localStorage.setItem(cacheKey, '1'); } catch {}
+            try {
+              localStorage.setItem(cacheKey, '1');
+              window.dispatchEvent(new Event('onboarding_checked'));
+            } catch {}
             try { window.sessionStorage.removeItem('just_signed_up'); } catch {}
           }
         }
@@ -938,8 +939,6 @@ function AnimatedRoutes() {
           <Route path="/admin-horus" element={<ProtectedRoute><PageTransition><AdminHorus /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-horus-template" element={<ProtectedRoute><PageTransition><AdminHorusTemplate /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-triagem" element={<ProtectedRoute><PageTransition><AdminTriagem /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-triagem-entrada" element={<ProtectedRoute><PageTransition><AdminTriagemEntrada /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-triagem-hub" element={<ProtectedRoute><PageTransition><AdminTriagemHub /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-boletins" element={<ProtectedRoute><PageTransition><AdminBoletins /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-desktop" element={<ProtectedRoute><PageTransition><AdminDesktop /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-erros-questoes" element={<ProtectedRoute><PageTransition><AdminErrosQuestoes /></PageTransition></ProtectedRoute>} />

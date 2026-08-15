@@ -57,17 +57,21 @@ const MAIS_MENU = [
   { id: 'boletins', label: 'Boletins', to: '/boletins', icon: Newspaper, desc: 'Notícias e atualizações jurídicas', color: '#38BDF8' },
 ];
 
+import { useKeyboardHeight } from '@/hooks/useKeyboardListeners';
+
 const VadeMecumBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [maisOpen, setMaisOpen] = useState(false);
+  const keyboardHeight = useKeyboardHeight();
+  const actuallyHidden = hidden || keyboardHeight > 0;
 
   return (
     <>
       <motion.nav
         aria-label="Navegação Vade Mecum"
         initial={false}
-        animate={hidden ? { y: 120, opacity: 0 } : { y: 0, opacity: 1 }}
+        animate={actuallyHidden ? { y: 120, opacity: 0 } : { y: 0, opacity: 1 }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
         className="fixed bottom-0 left-0 right-0 z-50 lg:hidden md:bottom-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-auto"
       >

@@ -126,7 +126,13 @@ export async function toggleArtigoFavorito(fav: ArtigoFav): Promise<boolean> {
       .maybeSingle();
 
     if (existing?.id) {
-      await supabase.from('artigos_favoritos').delete().eq('id', existing.id);
+      const { error } = await supabase.from('artigos_favoritos').delete().eq('id', existing.id);
+      if (error) {
+        try {
+          const { syncQueue } = await import('@/services/syncQueue');
+          await syncQueue.enqueue({ kind: 'table.delete', table: 'artigos_favoritos', match: { id: existing.id } });
+        } catch {}
+      }
       nowOn = false;
     } else {
       // Teto de favoritos ativos para contas gratuitas
@@ -140,13 +146,20 @@ export async function toggleArtigoFavorito(fav: ArtigoFav): Promise<boolean> {
           if ((count || 0) >= limite) throw new FavoritoLimitError(limite);
         }
       }
-      await supabase.from('artigos_favoritos').insert({
+      const payload = {
         user_id: user.id,
         tabela_codigo: tabela,
         numero_artigo: numero,
         conteudo_preview: fav.conteudo_preview ?? null,
         artigo_id: makeArtigoId(tabela, numero),
-      });
+      };
+      const { error } = await supabase.from('artigos_favoritos').insert(payload);
+      if (error) {
+        try {
+          const { syncQueue } = await import('@/services/syncQueue');
+          await syncQueue.enqueue({ kind: 'table.insert', table: 'artigos_favoritos', values: payload });
+        } catch {}
+      }
       nowOn = true;
     }
   } else {

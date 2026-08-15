@@ -5,8 +5,9 @@ import {
   ChevronLeft, ChevronRight, Camera, Pencil, Check,
   StickyNote, Highlighter, Star, BookMarked,
   Scale, FileText, Film, Gavel, BookOpen, Sparkles, Calendar,
-  NotebookPen, Video,
+  NotebookPen, Video, Database, Trash2
 } from "lucide-react";
+import { toast } from "sonner";
 import { haptic } from "@/lib/nativeHaptics";
 import { supabase } from "@/integrations/supabase/client";
 import { flushAppMetricsNow } from "@/lib/appMetrics";
@@ -122,7 +123,8 @@ const MeuEspaco = () => {
   const [bioOverride, setBioOverride] = useState<string | null>(null);
   const [coverPickerOpen, setCoverPickerOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string>(() => toYMD(new Date()));
-  const [activeTab, setActiveTab] = useState<'meus' | 'metas'>('metas');
+  const [activeTab, setActiveTab] = useState<'meus' | 'metas'>('meus');
+  const [clearingStorage, setClearingStorage] = useState(false);
   
   const METAS_MOCK = [
     { id: 'm1', type: 'Missão de Leitura', title: 'Crime e Castigo', subtitle: 'Meta: Ler 15 páginas hoje (Págs 45 a 60)', progress: 0, path: '/pessoal/livros', icon: BookOpen },
@@ -306,6 +308,26 @@ const MeuEspaco = () => {
   const handleBack = () => {
     haptic.selection();
     goBack();
+  };
+
+  const clearStorage = async () => {
+    haptic.selection();
+    if (!window.confirm("Isso apagará o cache de leis e dicionário baixados (eles serão recarregados quando necessário). Tem certeza?")) return;
+    setClearingStorage(true);
+    try {
+      const { localDb } = await import('@/services/localDb');
+      if (localDb.available) {
+        await localDb.clearAll();
+      }
+      const { clearCache } = await import('@/lib/pessoalCache');
+      clearCache();
+      toast.success("Armazenamento offline liberado com sucesso!");
+    } catch (e) {
+      console.error("Erro ao limpar dados offline:", e);
+      toast.error("Houve um erro ao liberar o armazenamento.");
+    } finally {
+      setClearingStorage(false);
+    }
   };
 
   
@@ -513,6 +535,29 @@ const MeuEspaco = () => {
                       </button>
                     );
                   })}
+                </div>
+              </div>
+
+              {/* Armazenamento Local / Limpeza */}
+              <div className="px-5 lg:px-0">
+                <div className="rounded-2xl border border-border/60 bg-secondary/30 p-4">
+                  <div className="flex items-center gap-3 mb-2">
+                    <Database className="w-5 h-5 text-muted-foreground" />
+                    <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
+                      Armazenamento Offline
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground/80 mb-4">
+                    O aplicativo guarda leis, artigos e resumos para que você possa estudar mesmo sem internet. Limpe esse cache se precisar liberar espaço.
+                  </p>
+                  <button
+                    onClick={clearStorage}
+                    disabled={clearingStorage}
+                    className="w-full h-12 rounded-xl bg-secondary border border-border/60 text-foreground text-sm font-semibold inline-flex items-center justify-center gap-2 active:scale-[0.98] transition hover:bg-secondary/80 disabled:opacity-50"
+                  >
+                    <Trash2 className="w-4 h-4 text-red-400" />
+                    {clearingStorage ? "Limpando..." : "Limpar dados baixados"}
+                  </button>
                 </div>
               </div>
             </div>

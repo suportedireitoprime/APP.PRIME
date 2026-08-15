@@ -93,9 +93,36 @@ const PremiumGate = ({
 
   // Mensalidade do plano anual — a App Store exige o patamar de R$ 19,90.
   const isIOS = useMemo(() => Capacitor.getPlatform() === 'ios', []);
-  const mensalidade = isIOS ? '19,90' : '16,66';
-  const totalAnual = isIOS ? 'total R$ 238,80/ano' : 'total R$ 199,90/ano';
-  const economia = isIOS ? '33%' : '44%';
+  const [mensalidade, setMensalidade] = useState(isIOS ? '19,90' : '16,66');
+  const [totalAnual, setTotalAnual] = useState(isIOS ? 'total R$ 238,80/ano' : 'total R$ 199,90/ano');
+  const [economia, setEconomia] = useState(isIOS ? '33%' : '44%');
+
+  useEffect(() => {
+    if (!open) {
+      setShowBenefits(false);
+      return;
+    }
+    const loadPricing = async () => {
+      const { isBillingAvailable, getProducts } = await import('@/lib/billing');
+      if (isBillingAvailable()) {
+        const prods = await getProducts();
+        const anualProd = prods.find((p) => p.productId === 'prime_premium_anual');
+        if (anualProd && anualProd.price) {
+          // Extrai o valor numérico (ex: "R$ 199,90" -> 199.90)
+          const numMatch = anualProd.price.match(/[\d.,]+/);
+          if (numMatch) {
+            const rawVal = parseFloat(numMatch[0].replace('.', '').replace(',', '.'));
+            if (!isNaN(rawVal)) {
+              const mensalStr = (rawVal / 12).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+              setMensalidade(mensalStr);
+              setTotalAnual(`total ${anualProd.price}/ano`);
+            }
+          }
+        }
+      }
+    };
+    loadPricing();
+  }, [open]);
 
   const ctaLabel = 'Começar 3 dias grátis';
   const goToCheckout = () => {

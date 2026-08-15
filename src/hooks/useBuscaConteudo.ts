@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { localDb } from '@/services/localDb';
 
 export type ConteudoTipo =
   | 'videoaula'
@@ -98,34 +99,68 @@ export function useBuscaConteudo(
 
     async function buscar() {
       try {
-        const { data, error } = await supabase.rpc('buscar_conteudo', {
-          _termo: q,
-          _tipo: tipo === 'tudo' ? null : tipo,
-          _limit: 60,
-        });
+        let resultsOnline: ConteudoResultado[] = [];
+        let errorOnline = null;
+
+        // 1. Tenta Supabase (online)
+        if (navigator.onLine !== false) {
+          const { data, error } = await supabase.rpc('buscar_conteudo', {
+            _termo: q,
+            _tipo: tipo === 'tudo' ? null : tipo,
+            _limit: 60,
+          });
+          errorOnline = error;
+          if (!error && Array.isArray(data)) {
+            resultsOnline = data as ConteudoResultado[];
+          }
+        }
+
+        // 2. Tenta localDb (offline)
+        let resultsOffline: ConteudoResultado[] = [];
+        if (localDb.available && (tipo === 'tudo' || tipo === 'conteudo' || tipo === 'artigo')) {
+          const res = await localDb.searchArtigos(q, 15);
+          resultsOffline = res.map((r: any) => ({
+            entity_type: 'artigo',
+            entity_id: r.id,
+            entity_table: r.lei, // O nome da tabela que foi salvo no sqlite
+            title: `${r.lei.toUpperCase()} - Art. ${r.numero}`,
+            subtitle: r.titulo || null,
+            snippet: r.texto,
+            thumb_url: null,
+            route: `/vademecum/${r.lei}?art=${r.numero}`,
+            score: 100,
+          }));
+        }
 
         if (!isMounted) return;
 
-        if (!error && Array.isArray(data)) {
-          const res = data as ConteudoResultado[];
+        // 3. Mescla os resultados priorizando online, preenchendo com offline se faltar
+        const combined = [...resultsOnline];
+        for (const off of resultsOffline) {
+          if (!combined.some(c => c.entity_type === 'artigo' && c.entity_id === off.entity_id)) {
+            combined.push(off);
+          }
+        }
+
+        if (!errorOnline || combined.length > 0) {
           if (searchCache.size >= MAX_CACHE_SIZE) {
             const firstKey = searchCache.keys().next().value;
             if (firstKey) searchCache.delete(firstKey);
           }
-          searchCache.set(cacheKey, res);
-          setResultados(res);
+          searchCache.set(cacheKey, combined);
+          setResultados(combined);
 
-          // fire-and-forget log de hit
-          supabase.from('search_hits').insert({
-            termo: q,
-            termo_norm: q.toLowerCase(),
-            tipo: tipo === 'tudo' ? null : tipo,
-          }).then(() => {});
+          if (navigator.onLine !== false) {
+            supabase.from('search_hits').insert({
+              termo: q,
+              termo_norm: q.toLowerCase(),
+              tipo: tipo === 'tudo' ? null : tipo,
+            }).then(() => {});
 
-          // GA4 `search` + Meta `Search`
-          import('@/lib/appEvents')
-            .then(({ appEvents }) => appEvents.search(q, res.length))
-            .catch(() => {});
+            import('@/lib/appEvents')
+              .then(({ appEvents }) => appEvents.search(q, combined.length))
+              .catch(() => {});
+          }
         } else {
           setResultados([]);
         }

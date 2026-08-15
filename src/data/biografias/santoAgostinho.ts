@@ -5,7 +5,7 @@ export const santoAgostinhoData: BiografiaData = {
   categoriaId: 'filosofos',
   nome: 'Santo Agostinho',
   subtitulo: 'O pilar da filosofia patrística que uniu a razão platônica à fé cristã, moldando o pensamento ocidental.',
-  // imagemUrl: '/biografias/santoagostinho-capa.jpg', // TODO: Adicionar a imagem gerada
+  imagemUrl: '/biografias/santoagostinho-capa.jpg',
   epoca: 'Idade Média',
   ordemEpoca: 4,
   datasVida: '(354 – 430)',

@@ -331,9 +331,14 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
           </AlertDialogHeader>
           <AlertDialogFooter className="flex-col gap-2 sm:flex-row">
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={() => {
+            <AlertDialogAction onClick={(e) => {
+              e.preventDefault();
+              setLogoutPrompt(false);
               onClose();
-              setTimeout(() => signOut(), 200);
+              // Evita o congelamento (freeze) da tela forçando a limpeza do lock do Radix antes do unmount
+              document.body.style.pointerEvents = '';
+              document.body.removeAttribute('data-scroll-locked');
+              setTimeout(() => signOut(), 300);
             }} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
               Sim, sair
             </AlertDialogAction>

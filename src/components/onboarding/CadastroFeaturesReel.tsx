@@ -183,19 +183,12 @@ function CadastroFeaturesReelInner({ nome, onDone, playSfx }: Props) {
       className="fixed inset-0 z-[110] overflow-hidden bg-[#0B0B0C] text-white select-none"
     >
       {/* Glow de fundo — muda de intensidade a cada cena */}
-      <AnimatePresence>
-        <motion.div
-          key={`glow-${cur.id}`}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.6 }}
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background: `radial-gradient(ellipse 80% 55% at 50% 26%, ${cur.glow} 0%, rgba(20,8,8,0.55) 45%, #0B0B0C 78%)`,
-          }}
-        />
-      </AnimatePresence>
+      <motion.div
+        className="pointer-events-none absolute inset-0 transition-colors duration-700 ease-in-out"
+        style={{
+          background: `radial-gradient(ellipse 80% 55% at 50% 26%, ${cur.glow} 0%, rgba(20,8,8,0.55) 45%, #0B0B0C 78%)`,
+        }}
+      />
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.07]"
         style={{

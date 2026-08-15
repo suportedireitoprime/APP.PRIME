@@ -8,6 +8,7 @@ import AssistenteOverlay from './AssistenteOverlay';
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { haptic } from '@/lib/nativeHaptics';
+import { useKeyboardHeight } from '@/hooks/useKeyboardListeners';
 
 import DicionarioJuridico from '@/components/ferramentas/DicionarioJuridico';
 const SideMenu = lazy(() => import('./SideMenu'));
@@ -115,8 +116,8 @@ const BottomNav = () => {
     return () => window.clearTimeout(t);
   }, []);
 
-
-  const hideNav = sideMenuOpen || externalMenuOpen;
+  const keyboardHeight = useKeyboardHeight();
+  const hideNav = sideMenuOpen || externalMenuOpen || keyboardHeight > 0;
 
   const isEstudos = path.startsWith('/estudos') || path.startsWith('/resumos-juridicos') || path.startsWith('/biblioteca');
 

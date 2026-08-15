@@ -14,7 +14,8 @@ import { conectado } from '@/lib/nativo/rede';
 export type SyncOp =
   | { kind: 'table.update'; table: string; match: Record<string, any>; values: Record<string, any> }
   | { kind: 'table.delete'; table: string; match: Record<string, any> }
-  | { kind: 'table.insert'; table: string; values: Record<string, any> };
+  | { kind: 'table.insert'; table: string; values: Record<string, any> }
+  | { kind: 'table.upsert'; table: string; values: Record<string, any>; onConflict?: string };
 
 interface QueueRow {
   id: number;
@@ -51,6 +52,9 @@ async function applyOp(op: SyncOp): Promise<{ ok: true } | { ok: false; error: s
       ({ error } = await q);
     } else if (op.kind === 'table.insert') {
       ({ error } = await (supabase as any).from(op.table).insert(op.values));
+    } else if (op.kind === 'table.upsert') {
+      let q = (supabase as any).from(op.table).upsert(op.values, op.onConflict ? { onConflict: op.onConflict } : undefined);
+      ({ error } = await q);
     }
     if (error) {
       // Erros 4xx são permanentes (RLS, validação). Erros de rede: retry.

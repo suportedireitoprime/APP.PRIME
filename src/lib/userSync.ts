@@ -48,20 +48,32 @@ async function pushRow(escopo: string, itemKey: string, payload: any, deleted: b
   const uid = await currentUserId();
   if (!uid) return;
   try {
-    await supabase.from('user_sync_items' as any).upsert(
-      {
-        user_id: uid,
-        escopo,
-        item_key: itemKey,
-        payload: payload ?? {},
-        deleted,
-        item_at: new Date(at || Date.now()).toISOString(),
-        updated_at: new Date().toISOString(),
-      },
+    const row = {
+      user_id: uid,
+      escopo,
+      item_key: itemKey,
+      payload: payload ?? {},
+      deleted,
+      item_at: new Date(at || Date.now()).toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    const { error } = await supabase.from('user_sync_items' as any).upsert(
+      row,
       { onConflict: 'user_id,escopo,item_key' },
     );
+    if (error) {
+      try {
+        const { syncQueue } = await import('@/services/syncQueue');
+        await syncQueue.enqueue({
+          kind: 'table.upsert',
+          table: 'user_sync_items',
+          values: row,
+          onConflict: 'user_id,escopo,item_key',
+        });
+      } catch {}
+    }
   } catch {
-    /* offline: o próximo push/pull reconcilia */
+    /* fallback extra se falhar try block */
   }
 }
 

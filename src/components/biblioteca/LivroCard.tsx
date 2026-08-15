@@ -1,4 +1,4 @@
-import { directImg } from '@/lib/cdnImg';
+import { useBibliotecaCapa } from '@/hooks/useBibliotecaAsset';
 
 export interface LivroUnificado {
   id: string | number;
@@ -19,7 +19,7 @@ interface LivroCardProps {
 }
 
 const LivroCard = ({ livro, onClick, priority }: LivroCardProps) => {
-  const capaUrl = livro.capa ? directImg(livro.capa, 300) : '';
+  const capaUrl = useBibliotecaCapa(livro.capa, 300);
 
   return (
     <button

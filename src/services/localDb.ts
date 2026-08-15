@@ -170,4 +170,17 @@ export const localDb = {
       );
     }
   },
+
+  async clearAll(): Promise<void> {
+    if (!SQLITE_ENABLED) return;
+    await this.ready();
+    await this.run('DELETE FROM kv');
+    await this.run('DELETE FROM dicionario_juridico');
+    await this.run('DELETE FROM historico_busca');
+    await this.run('DELETE FROM artigos_cache');
+    try {
+      await this.run('DELETE FROM artigos_fts');
+    } catch {}
+    await this.run('VACUUM');
+  },
 };

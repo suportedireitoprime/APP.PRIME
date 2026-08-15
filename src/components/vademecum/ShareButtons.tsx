@@ -3,6 +3,7 @@ import { Share2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { buildSmartLink } from '@/lib/nativeDeepLinks';
 import { copiarTexto } from '@/lib/nativo/copiar';
+import { haptic } from '@/lib/nativeHaptics';
 
 interface ShareButtonsProps {
   artigoNumero: string;
@@ -18,6 +19,7 @@ const ShareButtons = ({ artigoNumero, artigoTexto, leiNome, leiSlug }: ShareButt
     : (typeof window !== 'undefined' ? window.location.href : '');
 
   const handleNativeShare = async () => {
+    haptic.selection();
     try {
       const { Capacitor } = await import('@capacitor/core');
       if (Capacitor.isNativePlatform()) {
@@ -50,10 +52,10 @@ const ShareButtons = ({ artigoNumero, artigoTexto, leiNome, leiSlug }: ShareButt
       >
         <Share2 className="w-4 h-4" />
       </button>
-      <WhatsappShareButton url={url} title={text}>
+      <WhatsappShareButton url={url} title={text} onClick={() => haptic.selection()}>
         <WhatsappIcon size={32} round />
       </WhatsappShareButton>
-      <TelegramShareButton url={url} title={text}>
+      <TelegramShareButton url={url} title={text} onClick={() => haptic.selection()}>
         <TelegramIcon size={32} round />
       </TelegramShareButton>
     </div>

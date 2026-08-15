@@ -120,6 +120,7 @@ export function useHighlights(artigoId: string | null) {
     setHighlights(updated);
     persist(updated);
     sel.removeAllRanges();
+    import('@/lib/nativeHaptics').then(({ haptic }) => haptic.selection()).catch(() => {});
     return id;
   }, [highlights, selectedColor, persist]);
 
@@ -142,6 +143,7 @@ export function useHighlights(artigoId: string | null) {
     const updated = [...nonOverlapping, newHighlight];
     setHighlights(updated);
     persist(updated);
+    import('@/lib/nativeHaptics').then(({ haptic }) => haptic.selection()).catch(() => {});
     return id;
   }, [highlights, selectedColor, persist]);
 

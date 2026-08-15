@@ -1,6 +1,7 @@
 import { useLocation } from "react-router-dom";
 import Index from "@/pages/Index";
 import { useAuth } from "@/hooks/useAuth";
+import { useEffect, useState } from "react";
 
 /**
  * Mantém a Home montada em memória o tempo todo, apenas alternando
@@ -38,6 +39,27 @@ const PersistentHome = () => {
     publicPaths.has(location.pathname) ||
     location.pathname.startsWith("/desktop-link/");
   if (isPublic) return null;
+
+  const [onboardingChecked, setOnboardingChecked] = useState(() => {
+    if (!user) return false;
+    if (typeof window === 'undefined') return false;
+    return localStorage.getItem(`onboarding_completed:${user.id}`) === '1';
+  });
+
+  useEffect(() => {
+    if (!user) return;
+    const cacheKey = `onboarding_completed:${user.id}`;
+    if (localStorage.getItem(cacheKey) === '1') {
+      setOnboardingChecked(true);
+      return;
+    }
+    
+    const handleCheck = () => setOnboardingChecked(true);
+    window.addEventListener('onboarding_checked', handleCheck);
+    return () => window.removeEventListener('onboarding_checked', handleCheck);
+  }, [user]);
+
+  if (!onboardingChecked) return null;
 
   const visible = location.pathname === "/";
   return (
