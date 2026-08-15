@@ -37,7 +37,7 @@ const TITULOS: Record<AcaoTipo, string> = {
   termos: 'Termos da questão',
 };
 
-export function agendarRevisao(chave: string, dias: number) {
+function agendarRevisao(chave: string, dias: number) {
   if (typeof window === 'undefined') return;
   const KEY = 'questoes:revisar';
   let lista: Array<{ chave: string; dueAt: string; intervalo: number }> = [];

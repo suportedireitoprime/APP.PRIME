@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   RotateCcw, BarChart3, ChevronRight, ListChecks, NotebookPen, 
-  Search, X, Sparkles, Filter, ArchiveRestore
+  Search, X, Sparkles, Filter, History
 } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import QuestoesHero from '@/components/questoes/QuestoesHero';
@@ -16,10 +16,10 @@ import { visualDaArea } from '@/lib/questoesVisual';
 import { useQuestoesCargos, useQuestoesDesempenho, useQuestoesAreas } from '@/hooks/useQuestoes';
 
 const ATALHOS_4 = [
+  { id: 'historico', label: 'Histórico', desc: 'Sessões salvas', icon: History, route: '/questoes/historico' },
   { id: 'cadernos', label: 'Cadernos', desc: 'Blocos de estudo', icon: NotebookPen, route: '/questoes/cadernos' },
   { id: 'revisar', label: 'Revisão', desc: 'Volte no que errou', icon: RotateCcw, route: '/questoes/revisar' },
   { id: 'desempenho', label: 'Desempenho', desc: 'Números por área', icon: BarChart3, route: '/questoes/desempenho' },
-  { id: 'historico', label: 'Histórico', desc: 'Sessões salvas', icon: ArchiveRestore, route: '/questoes/historico' },
 ];
 
 const Questoes = () => {
