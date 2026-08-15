@@ -66,7 +66,7 @@ export function QuestoesMateriaSheet({ materia, aberto, onOpenChange }: Questoes
         disciplinas: [materia],
         assuntos: [assuntoSelecionado],
         anos: [],
-        status: 'todos',
+        status: [],
         ordem: 'embaralhado',
         quantidade: qtd === 'todas' ? null : Number(qtd),
       };

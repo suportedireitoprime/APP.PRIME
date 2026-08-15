@@ -97,7 +97,7 @@ const LIMITE_PADRAO = 50;
 
 export type FiltroAvancado = {
   segmentos: string[]; disciplinas: string[]; assuntos: string[]; anos: string[];
-  status: string; ordem: 'embaralhado' | 'original'; quantidade: number | null;
+  status: string[]; ordem: 'embaralhado' | 'original'; quantidade: number | null;
 };
 
 type SortearOpts = {

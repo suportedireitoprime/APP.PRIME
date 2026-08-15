@@ -13,7 +13,7 @@ export type QuestoesFiltro = {
   disciplinas: string[];
   assuntos: string[];
   anos: string[];
-  status: string;
+  status: string[];
   ordem: 'embaralhado' | 'original';
   quantidade: number | null;
 };
@@ -22,7 +22,7 @@ export const FILTRO_KEY = 'questoes:filtro';
 
 export const FILTRO_VAZIO: QuestoesFiltro = {
   segmentos: [], disciplinas: [], assuntos: [], anos: [],
-  status: '', ordem: 'embaralhado', quantidade: null,
+  status: [], ordem: 'embaralhado', quantidade: null,
 };
 
 export function lerFiltroSalvo(): QuestoesFiltro | null {
@@ -40,7 +40,6 @@ const SEGMENTOS = [
 ];
 
 const STATUS = [
-  { id: 'todos', label: 'Todos' },
   { id: 'nao_resolvidas', label: 'Não resolvi' },
   { id: 'resolvidas', label: 'Resolvi' },
   { id: 'acertei', label: 'Acertei' },
@@ -377,7 +376,7 @@ const QuestoesFiltroSheet = ({
 
   const selecionados =
     f.segmentos.length + f.disciplinas.length + f.assuntos.length + f.anos.length +
-    (f.status && f.status !== 'todos' ? 1 : 0) +
+    (f.status?.length > 0 ? 1 : 0) +
     (f.quantidade ? 1 : 0);
 
   const limpar = () => setF({ ...FILTRO_VAZIO });
@@ -445,9 +444,9 @@ const QuestoesFiltroSheet = ({
               />
               <StepRow
                 step={4} label="Status"
-                hint={f.status ? (STATUS.find((s) => s.id === f.status)?.label ?? 'Todos') : 'Todos os status'}
-                locked={!f.segmentos.length} done={!!f.status && f.status !== 'todos'}
-                badge={f.status && f.status !== 'todos' ? 1 : undefined}
+                hint={f.status.length ? `${f.status.length} selecionado(s)` : 'Todos os status'}
+                locked={!f.segmentos.length} done={!!f.status.length}
+                badge={f.status.length || undefined}
                 onClick={() => setPasso('status')}
               />
               <StepRow
@@ -546,11 +545,11 @@ const QuestoesFiltroSheet = ({
               )}
               {passo === 'status' && (
                 <SelecaoSheet
-                  key="status" titulo="Status" single
+                  key="status" titulo="Status"
                   opcoes={STATUS.map((s) => s.label)}
-                  selecionado={f.status ? [STATUS.find((s) => s.id === f.status)?.label ?? f.status] : []}
+                  selecionado={f.status.map(id => STATUS.find(s => s.id === id)?.label ?? id)}
                   onFechar={() => setPasso(null)}
-                  onConfirmar={(v) => setF((p) => ({ ...p, status: v[0] ? (STATUS.find((s) => s.label === v[0])?.id ?? 'todos') : '' }))}
+                  onConfirmar={(v) => setF((p) => ({ ...p, status: v.map(label => STATUS.find(s => s.label === label)?.id ?? label) }))}
                 />
               )}
               {passo === 'quantidade' && (
