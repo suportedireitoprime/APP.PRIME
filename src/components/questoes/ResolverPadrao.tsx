@@ -177,16 +177,16 @@ const ResolverPadrao = ({
       {gateQuestoes.gateNode}
       {gateFuncoes.gateNode}
 
-      {/* 1. Cabeçalho Laranja */}
+      {/* 1. Cabeçalho Principal */}
       <div className="sticky top-0 z-50 flex items-center justify-between bg-primary px-4 pb-4 pt-safe-header text-primary-foreground shadow-sm">
-        <button onClick={onBack} aria-label="Voltar" className="grid h-11 w-11 shrink-0 place-items-center rounded-full hover:bg-black/10 transition-colors">
+        <button onClick={onBack} aria-label="Voltar" className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-black/15 hover:bg-black/25 transition-colors">
           <ChevronLeft className="h-6 w-6" />
         </button>
-        <div className="flex-1 text-center">
-          <p className="text-[17px] font-bold">Questão Q{atual.id.substring(0, 6).toUpperCase()}</p>
-          <p className="text-[13px] font-medium opacity-90">{atual.disciplina}</p>
+        <div className="flex-1 px-3 text-center">
+          <p className="line-clamp-1 text-[16px] font-bold leading-tight">{atual.assunto || atual.disciplina}</p>
+          {atual.assunto && <p className="text-[12px] font-medium opacity-90">{atual.disciplina}</p>}
         </div>
-        <button onClick={agendarNotificacaoErro} aria-label="Reportar Erro" className="grid h-11 w-11 shrink-0 place-items-center rounded-full hover:bg-black/10 transition-colors">
+        <button onClick={agendarNotificacaoErro} aria-label="Reportar Erro" className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-black/15 hover:bg-black/25 transition-colors">
           <AlertTriangle className="h-5 w-5" />
         </button>
       </div>
