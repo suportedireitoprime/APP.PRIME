@@ -73,11 +73,11 @@ const Questoes = () => {
             <button
               key={location.key}
               onClick={() => { haptic.selection(); setFiltroAberto(true); }}
-              className="btn-attention-shine group mt-4 flex h-14 sm:h-16 min-h-[56px] w-full items-center justify-center gap-3 rounded-2xl bg-[#DC2626] hover:bg-[#B91C1C] text-white text-base sm:text-lg font-black shadow-xl shadow-[#DC2626]/35 transition-all active:scale-[0.99] border border-red-400/30"
+              className="btn-attention-shine group mt-4 flex h-14 sm:h-16 min-h-[56px] w-full items-center justify-center gap-3 rounded-2xl bg-[#DC2626] hover:bg-[#B91C1C] text-white text-base sm:text-lg font-black shadow-xl shadow-[#DC2626]/35 transition-all active:scale-[0.99] border border-red-400/30 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]"
             >
-              <Filter className="h-6 w-6 text-white" strokeWidth={2.5} />
+              <Filter className="h-6 w-6 text-white drop-shadow-md" strokeWidth={2.5} />
               <span className="tracking-wide text-white">Filtro Rápido</span>
-              <ChevronRight className="h-6 w-6 text-white transition-transform group-hover:translate-x-1" strokeWidth={2.5} />
+              <ChevronRight className="h-6 w-6 text-white transition-transform group-hover:translate-x-1 drop-shadow-md" strokeWidth={2.5} />
             </button>
           </div>
 

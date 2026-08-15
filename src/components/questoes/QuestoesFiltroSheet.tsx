@@ -111,12 +111,12 @@ function StepRow({
         locked
           ? 'bg-zinc-900 text-zinc-600'
           : done
-            ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/25'
+            ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/25 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]'
             : active
-              ? 'bg-[#F87171] text-white shadow-md shadow-[#F87171]/30'
+              ? 'bg-[#DC2626] text-white shadow-md shadow-[#DC2626]/30 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]'
               : 'bg-zinc-800 text-zinc-300',
       )}>
-        {done ? <Check className="h-5 w-5" strokeWidth={3} /> : step}
+        {done ? <Check className="h-5 w-5 drop-shadow-md" strokeWidth={3} /> : step}
       </span>
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-2">
@@ -144,7 +144,7 @@ function StepRow({
       ) : (
         <span className="flex shrink-0 items-center gap-2">
           {!!badge && (
-            <span className="grid h-6 min-w-[24px] place-items-center rounded-full bg-[#F87171] px-2 text-[12px] font-black text-white shadow-sm shadow-[#F87171]/30">
+            <span className="grid h-6 min-w-[24px] place-items-center rounded-full bg-[#DC2626] px-2 text-[12px] font-black text-white shadow-sm shadow-[#DC2626]/30 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]">
               {badge}
             </span>
           )}
@@ -473,7 +473,7 @@ const QuestoesFiltroSheet = ({
                       onClick={() => setF((p) => ({ ...p, ordem: o }))}
                       className={cn(
                         'h-8 rounded-full px-3 text-[12.5px] font-bold transition-all',
-                        f.ordem === o ? 'bg-[#DC2626] text-white shadow-md shadow-[#DC2626]/20' : 'text-zinc-400 hover:text-zinc-200',
+                        f.ordem === o ? 'bg-[#DC2626] text-white shadow-md shadow-[#DC2626]/20 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]' : 'text-zinc-400 hover:text-zinc-200',
                       )}
                     >
                       {o === 'embaralhado' ? 'Embaralhado' : 'Ordem original'}
@@ -486,9 +486,9 @@ const QuestoesFiltroSheet = ({
             <div className="flex items-center gap-3 border-t border-zinc-800/80 bg-zinc-900/90 backdrop-blur-md px-5 pb-safe-nav pt-4">
               <button
                 onClick={aplicar}
-                className="flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl bg-[#DC2626] hover:bg-[#B91C1C] text-[16px] font-black text-white shadow-lg shadow-[#DC2626]/30 active:scale-[0.98] transition-all"
+                className="flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl bg-[#DC2626] hover:bg-[#B91C1C] text-[16px] font-black text-white shadow-lg shadow-[#DC2626]/30 active:scale-[0.98] transition-all [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]"
               >
-                {carregando ? <Loader2 className="h-5 w-5 animate-spin" /> : <Filter className="h-5 w-5" fill="currentColor" />}
+                {carregando ? <Loader2 className="h-5 w-5 animate-spin" /> : <Filter className="h-5 w-5 drop-shadow-md" fill="currentColor" />}
                 Aplicar filtros
                 <span className="ml-2 rounded-full bg-black/30 px-2.5 py-0.5 text-[13px] tabular-nums font-extrabold tracking-wide">
                   {fmt(counts.total)}
