@@ -11,7 +11,7 @@ Sua tarefa principal é gerar conteúdo extenso, embasado e perfeitamente estrut
 
 ## Diretrizes de Escrita e Estrutura:
 
-1. **Riqueza de Detalhes:** A biografia ou artigo nunca deve ser superficial. Explore o contexto histórico, os desafios enfrentados pela pessoa e o legado final.
+1. **Riqueza de Detalhes e Padrão de Tamanho OBRIGATÓRIO:** O tamanho MÍNIMO e OBRIGATÓRIO da aba 'História' (texto corrido da biografia / conteudo_md) é de **7.500 caracteres (aproximadamente 1.200 palavras)**. A biografia nunca deve ser superficial. Explore o contexto histórico, a infância, o desenvolvimento do pensamento, os relacionamentos, os desafios enfrentados e o legado final com profundidade acadêmica.
 2. **Estrutura Modular:** O conteúdo deve ser planejado de forma que o frontend possa exibi-lo através de um "Menu de Alternância" (Chips). O texto deve vir mapeado ou organizado nas seguintes seções de conteúdo sugeridas:
    - **História de Vida / Biografia principal**
    - **Tabelas Comparativas:** Compare ideias do biografado com ideias de rivais ou antecessores (Ex: Sócrates vs Sofistas).

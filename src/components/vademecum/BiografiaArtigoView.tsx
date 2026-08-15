@@ -172,7 +172,14 @@ export const BiografiaArtigoView = ({ personagemId, onBack }: Props) => {
                   {currentTab?.tabela && (
                     <div className="space-y-6">
                       {currentTab.tabela.items.map((item, i) => (
-                        <div key={i} className="bg-card rounded-2xl border border-border/40 overflow-hidden flex flex-col md:flex-row">
+                        <motion.div 
+                          key={i} 
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true, margin: "-50px" }}
+                          transition={{ duration: 0.4, delay: i * 0.1 }}
+                          className="bg-card rounded-2xl border border-border/40 overflow-hidden flex flex-col md:flex-row"
+                        >
                           <div className="p-4 md:p-6 md:w-1/3 bg-secondary/30 flex items-center justify-center text-center">
                             <span className="font-display font-bold text-lg text-primary">{item.topico}</span>
                           </div>
@@ -186,7 +193,7 @@ export const BiografiaArtigoView = ({ personagemId, onBack }: Props) => {
                               <p className="text-sm text-zinc-300 leading-relaxed">{item.oponente}</p>
                             </div>
                           </div>
-                        </div>
+                        </motion.div>
                       ))}
                     </div>
                   )}
@@ -195,14 +202,27 @@ export const BiografiaArtigoView = ({ personagemId, onBack }: Props) => {
                   {currentTab?.timeline && (
                     <div className="relative border-l-2 border-primary/30 ml-4 md:ml-6 space-y-8 pb-4">
                       {currentTab.timeline.map((item, i) => (
-                        <div key={i} className="relative pl-6 md:pl-8">
-                          <div className="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-background border-2 border-primary" />
+                        <motion.div 
+                          key={i} 
+                          initial={{ opacity: 0, x: -20 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          viewport={{ once: true, margin: "-50px" }}
+                          transition={{ duration: 0.4, delay: i * 0.1 }}
+                          className="relative pl-6 md:pl-8"
+                        >
+                          <motion.div 
+                            initial={{ scale: 0 }}
+                            whileInView={{ scale: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ type: "spring", delay: (i * 0.1) + 0.2 }}
+                            className="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-background border-2 border-primary" 
+                          />
                           <div className="flex flex-col gap-1">
                             <span className="font-display font-bold text-primary text-sm tracking-widest">{item.ano}</span>
                             <h3 className="text-xl font-bold text-white mb-1">{item.evento}</h3>
                             <p className="text-zinc-400 text-sm md:text-base leading-relaxed">{item.detalhe}</p>
                           </div>
-                        </div>
+                        </motion.div>
                       ))}
                     </div>
                   )}
