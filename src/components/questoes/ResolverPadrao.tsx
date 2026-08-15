@@ -258,7 +258,7 @@ const ResolverPadrao = ({
         </button>
       </div>
 
-      <div className={cn("relative mx-auto w-full max-w-3xl flex-1 px-4 sm:px-6", feedbackOculto ? "pb-24" : "pb-32", isScanningIa && "overflow-hidden rounded-xl ring-2 ring-blue-500/50 shadow-[0_0_20px_rgba(59,130,246,0.3)] transition-all")}>
+      <div className={cn("relative mx-auto w-full max-w-3xl flex-1 px-4 sm:px-6 pt-6 sm:pt-8", feedbackOculto ? "pb-24" : "pb-32", isScanningIa && "overflow-hidden rounded-xl ring-2 ring-blue-500/50 shadow-[0_0_20px_rgba(59,130,246,0.3)] transition-all")}>
         <AnimatePresence>
           {isScanningIa && (
             <motion.div
