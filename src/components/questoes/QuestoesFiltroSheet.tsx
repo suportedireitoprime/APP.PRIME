@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Check, Filter, Lock, Search, X, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -199,6 +200,20 @@ function SelecaoSheet({
     }
   };
 
+  const parentRef = useRef<HTMLDivElement>(null);
+  
+  const hasTodos = !single && opcoes.length > 0;
+  
+  const rowVirtualizer = useVirtualizer({
+    count: lista.length + (hasTodos ? 1 : 0),
+    getScrollElement: () => parentRef.current,
+    estimateSize: (index) => {
+       if (hasTodos && index === 0) return 56;
+       return 60;
+    },
+    overscan: 10,
+  });
+
   return (
     <motion.div
       initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
@@ -242,68 +257,95 @@ function SelecaoSheet({
         </div>
       )}
 
-      <ul className="flex-1 divide-y divide-zinc-800/60 overflow-y-auto px-4">
-        {!single && (
-          <li>
-            <button
-              onClick={toggleAll}
-              className="flex min-h-[56px] w-full items-center gap-3 py-3.5 text-left group"
-            >
-              <span className="flex-1 text-[15px] font-bold text-zinc-100 group-hover:text-white transition-colors">
-                Todos
-              </span>
-              <span className={cn(
-                'grid h-6 w-6 shrink-0 place-items-center rounded-md border-2 transition-all',
-                isAllSelected
-                  ? 'border-[#DC2626] bg-[#DC2626] text-white shadow-md shadow-[#DC2626]/25 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]'
-                  : 'border-zinc-700 bg-zinc-900/50 group-hover:border-zinc-500',
-              )}>
-                {isAllSelected && <Check className="h-3.5 w-3.5 drop-shadow-md" strokeWidth={3} />}
-              </span>
-            </button>
-          </li>
+      <div ref={parentRef} className="flex-1 overflow-y-auto px-4">
+        {lista.length === 0 ? (
+          <div className="py-12 text-center text-[13px] text-zinc-500">Nada encontrado.</div>
+        ) : (
+          <ul
+            className="relative w-full"
+            style={{ height: `${rowVirtualizer.getTotalSize()}px` }}
+          >
+            {rowVirtualizer.getVirtualItems().map((virtualItem) => {
+              const isTodos = hasTodos && virtualItem.index === 0;
+              const realIndex = hasTodos ? virtualItem.index - 1 : virtualItem.index;
+              const o = lista[realIndex];
+
+              if (isTodos) {
+                return (
+                  <li
+                    key="todos"
+                    className="absolute top-0 left-0 w-full border-b border-zinc-800/60 last:border-0"
+                    style={{
+                      height: `${virtualItem.size}px`,
+                      transform: `translateY(${virtualItem.start}px)`,
+                    }}
+                  >
+                    <button
+                      onClick={toggleAll}
+                      className="flex h-full w-full items-center gap-3 text-left group"
+                    >
+                      <span className="flex-1 text-[15px] font-bold text-zinc-100 group-hover:text-white transition-colors">
+                        Todos
+                      </span>
+                      <span className={cn(
+                        'grid h-6 w-6 shrink-0 place-items-center rounded-md border-2 transition-all',
+                        isAllSelected
+                          ? 'border-[#DC2626] bg-[#DC2626] text-white shadow-md shadow-[#DC2626]/25 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]'
+                          : 'border-zinc-700 bg-zinc-900/50 group-hover:border-zinc-500',
+                      )}>
+                        {isAllSelected && <Check className="h-3.5 w-3.5 drop-shadow-md" strokeWidth={3} />}
+                      </span>
+                    </button>
+                  </li>
+                );
+              }
+
+              const ativo = local.includes(o);
+              return (
+                <li
+                  key={o}
+                  className="absolute top-0 left-0 w-full border-b border-zinc-800/60 last:border-0"
+                  style={{
+                    height: `${virtualItem.size}px`,
+                    transform: `translateY(${virtualItem.start}px)`,
+                  }}
+                >
+                  <button
+                    onClick={() => toggle(o)}
+                    className="flex h-full w-full items-center gap-3 text-left group"
+                  >
+                    <span className="min-w-0 flex-1">
+                      <span className={cn(
+                        'block text-[15px] font-semibold leading-tight transition-colors',
+                        ativo ? 'text-white' : 'text-zinc-200 group-hover:text-white',
+                      )}>
+                        {o}
+                      </span>
+                      {descricoes?.[o] && (
+                        <span className="mt-1 block text-[12px] leading-snug text-zinc-400">{descricoes[o]}</span>
+                      )}
+                    </span>
+                    {contagens?.[o] !== undefined && (
+                      <span className="grid h-6 min-w-[44px] place-items-center rounded-full bg-[#F87171]/15 px-2 text-[11px] font-extrabold tabular-nums text-[#F87171]">
+                        {fmt(contagens[o])}
+                      </span>
+                    )}
+                    <span className={cn(
+                      'grid h-6 w-6 shrink-0 place-items-center border-2 transition-all',
+                      single ? 'rounded-full' : 'rounded-md',
+                      ativo
+                        ? 'border-[#DC2626] bg-[#DC2626] text-white shadow-md shadow-[#DC2626]/25 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]'
+                        : 'border-zinc-700 bg-zinc-900/50 group-hover:border-zinc-500',
+                    )}>
+                      {ativo && <Check className="h-3.5 w-3.5 drop-shadow-md" strokeWidth={3} />}
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
         )}
-        {lista.map((o) => {
-          const ativo = local.includes(o);
-          return (
-            <li key={o}>
-              <button
-                onClick={() => toggle(o)}
-                className="flex min-h-[60px] w-full items-center gap-3 py-3.5 text-left group"
-              >
-                <span className="min-w-0 flex-1">
-                  <span className={cn(
-                    'block text-[15px] font-semibold leading-tight transition-colors',
-                    ativo ? 'text-white' : 'text-zinc-200 group-hover:text-white',
-                  )}>
-                    {o}
-                  </span>
-                  {descricoes?.[o] && (
-                    <span className="mt-1 block text-[12px] leading-snug text-zinc-400">{descricoes[o]}</span>
-                  )}
-                </span>
-                {contagens?.[o] !== undefined && (
-                  <span className="grid h-6 min-w-[44px] place-items-center rounded-full bg-[#F87171]/15 px-2 text-[11px] font-extrabold tabular-nums text-[#F87171]">
-                    {fmt(contagens[o])}
-                  </span>
-                )}
-                <span className={cn(
-                  'grid h-6 w-6 shrink-0 place-items-center border-2 transition-all',
-                  single ? 'rounded-full' : 'rounded-md',
-                  ativo
-                    ? 'border-[#DC2626] bg-[#DC2626] text-white shadow-md shadow-[#DC2626]/25 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]'
-                    : 'border-zinc-700 bg-zinc-900/50 group-hover:border-zinc-500',
-                )}>
-                  {ativo && <Check className="h-3.5 w-3.5 drop-shadow-md" strokeWidth={3} />}
-                </span>
-              </button>
-            </li>
-          );
-        })}
-        {lista.length === 0 && (
-          <li className="py-12 text-center text-[13px] text-zinc-500">Nada encontrado.</li>
-        )}
-      </ul>
+      </div>
 
       <div className="border-t border-zinc-800/80 bg-zinc-950/90 backdrop-blur-md px-5 pb-safe-nav pt-4">
         <button
