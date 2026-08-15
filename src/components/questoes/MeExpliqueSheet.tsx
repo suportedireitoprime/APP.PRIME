@@ -194,7 +194,9 @@ export const MeExpliqueSheet = ({ aberto, onClose, questao }: Props) => {
                       )}
                     >
                       {isAsst ? (
-                        <ReactMarkdown className="prose prose-invert max-w-none">{textToShow}</ReactMarkdown>
+                        <div className="prose prose-invert max-w-none">
+                          <ReactMarkdown>{textToShow}</ReactMarkdown>
+                        </div>
                       ) : (
                         textToShow
                       )}
