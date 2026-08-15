@@ -3,21 +3,23 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   RotateCcw, BarChart3, ChevronRight, ListChecks, NotebookPen, 
-  Search, X, Sparkles, Filter, Layers 
+  Search, X, Sparkles, Filter, ArchiveRestore
 } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import QuestoesHero from '@/components/questoes/QuestoesHero';
 import QuestoesBottomNav from '@/components/questoes/QuestoesBottomNav';
 import QuestoesFiltroSheet from '@/components/questoes/QuestoesFiltroSheet';
+import { QuestoesMateriaSheet } from '@/components/questoes/QuestoesMateriaSheet';
 import { Input } from '@/components/ui/input';
 import { haptic } from '@/lib/nativeHaptics';
 import { visualDaArea } from '@/lib/questoesVisual';
 import { useQuestoesCargos, useQuestoesDesempenho, useQuestoesAreas } from '@/hooks/useQuestoes';
 
-const ATALHOS_3 = [
+const ATALHOS_4 = [
   { id: 'cadernos', label: 'Cadernos', desc: 'Blocos de estudo', icon: NotebookPen, route: '/questoes/cadernos' },
   { id: 'revisar', label: 'Revisão', desc: 'Volte no que errou', icon: RotateCcw, route: '/questoes/revisar' },
   { id: 'desempenho', label: 'Desempenho', desc: 'Números por área', icon: BarChart3, route: '/questoes/desempenho' },
+  { id: 'historico', label: 'Histórico', desc: 'Sessões salvas', icon: ArchiveRestore, route: '/questoes/historico' },
 ];
 
 const Questoes = () => {
@@ -29,6 +31,7 @@ const Questoes = () => {
 
   const [filtroAberto, setFiltroAberto] = useState(false);
   const [busca, setBusca] = useState('');
+  const [materiaSheet, setMateriaSheet] = useState<{ aberto: boolean; materia: string | null }>({ aberto: false, materia: null });
   const [buscaAberta, setBuscaAberta] = useState(false);
 
   const pct = dados?.total ? Math.round((dados.acertos / dados.total) * 100) : 0;
@@ -78,18 +81,18 @@ const Questoes = () => {
             </button>
           </div>
 
-          {/* ── 3 Cards (Meus Cadernos, Minha Revisão, Meu Desempenho) ── */}
-          <div className="grid grid-cols-3 gap-2.5">
-            {ATALHOS_3.map((a) => {
+          {/* ── 4 Cards (Cadernos, Revisão, Desempenho, Histórico) ── */}
+          <div className="grid grid-cols-4 gap-2.5">
+            {ATALHOS_4.map((a) => {
               const Icon = a.icon;
               return (
                 <button
                   key={a.id}
                   onClick={() => { haptic.selection(); navigate(a.route); }}
-                  className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-primary/50 transition-all active:scale-95 gap-2 text-center"
+                  className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-zinc-400/50 transition-all active:scale-95 gap-2 text-center"
                 >
                   <div className="w-10 h-10 flex items-center justify-center">
-                    <Icon className="w-7 h-7 sm:w-8 sm:h-8 text-primary transition-all duration-300 group-hover:drop-shadow-[0_0_12px_rgba(139,92,246,0.9)] group-hover:scale-110" strokeWidth={2} />
+                    <Icon className="w-7 h-7 sm:w-8 sm:h-8 text-zinc-400 transition-all duration-300 group-hover:text-zinc-300 group-hover:scale-110" strokeWidth={2} />
                   </div>
                   <div>
                     <p className="text-xs font-extrabold text-foreground leading-tight">{a.label}</p>
@@ -152,7 +155,7 @@ const Questoes = () => {
                       key={a.area}
                       onClick={() => {
                         haptic.selection();
-                        navigate(`/questoes/praticar?area=${encodeURIComponent(a.area)}`);
+                        setMateriaSheet({ aberto: true, materia: a.area });
                       }}
                       className="group flex w-full items-center gap-3.5 rounded-2xl border border-border/80 bg-card p-4 text-left transition-all hover:border-primary/50 hover:shadow-md active:scale-[0.99]"
                     >
@@ -188,9 +191,13 @@ const Questoes = () => {
           navigate('/questoes/praticar?filtro=1');
         }}
       />
+      <QuestoesMateriaSheet
+        materia={materiaSheet.materia}
+        aberto={materiaSheet.aberto}
+        onOpenChange={(aberto) => setMateriaSheet((p) => ({ ...p, aberto }))}
+      />
     </div>
   );
 };
 
 export default Questoes;
-
