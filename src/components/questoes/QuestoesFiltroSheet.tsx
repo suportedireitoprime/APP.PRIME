@@ -96,42 +96,42 @@ function StepRow({
       disabled={locked}
       onClick={onClick}
       className={cn(
-        'flex w-full items-center gap-3 rounded-2xl border px-3.5 py-3 text-left transition-all',
-        'bg-foreground/[0.04]',
-        active ? 'border-primary/60 bg-primary/[0.07]' : done ? 'border-emerald-400/25' : 'border-border',
-        !locked && 'hover:bg-foreground/[0.07] active:scale-[0.995]',
-        locked && 'cursor-not-allowed opacity-55',
+        'flex w-full items-center gap-4 rounded-2xl border px-4 py-3.5 text-left transition-all',
+        'bg-card/50 shadow-sm backdrop-blur-md',
+        active ? 'border-primary/50 bg-primary/5 shadow-primary/10' : done ? 'border-emerald-500/20 bg-emerald-500/5' : 'border-border/50',
+        !locked && 'hover:bg-foreground/[0.04] active:scale-[0.98]',
+        locked && 'cursor-not-allowed opacity-50 grayscale-[0.5]',
       )}
     >
       <span className={cn(
-        'grid h-8 w-8 shrink-0 place-items-center rounded-full text-[12.5px] font-bold tabular-nums',
-        done ? 'bg-emerald-500/20 text-emerald-300'
-          : active ? 'bg-primary text-primary-foreground'
-          : 'bg-foreground/[0.08] text-foreground/60',
+        'grid h-10 w-10 shrink-0 place-items-center rounded-full text-[14px] font-bold tabular-nums transition-colors',
+        done ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20'
+          : active ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/30'
+          : 'bg-foreground/[0.06] text-foreground/50',
       )}>
-        {done ? <Check className="h-4 w-4" strokeWidth={3} /> : step}
+        {done ? <Check className="h-5 w-5" strokeWidth={3} /> : step}
       </span>
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-2">
-          <span className="text-[14.5px] font-semibold text-foreground">{label}</span>
+          <span className="text-[15.5px] font-bold text-foreground">{label}</span>
           {active && (
-            <span className="rounded-full bg-primary/20 px-1.5 text-[10px] font-bold uppercase tracking-wide text-primary">
-              Próximo
+            <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-widest text-primary">
+              Aberto
             </span>
           )}
         </span>
-        <span className="mt-0.5 block truncate text-[12px] text-muted-foreground">{hint}</span>
+        <span className="mt-0.5 block truncate text-[13px] text-muted-foreground/80">{hint}</span>
       </span>
       {locked ? (
-        <Lock className="h-4 w-4 shrink-0 text-foreground/40" />
+        <Lock className="h-5 w-5 shrink-0 text-foreground/30" />
       ) : (
-        <span className="flex shrink-0 items-center gap-1.5">
+        <span className="flex shrink-0 items-center gap-2">
           {!!badge && (
-            <span className="grid h-6 min-w-[24px] place-items-center rounded-full bg-primary/20 px-2 text-[11px] font-bold text-primary">
+            <span className="grid h-6 min-w-[24px] place-items-center rounded-full bg-primary px-2 text-[12px] font-bold text-primary-foreground">
               {badge}
             </span>
           )}
-          <ChevronRight className="h-4 w-4 text-foreground/40" />
+          <ChevronRight className="h-5 w-5 text-foreground/40" />
         </span>
       )}
     </button>
@@ -168,16 +168,16 @@ function SelecaoSheet({
 
   return (
     <motion.div
-      initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
-      transition={{ duration: 0.26, ease: [0.32, 0.72, 0, 1] }}
-      className="absolute inset-0 z-10 flex flex-col rounded-t-3xl border-t border-border bg-background"
+      initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
+      transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+      className="absolute inset-0 z-20 flex flex-col bg-background/95 backdrop-blur-xl"
     >
-      <div className="flex items-center gap-2 border-b border-border px-3 py-3">
-        <button onClick={onFechar} aria-label="Voltar" className="grid h-11 w-11 place-items-center rounded-full bg-muted/60 text-foreground">
-          <ChevronLeft className="h-5 w-5" />
+      <div className="flex items-center gap-2 border-b border-border/50 px-3 pt-safe-header pb-3 bg-background/80">
+        <button onClick={onFechar} aria-label="Voltar" className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-foreground/5 hover:bg-foreground/10 text-foreground transition-colors">
+          <ChevronLeft className="h-6 w-6" />
         </button>
-        <p className="flex-1 text-center text-[15px] font-bold text-foreground">{titulo}</p>
-        <button onClick={() => setLocal([])} className="px-2 text-[13px] font-medium text-muted-foreground hover:text-foreground">
+        <p className="flex-1 text-center text-[18px] font-bold text-foreground">{titulo}</p>
+        <button onClick={() => setLocal([])} className="px-3 text-[14px] font-medium text-primary hover:text-primary-light active:scale-95">
           Limpar
         </button>
       </div>
@@ -246,12 +246,12 @@ function SelecaoSheet({
         )}
       </ul>
 
-      <div className="border-t border-border px-4 pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-3">
+      <div className="border-t border-border/50 bg-background/80 backdrop-blur-md px-5 pb-safe-nav pt-4">
         <button
           onClick={() => { onConfirmar(local); onFechar(); }}
-          className="h-12 w-full rounded-2xl bg-primary text-[15px] font-bold text-primary-foreground active:scale-[0.99]"
+          className="h-14 w-full rounded-2xl bg-primary shadow-lg shadow-primary/25 text-[16px] font-bold text-primary-foreground active:scale-[0.98] transition-all"
         >
-          OK
+          Confirmar seleção
         </button>
       </div>
     </motion.div>
@@ -338,22 +338,23 @@ const QuestoesFiltroSheet = ({
           />
           <motion.div
             initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%', pointerEvents: 'none' }}
-            transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
-            className="theme-questoes fixed inset-x-0 bottom-0 z-[71] flex h-[92dvh] flex-col overflow-hidden rounded-t-3xl border-t border-border bg-background"
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="theme-questoes fixed inset-0 z-[71] flex flex-col overflow-hidden bg-background"
           >
-            <span aria-hidden className="mx-auto mt-2 h-1 w-10 rounded-full bg-foreground/20" />
-
-            <div className="flex items-start justify-between gap-3 px-5 pb-3 pt-3">
-              <div className="min-w-0">
-                <p className="flex items-center gap-2 text-[19px] font-bold text-foreground">
+            <div className="flex items-center gap-3 px-4 pb-4 pt-safe-header border-b border-border/50 bg-background/80 backdrop-blur-md">
+              <button onClick={onFechar} aria-label="Voltar" className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-foreground/5 hover:bg-foreground/10 text-foreground transition-colors active:scale-95">
+                <ChevronLeft className="h-6 w-6" />
+              </button>
+              <div className="min-w-0 flex-1">
+                <p className="flex items-center gap-2 text-[20px] font-bold text-foreground tracking-tight">
                   <Filter className="h-5 w-5 text-primary" /> Filtrar questões
                 </p>
-                <p className="mt-0.5 text-[13px] leading-snug text-muted-foreground">
-                  Refine por segmento, disciplina, assunto, ano e situação.
+                <p className="mt-0.5 text-[13px] leading-snug text-muted-foreground/80 truncate">
+                  Refine por segmento, disciplina, assunto e mais.
                 </p>
               </div>
-              <button onClick={onFechar} aria-label="Fechar" className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-muted/70 text-foreground">
-                <X className="h-5 w-5" />
+              <button onClick={limpar} className="px-3 text-[14px] font-medium text-primary hover:text-primary-light active:scale-95">
+                Limpar
               </button>
             </div>
 
@@ -418,22 +419,19 @@ const QuestoesFiltroSheet = ({
               </div>
             </div>
 
-            <div className="flex items-center gap-3 border-t border-border px-4 pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-3">
-              <button onClick={limpar} className="px-2 text-[14px] font-medium text-muted-foreground hover:text-foreground">
-                Limpar
-              </button>
+            <div className="flex items-center gap-3 border-t border-border/50 bg-background/80 backdrop-blur-md px-5 pb-safe-nav pt-4">
               <button
                 onClick={aplicar}
-                className="flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl bg-primary text-[15px] font-bold text-primary-foreground active:scale-[0.99]"
+                className="flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl bg-primary text-[16px] font-bold text-primary-foreground shadow-lg shadow-primary/25 active:scale-[0.98] transition-all"
               >
-                {carregando ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+                {carregando ? <Loader2 className="h-5 w-5 animate-spin" /> : <Filter className="h-5 w-5" fill="currentColor" />}
                 Aplicar filtros
-                <span className="rounded-full bg-black/20 px-2 py-0.5 text-[12px] tabular-nums">
+                <span className="ml-2 rounded-full bg-black/20 px-2.5 py-0.5 text-[13px] tabular-nums font-extrabold tracking-wide">
                   {fmt(counts.total)}
                 </span>
               </button>
               {selecionados > 0 && (
-                <span className="grid h-9 w-9 place-items-center rounded-full bg-primary/15 text-[12px] font-bold text-primary">
+                <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-primary/15 text-[15px] font-bold text-primary">
                   {selecionados}
                 </span>
               )}
