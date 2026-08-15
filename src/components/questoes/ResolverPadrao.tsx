@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import {
-  ChevronLeft, ChevronRight, ChevronUp, Clock, Heart, Loader2, PlayCircle, CheckCircle2, XCircle, X, RotateCw, Sparkles, AlertTriangle, ScanText, FileText, Plus, MessageSquare, Trophy, Grid2X2
+  ChevronLeft, ChevronRight, ChevronUp, Clock, Heart, Loader2, PlayCircle, CheckCircle2, XCircle, X, RotateCw, Sparkles, AlertTriangle, ScanText, FileText, Plus, MessageSquare, Trophy, Grid2X2, Mic, Layers
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -13,8 +14,6 @@ import { toast } from 'sonner';
 import { QuestaoAcoesBar, ComentarioSheet } from '@/components/questoes/QuestaoAcoesBar';
 import { useGatedFeature } from '@/hooks/useGatedFeature';
 import { CartaoRespostaSheet } from './CartaoRespostaSheet';
-import { MeExpliqueSheet } from './MeExpliqueSheet';
-import { Wand2, Layers } from 'lucide-react';
 
 const db = supabase as any;
 
@@ -38,6 +37,7 @@ function formatarTempo(seg: number) {
 const ResolverPadrao = ({
   questoes, loading, contexto = 'pratica', onRegistrar, onNovoBloco, onBack, vazioTexto,
 }: Props) => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [idx, setIdx] = useState(0);
   const [selecao, setSelecao] = useState<string | null>(null);
@@ -48,8 +48,6 @@ const ResolverPadrao = ({
   const [recursosAberto, setRecursosAberto] = useState(false);
   const [feedbackOculto, setFeedbackOculto] = useState(false);
   const [gradeAberta, setGradeAberta] = useState(false);
-  const [meExpliqueAberto, setMeExpliqueAberto] = useState(false);
-  const [isScanningIa, setIsScanningIa] = useState(false);
   const [streak, setStreak] = useState(0);
   const [ocrLoading, setOcrLoading] = useState<Record<string, boolean>>({});
   const [ocrText, setOcrText] = useState<Record<string, string>>({});
@@ -108,18 +106,6 @@ const ResolverPadrao = ({
   const atual = questoes[idx];
   const resp = atual ? respostas[atual.id] : undefined;
   const correta = letraGabarito(atual?.gabarito_oficial);
-
-  const handleMeExpliqueClick = () => {
-    if (gateFuncoes.blocked) { gateFuncoes.openGate(); return; }
-    haptic.selection?.();
-    setIsScanningIa(true);
-    setFeedbackOculto(true);
-    
-    setTimeout(() => {
-      setIsScanningIa(false);
-      setMeExpliqueAberto(true);
-    }, 1500);
-  };
 
   useEffect(() => {
     setSelecao(resp?.escolha ?? null);
@@ -258,17 +244,7 @@ const ResolverPadrao = ({
         </button>
       </div>
 
-      <div className={cn("relative mx-auto w-full max-w-3xl flex-1 px-4 sm:px-6 pt-6 sm:pt-8", feedbackOculto ? "pb-24" : "pb-32", isScanningIa && "overflow-hidden rounded-xl ring-2 ring-blue-500/50 shadow-[0_0_20px_rgba(59,130,246,0.3)] transition-all")}>
-        <AnimatePresence>
-          {isScanningIa && (
-            <motion.div
-              initial={{ top: '-10%' }}
-              animate={{ top: '110%' }}
-              transition={{ duration: 1.5, ease: 'linear' }}
-              className="absolute left-0 right-0 z-10 h-32 bg-gradient-to-b from-transparent to-blue-500/30 border-b-2 border-blue-400 pointer-events-none"
-            />
-          )}
-        </AnimatePresence>
+      <div className={cn("relative mx-auto w-full max-w-3xl flex-1 px-4 sm:px-6 pt-6 sm:pt-8", feedbackOculto ? "pb-24" : "pb-32")}>
 
         <AnimatePresence mode="wait">
           <motion.div
@@ -426,26 +402,26 @@ const ResolverPadrao = ({
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 className={cn(
                   "relative rounded-t-3xl border-t px-5 pb-safe-nav pt-7 shadow-2xl",
-                  resp.acertou ? "bg-[#0a1f10] border-green-500/30" : "bg-[#1f0a0a] border-red-500/30"
+                  resp.acertou ? "bg-emerald-500 border-emerald-400" : "bg-[#1f0a0a] border-red-500/30"
                 )}
               >
                 <button
                   onClick={() => setFeedbackOculto(true)}
-                  className="absolute right-4 top-4 rounded-full p-2 text-white/30 transition-colors hover:bg-white/10 hover:text-white"
+                  className={cn("absolute right-4 top-4 rounded-full p-2 transition-colors hover:bg-black/10", resp.acertou ? "text-emerald-50 hover:text-white" : "text-white/30 hover:text-white")}
                 >
                   <X className="h-5 w-5" />
                 </button>
                 <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
                   <div className="flex items-center gap-4">
-                    <div className={cn("flex h-12 w-12 shrink-0 items-center justify-center rounded-full", resp.acertou ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400")}>
+                    <div className={cn("flex h-12 w-12 shrink-0 items-center justify-center rounded-full", resp.acertou ? "bg-white/20 text-white shadow-inner" : "bg-red-500/20 text-red-400")}>
                       {resp.acertou ? <CheckCircle2 className="h-7 w-7" /> : <XCircle className="h-7 w-7" />}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className={cn("text-[22px] font-extrabold tracking-tight", resp.acertou ? "text-green-400" : "text-red-400")}>
+                      <p className={cn("text-[22px] font-extrabold tracking-tight", resp.acertou ? "text-white" : "text-red-400")}>
                         {resp.acertou ? 'Resposta correta!' : 'Resposta incorreta'}
                       </p>
                       {resp.acertou ? (
-                        <p className="text-[14px] font-medium text-green-400/80">
+                        <p className="text-[14px] font-medium text-emerald-50">
                           Você mandou bem.
                         </p>
                       ) : (
@@ -453,9 +429,9 @@ const ResolverPadrao = ({
                           O gabarito é a <strong className="rounded bg-red-500/20 px-2 py-0.5 text-red-300">Alternativa {correta}</strong>
                         </p>
                       )}
-                      <div className="mt-2 text-[12px] font-medium text-white/50 flex items-center gap-1.5">
-                        <div className="h-1 flex-1 bg-white/10 rounded-full overflow-hidden max-w-[100px]">
-                          <div className={cn("h-full rounded-full transition-all duration-1000", resp.acertou ? "bg-green-500/50" : "bg-red-500/50")} style={{ width: `${percentualAcerto}%` }} />
+                      <div className={cn("mt-2 text-[12px] font-medium flex items-center gap-1.5", resp.acertou ? "text-emerald-50" : "text-white/50")}>
+                        <div className="h-1 flex-1 bg-black/10 rounded-full overflow-hidden max-w-[100px]">
+                          <div className={cn("h-full rounded-full transition-all duration-1000", resp.acertou ? "bg-white" : "bg-red-500/50")} style={{ width: `${percentualAcerto}%` }} />
                         </div>
                         {percentualAcerto}% acertaram
                       </div>
@@ -464,21 +440,11 @@ const ResolverPadrao = ({
                   <div className="flex flex-col gap-5 py-1">
                     <div className="flex gap-2">
                       <button
-                        onClick={handleMeExpliqueClick}
-                        className={cn("flex h-[56px] flex-1 items-center justify-between rounded-2xl border px-4 shadow-lg shadow-blue-500/10", "bg-blue-600 border-blue-500 text-white")}
-                      >
-                        <div className="flex items-center gap-3"><Wand2 className="h-5 w-5 animate-pulse" /> <span className="font-bold">Me Explique</span></div>
-                        <ChevronRight className="h-5 w-5 opacity-50" />
-                      </button>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <button
                         onClick={() => { if (gateFuncoes.blocked) { gateFuncoes.openGate(); return; } setComentarioAberto(true); }}
-                        className={cn("flex h-[56px] flex-1 items-center justify-between rounded-2xl border px-4", resp.acertou ? "bg-green-500/10 border-green-500/20 text-green-400" : "bg-red-500/10 border-red-500/20 text-red-400")}
+                        className={cn("flex h-[56px] flex-1 items-center justify-between rounded-2xl border px-4", resp.acertou ? "bg-white/10 border-white/20 text-white hover:bg-white/20" : "bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20")}
                       >
                         <div className="flex items-center gap-3"><MessageSquare className="h-5 w-5" /> <span className="font-bold">Comentário</span></div>
-                        <ChevronRight className="h-5 w-5" />
+                        <ChevronRight className="h-5 w-5 opacity-50" />
                       </button>
                       
                       {!resp.acertou && (
@@ -501,6 +467,16 @@ const ResolverPadrao = ({
                           <span className="font-bold hidden sm:inline">Flashcard</span>
                         </button>
                       )}
+                    </div>
+
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => navigate('/me-explique', { state: { questaoId: atual.id } })}
+                        className={cn("flex h-[56px] flex-1 items-center justify-between rounded-2xl border px-4 shadow-lg", resp.acertou ? "bg-white text-emerald-600 border-white/50 shadow-black/10 hover:bg-emerald-50" : "bg-blue-600 border-blue-500 text-white shadow-blue-500/10 hover:bg-blue-500")}
+                      >
+                        <div className="flex items-center gap-3"><Mic className="h-5 w-5 animate-pulse" /> <span className="font-bold">Professora</span></div>
+                        <ChevronRight className="h-5 w-5 opacity-50" />
+                      </button>
                     </div>
 
                     <div className="w-full">
@@ -590,12 +566,6 @@ const ResolverPadrao = ({
         respostas={respostas}
         questoesIdMap={questoes.map(q => q.id)}
         onSelect={setIdx}
-      />
-
-      <MeExpliqueSheet
-        aberto={meExpliqueAberto}
-        onClose={() => setMeExpliqueAberto(false)}
-        questao={atual}
       />
     </div>
   );
