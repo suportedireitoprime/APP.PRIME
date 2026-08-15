@@ -108,7 +108,7 @@ export function StepRow({
       className={cn(
         'flex w-full items-center gap-4 rounded-2xl border px-4 py-3.5 text-left transition-all',
         active
-          ? 'border-[#F87171]/60 bg-[#F87171]/8 shadow-lg shadow-[#F87171]/10'
+          ? 'border-[#E11D48]/60 bg-[#E11D48]/8 shadow-lg shadow-[#E11D48]/10'
           : done
             ? 'border-emerald-500/30 bg-zinc-900/90 shadow-sm'
             : 'border-zinc-800/80 bg-zinc-900/70 hover:border-zinc-700 hover:bg-zinc-800/60 active:scale-[0.98]',
@@ -119,7 +119,7 @@ export function StepRow({
         done
           ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/25 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]'
           : active
-            ? 'bg-[#DC2626] text-white shadow-md shadow-[#DC2626]/30 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]'
+            ? 'bg-hero-panel text-white shadow-md shadow-[#E11D48]/30 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]'
             : 'bg-zinc-800 text-zinc-300',
       )}>
         {done ? <Check className="h-5 w-5 drop-shadow-md" strokeWidth={3} /> : step}
@@ -130,7 +130,7 @@ export function StepRow({
             {label}
           </span>
           {active && (
-            <span className="rounded-full bg-[#F87171]/20 border border-[#F87171]/30 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-[#F87171]">
+            <span className="rounded-full bg-[#E11D48]/20 border border-[#E11D48]/30 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-[#E11D48]">
               Aberto
             </span>
           )}
@@ -147,7 +147,7 @@ export function StepRow({
       ) : (
         <span className="flex shrink-0 items-center gap-2">
           {!!badge && (
-            <span className="grid h-6 min-w-[24px] place-items-center rounded-full bg-[#DC2626] px-2 text-[12px] font-black text-white shadow-sm shadow-[#DC2626]/30 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]">
+            <span className="grid h-6 min-w-[24px] place-items-center rounded-full bg-hero-panel px-2 text-[12px] font-black text-white shadow-sm shadow-[#E11D48]/30 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]">
               {badge}
             </span>
           )}
@@ -233,7 +233,7 @@ export function SelecaoSheet({
         <p className="flex-1 text-center text-[18px] font-extrabold text-zinc-100">{titulo}</p>
         <button
           onClick={() => { haptic.selection?.(); setLocal([]); }}
-          className="px-3 text-[14px] font-bold text-[#F87171] hover:text-[#FCA5A5] active:scale-95 transition-colors"
+          className="px-3 text-[14px] font-bold text-[#E11D48] hover:text-[#BE123C] active:scale-95 transition-colors"
         >
           Limpar
         </button>
@@ -292,7 +292,7 @@ export function SelecaoSheet({
                       <span className={cn(
                         'grid h-6 w-6 shrink-0 place-items-center rounded-md border-2 transition-all',
                         isAllSelected
-                          ? 'border-[#DC2626] bg-[#DC2626] text-white shadow-md shadow-[#DC2626]/25 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]'
+                          ? 'border-[#E11D48] bg-hero-panel text-white shadow-md shadow-[#E11D48]/25 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]'
                           : 'border-zinc-700 bg-zinc-900/50 group-hover:border-zinc-500',
                       )}>
                         {isAllSelected && <Check className="h-3.5 w-3.5 drop-shadow-md" strokeWidth={3} />}
@@ -328,15 +328,14 @@ export function SelecaoSheet({
                       )}
                     </span>
                     {contagens?.[o] !== undefined && (
-                      <span className="grid h-6 min-w-[44px] place-items-center rounded-full bg-[#F87171]/15 px-2 text-[11px] font-extrabold tabular-nums text-[#F87171]">
+                      <span className="grid h-6 min-w-[44px] place-items-center rounded-full bg-[#E11D48]/15 px-2 text-[11px] font-extrabold tabular-nums text-[#E11D48]">
                         {fmt(contagens[o])}
                       </span>
                     )}
                     <span className={cn(
-                      'grid h-6 w-6 shrink-0 place-items-center border-2 transition-all',
-                      single ? 'rounded-full' : 'rounded-md',
+                      'grid h-6 w-6 shrink-0 place-items-center rounded-md border-2 transition-all',
                       ativo
-                        ? 'border-[#DC2626] bg-[#DC2626] text-white shadow-md shadow-[#DC2626]/25 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]'
+                        ? 'border-[#E11D48] bg-hero-panel text-white shadow-md shadow-[#E11D48]/25 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]'
                         : 'border-zinc-700 bg-zinc-900/50 group-hover:border-zinc-500',
                     )}>
                       {ativo && <Check className="h-3.5 w-3.5 drop-shadow-md" strokeWidth={3} />}
@@ -356,7 +355,7 @@ export function SelecaoSheet({
             onConfirmar(local);
             onFechar();
           }}
-          className="h-14 w-full rounded-2xl bg-[#DC2626] hover:bg-[#B91C1C] text-white font-black text-[16px] shadow-lg shadow-[#DC2626]/30 active:scale-[0.98] transition-all"
+          className="h-14 w-full rounded-2xl bg-hero-panel hover:brightness-110 text-white font-black text-[16px] shadow-lg shadow-[#E11D48]/30 active:scale-[0.98] transition-all"
         >
           Confirmar seleção
         </button>
@@ -500,13 +499,13 @@ const QuestoesFiltroSheet = ({
               </button>
               <div className="min-w-0 flex-1">
                 <p className="flex items-center gap-2 text-[20px] font-extrabold text-zinc-100 tracking-tight">
-                  <Filter className="h-5 w-5 text-[#F87171]" /> Filtrar questões
+                  <Filter className="h-5 w-5 text-[#E11D48]" /> Filtrar questões
                 </p>
                 <p className="mt-0.5 text-[13px] leading-snug text-zinc-400 truncate">
                   Refine por segmento, disciplina, assunto e mais.
                 </p>
               </div>
-              <button onClick={limpar} className="px-3 text-[14px] font-bold text-[#F87171] hover:text-[#FCA5A5] active:scale-95 transition-colors">
+              <button onClick={limpar} className="px-3 text-[14px] font-bold text-[#E11D48] hover:text-[#BE123C] active:scale-95 transition-colors">
                 Limpar
               </button>
             </div>
@@ -567,7 +566,7 @@ const QuestoesFiltroSheet = ({
                       onClick={() => setF((p) => ({ ...p, ordem: o }))}
                       className={cn(
                         'h-8 rounded-full px-3 text-[12.5px] font-bold transition-all',
-                        f.ordem === o ? 'bg-[#DC2626] text-white shadow-md shadow-[#DC2626]/20 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]' : 'text-zinc-400 hover:text-zinc-200',
+                        f.ordem === o ? 'bg-hero-panel text-white shadow-md shadow-[#E11D48]/20 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]' : 'text-zinc-400 hover:text-zinc-200',
                       )}
                     >
                       {o === 'embaralhado' ? 'Embaralhado' : 'Ordem original'}
@@ -580,7 +579,7 @@ const QuestoesFiltroSheet = ({
             <div className="flex items-center gap-3 border-t border-zinc-800/80 bg-zinc-900/90 backdrop-blur-md px-5 pb-safe-nav pt-4">
               <button
                 onClick={aplicar}
-                className="flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl bg-[#DC2626] hover:bg-[#B91C1C] text-[16px] font-black text-white shadow-lg shadow-[#DC2626]/30 active:scale-[0.98] transition-all [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]"
+                className="flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl bg-hero-panel hover:brightness-110 text-[16px] font-black text-white shadow-lg shadow-[#E11D48]/30 active:scale-[0.98] transition-all [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]"
               >
                 {carregando ? <Loader2 className="h-5 w-5 animate-spin" /> : <Filter className="h-5 w-5 drop-shadow-md" fill="currentColor" />}
                 Aplicar filtros
@@ -589,7 +588,7 @@ const QuestoesFiltroSheet = ({
                 </span>
               </button>
               {selecionados > 0 && (
-                <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-[#F87171]/15 border border-[#F87171]/30 text-[15px] font-black text-[#F87171]">
+                <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-[#E11D48]/15 border border-[#E11D48]/30 text-[15px] font-black text-[#E11D48]">
                   {selecionados}
                 </span>
               )}
@@ -661,7 +660,7 @@ const QuestoesFiltroSheet = ({
                 <SelecaoSheet
                   key="qtd" titulo="Quantidade" single
                   opcoes={QUANTIDADES.map((q) => (q ? `${q} questões` : 'Todas'))}
-                  selecionado={[f.quantidade ? `${f.quantidade} questões` : 'Todas']}
+                  selecionado={f.quantidade ? [`${f.quantidade} questões`] : []}
                   onFechar={() => setPasso(null)}
                   onConfirmar={(v) => setF((p) => ({
                     ...p,

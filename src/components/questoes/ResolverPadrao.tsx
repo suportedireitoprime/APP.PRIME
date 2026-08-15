@@ -264,9 +264,9 @@ const ResolverPadrao = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 1.5 }}
             transition={{ type: 'spring', damping: 15, stiffness: 200 }}
-            className="flex h-32 w-32 items-center justify-center rounded-full bg-[#DC2626]/10 text-6xl font-black text-[#DC2626] shadow-[0_0_40px_rgba(220,38,38,0.2)]"
+            className="flex h-32 w-32 items-center justify-center rounded-full bg-[#E11D48]/10 text-6xl font-black text-[#E11D48] shadow-[0_0_40px_rgba(225,29,72,0.2)]"
           >
-            {countdown > 0 ? countdown : <Loader2 className="h-12 w-12 animate-spin text-[#DC2626]" />}
+            {countdown > 0 ? countdown : <Loader2 className="h-12 w-12 animate-spin text-[#E11D48]" />}
           </motion.div>
         </AnimatePresence>
         <p className="mt-8 text-lg font-bold text-zinc-400 animate-pulse">Preparando suas questões...</p>

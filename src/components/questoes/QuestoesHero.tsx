@@ -94,7 +94,7 @@ const QuestoesHero = ({ pct, total, hoje, acertos, disponiveis, onBack }: Props)
             style={{ opacity: i === heroIdx ? 1 : 0, filter: 'brightness(0) invert(1)', mixBlendMode: 'soft-light' }}
           />
         ))}
-        <div className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-[hsl(0_72%_38%)] via-[hsl(0_72%_38%)]/60 to-transparent" />
+        <div className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-[hsl(350_74%_42%)] via-[hsl(350_74%_42%)]/60 to-transparent" />
       </div>
 
       <div className="relative p-4 sm:p-5">
@@ -210,7 +210,7 @@ const QuestoesHero = ({ pct, total, hoje, acertos, disponiveis, onBack }: Props)
 
             <div className="space-y-2">
               {/* Sua Posição */}
-              <div className="flex items-center justify-between p-3.5 rounded-2xl bg-red-600/15 border border-red-500/40">
+              <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#E11D48]/15 border border-[#E11D48]/40">
                 <div className="flex items-center gap-3">
                   <span className="w-7 text-center font-black text-sm text-red-400">#4</span>
                   <div>
@@ -259,7 +259,7 @@ const QuestoesHero = ({ pct, total, hoje, acertos, disponiveis, onBack }: Props)
 
             <div className="space-y-2">
               {/* Sua Posição */}
-              <div className="flex items-center justify-between p-3.5 rounded-2xl bg-red-600/15 border border-red-500/40">
+              <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#E11D48]/15 border border-[#E11D48]/40">
                 <div className="flex items-center gap-3">
                   <span className="w-7 text-center font-black text-sm text-red-400">#7</span>
                   <div>
