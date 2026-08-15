@@ -251,6 +251,19 @@ const PremiumGate = ({
                   Ver outros planos
                 </button>
 
+                {import.meta.env.DEV && (
+                  <button
+                    onClick={() => {
+                      // Isso apenas fecha a UI para testes de fluxo.
+                      // Para testar o status real, o dev deve alterar o BD.
+                      onClose();
+                    }}
+                    className="relative text-[10px] font-mono text-primary/60 border border-dashed border-primary/30 rounded px-2 py-1 mt-4 hover:bg-primary/10 transition-colors"
+                  >
+                    [DEV] PULAR GATE E FECHAR
+                  </button>
+                )}
+
                 <p className="relative mt-3 flex items-center gap-1.5 text-[10px] text-muted-foreground/80">
                   <ShieldCheck className="w-3 h-3" />
                   Pagamento pela {isIOS ? 'App Store' : 'Google Play'} · sem fidelidade

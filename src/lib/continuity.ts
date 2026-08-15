@@ -11,6 +11,7 @@
  */
 
 import { supabase } from '@/integrations/supabase/client';
+import { get, set } from 'idb-keyval';
 
 export type ContinuityKind = 'blog' | 'noticia' | 'artigo' | 'radar' | 'biblioteca' | 'other';
 
@@ -23,6 +24,7 @@ export interface ContinuityEntry {
 }
 
 const LS_KEY = 'continuity:last';
+const OFFLINE_QUEUE_KEY = 'continuity:offline_queue';
 const IGNORE_PATHS = ['/auth', '/onboarding', '/landing', '/reset-password'];
 
 function deviceHint(): string {
@@ -57,7 +59,7 @@ async function pushRemote(entry: ContinuityEntry) {
   try {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
-    await supabase
+    const { error } = await supabase
       .from('user_activity_state')
       .upsert({
         user_id: user.id,
@@ -67,9 +69,66 @@ async function pushRemote(entry: ContinuityEntry) {
         device_hint: entry.device_hint ?? deviceHint(),
         updated_at: entry.updated_at,
       });
+    if (error) throw error;
   } catch {
-    /* remote sync is best-effort */
+    /* remote sync failed -> add to offline queue */
+    try {
+      const queue = (await get<ContinuityEntry[]>(OFFLINE_QUEUE_KEY)) || [];
+      queue.push(entry);
+      // Keep queue small since we only need the latest
+      if (queue.length > 20) queue.shift();
+      await set(OFFLINE_QUEUE_KEY, queue);
+    } catch {
+      /* ignore IDB errors */
+    }
   }
+}
+
+let isFlushing = false;
+export async function flushSyncQueue() {
+  if (typeof window === 'undefined' || !navigator.onLine || isFlushing) return;
+  isFlushing = true;
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      await set(OFFLINE_QUEUE_KEY, []);
+      return;
+    }
+    const queue = (await get<ContinuityEntry[]>(OFFLINE_QUEUE_KEY)) || [];
+    if (queue.length === 0) return;
+
+    // O user_activity_state guarda apenas o último estado, então mandamos só o mais recente
+    queue.sort((a, b) => (a.updated_at < b.updated_at ? 1 : -1));
+    const latest = queue[0];
+
+    const { error } = await supabase
+      .from('user_activity_state')
+      .upsert({
+        user_id: user.id,
+        path: latest.path,
+        label: latest.label,
+        kind: latest.kind,
+        device_hint: latest.device_hint ?? deviceHint(),
+        updated_at: latest.updated_at,
+      });
+
+    if (!error) {
+      await set(OFFLINE_QUEUE_KEY, []);
+    }
+  } catch {
+    /* try again later */
+  } finally {
+    isFlushing = false;
+  }
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('online', flushSyncQueue);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      flushSyncQueue();
+    }
+  });
 }
 
 export function recordActivity(input: {
