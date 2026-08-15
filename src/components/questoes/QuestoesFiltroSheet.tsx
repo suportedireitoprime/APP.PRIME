@@ -202,7 +202,7 @@ function SelecaoSheet({
     <motion.div
       initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
       transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-      className="absolute inset-0 z-20 flex flex-col bg-zinc-950/98 backdrop-blur-2xl text-foreground"
+      className="absolute inset-0 z-20 flex flex-col bg-zinc-950 text-foreground"
     >
       <div className="flex items-center gap-2 border-b border-zinc-800/80 px-3 pt-safe-header pb-3 bg-zinc-900/90 backdrop-blur-md">
         <button
