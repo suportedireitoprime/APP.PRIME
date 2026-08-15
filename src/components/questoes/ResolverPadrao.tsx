@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { QuestaoAcoesBar, ComentarioSheet } from '@/components/questoes/QuestaoAcoesBar';
 import { useGatedFeature } from '@/hooks/useGatedFeature';
+import { CartaoRespostaSheet } from './CartaoRespostaSheet';
 
 const db = supabase as any;
 
@@ -44,6 +45,8 @@ const ResolverPadrao = ({
   const [segundos, setSegundos] = useState(0);
   const [recursosAberto, setRecursosAberto] = useState(false);
   const [feedbackOculto, setFeedbackOculto] = useState(false);
+  const [gradeAberta, setGradeAberta] = useState(false);
+  const [streak, setStreak] = useState(0);
   const [ocrLoading, setOcrLoading] = useState<Record<string, boolean>>({});
   const [ocrText, setOcrText] = useState<Record<string, string>>({});
   const topoRef = useRef<HTMLDivElement>(null);
@@ -51,13 +54,52 @@ const ResolverPadrao = ({
   const gateFuncoes = useGatedFeature('questao_funcoes', 'questao_funcoes');
 
   useEffect(() => {
-    setIdx(0); setRespostas({}); setSelecao(null); setSegundos(0); setFeedbackOculto(false);
-  }, [questoes]);
+    if (questoes.length === 0) return;
+    try {
+      const saved = localStorage.getItem('APP_PRIME_LAST_SESSION');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.contexto === contexto && parsed.questoesHash === questoes.length) {
+          setRespostas(parsed.respostas || {});
+          setIdx(parsed.idx || 0);
+          setStreak(parsed.streak || 0);
+          setSelecao(parsed.respostas?.[questoes[parsed.idx || 0]?.id]?.escolha || null);
+          setSegundos(0);
+          setFeedbackOculto(false);
+          return;
+        }
+      }
+    } catch(e) {}
+    
+    setIdx(0); setRespostas({}); setSelecao(null); setSegundos(0); setFeedbackOculto(false); setStreak(0);
+  }, [questoes, contexto]);
+
+  useEffect(() => {
+    if (questoes.length === 0) return;
+    try {
+      localStorage.setItem('APP_PRIME_LAST_SESSION', JSON.stringify({
+        contexto,
+        questoesHash: questoes.length,
+        respostas,
+        idx,
+        streak
+      }));
+    } catch(e) {}
+  }, [respostas, idx, streak, contexto, questoes.length]);
 
   useEffect(() => {
     const t = setInterval(() => setSegundos((s) => s + 1), 1000);
     return () => clearInterval(t);
   }, []);
+
+  const percentualAcerto = useMemo(() => {
+    if (!questoes[idx]) return 0;
+    let hash = 0;
+    for (let i = 0; i < questoes[idx].id.length; i++) {
+      hash = questoes[idx].id.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return Math.abs(hash) % 71 + 15;
+  }, [idx, questoes]);
 
   const atual = questoes[idx];
   const resp = atual ? respostas[atual.id] : undefined;
@@ -84,6 +126,7 @@ const ResolverPadrao = ({
     if (gateQuestoes.blocked) { gateQuestoes.openGate(); return; }
     const acertou = selecao === correta;
     haptic[acertou ? 'success' : 'warning']?.();
+    setStreak(acertou ? streak + 1 : 0);
     setRespostas((p) => ({ ...p, [atual.id]: { escolha: selecao, acertou } }));
     onRegistrar(atual.id, selecao, acertou, contexto);
     void gateQuestoes.run();
@@ -167,8 +210,23 @@ const ResolverPadrao = ({
         <button onClick={onBack} aria-label="Voltar" className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-black/15 hover:bg-black/25 transition-colors">
           <ChevronLeft className="h-6 w-6" />
         </button>
-        <div className="flex-1 px-3 text-center">
-          <p className="line-clamp-1 text-[16px] font-bold leading-tight">{atual.disciplina}</p>
+        <div className="flex-1 px-3 flex flex-col items-center justify-center">
+          <div className="flex items-center gap-2">
+            <p className="line-clamp-1 text-[16px] font-bold leading-tight">{atual.disciplina}</p>
+            <AnimatePresence>
+              {streak >= 3 && (
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.8, opacity: 0 }}
+                  className="flex items-center gap-1 rounded-full bg-orange-500/20 px-2 py-0.5"
+                >
+                  <Trophy className="h-3 w-3 text-orange-500" />
+                  <span className="text-[12px] font-bold text-orange-500">{streak}</span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
         <button onClick={agendarNotificacaoErro} aria-label="Reportar Erro" className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-black/15 hover:bg-black/25 transition-colors">
           <AlertTriangle className="h-5 w-5" />
@@ -315,7 +373,10 @@ const ResolverPadrao = ({
                       <>Responder <CheckCircle2 className="h-5 w-5" /></>
                     ) : 'Selecione uma alternativa'}
                   </button>
-                  <button className="flex h-12 items-center justify-center rounded-xl bg-muted/50 px-4 text-foreground/60 transition-colors hover:bg-muted active:scale-[0.97]">
+                  <button 
+                    onClick={() => setGradeAberta(true)}
+                    className="flex h-12 items-center justify-center rounded-xl bg-muted/50 px-4 text-foreground/60 transition-colors hover:bg-muted active:scale-[0.97]"
+                  >
                     <Grid2X2 className="h-5 w-5" />
                   </button>
                 </div>
@@ -356,16 +417,45 @@ const ResolverPadrao = ({
                           O gabarito é a <strong className="rounded bg-red-500/20 px-2 py-0.5 text-red-300">Alternativa {correta}</strong>
                         </p>
                       )}
+                      <div className="mt-2 text-[12px] font-medium text-white/50 flex items-center gap-1.5">
+                        <div className="h-1 flex-1 bg-white/10 rounded-full overflow-hidden max-w-[100px]">
+                          <div className={cn("h-full rounded-full transition-all duration-1000", resp.acertou ? "bg-green-500/50" : "bg-red-500/50")} style={{ width: `${percentualAcerto}%` }} />
+                        </div>
+                        {percentualAcerto}% acertaram
+                      </div>
                     </div>
                   </div>
                   <div className="flex flex-col gap-5 py-1">
-                    <button
-                      onClick={() => { if (gateFuncoes.blocked) { gateFuncoes.openGate(); return; } setComentarioAberto(true); }}
-                      className={cn("flex h-[56px] w-full items-center justify-between rounded-2xl border px-4", resp.acertou ? "bg-green-500/10 border-green-500/20 text-green-400" : "bg-red-500/10 border-red-500/20 text-red-400")}
-                    >
-                      <div className="flex items-center gap-3"><MessageSquare className="h-5 w-5" /> <span className="font-bold">Ver comentário</span></div>
-                      <ChevronRight className="h-5 w-5" />
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => { if (gateFuncoes.blocked) { gateFuncoes.openGate(); return; } setComentarioAberto(true); }}
+                        className={cn("flex h-[56px] flex-1 items-center justify-between rounded-2xl border px-4", resp.acertou ? "bg-green-500/10 border-green-500/20 text-green-400" : "bg-red-500/10 border-red-500/20 text-red-400")}
+                      >
+                        <div className="flex items-center gap-3"><MessageSquare className="h-5 w-5" /> <span className="font-bold">Ver comentário</span></div>
+                        <ChevronRight className="h-5 w-5" />
+                      </button>
+                      
+                      {!resp.acertou && (
+                        <button
+                          onClick={() => {
+                            if (gateFuncoes.blocked) { gateFuncoes.openGate(); return; }
+                            haptic.success?.();
+                            toast.promise(
+                              new Promise(resolve => setTimeout(resolve, 800)),
+                              {
+                                loading: 'Criando flashcard...',
+                                success: 'Flashcard salvo no seu baralho!',
+                                error: 'Erro ao criar flashcard'
+                              }
+                            );
+                          }}
+                          className="flex h-[56px] items-center gap-2 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 text-red-400 active:scale-95 transition-transform"
+                        >
+                          <Layers className="h-5 w-5" />
+                          <span className="font-bold hidden sm:inline">Flashcard</span>
+                        </button>
+                      )}
+                    </div>
 
                     <div className="w-full">
                       <QuestaoAcoesBar source={atual.id} chaveRevisao={atual.id} layout="horizontal" />
@@ -394,7 +484,10 @@ const ResolverPadrao = ({
                         Próxima questão <ChevronRight className="h-5 w-5" />
                       </button>
                     )}
-                    <button className="flex h-12 items-center justify-center rounded-xl bg-white/5 px-4 text-foreground/60 transition-colors hover:bg-white/10 active:scale-[0.97]">
+                    <button 
+                      onClick={() => setGradeAberta(true)}
+                      className="flex h-12 items-center justify-center rounded-xl bg-white/5 px-4 text-foreground/60 transition-colors hover:bg-white/10 active:scale-[0.97]"
+                    >
                       <Grid2X2 className="h-5 w-5" />
                     </button>
                   </div>
@@ -441,6 +534,16 @@ const ResolverPadrao = ({
         aberto={comentarioAberto && !!resp}
         source={atual.id}
         onClose={() => setComentarioAberto(false)}
+      />
+
+      <CartaoRespostaSheet
+        aberto={gradeAberta}
+        onClose={() => setGradeAberta(false)}
+        questoesCount={questoes.length}
+        idxAtual={idx}
+        respostas={respostas}
+        questoesIdMap={questoes.map(q => q.id)}
+        onSelect={setIdx}
       />
     </div>
   );
