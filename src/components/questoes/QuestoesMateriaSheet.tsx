@@ -142,7 +142,7 @@ export function QuestoesMateriaSheet({ materia, aberto, onOpenChange }: Questoes
               <button
                 onClick={handlePraticar}
                 disabled={loading}
-                className="flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl bg-hero-panel hover:brightness-110 text-[16px] font-black text-white shadow-lg shadow-[#E11D48]/30 active:scale-[0.98] transition-all disabled:opacity-50 disabled:active:scale-100"
+                className="flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl bg-hero-panel hover:brightness-110 text-[16px] font-black text-white shadow-lg shadow-black/40 active:scale-[0.98] transition-all disabled:opacity-50 disabled:active:scale-100"
               >
                 Começar a Praticar
               </button>

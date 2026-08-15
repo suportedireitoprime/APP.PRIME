@@ -355,7 +355,7 @@ export function SelecaoSheet({
             onConfirmar(local);
             onFechar();
           }}
-          className="h-14 w-full rounded-2xl bg-hero-panel hover:brightness-110 text-white font-black text-[16px] shadow-lg shadow-[#E11D48]/30 active:scale-[0.98] transition-all"
+          className="h-14 w-full rounded-2xl bg-hero-panel hover:brightness-110 text-white font-black text-[16px] shadow-lg shadow-black/40 active:scale-[0.98] transition-all"
         >
           Confirmar seleção
         </button>
@@ -579,7 +579,7 @@ const QuestoesFiltroSheet = ({
             <div className="flex items-center gap-3 border-t border-zinc-800/80 bg-zinc-900/90 backdrop-blur-md px-5 pb-safe-nav pt-4">
               <button
                 onClick={aplicar}
-                className="flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl bg-hero-panel hover:brightness-110 text-[16px] font-black text-white shadow-lg shadow-[#E11D48]/30 active:scale-[0.98] transition-all [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]"
+                className="flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl bg-hero-panel hover:brightness-110 text-[16px] font-black text-white shadow-lg shadow-black/40 active:scale-[0.98] transition-all [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]"
               >
                 {carregando ? <Loader2 className="h-5 w-5 animate-spin" /> : <Filter className="h-5 w-5 drop-shadow-md" fill="currentColor" />}
                 Aplicar filtros
