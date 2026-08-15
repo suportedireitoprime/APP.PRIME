@@ -377,50 +377,56 @@ const ResolverPadrao = ({
                 exit={{ y: '100%' }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 className={cn(
-                  "rounded-t-3xl border-t px-5 pb-safe-nav pt-5 shadow-2xl",
+                  "rounded-t-3xl border-t px-5 pb-safe-nav pt-7 shadow-2xl",
                   resp.acertou 
                     ? "bg-[#0a1f10] border-green-500/30" 
                     : "bg-[#1f0a0a] border-red-500/30"
                 )}
               >
-                <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
+                <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
                   {/* Resultado */}
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-4">
                     <div className={cn(
-                      "flex h-11 w-11 shrink-0 items-center justify-center rounded-full",
+                      "flex h-12 w-12 shrink-0 items-center justify-center rounded-full",
                       resp.acertou ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"
                     )}>
-                      {resp.acertou ? <CheckCircle2 className="h-6 w-6" /> : <XCircle className="h-6 w-6" />}
+                      {resp.acertou ? <CheckCircle2 className="h-7 w-7" /> : <XCircle className="h-7 w-7" />}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className={cn(
-                        "text-[18px] font-extrabold tracking-tight",
+                        "text-[22px] font-extrabold tracking-tight",
                         resp.acertou ? "text-green-400" : "text-red-400"
                       )}>
-                        {resp.acertou ? 'Excelente!' : 'Não foi dessa vez.'}
+                        {resp.acertou ? 'Resposta correta!' : 'Resposta incorreta'}
                       </p>
-                      <p className={cn(
-                        "text-[13px] font-medium",
-                        resp.acertou ? "text-green-400/70" : "text-red-400/70"
-                      )}>
-                        {resp.acertou ? 'Você acertou a questão.' : `O gabarito correto é a alternativa ${correta}.`}
-                      </p>
+                      {resp.acertou ? (
+                        <p className="text-[14px] font-medium text-green-400/80">
+                          Você mandou bem.
+                        </p>
+                      ) : (
+                        <p className="mt-1 text-[14.5px] font-medium text-red-400/80">
+                          O gabarito é a <strong className="rounded bg-red-500/20 px-2 py-0.5 text-red-300">Alternativa {correta}</strong>
+                        </p>
+                      )}
                     </div>
                   </div>
                   
                   {/* Ações rápidas: Comentário (lista) + Recursos (horizontal) */}
-                  <div className="flex flex-col gap-4 py-2">
+                  <div className="flex flex-col gap-5 py-1">
                     <button
                       onClick={() => { if (gateFuncoes.blocked) { gateFuncoes.openGate(); return; } setComentarioAberto(true); }}
                       className={cn(
-                        "flex h-[52px] w-full shrink-0 items-center gap-3 rounded-xl border px-4 text-left transition-all active:scale-[0.98]",
+                        "flex h-[56px] w-full shrink-0 items-center justify-between rounded-2xl border px-4 transition-all active:scale-[0.98]",
                         resp.acertou 
                           ? "bg-green-500/10 border-green-500/20 hover:bg-green-500/20 text-green-400" 
                           : "bg-red-500/10 border-red-500/20 hover:bg-red-500/20 text-red-400"
                       )}
                     >
-                      <MessageSquare className="h-5 w-5" />
-                      <span className="text-[15px] font-bold">Ver comentário</span>
+                      <div className="flex items-center gap-3">
+                        <MessageSquare className="h-5 w-5" />
+                        <span className="text-[16px] font-bold">Ver comentário</span>
+                      </div>
+                      <ChevronRight className="h-5 w-5 opacity-70" />
                     </button>
                     
                     <div className="w-full">
