@@ -5,7 +5,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import FlashcardsBottomNav from '@/components/flashcards/FlashcardsBottomNav';
 import AreaTemasSheet from '@/components/flashcards/AreaTemasSheet';
-import ContagemRegressiva from '@/components/questoes/ContagemRegressiva';
 import {
   CheckCircle2, RotateCcw, SlidersHorizontal, BookOpen, Scale, Lightbulb, ChevronRight, Layers,
 } from 'lucide-react';
@@ -64,7 +63,7 @@ const FlashcardsEstudo = () => {
   const escolhendo = !areaParam && !areasParam && !deckId && modo !== 'edital';
 
   const limitParam = parseInt(params.get('limite') || '30', 10);
-  let listaAreas = areasParam ? areasParam.split('|').filter(Boolean) : areaParam ? [areaParam] : null;
+  const listaAreas = areasParam ? areasParam.split('|').filter(Boolean) : areaParam ? [areaParam] : null;
   const temasList = temasParam ? temasParam.split('|').filter(Boolean) : null;
   const modoAtual = modo;
 
@@ -82,7 +81,6 @@ const FlashcardsEstudo = () => {
   const [cards, setCards] = useState<FlashcardCard[]>([]);
   const [idx, setIdx] = useState(0);
   const [virado, setVirado] = useState(false);
-  const [contando, setContando] = useState(!escolhendo);
   const [temas, setTemas] = useState<{ tema: string; total: number }[]>([]);
   const [feitos, setFeitos] = useState(0);
   const [areaSheet, setAreaSheet] = useState<string | null>(null);
@@ -188,13 +186,6 @@ const FlashcardsEstudo = () => {
 
   return (
     <div className={`min-h-dvh bg-background ${escolhendo ? 'pb-32' : 'pb-10'}`}>
-      {contando && !escolhendo && (
-        <ContagemRegressiva
-          solido
-          subtitulo="Preparando seus flashcards…"
-          onFim={() => setContando(false)}
-        />
-      )}
       {gateFlashcards.gateNode}
       <div className="mx-auto w-full max-w-3xl px-3.5 sm:px-6">
         <PageHeader

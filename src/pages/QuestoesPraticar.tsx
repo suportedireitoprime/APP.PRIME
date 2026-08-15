@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import ResolverPadrao from '@/components/questoes/ResolverPadrao';
-import ContagemRegressiva from '@/components/questoes/ContagemRegressiva';
 import { useQuestoesSessao } from '@/hooks/useQuestoes';
 import { lerFiltroSalvo } from '@/components/questoes/QuestoesFiltroSheet';
 import { useGoBack } from '@/hooks/useGoBack';
@@ -19,7 +18,6 @@ const QuestoesPraticar = () => {
   const limite = Number.isFinite(qtdParam) && qtdParam > 0 ? qtdParam : undefined;
 
   const filtro = useMemo(() => (usaFiltro ? lerFiltroSalvo() : null), [usaFiltro]);
-  const [contando, setContando] = useState(true);
 
   const { questoes, loading, recarregar, registrar } = useQuestoesSessao({
     area, nivel, cargoId, limite, novas: !filtro, filtro,
@@ -27,11 +25,9 @@ const QuestoesPraticar = () => {
 
   return (
     <div className="theme-questoes min-h-screen bg-background pb-safe">
-      {contando && <ContagemRegressiva onFim={() => setContando(false)} />}
-      
       <ResolverPadrao
         questoes={questoes}
-        loading={loading || contando}
+        loading={loading}
         contexto="pratica"
         onRegistrar={registrar}
         onNovoBloco={recarregar}

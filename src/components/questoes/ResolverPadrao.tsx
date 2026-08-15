@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronLeft, ChevronRight, ChevronUp, Clock, Heart, Loader2, PlayCircle, CheckCircle2, XCircle, X, RotateCw, Sparkles, AlertTriangle, ScanText, FileText, Plus, MessageSquare, Trophy, Grid2X2
@@ -137,16 +137,17 @@ const ResolverPadrao = ({
   const acertos = Object.values(respostas).filter((r) => r.acertou).length;
   const todasRespondidas = questoes.length > 0 && questoes.every((q) => respostas[q.id]);
 
-  const responder = () => {
+  const responder = useCallback(() => {
     if (!atual || !selecao || resp) return;
     if (gateQuestoes.blocked) { gateQuestoes.openGate(); return; }
     const acertou = selecao === correta;
     haptic[acertou ? 'success' : 'warning']?.();
     setStreak(acertou ? streak + 1 : 0);
-    setRespostas((p) => ({ ...p, [atual.id]: { escolha: selecao, acertou } }));
+    
+    setRespostas((prev) => ({ ...prev, [atual.id]: { escolha: selecao, acertou } }));
     onRegistrar(atual.id, selecao, acertou, contexto);
     void gateQuestoes.run();
-  };
+  }, [atual, selecao, resp, gateQuestoes, correta, streak, contexto, onRegistrar]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -204,6 +205,14 @@ const ResolverPadrao = ({
       import('sonner').then(({ toast }) => toast.info('Função de reportar erro em breve!'));
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   if (!questoes.length) {
     return (
