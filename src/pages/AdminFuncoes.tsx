@@ -92,7 +92,7 @@ const prefetch = (route?: string): Promise<unknown> => {
 };
 
 const prefetchAllAdminRoutes = () => {
-  const routes = Array.from(new Set(CATEGORIES.flatMap((cat) => cat.items.map((item) => item.route).filter(Boolean)))) as string[];
+  const routes = Array.from(new Set(CATEGORIES.flatMap((cat) => (cat.items || []).map((item) => item.route).filter(Boolean)))) as string[];
   routes.forEach(prefetch);
 };
 
@@ -121,7 +121,7 @@ type Category = {
   title: string;
   desc: string;
   icon: any;
-  items: Item[];
+  items?: Item[];
   route?: string;
 };
 
@@ -248,13 +248,7 @@ const CATEGORIES: Category[] = [
       { id: 'admin-passo-a-passo-lojas', label: 'Passo a Passo Lojas', icon: Store, desc: 'Guia com 25 passos para publicar no Google Play e App Store', route: '/admin-passo-a-passo-lojas' },
     ],
   },
-  {
-    id: 'triagem',
-    title: 'Triagem',
-    desc: 'Triagem de cadastro do app',
-    icon: Sparkles,
-    route: '/admin-triagem',
-  },
+
   {
     id: 'horus-exclusivo',
     title: 'Horus (Exclusivo)',
@@ -446,15 +440,16 @@ const AdminFuncoes = () => {
                     void prefetch(cat.route).finally(() => navigate(cat.route!));
                     return;
                   }
-                  if (cat.items.length === 1 && cat.items[0].route) {
-                    void prefetch(cat.items[0].route).finally(() => navigate(cat.items[0].route!));
+                  const items = cat.items || [];
+                  if (items.length === 1 && items[0].route) {
+                    void prefetch(items[0].route).finally(() => navigate(items[0].route!));
                   } else {
                     setOpenCat(cat);
                   }
                 }}
                 onPointerDown={() => {
                   if (cat.route) prefetch(cat.route);
-                  cat.items.forEach(i => prefetch(i.route));
+                  (cat.items || []).forEach(i => prefetch(i.route));
                 }}
                 className="w-full flex items-center gap-4 px-4 py-5 min-h-[84px] text-left hover:bg-secondary/60 active:bg-secondary transition-colors"
               >
@@ -466,7 +461,7 @@ const AdminFuncoes = () => {
                     {cat.title}
                   </div>
                   <div className="font-body text-[12px] text-muted-foreground truncate mt-0.5">
-                    {cat.desc} · {cat.items.length} {cat.items.length === 1 ? 'função' : 'funções'}
+                    {cat.desc} {(cat.items && cat.items.length > 0) ? `· ${cat.items.length} ${cat.items.length === 1 ? 'função' : 'funções'}` : ''}
                   </div>
                 </div>
                 <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
@@ -503,7 +498,7 @@ const AdminFuncoes = () => {
           {openCat && (
               <div className="p-3">
                 <div className="rounded-2xl border border-border/60 bg-secondary/30 divide-y divide-border/50 overflow-hidden">
-                  {openCat.items.map(item => {
+                  {(openCat.items || []).map(item => {
                     const Icon = item.icon;
                     const disabled = !item.route && item.id !== 'github-abrir' && item.id !== 'crashlytics-test';
                     return (
