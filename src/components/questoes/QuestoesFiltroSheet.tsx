@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Check, Filter, Lock, Search, X, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import { haptic } from '@/lib/nativeHaptics';
 import { cn } from '@/lib/utils';
 
@@ -84,45 +85,46 @@ const fmt = (n: number) => n.toLocaleString('pt-BR');
 
 /* -------------------------------------------------- passo numerado */
 function StepRow({
-  step, label, hint, onClick, locked, active, done, badge,
+  step, label, hint, onClick, locked, active, done, badge, lockedMessage,
 }: {
   step: number; label: string; hint: string; onClick: () => void;
-  locked?: boolean; active?: boolean; done?: boolean; badge?: number;
+  locked?: boolean; active?: boolean; done?: boolean; badge?: number; lockedMessage?: string;
 }) {
   return (
     <button
       type="button"
-      disabled={locked}
-      onClick={onClick}
+      onClick={() => {
+        if (locked) {
+          haptic.error();
+          toast(lockedMessage || 'Complete a etapa anterior primeiro.', {
+            description: 'Essa opção está bloqueada no momento.',
+          });
+          return;
+        }
+        onClick();
+      }}
       className={cn(
         'flex w-full items-center gap-4 rounded-2xl border px-4 py-3.5 text-left transition-all',
-        locked
-          ? 'border-zinc-900 bg-zinc-950/40 opacity-40 cursor-not-allowed'
-          : active
-            ? 'border-[#F87171]/60 bg-[#F87171]/8 shadow-lg shadow-[#F87171]/10'
-            : done
-              ? 'border-emerald-500/30 bg-zinc-900/90 shadow-sm'
-              : 'border-zinc-800/80 bg-zinc-900/70 hover:border-zinc-700 hover:bg-zinc-800/60 active:scale-[0.98]',
+        active
+          ? 'border-[#F87171]/60 bg-[#F87171]/8 shadow-lg shadow-[#F87171]/10'
+          : done
+            ? 'border-emerald-500/30 bg-zinc-900/90 shadow-sm'
+            : 'border-zinc-800/80 bg-zinc-900/70 hover:border-zinc-700 hover:bg-zinc-800/60 active:scale-[0.98]',
       )}
     >
       <span className={cn(
         'grid h-10 w-10 shrink-0 place-items-center rounded-full text-[14px] font-black tabular-nums transition-all',
-        locked
-          ? 'bg-zinc-900 text-zinc-600'
-          : done
-            ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/25 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]'
-            : active
-              ? 'bg-[#DC2626] text-white shadow-md shadow-[#DC2626]/30 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]'
-              : 'bg-zinc-800 text-zinc-300',
+        done
+          ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/25 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]'
+          : active
+            ? 'bg-[#DC2626] text-white shadow-md shadow-[#DC2626]/30 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]'
+            : 'bg-zinc-800 text-zinc-300',
       )}>
         {done ? <Check className="h-5 w-5 drop-shadow-md" strokeWidth={3} /> : step}
       </span>
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-2">
-          <span className={cn(
-            'text-[15.5px] font-bold transition-colors',
-            locked ? 'text-zinc-500' : 'text-zinc-100',
-          )}>
+          <span className="text-[15.5px] font-bold transition-colors text-zinc-100">
             {label}
           </span>
           {active && (
@@ -133,13 +135,13 @@ function StepRow({
         </span>
         <span className={cn(
           'mt-0.5 block truncate text-[13px]',
-          locked ? 'text-zinc-600' : done ? 'text-zinc-300' : 'text-zinc-400',
+          done ? 'text-zinc-300' : 'text-zinc-400',
         )}>
           {hint}
         </span>
       </span>
       {locked ? (
-        <Lock className="h-5 w-5 shrink-0 text-zinc-600" />
+        <Lock className="h-5 w-5 shrink-0 text-zinc-400" />
       ) : (
         <span className="flex shrink-0 items-center gap-2">
           {!!badge && (
@@ -433,6 +435,7 @@ const QuestoesFiltroSheet = ({
                 hint={f.disciplinas.length ? `${f.disciplinas.length} selecionada(s)` : 'Todas as disciplinas'}
                 locked={!f.segmentos.length} active={proximo === 'disciplinas'} done={!!f.disciplinas.length}
                 badge={f.disciplinas.length}
+                lockedMessage="Escolha o segmento primeiro."
                 onClick={() => setPasso('disciplinas')}
               />
               <StepRow
@@ -440,6 +443,7 @@ const QuestoesFiltroSheet = ({
                 hint={f.assuntos.length ? `${f.assuntos.length} selecionado(s)` : 'Todos os assuntos'}
                 locked={!f.disciplinas.length} active={proximo === 'assuntos'} done={!!f.assuntos.length}
                 badge={f.assuntos.length}
+                lockedMessage="Escolha as disciplinas primeiro."
                 onClick={() => setPasso('assuntos')}
               />
               <StepRow
@@ -447,6 +451,7 @@ const QuestoesFiltroSheet = ({
                 hint={f.status.length ? `${f.status.length} selecionado(s)` : 'Todos os status'}
                 locked={!f.segmentos.length} done={!!f.status.length}
                 badge={f.status.length || undefined}
+                lockedMessage="Escolha o segmento primeiro."
                 onClick={() => setPasso('status')}
               />
               <StepRow
@@ -454,6 +459,7 @@ const QuestoesFiltroSheet = ({
                 hint={f.anos.length ? (f.anos.length === anos.length && anos.length > 0 ? 'Todos os anos' : f.anos.join(', ')) : 'Todos os anos'}
                 locked={!f.segmentos.length} done={!!f.anos.length}
                 badge={f.anos.length}
+                lockedMessage="Escolha o segmento primeiro."
                 onClick={() => setPasso('anos')}
               />
               <StepRow

@@ -136,7 +136,7 @@ const QuestoesHero = ({ pct, total, hoje, acertos, disponiveis }: Props) => {
                 <span className="text-[9px] font-extrabold uppercase tracking-wider text-white/60 group-hover:text-white">Respondidas</span>
                 <ChevronRight className="w-2.5 h-2.5 text-white/40 group-hover:text-white group-hover:translate-x-0.5 transition-transform" />
               </div>
-              <span className="mt-0.5 font-display text-base font-black leading-none text-white">
+              <span className="mt-0.5 font-display text-base font-black leading-none text-white [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]">
                 {total.toLocaleString('pt-BR')}
               </span>
             </button>
@@ -166,7 +166,7 @@ const QuestoesHero = ({ pct, total, hoje, acertos, disponiveis }: Props) => {
                 <span className="text-[9px] font-extrabold uppercase tracking-wider text-white/60 group-hover:text-white">Banco Total</span>
                 <ChevronRight className="w-2.5 h-2.5 text-white/40 group-hover:text-white group-hover:translate-x-0.5 transition-transform" />
               </div>
-              <span className="mt-0.5 font-display text-base font-black leading-none text-red-400">
+              <span className="mt-0.5 font-display text-base font-black leading-none text-white [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]">
                 {disponiveis > 0 ? disponiveis.toLocaleString('pt-BR') : '25.000+'}
               </span>
             </button>
