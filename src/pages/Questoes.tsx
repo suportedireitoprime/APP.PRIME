@@ -90,8 +90,9 @@ const Questoes = () => {
                   onClick={() => { haptic.selection(); navigate(a.route); }}
                   className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-zinc-400/50 transition-all active:scale-95 gap-2 text-center"
                 >
-                  <div className="w-10 h-10 flex items-center justify-center">
+                  <div className="relative w-10 h-10 flex items-center justify-center">
                     <Icon className="w-7 h-7 sm:w-8 sm:h-8 text-zinc-400 transition-all duration-300 group-hover:text-zinc-300 group-hover:scale-110" strokeWidth={2} />
+                    <Icon className="absolute inset-auto w-7 h-7 sm:w-8 sm:h-8 text-white opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300 icon-shine-mask" strokeWidth={2} />
                   </div>
                   <div>
                     <p className="text-xs font-extrabold text-foreground leading-tight">{a.label}</p>
