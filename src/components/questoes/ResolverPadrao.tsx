@@ -85,7 +85,6 @@ const ResolverPadrao = ({
     setRespostas((p) => ({ ...p, [atual.id]: { escolha: selecao, acertou } }));
     onRegistrar(atual.id, selecao, acertou, contexto);
     void gateQuestoes.run();
-    if (!gateFuncoes.blocked) setComentarioAberto(true);
   };
 
   // Atalhos de teclado no Desktop (A, B, C, D, E ou 1, 2, 3, 4, 5 para escolher; Enter para responder/avançar)
@@ -231,21 +230,6 @@ const ResolverPadrao = ({
           </div>
         </div>
 
-        {/* Questões Ações Bar - Slide Down when Recursos is open */}
-        <AnimatePresence>
-          {recursosAberto && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden border-b border-border/50"
-            >
-              <div className="py-4">
-                <QuestaoAcoesBar source={atual.id} chaveRevisao={atual.id} />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         {/* 3. Metadados (Ano, Banca, Órgão, Assunto) */}
         <div className="flex flex-col gap-1.5 pt-4 pb-5 text-[14px] text-muted-foreground/90">
@@ -412,34 +396,20 @@ const ResolverPadrao = ({
                     </div>
                   </div>
                   
-                  {/* Ações rápidas: Comentário + Recursos */}
-                  <div className="flex gap-2">
+                  {/* Lista de Ações e Recursos (Vertical) */}
+                  <div className="flex max-h-[35vh] flex-col gap-2 overflow-y-auto px-1 py-1 scrollbar-none">
                     <button
                       onClick={() => { if (gateFuncoes.blocked) { gateFuncoes.openGate(); return; } setComentarioAberto(true); }}
-                      className={cn(
-                        "flex h-11 flex-1 items-center justify-center gap-2 rounded-xl text-[14px] font-bold transition-all active:scale-[0.97]",
-                        resp.acertou 
-                          ? "bg-green-500/15 text-green-400 hover:bg-green-500/25" 
-                          : "bg-red-500/15 text-red-400 hover:bg-red-500/25"
-                      )}
+                      className="flex h-12 w-full shrink-0 items-center gap-3 rounded-xl border border-white/5 bg-black/20 px-4 text-left transition-all hover:bg-black/30 active:scale-[0.98]"
                     >
-                      <MessageSquare className="h-4 w-4" /> Comentário
+                      <MessageSquare className="h-5 w-5 text-primary" />
+                      <span className="text-[15px] font-semibold text-white/90">Comentário</span>
                     </button>
-                    <button
-                      onClick={() => { if (gateFuncoes.blocked) { gateFuncoes.openGate(); return; } setRecursosAberto(!recursosAberto); }}
-                      className={cn(
-                        "flex h-11 flex-1 items-center justify-center gap-2 rounded-xl text-[14px] font-bold transition-all active:scale-[0.97]",
-                        resp.acertou 
-                          ? "bg-green-500/15 text-green-400 hover:bg-green-500/25" 
-                          : "bg-red-500/15 text-red-400 hover:bg-red-500/25"
-                      )}
-                    >
-                      <Sparkles className="h-4 w-4" /> Funções IA
-                    </button>
+                    <QuestaoAcoesBar source={atual.id} chaveRevisao={atual.id} layout="vertical" />
                   </div>
 
                   {/* Navegação */}
-                  <div className="flex gap-2.5">
+                  <div className="flex gap-2.5 pt-2">
                     {idx > 0 && (
                       <button
                         onClick={() => setIdx((i) => i - 1)}

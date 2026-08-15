@@ -59,30 +59,48 @@ const OPCOES_RESUMOS: SeletorOpcao[] = [
 ];
 
 /** Trilho de recursos da questão (mini-aula, flashcards, resumos, termos, pegadinhas, lei seca, revisar). */
-export function QuestaoAcoesBar({ source, chaveRevisao }: { source: Fonte; chaveRevisao: string }) {
+export function QuestaoAcoesBar({ source, chaveRevisao, layout = 'horizontal' }: { source: Fonte; chaveRevisao: string; layout?: 'horizontal' | 'vertical' }) {
   const [aba, setAba] = useState<Aba>(null);
   const [seletor, setSeletor] = useState<SeletorTipo>(null);
   const gate = useGatedFeature('questao_funcoes', 'questao_funcoes');
 
   useEffect(() => { setAba(null); setSeletor(null); }, [chaveRevisao]);
 
-  const RailBtn = ({ icon: Icon, label, onClick }: { icon: any; label: string; onClick: () => void }) => (
-    <button
-      type="button"
-      onClick={() => { if (gate.blocked) { gate.openGate(); return; } onClick(); }}
-      className="flex shrink-0 snap-start flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground min-w-[76px]"
-    >
-      <Icon className="h-8 w-8" strokeWidth={1.2} />
-      <span className="whitespace-nowrap text-[12px] font-medium leading-tight">{label}</span>
-    </button>
-  );
+  const RailBtn = ({ icon: Icon, label, onClick }: { icon: any; label: string; onClick: () => void }) => {
+    if (layout === 'vertical') {
+      return (
+        <button
+          type="button"
+          onClick={() => { if (gate.blocked) { gate.openGate(); return; } onClick(); }}
+          className="flex h-12 w-full shrink-0 items-center gap-3 rounded-xl border border-white/5 bg-black/20 px-4 text-left transition-all hover:bg-black/30 active:scale-[0.98]"
+        >
+          <Icon className="h-5 w-5 text-primary" strokeWidth={2} />
+          <span className="text-[15px] font-semibold text-white/90">{label}</span>
+        </button>
+      );
+    }
+    return (
+      <button
+        type="button"
+        onClick={() => { if (gate.blocked) { gate.openGate(); return; } onClick(); }}
+        className="flex shrink-0 snap-start flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground min-w-[76px]"
+      >
+        <Icon className="h-8 w-8" strokeWidth={1.2} />
+        <span className="whitespace-nowrap text-[12px] font-medium leading-tight">{label}</span>
+      </button>
+    );
+  };
 
 
   return (
     <>
       {gate.gateNode}
 
-      <div className="scrollbar-none -mx-1 flex w-full snap-x snap-mandatory items-stretch gap-1 overflow-x-auto px-1">
+      <div className={cn(
+        layout === 'vertical'
+          ? "flex flex-col gap-2 w-full"
+          : "scrollbar-none -mx-1 flex w-full snap-x snap-mandatory items-stretch gap-1 overflow-x-auto px-1"
+      )}>
         <RailBtn icon={BookOpen} label="Aula" onClick={() => setAba('aula')} />
         <RailBtn icon={Layers} label="Flashcards" onClick={() => setAba('flashcards')} />
         <RailBtn icon={BookOpenText} label="Resumos" onClick={() => setSeletor('resumos')} />
