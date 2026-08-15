@@ -77,9 +77,7 @@ export default function ConteudoBusca({
       {termoCurto && (
         <div className="px-4 py-8 space-y-4">
           <div className="text-center space-y-2">
-            <div className="w-14 h-14 mx-auto rounded-2xl bg-primary/10 flex items-center justify-center">
-              <Sparkles className="w-7 h-7 text-primary" />
-            </div>
+
             <p className="text-sm text-muted-foreground">
               {grupo === 'jurisprudencia'
                 ? 'Pesquise qualquer termo. Trazemos súmulas do STF e do STJ, jurisprudência em teses, informativos e pesquisas prontas.'
