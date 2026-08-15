@@ -76,8 +76,7 @@ const QuestoesHero = ({ pct, total, hoje, acertos, disponiveis, onBack }: Props)
       </div>
 
       <section
-        className="relative isolate overflow-hidden"
-        style={{ background: 'linear-gradient(135deg, hsl(0 72% 38%) 0%, hsl(0 80% 55%) 100%)' }}
+        className="relative isolate overflow-hidden bg-hero-panel"
         aria-label="Seu progresso em questões"
       >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.22),transparent_60%)]" />
