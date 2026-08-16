@@ -45,6 +45,45 @@ const MODOS = [
   { id: 'compreendidos', label: 'Compreendidos' },
 ];
 
+/** Transforma "Código Penal - TÍTULO I DA APLICAÇÃO DA LEI PENAL" em
+ *  ["Código Penal", "Título I", "Da Aplicação da Lei Penal"] */
+function formatTemaBreadcrumb(raw: string): string[] {
+  // Separa pela primeira ocorrência de " - " ou " – "
+  const dashIdx = raw.search(/\s[-–]\s/);
+  if (dashIdx === -1) return [toSentence(raw)];
+
+  const leiName = raw.slice(0, dashIdx).trim();
+  const rest = raw.slice(dashIdx).replace(/^\s*[-–]\s*/, '').trim();
+
+  // Tenta separar o rótulo estrutural (TÍTULO I, CAPÍTULO II, etc.) do nome descritivo
+  const structMatch = rest.match(
+    /^((?:PARTE|LIVRO|T[ÍI]TULO|CAP[ÍI]TULO|SE[ÇC][ÃA]O|SUBSE[ÇC][ÃA]O)\s+[\wºª]+(?:-[\wºª]+)?)\s*[-–:]?\s*(.*)$/i
+  );
+
+  if (structMatch) {
+    const label = toSentence(structMatch[1]); // "Título I"
+    const desc = structMatch[2]?.trim();
+    if (desc) {
+      return [leiName, label, toSentence(desc)];
+    }
+    return [leiName, label];
+  }
+
+  return [leiName, toSentence(rest)];
+}
+
+/** "DA APLICAÇÃO DA LEI PENAL" → "Da Aplicação da Lei Penal" */
+function toSentence(s: string): string {
+  const lower = s.toLowerCase();
+  const minors = new Set(['da', 'de', 'do', 'das', 'dos', 'e', 'em', 'no', 'na', 'nos', 'nas', 'ao', 'à', 'às', 'por', 'para', 'com', 'sem', 'sob', 'ou']);
+  return lower.replace(/\b\w+/g, (word, index) => {
+    if (index === 0 || !minors.has(word)) {
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    }
+    return word;
+  });
+}
+
 const FlashcardsEstudo = () => {
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
@@ -491,11 +530,20 @@ const FlashcardsEstudo = () => {
                             <img src={laurel} alt="" aria-hidden="true" className="pointer-events-none absolute left-[12%] bottom-[25%] w-8 lp-float" style={{ animationDelay: '2s', opacity: 0.35 }} />
                           </div>
 
-                          <div className="relative z-10 mb-4 flex items-start justify-between gap-3">
-                            <p className="text-sm md:text-base font-semibold leading-snug line-clamp-2" style={{ color: `color-mix(in oklab, ${accent} 70%, white)`, textShadow: "0 2px 12px rgba(0,0,0,0.55)" }}>
-                              {atual.tema ?? atual.area ?? "Flashcard"}
-                            </p>
-                            <Scale className="h-5 w-5 shrink-0" style={{ color: `${accent}`, opacity: 0.7 }} aria-hidden />
+                          <div className="relative z-10 mb-4 flex items-start justify-between gap-2">
+                            <div className="flex flex-wrap items-center gap-x-1 gap-y-0.5 min-w-0 flex-1">
+                              {formatTemaBreadcrumb(atual.tema ?? atual.area ?? 'Flashcard').map((part, i, arr) => (
+                                <span key={i} className="flex items-center gap-1">
+                                  <span className="text-[11px] md:text-xs font-medium leading-snug" style={{ color: `color-mix(in oklab, ${accent} 60%, white)`, textShadow: '0 1px 8px rgba(0,0,0,0.5)' }}>
+                                    {part}
+                                  </span>
+                                  {i < arr.length - 1 && (
+                                    <ChevronRight className="h-2.5 w-2.5 shrink-0 opacity-50" style={{ color: `color-mix(in oklab, ${accent} 50%, white)` }} />
+                                  )}
+                                </span>
+                              ))}
+                            </div>
+                            <Scale className="h-4 w-4 shrink-0 mt-0.5" style={{ color: `${accent}`, opacity: 0.6 }} aria-hidden />
                           </div>
                           
                           <div className="relative z-10 flex-1 flex items-center justify-center text-center">
