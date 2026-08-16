@@ -78,7 +78,7 @@ const Flashcards = () => {
           <div className="bg-card/60 border border-border/80 p-5 rounded-3xl backdrop-blur-md shadow-xl">
             <div className="flex items-center gap-2">
               <span className="h-5 w-1 rounded-full bg-[#36AF85]" />
-              <h2 className="text-lg font-extrabold leading-tight text-foreground sm:text-xl">Praticar Flashcards</h2>
+              <h2 className="text-lg font-extrabold leading-tight text-foreground sm:text-xl drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] uppercase">Praticar Flashcards</h2>
             </div>
             <p className="ml-3 mt-1 text-xs text-muted-foreground">
               Escolha filtros personalizados e comece sua rotina de revisão.
@@ -86,9 +86,9 @@ const Flashcards = () => {
 
             <button
               onClick={() => { haptic.selection(); setFiltroAberto(true); }}
-              className="btn-attention-shine group mt-4 flex h-14 sm:h-16 min-h-[56px] w-full items-center justify-center gap-3 rounded-2xl bg-[#36AF85] hover:bg-[#2C9570] text-white text-base sm:text-lg font-black shadow-xl shadow-[#36AF85]/35 transition-all active:scale-[0.99] border border-[#36AF85]/30"
+              className="btn-attention-shine group mt-4 flex h-14 sm:h-16 min-h-[56px] w-full items-center justify-center gap-3 rounded-2xl bg-[#2C9570] hover:bg-[#237A5C] text-white text-base sm:text-lg font-black shadow-xl shadow-[#2C9570]/35 transition-all active:scale-[0.99] border border-[#2C9570]/30"
             >
-              <Filter className="h-6 w-6 text-white" strokeWidth={2.5} />
+              <Filter className="h-6 w-6 text-white" strokeWidth={2} />
               <span className="tracking-wide text-white">Filtro Rápido</span>
               <ChevronRight className="h-6 w-6 text-white transition-transform group-hover:translate-x-1" strokeWidth={2.5} />
             </button>
@@ -131,16 +131,16 @@ const Flashcards = () => {
 
           {/* ── Categorias ───────────────────── */}
           <section className="space-y-3 pt-2">
-            <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground">
+            <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
               Categorias
             </p>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
               <button
                 onClick={() => { haptic.selection(); /* Já exibe as matérias abaixo, ou pode fazer scroll/filtro */ }}
-                className="group flex items-center gap-3 p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#36AF85]/50 transition-colors active:scale-95"
+                className="group flex flex-col items-center justify-center gap-3 p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#36AF85]/50 transition-colors active:scale-95"
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#36AF85]/10 text-[#36AF85] group-hover:scale-110 transition-transform">
-                  <BookOpen className="h-5 w-5" />
+                <div className="flex items-center justify-center text-[#36AF85] group-hover:scale-110 transition-transform">
+                  <BookOpen className="h-8 w-8" strokeWidth={1.5} />
                 </div>
                 <div className="flex flex-col items-start">
                   <span className="text-sm font-bold text-foreground">Matérias</span>
@@ -149,10 +149,10 @@ const Flashcards = () => {
 
               <button
                 onClick={() => { haptic.selection(); navigate('/flashcards/leis'); }}
-                className="group flex items-center gap-3 p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#36AF85]/50 transition-colors active:scale-95"
+                className="group flex flex-col items-center justify-center gap-3 p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#36AF85]/50 transition-colors active:scale-95"
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#36AF85]/10 text-[#36AF85] group-hover:scale-110 transition-transform">
-                  <Scale className="h-5 w-5" />
+                <div className="flex items-center justify-center text-[#36AF85] group-hover:scale-110 transition-transform">
+                  <Scale className="h-8 w-8" strokeWidth={1.5} />
                 </div>
                 <div className="flex flex-col items-start">
                   <span className="text-sm font-bold text-foreground">Leis</span>
@@ -161,10 +161,10 @@ const Flashcards = () => {
 
               <button
                 onClick={() => haptic.selection()}
-                className="group flex items-center gap-3 p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#36AF85]/50 transition-colors active:scale-95"
+                className="group flex flex-col items-center justify-center gap-3 p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#36AF85]/50 transition-colors active:scale-95"
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#36AF85]/10 text-[#36AF85] group-hover:scale-110 transition-transform">
-                  <Gavel className="h-5 w-5" />
+                <div className="flex items-center justify-center text-[#36AF85] group-hover:scale-110 transition-transform">
+                  <Gavel className="h-8 w-8" strokeWidth={1.5} />
                 </div>
                 <div className="flex flex-col items-start">
                   <span className="text-sm font-bold text-foreground">Jurisprudência</span>
@@ -173,10 +173,10 @@ const Flashcards = () => {
 
               <button
                 onClick={() => haptic.selection()}
-                className="group flex items-center gap-3 p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#36AF85]/50 transition-colors active:scale-95"
+                className="group flex flex-col items-center justify-center gap-3 p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#36AF85]/50 transition-colors active:scale-95"
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#36AF85]/10 text-[#36AF85] group-hover:scale-110 transition-transform">
-                  <Quote className="h-5 w-5" />
+                <div className="flex items-center justify-center text-[#36AF85] group-hover:scale-110 transition-transform">
+                  <Quote className="h-8 w-8" strokeWidth={1.5} />
                 </div>
                 <div className="flex flex-col items-start">
                   <span className="text-sm font-bold text-foreground">Termos</span>
@@ -188,7 +188,7 @@ const Flashcards = () => {
           {/* ── Matérias / Decks em Grid Responsivo ───────────────────── */}
           <section className="space-y-3">
             <div className="flex items-center justify-between gap-2">
-              <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground">
+              <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
                 Escolher Matéria ({lista.length})
               </p>
               <button
