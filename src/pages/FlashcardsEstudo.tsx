@@ -59,6 +59,7 @@ const FlashcardsEstudo = () => {
   const modo = params.get('modo') || 'todos';
   const ordemParam = params.get('ordem') || 'embaralhado';
   const editalId = params.get('editalId');
+  const quantidadeParam = params.get('quantidade');
 
   // Sem nenhum filtro escolhido → tela de categorias.
   const escolhendo = !areaParam && !areasParam && !deckId && modo !== 'edital';
@@ -66,6 +67,8 @@ const FlashcardsEstudo = () => {
   const limitParam = parseInt(params.get('limite') || '30', 10);
   const listaAreas = areasParam ? areasParam.split('|').filter(Boolean) : areaParam ? [areaParam] : null;
   const temasList = temasParam ? temasParam.split('|').filter(Boolean) : null;
+  const artigosParam = params.get('artigos');
+  const artigosList = artigosParam ? artigosParam.split('|').filter(Boolean) : null;
   const modoAtual = modo;
 
   const { data: cardsRaw, isLoading: loadingCards, refetch: refetchCards } = useFlashcardsSessao({
@@ -94,14 +97,28 @@ const FlashcardsEstudo = () => {
   useEffect(() => {
     if (cardsRaw) {
       let finalCards = [...cardsRaw];
+      
+      // Filtro de artigos no frontend
+      if (artigosList && artigosList.length > 0) {
+        finalCards = finalCards.filter(c => c.artigo_numero && artigosList.includes(c.artigo_numero));
+      }
+      
       if (ordemParam === 'sequencial') {
         finalCards.sort((a,b) => (a.artigo_numero || '').localeCompare(b.artigo_numero || '', undefined, {numeric: true}));
       }
+
+      if (quantidadeParam) {
+        const q = parseInt(quantidadeParam, 10);
+        if (!isNaN(q) && q > 0) {
+          finalCards = finalCards.slice(0, q);
+        }
+      }
+
       setCards(finalCards);
       setIdx(0);
       setVirado(false);
     }
-  }, [cardsRaw, ordemParam]);
+  }, [cardsRaw, ordemParam, artigosList, quantidadeParam]);
 
   // Ponto de Retomada: Salvar e restaurar último cartão estudado
   const sessionKey = `flashcards_pos_${areaParam || areasParam || deckId || 'geral'}_${temasParam || 'todos'}`;

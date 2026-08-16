@@ -114,15 +114,17 @@ export function StepRow({
 
 /* -------------------------------------------------- sub-sheet de seleção */
 export function SelecaoSheet({
-  titulo, opcoes, selecionado, single, onFechar, onConfirmar, buscavel,
+  titulo, opcoes, selecionado, single, onFechar, onConfirmar, buscavel, renderOpcao, loading
 }: {
   titulo: string;
   opcoes: string[];
   selecionado: string[];
   single?: boolean;
   buscavel?: boolean;
+  loading?: boolean;
   onFechar: () => void;
   onConfirmar: (v: string[]) => void;
+  renderOpcao?: (opcao: string) => React.ReactNode;
 }) {
   const [local, setLocal] = useState<string[]>(selecionado);
   const [q, setQ] = useState('');
@@ -212,7 +214,12 @@ export function SelecaoSheet({
       )}
 
       <div ref={parentRef} className="flex-1 overflow-y-auto px-4">
-        {lista.length === 0 ? (
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-16 gap-3 text-zinc-400">
+            <Loader2 className="h-6 w-6 animate-spin text-[#36AF85]" />
+            <span className="text-[13px] font-medium">Carregando {titulo.toLowerCase()}...</span>
+          </div>
+        ) : lista.length === 0 ? (
           <div className="py-12 text-center text-[13px] text-zinc-500">Nada encontrado.</div>
         ) : (
           <ul
@@ -273,7 +280,7 @@ export function SelecaoSheet({
                         'block text-[15px] font-semibold leading-tight transition-colors',
                         ativo ? 'text-white' : 'text-zinc-200 group-hover:text-white',
                       )}>
-                        {o}
+                        {renderOpcao ? renderOpcao(o) : o}
                       </span>
                     </span>
                     <span className={cn(

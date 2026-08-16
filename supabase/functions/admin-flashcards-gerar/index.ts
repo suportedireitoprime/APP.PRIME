@@ -83,23 +83,132 @@ Deno.serve(async (req) => {
     });
 
     const body = await req.json().catch(() => null);
+    const acao = typeof body?.acao === "string" ? body.acao : "gerar";
     const categoria = typeof body?.categoria === "string" ? body.categoria.trim() : "";
     const area = typeof body?.area === "string" ? body.area.trim() : "";
     const tema = typeof body?.tema === "string" ? body.tema.trim() : "";
     const quantidade = typeof body?.quantidade === "number" ? body.quantidade : 20;
-
-    if (!area || !tema) return json({ error: "area e tema são obrigatórios" }, 400);
-
-    const userContent = `CATEGORIA: ${categoria}\nÁREA: ${area}\nTEMA: ${tema}\nQUANTIDADE DESEJADA: ${quantidade} flashcards\n\nGere flashcards sobre este tema com foco no formato da categoria (${categoria}).`;
-
-    console.log(`[admin-flashcards-gerar] area=${area} tema=${tema} qtd=${quantidade} provedor=${PROVIDER} modelo=${MODEL}`);
+    const temasExistentes = Array.isArray(body?.temasExistentes) ? body.temasExistentes : [];
     
+    // Novas opções de fonte
+    const fonteTipo = typeof body?.fonteTipo === "string" ? body.fonteTipo : "livre";
+    const fonteConteudo = typeof body?.fonteConteudo === "string" ? body.fonteConteudo.trim() : "";
+
+    if (!area) return json({ error: "area é obrigatória" }, 400);
+
+    // ==========================================
+    // FLUXO DE SUGESTÃO DE TEMAS
+    // ==========================================
+    if (acao === "sugerir") {
+      const SUGERIR_PROMPT = `Você é um curador educacional especialista em concursos.
+Sua tarefa é analisar uma lista de temas existentes de uma Área do Direito e sugerir novos temas IMPORTANTES que estão faltando.
+Não sugira temas que já existem (mesmo que com palavras ligeiramente diferentes).
+Devolva UM JSON com 5 a 10 sugestões claras e curtas:
+{
+  "sugestoes": ["Tema 1", "Tema 2"]
+}`;
+      const userReq = `ÁREA: ${area}\nTEMAS JÁ EXISTENTES:\n${temasExistentes.join("\n")}\n\nListe assuntos cobrados em concursos para esta área que NÃO estão nesta lista.`;
+
+      const aiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: SUGERIR_PROMPT }] },
+          contents: [{ role: "user", parts: [{ text: userReq }] }],
+          generationConfig: {
+            temperature: 0.7,
+            responseMimeType: "application/json",
+          },
+        }),
+      });
+
+      if (!aiRes.ok) return json({ error: "Falha na IA ao sugerir" }, 502);
+      
+      const aiJson = await aiRes.json();
+      let parsed = {};
+      try {
+        const txt = aiJson?.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
+        parsed = JSON.parse(txt);
+      } catch { /* ignore */ }
+
+      return json({ sugestoes: (parsed as any).sugestoes || [] });
+    }
+
+    // ==========================================
+    // FLUXO NORMAL DE GERAÇÃO
+    // ==========================================
+    if (!tema) return json({ error: "tema é obrigatório para geração" }, 400);
+
+    let baseContext = "";
+    let geminiFileUri: string | null = null;
+    let geminiMimeType: string | null = null;
+
+    if (fonteTipo === "youtube" || fonteTipo === "lei") {
+      baseContext = `\n[REFERÊNCIA FORNECIDA PELO USUÁRIO]:\n${fonteConteudo}\nUse esta referência como base primária para as informações, adaptando e resumindo conforme necessário.`;
+    } else if (fonteTipo === "pdf" || fonteTipo === "audio") {
+      if (fonteConteudo.startsWith("http")) {
+        console.log(`[admin-flashcards-gerar] Baixando arquivo: ${fonteConteudo}`);
+        try {
+          const fileRes = await fetch(fonteConteudo);
+          if (!fileRes.ok) throw new Error("Falha ao baixar arquivo público do Supabase.");
+          
+          const fileBuffer = await fileRes.arrayBuffer();
+          const mimeType = fonteTipo === "pdf" ? "application/pdf" : "audio/mpeg";
+          
+          console.log(`[admin-flashcards-gerar] Enviando arquivo para Gemini File API (${fileBuffer.byteLength} bytes)...`);
+          const uploadRes = await fetch(`https://generativelanguage.googleapis.com/upload/v1beta/files?key=${encodeURIComponent(GEMINI_API_KEY)}`, {
+            method: 'POST',
+            headers: {
+              'X-Goog-Upload-Protocol': 'raw',
+              'X-Goog-Upload-Command': 'upload',
+              'X-Goog-Upload-File-Name': `upload_${Date.now()}.${fonteTipo === 'pdf' ? 'pdf' : 'mp3'}`,
+              'Content-Type': mimeType,
+              'Content-Length': fileBuffer.byteLength.toString(),
+            },
+            body: fileBuffer
+          });
+          
+          if (!uploadRes.ok) {
+            const errBody = await uploadRes.text();
+            throw new Error(`Erro no Gemini File API: ${errBody}`);
+          }
+          
+          const uploadData = await uploadRes.json();
+          geminiFileUri = uploadData.file.uri;
+          geminiMimeType = uploadData.file.mimeType;
+          console.log(`[admin-flashcards-gerar] Arquivo upado para Gemini com URI: ${geminiFileUri}`);
+          
+          baseContext = `\n[NOTA]: O usuário enviou um arquivo (${fonteTipo}). Baseie seus flashcards INTEIRAMENTE neste arquivo, extraindo as informações mais relevantes.`;
+        } catch (e: any) {
+          console.error("Erro ao processar PDF/Audio:", e);
+          baseContext = `\n[AVISO]: Falha ao processar o arquivo enviado. Utilize seu conhecimento interno sobre o tema para preencher a lacuna.`;
+        }
+      } else {
+        baseContext = `\n[NOTA]: O usuário selecionou a fonte ${fonteTipo}, mas nenhum arquivo válido foi enviado. Utilize seu conhecimento interno.`;
+      }
+    }
+
+    const userContent = `CATEGORIA: ${categoria}\nÁREA: ${area}\nTEMA: ${tema}\nQUANTIDADE DESEJADA: ${quantidade} flashcards\n${baseContext}\n\nGere flashcards sobre este tema com foco no formato da categoria (${categoria}).`;
+
+    console.log(`[admin-flashcards-gerar] area=${area} tema=${tema} qtd=${quantidade} provedor=${PROVIDER} modelo=${MODEL} fonte=${fonteTipo}`);
+    
+    // Se fonteTipo for "web", habilitamos o Google Search tool
+    const tools = fonteTipo === "web" ? [{ googleSearch: {} }] : undefined;
+
+    // Constrói o corpo da mensagem com suporte a arquivos (File API)
+    const parts: any[] = [];
+    if (geminiFileUri && geminiMimeType) {
+      parts.push({ fileData: { mimeType: geminiMimeType, fileUri: geminiFileUri } });
+    }
+    parts.push({ text: userContent });
+
     const aiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
-        contents: [{ role: "user", parts: [{ text: userContent }] }],
+        contents: [{ role: "user", parts }],
+        tools,
         generationConfig: {
           temperature: 0.2,
           responseMimeType: "application/json",
