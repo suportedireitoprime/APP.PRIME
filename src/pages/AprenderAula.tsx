@@ -207,8 +207,8 @@ const AprenderAula = () => {
     flipAudioRef.current.preload = 'auto';
   }
   if (typeof window !== 'undefined' && !swooshAudioRef.current) {
-    swooshAudioRef.current = new Audio(srcOf(pageTurnSoundAsset));
-    swooshAudioRef.current.volume = 0.55;
+    swooshAudioRef.current = new Audio('/sounds/mixkit-paper-slide-1530.wav');
+    swooshAudioRef.current.volume = 0.6;
     swooshAudioRef.current.preload = 'auto';
   }
   const playFlipSound = () => {
@@ -302,9 +302,16 @@ const AprenderAula = () => {
     return last;
   }, [blocos, respostas, flipped, conexoes, progressoSalvo]);
 
-  // Auto-scroll para o topo ao mudar de página
+  const isFirstRender = useRef(true);
+
+  // Auto-scroll para o topo e reprodução do som de passar página
   useEffect(() => {
     if (!mostrarPrevia) {
+      if (!isFirstRender.current) {
+        playSwooshSound();
+      } else {
+        isFirstRender.current = false;
+      }
       window.scrollTo({ top: 0, behavior: 'smooth' });
       
       // Scroll da timeline para centralizar o item ativo
@@ -318,9 +325,14 @@ const AprenderAula = () => {
   }, [currentIdx, mostrarPrevia]);
 
 
+  const prevIdxRef = useRef<number>(currentIdx);
+  const direction = currentIdx >= prevIdxRef.current ? 1 : -1;
+  useEffect(() => {
+    prevIdxRef.current = currentIdx;
+  }, [currentIdx]);
+
   const atual = blocos[currentIdx] || blocos[0];
   const idx = currentIdx; // alias para compatibilidade com o sumário e cabeçalho
-  const isGamificacao = atual && ['pergunta', 'conexao', 'flashcard'].includes(atual.tipo);
 
   const acertos = useMemo(
     () => perguntas.filter((p) => respostas[p.id]?.correta).length,
@@ -578,132 +590,121 @@ const AprenderAula = () => {
         </div>
       </aside>
 
-      <AnimatePresence>
-        {!isGamificacao && (
-          <motion.header
-            initial={{ y: -100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -100, opacity: 0 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-            className="sticky top-0 z-10 border-b border-white/5 bg-background/95 backdrop-blur-md"
+      {/* Top Header & Timeline - Permanente e estável */}
+      <header
+        className="sticky top-0 z-20 border-b border-white/5 bg-background/95 backdrop-blur-md"
+        style={{
+          paddingTop: 'calc(var(--sai-top, env(safe-area-inset-top, 0px)) + 0.5rem)',
+        }}
+      >
+        <div
+          className="mx-auto flex flex-col md:flex-row md:items-center gap-3 py-3 md:py-4 lg:max-w-none lg:px-10 2xl:px-16"
+          style={{
+            paddingLeft: 'calc(1rem + var(--sai-left, env(safe-area-inset-left, 0px)))',
+            paddingRight: 'calc(1rem + var(--sai-right, env(safe-area-inset-right, 0px)))',
+          }}
+        >
+          <div className="flex items-start gap-4">
+            <button
+              onClick={() => goBack()}
+              aria-label="Voltar"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/5 border border-white/10 hover:bg-white/10 active:scale-95 transition-transform text-white lg:hidden mt-0.5"
+            >
+              <ArrowLeft className="h-[18px] w-[18px]" />
+            </button>
+            <div className="flex-1 flex flex-col justify-center pl-1">
+              <p className="font-sans text-[15px] font-medium text-white/90 lg:hidden leading-snug tracking-tight line-clamp-2">
+                {aula.titulo}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Timeline horizontal - Dark estético */}
+        <div
+          className="relative overflow-x-auto bg-card/40 py-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden scroll-smooth border-y border-white/5"
+        >
+          <div
+            className="mx-auto flex max-w-3xl items-center lg:max-w-none lg:px-10 2xl:px-16"
             style={{
-              paddingTop: 'calc(var(--sai-top, env(safe-area-inset-top, 0px)) + 0.5rem)',
+              paddingLeft: 'calc(0.75rem + var(--sai-left, env(safe-area-inset-left, 0px)))',
+              paddingRight: 'calc(0.75rem + var(--sai-right, env(safe-area-inset-right, 0px)))',
             }}
           >
-            <div
-              className="mx-auto flex flex-col md:flex-row md:items-center gap-3 py-3 md:py-4 lg:max-w-none lg:px-10 2xl:px-16"
-              style={{
-                paddingLeft: 'calc(1rem + var(--sai-left, env(safe-area-inset-left, 0px)))',
-                paddingRight: 'calc(1rem + var(--sai-right, env(safe-area-inset-right, 0px)))',
-              }}
-            >
-              <div className="flex items-start gap-4">
-                <button
-                  onClick={() => goBack()}
-                  aria-label="Voltar"
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/5 border border-white/10 hover:bg-white/10 active:scale-95 transition-transform text-white lg:hidden mt-0.5"
-                >
-                  <ArrowLeft className="h-[18px] w-[18px]" />
-                </button>
-                <div className="flex-1 flex flex-col justify-center pl-1">
-                  <p className="font-sans text-[15px] font-medium text-white/90 lg:hidden leading-snug tracking-tight line-clamp-2">
-                    {aula.titulo}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Timeline horizontal - Dark estético */}
-            <div
-              className="relative overflow-x-auto bg-card/40 py-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden scroll-smooth border-y border-white/5"
-            >
-              <div
-                className="mx-auto flex max-w-3xl items-center lg:max-w-none lg:px-10 2xl:px-16"
-                style={{
-                  paddingLeft: 'calc(0.75rem + var(--sai-left, env(safe-area-inset-left, 0px)))',
-                  paddingRight: 'calc(0.75rem + var(--sai-right, env(safe-area-inset-right, 0px)))',
-                }}
-              >
-                {blocos.map((b, i) => {
-                  const Icon = iconePorTipo(b.tipo);
-                  const isAtual = i === idx;
-                  const isFeito = i < idx;
-                  const ativo = isAtual || isFeito;
-                  const respondida = b.tipo === 'pergunta' ? respostas[b.id] : undefined;
-                  const ok = respondida?.correta;
-                  const err = respondida && !respondida.correta;
-                  const isLast = i === blocos.length - 1;
-                  const ato = atoDoBloco(b);
-                  const iniciaAto = !!ato && ato !== atoDoBloco(blocos[i - 1] ?? {});
-                  return (
-                    <div key={b.id} id={`timeline-item-${i}`} className="relative flex shrink-0 items-center">
-
-                      <button
-                        onClick={() => {
-                          if (i > maxRevealedIdx) return;
-                          setCurrentIdx(i);
-                        }}
-                        aria-label={`${rotuloPorTipo(b.tipo)} ${i + 1}`}
-                        className="relative flex h-11 w-11 md:h-12 md:w-12 shrink-0 items-center justify-center rounded-full transition-transform active:scale-95"
-                      >
-                        {isAtual && (
-                          <motion.span
-                            layoutId="timeline-halo"
-                            className="absolute inset-0 rounded-full border border-white/30 bg-white/5"
-                            transition={{ type: 'spring', stiffness: 500, damping: 32 }}
-                          />
-                        )}
-                        <Icon
-                          className={`relative h-[22px] w-[22px] md:h-5 md:w-5 transition-colors ${
-                            isAtual
-                              ? 'text-white'
-                              : isFeito
-                              ? 'text-neutral-400'
-                              : 'text-neutral-700'
-                          }`}
-                          strokeWidth={1.5}
-                        />
-                        {ok && (
-                          <span className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 ring-2 ring-background shadow-md">
-                            <CheckCircle2 className="h-3 w-3 text-white" strokeWidth={2.5} />
-                          </span>
-                        )}
-                        {err && (
-                          <span className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary ring-2 ring-background shadow-md">
-                            <XCircle className="h-3 w-3 text-white" strokeWidth={2.5} />
-                          </span>
-                        )}
-                      </button>
-                      {!isLast && (
-                        <div className="relative mx-1 h-[3px] w-6 md:w-8 overflow-hidden rounded-full bg-muted/60">
-                          <motion.div
-                            className="absolute inset-y-0 left-0 rounded-full bg-primary"
-                            initial={false}
-                            animate={{ width: isFeito ? '100%' : '0%' }}
-                            transition={{ duration: 0.4, ease: 'easeOut' }}
-                          />
-                        </div>
-                      )}
+            {blocos.map((b, i) => {
+              const Icon = iconePorTipo(b.tipo);
+              const isAtual = i === idx;
+              const isFeito = i < idx;
+              const respondida = b.tipo === 'pergunta' ? respostas[b.id] : undefined;
+              const ok = respondida?.correta;
+              const err = respondida && !respondida.correta;
+              const isLast = i === blocos.length - 1;
+              return (
+                <div key={b.id} id={`timeline-item-${i}`} className="relative flex shrink-0 items-center">
+                  <button
+                    onClick={() => {
+                      if (i > maxRevealedIdx) return;
+                      setCurrentIdx(i);
+                    }}
+                    aria-label={`${rotuloPorTipo(b.tipo)} ${i + 1}`}
+                    className="relative flex h-11 w-11 md:h-12 md:w-12 shrink-0 items-center justify-center rounded-full transition-transform active:scale-95"
+                  >
+                    {isAtual && (
+                      <motion.span
+                        layoutId="timeline-halo"
+                        className="absolute inset-0 rounded-full border border-white/30 bg-white/5"
+                        transition={{ type: 'spring', stiffness: 500, damping: 32 }}
+                      />
+                    )}
+                    <Icon
+                      className={`relative h-[22px] w-[22px] md:h-5 md:w-5 transition-colors ${
+                        isAtual
+                          ? 'text-white'
+                          : isFeito
+                          ? 'text-neutral-400'
+                          : 'text-neutral-700'
+                      }`}
+                      strokeWidth={1.5}
+                    />
+                    {ok && (
+                      <span className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 ring-2 ring-background shadow-md">
+                        <CheckCircle2 className="h-3 w-3 text-white" strokeWidth={2.5} />
+                      </span>
+                    )}
+                    {err && (
+                      <span className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary ring-2 ring-background shadow-md">
+                        <XCircle className="h-3 w-3 text-white" strokeWidth={2.5} />
+                      </span>
+                    )}
+                  </button>
+                  {!isLast && (
+                    <div className="relative mx-1 h-[3px] w-6 md:w-8 overflow-hidden rounded-full bg-muted/60">
+                      <motion.div
+                        className="absolute inset-y-0 left-0 rounded-full bg-primary"
+                        initial={false}
+                        animate={{ width: isFeito ? '100%' : '0%' }}
+                        transition={{ duration: 0.4, ease: 'easeOut' }}
+                      />
                     </div>
-                  );
-                })}
-              </div>
-            </div>
-          </motion.header>
-        )}
-      </AnimatePresence>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </header>
 
-      {/* Feed Contínuo Vertical */}
-      <main className={`relative flex-1 overflow-y-auto overflow-x-hidden scroll-smooth transition-colors duration-500 ${isGamificacao ? 'bg-zinc-950' : 'bg-background'}`}>
-        <div className={`mx-auto h-full w-full max-w-3xl px-5 md:px-8 pt-6 md:pt-8 pb-[calc(10rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] lg:mx-0 lg:max-w-[74ch] xl:max-w-[80ch] lg:px-12 2xl:px-16 lg:pt-12 lg:pb-32 flex flex-col ${isGamificacao ? 'justify-center items-center flex-1 h-[80vh]' : 'gap-12 lg:gap-16'}`}>
-          <AnimatePresence mode="wait">
+      {/* Conteúdo Principal do Slide / Aula */}
+      <main className="relative flex-1 overflow-y-auto overflow-x-hidden scroll-smooth bg-background">
+        <div className="mx-auto w-full max-w-3xl px-5 md:px-8 pt-6 md:pt-8 pb-[calc(10rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] lg:mx-0 lg:max-w-[74ch] xl:max-w-[80ch] lg:px-12 2xl:px-16 lg:pt-10 lg:pb-32 flex flex-col">
+          <AnimatePresence mode="popLayout" initial={false}>
             {atual && (
               <motion.div
                 key={atual.id}
-                initial={isGamificacao ? { opacity: 0, x: '100vw' } : { opacity: 0, x: 20 }}
+                initial={{ opacity: 0, x: direction * 45 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={isGamificacao ? { opacity: 0, x: '-100vw' } : { opacity: 0, x: -20 }}
-                transition={isGamificacao ? { type: 'spring', damping: 25, stiffness: 200 } : { duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                exit={{ opacity: 0, x: -direction * 45 }}
+                transition={{ duration: 0.22, ease: [0.25, 1, 0.5, 1] }}
                 className="w-full relative"
               >
                 <BlocoView
@@ -1254,11 +1255,16 @@ function BlocoView({
     const { enunciado, opcoes } = bloco.payload || {};
     const correta = String(bloco.resposta_correta?.id_correto || '').toLowerCase();
     return (
-      <article className="max-w-[70ch] mx-auto py-4">
-        <p className="mb-4 flex items-center gap-3 text-[11px] font-extrabold uppercase tracking-[0.2em] text-red-400">
-          Desafio de Fixação
-        </p>
-        <h2 className="mb-8 font-sans text-[21px] md:text-[23px] font-normal leading-snug text-white">{enunciado}</h2>
+      <article className="max-w-[70ch] mx-auto py-2">
+        <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-primary">
+          <Sparkles className="h-3.5 w-3.5" />
+          <span>Desafio de Fixação</span>
+        </div>
+        
+        <h2 className="mb-6 font-display text-[19px] md:text-[22px] font-bold leading-relaxed text-foreground tracking-tight">
+          {enunciado}
+        </h2>
+
         <div className="space-y-3 pb-24">
           {(opcoes || []).map((op: any) => {
             const id = String(op.id).toLowerCase();
@@ -1266,6 +1272,21 @@ function BlocoView({
             const acertou = resposta?.correta && (resposta.escolha?.toLowerCase() === id);
             const errou = resposta && (resposta.escolha?.toLowerCase() === id) && !resposta.correta;
             const revelaCerta = resposta && id === correta;
+
+            let cardClass = 'border-white/[0.08] bg-card/60 hover:bg-card hover:border-white/20 text-neutral-200 shadow-sm backdrop-blur-sm';
+            let badgeClass = 'border-white/15 bg-white/5 text-neutral-400 group-hover:text-white group-hover:border-white/30';
+
+            if (acertou || revelaCerta) {
+              cardClass = 'border-emerald-500/60 bg-emerald-500/[0.12] text-white ring-1 ring-emerald-500/40 shadow-lg shadow-emerald-500/10';
+              badgeClass = 'border-emerald-500/60 bg-emerald-500/25 text-emerald-400 font-bold';
+            } else if (errou) {
+              cardClass = 'border-rose-500/60 bg-rose-500/[0.12] text-white ring-1 ring-rose-500/40 shadow-lg shadow-rose-500/10';
+              badgeClass = 'border-rose-500/60 bg-rose-500/25 text-rose-400 font-bold';
+            } else if (escolhida) {
+              cardClass = 'border-primary bg-primary/15 text-white ring-2 ring-primary/40 shadow-lg shadow-primary/15';
+              badgeClass = 'border-primary bg-primary text-white font-bold';
+            }
+
             return (
               <button
                 key={op.id}
@@ -1273,31 +1294,27 @@ function BlocoView({
                 onClick={() => {
                   if (!resposta) setSelectedOpcao(id);
                 }}
-                className={`flex w-full items-center gap-4 rounded-2xl border p-5 text-left text-[16px] md:text-[17px] leading-relaxed transition-all min-h-16 shadow-sm group ${
-                  acertou || revelaCerta
-                    ? 'border-emerald-500/50 bg-emerald-500/[0.12] text-white ring-1 ring-emerald-500/30'
-                    : errou
-                    ? 'border-red-500/50 bg-red-500/[0.12] text-white ring-1 ring-red-500/30'
-                    : escolhida
-                    ? 'border-neutral-500 bg-neutral-700 text-white ring-1 ring-neutral-500/50'
-                    : 'border-white/10 bg-[#1A1A1A] text-neutral-300 hover:border-white/30 hover:bg-[#262626]'
-                }`}
+                className={`group relative flex w-full items-center gap-4 rounded-2xl border p-4 md:p-5 text-left text-[15px] md:text-[16px] leading-relaxed transition-all duration-200 min-h-[4rem] active:scale-[0.99] ${cardClass}`}
               >
-                <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border text-sm font-extrabold uppercase transition-colors ${
-                  acertou || revelaCerta ? 'border-emerald-500/60 bg-emerald-500/25 text-emerald-400' :
-                  errou ? 'border-red-500/60 bg-red-500/25 text-red-400' :
-                  escolhida ? 'border-neutral-400 bg-neutral-600 text-white' :
-                  'border-white/20 bg-white/5 text-neutral-400 group-hover:text-white group-hover:border-white/40'
-                }`}>
+                <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border text-xs font-bold uppercase transition-colors ${badgeClass}`}>
                   {op.id}
                 </span>
                 <span className="flex-1 font-medium">{op.texto}</span>
-                {(acertou || revelaCerta) && <CheckCircle2 className="h-6 w-6 text-emerald-400 shrink-0" />}
-                {errou && <XCircle className="h-6 w-6 text-red-400 shrink-0" />}
+                {(acertou || revelaCerta) && (
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400">
+                    <Check className="h-4 w-4" strokeWidth={3} />
+                  </span>
+                )}
+                {errou && (
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-rose-500/20 text-rose-400">
+                    <XCircle className="h-4 w-4" strokeWidth={2.5} />
+                  </span>
+                )}
               </button>
             );
           })}
         </div>
+
         <AnimatePresence>
           {resposta && showExplicacao && (
             <>
@@ -1306,7 +1323,7 @@ function BlocoView({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm"
+                className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm"
                 onClick={() => setShowExplicacao(false)}
               />
               
@@ -1315,31 +1332,35 @@ function BlocoView({
                 initial={{ y: '100%' }}
                 animate={{ y: 0 }}
                 exit={{ y: '100%' }}
-                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                className="fixed bottom-0 left-0 right-0 z-[70] max-h-[85vh] rounded-t-[2rem] border-t border-white/10 bg-[#1A1A1A] p-6 pb-[calc(1.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] shadow-[0_-10px_40px_rgba(0,0,0,0.5)] flex flex-col"
+                transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+                className="fixed bottom-0 left-0 right-0 z-[70] max-h-[85vh] rounded-t-[2.5rem] border-t border-white/10 bg-[#121417]/98 backdrop-blur-2xl p-6 sm:p-8 pb-[calc(1.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] shadow-2xl flex flex-col"
               >
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-3">
+                {/* Grab handle */}
+                <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-white/20" />
+
+                <div className="flex items-center justify-between mb-5">
+                  <div className="flex items-center gap-3.5">
                     {resposta.correta ? (
-                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 ring-1 ring-emerald-500/50">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-400 ring-1 ring-emerald-500/50">
                         <CheckCircle2 className="h-7 w-7 text-emerald-400" />
                       </div>
                     ) : (
-                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-500/20 text-red-400 ring-1 ring-red-500/50">
-                        <XCircle className="h-7 w-7 text-red-400" />
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-500/20 text-rose-400 ring-1 ring-rose-500/50">
+                        <XCircle className="h-7 w-7 text-rose-400" />
                       </div>
                     )}
                     <div>
-                      <h3 className={`font-display text-xl font-bold tracking-wide ${resposta.correta ? 'text-emerald-400' : 'text-red-400'}`}>
+                      <h3 className={`font-display text-xl font-bold tracking-tight ${resposta.correta ? 'text-emerald-400' : 'text-rose-400'}`}>
                         {resposta.correta ? 'Você acertou!' : 'Você errou'}
                       </h3>
                       <p className="text-sm text-neutral-300">
-                        {resposta.correta ? 'Mandou muito bem.' : 'Não desanime, continue tentando.'}
+                        {resposta.correta ? 'Excelente raciocínio!' : 'Revise o comentário e continue firme.'}
                       </p>
                     </div>
                   </div>
                   <button
                     onClick={() => setShowExplicacao(false)}
+                    aria-label="Fechar"
                     className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/5 text-white/50 hover:bg-white/10 hover:text-white transition-colors"
                   >
                     <XCircle className="h-5 w-5" />
@@ -1347,17 +1368,17 @@ function BlocoView({
                 </div>
                 
                 <div className="overflow-y-auto pr-2 pb-6 flex-1">
-                  <p className="text-[12px] font-extrabold uppercase tracking-widest text-red-400 mb-2">Comentário do Professor</p>
-                  <p className="text-[16px] leading-relaxed text-neutral-200 whitespace-pre-wrap">
+                  <p className="text-[11px] font-extrabold uppercase tracking-widest text-primary mb-2">Comentário do Professor</p>
+                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-4 text-[15px] leading-relaxed text-neutral-200 whitespace-pre-wrap">
                     {bloco.resposta_correta?.explicacao || 'Nenhum comentário disponível para esta questão.'}
-                  </p>
+                  </div>
                 </div>
                 
                 <div className="pt-2">
                   <button
                      onClick={() => setShowExplicacao(false)}
-                     className={`w-full rounded-2xl px-6 py-4 text-[16px] font-extrabold text-white shadow-lg active:scale-[0.98] transition-all ${
-                       resposta.correta ? 'bg-emerald-500 hover:bg-emerald-400 shadow-emerald-500/25' : 'bg-red-500 hover:bg-red-400 shadow-red-500/25'
+                     className={`w-full rounded-2xl px-6 py-4 text-[15px] font-extrabold text-white shadow-lg active:scale-[0.98] transition-all ${
+                       resposta.correta ? 'bg-emerald-500 hover:bg-emerald-400 shadow-emerald-500/25' : 'bg-rose-500 hover:bg-rose-400 shadow-rose-500/25'
                      }`}
                   >
                      Entendi
@@ -1372,17 +1393,24 @@ function BlocoView({
         <AnimatePresence>
           {!resposta && selectedOpcao && (
             <motion.div
-              initial={{ y: 100 }}
-              animate={{ y: 0 }}
-              exit={{ y: 100 }}
-              className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 bg-background/95 backdrop-blur px-4 py-4 pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] flex items-center justify-between"
+              initial={{ y: 80, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 80, opacity: 0 }}
+              transition={{ type: 'spring', damping: 28, stiffness: 350 }}
+              className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/[0.08] bg-background/90 backdrop-blur-xl px-4 py-3.5 pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] shadow-2xl"
             >
-              <button
-                onClick={() => onResponder(selectedOpcao)}
-                className="w-full rounded-2xl bg-primary px-6 py-4 text-[16px] font-bold text-white shadow-lg shadow-primary/20 hover:bg-primary-light active:scale-[0.98] transition-all"
-              >
-                Responder
-              </button>
+              <div className="mx-auto max-w-3xl lg:max-w-[74ch] xl:max-w-[80ch] flex items-center justify-between gap-4">
+                <div className="hidden sm:flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                  <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+                  Alternativa {selectedOpcao.toUpperCase()} selecionada
+                </div>
+                <button
+                  onClick={() => onResponder(selectedOpcao)}
+                  className="w-full sm:w-auto sm:min-w-[200px] ml-auto flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-primary/25 hover:bg-primary-light active:scale-[0.98] transition-all"
+                >
+                  Confirmar Resposta <ArrowRight className="h-4 w-4 text-white" strokeWidth={2.5} />
+                </button>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>

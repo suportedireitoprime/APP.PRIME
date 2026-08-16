@@ -3,6 +3,7 @@ import { CheckCircle2, XCircle, ChevronRight, HelpCircle, Trophy, RotateCw } fro
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { playPaperSlideSound } from '@/lib/paperSound';
 
 export type Questao = {
   id: string;
@@ -185,7 +186,10 @@ const QuestoesTab = ({ temaId, questoes, loading, respostas, onRespondida, onIrP
 
       <div className="flex items-center justify-end pt-2">
         <button
-          onClick={() => setIdx((i) => Math.min(total - 1, i + 1))}
+          onClick={() => {
+            setIdx((i) => Math.min(total - 1, i + 1));
+            playPaperSlideSound();
+          }}
           disabled={!respAtual}
           className="inline-flex h-11 items-center justify-center gap-1.5 rounded-xl bg-[hsl(0_72%_52%)] px-5 text-[14px] font-bold text-primary-foreground transition-transform hover:scale-[1.01] disabled:opacity-40"
           style={{ fontFamily: "'Barlow', system-ui, sans-serif" }}

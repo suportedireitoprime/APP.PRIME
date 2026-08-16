@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Shuffle, RotateCw, Sparkles, CheckCircle2, Lightbulb, Layers } from 'lucide-react';
 import flipSoundAsset from '@/assets/flipcard.mp3.asset.json';
 import { srcOf } from '@/lib/assetUrl';
+import { playPaperSlideSound } from '@/lib/paperSound';
 
 type Flashcard = {
   id: string;
@@ -72,12 +73,14 @@ const FlashcardsTab = ({ flashcards, loading }: Props) => {
   const go = (delta: number) => {
     setFlipped(false);
     setIdx((i) => Math.max(0, Math.min(total - 1, i + delta)));
+    playPaperSlideSound();
   };
 
   const embaralhar = () => {
     setOrder(shuffleArr(order));
     setIdx(0);
     setFlipped(false);
+    playPaperSlideSound();
   };
 
   if (loading) {
