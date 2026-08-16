@@ -152,14 +152,29 @@ export default function FlashcardsLeis() {
     return counts;
   }, [cardsDisponiveis]);
 
-  useEffect(() => {
-    document.title = 'Flashcards Leis | Vade Mecum PRIME';
-  }, []);
+  const LEIS_CACHE_KEY = 'flashcards_leis_counts_v1';
 
   useEffect(() => {
     let isMounted = true;
+
+    // 0. Mostrar cache instantaneamente (stale-while-revalidate)
+    try {
+      const cached = localStorage.getItem(LEIS_CACHE_KEY);
+      if (cached) {
+        const parsed: TemaRow[] = JSON.parse(cached);
+        if (parsed.length > 0 && isMounted) {
+          setTodasLeis(parsed);
+          setLoadingLeis(false);
+        }
+      }
+    } catch { /* cache corrompido, ignora */ }
+
     const fetchAllLeis = async () => {
-      setLoadingLeis(true);
+      // Se não tem cache, mostra skeleton
+      if (!localStorage.getItem(LEIS_CACHE_KEY)) {
+        setLoadingLeis(true);
+      }
+
       try {
         // 1. Fetch vade mecum leis (Rápido)
         const { data: vmLeis, error: vmError } = await supabase
@@ -169,7 +184,6 @@ export default function FlashcardsLeis() {
           
         if (vmError) throw vmError;
 
-        // Mostrar instantaneamente as leis sem os contadores
         const initialLeis: TemaRow[] = (vmLeis || []).map(lei => ({
           tema: lei.nome,
           total: 0,
@@ -178,9 +192,10 @@ export default function FlashcardsLeis() {
           area: lei.categoria
         }));
 
-        if (isMounted) {
+        // Se não havia cache, pelo menos mostra a lista (com 0)
+        if (!localStorage.getItem(LEIS_CACHE_KEY) && isMounted) {
           setTodasLeis(initialLeis);
-          setLoadingLeis(false); // Libera a UI instantaneamente
+          setLoadingLeis(false);
         }
 
         // 2. Fetch all themes in background to get the flashcard counts
@@ -196,7 +211,7 @@ export default function FlashcardsLeis() {
           const flattenedTemas = results.flat() as TemaRow[];
 
           if (isMounted) {
-            setTodasLeis(prev => prev.map(lei => {
+            const updatedLeis = initialLeis.map(lei => {
               const matchingTemas = flattenedTemas.filter(t => 
                 t.tema === lei.tema || t.tema.startsWith(lei.tema + ' -') || t.tema.startsWith(lei.tema + ' (')
               );
@@ -206,7 +221,15 @@ export default function FlashcardsLeis() {
               const a_revisar = matchingTemas.reduce((acc, t) => acc + (t.a_revisar || 0), 0);
               
               return { ...lei, total, compreendidos, a_revisar };
-            }));
+            });
+
+            setTodasLeis(updatedLeis);
+            setLoadingLeis(false);
+
+            // 3. Salvar no cache para próxima visita instantânea
+            try {
+              localStorage.setItem(LEIS_CACHE_KEY, JSON.stringify(updatedLeis));
+            } catch { /* storage cheio, ignora */ }
           }
         }
       } catch (err) {
