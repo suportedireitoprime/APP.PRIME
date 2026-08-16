@@ -5,7 +5,7 @@ import { PageHeader } from '@/components/vademecum/PageHeader';
 import FlashcardsBottomNav from '@/components/flashcards/FlashcardsBottomNav';
 import AreaTemasSheet from '@/components/flashcards/AreaTemasSheet';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Calendar, ChevronRight, Flame, Search, Sparkles, Users, X, Layers, Target, BarChart3, FolderPlus, RotateCcw, Filter } from 'lucide-react';
+import { Calendar, ChevronRight, Flame, Search, Sparkles, Users, X, Layers, Target, BarChart3, FolderPlus, RotateCcw, Filter, BookOpen, Scale, Gavel, Quote } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { getAreaVisual } from '@/lib/flashcardsAreaVisual';
 import { haptic } from '@/lib/nativeHaptics';
@@ -94,31 +94,95 @@ const Flashcards = () => {
             </button>
           </div>
 
-          {/* ── Ações Rápidas (3 botões) ───────────────── */}
-          <section className="grid grid-cols-3 gap-2">
+          {/* ── Ações Rápidas (4 botões) ───────────────── */}
+          <section className="grid grid-cols-4 gap-2">
             <button
               onClick={() => { haptic.selection(); navigate('/flashcards/decks'); }}
-              className="flex flex-col items-center justify-center p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-success/50 transition-colors active:scale-95 gap-3"
+              className="flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-success/50 transition-colors active:scale-95 gap-2 sm:gap-3"
             >
-              <FolderPlus className="w-6 h-6 text-muted-foreground" />
-              <p className="text-xs font-bold text-foreground text-center leading-tight">Meus Decks</p>
+              <FolderPlus className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground" />
+              <p className="text-[10px] sm:text-xs font-bold text-foreground text-center leading-tight">Meus Decks</p>
             </button>
 
             <button
               onClick={() => { haptic.selection(); navigate('/flashcards/revisar'); }}
-              className="flex flex-col items-center justify-center p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-success/50 transition-colors active:scale-95 gap-3"
+              className="flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-success/50 transition-colors active:scale-95 gap-2 sm:gap-3"
             >
-              <RotateCcw className="w-6 h-6 text-muted-foreground" />
-              <p className="text-xs font-bold text-foreground text-center leading-tight">Minha Revisão</p>
+              <RotateCcw className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground" />
+              <p className="text-[10px] sm:text-xs font-bold text-foreground text-center leading-tight">Minha Revisão</p>
             </button>
 
             <button
               onClick={() => { haptic.selection(); navigate('/flashcards/desafios'); }}
-              className="flex flex-col items-center justify-center p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-success/50 transition-colors active:scale-95 gap-3"
+              className="flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-success/50 transition-colors active:scale-95 gap-2 sm:gap-3"
             >
-              <Target className="w-6 h-6 text-muted-foreground" />
-              <p className="text-xs font-bold text-foreground text-center leading-tight">Meus Desafios</p>
+              <Target className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground" />
+              <p className="text-[10px] sm:text-xs font-bold text-foreground text-center leading-tight">Meus Desafios</p>
             </button>
+
+            <button
+              onClick={() => { haptic.selection(); navigate('/flashcards/progresso'); }}
+              className="flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-success/50 transition-colors active:scale-95 gap-2 sm:gap-3"
+            >
+              <BarChart3 className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground" />
+              <p className="text-[10px] sm:text-xs font-bold text-foreground text-center leading-tight">Progresso</p>
+            </button>
+          </section>
+
+          {/* ── Categorias ───────────────────── */}
+          <section className="space-y-3 pt-2">
+            <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground">
+              Categorias
+            </p>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              <button
+                onClick={() => { haptic.selection(); /* Já exibe as matérias abaixo, ou pode fazer scroll/filtro */ }}
+                className="group flex items-center gap-3 p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#36AF85]/50 transition-colors active:scale-95"
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#36AF85]/10 text-[#36AF85] group-hover:scale-110 transition-transform">
+                  <BookOpen className="h-5 w-5" />
+                </div>
+                <div className="flex flex-col items-start">
+                  <span className="text-sm font-bold text-foreground">Matérias</span>
+                </div>
+              </button>
+
+              <button
+                onClick={() => haptic.selection()}
+                className="group flex items-center gap-3 p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#36AF85]/50 transition-colors active:scale-95"
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#36AF85]/10 text-[#36AF85] group-hover:scale-110 transition-transform">
+                  <Scale className="h-5 w-5" />
+                </div>
+                <div className="flex flex-col items-start">
+                  <span className="text-sm font-bold text-foreground">Leis</span>
+                </div>
+              </button>
+
+              <button
+                onClick={() => haptic.selection()}
+                className="group flex items-center gap-3 p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#36AF85]/50 transition-colors active:scale-95"
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#36AF85]/10 text-[#36AF85] group-hover:scale-110 transition-transform">
+                  <Gavel className="h-5 w-5" />
+                </div>
+                <div className="flex flex-col items-start">
+                  <span className="text-sm font-bold text-foreground">Jurisprudência</span>
+                </div>
+              </button>
+
+              <button
+                onClick={() => haptic.selection()}
+                className="group flex items-center gap-3 p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#36AF85]/50 transition-colors active:scale-95"
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#36AF85]/10 text-[#36AF85] group-hover:scale-110 transition-transform">
+                  <Quote className="h-5 w-5" />
+                </div>
+                <div className="flex flex-col items-start">
+                  <span className="text-sm font-bold text-foreground">Termos</span>
+                </div>
+              </button>
+            </div>
           </section>
 
           {/* ── Matérias / Decks em Grid Responsivo ───────────────────── */}
