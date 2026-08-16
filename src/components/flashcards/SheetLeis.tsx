@@ -80,8 +80,8 @@ const SheetLeis = ({ area, open, onOpenChange }: Props) => {
   const [passo, setPasso] = useState<'main' | 'titulos' | 'status' | 'ordem'>('main');
   const [f, setF] = useState({
     titulos: [] as string[],
-    status: ['todos'],
-    ordem: ['embaralhado'],
+    status: [] as string[],
+    ordem: [] as string[],
   });
 
   const { icon: Icon } = getAreaVisual(area ?? '');
@@ -89,7 +89,7 @@ const SheetLeis = ({ area, open, onOpenChange }: Props) => {
   useEffect(() => {
     if (!open || !area) return;
     setPasso('main');
-    setF({ titulos: [], status: ['todos'], ordem: ['embaralhado'] });
+    setF({ titulos: [], status: [], ordem: [] });
     setBusca('');
     setLoading(true);
     supabase.rpc('flashcards_temas', { _area: area }).then(({ data }) => {
@@ -153,20 +153,20 @@ const SheetLeis = ({ area, open, onOpenChange }: Props) => {
               <div className="flex-1 overflow-y-auto px-5 pb-24 sm:px-6 pt-2 space-y-3">
                 <StepRow
                   step={1} label="Títulos / Leis"
-                  hint={f.titulos.length ? `${f.titulos.length} selecionado(s)` : 'Todas as leis'}
+                  hint={f.titulos.length ? `${f.titulos.length} selecionado(s)` : 'Nenhuma lei selecionada'}
                   done={f.titulos.length > 0}
                   onClick={() => setPasso('titulos')}
                 />
                 <StepRow
                   step={2} label="Status"
-                  hint={STATUS_OPCOES.find(o => o.id === f.status[0])?.label || 'Todos os cards'}
-                  done={f.status[0] !== 'todos'}
+                  hint={f.status.length ? STATUS_OPCOES.find(o => o.id === f.status[0])?.label : 'Selecione um status'}
+                  done={f.status.length > 0}
                   onClick={() => setPasso('status')}
                 />
                 <StepRow
                   step={3} label="Ordem"
-                  hint={ORDEM_OPCOES.find(o => o.id === f.ordem[0])?.label || 'Embaralhado'}
-                  done={f.ordem[0] !== 'embaralhado'}
+                  hint={f.ordem.length ? ORDEM_OPCOES.find(o => o.id === f.ordem[0])?.label : 'Selecione a ordem'}
+                  done={f.ordem.length > 0}
                   onClick={() => setPasso('ordem')}
                 />
               </div>
@@ -174,8 +174,8 @@ const SheetLeis = ({ area, open, onOpenChange }: Props) => {
               <div className="absolute bottom-0 left-0 right-0 bg-background/80 p-5 pt-4 backdrop-blur-xl border-t sm:px-6 pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
                 <Button
                   onClick={estudar}
-                  disabled={loading || temas.length === 0}
-                  className="h-14 w-full rounded-2xl bg-[#36AF85] text-[16px] font-black tracking-wide text-white shadow-xl shadow-[#36AF85]/30 hover:bg-[#2C9570] active:scale-[0.99]"
+                  disabled={loading || f.titulos.length === 0 || f.status.length === 0 || f.ordem.length === 0}
+                  className="h-14 w-full rounded-2xl bg-[#217756] text-[16px] font-black tracking-wide text-white shadow-xl shadow-black/30 hover:bg-[#1A6246] active:scale-[0.99] transition-all [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]"
                 >
                   Começar Revisão ({totalSel} cards)
                 </Button>
@@ -216,15 +216,15 @@ const SheetLeis = ({ area, open, onOpenChange }: Props) => {
                     ) : (
                       <div className="space-y-2">
                         <button
-                          onClick={() => setF(p => ({ ...p, titulos: [] }))}
-                          className={cn("flex w-full items-center justify-between rounded-2xl border p-4 text-left transition-all active:scale-[0.99]", f.titulos.length === 0 ? 'border-[#36AF85] bg-[#36AF85]/10' : 'border-border bg-card')}
+                          onClick={() => setF(p => ({ ...p, titulos: temas.map(t => t.tema) }))}
+                          className={cn("flex w-full items-center justify-between rounded-2xl border p-4 text-left transition-all active:scale-[0.99]", f.titulos.length === temas.length ? 'border-[#217756] bg-[#217756]/10' : 'border-border bg-card')}
                         >
                           <div>
-                            <p className={cn("text-[15px] font-bold", f.titulos.length === 0 ? 'text-[#36AF85]' : 'text-foreground')}>Todas as Leis</p>
+                            <p className={cn("text-[15px] font-bold", f.titulos.length === temas.length ? 'text-[#217756]' : 'text-foreground')}>Todas as Leis</p>
                             <p className="text-xs font-medium text-muted-foreground">{temas.reduce((a, c) => a + c.total, 0)} cards</p>
                           </div>
-                          <div className={cn("flex h-6 w-6 items-center justify-center rounded-full border-2", f.titulos.length === 0 ? 'border-[#36AF85] bg-[#36AF85]' : 'border-muted-foreground/30')}>
-                            {f.titulos.length === 0 && <Check className="h-3.5 w-3.5 text-white" strokeWidth={3} />}
+                          <div className={cn("flex h-6 w-6 items-center justify-center rounded-full border-2", f.titulos.length === temas.length ? 'border-[#217756] bg-[#217756]' : 'border-muted-foreground/30')}>
+                            {f.titulos.length === temas.length && <Check className="h-3.5 w-3.5 text-white" strokeWidth={3} />}
                           </div>
                         </button>
                         {filtrados.map((t) => {
@@ -232,13 +232,13 @@ const SheetLeis = ({ area, open, onOpenChange }: Props) => {
                           return (
                             <button
                               key={t.tema} onClick={() => toggleTitulo(t.tema)}
-                              className={cn("flex w-full items-center justify-between rounded-2xl border p-4 text-left transition-all active:scale-[0.99]", isSel ? 'border-[#36AF85] bg-[#36AF85]/5' : 'border-border bg-card')}
+                              className={cn("flex w-full items-center justify-between rounded-2xl border p-4 text-left transition-all active:scale-[0.99]", isSel ? 'border-[#217756] bg-[#217756]/10' : 'border-border bg-card')}
                             >
                               <div className="pr-4">
-                                <p className={cn("text-[14px] font-bold leading-tight", isSel ? 'text-[#36AF85]' : 'text-foreground')}>{t.tema}</p>
+                                <p className={cn("text-[14px] font-bold leading-tight", isSel ? 'text-[#217756]' : 'text-foreground')}>{t.tema}</p>
                                 <p className="mt-0.5 text-xs font-medium text-muted-foreground">{t.total} cards</p>
                               </div>
-                              <div className={cn("flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2", isSel ? 'border-[#36AF85] bg-[#36AF85]' : 'border-muted-foreground/30 bg-card')}>
+                              <div className={cn("flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2", isSel ? 'border-[#217756] bg-[#217756]' : 'border-muted-foreground/30 bg-card')}>
                                 {isSel && <Check className="h-3.5 w-3.5 text-white" strokeWidth={3} />}
                               </div>
                             </button>
@@ -247,33 +247,50 @@ const SheetLeis = ({ area, open, onOpenChange }: Props) => {
                       </div>
                     )}
                   </div>
+                  <div className="absolute bottom-0 left-0 right-0 bg-background/80 p-5 pt-4 backdrop-blur-xl border-t sm:px-6 pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
+                    <Button
+                      onClick={() => setPasso('main')}
+                      className="h-14 w-full rounded-2xl bg-[#217756] text-[16px] font-black tracking-wide text-white shadow-xl shadow-black/30 hover:bg-[#1A6246] active:scale-[0.99] transition-all [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]"
+                    >
+                      Confirmar
+                    </Button>
+                  </div>
                 </>
               )}
 
               {(passo === 'status' || passo === 'ordem') && (
-                <div className="flex-1 overflow-y-auto px-5 py-4 pb-24">
-                  <div className="space-y-2">
-                    {(passo === 'status' ? STATUS_OPCOES : ORDEM_OPCOES).map((o) => {
-                      const isSel = (passo === 'status' ? f.status : f.ordem).includes(o.id);
-                      return (
-                        <button
-                          key={o.id}
-                          onClick={() => {
-                            haptic.selection();
-                            setF(p => ({ ...p, [passo]: [o.id] }));
-                            setTimeout(() => setPasso('main'), 200);
-                          }}
-                          className={cn("flex w-full items-center justify-between rounded-2xl border p-4 text-left transition-all active:scale-[0.99]", isSel ? 'border-[#36AF85] bg-[#36AF85]/10' : 'border-border bg-card')}
-                        >
-                          <p className={cn("text-[15px] font-bold", isSel ? 'text-[#36AF85]' : 'text-foreground')}>{o.label}</p>
-                          <div className={cn("flex h-6 w-6 items-center justify-center rounded-full border-2", isSel ? 'border-[#36AF85] bg-[#36AF85]' : 'border-muted-foreground/30')}>
-                            {isSel && <Check className="h-3.5 w-3.5 text-white" strokeWidth={3} />}
-                          </div>
-                        </button>
-                      );
-                    })}
+                <>
+                  <div className="flex-1 overflow-y-auto px-5 py-4 pb-24">
+                    <div className="space-y-2">
+                      {(passo === 'status' ? STATUS_OPCOES : ORDEM_OPCOES).map((o) => {
+                        const isSel = (passo === 'status' ? f.status : f.ordem).includes(o.id);
+                        return (
+                          <button
+                            key={o.id}
+                            onClick={() => {
+                              haptic.selection();
+                              setF(p => ({ ...p, [passo]: [o.id] }));
+                            }}
+                            className={cn("flex w-full items-center justify-between rounded-2xl border p-4 text-left transition-all active:scale-[0.99]", isSel ? 'border-[#217756] bg-[#217756]/10' : 'border-border bg-card')}
+                          >
+                            <p className={cn("text-[15px] font-bold", isSel ? 'text-[#217756]' : 'text-foreground')}>{o.label}</p>
+                            <div className={cn("flex h-6 w-6 items-center justify-center rounded-full border-2", isSel ? 'border-[#217756] bg-[#217756]' : 'border-muted-foreground/30')}>
+                              {isSel && <Check className="h-3.5 w-3.5 text-white" strokeWidth={3} />}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
+                  <div className="absolute bottom-0 left-0 right-0 bg-background/80 p-5 pt-4 backdrop-blur-xl border-t sm:px-6 pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
+                    <Button
+                      onClick={() => setPasso('main')}
+                      className="h-14 w-full rounded-2xl bg-[#217756] text-[16px] font-black tracking-wide text-white shadow-xl shadow-black/30 hover:bg-[#1A6246] active:scale-[0.99] transition-all [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]"
+                    >
+                      Confirmar
+                    </Button>
+                  </div>
+                </>
               )}
             </motion.div>
           )}
