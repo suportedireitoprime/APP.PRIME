@@ -290,6 +290,7 @@ const AdminHorusTemplate = lazy(() => import('./pages/AdminHorusTemplate'));
 const AdminTriagem = lazy(() => import('./pages/AdminTriagem'));
 const HorusWhatsApp = lazy(() => import("./pages/HorusWhatsApp.tsx"));
 const AdminBlogEdicao = lazy(() => import("./pages/AdminBlogEdicao.tsx"));
+const AdminFlashcardsEditar = lazy(() => import("./pages/AdminFlashcardsEditar.tsx"));
 const AdminDesignImagens = lazy(() => import("./pages/AdminDesignImagens.tsx"));
 const AdminHeroHome = lazy(() => import("./pages/AdminHeroHome.tsx"));
 const AdminHomeCuriosidades = lazy(() => import("./pages/AdminHomeCuriosidades.tsx"));
@@ -985,6 +986,7 @@ function AnimatedRoutes() {
           <Route path="/boletins-noticias/:id" element={<ProtectedRoute><PageTransition><BoletinsJuridicos tipo="noticias" /></PageTransition></ProtectedRoute>} />
           <Route path="/ajustes/horus" element={<ProtectedRoute><PageTransition><HorusWhatsApp /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-blog-edicao" element={<ProtectedRoute><PageTransition><AdminBlogEdicao /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin-flashcards-editar" element={<ProtectedRoute><PageTransition><AdminFlashcardsEditar /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-design-imagens" element={<ProtectedRoute><PageTransition><AdminDesignImagens /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-hero-home" element={<ProtectedRoute><PageTransition><AdminHeroHome /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-home-curiosidades" element={<ProtectedRoute><PageTransition><AdminHomeCuriosidades /></PageTransition></ProtectedRoute>} />

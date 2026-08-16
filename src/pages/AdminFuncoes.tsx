@@ -142,6 +142,7 @@ const CATEGORIES: Category[] = [
     icon: Newspaper,
     items: [
       // Conteúdo & IA
+      { id: 'flashcards-edicao', label: 'Flashcards Editar', icon: Layers, desc: 'IA, bibliotecas, revisão e stats', route: '/admin-flashcards-editar' },
       { id: 'blog-edicao', label: 'Blog Editar', icon: Newspaper, desc: 'Geração automática de artigos + push', route: '/admin-blog-edicao' },
       { id: 'overlay-frases', label: 'Frases Editar', icon: Quote, desc: 'Frases + vozes do overlay de geração', route: '/admin-overlay-frases' },
       { id: 'design-imagens', label: 'Design de Imagens', icon: Palette, desc: 'Presets de estilo (prompt travado) por categoria', route: '/admin-design-imagens' },
