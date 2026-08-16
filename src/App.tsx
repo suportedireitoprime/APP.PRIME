@@ -843,6 +843,7 @@ function AnimatedRoutes() {
           <Route path="/flashcards/progresso" element={<ProtectedRoute><PageTransition><FlashcardsProgresso /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/desafios" element={<ProtectedRoute><PageTransition><FlashcardsDesafios /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/decks" element={<ProtectedRoute><PageTransition><FlashcardsDecks /></PageTransition></ProtectedRoute>} />
+          <Route path="/flashcards/leis" element={<ProtectedRoute><PageTransition><FlashcardsLeisArea /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas" element={<Navigate to="/videoaulas/painel" replace />} />
           <Route path="/videoaulas/painel" element={<ProtectedRoute><PageTransition><Videoaulas /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/favoritos" element={<ProtectedRoute><PageTransition><VideoaulasLista modo="favoritos" /></PageTransition></ProtectedRoute>} />
