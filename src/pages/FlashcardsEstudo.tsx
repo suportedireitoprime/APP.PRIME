@@ -580,7 +580,12 @@ const FlashcardsEstudo = () => {
                               Resposta Explicada
                             </p>
                             <div className="flex-1 flex flex-col items-center justify-center space-y-4 pb-4">
-                              <p className="whitespace-pre-wrap text-base sm:text-lg md:text-xl font-medium leading-relaxed text-foreground text-center max-w-prose">
+                              <p className={`whitespace-pre-wrap font-medium leading-relaxed text-foreground text-center max-w-prose ${
+                                atual.resposta.length < 40 ? 'text-2xl sm:text-3xl' :
+                                atual.resposta.length < 80 ? 'text-xl sm:text-2xl' :
+                                atual.resposta.length < 150 ? 'text-lg sm:text-xl' :
+                                'text-base sm:text-lg'
+                              }`}>
                                 {atual.resposta}
                               </p>
                             </div>
@@ -600,25 +605,35 @@ const FlashcardsEstudo = () => {
                 </AnimatePresence>
                 </div>
 
-                {/* Botões de Ação com Safe Area Inset Bottom para Mobile */}
-                <div className="pt-2 pb-[calc(6.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] grid grid-cols-2 gap-3">
-                  <Button
-                    variant="outline"
-                    className="h-14 sm:h-16 rounded-2xl text-base font-bold gap-2 border-border/80 hover:border-emerald-500/50 hover:bg-emerald-500/10 active:scale-95 transition-all shadow-sm"
-                    onClick={() => responder('revisar')}
-                  >
-                    <RotateCcw className="h-5 w-5 text-emerald-500" />
-                    <span>Revisar</span>
-                  </Button>
-                  <Button
-                    className="h-14 sm:h-16 rounded-2xl text-base font-black gap-2 active:scale-95 transition-all shadow-md hover:opacity-90"
-                    style={{ backgroundColor: '#10b981', color: '#ffffff' }}
-                    onClick={() => responder('compreendido')}
-                  >
-                    <CheckCircle2 className="h-5 w-5 text-white" />
-                    <span>Compreendi</span>
-                  </Button>
-                </div>
+                {/* Botões de Ação — só aparecem após virar o card */}
+                <AnimatePresence>
+                  {virado && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 24 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 24 }}
+                      transition={{ duration: 0.3, ease: 'easeOut' }}
+                      className="pt-2 pb-[calc(6.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] grid grid-cols-2 gap-3"
+                    >
+                      <Button
+                        variant="outline"
+                        className="h-14 sm:h-16 rounded-2xl text-base font-bold gap-2 border-border/80 hover:border-emerald-500/50 hover:bg-emerald-500/10 active:scale-95 transition-all shadow-sm"
+                        onClick={() => responder('revisar')}
+                      >
+                        <RotateCcw className="h-5 w-5 text-emerald-500" />
+                        <span>Revisar</span>
+                      </Button>
+                      <Button
+                        className="h-14 sm:h-16 rounded-2xl text-base font-black gap-2 active:scale-95 transition-all shadow-md hover:opacity-90"
+                        style={{ backgroundColor: '#10b981', color: '#ffffff' }}
+                        onClick={() => responder('compreendido')}
+                      >
+                        <CheckCircle2 className="h-5 w-5 text-white" />
+                        <span>Compreendi</span>
+                      </Button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </>
               );
             })()}
