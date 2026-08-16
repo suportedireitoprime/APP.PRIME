@@ -43,6 +43,7 @@ export function resetBodyScrollLock() {
   b.style.top = '';
   b.style.width = '';
   b.style.pointerEvents = 'auto';
+  b.removeAttribute('data-scroll-locked');
   setTimeout(() => { b.style.pointerEvents = ''; }, 50);
   h.style.overflow = '';
 }

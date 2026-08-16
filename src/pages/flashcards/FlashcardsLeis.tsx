@@ -10,6 +10,7 @@ import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { motion, AnimatePresence } from 'framer-motion';
 import { StepRow, SelecaoSheet } from '@/components/flashcards/FlashcardsFiltroSheet';
 import { QuantidadeSheet } from '@/components/flashcards/QuantidadeSheet';
+import { resetBodyScrollLock } from '@/hooks/useBodyScrollLock';
 // Types
 type TemaRow = {
   tema: string;
@@ -76,6 +77,14 @@ export default function FlashcardsLeis() {
   const [cardsDisponiveis, setCardsDisponiveis] = useState<{tema: string, artigo: string}[]>([]);
   const [titulosSelecionados, setTitulosSelecionados] = useState<string[]>([]);
   const [artigosSelecionados, setArtigosSelecionados] = useState<string[]>([]);
+  const [showQuantidade, setShowQuantidade] = useState(false);
+
+  // SEO & Prevenção de bug de scroll/pointer events
+  useEffect(() => {
+    document.title = 'Leis Secas em Flashcards | Vade Mecum PRIME';
+    resetBodyScrollLock();
+  }, []);
+
   const [loadingCards, setLoadingCards] = useState(false);
   const [etapaAlcancada, setEtapaAlcancada] = useState<number>(1);
 

@@ -17,6 +17,7 @@ import { playFlipSound } from '@/lib/flipSound';
 import { getAreaVisual } from '@/lib/flashcardsAreaVisual';
 import { useFlashcardsSessao, useFlashcardsResumoAreas, FlashcardCard } from '@/lib/flashcardsQueries';
 import { useGatedFeature } from '@/hooks/useGatedFeature';
+import { resetBodyScrollLock } from '@/hooks/useBodyScrollLock';
 import ContagemRegressiva from '@/components/questoes/ContagemRegressiva';
 import laurel from '@/assets/landing-tribunal/laurel-leaf.png';
 import scales from '@/assets/landing-tribunal/scales.png';
@@ -48,9 +49,10 @@ const FlashcardsEstudo = () => {
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
 
-  // SEO & Título dinâmico
+  // SEO & Prevenção de bug de scroll/pointer events (Radix UI Sheet unmount)
   useEffect(() => {
     document.title = 'Sessão de Prática de Flashcards | Vade Mecum PRIME';
+    resetBodyScrollLock();
   }, []);
 
   const areaParam = params.get('area');
