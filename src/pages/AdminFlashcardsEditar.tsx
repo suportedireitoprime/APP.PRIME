@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { supabase } from '@/integrations/supabase/client';
-import { Layers, Plus, Sparkles, Loader2, Trash2, ArrowLeft, BookOpen, Scale, Landmark, BookA, Users, Clock, AlertTriangle, ListTree } from 'lucide-react';
+import { Layers, Plus, Sparkles, Loader2, Trash2, BookOpen, Scale, Landmark, BookA, Users, Clock, AlertTriangle, ListTree, ChevronRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -170,17 +170,9 @@ export default function AdminFlashcardsEditar() {
 
   const renderAreas = () => (
     <div className="space-y-6">
-      <div className="flex items-center gap-4 mb-6">
-        <button 
-          onClick={() => setStep('categoria')}
-          className="p-2 hover:bg-muted rounded-full transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-        <div>
-          <h2 className="text-2xl font-bold font-display uppercase">{selectedCategoria?.label}</h2>
-          <p className="text-muted-foreground">Escolha a Área / Disciplina</p>
-        </div>
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold font-display uppercase">{selectedCategoria?.label}</h2>
+        <p className="text-muted-foreground">Escolha a Área / Disciplina</p>
       </div>
 
       {loadingAreas ? (
@@ -198,7 +190,7 @@ export default function AdminFlashcardsEditar() {
             >
               <span className="font-medium truncate">{a.area}</span>
               <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center group-hover:bg-amber-500/10 transition-colors">
-                <ArrowLeft className="w-4 h-4 text-muted-foreground group-hover:text-amber-500 rotate-180" />
+                <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-amber-500" />
               </div>
             </button>
           ))}
@@ -209,17 +201,9 @@ export default function AdminFlashcardsEditar() {
 
   const renderTemas = () => (
     <div className="space-y-8 mt-4">
-      <div className="flex items-center gap-4 mb-6">
-        <button 
-          onClick={() => setStep('area')}
-          className="p-2 hover:bg-muted rounded-full transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-        <div>
-          <h2 className="text-2xl font-bold font-display uppercase">{selectedArea}</h2>
-          <p className="text-muted-foreground">Categoria: {selectedCategoria?.label}</p>
-        </div>
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold font-display uppercase">{selectedArea}</h2>
+        <p className="text-muted-foreground">Categoria: {selectedCategoria?.label}</p>
       </div>
 
       {/* Painel de Criação */}
