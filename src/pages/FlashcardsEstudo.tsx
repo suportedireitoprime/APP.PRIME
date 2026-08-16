@@ -75,14 +75,13 @@ function formatTemaBreadcrumb(raw: string): string[] {
 
 /** "DA APLICAÇÃO DA LEI PENAL" → "Da Aplicação da Lei Penal" */
 function toSentence(s: string): string {
-  const lower = s.toLowerCase();
   const minors = new Set(['da', 'de', 'do', 'das', 'dos', 'e', 'em', 'no', 'na', 'nos', 'nas', 'ao', 'à', 'às', 'por', 'para', 'com', 'sem', 'sob', 'ou']);
-  return lower.replace(/\b\w+/g, (word, index) => {
-    if (index === 0 || !minors.has(word)) {
+  return s.toLowerCase().split(/\s+/).map((word, i) => {
+    if (i === 0 || !minors.has(word)) {
       return word.charAt(0).toUpperCase() + word.slice(1);
     }
     return word;
-  });
+  }).join(' ');
 }
 
 const FlashcardsEstudo = () => {

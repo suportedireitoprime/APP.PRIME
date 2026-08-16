@@ -337,19 +337,28 @@ export default function FlashcardsLeis() {
     return (
       <div className="flex w-full items-center justify-between pr-2 py-1">
         <div className="flex flex-col min-w-0 pr-2">
-          {parte1 && (
-            <span className="inline-flex items-center gap-1 w-fit px-2 py-0.5 rounded text-[11px] font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mb-1">
-              {parte1}
-            </span>
+          {/* Linha superior: badge + seta + artigos */}
+          {(parte1 || faixa) && (
+            <div className="flex items-center gap-1.5 mb-1">
+              {parte1 && (
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  {parte1}
+                </span>
+              )}
+              {parte1 && faixa && (
+                <ChevronRight className="h-3 w-3 text-emerald-500/50 shrink-0" />
+              )}
+              {faixa && (
+                <span className="text-[11px] font-bold text-[#36AF85]">
+                  {faixa}
+                </span>
+              )}
+            </div>
           )}
+          {/* Nome descritivo */}
           {description && (
             <span className="text-[15px] font-bold text-zinc-100 leading-snug tracking-tight">
               {description}
-            </span>
-          )}
-          {faixa && (
-            <span className="inline-flex items-center gap-1 text-[12px] font-bold text-[#36AF85] mt-1">
-              <span className="text-[11px] opacity-75">📖</span> {faixa}
             </span>
           )}
         </div>
