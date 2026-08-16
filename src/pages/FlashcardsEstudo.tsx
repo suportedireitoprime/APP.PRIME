@@ -103,6 +103,7 @@ const FlashcardsEstudo = () => {
       let finalCards = [...cardsRaw];
       
       // Filtro de artigos no frontend (compatível com números e textos)
+      const artigosList = artigosParam ? artigosParam.split('|').filter(Boolean) : null;
       if (artigosList && artigosList.length > 0) {
         finalCards = finalCards.filter(c => {
           if (!c.artigo_numero) return false;
@@ -126,7 +127,7 @@ const FlashcardsEstudo = () => {
       setIdx(0);
       setVirado(false);
     }
-  }, [cardsRaw, ordemParam, artigosList, quantidadeParam]);
+  }, [cardsRaw, ordemParam, artigosParam, quantidadeParam]);
 
   // Ponto de Retomada: Salvar e restaurar último cartão estudado
   const sessionKey = `flashcards_pos_${areaParam || areasParam || deckId || 'geral'}_${temasParam || 'todos'}`;
