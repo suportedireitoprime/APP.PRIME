@@ -6,9 +6,9 @@ import { Input } from '@/components/ui/input';
 import { getAreaVisual } from '@/lib/flashcardsAreaVisual';
 import { haptic } from '@/lib/nativeHaptics';
 import { useFlashcardsResumoAreas } from '@/lib/flashcardsQueries';
-import SheetLeis from '@/components/flashcards/SheetLeis';
+import AreaTemasSheet from '@/components/flashcards/AreaTemasSheet';
 
-const FlashcardsLeisArea = () => {
+const FlashcardsMaterias = () => {
   const navigate = useNavigate();
   const { data: areasRaw, isLoading: loadingAreas } = useFlashcardsResumoAreas();
   const areas = areasRaw || [];
@@ -18,7 +18,7 @@ const FlashcardsLeisArea = () => {
   const [areaSheet, setAreaSheet] = useState<string | null>(null);
 
   useEffect(() => {
-    document.title = 'Flashcards Leis | Vade Mecum PRIME';
+    document.title = 'Flashcards Matérias | Vade Mecum PRIME';
   }, []);
 
   const lista = useMemo(() => {
@@ -30,15 +30,15 @@ const FlashcardsLeisArea = () => {
 
   return (
     <div className="min-h-dvh overflow-x-hidden bg-background pb-28 lg:pb-12">
-      <PageHeader title="Leis por Matéria" onBack={() => navigate('/flashcards')} />
+      <PageHeader title="Matérias" onBack={() => navigate('/flashcards')} />
       <div className="mx-auto w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] px-3 sm:px-6 lg:px-8 mt-4">
         
         <div className="mb-6">
           <h2 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">
-            Escolha a matéria
+            Escolher Matéria
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Selecione uma matéria para ver todas as leis, códigos e estatutos relacionados a ela.
+            Selecione uma matéria para acessar os temas disponíveis e gerar seus flashcards.
           </p>
         </div>
 
@@ -106,7 +106,7 @@ const FlashcardsLeisArea = () => {
         </section>
       </div>
 
-      <SheetLeis
+      <AreaTemasSheet
         area={areaSheet}
         open={!!areaSheet}
         onOpenChange={(v) => !v && setAreaSheet(null)}
@@ -115,4 +115,4 @@ const FlashcardsLeisArea = () => {
   );
 };
 
-export default FlashcardsLeisArea;
+export default FlashcardsMaterias;

@@ -123,6 +123,9 @@ const SheetLeis = ({ area, open, onOpenChange }: Props) => {
     if (f.status[0] !== 'todos') p.set('modo', f.status[0]);
     // Ordem
     if (f.ordem[0] !== 'embaralhado') p.set('ordem', f.ordem[0]);
+    
+    // Passar o limite total selecionado para não limitar a 30
+    p.set('limite', totalSel.toString());
 
     onOpenChange(false);
     navigate(`/flashcards/estudar?${p.toString()}`);
@@ -216,7 +219,7 @@ const SheetLeis = ({ area, open, onOpenChange }: Props) => {
                     ) : (
                       <div className="space-y-2">
                         <button
-                          onClick={() => setF(p => ({ ...p, titulos: temas.map(t => t.tema) }))}
+                          onClick={() => setF(p => ({ ...p, titulos: p.titulos.length === temas.length ? [] : temas.map(t => t.tema) }))}
                           className={cn("flex w-full items-center justify-between rounded-2xl border p-4 text-left transition-all active:scale-[0.99]", f.titulos.length === temas.length ? 'border-[#217756] bg-[#217756]/10' : 'border-border bg-card')}
                         >
                           <div>

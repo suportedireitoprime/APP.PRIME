@@ -140,7 +140,7 @@ const FlashcardsEstudo = () => {
     setVirado((v) => !v);
   };
 
-  const responder = async (status: 'compreendido' | 'revisar') => {
+  const responder = (status: 'compreendido' | 'revisar') => {
     if (!atual || salvando.current) return;
     if (gateFlashcards.blocked) { gateFlashcards.openGate(); return; }
     
@@ -149,31 +149,43 @@ const FlashcardsEstudo = () => {
     
     salvando.current = true;
     haptic.light();
-    const { data: auth } = await supabase.auth.getUser();
-    if (auth.user) {
-      const { error } = await supabase.from('flashcards_progresso').upsert(
-        {
-          user_id: auth.user.id,
-          card_id: atual.id,
-          area: atual.area,
-          tema: atual.tema,
-          status,
-          ultima_resposta_em: new Date().toISOString(),
-        },
-        { onConflict: 'user_id,card_id' },
-      );
-      if (error) toast.error('Não foi possível salvar o progresso');
-    }
-    await gateFlashcards.run();
+
+    // OPTIMISTIC UI: Avança o card imediatamente
     setFeitos((f) => f + 1);
     setVirado(false);
-    salvando.current = false;
+    
     if (idx + 1 >= cards.length) {
       toast.success('Sessão concluída!');
       setIdx(cards.length);
     } else {
       setIdx((i) => i + 1);
     }
+
+    // FIRE AND FORGET: Salva no banco em background
+    supabase.auth.getUser().then(({ data: auth }) => {
+      if (auth.user) {
+        supabase.from('flashcards_progresso').upsert(
+          {
+            user_id: auth.user.id,
+            card_id: atual.id,
+            area: atual.area,
+            tema: atual.tema,
+            status,
+            ultima_resposta_em: new Date().toISOString(),
+          },
+          { onConflict: 'user_id,card_id' },
+        ).then(({ error }) => {
+          if (error) toast.error('Não foi possível salvar o progresso');
+        });
+      }
+    });
+
+    gateFlashcards.run();
+    
+    // Libera para o próximo clique após a animação de saída (250ms)
+    setTimeout(() => {
+      salvando.current = false;
+    }, 250);
   };
 
 
@@ -543,7 +555,7 @@ const FlashcardsEstudo = () => {
   );
 };
 
-function Tags({ card }: { card: Card }) {
+function Tags({ card }: { card: FlashcardCard }) {
   const { icon: Icon, color } = getAreaVisual(card.area);
   return (
     <div className="mb-2 flex items-center flex-wrap gap-1.5 text-[11px] font-extrabold tracking-tight">

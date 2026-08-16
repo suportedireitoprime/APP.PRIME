@@ -103,13 +103,7 @@ const FlashcardsCargoHero = ({ pct = 0, total = 0, hoje = 0, meta = 100, disponi
           <div className="grid grid-cols-3 divide-x divide-white/10">
             <Metric label="Hoje" value={hoje.toLocaleString('pt-BR')} sufixo=" cards" />
             <Metric label="Revisados" value={total.toLocaleString('pt-BR')} />
-            <div className="flex flex-col items-center justify-center px-2 py-2">
-              <span className="text-[9px] font-bold uppercase tracking-wider text-white/60">Sua Meta</span>
-              <span className="mt-0.5 font-display text-base font-black leading-none text-emerald-500">
-                {hoje.toLocaleString('pt-BR')}
-                <span className="text-white/50">/{meta.toLocaleString('pt-BR')}</span>
-              </span>
-            </div>
+            <Metric label="Total" value={disponiveis.toLocaleString('pt-BR')} sufixo=" cards" />
           </div>
         </div>
       </div>
