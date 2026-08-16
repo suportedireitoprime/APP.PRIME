@@ -1,0 +1,125 @@
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { PageHeader } from '@/components/vademecum/PageHeader';
+import { ChevronRight, Search, Sparkles, X } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { getAreaVisual } from '@/lib/flashcardsAreaVisual';
+import { haptic } from '@/lib/nativeHaptics';
+import { useFlashcardsResumoAreas } from '@/lib/flashcardsQueries';
+import SheetLeis from '@/components/flashcards/SheetLeis';
+
+const FlashcardsLeisArea = () => {
+  const navigate = useNavigate();
+  const { data: areasRaw, isLoading: loadingAreas } = useFlashcardsResumoAreas();
+  const areas = areasRaw || [];
+  
+  const [busca, setBusca] = useState('');
+  const [buscaAberta, setBuscaAberta] = useState(false);
+  const [areaSheet, setAreaSheet] = useState<string | null>(null);
+
+  useEffect(() => {
+    document.title = 'Flashcards Leis | Vade Mecum PRIME';
+  }, []);
+
+  const lista = useMemo(() => {
+    const q = busca.trim().toLowerCase();
+    const l = q ? areas.filter((a) => a.area.toLowerCase().includes(q)) : [...areas];
+    l.sort((a, b) => a.area.localeCompare(b.area, 'pt-BR'));
+    return l;
+  }, [areas, busca]);
+
+  return (
+    <div className="min-h-dvh overflow-x-hidden bg-background pb-28 lg:pb-12">
+      <PageHeader title="Leis por Matéria" onBack={() => navigate('/flashcards')} />
+      <div className="mx-auto w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] px-3 sm:px-6 lg:px-8 mt-4">
+        
+        <div className="mb-6">
+          <h2 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">
+            Escolha a matéria
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Selecione uma matéria para ver todas as leis, códigos e estatutos relacionados a ela.
+          </p>
+        </div>
+
+        <section className="space-y-3">
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground">
+              Matérias ({lista.length})
+            </p>
+            <button
+              onClick={() => {
+                haptic.selection();
+                setBuscaAberta((v) => !v);
+                if (buscaAberta) setBusca('');
+              }}
+              aria-label={buscaAberta ? 'Fechar busca' : 'Buscar matéria'}
+              className="flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            >
+              {buscaAberta ? <X className="h-4.5 w-4.5" /> : <Search className="h-4.5 w-4.5" />}
+            </button>
+          </div>
+
+          {buscaAberta && (
+            <Input
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              placeholder="Buscar matéria..."
+              className="h-11 rounded-2xl border-border bg-card shadow-sm"
+            />
+          )}
+
+          {loadingAreas ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-3.5 sm:gap-4">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="h-24 rounded-2xl animate-pulse border border-border/60 bg-muted/40" />
+              ))}
+            </div>
+          ) : lista.length === 0 ? (
+            <div className="rounded-2xl border border-border bg-card p-10 text-center text-muted-foreground">
+              <Sparkles className="mx-auto mb-2 h-7 w-7 text-[#36AF85]" />
+              Nenhuma matéria encontrada.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-3.5 sm:gap-4">
+              {lista.map((a) => {
+                const { icon: Icon } = getAreaVisual(a.area);
+                return (
+                  <button
+                    key={a.area}
+                    onClick={() => { haptic.selection(); setAreaSheet(a.area); }}
+                    className="group flex flex-col justify-between rounded-2xl border border-border/80 bg-card p-4 text-left transition-all hover:border-[#36AF85]/50 hover:shadow-md active:scale-[0.99] gap-3"
+                  >
+                    <div className="flex items-center justify-between gap-3 w-full">
+                      <div className="flex items-center gap-4 min-w-0">
+                        <div className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110">
+                          <Icon className="h-7 w-7 text-[#36AF85] transition-all duration-300 group-hover:drop-shadow-[0_0_12px_rgba(54,175,133,0.9)]" strokeWidth={1.5} />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="truncate text-base font-extrabold text-foreground group-hover:text-[#36AF85] transition-colors tracking-tight">
+                            {a.area}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <ChevronRight className="h-4.5 w-4.5 text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </section>
+      </div>
+
+      <SheetLeis
+        area={areaSheet}
+        open={!!areaSheet}
+        onOpenChange={(v) => !v && setAreaSheet(null)}
+      />
+    </div>
+  );
+};
+
+export default FlashcardsLeisArea;

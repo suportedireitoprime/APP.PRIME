@@ -175,6 +175,7 @@ const FlashcardsDecks = lazy(() => import("./pages/FlashcardsDecks.tsx"));
 const FlashcardsDesafios = lazy(() => import("./pages/FlashcardsDesafios.tsx"));
 const FlashcardsTrilhas = lazy(() => import("./pages/FlashcardsTrilhas.tsx"));
 const FlashcardsProgresso = lazy(() => import("./pages/FlashcardsProgresso.tsx"));
+const FlashcardsLeisArea = lazy(() => import("./pages/flashcards/FlashcardsLeisArea.tsx"));
 const Videoaulas = lazy(routePrefetch.videoaulas);
 const VideoaulasCategorias = lazy(routePrefetch.videoaulasCategorias);
 const VideoaulasCatalogo = lazy(routePrefetch.videoaulasCatalogo);

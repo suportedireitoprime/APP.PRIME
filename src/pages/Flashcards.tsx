@@ -148,7 +148,7 @@ const Flashcards = () => {
               </button>
 
               <button
-                onClick={() => haptic.selection()}
+                onClick={() => { haptic.selection(); navigate('/flashcards/leis'); }}
                 className="group flex items-center gap-3 p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#36AF85]/50 transition-colors active:scale-95"
               >
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#36AF85]/10 text-[#36AF85] group-hover:scale-110 transition-transform">
