@@ -196,6 +196,12 @@ const AprenderAula = () => {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [mentorOpen, setMentorOpen] = useState(false);
   
+  const [feedbackPergunta, setFeedbackPergunta] = useState<{
+    correta: boolean;
+    escolha: string;
+    explicacao: string;
+  } | null>(null);
+
   const startedAt = useRef<number>(Date.now());
   const feedEndRef = useRef<HTMLDivElement | null>(null);
   
@@ -333,6 +339,7 @@ const AprenderAula = () => {
 
   const atual = blocos[currentIdx] || blocos[0];
   const idx = currentIdx; // alias para compatibilidade com o sumário e cabeçalho
+  const isExercicioDedicado = atual && ['pergunta', 'flashcard', 'conexao'].includes(atual.tipo);
 
   const acertos = useMemo(
     () => perguntas.filter((p) => respostas[p.id]?.correta).length,
@@ -392,6 +399,12 @@ const AprenderAula = () => {
     setRespostas((r) => ({ ...r, [bloco.id]: { correta, escolha } }));
     await salvarBloco(bloco, { escolha }, correta);
     if (correta) playSwooshSound();
+
+    setFeedbackPergunta({
+      correta,
+      escolha,
+      explicacao: bloco.resposta_correta?.explicacao || 'Revise o conceito aprendido nesta etapa e siga em frente!',
+    });
   };
 
   const concluirAula = async () => {
@@ -590,113 +603,169 @@ const AprenderAula = () => {
         </div>
       </aside>
 
-      {/* Top Header & Timeline - Permanente e estável */}
-      <header
-        className="sticky top-0 z-20 border-b border-white/5 bg-background/95 backdrop-blur-md"
-        style={{
-          paddingTop: 'calc(var(--sai-top, env(safe-area-inset-top, 0px)) + 0.5rem)',
-        }}
-      >
-        <div
-          className="mx-auto flex flex-col md:flex-row md:items-center gap-3 py-3 md:py-4 lg:max-w-none lg:px-10 2xl:px-16"
+      {/* Top Header */}
+      {isExercicioDedicado ? (
+        /* Cabeçalho Minimalista e Dedicado para Exercícios/Fixação (Sem os nós da timeline) */
+        <header
+          className="sticky top-0 z-20 border-b border-white/5 bg-background/95 backdrop-blur-md"
           style={{
-            paddingLeft: 'calc(1rem + var(--sai-left, env(safe-area-inset-left, 0px)))',
-            paddingRight: 'calc(1rem + var(--sai-right, env(safe-area-inset-right, 0px)))',
+            paddingTop: 'calc(var(--sai-top, env(safe-area-inset-top, 0px)) + 0.5rem)',
           }}
         >
-          <div className="flex items-start gap-4">
+          <div
+            className="mx-auto flex items-center justify-between py-3 max-w-3xl lg:max-w-[74ch] xl:max-w-[80ch]"
+            style={{
+              paddingLeft: 'calc(1rem + var(--sai-left, env(safe-area-inset-left, 0px)))',
+              paddingRight: 'calc(1rem + var(--sai-right, env(safe-area-inset-right, 0px)))',
+            }}
+          >
             <button
               onClick={() => goBack()}
               aria-label="Voltar"
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/5 border border-white/10 hover:bg-white/10 active:scale-95 transition-transform text-white lg:hidden mt-0.5"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/5 border border-white/10 hover:bg-white/10 active:scale-95 transition-transform text-white"
             >
               <ArrowLeft className="h-[18px] w-[18px]" />
             </button>
-            <div className="flex-1 flex flex-col justify-center pl-1">
-              <p className="font-sans text-[15px] font-medium text-white/90 lg:hidden leading-snug tracking-tight line-clamp-2">
-                {aula.titulo}
-              </p>
-            </div>
-          </div>
-        </div>
 
-        {/* Timeline horizontal - Dark estético */}
-        <div
-          className="relative overflow-x-auto bg-card/40 py-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden scroll-smooth border-y border-white/5"
+            <div className="flex flex-col items-center text-center">
+              <span className="text-[11px] font-extrabold uppercase tracking-widest text-primary">
+                {atual.tipo === 'pergunta' ? 'Desafio de Fixação' : atual.tipo === 'flashcard' ? 'Flashcard de Retenção' : 'Conexão de Conceitos'}
+              </span>
+              <span className="text-xs font-semibold text-neutral-400">
+                Etapa {idx + 1} de {total}
+              </span>
+            </div>
+
+            <button
+              onClick={() => setSumarioOpen(true)}
+              aria-label="Sumário"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/5 border border-white/10 hover:bg-white/10 active:scale-95 transition-transform text-white/70 hover:text-white"
+            >
+              <List className="h-[18px] w-[18px]" />
+            </button>
+          </div>
+
+          {/* Barra de Progresso Fina */}
+          <div className="h-1 w-full bg-white/5">
+            <div
+              className="h-full bg-primary transition-all duration-300"
+              style={{ width: `${Math.round(((idx + 1) / total) * 100)}%` }}
+            />
+          </div>
+        </header>
+      ) : (
+        /* Cabeçalho Normal com Título e Timeline de Nós para Leitura/Teoria */
+        <header
+          className="sticky top-0 z-20 border-b border-white/5 bg-background/95 backdrop-blur-md"
+          style={{
+            paddingTop: 'calc(var(--sai-top, env(safe-area-inset-top, 0px)) + 0.5rem)',
+          }}
         >
           <div
-            className="mx-auto flex max-w-3xl items-center lg:max-w-none lg:px-10 2xl:px-16"
+            className="mx-auto flex flex-col md:flex-row md:items-center gap-3 py-3 md:py-4 lg:max-w-none lg:px-10 2xl:px-16"
             style={{
-              paddingLeft: 'calc(0.75rem + var(--sai-left, env(safe-area-inset-left, 0px)))',
-              paddingRight: 'calc(0.75rem + var(--sai-right, env(safe-area-inset-right, 0px)))',
+              paddingLeft: 'calc(1rem + var(--sai-left, env(safe-area-inset-left, 0px)))',
+              paddingRight: 'calc(1rem + var(--sai-right, env(safe-area-inset-right, 0px)))',
             }}
           >
-            {blocos.map((b, i) => {
-              const Icon = iconePorTipo(b.tipo);
-              const isAtual = i === idx;
-              const isFeito = i < idx;
-              const respondida = b.tipo === 'pergunta' ? respostas[b.id] : undefined;
-              const ok = respondida?.correta;
-              const err = respondida && !respondida.correta;
-              const isLast = i === blocos.length - 1;
-              return (
-                <div key={b.id} id={`timeline-item-${i}`} className="relative flex shrink-0 items-center">
-                  <button
-                    onClick={() => {
-                      if (i > maxRevealedIdx) return;
-                      setCurrentIdx(i);
-                    }}
-                    aria-label={`${rotuloPorTipo(b.tipo)} ${i + 1}`}
-                    className="relative flex h-11 w-11 md:h-12 md:w-12 shrink-0 items-center justify-center rounded-full transition-transform active:scale-95"
-                  >
-                    {isAtual && (
-                      <motion.span
-                        layoutId="timeline-halo"
-                        className="absolute inset-0 rounded-full border border-white/30 bg-white/5"
-                        transition={{ type: 'spring', stiffness: 500, damping: 32 }}
-                      />
-                    )}
-                    <Icon
-                      className={`relative h-[22px] w-[22px] md:h-5 md:w-5 transition-colors ${
-                        isAtual
-                          ? 'text-white'
-                          : isFeito
-                          ? 'text-neutral-400'
-                          : 'text-neutral-700'
-                      }`}
-                      strokeWidth={1.5}
-                    />
-                    {ok && (
-                      <span className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 ring-2 ring-background shadow-md">
-                        <CheckCircle2 className="h-3 w-3 text-white" strokeWidth={2.5} />
-                      </span>
-                    )}
-                    {err && (
-                      <span className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary ring-2 ring-background shadow-md">
-                        <XCircle className="h-3 w-3 text-white" strokeWidth={2.5} />
-                      </span>
-                    )}
-                  </button>
-                  {!isLast && (
-                    <div className="relative mx-1 h-[3px] w-6 md:w-8 overflow-hidden rounded-full bg-muted/60">
-                      <motion.div
-                        className="absolute inset-y-0 left-0 rounded-full bg-primary"
-                        initial={false}
-                        animate={{ width: isFeito ? '100%' : '0%' }}
-                        transition={{ duration: 0.4, ease: 'easeOut' }}
-                      />
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+            <div className="flex items-start gap-4">
+              <button
+                onClick={() => goBack()}
+                aria-label="Voltar"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/5 border border-white/10 hover:bg-white/10 active:scale-95 transition-transform text-white lg:hidden mt-0.5"
+              >
+                <ArrowLeft className="h-[18px] w-[18px]" />
+              </button>
+              <div className="flex-1 flex flex-col justify-center pl-1">
+                <p className="font-sans text-[15px] font-medium text-white/90 lg:hidden leading-snug tracking-tight line-clamp-2">
+                  {aula.titulo}
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
-      </header>
+
+          {/* Timeline horizontal - Dark estético */}
+          <div
+            className="relative overflow-x-auto bg-card/40 py-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden scroll-smooth border-y border-white/5"
+          >
+            <div
+              className="mx-auto flex max-w-3xl items-center lg:max-w-none lg:px-10 2xl:px-16"
+              style={{
+                paddingLeft: 'calc(0.75rem + var(--sai-left, env(safe-area-inset-left, 0px)))',
+                paddingRight: 'calc(0.75rem + var(--sai-right, env(safe-area-inset-right, 0px)))',
+              }}
+            >
+              {blocos.map((b, i) => {
+                const Icon = iconePorTipo(b.tipo);
+                const isAtual = i === idx;
+                const isFeito = i < idx;
+                const respondida = b.tipo === 'pergunta' ? respostas[b.id] : undefined;
+                const ok = respondida?.correta;
+                const err = respondida && !respondida.correta;
+                const isLast = i === blocos.length - 1;
+                return (
+                  <div key={b.id} id={`timeline-item-${i}`} className="relative flex shrink-0 items-center">
+                    <button
+                      onClick={() => {
+                        if (i > maxRevealedIdx) return;
+                        setCurrentIdx(i);
+                      }}
+                      aria-label={`${rotuloPorTipo(b.tipo)} ${i + 1}`}
+                      className="relative flex h-11 w-11 md:h-12 md:w-12 shrink-0 items-center justify-center rounded-full transition-transform active:scale-95"
+                    >
+                      {isAtual && (
+                        <motion.span
+                          layoutId="timeline-halo"
+                          className="absolute inset-0 rounded-full border border-white/30 bg-white/5"
+                          transition={{ type: 'spring', stiffness: 500, damping: 32 }}
+                        />
+                      )}
+                      <Icon
+                        className={`relative h-[22px] w-[22px] md:h-5 md:w-5 transition-colors ${
+                          isAtual
+                            ? 'text-white'
+                            : isFeito
+                            ? 'text-neutral-400'
+                            : 'text-neutral-700'
+                        }`}
+                        strokeWidth={1.5}
+                      />
+                      {ok && (
+                        <span className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 ring-2 ring-background shadow-md">
+                          <CheckCircle2 className="h-3 w-3 text-white" strokeWidth={2.5} />
+                        </span>
+                      )}
+                      {err && (
+                        <span className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary ring-2 ring-background shadow-md">
+                          <XCircle className="h-3 w-3 text-white" strokeWidth={2.5} />
+                        </span>
+                      )}
+                    </button>
+                    {!isLast && (
+                      <div className="relative mx-1 h-[3px] w-6 md:w-8 overflow-hidden rounded-full bg-muted/60">
+                        <motion.div
+                          className="absolute inset-y-0 left-0 rounded-full bg-primary"
+                          initial={false}
+                          animate={{ width: isFeito ? '100%' : '0%' }}
+                          transition={{ duration: 0.4, ease: 'easeOut' }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </header>
+      )}
 
       {/* Conteúdo Principal do Slide / Aula */}
       <main className="relative flex-1 overflow-y-auto overflow-x-hidden scroll-smooth bg-background">
-        <div className="mx-auto w-full max-w-3xl px-5 md:px-8 pt-6 md:pt-8 pb-[calc(10rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] lg:mx-0 lg:max-w-[74ch] xl:max-w-[80ch] lg:px-12 2xl:px-16 lg:pt-10 lg:pb-32 flex flex-col">
+        <div className={`mx-auto w-full max-w-3xl px-5 md:px-8 lg:mx-0 lg:max-w-[74ch] xl:max-w-[80ch] lg:px-12 2xl:px-16 flex flex-col ${
+          isExercicioDedicado
+            ? 'pt-6 md:pt-10 pb-32 min-h-[calc(100dvh-130px)] justify-center'
+            : 'pt-6 md:pt-8 pb-[calc(10rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] lg:pt-10 lg:pb-32'
+        }`}>
           <AnimatePresence mode="popLayout" initial={false}>
             {atual && (
               <motion.div
@@ -714,6 +783,7 @@ const AprenderAula = () => {
                   flipped={!!flipped[atual.id]}
                   onFlip={() => { playFlipSound(); setFlipped((f) => ({ ...f, [atual.id]: !f[atual.id] })); }}
                   onAvaliarFlash={(nivel) => avaliarFlashcard(atual, nivel)}
+                  onAvancar={() => setCurrentIdx((i) => Math.min(total - 1, i + 1))}
                   conexao={conexoes[atual.id]}
                   onConexao={async (map, done) => {
                     setConexoes((c) => ({ ...c, [atual.id]: map }));
@@ -734,70 +804,148 @@ const AprenderAula = () => {
         </div>
       </main>
 
-      {/* Navegação de Rodapé Estilo eBook */}
-      {!(atual?.tipo === 'pergunta' && !respostas[atual.id]) && (
+      {/* Navegação de Rodapé Estilo eBook (Oculto em telas dedicadas de exercício para foco imersivo) */}
+      {!isExercicioDedicado && (
         <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/5 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 px-4 py-3 pb-[calc(0.75rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setSumarioOpen(true)}
-            className="flex items-center justify-center h-10 w-10 rounded-full text-neutral-400 hover:text-white hover:bg-white/5 transition-colors"
-            aria-label="Sumário"
-          >
-            <List className="h-5 w-5" />
-          </button>
-          <button
-            onClick={() => setSettingsOpen(true)}
-            className="flex items-center justify-center h-10 w-10 rounded-full text-neutral-400 hover:text-white hover:bg-white/5 transition-colors"
-            aria-label="Configurações"
-          >
-            <Settings2 className="h-5 w-5" />
-          </button>
-          <button
-            onClick={() => setMentorOpen(true)}
-            className="flex items-center justify-center h-10 w-10 rounded-full text-neutral-400 hover:text-white hover:bg-white/5 transition-colors"
-            aria-label="Mentor IA"
-          >
-            <MessageCircle className="h-5 w-5" />
-          </button>
-        </div>
-        
-        {/* Counter Centralizado */}
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none pb-[calc(var(--sai-bottom,env(safe-area-inset-bottom,0px))/2)]">
-          <span className="text-[13px] font-semibold tabular-nums text-neutral-400 tracking-wide">
-            {idx + 1} <span className="text-neutral-600 font-medium">/ {total}</span>
-          </span>
-        </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setSumarioOpen(true)}
+              className="flex items-center justify-center h-10 w-10 rounded-full text-neutral-400 hover:text-white hover:bg-white/5 transition-colors"
+              aria-label="Sumário"
+            >
+              <List className="h-5 w-5" />
+            </button>
+            <button
+              onClick={() => setSettingsOpen(true)}
+              className="flex items-center justify-center h-10 w-10 rounded-full text-neutral-400 hover:text-white hover:bg-white/5 transition-colors"
+              aria-label="Configurações"
+            >
+              <Settings2 className="h-5 w-5" />
+            </button>
+            <button
+              onClick={() => setMentorOpen(true)}
+              className="flex items-center justify-center h-10 w-10 rounded-full text-neutral-400 hover:text-white hover:bg-white/5 transition-colors"
+              aria-label="Mentor IA"
+            >
+              <MessageCircle className="h-5 w-5" />
+            </button>
+          </div>
+          
+          {/* Counter Centralizado */}
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none pb-[calc(var(--sai-bottom,env(safe-area-inset-bottom,0px))/2)]">
+            <span className="text-[13px] font-semibold tabular-nums text-neutral-400 tracking-wide">
+              {idx + 1} <span className="text-neutral-600 font-medium">/ {total}</span>
+            </span>
+          </div>
 
-        <div className="flex items-center gap-3">
-           <button
-             onClick={() => setCurrentIdx((i) => Math.max(0, i - 1))}
-             disabled={idx === 0}
-             className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-             aria-label="Anterior"
-           >
-             <ChevronLeft className="h-5 w-5" />
-           </button>
-           
-           {idx < total - 1 ? (
+          <div className="flex items-center gap-3">
              <button
-                onClick={() => setCurrentIdx((i) => Math.min(total - 1, i + 1))}
-                disabled={idx >= maxRevealedIdx}
-                className="flex h-10 items-center justify-center gap-2 rounded-full bg-white text-black px-5 font-bold hover:bg-neutral-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+               onClick={() => setCurrentIdx((i) => Math.max(0, i - 1))}
+               disabled={idx === 0}
+               className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+               aria-label="Anterior"
              >
-                Próximo <ChevronRight className="h-[18px] w-[18px]" />
+               <ChevronLeft className="h-5 w-5" />
              </button>
-           ) : (
-             <button
-                onClick={concluirAula}
-                disabled={idx > maxRevealedIdx || maxRevealedIdx < total - 1}
-                className="flex h-10 items-center justify-center gap-2 rounded-full bg-primary text-primary-foreground px-5 font-bold hover:bg-primary/90 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-             >
-                <CheckCircle2 className="h-[18px] w-[18px]" /> Concluir
-             </button>
-           )}
-        </div>
+             
+             {idx < total - 1 ? (
+               <button
+                  onClick={() => setCurrentIdx((i) => Math.min(total - 1, i + 1))}
+                  disabled={idx >= maxRevealedIdx}
+                  className="flex h-10 items-center justify-center gap-2 rounded-full bg-white text-black px-5 font-bold hover:bg-neutral-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+               >
+                  Próximo <ChevronRight className="h-[18px] w-[18px]" />
+               </button>
+             ) : (
+               <button
+                  onClick={concluirAula}
+                  disabled={idx > maxRevealedIdx || maxRevealedIdx < total - 1}
+                  className="flex h-10 items-center justify-center gap-2 rounded-full bg-primary text-primary-foreground px-5 font-bold hover:bg-primary/90 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+               >
+                  <CheckCircle2 className="h-[18px] w-[18px]" /> Concluir
+               </button>
+             )}
+          </div>
         </div>
       )}
+
+      {/* Modal de Feedback de Questão - Nível Raiz (100% Sólido, Zero Transparência ou Vazamento) */}
+      <AnimatePresence>
+        {feedbackPergunta && (
+          <div className="fixed inset-0 z-[100] flex flex-col justify-end pointer-events-auto">
+            {/* Overlay Escuro Total */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/85 backdrop-blur-sm"
+              onClick={() => setFeedbackPergunta(null)}
+            />
+
+            {/* Bottom Sheet 100% Sólido */}
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+              className="relative z-10 w-full max-h-[85vh] rounded-t-[2.5rem] border-t border-white/10 bg-[#121418] p-6 sm:p-8 pb-[calc(2rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] shadow-2xl flex flex-col"
+            >
+              {/* Grab handle */}
+              <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-white/20" />
+
+              <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center gap-3.5">
+                  {feedbackPergunta.correta ? (
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-400 ring-1 ring-emerald-500/50">
+                      <CheckCircle2 className="h-7 w-7 text-emerald-400" />
+                    </div>
+                  ) : (
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-500/20 text-rose-400 ring-1 ring-rose-500/50">
+                      <XCircle className="h-7 w-7 text-rose-400" />
+                    </div>
+                  )}
+                  <div>
+                    <h3 className={`font-display text-xl font-bold tracking-tight ${feedbackPergunta.correta ? 'text-emerald-400' : 'text-rose-400'}`}>
+                      {feedbackPergunta.correta ? 'Você acertou!' : 'Você errou'}
+                    </h3>
+                    <p className="text-sm text-neutral-300">
+                      {feedbackPergunta.correta ? 'Excelente raciocínio!' : 'Revise o comentário e continue firme.'}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setFeedbackPergunta(null)}
+                  aria-label="Fechar"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/5 text-white/50 hover:bg-white/10 hover:text-white transition-colors"
+                >
+                  <XCircle className="h-5 w-5" />
+                </button>
+              </div>
+
+              <div className="overflow-y-auto pr-2 pb-6 flex-1">
+                <p className="text-[11px] font-extrabold uppercase tracking-widest text-primary mb-2">Comentário do Professor</p>
+                <div className="rounded-2xl border border-white/10 bg-[#1a1d24] p-5 text-[15px] leading-relaxed text-neutral-100 whitespace-pre-wrap shadow-inner">
+                  {feedbackPergunta.explicacao || 'Nenhum comentário disponível para esta questão.'}
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <button
+                  onClick={() => {
+                    setFeedbackPergunta(null);
+                    setCurrentIdx((i) => Math.min(total - 1, i + 1));
+                  }}
+                  className={`w-full rounded-2xl px-6 py-4 text-[16px] font-extrabold text-white shadow-xl active:scale-[0.98] transition-all flex items-center justify-center gap-2 ${
+                    feedbackPergunta.correta ? 'bg-emerald-500 hover:bg-emerald-400 shadow-emerald-500/30' : 'bg-rose-600 hover:bg-rose-500 shadow-rose-600/30'
+                  }`}
+                >
+                  Continuar <ChevronRight className="h-5 w-5" />
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Sumário */}
       <Sheet open={sumarioOpen} onOpenChange={setSumarioOpen}>
@@ -944,7 +1092,7 @@ const AprenderAula = () => {
 /* ---------- Blocos ---------- */
 
 function BlocoView({
-  bloco, resposta, onResponder, flipped, onFlip, onAvaliarFlash, conexao, onConexao,
+  bloco, resposta, onResponder, flipped, onFlip, onAvaliarFlash, onAvancar, conexao, onConexao,
 }: {
   bloco: Bloco;
   resposta?: { correta: boolean; escolha?: string };
@@ -952,23 +1100,15 @@ function BlocoView({
   flipped: boolean;
   onFlip: () => void;
   onAvaliarFlash: (nivel: NivelFlashcard) => void;
+  onAvancar?: () => void;
   conexao?: Record<number, number | null>;
   onConexao: (map: Record<number, number | null>, done: boolean) => void;
 }) {
   const [selectedOpcao, setSelectedOpcao] = useState<string | null>(null);
-  const [showExplicacao, setShowExplicacao] = useState(false);
 
   useEffect(() => {
     setSelectedOpcao(null);
-    setShowExplicacao(false);
   }, [bloco.id]);
-
-  useEffect(() => {
-    if (resposta) {
-      const t = setTimeout(() => setShowExplicacao(true), 400);
-      return () => clearTimeout(t);
-    }
-  }, [resposta]);
 
   if (isBlocoTexto(bloco.tipo)) {
     return <LeituraBlock payload={bloco.payload || {}} />;
@@ -1315,80 +1455,6 @@ function BlocoView({
           })}
         </div>
 
-        <AnimatePresence>
-          {resposta && showExplicacao && (
-            <>
-              {/* Overlay Escuro */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm"
-                onClick={() => setShowExplicacao(false)}
-              />
-              
-              {/* Bottom Sheet */}
-              <motion.div
-                initial={{ y: '100%' }}
-                animate={{ y: 0 }}
-                exit={{ y: '100%' }}
-                transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-                className="fixed bottom-0 left-0 right-0 z-[70] max-h-[85vh] rounded-t-[2.5rem] border-t border-white/10 bg-[#121417]/98 backdrop-blur-2xl p-6 sm:p-8 pb-[calc(1.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] shadow-2xl flex flex-col"
-              >
-                {/* Grab handle */}
-                <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-white/20" />
-
-                <div className="flex items-center justify-between mb-5">
-                  <div className="flex items-center gap-3.5">
-                    {resposta.correta ? (
-                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-400 ring-1 ring-emerald-500/50">
-                        <CheckCircle2 className="h-7 w-7 text-emerald-400" />
-                      </div>
-                    ) : (
-                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-500/20 text-rose-400 ring-1 ring-rose-500/50">
-                        <XCircle className="h-7 w-7 text-rose-400" />
-                      </div>
-                    )}
-                    <div>
-                      <h3 className={`font-display text-xl font-bold tracking-tight ${resposta.correta ? 'text-emerald-400' : 'text-rose-400'}`}>
-                        {resposta.correta ? 'Você acertou!' : 'Você errou'}
-                      </h3>
-                      <p className="text-sm text-neutral-300">
-                        {resposta.correta ? 'Excelente raciocínio!' : 'Revise o comentário e continue firme.'}
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => setShowExplicacao(false)}
-                    aria-label="Fechar"
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/5 text-white/50 hover:bg-white/10 hover:text-white transition-colors"
-                  >
-                    <XCircle className="h-5 w-5" />
-                  </button>
-                </div>
-                
-                <div className="overflow-y-auto pr-2 pb-6 flex-1">
-                  <p className="text-[11px] font-extrabold uppercase tracking-widest text-primary mb-2">Comentário do Professor</p>
-                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-4 text-[15px] leading-relaxed text-neutral-200 whitespace-pre-wrap">
-                    {bloco.resposta_correta?.explicacao || 'Nenhum comentário disponível para esta questão.'}
-                  </div>
-                </div>
-                
-                <div className="pt-2">
-                  <button
-                     onClick={() => setShowExplicacao(false)}
-                     className={`w-full rounded-2xl px-6 py-4 text-[15px] font-extrabold text-white shadow-lg active:scale-[0.98] transition-all ${
-                       resposta.correta ? 'bg-emerald-500 hover:bg-emerald-400 shadow-emerald-500/25' : 'bg-rose-500 hover:bg-rose-400 shadow-rose-500/25'
-                     }`}
-                  >
-                     Entendi
-                  </button>
-                </div>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
-
         {/* Floating Responder Button */}
         <AnimatePresence>
           {!resposta && selectedOpcao && (
@@ -1505,6 +1571,46 @@ function BlocoView({
             </div>
           </motion.div>
         </div>
+
+        {/* Botões de Auto-avaliação do Flashcard */}
+        {flipped && (
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3 w-full"
+          >
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onAvaliarFlash('nao_sabia');
+                onAvancar?.();
+              }}
+              className="w-full sm:w-auto flex-1 rounded-2xl border border-rose-500/30 bg-rose-500/10 px-5 py-3.5 text-sm font-bold text-rose-400 hover:bg-rose-500/20 active:scale-95 transition-all"
+            >
+              Não lembrei
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onAvaliarFlash('duvida');
+                onAvancar?.();
+              }}
+              className="w-full sm:w-auto flex-1 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-5 py-3.5 text-sm font-bold text-amber-400 hover:bg-amber-500/20 active:scale-95 transition-all"
+            >
+              Mais ou menos
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onAvaliarFlash('sabia');
+                onAvancar?.();
+              }}
+              className="w-full sm:w-auto flex-1 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-5 py-3.5 text-sm font-bold text-emerald-400 hover:bg-emerald-500/20 active:scale-95 transition-all"
+            >
+              Lembrei fácil
+            </button>
+          </motion.div>
+        )}
       </article>
     );
   }
