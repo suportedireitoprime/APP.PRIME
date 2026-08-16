@@ -329,11 +329,19 @@ export default function FlashcardsLeis() {
 
   const handleStartSession = () => {
     if (!leiSelecionada || !statusSel) return;
-    haptic.selection();
+    haptic.selection?.();
     const p = new URLSearchParams();
-    if (leiSelecionada.area) p.set('areas', leiSelecionada.area);
-    p.set('temas', titulosSelecionados.length > 0 ? titulosSelecionados.join('|') : leiSelecionada.tema);
-    if (artigosSelecionados.length > 0) p.set('artigos', artigosSelecionados.join('|'));
+    
+    // Se selecionou títulos específicos, envia eles; se deixou vazio ("Todos"), envia todos os títulos únicos da lei
+    const temasParaEnviar = titulosSelecionados.length > 0 ? titulosSelecionados : titulosUnicos;
+    if (temasParaEnviar.length > 0) {
+      p.set('temas', temasParaEnviar.join('|'));
+    }
+    
+    if (artigosSelecionados.length > 0) {
+      p.set('artigos', artigosSelecionados.join('|'));
+    }
+    
     p.set('modo', statusSel);
     p.set('limite', '9999'); // Sempre envia 9999 para garantir a filtragem dos artigos sem perda por paginação
     if (quantidadeSel) p.set('quantidade', quantidadeSel.toString());
@@ -471,14 +479,14 @@ export default function FlashcardsLeis() {
             <StepRow
               step={1} label="Títulos"
               hint={titulosSelecionados.length ? `${titulosSelecionados.length} selecionado(s)` : (loadingCards ? 'Carregando títulos...' : 'Todos os títulos')}
-              active={passo === 'titulos'} done={!!titulosSelecionados.length}
+              active={passo === 'titulos'} done={etapaAlcancada >= 2 || !!titulosSelecionados.length}
               badge={titulosSelecionados.length || undefined}
               onClick={() => setPasso('titulos')}
             />
             <StepRow
               step={2} label="Artigos"
               hint={artigosSelecionados.length ? `${artigosSelecionados.length} selecionado(s)` : 'Todos os artigos'}
-              active={passo === 'artigos'} done={!!artigosSelecionados.length}
+              active={passo === 'artigos'} done={etapaAlcancada >= 3 || !!artigosSelecionados.length}
               locked={etapaAlcancada < 2}
               badge={artigosSelecionados.length || undefined}
               onClick={() => setPasso('artigos')}
@@ -486,20 +494,22 @@ export default function FlashcardsLeis() {
             <StepRow
               step={3} label="Status"
               hint={statusSel ? STATUS_LEIS.find(s => s.id === statusSel)?.label || '' : 'Selecione o status'}
-              active={passo === 'status'} done={!!statusSel}
+              active={passo === 'status'} done={!!statusSel || etapaAlcancada >= 4}
               locked={etapaAlcancada < 3}
               onClick={() => setPasso('status')}
             />
             <StepRow
               step={4} label="Quantidade"
               hint={quantidadeSel ? `${quantidadeSel} flashcards` : 'Todos os cards'}
-              active={passo === 'quantidade'} locked={etapaAlcancada < 4}
+              active={passo === 'quantidade'} done={etapaAlcancada >= 5}
+              locked={etapaAlcancada < 4}
               onClick={() => setPasso('quantidade')}
             />
             <StepRow
               step={5} label="Ordem de Exibição"
               hint={ordemSel === 'sequencial' ? 'Sequencial' : 'Aleatório'}
-              active={passo === 'ordem'} locked={etapaAlcancada < 5}
+              active={passo === 'ordem'} done={etapaAlcancada >= 5}
+              locked={etapaAlcancada < 5}
               onClick={() => setPasso('ordem')}
             />
           </div>

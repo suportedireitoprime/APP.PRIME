@@ -17,6 +17,7 @@ import { playFlipSound } from '@/lib/flipSound';
 import { getAreaVisual } from '@/lib/flashcardsAreaVisual';
 import { useFlashcardsSessao, useFlashcardsResumoAreas, FlashcardCard } from '@/lib/flashcardsQueries';
 import { useGatedFeature } from '@/hooks/useGatedFeature';
+import ContagemRegressiva from '@/components/questoes/ContagemRegressiva';
 import laurel from '@/assets/landing-tribunal/laurel-leaf.png';
 import scales from '@/assets/landing-tribunal/scales.png';
 
@@ -89,18 +90,23 @@ const FlashcardsEstudo = () => {
   const [feitos, setFeitos] = useState(0);
   const [areaSheet, setAreaSheet] = useState<string | null>(null);
   const [exitDirection, setExitDirection] = useState<'left' | 'down'>('left');
+  const [emContagem, setEmContagem] = useState(!escolhendo);
   const salvando = useRef(false);
   const gateFlashcards = useGatedFeature('flashcards', 'flashcards');
 
-  const loading = loadingCards && !escolhendo;
+  const loading = (loadingCards || emContagem) && !escolhendo;
 
   useEffect(() => {
     if (cardsRaw) {
       let finalCards = [...cardsRaw];
       
-      // Filtro de artigos no frontend
+      // Filtro de artigos no frontend (compatível com números e textos)
       if (artigosList && artigosList.length > 0) {
-        finalCards = finalCards.filter(c => c.artigo_numero && artigosList.includes(c.artigo_numero));
+        finalCards = finalCards.filter(c => {
+          if (!c.artigo_numero) return false;
+          const numCard = c.artigo_numero.replace(/\D/g, '');
+          return artigosList.includes(c.artigo_numero) || (numCard !== '' && artigosList.some(a => a.replace(/\D/g, '') === numCard));
+        });
       }
       
       if (ordemParam === 'sequencial') {
@@ -341,6 +347,10 @@ const FlashcardsEstudo = () => {
           </div>
         ) : (
           <div className="pt-4 space-y-4">
+            {emContagem && !escolhendo && (
+              <ContagemRegressiva onFim={() => setEmContagem(false)} subtitulo="Preparando seus flashcards…" solido />
+            )}
+
             {/* Barra de progresso */}
             <div className="flex items-center gap-3">
               <Progress value={cards.length ? ((idx + 1) / cards.length) * 100 : 0} className="h-2 flex-1 [&>div]:bg-emerald-500" />
@@ -349,11 +359,10 @@ const FlashcardsEstudo = () => {
               </span>
             </div>
 
-            {loading && (
-              <div className="relative w-full min-h-[380px] sm:min-h-[440px] h-[54dvh] max-h-[540px] rounded-[32px] border border-border/80 bg-card p-6 md:p-8 flex items-center justify-center shadow-lg">
+            {loading && !emContagem && (
+              <div className="relative w-full min-h-[380px] sm:min-h-[440px] h-[54dvh] max-h-[540px] rounded-[32px] border border-border/80 bg-card p-6 md:p-8 flex items-center justify-center shadow-lg animate-pulse">
                 <div className="flex flex-col items-center gap-4 text-emerald-500/60">
                   <div className="h-10 w-10 animate-spin rounded-full border-4 border-current border-t-transparent" />
-                  <p className="text-sm font-semibold uppercase tracking-wider animate-pulse">Preparando Sessão...</p>
                 </div>
               </div>
             )}
