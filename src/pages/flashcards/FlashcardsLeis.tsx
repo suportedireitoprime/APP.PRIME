@@ -72,7 +72,7 @@ export default function FlashcardsLeis() {
   const [leiSelecionada, setLeiSelecionada] = useState<TemaRow | null>(null);
   const [passo, setPasso] = useState<null | 'titulos' | 'artigos' | 'status' | 'quantidade' | 'ordem'>(null);
   const [statusSel, setStatusSel] = useState<string>('');
-  const [quantidadeSel, setQuantidadeSel] = useState<number | null>(null);
+  const [quantidadeSel, setQuantidadeSel] = useState<number | 'todos' | undefined>(undefined);
   const [ordemSel, setOrdemSel] = useState<'sequencial' | 'embaralhado'>('sequencial');
   const [cardsDisponiveis, setCardsDisponiveis] = useState<{tema: string, artigo: string}[]>([]);
   const [titulosSelecionados, setTitulosSelecionados] = useState<string[]>([]);
@@ -105,7 +105,7 @@ export default function FlashcardsLeis() {
     setTitulosSelecionados([]);
     setArtigosSelecionados([]);
     setStatusSel('');
-    setQuantidadeSel(null);
+    setQuantidadeSel(undefined);
     setEtapaAlcancada(1);
   }, [leiSelecionada]);
 
@@ -353,7 +353,7 @@ export default function FlashcardsLeis() {
     
     p.set('modo', statusSel);
     p.set('limite', '9999'); // Sempre envia 9999 para garantir a filtragem dos artigos sem perda por paginação
-    if (quantidadeSel) p.set('quantidade', quantidadeSel.toString());
+    if (quantidadeSel && quantidadeSel !== 'todos') p.set('quantidade', quantidadeSel.toString());
     p.set('ordem', ordemSel);
     navigate(`/flashcards/estudar?${p.toString()}`);
   };
@@ -509,7 +509,7 @@ export default function FlashcardsLeis() {
             />
             <StepRow
               step={4} label="Quantidade"
-              hint={quantidadeSel ? `${quantidadeSel} flashcards` : 'Todos os cards'}
+              hint={quantidadeSel === 'todos' ? 'Todos os flashcards' : (quantidadeSel ? `${quantidadeSel} flashcards` : 'Selecione a quantidade')}
               active={passo === 'quantidade'} done={etapaAlcancada >= 5}
               locked={etapaAlcancada < 4}
               onClick={() => setPasso('quantidade')}
@@ -627,7 +627,8 @@ function StatusSheet({
   onConfirmar: (status: string) => void;
 }) {
   const [selecionados, setSelecionados] = useState<string[]>(() => {
-    if (statusSel === 'todos' || !statusSel) return ['todos', 'novos', 'revisar'];
+    if (!statusSel) return [];
+    if (statusSel === 'todos') return ['todos', 'novos', 'revisar'];
     return [statusSel];
   });
 
@@ -677,6 +678,7 @@ function StatusSheet({
   };
 
   const handleConfirm = () => {
+    if (selecionados.length === 0) return;
     haptic.selection?.();
     if (isTodosChecked || (!isNovosChecked && !isRevisarChecked)) {
       onConfirmar('todos');
@@ -805,7 +807,8 @@ function StatusSheet({
       <div className="border-t border-zinc-800/80 bg-zinc-900/90 backdrop-blur-md px-5 pb-safe-nav pt-4">
         <button
           onClick={handleConfirm}
-          className="flex h-12 w-full items-center justify-center rounded-xl bg-[#36AF85] hover:bg-[#2C9570] text-[15px] font-bold text-white shadow-lg active:scale-[0.98] transition-all"
+          disabled={selecionados.length === 0}
+          className="flex h-12 w-full items-center justify-center rounded-xl bg-[#36AF85] hover:bg-[#2C9570] text-[15px] font-bold text-white shadow-lg active:scale-[0.98] transition-all disabled:opacity-50 disabled:active:scale-100"
         >
           Confirmar Status
         </button>

@@ -9,18 +9,18 @@ export function QuantidadeSheet({
   onFechar,
   onConfirmar,
 }: {
-  quantidadeSel: number | null;
+  quantidadeSel: number | 'todos' | undefined;
   totalCount: number;
   onFechar: () => void;
-  onConfirmar: (qtd: number | null) => void;
+  onConfirmar: (qtd: number | 'todos') => void;
 }) {
-  const [localQtd, setLocalQtd] = useState<number | null>(quantidadeSel);
-  const isTodos = localQtd === null;
+  const [localQtd, setLocalQtd] = useState<number | 'todos' | undefined>(quantidadeSel);
+  const isTodos = localQtd === 'todos';
   const opcoesFixas = [10, 20, 50, 100];
 
   const handleSelectTodos = () => {
     haptic.selection?.();
-    setLocalQtd(null);
+    setLocalQtd('todos');
   };
 
   const handleSelectFixa = (qtd: number) => {
@@ -29,6 +29,7 @@ export function QuantidadeSheet({
   };
 
   const handleConfirm = () => {
+    if (localQtd === undefined) return;
     haptic.selection?.();
     onConfirmar(localQtd);
   };
@@ -130,7 +131,8 @@ export function QuantidadeSheet({
       <div className="border-t border-zinc-800/80 bg-zinc-900/90 backdrop-blur-md px-5 pb-safe-nav pt-4">
         <button
           onClick={handleConfirm}
-          className="flex h-12 w-full items-center justify-center rounded-xl bg-[#36AF85] hover:bg-[#2C9570] text-[15px] font-bold text-white shadow-lg active:scale-[0.98] transition-all"
+          disabled={localQtd === undefined}
+          className="flex h-12 w-full items-center justify-center rounded-xl bg-[#36AF85] hover:bg-[#2C9570] text-[15px] font-bold text-white shadow-lg active:scale-[0.98] transition-all disabled:opacity-50 disabled:active:scale-100"
         >
           Confirmar Quantidade
         </button>
