@@ -7,6 +7,7 @@ import FlashcardsBottomNav from '@/components/flashcards/FlashcardsBottomNav';
 import AreaTemasSheet from '@/components/flashcards/AreaTemasSheet';
 import {
   CheckCircle2, RotateCcw, SlidersHorizontal, BookOpen, Scale, Lightbulb, ChevronRight, Layers,
+  Shuffle, ArrowDownNarrowWide, BarChart3,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -129,6 +130,8 @@ const FlashcardsEstudo = () => {
   const [virado, setVirado] = useState(false);
   const [temas, setTemas] = useState<{ tema: string; total: number }[]>([]);
   const [feitos, setFeitos] = useState(0);
+  const [sessionCompreendidos, setSessionCompreendidos] = useState(0);
+  const [sessionRevisar, setSessionRevisar] = useState(0);
   const [areaSheet, setAreaSheet] = useState<string | null>(null);
   const [exitDirection, setExitDirection] = useState<'left' | 'down'>('left');
   const [emContagem, setEmContagem] = useState(!escolhendo);
@@ -211,6 +214,8 @@ const FlashcardsEstudo = () => {
     
     // Configura a direção da animação baseada na resposta
     setExitDirection(status === 'revisar' ? 'down' : 'left');
+    if (status === 'compreendido') setSessionCompreendidos(c => c + 1);
+    else setSessionRevisar(c => c + 1);
     
     salvando.current = true;
     haptic.light();
@@ -266,66 +271,145 @@ const FlashcardsEstudo = () => {
     return temasParam?.split('|')[0] || areaParam || 'Estudar';
   }, [areaParam, temasParam, escolhendo]);
 
+  // Dados de performance por título para o gráfico
+  const sessionPerTitle = useMemo(() => {
+    if (!cards.length) return [];
+    const map: Record<string, { total: number; done: number }> = {};
+    cards.forEach(c => {
+      const key = c.tema || c.area || 'Geral';
+      if (!map[key]) map[key] = { total: 0, done: 0 };
+      map[key].total++;
+    });
+    // Marca os cards já feitos
+    cards.slice(0, idx).forEach(c => {
+      const key = c.tema || c.area || 'Geral';
+      if (map[key]) map[key].done++;
+    });
+    return Object.entries(map)
+      .map(([name, v]) => ({ name, ...v, pct: v.total ? Math.round((v.done / v.total) * 100) : 0 }))
+      .sort((a, b) => b.total - a.total);
+  }, [cards, idx]);
+
+  const toggleOrdem = () => {
+    const next = new URLSearchParams(params);
+    const newOrdem = ordemParam === 'sequencial' ? 'embaralhado' : 'sequencial';
+    next.set('ordem', newOrdem);
+    setParams(next, { replace: true });
+    haptic.selection();
+  };
+
   return (
     <div className={`min-h-dvh bg-background ${escolhendo ? 'pb-32' : 'pb-10'}`}>
       {gateFlashcards.gateNode}
       <div className="mx-auto w-full max-w-3xl px-3.5 sm:px-6">
         <PageHeader
-          title={escolhendo ? 'Categorias de Flashcards' : areaParam || 'Prática de Flashcards'}
-          subtitle={temasParam ? `Filtro: ${temasParam}` : undefined}
+          title={escolhendo ? 'Categorias de Flashcards' : ''}
           onBack={() => navigate('/flashcards')}
           rightAction={
             !escolhendo && (
               <Sheet>
                 <SheetTrigger asChild>
                   <button className="flex h-10 w-10 items-center justify-center rounded-full bg-card border border-border/80 shadow-sm text-foreground hover:bg-muted">
-                    <SlidersHorizontal className="h-4.5 w-4.5 text-foreground" />
+                    <BarChart3 className="h-4.5 w-4.5 text-foreground" />
                   </button>
                 </SheetTrigger>
                 <SheetContent side="bottom" className="max-h-[90dvh] overflow-y-auto rounded-t-3xl border-t border-border">
-                  <SheetHeader><SheetTitle>Filtros</SheetTitle></SheetHeader>
+                  <SheetHeader><SheetTitle>Sessão Atual</SheetTitle></SheetHeader>
 
-                  <div className="mt-4 space-y-5 pb-8">
-                    <div>
-                      <p className="mb-2 text-xs font-semibold uppercase text-muted-foreground">Modo</p>
-                      <div className="flex flex-wrap gap-2">
-                        {MODOS.map((m) => (
-                          <Chip key={m.id} active={modo === m.id} onClick={() => setParam('modo', m.id)}>
-                            {m.label}
-                          </Chip>
-                        ))}
+                  <div className="mt-4 space-y-6 pb-8">
+                    {/* Ring Chart */}
+                    <div className="flex items-center gap-6">
+                      <div className="relative shrink-0">
+                        <svg width="100" height="100" viewBox="0 0 100 100" className="-rotate-90">
+                          <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" strokeWidth="8" className="text-zinc-800/60" />
+                          {feitos > 0 && (
+                            <>
+                              <circle
+                                cx="50" cy="50" r="40" fill="none"
+                                stroke="#10b981" strokeWidth="8" strokeLinecap="round"
+                                strokeDasharray={`${(sessionCompreendidos / Math.max(feitos, 1)) * 251.3} 251.3`}
+                              />
+                              <circle
+                                cx="50" cy="50" r="40" fill="none"
+                                stroke="#f59e0b" strokeWidth="8" strokeLinecap="round"
+                                strokeDasharray={`${(sessionRevisar / Math.max(feitos, 1)) * 251.3} 251.3`}
+                                strokeDashoffset={`${-(sessionCompreendidos / Math.max(feitos, 1)) * 251.3}`}
+                              />
+                            </>
+                          )}
+                        </svg>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                          <span className="text-2xl font-black text-foreground tabular-nums">{feitos}</span>
+                          <span className="text-[10px] font-medium text-muted-foreground">de {cards.length}</span>
+                        </div>
+                      </div>
+                      <div className="flex-1 space-y-2">
+                        <div className="flex items-center gap-2">
+                          <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 shrink-0" />
+                          <span className="text-sm font-bold text-foreground">{sessionCompreendidos} Compreendidos</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="h-2.5 w-2.5 rounded-full bg-amber-500 shrink-0" />
+                          <span className="text-sm font-bold text-foreground">{sessionRevisar} A revisar</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="h-2.5 w-2.5 rounded-full bg-zinc-700 shrink-0" />
+                          <span className="text-sm font-bold text-muted-foreground">{cards.length - feitos} Restantes</span>
+                        </div>
                       </div>
                     </div>
 
-                    <div>
-                      <p className="mb-2 text-xs font-semibold uppercase text-muted-foreground">Área</p>
-                      <div className="flex flex-wrap gap-2">
-                        <Chip active={!areaParam} onClick={() => setParam('area', null)}>Todas</Chip>
-                        {areas.map((a) => (
-                          <Chip key={a.area} active={areaParam === a.area} onClick={() => setParam('area', a.area)}>
-                            {a.area}
-                          </Chip>
-                        ))}
-                      </div>
-                    </div>
-
-                    {!!temas.length && (
+                    {/* Progress by Title */}
+                    {sessionPerTitle.length > 1 && (
                       <div>
-                        <p className="mb-2 text-xs font-semibold uppercase text-muted-foreground">Matéria</p>
-                        <div className="flex flex-wrap gap-2">
-                          <Chip active={!temasParam} onClick={() => setParam('temas', null)}>Todas</Chip>
-                          {temas.slice(0, 60).map((t) => (
-                            <Chip
-                              key={t.tema}
-                              active={temasParam === t.tema}
-                              onClick={() => setParam('temas', t.tema)}
-                            >
-                              {t.tema} · {t.total}
-                            </Chip>
+                        <p className="mb-3 text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground">Progresso por Título</p>
+                        <div className="space-y-2.5">
+                          {sessionPerTitle.map(t => (
+                            <div key={t.name} className="space-y-1">
+                              <div className="flex items-center justify-between gap-2">
+                                <span className="text-xs font-semibold text-foreground truncate flex-1">{formatTemaBreadcrumb(t.name).pop()}</span>
+                                <span className="text-[11px] font-bold tabular-nums text-muted-foreground shrink-0">{t.done}/{t.total}</span>
+                              </div>
+                              <div className="h-1.5 w-full rounded-full bg-zinc-800/60 overflow-hidden">
+                                <div
+                                  className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400 transition-all duration-500"
+                                  style={{ width: `${t.pct}%` }}
+                                />
+                              </div>
+                            </div>
                           ))}
                         </div>
                       </div>
                     )}
+
+                    {/* Order Toggle */}
+                    <div>
+                      <p className="mb-3 text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground">Ordem de Exibição</p>
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          onClick={() => { if (ordemParam !== 'sequencial') toggleOrdem(); }}
+                          className={`flex items-center justify-center gap-2 p-3.5 rounded-2xl border text-sm font-bold transition-all ${
+                            ordemParam === 'sequencial'
+                              ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-500 shadow-sm shadow-emerald-500/10'
+                              : 'bg-zinc-900/40 border-zinc-800/80 text-zinc-400 hover:bg-zinc-900/80'
+                          }`}
+                        >
+                          <ArrowDownNarrowWide className="h-4 w-4" />
+                          Sequencial
+                        </button>
+                        <button
+                          onClick={() => { if (ordemParam !== 'embaralhado') toggleOrdem(); }}
+                          className={`flex items-center justify-center gap-2 p-3.5 rounded-2xl border text-sm font-bold transition-all ${
+                            ordemParam === 'embaralhado'
+                              ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-500 shadow-sm shadow-emerald-500/10'
+                              : 'bg-zinc-900/40 border-zinc-800/80 text-zinc-400 hover:bg-zinc-900/80'
+                          }`}
+                        >
+                          <Shuffle className="h-4 w-4" />
+                          Aleatório
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </SheetContent>
               </Sheet>
