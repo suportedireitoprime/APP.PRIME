@@ -9,6 +9,7 @@ import { haptic } from '@/lib/nativeHaptics';
 import { cn } from '@/lib/utils';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useFlashcardsResumoAreas } from '@/lib/flashcardsQueries';
+import { QuantidadeSheet } from '@/components/flashcards/QuantidadeSheet';
 
 export type FlashcardsFiltro = {
   disciplinas: string[];
@@ -512,15 +513,15 @@ const FlashcardsFiltroSheet = ({
                 />
               )}
               {passo === 'quantidade' && (
-                <SelecaoSheet
-                  key="qtd" titulo="Quantidade" single
-                  opcoes={QUANTIDADES.map((q) => (q ? `${q} flashcards` : 'Todos'))}
-                  selecionado={f.quantidade ? [`${f.quantidade} flashcards`] : []}
+                <QuantidadeSheet
+                  key="qtd"
+                  quantidadeSel={f.quantidade}
+                  totalCount={lista.length} // A lista de cards ou total? Aqui eu deveria passar a contagem total baseada nos filtros aplicados. Como não tenho isso em FlashcardsFiltroSheet (ele só filtra depois), passo 0.
                   onFechar={() => setPasso(null)}
-                  onConfirmar={(v) => setF((p) => ({
-                    ...p,
-                    quantidade: v[0] && v[0] !== 'Todos' ? Number(v[0].replace(/\D/g, '')) : null,
-                  }))}
+                  onConfirmar={(qtd) => {
+                    setF(p => ({ ...p, quantidade: qtd }));
+                    setPasso(null);
+                  }}
                 />
               )}
             </AnimatePresence>

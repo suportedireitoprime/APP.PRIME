@@ -14,11 +14,11 @@ export function MapaConceitualBlock({ payload }: { payload: any }) {
 
   const posicoes = useMemo(() => {
     const n = nos.length || 1;
-    // Base layout na estrutura do viewBox: 0 0 500 500
-    const cx = 250;
-    const cy = 250;
-    // Ajusta o raio dinamicamente: grafos maiores precisam de mais espaço, mas limitamos no 500x500
-    const radius = n <= 3 ? 150 : n <= 5 ? 180 : 200;
+    // Base layout na estrutura do viewBox: 0 0 600 600
+    const cx = 300;
+    const cy = 300;
+    // Ajusta o raio dinamicamente: grafos maiores precisam de mais espaço
+    const radius = n <= 3 ? 160 : n <= 5 ? 200 : 220;
     const map: Record<string, { x: number; y: number }> = {};
     
     if (n === 1) {
@@ -90,7 +90,7 @@ export function MapaConceitualBlock({ payload }: { payload: any }) {
           viewport={{ once: true, margin: "-100px" }}
           className="relative z-10 w-full"
         >
-          <svg viewBox="0 0 500 500" className="w-full h-auto max-h-[65vh] drop-shadow-md">
+          <svg viewBox="0 0 600 600" className="w-full h-auto max-h-[65vh] drop-shadow-md">
             <defs>
               <filter id="glow">
                 <feGaussianBlur stdDeviation="4" result="coloredBlur"/>

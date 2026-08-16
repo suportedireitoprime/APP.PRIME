@@ -63,7 +63,7 @@ const FlashcardsEstudo = () => {
   const quantidadeParam = params.get('quantidade');
 
   // Sem nenhum filtro escolhido → tela de categorias.
-  const escolhendo = !areaParam && !areasParam && !deckId && modo !== 'edital';
+  const escolhendo = !areaParam && !areasParam && !temasParam && !deckId && modo !== 'edital';
 
   const limitParam = parseInt(params.get('limite') || '30', 10);
   const listaAreas = areasParam ? areasParam.split('|').filter(Boolean) : areaParam ? [areaParam] : null;
