@@ -122,15 +122,15 @@ Devolva UM JSON com esta estrutura EXATA:
 
 TIPOS DE BLOCO PERMITIDOS (varie, intercale teoria com dinâmica):
 
-1) "leitura" — EXPLICAÇÃO DIDÁTICA E APROFUNDADA. O aluno aprende a teoria completa com fluidez.
+1) "leitura" — EXPLICAÇÃO DIDÁTICA, ENVOLVENTE E APROFUNDADA. O aluno aprende a teoria completa como se fosse um tutor experiente falando passo a passo.
    { "tipo":"leitura", "ato":"fundamentos", "payload": {
        "titulo":"opcional",
-       "conteudo":"markdown da explicação COMPLETA — 3 a 5 parágrafos bem explicados, cobrindo com clareza os conceitos jurídicos, fundamentos e doutrina contidos no livro",
-       "em_portugues_claro":"explicação direta e didática do conceito em linguagem do dia a dia",
-       "exemplo":"caso concreto explicativo e detalhado com personagens e contexto realista (3-5 frases)",
-       "pegadinha":"explicação detalhada de onde os alunos erram em provas (OAB/concursos) e pegadinhas com justificativa jurídica"
+       "conteudo":"markdown da explicação COMPLETA — 3 a 5 parágrafos bem explicados, narrativos e conectados. Não seja seco. Cubra com clareza os conceitos jurídicos, fundamentos e doutrina contidos no livro.",
+       "em_portugues_claro":"tradução imediata daquele conceito para uma linguagem leiga, acessível e do dia a dia (sem juridiquês).",
+       "exemplo":"um caso prático detalhado com historinha, personagens e contexto realista para fixar o aprendizado (3-5 frases).",
+       "pegadinha":"o pulo do gato: onde as bancas (OAB/concursos) tentam enganar e como escapar da armadilha."
    } }
-   Os campos em_portugues_claro, exemplo e pegadinha são OBRIGATÓRIOS sempre que o conceito for técnico.
+   Os campos em_portugues_claro, exemplo e pegadinha são OBRIGATÓRIOS. Eles serão exibidos sequencialmente na tela (não em abas), então escreva-os de forma que a leitura flua do 'conteudo' direto para a 'traducao', depois para o 'exemplo' e termine com a 'pegadinha'.
    REGRAS DE FORMATAÇÃO DO MARKDOWN:
    - Negrito: EXATAMENTE dois asteriscos: **palavra**. Nunca três.
    - Itálico: EXATAMENTE um asterisco: *palavra*.

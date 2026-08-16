@@ -27,9 +27,11 @@ const DesktopPageLayout = ({ children, activeId, title, subtitle, mobileHeader, 
   const isDesktop = useIsDesktop();
   const location = useLocation();
 
+  const themeClass = activeId === 'aprender' ? 'theme-aprender' : activeId === 'questoes' ? 'theme-questoes' : 'theme-vademecum';
+
   if (!isDesktop) {
     return (
-      <div className="min-h-dvh bg-background pb-20">
+      <div className={`min-h-dvh bg-background pb-[calc(7rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] ${themeClass}`}>
         <div className="mx-auto w-full md:max-w-[900px] md:px-6">
           {mobileHeader}
           {children}
@@ -40,7 +42,7 @@ const DesktopPageLayout = ({ children, activeId, title, subtitle, mobileHeader, 
 
 
   return (
-    <div className="min-h-dvh bg-background flex flex-col">
+    <div className={`min-h-dvh bg-background flex flex-col ${themeClass}`}>
       {/* Cabeçalho amarelo e breadcrumb agora vêm do GlobalDesktopHeader.
           O hero de busca é exclusivo da área de Legislação. */}
       {activeId === 'legislacao' && <DesktopHeroBanner />}

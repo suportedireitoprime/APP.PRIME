@@ -3,7 +3,7 @@ import { ReactNode } from 'react';
 import { haptic } from '@/lib/nativeHaptics';
 
 interface PageHeaderProps {
-  title: string;
+  title: string | ReactNode;
   subtitle?: string;
   onBack?: () => void;
   rightAction?: ReactNode;

@@ -227,7 +227,7 @@ const Aprender = () => {
 
   const mobileHeader = (
     <PageHeader
-      title="Aprender"
+      title={<span className="font-display font-black text-[22px] sm:text-[24px] uppercase tracking-wide">APRENDER</span>}
       onBack={() => navigate('/')}
       rightAction={
         <button
@@ -307,7 +307,7 @@ const Aprender = () => {
           <div className="lg:col-span-6 space-y-5">
             {/* Hero amarelo full-bleed */}
             <section
-              className="bg-hero-yellow relative isolate overflow-hidden rounded-2xl border border-black/10 shadow-lg"
+              className="bg-hero-yellow relative isolate overflow-hidden -mx-3 sm:mx-0 rounded-none sm:rounded-2xl border-b border-black/10 sm:border-x sm:border-t shadow-lg"
               aria-label="Seu progresso em trilhas"
             >
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.25),transparent_60%)]" />
@@ -329,13 +329,13 @@ const Aprender = () => {
                   />
                 ))}
                 <div
-                  className="absolute inset-0 opacity-25"
+                  className="absolute inset-0 opacity-40"
                   style={{
-                    background: 'linear-gradient(135deg, hsl(348 78% 38%) 0%, #F87171 100%)',
+                    background: 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-light)) 100%)',
                     mixBlendMode: 'multiply',
                   }}
                 />
-                <div className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-[hsl(0_72%_52%)] via-[hsl(0_72%_52%)]/60 to-transparent" />
+                <div className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-background via-background/60 to-transparent" />
               </div>
 
               <div className="relative p-4 sm:p-5">

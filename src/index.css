@@ -248,17 +248,18 @@ body {
   }
 
   /* Vermelho padrão do app (mesmo do painel vermelho da home) */
+  /* Painel principal Aprender — Dourado elegante */
   .bg-hero-yellow {
-    background: linear-gradient(135deg, hsl(350 70% 22%) 0%, hsl(350 72% 34%) 50%, hsl(348 78% 38%) 100%);
+    background: linear-gradient(135deg, hsl(46 65% 22%) 0%, hsl(46 65% 34%) 50%, hsl(46 65% 46%) 100%);
     color: #fff;
   }
   .bg-hero-yellow-soft {
-    background: linear-gradient(135deg, hsl(350 70% 22% / 0.9) 0%, hsl(350 72% 34% / 0.9) 50%, hsl(348 78% 38% / 0.9) 100%);
+    background: linear-gradient(135deg, hsl(46 65% 22% / 0.9) 0%, hsl(46 65% 34% / 0.9) 50%, hsl(46 65% 46% / 0.9) 100%);
     color: #fff;
   }
   .tab-hero-yellow[data-state="active"] {
-    background: linear-gradient(135deg, hsl(350 68% 32%) 0%, hsl(350 74% 42%) 50%, hsl(348 80% 50%) 100%) !important;
-    color: #fff !important;
+    background: linear-gradient(135deg, hsl(46 65% 32%) 0%, hsl(46 65% 44%) 50%, hsl(46 65% 52%) 100%) !important;
+    color: #1a1a1a !important;
   }
 
   /* Painel vermelho / tab ativa / rodapé — gradiente compartilhado (DIREITO PRIME) */
@@ -298,9 +299,24 @@ body {
     --primary-light: 0 92% 82%;
     --ring: 0 91% 71%;
   }
+  
+  /* Escopo de tema do módulo Aprender — Vermelho Vivo, Luminous & Deep Dark */
+  .theme-aprender {
+    --background: 0 0% 4%;
+    --card: 0 0% 7%;
+    --popover: 0 0% 7%;
+    --secondary: 0 0% 12%;
+    --muted: 0 0% 10%;
+    --border: 0 0% 14%;
+    
+    --primary: 350 89% 60%;
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 350 95% 70%;
+    --ring: 350 89% 60%;
+  }
 
   .bg-tab-active {
-    background: linear-gradient(180deg, hsl(350 70% 22%) 0%, hsl(350 72% 34%) 50%, hsl(348 78% 38%) 100%);
+    background: linear-gradient(180deg, hsl(350 85% 45%) 0%, hsl(350 88% 55%) 50%, hsl(350 89% 60%) 100%);
   }
 
 

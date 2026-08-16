@@ -160,7 +160,7 @@ const AprenderModulo = () => {
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[hsl(348,78%,34%)] via-[hsl(348,78%,24%)] to-background border border-[hsl(348,78%,38%)]/40 p-6 sm:p-8 text-white shadow-xl space-y-4"
+              className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/35 via-primary/15 to-background border border-primary/30 p-6 sm:p-8 text-white shadow-xl space-y-4"
             >
               <div className="flex items-center justify-between gap-3">
                 <span className="px-3 py-1 rounded-full bg-white/15 border border-white/20 text-xs font-extrabold uppercase tracking-wider">

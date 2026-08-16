@@ -218,14 +218,14 @@ export const GeracaoAnimacaoOverlay = ({
               <button
                 type="button"
                 onClick={onCancel}
-                className="self-start inline-flex items-center gap-1.5 rounded-full bg-white/10 hover:bg-white/15 active:bg-white/20 text-amber-100 text-xs font-semibold px-3 py-1.5 backdrop-blur transition"
+                className="self-start inline-flex items-center gap-1.5 rounded-full bg-white/10 hover:bg-white/15 active:bg-white/20 text-rose-100 text-xs font-semibold px-3 py-1.5 backdrop-blur transition"
                 aria-label={cancelLabel}
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
                 {cancelLabel}
               </button>
             )}
-            <div className="relative rounded-3xl border border-amber-400/40 bg-[#0e0407]/95 px-6 pt-16 pb-6 shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
+            <div className="relative rounded-3xl border border-rose-500/20 bg-[#0e0407]/95 px-6 pt-16 pb-6 shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
               <img
                 src={srcOf(danceCatAsset)}
                 alt=""
@@ -235,31 +235,31 @@ export const GeracaoAnimacaoOverlay = ({
 
               <div className="relative mx-auto mb-5 h-32 w-32">
                 <svg className="absolute inset-0 h-full w-full -rotate-90" viewBox="0 0 100 100">
-                  <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(239,68,68, 0.15)" strokeWidth="6" />
+                  <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(244,63,94, 0.15)" strokeWidth="6" />
                   <circle cx="50" cy="50" r="46" fill="none" stroke="url(#geracao-grad)" strokeWidth="6" strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={circumference * (1 - pctInt / 100)} style={{ transition: "stroke-dashoffset 0.4s ease" }} />
                   <defs>
                     <linearGradient id="geracao-grad" x1="0" y1="0" x2="1" y2="1">
-                      <stop offset="0%" stopColor="#f87171" />
-                      <stop offset="100%" stopColor="#a81f40" />
+                      <stop offset="0%" stopColor="#fb7185" />
+                      <stop offset="100%" stopColor="#9f1239" />
                     </linearGradient>
                   </defs>
                 </svg>
                 <motion.div animate={{ rotate: 360 }} transition={{ duration: 1.8, repeat: Infinity, ease: "linear" }} className="absolute inset-0">
                   <svg viewBox="0 0 100 100" className="h-full w-full">
-                    <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(248,113,113, 0.9)" strokeWidth="6" strokeLinecap="round" strokeDasharray="18 260" />
+                    <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(244,63,94, 0.9)" strokeWidth="6" strokeLinecap="round" strokeDasharray="18 260" />
                   </svg>
                 </motion.div>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-3xl font-bold text-amber-100 tabular-nums">{pctInt}%</span>
-                  <span className="text-[10px] uppercase tracking-widest text-amber-300/80 mt-0.5">
+                  <span className="text-3xl font-bold text-rose-50 tabular-nums">{pctInt}%</span>
+                  <span className="text-[10px] uppercase tracking-widest text-rose-300/80 mt-0.5">
                     {stepIdx >= 3 ? "Concluído" : restante === 0 ? "Finalizando" : `~${mm}:${ss}`}
                   </span>
                 </div>
               </div>
 
               <div className="flex items-center justify-center gap-2 mb-3">
-                <Sparkles className="h-4 w-4 text-amber-300 animate-pulse" />
-                <p className="text-sm font-semibold text-amber-200 text-center">{titulo}</p>
+                <Sparkles className="h-4 w-4 text-rose-400 animate-pulse" />
+                <p className="text-sm font-semibold text-rose-100 text-center">{titulo}</p>
               </div>
 
               <ol className="space-y-2">
@@ -268,10 +268,10 @@ export const GeracaoAnimacaoOverlay = ({
                   const active = i === stepIdx;
                   return (
                     <li key={s} className="flex items-center gap-2.5 text-[12.5px]">
-                      <span className={`h-5 w-5 grid place-items-center rounded-full text-[10px] font-bold shrink-0 ${done ? "bg-emerald-500 text-black" : active ? "bg-amber-400 text-black animate-pulse" : "bg-white/10 text-white/50"}`}>
+                      <span className={`h-5 w-5 grid place-items-center rounded-full text-[10px] font-bold shrink-0 ${done ? "bg-white/10 text-white/50" : active ? "bg-rose-500 text-white shadow-[0_0_8px_rgba(244,63,94,0.6)]" : "bg-white/5 text-white/20"}`}>
                         {done ? "✓" : active ? "•" : i + 1}
                       </span>
-                      <span className={done ? "text-white/60 line-through" : active ? "text-amber-100 font-semibold" : "text-white/50"}>{s}</span>
+                      <span className={done ? "text-white/40 line-through" : active ? "text-rose-50 font-semibold" : "text-white/30"}>{s}</span>
                     </li>
                   );
                 })}
@@ -285,25 +285,25 @@ export const GeracaoAnimacaoOverlay = ({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.4 }}
-                className="rounded-2xl border border-amber-400/15 bg-black/40 px-5 py-4 shadow-inner"
+                className="rounded-2xl border border-rose-500/15 bg-black/40 px-5 py-4 shadow-inner"
               >
-                <div className="text-[10px] uppercase tracking-widest text-amber-300/70 mb-2 font-semibold">
+                <div className="text-[10px] uppercase tracking-widest text-rose-300/70 mb-2 font-semibold">
                   {badgeCategoria}
                 </div>
-                <blockquote className="text-[13px] leading-relaxed text-amber-50/90 italic">
-                  <span className="text-amber-300/70 mr-1 text-lg leading-none align-[-2px]">"</span>
+                <blockquote className="text-[13px] leading-relaxed text-rose-50/90 italic">
+                  <span className="text-rose-400/60 mr-1 text-lg leading-none align-[-2px]">"</span>
                   {fraseAtual.texto}
-                  <span className="text-amber-300/70 ml-0.5 text-lg leading-none align-[-2px]">"</span>
+                  <span className="text-rose-400/60 ml-0.5 text-lg leading-none align-[-2px]">"</span>
                 </blockquote>
                 {fraseAtual.legenda && (
-                  <figcaption className="mt-2 text-[11px] uppercase tracking-wider text-amber-300/80">
+                  <figcaption className="mt-2 text-[11px] uppercase tracking-wider text-rose-300/80">
                     — {fraseAtual.legenda}
                   </figcaption>
                 )}
                 {/* Barra de progresso da narração da frase */}
-                <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-amber-400/10">
+                <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-rose-500/10">
                   <div
-                    className="h-full bg-gradient-to-r from-amber-300 to-amber-500 rounded-full"
+                    className="h-full bg-gradient-to-r from-rose-300 to-rose-500 rounded-full"
                     style={{ width: `${Math.round(audioProgress * 100)}%`, transition: 'width 0.15s linear' }}
                   />
                 </div>

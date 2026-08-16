@@ -18,6 +18,9 @@ import {
   List,
   MessageCircle,
   Settings2,
+  ChevronLeft,
+  ChevronRight,
+  Check
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -77,15 +80,15 @@ const iconePorTipo = (tipo: TipoBloco) => {
   switch (tipo) {
     case 'intro': return BookOpen;
     case 'conceito': return Lightbulb;
-    case 'exemplo': return FileText;
+    case 'exemplo': return BookOpen;
     case 'conclusao': return Flag;
     case 'leitura':
-    case 'texto': return FileText;
+    case 'texto': return BookOpen;
     case 'pergunta': return HelpCircle;
     case 'flashcard': return Layers;
     case 'conexao': return Link2;
-    case 'citacao': return BookOpen;
-    case 'artigo_lei': return FileText;
+    case 'citacao': return Quote;
+    case 'artigo_lei': return Scale;
     case 'tabela': return Layers;
     case 'mapa_mental': return Link2;
     case 'mapa_conceitual': return Link2;
@@ -97,7 +100,7 @@ const iconePorTipo = (tipo: TipoBloco) => {
     case 'fluxograma': return Flag;
     case 'checkpoint': return CheckCircle2;
     case 'recapitulacao': return Trophy;
-    default: return FileText;
+    default: return BookOpen;
   }
 };
 
@@ -140,6 +143,33 @@ const atoDoBloco = (b: { payload?: any }) => {
   return ROTULO_ATO[a] ? a : '';
 };
 
+const interleaveBlocos = (blocos: Bloco[]) => {
+  const normalBlocos = blocos.filter(b => b.tipo !== 'pergunta' && b.tipo !== 'flashcard');
+  const questionBlocos = blocos.filter(b => b.tipo === 'pergunta' || b.tipo === 'flashcard');
+  
+  if (normalBlocos.length === 0 || questionBlocos.length === 0) return blocos;
+  
+  const interleaved: Bloco[] = [];
+  const step = normalBlocos.length / questionBlocos.length;
+  let qIdx = 0;
+  
+  for (let i = 0; i < normalBlocos.length; i++) {
+    interleaved.push(normalBlocos[i]);
+    const expectedQs = Math.floor((i + 1) / step);
+    while (qIdx < expectedQs && qIdx < questionBlocos.length) {
+      interleaved.push(questionBlocos[qIdx]);
+      qIdx++;
+    }
+  }
+  
+  while (qIdx < questionBlocos.length) {
+    interleaved.push(questionBlocos[qIdx]);
+    qIdx++;
+  }
+  
+  return interleaved;
+};
+
 
 const AprenderAula = () => {
   useTrackArea("aprender_aula_iniciada");
@@ -152,20 +182,23 @@ const AprenderAula = () => {
   const [loading, setLoading] = useState(true);
   const [proximaAula, setProximaAula] = useState<{ id: string; titulo: string } | null>(null);
   const [proximasAulas, setProximasAulas] = useState<{ id: string; titulo: string }[]>([]);
-  const [idx, setIdx] = useState(0);
-  const [direction, setDirection] = useState(1);
+  
+  // Estados de Interação
+  const [currentIdx, setCurrentIdx] = useState(0);
   const [respostas, setRespostas] = useState<Record<string, { correta: boolean; escolha?: string }>>({});
   const [flipped, setFlipped] = useState<Record<string, boolean>>({});
   const [conexoes, setConexoes] = useState<Record<string, Record<number, number | null>>>({});
+  
   const [finalizada, setFinalizada] = useState(false);
   const [mostrarPrevia, setMostrarPrevia] = useState(true);
   const [progressoSalvo, setProgressoSalvo] = useState(0);
   const [sumarioOpen, setSumarioOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [mentorOpen, setMentorOpen] = useState(false);
+  
   const startedAt = useRef<number>(Date.now());
-  const timelineScrollRef = useRef<HTMLDivElement | null>(null);
-  const timelineItemsRef = useRef<Array<HTMLDivElement | null>>([]);
+  const feedEndRef = useRef<HTMLDivElement | null>(null);
+  
   const flipAudioRef = useRef<HTMLAudioElement | null>(null);
   const swooshAudioRef = useRef<HTMLAudioElement | null>(null);
   if (typeof window !== 'undefined' && !flipAudioRef.current) {
@@ -197,7 +230,10 @@ const AprenderAula = () => {
         supabase.from('aprender_blocos').select('id, ordem, tipo, payload, resposta_correta').eq('aula_id', aulaId).order('ordem'),
       ]);
       setAula(a as Aula | null);
-      setBlocos((bs ?? []) as Bloco[]);
+      
+      const loadedBlocos = (bs ?? []) as Bloco[];
+      setBlocos(interleaveBlocos(loadedBlocos));
+      
       startedAt.current = Date.now();
       setLoading(false);
 
@@ -219,7 +255,6 @@ const AprenderAula = () => {
     })();
   }, [aulaId]);
 
-  // Progresso anterior — usado na prévia para oferecer "continuar de onde parei".
   useEffect(() => {
     if (!aulaId || !user) return;
     (async () => {
@@ -234,17 +269,59 @@ const AprenderAula = () => {
   }, [aulaId, user]);
 
   const total = blocos.length;
-  const atual = blocos[idx];
   const perguntas = useMemo(() => blocos.filter((b) => b.tipo === 'pergunta'), [blocos]);
 
-  // Auto-scroll da timeline amarela: mantém o passo atual centralizado conforme avança
+  // Lógica principal do Feed: determina até qual bloco o usuário pode ver
+  const maxRevealedIdx = useMemo(() => {
+    if (!blocos || blocos.length === 0) return 0;
+    let last = 0;
+    for (let i = 0; i < blocos.length; i++) {
+      last = i;
+      const b = blocos[i];
+      const isInteractive = ['pergunta', 'flashcard', 'conexao', 'ordenacao'].includes(b.tipo);
+      
+      let completed = false;
+      if (i < progressoSalvo) {
+        completed = true;
+      } else {
+        if (b.tipo === 'pergunta' && respostas[b.id]) completed = true;
+        if (b.tipo === 'flashcard' && flipped[b.id]) completed = true;
+        if (b.tipo === 'conexao' && conexoes[b.id]) {
+          const map = conexoes[b.id];
+          const pares = b.payload?.pares || [];
+          if (pares.length > 0 && pares.every((_: any, idx: number) => map[idx] === idx)) {
+             completed = true;
+          }
+        }
+      }
+
+      if (isInteractive && !completed) {
+        break; // Bloqueia a revelação dos próximos blocos até resolver este
+      }
+    }
+    return last;
+  }, [blocos, respostas, flipped, conexoes, progressoSalvo]);
+
+  // Auto-scroll para o topo ao mudar de página
   useEffect(() => {
-    const container = timelineScrollRef.current;
-    const item = timelineItemsRef.current[idx];
-    if (!container || !item) return;
-    const targetLeft = item.offsetLeft - container.clientWidth / 2 + item.clientWidth / 2;
-    container.scrollTo({ left: Math.max(0, targetLeft), behavior: 'smooth' });
-  }, [idx, blocos.length]);
+    if (!mostrarPrevia) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
+      // Scroll da timeline para centralizar o item ativo
+      setTimeout(() => {
+        const el = document.getElementById(`timeline-item-${currentIdx}`);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+      }, 100);
+    }
+  }, [currentIdx, mostrarPrevia]);
+
+
+  const atual = blocos[currentIdx] || blocos[0];
+  const idx = currentIdx; // alias para compatibilidade com o sumário e cabeçalho
+  const isGamificacao = atual && ['pergunta', 'conexao', 'flashcard'].includes(atual.tipo);
+
   const acertos = useMemo(
     () => perguntas.filter((p) => respostas[p.id]?.correta).length,
     [perguntas, respostas],
@@ -255,7 +332,7 @@ const AprenderAula = () => {
     const payload = {
       user_id: user.id,
       aula_id: aulaId,
-      blocos_concluidos: concluida ? total : Math.min(idx + 1, total),
+      blocos_concluidos: concluida ? total : Math.min(maxRevealedIdx + 1, total),
       acertos,
       total_perguntas: perguntas.length,
       tempo_ms: Date.now() - startedAt.current,
@@ -294,6 +371,7 @@ const AprenderAula = () => {
     const nova = proximaRevisao(nivel, anterior?.proxima_revisao_em);
     await salvarBloco(bloco, { nivel }, nivel === 'sabia', nova);
     toast.success(`Revisão marcada para ${rotuloIntervalo(nova)}`);
+    playSwooshSound();
   };
 
   const responderPergunta = async (bloco: Bloco, escolha: string) => {
@@ -301,27 +379,14 @@ const AprenderAula = () => {
     const correta = String(bloco.resposta_correta?.id_correto || '').toLowerCase() === escolha.toLowerCase();
     setRespostas((r) => ({ ...r, [bloco.id]: { correta, escolha } }));
     await salvarBloco(bloco, { escolha }, correta);
+    if (correta) playSwooshSound();
   };
 
-  const irPara = (novo: number) => {
-    if (novo < 0 || novo >= total || novo === idx) return;
-    setDirection(novo > idx ? 1 : -1);
-    setIdx(novo);
-    playSwooshSound();
+  const concluirAula = async () => {
+    await salvarProgresso(true);
+    setFinalizada(true);
+    toast.success('Aula concluída com sucesso!');
   };
-
-  const proximo = async () => {
-    if (idx < total - 1) {
-      await salvarProgresso(false);
-      irPara(idx + 1);
-    } else {
-      await salvarProgresso(true);
-      setFinalizada(true);
-      toast.success('Aula concluída!');
-    }
-  };
-
-  const anterior = () => irPara(idx - 1);
 
   if (loading) {
     return (
@@ -360,8 +425,8 @@ const AprenderAula = () => {
         progressoPct={pctProgresso}
         podeContinuar={continuarDe > 0 && pctProgresso < 100}
         onVoltar={() => goBack()}
-        onComecar={() => { setIdx(0); startedAt.current = Date.now(); setMostrarPrevia(false); }}
-        onContinuar={() => { setIdx(continuarDe); startedAt.current = Date.now(); setMostrarPrevia(false); }}
+        onComecar={() => { setCurrentIdx(0); setProgressoSalvo(0); setRespostas({}); setFlipped({}); setConexoes({}); startedAt.current = Date.now(); setMostrarPrevia(false); }}
+        onContinuar={() => { setCurrentIdx(continuarDe); startedAt.current = Date.now(); setMostrarPrevia(false); }}
       />
     );
   }
@@ -411,7 +476,7 @@ const AprenderAula = () => {
           <div className="mt-8 space-y-4">
             <div className="grid gap-3 sm:grid-cols-2">
               <button
-                onClick={() => { setIdx(0); setRespostas({}); setFlipped({}); setConexoes({}); setFinalizada(false); startedAt.current = Date.now(); }}
+                onClick={() => { setCurrentIdx(0); setProgressoSalvo(0); setRespostas({}); setFlipped({}); setConexoes({}); setFinalizada(false); startedAt.current = Date.now(); }}
                 className="flex h-14 items-center justify-center rounded-xl border border-border/80 bg-card px-5 text-sm font-bold text-foreground hover:bg-accent active:scale-95 transition-transform"
               >
                 <RotateCw className="mr-2 inline h-4 w-4" /> Refazer Aula
@@ -445,7 +510,7 @@ const AprenderAula = () => {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col bg-background lg:pl-[19rem]">
+    <div className="flex min-h-dvh flex-col bg-background theme-aprender lg:pl-[19rem]">
       {/* Sidebar desktop — sumário da aula + próximas aulas */}
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-[19rem] flex-col border-r border-border bg-card/40 lg:flex">
         <div className="border-b border-border px-5 py-5">
@@ -472,9 +537,14 @@ const AprenderAula = () => {
               return (
                 <button
                   key={b.id}
-                  onClick={() => irPara(i)}
+                  onClick={() => {
+                     if (i > maxRevealedIdx) return;
+                     setCurrentIdx(i);
+                     setSumarioOpen(false);
+                  }}
                   className={`flex w-full items-start gap-2.5 rounded-lg px-2.5 py-2 text-left transition-colors ${
-                    isAtual ? 'bg-accent' : 'hover:bg-accent/50'
+                    i <= maxRevealedIdx ? 'hover:bg-accent/50' : 'opacity-50 cursor-not-allowed'
+
                   }`}
                 >
                   <Icon className={`mt-0.5 h-4 w-4 shrink-0 ${i <= idx ? 'text-primary' : 'text-muted-foreground'}`} />
@@ -508,256 +578,225 @@ const AprenderAula = () => {
         </div>
       </aside>
 
-      {/*
-        Header alinhado ao PageHeader do Radar (min-height 5rem + safe-area).
-        Alvos de toque seguem Apple HIG (44pt) e Material 3 (48dp).
-      */}
-      <header
-        className="sticky top-0 z-10 border-b border-border bg-background/95 backdrop-blur"
-        style={{
-          paddingTop: 'calc(var(--sai-top, env(safe-area-inset-top, 0px)) + 0.5rem)',
-        }}
-      >
-        <div
-          className="mx-auto flex max-w-3xl items-center gap-3 py-2 md:py-3 lg:max-w-none lg:px-10 2xl:px-16"
-          style={{
-            paddingLeft: 'calc(0.75rem + var(--sai-left, env(safe-area-inset-left, 0px)))',
-            paddingRight: 'calc(0.75rem + var(--sai-right, env(safe-area-inset-right, 0px)))',
-          }}
-        >
-          <button
-            onClick={() => goBack()}
-            aria-label="Voltar"
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-muted hover:bg-accent active:scale-95 transition-transform lg:hidden"
-          >
-            <ArrowLeft className="h-[22px] w-[22px]" />
-          </button>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-[11px] uppercase tracking-wide text-muted-foreground md:text-xs">
-              {ROTULO_ATO[atoDoBloco(atual)] ? `Aprender · ${ROTULO_ATO[atoDoBloco(atual)]}` : 'Aprender'}
-            </p>
-            <p className="truncate font-display text-[15px] font-bold text-foreground md:text-base lg:hidden">{aula.titulo}</p>
-          </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <div className="flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-xs font-bold text-amber-600 dark:text-amber-400">
-              <Zap className="h-3.5 w-3.5 fill-amber-500 text-amber-500 animate-pulse" />
-              <span>{(idx + 1) * 15 + acertos * 25} XP</span>
-            </div>
-            {acertos > 0 && (
-              <div className="flex items-center gap-1 rounded-full border border-orange-500/30 bg-orange-500/10 px-2.5 py-1 text-xs font-bold text-orange-600 dark:text-orange-400">
-                <Flame className="h-3.5 w-3.5 fill-orange-500 text-orange-500" />
-                <span>{acertos}x</span>
-              </div>
-            )}
-            <span className="shrink-0 rounded-full bg-muted px-3 py-1 text-xs font-medium tabular-nums text-muted-foreground md:text-sm">
-              {idx + 1}/{total}
-            </span>
-          </div>
-
-        </div>
-
-
-        {/* Timeline horizontal — Dark Card / Zinc de alto contraste com iluminação sutil */}
-        <div
-          ref={timelineScrollRef}
-          className="relative overflow-x-auto border-y border-border/80 bg-card/90 py-3 backdrop-blur-md [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden scroll-smooth shadow-sm"
-        >
-          <div
-            className="mx-auto flex max-w-3xl items-center lg:max-w-none lg:px-10 2xl:px-16"
+      <AnimatePresence>
+        {!isGamificacao && (
+          <motion.header
+            initial={{ y: -100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -100, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+            className="sticky top-0 z-10 border-b border-white/5 bg-background/95 backdrop-blur-md"
             style={{
-              paddingLeft: 'calc(0.75rem + var(--sai-left, env(safe-area-inset-left, 0px)))',
-              paddingRight: 'calc(0.75rem + var(--sai-right, env(safe-area-inset-right, 0px)))',
+              paddingTop: 'calc(var(--sai-top, env(safe-area-inset-top, 0px)) + 0.5rem)',
             }}
           >
-            {blocos.map((b, i) => {
-              const Icon = iconePorTipo(b.tipo);
-              const isAtual = i === idx;
-              const isFeito = i < idx;
-              const ativo = isAtual || isFeito;
-              const respondida = b.tipo === 'pergunta' ? respostas[b.id] : undefined;
-              const ok = respondida?.correta;
-              const err = respondida && !respondida.correta;
-              const isLast = i === blocos.length - 1;
-              const ato = atoDoBloco(b);
-              const iniciaAto = !!ato && ato !== atoDoBloco(blocos[i - 1] ?? {});
-              return (
-                <div key={b.id} ref={(el) => (timelineItemsRef.current[i] = el)} className="relative flex shrink-0 items-center">
-                  {iniciaAto && (
-                    <span className="mr-2 shrink-0 rounded-full bg-primary/20 border border-primary/40 px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-primary shadow-sm">
-                      {ROTULO_ATO[ato]}
-                    </span>
-                  )}
-
-                  <button
-                    onClick={() => irPara(i)}
-                    aria-label={`${rotuloPorTipo(b.tipo)} ${i + 1}`}
-                    className="relative flex h-11 w-11 md:h-12 md:w-12 shrink-0 items-center justify-center rounded-full transition-transform active:scale-95"
-                  >
-                    {isAtual && (
-                      <motion.span
-                        layoutId="timeline-halo"
-                        className="absolute inset-0 rounded-full bg-primary/25 ring-2 ring-primary/60 shadow-lg"
-                        transition={{ type: 'spring', stiffness: 500, damping: 32 }}
-                      />
-                    )}
-                    <Icon
-                      className={`relative h-[22px] w-[22px] md:h-6 md:w-6 transition-colors ${
-                        isAtual
-                          ? 'text-primary drop-shadow-[0_0_8px_rgba(var(--primary),0.6)]'
-                          : isFeito
-                          ? 'text-foreground'
-                          : 'text-muted-foreground/40'
-                      }`}
-                      strokeWidth={isAtual ? 2.5 : 2}
-                    />
-                    {ok && (
-                      <span className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 ring-2 ring-background shadow-md">
-                        <CheckCircle2 className="h-3 w-3 text-white" strokeWidth={2.5} />
-                      </span>
-                    )}
-                    {err && (
-                      <span className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 ring-2 ring-background shadow-md">
-                        <XCircle className="h-3 w-3 text-white" strokeWidth={2.5} />
-                      </span>
-                    )}
-                  </button>
-                  {!isLast && (
-                    <div className="relative mx-1 h-[3px] w-6 md:w-8 overflow-hidden rounded-full bg-muted/60">
-                      <motion.div
-                        className="absolute inset-y-0 left-0 rounded-full bg-primary"
-                        initial={false}
-                        animate={{ width: isFeito ? '100%' : '0%' }}
-                        transition={{ duration: 0.4, ease: 'easeOut' }}
-                      />
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </header>
-
-      {/* Conteúdo com swipe horizontal */}
-      <main className="relative flex-1 overflow-hidden lg:pr-[15rem] 2xl:pr-[17rem]">
-        <AnimatePresence mode="wait" initial={false} custom={direction}>
-          <motion.div
-            key={atual.id}
-            custom={direction}
-            initial={{ x: direction * 60, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: direction * -60, opacity: 0 }}
-            transition={{ duration: 0.25, ease: 'easeOut' }}
-            drag="x"
-            dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={0.2}
-            onDragEnd={(_, info) => {
-              if (info.offset.x < -80) proximo();
-              else if (info.offset.x > 80) anterior();
-            }}
-            className="mx-auto h-full w-full max-w-3xl overflow-y-auto px-5 md:px-8 pt-6 md:pt-8 pb-[calc(9rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] lg:mx-0 lg:max-w-[74ch] xl:max-w-[80ch] lg:px-12 2xl:px-16 lg:pt-12 lg:pb-20 lg:leading-relaxed lg:[&_article]:space-y-6"
-
-
-          >
-            <BlocoView
-              bloco={atual}
-              resposta={respostas[atual.id]}
-              onResponder={(escolha) => responderPergunta(atual, escolha)}
-              flipped={!!flipped[atual.id]}
-              onFlip={() => { playFlipSound(); setFlipped((f) => ({ ...f, [atual.id]: !f[atual.id] })); }}
-              onAvaliarFlash={(nivel) => avaliarFlashcard(atual, nivel)}
-              conexao={conexoes[atual.id]}
-              onConexao={async (map, done) => {
-                setConexoes((c) => ({ ...c, [atual.id]: map }));
-                if (done) {
-                  const pares = atual.payload?.pares || [];
-                  const acertou = pares.every((_: any, i: number) => map[i] === i);
-                  await salvarBloco(atual, { map }, acertou);
-                  if (acertou) toast.success('Todas as ligações corretas!');
-                }
+            <div
+              className="mx-auto flex flex-col md:flex-row md:items-center gap-3 py-3 md:py-4 lg:max-w-none lg:px-10 2xl:px-16"
+              style={{
+                paddingLeft: 'calc(1rem + var(--sai-left, env(safe-area-inset-left, 0px)))',
+                paddingRight: 'calc(1rem + var(--sai-right, env(safe-area-inset-right, 0px)))',
               }}
-            />
-          </motion.div>
-        </AnimatePresence>
+            >
+              <div className="flex items-start gap-4">
+                <button
+                  onClick={() => goBack()}
+                  aria-label="Voltar"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/5 border border-white/10 hover:bg-white/10 active:scale-95 transition-transform text-white lg:hidden mt-0.5"
+                >
+                  <ArrowLeft className="h-[18px] w-[18px]" />
+                </button>
+                <div className="flex-1 flex flex-col justify-center pl-1">
+                  <p className="font-sans text-[15px] font-medium text-white/90 lg:hidden leading-snug tracking-tight line-clamp-2">
+                    {aula.titulo}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Timeline horizontal - Dark estético */}
+            <div
+              className="relative overflow-x-auto bg-card/40 py-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden scroll-smooth border-y border-white/5"
+            >
+              <div
+                className="mx-auto flex max-w-3xl items-center lg:max-w-none lg:px-10 2xl:px-16"
+                style={{
+                  paddingLeft: 'calc(0.75rem + var(--sai-left, env(safe-area-inset-left, 0px)))',
+                  paddingRight: 'calc(0.75rem + var(--sai-right, env(safe-area-inset-right, 0px)))',
+                }}
+              >
+                {blocos.map((b, i) => {
+                  const Icon = iconePorTipo(b.tipo);
+                  const isAtual = i === idx;
+                  const isFeito = i < idx;
+                  const ativo = isAtual || isFeito;
+                  const respondida = b.tipo === 'pergunta' ? respostas[b.id] : undefined;
+                  const ok = respondida?.correta;
+                  const err = respondida && !respondida.correta;
+                  const isLast = i === blocos.length - 1;
+                  const ato = atoDoBloco(b);
+                  const iniciaAto = !!ato && ato !== atoDoBloco(blocos[i - 1] ?? {});
+                  return (
+                    <div key={b.id} id={`timeline-item-${i}`} className="relative flex shrink-0 items-center">
+
+                      <button
+                        onClick={() => {
+                          if (i > maxRevealedIdx) return;
+                          setCurrentIdx(i);
+                        }}
+                        aria-label={`${rotuloPorTipo(b.tipo)} ${i + 1}`}
+                        className="relative flex h-11 w-11 md:h-12 md:w-12 shrink-0 items-center justify-center rounded-full transition-transform active:scale-95"
+                      >
+                        {isAtual && (
+                          <motion.span
+                            layoutId="timeline-halo"
+                            className="absolute inset-0 rounded-full border border-white/30 bg-white/5"
+                            transition={{ type: 'spring', stiffness: 500, damping: 32 }}
+                          />
+                        )}
+                        <Icon
+                          className={`relative h-[22px] w-[22px] md:h-5 md:w-5 transition-colors ${
+                            isAtual
+                              ? 'text-white'
+                              : isFeito
+                              ? 'text-neutral-400'
+                              : 'text-neutral-700'
+                          }`}
+                          strokeWidth={1.5}
+                        />
+                        {ok && (
+                          <span className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 ring-2 ring-background shadow-md">
+                            <CheckCircle2 className="h-3 w-3 text-white" strokeWidth={2.5} />
+                          </span>
+                        )}
+                        {err && (
+                          <span className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary ring-2 ring-background shadow-md">
+                            <XCircle className="h-3 w-3 text-white" strokeWidth={2.5} />
+                          </span>
+                        )}
+                      </button>
+                      {!isLast && (
+                        <div className="relative mx-1 h-[3px] w-6 md:w-8 overflow-hidden rounded-full bg-muted/60">
+                          <motion.div
+                            className="absolute inset-y-0 left-0 rounded-full bg-primary"
+                            initial={false}
+                            animate={{ width: isFeito ? '100%' : '0%' }}
+                            transition={{ duration: 0.4, ease: 'easeOut' }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </motion.header>
+        )}
+      </AnimatePresence>
+
+      {/* Feed Contínuo Vertical */}
+      <main className={`relative flex-1 overflow-y-auto overflow-x-hidden scroll-smooth transition-colors duration-500 ${isGamificacao ? 'bg-zinc-950' : 'bg-background'}`}>
+        <div className={`mx-auto h-full w-full max-w-3xl px-5 md:px-8 pt-6 md:pt-8 pb-[calc(10rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] lg:mx-0 lg:max-w-[74ch] xl:max-w-[80ch] lg:px-12 2xl:px-16 lg:pt-12 lg:pb-32 flex flex-col ${isGamificacao ? 'justify-center items-center flex-1 h-[80vh]' : 'gap-12 lg:gap-16'}`}>
+          <AnimatePresence mode="wait">
+            {atual && (
+              <motion.div
+                key={atual.id}
+                initial={isGamificacao ? { opacity: 0, x: '100vw' } : { opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={isGamificacao ? { opacity: 0, x: '-100vw' } : { opacity: 0, x: -20 }}
+                transition={isGamificacao ? { type: 'spring', damping: 25, stiffness: 200 } : { duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                className="w-full relative"
+              >
+                <BlocoView
+                  bloco={atual}
+                  resposta={respostas[atual.id]}
+                  onResponder={(escolha) => responderPergunta(atual, escolha)}
+                  flipped={!!flipped[atual.id]}
+                  onFlip={() => { playFlipSound(); setFlipped((f) => ({ ...f, [atual.id]: !f[atual.id] })); }}
+                  onAvaliarFlash={(nivel) => avaliarFlashcard(atual, nivel)}
+                  conexao={conexoes[atual.id]}
+                  onConexao={async (map, done) => {
+                    setConexoes((c) => ({ ...c, [atual.id]: map }));
+                    if (done) {
+                      const pares = atual.payload?.pares || [];
+                      const acertou = pares.every((_: any, idx: number) => map[idx] === idx);
+                      await salvarBloco(atual, { map }, acertou);
+                      if (acertou) toast.success('Todas as ligações corretas!');
+                    }
+                  }}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Espaço extra pro footer fixo */}
+          <div className="h-8" />
+        </div>
       </main>
 
-      {/* Controles desktop — coluna fixa à direita, fora da coluna de leitura */}
-      <aside className="fixed right-5 top-1/2 z-20 hidden w-[12.5rem] -translate-y-1/2 flex-col gap-2 rounded-2xl border border-border/80 bg-card/90 p-3 backdrop-blur-md shadow-lg lg:flex 2xl:right-8 2xl:w-[14rem]">
-        <p className="px-1 pb-1 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-          Etapa {idx + 1} de {total}
-        </p>
-        <button
-          onClick={proximo}
-          className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary text-sm font-bold text-white shadow-md transition-all hover:bg-primary/90 active:scale-95"
-        >
-          <span>{idx === total - 1 ? 'Concluir' : 'Próximo'}</span>
-          <ArrowRight className="h-4 w-4 text-white" strokeWidth={2.5} />
-        </button>
-        <button
-          onClick={anterior}
-          disabled={idx === 0}
-          className="inline-flex h-11 w-full items-center justify-center rounded-xl border border-border bg-muted/40 text-sm font-semibold text-foreground transition-transform hover:bg-accent disabled:opacity-40 active:scale-95"
-        >
-          Anterior
-        </button>
-        <div className="my-1 h-px bg-border/60" />
-        <button
-          onClick={() => setMentorOpen(true)}
-          className="inline-flex h-11 w-full items-center gap-2 rounded-xl border border-border/80 bg-card px-3 text-sm font-semibold text-foreground transition-colors hover:bg-accent"
-        >
-          <MessageCircle className="h-[18px] w-[18px] text-primary" strokeWidth={2.5} />
-          Mentor
-        </button>
-        <button
-          onClick={() => setSettingsOpen(true)}
-          className="inline-flex h-11 w-full items-center gap-2 rounded-xl border border-border/80 bg-card px-3 text-sm font-semibold text-muted-foreground transition-colors hover:bg-accent"
-        >
-          <Settings2 className="h-[18px] w-[18px] text-muted-foreground" strokeWidth={2} />
-          Ajustes
-        </button>
-      </aside>
-
-      {/* Rodapé unificado (mobile) — botões 48dp (Material) / 44pt (Apple) */}
-      <div
-        className="fixed inset-x-0 bottom-0 z-20 border-t border-border/80 bg-card/95 backdrop-blur-md lg:hidden shadow-lg"
-        style={{
-          paddingLeft: 'calc(0.75rem + var(--sai-left, env(safe-area-inset-left, 0px)))',
-          paddingRight: 'calc(0.75rem + var(--sai-right, env(safe-area-inset-right, 0px)))',
-          paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom, 0px))',
-        }}
-      >
-        <div className="mx-auto flex max-w-3xl items-center gap-2.5 md:gap-3 py-2.5 lg:max-w-4xl lg:px-6">
+      {/* Navegação de Rodapé Estilo eBook */}
+      {!(atual?.tipo === 'pergunta' && !respostas[atual.id]) && (
+        <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/5 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 px-4 py-3 pb-[calc(0.75rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setSumarioOpen(true)}
+            className="flex items-center justify-center h-10 w-10 rounded-full text-neutral-400 hover:text-white hover:bg-white/5 transition-colors"
+            aria-label="Sumário"
+          >
+            <List className="h-5 w-5" />
+          </button>
           <button
             onClick={() => setSettingsOpen(true)}
+            className="flex items-center justify-center h-10 w-10 rounded-full text-neutral-400 hover:text-white hover:bg-white/5 transition-colors"
             aria-label="Configurações"
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border/80 bg-card hover:bg-accent active:scale-95 transition-transform text-foreground"
           >
-            <Settings2 className="h-[22px] w-[22px]" />
+            <Settings2 className="h-5 w-5" />
           </button>
           <button
             onClick={() => setMentorOpen(true)}
-            aria-label="Mentor"
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary text-white shadow-md active:scale-95 transition-transform hover:bg-primary/90"
+            className="flex items-center justify-center h-10 w-10 rounded-full text-neutral-400 hover:text-white hover:bg-white/5 transition-colors"
+            aria-label="Mentor IA"
           >
-            <MessageCircle className="h-[22px] w-[22px] text-white" strokeWidth={2.5} />
-          </button>
-          <div className="flex-1" />
-          <button
-            onClick={anterior}
-            disabled={idx === 0}
-            className="rounded-full border border-border/80 bg-muted/60 px-5 h-12 text-sm font-semibold text-foreground disabled:opacity-40 active:scale-95 transition-transform"
-          >
-            Anterior
-          </button>
-          <button
-            onClick={proximo}
-            className="inline-flex items-center gap-1.5 rounded-full bg-primary px-6 h-12 text-sm font-bold text-white hover:bg-primary/90 active:scale-95 transition-transform shadow-md"
-          >
-            <span>{idx === total - 1 ? 'Concluir' : 'Próximo'}</span>
-            <ArrowRight className="h-4 w-4 text-white" strokeWidth={2.5} />
+            <MessageCircle className="h-5 w-5" />
           </button>
         </div>
-      </div>
+        
+        {/* Counter Centralizado */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none pb-[calc(var(--sai-bottom,env(safe-area-inset-bottom,0px))/2)]">
+          <span className="text-[13px] font-semibold tabular-nums text-neutral-400 tracking-wide">
+            {idx + 1} <span className="text-neutral-600 font-medium">/ {total}</span>
+          </span>
+        </div>
+
+        <div className="flex items-center gap-3">
+           <button
+             onClick={() => setCurrentIdx((i) => Math.max(0, i - 1))}
+             disabled={idx === 0}
+             className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+             aria-label="Anterior"
+           >
+             <ChevronLeft className="h-5 w-5" />
+           </button>
+           
+           {idx < total - 1 ? (
+             <button
+                onClick={() => setCurrentIdx((i) => Math.min(total - 1, i + 1))}
+                disabled={idx >= maxRevealedIdx}
+                className="flex h-10 items-center justify-center gap-2 rounded-full bg-white text-black px-5 font-bold hover:bg-neutral-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+             >
+                Próximo <ChevronRight className="h-[18px] w-[18px]" />
+             </button>
+           ) : (
+             <button
+                onClick={concluirAula}
+                disabled={idx > maxRevealedIdx || maxRevealedIdx < total - 1}
+                className="flex h-10 items-center justify-center gap-2 rounded-full bg-primary text-primary-foreground px-5 font-bold hover:bg-primary/90 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+             >
+                <CheckCircle2 className="h-[18px] w-[18px]" /> Concluir
+             </button>
+           )}
+        </div>
+        </div>
+      )}
 
       {/* Sumário */}
       <Sheet open={sumarioOpen} onOpenChange={setSumarioOpen}>
@@ -777,14 +816,18 @@ const AprenderAula = () => {
               return (
                 <button
                   key={b.id}
-                  onClick={() => { irPara(i); setSumarioOpen(false); }}
+                  onClick={() => {
+                    setSumarioOpen(false);
+                      if (i > maxRevealedIdx) return;
+                      setCurrentIdx(i);
+                  }}
                   className={`flex w-full items-center gap-3 rounded-lg p-3 text-left text-sm transition-colors ${
-                    isAtual ? 'bg-accent' : 'hover:bg-accent/60'
+                    i <= maxRevealedIdx ? 'hover:bg-accent/60' : 'opacity-50 cursor-not-allowed'
                   }`}
                 >
                   <span
-                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-black"
-                    style={{ background: 'hsl(348 78% 38%)' }}
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-white"
+                    style={{ background: 'hsl(var(--primary))' }}
                   >
                     <Icon className="h-4 w-4" />
                   </span>
@@ -911,6 +954,21 @@ function BlocoView({
   conexao?: Record<number, number | null>;
   onConexao: (map: Record<number, number | null>, done: boolean) => void;
 }) {
+  const [selectedOpcao, setSelectedOpcao] = useState<string | null>(null);
+  const [showExplicacao, setShowExplicacao] = useState(false);
+
+  useEffect(() => {
+    setSelectedOpcao(null);
+    setShowExplicacao(false);
+  }, [bloco.id]);
+
+  useEffect(() => {
+    if (resposta) {
+      const t = setTimeout(() => setShowExplicacao(true), 400);
+      return () => clearTimeout(t);
+    }
+  }, [resposta]);
+
   if (isBlocoTexto(bloco.tipo)) {
     return <LeituraBlock payload={bloco.payload || {}} />;
   }
@@ -923,14 +981,17 @@ function BlocoView({
   if (bloco.tipo === 'citacao') {
     const { texto, autor, fonte_url } = bloco.payload || {};
     return (
-      <article>
-        <p className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase text-primary"><Quote className="h-4 w-4" /> Citação</p>
-        <blockquote className="border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg">
-          <p className="font-display text-lg leading-relaxed italic text-foreground">"{texto}"</p>
-          {autor && <footer className="mt-3 text-sm text-muted-foreground">— {autor}</footer>}
+      <article className="max-w-[70ch] mx-auto py-4">
+        <p className="mb-4 flex items-center gap-3 text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary/80">
+          <Quote className="h-3.5 w-3.5" /> Citação Especial
+        </p>
+        <blockquote className="relative pl-6 py-2">
+          <div className="absolute left-0 top-0 bottom-0 w-1 rounded-full bg-gradient-to-b from-primary via-primary/50 to-transparent" />
+          <p className="font-sans text-[20px] md:text-[22px] leading-[1.7] italic text-neutral-300">"{texto}"</p>
+          {autor && <footer className="mt-4 text-[15px] font-medium text-neutral-500">— {autor}</footer>}
           {fonte_url && (
-            <a href={fonte_url} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-xs text-primary underline">
-              Ver fonte
+            <a href={fonte_url} target="_blank" rel="noopener noreferrer" className="mt-3 inline-block text-[13px] font-semibold text-primary hover:text-primary-light underline underline-offset-4 decoration-primary/30 hover:decoration-primary/80 transition-all">
+              Acessar fonte original
             </a>
           )}
         </blockquote>
@@ -941,13 +1002,15 @@ function BlocoView({
   if (bloco.tipo === 'artigo_lei') {
     const { lei, numero, texto } = bloco.payload || {};
     return (
-      <article>
-        <p className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase text-primary"><Scale className="h-4 w-4" /> Artigo de lei</p>
-        <div className="rounded-lg border border-border bg-muted/40 p-4">
-          <p className="mb-2 text-sm font-bold text-foreground">
-            {lei} {numero ? `— art. ${numero}` : ''}
+      <article className="max-w-[70ch] mx-auto py-4">
+        <p className="mb-4 flex items-center gap-3 text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary/80">
+          <Scale className="h-3.5 w-3.5" /> Texto da Lei
+        </p>
+        <div className="relative rounded-2xl border border-white/5 bg-gradient-to-br from-white/[0.04] to-transparent p-6 shadow-xl before:absolute before:inset-0 before:bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] before:opacity-10 before:mix-blend-overlay">
+          <p className="mb-4 text-sm font-bold text-white uppercase tracking-wide">
+            {lei} {numero ? <span className="text-primary font-black">— Art. {numero}</span> : ''}
           </p>
-          <p className="whitespace-pre-line text-[15px] leading-relaxed text-foreground">{texto}</p>
+          <p className="whitespace-pre-line text-[17px] md:text-[18px] leading-[1.8] text-neutral-300 relative z-10">{texto}</p>
         </div>
       </article>
     );
@@ -956,23 +1019,23 @@ function BlocoView({
   if (bloco.tipo === 'tabela') {
     const { titulo, colunas = [], linhas = [] } = bloco.payload || {};
     return (
-      <article>
-        {titulo && <h3 className="mb-3 font-display text-[19px] font-bold leading-snug text-foreground">{titulo}</h3>}
+      <article className="max-w-[70ch] lg:max-w-none mx-auto py-4">
+        {titulo && <h3 className="mb-6 font-sans text-[20px] font-bold leading-snug text-white">{titulo}</h3>}
 
-        {/* Mobile: cada linha vira um cartão — sem rolagem horizontal */}
-        <div className="space-y-3 sm:hidden">
+        {/* Mobile: cada linha vira um cartão */}
+        <div className="space-y-4 sm:hidden">
           {linhas.map((row: string[], ri: number) => (
-            <div key={ri} className="overflow-hidden rounded-xl border border-border shadow-sm">
-              <div className="bg-muted px-3 py-2 font-display text-[15px] font-bold text-foreground">
+            <div key={ri} className="overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] shadow-lg">
+              <div className="bg-white/5 px-4 py-3 font-sans text-[15px] font-bold text-white border-b border-white/5">
                 {row[0]}
               </div>
-              <dl className="divide-y divide-border">
+              <dl className="divide-y divide-white/5">
                 {row.slice(1).map((cell, ci) => (
-                  <div key={ci} className="px-3 py-2.5">
-                    <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  <div key={ci} className="px-4 py-3">
+                    <dt className="text-[10px] font-bold uppercase tracking-wider text-neutral-500 mb-1">
                       {colunas[ci + 1]}
                     </dt>
-                    <dd className="mt-0.5 text-[15px] leading-relaxed text-foreground/90">{cell}</dd>
+                    <dd className="text-[15px] leading-relaxed text-neutral-300">{cell}</dd>
                   </div>
                 ))}
               </dl>
@@ -981,20 +1044,20 @@ function BlocoView({
         </div>
 
         {/* Desktop: tabela normal */}
-        <div className="hidden overflow-x-auto rounded-xl border border-border shadow-sm sm:block">
+        <div className="hidden overflow-x-auto rounded-2xl border border-white/5 shadow-xl sm:block bg-white/[0.02]">
           <table className="w-full text-[15px]">
-            <thead className="bg-muted">
+            <thead className="bg-white/5">
               <tr>
                 {colunas.map((c: string, i: number) => (
-                  <th key={i} className="px-3 py-3 text-left text-[14px] font-bold text-foreground">{c}</th>
+                  <th key={i} className="px-4 py-4 text-left text-[14px] font-bold text-white uppercase tracking-wider">{c}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {linhas.map((row: string[], ri: number) => (
-                <tr key={ri} className="border-t border-border odd:bg-card/40">
+                <tr key={ri} className="border-t border-white/5 odd:bg-white/[0.01]">
                   {row.map((cell, ci) => (
-                    <td key={ci} className="px-3 py-3 align-top leading-relaxed text-foreground/90">{cell}</td>
+                    <td key={ci} className="px-4 py-4 align-top leading-relaxed text-neutral-300">{cell}</td>
                   ))}
                 </tr>
               ))}
@@ -1084,7 +1147,7 @@ function BlocoView({
         case 'inicio': return { border: 'border-emerald-500/50', bg: 'bg-emerald-500/5', badge: 'bg-emerald-500 text-white', label: 'Início' };
         case 'fim': return { border: 'border-primary/50', bg: 'bg-primary/5', badge: 'bg-primary text-primary-foreground', label: 'Fim' };
         case 'decisao': return { border: 'border-yellow-500/60', bg: 'bg-yellow-500/10', badge: 'bg-yellow-500 text-black', label: 'Decisão' };
-        default: return { border: 'border-border', bg: 'bg-card', badge: 'bg-muted text-foreground', label: 'Etapa' };
+        default: return { border: 'border-border/60 hover:border-primary/40 transition-colors', bg: 'bg-card/60 backdrop-blur-sm', badge: 'bg-primary/10 text-primary font-bold', label: 'Etapa' };
       }
     };
     return (
@@ -1191,44 +1254,138 @@ function BlocoView({
     const { enunciado, opcoes } = bloco.payload || {};
     const correta = String(bloco.resposta_correta?.id_correto || '').toLowerCase();
     return (
-      <article>
-        <p className="mb-1 text-xs font-semibold uppercase text-primary">Pergunta</p>
-        <h2 className="mb-4 font-display text-xl font-bold leading-snug text-foreground">{enunciado}</h2>
-        <div className="space-y-2">
+      <article className="max-w-[70ch] mx-auto py-4">
+        <p className="mb-4 flex items-center gap-3 text-[11px] font-extrabold uppercase tracking-[0.2em] text-red-400">
+          Desafio de Fixação
+        </p>
+        <h2 className="mb-8 font-sans text-[21px] md:text-[23px] font-normal leading-snug text-white">{enunciado}</h2>
+        <div className="space-y-3 pb-24">
           {(opcoes || []).map((op: any) => {
             const id = String(op.id).toLowerCase();
-            const escolhida = resposta?.escolha?.toLowerCase() === id;
-            const acertou = resposta?.correta && escolhida;
-            const errou = resposta && escolhida && !resposta.correta;
+            const escolhida = resposta ? (resposta.escolha?.toLowerCase() === id) : (selectedOpcao === id);
+            const acertou = resposta?.correta && (resposta.escolha?.toLowerCase() === id);
+            const errou = resposta && (resposta.escolha?.toLowerCase() === id) && !resposta.correta;
             const revelaCerta = resposta && id === correta;
             return (
               <button
                 key={op.id}
                 disabled={!!resposta}
-                onClick={() => onResponder(id)}
-                className={`flex w-full items-center gap-3 rounded-xl border p-4 text-left text-[15px] leading-relaxed transition-colors min-h-14 ${
+                onClick={() => {
+                  if (!resposta) setSelectedOpcao(id);
+                }}
+                className={`flex w-full items-center gap-4 rounded-2xl border p-5 text-left text-[16px] md:text-[17px] leading-relaxed transition-all min-h-16 shadow-sm group ${
                   acertou || revelaCerta
-                    ? 'border-green-500/60 bg-green-500/10 text-foreground'
+                    ? 'border-emerald-500/50 bg-emerald-500/[0.12] text-white ring-1 ring-emerald-500/30'
                     : errou
-                    ? 'border-red-500/60 bg-red-500/10 text-foreground'
-                    : 'border-border hover:border-primary/50 hover:bg-accent'
+                    ? 'border-red-500/50 bg-red-500/[0.12] text-white ring-1 ring-red-500/30'
+                    : escolhida
+                    ? 'border-neutral-500 bg-neutral-700 text-white ring-1 ring-neutral-500/50'
+                    : 'border-white/10 bg-[#1A1A1A] text-neutral-300 hover:border-white/30 hover:bg-[#262626]'
                 }`}
               >
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border text-sm font-bold uppercase">
+                <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border text-sm font-extrabold uppercase transition-colors ${
+                  acertou || revelaCerta ? 'border-emerald-500/60 bg-emerald-500/25 text-emerald-400' :
+                  errou ? 'border-red-500/60 bg-red-500/25 text-red-400' :
+                  escolhida ? 'border-neutral-400 bg-neutral-600 text-white' :
+                  'border-white/20 bg-white/5 text-neutral-400 group-hover:text-white group-hover:border-white/40'
+                }`}>
                   {op.id}
                 </span>
-                <span className="flex-1">{op.texto}</span>
-                {(acertou || revelaCerta) && <CheckCircle2 className="h-5 w-5 text-green-600" />}
-                {errou && <XCircle className="h-5 w-5 text-red-600" />}
+                <span className="flex-1 font-medium">{op.texto}</span>
+                {(acertou || revelaCerta) && <CheckCircle2 className="h-6 w-6 text-emerald-400 shrink-0" />}
+                {errou && <XCircle className="h-6 w-6 text-red-400 shrink-0" />}
               </button>
             );
           })}
         </div>
-        {resposta && bloco.resposta_correta?.explicacao && (
-          <div className="mt-4 rounded-lg bg-muted/60 p-3 text-[15px] text-muted-foreground">
-            <strong className="text-foreground">Explicação:</strong> {bloco.resposta_correta.explicacao}
-          </div>
-        )}
+        <AnimatePresence>
+          {resposta && showExplicacao && (
+            <>
+              {/* Overlay Escuro */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm"
+                onClick={() => setShowExplicacao(false)}
+              />
+              
+              {/* Bottom Sheet */}
+              <motion.div
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                className="fixed bottom-0 left-0 right-0 z-[70] max-h-[85vh] rounded-t-[2rem] border-t border-white/10 bg-[#1A1A1A] p-6 pb-[calc(1.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] shadow-[0_-10px_40px_rgba(0,0,0,0.5)] flex flex-col"
+              >
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    {resposta.correta ? (
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 ring-1 ring-emerald-500/50">
+                        <CheckCircle2 className="h-7 w-7 text-emerald-400" />
+                      </div>
+                    ) : (
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-500/20 text-red-400 ring-1 ring-red-500/50">
+                        <XCircle className="h-7 w-7 text-red-400" />
+                      </div>
+                    )}
+                    <div>
+                      <h3 className={`font-display text-xl font-bold tracking-wide ${resposta.correta ? 'text-emerald-400' : 'text-red-400'}`}>
+                        {resposta.correta ? 'Você acertou!' : 'Você errou'}
+                      </h3>
+                      <p className="text-sm text-neutral-300">
+                        {resposta.correta ? 'Mandou muito bem.' : 'Não desanime, continue tentando.'}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setShowExplicacao(false)}
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/5 text-white/50 hover:bg-white/10 hover:text-white transition-colors"
+                  >
+                    <XCircle className="h-5 w-5" />
+                  </button>
+                </div>
+                
+                <div className="overflow-y-auto pr-2 pb-6 flex-1">
+                  <p className="text-[12px] font-extrabold uppercase tracking-widest text-red-400 mb-2">Comentário do Professor</p>
+                  <p className="text-[16px] leading-relaxed text-neutral-200 whitespace-pre-wrap">
+                    {bloco.resposta_correta?.explicacao || 'Nenhum comentário disponível para esta questão.'}
+                  </p>
+                </div>
+                
+                <div className="pt-2">
+                  <button
+                     onClick={() => setShowExplicacao(false)}
+                     className={`w-full rounded-2xl px-6 py-4 text-[16px] font-extrabold text-white shadow-lg active:scale-[0.98] transition-all ${
+                       resposta.correta ? 'bg-emerald-500 hover:bg-emerald-400 shadow-emerald-500/25' : 'bg-red-500 hover:bg-red-400 shadow-red-500/25'
+                     }`}
+                  >
+                     Entendi
+                  </button>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+
+        {/* Floating Responder Button */}
+        <AnimatePresence>
+          {!resposta && selectedOpcao && (
+            <motion.div
+              initial={{ y: 100 }}
+              animate={{ y: 0 }}
+              exit={{ y: 100 }}
+              className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 bg-background/95 backdrop-blur px-4 py-4 pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] flex items-center justify-between"
+            >
+              <button
+                onClick={() => onResponder(selectedOpcao)}
+                className="w-full rounded-2xl bg-primary px-6 py-4 text-[16px] font-bold text-white shadow-lg shadow-primary/20 hover:bg-primary-light active:scale-[0.98] transition-all"
+              >
+                Responder
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </article>
     );
   }
@@ -1241,85 +1398,85 @@ function BlocoView({
     const dicaTexto: string = dica || '';
 
     const Divider = ({ label, Icon }: { label: string; Icon?: any }) => (
-      <div className="flex items-center gap-3 my-3" aria-hidden="true">
-        <div className="flex-1 h-px bg-accent-foreground/25" />
-        <span className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-bold text-accent-foreground/80">
+      <div className="flex items-center gap-4 my-6" aria-hidden="true">
+        <div className="flex-1 h-px bg-white/10" />
+        <span className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold text-white/50">
           {Icon && <Icon className="w-3.5 h-3.5" />} {label}
         </span>
-        <div className="flex-1 h-px bg-accent-foreground/25" />
+        <div className="flex-1 h-px bg-white/10" />
       </div>
     );
 
     return (
-      <article>
-        <p className="mb-3 text-xs font-semibold uppercase text-primary">Flashcard</p>
+      <article className="max-w-[70ch] mx-auto py-4">
+        <p className="mb-4 flex items-center gap-3 text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary/80">
+          Flashcard de Retenção
+        </p>
 
         <div className="w-full" style={{ perspective: '1200px' }}>
           <motion.div
             className="relative w-full min-h-[460px] cursor-pointer"
             animate={{ rotateY: flipped ? 180 : 0 }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             style={{ transformStyle: 'preserve-3d' }}
             onClick={onFlip}
           >
             {/* Frente */}
             <div
-              className="absolute inset-0 rounded-3xl bg-gradient-to-br from-card via-card to-secondary border-2 border-accent/40 p-6 flex flex-col shadow-2xl"
+              className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-[#111] to-[#1a1a1a] border border-white/10 p-8 md:p-10 flex flex-col shadow-2xl"
               style={{ backfaceVisibility: 'hidden' }}
             >
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-[10px] uppercase tracking-widest font-bold text-accent">Frente</span>
-                <Sparkles className="w-4 h-4 text-accent/60" />
+              <div className="flex items-center justify-between mb-4 opacity-50">
+                <span className="text-[10px] uppercase tracking-widest font-extrabold text-white">Frente</span>
+                <Sparkles className="w-5 h-5 text-white" />
               </div>
-              <div className="flex-1 flex items-center justify-center text-center">
-                <p className="font-display text-xl leading-snug text-foreground">{frente}</p>
+              <div className="flex-1 flex items-center justify-center text-center px-4">
+                <p className="font-sans text-2xl md:text-3xl font-bold leading-[1.4] text-white/90">{frente}</p>
               </div>
-              <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground pt-3 border-t border-border/40">
-                <RotateCw className="w-3.5 h-3.5" /> Toque para virar
+              <div className="flex items-center justify-center gap-2 text-xs font-medium uppercase tracking-wider text-white/30 pt-6 border-t border-white/5">
+                <RotateCw className="w-4 h-4" /> Toque para virar
               </div>
             </div>
 
             {/* Verso */}
             <div
-              className="absolute inset-0 rounded-3xl bg-gradient-to-br from-accent/95 to-primary/90 p-5 flex flex-col shadow-2xl"
+              className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/30 p-8 md:p-10 flex flex-col shadow-2xl backdrop-blur-xl"
               style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
             >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] uppercase tracking-widest font-bold text-accent-foreground/80">Verso · Resposta</span>
-                <CheckCircle2 className="w-4 h-4 text-accent-foreground/80" />
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-[10px] uppercase tracking-widest font-extrabold text-primary">Verso · Resposta</span>
+                <CheckCircle2 className="w-5 h-5 text-primary" />
               </div>
-              <div className="flex-1 overflow-y-auto text-left pr-1">
-                <p className="font-body text-[15px] leading-relaxed text-accent-foreground">{versoTexto}</p>
+              <div className="flex-1 overflow-y-auto text-left pr-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <p className="font-sans text-xl font-bold leading-relaxed text-white/95">{versoTexto}</p>
 
                 {exemploTexto && (
                   <>
                     <Divider label="Exemplo prático" Icon={Lightbulb} />
-                    <p className="font-body text-[14px] leading-relaxed text-accent-foreground italic">{exemploTexto}</p>
+                    <p className="font-sans text-[16px] leading-relaxed text-white/80 italic">{exemploTexto}</p>
                   </>
                 )}
 
                 {aplicandoTexto && (
                   <>
                     <Divider label="Aplicando" Icon={Flag} />
-                    <p className="font-body text-[14px] leading-relaxed text-accent-foreground">{aplicandoTexto}</p>
+                    <p className="font-sans text-[16px] leading-relaxed text-white/80">{aplicandoTexto}</p>
                   </>
                 )}
 
                 {dicaTexto && (
-                  <div className="mt-3 rounded-xl bg-accent-foreground/10 border border-accent-foreground/25 px-3 py-2">
-                    <p className="text-[10px] uppercase tracking-widest font-bold text-accent-foreground/80 mb-0.5">Dica</p>
-                    <p className="font-body text-[13px] leading-relaxed text-accent-foreground/90">{dicaTexto}</p>
+                  <div className="mt-6 rounded-2xl bg-white/5 border border-white/10 px-5 py-4">
+                    <p className="text-[10px] uppercase tracking-widest font-bold text-primary mb-1">Dica de Ouro</p>
+                    <p className="font-sans text-[15px] leading-relaxed text-white/90">{dicaTexto}</p>
                   </div>
                 )}
               </div>
-              <div className="flex items-center justify-center gap-2 text-xs text-accent-foreground/70 pt-3 mt-2 border-t border-accent-foreground/20">
-                <RotateCw className="w-3.5 h-3.5" /> Toque para voltar
+              <div className="flex items-center justify-center gap-2 text-xs font-medium uppercase tracking-wider text-white/30 pt-6 mt-4 border-t border-white/5">
+                <RotateCw className="w-4 h-4" /> Toque para voltar
               </div>
             </div>
           </motion.div>
         </div>
-
-
       </article>
     );
   }

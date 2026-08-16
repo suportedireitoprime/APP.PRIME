@@ -125,7 +125,7 @@ const AprenderDesempenho = () => {
                         className="h-full rounded-full transition-all"
                         style={{
                           width: `${Math.min(100, score)}%`,
-                          background: a.cor ?? 'hsl(348 78% 38%)',
+                          background: a.cor ?? 'hsl(var(--primary))',
                         }}
                       />
                     </div>

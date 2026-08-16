@@ -25,8 +25,8 @@ const MateriaRow = ({ area, icon, onOpen, onPrefetch }: Props) => {
       className="group flex w-full items-center gap-3 rounded-2xl border border-border bg-card p-3.5 text-left transition-all hover:border-primary/40 hover:shadow-md active:scale-[0.995] sm:p-4"
     >
       {icon ? (
-        <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 p-2 sm:h-14 sm:w-14">
-          <icon.Icon className="h-7 w-7 sm:h-8 sm:w-8" strokeWidth={2} style={{ color: icon.color }} />
+        <div className="relative flex h-12 w-12 shrink-0 items-center justify-center sm:h-14 sm:w-14">
+          <icon.Icon className="h-8 w-8 sm:h-9 sm:w-9" strokeWidth={1.25} style={{ color: icon.color }} />
         </div>
       ) : (
         <div
