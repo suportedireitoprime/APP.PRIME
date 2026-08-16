@@ -3,11 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { supabase } from '@/integrations/supabase/client';
 import { useFlashcardsResumoAreas } from '@/lib/flashcardsQueries';
-import { ChevronRight, Search, Sparkles, Scale, BookOpen, Clock, FileText, Landmark, Users, Gavel, File, ArrowLeft, CheckCircle2, Circle, ChevronLeft } from 'lucide-react';
+import { ChevronRight, Search, Sparkles, Scale, BookOpen, Clock, FileText, Landmark, Users, Gavel, File, ArrowLeft, CheckCircle2, Circle, ChevronLeft, Check } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { haptic } from '@/lib/nativeHaptics';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
-import { AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { StepRow, SelecaoSheet } from '@/components/flashcards/FlashcardsFiltroSheet';
 
 // Types
@@ -241,6 +241,23 @@ export default function FlashcardsLeis() {
   const mostrarCategorias = !categoriaSelecionada && !busca.trim();
   const loading = loadingAreas || loadingLeis;
 
+  const cardsPorArtigo = useMemo(() => {
+    const counts: Record<string, number> = {};
+    const filtrados = cardsDisponiveis.filter(c => titulosSelecionados.length === 0 || titulosSelecionados.includes(c.tema));
+    filtrados.forEach(c => {
+      counts[c.artigo] = (counts[c.artigo] || 0) + 1;
+    });
+    return counts;
+  }, [cardsDisponiveis, titulosSelecionados]);
+
+  const totalCardsFiltrados = useMemo(() => {
+    return cardsDisponiveis.filter(c => {
+      const matchTema = titulosSelecionados.length === 0 || titulosSelecionados.includes(c.tema);
+      const matchArt = artigosSelecionados.length === 0 || artigosSelecionados.includes(c.artigo);
+      return matchTema && matchArt;
+    }).length;
+  }, [cardsDisponiveis, titulosSelecionados, artigosSelecionados]);
+
   const renderTituloOpcao = (opcao: string) => {
     if (!leiSelecionada) return opcao;
     const prefix = leiSelecionada.tema + ' - ';
@@ -267,24 +284,40 @@ export default function FlashcardsLeis() {
     const description = parte2 ? parte2.charAt(0).toUpperCase() + parte2.slice(1).toLowerCase() : null;
 
     return (
-      <div className="flex w-full items-center justify-between pr-2 py-0.5">
+      <div className="flex w-full items-center justify-between pr-2 py-1">
         <div className="flex flex-col min-w-0 pr-2">
           {parte1 && (
-            <span className="text-[11px] font-black text-zinc-400 tracking-wider uppercase">
+            <span className="inline-flex items-center gap-1 w-fit px-2 py-0.5 rounded text-[11px] font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mb-1">
               {parte1}
             </span>
           )}
           {description && (
-            <span className="text-[15px] font-semibold text-zinc-100 mt-0.5 leading-snug">
+            <span className="text-[15px] font-bold text-zinc-100 leading-snug tracking-tight">
               {description}
             </span>
           )}
           {faixa && (
-            <span className="text-[12px] font-medium text-[#36AF85] mt-0.5">
-              {faixa}
+            <span className="inline-flex items-center gap-1 text-[12px] font-bold text-[#36AF85] mt-1">
+              <span className="text-[11px] opacity-75">📖</span> {faixa}
             </span>
           )}
         </div>
+        {count > 0 && (
+          <span className="text-[12px] font-bold text-zinc-300 bg-zinc-800/90 border border-zinc-700/80 px-2.5 py-1 rounded-lg ml-2 whitespace-nowrap shrink-0 shadow-sm">
+            {count} {count === 1 ? 'card' : 'cards'}
+          </span>
+        )}
+      </div>
+    );
+  };
+
+  const renderArtigoOpcao = (art: string) => {
+    const count = cardsPorArtigo[art] || 0;
+    const isNum = /^\d+$/.test(art);
+    const label = isNum ? `Artigo ${art}` : art;
+    return (
+      <div className="flex w-full items-center justify-between pr-2 py-0.5">
+        <span className="text-[15px] font-bold text-zinc-100">{label}</span>
         {count > 0 && (
           <span className="text-[12px] font-medium text-zinc-400 bg-zinc-800/80 border border-zinc-700/50 px-2.5 py-0.5 rounded-full ml-2 whitespace-nowrap shrink-0">
             {count} {count === 1 ? 'card' : 'cards'}
@@ -488,6 +521,8 @@ export default function FlashcardsLeis() {
                 opcoes={titulosUnicos}
                 selecionado={titulosSelecionados}
                 loading={loadingCards}
+                totalCount={cardsDisponiveis.length}
+                itemHeight={86}
                 onFechar={() => setPasso(null)}
                 onConfirmar={(v) => { 
                   setTitulosSelecionados(v); 
@@ -504,35 +539,38 @@ export default function FlashcardsLeis() {
                 opcoes={artigosUnicos}
                 selecionado={artigosSelecionados}
                 loading={loadingCards}
+                totalCount={cardsDisponiveis.filter(c => titulosSelecionados.length === 0 || titulosSelecionados.includes(c.tema)).length}
+                itemHeight={64}
                 onFechar={() => setPasso(null)}
                 onConfirmar={(v) => {
                   setArtigosSelecionados(v);
                   setEtapaAlcancada(prev => Math.max(prev, 3));
                   setPasso('status');
                 }}
+                renderOpcao={renderArtigoOpcao}
               />
             )}
             {passo === 'status' && (
-              <SelecaoSheet
-                key="status" titulo="Status" single
-                opcoes={STATUS_LEIS.map(s => s.label)}
-                selecionado={statusSel ? [STATUS_LEIS.find(s => s.id === statusSel)?.label || ''] : []}
+              <StatusSheet
+                key="status"
+                statusSel={statusSel}
+                totalCount={totalCardsFiltrados}
                 onFechar={() => setPasso(null)}
-                onConfirmar={(v) => {
-                  setStatusSel(STATUS_LEIS.find(s => s.label === v[0])?.id || '');
+                onConfirmar={(s) => {
+                  setStatusSel(s);
                   setEtapaAlcancada(prev => Math.max(prev, 4));
                   setPasso('quantidade');
                 }}
               />
             )}
             {passo === 'quantidade' && (
-              <SelecaoSheet
-                key="qtd" titulo="Quantidade" single
-                opcoes={['Todos', '10 flashcards', '20 flashcards', '50 flashcards', '100 flashcards']}
-                selecionado={quantidadeSel ? [`${quantidadeSel} flashcards`] : []}
+              <QuantidadeSheet
+                key="qtd"
+                quantidadeSel={quantidadeSel}
+                totalCount={totalCardsFiltrados}
                 onFechar={() => setPasso(null)}
-                onConfirmar={(v) => {
-                  setQuantidadeSel(v[0] && v[0] !== 'Todos' ? Number(v[0].replace(/\D/g, '')) : null);
+                onConfirmar={(q) => {
+                  setQuantidadeSel(q);
                   setEtapaAlcancada(prev => Math.max(prev, 5));
                   setPasso('ordem');
                 }}
@@ -554,5 +592,364 @@ export default function FlashcardsLeis() {
         </SheetContent>
       </Sheet>
     </div>
+  );
+}
+
+/* -------------------------------------------------- StatusSheet Customizada */
+function StatusSheet({
+  statusSel,
+  totalCount,
+  onFechar,
+  onConfirmar,
+}: {
+  statusSel: string;
+  totalCount: number;
+  onFechar: () => void;
+  onConfirmar: (status: string) => void;
+}) {
+  const [selecionados, setSelecionados] = useState<string[]>(() => {
+    if (statusSel === 'todos' || !statusSel) return ['todos', 'novos', 'revisar'];
+    return [statusSel];
+  });
+
+  const isTodosChecked = selecionados.includes('todos') || (selecionados.includes('novos') && selecionados.includes('revisar'));
+  const isNovosChecked = selecionados.includes('novos') || isTodosChecked;
+  const isRevisarChecked = selecionados.includes('revisar') || isTodosChecked;
+
+  const toggleTodos = () => {
+    haptic.selection?.();
+    if (isTodosChecked) {
+      setSelecionados([]);
+    } else {
+      setSelecionados(['todos', 'novos', 'revisar']);
+    }
+  };
+
+  const toggleNovos = () => {
+    haptic.selection?.();
+    if (isTodosChecked) {
+      setSelecionados(['revisar']);
+    } else if (isNovosChecked) {
+      setSelecionados(prev => prev.filter(x => x !== 'novos' && x !== 'todos'));
+    } else {
+      const next = [...selecionados.filter(x => x !== 'todos'), 'novos'];
+      if (next.includes('revisar')) {
+        setSelecionados(['todos', 'novos', 'revisar']);
+      } else {
+        setSelecionados(next);
+      }
+    }
+  };
+
+  const toggleRevisar = () => {
+    haptic.selection?.();
+    if (isTodosChecked) {
+      setSelecionados(['novos']);
+    } else if (isRevisarChecked) {
+      setSelecionados(prev => prev.filter(x => x !== 'revisar' && x !== 'todos'));
+    } else {
+      const next = [...selecionados.filter(x => x !== 'todos'), 'revisar'];
+      if (next.includes('novos')) {
+        setSelecionados(['todos', 'novos', 'revisar']);
+      } else {
+        setSelecionados(next);
+      }
+    }
+  };
+
+  const handleConfirm = () => {
+    haptic.selection?.();
+    if (isTodosChecked || (!isNovosChecked && !isRevisarChecked)) {
+      onConfirmar('todos');
+    } else if (isNovosChecked) {
+      onConfirmar('novos');
+    } else if (isRevisarChecked) {
+      onConfirmar('revisar');
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
+      transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+      className="absolute inset-0 z-20 flex flex-col bg-zinc-950 text-foreground"
+    >
+      <div className="flex items-center gap-2 border-b border-zinc-800/80 px-3 pt-safe-header pb-3 bg-zinc-900/90 backdrop-blur-md">
+        <button
+          onClick={onFechar}
+          className="grid h-10 w-10 place-items-center rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-white"
+          aria-label="Voltar"
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </button>
+        <span className="text-[17px] font-bold text-white">Status dos Cards</span>
+        <div className="ml-auto">
+          <button
+            onClick={() => setSelecionados([])}
+            className="text-[13px] font-medium text-zinc-400 hover:text-zinc-200"
+          >
+            Limpar
+          </button>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+        {/* Option: Todos os Cards */}
+        <button
+          type="button"
+          onClick={toggleTodos}
+          className={`flex w-full items-center justify-between p-4 rounded-xl border transition-all text-left group ${
+            isTodosChecked
+              ? 'bg-emerald-500/10 border-emerald-500/40 shadow-sm shadow-emerald-500/10'
+              : 'bg-zinc-900/40 border-zinc-800/80 hover:bg-zinc-900/80'
+          }`}
+        >
+          <div className="flex flex-col pr-2">
+            <span className="text-[15px] font-bold text-zinc-100 group-hover:text-white">
+              Todos os Cards
+            </span>
+            <span className="text-[12px] text-zinc-400 mt-0.5">
+              Inclui cards novos e a revisar
+            </span>
+          </div>
+          <div className="flex items-center gap-3 shrink-0">
+            {totalCount > 0 && (
+              <span className="text-[12px] font-semibold text-zinc-300 bg-zinc-800/90 border border-zinc-700/60 px-2.5 py-0.5 rounded-full">
+                {totalCount} {totalCount === 1 ? 'card' : 'cards'}
+              </span>
+            )}
+            <span className={`grid h-6 w-6 place-items-center rounded-md border-2 transition-all ${
+              isTodosChecked
+                ? 'border-[#36AF85] bg-[#36AF85] text-white shadow-md shadow-[#36AF85]/25'
+                : 'border-zinc-700 bg-zinc-900/50'
+            }`}>
+              {isTodosChecked && <Check className="h-3.5 w-3.5 drop-shadow-md" strokeWidth={3} />}
+            </span>
+          </div>
+        </button>
+
+        {/* Option: Apenas Novos */}
+        <button
+          type="button"
+          onClick={toggleNovos}
+          className={`flex w-full items-center justify-between p-4 rounded-xl border transition-all text-left group ${
+            isNovosChecked
+              ? 'bg-emerald-500/10 border-emerald-500/40 shadow-sm shadow-emerald-500/10'
+              : 'bg-zinc-900/40 border-zinc-800/80 hover:bg-zinc-900/80'
+          }`}
+        >
+          <div className="flex flex-col pr-2">
+            <span className="text-[15px] font-bold text-zinc-100 group-hover:text-white">
+              Apenas Novos
+            </span>
+            <span className="text-[12px] text-zinc-400 mt-0.5">
+              Cards que você ainda não estudou
+            </span>
+          </div>
+          <span className={`grid h-6 w-6 place-items-center rounded-md border-2 transition-all ${
+            isNovosChecked
+              ? 'border-[#36AF85] bg-[#36AF85] text-white shadow-md shadow-[#36AF85]/25'
+              : 'border-zinc-700 bg-zinc-900/50'
+          }`}>
+            {isNovosChecked && <Check className="h-3.5 w-3.5 drop-shadow-md" strokeWidth={3} />}
+          </span>
+        </button>
+
+        {/* Option: A Revisar */}
+        <button
+          type="button"
+          onClick={toggleRevisar}
+          className={`flex w-full items-center justify-between p-4 rounded-xl border transition-all text-left group ${
+            isRevisarChecked
+              ? 'bg-emerald-500/10 border-emerald-500/40 shadow-sm shadow-emerald-500/10'
+              : 'bg-zinc-900/40 border-zinc-800/80 hover:bg-zinc-900/80'
+          }`}
+        >
+          <div className="flex flex-col pr-2">
+            <span className="text-[15px] font-bold text-zinc-100 group-hover:text-white">
+              A Revisar
+            </span>
+            <span className="text-[12px] text-zinc-400 mt-0.5">
+              Cards marcados para repetição espaçada
+            </span>
+          </div>
+          <span className={`grid h-6 w-6 place-items-center rounded-md border-2 transition-all ${
+            isRevisarChecked
+              ? 'border-[#36AF85] bg-[#36AF85] text-white shadow-md shadow-[#36AF85]/25'
+              : 'border-zinc-700 bg-zinc-900/50'
+          }`}>
+            {isRevisarChecked && <Check className="h-3.5 w-3.5 drop-shadow-md" strokeWidth={3} />}
+          </span>
+        </button>
+      </div>
+
+      <div className="border-t border-zinc-800/80 bg-zinc-900/90 backdrop-blur-md px-5 pb-safe-nav pt-4">
+        <button
+          onClick={handleConfirm}
+          className="flex h-12 w-full items-center justify-center rounded-xl bg-[#36AF85] hover:bg-[#2C9570] text-[15px] font-bold text-white shadow-lg active:scale-[0.98] transition-all"
+        >
+          Confirmar Status
+        </button>
+      </div>
+    </motion.div>
+  );
+}
+
+/* -------------------------------------------------- QuantidadeSheet Customizada */
+function QuantidadeSheet({
+  quantidadeSel,
+  totalCount,
+  onFechar,
+  onConfirmar,
+}: {
+  quantidadeSel: number | null;
+  totalCount: number;
+  onFechar: () => void;
+  onConfirmar: (qtd: number | null) => void;
+}) {
+  const [localQtd, setLocalQtd] = useState<number | null>(quantidadeSel);
+  const isTodos = localQtd === null;
+  const opcoesFixas = [10, 20, 50, 100];
+
+  const handleSelectTodos = () => {
+    haptic.selection?.();
+    setLocalQtd(null);
+  };
+
+  const handleSelectFixa = (qtd: number) => {
+    haptic.selection?.();
+    setLocalQtd(qtd);
+  };
+
+  const handleConfirm = () => {
+    haptic.selection?.();
+    onConfirmar(localQtd);
+  };
+
+  return (
+    <motion.div
+      initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
+      transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+      className="absolute inset-0 z-20 flex flex-col bg-zinc-950 text-foreground"
+    >
+      <div className="flex items-center gap-2 border-b border-zinc-800/80 px-3 pt-safe-header pb-3 bg-zinc-900/90 backdrop-blur-md">
+        <button
+          onClick={onFechar}
+          className="grid h-10 w-10 place-items-center rounded-xl text-zinc-400 hover:bg-zinc-800 hover:text-white"
+          aria-label="Voltar"
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </button>
+        <span className="text-[17px] font-bold text-white">Quantidade de Cards</span>
+      </div>
+
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+        {/* Option: Todos */}
+        <button
+          type="button"
+          onClick={handleSelectTodos}
+          className={`flex w-full items-center justify-between p-4 rounded-xl border transition-all text-left group ${
+            isTodos
+              ? 'bg-emerald-500/10 border-emerald-500/40 shadow-sm shadow-emerald-500/10'
+              : 'bg-zinc-900/40 border-zinc-800/80 hover:bg-zinc-900/80'
+          }`}
+        >
+          <div className="flex flex-col pr-2">
+            <span className="text-[15px] font-bold text-zinc-100 group-hover:text-white">
+              Todos os flashcards
+            </span>
+            <span className="text-[12px] text-zinc-400 mt-0.5">
+              Estudar sem limite de quantidade
+            </span>
+          </div>
+          <div className="flex items-center gap-3 shrink-0">
+            {totalCount > 0 && (
+              <span className="text-[12px] font-semibold text-zinc-300 bg-zinc-800/90 border border-zinc-700/60 px-2.5 py-0.5 rounded-full">
+                {totalCount} {totalCount === 1 ? 'card' : 'cards'}
+              </span>
+            )}
+            <span className={`grid h-6 w-6 place-items-center rounded-md border-2 transition-all ${
+              isTodos
+                ? 'border-[#36AF85] bg-[#36AF85] text-white shadow-md shadow-[#36AF85]/25'
+                : 'border-zinc-700 bg-zinc-900/50'
+            }`}>
+              {isTodos && <Check className="h-3.5 w-3.5 drop-shadow-md" strokeWidth={3} />}
+            </span>
+          </div>
+        </button>
+
+        {/* Animated collapse / expand for fixed quantities */}
+        <AnimatePresence>
+          {!isTodos ? (
+            <motion.div
+              key="fixed-options"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.25, ease: 'easeInOut' }}
+              className="overflow-hidden space-y-2.5 pt-1"
+            >
+              <div className="text-[12px] font-bold uppercase tracking-wider text-zinc-400 px-1 pt-1">
+                Quantidades Fixas
+              </div>
+              {opcoesFixas.map((qtd) => {
+                const checked = localQtd === qtd;
+                return (
+                  <button
+                    key={qtd}
+                    type="button"
+                    onClick={() => handleSelectFixa(qtd)}
+                    className={`flex w-full items-center justify-between p-3.5 rounded-xl border transition-all text-left group ${
+                      checked
+                        ? 'bg-emerald-500/10 border-emerald-500/40 shadow-sm shadow-emerald-500/10'
+                        : 'bg-zinc-900/40 border-zinc-800/80 hover:bg-zinc-900/80'
+                    }`}
+                  >
+                    <span className="text-[15px] font-bold text-zinc-100 group-hover:text-white">
+                      {qtd} flashcards
+                    </span>
+                    <span className={`grid h-6 w-6 place-items-center rounded-md border-2 transition-all ${
+                      checked
+                        ? 'border-[#36AF85] bg-[#36AF85] text-white shadow-md shadow-[#36AF85]/25'
+                        : 'border-zinc-700 bg-zinc-900/50'
+                    }`}>
+                      {checked && <Check className="h-3.5 w-3.5 drop-shadow-md" strokeWidth={3} />}
+                    </span>
+                  </button>
+                );
+              })}
+            </motion.div>
+          ) : (
+            <motion.div
+              key="define-custom"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="pt-2"
+            >
+              <button
+                type="button"
+                onClick={() => {
+                  haptic.selection?.();
+                  setLocalQtd(20);
+                }}
+                className="w-full py-3 px-4 rounded-xl border border-dashed border-zinc-700/80 hover:border-emerald-500/50 bg-zinc-900/30 hover:bg-zinc-900/60 text-[13px] font-semibold text-zinc-400 hover:text-emerald-400 transition-all flex items-center justify-center gap-2"
+              >
+                <span>Definir meta / quantidade fixa (10, 20, 50, 100)</span>
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      <div className="border-t border-zinc-800/80 bg-zinc-900/90 backdrop-blur-md px-5 pb-safe-nav pt-4">
+        <button
+          onClick={handleConfirm}
+          className="flex h-12 w-full items-center justify-center rounded-xl bg-[#36AF85] hover:bg-[#2C9570] text-[15px] font-bold text-white shadow-lg active:scale-[0.98] transition-all"
+        >
+          Confirmar Quantidade
+        </button>
+      </div>
+    </motion.div>
   );
 }

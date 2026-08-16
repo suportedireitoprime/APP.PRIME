@@ -114,7 +114,7 @@ export function StepRow({
 
 /* -------------------------------------------------- sub-sheet de seleção */
 export function SelecaoSheet({
-  titulo, opcoes, selecionado, single, onFechar, onConfirmar, buscavel, renderOpcao, loading
+  titulo, opcoes, selecionado, single, onFechar, onConfirmar, buscavel, renderOpcao, loading, totalCount, itemHeight
 }: {
   titulo: string;
   opcoes: string[];
@@ -122,6 +122,8 @@ export function SelecaoSheet({
   single?: boolean;
   buscavel?: boolean;
   loading?: boolean;
+  totalCount?: number;
+  itemHeight?: number;
   onFechar: () => void;
   onConfirmar: (v: string[]) => void;
   renderOpcao?: (opcao: string) => React.ReactNode;
@@ -160,12 +162,14 @@ export function SelecaoSheet({
   
   const hasTodos = !single && opcoes.length > 0;
   
+  const defaultHeight = itemHeight || 60;
+  
   const rowVirtualizer = useVirtualizer({
     count: lista.length + (hasTodos ? 1 : 0),
     getScrollElement: () => parentRef.current,
     estimateSize: (index) => {
        if (hasTodos && index === 0) return 56;
-       return 60;
+       return defaultHeight;
     },
     overscan: 10,
   });
@@ -245,9 +249,16 @@ export function SelecaoSheet({
                       onClick={toggleAll}
                       className="flex h-full w-full items-center gap-3 text-left group"
                     >
-                      <span className="flex-1 text-[15px] font-bold text-zinc-100 group-hover:text-white transition-colors">
-                        Todos
-                      </span>
+                      <div className="flex flex-1 items-center justify-between pr-2">
+                        <span className="text-[15px] font-bold text-zinc-100 group-hover:text-white transition-colors">
+                          Todos
+                        </span>
+                        {totalCount !== undefined && totalCount > 0 && (
+                          <span className="text-[12px] font-medium text-zinc-400 bg-zinc-800/90 border border-zinc-700/60 px-2.5 py-0.5 rounded-full whitespace-nowrap">
+                            {totalCount} {totalCount === 1 ? 'card' : 'cards'}
+                          </span>
+                        )}
+                      </div>
                       <span className={cn(
                         'grid h-6 w-6 shrink-0 place-items-center rounded-md border-2 transition-all',
                         isAllSelected
