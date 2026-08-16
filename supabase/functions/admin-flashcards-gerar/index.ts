@@ -16,6 +16,7 @@ const PROVIDER = "gemini-direto";
 const SYSTEM_PROMPT = `Você é um professor e especialista em Direito criando FLASHCARDS ricos e VARIADOS para estudantes e concurseiros.
 
 Recebe:
+- Categoria (Ex: Jurisprudência, Leis, Termos Jurídicos, Matérias)
 - Área do Direito (Ex: Direito Constitucional, Direito Penal)
 - Tema Específico (Ex: Súmula Vinculante 14, Princípios Fundamentais, Lei 8.112/90)
 - Quantidade Desejada
@@ -82,13 +83,14 @@ Deno.serve(async (req) => {
     });
 
     const body = await req.json().catch(() => null);
+    const categoria = typeof body?.categoria === "string" ? body.categoria.trim() : "";
     const area = typeof body?.area === "string" ? body.area.trim() : "";
     const tema = typeof body?.tema === "string" ? body.tema.trim() : "";
     const quantidade = typeof body?.quantidade === "number" ? body.quantidade : 20;
 
     if (!area || !tema) return json({ error: "area e tema são obrigatórios" }, 400);
 
-    const userContent = `ÁREA: ${area}\nTEMA: ${tema}\nQUANTIDADE DESEJADA: ${quantidade} flashcards\n\nGere flashcards sobre este tema com foco em preparação de alto nível.`;
+    const userContent = `CATEGORIA: ${categoria}\nÁREA: ${area}\nTEMA: ${tema}\nQUANTIDADE DESEJADA: ${quantidade} flashcards\n\nGere flashcards sobre este tema com foco no formato da categoria (${categoria}).`;
 
     console.log(`[admin-flashcards-gerar] area=${area} tema=${tema} qtd=${quantidade} provedor=${PROVIDER} modelo=${MODEL}`);
     
