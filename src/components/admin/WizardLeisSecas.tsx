@@ -150,35 +150,44 @@ export default function WizardLeisSecas({ selectedArea }: WizardLeisSecasProps) 
 
   const handleGerarTudo = async () => {
     if (!selectedLei) return;
-    const todosArtigos = estrutura.reduce((acc: any[], bloco: any) => [...acc, ...(bloco.artigos || [])], []);
-    if (todosArtigos.length === 0) return toast.error('Nenhum artigo mapeado.');
+    if (estrutura.length === 0) return toast.error('Nenhum artigo mapeado.');
     
-    setGeneratingBlock('Todos os Blocos (Completo)');
     setStep('generating');
+    let totalGerado = 0;
+    
     try {
-      const temaNome = `${selectedLei.nome_curto || selectedLei.nome} - Completo`;
-      
-      const { data, error } = await supabase.functions.invoke('admin-flashcards-leis', {
-        body: { 
-          acao: 'gerar_flashcards',
-          area: selectedArea, 
-          tema: temaNome,
-          artigos: todosArtigos,
-          quantidadePorArtigo: cardsPerArticle
-        }
-      });
+      // Processa cada bloco sequencialmente para evitar timeout na Edge Function
+      for (const bloco of estrutura) {
+        if (!bloco.artigos || bloco.artigos.length === 0) continue;
+        
+        setGeneratingBlock(`Processando: ${bloco.titulo}`);
+        const temaNome = `${selectedLei.nome_curto || selectedLei.nome} - ${bloco.titulo}`;
+        
+        const { data, error } = await supabase.functions.invoke('admin-flashcards-leis', {
+          body: { 
+            acao: 'gerar_flashcards',
+            area: selectedArea, 
+            tema: temaNome,
+            artigos: bloco.artigos,
+            quantidadePorArtigo: cardsPerArticle
+          }
+        });
 
-      if (error) throw error;
-      toast.success(`${data?.total || 0} flashcards gerados com sucesso!`);
-      
-      setCardsCountMap(prev => ({
-        ...prev,
-        [selectedLei.id]: (prev[selectedLei.id] || 0) + (data?.total || 0)
-      }));
-      
+        if (error) throw error;
+        
+        totalGerado += (data?.total || 0);
+        
+        // Atualiza a contagem parcial no estado para o usuário ver progresso (opcional, mas bom pra UX)
+        setCardsCountMap(prev => ({
+          ...prev,
+          [selectedLei.id]: (prev[selectedLei.id] || 0) + (data?.total || 0)
+        }));
+      }
+
+      toast.success(`${totalGerado} flashcards gerados com sucesso para todos os blocos!`);
       setStep('details');
     } catch (err: any) {
-      toast.error('Erro na geração: ' + err.message);
+      toast.error(`Erro na geração (parou após gerar ${totalGerado}): ` + err.message);
       setStep('refine');
     } finally {
       setGeneratingBlock(null);
