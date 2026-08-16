@@ -90,13 +90,32 @@ export default function FlashcardsLeis() {
 
   useEffect(() => {
     if (!leiSelecionada) return;
+    const cacheKey = `flashcards_meta_${leiSelecionada.tema}`;
+
+    // 0. Mostrar cache instantaneamente
+    try {
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed.length > 0) {
+          setCardsDisponiveis(parsed);
+          setLoadingCards(false);
+        }
+      }
+    } catch { /* ignora */ }
+
     const fetchMeta = async () => {
-      setLoadingCards(true);
+      // Só mostra skeleton se não havia cache
+      if (!localStorage.getItem(cacheKey)) {
+        setLoadingCards(true);
+      }
       const { data } = await supabase.from('flashcards_cards')
         .select('tema, artigo_numero')
         .ilike('tema', `${leiSelecionada.tema}%`);
       if (data) {
-        setCardsDisponiveis(data.map(d => ({ tema: d.tema, artigo: d.artigo_numero || 'Geral' })));
+        const mapped = data.map(d => ({ tema: d.tema, artigo: d.artigo_numero || 'Geral' }));
+        setCardsDisponiveis(mapped);
+        try { localStorage.setItem(cacheKey, JSON.stringify(mapped)); } catch { /* ignora */ }
       }
       setLoadingCards(false);
     };
