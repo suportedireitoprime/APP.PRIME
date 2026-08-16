@@ -24,19 +24,22 @@ export default function WizardLeisSecas({ selectedArea }: WizardLeisSecasProps) 
   const [planaltoUrl, setPlanaltoUrl] = useState('');
   const [extracting, setExtracting] = useState(false);
   const [estrutura, setEstrutura] = useState<any[]>([]);
+  const [blockCounts, setBlockCounts] = useState<Record<string, number>>({});
+  const [blockLastUpdate, setBlockLastUpdate] = useState<Record<string, string>>({});
   
   // Refinamento
-  const [cardsPerArticle, setCardsPerArticle] = useState<number | 'auto'>(10);
+  const [cardsPerArticle, setCardsPerArticle] = useState<number | 'auto'>('auto');
   
   // Geração
   const [generatingBlock, setGeneratingBlock] = useState<string | null>(null);
+  const [generationLogs, setGenerationLogs] = useState<string[]>([]);
+  const [generationProgress, setGenerationProgress] = useState(0);
 
   useEffect(() => {
     let isMounted = true;
     const fetchData = async () => {
       setLoadingLeis(true);
       try {
-        // 1. Fetch leis
         const { data: leisData, error: leisError } = await supabase
           .from('vade_mecum_leis')
           .select('*')
@@ -45,8 +48,6 @@ export default function WizardLeisSecas({ selectedArea }: WizardLeisSecasProps) 
         
         if (leisError) throw leisError;
         
-        // 2. Fetch cards count grouped by tema (where area = selectedArea is not totally reliable, we must match tema prefixes)
-        // We will fetch all temas for this area first
         const { data: temasData, error: temasError } = await supabase.rpc('flashcards_temas', { _area: selectedArea });
         
         if (isMounted) {
@@ -54,7 +55,6 @@ export default function WizardLeisSecas({ selectedArea }: WizardLeisSecasProps) 
           
           if (!temasError && temasData) {
             const counts: Record<string, number> = {};
-            // Match tema names with law short names
             leisData?.forEach(lei => {
               const prefix = lei.nome_curto || lei.nome;
               let total = 0;
@@ -79,6 +79,43 @@ export default function WizardLeisSecas({ selectedArea }: WizardLeisSecasProps) 
     return () => { isMounted = false; };
   }, [selectedArea]);
 
+  const fetchBlockDetails = async (estrut: any[], lei: any) => {
+    try {
+      const { data } = await supabase.rpc('flashcards_temas', { _area: selectedArea });
+      if (data) {
+        const counts: Record<string, number> = {};
+        const prefix = lei.nome_curto || lei.nome;
+        estrut.forEach(b => {
+          const temaNome = `${prefix} - ${b.titulo}`;
+          const found = data.find((t: any) => t.tema === temaNome);
+          counts[b.titulo] = found ? found.total : 0;
+        });
+        setBlockCounts(counts);
+      }
+
+      // Fetch last generated date for the blocks
+      const prefix = lei.nome_curto || lei.nome;
+      const { data: recentCards } = await supabase
+        .from('flashcards_cards')
+        .select('tema, created_at')
+        .ilike('tema', `${prefix}%`)
+        .order('created_at', { ascending: false });
+
+      if (recentCards) {
+        const dates: Record<string, string> = {};
+        estrut.forEach(b => {
+          const temaNome = `${prefix} - ${b.titulo}`;
+          const card = recentCards.find((c: any) => c.tema === temaNome);
+          if (card) {
+            dates[b.titulo] = new Date(card.created_at).toLocaleString('pt-BR');
+          }
+        });
+        setBlockLastUpdate(dates);
+      }
+
+    } catch (e) {}
+  };
+
   const handleExtrairSupabase = async () => {
     setExtracting(true);
     try {
@@ -86,7 +123,9 @@ export default function WizardLeisSecas({ selectedArea }: WizardLeisSecasProps) 
         body: { acao: 'listar_estrutura', lei_id: selectedLei.id }
       });
       if (error) throw error;
-      setEstrutura(data?.estrutura || []);
+      const result = data?.estrutura || [];
+      setEstrutura(result);
+      await fetchBlockDetails(result, selectedLei);
       setStep('refine');
     } catch (err: any) {
       toast.error('Erro ao buscar estrutura: ' + err.message);
@@ -105,7 +144,9 @@ export default function WizardLeisSecas({ selectedArea }: WizardLeisSecasProps) 
         body: { acao: 'extrair_planalto', url: planaltoUrl }
       });
       if (error) throw error;
-      setEstrutura(data?.estrutura || []);
+      const result = data?.estrutura || [];
+      setEstrutura(result);
+      await fetchBlockDetails(result, selectedLei);
       setStep('refine');
     } catch (err: any) {
       toast.error('Erro ao extrair do Planalto: ' + err.message);
@@ -116,31 +157,68 @@ export default function WizardLeisSecas({ selectedArea }: WizardLeisSecasProps) 
 
   const handleGerarBloco = async (bloco: any) => {
     setGeneratingBlock(bloco.titulo);
+    setGenerationLogs(["Iniciando conexão segura com a IA..."]);
+    setGenerationProgress(5);
     setStep('generating');
+    
+    // Simulate real-time logs
+    const logInterval = setInterval(() => {
+      setGenerationLogs(prev => {
+        const msgs = [
+          "Lendo desmembramentos dos artigos...",
+          "Mapeando incisos, parágrafos e alíneas...",
+          "Estruturando perguntas doutrinárias...",
+          "Criando sentenças com lacunas assertivas...",
+          "Validando tamanho dos tokens..."
+        ];
+        if (prev.length < msgs.length + 1) {
+          setGenerationProgress(prev.length * 15);
+          return [...prev, msgs[prev.length - 1]];
+        }
+        return prev;
+      });
+    }, 3000);
+
     try {
       const temaNome = `${selectedLei.nome_curto || selectedLei.nome} - ${bloco.titulo}`;
       
-      const { data, error } = await supabase.functions.invoke('admin-flashcards-leis', {
-        body: { 
-          acao: 'gerar_flashcards',
-          area: selectedArea, 
-          tema: temaNome,
-          artigos: bloco.artigos,
-          quantidadePorArtigo: cardsPerArticle
-        }
-      });
+      const chunkArray = (arr: any[], size: number) => Array.from({ length: Math.ceil(arr.length / size) }, (v, i) => arr.slice(i * size, i * size + size));
+      const chunks = chunkArray(bloco.artigos || [], 4); // 4 artigos por chamada para evitar Timeout
+      let totalBlock = 0;
 
-      if (error) throw error;
-      toast.success(`${data?.total || 0} flashcards gerados com sucesso!`);
+      for (let i = 0; i < chunks.length; i++) {
+        setGenerationLogs(prev => [...prev, `Processando lote ${i + 1}/${chunks.length} do bloco...`]);
+        const { data, error } = await supabase.functions.invoke('admin-flashcards-leis', {
+          body: { 
+            acao: 'gerar_flashcards',
+            area: selectedArea, 
+            tema: temaNome,
+            artigos: chunks[i],
+            quantidadePorArtigo: cardsPerArticle
+          }
+        });
+        if (error) throw error;
+        totalBlock += (data?.total || 0);
+      }
+
+      clearInterval(logInterval);
+      setGenerationProgress(100);
+      setGenerationLogs(prev => [...prev, "Sucesso! Cards injetados no banco de dados."]);
+
+      toast.success(`${totalBlock} flashcards gerados com sucesso!`);
       
       // Update local count mock
       setCardsCountMap(prev => ({
         ...prev,
-        [selectedLei.id]: (prev[selectedLei.id] || 0) + (data?.total || 0)
+        [selectedLei.id]: (prev[selectedLei.id] || 0) + totalBlock
       }));
+
+      // Refresh structure details
+      await fetchBlockDetails(estrutura, selectedLei);
       
-      setStep('details');
+      setTimeout(() => setStep('refine'), 1500);
     } catch (err: any) {
+      clearInterval(logInterval);
       toast.error('Erro na geração: ' + err.message);
       setStep('refine');
     } finally {
@@ -156,6 +234,8 @@ export default function WizardLeisSecas({ selectedArea }: WizardLeisSecasProps) 
     let totalGerado = 0;
     
     try {
+      const chunkArray = (arr: any[], size: number) => Array.from({ length: Math.ceil(arr.length / size) }, (v, i) => arr.slice(i * size, i * size + size));
+
       // Processa cada bloco sequencialmente para evitar timeout na Edge Function
       for (const bloco of estrutura) {
         if (!bloco.artigos || bloco.artigos.length === 0) continue;
@@ -163,24 +243,30 @@ export default function WizardLeisSecas({ selectedArea }: WizardLeisSecasProps) 
         setGeneratingBlock(`Processando: ${bloco.titulo}`);
         const temaNome = `${selectedLei.nome_curto || selectedLei.nome} - ${bloco.titulo}`;
         
-        const { data, error } = await supabase.functions.invoke('admin-flashcards-leis', {
-          body: { 
-            acao: 'gerar_flashcards',
-            area: selectedArea, 
-            tema: temaNome,
-            artigos: bloco.artigos,
-            quantidadePorArtigo: cardsPerArticle
-          }
-        });
+        const chunks = chunkArray(bloco.artigos, 4);
+        let blockTotal = 0;
 
-        if (error) throw error;
+        for (const chunk of chunks) {
+          const { data, error } = await supabase.functions.invoke('admin-flashcards-leis', {
+            body: { 
+              acao: 'gerar_flashcards',
+              area: selectedArea, 
+              tema: temaNome,
+              artigos: chunk,
+              quantidadePorArtigo: cardsPerArticle
+            }
+          });
+
+          if (error) throw error;
+          blockTotal += (data?.total || 0);
+        }
         
-        totalGerado += (data?.total || 0);
+        totalGerado += blockTotal;
         
         // Atualiza a contagem parcial no estado para o usuário ver progresso (opcional, mas bom pra UX)
         setCardsCountMap(prev => ({
           ...prev,
-          [selectedLei.id]: (prev[selectedLei.id] || 0) + (data?.total || 0)
+          [selectedLei.id]: (prev[selectedLei.id] || 0) + blockTotal
         }));
       }
 
@@ -202,15 +288,6 @@ export default function WizardLeisSecas({ selectedArea }: WizardLeisSecasProps) 
     <div className="space-y-6 mt-4">
       {/* HEADER DE CONTEXTO */}
       <div className="mb-8">
-        {step !== 'list' && (
-          <button 
-            onClick={() => setStep(step === 'details' ? 'list' : step === 'extract' ? 'details' : step === 'refine' ? 'extract' : 'list')}
-            className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground mb-3 transition-colors"
-          >
-            <ChevronLeft className="w-3 h-3" />
-            {step === 'details' ? 'Voltar para Leis' : 'Voltar passo anterior'}
-          </button>
-        )}
         <div>
           <h2 className="text-2xl font-bold font-display uppercase">{selectedLei ? (selectedLei.nome_curto || selectedLei.nome) : selectedArea}</h2>
           <p className="text-muted-foreground">
@@ -296,9 +373,22 @@ export default function WizardLeisSecas({ selectedArea }: WizardLeisSecasProps) 
             <p className="text-sm text-muted-foreground max-w-md mb-6">
               Inicie o wizard de extração e refinamento para mapear os títulos, capítulos e artigos desta lei e gerar os cards com inteligência artificial.
             </p>
-            <Button size="lg" className="bg-amber-600 hover:bg-amber-700 text-white" onClick={() => setStep('extract')}>
-              Iniciar Wizard de Geração <ChevronRight className="w-4 h-4 ml-2" />
+            <Button 
+              size="lg" 
+              className="bg-[#DC2626] hover:bg-[#B91C1C] text-white shadow-md shadow-red-900/20" 
+              onClick={handleExtrairSupabase}
+              disabled={extracting}
+            >
+              {extracting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+              Extrair Estrutura do Supabase <ChevronRight className="w-4 h-4 ml-2" />
             </Button>
+            <button 
+              onClick={() => setStep('extract')} 
+              className="text-xs text-muted-foreground mt-4 hover:text-foreground transition-colors underline underline-offset-4"
+              disabled={extracting}
+            >
+              Forçar extração externa via link do Planalto
+            </button>
           </div>
         </div>
       )}
@@ -363,22 +453,20 @@ export default function WizardLeisSecas({ selectedArea }: WizardLeisSecasProps) 
               <div className="text-left">
                 <h3 className="font-semibold text-sm">Estrutura Mapeada</h3>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  Estimativa: <strong className="text-[#EF4444]">{cardsPerArticle === 'auto' ? `~${estrutura.reduce((s, b) => s + (b.artigos?.length || 0), 0) * 15}` : `~${estrutura.reduce((s, b) => s + (b.artigos?.length || 0), 0) * (cardsPerArticle as number)}`} cards no total</strong>
+                  Estimativa: <strong className="text-[#EF4444]">{cardsPerArticle === 'auto' ? `~${estrutura.reduce((s, b) => s + (b.artigos?.length || 0), 0) * 15}` : `~${estrutura.reduce((s, b) => s + (b.artigos?.length || 0), 0) * (cardsPerArticle as number)}`} cards no total</strong> / <strong className="text-green-500">{cardsCountMap[selectedLei.id] || 0} já gerados</strong>
                 </p>
               </div>
             </div>
               
-              <div className="flex items-center gap-3 flex-wrap">
-                <div className="flex items-center gap-2 bg-muted/50 rounded-md p-1 pr-2 border border-border/50">
-                  <span className="text-xs font-medium pl-2 text-muted-foreground">Densidade:</span>
+              <div className="flex items-center gap-3 flex-wrap max-w-full">
+                <div className="flex items-center gap-2 bg-muted/50 rounded-md p-1 pr-2 border border-border/50 max-w-full">
+                  <span className="text-xs font-medium pl-2 text-muted-foreground shrink-0">Regra:</span>
                   <select 
                     value={cardsPerArticle} 
                     onChange={e => setCardsPerArticle(e.target.value === 'auto' ? 'auto' : parseInt(e.target.value))}
-                    className="h-8 text-xs bg-background text-foreground font-bold rounded px-2 outline-none border border-border/50"
+                    className="h-8 text-xs bg-background text-foreground font-bold rounded px-2 outline-none border border-border/50 max-w-[200px] md:max-w-xs lg:max-w-sm text-ellipsis overflow-hidden whitespace-nowrap"
                   >
-                    <option value={10}>Padrão (10 cards/art)</option>
-                    <option value={25}>Profunda (25 cards/art)</option>
-                    <option value="auto">Inteligente (Mín. 10/art)</option>
+                    <option value="auto">Opção 2 - Aprofundamento Máximo (10 Cards por desmembramento)</option>
                   </select>
                 </div>
                 <Button 
@@ -386,37 +474,53 @@ export default function WizardLeisSecas({ selectedArea }: WizardLeisSecasProps) 
                   onClick={() => handleGerarTudo()}
                   disabled={step === 'generating'}
                 >
-                  Gerar Todos (Completa)
+                  Gerar Todos (Restantes)
                 </Button>
               </div>
             </div>
 
-
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {estrutura.map((bloco, idx) => {
               const arts = bloco.artigos?.length || 0;
-              const estCards = cardsPerArticle === 'auto' ? 'Auto' : arts * (cardsPerArticle as number);
+              const generatedCount = blockCounts[bloco.titulo] || 0;
+              const lastUpdated = blockLastUpdate[bloco.titulo];
+              const isGenerated = generatedCount > 0;
+              
+              // Adiciona setinha entre TÍTULO/CAPÍTULO e a descrição (Ex: TÍTULO I › DA APLICAÇÃO)
+              const formattedTitulo = bloco.titulo.replace(/^((?:TÍTULO|CAPÍTULO|LIVRO|PARTE|SEÇÃO|SUBSEÇÃO)\s+[IVXLCDM]+)\s+(.*)/i, '$1 › $2');
+
               return (
-                <div key={idx} className="bg-card border border-border/50 rounded-xl p-5 flex flex-col justify-between">
+                <div key={idx} className={`border rounded-xl p-5 flex flex-col justify-between transition-colors ${isGenerated ? 'bg-emerald-950/40 border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.1)]' : 'bg-card border-border/50'}`}>
                   <div>
-                    <h4 className="font-medium text-sm mb-3 line-clamp-2" title={bloco.titulo}>{bloco.titulo}</h4>
+                    <h4 className="font-medium text-sm mb-3 line-clamp-2" title={formattedTitulo}>{formattedTitulo}</h4>
                     <div className="grid grid-cols-2 gap-4 mb-4">
                       <div className="bg-muted/50 rounded-lg p-3 text-center">
                         <div className="text-xl font-bold text-foreground/80">{arts}</div>
                         <div className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground mt-1">Artigos</div>
                       </div>
-                      <div className="bg-[#EF4444]/10 border border-[#EF4444]/20 rounded-lg p-3 text-center">
-                        <div className="text-xl font-bold text-[#EF4444]">~{estCards}</div>
-                        <div className="text-[10px] uppercase font-bold tracking-wider text-[#EF4444]/80 mt-1">Est. de Cards</div>
+                      <div className={`${isGenerated ? 'bg-emerald-500/15 border-emerald-500/30' : 'bg-amber-500/10 border-amber-500/20'} border rounded-lg p-3 text-center`}>
+                        <div className={`text-xl font-bold ${isGenerated ? 'text-emerald-400' : 'text-amber-500'}`}>{isGenerated ? generatedCount : '~' + (arts * 15)}</div>
+                        <div className={`text-[10px] uppercase font-bold tracking-wider ${isGenerated ? 'text-emerald-400/90' : 'text-amber-500/80'} mt-1`}>{isGenerated ? 'Gerados' : 'Est. de Cards'}</div>
                       </div>
                     </div>
                   </div>
-                  <Button 
-                    className="w-full bg-[#DC2626] hover:bg-[#B91C1C] text-white font-bold tracking-wide shadow-md shadow-red-900/20"
-                    onClick={() => handleGerarBloco(bloco)}
-                  >
-                    Gerar para este Bloco
-                  </Button>
+                  
+                  {isGenerated ? (
+                    <div className="w-full bg-emerald-500/20 text-emerald-400 font-bold text-sm rounded-md p-3 flex items-center justify-between border border-emerald-500/30">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 className="w-5 h-5" />
+                        Gerado com Sucesso
+                      </div>
+                      {lastUpdated && <span className="opacity-90 font-mono text-xs">{lastUpdated}</span>}
+                    </div>
+                  ) : (
+                    <Button 
+                      className="w-full bg-[#DC2626] hover:bg-[#B91C1C] text-white font-bold tracking-wide shadow-md shadow-red-900/20"
+                      onClick={() => handleGerarBloco(bloco)}
+                    >
+                      Gerar para este Bloco
+                    </Button>
+                  )}
                 </div>
               );
             })}
@@ -426,23 +530,51 @@ export default function WizardLeisSecas({ selectedArea }: WizardLeisSecasProps) 
 
       {/* STEP: GERANDO */}
       {step === 'generating' && (
-        <div className="bg-card border border-border/50 rounded-xl p-12 flex flex-col items-center justify-center text-center space-y-6">
-          <div className="relative">
-            <Loader2 className="w-16 h-16 animate-spin text-amber-500" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <Clock className="w-6 h-6 text-amber-500/50" />
+        <div className="bg-card border border-border/50 rounded-xl p-8 flex flex-col items-center justify-center space-y-6">
+          <div className="flex flex-col items-center text-center">
+            <div className="relative mb-6">
+              <Loader2 className="w-16 h-16 animate-spin text-amber-500" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Clock className="w-6 h-6 text-amber-500/50" />
+              </div>
             </div>
-          </div>
-          <div>
             <h3 className="text-xl font-bold mb-2">Processando com Inteligência Artificial...</h3>
             <p className="text-muted-foreground max-w-md mx-auto">
-              Analisando texto literal, criando lacunas assertivas e estruturando perguntas doutrinárias para o bloco <strong className="text-foreground">{generatingBlock}</strong>.
+              Analisando desmembramentos, criando lacunas assertivas e estruturando perguntas para: <strong className="text-foreground">{generatingBlock}</strong>.
             </p>
           </div>
-          <div className="w-full max-w-md pt-4">
-            <Progress value={undefined} className="h-2" />
-            <p className="text-xs text-muted-foreground mt-3 font-medium flex items-center justify-center gap-2">
-              <Clock className="w-3 h-3" /> Tempo estimado: 1 a 3 minutos
+
+          <div className="w-full max-w-2xl bg-black rounded-lg border border-border/50 overflow-hidden font-mono text-xs shadow-inner">
+            <div className="bg-zinc-900 border-b border-zinc-800 px-4 py-2 flex items-center gap-2">
+              <div className="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+              <div className="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
+              <div className="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+              <span className="text-zinc-500 ml-2">Terminal de Geração</span>
+            </div>
+            <div className="p-4 space-y-2 h-[180px] overflow-y-auto flex flex-col justify-end">
+              {generationLogs.map((log, i) => (
+                <div key={i} className="flex gap-2 text-zinc-300 animate-in fade-in slide-in-from-bottom-2">
+                  <span className="text-amber-500 shrink-0">[{new Date().toLocaleTimeString('pt-BR')}]</span>
+                  <span>{log}</span>
+                </div>
+              ))}
+              {generationProgress < 100 && (
+                <div className="flex gap-2 text-zinc-500 mt-2">
+                  <span className="shrink-0">[{new Date().toLocaleTimeString('pt-BR')}]</span>
+                  <span className="flex items-center gap-1">Aguardando IA <span className="animate-pulse">...</span></span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="w-full max-w-2xl pt-4">
+            <div className="flex justify-between items-end mb-2">
+              <span className="text-sm font-medium text-muted-foreground">Progresso</span>
+              <span className="text-sm font-bold text-amber-500">{generationProgress}%</span>
+            </div>
+            <Progress value={generationProgress} className="h-2" />
+            <p className="text-xs text-muted-foreground mt-4 font-medium flex items-center justify-center gap-2">
+              <Clock className="w-3 h-3" /> Tempo estimado: 30s a 2 minutos
             </p>
           </div>
         </div>

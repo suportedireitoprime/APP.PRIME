@@ -203,19 +203,30 @@ Regras:
       
       if (!area || !tema || artigos.length === 0) return json({ error: "Faltam parâmetros" }, 400);
 
-      const blocoTexto = artigos.map((a: any) => `Art. ${a.numero} — ${a.texto}`).join("\n\n");
+      const chunkArray = (arr: any[], size: number) => Array.from({ length: Math.ceil(arr.length / size) }, (v, i) => arr.slice(i * size, i * size + size));
+      const chunks = chunkArray(artigos, 1); // Reduzido para 1 artigo por vez, pois 10 cards por desmembramento gera muito texto
+      let allFlashcards: any[] = [];
 
-      const SYSTEM_PROMPT = `Você é um professor de Direito focado em "Lei Seca" para concursos públicos.
-Sua missão é extrair TODO O CONTEÚDO LITERAL dos artigos fornecidos e transformá-los em Flashcards EXAUSTIVOS.
+      for (const chunk of chunks) {
+        const blocoTexto = chunk.map((a: any) => `Art. ${a.numero} — ${a.texto}`).join("\n\n");
 
-Para cada artigo (caput, parágrafos, incisos, alíneas), crie ${quantidadePorArtigoStr}:
-1) Flashcard Normal: Pergunta direta e resposta exata da lei.
-2) Lacuna (Fill-in-the-blank): Omitir uma palavra/prazo/termo EXATO da lei na pergunta (usando ____) e a resposta será a palavra omitida.
+        const SYSTEM_PROMPT = `Você é um professor de Direito focado em "Lei Seca" para concursos públicos.
+Sua missão é extrair TODO O CONTEÚDO LITERAL dos artigos fornecidos e transformá-los em Flashcards EXAUSTIVOS de Aprofundamento Máximo.
+
+Para CADA desmembramento encontrado no artigo (caput, cada parágrafo, cada inciso, cada alínea), você deve gerar EXATAMENTE 10 flashcards.
+Exemplo: Se o artigo tiver o caput e 1 inciso, você deve gerar 10 cards para o caput e 10 para o inciso (total de 20 cards para este artigo).
+
+Os 10 flashcards de CADA desmembramento devem seguir OBRIGATORIAMENTE esta estrutura exata:
+1) 2x Lacunas (Fill-in-the-blank): Omitir palavras-chave ou prazos EXATOS da lei na pergunta (usando ____) e a resposta será a palavra omitida.
+2) 2x Perguntas Doutrinárias/Diretas: Perguntas sobre a regra geral e/ou exceção descrita no desmembramento.
+3) 2x Definições de Termos Técnicos: O que significa um termo ou conceito jurídico citado na lei.
+4) 2x Casos Hipotéticos Curtos: Situações práticas curtas (Ex: "João cometeu o ato X. Segundo a lei, qual a consequência?").
+5) 2x Pegadinhas de Prova: Afirmações do tipo Verdadeiro/Falso onde você altera uma palavra crítica (ex: trocar "pode" por "deve", inserir um "não") e a resposta explica o erro.
 
 Regras:
-- CUBRA TUDO: Não ignore incisos ou exceções.
+- CUBRA TUDO: Não ignore NENHUM inciso, alínea ou parágrafo.
 - Seja literal: a resposta das lacunas deve ser a exata palavra usada na lei.
-- O campo "dica" PODE ser preenchido com a indicação do artigo (ex: "Art. 5º, I").
+- O campo "dica" DEVE ser preenchido com a indicação exata do dispositivo (ex: "Art. 5º, I, 'a'").
 
 Formato de Saída (JSON APENAS):
 {
@@ -230,37 +241,40 @@ Formato de Saída (JSON APENAS):
   ]
 }`;
 
-      const userContent = `Gere os flashcards (Normais e Lacunas) focando APENAS nos seguintes artigos:\n\n${blocoTexto}`;
+        const userContent = `Gere os flashcards (Normais e Lacunas) focando APENAS nos seguintes artigos:\n\n${blocoTexto}`;
 
-      const aiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
-          contents: [{ role: "user", parts: [{ text: userContent }] }],
-          generationConfig: {
-            temperature: 0.2,
-            responseMimeType: "application/json",
-          },
-        }),
-      });
+        const aiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+            contents: [{ role: "user", parts: [{ text: userContent }] }],
+            generationConfig: {
+              temperature: 0.2,
+              responseMimeType: "application/json",
+            },
+          }),
+        });
 
-      if (!aiRes.ok) return json({ error: "Gemini API falhou" }, 502);
+        if (!aiRes.ok) continue; // Pula chunk com erro
 
-      const aiJson = await aiRes.json();
-      let parsed: any = {};
-      try {
-        const content = aiJson?.candidates?.[0]?.content?.parts?.[0]?.text ?? "{}";
-        parsed = JSON.parse(content);
-      } catch {
-        parsed = {};
+        const aiJson = await aiRes.json();
+        let parsed: any = {};
+        try {
+          const content = aiJson?.candidates?.[0]?.content?.parts?.[0]?.text ?? "{}";
+          parsed = JSON.parse(content);
+        } catch {
+          parsed = {};
+        }
+
+        const flashcards = Array.isArray(parsed.flashcards) ? parsed.flashcards : [];
+        allFlashcards = allFlashcards.concat(flashcards);
       }
 
-      const flashcards = Array.isArray(parsed.flashcards) ? parsed.flashcards : [];
-      if (flashcards.length === 0) return json({ error: "IA retornou 0 flashcards" }, 502);
+      if (allFlashcards.length === 0) return json({ error: "IA retornou 0 flashcards em todos os lotes" }, 502);
 
       const clean: any[] = [];
-      for (const f of flashcards) {
+      for (const f of allFlashcards) {
         if (!f.frente || !f.verso) continue;
         clean.push({
           area,

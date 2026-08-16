@@ -74,7 +74,7 @@ const AdminVadeMecum = () => {
 
   return (
     <div className="min-h-dvh bg-background pb-10">
-      <PageHeader title="Configurações IA - Vade Mecum" onBack={() => navigate('/admin')} />
+      <PageHeader title="Configurações IA - Vade Mecum" onBack={() => navigate('/admin-funcoes')} />
 
       <div className="p-4 max-w-4xl mx-auto space-y-6">
         <div className="flex items-center gap-2 mb-2">

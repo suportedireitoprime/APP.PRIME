@@ -598,7 +598,7 @@ export default function AdminFlashcardsEditar() {
         onBack={() => {
           if (step === 'temas') setStep('area');
           else if (step === 'area') setStep('categoria');
-          else navigate('/admin');
+          else navigate('/admin-funcoes');
         }} 
       />
 

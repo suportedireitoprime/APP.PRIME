@@ -198,13 +198,14 @@ export default function FlashcardsLeis() {
         // 1. Fetch vade mecum leis (Rápido)
         const { data: vmLeis, error: vmError } = await supabase
           .from('vade_mecum_leis')
-          .select('nome, categoria, ordem')
+          .select('nome, nome_curto, categoria, ordem')
           .order('ordem');
           
         if (vmError) throw vmError;
 
         const initialLeis: TemaRow[] = (vmLeis || []).map(lei => ({
           tema: lei.nome,
+          nome_curto: lei.nome_curto,
           total: 0,
           compreendidos: 0,
           a_revisar: 0,
@@ -231,9 +232,15 @@ export default function FlashcardsLeis() {
 
           if (isMounted) {
             const updatedLeis = initialLeis.map(lei => {
-              const matchingTemas = flattenedTemas.filter(t => 
-                t.tema === lei.tema || t.tema.startsWith(lei.tema + ' -') || t.tema.startsWith(lei.tema + ' (')
-              );
+              const prefix1 = lei.tema.toLowerCase();
+              const prefix2 = (lei.nome_curto || '').toLowerCase();
+              
+              const matchingTemas = flattenedTemas.filter(t => {
+                const temaLower = t.tema.toLowerCase();
+                const match1 = temaLower === prefix1 || temaLower.startsWith(prefix1 + ' -') || temaLower.startsWith(prefix1 + ' (');
+                const match2 = prefix2 ? (temaLower === prefix2 || temaLower.startsWith(prefix2 + ' -') || temaLower.startsWith(prefix2 + ' (')) : false;
+                return match1 || match2;
+              });
 
               const total = matchingTemas.reduce((acc, t) => acc + t.total, 0);
               const compreendidos = matchingTemas.reduce((acc, t) => acc + (t.compreendidos || 0), 0);
@@ -312,9 +319,13 @@ export default function FlashcardsLeis() {
   const renderTituloOpcao = (opcao: string) => {
     if (!leiSelecionada) return opcao;
     const prefix = leiSelecionada.tema + ' - ';
+    const prefixCurto = (leiSelecionada.nome_curto || '') + ' - ';
+    
     let name = opcao;
-    if (opcao.startsWith(prefix)) {
+    if (opcao.toLowerCase().startsWith(prefix.toLowerCase())) {
       name = opcao.slice(prefix.length);
+    } else if (prefixCurto !== ' - ' && opcao.toLowerCase().startsWith(prefixCurto.toLowerCase())) {
+      name = opcao.slice(prefixCurto.length);
     }
     
     const info = infoPorTitulo[opcao];
@@ -511,6 +522,9 @@ export default function FlashcardsLeis() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {listaFiltrada.map((lei) => {
                 const progresso = lei.total ? Math.round((lei.compreendidos / lei.total) * 100) : 0;
+                const strokeDasharray = 2 * Math.PI * 18; // r=18
+                const strokeDashoffset = strokeDasharray - (strokeDasharray * progresso) / 100;
+                
                 return (
                   <button
                     key={lei.tema}
@@ -523,17 +537,44 @@ export default function FlashcardsLeis() {
                     }}
                     className={`group flex items-center justify-between p-4 rounded-2xl border bg-card text-left transition-all ${lei.total > 0 ? 'border-border/80 hover:border-[#36AF85]/50 hover:shadow-md active:scale-[0.99] cursor-pointer' : 'border-border/40 opacity-70 cursor-default'}`}
                   >
-                    <div className="flex flex-col min-w-0 pr-4">
-                      <span className={`font-bold text-sm sm:text-base leading-tight line-clamp-2 transition-colors ${lei.total > 0 ? 'text-foreground group-hover:text-[#36AF85]' : 'text-muted-foreground'}`}>
-                        {lei.tema}
-                      </span>
-                      <div className="flex items-center gap-3 mt-1.5 text-xs font-medium text-muted-foreground">
-                        <span>{lei.total} {lei.total === 1 ? 'card' : 'cards'}</span>
-                        {progresso > 0 && (
-                          <span className="flex items-center gap-1 text-[#36AF85]">
-                            <Sparkles className="w-3 h-3" /> {progresso}% dominado
-                          </span>
-                        )}
+                    <div className="flex items-center gap-4 flex-1 min-w-0">
+                      {/* Circular Progress */}
+                      <div className="relative w-12 h-12 flex items-center justify-center shrink-0">
+                        <svg className="w-full h-full -rotate-90 transform" viewBox="0 0 44 44">
+                          {/* Background Circle */}
+                          <circle
+                            cx="22" cy="22" r="18"
+                            strokeWidth="4"
+                            stroke="currentColor"
+                            fill="transparent"
+                            className="text-muted/30"
+                          />
+                          {/* Progress Circle */}
+                          <motion.circle
+                            cx="22" cy="22" r="18"
+                            strokeWidth="4"
+                            stroke="currentColor"
+                            fill="transparent"
+                            strokeLinecap="round"
+                            className={progresso > 0 ? "text-[#36AF85]" : "text-transparent"}
+                            initial={{ strokeDashoffset: strokeDasharray }}
+                            animate={{ strokeDashoffset: lei.total > 0 ? strokeDashoffset : strokeDasharray }}
+                            transition={{ duration: 1, ease: "easeOut" }}
+                            style={{ strokeDasharray }}
+                          />
+                        </svg>
+                        <div className="absolute inset-0 flex items-center justify-center flex-col">
+                          <span className={`text-[10px] font-bold ${progresso > 0 ? 'text-foreground' : 'text-muted-foreground'}`}>{progresso}%</span>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col min-w-0 pr-4">
+                        <span className={`font-bold text-sm sm:text-base leading-tight line-clamp-2 transition-colors ${lei.total > 0 ? 'text-foreground group-hover:text-[#36AF85]' : 'text-muted-foreground'}`}>
+                          {lei.tema}
+                        </span>
+                        <div className="flex items-center gap-3 mt-1.5 text-xs font-medium text-muted-foreground">
+                          <span>{lei.total} {lei.total === 1 ? 'card' : 'cards'}</span>
+                        </div>
                       </div>
                     </div>
                     {lei.total > 0 && (
