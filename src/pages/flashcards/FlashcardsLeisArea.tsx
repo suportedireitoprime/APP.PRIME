@@ -70,9 +70,9 @@ const FlashcardsLeisArea = () => {
           )}
 
           {loadingAreas ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-3.5 sm:gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="h-24 rounded-2xl animate-pulse border border-border/60 bg-muted/40" />
+                <div key={i} className="h-28 rounded-2xl animate-pulse border border-border/60 bg-muted/40" />
               ))}
             </div>
           ) : lista.length === 0 ? (
@@ -81,29 +81,22 @@ const FlashcardsLeisArea = () => {
               Nenhuma matéria encontrada.
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-3.5 sm:gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
               {lista.map((a) => {
                 const { icon: Icon } = getAreaVisual(a.area);
                 return (
                   <button
                     key={a.area}
                     onClick={() => { haptic.selection(); setAreaSheet(a.area); }}
-                    className="group flex flex-col justify-between rounded-2xl border border-border/80 bg-card p-4 text-left transition-all hover:border-[#36AF85]/50 hover:shadow-md active:scale-[0.99] gap-3"
+                    className="group flex flex-col items-center justify-center gap-3 p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#36AF85]/50 transition-colors active:scale-95 text-center"
                   >
-                    <div className="flex items-center justify-between gap-3 w-full">
-                      <div className="flex items-center gap-4 min-w-0">
-                        <div className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110">
-                          <Icon className="h-7 w-7 text-[#36AF85] transition-all duration-300 group-hover:drop-shadow-[0_0_12px_rgba(54,175,133,0.9)]" strokeWidth={1.5} />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="truncate text-base font-extrabold text-foreground group-hover:text-[#36AF85] transition-colors tracking-tight">
-                            {a.area}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <ChevronRight className="h-4.5 w-4.5 text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
-                      </div>
+                    <div className="flex items-center justify-center text-[#36AF85] group-hover:scale-110 transition-transform">
+                      <Icon className="h-8 w-8 transition-all duration-300 group-hover:drop-shadow-[0_0_12px_rgba(54,175,133,0.9)]" strokeWidth={1.5} />
+                    </div>
+                    <div className="flex flex-col items-center">
+                      <span className="text-sm font-bold text-foreground group-hover:text-[#36AF85] transition-colors leading-tight">
+                        {a.area}
+                      </span>
                     </div>
                   </button>
                 );

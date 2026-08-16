@@ -57,6 +57,7 @@ const FlashcardsEstudo = () => {
   const temasParam = params.get('temas') || params.get('tema');
   const deckId = params.get('deck');
   const modo = params.get('modo') || 'todos';
+  const ordemParam = params.get('ordem') || 'embaralhado';
   const editalId = params.get('editalId');
 
   // Sem nenhum filtro escolhido → tela de categorias.
@@ -92,11 +93,15 @@ const FlashcardsEstudo = () => {
 
   useEffect(() => {
     if (cardsRaw) {
-      setCards(cardsRaw);
+      let finalCards = [...cardsRaw];
+      if (ordemParam === 'sequencial') {
+        finalCards.sort((a,b) => (a.artigo_numero || '').localeCompare(b.artigo_numero || '', undefined, {numeric: true}));
+      }
+      setCards(finalCards);
       setIdx(0);
       setVirado(false);
     }
-  }, [cardsRaw]);
+  }, [cardsRaw, ordemParam]);
 
   // Ponto de Retomada: Salvar e restaurar último cartão estudado
   const sessionKey = `flashcards_pos_${areaParam || areasParam || deckId || 'geral'}_${temasParam || 'todos'}`;
