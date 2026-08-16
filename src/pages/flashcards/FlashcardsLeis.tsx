@@ -326,30 +326,59 @@ export default function FlashcardsLeis() {
     // Normalizar quebras de linha e espaços duplos
     const limpo = name.replace(/\r?\n/g, ' - ').replace(/\s+/g, ' ').trim();
 
-    // Match para extrair rótulo estrutural (PARTE, LIVRO, TÍTULO, CAPÍTULO, SEÇÃO, SUBSEÇÃO)
-    const match = limpo.match(/^((?:PARTE\s+\S+|LIVRO\s+\S+|T[ÍI]TULO\s+[\wºª-]+|CAP[ÍI]TULO\s+[\wºª-]+|SE[ÇC][ÃA]O\s+[\wºª-]+|SUBSE[ÇC][ÃA]O\s+[\wºª-]+))\s*[-–—:]?\s*(.*)$/i);
+    // Match para extrair rótulos estruturais em sequência (Ex: TÍTULO I - CAPÍTULO II - SEÇÃO III)
+    const badges: string[] = [];
+    let remaining = limpo;
     
-    const parte1 = match ? match[1].toUpperCase() : null;
-    let parte2 = match && match[2] ? match[2].trim() : (!match ? limpo : null);
-    if (parte2 && parte2.startsWith('-')) parte2 = parte2.replace(/^[-–—\s]+/, '').trim();
-    const description = parte2 ? parte2.charAt(0).toUpperCase() + parte2.slice(1).toLowerCase() : null;
+    // Expressão regular para encontrar um rótulo estrutural no início da string
+    const structRegex = /^(?:PARTE|LIVRO|T[ÍI]TULO|CAP[ÍI]TULO|SE[ÇC][ÃA]O|SUBSE[ÇC][ÃA]O)\s+[\wºª]+(?:-[\wºª]+)?/i;
+    
+    while (true) {
+      const match = remaining.match(structRegex);
+      if (!match) break;
+      
+      badges.push(match[0].toUpperCase());
+      remaining = remaining.slice(match[0].length).trim();
+      
+      // Remove hifens/dois pontos subsequentes
+      if (remaining.startsWith('-') || remaining.startsWith('–') || remaining.startsWith(':')) {
+        remaining = remaining.replace(/^[-–—:]+\s*/, '').trim();
+      }
+    }
+
+    // Formata o nome final usando a mesma lógica de toSentence
+    const formatSentence = (s: string) => {
+      if (!s) return null;
+      const minors = new Set(['da', 'de', 'do', 'das', 'dos', 'e', 'em', 'no', 'na', 'nos', 'nas', 'ao', 'à', 'às', 'por', 'para', 'com', 'sem', 'sob', 'ou']);
+      return s.toLowerCase().split(/\s+/).map((word, i) => {
+        if (i === 0 || !minors.has(word)) {
+          return word.charAt(0).toUpperCase() + word.slice(1);
+        }
+        return word;
+      }).join(' ');
+    };
+
+    const description = formatSentence(remaining);
 
     return (
       <div className="flex w-full items-center justify-between pr-2 py-1">
         <div className="flex flex-col min-w-0 pr-2">
-          {/* Linha superior: badge + seta + artigos */}
-          {(parte1 || faixa) && (
-            <div className="flex items-center gap-1.5 mb-1">
-              {parte1 && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                  {parte1}
-                </span>
-              )}
-              {parte1 && faixa && (
+          {/* Linha superior: badges + seta + artigos */}
+          {(badges.length > 0 || faixa) && (
+            <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+              {badges.map((b, idx) => (
+                <div key={idx} className="flex items-center gap-1.5">
+                  {idx > 0 && <ChevronRight className="h-3 w-3 text-emerald-500/50 shrink-0" />}
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 whitespace-nowrap">
+                    {b}
+                  </span>
+                </div>
+              ))}
+              {badges.length > 0 && faixa && (
                 <ChevronRight className="h-3 w-3 text-emerald-500/50 shrink-0" />
               )}
               {faixa && (
-                <span className="text-[11px] font-bold text-[#36AF85]">
+                <span className="text-[11px] font-bold text-[#36AF85] whitespace-nowrap">
                   {faixa}
                 </span>
               )}

@@ -54,23 +54,31 @@ function formatTemaBreadcrumb(raw: string): string[] {
   if (dashIdx === -1) return [toSentence(raw)];
 
   const leiName = raw.slice(0, dashIdx).trim();
-  const rest = raw.slice(dashIdx).replace(/^\s*[-–]\s*/, '').trim();
+  let remaining = raw.slice(dashIdx).replace(/^\s*[-–]\s*/, '').trim();
 
-  // Tenta separar o rótulo estrutural (TÍTULO I, CAPÍTULO II, etc.) do nome descritivo
-  const structMatch = rest.match(
-    /^((?:PARTE|LIVRO|T[ÍI]TULO|CAP[ÍI]TULO|SE[ÇC][ÃA]O|SUBSE[ÇC][ÃA]O)\s+[\wºª]+(?:-[\wºª]+)?)\s*[-–:]?\s*(.*)$/i
-  );
-
-  if (structMatch) {
-    const label = toSentence(structMatch[1]); // "Título I"
-    const desc = structMatch[2]?.trim();
-    if (desc) {
-      return [leiName, label, toSentence(desc)];
+  // Match para extrair rótulos estruturais em sequência (Ex: TÍTULO I - CAPÍTULO II - SEÇÃO III)
+  const badges: string[] = [];
+  const structRegex = /^(?:PARTE|LIVRO|T[ÍI]TULO|CAP[ÍI]TULO|SE[ÇC][ÃA]O|SUBSE[ÇC][ÃA]O)\s+[\wºª]+(?:-[\wºª]+)?/i;
+  
+  while (true) {
+    const match = remaining.match(structRegex);
+    if (!match) break;
+    
+    badges.push(toSentence(match[0]));
+    remaining = remaining.slice(match[0].length).trim();
+    
+    // Remove hifens/dois pontos subsequentes
+    if (remaining.startsWith('-') || remaining.startsWith('–') || remaining.startsWith(':')) {
+      remaining = remaining.replace(/^[-–—:]+\s*/, '').trim();
     }
-    return [leiName, label];
   }
 
-  return [leiName, toSentence(rest)];
+  const result = [leiName, ...badges];
+  if (remaining) {
+    result.push(toSentence(remaining));
+  }
+  
+  return result;
 }
 
 /** "DA APLICAÇÃO DA LEI PENAL" → "Da Aplicação da Lei Penal" */
