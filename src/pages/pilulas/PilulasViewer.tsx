@@ -140,10 +140,15 @@ export default function PilulasViewer() {
                     <span className="text-[12px] font-bold text-[#36AF85] tracking-widest uppercase mb-3 drop-shadow-md">
                       Pílula {index + 1} de {pilulas.length}
                     </span>
-                    <h2 className="text-[32px] font-black text-white leading-none drop-shadow-lg">
+                    <h2 className="text-[32px] font-black text-white leading-tight text-center px-6">
                       {pilulas[index].title}
                     </h2>
-                    <p className="mt-4 text-[15px] font-medium text-white/80 drop-shadow flex items-center gap-2">
+                    {pilulas[index].subtitle && (
+                      <p className="mt-3 text-lg font-medium text-white/90 text-center px-8 drop-shadow-md">
+                        {pilulas[index].subtitle}
+                      </p>
+                    )}
+                    <p className="mt-8 text-[15px] font-medium text-white/80 drop-shadow flex items-center gap-2">
                       <RotateCcw className="w-4 h-4" />
                       Toque para girar
                     </p>
