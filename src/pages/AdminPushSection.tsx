@@ -18,7 +18,7 @@ import { toast } from "sonner";
 import { FunctionsHttpError } from "@supabase/supabase-js";
 import PushAutomacoesTab from "@/components/admin/PushAutomacoesTab";
 import PushDiagnosticoTab from "@/components/admin/PushDiagnosticoTab";
-import PushCronogramaTab from "@/components/admin/PushCronogramaTab";
+import PushCronogramaTab, { PUSH_DEFAULT_COVERS } from "@/components/admin/PushCronogramaTab";
 
 type Section = "enviar" | "programadas" | "dashboard" | "diagnostico" | "historico";
 
@@ -417,6 +417,21 @@ export default function AdminPushSection() {
                         <span>{uploadingImage ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}</span>
                       </Button>
                     </label>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    <span className="text-[11px] text-muted-foreground font-medium flex items-center mr-1">Presets:</span>
+                    {PUSH_DEFAULT_COVERS.map((cp) => (
+                      <Button
+                        key={cp.id}
+                        type="button"
+                        size="sm"
+                        variant={imageUrl === cp.url ? "default" : "outline"}
+                        className="h-6 text-[11px] px-2 py-0"
+                        onClick={() => setImageUrl(cp.url)}
+                      >
+                        {cp.nome}
+                      </Button>
+                    ))}
                   </div>
                   {imageUrl && (
                     <img src={imageUrl} alt="preview" className="mt-2 h-16 rounded border object-cover" />
