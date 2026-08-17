@@ -4,6 +4,9 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { FileText, Image as ImageIcon, Youtube, Mic, ArrowLeft, ArrowRight, Loader2, Sparkles, Check, X, SlidersHorizontal, UploadCloud, Layers } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
+import { getOfflineDecks, saveOfflineDecks } from '@/lib/flashcardsOfflineManager';
 import { haptic } from '@/lib/nativeHaptics';
 
 interface WizardFlashcardsIAProps {
@@ -34,9 +37,13 @@ const formatYoutubeDuration = (duration: string) => {
 };
 
 export default function WizardFlashcardsIA({ open, onOpenChange }: WizardFlashcardsIAProps) {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  
   const [step, setStep] = useState(1);
   const [source, setSource] = useState<SourceType>(null);
   const [loadingAI, setLoadingAI] = useState(false);
+  const [loadingSave, setLoadingSave] = useState(false);
   
   // Step 2 (Youtube specific)
   const [youtubeLink, setYoutubeLink] = useState('');
@@ -208,9 +215,37 @@ Retorne um JSON estrito neste formato, sugerindo uma quantidade adequada de flas
   };
 
   const handleSave = () => {
-    haptic.success();
-    onOpenChange(false);
-    // Real implementation would save to DB here
+    if (!deckName.trim()) return;
+    haptic.selection();
+    setLoadingSave(true);
+    
+    // Simula a geração da IA (os cards reais)
+    setTimeout(() => {
+      const newDeckId = crypto.randomUUID();
+      const offlineDecks = getOfflineDecks();
+      
+      offlineDecks.unshift({
+        id: newDeckId,
+        nome: deckName,
+        descricao: resumo,
+        filtros: null,
+        total_cards: qtdCards
+      });
+      
+      saveOfflineDecks(offlineDecks);
+      
+      setLoadingSave(false);
+      haptic.success();
+      onOpenChange(false);
+      
+      toast({
+        title: "Flashcards Gerados!",
+        description: `Seu deck "${deckName}" com ${qtdCards} cards foi criado com sucesso.`,
+      });
+      
+      // Redireciona para a tela de flashcards principal
+      navigate('/flashcards');
+    }, 2500);
   };
 
   return (
@@ -426,7 +461,7 @@ Retorne um JSON estrito neste formato, sugerindo uma quantidade adequada de flas
                   A IA definiu um limite máximo de {maxCards} flashcards para a densidade deste conteúdo.
                 </div>
 
-                <Button onClick={() => { haptic.selection(); setStep(5); }} className="w-full bg-primary text-white rounded-full font-bold h-12">
+                <Button onClick={() => { haptic.selection(); setDeckName(youtubePreview?.title || tema || ''); setStep(5); }} className="w-full bg-primary text-white rounded-full font-bold h-12">
                   Aprovar Plano
                 </Button>
               </motion.div>
@@ -449,7 +484,21 @@ Retorne um JSON estrito neste formato, sugerindo uma quantidade adequada de flas
                       value={deckName}
                       onChange={(e) => setDeckName(e.target.value)}
                       className="bg-muted border-border/50 h-12 font-medium" 
+                      disabled={loadingSave}
                     />
+                    {tema && tema !== deckName && (
+                      <div className="mt-3 text-left">
+                        <span className="text-[10px] uppercase font-bold text-muted-foreground ml-1 mb-1 block">Sugestão da IA</span>
+                        <button 
+                          onClick={() => { haptic.selection(); setDeckName(tema); }}
+                          disabled={loadingSave}
+                          className="bg-[#36AF85]/10 border border-[#36AF85]/20 text-[#36AF85] text-xs font-semibold px-3 py-2 rounded-lg cursor-pointer hover:bg-[#36AF85]/20 transition-colors inline-block text-left disabled:opacity-50"
+                        >
+                          <Sparkles className="w-3 h-3 inline-block mr-1.5 -mt-0.5" />
+                          {tema}
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -461,8 +510,8 @@ Retorne um JSON estrito neste formato, sugerindo uma quantidade adequada de flas
                   <span className="text-xs font-bold bg-[#36AF85] text-white px-2 py-0.5 rounded-md">{qtdCards} Cards</span>
                 </div>
 
-                <Button onClick={handleSave} disabled={!deckName.trim()} className="w-full bg-[#36AF85] hover:bg-[#2b8c6a] text-white rounded-full font-bold h-12 shadow-lg shadow-[#36AF85]/20">
-                  <Check className="w-4 h-4 mr-2" /> Gerar Deck
+                <Button onClick={handleSave} disabled={!deckName.trim() || loadingSave} className="w-full bg-[#36AF85] hover:bg-[#2b8c6a] text-white rounded-full font-bold h-12 shadow-lg shadow-[#36AF85]/20">
+                  {loadingSave ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Check className="w-4 h-4 mr-2" /> Gerar Deck</>}
                 </Button>
               </motion.div>
             )}
