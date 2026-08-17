@@ -827,6 +827,7 @@ function AnimatedRoutes() {
           <Route path="/ferramentas/peticao-inicial/:id" element={<ProtectedRoute><PageTransition><PeticaoInicialEditor /></PageTransition></ProtectedRoute>} />
           <Route path="/admin/locais" element={<ProtectedRoute><PageTransition><AdminLocais /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-estatisticas-assinatura" element={<ProtectedRoute><PageTransition><AdminEstatisticasAssinatura /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin-avaliacoes-loja" element={<ProtectedRoute><PageTransition><AdminAvaliacoesLoja /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas" element={<ProtectedRoute><PageTransition><PilulasHome /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas/deck/:deckId" element={<ProtectedRoute><PageTransition><PilulasViewer /></PageTransition></ProtectedRoute>} />
           <Route path="/tematica-juridica" element={<ProtectedRoute><PageTransition><TematicaJuridica /></PageTransition></ProtectedRoute>} />

@@ -5,7 +5,7 @@ import {
   Gamepad2, Brain, BookA, MessageCircle, BellRing, Mic, Lightbulb, Building2,
   Rss, Palette, Users, GitBranch, Github, ImageIcon, KeyRound, Bug, Newspaper,
   Quote, Monitor, Send, RefreshCcw, Lock, Wrench, FileText, Crown, Search, Target, MapPin, PlayCircle,
-  ListChecks, Headphones, ShieldAlert, Layers, TrendingDown,
+  ListChecks, Headphones, ShieldAlert, Layers, TrendingDown, Star,
 } from 'lucide-react';
 
 import { toast } from 'sonner';
@@ -41,6 +41,7 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   '/admin-funcoes-assinantes': () => import('./AdminFuncoesAssinantes'),
   '/admin-assinantes': () => import('./AdminAssinantes'),
   '/admin-estatisticas-assinatura': () => import('./AdminEstatisticasAssinatura'),
+  '/admin-avaliacoes-loja': () => import('./AdminAvaliacoesLoja'),
   '/admin-boletins': () => import('./AdminBoletins'),
   '/admin-modelos': () => import('./AdminModelos'),
   '/admin-desktop': () => import('./AdminDesktop'),
@@ -237,6 +238,7 @@ const CATEGORIES: Category[] = [
       { id: 'admin-monitor', label: 'Monitoramento', icon: Activity, desc: 'Status e saúde do sistema', route: '/admin-monitor' },
       { id: 'monitor-usuarios', label: 'Usuários Online', icon: Users, desc: 'Monitoramento em tempo real', route: '/admin-monitor-usuarios' },
       { id: 'monitor-apis', label: 'APIs', icon: Activity, desc: 'Funções que usam IA (custo, manual/auto)', route: '/admin-monitor-apis' },
+      { id: 'admin-avaliacoes-loja', label: 'Avaliações da Loja', icon: Star, desc: 'Reviews e notas recebidas na Google Play Store', route: '/admin-avaliacoes-loja' },
     ],
   },
   {
