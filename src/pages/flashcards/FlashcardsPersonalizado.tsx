@@ -112,6 +112,16 @@ export default function FlashcardsPersonalizado() {
   // Lista de Recentes global
   const recentesGeral = offlineDecks.slice(0, 10);
 
+  const groupedRecentes = useMemo(() => {
+    const groups: { [key: string]: Deck[] } = {};
+    recentesGeral.forEach(deck => {
+      const dateStr = formatDate(deck.created_at);
+      if (!groups[dateStr]) groups[dateStr] = [];
+      groups[dateStr].push(deck);
+    });
+    return groups;
+  }, [recentesGeral]);
+
   const resultadosBusca = useMemo(() => {
     if (!searchQuery.trim()) return [];
     const q = searchQuery.toLowerCase();
@@ -131,75 +141,67 @@ export default function FlashcardsPersonalizado() {
           haptic.selection();
           setSelectedDeck(deck);
         }}
-        className="group relative bg-card border border-border/80 rounded-2xl hover:border-[#36AF85]/50 transition-all cursor-pointer shadow-sm hover:shadow-md flex flex-col overflow-hidden"
+        className="group relative bg-card border border-border/80 rounded-xl hover:border-[#36AF85]/50 transition-all cursor-pointer shadow-sm hover:shadow-md flex items-center p-3 gap-3 overflow-hidden"
       >
-        {deck.thumbnail && (
-          <div className="w-full h-28 bg-muted relative">
-            <img src={deck.thumbnail} alt={deck.nome} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-            <div className="absolute bottom-2 left-2 right-2 flex justify-between items-end">
-              <div className="bg-black/60 backdrop-blur-sm px-2 py-1 rounded text-[10px] text-white font-bold tracking-wider">
-                {deck.duration || renderIcon(deckTipo)}
-              </div>
+        {deck.thumbnail ? (
+          <div className="w-20 h-14 bg-muted rounded-lg relative overflow-hidden shrink-0 border border-border/50">
+            <img src={deck.thumbnail} alt={deck.nome} className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute inset-0 bg-black/20 pointer-events-none" />
+            <div className="absolute bottom-1 right-1 bg-black/70 backdrop-blur-sm px-1 rounded text-[8px] text-white font-bold">
+              {deck.duration || 'Vídeo'}
             </div>
+          </div>
+        ) : (
+          <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${colors.iconBg}`}>
+            {renderIcon(deckTipo)}
           </div>
         )}
-        <div className="p-4 flex flex-col flex-1">
-          <div className="flex justify-between items-start mb-2">
-            {!deck.thumbnail && (
-              <div className={`p-2 rounded-xl mr-2 ${colors.iconBg}`}>
-                {renderIcon(deckTipo)}
-              </div>
-            )}
-            
-            <div className="flex items-center gap-2 ml-auto">
-              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider bg-background/50 px-2 py-1 rounded-md border border-border/50">
-                {formatDate(deck.created_at)}
+        
+        <div className="flex-1 min-w-0 flex flex-col justify-center py-0.5">
+          <h4 className="font-bold text-foreground text-sm leading-tight truncate">{deck.nome}</h4>
+          
+          <div className="flex items-center gap-2 mt-1.5">
+            {deck.tags && deck.tags.length > 0 && (
+              <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-muted text-muted-foreground border border-border/50 truncate max-w-[80px]">
+                {deck.tags[0]}
               </span>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <button
-                    onClick={(e) => e.stopPropagation()}
-                    className="p-1.5 text-muted-foreground hover:text-red-500 bg-background/50 hover:bg-red-500/10 rounded-md transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </AlertDialogTrigger>
-                <AlertDialogContent onClick={(e) => e.stopPropagation()}>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Excluir deck?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Tem certeza que deseja excluir "{deck.nome}"? Esta ação não pode ser desfeita e os flashcards serão apagados do seu dispositivo.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel onClick={(e) => e.stopPropagation()}>Cancelar</AlertDialogCancel>
-                    <AlertDialogAction onClick={(e) => handleDeleteDeck(e, deck.id)} className="bg-red-600 hover:bg-red-700 text-white">
-                      Excluir
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </div>
+            )}
+            <p className="text-[10px] text-muted-foreground font-semibold flex items-center gap-1">
+              <Layers className="w-3 h-3" />
+              {deck.total_cards} cards
+            </p>
           </div>
-          
-          <h4 className="font-bold text-foreground text-sm leading-tight mb-2 line-clamp-2">{deck.nome}</h4>
-          
-          {deck.tags && deck.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1 mb-3">
-              {deck.tags.slice(0, 2).map((tag, i) => (
-                <span key={i} className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-muted text-muted-foreground border border-border/50">
-                  {tag}
-                </span>
-              ))}
-              {deck.tags.length > 2 && <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-muted text-muted-foreground border border-border/50">+{deck.tags.length - 2}</span>}
-            </div>
-          )}
-          
-          <p className="text-xs text-muted-foreground font-semibold flex items-center gap-1.5 mt-auto">
-            <Layers className="w-3.5 h-3.5" />
-            {deck.total_cards} cards gerados
-          </p>
+        </div>
+
+        <div className="flex flex-col items-end gap-2 shrink-0">
+          <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider bg-background/50 px-1.5 py-0.5 rounded border border-border/50 hidden sm:block">
+            {formatDate(deck.created_at)}
+          </span>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <button
+                onClick={(e) => e.stopPropagation()}
+                className="p-1.5 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded-md transition-colors"
+                aria-label="Excluir deck"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </AlertDialogTrigger>
+            <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Excluir deck?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Tem certeza que deseja excluir "{deck.nome}"? Esta ação não pode ser desfeita e os flashcards serão apagados.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel onClick={(e) => e.stopPropagation()}>Cancelar</AlertDialogCancel>
+                <AlertDialogAction onClick={(e) => handleDeleteDeck(e, deck.id)} className="bg-red-600 hover:bg-red-700 text-white">
+                  Excluir
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
     );
@@ -294,8 +296,19 @@ export default function FlashcardsPersonalizado() {
                   <div className="flex items-center justify-between mb-4 px-1">
                     <h3 className="text-sm font-extrabold uppercase tracking-widest text-muted-foreground">Recentes</h3>
                   </div>
-                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                    {recentesGeral.map(renderDeckCard)}
+                  <div className="space-y-6">
+                    {Object.entries(groupedRecentes).map(([dateLabel, decks]) => (
+                      <div key={dateLabel} className="space-y-3">
+                        <div className="flex items-center gap-2">
+                           <div className="h-px bg-border flex-1" />
+                           <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-2">{dateLabel}</span>
+                           <div className="h-px bg-border flex-1" />
+                        </div>
+                        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                          {decks.map(renderDeckCard)}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </>
               )}
@@ -337,7 +350,7 @@ export default function FlashcardsPersonalizado() {
                   <p className="mt-1 text-sm text-muted-foreground">Clique no botão flutuante para gerar um novo deck.</p>
                 </div>
               ) : (
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
                   {decksFiltrados.map(renderDeckCard)}
                 </div>
               )}
