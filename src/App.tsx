@@ -43,6 +43,7 @@ import OfflineWatcher from "@/components/OfflineWatcher";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
+import { HorusAvaliacaoOverlay } from "./components/vademecum/HorusAvaliacaoOverlay";
 import { usePresenceTracker } from "@/hooks/usePresenceTracker";
 import { useNativePermissions } from "@/hooks/useNativePermissions";
 import AtivarNotificacoesGate from "@/components/notificacoes/AtivarNotificacoesGate";
