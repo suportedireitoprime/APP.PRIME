@@ -18,6 +18,7 @@ import { getTemaCover } from "@/lib/flashcards-tema-cover";
 import laurel from '@/assets/landing-tribunal/laurel-leaf.png';
 import scales from '@/assets/landing-tribunal/scales.png';
 import { haptic } from "@/lib/nativeHaptics";
+import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
 
 export interface FlashcardElegante {
   pergunta: string;
@@ -596,14 +597,16 @@ function FrenteCard({
   const cover = card.coverUrl ?? getTemaCover(card.tema ?? fallbackTitulo);
 
   return (
-    <div
-      role="button"
-      onClick={onClick}
-      className="absolute inset-0 rounded-2xl border p-6 md:p-8 flex flex-col cursor-pointer overflow-hidden text-white"
-      style={{
-        backfaceVisibility: "hidden",
-        WebkitBackfaceVisibility: "hidden",
-        borderColor: `${accent}40`,
+    <CardContainer 
+      containerClassName="absolute inset-0 !p-0 m-0 w-full h-full flex-none" 
+      className="w-full h-full"
+    >
+      <CardBody
+        className="w-full h-full rounded-2xl border p-6 md:p-8 flex flex-col cursor-pointer overflow-hidden text-white bg-transparent"
+        style={{
+          backfaceVisibility: "hidden",
+          WebkitBackfaceVisibility: "hidden",
+          borderColor: `${accent}40`,
         boxShadow: `0 20px 60px -30px ${accent}80, inset 0 0 0 1px ${accent}25`,
         background: cover
           ? "oklch(0.14 0.03 280)"
@@ -717,7 +720,7 @@ function FrenteCard({
         />
       </div>
 
-      <div className="relative mb-4 flex items-start justify-between gap-3">
+      <CardItem translateZ="50" className="relative mb-4 flex items-start justify-between gap-3 w-full">
         <p
           className="text-sm md:text-base font-semibold leading-snug line-clamp-2"
           style={{
@@ -732,9 +735,9 @@ function FrenteCard({
           style={{ color: `${accent}`, opacity: 0.7 }}
           aria-hidden
         />
-      </div>
+      </CardItem>
 
-      <div className="relative flex-1 flex items-center justify-center text-center">
+      <CardItem translateZ="100" className="relative flex-1 flex items-center justify-center text-center w-full">
         <motion.p
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
@@ -747,12 +750,17 @@ function FrenteCard({
         >
           {card.pergunta}
         </motion.p>
-      </div>
+      </CardItem>
 
-      <p className="relative text-[11px] text-white/70 text-center mt-4 inline-flex items-center justify-center gap-1.5">
-        <RotateCw className="h-3 w-3" /> Toque para ver a resposta
-      </p>
-    </div>
+      <CardItem translateZ="60" className="w-full">
+        <p className="relative text-[11px] text-white/70 text-center mt-4 flex items-center justify-center gap-1.5 w-full">
+          <RotateCw className="h-3 w-3" /> Toque para ver a resposta
+        </p>
+      </CardItem>
+      {/* Invisible overlay button to handle clicks without breaking 3d items */}
+      <div className="absolute inset-0 z-50 cursor-pointer" onClick={onClick} role="button" aria-label="Ver resposta" />
+      </CardBody>
+    </CardContainer>
   );
 }
 
