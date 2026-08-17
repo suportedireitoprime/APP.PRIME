@@ -1,6 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Heart, Clock, Highlighter, ChevronRight } from 'lucide-react';
+import { ChevronRight, Bookmark, Clock, BookOpen, FileUp, Lock } from 'lucide-react';
+import { track } from '@/lib/analyticsEvents';
+import { FilePicker } from '@capawesome/capacitor-file-picker';
+import { useGatedFeature } from '@/hooks/useGatedFeature';
+import PdfScrollReader from './PdfScrollReader';
 import type { LivroNormalizado } from '@/lib/bibliotecaColecoes';
 import {
   getFavoritos,
@@ -44,12 +48,34 @@ const BibliotecaAtividadeRail = ({ onAbrirLivro }: Props) => {
   const navigate = useNavigate();
   const [aba, setAba] = useState<Aba>('lendo');
   const [tick, setTick] = useState(0);
+  const [customPdfUrl, setCustomPdfUrl] = useState<string | null>(null);
+  const [customPdfTitle, setCustomPdfTitle] = useState<string>('');
+  const gate = useGatedFeature('pdf_personalizado', 'default');
 
   useEffect(() => subscribeTracking(() => setTick((t) => t + 1)), []);
   useEffect(() => {
     void pullBibliotecaTracking().then(() => setTick((t) => t + 1));
     void pullLeituraProgress().then(() => setTick((t) => t + 1));
   }, []);
+
+  const handleUploadPdf = async () => {
+    gate.run(async () => {
+      try {
+        const result = await FilePicker.pickFiles({
+          types: ['application/pdf'],
+          multiple: false,
+          readData: true,
+        });
+        const file = result.files[0];
+        if (file && file.data) {
+          setCustomPdfTitle(file.name || 'PDF Personalizado');
+          setCustomPdfUrl(`data:application/pdf;base64,${file.data}`);
+        }
+      } catch (e) {
+        console.log('User cancelled or error picking file', e);
+      }
+    });
+  };
 
   const lendo = useMemo(() => readLeituraProgress(tick).slice(0, 12), [tick]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -70,6 +96,7 @@ const BibliotecaAtividadeRail = ({ onAbrirLivro }: Props) => {
         }));
 
   return (
+    <>
     <div className="sticky top-4 rounded-3xl border border-border/50 bg-card overflow-hidden">
       <div className="px-4 pt-4">
         <p className="text-[10px] uppercase tracking-[0.22em] font-bold text-primary/90">
@@ -147,22 +174,38 @@ const BibliotecaAtividadeRail = ({ onAbrirLivro }: Props) => {
 
       <div className="p-3 border-t border-border/50 bg-secondary/10">
         <button
-          onClick={() => navigate('/biblioteca/caderno')}
-          className="w-full flex items-center justify-between p-3 rounded-xl bg-card hover:bg-secondary/50 border border-border/50 transition-colors"
+          onClick={handleUploadPdf}
+          className="w-full flex items-center justify-between p-3 rounded-xl bg-card hover:bg-secondary/50 border border-border/50 transition-colors relative overflow-hidden group"
         >
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-              <Highlighter className="w-4 h-4" />
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="flex items-center gap-3 relative z-10">
+            <div className="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-500">
+              <FileUp className="w-4 h-4" />
             </div>
             <div className="text-left">
-              <p className="text-[13px] font-bold text-foreground">Meu Caderno</p>
-              <p className="text-[10px] text-muted-foreground">Todos os seus grifos</p>
+              <p className="text-[13px] font-bold text-foreground flex items-center gap-1.5">
+                Personalizado
+                {!gate.isPremium && <Lock className="w-2.5 h-2.5 text-muted-foreground" />}
+              </p>
+              <p className="text-[10px] text-muted-foreground">Leia seus PDFs</p>
             </div>
           </div>
-          <ChevronRight className="w-4 h-4 text-muted-foreground" />
+          <ChevronRight className="w-4 h-4 text-muted-foreground relative z-10" />
         </button>
       </div>
     </div>
+      {customPdfUrl && (
+        <PdfScrollReader
+          url={customPdfUrl}
+          titulo={customPdfTitle}
+          onClose={() => {
+            setCustomPdfUrl(null);
+            setCustomPdfTitle('');
+          }}
+        />
+      )}
+      {gate.gateNode}
+    </>
   );
 };
 

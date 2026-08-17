@@ -1,4 +1,6 @@
 import { useBibliotecaCapa } from '@/hooks/useBibliotecaAsset';
+import { useIsPdfCached } from '@/hooks/useIsPdfCached';
+import { CloudOff, CheckCircle2 } from 'lucide-react';
 
 export interface LivroUnificado {
   id: string | number;
@@ -20,13 +22,19 @@ interface LivroCardProps {
 
 const LivroCard = ({ livro, onClick, priority }: LivroCardProps) => {
   const capaUrl = useBibliotecaCapa(livro.capa, 300);
+  const isDownloaded = useIsPdfCached(livro.download);
 
   return (
     <button
       onClick={onClick}
-      className="flex-shrink-0 w-[120px] snap-start group text-left"
+      className="flex-shrink-0 w-[120px] snap-start group text-left relative"
     >
-      <div className="w-[120px] h-[170px] rounded-lg overflow-hidden bg-muted border border-border shadow-sm group-hover:shadow-md transition-shadow">
+      <div className="w-[120px] h-[170px] rounded-lg overflow-hidden bg-muted border border-border shadow-sm group-hover:shadow-md transition-shadow relative">
+        {isDownloaded && (
+          <div className="absolute top-1.5 right-1.5 z-10 bg-black/60 backdrop-blur-sm p-1 rounded-full border border-white/10 shadow-sm">
+            <CheckCircle2 className="w-3.5 h-3.5 text-green-400" />
+          </div>
+        )}
         {capaUrl ? (
           <img
             src={capaUrl}

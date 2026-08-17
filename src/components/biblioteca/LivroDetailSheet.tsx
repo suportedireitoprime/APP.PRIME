@@ -26,6 +26,7 @@ import PremiumGate from '@/components/PremiumGate';
 import LembreteSheet from '@/components/lembretes/LembreteSheet';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 import { useBodyScrollLock, resetBodyScrollLock } from '@/hooks/useBodyScrollLock';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { useNavigate } from 'react-router-dom';
 import { Library, Headphones } from 'lucide-react';
 import { copiarTexto } from '@/lib/nativo/copiar';
@@ -99,6 +100,7 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
   // Sync favorito + registra recente quando abre um livro
   useEffect(() => {
     if (!livro || !open) return;
+    haptic.light();
     setFav(isFavorito(livro));
     pushRecente(livro);
     const unsub = subscribeTracking(() => setFav(isFavorito(livro)));
@@ -486,11 +488,14 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
 
       {/* Leitores em fullscreen */}
       {readerMode === 'pdf' && (pdfUrlForReader || livro.download) && (
-        <PdfScrollReader
-          url={pdfUrlForReader || livro.download!}
-          titulo={livro.titulo}
-          onClose={() => { setReaderMode(null); setPdfUrlForReader(null); }}
-        />
+        <ErrorBoundary>
+          <PdfScrollReader
+            url={pdfUrlForReader || livro.download!}
+            titulo={livro.titulo}
+            livroId={String(livro.id)}
+            onClose={() => { setReaderMode(null); setPdfUrlForReader(null); }}
+          />
+        </ErrorBoundary>
       )}
       {readerMode === 'nativa' && livro.download && (
         <LeitorNativo

@@ -1,8 +1,9 @@
-import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { lazy, Suspense, useEffect, useMemo, useState, useRef } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Capacitor } from '@capacitor/core';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { COLECOES, findColecao, normalizeLivro, type LivroNormalizado } from '@/lib/bibliotecaColecoes';
 import { useVisibleColecoes } from '@/hooks/useVisibleColecoes';
@@ -10,8 +11,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { startCapasPrefetch } from '@/services/bibliotecaCapasPrefetch';
 import { startLeituraNativaPrefetch } from '@/services/leituraNativaPrefetch';
 import { scheduleWarmBiblioteca } from '@/services/bibliotecaWarmup';
-import { getAreaCover } from '@/lib/areasDireitoCovers';
 import { styleForArea, styleForPerformance } from '@/lib/bibliotecaIcons';
+import { getPersistedColecao, setPersistedColecao } from '@/services/offlineDb';
 import { directImg } from '@/lib/cdnImg';
 import BibliotecaAtalhosBar from '@/components/biblioteca/BibliotecaAtalhosBar';
 import BibliotecaSearchBar from '@/components/biblioteca/BibliotecaSearchBar';
@@ -20,12 +21,59 @@ import LivroDetailSheet from '@/components/biblioteca/LivroDetailSheet';
 import FilosofosPanel from '@/components/biblioteca/FilosofosPanel';
 import RecomendacoesCarousel from '@/components/biblioteca/RecomendacoesCarousel';
 import ContinuarLeituraCarousel from '@/components/biblioteca/ContinuarLeituraCarousel';
+import PdfScrollReader from '@/components/biblioteca/PdfScrollReader';
 import { useIsDesktop } from '@/hooks/use-desktop';
 import { track } from '@/lib/analyticsEvents';
 import { useTrackArea } from "@/hooks/useTrackArea";
-import { Highlighter, ChevronRight, Library, BookOpen, Gauge, X } from 'lucide-react';
+import { FileUp, ChevronRight, Library, BookOpen, Gauge, X, Lock } from 'lucide-react';
+import { useGatedFeature } from '@/hooks/useGatedFeature';
+import { FilePicker } from '@capawesome/capacitor-file-picker';
+import { saveCustomPdf, listCustomPdfs, removeCustomPdf, getCustomPdf, type CustomPdfRecord } from '@/services/bibliotecaPersonalizadosDb';
+import { useIsPdfCached } from '@/hooks/useIsPdfCached';
+import { CloudOff, CheckCircle2, HardDrive } from 'lucide-react';
 
 const BibliotecasDesktop = lazy(() => import('./BibliotecasDesktop'));
+
+function VirtualLivroItem({ virtualRow, livro: l, onClick }: { virtualRow: any, livro: LivroNormalizado, onClick: () => void }) {
+  const isDownloaded = useIsPdfCached(l.download);
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: `${virtualRow.size}px`,
+        transform: `translateY(${virtualRow.start}px)`,
+        paddingBottom: '8px',
+      }}
+    >
+      <button
+        type="button"
+        onClick={onClick}
+        className="flex items-center gap-3 p-3 rounded-2xl bg-card border border-border/60 text-left active:scale-[0.99] transition-transform w-full h-full relative"
+      >
+        <div className="w-[56px] h-[76px] shrink-0 rounded-lg overflow-hidden bg-muted border border-border relative">
+          {isDownloaded && (
+            <div className="absolute top-1 right-1 z-10 bg-black/60 backdrop-blur-sm p-0.5 rounded-full border border-white/10 shadow-sm">
+              <CheckCircle2 className="w-3 h-3 text-green-400" />
+            </div>
+          )}
+          {l.capa && (
+            <img src={directImg(l.capa, 200)} alt="" loading="lazy" className="w-full h-full object-cover" />
+          )}
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-semibold text-foreground leading-snug line-clamp-2">{l.titulo}</p>
+          {l.autor && (
+            <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{l.autor}</p>
+          )}
+        </div>
+        <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+      </button>
+    </div>
+  );
+}
 
 /** Coleções que compõem a aba "Performance" (desenvolvimento além do Direito). */
 const PERFORMANCE_IDS = ['fora-da-toga', 'oratoria', 'lideranca', 'portugues', 'pesquisa'];
@@ -42,11 +90,98 @@ const Bibliotecas = () => {
   useTrackArea("biblioteca_aberta");
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const abaUrl = searchParams.get('aba') as AbaBiblioteca;
+  const materiaUrl = searchParams.get('materia');
+
   const [livroAberto, setLivroAberto] = useState<LivroNormalizado | null>(null);
-  const [aba, setAba] = useState<AbaBiblioteca>('acervos');
-  const [materiaAberta, setMateriaAberta] = useState<string | null>(null);
+  const [customPdfUrl, setCustomPdfUrl] = useState<string | null>(null);
+  const [customPdfTitle, setCustomPdfTitle] = useState<string>('');
+  const [customPdfsList, setCustomPdfsList] = useState<Omit<CustomPdfRecord, 'data'>[]>([]);
+  
+  const aba: AbaBiblioteca = abaUrl && ['performance', 'acervos', 'materias'].includes(abaUrl) ? abaUrl : 'acervos';
+  const materiaAberta = materiaUrl || null;
+
+  const setAba = (newAba: AbaBiblioteca) => {
+    setSearchParams(prev => {
+      prev.set('aba', newAba);
+      prev.delete('materia');
+      return prev;
+    }, { replace: true });
+  };
+
+  const setMateriaAberta = (novaMateria: string | null) => {
+    setSearchParams(prev => {
+      if (novaMateria) prev.set('materia', novaMateria);
+      else prev.delete('materia');
+      return prev;
+    }, { replace: true });
+  };
+
   const isDesktop = useIsDesktop();
   const colecoesVisiveis = useVisibleColecoes();
+  const gate = useGatedFeature('pdf_personalizado', 'default');
+  const parentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    getPersistedColecao('areas').then((cached) => {
+      if (cached && cached.length > 0) {
+        const current = queryClient.getQueryData(['biblioteca-colecao', 'areas']);
+        if (!current) {
+          queryClient.setQueryData(['biblioteca-colecao', 'areas'], cached);
+        }
+      }
+    });
+  }, [queryClient]);
+
+  const loadCustomPdfs = async () => {
+    try {
+      const list = await listCustomPdfs();
+      setCustomPdfsList(list);
+    } catch {}
+  };
+
+  useEffect(() => {
+    loadCustomPdfs();
+  }, []);
+
+  const handleUploadPdf = async () => {
+    gate.run(async () => {
+      try {
+        const result = await FilePicker.pickFiles({
+          types: ['application/pdf'],
+          multiple: false,
+          readData: true,
+        });
+        const file = result.files[0];
+        if (file && file.data) {
+          const t = file.name || 'PDF Personalizado';
+          const d = `data:application/pdf;base64,${file.data}`;
+          const id = crypto.randomUUID();
+          await saveCustomPdf(id, t, d);
+          await loadCustomPdfs();
+          setCustomPdfTitle(t);
+          setCustomPdfUrl(d);
+        }
+      } catch (e) {
+        console.log('User cancelled or error picking file', e);
+      }
+    });
+  };
+
+  const handleOpenCustomPdf = async (id: string, titulo: string) => {
+    const record = await getCustomPdf(id);
+    if (record) {
+      setCustomPdfTitle(record.titulo);
+      setCustomPdfUrl(record.data);
+    }
+  };
+
+  const handleDeleteCustomPdf = async (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    await removeCustomPdf(id);
+    await loadCustomPdfs();
+  };
 
   const colecoesPerformance = useMemo(
     () => colecoesVisiveis.filter((c) => PERFORMANCE_IDS.includes(c.id)),
@@ -63,11 +198,19 @@ const Bibliotecas = () => {
     placeholderData: (prev: any) => prev,
     queryFn: async () => {
       if (!colecaoAreas) return [] as LivroNormalizado[];
-      let q: any = supabase.from(colecaoAreas.table as any).select(colecaoAreas.select);
-      if (colecaoAreas.orderBy) q = q.order(colecaoAreas.orderBy, { ascending: true, nullsFirst: false });
-      const { data, error } = await q.limit(2000);
-      if (error) throw error;
-      return (data as any[]).map((r) => normalizeLivro(r, colecaoAreas));
+      try {
+        let q: any = supabase.from(colecaoAreas.table as any).select(colecaoAreas.select);
+        if (colecaoAreas.orderBy) q = q.order(colecaoAreas.orderBy, { ascending: true, nullsFirst: false });
+        const { data, error } = await q.limit(2000);
+        if (error) throw error;
+        const normalized = (data as any[]).map((r) => normalizeLivro(r, colecaoAreas));
+        setPersistedColecao('areas', normalized).catch(() => {});
+        return normalized;
+      } catch (err) {
+        const cached = await getPersistedColecao<LivroNormalizado>('areas');
+        if (cached && cached.length > 0) return cached;
+        throw err;
+      }
     },
   });
 
@@ -87,8 +230,12 @@ const Bibliotecas = () => {
     [livrosAreas, materiaAberta],
   );
 
-
-
+  const rowVirtualizer = useVirtualizer({
+    count: livrosDaMateria.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 100, // altura aproximada do card (76px imagem + paddings + gap)
+    overscan: 5,
+  });
 
   // SEO & Título dinâmico por aba da biblioteca
   useEffect(() => {
@@ -126,6 +273,15 @@ const Bibliotecas = () => {
       <PageHeader
         title="Biblioteca"
         onBack={() => navigate('/')}
+        rightAction={
+          <button
+            onClick={() => navigate('/biblioteca-offline')}
+            aria-label="Armazenamento Offline"
+            className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full flex items-center justify-center bg-muted active:scale-95 transition-transform"
+          >
+            <HardDrive className="w-5 h-5 text-primary" />
+          </button>
+        }
       />
 
       <div className="max-w-3xl mx-auto w-full">
@@ -140,20 +296,48 @@ const Bibliotecas = () => {
 
         <div className="px-4 mt-6">
           <button
-            onClick={() => navigate('/biblioteca/caderno')}
-            className="w-full flex items-center justify-between p-4 rounded-2xl bg-card hover:bg-secondary/50 border border-border/50 shadow-sm transition-colors"
+            onClick={handleUploadPdf}
+            className="w-full flex items-center justify-between p-4 rounded-2xl bg-card hover:bg-secondary/50 border border-border/50 shadow-sm transition-colors relative overflow-hidden group"
           >
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                <Highlighter className="w-5 h-5" />
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="flex items-center gap-4 relative z-10">
+              <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500">
+                <FileUp className="w-5 h-5" />
               </div>
               <div className="text-left">
-                <p className="text-[15px] font-bold text-foreground">Meu Caderno</p>
-                <p className="text-[12px] text-muted-foreground mt-0.5">Acesse seus grifos e marcações</p>
+                <p className="text-[15px] font-bold text-foreground flex items-center gap-2">
+                  Personalizado
+                  {!gate.isPremium && <Lock className="w-3 h-3 text-muted-foreground" />}
+                </p>
+                <p className="text-[12px] text-muted-foreground mt-0.5">Leia seus próprios PDFs no app</p>
               </div>
             </div>
-            <ChevronRight className="w-5 h-5 text-muted-foreground" />
+            <ChevronRight className="w-5 h-5 text-muted-foreground relative z-10" />
           </button>
+          
+          {customPdfsList.length > 0 && (
+            <div className="mt-3 space-y-2">
+              {customPdfsList.map(pdf => (
+                <div key={pdf.id} className="flex items-center justify-between p-3 rounded-xl bg-card/50 border border-border/40">
+                  <button 
+                    onClick={() => handleOpenCustomPdf(pdf.id, pdf.titulo)}
+                    className="flex-1 text-left min-w-0"
+                  >
+                    <p className="text-sm font-semibold text-foreground truncate">{pdf.titulo}</p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                      Salvo em {new Date(pdf.createdAt).toLocaleDateString()}
+                    </p>
+                  </button>
+                  <button
+                    onClick={(e) => handleDeleteCustomPdf(e, pdf.id)}
+                    className="p-2 text-muted-foreground hover:text-red-500 transition-colors ml-2"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="mt-8">
@@ -389,28 +573,26 @@ const Bibliotecas = () => {
                   <X className="w-4 h-4" />
                 </button>
               </div>
-              <div className="flex-1 overflow-y-auto px-4 pb-6 flex flex-col gap-2">
-                {livrosDaMateria.map((l) => (
-                  <button
-                    key={l.id}
-                    type="button"
-                    onClick={() => setLivroAberto(l)}
-                    className="flex items-center gap-3 p-3 rounded-2xl bg-card border border-border/60 text-left active:scale-[0.99] transition-transform"
-                  >
-                    <div className="w-[56px] h-[76px] shrink-0 rounded-lg overflow-hidden bg-muted border border-border">
-                      {l.capa && (
-                        <img src={directImg(l.capa, 200)} alt="" loading="lazy" className="w-full h-full object-cover" />
-                      )}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-semibold text-foreground leading-snug line-clamp-2">{l.titulo}</p>
-                      {l.autor && (
-                        <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{l.autor}</p>
-                      )}
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
-                  </button>
-                ))}
+              <div ref={parentRef} className="flex-1 overflow-y-auto px-4 pb-6 relative">
+                <div
+                  style={{
+                    height: `${rowVirtualizer.getTotalSize()}px`,
+                    width: '100%',
+                    position: 'relative',
+                  }}
+                >
+                  {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                    const l = livrosDaMateria[virtualRow.index];
+                    return (
+                      <VirtualLivroItem
+                        key={virtualRow.key}
+                        virtualRow={virtualRow}
+                        livro={l}
+                        onClick={() => setLivroAberto(l)}
+                      />
+                    );
+                  })}
+                </div>
                 {livrosDaMateria.length === 0 && (
                   <p className="py-10 text-center text-sm text-muted-foreground">Nenhum livro nesta matéria.</p>
                 )}
@@ -425,6 +607,21 @@ const Bibliotecas = () => {
         open={!!livroAberto}
         onClose={() => setLivroAberto(null)}
       />
+
+      <AnimatePresence>
+        {customPdfUrl && (
+          <PdfScrollReader
+            url={customPdfUrl}
+            titulo={customPdfTitle}
+            onClose={() => {
+              setCustomPdfUrl(null);
+              setCustomPdfTitle('');
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      {gate.gateNode}
     </main>
   );
 };

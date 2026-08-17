@@ -62,6 +62,7 @@ const ContinuarLeituraCarousel = ({ onAbrirLivro }: Props) => {
                       src={directImg(snap.capa, 320)}
                       alt=""
                       loading="lazy"
+                      decoding="async"
                       className="absolute inset-0 w-full h-full object-cover"
                     />
                   ) : null}

@@ -7,6 +7,7 @@ import { pdfjsLib, configurarPdfWorker } from '@/lib/pdfWorkerConfig';
 import { createPortal } from 'react-dom';
 import { openPdfNative } from '@/lib/fileOpener';
 import { Capacitor, CapacitorHttp } from '@capacitor/core';
+import { ScreenOrientation } from '@capacitor/screen-orientation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { logPdfEvent } from '@/lib/pdfTelemetry';
@@ -108,18 +109,38 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId }: Props) => {
   const [promptContinuarPage, setPromptContinuarPage] = useState<number | null>(null);
 
   useEffect(() => {
+    if (isNative && !isDesktop) {
+      ScreenOrientation.lock({ type: 'portrait' }).catch(() => {});
+    }
+    return () => {
+      if (isNative && !isDesktop) {
+        ScreenOrientation.unlock().catch(() => {});
+      }
+    };
+  }, [isNative, isDesktop]);
+
+  useEffect(() => {
     let cancelled = false;
     let timeoutId: number | undefined;
     let timedOut = false;
+    let localBlobUrl: string | null = null;
     startedAtRef.current = Date.now();
     logPdfEvent({ url, event: 'load_start', livroId, livroTitulo: titulo });
     (async () => {
       try {
         const normalizedUrl = normalizePdfUrl(url);
         const isNativeNow = Capacitor.isNativePlatform();
-        const source: any = isNativeNow
-          ? { data: await fetchPdfBytes(normalizedUrl) }
-          : { url: normalizedUrl, withCredentials: false };
+        const isLocalMem = normalizedUrl.startsWith('blob:') || normalizedUrl.startsWith('data:');
+        
+        let source: any;
+        if (isNativeNow && !isLocalMem) {
+          const bytes = await fetchPdfBytes(normalizedUrl);
+          const blob = new Blob([bytes.buffer], { type: 'application/pdf' });
+          localBlobUrl = URL.createObjectURL(blob);
+          source = { url: localBlobUrl, withCredentials: false };
+        } else {
+          source = { url: normalizedUrl, withCredentials: false };
+        }
 
         const task = pdfjsLib.getDocument(source);
 
@@ -203,6 +224,14 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId }: Props) => {
     return () => {
       cancelled = true;
       if (timeoutId) window.clearTimeout(timeoutId);
+      if (pdfRef.current) {
+        try {
+          pdfRef.current.destroy();
+        } catch {}
+      }
+      if (localBlobUrl) {
+        URL.revokeObjectURL(localBlobUrl);
+      }
       pdfRef.current = null;
       renderedRef.current.clear();
     };

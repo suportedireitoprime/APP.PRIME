@@ -303,7 +303,7 @@ const AdminHeroHome = lazy(() => import("./pages/AdminHeroHome.tsx"));
 const AdminHomeCuriosidades = lazy(() => import("./pages/AdminHomeCuriosidades.tsx"));
 const AdminOverlayFrases = lazy(() => import("./pages/AdminOverlayFrases.tsx"));
 const BibliotecaEditar = lazy(() => import("./pages/BibliotecaEditar.tsx"));
-const BibliotecaCaderno = lazy(() => import("./pages/BibliotecaCaderno.tsx"));
+
 const AdminLeituraNativa = lazy(() => import("./pages/AdminLeituraNativa.tsx"));
 const AdminAudioaulas = lazy(() => import("./pages/AdminAudioaulas.tsx"));
 const Audioaulas = lazy(routePrefetch.audioaulas);
@@ -947,7 +947,7 @@ function AnimatedRoutes() {
           <Route path="/newsletter" element={<ProtectedRoute><PageTransition><Newsletter /></PageTransition></ProtectedRoute>} />
           <Route path="/biblioteca" element={<ProtectedRoute><PageTransition><Bibliotecas /></PageTransition></ProtectedRoute>} />
           <Route path="/bibliotecas" element={<ProtectedRoute><PageTransition><Bibliotecas /></PageTransition></ProtectedRoute>} />
-          <Route path="/biblioteca/caderno" element={<ProtectedRoute><PageTransition><BibliotecaCaderno /></PageTransition></ProtectedRoute>} />
+
           <Route path="/bibliotecas/trilhas" element={<ProtectedRoute><PageTransition><BibliotecaTrilhas /></PageTransition></ProtectedRoute>} />
           <Route path="/bibliotecas/:colecaoId" element={<ProtectedRoute><PageTransition><BibliotecaCategoria /></PageTransition></ProtectedRoute>} />
           <Route path="/bibliotecas/:colecaoId/:areaSlug" element={<ProtectedRoute><PageTransition><BibliotecaCategoria /></PageTransition></ProtectedRoute>} />
