@@ -5,8 +5,7 @@ import {
   Gamepad2, Brain, BookA, MessageCircle, BellRing, Mic, Lightbulb, Building2,
   Rss, Palette, Users, GitBranch, Github, ImageIcon, KeyRound, Bug, Newspaper,
   Quote, Monitor, Send, RefreshCcw, Lock, Wrench, FileText, Crown, Search, Target, MapPin, PlayCircle,
-  Sparkles, UserPlus, GraduationCap, Scale, Store, Mail, FileSignature,
-  ListChecks, Headphones, ShieldAlert, Layers,
+  ListChecks, Headphones, ShieldAlert, Layers, TrendingDown,
 } from 'lucide-react';
 
 import { toast } from 'sonner';
@@ -41,6 +40,7 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   
   '/admin-funcoes-assinantes': () => import('./AdminFuncoesAssinantes'),
   '/admin-assinantes': () => import('./AdminAssinantes'),
+  '/admin-estatisticas-assinatura': () => import('./AdminEstatisticasAssinatura'),
   '/admin-boletins': () => import('./AdminBoletins'),
   '/admin-modelos': () => import('./AdminModelos'),
   '/admin-desktop': () => import('./AdminDesktop'),
@@ -330,6 +330,7 @@ const CATEGORIES: Category[] = [
     items: [
       { id: 'admin-funcoes-assinantes', label: 'Funções Assinantes', icon: Crown, desc: 'Limite de uso free por função (blog, narração, biblioteca, IA…)', route: '/admin-funcoes-assinantes' },
       { id: 'admin-assinantes', label: 'Assinantes Play', icon: Users, desc: 'Métricas do Google Play + lista de quem assinou', route: '/admin-assinantes' },
+      { id: 'admin-estatisticas-assinatura', label: 'Estatísticas da Assinatura', icon: TrendingDown, desc: 'Churn, Cancelamentos, Reembolsos e Antifraude', route: '/admin-estatisticas-assinatura' },
     ],
   },
   {

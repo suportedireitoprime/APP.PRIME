@@ -140,6 +140,7 @@ const DicionarioJuridicoPage = lazy(routePrefetch.dicionario);
 const PeticaoInicial = lazy(() => import("./pages/PeticaoInicial.tsx"));
 const PeticaoInicialEditor = lazy(() => import("./pages/PeticaoInicialEditor.tsx"));
 const AdminLocais = lazy(() => import("./pages/AdminLocais.tsx"));
+const AdminEstatisticasAssinatura = lazy(() => import("./pages/AdminEstatisticasAssinatura.tsx"));
 const TematicaJuridica = lazy(routePrefetch.tematica);
 const Compartilhado = lazy(() => import("./pages/Compartilhado.tsx"));
 const Radar360 = lazy(routePrefetch.radar360);
@@ -825,6 +826,7 @@ function AnimatedRoutes() {
           <Route path="/ferramentas/peticao-inicial" element={<ProtectedRoute><PageTransition><PeticaoInicial /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/peticao-inicial/:id" element={<ProtectedRoute><PageTransition><PeticaoInicialEditor /></PageTransition></ProtectedRoute>} />
           <Route path="/admin/locais" element={<ProtectedRoute><PageTransition><AdminLocais /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin-estatisticas-assinatura" element={<ProtectedRoute><PageTransition><AdminEstatisticasAssinatura /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas" element={<ProtectedRoute><PageTransition><PilulasHome /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas/deck/:deckId" element={<ProtectedRoute><PageTransition><PilulasViewer /></PageTransition></ProtectedRoute>} />
           <Route path="/tematica-juridica" element={<ProtectedRoute><PageTransition><TematicaJuridica /></PageTransition></ProtectedRoute>} />
