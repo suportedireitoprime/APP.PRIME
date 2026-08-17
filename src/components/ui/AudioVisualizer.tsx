@@ -52,7 +52,7 @@ export function AudioVisualizer({ stream, isActive, className = '', barColor = '
           x, 
           canvas.height / 2 - barHeight / 2, 
           barWidth - 2, 
-          barHeight > 4 ? barHeight : 4, // Altura mÌnima
+          barHeight > 4 ? barHeight : 4, // Altura m√≠nima
           2
         );
         canvasCtx.fill();
@@ -74,7 +74,7 @@ export function AudioVisualizer({ stream, isActive, className = '', barColor = '
   if (!isActive) return null;
 
   return (
-    <div className={lex justify-center items-center w-full my-2 }>
+    <div className={`flex justify-center items-center w-full my-2 ${className}`}>
       <canvas 
         ref={canvasRef} 
         width={200} 

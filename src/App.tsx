@@ -803,7 +803,7 @@ function AnimatedRoutes() {
           <Route path="/lembretes/resumos" element={<ProtectedRoute><PageTransition><LembretesResumos /></PageTransition></ProtectedRoute>} />
           <Route path="/lembretes/leitura" element={<ProtectedRoute><PageTransition><LembretesLeitura /></PageTransition></ProtectedRoute>} />
           <Route path="/lembretes/questoes" element={<ProtectedRoute><PageTransition><LembretesQuestoesTab /></PageTransition></ProtectedRoute>} />
-          <Route path="/anotacoes/audio" element={<ProtectedRoute><PageTransition><AnotacoesAudio /></PageTransition></ProtectedRoute>} />
+          <Route path="/anotacoes/audio" element={<ProtectedRoute><PageTransition><Suspense fallback={<div className="min-h-dvh bg-background" />}><AnotacoesAudio /></Suspense></PageTransition></ProtectedRoute>} />
           <Route path="/ajustes/excluir-conta" element={<ProtectedRoute><PageTransition><ExcluirConta /></PageTransition></ProtectedRoute>} />
           <Route path="/radar/deputados" element={<ProtectedRoute><PageTransition><RadarDeputados /></PageTransition></ProtectedRoute>} />
           <Route path="/radar/votacoes" element={<ProtectedRoute><PageTransition><RadarVotacoes /></PageTransition></ProtectedRoute>} />
