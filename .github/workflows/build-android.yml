@@ -3866,6 +3866,38 @@ jobs:
           path: android/app/build/outputs/native-debug-symbols-collected/*.zip
           if-no-files-found: ignore
 
+      - name: Get Recent Commits
+        if: success()
+        run: |
+          set -e
+          echo "RECENT_COMMITS<<EOF" >> $GITHUB_ENV
+          git log -10 --pretty=format:"- %h %s" >> $GITHUB_ENV
+          echo "" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Send Email Notification
+        if: success()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: "🚀 Nova Build Android (#${{ github.run_number }}) - v${{ env.APP_VERSION_NAME }}"
+          to: "wn7corporation@gmail.com"
+          from: "GitHub Actions <github-actions@github.com>"
+          body: |
+            Nova build Android gerada e exportada com sucesso!
+            
+            📦 Versão: v${{ env.APP_VERSION_NAME }} (Build code: ${{ env.APP_BUILD_NUMBER }})
+            🌿 Branch: ${{ github.ref_name }}
+            
+            📝 Últimos 10 commits nesta versão:
+            ${{ env.RECENT_COMMITS }}
+            
+            🔗 Para baixar o APK e o AAB, acesse a aba 'Actions' no GitHub e clique no run #${{ github.run_number }}.
+
 
       - name: Persist version bump (commit .build-version.json)
         if: success()
