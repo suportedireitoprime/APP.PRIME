@@ -27,6 +27,7 @@ const CATEGORIAS = [
 export default function FlashcardsPersonalizado() {
   const navigate = useNavigate();
   const [wizardOpen, setWizardOpen] = useState(false);
+  const [wizardSource, setWizardSource] = useState<'pdf' | 'image' | 'youtube' | 'audio' | null>(null);
   const [offlineDecks, setOfflineDecks] = useState<Deck[]>([]);
   const [categoriaSelecionada, setCategoriaSelecionada] = useState<string | null>(null);
   const [dataSelecionada, setDataSelecionada] = useState<string>('Todas');
@@ -281,13 +282,22 @@ export default function FlashcardsPersonalizado() {
       </div>
 
       <button
-        onClick={() => { haptic.selection(); setWizardOpen(true); }}
+        onClick={() => {
+          haptic.selection();
+          if (categoriaSelecionada) {
+            const mapped = categoriaSelecionada === 'imagem' ? 'image' : categoriaSelecionada;
+            setWizardSource(mapped as any);
+          } else {
+            setWizardSource(null);
+          }
+          setWizardOpen(true);
+        }}
         className="fixed bottom-[calc(2rem+env(safe-area-inset-bottom,0px))] right-6 z-50 w-14 h-14 bg-[#36AF85] hover:bg-[#2b8c6a] rounded-full flex items-center justify-center shadow-lg shadow-[#36AF85]/30 active:scale-95 transition-transform"
       >
         <Plus className="w-6 h-6 text-white" />
       </button>
 
-      <WizardFlashcardsIA open={wizardOpen} onOpenChange={setWizardOpen} />
+      <WizardFlashcardsIA open={wizardOpen} onOpenChange={setWizardOpen} initialSource={wizardSource} />
     </div>
   );
 }

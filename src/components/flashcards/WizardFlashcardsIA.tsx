@@ -13,6 +13,7 @@ import { haptic } from '@/lib/nativeHaptics';
 interface WizardFlashcardsIAProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  initialSource?: 'pdf' | 'image' | 'youtube' | 'audio' | null;
 }
 
 type SourceType = 'pdf' | 'image' | 'youtube' | 'audio' | null;
@@ -37,7 +38,7 @@ const formatYoutubeDuration = (duration: string) => {
   return `${formattedM}:${formattedS}`;
 };
 
-export default function WizardFlashcardsIA({ open, onOpenChange }: WizardFlashcardsIAProps) {
+export default function WizardFlashcardsIA({ open, onOpenChange, initialSource }: WizardFlashcardsIAProps) {
   const navigate = useNavigate();
   const { toast } = useToast();
   
@@ -62,9 +63,17 @@ export default function WizardFlashcardsIA({ open, onOpenChange }: WizardFlashca
   // Step 5
   const [deckName, setDeckName] = useState('');
 
-  // Reset when closed
+  // Reset when closed or apply initialSource when opened
   useEffect(() => {
-    if (!open) {
+    if (open) {
+      if (initialSource) {
+        setStep(2);
+        setSource(initialSource);
+      } else {
+        setStep(1);
+        setSource(null);
+      }
+    } else {
       setTimeout(() => {
         setStep(1);
         setSource(null);
@@ -77,7 +86,7 @@ export default function WizardFlashcardsIA({ open, onOpenChange }: WizardFlashca
         setMaxCards(100);
       }, 300);
     }
-  }, [open]);
+  }, [open, initialSource]);
 
   const handleSourceSelect = (s: SourceType) => {
     haptic.selection();
