@@ -251,7 +251,10 @@ const LeiSecaPlayer = lazy(routePrefetch.leiSecaPlayer);
 const LeiSecaLembretes = lazy(routePrefetch.leiSecaLembretes);
 
 const AdminMonitor = lazy(() => import("./pages/AdminMonitor.tsx"));
+const AdminAvaliacoesLoja = lazy(() => import("./pages/AdminAvaliacoesLoja.tsx"));
 const Perfil = lazy(() => import("./pages/Perfil.tsx"));
+const Landing = lazy(() => import("./pages/Landing.tsx"));
+const Atualizacoes = lazy(() => import("./pages/Atualizacoes.tsx"));
 const SobreApp = lazy(() => import("./pages/SobreApp.tsx"));
 const GeradorPost = lazy(() => import("./pages/GeradorPost.tsx"));
 const Blog = lazy(routePrefetch.blog);
@@ -290,6 +293,7 @@ const TribunalSimulado = lazy(() => import("./pages/TribunalSimulado.tsx"));
 const AdminHorus = lazy(() => import('./pages/AdminHorus'));
 const AdminHorusTemplate = lazy(() => import('./pages/AdminHorusTemplate'));
 const AdminTriagem = lazy(() => import('./pages/AdminTriagem'));
+const TriagemFinal = lazy(() => import('./components/draggable-card-demo-2'));
 const HorusWhatsApp = lazy(() => import("./pages/HorusWhatsApp.tsx"));
 const AdminBlogEdicao = lazy(() => import("./pages/AdminBlogEdicao.tsx"));
 const AdminFlashcardsEditar = lazy(() => import("./pages/AdminFlashcardsEditar.tsx"));
@@ -756,6 +760,7 @@ function AnimatedRoutes() {
       <DeepLinkBootstrap />
       {user && <PresenceWrapper />}
       {user && <NovidadesRadarOverlay />}
+      <HorusAvaliacaoOverlay />
       <GlobalDesktopHeader />
       <DesktopFileDropOverlay />
       <PersistentHome />
@@ -780,6 +785,7 @@ function AnimatedRoutes() {
           <Route path="/legislacao/:tipo/:leiSlug" element={<ProtectedRoute><PageTransition><CategoriaLegislacao /></PageTransition></ProtectedRoute>} />
           <Route path="/legislacao/:tipo/:leiSlug/:artigoNumero" element={<ProtectedRoute><PageTransition><CategoriaLegislacao /></PageTransition></ProtectedRoute>} />
           <Route path="/noticias" element={<ProtectedRoute><PageTransition><Noticias /></PageTransition></ProtectedRoute>} />
+          <Route path="/atualizacoes" element={<ProtectedRoute><PageTransition><Atualizacoes /></PageTransition></ProtectedRoute>} />
           <Route path="/novidades" element={<ProtectedRoute><PageTransition><Novidades /></PageTransition></ProtectedRoute>} />
           <Route path="/anotacoes" element={<ProtectedRoute><PageTransition><Anotacoes /></PageTransition></ProtectedRoute>} />
           <Route path="/configuracoes" element={<ProtectedRoute><PageTransition><Configuracoes /></PageTransition></ProtectedRoute>} />
@@ -931,7 +937,7 @@ function AnimatedRoutes() {
           <Route path="/questoes/historico" element={<ProtectedRoute><PageTransition><QuestoesHistorico /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-questoes" element={<ProtectedRoute><PageTransition><AdminQuestoes /></PageTransition></ProtectedRoute>} />
           <Route path="/admin/resumo-livro-audio" element={<ProtectedRoute><PageTransition><AdminResumoLivroAudioEditar /></PageTransition></ProtectedRoute>} />
-
+          <Route path="/admin-avaliacao-loja" element={<ProtectedRoute><PageTransition><AdminAvaliacoesLoja /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-monitor" element={<ProtectedRoute><PageTransition><AdminMonitor /></PageTransition></ProtectedRoute>} />
           <Route path="/perfil" element={<ProtectedRoute><PageTransition><Perfil /></PageTransition></ProtectedRoute>} />
           <Route path="/sobre" element={<ProtectedRoute><PageTransition><SobreApp /></PageTransition></ProtectedRoute>} />
@@ -985,6 +991,7 @@ function AnimatedRoutes() {
           <Route path="/admin-horus" element={<ProtectedRoute><PageTransition><AdminHorus /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-horus-template" element={<ProtectedRoute><PageTransition><AdminHorusTemplate /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-triagem" element={<ProtectedRoute><PageTransition><AdminTriagem /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin/triagem-final" element={<ProtectedRoute><PageTransition><TriagemFinal /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-boletins" element={<ProtectedRoute><PageTransition><AdminBoletins /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-desktop" element={<ProtectedRoute><PageTransition><AdminDesktop /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-erros-questoes" element={<ProtectedRoute><PageTransition><AdminErrosQuestoes /></PageTransition></ProtectedRoute>} />

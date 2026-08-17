@@ -49,21 +49,16 @@ const AvaliarAppSheet = ({ open, onClose, onFeedback }: Props) => {
     
     // Se estiver no navegador (Dev), mostra uma simulação clara do que aconteceria
     if (!Capacitor.isNativePlatform()) {
-      toast.success('✨ [SIMULAÇÃO NATIVA]: O modal da Play Store / App Store apareceria aqui.', {
+      toast.success('✨ [SIMULAÇÃO NATIVA]: O aplicativo da Play Store / App Store abriria aqui.', {
         duration: 4000,
       });
       return;
     }
 
-    const ok = await requestReviewNow();
-    if (!ok) {
-      await openStoreFallback();
-      toast.success('Obrigado! Abrimos a loja para você avaliar.');
-    } else {
-      // A API nativa do Google/Apple não nos diz se a pessoa realmente avaliou 
-      // e às vezes não mostra o modal (por cotas). Agradecemos mesmo assim.
-      toast.success('Obrigado por avaliar o Direito Prime!', { duration: 3000 });
-    }
+    // Para cliques manuais, a API nativa requestReviewNow() é muito agressiva com cotas
+    // e frequentemente falha silenciosamente. A melhor UX é abrir a loja diretamente.
+    await openStoreFallback();
+    toast.success('Obrigado! Abrimos a loja para você avaliar.');
   };
 
   const handleNaoGostei = () => {

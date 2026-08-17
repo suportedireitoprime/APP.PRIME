@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import {
   Info, LogOut, ChevronRight,
   User, LifeBuoy, Lock, Star, Gem, MessageSquareHeart,
-  Pencil, Sparkles, Bell as BellIcon, Crown,
+  Pencil, Sparkles, Bell as BellIcon, Crown, CheckSquare,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfileSummary } from '@/hooks/useProfileSummary';
@@ -35,12 +35,6 @@ interface Group { title?: string; items: Item[]; }
 // Destaques base, agora calculados dinamicamente no render
 
 const GROUPS: Group[] = [
-  {
-    title: 'Aprender',
-    items: [
-      { id: 'pilulas', label: 'Pílulas Jurídicas', icon: Sparkles },
-    ],
-  },
   {
     title: 'Conta',
     items: [
@@ -132,12 +126,6 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
       return;
     }
 
-    // Opinião abre um bottom sheet (90% da altura) em vez de navegar.
-    if (id === 'opiniao') {
-      setOpiniaoOpen(true);
-      return;
-    }
-
     // Avaliar o app abre o bottom-sheet (prompt nativo da loja quando disponível).
     if (id === 'avaliar') {
       // Fecha o menu lateral primeiro para o sheet não abrir atrás dele.
@@ -151,7 +139,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
       'planos': '/assinatura',
       'meu-espaco': '/meu-espaco',
       'suporte': '/suporte',
-      'novidades': '/novidades',
+      'novidades': '/atualizacoes',
       'atualizacao': '/noticias',
       'explicacao': '/explicacao-lei',
       'constituicao': '/legislacao/constituicao',
@@ -160,9 +148,13 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
       'leis-ordinarias': '/legislacao/leis-ordinarias',
       'decretos': '/legislacao/decretos',
       'sumulas': '/jurisprudencia',
+      'admin-monitor': '/admin',
+      'admin-avaliacao-loja': '/admin-avaliacao-loja',
+      'resumo-livro': '/admin/resumo-livro-audio',
       'estudar': '/estudos',
       'resumos': '/resumos-juridicos',
       'biblioteca': '/biblioteca',
+      'opiniao': '/opiniao',
       'sobre': '/sobre',
       'lembretes': '/meus-lembretes',
       'pilulas': '/pilulas',
@@ -292,6 +284,16 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
                   </GroupCard>
                   {g.title === 'Conta' && isAdmin && (
                     <GroupCard title="Admin">
+                      <MenuRow
+                        icon={Sparkles}
+                        label="Pílulas Jurídicas"
+                        onClick={() => { navigate('/pilulas'); onClose(); }}
+                      />
+                      <MenuRow
+                        icon={CheckSquare}
+                        label="Avaliações na Loja"
+                        onClick={() => { navigate('/admin-avaliacao-loja'); onClose(); }}
+                      />
                       <MenuRow
                         icon={Lock}
                         label="Funções Admin"

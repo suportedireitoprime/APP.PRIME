@@ -28,6 +28,9 @@ const MIN_OPENS_BEFORE_PROMPT = 3;
 /** Dias mínimos de uso quando ainda não houve nenhum momento positivo. */
 const MIN_DAYS_BEFORE_SOFT_PROMPT = 2;
 
+const K_VALID_OPENS_TS = 'iar_valid_opens_ts';
+const HOURS_6_MS = 6 * 60 * 60 * 1000;
+
 async function get(key: string): Promise<string | null> {
   try {
     const { value } = await Preferences.get({ key });
@@ -105,10 +108,36 @@ export async function maybeRequestOnSecondOpen(delayMs = 3500): Promise<void> {
   const opens = await trackAppOpen();
   if (await hasRated()) return;
 
-  // Mostra o prompt nativo de avaliação após 3 aberturas do aplicativo
-  if (opens >= MIN_OPENS_BEFORE_PROMPT) {
-    setTimeout(() => { requestReviewNow(); }, delayMs);
+  // A lógica antiga maybeRequestOnSecondOpen está sendo substituída 
+  // pela nova lógica agressiva do Horus após 3 aberturas com 6h de intervalo.
+  // Vamos manter isso aqui apenas como backup se necessário, mas não será o fluxo principal.
+}
+
+/**
+ * Nova lógica: Rastreia a abertura, e se já passou 6h desde a última abertura rastreada,
+ * adiciona no histórico. Retorna true se acumulou 3 aberturas (elegível para Horus).
+ */
+export async function checkHorusAvaliacaoEligibility(): Promise<boolean> {
+  if (!Capacitor.isNativePlatform()) return false;
+  if (await hasRated()) return false;
+
+  const raw = await get(K_VALID_OPENS_TS);
+  let opens: number[] = raw ? JSON.parse(raw) : [];
+
+  const now = Date.now();
+  if (opens.length === 0) {
+    opens.push(now);
+    await set(K_VALID_OPENS_TS, JSON.stringify(opens));
+    return false;
   }
+
+  const lastOpen = opens[opens.length - 1];
+  if (now - lastOpen >= HOURS_6_MS) {
+    opens.push(now);
+    await set(K_VALID_OPENS_TS, JSON.stringify(opens));
+  }
+
+  return opens.length >= 3;
 }
 
 /** Prompt pós-compra — só aparece se a pessoa ainda não avaliou. */
