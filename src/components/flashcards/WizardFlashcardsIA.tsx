@@ -158,10 +158,31 @@ export default function WizardFlashcardsIA({ open, onOpenChange, initialSource }
     }
   };
 
+  const [loadingStep, setLoadingStep] = useState(0);
+
   const handleSimulateAI = async () => {
     haptic.selection();
     setStep(3);
     setLoadingAI(true);
+    setLoadingStep(0);
+    
+    const loadingTimer = setInterval(() => {
+      setLoadingStep(prev => prev < 3 ? prev + 1 : prev);
+    }, 1000);
+
+    const finishLoading = (temaStr: string, resumoStr: string, qtdRecomendada: number, qtdMax: number) => {
+      clearInterval(loadingTimer);
+      setLoadingStep(4); // Tica todos
+      setTema(temaStr);
+      setResumo(resumoStr);
+      setQtdCards(qtdRecomendada);
+      setMaxCards(qtdMax);
+      setTimeout(() => {
+        setLoadingAI(false);
+        setStep(4); // Vai direto pro Step 4 (Quantidade)
+        haptic.success();
+      }, 600);
+    };
     
     try {
       const apiKey = (import.meta as any).env.VITE_GEMINI_API_KEY;
@@ -169,7 +190,6 @@ export default function WizardFlashcardsIA({ open, onOpenChange, initialSource }
       const desc = youtubePreview?.description || '';
 
       if (apiKey && title) {
-        // Pedir para a IA gerar o tema e o resumo baseados na descrição real
         const prompt = `Analise o título e a descrição deste vídeo educacional/jurídico.
 Título: ${title}
 Descrição: ${desc.substring(0, 1500)}
@@ -196,32 +216,33 @@ Retorne um JSON estrito neste formato, sugerindo uma quantidade adequada de flas
           const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
           if (text) {
             const parsed = JSON.parse(text);
-            setTema(parsed.tema || title);
-            setResumo(parsed.resumo || 'Descrição não disponível.');
-            setQtdCards(parsed.qtd_recomendada || 35);
-            setMaxCards(Math.min(150, parsed.qtd_maxima || 100));
-            setLoadingAI(false);
-            haptic.success();
+            finishLoading(
+              parsed.tema || title,
+              parsed.resumo || 'Descrição não disponível.',
+              parsed.qtd_recomendada || 35,
+              Math.min(150, parsed.qtd_maxima || 100)
+            );
             return;
           }
         }
       }
 
-      // Fallback sem IA: usar os dados reais diretamente
-      setTema(title);
-      setResumo(desc ? desc.substring(0, 150) + '...' : 'Descrição não disponível para este vídeo.');
-      setQtdCards(25);
-      setMaxCards(100);
+      // Fallback sem IA
+      finishLoading(
+        title,
+        desc ? desc.substring(0, 150) + '...' : 'Descrição não disponível para este vídeo.',
+        25,
+        100
+      );
     } catch (e) {
       console.error(e);
-      setTema(youtubePreview?.title || 'Conteúdo do YouTube');
-      setResumo('Não foi possível gerar um resumo avançado. Prosseguindo com os dados básicos.');
-      setQtdCards(25);
-      setMaxCards(100);
+      finishLoading(
+        youtubePreview?.title || 'Conteúdo do YouTube',
+        'Não foi possível gerar um resumo avançado. Prosseguindo com os dados básicos.',
+        25,
+        100
+      );
     }
-
-    setLoadingAI(false);
-    haptic.success();
   };
 
   const handleSave = () => {
@@ -411,27 +432,26 @@ Retorne um JSON estrito neste formato, sugerindo uma quantidade adequada de flas
                 exit={{ opacity: 0, x: 20 }}
                 className="flex flex-col items-center justify-center h-full text-center py-4"
               >
-                {loadingAI ? (
-                  <div className="flex flex-col items-center gap-4 py-8">
-                    <Loader2 className="w-12 h-12 text-[#36AF85] animate-spin" />
-                    <div>
-                      <p className="font-bold text-lg">Analisando Material...</p>
-                      <p className="text-xs text-muted-foreground mt-1">A IA está lendo e categorizando o conteúdo.</p>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="w-full text-left space-y-4">
-                    <div className="bg-[#36AF85]/10 border border-[#36AF85]/30 rounded-2xl p-4 flex gap-3">
-                      <Sparkles className="w-5 h-5 text-[#36AF85] shrink-0 mt-0.5" />
-                      <div>
-                        <h3 className="font-bold text-[#36AF85] text-sm uppercase tracking-wider">Conteúdo Detectado</h3>
-                        <p className="font-bold text-foreground mt-1 text-lg">{tema}</p>
-                        <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{resumo}</p>
-                      </div>
-                    </div>
-                    <Button onClick={() => { haptic.selection(); setStep(4); }} className="w-full bg-[#36AF85] hover:bg-[#2b8c6a] text-white rounded-full font-bold h-12">
-                      Continuar <ArrowRight className="w-4 h-4 ml-2" />
-                    </Button>
+                {loadingAI && (
+                  <div className="flex flex-col w-full px-2 py-4">
+                     <div className="flex justify-center mb-8">
+                        <Loader2 className="w-12 h-12 text-[#36AF85] animate-spin" />
+                     </div>
+                     <div className="space-y-4">
+                       {[
+                         "Analisando material base...",
+                         "Extraindo transcrição e referências...",
+                         "Estruturando conceitos principais...",
+                         "Formatando flashcards com IA..."
+                       ].map((text, i) => (
+                         <div key={i} className={`flex items-center gap-3 transition-opacity duration-500 ${loadingStep >= i ? 'opacity-100' : 'opacity-30'}`}>
+                           <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-colors duration-500 ${loadingStep > i ? 'bg-[#36AF85] text-white' : loadingStep === i ? 'bg-[#36AF85]/20 text-[#36AF85] animate-pulse' : 'bg-muted text-muted-foreground'}`}>
+                             {loadingStep > i ? <Check className="w-3.5 h-3.5" /> : <div className="w-2 h-2 rounded-full bg-current" />}
+                           </div>
+                           <span className={`text-sm font-bold transition-colors duration-500 ${loadingStep >= i ? 'text-foreground' : 'text-muted-foreground'}`}>{text}</span>
+                         </div>
+                       ))}
+                     </div>
                   </div>
                 )}
               </motion.div>

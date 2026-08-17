@@ -773,8 +773,8 @@ const FlashcardsEstudo = () => {
                         <span>Revisar</span>
                       </Button>
                       <Button
-                        className="h-14 sm:h-16 rounded-2xl text-base font-black gap-2 active:scale-95 transition-all shadow-md hover:opacity-90"
-                        style={{ backgroundColor: '#10b981', color: '#ffffff' }}
+                        className="h-14 sm:h-16 rounded-2xl text-base font-black gap-2 active:scale-95 transition-all shadow-md hover:opacity-90 border-0"
+                        style={{ backgroundColor: accent, color: '#ffffff', boxShadow: `0 4px 14px 0 ${accent}40` }}
                         onClick={() => responder('compreendido')}
                       >
                         <CheckCircle2 className="h-5 w-5 text-white" />
