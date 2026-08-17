@@ -76,12 +76,8 @@
     "@capacitor/status-bar": "^8.0.1",
     "@capacitor/screen-reader": "^8.0.1",
     "@capawesome/capacitor-file-picker": "^8.0.0",
-
-    "@capawesome/capacitor-printer": "^8.0.0",
     "@capawesome/capacitor-photo-editor": "^8.0.0",
-    "@capacitor-community/video-player": "^8.0.0",
     "@capacitor-community/intercom": "^8.0.0",
-    "@capawesome/capacitor-android-foreground-service": "^8.0.0",
     "@capgo/native-audio": "^8.0.0",
     "@capacitor-community/apple-sign-in": "^8.0.0",
     "@capacitor-community/uxcam": "^8.0.0",
