@@ -76,8 +76,7 @@
     "@capacitor/status-bar": "^8.0.1",
     "@capacitor/screen-reader": "^8.0.1",
     "@capawesome/capacitor-file-picker": "^8.0.0",
-    "@capawesome-team/capacitor-pdf-viewer": "^8.0.0",
-    "@capawesome-team/capacitor-datetime-picker": "^8.0.0",
+
     "@capawesome/capacitor-printer": "^8.0.0",
     "@capawesome/capacitor-photo-editor": "^8.0.0",
     "@capacitor-community/video-player": "^8.0.0",
