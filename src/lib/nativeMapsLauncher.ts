@@ -16,15 +16,11 @@ export async function openMap(opts: OpenMapOptions): Promise<void> {
 
   if (Capacitor.isNativePlatform()) {
     try {
-      const mod: any = await import('@capawesome/capacitor-maps-launcher');
-      const MapsLauncher = mod.MapsLauncher;
       if (typeof lat === 'number' && typeof lng === 'number') {
-        await MapsLauncher.showLocation({
-          latitude: lat,
-          longitude: lng,
-          label: label ?? 'Destino',
-        });
-        return;
+        const url = `geo:${lat},${lng}?q=${lat},${lng}${label ? '(' + encodeURIComponent(label) + ')' : ''}`;
+        const { AppLauncher } = await import('@capacitor/app-launcher');
+        const can = await AppLauncher.canOpenUrl({ url });
+        if (can.value) { await AppLauncher.openUrl({ url }); return; }
       }
       if (address) {
         // Fallback: usa deep-link universal do Google Maps.
