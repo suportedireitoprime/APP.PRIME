@@ -1,9 +1,9 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { supabase } from '@/integrations/supabase/client';
 import { useFlashcardsResumoAreas } from '@/lib/flashcardsQueries';
-import { ChevronRight, Search, Sparkles, Scale, BookOpen, Clock, FileText, Landmark, Users, Gavel, File, ArrowLeft, CheckCircle2, Circle, ChevronLeft, Check } from 'lucide-react';
+import { Search, Scale, ChevronRight, ArrowLeft, BookOpen, ChevronLeft, Sparkles, Check, CheckCircle2, Clock, FileText, Landmark, Users, Gavel, File, Circle, LucideIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { haptic } from '@/lib/nativeHaptics';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
@@ -11,6 +11,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { StepRow, SelecaoSheet } from '@/components/flashcards/FlashcardsFiltroSheet';
 import { QuantidadeSheet } from '@/components/flashcards/QuantidadeSheet';
 import { resetBodyScrollLock } from '@/hooks/useBodyScrollLock';
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
+
 // Types
 type TemaRow = {
   tema: string;
@@ -19,6 +22,7 @@ type TemaRow = {
   compreendidos: number;
   a_revisar: number;
   area?: string;
+  nome_curto?: string;
 };
 
 const isLei = (tema: string) => {
@@ -67,6 +71,7 @@ export default function FlashcardsLeis() {
   const [loadingLeis, setLoadingLeis] = useState(false);
   const [busca, setBusca] = useState('');
   const [categoriaSelecionada, setCategoriaSelecionada] = useState<string | null>(null);
+  const container = useRef<HTMLDivElement>(null);
 
   // Selected state for the bottom sheet
   const [leiSelecionada, setLeiSelecionada] = useState<TemaRow | null>(null);
@@ -155,7 +160,15 @@ export default function FlashcardsLeis() {
 
   const artigosUnicos = useMemo(() => {
     const filtrados = cardsDisponiveis.filter(c => titulosSelecionados.length === 0 || titulosSelecionados.includes(c.tema));
-    return Array.from(new Set(filtrados.map(c => c.artigo))).sort((a, b) => {
+    
+    const getBaseArtigo = (art: string) => {
+      if (!art || art === 'Geral') return 'Geral';
+      const match = art.match(/^\D*(\d+(?:-[a-zA-Z]|[a-zA-Z])?)/);
+      if (match) return match[1].toUpperCase();
+      return art;
+    };
+    
+    return Array.from(new Set(filtrados.map(c => getBaseArtigo(c.artigo)))).sort((a, b) => {
       const numA = parseInt(a.replace(/\D/g, '')) || 0;
       const numB = parseInt(b.replace(/\D/g, '')) || 0;
       if (numA === numB) return a.localeCompare(b);
@@ -220,7 +233,12 @@ export default function FlashcardsLeis() {
 
         // 2. Fetch all themes in background to get the flashcard counts
         if (areasRaw && areasRaw.length > 0) {
-          const promises = areasRaw.map(a => 
+          // Include 'codigo' and 'lei' areas explicitly in case they aren't returned by flashcards_resumo_areas
+          const areasToFetch = [...areasRaw];
+          if (!areasToFetch.find(a => a.area === 'codigo')) areasToFetch.push({ area: 'codigo' } as any);
+          if (!areasToFetch.find(a => a.area === 'lei')) areasToFetch.push({ area: 'lei' } as any);
+
+          const promises = areasToFetch.map(a => 
             supabase.rpc('flashcards_temas', { _area: a.area })
               .then(res => {
                 if (res.error) return [];
@@ -278,6 +296,15 @@ export default function FlashcardsLeis() {
     return list.filter(t => t.tema.toLowerCase().includes(q) || (t.area && t.area.toLowerCase().includes(q)));
   }, [todasLeis, busca, categoriaSelecionada]);
 
+  useGSAP(() => {
+    if (listaFiltrada.length > 0) {
+      gsap.fromTo('.lei-card', 
+        { y: 30, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.4, stagger: 0.05, ease: 'back.out(1.2)' }
+      );
+    }
+  }, { dependencies: [listaFiltrada], scope: container });
+
 
   const groupedByCategoria = useMemo(() => {
     const groups: Record<string, TemaRow[]> = {};
@@ -299,11 +326,19 @@ export default function FlashcardsLeis() {
   const mostrarCategorias = !categoriaSelecionada && !busca.trim();
   const loading = loadingAreas || loadingLeis;
 
+  const getBaseArtigo = (art: string) => {
+    if (!art || art === 'Geral') return 'Geral';
+    const match = art.match(/^\D*(\d+(?:-[a-zA-Z]|[a-zA-Z])?)/);
+    if (match) return match[1].toUpperCase();
+    return art;
+  };
+
   const cardsPorArtigo = useMemo(() => {
     const counts: Record<string, number> = {};
     const filtrados = cardsDisponiveis.filter(c => titulosSelecionados.length === 0 || titulosSelecionados.includes(c.tema));
     filtrados.forEach(c => {
-      counts[c.artigo] = (counts[c.artigo] || 0) + 1;
+      const baseArt = getBaseArtigo(c.artigo);
+      counts[baseArt] = (counts[baseArt] || 0) + 1;
     });
     return counts;
   }, [cardsDisponiveis, titulosSelecionados]);
@@ -311,7 +346,8 @@ export default function FlashcardsLeis() {
   const totalCardsFiltrados = useMemo(() => {
     return cardsDisponiveis.filter(c => {
       const matchTema = titulosSelecionados.length === 0 || titulosSelecionados.includes(c.tema);
-      const matchArt = artigosSelecionados.length === 0 || artigosSelecionados.includes(c.artigo);
+      const baseArt = getBaseArtigo(c.artigo);
+      const matchArt = artigosSelecionados.length === 0 || artigosSelecionados.includes(baseArt);
       return matchTema && matchArt;
     }).length;
   }, [cardsDisponiveis, titulosSelecionados, artigosSelecionados]);
@@ -535,7 +571,7 @@ export default function FlashcardsLeis() {
                       setPasso('titulos');
                       setStatusSel('');
                     }}
-                    className={`group flex items-center justify-between p-4 rounded-2xl border bg-card text-left transition-all ${lei.total > 0 ? 'border-border/80 hover:border-[#36AF85]/50 hover:shadow-md active:scale-[0.99] cursor-pointer' : 'border-border/40 opacity-70 cursor-default'}`}
+                    className={`lei-card group flex items-center justify-between p-4 rounded-2xl border bg-card text-left transition-all ${lei.total > 0 ? 'border-border/80 hover:border-[#36AF85]/50 hover:shadow-md active:scale-[0.99] cursor-pointer' : 'border-border/40 opacity-70 cursor-default'}`}
                   >
                     <div className="flex items-center gap-4 flex-1 min-w-0">
                       {/* Circular Progress */}

@@ -5,20 +5,14 @@ import { PageHeader } from '@/components/vademecum/PageHeader';
 import FlashcardsBottomNav from '@/components/flashcards/FlashcardsBottomNav';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, Play, Trash2, FolderPlus, ChevronRight, ChevronLeft, Check, Sparkles, Layers } from 'lucide-react';
+import { Plus, Play, Trash2, FolderPlus, ChevronRight, ChevronLeft, Check, Sparkles, Layers, CloudDownload } from 'lucide-react';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter,
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { haptic } from '@/lib/nativeHaptics';
-
-type Deck = {
-  id: string;
-  nome: string;
-  descricao: string | null;
-  filtros: any;
-  total_cards: number;
-};
+import { syncDecksOffline, Deck, saveOfflineDecks } from '@/lib/flashcardsOfflineManager';
+import { useOnlineStatus } from '@/hooks/useOnlineStatus';
 
 type TemaItem = { tema: string; area: string; count: number };
 
@@ -47,12 +41,14 @@ const FlashcardsDecks = () => {
   const [loadingTemas, setLoadingTemas] = useState(false);
   const [salvando, setSalvando] = useState(false);
 
+  const online = useOnlineStatus();
+  const [syncing, setSyncing] = useState(false);
+
   const carregar = async () => {
-    const { data } = await supabase
-      .from('flashcards_decks')
-      .select('*')
-      .order('created_at', { ascending: false });
-    setDecks((data as unknown as Deck[]) || []);
+    setSyncing(true);
+    const data = await syncDecksOffline();
+    setDecks(data);
+    setSyncing(false);
   };
 
   useEffect(() => {
@@ -150,9 +146,16 @@ const FlashcardsDecks = () => {
   };
 
   const excluir = async (id: string) => {
+    if (!online) {
+      toast.error('Você precisa de internet para excluir decks.');
+      return;
+    }
     const { error } = await supabase.from('flashcards_decks').delete().eq('id', id);
     if (error) { toast.error('Não foi possível excluir'); return; }
-    setDecks((d) => d.filter((x) => x.id !== id));
+    
+    const novosDecks = decks.filter((x) => x.id !== id);
+    setDecks(novosDecks);
+    saveOfflineDecks(novosDecks);
   };
 
   const estudar = (d: Deck) => {
@@ -172,21 +175,47 @@ const FlashcardsDecks = () => {
   };
 
   return (
-    <div className="min-h-dvh bg-background pb-28 lg:pb-12 pt-[calc(0.5rem+var(--sai-top,env(safe-area-inset-top,0px)))]">
+    <div className="min-h-dvh overflow-x-hidden bg-background pb-[calc(7rem+env(safe-area-inset-bottom,0px))] lg:pb-[calc(3rem+env(safe-area-inset-bottom,0px))]">
       <div className="mx-auto w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] px-3 sm:px-6 lg:px-8">
         <PageHeader
           title="Meus Decks Customizados"
           subtitle="Monte combinações personalizadas de matérias para treinar"
           onBack={() => navigate('/flashcards')}
           rightAction={
-            <button 
-              onClick={() => { haptic.selection(); setAberto(true); }} 
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white shadow-md active:scale-95 transition-transform shrink-0"
-            >
-              <Plus className="h-5 w-5" />
-            </button>
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="h-10 text-[11px] font-bold gap-1 rounded-full px-3 hidden sm:flex"
+                onClick={() => { haptic.selection(); carregar(); }}
+                disabled={syncing}
+              >
+                <CloudDownload className={`h-4 w-4 ${syncing ? 'animate-pulse' : ''}`} />
+                {syncing ? 'Sincronizando...' : 'Disponibilizar Offline'}
+              </Button>
+              <button 
+                onClick={() => { haptic.selection(); setAberto(true); }} 
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white shadow-md active:scale-95 transition-transform shrink-0"
+              >
+                <Plus className="h-5 w-5" />
+              </button>
+            </div>
           }
         />
+
+        {/* Mobile sync button shown below header */}
+        <div className="sm:hidden px-1 pt-2 pb-1">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="w-full text-xs font-bold gap-2 rounded-xl h-10 border-border/80 bg-card text-muted-foreground"
+            onClick={() => { haptic.selection(); carregar(); }}
+            disabled={syncing}
+          >
+            <CloudDownload className={`h-4 w-4 ${syncing ? 'animate-pulse' : ''}`} />
+            {syncing ? 'Baixando atualizações...' : 'Disponibilizar Decks Offline'}
+          </Button>
+        </div>
 
         <div className="space-y-5 pt-3">
           <div className="flex flex-wrap items-center justify-between gap-3">

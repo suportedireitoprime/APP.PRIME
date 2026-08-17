@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Layers } from 'lucide-react';
+import { Layers, Flame } from 'lucide-react';
 import q1 from '@/assets/questoes-hero/q-1.png';
 import q2 from '@/assets/questoes-hero/q-2.png';
 import q3 from '@/assets/questoes-hero/q-3.png';
@@ -17,10 +17,12 @@ interface Props {
   meta?: number;
   /** cards para hoje */
   disponiveis?: number;
+  /** ofensiva em dias */
+  streak?: number;
 }
 
 /** Painel de Flashcards no topo da tela de Cargos (Prática Livre) */
-const FlashcardsCargoHero = ({ pct = 0, total = 0, hoje = 0, meta = 100, disponiveis = 0 }: Props) => {
+const FlashcardsCargoHero = ({ pct = 0, total = 0, hoje = 0, meta = 100, disponiveis = 0, streak = 0 }: Props) => {
   const [heroIdx, setHeroIdx] = useState(0);
 
   useEffect(() => {
@@ -83,7 +85,15 @@ const FlashcardsCargoHero = ({ pct = 0, total = 0, hoje = 0, meta = 100, disponi
           </div>
 
           <div className="min-w-0 max-w-[58%]">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-white/75">Hora de revisar</p>
+            <div className="flex items-center gap-2 mb-0.5">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-white/75">Hora de revisar</p>
+              {streak > 0 && (
+                <div className="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-orange-500/20 border border-orange-500/30">
+                  <Flame className="w-3 h-3 text-orange-400" fill="currentColor" />
+                  <span className="text-[10px] font-black text-orange-400">{streak}</span>
+                </div>
+              )}
+            </div>
             <h1 className="mt-0.5 font-display text-[22px] font-black leading-tight text-white sm:text-[28px]">
               Flashcards
               <span className="ml-2 font-display text-[15px] font-semibold italic text-white/75 sm:text-[20px]">

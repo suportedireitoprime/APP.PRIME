@@ -4,7 +4,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import FlashcardsBottomNav from '@/components/flashcards/FlashcardsBottomNav';
-import { Calendar, ChevronRight, Flame, Search, Sparkles, Users, X, Layers, Target, BarChart3, FolderPlus, RotateCcw, Filter, BookOpen, Scale, Gavel, Quote, Lightbulb, Clock } from 'lucide-react';
+import { Calendar, ChevronRight, Flame, Search, Sparkles, Users, X, Layers, Target, BarChart3, FolderPlus, RotateCcw, Filter, BookOpen, Scale, Gavel, Quote, Lightbulb, Clock, History, Dices } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { haptic } from '@/lib/nativeHaptics';
 import FlashcardsCargoHero from '@/components/flashcards/FlashcardsCargoHero';
 import { useFlashcardsDashboard, useFlashcardsResumoAreas, FlashcardsAreaRow, FlashcardsDash } from '@/lib/flashcardsQueries';
@@ -18,7 +19,8 @@ const Flashcards = () => {
   const [loadingMix, setLoadingMix] = useState(false);
   
   const [filtroAberto, setFiltroAberto] = useState(false);
-
+  const [diasFrequencia, setDiasFrequencia] = useState<7 | 15 | 30>(30);
+  const [expandedFrequencia, setExpandedFrequencia] = useState(false);
   const loading = loadingDash;
 
   // SEO & Título dinâmico
@@ -81,7 +83,7 @@ const Flashcards = () => {
   };
 
   return (
-    <div className="min-h-dvh overflow-x-hidden bg-background pb-28 lg:pb-12">
+    <div className="min-h-dvh overflow-x-hidden bg-background pb-[calc(7rem+env(safe-area-inset-bottom,0px))] lg:pb-[calc(3rem+env(safe-area-inset-bottom,0px))]">
       <PageHeader title="Flashcards" onBack={() => navigate('/')} />
       <div className="mx-auto w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] px-3 sm:px-6 lg:px-8">
 
@@ -93,6 +95,7 @@ const Flashcards = () => {
             hoje={dash?.hoje || 0} 
             meta={100} 
             disponiveis={dash?.total_cards || 0} 
+            streak={dash?.streak || 0}
           />
         </div>
         
@@ -118,37 +121,53 @@ const Flashcards = () => {
           </div>
 
           {/* ── Ações Rápidas (4 botões) ───────────────── */}
-          <section className="grid grid-cols-4 gap-2">
+          <section className="grid grid-cols-4 gap-2.5">
+            <button
+              onClick={() => { haptic.selection(); navigate('/flashcards/historico'); }}
+              className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-success/50 transition-all active:scale-95 gap-2 text-center"
+            >
+              <div className="relative w-10 h-10 flex items-center justify-center">
+                <History className="w-7 h-7 sm:w-8 sm:h-8 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110" strokeWidth={2} />
+              </div>
+              <div>
+                <p className="text-xs font-extrabold text-foreground leading-tight">Histórico</p>
+              </div>
+            </button>
+
             <button
               onClick={() => { haptic.selection(); navigate('/flashcards/decks'); }}
-              className="flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-success/50 transition-colors active:scale-95 gap-2 sm:gap-3"
+              className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-success/50 transition-all active:scale-95 gap-2 text-center"
             >
-              <FolderPlus className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground" />
-              <p className="text-[10px] sm:text-xs font-bold text-foreground text-center leading-tight">Meus Decks</p>
+              <div className="relative w-10 h-10 flex items-center justify-center">
+                <FolderPlus className="w-7 h-7 sm:w-8 sm:h-8 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110" strokeWidth={2} />
+              </div>
+              <div>
+                <p className="text-xs font-extrabold text-foreground leading-tight">Decks</p>
+              </div>
             </button>
 
             <button
               onClick={() => { haptic.selection(); navigate('/flashcards/revisar'); }}
-              className="flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-success/50 transition-colors active:scale-95 gap-2 sm:gap-3"
+              className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-success/50 transition-all active:scale-95 gap-2 text-center"
             >
-              <RotateCcw className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground" />
-              <p className="text-[10px] sm:text-xs font-bold text-foreground text-center leading-tight">Minha Revisão</p>
-            </button>
-
-            <button
-              onClick={() => { haptic.selection(); navigate('/flashcards/desafios'); }}
-              className="flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-success/50 transition-colors active:scale-95 gap-2 sm:gap-3"
-            >
-              <Target className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground" />
-              <p className="text-[10px] sm:text-xs font-bold text-foreground text-center leading-tight">Meus Desafios</p>
+              <div className="relative w-10 h-10 flex items-center justify-center">
+                <RotateCcw className="w-7 h-7 sm:w-8 sm:h-8 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110" strokeWidth={2} />
+              </div>
+              <div>
+                <p className="text-xs font-extrabold text-foreground leading-tight">Revisão</p>
+              </div>
             </button>
 
             <button
               onClick={() => { haptic.selection(); navigate('/flashcards/progresso'); }}
-              className="flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-success/50 transition-colors active:scale-95 gap-2 sm:gap-3"
+              className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-success/50 transition-all active:scale-95 gap-2 text-center"
             >
-              <BarChart3 className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground" />
-              <p className="text-[10px] sm:text-xs font-bold text-foreground text-center leading-tight">Progresso</p>
+              <div className="relative w-10 h-10 flex items-center justify-center">
+                <BarChart3 className="w-7 h-7 sm:w-8 sm:h-8 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110" strokeWidth={2} />
+              </div>
+              <div>
+                <p className="text-xs font-extrabold text-foreground leading-tight">Progresso</p>
+              </div>
             </button>
           </section>
 
@@ -208,6 +227,75 @@ const Flashcards = () => {
             </div>
           </section>
 
+          {/* ── Atividade Recente (Heatmap SRS) ───────────────────── */}
+          {dash?.atividade_30d && dash.atividade_30d.length > 0 && (
+            <section className="space-y-3 pt-2">
+              <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] flex items-center justify-between">
+                Sua Frequência ({diasFrequencia} dias)
+              </p>
+              <div className="flex bg-card/60 border border-border/80 rounded-2xl overflow-hidden backdrop-blur-md shadow-sm">
+                <div className="flex-1 p-4 flex flex-col justify-center">
+                  <div className="flex flex-wrap gap-1.5 justify-center">
+                    {dash.atividade_30d.slice(-diasFrequencia).map((dia, idx) => {
+                      // intensity based on total cards reviewed
+                      let bg = 'bg-muted/50';
+                      let text = 'text-muted-foreground/40';
+                      if (dia.total > 0 && dia.total < 20) { bg = 'bg-[#36AF85]/30'; text = 'text-[#36AF85]/80'; }
+                      else if (dia.total >= 20 && dia.total < 50) { bg = 'bg-[#36AF85]/60'; text = 'text-[#0d0f12]/60'; }
+                      else if (dia.total >= 50) { bg = 'bg-[#36AF85]'; text = 'text-[#0d0f12]/80'; }
+                      
+                      const dt = dia.dia.split('-');
+                      const abrev = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'][new Date(Number(dt[0]), Number(dt[1])-1, Number(dt[2])).getDay()];
+                      
+                      return (
+                        <div 
+                          key={idx} 
+                          className={`w-5 h-5 sm:w-6 sm:h-6 rounded-md flex items-center justify-center text-[9px] font-bold ${bg} ${text}`} 
+                          title={`${dia.dia}: ${dia.total} revisões`}
+                        >
+                          {abrev}
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {expandedFrequencia && (
+                     <div className="flex justify-center gap-2 mt-4 pt-4 border-t border-border/50">
+                        {[7, 15, 30].map(n => (
+                           <button key={n} onClick={() => { setDiasFrequencia(n as any); setExpandedFrequencia(false); haptic.selection(); }}
+                            className={`px-3 py-1 rounded-full text-[11px] font-bold transition-colors ${diasFrequencia === n ? 'bg-primary text-white' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
+                             {n} dias
+                           </button>
+                        ))}
+                     </div>
+                  )}
+                  <div className="flex items-center justify-between mt-3 text-[10px] text-muted-foreground font-medium px-1">
+                    <span>{diasFrequencia} dias atrás</span>
+                    <div className="flex items-center gap-1">
+                      <span>Menos</span>
+                      <div className="flex gap-0.5 mx-1">
+                        <div className="w-2.5 h-2.5 rounded-sm bg-muted/50" />
+                        <div className="w-2.5 h-2.5 rounded-sm bg-[#36AF85]/30" />
+                        <div className="w-2.5 h-2.5 rounded-sm bg-[#36AF85]/60" />
+                        <div className="w-2.5 h-2.5 rounded-sm bg-[#36AF85]" />
+                      </div>
+                      <span>Mais</span>
+                    </div>
+                    <span>Hoje</span>
+                  </div>
+                </div>
+                
+                <button 
+                  onClick={() => { haptic.selection(); setExpandedFrequencia(!expandedFrequencia); }}
+                  className="w-8 shrink-0 flex flex-col items-center justify-center bg-[#0d0f12] text-white/90 border-l border-border/50 hover:bg-black transition-colors"
+                >
+                  <span className="text-[10px] font-black uppercase tracking-widest leading-[1.2] py-4">
+                    V<br/>E<br/>R
+                  </span>
+                </button>
+              </div>
+            </section>
+          )}
+
           {/* ── Subcategorias ───────────────────── */}
           <section className="space-y-3 pt-4">
             <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] flex items-center justify-between">
@@ -215,15 +303,22 @@ const Flashcards = () => {
               <button 
                 onClick={handleMixRapido}
                 disabled={loadingMix}
-                className="text-[#36AF85] hover:text-[#36AF85]/80 active:scale-95 transition-all text-xs font-black flex items-center gap-1.5"
+                className="text-[#36AF85] hover:text-[#36AF85]/80 active:scale-95 transition-all text-[11px] font-black flex items-center gap-1.5 bg-[#36AF85]/10 px-2.5 py-1 rounded-full"
               >
-                {loadingMix ? 'GERANDO...' : '🎲 MIX RÁPIDO'}
+                {loadingMix ? (
+                  <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}>
+                    <Dices className="w-4 h-4" />
+                  </motion.div>
+                ) : (
+                  <Dices className="w-4 h-4" />
+                )}
+                {loadingMix ? 'GERANDO...' : 'MIX RÁPIDO'}
               </button>
             </p>
             <div className="flex flex-col gap-2">
               <button
                 onClick={() => { haptic.selection(); navigate('/flashcards/filosofos'); }}
-                className="group flex items-center justify-between p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-success/50 transition-colors active:scale-95"
+                className="group flex items-center justify-between py-5 px-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-success/50 transition-colors active:scale-95"
               >
                 <div className="flex items-center gap-3">
                   <div className="flex items-center justify-center text-muted-foreground group-hover:scale-110 transition-transform">
@@ -236,7 +331,7 @@ const Flashcards = () => {
               
               <button
                 onClick={() => { haptic.selection(); navigate('/flashcards/juristas'); }}
-                className="group flex items-center justify-between p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-success/50 transition-colors active:scale-95"
+                className="group flex items-center justify-between py-5 px-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-success/50 transition-colors active:scale-95"
               >
                 <div className="flex items-center gap-3">
                   <div className="flex items-center justify-center text-muted-foreground group-hover:scale-110 transition-transform">
@@ -249,7 +344,7 @@ const Flashcards = () => {
 
               <button
                 onClick={() => { haptic.selection(); navigate('/flashcards/prazos'); }}
-                className="group flex items-center justify-between p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-success/50 transition-colors active:scale-95"
+                className="group flex items-center justify-between py-5 px-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-success/50 transition-colors active:scale-95"
               >
                 <div className="flex items-center gap-3">
                   <div className="flex items-center justify-center text-muted-foreground group-hover:scale-110 transition-transform">
@@ -262,7 +357,7 @@ const Flashcards = () => {
 
               <button
                 onClick={() => { haptic.selection(); navigate('/flashcards/excecoes'); }}
-                className="group flex items-center justify-between p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-success/50 transition-colors active:scale-95"
+                className="group flex items-center justify-between py-5 px-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-success/50 transition-colors active:scale-95"
               >
                 <div className="flex items-center gap-3">
                   <div className="flex items-center justify-center text-muted-foreground group-hover:scale-110 transition-transform">
@@ -275,7 +370,7 @@ const Flashcards = () => {
 
               <button
                 onClick={() => { haptic.selection(); navigate('/flashcards/classificacoes'); }}
-                className="group flex items-center justify-between p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-success/50 transition-colors active:scale-95"
+                className="group flex items-center justify-between py-5 px-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-success/50 transition-colors active:scale-95"
               >
                 <div className="flex items-center gap-3">
                   <div className="flex items-center justify-center text-muted-foreground group-hover:scale-110 transition-transform">

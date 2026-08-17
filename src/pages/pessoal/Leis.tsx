@@ -1,7 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Scale, ChevronRight, Heart } from "lucide-react";
 import { motion } from "framer-motion";
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useGSAP } from '@gsap/react';
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import PessoalListLayout from "./PessoalListLayout";
@@ -10,6 +13,8 @@ import { buildMinhasLeis, type MinhaLei } from "@/lib/minhasLeis";
 import { PESSOAL_KEYS, fetchPessoalArtigos } from "@/services/pessoalPrefetch";
 import { getCache } from "@/lib/pessoalCache";
 import LeiFavoritaArtigosSheet from "@/components/pessoal/LeiFavoritaArtigosSheet";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const TIPO_LABEL: Record<string, string> = {
   constituicao: "Constituição",
@@ -24,6 +29,7 @@ export default function MinhasLeisPage() {
   const { user } = useAuth();
   const [openLei, setOpenLei] = useState<LeiFavorita | null>(null);
   const [localTick, setLocalTick] = useState(0);
+  const listRef = useRef<HTMLDivElement>(null);
 
   const snapArtigos: any[] = Array.isArray(getCache('artigos')) ? (getCache('artigos') as any[]) : [];
 
@@ -58,6 +64,26 @@ export default function MinhasLeisPage() {
     return map;
   }, [leis]);
 
+  useGSAP(() => {
+    if (!listRef.current) return;
+    const items = gsap.utils.toArray('.lei-card-item');
+    items.forEach((item) => {
+      gsap.fromTo(item as Element, 
+        { opacity: 0, y: 30, scale: 0.95 },
+        { 
+          opacity: 1, y: 0, scale: 1, 
+          duration: 0.5, 
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: item as Element,
+            start: "top 95%",
+            toggleActions: "play none none reverse",
+          }
+        }
+      );
+    });
+  }, { scope: listRef, dependencies: [leis] });
+
   const abrir = (f: MinhaLei) =>
     setOpenLei({
       tipo: f.tipo,
@@ -87,7 +113,7 @@ export default function MinhasLeisPage() {
       }
     >
       {!isEmpty && (
-        <div className="space-y-6">
+        <div ref={listRef} className="space-y-6">
           {Object.entries(grupos).map(([tipo, itens]) => (
             <section key={tipo}>
               <div className="sticky top-0 z-10 -mx-4 px-4 py-2 bg-background/85 backdrop-blur">
@@ -97,13 +123,10 @@ export default function MinhasLeisPage() {
               </div>
               <div className="space-y-2 mt-2">
                 {itens.map((f, i) => (
-                  <motion.button
+                  <button
                     key={f.leiId}
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.02 }}
                     onClick={() => abrir(f)}
-                    className="w-full flex items-center gap-3 p-3 rounded-2xl bg-card border border-border hover:border-primary/40 transition-all text-left min-h-[64px]"
+                    className="lei-card-item w-full flex items-center gap-3 p-3 rounded-2xl bg-card border border-border hover:border-primary/40 transition-all text-left min-h-[64px]"
                   >
                     <div
                       className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 text-white font-display font-black text-[13px]"
@@ -122,7 +145,7 @@ export default function MinhasLeisPage() {
                       </p>
                     </div>
                     <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
-                  </motion.button>
+                  </button>
                 ))}
               </div>
             </section>

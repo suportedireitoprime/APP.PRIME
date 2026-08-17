@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Preview Ícones Flashcards</title>
+<style>
+  body {
+    background-color: #0D0D0D;
+    color: white;
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+  }
+  .container {
+    display: flex;
+    gap: 40px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .card {
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 16px;
+    padding: 30px;
+    text-align: center;
+    width: 200px;
+  }
+  .card h3 {
+    margin: 20px 0 5px 0;
+    color: #fff;
+  }
+  .card p {
+    margin: 0;
+    color: #888;
+    font-size: 14px;
+  }
+  svg {
+    width: 100px;
+    height: 100px;
+    color: #36AF85;
+  }
+</style>
+</head>
+<body>
+  <h1>Escolha a opção do novo ícone</h1>
+  <p>Volte no chat e me diga qual número (1, 2 ou 3) você prefere!</p>
+
+  <div class="container">
+    <div class="card">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="10" width="12" height="12" rx="2" />
+        <path d="M6 10V8a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2" />
+        <path d="M10 6V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2" />
+      </svg>
+      <h3>Opção 1</h3>
+      <p>Cascata Diagonal</p>
+    </div>
+
+    <div class="card">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="4" y="10" width="16" height="12" rx="2" />
+        <path d="M6 10V8a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2" />
+        <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+      </svg>
+      <h3>Opção 2</h3>
+      <p>Cascata Vertical</p>
+    </div>
+
+    <div class="card">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="10" width="12" height="12" rx="2" />
+        <path d="M6 10V8a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2" />
+        <path d="M10 6V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2" />
+        <path d="M5 14h6" />
+        <path d="M5 18h4" />
+      </svg>
+      <h3>Opção 3</h3>
+      <p>Diagonal com Texto</p>
+    </div>
+  </div>
+</body>
+</html>

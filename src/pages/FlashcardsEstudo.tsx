@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
 import { supabase } from '@/integrations/supabase/client';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import FlashcardsBottomNav from '@/components/flashcards/FlashcardsBottomNav';
@@ -17,11 +19,32 @@ import { haptic } from '@/lib/nativeHaptics';
 import { playFlipSound } from '@/lib/flipSound';
 import { getAreaVisual } from '@/lib/flashcardsAreaVisual';
 import { useFlashcardsSessao, useFlashcardsResumoAreas, FlashcardCard } from '@/lib/flashcardsQueries';
+import { saveFlashcardsSessao, getFlashcardsSessoes } from '@/lib/flashcardsSessoes';
 import { useGatedFeature } from '@/hooks/useGatedFeature';
 import { resetBodyScrollLock } from '@/hooks/useBodyScrollLock';
 import ContagemRegressiva from '@/components/questoes/ContagemRegressiva';
 import laurel from '@/assets/landing-tribunal/laurel-leaf.png';
 import scales from '@/assets/landing-tribunal/scales.png';
+
+function AnimatedNumber({ value }: { value: number }) {
+  const numRef = useRef<HTMLSpanElement>(null);
+  
+  useGSAP(() => {
+    if (numRef.current) {
+      const target = { val: parseFloat(numRef.current.innerText) || 0 };
+      gsap.to(target, {
+        val: value,
+        duration: 0.4,
+        ease: 'power2.out',
+        onUpdate: () => {
+          if (numRef.current) numRef.current.innerText = Math.round(target.val).toString();
+        }
+      });
+    }
+  }, [value]);
+
+  return <span ref={numRef}>{value}</span>;
+}
 
 function hashString(s: string): number {
   let h = 2166136261;
@@ -120,6 +143,8 @@ const FlashcardsEstudo = () => {
   const artigosParam = params.get('artigos');
   const artigosList = artigosParam ? artigosParam.split('|').filter(Boolean) : null;
   const modoAtual = modo;
+  
+  const [sessaoId] = useState(() => params.get('sessaoId') || Date.now().toString());
 
   const { data: cardsRaw, isLoading: loadingCards, refetch: refetchCards } = useFlashcardsSessao({
     areas: listaAreas,
@@ -135,7 +160,6 @@ const FlashcardsEstudo = () => {
   const [cards, setCards] = useState<FlashcardCard[]>([]);
   const [idx, setIdx] = useState(0);
   const [virado, setVirado] = useState(false);
-  const [temas, setTemas] = useState<{ tema: string; total: number }[]>([]);
   const [feitos, setFeitos] = useState(0);
   const [sessionCompreendidos, setSessionCompreendidos] = useState(0);
   const [sessionRevisar, setSessionRevisar] = useState(0);
@@ -143,6 +167,7 @@ const FlashcardsEstudo = () => {
   const [exitDirection, setExitDirection] = useState<'left' | 'down'>('left');
   const [emContagem, setEmContagem] = useState(!escolhendo);
   const salvando = useRef(false);
+  const cardContainerRef = useRef<HTMLDivElement>(null);
   const gateFlashcards = useGatedFeature('flashcards', 'flashcards');
 
   const loading = (loadingCards || emContagem) && !escolhendo;
@@ -199,12 +224,21 @@ const FlashcardsEstudo = () => {
     }
   }, [idx, cards.length, sessionKey]);
 
+  // Se retomou, puxa "feitos" do storage (se existir)
   useEffect(() => {
-    if (!areaParam) { setTemas([]); return; }
-    supabase.rpc('flashcards_temas', { _area: areaParam }).then(({ data }) => {
-      if (data) setTemas((data as any[]).map((t) => ({ tema: t.tema, total: Number(t.total) })));
-    });
-  }, [areaParam]);
+    const s = getFlashcardsSessoes().find(s => s.id === sessaoId);
+    if (s && s.cardsRevisados > 0 && feitos === 0) {
+      setFeitos(s.cardsRevisados);
+    }
+  }, [sessaoId, feitos]);
+
+  // Se retomou, puxa "feitos" do storage (se existir)
+  useEffect(() => {
+    const s = getFlashcardsSessoes().find(s => s.id === sessaoId);
+    if (s && s.cardsRevisados > 0 && feitos === 0) {
+      setFeitos(s.cardsRevisados);
+    }
+  }, [sessaoId, feitos]);
 
   const atual = cards[idx];
   const progresso = cards.length ? Math.round((feitos / cards.length) * 100) : 0;
@@ -221,8 +255,14 @@ const FlashcardsEstudo = () => {
     
     // Configura a direção da animação baseada na resposta
     setExitDirection(status === 'revisar' ? 'down' : 'left');
-    if (status === 'compreendido') setSessionCompreendidos(c => c + 1);
-    else setSessionRevisar(c => c + 1);
+    if (status === 'compreendido') {
+      setSessionCompreendidos(c => c + 1);
+    } else {
+      setSessionRevisar(c => c + 1);
+      if (cardContainerRef.current) {
+        gsap.fromTo(cardContainerRef.current, {x: -8}, {x: 8, clearProps: "x", repeat: 5, yoyo: true, duration: 0.05, ease: 'sine.inOut'});
+      }
+    }
     
     salvando.current = true;
     haptic.light();
@@ -237,6 +277,23 @@ const FlashcardsEstudo = () => {
     } else {
       setIdx((i) => i + 1);
     }
+
+    // Salvar no histórico local
+    const novoFeitos = feitos + 1;
+    const titleParts = [];
+    if (areaParam || areasParam) titleParts.push(areaParam || 'Geral');
+    if (temasParam) titleParts.push(temasParam.split('|')[0]);
+    if (deckId) titleParts.push(`Deck ${deckId}`);
+    
+    saveFlashcardsSessao({
+      id: sessaoId,
+      dataInicio: new Date().toISOString(),
+      dataUltimoAcesso: new Date().toISOString(),
+      queryString: params.toString() + (params.has('sessaoId') ? '' : `&sessaoId=${sessaoId}`),
+      filtroAplicado: titleParts.join(' • ') || 'Sessão Personalizada',
+      cardsRevisados: novoFeitos,
+      totalCards: cards.length,
+    });
 
     // FIRE AND FORGET: Salva no banco em background
     supabase.auth.getUser().then(({ data: auth }) => {
@@ -306,7 +363,7 @@ const FlashcardsEstudo = () => {
   };
 
   return (
-    <div className={`min-h-dvh bg-background ${escolhendo ? 'pb-32' : 'pb-10'}`}>
+    <div className={`min-h-dvh overflow-x-hidden bg-background ${escolhendo ? 'pb-[calc(8rem+env(safe-area-inset-bottom,0px))]' : 'pb-[calc(2.5rem+env(safe-area-inset-bottom,0px))]'}`}>
       {gateFlashcards.gateNode}
       <div className="mx-auto w-full max-w-3xl px-3.5 sm:px-6">
         <PageHeader
@@ -488,7 +545,7 @@ const FlashcardsEstudo = () => {
             <div className="flex items-center gap-3">
               <Progress value={cards.length ? ((idx + 1) / cards.length) * 100 : 0} className="h-2 flex-1 [&>div]:bg-emerald-500" />
               <span className="text-xs font-black tabular-nums text-muted-foreground">
-                {idx + 1}/{cards.length}
+                <AnimatedNumber value={idx + 1} />/<AnimatedNumber value={cards.length} />
               </span>
             </div>
 
@@ -579,6 +636,7 @@ const FlashcardsEstudo = () => {
                       className="relative w-full h-full text-left focus:outline-none cursor-pointer select-none"
                     >
                       <div
+                        ref={cardContainerRef}
                         className="relative h-full w-full transition-transform duration-[800ms] [transform-style:preserve-3d]"
                         style={{
                           transform: virado ? 'rotateY(180deg)' : 'rotateY(0deg)',

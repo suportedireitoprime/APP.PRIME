@@ -172,9 +172,11 @@ const FlashcardsEstudo = lazy(() => import("./pages/FlashcardsEstudo.tsx"));
 const FlashcardsRevisar = lazy(() => import("./pages/FlashcardsRevisar.tsx"));
 const FlashcardsCornell = lazy(() => import("./pages/FlashcardsCornell.tsx"));
 const FlashcardsDecks = lazy(() => import("./pages/FlashcardsDecks.tsx"));
+const FlashcardsPersonalizado = lazy(() => import("./pages/flashcards/FlashcardsPersonalizado.tsx"));
 const FlashcardsDesafios = lazy(() => import("./pages/FlashcardsDesafios.tsx"));
 const FlashcardsTrilhas = lazy(() => import("./pages/FlashcardsTrilhas.tsx"));
 const FlashcardsProgresso = lazy(() => import("./pages/FlashcardsProgresso.tsx"));
+const FlashcardsHistorico = lazy(() => import("./pages/flashcards/FlashcardsHistorico.tsx"));
 const FlashcardsMaterias = lazy(() => import("./pages/flashcards/FlashcardsMaterias.tsx"));
 const FlashcardsLeis = lazy(() => import("./pages/flashcards/FlashcardsLeis.tsx"));
 const FlashcardsJurisprudencia = lazy(() => import("./pages/flashcards/FlashcardsJurisprudencia.tsx"));
@@ -850,8 +852,10 @@ function AnimatedRoutes() {
           <Route path="/flashcards/revisar" element={<ProtectedRoute><PageTransition><FlashcardsRevisar /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/cornell" element={<ProtectedRoute><PageTransition><FlashcardsCornell /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/progresso" element={<ProtectedRoute><PageTransition><FlashcardsProgresso /></PageTransition></ProtectedRoute>} />
+          <Route path="/flashcards/historico" element={<ProtectedRoute><PageTransition><FlashcardsHistorico /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/desafios" element={<ProtectedRoute><PageTransition><FlashcardsDesafios /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/decks" element={<ProtectedRoute><PageTransition><FlashcardsDecks /></PageTransition></ProtectedRoute>} />
+          <Route path="/flashcards/personalizado" element={<ProtectedRoute><PageTransition><FlashcardsPersonalizado /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/materias" element={<ProtectedRoute><PageTransition><FlashcardsMaterias /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/leis" element={<ProtectedRoute><PageTransition><FlashcardsLeis /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/jurisprudencia" element={<Suspense fallback={<div className="min-h-dvh bg-background" />}><FlashcardsJurisprudencia /></Suspense>} />

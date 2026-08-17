@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Preview Ícones Flashcards - Parte 2</title>
+<style>
+  body {
+    background-color: #0D0D0D;
+    color: white;
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+  }
+  .container {
+    display: flex;
+    gap: 40px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 900px;
+  }
+  .card {
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 16px;
+    padding: 30px;
+    text-align: center;
+    width: 200px;
+    transition: transform 0.2s;
+  }
+  .card:hover {
+    transform: scale(1.05);
+    border-color: #36AF85;
+  }
+  .card h3 {
+    margin: 20px 0 5px 0;
+    color: #fff;
+  }
+  .card p {
+    margin: 0;
+    color: #888;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  svg {
+    width: 100px;
+    height: 100px;
+    color: #36AF85;
+  }
+</style>
+</head>
+<body>
+  <h1>Mais Estilos de Flashcards</h1>
+  <p>Criei novas alternativas usando preenchimento (overlap) para não misturar as linhas. Veja as opções 4 a 8!</p>
+
+  <div class="container">
+    
+    <!-- Opção 4 -->
+    <div class="card">
+      <svg viewBox="0 0 24 24" fill="#1a1a1a" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="6" y="4" width="12" height="16" rx="2" transform="rotate(-20 12 20)" />
+        <rect x="6" y="4" width="12" height="16" rx="2" />
+        <rect x="6" y="4" width="12" height="16" rx="2" transform="rotate(20 12 20)" />
+      </svg>
+      <h3>Opção 4</h3>
+      <p>Cartas em Leque (Espalhadas)</p>
+    </div>
+
+    <!-- Opção 5 -->
+    <div class="card">
+      <svg viewBox="0 0 24 24" fill="#1a1a1a" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="8" y="2" width="12" height="16" rx="2" />
+        <rect x="4" y="6" width="12" height="16" rx="2" />
+      </svg>
+      <h3>Opção 5</h3>
+      <p>Cascata Dupla Simples (Minimalista)</p>
+    </div>
+
+    <!-- Opção 6 -->
+    <div class="card">
+      <svg viewBox="0 0 24 24" fill="#1a1a1a" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 10V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v4" fill="none" />
+        <rect x="2" y="10" width="20" height="12" rx="2" />
+        <polygon points="13 12 10 16 12 16 11 20 14 16 12 16 13 12" fill="currentColor" stroke="none" />
+      </svg>
+      <h3>Opção 6</h3>
+      <p>Pilha Horizontal com Ícone de "Flash"</p>
+    </div>
+
+    <!-- Opção 7 -->
+    <div class="card">
+      <svg viewBox="0 0 24 24" fill="#1a1a1a" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 6V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-2" fill="none" />
+        <rect x="4" y="6" width="12" height="16" rx="2" />
+        <!-- Rotate arrow -->
+        <path d="M21 16v-4a4 4 0 0 0-4-4h-2" fill="none" />
+        <path d="M17 6l-2 2 2 2" fill="none" />
+      </svg>
+      <h3>Opção 7</h3>
+      <p>Cartas com Seta de Repetição (Spaced Repetition)</p>
+    </div>
+
+    <!-- Opção 8 -->
+    <div class="card">
+      <svg viewBox="0 0 24 24" fill="#1a1a1a" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" fill="none" />
+        <path d="M4 14V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6" fill="none" />
+        <rect x="2" y="14" width="20" height="8" rx="2" />
+      </svg>
+      <h3>Opção 8</h3>
+      <p>Pilha Simétrica Frontal</p>
+    </div>
+
+  </div>
+</body>
+</html>

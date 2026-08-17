@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {pickAsset, assetUrl, srcOf } from '@/lib/assetUrl';
-import { Menu as MenuIcon, Search, Scale, BookOpen, Clock, Layers, Eye, Quote, Lightbulb, ScrollText, History, ChevronLeft, User as UserIcon, Mic, Radar, MapPin, Monitor, Library, Bell, GraduationCap, Target, CloudOff, ListChecks, Camera } from 'lucide-react';
+import { Menu as MenuIcon, Search, Scale, BookOpen, Clock, Eye, Quote, Lightbulb, ScrollText, History, ChevronLeft, User as UserIcon, Mic, Radar, MapPin, Monitor, Library, Bell, GraduationCap, Target, CloudOff, ListChecks, Camera } from 'lucide-react';
+import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfileSummary } from '@/hooks/useProfileSummary';
@@ -627,7 +628,7 @@ const HomeHeaderHero = ({ onSearchOpenChange }: { onSearchOpenChange?: (open: bo
           <div className="grid grid-cols-4 gap-2 mt-1">
             {[
               { label: 'Aprender',    icon: GraduationCap, to: '/aprender',     color: '#FFD500', badgeColor: null, badgeKey: null, prefetch: 'aprender' as PrefetchKey },
-              { label: 'Flashcards',  icon: Layers,        to: '/flashcards',   color: '#34D399', badgeColor: null, badgeKey: null, prefetch: 'flashcards' as PrefetchKey },
+              { label: 'Flashcards',  icon: FlashcardsIcon,        to: '/flashcards',   color: '#34D399', badgeColor: null, badgeKey: null, prefetch: 'flashcards' as PrefetchKey },
               { label: 'Questões',    icon: ListChecks,    to: '/questoes',     color: '#F87171', badgeColor: null, badgeKey: null, prefetch: 'questoes' as PrefetchKey },
               { label: 'Me Explique', icon: Camera,        to: '/me-explique',  color: '#F97316', badgeColor: null, badgeKey: null, prefetch: 'aprender' as PrefetchKey },
             ].map((item, index) => {

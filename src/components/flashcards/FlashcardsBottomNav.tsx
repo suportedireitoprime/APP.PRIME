@@ -1,14 +1,14 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { LayoutGrid, FolderPlus, RotateCcw, Route as RouteIcon, Trophy, Briefcase, BarChart3 } from 'lucide-react';
+import { LayoutGrid, FolderPlus, RotateCcw, Route as RouteIcon, Trophy, Briefcase, BarChart3, Target, Sparkles } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
 const TABS = [
   { id: 'categorias', label: 'Categorias', to: '/flashcards', icon: LayoutGrid, match: (p: string) => p === '/flashcards' },
   { id: 'trilhas', label: 'Trilhas', to: '/flashcards/trilhas', icon: RouteIcon, match: (p: string) => p.startsWith('/flashcards/trilhas') },
   { id: 'cargos', label: 'Cargos', to: '/flashcards/cargos', icon: Briefcase, match: (p: string) => p.startsWith('/flashcards/cargos') },
-  { id: 'decks', label: 'Decks', to: '/flashcards/decks', icon: FolderPlus, match: (p: string) => p.startsWith('/flashcards/decks') },
-  { id: 'progresso', label: 'Progresso', to: '/flashcards/progresso', icon: BarChart3, match: (p: string) => p.startsWith('/flashcards/progresso') },
+  { id: 'personalizado', label: 'Personalizado', to: '/flashcards/personalizado', icon: Sparkles, match: (p: string) => p.startsWith('/flashcards/personalizado') },
+  { id: 'desafios', label: 'Desafios', to: '/flashcards/desafios', icon: Target, match: (p: string) => p.startsWith('/flashcards/desafios') },
 ];
 
 
