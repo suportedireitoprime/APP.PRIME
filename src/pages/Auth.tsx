@@ -539,13 +539,13 @@ const Auth = () => {
       <button
         onClick={() => navigate('/landing')}
         aria-label="Voltar"
-        className="absolute top-[max(var(--sai-top,env(safe-area-inset-top,0px)),1rem)] left-4 z-20 w-11 h-11 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-black/60 transition active:scale-95"
+        className="absolute top-[calc(var(--sai-top,env(safe-area-inset-top,0px))+1.25rem)] left-[calc(var(--sai-left,env(safe-area-inset-left,0px))+1rem)] z-20 w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-black/60 transition active:scale-95 touch-manipulation"
       >
-        <ArrowLeft className="w-5 h-5 text-white" />
+        <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 text-white" strokeWidth={2.4} />
       </button>
 
       {/* Conteúdo Topo */}
-      <div className="relative z-10 w-full pt-[max(var(--sai-top,env(safe-area-inset-top,0px)),3.5rem)] px-6 text-center flex-1">
+      <div className="relative z-10 w-full pt-[calc(var(--sai-top,env(safe-area-inset-top,0px))+4rem)] px-6 text-center flex-1">
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -580,7 +580,7 @@ const Auth = () => {
       </div>
 
       {/* Área dos Botões Inferiores */}
-      <div className="relative z-10 w-full px-5 pb-[max(var(--sai-bottom,env(safe-area-inset-bottom,0px)),2rem)] flex flex-col gap-4">
+      <div className="relative z-10 w-full px-5 pb-[calc(var(--sai-bottom,env(safe-area-inset-bottom,0px))+2rem)] flex flex-col gap-4">
         
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
