@@ -3,14 +3,29 @@ import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { supabase } from '@/integrations/supabase/client';
 import { useFlashcardsResumoAreas } from '@/lib/flashcardsQueries';
-import { Search, Scale, ChevronRight, ArrowLeft, BookOpen, ChevronLeft, Sparkles, Check, CheckCircle2, Clock, FileText, Landmark, Users, Gavel, File, Circle, LucideIcon } from 'lucide-react';
+import { 
+  Search, Scale, ChevronRight, ArrowLeft, BookOpen, ChevronLeft, Sparkles, Check, CheckCircle2, 
+  Clock, FileText, Landmark, Users, Gavel, File, Circle, LucideIcon, Play, FolderPlus, 
+  BookmarkCheck, Layers, Loader2, ListOrdered, ArrowDownNarrowWide, Shuffle 
+} from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { haptic } from '@/lib/nativeHaptics';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog';
 import { motion, AnimatePresence } from 'framer-motion';
 import { StepRow, SelecaoSheet } from '@/components/flashcards/FlashcardsFiltroSheet';
 import { QuantidadeSheet } from '@/components/flashcards/QuantidadeSheet';
 import { resetBodyScrollLock } from '@/hooks/useBodyScrollLock';
+import { getOfflineDecks, saveOfflineDecks, syncDecksOffline, Deck } from '@/lib/flashcardsOfflineManager';
+import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 
@@ -83,6 +98,12 @@ export default function FlashcardsLeis() {
   const [titulosSelecionados, setTitulosSelecionados] = useState<string[]>([]);
   const [artigosSelecionados, setArtigosSelecionados] = useState<string[]>([]);
   const [showQuantidade, setShowQuantidade] = useState(false);
+
+  // Estados para Salvar Deck personalizado
+  const [modalSalvarDeckAberto, setModalSalvarDeckAberto] = useState(false);
+  const [nomeDeck, setNomeDeck] = useState('');
+  const [descricaoDeck, setDescricaoDeck] = useState('');
+  const [salvandoDeck, setSalvandoDeck] = useState(false);
 
   // SEO & Prevenção de bug de scroll/pointer events
   useEffect(() => {
@@ -183,6 +204,45 @@ export default function FlashcardsLeis() {
     });
     return counts;
   }, [cardsDisponiveis]);
+
+  const cardsPorArtigo = useMemo(() => {
+    const counts: Record<string, number> = {};
+    const getBaseArtigo = (art: string) => {
+      if (!art || art === 'Geral') return 'Geral';
+      const match = art.match(/^\D*(\d+(?:-[a-zA-Z]|[a-zA-Z])?)/);
+      if (match) return match[1].toUpperCase();
+      return art;
+    };
+    const filtrados = cardsDisponiveis.filter(c => titulosSelecionados.length === 0 || titulosSelecionados.includes(c.tema));
+    filtrados.forEach(c => {
+      const base = getBaseArtigo(c.artigo);
+      counts[base] = (counts[base] || 0) + 1;
+    });
+    return counts;
+  }, [cardsDisponiveis, titulosSelecionados]);
+
+  const totalCardsFiltrados = useMemo(() => {
+    const getBaseArtigo = (art: string) => {
+      if (!art || art === 'Geral') return 'Geral';
+      const match = art.match(/^\D*(\d+(?:-[a-zA-Z]|[a-zA-Z])?)/);
+      if (match) return match[1].toUpperCase();
+      return art;
+    };
+    return cardsDisponiveis.filter(c => {
+      const matchTitulo = titulosSelecionados.length === 0 || titulosSelecionados.includes(c.tema);
+      const baseArt = getBaseArtigo(c.artigo);
+      const matchArtigo = artigosSelecionados.length === 0 || artigosSelecionados.includes(baseArt) || artigosSelecionados.includes(c.artigo);
+      return matchTitulo && matchArtigo;
+    }).length;
+  }, [cardsDisponiveis, titulosSelecionados, artigosSelecionados]);
+
+  const effectiveCardsCount = useMemo(() => {
+    if (totalCardsFiltrados === 0) return 0;
+    if (quantidadeSel && typeof quantidadeSel === 'number') {
+      return Math.min(quantidadeSel, totalCardsFiltrados);
+    }
+    return totalCardsFiltrados;
+  }, [totalCardsFiltrados, quantidadeSel]);
 
   const LEIS_CACHE_KEY = 'flashcards_leis_counts_v1';
 
@@ -326,32 +386,6 @@ export default function FlashcardsLeis() {
   const mostrarCategorias = !categoriaSelecionada && !busca.trim();
   const loading = loadingAreas || loadingLeis;
 
-  const getBaseArtigo = (art: string) => {
-    if (!art || art === 'Geral') return 'Geral';
-    const match = art.match(/^\D*(\d+(?:-[a-zA-Z]|[a-zA-Z])?)/);
-    if (match) return match[1].toUpperCase();
-    return art;
-  };
-
-  const cardsPorArtigo = useMemo(() => {
-    const counts: Record<string, number> = {};
-    const filtrados = cardsDisponiveis.filter(c => titulosSelecionados.length === 0 || titulosSelecionados.includes(c.tema));
-    filtrados.forEach(c => {
-      const baseArt = getBaseArtigo(c.artigo);
-      counts[baseArt] = (counts[baseArt] || 0) + 1;
-    });
-    return counts;
-  }, [cardsDisponiveis, titulosSelecionados]);
-
-  const totalCardsFiltrados = useMemo(() => {
-    return cardsDisponiveis.filter(c => {
-      const matchTema = titulosSelecionados.length === 0 || titulosSelecionados.includes(c.tema);
-      const baseArt = getBaseArtigo(c.artigo);
-      const matchArt = artigosSelecionados.length === 0 || artigosSelecionados.includes(baseArt);
-      return matchTema && matchArt;
-    }).length;
-  }, [cardsDisponiveis, titulosSelecionados, artigosSelecionados]);
-
   const renderTituloOpcao = (opcao: string) => {
     if (!leiSelecionada) return opcao;
     const prefix = leiSelecionada.tema + ' - ';
@@ -461,6 +495,102 @@ export default function FlashcardsLeis() {
         )}
       </div>
     );
+  };
+
+  const abrirModalSalvarDeck = () => {
+    if (!leiSelecionada) return;
+    haptic.selection?.();
+    const nomeBase = leiSelecionada.nome_curto || leiSelecionada.tema;
+    let sugestao = nomeBase;
+    if (titulosSelecionados.length === 1) {
+      const primeiro = titulosSelecionados[0].split(' - ')[0].trim();
+      sugestao = `${nomeBase} - ${primeiro}`;
+    } else if (titulosSelecionados.length > 1) {
+      sugestao = `${nomeBase} (${titulosSelecionados.length} títulos)`;
+    }
+    setNomeDeck(sugestao);
+    setDescricaoDeck(
+      `${leiSelecionada.tema} • ${effectiveCardsCount} cards • ${
+        statusSel === 'novos' ? 'Novos' : statusSel === 'revisar' ? 'A Revisar' : 'Todos'
+      }`
+    );
+    setModalSalvarDeckAberto(true);
+  };
+
+  const handleSalvarDeck = async () => {
+    if (!leiSelecionada || !nomeDeck.trim()) {
+      toast.error('Informe um nome para o deck');
+      return;
+    }
+    setSalvandoDeck(true);
+    haptic.selection?.();
+
+    try {
+      const { data: authData } = await supabase.auth.getUser();
+      const userId = authData?.user?.id;
+
+      const temasParaEnviar = titulosSelecionados.length > 0 ? titulosSelecionados : titulosUnicos;
+      const CORES_DECKS = ['#36AF85', '#3b82f6', '#10b981', '#a855f7', '#f97316', '#ec4899', '#ef4444', '#06b6d4'];
+      const corEscolhida = CORES_DECKS[Math.floor(Math.random() * CORES_DECKS.length)];
+
+      const deckPayload = {
+        user_id: userId || 'local_user',
+        nome: nomeDeck.trim(),
+        descricao: descricaoDeck.trim() || `${leiSelecionada.tema} • ${effectiveCardsCount} cards`,
+        filtros: {
+          areas: [leiSelecionada.area || 'legislacao'],
+          temas: temasParaEnviar,
+          artigos: artigosSelecionados,
+          modo: statusSel || 'todos',
+          quantidade: quantidadeSel,
+          ordem: ordemSel,
+          cor: corEscolhida,
+        },
+        total_cards: effectiveCardsCount,
+      };
+
+      if (userId) {
+        const { error } = await supabase.from('flashcards_decks').insert(deckPayload);
+        if (error) {
+          console.warn('Erro ao salvar deck no Supabase, salvando offline:', error);
+          const locais = getOfflineDecks();
+          const localDeck: Deck = {
+            id: `deck_${Date.now()}`,
+            nome: deckPayload.nome,
+            descricao: deckPayload.descricao,
+            filtros: deckPayload.filtros,
+            total_cards: deckPayload.total_cards,
+          };
+          saveOfflineDecks([localDeck, ...locais]);
+        } else {
+          await syncDecksOffline();
+        }
+      } else {
+        const locais = getOfflineDecks();
+        const localDeck: Deck = {
+          id: `deck_${Date.now()}`,
+          nome: deckPayload.nome,
+          descricao: deckPayload.descricao,
+          filtros: deckPayload.filtros,
+          total_cards: deckPayload.total_cards,
+        };
+        saveOfflineDecks([localDeck, ...locais]);
+      }
+
+      toast.success('Deck salvo com sucesso em "Meus Decks"!', {
+        description: 'Você pode acessá-lo e estudá-lo a qualquer momento.',
+        action: {
+          label: 'Ver Decks',
+          onClick: () => navigate('/flashcards/decks'),
+        },
+      });
+      setModalSalvarDeckAberto(false);
+    } catch (err) {
+      console.error(err);
+      toast.error('Ocorreu um erro ao salvar o deck.');
+    } finally {
+      setSalvandoDeck(false);
+    }
   };
 
   const handleStartSession = () => {
@@ -667,26 +797,104 @@ export default function FlashcardsLeis() {
             <StepRow
               step={4} label="Quantidade"
               hint={quantidadeSel === 'todos' ? 'Todos os flashcards' : (quantidadeSel ? `${quantidadeSel} flashcards` : 'Selecione a quantidade')}
-              active={passo === 'quantidade'} done={etapaAlcancada >= 5}
+              active={passo === 'quantidade'} done={etapaAlcancada >= 5 || quantidadeSel !== undefined}
               locked={etapaAlcancada < 4}
               onClick={() => setPasso('quantidade')}
             />
-            <StepRow
-              step={5} label="Ordem de Exibição"
-              hint={ordemSel === 'sequencial' ? 'Sequencial' : 'Aleatório'}
-              active={passo === 'ordem'} done={etapaAlcancada >= 5}
-              locked={etapaAlcancada < 5}
-              onClick={() => setPasso('ordem')}
-            />
+
+            {/* ETAPA 5: Ordem de Exibição (Alternância Inline / Segmented Control) */}
+            <div
+              className={cn(
+                'flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border px-4 py-3.5 transition-all',
+                etapaAlcancada >= 5 || quantidadeSel !== undefined
+                  ? 'border-zinc-800/80 bg-zinc-900/90 shadow-sm'
+                  : 'border-zinc-800/50 bg-zinc-900/50 opacity-80'
+              )}
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <span
+                  className={cn(
+                    'grid h-10 w-10 shrink-0 place-items-center rounded-full text-[14px] font-black tabular-nums transition-all',
+                    etapaAlcancada >= 5 || quantidadeSel !== undefined
+                      ? 'bg-[#36AF85] text-white shadow-md shadow-[#36AF85]/25 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]'
+                      : 'bg-zinc-800 text-zinc-400'
+                  )}
+                >
+                  <ListOrdered className="h-5 w-5" />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-[15.5px] font-bold text-zinc-100 leading-tight">
+                    Ordem de Exibição
+                  </p>
+                  <p className="mt-0.5 text-[12.5px] text-zinc-400 truncate">
+                    {ordemSel === 'sequencial' ? 'Ordem numérica da lei' : 'Ordem randômica / aleatória'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Segmented Control / Alternância */}
+              <div className="flex items-center p-1 rounded-xl bg-zinc-950/80 border border-zinc-800 shrink-0 self-stretch sm:self-auto">
+                <button
+                  type="button"
+                  onClick={() => {
+                    haptic.selection?.();
+                    setOrdemSel('sequencial');
+                  }}
+                  className={cn(
+                    'relative flex flex-1 sm:flex-initial items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg text-[13px] font-bold transition-all',
+                    ordemSel === 'sequencial'
+                      ? 'bg-[#36AF85] text-white shadow-md shadow-[#36AF85]/30'
+                      : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50'
+                  )}
+                >
+                  <ArrowDownNarrowWide className="w-3.5 h-3.5" />
+                  <span>Sequencial</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    haptic.selection?.();
+                    setOrdemSel('embaralhado');
+                  }}
+                  className={cn(
+                    'relative flex flex-1 sm:flex-initial items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg text-[13px] font-bold transition-all',
+                    ordemSel === 'embaralhado'
+                      ? 'bg-[#36AF85] text-white shadow-md shadow-[#36AF85]/30'
+                      : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50'
+                  )}
+                >
+                  <Shuffle className="w-3.5 h-3.5" />
+                  <span>Aleatório</span>
+                </button>
+              </div>
+            </div>
           </div>
 
-          <div className="flex items-center gap-3 border-t border-zinc-800/80 bg-zinc-900/90 backdrop-blur-md px-5 pb-safe-nav pt-4">
+          {/* Rodapé com Salvar Deck e Iniciar Sessão */}
+          <div className="flex items-center gap-2.5 border-t border-zinc-800/80 bg-zinc-900/90 backdrop-blur-md px-4 sm:px-5 pb-safe-nav pt-3.5">
+            {/* Botão Salvar Deck */}
             <button
-              onClick={handleStartSession}
-              disabled={!statusSel}
-              className="flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl bg-[#36AF85] hover:bg-[#2C9570] text-[16px] font-black text-white shadow-lg shadow-black/40 active:scale-[0.98] transition-all [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)] disabled:opacity-50"
+              type="button"
+              onClick={abrirModalSalvarDeck}
+              disabled={!statusSel || effectiveCardsCount === 0}
+              title="Salvar como novo deck personalizado"
+              className="flex h-14 items-center justify-center gap-2 px-4 rounded-2xl border border-zinc-700/80 bg-zinc-800/80 hover:bg-zinc-700 text-[14px] font-bold text-zinc-200 hover:text-white active:scale-95 transition-all disabled:opacity-40 shrink-0"
             >
-              Iniciar Sessão
+              <FolderPlus className="w-5 h-5 text-[#36AF85]" />
+              <span className="hidden sm:inline">Salvar Deck</span>
+            </button>
+
+            {/* Botão Iniciar Sessão com contagem de cards */}
+            <button
+              type="button"
+              onClick={handleStartSession}
+              disabled={!statusSel || effectiveCardsCount === 0}
+              className="flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl bg-[#36AF85] hover:bg-[#2C9570] text-[16px] font-black text-white shadow-lg shadow-black/40 active:scale-[0.98] transition-all [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)] disabled:opacity-50 min-w-0"
+            >
+              <Play className="w-5 h-5 fill-current shrink-0" />
+              <span className="truncate">
+                Iniciar Sessão {effectiveCardsCount > 0 ? `• ${effectiveCardsCount} ${effectiveCardsCount === 1 ? 'card' : 'cards'}` : ''}
+              </span>
             </button>
           </div>
 
@@ -748,18 +956,6 @@ export default function FlashcardsLeis() {
                 onConfirmar={(q) => {
                   setQuantidadeSel(q);
                   setEtapaAlcancada(prev => Math.max(prev, 5));
-                  setPasso('ordem');
-                }}
-              />
-            )}
-            {passo === 'ordem' && (
-              <SelecaoSheet
-                key="ord" titulo="Ordem de Exibição" single
-                opcoes={['Sequencial', 'Aleatório']}
-                selecionado={[ordemSel === 'sequencial' ? 'Sequencial' : 'Aleatório']}
-                onFechar={() => setPasso(null)}
-                onConfirmar={(v) => {
-                  setOrdemSel(v[0] === 'Sequencial' ? 'sequencial' : 'embaralhado');
                   setPasso(null);
                 }}
               />
@@ -767,6 +963,101 @@ export default function FlashcardsLeis() {
           </AnimatePresence>
         </SheetContent>
       </Sheet>
+
+      {/* Dialog para Salvar Deck */}
+      <Dialog open={modalSalvarDeckAberto} onOpenChange={setModalSalvarDeckAberto}>
+        <DialogContent className="max-w-md bg-zinc-950 border-zinc-800 text-foreground p-6 rounded-3xl shadow-2xl">
+          <DialogHeader className="text-left space-y-2">
+            <div className="flex items-center gap-2.5">
+              <div className="grid h-10 w-10 place-items-center rounded-xl bg-[#36AF85]/15 border border-[#36AF85]/30 text-[#36AF85]">
+                <FolderPlus className="h-5 w-5" />
+              </div>
+              <div>
+                <DialogTitle className="text-lg font-extrabold text-white tracking-tight">
+                  Salvar como Novo Deck
+                </DialogTitle>
+                <DialogDescription className="text-xs text-zinc-400">
+                  Salve esta seleção para acessar rapidamente na aba Decks.
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+
+          <div className="space-y-4 py-2">
+            <div className="space-y-1.5">
+              <label className="text-xs font-extrabold uppercase tracking-wider text-zinc-300">
+                Nome do Deck <span className="text-[#36AF85]">*</span>
+              </label>
+              <Input
+                value={nomeDeck}
+                onChange={(e) => setNomeDeck(e.target.value)}
+                placeholder="Ex: Código Penal - Parte Geral"
+                className="h-12 bg-zinc-900/90 border-zinc-700/80 rounded-xl text-white font-medium focus-visible:ring-[#36AF85]"
+                autoFocus
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-extrabold uppercase tracking-wider text-zinc-400">
+                Descrição (opcional)
+              </label>
+              <Input
+                value={descricaoDeck}
+                onChange={(e) => setDescricaoDeck(e.target.value)}
+                placeholder="Ex: Foco nos crimes contra a pessoa"
+                className="h-11 bg-zinc-900/90 border-zinc-700/80 rounded-xl text-zinc-200 text-sm focus-visible:ring-[#36AF85]"
+              />
+            </div>
+
+            {/* Resumo do Deck a ser salvo */}
+            <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-3.5 space-y-2">
+              <p className="text-[11px] font-black uppercase tracking-widest text-[#36AF85] flex items-center gap-1.5">
+                <Layers className="w-3.5 h-3.5" /> Resumo da Configuração
+              </p>
+              <div className="text-xs text-zinc-300 space-y-1">
+                <p className="font-semibold text-white truncate">
+                  📖 <span className="text-zinc-400">Lei:</span> {leiSelecionada?.tema}
+                </p>
+                <p className="text-zinc-400">
+                  🏷️ <span className="text-zinc-300">Filtro:</span> {titulosSelecionados.length ? `${titulosSelecionados.length} títulos` : 'Todos os títulos'} • {artigosSelecionados.length ? `${artigosSelecionados.length} artigos` : 'Todos os artigos'}
+                </p>
+                <p className="text-zinc-400">
+                  ⚡ <span className="text-zinc-300">Total:</span> <strong className="text-emerald-400">{effectiveCardsCount} flashcards</strong> ({ordemSel === 'sequencial' ? 'Sequencial' : 'Aleatório'})
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="flex-row gap-2 pt-2 sm:justify-end">
+            <button
+              type="button"
+              onClick={() => setModalSalvarDeckAberto(false)}
+              disabled={salvandoDeck}
+              className="flex-1 sm:flex-none px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-800/80 hover:bg-zinc-700 text-sm font-bold text-zinc-300 hover:text-white transition-colors"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              onClick={handleSalvarDeck}
+              disabled={salvandoDeck || !nomeDeck.trim()}
+              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#36AF85] hover:bg-[#2C9570] text-sm font-bold text-white shadow-lg shadow-[#36AF85]/20 disabled:opacity-50 transition-all active:scale-95"
+            >
+              {salvandoDeck ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Salvando...</span>
+                </>
+              ) : (
+                <>
+                  <BookmarkCheck className="w-4 h-4" />
+                  <span>Salvar Deck</span>
+                </>
+              )}
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
