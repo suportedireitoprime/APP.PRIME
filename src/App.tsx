@@ -512,7 +512,13 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
   }
 
   if (requireOnboarding && !initialCheckDone) {
-    return null; // Aguarda a checagem terminar antes de renderizar a rota ou navegar. Evita o travamento do AnimatePresence.
+    // Exibe o fallback elegante com spinner ao invés de tela preta vazia,
+    // mantendo a ilusão de que o app já carregou enquanto valida no DB
+    return (
+      <div className="fixed inset-0 z-[9999] bg-background">
+        <LazyFallback />
+      </div>
+    );
   }
 
   // Redireciona para /onboarding se a triagem está pendente, MAS apenas quando

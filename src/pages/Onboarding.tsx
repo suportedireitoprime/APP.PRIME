@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, startTransition } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -58,7 +58,9 @@ const Onboarding = () => {
   const concluirNotificacoes = (granted: boolean) => {
     setPedirNotificacoes(false);
     toast.success(granted ? 'Notificações ativadas. Bora estudar!' : 'Bora estudar!');
-    navigate('/', { replace: true });
+    startTransition(() => {
+      navigate('/', { replace: true });
+    });
   };
 
   return (

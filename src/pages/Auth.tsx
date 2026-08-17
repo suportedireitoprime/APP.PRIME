@@ -78,9 +78,14 @@ const AuthDrawer = ({ mode, setMode, onClose }: { mode: 'login' | 'signup' | 'fo
   }, [mode]);
 
   useEffect(() => {
-    if (mode !== 'signup') return;
-    import('@/components/onboarding/CadastroOnboardingOverlay').catch(() => {});
-    import('@/components/onboarding/CadastroFeaturesReel').catch(() => {});
+    // Pré-carrega o Onboarding proativamente para navegação instantânea.
+    // Isso evita o Skeleton loader visível para redes lentas pós-registro.
+    if (mode === 'signup' || mode === 'login') {
+      import('@/pages/Onboarding').catch(() => {});
+      import('@/components/onboarding/CadastroOnboardingOverlay').catch(() => {});
+      import('@/components/onboarding/CadastroFeaturesReel').catch(() => {});
+      import('@/components/onboarding/NotificacoesPermissaoStep').catch(() => {});
+    }
   }, [mode]);
 
   const handleGoogle = async () => {
