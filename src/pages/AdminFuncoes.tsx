@@ -5,7 +5,7 @@ import {
   Gamepad2, Brain, BookA, MessageCircle, BellRing, Mic, Lightbulb, Building2,
   Rss, Palette, Users, GitBranch, Github, ImageIcon, KeyRound, Bug, Newspaper,
   Quote, Monitor, Send, RefreshCcw, Lock, Wrench, FileText, Crown, Search, Target, MapPin, PlayCircle,
-  ListChecks, Headphones, ShieldAlert, Layers, TrendingDown, Star,
+  ListChecks, Headphones, ShieldAlert, Layers, TrendingDown, Star, Scale, Store, FileSignature, GraduationCap, Sparkles
 } from 'lucide-react';
 
 import { toast } from 'sonner';
@@ -152,6 +152,7 @@ const CATEGORIES: Category[] = [
       { id: 'apresentacao-editar', label: 'Apresentação Editar', icon: Mic, desc: 'Resumo ou lei + PDF → OCR e narração de cada slide', route: '/admin-apresentacao-editar' },
       { id: 'resumo-livro-audio-editar', label: 'Resumo Livro Áudio Editar', icon: Headphones, desc: 'Adicionar áudio para os resumos dos livros', route: '/admin/resumo-livro-audio' },
       { id: 'narracao', label: 'Narração Editar', icon: Mic, desc: 'TTS com Gemini', route: '/narracao' },
+      { id: 'pilulas-juridicas', label: 'Pílulas Jurídicas', icon: Sparkles, desc: 'Dicas rápidas e conceitos essenciais do Direito', route: '/pilulas' },
       { id: 'explicacao-lei', label: 'Explicações Editar (IA)', icon: Lightbulb, desc: 'Batch de explicações', route: '/explicacao-lei' },
       { id: 'boletins', label: 'Boletins Editar', icon: Rss, desc: 'Newsletters e boletins', route: '/newsletter' },
       // Biblioteca
@@ -238,7 +239,7 @@ const CATEGORIES: Category[] = [
       { id: 'admin-monitor', label: 'Monitoramento', icon: Activity, desc: 'Status e saúde do sistema', route: '/admin-monitor' },
       { id: 'monitor-usuarios', label: 'Usuários Online', icon: Users, desc: 'Monitoramento em tempo real', route: '/admin-monitor-usuarios' },
       { id: 'monitor-apis', label: 'APIs', icon: Activity, desc: 'Funções que usam IA (custo, manual/auto)', route: '/admin-monitor-apis' },
-      { id: 'admin-avaliacoes-loja', label: 'Avaliações da Loja', icon: Star, desc: 'Reviews e notas recebidas na Google Play Store', route: '/admin-avaliacoes-loja' },
+      { id: 'admin-avaliacoes-loja', label: 'Avaliar APP', icon: Star, desc: 'Reviews e notas recebidas na Google Play Store', route: '/admin-avaliacao-loja' },
     ],
   },
   {

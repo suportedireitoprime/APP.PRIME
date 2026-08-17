@@ -284,11 +284,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
                   </GroupCard>
                   {g.title === 'Conta' && isAdmin && (
                     <GroupCard title="Admin">
-                      <MenuRow
-                        icon={Star}
-                        label="Avaliar APP"
-                        onClick={() => { navigate('/admin-avaliacao-loja'); onClose(); }}
-                      />
+
                       <MenuRow
                         icon={Lock}
                         label="Funções Admin"
