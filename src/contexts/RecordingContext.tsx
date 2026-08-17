@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useRef, useState, useCallback, Re
 import { Capacitor } from '@capacitor/core';
 import { voiceRecorder } from '@/lib/nativeVoiceRecorder';
 import { supabase } from '@/integrations/supabase/client';
+import { haptic } from '@/lib/nativeHaptics';
 import { toast } from 'sonner';
 
 type Status = 'idle' | 'recording' | 'paused' | 'saving';
@@ -93,6 +94,7 @@ export function RecordingProvider({ children }: { children: ReactNode }) {
     setStatus('recording');
     startTicker();
     scheduleOngoingNotification(t);
+    haptic.medium();
   }, [title, isNative]);
 
   const pause = useCallback(async () => {
@@ -105,6 +107,7 @@ export function RecordingProvider({ children }: { children: ReactNode }) {
       mediaRec.current?.pause();
     }
     setStatus('paused');
+    haptic.selection();
   }, [status, isNative]);
 
   const resume = useCallback(async () => {
@@ -116,6 +119,7 @@ export function RecordingProvider({ children }: { children: ReactNode }) {
     }
     startTicker();
     setStatus('recording');
+    haptic.selection();
   }, [status, isNative]);
 
   const stop = useCallback(async (): Promise<{ id: string } | null> => {
@@ -169,6 +173,7 @@ export function RecordingProvider({ children }: { children: ReactNode }) {
 
       toast.success('Aula salva!');
       setStatus('idle'); setElapsedMs(0); accumulated.current = 0; setTitle('');
+      haptic.success();
       return { id: row!.id as string };
     } catch (e: any) {
       toast.error('Erro ao parar: ' + (e?.message ?? 'desconhecido'));
