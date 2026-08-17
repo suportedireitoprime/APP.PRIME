@@ -296,23 +296,16 @@ Retorne um JSON estrito neste formato, sugerindo uma quantidade adequada de flas
         
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-border/50">
-          <div className="flex items-center gap-2">
-            <button onClick={() => { haptic.selection(); onOpenChange(false); }} className="p-1.5 hover:bg-muted rounded-full transition-colors">
-              <X className="w-5 h-5 text-muted-foreground" />
-            </button>
-            <h2 className="font-bold text-foreground">
-              {step === 1 && 'Escolha a Fonte'}
-              {step === 2 && 'Envie o Material'}
-              {step === 3 && 'Análise da IA'}
-              {step === 4 && 'Plano de Estudo'}
-              {step === 5 && 'Salvar Deck'}
-            </h2>
-          </div>
-          {step > 1 && step < 5 && (
-            <div className="text-xs font-bold text-muted-foreground bg-muted/50 px-2.5 py-1 rounded-full">
-              Passo {step}/5
-            </div>
-          )}
+          <h2 className="font-black text-foreground uppercase tracking-widest text-sm">
+            {step === 1 && 'Escolha a Fonte'}
+            {step === 2 && 'Envie o Material'}
+            {step === 3 && 'Análise da IA'}
+            {step === 4 && 'Plano de Estudo'}
+            {step === 5 && 'Salvar Deck'}
+          </h2>
+          <button onClick={() => { haptic.selection(); onOpenChange(false); }} className="p-2 bg-muted hover:bg-muted/80 rounded-full transition-colors active:scale-95">
+            <X className="w-4 h-4 text-foreground" />
+          </button>
         </div>
 
         <div className="p-6 overflow-y-auto max-h-[80vh] scrollbar-hide">
@@ -406,10 +399,10 @@ Retorne um JSON estrito neste formato, sugerindo uma quantidade adequada de flas
                           {loadingPreview ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Procurar Vídeo'}
                         </Button>
                         
-                        <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4 flex gap-3">
-                          <Sparkles className="w-5 h-5 text-amber-500 shrink-0" />
-                          <p className="text-xs text-amber-500/90 font-medium leading-relaxed">
-                            A Inteligência Artificial extrairá a transcrição deste vídeo automaticamente para gerar seus flashcards.
+                        <div className="bg-muted/50 border border-border/50 rounded-2xl p-4 flex gap-3 items-start mt-4">
+                          <Scale className="w-5 h-5 text-[#36AF85] shrink-0 mt-0.5" />
+                          <p className="text-xs text-foreground/80 font-medium leading-relaxed">
+                            A nossa IA Jurídica especializada analisará a transcrição completa deste vídeo e criará os flashcards ideais para consolidar o seu aprendizado de forma automática.
                           </p>
                         </div>
                       </>
@@ -610,6 +603,15 @@ Retorne um JSON estrito neste formato, sugerindo uma quantidade adequada de flas
             )}
           </AnimatePresence>
         </div>
+
+        {/* Footer (Step Counter) */}
+        {step > 1 && step < 5 && (
+          <div className="p-4 border-t border-border/50 flex justify-center bg-background/50">
+            <div className="text-xs font-bold text-muted-foreground tracking-widest uppercase">
+              Passo {step} de 5
+            </div>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );
