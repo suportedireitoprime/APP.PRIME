@@ -55,19 +55,39 @@ export default function WizardFlashcardsIA({ open, onOpenChange }: WizardFlashca
     setStep(2);
   };
 
-  const handleSearchYoutube = () => {
+  const handleSearchYoutube = async () => {
     if (!youtubeLink.trim()) return;
     setLoadingPreview(true);
     haptic.selection();
-    setTimeout(() => {
+
+    try {
+      // Chama o microsserviço Python local com yt-dlp
+      const response = await fetch(`http://localhost:8000/info?url=${encodeURIComponent(youtubeLink)}`);
+      
+      if (!response.ok) {
+        throw new Error('Falha ao buscar vídeo. O servidor Python está rodando?');
+      }
+
+      const data = await response.json();
+
       setYoutubePreview({
-        title: 'Direito Penal do Zero: Aplicação da Lei Penal - Parte 01 (Aula Completa)',
-        duration: '29:26',
+        title: data.title || 'Vídeo Desconhecido',
+        duration: data.duration || '00:00',
+        image: data.image || 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80&w=600'
+      });
+      haptic.success();
+    } catch (error) {
+      console.error("Erro na busca do YouTube:", error);
+      // Fallback em caso de erro no servidor
+      setYoutubePreview({
+        title: 'Vídeo Encontrado (Sem Conexão com yt-dlp)',
+        duration: 'YouTube',
         image: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80&w=600'
       });
-      setLoadingPreview(false);
       haptic.success();
-    }, 1500);
+    } finally {
+      setLoadingPreview(false);
+    }
   };
 
   const handleSimulateAI = () => {
