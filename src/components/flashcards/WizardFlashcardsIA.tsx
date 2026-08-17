@@ -70,7 +70,7 @@ export default function WizardFlashcardsIA({ open, onOpenChange }: WizardFlashca
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] p-0 overflow-hidden bg-background border-border/80">
+      <DialogContent className="sm:max-w-[425px] p-0 overflow-hidden bg-background border-border/80 [&>button:last-child]:hidden">
         <DialogTitle className="sr-only">Criar Flashcards com IA</DialogTitle>
         
         {/* Header */}
@@ -89,7 +89,9 @@ export default function WizardFlashcardsIA({ open, onOpenChange }: WizardFlashca
               {step === 5 && 'Salvar Deck'}
             </h2>
           </div>
-          {/* Default Dialog close button will be used instead of manual one */}
+          <button onClick={() => onOpenChange(false)} className="w-8 h-8 flex items-center justify-center bg-zinc-800/80 hover:bg-zinc-700 rounded-full transition-colors">
+            <X className="w-4 h-4 text-zinc-400" />
+          </button>
         </div>
 
         <div className="p-5 min-h-[350px] relative">
@@ -103,10 +105,10 @@ export default function WizardFlashcardsIA({ open, onOpenChange }: WizardFlashca
                 exit={{ opacity: 0, x: 20 }}
                 className="grid grid-cols-2 gap-3"
               >
-                <SourceCard icon={<FileText strokeWidth={1.2} className="w-7 h-7" />} title="Documento PDF" desc="Apostilas ou Leis" onClick={() => handleSourceSelect('pdf')} color="text-zinc-200" />
-                <SourceCard icon={<Youtube strokeWidth={1.2} className="w-7 h-7" />} title="Vídeo YouTube" desc="Aulas e revisões" onClick={() => handleSourceSelect('youtube')} color="text-red-500" />
-                <SourceCard icon={<Mic strokeWidth={1.2} className="w-7 h-7" />} title="Áudio" desc="Máx 1 hora" onClick={() => handleSourceSelect('audio')} color="text-purple-400" />
-                <SourceCard icon={<ImageIcon strokeWidth={1.2} className="w-7 h-7" />} title="Imagens" desc="Fotos de resumos" onClick={() => handleSourceSelect('image')} color="text-emerald-400" />
+                <SourceCard icon={<FileText strokeWidth={1} className="w-7 h-7 text-blue-500" />} title="Documento PDF" desc="Máx 50 páginas" onClick={() => handleSourceSelect('pdf')} />
+                <SourceCard icon={<Youtube strokeWidth={1} className="w-7 h-7 text-red-500" />} title="Vídeo YouTube" desc="Aulas e revisões" onClick={() => handleSourceSelect('youtube')} />
+                <SourceCard icon={<Mic strokeWidth={1} className="w-7 h-7 text-purple-500" />} title="Áudio" desc="Máx 1 hora" onClick={() => handleSourceSelect('audio')} />
+                <SourceCard icon={<ImageIcon strokeWidth={1} className="w-7 h-7 text-emerald-500" />} title="Imagens" desc="Fotos de resumos" onClick={() => handleSourceSelect('image')} />
               </motion.div>
             )}
 
@@ -257,13 +259,13 @@ export default function WizardFlashcardsIA({ open, onOpenChange }: WizardFlashca
   );
 }
 
-function SourceCard({ icon, title, desc, onClick, color }: { icon: React.ReactNode, title: string, desc: string, onClick: () => void, color: string }) {
+function SourceCard({ icon, title, desc, onClick }: { icon: React.ReactNode, title: string, desc: string, onClick: () => void }) {
   return (
     <div 
       onClick={() => { haptic.selection(); onClick(); }}
       className="bg-card border border-border/80 rounded-2xl p-4 flex flex-col items-start gap-3 hover:border-[#36AF85]/50 transition-all cursor-pointer active:scale-95"
     >
-      <div className={`mb-1 ${color}`}>
+      <div className="mb-1">
         {icon}
       </div>
       <div>
