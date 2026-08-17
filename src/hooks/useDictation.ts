@@ -17,22 +17,9 @@ import { toast } from 'sonner';
 export type DictationState = 'idle' | 'recording' | 'paused';
 
 const isNative = () => Capacitor.isNativePlatform();
-const getSR = () => import('@capacitor-community/speech-recognition').then(m => m.SpeechRecognition);
 
 async function ensurePermission(): Promise<boolean> {
-  if (!isNative()) {
-    return 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
-  }
-  try {
-    const avail = await (await getSR()).available();
-    if (!avail.available) return false;
-    const perm = await (await getSR()).checkPermissions();
-    if (perm.speechRecognition === 'granted') return true;
-    const req = await (await getSR()).requestPermissions();
-    return req.speechRecognition === 'granted';
-  } catch {
-    return false;
-  }
+  return 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
 }
 
 export function useDictation(
@@ -113,60 +100,6 @@ export function useDictation(
     setPartial('');
   }, []);
 
-  // ---------- Native ----------
-  const attachNativeListeners = useCallback(async () => {
-    if (nativeAttachedRef.current) return;
-    nativeAttachedRef.current = true;
-    await (await getSR()).addListener('partialResults', (data: any) => {
-      const text = (data?.matches?.[0] ?? '').toString();
-      if (!text) return;
-      nativeLastPartialRef.current = text;
-      setPartial(text);
-    });
-    await (await getSR()).addListener('listeningState', (data: any) => {
-      if (data?.status === 'stopped') {
-        const text = nativeLastPartialRef.current;
-        nativeLastPartialRef.current = '';
-        setPartial('');
-        if (text.trim()) onFinalRef.current(text.trim());
-        // Reinicia se ainda gravando (plugin encerrou por silêncio).
-        if (stateRef.current === 'recording') {
-          setTimeout(async () => {
-            if (stateRef.current === 'recording') {
-              (await getSR()).start({
-                language: lang,
-                partialResults: true,
-                popup: false,
-                maxResults: 1,
-              }).catch(() => { /* ignore */ });
-            }
-          }, 100);
-        }
-      }
-    });
-  }, [lang]);
-
-  const startNative = useCallback(async () => {
-    await attachNativeListeners();
-    await (await getSR()).start({
-      language: lang,
-      partialResults: true,
-      popup: false,
-      maxResults: 1,
-    });
-  }, [attachNativeListeners, lang]);
-
-  const stopNative = useCallback(async () => {
-    getSR().then(sr => sr.stop()).catch(() => { /* ignore */ });
-    getSR().then(sr => sr.removeAllListeners()).catch(() => { /* ignore */ });
-    nativeAttachedRef.current = false;
-    // Flush último partial.
-    const text = nativeLastPartialRef.current;
-    nativeLastPartialRef.current = '';
-    setPartial('');
-    if (text.trim()) onFinalRef.current(text.trim());
-  }, []);
-
   // ---------- API ----------
   const start = useCallback(async () => {
     if (stateRef.current !== 'idle') return;
@@ -176,43 +109,34 @@ export function useDictation(
       return;
     }
     setS('recording');
-    if (isNative()) await startNative();
-    else startWeb();
-  }, [startNative, startWeb]);
+    startWeb();
+  }, [startWeb]);
 
   const pause = useCallback(async () => {
     if (stateRef.current !== 'recording') return;
     setS('paused');
-    if (isNative()) await stopNative();
-    else stopWeb();
-  }, [stopNative, stopWeb]);
+    stopWeb();
+  }, [stopWeb]);
 
   const resume = useCallback(async () => {
     if (stateRef.current !== 'paused') return;
     setS('recording');
-    if (isNative()) await startNative();
-    else startWeb();
-  }, [startNative, startWeb]);
+    startWeb();
+  }, [startWeb]);
 
   const stop = useCallback(async () => {
     if (stateRef.current === 'idle') return;
     setS('idle');
-    if (isNative()) await stopNative();
-    else stopWeb();
-  }, [stopNative, stopWeb]);
+    stopWeb();
+  }, [stopWeb]);
 
   useEffect(() => {
     return () => {
       // Cleanup ao desmontar.
       stateRef.current = 'idle';
-      if (isNative()) {
-        getSR().then(sr => sr.stop()).catch(() => {});
-        getSR().then(sr => sr.removeAllListeners()).catch(() => {});
-      } else {
-        const rec = webRecRef.current;
-        if (rec) {
-          try { rec.onend = null; rec.stop(); } catch { /* ignore */ }
-        }
+      const rec = webRecRef.current;
+      if (rec) {
+        try { rec.onend = null; rec.stop(); } catch { /* ignore */ }
       }
     };
   }, []);

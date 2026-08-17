@@ -17,18 +17,9 @@ function isSendIntentPayload(v: unknown): v is { title?: string; description?: s
 }
 
 async function readCurrentIntent(): Promise<{ title?: string; description?: string; url?: string } | null> {
-  try {
-    // `send-intent` está instalado: import dinâmico normal (code-split).
-    const mod: any = await import('send-intent').catch(() => null);
-    if (!mod) return null;
-    const SendIntent = mod?.SendIntent ?? mod?.default;
-    if (!SendIntent?.checkSendIntentReceived) return null;
-    const result = await SendIntent.checkSendIntentReceived();
-    if (!isSendIntentPayload(result)) return null;
-    return result;
-  } catch {
-    return null;
-  }
+  // Plugin `send-intent` (v7) foi removido por incompatibilidade com Capacitor 8.
+  // Retorna nulo até que uma alternativa seja implementada.
+  return null;
 }
 
 function buildTarget(payload: { title?: string; description?: string; url?: string }): string {

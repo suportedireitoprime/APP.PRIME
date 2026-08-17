@@ -1,94 +1,16 @@
-import { Capacitor } from '@capacitor/core';
-
-
-const isNative = () => Capacitor.isNativePlatform();
-const getSR = () => import('@capacitor-community/speech-recognition').then(m => m.SpeechRecognition);
-
 export async function ensureSpeechPermission(): Promise<boolean> {
-  if (!isNative()) return 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
-  try {
-    const avail = await (await getSR()).available();
-    if (!avail.available) return false;
-    const perm = await (await getSR()).checkPermissions();
-    if (perm.speechRecognition === 'granted') return true;
-    const req = await (await getSR()).requestPermissions();
-    return req.speechRecognition === 'granted';
-  } catch {
-    return false;
-  }
+  return 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
 }
 
 export type SpeechListener = (partial: string, isFinal: boolean) => void;
 
 let webRec: any = null;
-// Guard nativo: o plugin não emite `isFinal` em partialResults.
-// Detectamos fim via `listeningState=stopped` (auto-stop por silêncio no
-// Android) e também via silêncio prolongado sem novos partials.
-let nativeSilenceTimer: any = null;
-let nativeLastText = '';
-let nativeOnResult: SpeechListener | null = null;
-
-async function nativeCleanup() {
-  try { await (await getSR()).removeAllListeners(); } catch { /* ignore */ }
-  if (nativeSilenceTimer) { clearTimeout(nativeSilenceTimer); nativeSilenceTimer = null; }
-  nativeOnResult = null;
-  nativeLastText = '';
-}
-
-function armNativeSilenceTimer(ms = 1500) {
-  if (nativeSilenceTimer) clearTimeout(nativeSilenceTimer);
-  nativeSilenceTimer = setTimeout(async () => {
-    // Silêncio → considera final. Emite e finaliza plugin.
-    const text = nativeLastText;
-    const cb = nativeOnResult;
-    // Para o plugin (dispara listeningState=stopped, que também limpa).
-    (await getSR()).stop().catch(() => { /* ignore */ });
-    if (cb && text) cb(text, true);
-  }, ms);
-}
 
 export async function startListening(onResult: SpeechListener, lang = 'pt-BR'): Promise<void> {
-  if (isNative()) {
-    const ok = await ensureSpeechPermission();
-    if (!ok) throw new Error('Permissão de microfone negada');
+  const ok = await ensureSpeechPermission();
+  if (!ok) throw new Error('Permissão de microfone negada ou reconhecimento indisponível neste navegador');
 
-    // Garante estado limpo antes de reiniciar.
-    await nativeCleanup();
-    nativeOnResult = onResult;
-    nativeLastText = '';
-
-    await (await getSR()).addListener('partialResults', (data: any) => {
-      const text = (data?.matches?.[0] ?? '').toString();
-      if (!text) return;
-      nativeLastText = text;
-      onResult(text, false);
-      // Reinicia janela de silêncio a cada novo trecho reconhecido.
-      armNativeSilenceTimer(1500);
-    });
-
-    await (await getSR()).addListener('listeningState', async (data: any) => {
-      if (data?.status === 'stopped') {
-        const text = nativeLastText;
-        const cb = nativeOnResult;
-        await nativeCleanup();
-        if (cb && text) cb(text, true);
-      }
-    });
-
-    await (await getSR()).start({
-      language: lang,
-      partialResults: true,
-      popup: false,
-      maxResults: 1,
-    });
-    // Timeout de segurança: se nada for reconhecido em 8s, encerra.
-    armNativeSilenceTimer(8000);
-    return;
-  }
-
-  // Web fallback
   const Ctor: any = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-  if (!Ctor) throw new Error('Reconhecimento de voz indisponível neste navegador');
   webRec = new Ctor();
   webRec.lang = lang;
   webRec.continuous = false;
@@ -100,27 +22,24 @@ export async function startListening(onResult: SpeechListener, lang = 'pt-BR'): 
       text += e.results[i][0].transcript;
       if (e.results[i].isFinal) isFinal = true;
     }
-    onResult(text, isFinal);
+    onResult(text.trim(), isFinal);
   };
-  webRec.onerror = () => {};
+  webRec.onerror = (e: any) => {
+    if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
+      throw new Error('Permissão de microfone negada');
+    }
+  };
+  webRec.onend = () => {
+    webRec = null;
+  };
   webRec.start();
 }
 
 /** Para o reconhecimento. `cancel=true` descarta o texto (não chama onFinal). */
 export async function stopListening(cancel = false): Promise<void> {
-  if (isNative()) {
-    if (cancel) {
-      // Cancela sem emitir final: zera callback antes de parar.
-      nativeOnResult = null;
-      nativeLastText = '';
-    }
-    try { await (await getSR()).stop(); } catch { /* ignore */ }
-    await nativeCleanup();
-    return;
+  if (webRec) {
+    if (cancel) webRec.onresult = null;
+    try { webRec.onend = null; webRec.stop(); } catch { /* ignore */ }
+    webRec = null;
   }
-  try {
-    if (cancel && webRec) webRec.onresult = null;
-    webRec?.stop();
-  } catch { /* ignore */ }
-  webRec = null;
 }

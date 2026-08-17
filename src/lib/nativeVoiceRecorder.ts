@@ -1,77 +1,93 @@
-import { Capacitor } from '@capacitor/core';
-
 /**
- * Wrapper de gravação de áudio nativa (capacitor-voice-recorder).
- * Retorna um base64 (mime audio/aac no Android, audio/m4a no iOS).
- *
- * Uso típico:
- *   await voiceRecorder.requestPermission();
- *   await voiceRecorder.start();
- *   const { base64, mimeType, duration } = await voiceRecorder.stop();
+ * Wrapper de gravação de áudio (substituindo capacitor-voice-recorder temporariamente)
+ * Utiliza a API nativa da Web (MediaRecorder) compatível tanto com Navegador quanto WebView.
  */
-async function loadModule() {
-  const mod: any = await import('capacitor-voice-recorder');
-  return mod.VoiceRecorder as any;
-}
+let mediaRecorder: MediaRecorder | null = null;
+let audioChunks: Blob[] = [];
+
+const convertBlobToBase64 = (blob: Blob): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const dataUrl = reader.result as string;
+      const b64 = dataUrl.split(',')[1];
+      resolve(b64);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+};
 
 export const voiceRecorder = {
-  isAvailable: () => Capacitor.isNativePlatform(),
+  isAvailable: () => true, // Sempre disponível usando Web API
 
   async hasPermission(): Promise<boolean> {
-    if (!Capacitor.isNativePlatform()) return false;
     try {
-      const VR = await loadModule();
-      const res = await VR.hasAudioRecordingPermission();
-      return !!res?.value;
-    } catch { return false; }
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream.getTracks().forEach(t => t.stop());
+      return true;
+    } catch {
+      return false;
+    }
   },
 
   async requestPermission(): Promise<boolean> {
-    if (!Capacitor.isNativePlatform()) return false;
-    try {
-      const VR = await loadModule();
-      const res = await VR.requestAudioRecordingPermission();
-      return !!res?.value;
-    } catch { return false; }
+    return this.hasPermission();
   },
 
   async start(): Promise<{ ok: boolean; reason?: string }> {
-    if (!Capacitor.isNativePlatform()) return { ok: false, reason: 'not_native' };
     try {
-      const granted = (await this.hasPermission()) || (await this.requestPermission());
-      if (!granted) return { ok: false, reason: 'permission_denied' };
-      const VR = await loadModule();
-      await VR.startRecording();
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder = new MediaRecorder(stream);
+      audioChunks = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) audioChunks.push(event.data);
+      };
+
+      mediaRecorder.start();
       return { ok: true };
     } catch (e: any) {
-      return { ok: false, reason: e?.message ?? 'unknown' };
+      return { ok: false, reason: e?.message ?? 'permission_denied' };
     }
   },
 
   async stop(): Promise<{ ok: boolean; base64?: string; mimeType?: string; duration?: number; reason?: string }> {
-    if (!Capacitor.isNativePlatform()) return { ok: false, reason: 'not_native' };
-    try {
-      const VR = await loadModule();
-      const res = await VR.stopRecording();
-      const v = res?.value ?? res;
-      return {
-        ok: true,
-        base64: v?.recordDataBase64,
-        mimeType: v?.mimeType,
-        duration: v?.msDuration,
+    return new Promise((resolve) => {
+      if (!mediaRecorder) {
+        resolve({ ok: false, reason: 'not_recording' });
+        return;
+      }
+
+      mediaRecorder.onstop = async () => {
+        const mimeType = mediaRecorder?.mimeType || 'audio/webm';
+        const blob = new Blob(audioChunks, { type: mimeType });
+        
+        // Desligar o microfone
+        mediaRecorder?.stream.getTracks().forEach(t => t.stop());
+        mediaRecorder = null;
+        
+        try {
+          const base64 = await convertBlobToBase64(blob);
+          resolve({ ok: true, base64, mimeType, duration: 1000 });
+        } catch (e: any) {
+          resolve({ ok: false, reason: e?.message ?? 'encode_error' });
+        }
       };
-    } catch (e: any) {
-      return { ok: false, reason: e?.message ?? 'unknown' };
-    }
+
+      mediaRecorder.stop();
+    });
   },
 
   async pause() {
-    if (!Capacitor.isNativePlatform()) return;
-    try { const VR = await loadModule(); await VR.pauseRecording(); } catch {}
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+      mediaRecorder.pause();
+    }
   },
 
   async resume() {
-    if (!Capacitor.isNativePlatform()) return;
-    try { const VR = await loadModule(); await VR.resumeRecording(); } catch {}
+    if (mediaRecorder && mediaRecorder.state === 'paused') {
+      mediaRecorder.resume();
+    }
   },
 };

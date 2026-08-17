@@ -6,12 +6,16 @@ configurarPdfWorker(pdfjsLib);
 
 import {
   Presentation, History, Upload, Loader2, Play, Check, Mic, ChevronRight, Trash2,
-  BookOpen, Scale, BookMarked, Eye, EyeOff, Search, Sparkles, Filter,
+  BookOpen, Scale, BookMarked, Eye, EyeOff, Search, Sparkles, Filter, Terminal
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { supabase } from '@/integrations/supabase/client';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
+  AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import {
   iniciarApresJob, subscribeApresJob, pararApresJob, limparApresJob,
   etaSegundos, formatarEta, type ApresJobEstado,
@@ -86,6 +90,14 @@ const AdminApresentacaoEditar = () => {
   const [slides, setSlides] = useState<SlidePreparado[]>([]);
   const [lendoPdf, setLendoPdf] = useState<{ feitos: number; total: number } | null>(null);
   const [ocrAtivo, setOcrAtivo] = useState(false);
+
+  const [pdfLogs, setPdfLogs] = useState<{ time: Date; text: string }[]>([]);
+  const addPdfLog = (msg: string) => {
+    setPdfLogs((prev) => {
+      const nov = [{ time: new Date(), text: msg }, ...prev];
+      return nov.slice(0, 100);
+    });
+  };
 
   useEffect(() => subscribeApresJob(setJob), []);
 
@@ -277,19 +289,22 @@ const AdminApresentacaoEditar = () => {
     return null;
   }, [modo, resumoSel, area, tema, lei, artigoSel, livroSel]);
 
-  const limparPdf = () => { setSlides([]); setNomePdf(''); setLendoPdf(null); };
+  const limparPdf = () => { setSlides([]); setNomePdf(''); setLendoPdf(null); setPdfLogs([]); setOcrAtivo(false); };
 
   // Etapa: ler o PDF (imagens dos slides) + OCR Mistral por página
   const lerPdf = async (file: File) => {
     limparPdf();
     setNomePdf(file.name);
+    addPdfLog(`Iniciando leitura do arquivo: ${file.name}`);
     try {
       configurarPdfWorker(pdfjsLib);
       const buf = new Uint8Array(await file.arrayBuffer());
+      addPdfLog(`Tamanho do arquivo: ${Math.round(buf.length / 1024)} KB. Extraindo páginas...`);
       const pdf = await pdfjsLib.getDocument(getPdfDocumentParams(buf)).promise;
       const total = pdf.numPages;
       setLendoPdf({ feitos: 0, total });
       const preparados: SlidePreparado[] = [];
+      addPdfLog(`PDF carregado. Encontradas ${total} páginas para processar.`);
       for (let i = 1; i <= total; i++) {
         const page = await pdf.getPage(i);
         const viewport = page.getViewport({ scale: 1.6 });
@@ -303,10 +318,12 @@ const AdminApresentacaoEditar = () => {
         const texto = (content.items as any[]).map((it) => it.str).join(' ').replace(/\s+/g, ' ').trim();
         preparados.push({ b64: dataUrl.split(',')[1], texto, thumb: dataUrl });
         setLendoPdf({ feitos: i, total });
+        addPdfLog(`Processada página ${i}/${total}.`);
       }
 
       // OCR (Mistral) — essencial quando o PDF é só imagem
       setOcrAtivo(true);
+      addPdfLog(`Iniciando OCR Inteligente (Mistral) no PDF inteiro...`);
       try {
         const bytes = new Uint8Array(await file.arrayBuffer());
         let bin = '';
@@ -318,9 +335,12 @@ const AdminApresentacaoEditar = () => {
         paginas.forEach((t, i) => {
           if (preparados[i] && t && t.length > (preparados[i].texto?.length ?? 0)) preparados[i].texto = t;
         });
+        addPdfLog(`OCR concluído com sucesso em ${paginas.length} página(s).`);
         toast.success(`OCR concluído em ${paginas.length} página(s).`);
       } catch (e) {
-        toast.warning(`OCR indisponível (${e instanceof Error ? e.message : 'erro'}) — usando o texto do PDF.`);
+        const msg = e instanceof Error ? e.message : 'erro';
+        addPdfLog(`Aviso: OCR indisponível (${msg}). Usando o texto padrão extraído do PDF.`);
+        toast.warning(`OCR indisponível (${msg}) — usando o texto do PDF.`);
       } finally {
         setOcrAtivo(false);
       }
@@ -412,7 +432,7 @@ const AdminApresentacaoEditar = () => {
         onBack={handleBack}
       />
 
-      {(job || lendoPdf || ocrAtivo) && (
+      {(job?.ativo || lendoPdf || ocrAtivo) && (
         <div className="sticky top-0 z-30 bg-card/95 backdrop-blur border-b border-border p-3">
           <div className="max-w-4xl mx-auto">
             <div className="flex items-center justify-between text-xs font-body mb-2">
@@ -424,7 +444,6 @@ const AdminApresentacaoEditar = () => {
                     : `${job!.ultimaMensagem} ${job!.feitos}/${job!.total} · ${pct}%`}
               </span>
               {job?.ativo && <button onClick={pararApresJob} className="text-destructive font-semibold">Parar</button>}
-              {job && !job.ativo && <button onClick={limparApresJob} className="text-muted-foreground font-semibold">Fechar</button>}
             </div>
             <div className="h-2 rounded-full bg-muted overflow-hidden">
               <div className="h-full bg-primary transition-all" style={{ width: `${lendoPdf ? pctPdf : ocrAtivo ? 100 : pct}%` }} />
@@ -695,6 +714,37 @@ const AdminApresentacaoEditar = () => {
               ))}
             </div>
           )}
+          
+          {/* Logs PDF Terminal */}
+          {(lendoPdf || ocrAtivo || pdfLogs.length > 0) && !job?.ativo && (
+            <div className="mt-4 rounded-xl overflow-hidden bg-black/90 border border-border shadow-inner">
+              <div className="flex items-center justify-between px-3 py-2 bg-zinc-900 border-b border-border">
+                <div className="flex items-center gap-2">
+                  <Terminal className="w-4 h-4 text-primary" />
+                  <span className="text-xs font-mono font-bold text-zinc-300">Análise do PDF</span>
+                </div>
+                {slides.length > 0 && !lendoPdf && !ocrAtivo && (
+                  <button onClick={() => setPdfLogs([])} className="text-[11px] font-bold text-muted-foreground hover:text-foreground">OCULTAR</button>
+                )}
+              </div>
+              <div className="p-3 font-mono text-[11px] h-32 overflow-y-auto space-y-1 text-zinc-400">
+                {pdfLogs.map((l, idx) => (
+                  <div key={idx} className="leading-tight">
+                    <span className="text-zinc-600">[{new Date(l.time).toLocaleTimeString('pt-BR', {hour12:false})}]</span>{' '}
+                    <span className={l.text.includes('Erro') || l.text.includes('Aviso') ? 'text-amber-400' : l.text.includes('sucesso') || l.text.includes('prontos') ? 'text-green-400' : 'text-zinc-300'}>
+                      {l.text}
+                    </span>
+                  </div>
+                ))}
+                {(lendoPdf || ocrAtivo) && (
+                  <div className="flex items-center gap-2 text-primary mt-2">
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                    <span>{ocrAtivo ? 'Aguardando inteligência artificial (Mistral)...' : 'Processando páginas localmente...'}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* 3 — voz e geração */}
@@ -719,10 +769,37 @@ const AdminApresentacaoEditar = () => {
             className="w-full rounded-xl bg-primary text-primary-foreground py-3.5 font-heading font-bold text-sm flex items-center justify-center gap-2 disabled:opacity-50 shadow-md hover:bg-primary/90 transition"
           >
             {job?.ativo ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4 fill-current" />}
-              </button>
+            {job?.ativo ? 'Gerando...' : 'Iniciar Geração de Narração'}
+          </button>
+          
+          {/* Logs Terminal View */}
+          {job && (
+            <div className="mt-4 rounded-xl overflow-hidden bg-black/90 border border-border shadow-inner">
+              <div className="flex items-center justify-between px-3 py-2 bg-zinc-900 border-b border-border">
+                <div className="flex items-center gap-2">
+                  <Terminal className="w-4 h-4 text-primary" />
+                  <span className="text-xs font-mono font-bold text-zinc-300">Terminal de Geração</span>
+                </div>
+                {!job.ativo && (
+                  <button onClick={limparApresJob} className="text-[11px] font-bold text-muted-foreground hover:text-foreground">FECHAR</button>
+                )}
+              </div>
+              <div className="p-3 font-mono text-[11px] h-48 overflow-y-auto space-y-1 text-zinc-400">
+                {job.logs?.map((l, idx) => (
+                  <div key={idx} className="leading-tight">
+                    <span className="text-zinc-600">[{new Date(l.time).toLocaleTimeString('pt-BR', {hour12:false})}]</span>{' '}
+                    <span className={l.text.includes('Erro') || l.text.includes('Falha') ? 'text-red-400' : l.text.includes('sucesso') || l.text.includes('pronta') ? 'text-green-400' : 'text-zinc-300'}>
+                      {l.text}
+                    </span>
+                  </div>
+                ))}
+                {!job.logs?.length && <div className="text-zinc-600 animate-pulse">Aguardando logs...</div>}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
+      </div>
+    )}
 
         {/* Lista de Apresentações Criadas */}
         <div className="rounded-2xl border border-border bg-card p-4 space-y-3 mt-8">
@@ -741,9 +818,28 @@ const AdminApresentacaoEditar = () => {
               <button onClick={() => alternarPublicacao(a)} className="p-2 text-muted-foreground hover:text-primary transition" aria-label="Publicar">
                 {a.publicada ? <Eye className="w-4 h-4 text-primary" /> : <EyeOff className="w-4 h-4" />}
               </button>
-              <button onClick={() => excluir(a)} className="p-2 text-destructive hover:opacity-80 transition" aria-label="Excluir">
-                <Trash2 className="w-4 h-4" />
-              </button>
+              
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <button className="p-2 text-destructive hover:opacity-80 transition" aria-label="Excluir">
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Excluir Apresentação?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Esta ação não pode ser desfeita. Isso excluirá permanentemente a apresentação "{a.titulo}" e removerá os dados do servidor.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => excluir(a)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                      Sim, excluir
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           ))}
         </div>

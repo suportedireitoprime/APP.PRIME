@@ -16,6 +16,7 @@ export type ApresJobEstado = {
   concluido: boolean;
   erro: string | null;
   ultimaMensagem: string;
+  logs: { time: Date; text: string }[];
 };
 
 type Listener = (e: ApresJobEstado | null) => void;
@@ -35,6 +36,13 @@ export const subscribeApresJob = (l: Listener) => {
 export const getApresJob = () => (estado ? { ...estado } : null);
 export const pararApresJob = () => { parar = true; };
 export const limparApresJob = () => { if (estado && !estado.ativo) { estado = null; emitir(); } };
+export const addApresLog = (msg: string) => { 
+  if (estado) { 
+    estado.logs.unshift({ time: new Date(), text: msg }); 
+    if (estado.logs.length > 100) estado.logs.pop();
+    emitir(); 
+  } 
+};
 
 /** Tempo estimado restante em segundos (média dos slides já feitos). */
 export const etaSegundos = (e: ApresJobEstado): number | null => {
@@ -51,8 +59,8 @@ export const formatarEta = (seg: number | null): string => {
   return `${m}min ${String(s).padStart(2, '0')}s`;
 };
 
-const call = async (payload: Record<string, unknown>, timeoutMs = 180000) => {
-  return new Promise((resolve, reject) => {
+const call = async (payload: Record<string, unknown>, timeoutMs = 180000): Promise<any> => {
+  return new Promise<any>((resolve, reject) => {
     const id = setTimeout(() => reject(new Error('Timeout de comunicação com o servidor')), timeoutMs);
     supabase.functions.invoke('narracao', {
       body: { ...payload, fn: 'blog_preview' },
@@ -118,6 +126,7 @@ export async function iniciarApresJob(params: {
     concluido: false,
     erro: null,
     ultimaMensagem: existente ? 'Retomando slides que faltaram…' : 'Criando apresentação…',
+    logs: [{ time: new Date(), text: existente ? 'Iniciando retomada de geração' : 'Iniciando geração da apresentação' }],
   };
   emitir();
 
@@ -141,6 +150,7 @@ export async function iniciarApresJob(params: {
 
     estado.apresentacaoId = apresentacao_id;
     estado.ultimaMensagem = 'Gerando narração dos slides…';
+    addApresLog('Apresentação registrada com sucesso no banco de dados.');
     emitir();
 
     const processar = async (i: number): Promise<boolean> => {
@@ -154,10 +164,13 @@ export async function iniciarApresJob(params: {
             imagem_b64: params.slides[i].b64,
             texto: params.slides[i].texto,
           });
+          addApresLog(`Slide ${i + 1}/${alvos.length}: Concluído (OCR + Voz + Roteiro).`);
           return true;
         } catch (e) {
+          const errMsg = e instanceof Error ? e.message : 'Erro desconhecido';
           if (estado) {
             estado.ultimaMensagem = `Slide ${i + 1}: tentativa ${tentativa} falhou, repetindo…`;
+            addApresLog(`Erro no slide ${i + 1} (Tentativa ${tentativa}/3): ${errMsg}`);
             emitir();
           }
           await dormir(1500 * tentativa);
@@ -168,10 +181,17 @@ export async function iniciarApresJob(params: {
 
     for (let n = 0; n < alvos.length; n++) {
       const i = alvos[n];
-      if (parar) break;
+      if (parar) {
+        addApresLog('Processo interrompido pelo usuário.');
+        break;
+      }
+      addApresLog(`Iniciando processamento do slide ${i + 1}/${alvos.length}...`);
       const ok = await processar(i);
       if (!estado) return;
-      if (!ok && !parar) estado.falhas.push(i);
+      if (!ok && !parar) {
+        estado.falhas.push(i);
+        addApresLog(`Falha definitiva ao processar o slide ${i + 1}.`);
+      }
       estado.feitos = n + 1;
       estado.ultimaMensagem = 'Gerando narração dos slides…';
       emitir();
@@ -182,6 +202,7 @@ export async function iniciarApresJob(params: {
       const pendentes = [...estado.falhas];
       estado.falhas = [];
       estado.ultimaMensagem = `Refazendo ${pendentes.length} slide(s) com erro…`;
+      addApresLog(`Iniciando nova tentativa para ${pendentes.length} slide(s) que falharam...`);
       emitir();
       for (const i of pendentes) {
         if (parar) break;
@@ -197,12 +218,16 @@ export async function iniciarApresJob(params: {
       // (sem isso ela ficava invisível na biblioteca).
       if (!parar) {
         try {
+          addApresLog('Finalizando a apresentação (processando metadados finais)...');
           await call({
             acao: 'apres-finalizar',
             apresentacao_id,
             total_slides: params.slides.length,
           });
-        } catch { /* ignora: admin pode publicar manualmente */ }
+          addApresLog('Apresentação finalizada com sucesso e publicada.');
+        } catch { 
+          addApresLog('Aviso: Não foi possível finalizar automaticamente. Pode ser necessário publicar manualmente.');
+        }
       }
       estado.ativo = false;
       estado.concluido = !parar;
@@ -211,6 +236,9 @@ export async function iniciarApresJob(params: {
         : estado.falhas.length
           ? `Concluído com ${estado.falhas.length} slide(s) sem narração`
           : 'Apresentação narrada pronta!';
+      addApresLog(estado.ultimaMensagem);
+      
+      // We don't automatically clear the job here. The UI will notice it's finished, toast it, and then clear it.
       emitir();
     }
   } catch (e) {
@@ -218,6 +246,7 @@ export async function iniciarApresJob(params: {
       estado.ativo = false;
       estado.erro = e instanceof Error ? e.message : 'Erro ao gerar a narração';
       estado.ultimaMensagem = estado.erro;
+      addApresLog(`Erro fatal: ${estado.erro}`);
       emitir();
     }
   } finally {

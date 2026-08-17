@@ -42,19 +42,9 @@ export async function garantirPermissoesMidia(
   }
 
   if (precisaMicrofone) {
-    try {
-      const { SpeechRecognition } = await import('@capacitor-community/speech-recognition');
-      const estado = await SpeechRecognition.checkPermissions();
-      if (estado.speechRecognition === 'granted') {
-        resultado.microfone = true;
-      } else {
-        const pedido = await SpeechRecognition.requestPermissions();
-        resultado.microfone = pedido.speechRecognition === 'granted';
-      }
-    } catch (e) {
-      console.warn('[permissoesMidia] microfone:', e);
-      resultado.microfone = true;
-    }
+    // Como o plugin de voz nativo foi removido por incompatibilidade,
+    // assumimos true para delegar o pedido à API getUserMedia nativa do navegador/WebView.
+    resultado.microfone = true;
   }
 
   if (!resultado.camera && !resultado.microfone) {
