@@ -229,7 +229,7 @@ Retorne um JSON estrito neste formato, sugerindo uma quantidade adequada de flas
         id: newDeckId,
         nome: deckName,
         descricao: resumo,
-        filtros: null,
+        filtros: { source: source },
         total_cards: qtdCards
       });
       
@@ -244,9 +244,8 @@ Retorne um JSON estrito neste formato, sugerindo uma quantidade adequada de flas
         description: `Seu deck "${deckName}" com ${qtdCards} cards foi criado com sucesso.`,
       });
       
-      // Redireciona para a tela de flashcards principal
-      navigate('/flashcards');
-    }, 2500);
+      // Modal fecha e Decks Personalizados recarrega automaticamente
+    }, 3500);
   };
 
   return (
@@ -477,48 +476,72 @@ Retorne um JSON estrito neste formato, sugerindo uma quantidade adequada de flas
                 exit={{ opacity: 0, x: 20 }}
                 className="space-y-6"
               >
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">Nome do Deck</label>
-                    <Textarea 
-                      placeholder="Ex: Resumo de Direito Penal..." 
-                      value={deckName}
-                      onChange={(e) => setDeckName(e.target.value)}
-                      className="bg-muted border-border/50 min-h-[80px] font-medium resize-none leading-tight" 
-                      disabled={loadingSave}
-                    />
-                    {tema && tema !== deckName && (
-                      <div className="mt-3 text-left">
-                        <span className="text-[10px] uppercase font-bold text-muted-foreground ml-1 mb-1 block">Sugestão da IA</span>
-                        <button 
-                          onClick={() => { haptic.selection(); setDeckName(tema); }}
-                          disabled={loadingSave}
-                          className="bg-[#36AF85]/10 border border-[#36AF85]/20 text-[#36AF85] text-xs font-semibold px-3 py-2 rounded-lg cursor-pointer hover:bg-[#36AF85]/20 transition-colors inline-block text-left disabled:opacity-50"
-                        >
-                          <Sparkles className="w-3 h-3 inline-block mr-1.5 -mt-0.5" />
-                          {tema}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="bg-[#36AF85]/10 border border-[#36AF85]/30 rounded-xl p-4 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
+                {loadingSave ? (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="flex flex-col items-center justify-center py-8 space-y-6"
+                  >
                     <motion.div
-                      animate={{ y: [0, -2, 0], rotate: [-3, 3, -3] }}
-                      transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+                      animate={{ y: [0, -10, 0], rotate: [0, 5, -5, 0] }}
+                      transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
+                      className="w-20 h-20 bg-[#36AF85]/10 rounded-full flex items-center justify-center border border-[#36AF85]/20 shadow-lg shadow-[#36AF85]/10"
                     >
-                      <Scale strokeWidth={1} className="w-5 h-5 text-[#36AF85]" />
+                      <Scale strokeWidth={1} className="w-10 h-10 text-[#36AF85]" />
                     </motion.div>
-                    <span className="font-bold text-sm text-[#36AF85]">Geração Automática</span>
-                  </div>
-                  <span className="text-xs font-bold bg-[#36AF85] text-white px-2 py-0.5 rounded-md">{qtdCards} Cards</span>
-                </div>
+                    <div className="text-center space-y-2">
+                      <h3 className="text-xl font-bold">Criando flashcards...</h3>
+                      <p className="text-sm text-muted-foreground text-center px-2 leading-relaxed">
+                        A Inteligência Artificial está transformando o conteúdo em perguntas e respostas inteligentes.
+                      </p>
+                    </div>
+                  </motion.div>
+                ) : (
+                  <>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">Nome do Deck</label>
+                        <Textarea 
+                          placeholder="Ex: Resumo de Direito Penal..." 
+                          value={deckName}
+                          onChange={(e) => setDeckName(e.target.value)}
+                          className="bg-muted border-border/50 min-h-[80px] font-medium resize-none leading-tight" 
+                          disabled={loadingSave}
+                        />
+                        {tema && tema !== deckName && (
+                          <div className="mt-3 text-left">
+                            <span className="text-[10px] uppercase font-bold text-muted-foreground ml-1 mb-1 block">Sugestão da IA</span>
+                            <button 
+                              onClick={() => { haptic.selection(); setDeckName(tema); }}
+                              disabled={loadingSave}
+                              className="bg-[#36AF85]/10 border border-[#36AF85]/20 text-[#36AF85] text-xs font-semibold px-3 py-2 rounded-lg cursor-pointer hover:bg-[#36AF85]/20 transition-colors inline-block text-left disabled:opacity-50"
+                            >
+                              <Sparkles className="w-3 h-3 inline-block mr-1.5 -mt-0.5" />
+                              {tema}
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
 
-                <Button onClick={handleSave} disabled={!deckName.trim() || loadingSave} className="w-full bg-[#36AF85] hover:bg-[#2b8c6a] text-white rounded-full font-bold h-12 shadow-lg shadow-[#36AF85]/20">
-                  {loadingSave ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Check className="w-4 h-4 mr-2" /> Gerar Deck</>}
-                </Button>
+                    <div className="bg-[#36AF85]/10 border border-[#36AF85]/30 rounded-xl p-4 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <motion.div
+                          animate={{ y: [0, -2, 0], rotate: [-3, 3, -3] }}
+                          transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+                        >
+                          <Scale strokeWidth={1} className="w-5 h-5 text-[#36AF85]" />
+                        </motion.div>
+                        <span className="font-bold text-sm text-[#36AF85]">Geração Automática</span>
+                      </div>
+                      <span className="text-xs font-bold bg-[#36AF85] text-white px-2 py-0.5 rounded-md">{qtdCards} Cards</span>
+                    </div>
+
+                    <Button onClick={handleSave} disabled={!deckName.trim() || loadingSave} className="w-full bg-[#36AF85] hover:bg-[#2b8c6a] text-white rounded-full font-bold h-12 shadow-lg shadow-[#36AF85]/20">
+                      <Check className="w-4 h-4 mr-2" /> Gerar Deck
+                    </Button>
+                  </>
+                )}
               </motion.div>
             )}
           </AnimatePresence>
