@@ -55,7 +55,7 @@ const AdminApresentacaoEditar = () => {
   const navigate = useNavigate();
 
   const [modo, setModo] = useState<Modo>('materia');
-  const [step, setStep] = useState<'categoria' | 'referencia'>('categoria');
+  const [step, setStep] = useState<'categoria' | 'referencia' | 'geracao'>('categoria');
   const [vozes, setVozes] = useState<Voz[]>([]);
   const [voz, setVoz] = useState('Charon');
   const [job, setJob] = useState<ApresJobEstado | null>(null);
@@ -364,6 +364,7 @@ const AdminApresentacaoEditar = () => {
     try {
       await call({ acao: 'apres-excluir', apresentacao_id: a.id });
       setLista((prev) => prev.filter((x) => x.id !== a.id));
+      setLivros((prev) => prev.map((l) => l.apresentacao_id === a.id ? { ...l, apresentacao_id: null } : l));
       toast.success('Apresentação removida');
     } catch (e) { toast.error(e instanceof Error ? e.message : 'Erro'); }
   };
@@ -505,7 +506,7 @@ const AdminApresentacaoEditar = () => {
                     {subtemas.map((r) => (
                       <button
                         key={r.id}
-                        onClick={() => setResumoSel(r)}
+                        onClick={() => { setResumoSel(r); setStep('geracao'); }}
                         className={`w-full text-left p-3 flex items-center gap-2 transition ${resumoSel?.id === r.id ? 'bg-primary/10' : 'hover:bg-accent/40'}`}
                       >
                         <span className="flex-1 min-w-0">
@@ -550,7 +551,7 @@ const AdminApresentacaoEditar = () => {
                       {artigosFiltrados.map((a) => (
                         <button
                           key={a.numero}
-                          onClick={() => setArtigoSel(a)}
+                          onClick={() => { setArtigoSel(a); setStep('geracao'); }}
                           className={`w-full text-left p-3 flex items-center gap-2 transition ${artigoSel?.numero === a.numero ? 'bg-primary/10' : 'hover:bg-accent/40'}`}
                         >
                           <span className="flex-1 min-w-0">
@@ -619,7 +620,7 @@ const AdminApresentacaoEditar = () => {
                         return (
                           <button
                             key={`${l.livro_tabela}:${l.livro_id}`}
-                            onClick={() => setLivroSel(l)}
+                            onClick={() => { setLivroSel(l); setStep('geracao'); }}
                             className={`w-full text-left p-3.5 flex items-center justify-between gap-3 transition ${
                               sel ? 'bg-primary/10' : 'hover:bg-accent/40'
                             }`}
@@ -648,7 +649,21 @@ const AdminApresentacaoEditar = () => {
                 )}
               </div>
             )}
+          </div>
+        )}
 
+        {step === 'geracao' && (
+          <div className="rounded-2xl border border-border bg-card p-4 space-y-4">
+            <div className="flex items-center justify-between mb-2">
+              <Passo n={1} titulo="Geração de Conteúdo" ok={!!referencia} ativo={true} />
+              <button
+                onClick={() => setStep('referencia')}
+                className="px-3 py-1.5 rounded-xl border border-border hover:bg-accent transition text-xs font-semibold text-muted-foreground"
+              >
+                ← Mudar Referência
+              </button>
+            </div>
+            
             {referencia && (
               <div className="p-3 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-between gap-2">
                 <span className="text-xs font-body text-muted-foreground truncate">
@@ -659,13 +674,8 @@ const AdminApresentacaoEditar = () => {
                 </span>
               </div>
             )}
-          </div>
-        )}
-
-        {step === 'referencia' && (
-          <>
             {/* 2 — PDF */}
-            <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
+            <div className="rounded-2xl border border-border bg-background p-4 space-y-3">
               <Passo n={2} titulo="Envie o PDF da apresentação" ok={!!slides.length} ativo={!!referencia && !slides.length} />
           <label className={`flex items-center justify-center gap-2 rounded-xl border border-dashed border-border py-6 text-sm font-body transition ${!referencia || ocupado ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-primary/50 hover:bg-accent/20'}`}>
             <Upload className="w-4 h-4 text-primary" />
@@ -688,7 +698,7 @@ const AdminApresentacaoEditar = () => {
         </div>
 
         {/* 3 — voz e geração */}
-        <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
+        <div className="rounded-2xl border border-border bg-background p-4 space-y-3">
           <Passo n={3} titulo="Voz e narração" ativo={!!slides.length} />
           <div className="flex items-center gap-2">
             <Mic className="w-4 h-4 text-primary shrink-0" />
@@ -696,7 +706,7 @@ const AdminApresentacaoEditar = () => {
               value={voz}
               onChange={(e) => setVoz(e.target.value)}
               disabled={ocupado}
-              className="flex-1 rounded-xl border border-border bg-background px-3 py-2.5 text-sm font-body focus:ring-1 focus:ring-primary"
+              className="flex-1 min-w-0 rounded-xl border border-border bg-background px-3 py-2.5 text-sm font-body focus:ring-1 focus:ring-primary text-ellipsis"
             >
               {(vozes.length ? vozes : [{ id: 'Charon', genero: '', descricao: 'Padrão' } as Voz]).map((v) => (
                 <option key={v.id} value={v.id}>{v.id} — {v.descricao}</option>
@@ -711,7 +721,7 @@ const AdminApresentacaoEditar = () => {
             {job?.ativo ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4 fill-current" />}
               </button>
             </div>
-          </>
+          </div>
         )}
 
         {/* Lista de Apresentações Criadas */}
