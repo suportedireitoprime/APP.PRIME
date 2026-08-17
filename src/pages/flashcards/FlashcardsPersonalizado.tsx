@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/PageHeader';
-import FlashcardsBottomNav from '@/components/flashcards/FlashcardsBottomNav';
-import { Button } from '@/components/ui/button';
-import { Plus, Sparkles, FileText, Layers, Play } from 'lucide-react';
+import { Plus, FileText, Layers, Play } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import WizardFlashcardsIA from '@/components/flashcards/WizardFlashcardsIA';
 
@@ -22,7 +20,7 @@ export default function FlashcardsPersonalizado() {
   }, []);
 
   return (
-    <div className="min-h-dvh bg-background pb-[calc(7rem+env(safe-area-inset-bottom,0px))] lg:pb-[calc(3rem+env(safe-area-inset-bottom,0px))] overflow-x-hidden">
+    <div className="min-h-dvh bg-background pb-[calc(5rem+env(safe-area-inset-bottom,0px))] overflow-x-hidden">
       <div className="mx-auto w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] px-3 sm:px-6 lg:px-8">
         <PageHeader
           title="Decks Personalizados"
@@ -30,37 +28,8 @@ export default function FlashcardsPersonalizado() {
           onBack={() => navigate('/flashcards')}
         />
 
-        {/* Hero Section */}
-        <div className="mt-4 relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0d0f12] to-[#1a1d24] border border-white/10 p-6 shadow-2xl">
-          <div className="absolute top-0 right-0 -mt-10 -mr-10 opacity-20 pointer-events-none">
-            <Sparkles className="w-48 h-48 text-[#36AF85]" />
-          </div>
-          
-          <div className="relative z-10 flex flex-col items-start gap-4">
-            <div className="bg-[#36AF85]/20 p-3 rounded-2xl">
-              <Sparkles className="w-6 h-6 text-[#36AF85]" />
-            </div>
-            <div>
-              <h2 className="text-xl sm:text-2xl font-black text-white leading-tight">
-                Estude com o seu <br />
-                <span className="text-[#36AF85]">Próprio Material</span>
-              </h2>
-              <p className="text-sm text-white/60 mt-2 max-w-[280px] sm:max-w-md font-medium leading-relaxed">
-                Nossa IA lê seus PDFs, assiste vídeos do YouTube e escuta seus áudios para criar Decks perfeitos para você.
-              </p>
-            </div>
-            <Button
-              onClick={() => { haptic.selection(); setWizardOpen(true); }}
-              className="mt-2 bg-[#36AF85] hover:bg-[#2b8c6a] text-white rounded-full font-bold px-8 shadow-lg shadow-[#36AF85]/20"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Criar Deck com IA
-            </Button>
-          </div>
-        </div>
-
         {/* List of Custom Decks */}
-        <div className="mt-8">
+        <div className="mt-6">
           <div className="flex items-center justify-between mb-4 px-1">
             <h3 className="text-sm font-extrabold uppercase tracking-widest text-muted-foreground">Meus Decks</h3>
           </div>
@@ -91,7 +60,14 @@ export default function FlashcardsPersonalizado() {
 
       </div>
 
-      <FlashcardsBottomNav />
+      {/* Botão Flutuante (FAB) */}
+      <button
+        onClick={() => { haptic.selection(); setWizardOpen(true); }}
+        className="fixed bottom-[calc(2rem+env(safe-area-inset-bottom,0px))] right-6 z-50 w-14 h-14 bg-[#36AF85] hover:bg-[#2b8c6a] rounded-full flex items-center justify-center shadow-lg shadow-[#36AF85]/30 active:scale-95 transition-transform"
+      >
+        <Plus className="w-6 h-6 text-white" />
+      </button>
+
       {wizardOpen && <WizardFlashcardsIA open={wizardOpen} onOpenChange={setWizardOpen} />}
     </div>
   );
