@@ -3452,7 +3452,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         {/* Bottom nav bar — only visible on "artigo" tab; fixed as a flex item below the scrollable area */}
         {(activeTab ?? 'artigo') === 'artigo' && !isDesktop && (
         <div className="shrink-0 relative z-[55] bg-card/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-lg shadow-black/10 pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))]">
-          <div className="relative grid grid-cols-5 items-end px-1 pt-3.5 pb-3.5 max-w-lg mx-auto">
+          <div className="relative grid grid-cols-5 items-end px-2 py-2 max-w-lg mx-auto">
             {(highlightMode || voiceGrifoActive) ? (
               <button
                 onClick={() => setShowEraseSheet(true)}
@@ -3464,7 +3464,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
             ) : (
               <button
                 onClick={() => setActiveActionMenu('funcoes')}
-                className={`flex flex-col items-center justify-end gap-1.5 py-1.5 transition-colors ${activeActionMenu === 'funcoes' ? 'text-primary' : 'text-foreground hover:text-primary'}`}
+                className={`flex flex-col items-center justify-end gap-1 py-2 transition-colors ${activeActionMenu === 'funcoes' ? 'text-primary' : 'text-foreground hover:text-primary'}`}
               >
                 <LayoutGrid className="w-7 h-7 sm:w-8 sm:h-8" />
                 <span className="font-body text-[11px] sm:text-[12px] leading-tight">Funções</span>
@@ -3475,7 +3475,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
             ) : (
               <button
                 onClick={() => gateFeature('praticar', 'praticar', 'Praticar', () => setShowPraticarSheet(true))}
-                className="flex flex-col items-center justify-end gap-1.5 py-1.5 text-foreground hover:text-primary transition-colors"
+                className="flex flex-col items-center justify-end gap-1 py-2 text-foreground hover:text-primary transition-colors"
               >
                 <Target className="w-7 h-7 sm:w-8 sm:h-8" />
                 <span className="font-body text-[11px] sm:text-[12px] leading-tight">Praticar</span>
@@ -3490,10 +3490,10 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                   else if (voicePhase === 'idle') voicePanelRef.current?.start();
                 }}
                 disabled={voicePhase === 'processing'}
-                className="relative z-[80] flex flex-col items-center justify-end gap-1.5 py-1.5 touch-manipulation select-none"
+                className="relative z-[80] flex flex-col items-center justify-end gap-1 py-2 touch-manipulation select-none"
                 aria-label={voicePhase === 'recording' ? 'Parar gravação' : 'Gravar voz'}
               >
-                <div className="absolute bottom-[28px] pointer-events-none">
+                <div className="absolute bottom-[32px] pointer-events-none">
                   <span className={`relative w-[4.5rem] h-[4.5rem] sm:w-20 sm:h-20 rounded-full flex items-center justify-center shadow-lg ring-4 ring-card transition-all duration-300 pointer-events-auto ${voicePhase === 'recording' ? 'bg-red-500 shadow-red-500/40 scale-105' : voicePhase === 'processing' ? 'bg-secondary' : 'bg-primary shadow-primary/40'}`}>
                     {voicePhase === 'recording' && (
                       <>
@@ -3520,10 +3520,10 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 onTouchStart={handleNarrarButtonPress}
                 onClick={handleNarrarButtonPress}
                 disabled={narracaoLoading}
-                className="relative z-[80] flex flex-col items-center justify-end gap-1.5 py-1.5 touch-manipulation select-none"
+                className="relative z-[80] flex flex-col items-center justify-end gap-1 py-2 touch-manipulation select-none"
                 aria-label="Narrar"
               >
-                <div className="absolute bottom-[28px] pointer-events-none">
+                <div className="absolute bottom-[32px] pointer-events-none">
                   <span className={`relative w-[4.5rem] h-[4.5rem] sm:w-20 sm:h-20 rounded-full flex items-center justify-center shadow-lg ring-4 ring-card transition-all duration-300 pointer-events-auto ${narracaoPlaying ? 'bg-primary shadow-primary/40 scale-105' : 'bg-primary shadow-primary/30 hover:bg-primary/90'}`}>
                     {narracaoPlaying && (
                       <>
@@ -3564,7 +3564,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
             ) : (
               <button
                 onClick={() => gateFeature('lei_anotacao', 'anotacoes', 'Anotações', () => { setShowAnotacoesSheet(true); setShowFontControls(false); })}
-                className="relative flex flex-col items-center justify-end gap-1.5 py-1.5 text-foreground hover:text-primary transition-colors"
+                className="relative flex flex-col items-center justify-end gap-1 py-2 text-foreground hover:text-primary transition-colors"
               >
                 <span className="relative">
                   <StickyNote className="w-7 h-7 sm:w-8 sm:h-8" />
@@ -3595,7 +3595,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
             ) : (
               <button
                 onClick={() => setActiveActionMenu('grifar')}
-                className={`relative flex flex-col items-center justify-end gap-1.5 py-1.5 transition-colors ${activeActionMenu === 'grifar' || magicMode || highlightMode ? 'text-primary' : 'text-foreground hover:text-primary'}`}
+                className={`relative flex flex-col items-center justify-end gap-1 py-2 transition-colors ${activeActionMenu === 'grifar' || magicMode || highlightMode ? 'text-primary' : 'text-foreground hover:text-primary'}`}
               >
                 <span className="relative">
                   <Feather className={`w-7 h-7 sm:w-8 sm:h-8 ${magicLoading ? 'animate-spin' : ''}`} />

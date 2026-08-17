@@ -27,6 +27,23 @@
  * no iOS). */
 html {
   background-color: hsl(var(--background));
+  
+  /* Bloqueia o "esticar a tela" nos topos e rodapés (rubber-banding) */
+  overscroll-behavior-y: none;
+  
+  /* Desativa a seleção de texto nativa (copiar/colar) que pinta a tela */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  
+  /* Remove o retângulo de destaque vermelho/cinza padrão ao tocar em itens clicáveis */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Reabilita a seleção para campos de texto (para permitir a digitação normal) */
+input, textarea {
+  -webkit-user-select: auto;
+  user-select: auto;
 }
 
 /* ============================================================
@@ -62,6 +79,7 @@ body {
   background-color: hsl(var(--background));
   box-sizing: border-box;
   min-height: 100dvh;
+  overscroll-behavior-y: none;
 }
 #root {
   min-height: 100dvh;

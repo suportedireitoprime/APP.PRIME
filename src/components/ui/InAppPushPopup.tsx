@@ -23,7 +23,7 @@ export default function InAppPushPopup() {
   return (
     <AnimatePresence>
       {currentPush && (
-        <div className="fixed inset-x-0 top-0 z-[9999] p-4 pointer-events-none flex justify-center pt-[calc(1rem+env(safe-area-inset-top,0px))]">
+        <div className="fixed inset-x-0 top-0 z-[9999] p-4 pointer-events-none flex justify-center pt-[calc(3rem+var(--sai-top,env(safe-area-inset-top,0px)))]">
           <motion.div
             initial={{ y: -100, opacity: 0, scale: 0.95 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
@@ -81,7 +81,7 @@ export default function InAppPushPopup() {
               className="bg-blue-600/10 hover:bg-blue-600/20 transition cursor-pointer border-t border-white/5 p-3 flex justify-center items-center gap-2"
               onClick={handleAction}
             >
-              <span className="text-blue-400 text-xs font-bold uppercase tracking-widest">Abrir Agora</span>
+              <span className="text-blue-400 text-xs font-bold uppercase tracking-widest">Entendi</span>
             </div>
           </motion.div>
         </div>

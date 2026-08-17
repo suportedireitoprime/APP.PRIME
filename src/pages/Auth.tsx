@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, startTransition } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -145,7 +145,11 @@ const AuthDrawer = ({ mode, setMode, onClose }: { mode: 'login' | 'signup' | 'fo
             sessao = sess.session;
             if (!sessao) await new Promise((r) => setTimeout(r, 250));
           }
-          if (sessao) navigateForm('/', { replace: true });
+          if (sessao) {
+            startTransition(() => {
+              navigateForm('/', { replace: true });
+            });
+          }
         }
       } else if (mode === 'login') {
         const { error } = await signIn(email, password);
@@ -168,7 +172,11 @@ const AuthDrawer = ({ mode, setMode, onClose }: { mode: 'login' | 'signup' | 'fo
           sessao = sess.session;
           if (!sessao) await new Promise((r) => setTimeout(r, 250));
         }
-        if (sessao) navigateForm('/onboarding', { replace: true });
+        if (sessao) {
+          startTransition(() => {
+            navigateForm('/onboarding', { replace: true });
+          });
+        }
       }
     } catch (err: any) {
       track(`${mode}_failed`, { erro: err.message ?? 'unknown' });
@@ -206,7 +214,7 @@ const AuthDrawer = ({ mode, setMode, onClose }: { mode: 'login' | 'signup' | 'fo
           <div className="w-12 h-1.5 rounded-full bg-white/20" />
         </div>
 
-        <div className="px-6 pb-[max(var(--sai-bottom,env(safe-area-inset-bottom,0px)),2rem)] overflow-y-auto no-scrollbar">
+        <div className="px-6 pb-[calc(var(--sai-bottom,env(safe-area-inset-bottom,0px))+2rem)] overflow-y-auto no-scrollbar">
           
           <div className="flex items-center justify-between mb-6">
             <div>
@@ -507,6 +515,15 @@ const Auth = () => {
   const navigate = useNavigate();
   const [drawerMode, setDrawerMode] = useState<'login' | 'signup' | 'forgot' | null>(null);
 
+  // Em vez de <Navigate> síncrono que pode causar Suspense error, navegamos via useEffect com startTransition
+  useEffect(() => {
+    if (!loading && user) {
+      startTransition(() => {
+        navigate('/', { replace: true });
+      });
+    }
+  }, [loading, user, navigate]);
+
   if (loading) {
     return (
       <main className="min-h-dvh flex items-center justify-center bg-[#0d0f12]">
@@ -515,7 +532,7 @@ const Auth = () => {
     );
   }
 
-  if (user) return <Navigate to="/" replace />;
+  if (user) return null;
 
   return (
     <main className="min-h-dvh w-full relative flex flex-col bg-[#0d0f12] overflow-hidden">

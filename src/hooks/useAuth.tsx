@@ -160,9 +160,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
     Promise.race([supabase.auth.getSession(), sessionTimeout]).then((result: any) => {
       const session = result?.data?.session ?? null;
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
+      startTransition(() => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
+      });
     });
 
     // Handle OAuth deep link on native (<appId>://auth-callback?code=...)

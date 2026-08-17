@@ -228,7 +228,7 @@ export class SessaoMeExplique {
 
   private abrirWs(url: string) {
     return new Promise<void>((resolve, reject) => {
-      const ws = new WebSocket(`${url}?access_token=${encodeURIComponent(this.opcoes.token)}`);
+      const ws = new WebSocket(`${url}?key=${encodeURIComponent(this.opcoes.token)}`);
       this.ws = ws;
       let resolvido = false;
 

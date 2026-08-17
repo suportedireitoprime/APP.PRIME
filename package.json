@@ -5,11 +5,11 @@
   "type": "module",
   "main": "electron/main.cjs",
   "scripts": {
-    "postinstall": "node -e \"const fs=require('fs'); fs.mkdirSync('public/assets', {recursive: true}); if(fs.existsSync('node_modules/sql.js/dist/sql-wasm.wasm')) fs.copyFileSync('node_modules/sql.js/dist/sql-wasm.wasm', 'public/assets/sql-wasm.wasm');\"",
+    "postinstall": "node -e \"const fs=require('fs'); fs.mkdirSync('public/assets', {recursive: true}); if(fs.existsSync('node_modules/sql.js/dist/sql-wasm.wasm')) fs.copyFileSync('node_modules/sql.js/dist/sql-wasm.wasm', 'public/assets/sql-wasm.wasm');\" && node scripts/patch-media.mjs",
     "predev": "bun run postinstall && bunx tsx scripts/generate-sitemap.ts",
     "dev": "vite",
     "prebuild": "bun run postinstall && node scripts/copy-build-assets.mjs && bunx tsx scripts/generate-sitemap.ts",
-    "build": "vite build",
+    "build": "cross-env NODE_OPTIONS=\"--max-old-space-size=4096\" vite build",
     "build:dev": "vite build --mode development",
     "build:electron": "cross-env ELECTRON_BUILD=1 vite build",
     "electron:dev": "electron .",

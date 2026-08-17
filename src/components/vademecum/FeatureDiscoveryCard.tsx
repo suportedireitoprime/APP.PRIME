@@ -29,14 +29,6 @@ const SUGESTOES: Sugestao[] = [
     rota: '/lembretes/local',
     Icon: MapPin,
   },
-  {
-    id: 'gravador',
-    titulo: 'Anotações por voz',
-    texto: 'Grave uma ideia em audiência ou na aula e transcreva depois, sem digitar nada.',
-    cta: 'Gravar uma anotação',
-    rota: '/anotacoes/audio',
-    Icon: Mic,
-  },
 ];
 
 const DISMISS_MS = 30 * 86400000;
