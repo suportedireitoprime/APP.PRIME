@@ -5,8 +5,11 @@ import { useIsDesktop } from '@/hooks/use-desktop';
 import { ArrowLeft, Plus, Sparkles, Loader2, Trash2, Mic, Square, Play, Pause, FileText, Check, Copy } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 import { supabase } from '@/integrations/supabase/client';
 import { voiceRecorder } from '@/lib/nativeVoiceRecorder';
+import { getTimestampKey } from '@/lib/modoAula/storage';
+import { AudioVisualizer } from '@/components/ui/AudioVisualizer';
 import { haptic } from '@/lib/nativeHaptics';
 import { toast } from 'sonner';
 
@@ -209,9 +212,12 @@ export function AnotacoesAulaSheet({
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
                     <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500" />
                   </span>
-                  <span className="text-xs font-bold tabular-nums text-red-400">
-                    Gravando {tempoGravacao}s
-                  </span>
+                  <div className="flex flex-col">
+                    <span className="text-xs font-bold tabular-nums text-red-400">
+                      Gravando {tempoGravacao}s
+                    </span>
+                    <AudioVisualizer stream={voiceRecorder.getStream()} isActive={gravando} className="!w-16 !my-0 h-4" barColor="#ef4444" />
+                  </div>
                   <Button
                     size="sm"
                     variant="destructive"

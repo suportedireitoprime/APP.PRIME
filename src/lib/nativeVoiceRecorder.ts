@@ -21,6 +21,8 @@ const convertBlobToBase64 = (blob: Blob): Promise<string> => {
 export const voiceRecorder = {
   isAvailable: () => true, // Sempre disponível usando Web API
 
+  getStream: () => mediaRecorder?.stream ?? null,
+
   async hasPermission(): Promise<boolean> {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });

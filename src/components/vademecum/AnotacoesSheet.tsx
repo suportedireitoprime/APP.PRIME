@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { voiceRecorder } from '@/lib/nativeVoiceRecorder';
 import { haptic } from '@/lib/nativeHaptics';
 import { toast } from 'sonner';
+import { AudioVisualizer } from '@/components/ui/AudioVisualizer';
 import {
   loadAnotacoes,
   getCachedData,
@@ -414,7 +415,12 @@ const AnotacoesSheet = ({ open, onClose, tabelaNome, artigoNumero, artigoTexto, 
                     <Plus /> Salvar texto
                   </Button>
                 </div>
-                {recording && <p className="text-xs text-destructive text-center animate-pulse">● Gravando… toque em “Parar áudio” para salvar</p>}
+                {recording && (
+                  <>
+                    <AudioVisualizer stream={voiceRecorder.getStream()} isActive={recording} className="text-destructive" barColor="#ef4444" />
+                    <p className="text-xs text-destructive text-center animate-pulse">● Gravando… toque em “Parar áudio” para salvar</p>
+                  </>
+                )}
                 <Button variant="outline" className="w-full border-primary/40 text-primary" onClick={handleSugerir} disabled={sugerindo}>
                   {sugerindo ? <Loader2 className="animate-spin" /> : <Sparkles />}
                   {sugerindo ? 'Gerando sugestões...' : 'Sugerir anotação com IA'}
