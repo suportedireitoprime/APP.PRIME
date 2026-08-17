@@ -5,7 +5,7 @@ import { pdfjsLib, configurarPdfWorker, getPdfDocumentParams } from '@/lib/pdfWo
 configurarPdfWorker(pdfjsLib);
 
 import {
-  Presentation, Upload, Loader2, Play, Check, Mic, ChevronRight, Trash2,
+  Presentation, History, Upload, Loader2, Play, Check, Mic, ChevronRight, Trash2,
   BookOpen, Scale, BookMarked, Eye, EyeOff, Search, Sparkles, Filter,
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -41,7 +41,7 @@ type LivroRow = {
 
 type Apres = {
   id: string; titulo: string; origem: string; area: string | null; tema: string | null;
-  subtema: string | null; total_slides: number; publicada: boolean; status: string;
+  subtema: string | null; total_slides: number; publicada: boolean; status: string; created_at: string;
 };
 
 const call = async (payload: Record<string, unknown>) => {
@@ -103,7 +103,7 @@ const AdminApresentacaoEditar = () => {
   const carregarLista = async () => {
     const { data } = await (supabase
       .from('apresentacoes_narradas') as any)
-      .select('id, titulo, origem, area, tema, subtema, total_slides, publicada, status')
+      .select('id, titulo, origem, area, tema, subtema, total_slides, publicada, status, created_at')
       .order('created_at', { ascending: false });
     setLista((data as Apres[]) ?? []);
   };
@@ -449,11 +449,11 @@ const AdminApresentacaoEditar = () => {
               <p className="text-muted-foreground text-sm">Qual o tipo de apresentação você deseja gerar ou editar?</p>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-3 gap-2 sm:gap-4">
               {([
                 { id: 'materia' as Modo, label: 'Matérias', desc: 'Resumos por área e tema', icon: BookOpen },
                 { id: 'lei' as Modo, label: 'Leis', desc: 'Constituição e Códigos', icon: Scale },
-                { id: 'livro' as Modo, label: 'Livros (Clássicos)', desc: 'Biblioteca Jurídica', icon: BookMarked },
+                { id: 'livro' as Modo, label: 'Livros', desc: 'Biblioteca Jurídica', icon: BookMarked },
               ]).map((m) => {
                 const Icon = m.icon;
                 return (
@@ -467,14 +467,14 @@ const AdminApresentacaoEditar = () => {
                       setLivroSel(null);
                       setStep('referencia');
                     }}
-                    className="bg-card border border-border/50 hover:border-primary/50 hover:bg-muted/30 transition-all rounded-2xl p-6 flex flex-col items-center justify-center gap-4 text-center group h-40 disabled:opacity-50"
+                    className="bg-card border border-border/50 hover:border-primary/50 hover:bg-muted/30 transition-all rounded-2xl p-3 sm:p-6 flex flex-col items-center justify-center gap-3 sm:gap-4 text-center group h-32 sm:h-40 disabled:opacity-50"
                   >
-                    <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center group-hover:scale-110 group-hover:bg-primary/10 transition-all">
-                      <Icon className="w-6 h-6 text-muted-foreground group-hover:text-primary transition-colors" />
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-muted flex items-center justify-center group-hover:scale-110 group-hover:bg-primary/10 transition-all">
+                      <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground group-hover:text-primary transition-colors" />
                     </div>
                     <div>
-                      <h3 className="font-medium text-lg font-heading">{m.label}</h3>
-                      <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{m.desc}</p>
+                      <h3 className="font-medium text-[11px] sm:text-lg font-heading leading-tight">{m.label}</h3>
+                      <p className="text-[9px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1 line-clamp-2 hidden sm:block">{m.desc}</p>
                     </div>
                   </button>
                 );
@@ -725,9 +725,9 @@ const AdminApresentacaoEditar = () => {
         )}
 
         {/* Lista de Apresentações Criadas */}
-        <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
+        <div className="rounded-2xl border border-border bg-card p-4 space-y-3 mt-8">
           <h2 className="font-heading font-bold text-sm flex items-center gap-2">
-            <Presentation className="w-4 h-4 text-primary" /> Apresentações criadas
+            <History className="w-4 h-4 text-primary" /> Histórico
           </h2>
           {!lista.length && <p className="text-xs text-muted-foreground font-body">Nenhuma apresentação criada ainda.</p>}
           {lista.map((a) => (
@@ -735,7 +735,7 @@ const AdminApresentacaoEditar = () => {
               <span className="flex-1 min-w-0">
                 <span className="block text-sm font-body font-semibold truncate">{a.titulo}</span>
                 <span className="block text-[11px] text-muted-foreground truncate">
-                  {[a.origem?.toUpperCase(), a.area, a.tema].filter(Boolean).join(' · ')} · {a.total_slides} slides · {a.status}
+                  {new Date(a.created_at).toLocaleDateString('pt-BR')} · {[a.origem?.toUpperCase(), a.area, a.tema].filter(Boolean).join(' · ')} · {a.total_slides} slides · {a.status}
                 </span>
               </span>
               <button onClick={() => alternarPublicacao(a)} className="p-2 text-muted-foreground hover:text-primary transition" aria-label="Publicar">
