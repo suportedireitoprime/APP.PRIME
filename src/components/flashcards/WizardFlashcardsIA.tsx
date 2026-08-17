@@ -40,7 +40,7 @@ export default function WizardFlashcardsIA({ open, onOpenChange }: WizardFlashca
   
   // Step 2 (Youtube specific)
   const [youtubeLink, setYoutubeLink] = useState('');
-  const [youtubePreview, setYoutubePreview] = useState<{ title: string, duration: string, image: string, author?: string } | null>(null);
+  const [youtubePreview, setYoutubePreview] = useState<{ title: string, duration: string, image: string, author?: string, description?: string } | null>(null);
   const [loadingPreview, setLoadingPreview] = useState(false);
 
   // Step 3 results
@@ -98,7 +98,8 @@ export default function WizardFlashcardsIA({ open, onOpenChange }: WizardFlashca
             title: item.snippet.title,
             duration: formatYoutubeDuration(item.contentDetails.duration),
             image: item.snippet.thumbnails.maxres?.url || item.snippet.thumbnails.high?.url || item.snippet.thumbnails.default?.url,
-            author: item.snippet.channelTitle
+            author: item.snippet.channelTitle,
+            description: item.snippet.description
           });
           haptic.success();
           return;
@@ -135,18 +136,64 @@ export default function WizardFlashcardsIA({ open, onOpenChange }: WizardFlashca
     }
   };
 
-  const handleSimulateAI = () => {
+  const handleSimulateAI = async () => {
     haptic.selection();
     setStep(3);
     setLoadingAI(true);
-    // Simulate AI processing
-    setTimeout(() => {
-      setTema('Direito Penal - Teoria do Crime');
-      setResumo('O material aborda os elementos do fato típico, ilicitude e culpabilidade. Discute dolo, culpa, erro de tipo e excludentes de ilicitude segundo a jurisprudência dominante.');
-      setQtdCards(38); // AI Suggestion
-      setLoadingAI(false);
-      haptic.success();
-    }, 3500);
+    
+    try {
+      const apiKey = (import.meta as any).env.VITE_GEMINI_API_KEY;
+      const title = youtubePreview?.title || '';
+      const desc = youtubePreview?.description || '';
+
+      if (apiKey && title) {
+        // Pedir para a IA gerar o tema e o resumo baseados na descrição real
+        const prompt = `Analise o título e a descrição deste vídeo educacional/jurídico.
+Título: ${title}
+Descrição: ${desc.substring(0, 1500)}
+
+Retorne um JSON estrito neste formato:
+{
+  "tema": "Tema principal em até 5 palavras",
+  "resumo": "Um resumo direto de até 2 linhas sobre o conteúdo que será abordado (ex: O material aborda os elementos...)"
+}`;
+
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { responseMimeType: "application/json" }
+          })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (text) {
+            const parsed = JSON.parse(text);
+            setTema(parsed.tema || title);
+            setResumo(parsed.resumo || 'Descrição não disponível.');
+            setQtdCards(35);
+            setLoadingAI(false);
+            haptic.success();
+            return;
+          }
+        }
+      }
+
+      // Fallback sem IA: usar os dados reais diretamente
+      setTema(title);
+      setResumo(desc ? desc.substring(0, 150) + '...' : 'Descrição não disponível para este vídeo.');
+      setQtdCards(25);
+    } catch (e) {
+      console.error(e);
+      setTema(youtubePreview?.title || 'Conteúdo do YouTube');
+      setResumo('Não foi possível gerar um resumo avançado. Prosseguindo com os dados básicos.');
+    }
+
+    setLoadingAI(false);
+    haptic.success();
   };
 
   const handleSave = () => {
