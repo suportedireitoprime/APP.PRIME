@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/PageHeader';
-import { Plus, FileText, Layers, Play, Youtube } from 'lucide-react';
+import { Plus, FileText, Layers, Youtube, Mic, ImageIcon } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import WizardFlashcardsIA from '@/components/flashcards/WizardFlashcardsIA';
 import { getOfflineDecks, Deck } from '@/lib/flashcardsOfflineManager';
@@ -41,6 +41,52 @@ export default function FlashcardsPersonalizado() {
     ...MOCK_DECKS
   ];
 
+  const getTypeColors = (tipo: string) => {
+    switch (tipo) {
+      case 'youtube':
+      case 'video':
+        return {
+          bg: 'bg-red-500/5 hover:bg-red-500/10',
+          border: 'border-red-500/20 hover:border-red-500/50',
+          iconBg: 'bg-red-500/10 text-red-500',
+        };
+      case 'imagem':
+      case 'image':
+        return {
+          bg: 'bg-orange-500/5 hover:bg-orange-500/10',
+          border: 'border-orange-500/20 hover:border-orange-500/50',
+          iconBg: 'bg-orange-500/10 text-orange-500',
+        };
+      case 'audio':
+        return {
+          bg: 'bg-purple-500/5 hover:bg-purple-500/10',
+          border: 'border-purple-500/20 hover:border-purple-500/50',
+          iconBg: 'bg-purple-500/10 text-purple-500',
+        };
+      case 'pdf':
+      case 'documento':
+      default:
+        return {
+          bg: 'bg-blue-500/5 hover:bg-blue-500/10',
+          border: 'border-blue-500/20 hover:border-blue-500/50',
+          iconBg: 'bg-blue-500/10 text-blue-500',
+        };
+    }
+  };
+
+  const renderIcon = (tipo: string) => {
+    switch (tipo) {
+      case 'youtube':
+      case 'video': return <Youtube className="w-5 h-5" />;
+      case 'imagem':
+      case 'image': return <ImageIcon className="w-5 h-5" />;
+      case 'audio': return <Mic className="w-5 h-5" />;
+      case 'pdf':
+      case 'documento':
+      default: return <FileText className="w-5 h-5" />;
+    }
+  };
+
   return (
     <div className="min-h-dvh bg-background pb-[calc(5rem+env(safe-area-inset-bottom,0px))] overflow-x-hidden">
       <div className="mx-auto w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] px-3 sm:px-6 lg:px-8">
@@ -57,26 +103,33 @@ export default function FlashcardsPersonalizado() {
           </div>
           
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {todosDecks.map((deck) => (
-              <div 
-                key={deck.id}
-                className="group p-4 bg-card/60 border border-border/80 rounded-2xl hover:border-[#36AF85]/50 transition-all cursor-pointer shadow-sm hover:shadow-md"
-              >
-                <div className="flex justify-between items-start mb-3">
-                  <div className="p-2 bg-muted rounded-xl">
-                    {deck.tipo === 'pdf' ? <FileText className="w-5 h-5 text-muted-foreground" /> : <Youtube className="w-5 h-5 text-red-500" />}
+            {todosDecks.map((deck) => {
+              const colors = getTypeColors(deck.tipo);
+              return (
+                <div 
+                  key={deck.id}
+                  onClick={() => {
+                    haptic.selection();
+                    navigate(`/flashcards/estudar?deck=${deck.id}`);
+                  }}
+                  className={`group p-4 ${colors.bg} border ${colors.border} rounded-2xl transition-all cursor-pointer shadow-sm hover:shadow-md`}
+                >
+                  <div className="flex justify-between items-start mb-3">
+                    <div className={`p-2 rounded-xl ${colors.iconBg}`}>
+                      {renderIcon(deck.tipo)}
+                    </div>
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider bg-background/50 px-2 py-1 rounded-md">
+                      {deck.data}
+                    </span>
                   </div>
-                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider bg-muted/50 px-2 py-1 rounded-md">
-                    {deck.data}
-                  </span>
+                  <h4 className="font-bold text-foreground text-base leading-tight mb-1 line-clamp-2">{deck.nome}</h4>
+                  <p className="text-xs text-muted-foreground font-semibold flex items-center gap-1.5 mt-2">
+                    <Layers className="w-3.5 h-3.5" />
+                    {deck.cards} flashcards gerados
+                  </p>
                 </div>
-                <h4 className="font-bold text-foreground text-base leading-tight mb-1 line-clamp-2">{deck.nome}</h4>
-                <p className="text-xs text-muted-foreground font-semibold flex items-center gap-1.5 mt-2">
-                  <Layers className="w-3.5 h-3.5" />
-                  {deck.cards} flashcards gerados
-                </p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
