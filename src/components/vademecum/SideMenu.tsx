@@ -125,10 +125,10 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
       // Fecha o menu e limpa locks imediatamente
       purgeBodyLocks();
       onClose();
-      // signOut direto — não depende do componente estar montado
+      // signOut direto — delay mínimo para garantir que o menu fechou
       setTimeout(() => {
         signOut().catch(() => {});
-      }, 200);
+      }, 50);
       return;
     }
 

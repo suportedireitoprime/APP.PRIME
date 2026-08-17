@@ -83,34 +83,26 @@ const AuthDrawer = ({ mode, setMode, onClose }: { mode: 'login' | 'signup' | 'fo
     import('@/components/onboarding/CadastroFeaturesReel').catch(() => {});
   }, [mode]);
 
-  const handleGoogle = () => {
+  const handleGoogle = async () => {
     setGoogleLoading(true);
-    requestAnimationFrame(() => {
-      requestAnimationFrame(async () => {
-        try {
-          const { error } = await signInWithGoogle();
-          if (error) throw error;
-        } catch (err: any) {
-          toastErroAuth(err.message || 'Não consegui entrar com o Google.');
-          setGoogleLoading(false);
-        }
-      });
-    });
+    try {
+      const { error } = await signInWithGoogle();
+      if (error) throw error;
+    } catch (err: any) {
+      toastErroAuth(err.message || 'Não consegui entrar com o Google.');
+      setGoogleLoading(false);
+    }
   };
 
-  const handleApple = () => {
+  const handleApple = async () => {
     setAppleLoading(true);
-    requestAnimationFrame(() => {
-      requestAnimationFrame(async () => {
-        try {
-          const { error } = await signInWithApple();
-          if (error) throw error;
-        } catch (err: any) {
-          toastErroAuth(err.message || 'Não consegui entrar com a Apple.');
-          setAppleLoading(false);
-        }
-      });
-    });
+    try {
+      const { error } = await signInWithApple();
+      if (error) throw error;
+    } catch (err: any) {
+      toastErroAuth(err.message || 'Não consegui entrar com a Apple.');
+      setAppleLoading(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

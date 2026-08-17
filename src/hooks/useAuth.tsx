@@ -230,18 +230,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signOut = useCallback(async () => {
-    if (Capacitor.isNativePlatform()) {
-      try {
-        await FirebaseAuthentication.signOut();
-      } catch (e) {
-        console.error('[FirebaseAuth] Erro ao fazer signout nativo', e);
-      }
-    }
-    await supabase.auth.signOut();
+    // Paraleliza Firebase + Supabase signout — eram sequenciais e causavam
+    // delay perceptível (cada um leva ~200-500ms de rede).
+    const firebaseLogout = Capacitor.isNativePlatform()
+      ? FirebaseAuthentication.signOut().catch((e) => console.error('[FirebaseAuth] Erro signout nativo', e))
+      : Promise.resolve();
+
+    await Promise.all([
+      firebaseLogout,
+      supabase.auth.signOut(),
+    ]);
     // Não fazer window.location.replace — o onAuthStateChange já seta
     // user=null e loading=false, e o ProtectedRoute/HomeGate redireciona
-    // automaticamente para /auth sem recarregar a página inteira (que
-    // causava tela preta no WebView nativo).
+    // automaticamente para /auth sem recarregar a página inteira.
   }, []);
 
   const resetPassword = useCallback(async (email: string) => {
