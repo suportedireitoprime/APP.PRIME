@@ -13,6 +13,26 @@ interface WizardFlashcardsIAProps {
 
 type SourceType = 'pdf' | 'image' | 'youtube' | 'audio' | null;
 
+const extractYoutubeId = (url: string) => {
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : null;
+};
+
+const formatYoutubeDuration = (duration: string) => {
+  const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
+  if (!match) return '00:00';
+  const h = (match[1] || '').replace('H', '');
+  const m = (match[2] || '').replace('M', '');
+  const s = (match[3] || '').replace('S', '');
+  
+  const formattedM = m ? m.padStart(2, '0') : '00';
+  const formattedS = s ? s.padStart(2, '0') : '00';
+  
+  if (h) return `${h}:${formattedM}:${formattedS}`;
+  return `${formattedM}:${formattedS}`;
+};
+
 export default function WizardFlashcardsIA({ open, onOpenChange }: WizardFlashcardsIAProps) {
   const [step, setStep] = useState(1);
   const [source, setSource] = useState<SourceType>(null);
@@ -20,7 +40,7 @@ export default function WizardFlashcardsIA({ open, onOpenChange }: WizardFlashca
   
   // Step 2 (Youtube specific)
   const [youtubeLink, setYoutubeLink] = useState('');
-  const [youtubePreview, setYoutubePreview] = useState<{ title: string, duration: string, image: string } | null>(null);
+  const [youtubePreview, setYoutubePreview] = useState<{ title: string, duration: string, image: string, author?: string } | null>(null);
   const [loadingPreview, setLoadingPreview] = useState(false);
 
   // Step 3 results
@@ -61,28 +81,53 @@ export default function WizardFlashcardsIA({ open, onOpenChange }: WizardFlashca
     haptic.selection();
 
     try {
-      // Chama o microsserviço Python local com yt-dlp
-      const response = await fetch(`http://localhost:8000/info?url=${encodeURIComponent(youtubeLink)}`);
+      const videoId = extractYoutubeId(youtubeLink);
+      if (!videoId) throw new Error('Link do YouTube inválido');
+
+      // Tenta a API V3 se a chave estiver configurada
+      const apiKey = import.meta.env.VITE_YOUTUBE_API_KEY;
       
-      if (!response.ok) {
-        throw new Error('Falha ao buscar vídeo. O servidor Python está rodando?');
+      if (apiKey) {
+        const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=${videoId}&key=${apiKey}`);
+        if (!res.ok) throw new Error('Erro na API do YouTube');
+        
+        const data = await res.json();
+        if (data.items && data.items.length > 0) {
+          const item = data.items[0];
+          setYoutubePreview({
+            title: item.snippet.title,
+            duration: formatYoutubeDuration(item.contentDetails.duration),
+            image: item.snippet.thumbnails.maxres?.url || item.snippet.thumbnails.high?.url || item.snippet.thumbnails.default?.url,
+            author: item.snippet.channelTitle
+          });
+          haptic.success();
+          return;
+        }
       }
 
-      const data = await response.json();
-
-      setYoutubePreview({
-        title: data.title || 'Vídeo Desconhecido',
-        duration: data.duration || '00:00',
-        image: data.image || 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80&w=600'
-      });
-      haptic.success();
+      // Fallback para oEmbed (público) se não houver chave ou falhar
+      const oembedRes = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`);
+      if (oembedRes.ok) {
+        const oembedData = await oembedRes.json();
+        setYoutubePreview({
+          title: oembedData.title,
+          duration: 'Vídeo do YouTube',
+          image: oembedData.thumbnail_url,
+          author: oembedData.author_name
+        });
+        haptic.success();
+        return;
+      }
+      
+      throw new Error('Não foi possível buscar os dados');
     } catch (error) {
       console.error("Erro na busca do YouTube:", error);
-      // Fallback em caso de erro no servidor
+      // Fallback visual
       setYoutubePreview({
-        title: 'Vídeo Encontrado (Sem Conexão com yt-dlp)',
+        title: 'Vídeo Encontrado',
         duration: 'YouTube',
-        image: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80&w=600'
+        image: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80&w=600',
+        author: 'Professor(a)'
       });
       haptic.success();
     } finally {
@@ -216,7 +261,7 @@ export default function WizardFlashcardsIA({ open, onOpenChange }: WizardFlashca
                           </div>
                           <div className="p-4 bg-zinc-950">
                             <h4 className="font-bold text-sm line-clamp-2 leading-tight text-zinc-100">{youtubePreview.title}</h4>
-                            <p className="text-xs text-zinc-500 mt-2 font-medium">Canal do Professor • 125 mil visualizações</p>
+                            <p className="text-xs text-zinc-500 mt-2 font-medium">{youtubePreview.author || 'Canal'} • YouTube</p>
                           </div>
                         </div>
 

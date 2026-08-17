@@ -14,7 +14,6 @@
     "build:electron": "cross-env ELECTRON_BUILD=1 vite build",
     "electron:dev": "electron .",
     "electron:pack": "bun run build:electron && electron-builder",
-    "start:ytdlp": "cd services/yt-dlp-api && pip install -r requirements.txt && uvicorn main:app --host 0.0.0.0 --port 8000 --reload",
     "export:laws": "node scripts/export-laws.mjs",
     "export:offline": "node scripts/export-offline-bundle.mjs",
     "export:covers": "node scripts/export-offline-covers.mjs",
