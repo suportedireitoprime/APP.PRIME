@@ -84,8 +84,8 @@ export default function WizardFlashcardsIA({ open, onOpenChange }: WizardFlashca
       const videoId = extractYoutubeId(youtubeLink);
       if (!videoId) throw new Error('Link do YouTube inválido');
 
-      // Tenta a API V3 se a chave estiver configurada
-      const apiKey = import.meta.env.VITE_YOUTUBE_API_KEY;
+      // Tenta a API V3 usando a chave dedicada ou a chave do Gemini que tem permissões
+      const apiKey = import.meta.env.VITE_YOUTUBE_API_KEY || (import.meta as any).env.VITE_GEMINI_API_KEY;
       
       if (apiKey) {
         const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=${videoId}&key=${apiKey}`);
