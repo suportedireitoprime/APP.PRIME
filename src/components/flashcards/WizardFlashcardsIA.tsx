@@ -105,10 +105,10 @@ export default function WizardFlashcardsIA({ open, onOpenChange }: WizardFlashca
                 exit={{ opacity: 0, x: 20 }}
                 className="grid grid-cols-2 gap-3"
               >
-                <SourceCard icon={<FileText strokeWidth={1} className="w-7 h-7 text-blue-500" />} title="Documento PDF" desc="Máx 50 páginas" onClick={() => handleSourceSelect('pdf')} />
-                <SourceCard icon={<Youtube strokeWidth={1} className="w-7 h-7 text-red-500" />} title="Vídeo YouTube" desc="Aulas e revisões" onClick={() => handleSourceSelect('youtube')} />
-                <SourceCard icon={<Mic strokeWidth={1} className="w-7 h-7 text-purple-500" />} title="Áudio" desc="Máx 1 hora" onClick={() => handleSourceSelect('audio')} />
-                <SourceCard icon={<ImageIcon strokeWidth={1} className="w-7 h-7 text-emerald-500" />} title="Imagens" desc="Fotos de resumos" onClick={() => handleSourceSelect('image')} />
+                <SourceCard icon={<FileText strokeWidth={1.5} className="w-7 h-7" style={{ color: '#3B82F6' }} />} title="Documento PDF" desc="Máx 50 páginas" onClick={() => handleSourceSelect('pdf')} />
+                <SourceCard icon={<Youtube strokeWidth={1.5} className="w-7 h-7" style={{ color: '#EF4444' }} />} title="Vídeo YouTube" desc="Aulas e revisões" onClick={() => handleSourceSelect('youtube')} />
+                <SourceCard icon={<Mic strokeWidth={1.5} className="w-7 h-7" style={{ color: '#A855F7' }} />} title="Áudio" desc="Máx 1 hora" onClick={() => handleSourceSelect('audio')} />
+                <SourceCard icon={<ImageIcon strokeWidth={1.5} className="w-7 h-7" style={{ color: '#F97316' }} />} title="Imagens" desc="Fotos de resumos" onClick={() => handleSourceSelect('image')} />
               </motion.div>
             )}
 
