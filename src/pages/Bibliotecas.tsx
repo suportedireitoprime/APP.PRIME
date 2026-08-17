@@ -27,7 +27,7 @@ import { track } from '@/lib/analyticsEvents';
 import { useTrackArea } from "@/hooks/useTrackArea";
 import { FileUp, ChevronRight, Library, BookOpen, Gauge, X, Lock } from 'lucide-react';
 import { useGatedFeature } from '@/hooks/useGatedFeature';
-import { FilePicker } from '@capawesome/capacitor-file-picker';
+// FilePicker carregado via dynamic import no handleUploadPdf (evita crash se plugin nativo não estiver registrado)
 import { saveCustomPdf, listCustomPdfs, removeCustomPdf, getCustomPdf, type CustomPdfRecord } from '@/services/bibliotecaPersonalizadosDb';
 import { useIsPdfCached } from '@/hooks/useIsPdfCached';
 import { CloudOff, CheckCircle2, HardDrive } from 'lucide-react';
@@ -148,6 +148,7 @@ const Bibliotecas = () => {
   const handleUploadPdf = async () => {
     gate.run(async () => {
       try {
+        const { FilePicker } = await import('@capawesome/capacitor-file-picker');
         const result = await FilePicker.pickFiles({
           types: ['application/pdf'],
           multiple: false,

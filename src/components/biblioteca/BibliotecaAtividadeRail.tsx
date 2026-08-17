@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight, Bookmark, Clock, BookOpen, FileUp, Lock } from 'lucide-react';
+import { ChevronRight, Bookmark, Clock, BookOpen, FileUp, Lock, Heart } from 'lucide-react';
 import { track } from '@/lib/analyticsEvents';
-import { FilePicker } from '@capawesome/capacitor-file-picker';
+// FilePicker carregado via dynamic import no handleUploadPdf
 import { useGatedFeature } from '@/hooks/useGatedFeature';
 import PdfScrollReader from './PdfScrollReader';
 import type { LivroNormalizado } from '@/lib/bibliotecaColecoes';
@@ -61,6 +61,7 @@ const BibliotecaAtividadeRail = ({ onAbrirLivro }: Props) => {
   const handleUploadPdf = async () => {
     gate.run(async () => {
       try {
+        const { FilePicker } = await import('@capawesome/capacitor-file-picker');
         const result = await FilePicker.pickFiles({
           types: ['application/pdf'],
           multiple: false,
