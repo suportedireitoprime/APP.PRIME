@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { FileText, Image as ImageIcon, Youtube, Mic, ArrowLeft, ArrowRight, Loader2, Sparkles, Check, X, SlidersHorizontal, UploadCloud } from 'lucide-react';
+import { FileText, Image as ImageIcon, Youtube, Mic, ArrowLeft, ArrowRight, Loader2, Sparkles, Check, X, SlidersHorizontal, UploadCloud, Layers } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
 interface WizardFlashcardsIAProps {
@@ -20,7 +20,7 @@ export default function WizardFlashcardsIA({ open, onOpenChange }: WizardFlashca
   
   // Step 2 (Youtube specific)
   const [youtubeLink, setYoutubeLink] = useState('');
-  const [youtubePreview, setYoutubePreview] = useState<{ title: string, duration: string } | null>(null);
+  const [youtubePreview, setYoutubePreview] = useState<{ title: string, duration: string, image: string } | null>(null);
   const [loadingPreview, setLoadingPreview] = useState(false);
 
   // Step 3 results
@@ -62,10 +62,11 @@ export default function WizardFlashcardsIA({ open, onOpenChange }: WizardFlashca
     setTimeout(() => {
       setYoutubePreview({
         title: 'Direito Penal do Zero: Aplicação da Lei Penal - Parte 01 (Aula Completa)',
-        duration: '29:26'
+        duration: '29:26',
+        image: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80&w=600'
       });
       setLoadingPreview(false);
-      haptic.notification('SUCCESS');
+      haptic.success();
     }, 1500);
   };
 
@@ -79,12 +80,12 @@ export default function WizardFlashcardsIA({ open, onOpenChange }: WizardFlashca
       setResumo('O material aborda os elementos do fato típico, ilicitude e culpabilidade. Discute dolo, culpa, erro de tipo e excludentes de ilicitude segundo a jurisprudência dominante.');
       setQtdCards(38); // AI Suggestion
       setLoadingAI(false);
-      haptic.notification('SUCCESS');
+      haptic.success();
     }, 3500);
   };
 
   const handleSave = () => {
-    haptic.notification('SUCCESS');
+    haptic.success();
     onOpenChange(false);
     // Real implementation would save to DB here
   };
@@ -167,18 +168,27 @@ export default function WizardFlashcardsIA({ open, onOpenChange }: WizardFlashca
                         </Button>
                       </>
                     ) : (
-                      <div className="space-y-4">
+                      <motion.div 
+                        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                        className="space-y-4"
+                      >
                         <div className="text-center mb-4">
                           <h3 className="font-bold text-lg">Vídeo Encontrado</h3>
                           <p className="text-sm text-muted-foreground">Confirme se é este o vídeo que deseja processar.</p>
                         </div>
                         
-                        <div className="bg-card border border-border/80 rounded-2xl overflow-hidden relative">
+                        <div className="bg-card border border-border/80 rounded-2xl overflow-hidden relative shadow-lg">
                           <div className="aspect-video bg-zinc-900 relative flex items-center justify-center group overflow-hidden">
-                            {/* Fake thumbnail using a gradient or image */}
-                            <div className="absolute inset-0 bg-gradient-to-br from-zinc-800 to-zinc-900 opacity-50" />
-                            <div className="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center z-10 shadow-[0_0_15px_rgba(220,38,38,0.5)] group-hover:scale-110 transition-transform">
-                              <Youtube className="w-6 h-6 text-white ml-0.5" />
+                            <img 
+                              src={youtubePreview.image} 
+                              alt="Thumbnail" 
+                              className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-60 transition-opacity duration-300"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                            <div className="w-14 h-14 bg-red-600/90 backdrop-blur-sm rounded-full flex items-center justify-center z-10 shadow-[0_0_20px_rgba(220,38,38,0.6)] group-hover:scale-110 transition-transform duration-300">
+                              <Youtube className="w-7 h-7 text-white ml-0.5" />
                             </div>
                             <div className="absolute bottom-2 right-2 bg-black/90 px-1.5 py-0.5 rounded text-[10px] font-bold text-white z-10 tracking-wider">
                               {youtubePreview.duration}
@@ -198,7 +208,7 @@ export default function WizardFlashcardsIA({ open, onOpenChange }: WizardFlashca
                             <Sparkles className="w-4 h-4 mr-2" /> Extrair Conteúdo
                           </Button>
                         </div>
-                      </div>
+                      </motion.div>
                     )}
                   </div>
                 ) : (
