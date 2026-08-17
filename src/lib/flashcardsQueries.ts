@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { withBundleFallback, bundle } from '@/services/offlineBundle';
+import { getOfflineDecks } from '@/lib/flashcardsOfflineManager';
 
 export type FlashcardsDash = {
   total_cards: number;
@@ -74,6 +75,33 @@ export const useFlashcardsSessao = (params: {
   return useQuery({
     queryKey: ['flashcards_sessao', params],
     queryFn: async () => {
+      // --- MOCK INTERCEPT FOR AI GENERATED DECKS ---
+      if (params.deckId) {
+        const offlineDecks = getOfflineDecks();
+        const mockDeck = offlineDecks.find(d => d.id === params.deckId && d.filtros?.source) 
+          || (params.deckId === '1' ? { nome: 'Resumo PDF Penal' } : null)
+          || (params.deckId === '2' ? { nome: 'Aula Youtube - Direitos Políticos' } : null);
+
+        if (mockDeck) {
+          await new Promise(r => setTimeout(r, 600)); // fake delay
+          return Array.from({ length: 15 }).map((_, i) => ({
+            id: `mock-ai-card-${params.deckId}-${i}`,
+            area: 'Conteúdo Personalizado',
+            tema: mockDeck.nome,
+            subtema: `Tópico Abordado ${i+1}`,
+            pergunta: `[GERADO PELA IA] Baseado no material "${mockDeck.nome}", como você explicaria o conceito ou a regra principal do Tópico ${i+1}?`,
+            resposta: `A Inteligência Artificial extraiu do seu material a seguinte resposta:\n\nO conceito principal é a aplicação prática das regras relacionadas ao tópico, garantindo que você entenda não apenas a teoria, mas também o contexto apresentado na fonte original.`,
+            exemplo: `Exemplo extraído do conteúdo: Em situações práticas abordadas no material, observamos a aplicação dessa regra.`,
+            base_legal: null,
+            dica: `Dica de IA: Tente focar nas palavras-chave do Tópico ${i+1} para memorizar mais rápido.`,
+            reforco_conteudo: null,
+            artigo_numero: null,
+            status: null
+          })) as unknown as FlashcardCard[];
+        }
+      }
+      // --- END MOCK INTERCEPT ---
+
       const onlineFn = async () => {
         const { data, error } = await supabase.rpc('flashcards_sessao', {
           _areas: params.areas,

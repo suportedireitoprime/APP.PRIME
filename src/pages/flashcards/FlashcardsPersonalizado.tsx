@@ -46,29 +46,25 @@ export default function FlashcardsPersonalizado() {
       case 'youtube':
       case 'video':
         return {
-          bg: 'bg-red-500/5 hover:bg-red-500/10',
-          border: 'border-red-500/20 hover:border-red-500/50',
+          hex: '#EF4444',
           iconBg: 'bg-red-500/10 text-red-500',
         };
       case 'imagem':
       case 'image':
         return {
-          bg: 'bg-orange-500/5 hover:bg-orange-500/10',
-          border: 'border-orange-500/20 hover:border-orange-500/50',
+          hex: '#F97316',
           iconBg: 'bg-orange-500/10 text-orange-500',
         };
       case 'audio':
         return {
-          bg: 'bg-purple-500/5 hover:bg-purple-500/10',
-          border: 'border-purple-500/20 hover:border-purple-500/50',
+          hex: '#A855F7',
           iconBg: 'bg-purple-500/10 text-purple-500',
         };
       case 'pdf':
       case 'documento':
       default:
         return {
-          bg: 'bg-blue-500/5 hover:bg-blue-500/10',
-          border: 'border-blue-500/20 hover:border-blue-500/50',
+          hex: '#3B82F6',
           iconBg: 'bg-blue-500/10 text-blue-500',
         };
     }
@@ -110,15 +106,15 @@ export default function FlashcardsPersonalizado() {
                   key={deck.id}
                   onClick={() => {
                     haptic.selection();
-                    navigate(`/flashcards/estudar?deck=${deck.id}`);
+                    navigate(`/flashcards/estudar?deck=${deck.id}&cor=${encodeURIComponent(colors.hex)}`);
                   }}
-                  className={`group p-4 ${colors.bg} border ${colors.border} rounded-2xl transition-all cursor-pointer shadow-sm hover:shadow-md`}
+                  className="group p-4 bg-card/60 border border-border/80 rounded-2xl hover:border-emerald-500/50 transition-all cursor-pointer shadow-sm hover:shadow-md"
                 >
                   <div className="flex justify-between items-start mb-3">
                     <div className={`p-2 rounded-xl ${colors.iconBg}`}>
                       {renderIcon(deck.tipo)}
                     </div>
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider bg-background/50 px-2 py-1 rounded-md">
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider bg-background/50 px-2 py-1 rounded-md border border-border/50">
                       {deck.data}
                     </span>
                   </div>
