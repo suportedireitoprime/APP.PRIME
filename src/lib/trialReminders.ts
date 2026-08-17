@@ -57,6 +57,7 @@ export async function scheduleTrialReminder(plan: TrialPlan): Promise<void> {
             schedule: { at: reminderAt, allowWhileIdle: true },
             smallIcon: 'ic_stat_icon_config_sample',
             iconColor: '#c94c4c',
+            channelId: 'alertas_urgentes',
           }],
         });
       } catch (e) {

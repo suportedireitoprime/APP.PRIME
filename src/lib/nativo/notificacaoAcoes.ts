@@ -7,6 +7,7 @@
  */
 import { Capacitor } from '@capacitor/core';
 import { aumentarBadge, limparBadge } from './badge';
+import { toastNative } from './nativeToast';
 
 export const TIPO_LEMBRETE = 'LEMBRETE_ESTUDO';
 export const TIPO_FLASHCARD = 'LEMBRETE_FLASHCARD';
@@ -44,6 +45,19 @@ export async function registrarAcoesNotificacao(): Promise<void> {
   registrado = true;
   try {
     const { LocalNotifications } = await import('@capacitor/local-notifications');
+    const { Haptics, ImpactStyle } = await import('@capacitor/haptics');
+
+    // Garante a criação do canal de emergência no Android
+    if (Capacitor.getPlatform() === 'android') {
+      await LocalNotifications.createChannel({
+        id: 'alertas_urgentes',
+        name: 'Alertas de Geofence e Estudo',
+        description: 'Notificações críticas que exigem atenção imediata (vibração forte).',
+        importance: 5,
+        vibration: true,
+        lights: true,
+      });
+    }
 
     await LocalNotifications.registerActionTypes({
       types: [
@@ -90,8 +104,22 @@ export async function registrarAcoesNotificacao(): Promise<void> {
     });
 
     // Badge: sobe a cada notificação recebida em primeiro plano e zera ao abrir.
-    await LocalNotifications.addListener('localNotificationReceived', () => {
+    await LocalNotifications.addListener('localNotificationReceived', async (notificacao) => {
       void aumentarBadge();
+      
+      // Se o app estiver aberto (primeiro plano), disparamos Haptics extremo!
+      if (document.visibilityState === 'visible') {
+        const hapticsLoop = async () => {
+          for (let i = 0; i < 3; i++) {
+            await Haptics.impact({ style: ImpactStyle.Heavy });
+            await new Promise(res => setTimeout(res, 200));
+            await Haptics.vibrate({ duration: 500 });
+            await new Promise(res => setTimeout(res, 400));
+          }
+        };
+        void hapticsLoop();
+        toastNative.info(`Alerta: ${notificacao.title ?? 'Nova notificação'}`);
+      }
     });
 
     const { App } = await import('@capacitor/app');

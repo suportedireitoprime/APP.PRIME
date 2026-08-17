@@ -199,6 +199,7 @@ const QuestoesLembretes = () => {
             body: `Bora resolver ${meta} questões agora?`,
             schedule: { on: { weekday, hour: hh, minute: mm }, allowWhileIdle: true, repeats: true },
             iconColor: '#c94c4c',
+            channelId: 'alertas_urgentes',
             extra: { url: '/questoes/praticar' },
           }],
         });
@@ -250,6 +251,7 @@ const QuestoesLembretes = () => {
             body: `Assim você vai ser avisado para resolver ${meta} questões.`,
             schedule: { at: new Date(Date.now() + 5000), allowWhileIdle: true },
             iconColor: '#c94c4c',
+            channelId: 'alertas_urgentes',
             extra: { url: '/questoes/praticar' },
           }],
         });

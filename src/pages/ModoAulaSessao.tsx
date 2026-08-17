@@ -23,6 +23,7 @@ async function notificacaoAtiva(titulo: string) {
         ongoing: true,
         autoCancel: false,
         smallIcon: 'ic_stat_icon_config_sample',
+        channelId: 'alertas_urgentes',
       }],
     });
   } catch { /* enhancement */ }

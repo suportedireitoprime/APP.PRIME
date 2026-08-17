@@ -111,6 +111,7 @@ const Lembretes = () => {
                 repeats: true,
               },
               iconColor: '#c94c4c',
+              channelId: 'alertas_urgentes',
             },
           ],
         });

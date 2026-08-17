@@ -169,6 +169,7 @@ async function firePush(r: GeofenceReminder) {
         body: r.message,
         smallIcon: 'ic_stat_icon_config_sample',
         iconColor: '#c94c4c',
+        channelId: 'alertas_urgentes',
       }],
     });
   } catch (e) {
