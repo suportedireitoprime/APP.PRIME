@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { Card } from '@/components/ui/card';
@@ -7,36 +7,112 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   TrendingDown, RotateCcw, ShieldAlert, ArrowDownRight, 
-  Search, Filter, CheckCircle2, XCircle, AlertTriangle, AlertCircle, Ban, CheckCircle
+  Search, Filter, CheckCircle2, XCircle, AlertTriangle, AlertCircle, Ban, CheckCircle,
+  Loader2
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-
-// --- Mocks ---
-const MOCK_CHURN = [
-  { id: 1, user: 'João Silva', email: 'joao.silva@email.com', date: 'Hoje', reason: 'Preço muito alto', status: 'Cancelado', plan: 'Mensal' },
-  { id: 2, user: 'Maria Oliveira', email: 'maria.o@email.com', date: 'Ontem', reason: 'Falta de tempo para estudar', status: 'Cancelado', plan: 'Anual' },
-  { id: 3, user: 'Carlos Santos', email: 'carlos.santos@email.com', date: '12 Ago', reason: 'Aprovado na OAB', status: 'Concluído', plan: 'Anual' },
-  { id: 4, user: 'Ana Costa', email: 'ana.costa@email.com', date: '10 Ago', reason: 'App travando', status: 'Cancelado', plan: 'Mensal' },
-];
-
-const MOCK_REFUNDS = [
-  { id: 1, user: 'Pedro Rocha', email: 'pedro@email.com', date: 'Hoje', amount: 'R$ 29,90', reason: 'Cobrança indevida (não uso mais)', status: 'Pendente', txId: 'TX-9821' },
-  { id: 2, user: 'Lucia Fernandes', email: 'lucia.f@email.com', date: 'Ontem', amount: 'R$ 249,90', reason: 'Esqueci de cancelar a renovação anual', status: 'Pendente', txId: 'TX-9811' },
-  { id: 3, user: 'Bruno Alves', email: 'bruno.a@email.com', date: '14 Ago', amount: 'R$ 29,90', reason: 'Não gostei do conteúdo', status: 'Reembolsado', txId: 'TX-9705' },
-];
-
-const MOCK_FRAUD = [
-  { id: 1, user: 'Usuário Desconhecido', email: 'teste123@email.com', date: 'Ontem', amount: 'R$ 249,90', reason: 'Chargeback (Fraude de Cartão)', status: 'Suspeito', actions: 'Revogar' },
-  { id: 2, user: 'Marcos Paulo', email: 'marcos@email.com', date: '12 Ago', amount: 'R$ 29,90', reason: 'Disputa bancária', status: 'Banido', actions: '-' },
-];
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function AdminEstatisticasAssinatura() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('churn');
+  const [searchTerm, setSearchTerm] = useState('');
+  const queryClient = useQueryClient();
+
+  const { data: subscriptions, isLoading } = useQuery({
+    queryKey: ['play_subscriptions_metrics'],
+    queryFn: async () => {
+      // Usando array spread para join. 
+      const { data, error } = await supabase
+        .from('play_subscriptions')
+        .select(`
+          *,
+          profiles!play_subscriptions_user_id_fkey(display_name, email)
+        `)
+        .order('updated_at', { ascending: false })
+        .catch(async () => {
+             // Fallback sem relação nomeada caso falhe
+             return await supabase.from('play_subscriptions').select('*, profiles(display_name, email)').order('updated_at', { ascending: false });
+        });
+
+      if (error) {
+        console.error("Erro ao carregar assinaturas:", error);
+        // Tentar fallback cego (só assinaturas sem profiles)
+        const fallback = await supabase.from('play_subscriptions').select('*').order('updated_at', { ascending: false });
+        return fallback.data || [];
+      }
+      return data || [];
+    }
+  });
+
+  // Realtime subscription para o admin
+  useEffect(() => {
+    const channel = supabase.channel('realtime_play_subs')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'play_subscriptions' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['play_subscriptions_metrics'] });
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
+  // Filtros em memória
+  const allData = subscriptions || [];
+
+  const churnList = allData.filter(s => 
+    s.status === 'SUBSCRIPTION_STATE_CANCELED' || 
+    s.status === 'SUBSCRIPTION_STATE_EXPIRED' ||
+    s.auto_renewing === false
+  );
+
+  const refundsList = allData.filter(s => 
+    s.latest_notification_type === 'VOIDED_PURCHASE' || 
+    (s.cancel_reason && String(s.cancel_reason).includes('REFUND'))
+  );
+
+  // Aqui para antifraude pegaremos os refunds que têm Refund de fraude (em play console é raríssimo chegar como tag de chargeback direto no webhook, mas vamos destacar os sem usuário vinculado)
+  const fraudList = refundsList.filter(s => !s.user_id);
+
+  // Totais (exibição de 30 dias para churn não tem filtro exato aqui sem saber qnd foi, mas pegaremos o total)
+  const churnRate = allData.length > 0 ? ((churnList.length / allData.length) * 100).toFixed(1) : '0.0';
+
+  const formatData = (iso: string | null) => {
+    if (!iso) return 'Desconhecida';
+    return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+  };
+
+  const getUserName = (sub: any) => {
+     if (sub.profiles) {
+         if (Array.isArray(sub.profiles)) return sub.profiles[0]?.display_name || 'Desconhecido';
+         return sub.profiles.display_name || 'Desconhecido';
+     }
+     return 'Usuário Externo (Não logado)';
+  };
+  
+  const getUserEmail = (sub: any) => {
+     if (sub.profiles) {
+         if (Array.isArray(sub.profiles)) return sub.profiles[0]?.email || '';
+         return sub.profiles.email || '';
+     }
+     return 'N/A';
+  };
+
+  const filterBySearch = (list: any[]) => {
+    if (!searchTerm) return list;
+    const lower = searchTerm.toLowerCase();
+    return list.filter(item => 
+      getUserName(item).toLowerCase().includes(lower) || 
+      getUserEmail(item).toLowerCase().includes(lower) ||
+      (item.order_id && item.order_id.toLowerCase().includes(lower))
+    );
+  };
 
   return (
     <div className="min-h-dvh bg-background pb-8 flex flex-col">
-      <PageHeader title="Estatísticas da Conta" onBack={() => navigate('/admin')} />
+      <PageHeader title="Estatísticas da Assinatura" onBack={() => navigate('/admin')} />
 
       <div className="flex-1 p-4 max-w-5xl mx-auto w-full space-y-6">
         
@@ -47,8 +123,11 @@ export default function AdminEstatisticasAssinatura() {
               <TrendingDown className="w-6 h-6 text-red-500" />
             </div>
             <div>
-              <div className="text-sm font-body text-muted-foreground">Taxa de Churn (30d)</div>
-              <div className="text-2xl font-display font-bold">4.2% <span className="text-xs text-red-500 font-normal ml-1">+0.5%</span></div>
+              <div className="text-sm font-body text-muted-foreground">Taxa de Churn (Histórico)</div>
+              <div className="text-2xl font-display font-bold">
+                {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : `${churnRate}%`} 
+                <span className="text-xs text-muted-foreground font-normal ml-1">({churnList.length} usuários)</span>
+              </div>
             </div>
           </Card>
 
@@ -57,8 +136,10 @@ export default function AdminEstatisticasAssinatura() {
               <RotateCcw className="w-6 h-6 text-orange-500" />
             </div>
             <div>
-              <div className="text-sm font-body text-muted-foreground">Reembolsos Pendentes</div>
-              <div className="text-2xl font-display font-bold">12 <span className="text-xs text-muted-foreground font-normal ml-1">R$ 520,00</span></div>
+              <div className="text-sm font-body text-muted-foreground">Reembolsos Processados</div>
+              <div className="text-2xl font-display font-bold">
+                {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : refundsList.length}
+              </div>
             </div>
           </Card>
 
@@ -67,8 +148,10 @@ export default function AdminEstatisticasAssinatura() {
               <ShieldAlert className="w-6 h-6 text-destructive" />
             </div>
             <div>
-              <div className="text-sm font-body text-muted-foreground">Alertas de Fraude</div>
-              <div className="text-2xl font-display font-bold">3 <span className="text-xs text-destructive font-normal ml-1">Ação requerida</span></div>
+              <div className="text-sm font-body text-muted-foreground">Alertas de Fraude / Sem Vínculo</div>
+              <div className="text-2xl font-display font-bold">
+                {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : fraudList.length}
+              </div>
             </div>
           </Card>
         </div>
@@ -78,51 +161,57 @@ export default function AdminEstatisticasAssinatura() {
           <TabsList className="w-full grid grid-cols-3 bg-secondary/40 p-1 rounded-xl h-auto">
             <TabsTrigger value="churn" className="rounded-lg py-2.5 text-xs sm:text-sm">
               <TrendingDown className="w-4 h-4 mr-2" />
-              Churn
+              Churn ({churnList.length})
             </TabsTrigger>
             <TabsTrigger value="refunds" className="rounded-lg py-2.5 text-xs sm:text-sm">
               <RotateCcw className="w-4 h-4 mr-2" />
-              Reembolsos
+              Reembolsos ({refundsList.length})
             </TabsTrigger>
             <TabsTrigger value="fraud" className="rounded-lg py-2.5 text-xs sm:text-sm">
               <ShieldAlert className="w-4 h-4 mr-2" />
-              Antifraude
+              Antifraude ({fraudList.length})
             </TabsTrigger>
           </TabsList>
 
-          {/* Tab: CHURN */}
-          <TabsContent value="churn" className="mt-4 space-y-4">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-              <h2 className="text-lg font-display font-bold">Cancelamentos Recentes</h2>
-              <div className="flex w-full sm:w-auto gap-2">
-                <div className="relative flex-1 sm:w-64">
+          <div className="mt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+             <div className="flex w-full sm:w-auto gap-2">
+                <div className="relative flex-1 sm:w-80">
                   <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                  <Input placeholder="Buscar email..." className="pl-9 bg-secondary/30 border-border/60" />
+                  <Input 
+                    placeholder="Buscar nome, email, GPA.xxx..." 
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-9 bg-secondary/30 border-border/60" 
+                  />
                 </div>
-                <Button variant="outline" size="icon" className="shrink-0 border-border/60">
-                  <Filter className="w-4 h-4" />
-                </Button>
               </div>
-            </div>
+          </div>
 
+          {/* Tab: CHURN */}
+          <TabsContent value="churn" className="space-y-4 mt-4">
             <div className="space-y-3">
-              {MOCK_CHURN.map((item) => (
+              {isLoading && <div className="text-center p-4 text-muted-foreground flex items-center justify-center gap-2"><Loader2 className="w-5 h-5 animate-spin"/> Carregando...</div>}
+              {!isLoading && churnList.length === 0 && <div className="text-center p-4 text-muted-foreground">Nenhum cancelamento encontrado.</div>}
+              
+              {filterBySearch(churnList).map((item) => (
                 <div key={item.id} className="p-4 rounded-xl border border-border/60 bg-secondary/20 flex flex-col sm:flex-row justify-between gap-4">
                   <div className="flex items-start gap-4">
                     <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center shrink-0">
                       <ArrowDownRight className="w-5 h-5 text-red-400" />
                     </div>
                     <div>
-                      <div className="font-semibold text-sm">{item.user} <span className="text-muted-foreground font-normal ml-2">{item.email}</span></div>
+                      <div className="font-semibold text-sm">{getUserName(item)} <span className="text-muted-foreground font-normal ml-2">{getUserEmail(item)}</span></div>
                       <div className="text-xs text-muted-foreground mt-1 flex items-center gap-2">
-                        <Badge variant="outline" className="text-[10px] uppercase border-border/50">{item.plan}</Badge>
-                        <span>{item.date}</span>
+                        <Badge variant="outline" className="text-[10px] uppercase border-border/50">{item.product_id}</Badge>
+                        <span>{formatData(item.updated_at)}</span>
                       </div>
+                      <div className="text-xs text-muted-foreground mt-1 font-mono">ID: {item.order_id || 'Não informado'}</div>
                     </div>
                   </div>
                   <div className="sm:text-right flex flex-col justify-center bg-secondary/40 sm:bg-transparent p-3 sm:p-0 rounded-lg sm:rounded-none">
-                    <div className="text-xs text-muted-foreground uppercase font-semibold mb-1">Motivo relatado</div>
-                    <div className="text-sm font-medium text-foreground">{item.reason}</div>
+                     <div className="text-xs text-muted-foreground uppercase font-semibold mb-1">Status / Motivo</div>
+                     <div className="text-sm font-medium text-foreground">{item.status}</div>
+                     {item.cancel_reason && <div className="text-xs text-muted-foreground mt-1">{item.cancel_reason}</div>}
                   </div>
                 </div>
               ))}
@@ -130,84 +219,64 @@ export default function AdminEstatisticasAssinatura() {
           </TabsContent>
 
           {/* Tab: REFUNDS */}
-          <TabsContent value="refunds" className="mt-4 space-y-4">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-              <h2 className="text-lg font-display font-bold">Gestão de Reembolsos</h2>
-            </div>
-
+          <TabsContent value="refunds" className="space-y-4 mt-4">
             <div className="space-y-3">
-              {MOCK_REFUNDS.map((item) => (
+              {isLoading && <div className="text-center p-4 text-muted-foreground flex items-center justify-center gap-2"><Loader2 className="w-5 h-5 animate-spin"/> Carregando...</div>}
+              {!isLoading && refundsList.length === 0 && <div className="text-center p-4 text-muted-foreground">Nenhum reembolso registrado.</div>}
+
+              {filterBySearch(refundsList).map((item) => (
                 <div key={item.id} className="p-4 rounded-xl border border-border/60 bg-secondary/20 flex flex-col sm:flex-row justify-between items-center gap-4">
                   <div className="flex-1 min-w-0 w-full">
                     <div className="flex items-center justify-between mb-2">
-                      <div className="font-semibold text-sm truncate">{item.user} <span className="text-muted-foreground font-normal ml-2">{item.email}</span></div>
-                      <Badge variant={item.status === 'Pendente' ? 'default' : 'secondary'} className={item.status === 'Pendente' ? 'bg-orange-500/20 text-orange-500' : ''}>
-                        {item.status}
+                      <div className="font-semibold text-sm truncate">{getUserName(item)} <span className="text-muted-foreground font-normal ml-2">{getUserEmail(item)}</span></div>
+                      <Badge variant="default" className="bg-orange-500/20 text-orange-500">
+                        Processado
                       </Badge>
                     </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+                    <div className="grid grid-cols-2 sm:grid-cols-2 gap-2 text-xs">
                       <div className="bg-background/50 p-2 rounded-md">
-                        <span className="text-muted-foreground block mb-0.5">Valor</span>
-                        <span className="font-semibold">{item.amount}</span>
+                        <span className="text-muted-foreground block mb-0.5">Data Notificação</span>
+                        <span className="font-medium">{formatData(item.latest_notification_at || item.updated_at)}</span>
                       </div>
                       <div className="bg-background/50 p-2 rounded-md">
-                        <span className="text-muted-foreground block mb-0.5">Data</span>
-                        <span className="font-medium">{item.date}</span>
-                      </div>
-                      <div className="bg-background/50 p-2 rounded-md col-span-2 sm:col-span-1">
-                        <span className="text-muted-foreground block mb-0.5">Transação</span>
-                        <span className="font-mono text-[10px]">{item.txId}</span>
+                        <span className="text-muted-foreground block mb-0.5">Transação Play Store</span>
+                        <span className="font-mono text-[10px] truncate block">{item.order_id || item.purchase_token?.slice(0, 20)+'...'}</span>
                       </div>
                     </div>
                     <div className="mt-3 text-sm flex gap-2">
                       <AlertCircle className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
-                      <span className="text-muted-foreground">Motivo: <span className="text-foreground">{item.reason}</span></span>
+                      <span className="text-muted-foreground">Raw Reason: <span className="text-foreground">{item.cancel_reason || 'Reembolso do Sistema'}</span></span>
                     </div>
                   </div>
-
-                  {item.status === 'Pendente' && (
-                    <div className="flex sm:flex-col gap-2 w-full sm:w-auto shrink-0">
-                      <Button size="sm" className="w-full bg-emerald-600 hover:bg-emerald-700 text-white">Aprovar</Button>
-                      <Button size="sm" variant="outline" className="w-full border-border/60 text-destructive hover:bg-destructive/10">Negar</Button>
-                    </div>
-                  )}
                 </div>
               ))}
             </div>
           </TabsContent>
 
           {/* Tab: FRAUD */}
-          <TabsContent value="fraud" className="mt-4 space-y-4">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-              <h2 className="text-lg font-display font-bold">Monitoramento Antifraude</h2>
-              <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/20">Proteção Ativa</Badge>
-            </div>
-
+          <TabsContent value="fraud" className="space-y-4 mt-4">
             <div className="space-y-3">
-              {MOCK_FRAUD.map((item) => (
+              {isLoading && <div className="text-center p-4 text-muted-foreground flex items-center justify-center gap-2"><Loader2 className="w-5 h-5 animate-spin"/> Carregando...</div>}
+              {!isLoading && fraudList.length === 0 && <div className="text-center p-4 text-muted-foreground">Nenhuma assinatura sem vínculo detectada.</div>}
+
+              {filterBySearch(fraudList).map((item) => (
                 <div key={item.id} className="p-4 rounded-xl border border-destructive/30 bg-destructive/5 flex flex-col sm:flex-row justify-between items-center gap-4">
                   <div className="flex items-start gap-4">
                     <div className="w-10 h-10 rounded-full bg-destructive/20 flex items-center justify-center shrink-0">
                       <Ban className="w-5 h-5 text-destructive" />
                     </div>
                     <div>
-                      <div className="font-semibold text-sm">{item.user} <span className="text-muted-foreground font-normal ml-2">{item.email}</span></div>
+                      <div className="font-semibold text-sm">Usuário não registrado no App <span className="text-muted-foreground font-normal ml-2">Sincronização pendente ou pirataria</span></div>
                       <div className="text-xs mt-1 text-destructive font-medium flex items-center gap-1.5">
                         <AlertTriangle className="w-3.5 h-3.5" />
-                        {item.reason} — {item.amount} ({item.date})
+                        GPA: {item.order_id} ({formatData(item.created_at)})
                       </div>
                     </div>
                   </div>
                   
-                  {item.status === 'Suspeito' ? (
-                     <div className="flex gap-2 w-full sm:w-auto">
-                       <Button size="sm" variant="destructive" className="w-full">Banir e Revogar</Button>
-                     </div>
-                  ) : (
-                    <div className="flex items-center gap-2 text-muted-foreground text-sm font-medium w-full sm:w-auto justify-center sm:justify-start">
-                       <CheckCircle className="w-4 h-4 text-emerald-500" /> Conta Banida
-                    </div>
-                  )}
+                  <div className="flex items-center gap-2 text-muted-foreground text-sm font-medium w-full sm:w-auto justify-center sm:justify-start">
+                     <CheckCircle className="w-4 h-4 text-emerald-500" /> Webhook Revogou Acesso
+                  </div>
                 </div>
               ))}
             </div>
