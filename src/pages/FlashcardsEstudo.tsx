@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { supabase } from '@/integrations/supabase/client';
@@ -196,7 +196,6 @@ const FlashcardsEstudo = () => {
   const salvando = useRef(false);
   const cardContainerRef = useRef<HTMLDivElement>(null);
   const gateFlashcards = useGatedFeature('flashcards', 'flashcards');
-  import { useMotionValue, useTransform } from 'framer-motion';
   
   const tiltX = useMotionValue(0);
   const tiltY = useMotionValue(0);

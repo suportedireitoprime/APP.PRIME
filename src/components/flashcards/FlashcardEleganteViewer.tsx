@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback, memo } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo, memo } from "react";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
 import {
   BookOpen,
@@ -6,6 +6,7 @@ import {
   Lightbulb,
   RotateCw,
   ChevronRight,
+  ChevronLeft,
   Sparkles,
   BrainCircuit,
   Loader2,
@@ -50,10 +51,10 @@ function hashString(s: string): number {
 
 function triggerConfetti() {
   if (typeof window === 'undefined') return;
+  const win = window as Window & { confetti?: (opts: Record<string, unknown>) => void };
   const fire = () => {
-    const confetti = (window as any).confetti;
-    if (confetti) {
-      confetti({
+    if (win.confetti) {
+      win.confetti({
         particleCount: 150,
         spread: 90,
         origin: { y: 0.6 },
@@ -61,7 +62,7 @@ function triggerConfetti() {
       });
     }
   };
-  if (!(window as any).confetti) {
+  if (!win.confetti) {
     const script = document.createElement('script');
     script.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js';
     script.onload = fire;
@@ -111,8 +112,9 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
   }, [isShuffled, total]);
 
   useEffect(() => {
+    const currentSynth = synthRef.current;
     return () => {
-      if (synthRef.current) synthRef.current.cancel();
+      if (currentSynth) currentSynth.cancel();
     };
   }, []);
 
@@ -264,7 +266,8 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
     return () => {
       isCancelled = true;
       clearTimeout(timeout);
-      if (synthRef.current) synthRef.current.cancel();
+      const synth = synthRef.current;
+      if (synth) synth.cancel();
     };
   }, [isAutoPlaying, idx, flipped, card, isLast, goNext, playFlip, onComplete]);
 

@@ -272,7 +272,7 @@ export default function FlashcardsPersonalizado() {
   };
 
   return (
-    <div className="min-h-dvh bg-background pb-[calc(5rem+env(safe-area-inset-bottom,0px))] overflow-x-hidden">
+    <div className="min-h-dvh bg-background pb-[calc(8rem+env(safe-area-inset-bottom,0px))] lg:pb-[calc(3rem+env(safe-area-inset-bottom,0px))] overflow-x-hidden">
       <div className="mx-auto w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] px-3 sm:px-6 lg:px-8">
         
         {categoriaSelecionada ? (
@@ -475,7 +475,7 @@ export default function FlashcardsPersonalizado() {
           setAppendDeckId(null);
           setWizardOpen(true);
         }}
-        className="fixed bottom-[calc(2rem+env(safe-area-inset-bottom,0px))] right-6 z-50 w-14 h-14 bg-[#36AF85] hover:bg-[#2b8c6a] rounded-full flex items-center justify-center shadow-lg shadow-[#36AF85]/30 active:scale-95 transition-transform"
+        className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom,0px))] lg:bottom-8 right-6 z-50 w-14 h-14 bg-[#36AF85] hover:bg-[#2b8c6a] rounded-full flex items-center justify-center shadow-lg shadow-[#36AF85]/30 active:scale-95 transition-transform"
       >
         <Plus className="w-6 h-6 text-white" />
       </button>
