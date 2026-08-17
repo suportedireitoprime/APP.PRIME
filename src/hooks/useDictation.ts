@@ -131,7 +131,7 @@ export function useDictation(
         if (text.trim()) onFinalRef.current(text.trim());
         // Reinicia se ainda gravando (plugin encerrou por silêncio).
         if (stateRef.current === 'recording') {
-          setTimeout(() => {
+          setTimeout(async () => {
             if (stateRef.current === 'recording') {
               (await getSR()).start({
                 language: lang,
@@ -157,8 +157,8 @@ export function useDictation(
   }, [attachNativeListeners, lang]);
 
   const stopNative = useCallback(async () => {
-    getSR().then(sr => sr.stop()).catch { /* ignore */ }
-    try { await getSR().then(sr => sr.removeAllListeners()); } catch { /* ignore */ }
+    getSR().then(sr => sr.stop()).catch(() => { /* ignore */ });
+    getSR().then(sr => sr.removeAllListeners()).catch(() => { /* ignore */ });
     nativeAttachedRef.current = false;
     // Flush último partial.
     const text = nativeLastPartialRef.current;
