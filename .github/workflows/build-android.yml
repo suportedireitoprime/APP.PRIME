@@ -7,6 +7,9 @@ on:
   # ⚠️ Trigger automático em push desativado para economizar minutos do GitHub Actions.
   # Para rodar a build, vá em Actions → "Build Android (.aab + .apk)" → "Run workflow".
   workflow_dispatch:
+  push:
+    branches:
+      - main
     inputs:
       mobile_config_urls:
         description: 'Signed URLs dos arquivos nativos salvos no Supabase'
