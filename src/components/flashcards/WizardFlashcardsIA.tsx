@@ -62,6 +62,7 @@ export default function WizardFlashcardsIA({ open, onOpenChange, initialSource }
 
   // Step 5
   const [deckName, setDeckName] = useState('');
+  const [deckTags, setDeckTags] = useState<string[]>([]);
 
   // Reset when closed or apply initialSource when opened
   useEffect(() => {
@@ -82,6 +83,7 @@ export default function WizardFlashcardsIA({ open, onOpenChange, initialSource }
         setTema('');
         setResumo('');
         setDeckName('');
+        setDeckTags([]);
         setQtdCards(45);
         setMaxCards(100);
       }, 300);
@@ -170,13 +172,14 @@ export default function WizardFlashcardsIA({ open, onOpenChange, initialSource }
       setLoadingStep(prev => prev < 3 ? prev + 1 : prev);
     }, 1000);
 
-    const finishLoading = (temaStr: string, resumoStr: string, qtdRecomendada: number, qtdMax: number) => {
+    const finishLoading = (temaStr: string, resumoStr: string, qtdRecomendada: number, qtdMax: number, tagsArray: string[]) => {
       clearInterval(loadingTimer);
       setLoadingStep(4); // Tica todos
       setTema(temaStr);
       setResumo(resumoStr);
       setQtdCards(qtdRecomendada);
       setMaxCards(qtdMax);
+      setDeckTags(tagsArray);
       setTimeout(() => {
         setLoadingAI(false);
         setStep(4); // Vai direto pro Step 4 (Quantidade)
@@ -194,12 +197,13 @@ export default function WizardFlashcardsIA({ open, onOpenChange, initialSource }
 Título: ${title}
 Descrição: ${desc.substring(0, 1500)}
 
-Retorne um JSON estrito neste formato, sugerindo uma quantidade adequada de flashcards baseada na densidade provável do assunto (ex: se o título e a descrição indicarem uma aula longa ou densa, sugira mais flashcards). A quantidade máxima não deve ultrapassar 150.
+Retorne um JSON estrito neste formato, sugerindo uma quantidade adequada de flashcards baseada na densidade provável do assunto e extraindo até 3 tags curtas (ex: Direito Penal, Concursos). A quantidade máxima não deve ultrapassar 150.
 {
   "tema": "Tema principal em até 5 palavras",
   "resumo": "Um resumo direto de até 2 linhas sobre o conteúdo que será abordado (ex: O material aborda os elementos...)",
   "qtd_recomendada": 30,
-  "qtd_maxima": 60
+  "qtd_maxima": 60,
+  "tags": ["Tag1", "Tag2"]
 }`;
 
         const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
@@ -220,7 +224,8 @@ Retorne um JSON estrito neste formato, sugerindo uma quantidade adequada de flas
               parsed.tema || title,
               parsed.resumo || 'Descrição não disponível.',
               parsed.qtd_recomendada || 35,
-              Math.min(150, parsed.qtd_maxima || 100)
+              Math.min(150, parsed.qtd_maxima || 100),
+              parsed.tags || []
             );
             return;
           }
@@ -232,7 +237,8 @@ Retorne um JSON estrito neste formato, sugerindo uma quantidade adequada de flas
         title,
         desc ? desc.substring(0, 150) + '...' : 'Descrição não disponível para este vídeo.',
         25,
-        100
+        100,
+        ['Estudo']
       );
     } catch (e) {
       console.error(e);
@@ -240,7 +246,8 @@ Retorne um JSON estrito neste formato, sugerindo uma quantidade adequada de flas
         youtubePreview?.title || 'Conteúdo do YouTube',
         'Não foi possível gerar um resumo avançado. Prosseguindo com os dados básicos.',
         25,
-        100
+        100,
+        ['Estudo']
       );
     }
   };
@@ -261,7 +268,10 @@ Retorne um JSON estrito neste formato, sugerindo uma quantidade adequada de flas
         descricao: resumo,
         filtros: { source: source },
         total_cards: qtdCards,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
+        thumbnail: youtubePreview?.image,
+        duration: youtubePreview?.duration,
+        tags: deckTags
       });
       
       saveOfflineDecks(offlineDecks);
@@ -287,11 +297,9 @@ Retorne um JSON estrito neste formato, sugerindo uma quantidade adequada de flas
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-border/50">
           <div className="flex items-center gap-2">
-            {step > 1 && (
-              <button onClick={() => { haptic.selection(); setStep(step - 1); }} className="p-1.5 hover:bg-muted rounded-full">
-                <ArrowLeft className="w-5 h-5 text-muted-foreground" />
-              </button>
-            )}
+            <button onClick={() => { haptic.selection(); onOpenChange(false); }} className="p-1.5 hover:bg-muted rounded-full transition-colors">
+              <X className="w-5 h-5 text-muted-foreground" />
+            </button>
             <h2 className="font-bold text-foreground">
               {step === 1 && 'Escolha a Fonte'}
               {step === 2 && 'Envie o Material'}
@@ -300,71 +308,115 @@ Retorne um JSON estrito neste formato, sugerindo uma quantidade adequada de flas
               {step === 5 && 'Salvar Deck'}
             </h2>
           </div>
-          <button onClick={() => onOpenChange(false)} className="w-8 h-8 flex items-center justify-center bg-zinc-800/80 hover:bg-zinc-700 rounded-full transition-colors">
-            <X className="w-4 h-4 text-zinc-400" />
-          </button>
+          {step > 1 && step < 5 && (
+            <div className="text-xs font-bold text-muted-foreground bg-muted/50 px-2.5 py-1 rounded-full">
+              Passo {step}/5
+            </div>
+          )}
         </div>
 
-        <div className="p-5 min-h-[350px] relative">
+        <div className="p-6 overflow-y-auto max-h-[80vh] scrollbar-hide">
           <AnimatePresence mode="wait">
-            {/* ETAPA 1: FONTE */}
+            {/* ETAPA 1: SELEÇÃO DA FONTE */}
             {step === 1 && (
               <motion.div
                 key="step1"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
-                className="grid grid-cols-2 gap-3"
+                className="grid grid-cols-2 gap-4"
               >
-                <SourceCard icon={<FileText strokeWidth={1.5} className="w-7 h-7" style={{ color: '#3B82F6' }} />} title="Documento PDF" desc="Máx 50 páginas" onClick={() => handleSourceSelect('pdf')} />
-                <SourceCard icon={<Youtube strokeWidth={1.5} className="w-7 h-7" style={{ color: '#EF4444' }} />} title="Vídeo YouTube" desc="Aulas e revisões" onClick={() => handleSourceSelect('youtube')} />
-                <SourceCard icon={<Mic strokeWidth={1.5} className="w-7 h-7" style={{ color: '#A855F7' }} />} title="Áudio" desc="Máx 1 hora" onClick={() => handleSourceSelect('audio')} />
-                <SourceCard icon={<ImageIcon strokeWidth={1.5} className="w-7 h-7" style={{ color: '#F97316' }} />} title="Imagens" desc="Fotos de resumos" onClick={() => handleSourceSelect('image')} />
+                <div onClick={() => handleSourceSelect('pdf')} className="bg-card border border-border/80 rounded-2xl p-4 flex flex-col items-start gap-3 hover:border-[#36AF85]/50 transition-all cursor-pointer active:scale-95 group">
+                  <div className="w-12 h-12 bg-red-500/10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <FileText className="w-6 h-6 text-red-500" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-foreground">Arquivo PDF</h3>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">Resumos e Apostilas</p>
+                  </div>
+                </div>
+
+                <div onClick={() => handleSourceSelect('image')} className="bg-card border border-border/80 rounded-2xl p-4 flex flex-col items-start gap-3 hover:border-[#36AF85]/50 transition-all cursor-pointer active:scale-95 group">
+                  <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <ImageIcon className="w-6 h-6 text-blue-500" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-foreground">Imagem</h3>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">Fotos de caderno</p>
+                  </div>
+                </div>
+
+                <div onClick={() => handleSourceSelect('youtube')} className="bg-card border border-border/80 rounded-2xl p-4 flex flex-col items-start gap-3 hover:border-[#36AF85]/50 transition-all cursor-pointer active:scale-95 group relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 to-transparent pointer-events-none" />
+                  <div className="w-12 h-12 bg-red-600/10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform relative z-10">
+                    <Youtube className="w-6 h-6 text-red-600" />
+                  </div>
+                  <div className="relative z-10">
+                    <h3 className="font-bold text-foreground flex items-center gap-1.5">
+                      YouTube <Sparkles className="w-3 h-3 text-[#36AF85]" />
+                    </h3>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">Aulas em vídeo</p>
+                  </div>
+                </div>
+
+                <div onClick={() => handleSourceSelect('audio')} className="bg-card border border-border/80 rounded-2xl p-4 flex flex-col items-start gap-3 hover:border-[#36AF85]/50 transition-all cursor-pointer active:scale-95 group opacity-60">
+                  <div className="w-12 h-12 bg-amber-500/10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Mic className="w-6 h-6 text-amber-500" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-foreground">Áudio (Breve)</h3>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">Aulas gravadas</p>
+                  </div>
+                </div>
               </motion.div>
             )}
 
-            {/* ETAPA 2: UPLOAD */}
+            {/* ETAPA 2: UPLOAD / LINK */}
             {step === 2 && (
               <motion.div
                 key="step2"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
-                className="flex flex-col h-full justify-center"
+                className="space-y-4"
               >
                 {source === 'youtube' ? (
-                  <div className="space-y-4">
+                  <div className="space-y-6">
                     {!youtubePreview ? (
                       <>
-                        <div className="text-center mb-6">
-                          <div className="w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                            <Youtube className="w-6 h-6 text-red-500" />
+                        <div className="space-y-2">
+                          <label className="text-sm font-bold text-muted-foreground ml-1">Cole o link do vídeo</label>
+                          <div className="relative">
+                            <Youtube className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-red-500" />
+                            <Input 
+                              placeholder="https://youtube.com/watch?v=..." 
+                              className="pl-12 h-14 rounded-full bg-muted/30 border-border/80 focus-visible:ring-[#36AF85]"
+                              value={youtubeLink}
+                              onChange={e => setYoutubeLink(e.target.value)}
+                              onKeyDown={e => e.key === 'Enter' && handleSearchYoutube()}
+                            />
                           </div>
-                          <p className="text-sm text-muted-foreground">Cole o link da videoaula. Nossa IA vai transcrever e gerar os cards.</p>
                         </div>
-                        <Input 
-                          placeholder="https://youtube.com/watch?v=..." 
-                          className="bg-muted border-border/50 h-12"
-                          value={youtubeLink}
-                          onChange={(e) => setYoutubeLink(e.target.value)}
-                        />
+                        
                         <Button 
                           onClick={handleSearchYoutube} 
                           disabled={!youtubeLink.trim() || loadingPreview}
-                          className="mt-4 bg-red-500 hover:bg-red-600 text-white w-full rounded-full font-bold h-12"
+                          className="w-full h-14 rounded-full bg-[#36AF85] hover:bg-[#2b8c6a] text-white font-bold text-base shadow-lg shadow-[#36AF85]/20 active:scale-95 transition-all"
                         >
-                          {loadingPreview ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Buscar Vídeo'}
+                          {loadingPreview ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Procurar Vídeo'}
                         </Button>
+                        
+                        <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4 flex gap-3">
+                          <Sparkles className="w-5 h-5 text-amber-500 shrink-0" />
+                          <p className="text-xs text-amber-500/90 font-medium leading-relaxed">
+                            A Inteligência Artificial extrairá a transcrição deste vídeo automaticamente para gerar seus flashcards.
+                          </p>
+                        </div>
                       </>
                     ) : (
-                      <motion.div 
-                        initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                        className="space-y-4"
-                      >
-                        <div className="text-center mb-4">
-                          <h3 className="font-bold text-lg">Vídeo Encontrado</h3>
+                      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+                        <div className="text-center space-y-1 mb-2">
+                          <h3 className="font-black text-lg uppercase tracking-wider text-foreground">Vídeo Encontrado</h3>
                           <p className="text-sm text-muted-foreground">Confirme se é este o vídeo que deseja processar.</p>
                         </div>
                         
@@ -478,26 +530,40 @@ Retorne um JSON estrito neste formato, sugerindo uma quantidade adequada de flas
                   <span className="text-5xl font-black text-foreground">{qtdCards}</span>
                   <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest mt-1">Flashcards</span>
                   
-                  <div className="flex items-center gap-4 mt-6 w-full">
-                    <Button variant="outline" size="icon" className="rounded-full" onClick={() => { haptic.selection(); setQtdCards(Math.max(5, qtdCards - 5)); }}>-</Button>
-                    <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden relative">
-                      <div className="absolute top-0 bottom-0 left-0 bg-[#36AF85] rounded-full transition-all duration-300" style={{ width: `${Math.min(100, (qtdCards/maxCards)*100)}%` }} />
+                  <div className="w-full mt-8 space-y-4">
+                    <div className="flex items-center justify-between text-xs font-bold text-muted-foreground px-2">
+                      <span>1</span>
+                      <span>Qtd. Desejada</span>
+                      <span>{maxCards}</span>
                     </div>
-                    <Button variant="outline" size="icon" className="rounded-full" onClick={() => { haptic.selection(); setQtdCards(Math.min(maxCards, qtdCards + 5)); }}>+</Button>
+                    <input 
+                      type="range" 
+                      min="1" 
+                      max={maxCards} 
+                      value={qtdCards}
+                      onChange={e => setQtdCards(parseInt(e.target.value))}
+                      className="w-full accent-[#36AF85] h-2 bg-muted rounded-full appearance-none outline-none"
+                    />
                   </div>
                 </div>
 
-                <div className="text-center text-xs text-muted-foreground font-medium px-4">
-                  A IA definiu um limite máximo de {maxCards} flashcards para a densidade deste conteúdo.
+                <div className="bg-[#36AF85]/10 border border-[#36AF85]/30 rounded-2xl p-4 flex gap-3 text-left">
+                  <Sparkles className="w-5 h-5 text-[#36AF85] shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-bold text-[#36AF85] text-sm mb-1">Qualidade do Resumo</h4>
+                    <p className="text-xs text-foreground/80 leading-relaxed">
+                      Gerar mais flashcards aumenta a profundidade dos detalhes cobrados. Diminuir a quantidade focará apenas nos conceitos mais vitais.
+                    </p>
+                  </div>
                 </div>
 
-                <Button onClick={() => { haptic.selection(); setDeckName(youtubePreview?.title || tema || ''); setStep(5); }} className="w-full bg-primary text-white rounded-full font-bold h-12">
-                  Aprovar Plano
+                <Button onClick={() => { haptic.selection(); setDeckName(tema); setStep(5); }} className="w-full bg-[#36AF85] hover:bg-[#2b8c6a] text-white rounded-full font-bold h-12">
+                  Avançar para Salvar
                 </Button>
               </motion.div>
             )}
 
-            {/* ETAPA 5: FINALIZAR */}
+            {/* ETAPA 5: SALVAR DECK */}
             {step === 5 && (
               <motion.div
                 key="step5"
@@ -506,72 +572,40 @@ Retorne um JSON estrito neste formato, sugerindo uma quantidade adequada de flas
                 exit={{ opacity: 0, x: 20 }}
                 className="space-y-6"
               >
-                {loadingSave ? (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="flex flex-col items-center justify-center py-8 space-y-6"
-                  >
-                    <motion.div
-                      animate={{ y: [0, -10, 0], rotate: [0, 5, -5, 0] }}
-                      transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
-                      className="w-20 h-20 bg-[#36AF85]/10 rounded-full flex items-center justify-center border border-[#36AF85]/20 shadow-lg shadow-[#36AF85]/10"
-                    >
-                      <Scale strokeWidth={1} className="w-10 h-10 text-[#36AF85]" />
-                    </motion.div>
-                    <div className="text-center space-y-2">
-                      <h3 className="text-xl font-bold">Criando flashcards...</h3>
-                      <p className="text-sm text-muted-foreground text-center px-2 leading-relaxed">
-                        A Inteligência Artificial está transformando o conteúdo em perguntas e respostas inteligentes.
-                      </p>
-                    </div>
-                  </motion.div>
-                ) : (
-                  <>
-                    <div className="space-y-4">
-                      <div>
-                        <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">Nome do Deck</label>
-                        <Textarea 
-                          placeholder="Ex: Resumo de Direito Penal..." 
-                          value={deckName}
-                          onChange={(e) => setDeckName(e.target.value)}
-                          className="bg-muted border-border/50 min-h-[80px] font-medium resize-none leading-tight" 
-                          disabled={loadingSave}
-                        />
-                        {tema && tema !== deckName && (
-                          <div className="mt-3 text-left">
-                            <span className="text-[10px] uppercase font-bold text-muted-foreground ml-1 mb-1 block">Sugestão da IA</span>
-                            <button 
-                              onClick={() => { haptic.selection(); setDeckName(tema); }}
-                              disabled={loadingSave}
-                              className="bg-[#36AF85]/10 border border-[#36AF85]/20 text-[#36AF85] text-xs font-semibold px-3 py-2 rounded-lg cursor-pointer hover:bg-[#36AF85]/20 transition-colors inline-block text-left disabled:opacity-50"
-                            >
-                              <Sparkles className="w-3 h-3 inline-block mr-1.5 -mt-0.5" />
-                              {tema}
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
+                <div className="text-center space-y-2">
+                  <h3 className="font-bold text-xl">Identifique seu Deck</h3>
+                  <p className="text-sm text-muted-foreground">O material foi analisado e está pronto.</p>
+                </div>
 
-                    <div className="bg-[#36AF85]/10 border border-[#36AF85]/30 rounded-xl p-4 flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <motion.div
-                          animate={{ y: [0, -2, 0], rotate: [-3, 3, -3] }}
-                          transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-                        >
-                          <Scale strokeWidth={1} className="w-5 h-5 text-[#36AF85]" />
-                        </motion.div>
-                        <span className="font-bold text-sm text-[#36AF85]">Geração Automática</span>
-                      </div>
-                      <span className="text-xs font-bold bg-[#36AF85] text-white px-2 py-0.5 rounded-md">{qtdCards} Cards</span>
-                    </div>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-muted-foreground ml-1">Nome do Deck</label>
+                    <Input value={deckName} onChange={e => setDeckName(e.target.value)} placeholder="Ex: Aula 01 - Direito Penal" className="h-14 rounded-2xl bg-muted/30 border-border/80" />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-muted-foreground ml-1">Tags (Opcional)</label>
+                    <Input 
+                       value={deckTags.join(', ')} 
+                       onChange={e => setDeckTags(e.target.value.split(',').map(t => t.trim()).filter(Boolean))} 
+                       placeholder="Ex: Penal, Concursos" 
+                       className="h-14 rounded-2xl bg-muted/30 border-border/80" 
+                    />
+                    <p className="text-[10px] text-muted-foreground ml-1">Separadas por vírgula</p>
+                  </div>
+                </div>
 
-                    <Button onClick={handleSave} disabled={!deckName.trim() || loadingSave} className="w-full bg-[#36AF85] hover:bg-[#2b8c6a] text-white rounded-full font-bold h-12 shadow-lg shadow-[#36AF85]/20">
-                      <Check className="w-4 h-4 mr-2" /> Gerar Deck
-                    </Button>
-                  </>
-                )}
+                <Button onClick={handleSave} disabled={!deckName.trim() || loadingSave} className="w-full bg-[#36AF85] hover:bg-[#2b8c6a] text-white rounded-full font-bold h-12 relative overflow-hidden">
+                  {loadingSave ? (
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="w-5 h-5 animate-spin" /> Gerando Cards...
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <Check className="w-5 h-5" /> Salvar e Finalizar
+                    </div>
+                  )}
+                </Button>
               </motion.div>
             )}
           </AnimatePresence>

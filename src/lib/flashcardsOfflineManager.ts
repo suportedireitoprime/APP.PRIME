@@ -1,12 +1,15 @@
 import { supabase } from '@/integrations/supabase/client';
 
-export type Deck = {
+export interface Deck {
   id: string;
   nome: string;
-  descricao: string | null;
-  filtros: any;
+  descricao?: string;
   total_cards: number;
+  filtros?: any;
   created_at?: string;
+  thumbnail?: string;
+  tags?: string[];
+  duration?: string;
 };
 
 const DECKS_KEY = 'APP_PRIME_FLASHCARDS_DECKS';
