@@ -1,10 +1,12 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/PageHeader';
-import { Plus, FileText, Layers, Youtube, Mic, ImageIcon, Trash2 } from 'lucide-react';
+import { Plus, FileText, Layers, Youtube, Mic, ImageIcon, Trash2, Search, Book, Scale, Library, Clock, Award, Video, Info, Share2, FolderOpen } from 'lucide-react';
+import { motion, useMotionValue, useTransform, AnimatePresence } from 'framer-motion';
 import { haptic } from '@/lib/nativeHaptics';
 import WizardFlashcardsIA from '@/components/flashcards/WizardFlashcardsIA';
-import { getOfflineDecks, saveOfflineDecks, Deck } from '@/lib/flashcardsOfflineManager';
+import { getOfflineDecks, saveOfflineDecks, getOfflineFolders, saveOfflineFolders, Deck, Folder } from '@/lib/flashcardsOfflineManager';
+import { Progress } from "@/components/ui/progress";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,19 +29,121 @@ const CATEGORIAS = [
   { id: 'imagem', title: 'Imagens', sources: ['imagem', 'image'] },
 ];
 
+function SwipeableDeckItem({ deck, onSelect, onDelete, onInfo, renderIcon, getTypeColors, formatDate }: any) {
+  const x = useMotionValue(0);
+  const trashOpacity = useTransform(x, [-80, -30], [1, 0]);
+  const deckTipo = deck.filtros?.source || 'pdf';
+  const colors = getTypeColors(deckTipo);
+
+  return (
+    <div className="relative group overflow-hidden rounded-xl mb-3 border border-border/80 bg-red-500/10">
+      <div className="absolute inset-y-0 right-0 w-24 bg-red-500 flex flex-col items-center justify-center text-white rounded-r-xl">
+        <motion.div style={{ opacity: trashOpacity }} className="flex flex-col items-center">
+          <Trash2 className="w-5 h-5 mb-1" />
+          <span className="text-[10px] font-bold uppercase tracking-wider">Excluir</span>
+        </motion.div>
+      </div>
+
+      <motion.div
+        drag="x"
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={{ left: 0.2, right: 0 }}
+        style={{ x }}
+        onDragEnd={(e, info) => {
+          if (info.offset.x < -80) {
+            onDelete(deck);
+            setTimeout(() => x.set(0), 300);
+          } else {
+            x.set(0);
+          }
+        }}
+        onClick={(e) => {
+          if (x.get() < -10) return;
+          onSelect(deck);
+        }}
+        className="relative bg-card hover:border-[#36AF85]/50 transition-all cursor-pointer shadow-sm hover:shadow-md flex items-center p-3 gap-3 overflow-hidden rounded-xl h-full w-full"
+      >
+        {deck.thumbnail ? (
+          <div className="w-20 h-14 bg-muted rounded-lg relative overflow-hidden shrink-0 border border-border/50">
+            <img src={deck.thumbnail} alt={deck.nome} className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute inset-0 bg-black/20 pointer-events-none" />
+            <div className="absolute bottom-1 right-1 bg-black/70 backdrop-blur-sm px-1 rounded text-[8px] text-white font-bold">
+              {deck.duration || 'Vídeo'}
+            </div>
+          </div>
+        ) : (
+          <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${colors.iconBg}`}>
+            {renderIcon(deckTipo)}
+          </div>
+        )}
+        
+        <div className="flex-1 min-w-0 flex flex-col justify-center py-0.5">
+          <h4 className="font-bold text-foreground text-sm leading-tight truncate">{deck.nome}</h4>
+          
+          <div className="flex flex-wrap items-center gap-2 mt-1.5">
+            {deck.materia && (
+              <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-[#36AF85]/10 text-[#36AF85] border border-[#36AF85]/20 truncate max-w-[120px]">
+                {deck.materia}
+              </span>
+            )}
+            {deck.tags && deck.tags.length > 0 && (
+              <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-muted text-muted-foreground border border-border/50 truncate max-w-[80px]">
+                {deck.tags[0]}
+              </span>
+            )}
+            <p className="text-[10px] text-muted-foreground font-semibold flex items-center gap-1">
+              <Layers className="w-3 h-3" />
+              {deck.total_cards} cards
+            </p>
+          </div>
+          {deck.total_cards > 0 && deck.cards_compreendidos !== undefined && (
+            <div className="mt-2 w-full max-w-[120px]">
+              <Progress value={(deck.cards_compreendidos / deck.total_cards) * 100} className="h-1 [&>div]:bg-[#36AF85]" />
+            </div>
+          )}
+        </div>
+
+        <div className="flex flex-col items-end gap-2 shrink-0">
+          <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider bg-background/50 px-1.5 py-0.5 rounded border border-border/50 hidden sm:block">
+            {formatDate(deck.created_at)}
+          </span>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onInfo(deck);
+            }}
+            className="p-1.5 text-muted-foreground hover:text-[#36AF85] hover:bg-[#36AF85]/10 rounded-md transition-colors"
+            aria-label="Informações do Deck"
+          >
+            <Info className="w-4 h-4" />
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
 export default function FlashcardsPersonalizado() {
   const navigate = useNavigate();
   const [wizardOpen, setWizardOpen] = useState(false);
-  const [wizardSource, setWizardSource] = useState<'pdf' | 'image' | 'youtube' | 'audio' | null>(null);
+  const [wizardSource, setWizardSource] = useState<'document' | 'image' | 'youtube' | 'audio' | null>(null);
   const [offlineDecks, setOfflineDecks] = useState<Deck[]>([]);
   const [categoriaSelecionada, setCategoriaSelecionada] = useState<string | null>(null);
   const [dataSelecionada, setDataSelecionada] = useState<string>('Todas');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDeck, setSelectedDeck] = useState<Deck | null>(null);
+  const [appendDeckId, setAppendDeckId] = useState<string | null>(null);
+  const [raioXDeck, setRaioXDeck] = useState<Deck | null>(null);
+  const [deckToDelete, setDeckToDelete] = useState<Deck | null>(null);
+  const [offlineFolders, setOfflineFolders] = useState<Folder[]>([]);
+  const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
+  const [isCreatingFolder, setIsCreatingFolder] = useState(false);
+  const [newFolderName, setNewFolderName] = useState('');
 
   useEffect(() => {
     document.title = 'Personalizado | Flashcards';
     setOfflineDecks(getOfflineDecks());
+    setOfflineFolders(getOfflineFolders());
   }, []);
 
   // Recarregar os decks quando o modal fechar
@@ -53,6 +157,17 @@ export default function FlashcardsPersonalizado() {
     e.stopPropagation();
     haptic.medium();
     const newDecks = offlineDecks.filter(d => d.id !== id);
+    setOfflineDecks(newDecks);
+    saveOfflineDecks(newDecks);
+  };
+
+  const handleUpdateDeckFolder = (folderId: string | null) => {
+    if (!raioXDeck) return;
+    haptic.selection();
+    const updated = { ...raioXDeck, folderId: folderId || undefined };
+    setRaioXDeck(updated);
+    
+    const newDecks = offlineDecks.map(d => d.id === updated.id ? updated : d);
     setOfflineDecks(newDecks);
     saveOfflineDecks(newDecks);
   };
@@ -90,6 +205,18 @@ export default function FlashcardsPersonalizado() {
   };
 
   // Filtragem para a view de Categoria
+  // Filtra por pasta também
+  const recentesGeral = useMemo(() => {
+    let list = offlineDecks
+      .slice()
+      .sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime());
+    
+    if (activeFolderId) {
+      list = list.filter(d => d.folderId === activeFolderId);
+    }
+    return list;
+  }, [offlineDecks, activeFolderId]);
+
   const decksDaCategoria = useMemo(() => {
     return categoriaSelecionada 
       ? offlineDecks.filter(d => {
@@ -109,8 +236,6 @@ export default function FlashcardsPersonalizado() {
     return decksDaCategoria.filter(d => formatDate(d.created_at) === dataSelecionada);
   }, [decksDaCategoria, dataSelecionada]);
 
-  // Lista de Recentes global
-  const recentesGeral = offlineDecks.slice(0, 10);
 
   const groupedRecentes = useMemo(() => {
     const groups: { [key: string]: Deck[] } = {};
@@ -132,78 +257,17 @@ export default function FlashcardsPersonalizado() {
   }, [offlineDecks, searchQuery]);
 
   const renderDeckCard = (deck: Deck) => {
-    const deckTipo = deck.filtros?.source || 'pdf';
-    const colors = getTypeColors(deckTipo);
     return (
-      <div 
+      <SwipeableDeckItem 
         key={deck.id}
-        onClick={() => {
-          haptic.selection();
-          setSelectedDeck(deck);
-        }}
-        className="group relative bg-card border border-border/80 rounded-xl hover:border-[#36AF85]/50 transition-all cursor-pointer shadow-sm hover:shadow-md flex items-center p-3 gap-3 overflow-hidden"
-      >
-        {deck.thumbnail ? (
-          <div className="w-20 h-14 bg-muted rounded-lg relative overflow-hidden shrink-0 border border-border/50">
-            <img src={deck.thumbnail} alt={deck.nome} className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity" />
-            <div className="absolute inset-0 bg-black/20 pointer-events-none" />
-            <div className="absolute bottom-1 right-1 bg-black/70 backdrop-blur-sm px-1 rounded text-[8px] text-white font-bold">
-              {deck.duration || 'Vídeo'}
-            </div>
-          </div>
-        ) : (
-          <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${colors.iconBg}`}>
-            {renderIcon(deckTipo)}
-          </div>
-        )}
-        
-        <div className="flex-1 min-w-0 flex flex-col justify-center py-0.5">
-          <h4 className="font-bold text-foreground text-sm leading-tight truncate">{deck.nome}</h4>
-          
-          <div className="flex items-center gap-2 mt-1.5">
-            {deck.tags && deck.tags.length > 0 && (
-              <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-muted text-muted-foreground border border-border/50 truncate max-w-[80px]">
-                {deck.tags[0]}
-              </span>
-            )}
-            <p className="text-[10px] text-muted-foreground font-semibold flex items-center gap-1">
-              <Layers className="w-3 h-3" />
-              {deck.total_cards} cards
-            </p>
-          </div>
-        </div>
-
-        <div className="flex flex-col items-end gap-2 shrink-0">
-          <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider bg-background/50 px-1.5 py-0.5 rounded border border-border/50 hidden sm:block">
-            {formatDate(deck.created_at)}
-          </span>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <button
-                onClick={(e) => e.stopPropagation()}
-                className="p-1.5 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded-md transition-colors"
-                aria-label="Excluir deck"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            </AlertDialogTrigger>
-            <AlertDialogContent onClick={(e) => e.stopPropagation()}>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Excluir deck?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Tem certeza que deseja excluir "{deck.nome}"? Esta ação não pode ser desfeita e os flashcards serão apagados.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel onClick={(e) => e.stopPropagation()}>Cancelar</AlertDialogCancel>
-                <AlertDialogAction onClick={(e) => handleDeleteDeck(e, deck.id)} className="bg-red-600 hover:bg-red-700 text-white">
-                  Excluir
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
-      </div>
+        deck={deck} 
+        onSelect={(d: Deck) => { haptic.selection(); setSelectedDeck(d); }}
+        onDelete={(d: Deck) => { haptic.medium(); setDeckToDelete(d); }}
+        onInfo={(d: Deck) => { haptic.selection(); setRaioXDeck(d); }}
+        renderIcon={renderIcon}
+        getTypeColors={getTypeColors}
+        formatDate={formatDate}
+      />
     );
   };
 
@@ -290,6 +354,43 @@ export default function FlashcardsPersonalizado() {
                 })}
               </div>
 
+              {/* TEMPLATES RÁPIDOS SE VAZIO */}
+              {offlineDecks.length === 0 && (
+                <div className="mb-10">
+                  <div className="flex items-center justify-between mb-4 px-1">
+                    <h3 className="text-sm font-extrabold uppercase tracking-widest text-muted-foreground">Ideias de Uso</h3>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {[
+                      { id: 'youtube', title: 'Aulas do YouTube', desc: 'Resumo e questões de vídeos', icon: <Youtube className="w-5 h-5 text-red-500" />, bg: 'bg-red-500/10' },
+                      { id: 'document', title: 'Documentos & PDFs', desc: 'Gere questões de apostilas', icon: <FileText className="w-5 h-5 text-blue-500" />, bg: 'bg-blue-500/10' },
+                      { id: 'document', title: 'Leis Secas', desc: 'Memorize artigos complexos', icon: <Book className="w-5 h-5 text-emerald-500" />, bg: 'bg-emerald-500/10' },
+                      { id: 'image', title: 'Mapas Mentais', desc: 'Extraia conceitos de imagens', icon: <ImageIcon className="w-5 h-5 text-purple-500" />, bg: 'bg-purple-500/10' },
+                      { id: 'document', title: 'Jurisprudência', desc: 'Decisões e Súmulas', icon: <Scale className="w-5 h-5 text-amber-500" />, bg: 'bg-amber-500/10' },
+                      { id: 'audio', title: 'Áudios e Podcasts', desc: 'Transcrição e flashcards', icon: <Mic className="w-5 h-5 text-indigo-500" />, bg: 'bg-indigo-500/10' },
+                      { id: 'document', title: 'Doutrina', desc: 'Conceitos fundamentais', icon: <Library className="w-5 h-5 text-orange-500" />, bg: 'bg-orange-500/10' },
+                      { id: 'youtube', title: 'Julgamentos', desc: 'Análise de sustentações orais', icon: <Video className="w-5 h-5 text-pink-500" />, bg: 'bg-pink-500/10' },
+                      { id: 'document', title: 'Prazos Processuais', desc: 'Fixação de datas e prazos', icon: <Clock className="w-5 h-5 text-cyan-500" />, bg: 'bg-cyan-500/10' },
+                      { id: 'document', title: 'Súmulas Vinculantes', desc: 'Treino intensivo STF/STJ', icon: <Award className="w-5 h-5 text-yellow-500" />, bg: 'bg-yellow-500/10' },
+                    ].map((item, idx) => (
+                      <div 
+                        key={idx}
+                        onClick={() => { haptic.selection(); setWizardSource(item.id as "youtube" | "document" | "image" | "audio"); setWizardOpen(true); }}
+                        className="bg-card border border-border/80 hover:border-[#36AF85]/50 rounded-2xl p-3 flex gap-4 cursor-pointer transition-all active:scale-95 items-center"
+                      >
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${item.bg}`}>
+                          {item.icon}
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-sm text-foreground leading-none">{item.title}</h4>
+                          <p className="text-[10px] text-muted-foreground mt-1">{item.desc}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* RECENTES */}
               {recentesGeral.length > 0 && (
                 <>
@@ -364,11 +465,14 @@ export default function FlashcardsPersonalizado() {
         onClick={() => {
           haptic.selection();
           if (categoriaSelecionada) {
-            const mapped = categoriaSelecionada === 'imagem' ? 'image' : categoriaSelecionada;
-            setWizardSource(mapped as any);
+            let mapped = categoriaSelecionada;
+            if (mapped === 'imagem') mapped = 'image';
+            if (mapped === 'pdf') mapped = 'document';
+            setWizardSource(mapped as "youtube" | "document" | "image" | "audio");
           } else {
             setWizardSource(null);
           }
+          setAppendDeckId(null);
           setWizardOpen(true);
         }}
         className="fixed bottom-[calc(2rem+env(safe-area-inset-bottom,0px))] right-6 z-50 w-14 h-14 bg-[#36AF85] hover:bg-[#2b8c6a] rounded-full flex items-center justify-center shadow-lg shadow-[#36AF85]/30 active:scale-95 transition-transform"
@@ -376,7 +480,7 @@ export default function FlashcardsPersonalizado() {
         <Plus className="w-6 h-6 text-white" />
       </button>
 
-      <WizardFlashcardsIA open={wizardOpen} onOpenChange={setWizardOpen} initialSource={wizardSource} />
+      <WizardFlashcardsIA open={wizardOpen} onOpenChange={setWizardOpen} initialSource={wizardSource} appendDeckId={appendDeckId} />
 
       <Sheet open={!!selectedDeck} onOpenChange={(open) => !open && setSelectedDeck(null)}>
         <SheetContent side="bottom" className="p-0 bg-background border-t border-border/50 max-h-[85vh] flex flex-col rounded-t-[2rem]">
@@ -449,22 +553,158 @@ export default function FlashcardsPersonalizado() {
                 )}
               </div>
 
-              <div className="p-6 pt-2 bg-background border-t border-border/50">
+              <div className="p-6 pt-2 bg-background border-t border-border/50 space-y-3">
                 <Button 
                   onClick={() => {
                     haptic.selection();
                     const c = getTypeColors(selectedDeck.filtros?.source || 'pdf').hex;
-                    navigate(`/flashcards/estudar?deck=${selectedDeck.id}&cor=${encodeURIComponent(c)}`);
+                    navigate(`/flashcards/estudar?deck=${selectedDeck.id}&cor=${encodeURIComponent(c)}&modo=todos`);
                   }} 
                   className="w-full bg-[#36AF85] hover:bg-[#2b8c6a] text-white rounded-full font-bold h-14 text-base shadow-lg shadow-[#36AF85]/20 active:scale-95 transition-all"
                 >
-                  Iniciar Sessão
+                  Iniciar Sessão <span className="ml-1 opacity-80 text-sm font-normal">({selectedDeck.total_cards} cards)</span>
                 </Button>
+                
+                <div className="flex gap-2">
+                  <Button 
+                    variant="outline"
+                    onClick={() => {
+                      haptic.selection();
+                      setWizardSource(null);
+                      setAppendDeckId(selectedDeck.id);
+                      setWizardOpen(true);
+                      setSelectedDeck(null);
+                    }} 
+                    className="flex-1 rounded-full h-12 font-bold border-border/50 text-foreground"
+                  >
+                    <Plus className="w-4 h-4 mr-2" /> Adicionar Cards
+                  </Button>
+
+                  {selectedDeck.cards_a_revisar !== undefined && selectedDeck.cards_a_revisar > 0 && (
+                    <Button 
+                      variant="outline"
+                      onClick={() => {
+                        haptic.selection();
+                        const c = getTypeColors(selectedDeck.filtros?.source || 'pdf').hex;
+                        navigate(`/flashcards/estudar?deck=${selectedDeck.id}&cor=${encodeURIComponent(c)}&modo=revisar`);
+                      }} 
+                      className="flex-1 rounded-full h-12 font-bold border-red-500/30 text-red-500 hover:bg-red-500/10 hover:text-red-600"
+                    >
+                      Revisar Erros ({selectedDeck.cards_a_revisar})
+                    </Button>
+                  )}
+                </div>
               </div>
             </>
           )}
         </SheetContent>
       </Sheet>
+
+      {/* RAIO-X SHEET */}
+      <Sheet open={!!raioXDeck} onOpenChange={(open) => !open && setRaioXDeck(null)}>
+        <SheetContent side="bottom" className="p-0 bg-background border-t border-border/50 max-h-[90vh] flex flex-col rounded-t-[2rem]">
+          {raioXDeck && (
+            <div className="flex flex-col h-full overflow-y-auto p-6 scrollbar-hide">
+              <SheetHeader className="mb-6 flex flex-col items-center">
+                <div className="w-16 h-16 rounded-2xl bg-[#36AF85]/10 flex items-center justify-center shrink-0 mb-2">
+                  {renderIcon(raioXDeck.filtros?.source || 'pdf')}
+                </div>
+                <SheetTitle className="text-xl font-black text-foreground text-center line-clamp-2">
+                  {raioXDeck.nome}
+                </SheetTitle>
+                <p className="text-xs text-muted-foreground text-center mt-1 uppercase tracking-widest font-bold">
+                  Criado em {formatDate(raioXDeck.created_at)}
+                </p>
+              </SheetHeader>
+
+              <div className="grid grid-cols-2 gap-4 mb-8">
+                <div className="bg-card border border-border/50 rounded-xl p-4 flex flex-col items-center justify-center">
+                  <span className="text-3xl font-black text-[#36AF85]">{raioXDeck.total_cards}</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mt-1">Cards Total</span>
+                </div>
+                <div className="bg-card border border-border/50 rounded-xl p-4 flex flex-col items-center justify-center">
+                  <span className="text-3xl font-black text-amber-500">{(raioXDeck.cards_compreendidos || 0)}</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mt-1">Acertos Recentes</span>
+                </div>
+              </div>
+
+              <div className="mb-6 space-y-2">
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">Pasta</label>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => handleUpdateDeckFolder(null)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors ${!raioXDeck.folderId ? 'bg-[#36AF85] text-white border-[#36AF85]' : 'bg-card text-muted-foreground border-border/80'}`}
+                  >
+                    Nenhuma
+                  </button>
+                  {offlineFolders.map(f => (
+                    <button
+                      key={f.id}
+                      onClick={() => handleUpdateDeckFolder(f.id)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors ${raioXDeck.folderId === f.id ? 'bg-[#36AF85] text-white border-[#36AF85]' : 'bg-card text-muted-foreground border-border/80'}`}
+                    >
+                      {f.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-3 mt-auto">
+                <Button 
+                  className="w-full h-14 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-lg shadow-indigo-600/20 text-sm font-bold gap-2"
+                  onClick={() => {
+                    haptic.selection();
+                    // Implementação de compartilhamento
+                    alert('Gerando link seguro... Funcionalidade de compartilhamento em construção');
+                  }}
+                >
+                  <Share2 className="w-5 h-5" /> Compartilhar Deck via Link
+                </Button>
+                
+                <Button 
+                  variant="outline"
+                  className="w-full h-14 border-border/80 text-foreground hover:bg-accent rounded-xl text-sm font-bold"
+                  onClick={() => {
+                    haptic.selection();
+                    setSelectedDeck(raioXDeck);
+                    setRaioXDeck(null);
+                  }}
+                >
+                  <Book className="w-5 h-5 mr-2" /> Iniciar Estudo
+                </Button>
+              </div>
+            </div>
+          )}
+        </SheetContent>
+      </Sheet>
+
+      <AlertDialog open={!!deckToDelete} onOpenChange={(open) => !open && setDeckToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir deck?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja excluir "{deckToDelete?.nome}"? Esta ação não pode ser desfeita e os flashcards serão apagados.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => {
+                if (deckToDelete) {
+                  const newDecks = offlineDecks.filter(d => d.id !== deckToDelete.id);
+                  setOfflineDecks(newDecks);
+                  saveOfflineDecks(newDecks);
+                  setDeckToDelete(null);
+                }
+              }} 
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
     </div>
   );
 }

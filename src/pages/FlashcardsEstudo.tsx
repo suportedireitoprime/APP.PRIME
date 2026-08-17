@@ -9,7 +9,7 @@ import FlashcardsBottomNav from '@/components/flashcards/FlashcardsBottomNav';
 import AreaTemasSheet from '@/components/flashcards/AreaTemasSheet';
 import {
   CheckCircle2, RotateCcw, SlidersHorizontal, BookOpen, Scale, Lightbulb, ChevronRight, Layers,
-  Shuffle, ArrowDownNarrowWide, BarChart3,
+  Shuffle, ArrowDownNarrowWide, BarChart3, Volume2, VolumeX, Shuffle as ShuffleIcon
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -20,6 +20,7 @@ import { playFlipSound } from '@/lib/flipSound';
 import { getAreaVisual } from '@/lib/flashcardsAreaVisual';
 import { useFlashcardsSessao, useFlashcardsResumoAreas, FlashcardCard } from '@/lib/flashcardsQueries';
 import { saveFlashcardsSessao, getFlashcardsSessoes } from '@/lib/flashcardsSessoes';
+import { getOfflineCards, saveOfflineCards, getOfflineDecks, saveOfflineDecks } from '@/lib/flashcardsOfflineManager';
 import { useGatedFeature } from '@/hooks/useGatedFeature';
 import { resetBodyScrollLock } from '@/hooks/useBodyScrollLock';
 import ContagemRegressiva from '@/components/questoes/ContagemRegressiva';
@@ -53,6 +54,29 @@ function hashString(s: string): number {
     h = Math.imul(h, 16777619);
   }
   return Math.abs(h);
+}
+
+function ConfettiShower() {
+  const pieces = Array.from({ length: 80 });
+  return (
+    <div className="absolute inset-0 pointer-events-none z-[100] overflow-hidden flex justify-center">
+      {pieces.map((_, i) => (
+        <motion.div
+          key={i}
+          initial={{ y: -20, x: 0, rotate: Math.random() * 360, opacity: 1, scale: Math.random() * 0.5 + 0.5 }}
+          animate={{
+            y: 500,
+            x: `+=${(Math.random() - 0.5) * 600}`,
+            rotate: Math.random() * 720,
+            opacity: [1, 1, 0]
+          }}
+          transition={{ duration: 1.5 + Math.random() * 2, ease: 'easeIn', delay: Math.random() * 0.4 }}
+          className="absolute top-0 w-2.5 h-2.5 rounded-sm"
+          style={{ backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'][i % 6] }}
+        />
+      ))}
+    </div>
+  );
 }
 
 type AreaResumo = {
@@ -166,9 +190,28 @@ const FlashcardsEstudo = () => {
   const [areaSheet, setAreaSheet] = useState<string | null>(null);
   const [exitDirection, setExitDirection] = useState<'left' | 'down'>('left');
   const [emContagem, setEmContagem] = useState(!escolhendo);
+  const [modoAudio, setModoAudio] = useState(false);
+  const [modoReverso, setModoReverso] = useState(false);
+  const audioTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const salvando = useRef(false);
   const cardContainerRef = useRef<HTMLDivElement>(null);
   const gateFlashcards = useGatedFeature('flashcards', 'flashcards');
+  import { useMotionValue, useTransform } from 'framer-motion';
+  
+  const tiltX = useMotionValue(0);
+  const tiltY = useMotionValue(0);
+  const rotateX = useTransform(tiltY, [-200, 200], [12, -12]);
+  const rotateY = useTransform(tiltX, [-200, 200], [-12, 12]);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    tiltX.set(e.clientX - rect.left - rect.width / 2);
+    tiltY.set(e.clientY - rect.top - rect.height / 2);
+  };
+  const handleMouseLeave = () => {
+    tiltX.set(0);
+    tiltY.set(0);
+  };
 
   const loading = (loadingCards || emContagem) && !escolhendo;
 
@@ -249,6 +292,53 @@ const FlashcardsEstudo = () => {
     setVirado((v) => !v);
   };
 
+  useEffect(() => {
+    if (!modoAudio) {
+      window.speechSynthesis.cancel();
+      if (audioTimeoutRef.current) clearTimeout(audioTimeoutRef.current);
+      return;
+    }
+    
+    if (cards.length > 0 && idx < cards.length) {
+      const card = cards[idx];
+      window.speechSynthesis.cancel();
+      if (audioTimeoutRef.current) clearTimeout(audioTimeoutRef.current);
+
+      const utPergunta = new SpeechSynthesisUtterance(card.pergunta);
+      utPergunta.lang = 'pt-BR';
+      utPergunta.rate = 1.0;
+      
+      utPergunta.onend = () => {
+        audioTimeoutRef.current = setTimeout(() => {
+          setVirado(true);
+          const utResposta = new SpeechSynthesisUtterance(card.resposta);
+          utResposta.lang = 'pt-BR';
+          utResposta.rate = 1.0;
+          utResposta.onend = () => {
+            audioTimeoutRef.current = setTimeout(() => {
+              if (idx + 1 < cards.length) {
+                setVirado(false);
+                setIdx(i => i + 1);
+                setFeitos(f => f + 1);
+              } else {
+                setModoAudio(false);
+                toast.success('Sessão concluída em áudio!');
+              }
+            }, 3000); // 3 segundos antes do próximo
+          };
+          window.speechSynthesis.speak(utResposta);
+        }, 1500); // 1.5s pra pensar antes da resposta
+      };
+      
+      window.speechSynthesis.speak(utPergunta);
+    }
+
+    return () => {
+      window.speechSynthesis.cancel();
+      if (audioTimeoutRef.current) clearTimeout(audioTimeoutRef.current);
+    };
+  }, [modoAudio, idx, cards]);
+
   const responder = (status: 'compreendido' | 'revisar') => {
     if (!atual || salvando.current) return;
     if (gateFlashcards.blocked) { gateFlashcards.openGate(); return; }
@@ -278,7 +368,7 @@ const FlashcardsEstudo = () => {
       setIdx((i) => i + 1);
     }
 
-    // Salvar no histórico local
+    // Salvar no histórico local geral
     const novoFeitos = feitos + 1;
     const titleParts = [];
     if (areaParam || areasParam) titleParts.push(areaParam || 'Geral');
@@ -295,7 +385,35 @@ const FlashcardsEstudo = () => {
       totalCards: cards.length,
     });
 
-    // FIRE AND FORGET: Salva no banco em background
+    // Tracking de Erros em Decks Personalizados Offline
+    if (deckId) {
+      const offlineDecks = getOfflineDecks();
+      const deckIndex = offlineDecks.findIndex(d => d.id === deckId);
+      if (deckIndex >= 0) {
+        const deck = offlineDecks[deckIndex];
+        const cardsOffline = getOfflineCards(deckId);
+        const cardIndex = cardsOffline.findIndex(c => c.id === atual.id);
+        
+        if (cardIndex >= 0) {
+          const oldStatus = cardsOffline[cardIndex].status;
+          const newStatus = status === 'compreendido' ? 'memorizado' : 'errou';
+          
+          if (oldStatus !== newStatus) {
+            cardsOffline[cardIndex].status = newStatus;
+            saveOfflineCards(deckId, cardsOffline);
+            
+            const compreendidos = cardsOffline.filter(c => c.status === 'memorizado').length;
+            const a_revisar = cardsOffline.filter(c => c.status === 'errou' || c.status === 'dificil').length;
+            
+            offlineDecks[deckIndex].cards_compreendidos = compreendidos;
+            offlineDecks[deckIndex].cards_a_revisar = a_revisar;
+            saveOfflineDecks(offlineDecks);
+          }
+        }
+      }
+    }
+
+    // FIRE AND FORGET: Salva no banco em background (somente se não for deck offline gerado, ou salva assim mesmo para Analytics global)
     supabase.auth.getUser().then(({ data: auth }) => {
       if (auth.user) {
         supabase.from('flashcards_progresso').upsert(
@@ -371,13 +489,38 @@ const FlashcardsEstudo = () => {
           onBack={() => navigate('/flashcards')}
           rightAction={
             !escolhendo && (
-              <Sheet>
-                <SheetTrigger asChild>
-                  <button className="flex h-10 w-10 items-center justify-center rounded-full bg-card border border-border/80 shadow-sm text-foreground hover:bg-muted">
-                    <BarChart3 className="h-4.5 w-4.5 text-foreground" />
-                  </button>
-                </SheetTrigger>
-                <SheetContent side="bottom" className="max-h-[90dvh] overflow-y-auto rounded-t-3xl border-t border-border">
+              <div className="flex gap-2">
+                {deckId && (
+                  <>
+                    <button 
+                      onClick={() => {
+                        haptic.selection();
+                        setModoAudio(!modoAudio);
+                      }} 
+                      title="Estudo por Áudio"
+                      className={`flex h-10 w-10 items-center justify-center rounded-full border border-border/80 shadow-sm transition-colors ${modoAudio ? 'bg-[#36AF85] text-white border-[#36AF85]' : 'bg-card text-foreground hover:bg-muted'}`}
+                    >
+                      {modoAudio ? <Volume2 className="h-4.5 w-4.5" /> : <VolumeX className="h-4.5 w-4.5 opacity-50" />}
+                    </button>
+                    <button 
+                      onClick={() => {
+                        haptic.selection();
+                        setModoReverso(!modoReverso);
+                      }} 
+                      title="Modo Jeopardy (Reverso)"
+                      className={`flex h-10 w-10 items-center justify-center rounded-full border border-border/80 shadow-sm transition-colors ${modoReverso ? 'bg-[#36AF85] text-white border-[#36AF85]' : 'bg-card text-foreground hover:bg-muted'}`}
+                    >
+                      <ShuffleIcon className="h-4.5 w-4.5" />
+                    </button>
+                  </>
+                )}
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <button className="flex h-10 w-10 items-center justify-center rounded-full bg-card border border-border/80 shadow-sm text-foreground hover:bg-muted">
+                      <BarChart3 className="h-4.5 w-4.5 text-foreground" />
+                    </button>
+                  </SheetTrigger>
+                  <SheetContent side="bottom" className="max-h-[90dvh] overflow-y-auto rounded-t-3xl border-t border-border">
                   <SheetHeader><SheetTitle>Sessão Atual</SheetTitle></SheetHeader>
 
                   <div className="mt-4 space-y-6 pb-8">
@@ -475,8 +618,9 @@ const FlashcardsEstudo = () => {
                       </div>
                     </div>
                   </div>
-                </SheetContent>
-              </Sheet>
+                  </SheetContent>
+                </Sheet>
+              </div>
             )
           }
         />
@@ -543,7 +687,14 @@ const FlashcardsEstudo = () => {
 
             {/* Barra de progresso */}
             <div className="flex items-center gap-3">
-              <Progress value={cards.length ? ((idx + 1) / cards.length) * 100 : 0} className="h-2 flex-1 [&>div]:bg-emerald-500" />
+              <div className="h-2 flex-1 bg-secondary rounded-full overflow-hidden relative">
+                <motion.div 
+                  initial={{ width: 0 }}
+                  animate={{ width: `${cards.length ? ((idx + 1) / cards.length) * 100 : 0}%` }}
+                  transition={{ type: 'spring', bounce: 0.5, duration: 0.8 }}
+                  className="absolute inset-y-0 left-0 bg-emerald-500"
+                />
+              </div>
               <span className="text-xs font-black tabular-nums text-muted-foreground">
                 <AnimatedNumber value={idx + 1} />/<AnimatedNumber value={cards.length} />
               </span>
@@ -565,11 +716,12 @@ const FlashcardsEstudo = () => {
             )}
 
             {!loading && cards.length > 0 && !atual && (
-              <div className="rounded-3xl border border-border bg-card p-10 text-center">
+              <div className="rounded-3xl border border-border bg-card p-10 text-center relative overflow-hidden">
+                <ConfettiShower />
                 <CheckCircle2 className="mx-auto mb-3 h-12 w-12 text-emerald-500" />
                 <h3 className="text-xl font-black text-foreground">Sessão Concluída!</h3>
                 <p className="mt-1 text-sm text-muted-foreground">{feitos} flashcards estudados com sucesso.</p>
-                <Button className="mt-5 rounded-2xl px-6 font-bold" onClick={() => { setFeitos(0); refetchCards(); }}>Nova sessão</Button>
+                <Button className="mt-5 rounded-2xl px-6 font-bold relative z-10" onClick={() => { setFeitos(0); refetchCards(); }}>Nova sessão</Button>
               </div>
             )}
 
@@ -626,6 +778,12 @@ const FlashcardsEstudo = () => {
                       }
                       transition={{ duration: 0.35, ease: [0.34, 1.25, 0.64, 1] }}
                       className="relative z-10 w-full h-full [perspective:1600px]"
+                    >
+                    <motion.div
+                      onMouseMove={handleMouseMove}
+                      onMouseLeave={handleMouseLeave}
+                      style={{ rotateX, rotateY }}
+                      className="w-full h-full"
                     >
                     <div
                       role="button"
@@ -696,8 +854,8 @@ const FlashcardsEstudo = () => {
                           </div>
                           
                           <div className="relative z-10 flex-1 flex items-center justify-center text-center">
-                            <motion.p initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.3 }} className="text-xl md:text-2xl leading-snug font-medium" style={{ fontFamily: "'Merriweather','Georgia',serif", textShadow: "0 2px 16px rgba(0,0,0,0.6)" }}>
-                              {atual.pergunta}
+                            <motion.p initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.3 }} className={`leading-snug font-medium ${modoReverso && atual.resposta.length > 80 ? 'text-lg md:text-xl' : 'text-xl md:text-2xl'}`} style={{ fontFamily: "'Merriweather','Georgia',serif", textShadow: "0 2px 16px rgba(0,0,0,0.6)" }}>
+                              {modoReverso ? atual.resposta : atual.pergunta}
                             </motion.p>
                           </div>
                           
@@ -726,16 +884,16 @@ const FlashcardsEstudo = () => {
 
                           <div className="relative z-10 flex-1 flex flex-col">
                             <p className="text-[10px] uppercase tracking-[0.2em] font-semibold mb-3 text-center" style={{ color: accent }}>
-                              Resposta Explicada
+                              {modoReverso ? 'Pergunta Original' : 'Resposta Explicada'}
                             </p>
                             <div className="flex-1 flex flex-col items-center justify-center space-y-4 pb-4">
                               <p className={`whitespace-pre-wrap font-medium leading-relaxed text-foreground text-center max-w-prose ${
-                                atual.resposta.length < 40 ? 'text-2xl sm:text-3xl' :
-                                atual.resposta.length < 80 ? 'text-xl sm:text-2xl' :
-                                atual.resposta.length < 150 ? 'text-lg sm:text-xl' :
+                                (modoReverso ? atual.pergunta : atual.resposta).length < 40 ? 'text-2xl sm:text-3xl' :
+                                (modoReverso ? atual.pergunta : atual.resposta).length < 80 ? 'text-xl sm:text-2xl' :
+                                (modoReverso ? atual.pergunta : atual.resposta).length < 150 ? 'text-lg sm:text-xl' :
                                 'text-base sm:text-lg'
                               }`}>
-                                {atual.resposta}
+                                {modoReverso ? atual.pergunta : atual.resposta}
                               </p>
                             </div>
                             
@@ -750,6 +908,7 @@ const FlashcardsEstudo = () => {
                         </div>
                       </div>
                     </div>
+                    </motion.div>
                   </motion.div>
                 </AnimatePresence>
                 </div>

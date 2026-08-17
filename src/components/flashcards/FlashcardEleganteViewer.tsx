@@ -11,6 +11,7 @@ import {
   Loader2,
   Headphones,
   Pause,
+  Shuffle,
 } from "lucide-react";
 import { getTemaCover } from "@/lib/flashcards-tema-cover";
 import laurel from '@/assets/landing-tribunal/laurel-leaf.png';
@@ -93,6 +94,22 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
   const [isAutoPlaying, setIsAutoPlaying] = useState(false);
   const synthRef = useRef<SpeechSynthesis | null>(typeof window !== 'undefined' ? window.speechSynthesis : null);
 
+  const [isShuffled, setIsShuffled] = useState(false);
+  const [shuffledIndices, setShuffledIndices] = useState<number[]>([]);
+
+  useEffect(() => {
+    if (isShuffled && total > 0) {
+      const indices = Array.from({length: total}, (_, i) => i);
+      for (let i = indices.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [indices[i], indices[j]] = [indices[j], indices[i]];
+      }
+      setShuffledIndices(indices);
+    } else {
+      setShuffledIndices(Array.from({length: total}, (_, i) => i));
+    }
+  }, [isShuffled, total]);
+
   useEffect(() => {
     return () => {
       if (synthRef.current) synthRef.current.cancel();
@@ -101,6 +118,7 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
 
   useEffect(() => {
     setProgresso({ novos: total, erros: 0, acertos: 0 });
+    setIdx(0); // reset when total changes
   }, [total]);
 
   const flipSoundRef = useRef<HTMLAudioElement | null>(null);
@@ -140,7 +158,8 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
     } catch {}
   }, []);
 
-  const card = cards?.[idx];
+  const actualIdx = (shuffledIndices && shuffledIndices.length > idx) ? shuffledIndices[idx] : idx;
+  const card = cards?.[actualIdx];
   const isLast = idx === total - 1;
 
   useEffect(() => {
@@ -166,13 +185,6 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
     return fallbacks[idx % fallbacks.length];
   }, [idx]);
 
-  if (!total || !card) {
-    return (
-      <div className="p-8 text-center text-muted-foreground">
-        Nenhum flashcard disponível ainda.
-      </div>
-    );
-  }
 
   const goNext = useCallback(() => {
     if (idx >= total - 1) return;
@@ -256,6 +268,7 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
     };
   }, [isAutoPlaying, idx, flipped, card, isLast, goNext, playFlip, onComplete]);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleDragEnd = (e: any, { offset }: any) => {
     const swipe = offset.x;
     if (swipe > 100) {
@@ -286,6 +299,14 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
     exit: (dir: 1 | -1) => ({ x: -dir * 100, y: 20, rotate: -dir * 8, opacity: 0, scale: 0.95 }),
   };
 
+  if (!total || !card) {
+    return (
+      <div className="p-8 text-center text-muted-foreground">
+        Nenhum flashcard disponível ainda.
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       {/* HUD de Progresso Gamificado & Auto-Play Toggle */}
@@ -305,21 +326,40 @@ const FlashcardEleganteViewer = memo(function FlashcardEleganteViewer({
           </div>
         </div>
         
-        {/* Toggle Auto-Play */}
-        <button
-          onClick={() => {
-            if (isAutoPlaying && synthRef.current) synthRef.current.cancel();
-            setIsAutoPlaying(!isAutoPlaying);
-          }}
-          className={`shrink-0 flex items-center justify-center w-10 h-10 rounded-full transition-all ${
-            isAutoPlaying 
-              ? 'bg-amber-500/20 text-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.3)]' 
-              : 'bg-secondary/50 text-muted-foreground hover:bg-secondary'
-          }`}
-          aria-label={isAutoPlaying ? "Pausar Modo Passivo" : "Iniciar Modo Passivo"}
-        >
-          {isAutoPlaying ? <Pause className="w-4 h-4 fill-current" /> : <Headphones className="w-4 h-4" />}
-        </button>
+        {/* Toggles */}
+        <div className="flex gap-2 shrink-0">
+          <button
+            onClick={() => {
+              haptic.selection();
+              setIsShuffled(!isShuffled);
+              setIdx(0);
+            }}
+            className={`flex items-center justify-center w-10 h-10 rounded-full transition-all ${
+              isShuffled 
+                ? 'bg-[#10B981]/20 text-[#10B981] shadow-[0_0_15px_rgba(16,185,129,0.3)]' 
+                : 'bg-secondary/50 text-muted-foreground hover:bg-secondary'
+            }`}
+            aria-label={isShuffled ? "Modo Aleatório Ativo" : "Modo Aleatório Inativo"}
+          >
+            <Shuffle className="w-4 h-4" />
+          </button>
+          
+          <button
+            onClick={() => {
+              haptic.selection();
+              if (isAutoPlaying && synthRef.current) synthRef.current.cancel();
+              setIsAutoPlaying(!isAutoPlaying);
+            }}
+            className={`flex items-center justify-center w-10 h-10 rounded-full transition-all ${
+              isAutoPlaying 
+                ? 'bg-amber-500/20 text-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.3)]' 
+                : 'bg-secondary/50 text-muted-foreground hover:bg-secondary'
+            }`}
+            aria-label={isAutoPlaying ? "Pausar Modo Passivo" : "Iniciar Modo Passivo"}
+          >
+            {isAutoPlaying ? <Pause className="w-4 h-4 fill-current" /> : <Headphones className="w-4 h-4" />}
+          </button>
+        </div>
       </div>
 
       {/* Card */}
@@ -725,7 +765,7 @@ function AbasExtra({
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedMnemonic, setGeneratedMnemonic] = useState<string | null>(null);
 
-  const abas: { key: AbaKey | "mnemonico"; label: string; icon: any; content?: string | null }[] = [
+  const abas: { key: "explicacao" | "exemplo" | "dica" | "mnemonico"; label: string; icon: React.ElementType; content?: string | null }[] = [
     { key: "explicacao", label: "Explicação", icon: BookOpen, content: card.explicacao },
     { key: "exemplo", label: "Exemplo", icon: Sparkles, content: card.exemplo },
     { key: "dica", label: "Dica", icon: Lightbulb, content: card.dica },
@@ -736,7 +776,7 @@ function AbasExtra({
   }
 
   const disponiveis = abas.filter((a) => a.content && a.content.trim().length > 0);
-  const [ativa, setAtiva] = useState<AbaKey | "mnemonico">(disponiveis[0]?.key ?? "explicacao");
+  const [ativa, setAtiva] = useState<"explicacao" | "exemplo" | "dica" | "mnemonico">(disponiveis[0]?.key ?? "explicacao");
 
   useEffect(() => {
     if (!disponiveis.find((a) => a.key === ativa) && disponiveis[0]) {

@@ -78,25 +78,38 @@ export const useFlashcardsSessao = (params: {
       // --- MOCK INTERCEPT FOR AI GENERATED DECKS ---
       if (params.deckId) {
         const offlineDecks = getOfflineDecks();
-        const mockDeck = offlineDecks.find(d => d.id === params.deckId && d.filtros?.source) 
-          || (params.deckId === '1' ? { nome: 'Resumo PDF Penal' } : null)
-          || (params.deckId === '2' ? { nome: 'Aula Youtube - Direitos Políticos' } : null);
+        const mockDeck = offlineDecks.find(d => d.id === params.deckId && d.filtros?.source);
 
         if (mockDeck) {
+          const { getOfflineCards } = await import('@/lib/flashcardsOfflineManager');
           await new Promise(r => setTimeout(r, 600)); // fake delay
-          return Array.from({ length: 15 }).map((_, i) => ({
-            id: `mock-ai-card-${params.deckId}-${i}`,
+          
+          let cards = getOfflineCards(params.deckId);
+          
+          if (params.modo === 'revisar') {
+            cards = cards.filter(c => c.status === 'errou' || c.status === 'dificil');
+          } else if (params.modo === 'compreendidos') {
+            cards = cards.filter(c => c.status === 'memorizado');
+          } else if (params.modo === 'novos') {
+            cards = cards.filter(c => !c.status);
+          }
+          
+          // Randomize cards a bit
+          cards = cards.sort(() => 0.5 - Math.random()).slice(0, params.limit || 15);
+          
+          return cards.map(c => ({
+            id: c.id,
             area: 'Conteúdo Personalizado',
             tema: mockDeck.nome,
-            subtema: `Tópico Abordado ${i+1}`,
-            pergunta: `Explique o conceito ou a regra principal do Tópico ${i+1} e como ele se aplica na prática.`,
-            resposta: `O conceito principal é a aplicação prática das regras relacionadas ao tópico, garantindo que você entenda não apenas a teoria, mas também o contexto apresentado na fonte original.`,
-            exemplo: `Exemplo prático abordado no material: Situação que demonstra a aplicação dessa regra.`,
+            subtema: null,
+            pergunta: c.pergunta,
+            resposta: c.resposta,
+            exemplo: c.exemplo || null,
             base_legal: null,
-            dica: `Dica de IA: Tente focar nas palavras-chave do Tópico ${i+1} para memorizar mais rápido.`,
+            dica: c.dica || null,
             reforco_conteudo: null,
             artigo_numero: null,
-            status: null
+            status: c.status || null
           })) as unknown as FlashcardCard[];
         }
       }
