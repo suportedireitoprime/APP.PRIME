@@ -7,7 +7,7 @@
  */
 import { Capacitor } from '@capacitor/core';
 import { aumentarBadge, limparBadge } from './badge';
-import { toastNative } from './nativeToast';
+import { toastNative } from '../nativeToast';
 
 export const TIPO_LEMBRETE = 'LEMBRETE_ESTUDO';
 export const TIPO_FLASHCARD = 'LEMBRETE_FLASHCARD';
