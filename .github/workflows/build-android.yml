@@ -67,6 +67,7 @@ jobs:
       - name: Build web app
         env:
           SKIP_PRECOMPRESS: "1"
+          NODE_OPTIONS: "--max-old-space-size=4096"
         run: bun run build
 
       - name: Strip precompressed assets (safety net for native)

@@ -81,6 +81,7 @@ jobs:
         if: env.SKIP_JOB != '1'
         env:
           ELECTRON_BUILD: "1"
+          NODE_OPTIONS: "--max-old-space-size=4096"
         shell: bash
         run: bun run build
 
