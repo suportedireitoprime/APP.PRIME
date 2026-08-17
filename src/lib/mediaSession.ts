@@ -9,7 +9,6 @@
 // Seguro em qualquer plataforma: sem suporte, tudo é ignorado.
 
 import { Capacitor } from '@capacitor/core';
-import { MediaSession } from '@capgo/capacitor-media-session';
 
 const DEFAULT_ARTIST = 'Direito Prime ⚖️';
 const PUBLIC_FALLBACK_ART = 'https://direitoprime.com.br/icon-512.png';
@@ -79,7 +78,9 @@ const isNativePluginSupported = () => Capacitor.isNativePlatform();
 const setMetadata = (m: { title: string; artist: string; album: string; artwork: MediaImage[] }) => {
   if (isNativePluginSupported()) {
     try {
-      void MediaSession.setMetadata(m).catch(() => {});
+      import('@capgo/capacitor-media-session').then(({ MediaSession }) => {
+        void MediaSession.setMetadata(m).catch(() => {});
+      }).catch(() => {});
     } catch {
       /* ignore */
     }
@@ -101,7 +102,9 @@ const setMetadata = (m: { title: string; artist: string; album: string; artwork:
 const setPlaybackState = (playbackState: MediaSessionPlaybackState) => {
   if (isNativePluginSupported()) {
     try {
-      void MediaSession.setPlaybackState({ playbackState }).catch(() => {});
+      import('@capgo/capacitor-media-session').then(({ MediaSession }) => {
+        void MediaSession.setPlaybackState({ playbackState }).catch(() => {});
+      }).catch(() => {});
     } catch {
       /* ignore */
     }
@@ -118,7 +121,9 @@ const setPlaybackState = (playbackState: MediaSessionPlaybackState) => {
 export const setPositionState = (opts: { duration: number; position: number; playbackRate: number }) => {
   if (isNativePluginSupported()) {
     try {
-      void MediaSession.setPositionState(opts).catch(() => {});
+      import('@capgo/capacitor-media-session').then(({ MediaSession }) => {
+        void MediaSession.setPositionState(opts).catch(() => {});
+      }).catch(() => {});
     } catch {
       /* ignore */
     }
@@ -146,7 +151,9 @@ const setActionHandler = (
 ) => {
   if (isNativePluginSupported()) {
     try {
-      void MediaSession.setActionHandler({ action: action as any }, handler).catch(() => {});
+      import('@capgo/capacitor-media-session').then(({ MediaSession }) => {
+        void MediaSession.setActionHandler({ action: action as any }, handler).catch(() => {});
+      }).catch(() => {});
     } catch {
       /* ignore */
     }

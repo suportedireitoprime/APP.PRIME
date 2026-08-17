@@ -1,17 +1,12 @@
 import { Capacitor } from '@capacitor/core';
-import { NativePurchases, PURCHASE_TYPE } from '@capgo/native-purchases';
 import { supabase } from '@/integrations/supabase/client';
 
-// ── IDs configurados no Google Play Console → Monetizar → Assinaturas ──
-// e no App Store Connect → Assinaturas
 export const PRODUCT_IDS = {
   mensal: 'prime_premium_mensal',
   anual: 'prime_premium_anual',
-  // Mesmo produto anual, plano base com pagamento parcelado (só Google Play)
   anual_parcelado: 'prime_premium_anual',
 } as const;
 
-// Base Plan IDs configurados dentro de cada assinatura no Play Console
 export const PLAN_IDS = {
   mensal: 'mensal',
   anual: 'anual',
@@ -33,10 +28,10 @@ export function isBillingAvailable() {
 
 let listenerRegistered = false;
 
-/** Inicializa o listener de transações e retorna as entitulas atuais. */
 export async function initBilling(onPurchased?: () => void): Promise<void> {
   if (!isBillingAvailable() || listenerRegistered) return;
 
+  const { NativePurchases } = await import('@capgo/native-purchases');
   NativePurchases.addListener('transactionUpdated', async (transaction) => {
     const token =
       transaction?.purchaseToken ??
@@ -56,6 +51,7 @@ export async function initBilling(onPurchased?: () => void): Promise<void> {
 export async function getProducts(): Promise<PlayProduct[]> {
   if (!isBillingAvailable()) return [];
   try {
+    const { NativePurchases, PURCHASE_TYPE } = await import('@capgo/native-purchases');
     const { products } = await NativePurchases.getProducts({
       productIdentifiers: [...new Set(Object.values(PRODUCT_IDS))],
       productType: PURCHASE_TYPE.SUBS,
@@ -81,17 +77,18 @@ export async function purchase(plan: PlanId): Promise<{ ok: boolean; error?: str
     return { ok: false, error: 'Compras nativas só funcionam no app instalado pela loja.' };
   }
   try {
+    const { NativePurchases, PURCHASE_TYPE } = await import('@capgo/native-purchases');
     const productId = PRODUCT_IDS[plan];
     const planId = PLAN_IDS[plan];
     const platform = currentPlatform();
-    // Na App Store da Apple não existe o conceito de "base plan"; enviar somente productIdentifier.
+    
     const args: any = {
       productIdentifier: productId,
       productType: PURCHASE_TYPE.SUBS,
     };
     if (platform === 'android') args.planIdentifier = planId;
     const transaction = await NativePurchases.purchaseProduct(args);
-    // Android → purchaseToken; iOS (StoreKit 2) → transactionId; fallback → receipt
+    
     const token =
       transaction?.purchaseToken ??
       (transaction as any)?.transactionId ??
@@ -110,6 +107,7 @@ export async function purchase(plan: PlanId): Promise<{ ok: boolean; error?: str
 export async function restorePurchases(): Promise<{ ok: boolean; restored: number; error?: string }> {
   if (!isBillingAvailable()) return { ok: false, restored: 0, error: 'Só disponível no app nativo.' };
   try {
+    const { NativePurchases, PURCHASE_TYPE } = await import('@capgo/native-purchases');
     const platform = currentPlatform();
     await NativePurchases.restorePurchases();
     const { purchases } = await NativePurchases.getPurchases({ productType: PURCHASE_TYPE.SUBS });
@@ -131,15 +129,10 @@ export async function restorePurchases(): Promise<{ ok: boolean; restored: numbe
   }
 }
 
-/**
- * Revalidação silenciosa das assinaturas que o aparelho já possui na loja.
- * Usada automaticamente (sem toast e sem toque do usuário) quando o banco não
- * mostra assinatura ativa e ao voltar do segundo plano — cobre renovações que
- * não chegaram via notificação do Google/Apple.
- */
 export async function syncEntitlements(): Promise<number> {
   if (!isBillingAvailable()) return 0;
   try {
+    const { NativePurchases, PURCHASE_TYPE } = await import('@capgo/native-purchases');
     const platform = currentPlatform();
     const { purchases } = await NativePurchases.getPurchases({ productType: PURCHASE_TYPE.SUBS });
     let synced = 0;
@@ -162,11 +155,10 @@ export async function syncEntitlements(): Promise<number> {
 
 export async function openManageSubscriptions(): Promise<void> {
   if (!isBillingAvailable()) return;
+  const { NativePurchases } = await import('@capgo/native-purchases');
   await NativePurchases.manageSubscriptions();
 }
 
-// Deduplica validate-purchase quando listener `transactionUpdated` e o handler
-// direto disparam para o mesmo purchaseToken quase ao mesmo tempo.
 const inflightValidations = new Map<string, Promise<{ ok: boolean; error?: string }>>();
 
 async function validateWithServer(productId: string, purchaseToken: string, platform: 'ios' | 'android' = 'android') {
@@ -182,9 +174,6 @@ async function validateWithServer(productId: string, purchaseToken: string, plat
     return { ok: true };
   })();
   inflightValidations.set(key, p);
-  // Mantém no cache por 30s para absorver o listener que chega segundos depois
   setTimeout(() => inflightValidations.delete(key), 30_000);
   return p;
 }
-
-

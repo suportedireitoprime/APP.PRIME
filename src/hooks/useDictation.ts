@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Capacitor } from '@capacitor/core';
-import { SpeechRecognition } from '@capacitor-community/speech-recognition';
+
 import { toast } from 'sonner';
 
 /**
@@ -17,17 +17,18 @@ import { toast } from 'sonner';
 export type DictationState = 'idle' | 'recording' | 'paused';
 
 const isNative = () => Capacitor.isNativePlatform();
+const getSR = () => import('@capacitor-community/speech-recognition').then(m => m.SpeechRecognition);
 
 async function ensurePermission(): Promise<boolean> {
   if (!isNative()) {
     return 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
   }
   try {
-    const avail = await SpeechRecognition.available();
+    const avail = await (await getSR()).available();
     if (!avail.available) return false;
-    const perm = await SpeechRecognition.checkPermissions();
+    const perm = await (await getSR()).checkPermissions();
     if (perm.speechRecognition === 'granted') return true;
-    const req = await SpeechRecognition.requestPermissions();
+    const req = await (await getSR()).requestPermissions();
     return req.speechRecognition === 'granted';
   } catch {
     return false;
@@ -116,13 +117,13 @@ export function useDictation(
   const attachNativeListeners = useCallback(async () => {
     if (nativeAttachedRef.current) return;
     nativeAttachedRef.current = true;
-    await SpeechRecognition.addListener('partialResults', (data: any) => {
+    await (await getSR()).addListener('partialResults', (data: any) => {
       const text = (data?.matches?.[0] ?? '').toString();
       if (!text) return;
       nativeLastPartialRef.current = text;
       setPartial(text);
     });
-    await SpeechRecognition.addListener('listeningState', (data: any) => {
+    await (await getSR()).addListener('listeningState', (data: any) => {
       if (data?.status === 'stopped') {
         const text = nativeLastPartialRef.current;
         nativeLastPartialRef.current = '';
@@ -132,7 +133,7 @@ export function useDictation(
         if (stateRef.current === 'recording') {
           setTimeout(() => {
             if (stateRef.current === 'recording') {
-              SpeechRecognition.start({
+              (await getSR()).start({
                 language: lang,
                 partialResults: true,
                 popup: false,
@@ -147,7 +148,7 @@ export function useDictation(
 
   const startNative = useCallback(async () => {
     await attachNativeListeners();
-    await SpeechRecognition.start({
+    await (await getSR()).start({
       language: lang,
       partialResults: true,
       popup: false,
@@ -156,8 +157,8 @@ export function useDictation(
   }, [attachNativeListeners, lang]);
 
   const stopNative = useCallback(async () => {
-    try { await SpeechRecognition.stop(); } catch { /* ignore */ }
-    try { await SpeechRecognition.removeAllListeners(); } catch { /* ignore */ }
+    getSR().then(sr => sr.stop()).catch { /* ignore */ }
+    try { await getSR().then(sr => sr.removeAllListeners()); } catch { /* ignore */ }
     nativeAttachedRef.current = false;
     // Flush último partial.
     const text = nativeLastPartialRef.current;
@@ -205,8 +206,8 @@ export function useDictation(
       // Cleanup ao desmontar.
       stateRef.current = 'idle';
       if (isNative()) {
-        SpeechRecognition.stop().catch(() => {});
-        SpeechRecognition.removeAllListeners().catch(() => {});
+        getSR().then(sr => sr.stop()).catch(() => {});
+        getSR().then(sr => sr.removeAllListeners()).catch(() => {});
       } else {
         const rec = webRecRef.current;
         if (rec) {

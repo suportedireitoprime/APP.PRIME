@@ -1,5 +1,4 @@
 import { Capacitor } from '@capacitor/core';
-import { FileOpener } from '@capacitor-community/file-opener';
 import { Filesystem, Directory } from '@capacitor/filesystem';
 
 const isNative = () => Capacitor.isNativePlatform();
@@ -32,6 +31,7 @@ export async function openPdfNative(url: string, name = 'documento.pdf'): Promis
       recursive: true,
     });
 
+    const { FileOpener } = await import('@capacitor-community/file-opener');
     await FileOpener.open({
       filePath: written.uri,
       contentType: 'application/pdf',

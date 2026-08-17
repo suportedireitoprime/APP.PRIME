@@ -1,7 +1,8 @@
 import { Capacitor } from '@capacitor/core';
-import { TextToSpeech } from '@capacitor-community/text-to-speech';
+
 
 const isNative = () => Capacitor.isNativePlatform();
+const getTTS = () => import('@capacitor-community/text-to-speech').then(m => m.TextToSpeech);
 let speechSessionId = 0;
 
 /** Aguarda `speechSynthesis.getVoices()` popular (alguns navegadores populam de forma assíncrona). */
@@ -62,7 +63,7 @@ export async function speakNative(text: string, opts?: { lang?: string; rate?: n
 
   if (isNative()) {
     try {
-      await TextToSpeech.speak({
+      await (await getTTS()).speak({
         text: cleanText,
         lang,
         rate,
@@ -153,7 +154,7 @@ export async function speakNative(text: string, opts?: { lang?: string; rate?: n
 export async function stopNativeSpeech(): Promise<void> {
   speechSessionId++;
   if (isNative()) {
-    try { await TextToSpeech.stop(); } catch {}
+    try { await (await getTTS()).stop(); } catch {}
     return;
   }
   if (typeof window !== 'undefined' && 'speechSynthesis' in window) {

@@ -1,16 +1,17 @@
 import { Capacitor } from '@capacitor/core';
-import { SpeechRecognition } from '@capacitor-community/speech-recognition';
+
 
 const isNative = () => Capacitor.isNativePlatform();
+const getSR = () => import('@capacitor-community/speech-recognition').then(m => m.SpeechRecognition);
 
 export async function ensureSpeechPermission(): Promise<boolean> {
   if (!isNative()) return 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
   try {
-    const avail = await SpeechRecognition.available();
+    const avail = await (await getSR()).available();
     if (!avail.available) return false;
-    const perm = await SpeechRecognition.checkPermissions();
+    const perm = await (await getSR()).checkPermissions();
     if (perm.speechRecognition === 'granted') return true;
-    const req = await SpeechRecognition.requestPermissions();
+    const req = await (await getSR()).requestPermissions();
     return req.speechRecognition === 'granted';
   } catch {
     return false;
@@ -28,7 +29,7 @@ let nativeLastText = '';
 let nativeOnResult: SpeechListener | null = null;
 
 async function nativeCleanup() {
-  try { await SpeechRecognition.removeAllListeners(); } catch { /* ignore */ }
+  try { await (await getSR()).removeAllListeners(); } catch { /* ignore */ }
   if (nativeSilenceTimer) { clearTimeout(nativeSilenceTimer); nativeSilenceTimer = null; }
   nativeOnResult = null;
   nativeLastText = '';
@@ -36,12 +37,12 @@ async function nativeCleanup() {
 
 function armNativeSilenceTimer(ms = 1500) {
   if (nativeSilenceTimer) clearTimeout(nativeSilenceTimer);
-  nativeSilenceTimer = setTimeout(() => {
+  nativeSilenceTimer = setTimeout(async () => {
     // Silêncio → considera final. Emite e finaliza plugin.
     const text = nativeLastText;
     const cb = nativeOnResult;
     // Para o plugin (dispara listeningState=stopped, que também limpa).
-    SpeechRecognition.stop().catch(() => { /* ignore */ });
+    (await getSR()).stop().catch(() => { /* ignore */ });
     if (cb && text) cb(text, true);
   }, ms);
 }
@@ -56,7 +57,7 @@ export async function startListening(onResult: SpeechListener, lang = 'pt-BR'): 
     nativeOnResult = onResult;
     nativeLastText = '';
 
-    await SpeechRecognition.addListener('partialResults', (data: any) => {
+    await (await getSR()).addListener('partialResults', (data: any) => {
       const text = (data?.matches?.[0] ?? '').toString();
       if (!text) return;
       nativeLastText = text;
@@ -65,7 +66,7 @@ export async function startListening(onResult: SpeechListener, lang = 'pt-BR'): 
       armNativeSilenceTimer(1500);
     });
 
-    await SpeechRecognition.addListener('listeningState', async (data: any) => {
+    await (await getSR()).addListener('listeningState', async (data: any) => {
       if (data?.status === 'stopped') {
         const text = nativeLastText;
         const cb = nativeOnResult;
@@ -74,7 +75,7 @@ export async function startListening(onResult: SpeechListener, lang = 'pt-BR'): 
       }
     });
 
-    await SpeechRecognition.start({
+    await (await getSR()).start({
       language: lang,
       partialResults: true,
       popup: false,
@@ -113,7 +114,7 @@ export async function stopListening(cancel = false): Promise<void> {
       nativeOnResult = null;
       nativeLastText = '';
     }
-    try { await SpeechRecognition.stop(); } catch { /* ignore */ }
+    try { await (await getSR()).stop(); } catch { /* ignore */ }
     await nativeCleanup();
     return;
   }
