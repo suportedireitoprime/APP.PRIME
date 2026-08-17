@@ -5,6 +5,17 @@ import { Plus, FileText, Layers, Youtube, Mic, ImageIcon, Trash2 } from 'lucide-
 import { haptic } from '@/lib/nativeHaptics';
 import WizardFlashcardsIA from '@/components/flashcards/WizardFlashcardsIA';
 import { getOfflineDecks, saveOfflineDecks, Deck } from '@/lib/flashcardsOfflineManager';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const CATEGORIAS = [
   { id: 'pdf', title: 'Documentos PDF', sources: ['pdf', 'documento'] },
@@ -53,10 +64,10 @@ export default function FlashcardsPersonalizado() {
   };
 
   const renderIcon = (tipo: string) => {
-    if (['youtube', 'video'].includes(tipo)) return <Youtube className="w-5 h-5" />;
-    if (['imagem', 'image'].includes(tipo)) return <ImageIcon className="w-5 h-5" />;
-    if (['audio'].includes(tipo)) return <Mic className="w-5 h-5" />;
-    return <FileText className="w-5 h-5" />;
+    if (['youtube', 'video'].includes(tipo)) return <Youtube className="w-8 h-8" style={{ color: '#EF4444' }} strokeWidth={1.5} />;
+    if (['imagem', 'image'].includes(tipo)) return <ImageIcon className="w-8 h-8" style={{ color: '#F97316' }} strokeWidth={1.5} />;
+    if (['audio'].includes(tipo)) return <Mic className="w-8 h-8" style={{ color: '#A855F7' }} strokeWidth={1.5} />;
+    return <FileText className="w-8 h-8" style={{ color: '#3B82F6' }} strokeWidth={1.5} />;
   };
 
   const decksFiltrados = categoriaSelecionada 
@@ -92,7 +103,7 @@ export default function FlashcardsPersonalizado() {
               <div className="flex items-center justify-between mb-4 px-1">
                 <h3 className="text-sm font-extrabold uppercase tracking-widest text-muted-foreground">Categorias</h3>
               </div>
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 {CATEGORIAS.map((cat) => {
                   const count = offlineDecks.filter(d => cat.sources.includes(d.filtros?.source || 'pdf')).length;
                   const colors = getTypeColors(cat.id);
@@ -104,17 +115,15 @@ export default function FlashcardsPersonalizado() {
                         haptic.selection();
                         setCategoriaSelecionada(cat.id);
                       }}
-                      className="group p-4 bg-card/60 border border-border/80 rounded-2xl hover:border-emerald-500/50 transition-all cursor-pointer shadow-sm hover:shadow-md flex flex-col justify-between"
+                      className="relative flex flex-col items-start p-5 rounded-3xl border border-border/50 bg-card/30 backdrop-blur-xl transition-all duration-300 hover:border-border hover:bg-card/50 cursor-pointer"
                     >
-                      <div className="flex justify-between items-start mb-4">
-                        <div className={`p-2 rounded-xl ${colors.iconBg}`}>
-                          {renderIcon(cat.id)}
-                        </div>
-                        <span className="text-xs font-bold text-muted-foreground bg-background/50 px-2 py-1 rounded-md border border-border/50">
-                          {count} decks
-                        </span>
+                      <div className="mb-4">
+                        {renderIcon(cat.id)}
                       </div>
-                      <h4 className="font-bold text-foreground text-base leading-tight">{cat.title}</h4>
+                      <h4 className="font-bold text-foreground text-sm sm:text-base leading-tight uppercase mb-1">{cat.title}</h4>
+                      <p className="text-xs text-muted-foreground font-medium">
+                        {count} {count === 1 ? 'deck' : 'decks'}
+                      </p>
                     </div>
                   );
                 })}
@@ -153,13 +162,34 @@ export default function FlashcardsPersonalizado() {
                             {renderIcon(deckTipo)}
                           </div>
                           
-                          <button
-                            onClick={(e) => handleDeleteDeck(e, deck.id)}
-                            className="p-1.5 text-muted-foreground hover:text-red-500 bg-background/50 hover:bg-red-500/10 rounded-md transition-colors"
-                            aria-label="Excluir deck"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <button
+                                onClick={(e) => e.stopPropagation()}
+                                className="p-1.5 text-muted-foreground hover:text-red-500 bg-background/50 hover:bg-red-500/10 rounded-md transition-colors"
+                                aria-label="Excluir deck"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Excluir deck?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Tem certeza que deseja excluir "{deck.nome}"? Esta ação não pode ser desfeita e os flashcards serão apagados do seu dispositivo.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel onClick={(e) => e.stopPropagation()}>Cancelar</AlertDialogCancel>
+                                <AlertDialogAction 
+                                  onClick={(e) => handleDeleteDeck(e, deck.id)}
+                                  className="bg-red-600 hover:bg-red-700 text-white"
+                                >
+                                  Excluir
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         </div>
                         <h4 className="font-bold text-foreground text-base leading-tight mb-2 pr-6 line-clamp-2">{deck.nome}</h4>
                         <p className="text-xs text-muted-foreground font-semibold flex items-center gap-1.5 mt-auto">
