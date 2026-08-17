@@ -40,7 +40,7 @@ export default function WizardFlashcardsIA({ open, onOpenChange }: WizardFlashca
   
   // Step 2 (Youtube specific)
   const [youtubeLink, setYoutubeLink] = useState('');
-  const [youtubePreview, setYoutubePreview] = useState<{ title: string, duration: string, image: string, author?: string, description?: string } | null>(null);
+  const [youtubePreview, setYoutubePreview] = useState<{ title: string, duration: string, image: string, author?: string, description?: string, hasCaptions?: boolean } | null>(null);
   const [loadingPreview, setLoadingPreview] = useState(false);
 
   // Step 3 results
@@ -49,6 +49,7 @@ export default function WizardFlashcardsIA({ open, onOpenChange }: WizardFlashca
   
   // Step 4
   const [qtdCards, setQtdCards] = useState(45);
+  const [maxCards, setMaxCards] = useState(100);
 
   // Step 5
   const [deckName, setDeckName] = useState('');
@@ -65,6 +66,7 @@ export default function WizardFlashcardsIA({ open, onOpenChange }: WizardFlashca
         setResumo('');
         setDeckName('');
         setQtdCards(45);
+        setMaxCards(100);
       }, 300);
     }
   }, [open]);
@@ -99,7 +101,8 @@ export default function WizardFlashcardsIA({ open, onOpenChange }: WizardFlashca
             duration: formatYoutubeDuration(item.contentDetails.duration),
             image: item.snippet.thumbnails.maxres?.url || item.snippet.thumbnails.high?.url || item.snippet.thumbnails.default?.url,
             author: item.snippet.channelTitle,
-            description: item.snippet.description
+            description: item.snippet.description,
+            hasCaptions: item.contentDetails.caption === 'true'
           });
           haptic.success();
           return;
@@ -114,7 +117,8 @@ export default function WizardFlashcardsIA({ open, onOpenChange }: WizardFlashca
           title: oembedData.title,
           duration: 'Vídeo do YouTube',
           image: oembedData.thumbnail_url,
-          author: oembedData.author_name
+          author: oembedData.author_name,
+          hasCaptions: true // Assumimos true no fallback para não bloquear
         });
         haptic.success();
         return;
@@ -128,7 +132,8 @@ export default function WizardFlashcardsIA({ open, onOpenChange }: WizardFlashca
         title: 'Vídeo Encontrado',
         duration: 'YouTube',
         image: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80&w=600',
-        author: 'Professor(a)'
+        author: 'Professor(a)',
+        hasCaptions: true // Fallback
       });
       haptic.success();
     } finally {
@@ -152,10 +157,12 @@ export default function WizardFlashcardsIA({ open, onOpenChange }: WizardFlashca
 Título: ${title}
 Descrição: ${desc.substring(0, 1500)}
 
-Retorne um JSON estrito neste formato:
+Retorne um JSON estrito neste formato, sugerindo uma quantidade adequada de flashcards baseada na densidade provável do assunto (ex: se o título e a descrição indicarem uma aula longa ou densa, sugira mais flashcards). A quantidade máxima não deve ultrapassar 150.
 {
   "tema": "Tema principal em até 5 palavras",
-  "resumo": "Um resumo direto de até 2 linhas sobre o conteúdo que será abordado (ex: O material aborda os elementos...)"
+  "resumo": "Um resumo direto de até 2 linhas sobre o conteúdo que será abordado (ex: O material aborda os elementos...)",
+  "qtd_recomendada": 30,
+  "qtd_maxima": 60
 }`;
 
         const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
@@ -174,7 +181,8 @@ Retorne um JSON estrito neste formato:
             const parsed = JSON.parse(text);
             setTema(parsed.tema || title);
             setResumo(parsed.resumo || 'Descrição não disponível.');
-            setQtdCards(35);
+            setQtdCards(parsed.qtd_recomendada || 35);
+            setMaxCards(Math.min(150, parsed.qtd_maxima || 100));
             setLoadingAI(false);
             haptic.success();
             return;
@@ -186,10 +194,13 @@ Retorne um JSON estrito neste formato:
       setTema(title);
       setResumo(desc ? desc.substring(0, 150) + '...' : 'Descrição não disponível para este vídeo.');
       setQtdCards(25);
+      setMaxCards(100);
     } catch (e) {
       console.error(e);
       setTema(youtubePreview?.title || 'Conteúdo do YouTube');
       setResumo('Não foi possível gerar um resumo avançado. Prosseguindo com os dados básicos.');
+      setQtdCards(25);
+      setMaxCards(100);
     }
 
     setLoadingAI(false);
@@ -309,6 +320,11 @@ Retorne um JSON estrito neste formato:
                           <div className="p-4 bg-zinc-950">
                             <h4 className="font-bold text-sm line-clamp-2 leading-tight text-zinc-100">{youtubePreview.title}</h4>
                             <p className="text-xs text-zinc-500 mt-2 font-medium">{youtubePreview.author || 'Canal'} • YouTube</p>
+                            {youtubePreview.hasCaptions === false && (
+                              <div className="mt-3 bg-red-500/10 border border-red-500/20 p-2 rounded text-xs text-red-400 font-medium leading-tight">
+                                Este vídeo não possui legendas ocultas. A IA não consegue extrair o conteúdo.
+                              </div>
+                            )}
                           </div>
                         </div>
 
@@ -316,7 +332,7 @@ Retorne um JSON estrito neste formato:
                           <Button variant="outline" onClick={() => setYoutubePreview(null)} className="flex-1 rounded-full h-12 font-bold border-border/50 hover:bg-muted">
                             Voltar
                           </Button>
-                          <Button onClick={handleSimulateAI} className="flex-[2] bg-[#36AF85] hover:bg-[#2b8c6a] text-white rounded-full font-bold h-12 shadow-lg shadow-[#36AF85]/20">
+                          <Button onClick={handleSimulateAI} disabled={youtubePreview.hasCaptions === false} className="flex-[2] bg-[#36AF85] hover:bg-[#2b8c6a] text-white rounded-full font-bold h-12 shadow-lg shadow-[#36AF85]/20">
                             <Sparkles className="w-4 h-4 mr-2" /> Extrair Conteúdo
                           </Button>
                         </div>
@@ -398,12 +414,16 @@ Retorne um JSON estrito neste formato:
                   <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest mt-1">Flashcards</span>
                   
                   <div className="flex items-center gap-4 mt-6 w-full">
-                    <Button variant="outline" size="icon" className="rounded-full" onClick={() => setQtdCards(Math.max(5, qtdCards - 5))}>-</Button>
-                    <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                      <div className="h-full bg-[#36AF85]" style={{ width: `${Math.min(100, (qtdCards/100)*100)}%` }} />
+                    <Button variant="outline" size="icon" className="rounded-full" onClick={() => { haptic.selection(); setQtdCards(Math.max(5, qtdCards - 5)); }}>-</Button>
+                    <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden relative">
+                      <div className="absolute top-0 bottom-0 left-0 bg-[#36AF85] rounded-full transition-all duration-300" style={{ width: `${Math.min(100, (qtdCards/maxCards)*100)}%` }} />
                     </div>
-                    <Button variant="outline" size="icon" className="rounded-full" onClick={() => setQtdCards(qtdCards + 5)}>+</Button>
+                    <Button variant="outline" size="icon" className="rounded-full" onClick={() => { haptic.selection(); setQtdCards(Math.min(maxCards, qtdCards + 5)); }}>+</Button>
                   </div>
+                </div>
+
+                <div className="text-center text-xs text-muted-foreground font-medium px-4">
+                  A IA definiu um limite máximo de {maxCards} flashcards para a densidade deste conteúdo.
                 </div>
 
                 <Button onClick={() => { haptic.selection(); setStep(5); }} className="w-full bg-primary text-white rounded-full font-bold h-12">
