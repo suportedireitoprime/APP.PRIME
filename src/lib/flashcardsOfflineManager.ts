@@ -6,6 +6,7 @@ export type Deck = {
   descricao: string | null;
   filtros: any;
   total_cards: number;
+  created_at?: string;
 };
 
 const DECKS_KEY = 'APP_PRIME_FLASHCARDS_DECKS';

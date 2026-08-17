@@ -230,7 +230,8 @@ Retorne um JSON estrito neste formato, sugerindo uma quantidade adequada de flas
         nome: deckName,
         descricao: resumo,
         filtros: { source: source },
-        total_cards: qtdCards
+        total_cards: qtdCards,
+        created_at: new Date().toISOString()
       });
       
       saveOfflineDecks(offlineDecks);
