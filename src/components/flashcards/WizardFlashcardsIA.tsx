@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { FileText, Image as ImageIcon, Youtube, Mic, ArrowLeft, ArrowRight, Loader2, Sparkles, Check, X, SlidersHorizontal, UploadCloud, Layers } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { FileText, Image as ImageIcon, Youtube, Mic, ArrowLeft, ArrowRight, Loader2, Sparkles, Check, X, SlidersHorizontal, UploadCloud, Layers, Scale } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { getOfflineDecks, saveOfflineDecks } from '@/lib/flashcardsOfflineManager';
@@ -479,11 +480,11 @@ Retorne um JSON estrito neste formato, sugerindo uma quantidade adequada de flas
                 <div className="space-y-4">
                   <div>
                     <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">Nome do Deck</label>
-                    <Input 
+                    <Textarea 
                       placeholder="Ex: Resumo de Direito Penal..." 
                       value={deckName}
                       onChange={(e) => setDeckName(e.target.value)}
-                      className="bg-muted border-border/50 h-12 font-medium" 
+                      className="bg-muted border-border/50 min-h-[80px] font-medium resize-none leading-tight" 
                       disabled={loadingSave}
                     />
                     {tema && tema !== deckName && (
@@ -504,7 +505,12 @@ Retorne um JSON estrito neste formato, sugerindo uma quantidade adequada de flas
 
                 <div className="bg-[#36AF85]/10 border border-[#36AF85]/30 rounded-xl p-4 flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-[#36AF85]" />
+                    <motion.div
+                      animate={{ y: [0, -2, 0], rotate: [-3, 3, -3] }}
+                      transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+                    >
+                      <Scale strokeWidth={1} className="w-5 h-5 text-[#36AF85]" />
+                    </motion.div>
                     <span className="font-bold text-sm text-[#36AF85]">Geração Automática</span>
                   </div>
                   <span className="text-xs font-bold bg-[#36AF85] text-white px-2 py-0.5 rounded-md">{qtdCards} Cards</span>
