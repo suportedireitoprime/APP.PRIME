@@ -389,12 +389,27 @@ const AdminApresentacaoEditar = () => {
     </div>
   );
 
+  const handleBack = () => {
+    if (step === 'geracao') {
+      setStep('referencia');
+    } else if (step === 'referencia') {
+      if (modo === 'livro' && categoriaLivro) {
+        setCategoriaLivro('');
+        setLivroSel(null);
+      } else {
+        setStep('categoria');
+      }
+    } else {
+      navigate('/admin-funcoes');
+    }
+  };
+
   return (
     <div className="min-h-dvh bg-background pb-28">
       <PageHeader
         title="Apresentação Editar"
         subtitle="Selecione Leis, Matérias ou Livros → Envie o PDF → Gere a Narração"
-        onBack={() => navigate('/admin-funcoes')}
+        onBack={handleBack}
       />
 
       {(job || lendoPdf || ocrAtivo) && (
@@ -470,12 +485,7 @@ const AdminApresentacaoEditar = () => {
           <div className="rounded-2xl border border-border bg-card p-4 space-y-4">
             <div className="flex items-center justify-between mb-2">
               <Passo n={1} titulo="Escolha a Referência" ok={!!referencia} ativo={!referencia} />
-              <button
-                onClick={() => setStep('categoria')}
-                className="px-3 py-1.5 rounded-xl border border-border hover:bg-accent transition text-xs font-semibold text-muted-foreground"
-              >
-                ← Voltar
-              </button>
+
             </div>
 
             {/* Painel da Categoria 1: Matérias */}
@@ -592,12 +602,7 @@ const AdminApresentacaoEditar = () => {
                 ) : (
                   <>
                     <div className="flex gap-2 items-center mb-3">
-                      <button
-                        onClick={() => { setCategoriaLivro(''); setLivroSel(null); }}
-                        className="px-3 py-2 rounded-xl border border-border hover:bg-accent transition text-xs font-semibold text-muted-foreground shrink-0"
-                      >
-                        ← Categorias
-                      </button>
+
                       <div className="relative flex-1">
                         <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                         <input
@@ -656,12 +661,7 @@ const AdminApresentacaoEditar = () => {
           <div className="rounded-2xl border border-border bg-card p-4 space-y-4">
             <div className="flex items-center justify-between mb-2">
               <Passo n={1} titulo="Geração de Conteúdo" ok={!!referencia} ativo={true} />
-              <button
-                onClick={() => setStep('referencia')}
-                className="px-3 py-1.5 rounded-xl border border-border hover:bg-accent transition text-xs font-semibold text-muted-foreground"
-              >
-                ← Mudar Referência
-              </button>
+
             </div>
             
             {referencia && (
