@@ -12,9 +12,6 @@ on:
         description: 'Signed URLs dos arquivos nativos salvos no Supabase'
         required: false
         default: ''
-  push:
-    branches:
-      - main
 
 jobs:
   build:
