@@ -18,6 +18,11 @@ export default function WizardFlashcardsIA({ open, onOpenChange }: WizardFlashca
   const [source, setSource] = useState<SourceType>(null);
   const [loadingAI, setLoadingAI] = useState(false);
   
+  // Step 2 (Youtube specific)
+  const [youtubeLink, setYoutubeLink] = useState('');
+  const [youtubePreview, setYoutubePreview] = useState<{ title: string, duration: string } | null>(null);
+  const [loadingPreview, setLoadingPreview] = useState(false);
+
   // Step 3 results
   const [tema, setTema] = useState('');
   const [resumo, setResumo] = useState('');
@@ -34,6 +39,8 @@ export default function WizardFlashcardsIA({ open, onOpenChange }: WizardFlashca
       setTimeout(() => {
         setStep(1);
         setSource(null);
+        setYoutubeLink('');
+        setYoutubePreview(null);
         setTema('');
         setResumo('');
         setDeckName('');
@@ -46,6 +53,20 @@ export default function WizardFlashcardsIA({ open, onOpenChange }: WizardFlashca
     haptic.selection();
     setSource(s);
     setStep(2);
+  };
+
+  const handleSearchYoutube = () => {
+    if (!youtubeLink.trim()) return;
+    setLoadingPreview(true);
+    haptic.selection();
+    setTimeout(() => {
+      setYoutubePreview({
+        title: 'Direito Penal do Zero: Aplicação da Lei Penal - Parte 01 (Aula Completa)',
+        duration: '29:26'
+      });
+      setLoadingPreview(false);
+      haptic.notification('SUCCESS');
+    }, 1500);
   };
 
   const handleSimulateAI = () => {
@@ -123,27 +144,78 @@ export default function WizardFlashcardsIA({ open, onOpenChange }: WizardFlashca
               >
                 {source === 'youtube' ? (
                   <div className="space-y-4">
-                    <div className="text-center mb-6">
-                      <div className="w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                        <Youtube className="w-6 h-6 text-red-500" />
+                    {!youtubePreview ? (
+                      <>
+                        <div className="text-center mb-6">
+                          <div className="w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <Youtube className="w-6 h-6 text-red-500" />
+                          </div>
+                          <p className="text-sm text-muted-foreground">Cole o link da videoaula. Nossa IA vai transcrever e gerar os cards.</p>
+                        </div>
+                        <Input 
+                          placeholder="https://youtube.com/watch?v=..." 
+                          className="bg-muted border-border/50 h-12"
+                          value={youtubeLink}
+                          onChange={(e) => setYoutubeLink(e.target.value)}
+                        />
+                        <Button 
+                          onClick={handleSearchYoutube} 
+                          disabled={!youtubeLink.trim() || loadingPreview}
+                          className="mt-4 bg-red-500 hover:bg-red-600 text-white w-full rounded-full font-bold h-12"
+                        >
+                          {loadingPreview ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Buscar Vídeo'}
+                        </Button>
+                      </>
+                    ) : (
+                      <div className="space-y-4">
+                        <div className="text-center mb-4">
+                          <h3 className="font-bold text-lg">Vídeo Encontrado</h3>
+                          <p className="text-sm text-muted-foreground">Confirme se é este o vídeo que deseja processar.</p>
+                        </div>
+                        
+                        <div className="bg-card border border-border/80 rounded-2xl overflow-hidden relative">
+                          <div className="aspect-video bg-zinc-900 relative flex items-center justify-center group overflow-hidden">
+                            {/* Fake thumbnail using a gradient or image */}
+                            <div className="absolute inset-0 bg-gradient-to-br from-zinc-800 to-zinc-900 opacity-50" />
+                            <div className="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center z-10 shadow-[0_0_15px_rgba(220,38,38,0.5)] group-hover:scale-110 transition-transform">
+                              <Youtube className="w-6 h-6 text-white ml-0.5" />
+                            </div>
+                            <div className="absolute bottom-2 right-2 bg-black/90 px-1.5 py-0.5 rounded text-[10px] font-bold text-white z-10 tracking-wider">
+                              {youtubePreview.duration}
+                            </div>
+                          </div>
+                          <div className="p-4 bg-zinc-950">
+                            <h4 className="font-bold text-sm line-clamp-2 leading-tight text-zinc-100">{youtubePreview.title}</h4>
+                            <p className="text-xs text-zinc-500 mt-2 font-medium">Canal do Professor • 125 mil visualizações</p>
+                          </div>
+                        </div>
+
+                        <div className="flex gap-3 pt-2">
+                          <Button variant="outline" onClick={() => setYoutubePreview(null)} className="flex-1 rounded-full h-12 font-bold border-border/50 hover:bg-muted">
+                            Voltar
+                          </Button>
+                          <Button onClick={handleSimulateAI} className="flex-[2] bg-[#36AF85] hover:bg-[#2b8c6a] text-white rounded-full font-bold h-12 shadow-lg shadow-[#36AF85]/20">
+                            <Sparkles className="w-4 h-4 mr-2" /> Extrair Conteúdo
+                          </Button>
+                        </div>
                       </div>
-                      <p className="text-sm text-muted-foreground">Cole o link da videoaula. Nossa IA vai transcrever e gerar os cards.</p>
-                    </div>
-                    <Input placeholder="https://youtube.com/watch?v=..." className="bg-muted border-border/50 h-12" />
+                    )}
                   </div>
                 ) : (
-                  <div className="border-2 border-dashed border-border/60 rounded-2xl p-8 flex flex-col items-center justify-center text-center bg-muted/30 hover:bg-muted/50 transition-colors cursor-pointer">
-                    <UploadCloud className="w-10 h-10 text-muted-foreground mb-3" />
-                    <p className="font-bold text-foreground">Toque para escolher o arquivo</p>
-                    {source === 'audio' && <p className="text-xs text-muted-foreground mt-1">Formatos suportados: MP3, M4A, WAV (Max: 1h)</p>}
-                    {source === 'pdf' && <p className="text-xs text-muted-foreground mt-1">Formatos suportados: PDF</p>}
-                    {source === 'image' && <p className="text-xs text-muted-foreground mt-1">Formatos suportados: JPG, PNG</p>}
-                  </div>
+                  <>
+                    <div className="border-2 border-dashed border-border/60 rounded-2xl p-8 flex flex-col items-center justify-center text-center bg-muted/30 hover:bg-muted/50 transition-colors cursor-pointer">
+                      <UploadCloud className="w-10 h-10 text-muted-foreground mb-3" />
+                      <p className="font-bold text-foreground">Toque para escolher o arquivo</p>
+                      {source === 'audio' && <p className="text-xs text-muted-foreground mt-1">Formatos suportados: MP3, M4A, WAV (Max: 1h)</p>}
+                      {source === 'pdf' && <p className="text-xs text-muted-foreground mt-1">Formatos suportados: PDF</p>}
+                      {source === 'image' && <p className="text-xs text-muted-foreground mt-1">Formatos suportados: JPG, PNG</p>}
+                    </div>
+                    
+                    <Button onClick={handleSimulateAI} className="mt-8 bg-[#36AF85] hover:bg-[#2b8c6a] text-white w-full rounded-full font-bold h-12 shadow-lg shadow-[#36AF85]/20">
+                      <Sparkles className="w-4 h-4 mr-2" /> Extrair Conteúdo
+                    </Button>
+                  </>
                 )}
-                
-                <Button onClick={handleSimulateAI} className="mt-8 bg-[#36AF85] hover:bg-[#2b8c6a] text-white w-full rounded-full font-bold h-12 shadow-lg shadow-[#36AF85]/20">
-                  <Sparkles className="w-4 h-4 mr-2" /> Extrair Conteúdo
-                </Button>
               </motion.div>
             )}
 
