@@ -11,13 +11,13 @@ const config: CapacitorConfig = {
   appId: 'br.com.app.gpu2675756.gpu0e7509bfb7bde52aef412888bb17a456',
   appName: 'Estudos Jurídicos',
   webDir: 'dist',
-  // 🔥 Hot-reload durante desenvolvimento. REMOVA o bloco `server` inteiro
+  // ⚡ Hot-reload durante desenvolvimento. REMOVA o bloco `server` inteiro
   // antes de gerar o AAB de release para que o app rode 100% offline com o
   // `dist/` embutido (o workflow do GitHub Actions faz isso automaticamente).
-  server: {
-    url: 'http://10.0.2.2:8080',
-    cleartext: true,
-  },
+  // server: {
+  //   url: 'http://10.0.2.2:8080',
+  //   cleartext: true,
+  // },
   android: {
     // allowMixedContent removido — hardening. Todas as chamadas usam HTTPS.
     // Debug do WebView desabilitado em release (evita inspeção via chrome://inspect
