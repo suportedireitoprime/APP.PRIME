@@ -1,13 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/PageHeader';
-import { Camera as CameraIcon, Upload, ScanText, RefreshCcw, Sparkles, Plus, X, BookOpen, Calendar, User, ArrowRight, Loader2, CheckCircle2 } from 'lucide-react';
+import { Camera as CameraIcon, Upload, ScanText, RefreshCcw, Sparkles, Plus, X, BookOpen, Calendar, User, ArrowRight, Loader2, CheckCircle2, CropIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Capacitor } from '@capacitor/core';
 import { toast } from '@/hooks/use-toast';
+import ReactCrop, { type Crop } from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css';
 
-type FlowStep = 'METADATA' | 'CAPTURE' | 'PROCESSING' | 'RESULT';
+type FlowStep = 'METADATA' | 'CAPTURE' | 'CROP' | 'PROCESSING' | 'RESULT';
 
 const PROCESSING_STEPS = [
   "Enviando imagens em alta resolução...",
@@ -29,6 +31,17 @@ export default function FaculdadeLousa() {
   // Imagens
   const [photos, setPhotos] = useState<string[]>([]);
   
+  // Crop UI
+  const [tempPhotoUrl, setTempPhotoUrl] = useState<string>('');
+  const [crop, setCrop] = useState<Crop>({
+    unit: '%',
+    width: 90,
+    height: 90,
+    x: 5,
+    y: 5
+  });
+  const imgRef = useRef<HTMLImageElement>(null);
+
   // Processamento
   const [procIndex, setProcIndex] = useState(0);
 
@@ -39,7 +52,6 @@ export default function FaculdadeLousa() {
         allowEditing: false, 
         resultType: CameraResultType.Uri,
         source: source,
-        preserveAspectRatio: true,
       });
 
       let newPhoto = '';
@@ -50,7 +62,8 @@ export default function FaculdadeLousa() {
       }
       
       if (newPhoto) {
-        setPhotos(prev => [...prev, newPhoto]);
+        setTempPhotoUrl(newPhoto);
+        setStep('CROP');
       }
     } catch (e: any) {
       if (e.message && e.message.includes('User cancelled')) return;
@@ -60,6 +73,42 @@ export default function FaculdadeLousa() {
         variant: "destructive"
       });
     }
+  };
+
+  const applyCrop = () => {
+    if (!imgRef.current || !crop.width || !crop.height) {
+      setPhotos(prev => [...prev, tempPhotoUrl]);
+      setStep('CAPTURE');
+      return;
+    }
+
+    const canvas = document.createElement('canvas');
+    const scaleX = imgRef.current.naturalWidth / imgRef.current.width;
+    const scaleY = imgRef.current.naturalHeight / imgRef.current.height;
+
+    canvas.width = crop.width * scaleX;
+    canvas.height = crop.height * scaleY;
+    const ctx = canvas.getContext('2d');
+
+    if (ctx) {
+      ctx.drawImage(
+        imgRef.current,
+        crop.x * scaleX,
+        crop.y * scaleY,
+        crop.width * scaleX,
+        crop.height * scaleY,
+        0,
+        0,
+        crop.width * scaleX,
+        crop.height * scaleY
+      );
+      
+      const croppedBase64 = canvas.toDataURL('image/jpeg');
+      setPhotos(prev => [...prev, croppedBase64]);
+    } else {
+      setPhotos(prev => [...prev, tempPhotoUrl]);
+    }
+    setStep('CAPTURE');
   };
 
   const removePhoto = (index: number) => {
@@ -110,8 +159,8 @@ export default function FaculdadeLousa() {
               exit={{ opacity: 0, x: -20 }}
               className="flex-1 flex flex-col"
             >
-              <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 self-center shadow-sm border border-primary/20">
-                <ScanText className="w-8 h-8 text-primary" strokeWidth={1.5} />
+              <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6 self-center shadow-sm border border-blue-500/20">
+                <ScanText className="w-8 h-8 text-blue-500" strokeWidth={1.5} />
               </div>
               <h2 className="font-display font-bold text-2xl text-foreground text-center mb-2">
                 Sobre a Aula
@@ -170,6 +219,49 @@ export default function FaculdadeLousa() {
                 Avançar para Fotos
                 <ArrowRight className="w-5 h-5" />
               </motion.button>
+            </motion.div>
+          )}
+
+          {step === 'CROP' && tempPhotoUrl && (
+            <motion.div 
+              key="crop"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex-1 flex flex-col h-full items-center"
+            >
+              <h3 className="font-display font-bold text-xl mb-2">Ajuste o Quadro</h3>
+              <p className="text-sm text-muted-foreground mb-4 text-center">
+                Recorte as bordas da lousa para melhorar a precisão da IA.
+              </p>
+              
+              <div className="flex-1 w-full bg-black/5 rounded-2xl overflow-hidden flex items-center justify-center p-2">
+                <ReactCrop crop={crop} onChange={c => setCrop(c)}>
+                  <img 
+                    ref={imgRef}
+                    src={tempPhotoUrl} 
+                    alt="Cortar" 
+                    className="max-h-[50vh] object-contain"
+                  />
+                </ReactCrop>
+              </div>
+
+              <div className="flex gap-3 w-full mt-6">
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setStep('CAPTURE')}
+                  className="flex-1 py-4 rounded-2xl bg-secondary text-secondary-foreground font-display font-bold"
+                >
+                  Cancelar
+                </motion.button>
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={applyCrop}
+                  className="flex-1 py-4 flex items-center justify-center gap-2 rounded-2xl bg-primary text-primary-foreground font-display font-bold shadow-lg shadow-primary/25"
+                >
+                  <CropIcon className="w-5 h-5" /> Confirmar
+                </motion.button>
+              </div>
             </motion.div>
           )}
 

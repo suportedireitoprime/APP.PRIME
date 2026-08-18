@@ -22,12 +22,49 @@ export default function FaculdadeLembretes() {
 
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!title || !type) return;
     if (type === 'time' && (!timeValue || !dateValue)) return;
     if (type === 'location' && !locationValue) return;
 
-    // Mock save flow with success animation
+    try {
+      const { Capacitor } = await import('@capacitor/core');
+      
+      if (Capacitor.isNativePlatform()) {
+        if (type === 'time') {
+          const { LocalNotifications } = await import('@capacitor/local-notifications');
+          const scheduleDate = new Date(`${dateValue}T${timeValue}:00`);
+          
+          if (scheduleDate.getTime() > Date.now()) {
+            let perm = await LocalNotifications.checkPermissions();
+            if (perm.display !== 'granted') {
+               perm = await LocalNotifications.requestPermissions();
+            }
+            if (perm.display === 'granted') {
+               await LocalNotifications.schedule({
+                 notifications: [
+                   {
+                     id: Math.floor(Math.random() * 100000),
+                     title: 'Lembrete de Estudo',
+                     body: title,
+                     schedule: { at: scheduleDate },
+                     smallIcon: 'ic_stat_icon_config_sample',
+                   }
+                 ]
+               });
+            }
+          }
+        } else if (type === 'location') {
+          // Solicita permissão de geolocalização e deixa registrado
+          const { Geolocation } = await import('@capacitor/geolocation');
+          await Geolocation.requestPermissions();
+        }
+      }
+    } catch(e) {
+      // Ignore web errors or missing plugins
+    }
+
+    // Success flow
     setIsSuccess(true);
     setTimeout(() => {
       setIsSuccess(false);

@@ -178,23 +178,26 @@ const BottomNav = () => {
 
   return (
     <>
-    {/* Bottom bar — visível em celular e tablet (< lg).
+    {/* Bottom bar — celular (< md) e Navigation Rail — tablet (md a lg).
         Desktop (lg+) usa a sidebar lateral. */}
     <nav
       aria-label="Navegação principal"
       role="navigation"
       data-bottom-nav
-      className={`fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-black transition-all duration-300 ease-out ${hideNav ? 'translate-y-[140%] opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'}`}
+      className={`fixed z-50 lg:hidden bg-black transition-all duration-300 ease-out 
+        bottom-0 left-0 right-0 
+        md:top-0 md:bottom-0 md:right-auto md:w-[90px] md:border-r md:border-white/10
+        ${hideNav ? 'translate-y-[140%] md:-translate-x-[140%] md:translate-y-0 opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'}`}
     >
-      {/* Degradê escuro subindo do rodapé para dar profundidade */}
+      {/* Degradê escuro subindo do rodapé para dar profundidade no mobile */}
       <div
         aria-hidden="true"
-        className="absolute bottom-full left-0 right-0 h-20 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none"
+        className="absolute bottom-full left-0 right-0 h-20 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none md:hidden"
       />
-      {/* Menu de Rodapé Vermelho com topo arredondado */}
-      <div className="relative z-10 bg-hero-panel border-t border-white/10 rounded-t-2xl shadow-[0_-8px_30px_rgba(0,0,0,0.6),0_-2px_10px_rgba(0,0,0,0.4)]">
-        <div className="max-w-2xl mx-auto px-2 py-2">
-        <div className="grid grid-cols-5 items-stretch">
+      {/* Menu Principal */}
+      <div className="relative z-10 bg-hero-panel border-t border-white/10 rounded-t-2xl md:border-t-0 md:rounded-none md:h-full md:bg-black/95 shadow-[0_-8px_30px_rgba(0,0,0,0.6),0_-2px_10px_rgba(0,0,0,0.4)] md:shadow-none">
+        <div className="max-w-2xl mx-auto px-2 py-2 md:py-8 md:h-full md:flex md:flex-col md:justify-center md:gap-6">
+        <div className="grid grid-cols-5 md:grid-cols-1 items-stretch md:gap-6">
           {/* Slot 1: Blog */}
           <button
             onPointerDown={() => prefetchRoute('blog')}
@@ -202,13 +205,13 @@ const BottomNav = () => {
             onClick={() => { haptic.light(); navigate('/blog'); }}
             data-track="bottom_nav_click"
             data-track-destino="blog"
-            className={`flex flex-col items-center justify-center gap-1 py-2 rounded-xl transition-all relative ${
+            className={`flex flex-col items-center justify-center gap-1 py-2 md:py-3 rounded-xl transition-all relative ${
               path.startsWith('/blog') ? 'text-white/90 bg-white/15 ring-1 ring-white/25' : 'text-white/90 hover:bg-white/10'
             }`}
             aria-label="Blog"
           >
-            <ScrollText className={`w-8 h-8 transition-transform text-white/90 drop-shadow-md ${path.startsWith('/blog') ? 'scale-110' : ''}`} strokeWidth={1.2} />
-            <span className="font-body text-[12px] font-medium leading-tight text-center text-white/90 drop-shadow-sm">Blog</span>
+            <ScrollText className={`w-8 h-8 md:w-7 md:h-7 transition-transform text-white/90 drop-shadow-md ${path.startsWith('/blog') ? 'scale-110' : ''}`} strokeWidth={1.2} />
+            <span className="font-body text-[12px] md:text-[11px] font-medium leading-tight text-center text-white/90 drop-shadow-sm">Blog</span>
           </button>
 
 
@@ -217,40 +220,38 @@ const BottomNav = () => {
             onClick={() => { haptic.selection(); setChatOpen(true); }}
             data-track="bottom_nav_click"
             data-track-destino="chat"
-            className={`flex flex-col items-center justify-center gap-1 py-2 rounded-xl transition-all ${
+            className={`flex flex-col items-center justify-center gap-1 py-2 md:py-3 rounded-xl transition-all ${
               chatOpen ? 'text-white/90 bg-white/15 ring-1 ring-white/25' : 'text-white/90 hover:bg-white/10'
             }`}
             aria-label="Chat Jurídico"
           >
-            <MessageCircle className={`w-8 h-8 transition-transform text-white/90 drop-shadow-md ${chatOpen ? 'scale-110' : ''}`} strokeWidth={1.2} />
-            <span className="font-body text-[12px] font-medium leading-tight text-center text-white/90 drop-shadow-sm">Chat</span>
+            <MessageCircle className={`w-8 h-8 md:w-7 md:h-7 transition-transform text-white/90 drop-shadow-md ${chatOpen ? 'scale-110' : ''}`} strokeWidth={1.2} />
+            <span className="font-body text-[12px] md:text-[11px] font-medium leading-tight text-center text-white/90 drop-shadow-sm">Chat</span>
           </button>
 
-          {/* Slot 3: Vade Mecum (destaque flutuante central) */}
+          {/* Slot 3: Vade Mecum (destaque flutuante central no mobile, normal no tablet) */}
           <button
-            onPointerDown={() => prefetchRoute('vade-mecum')}
-            onMouseEnter={() => prefetchRoute('vade-mecum')}
             onClick={() => { haptic.light(); if (!path.startsWith('/vade-mecum')) navigate('/vade-mecum'); }}
             data-track="bottom_nav_click"
             data-track-destino="vade-mecum"
-            className="relative flex flex-col items-center justify-end gap-1 py-2"
+            className="relative flex flex-col items-center justify-end gap-1 py-2 md:py-3 md:justify-center md:rounded-xl md:hover:bg-white/10"
             aria-label="Vade Mecum"
           >
             <span
-              className={`absolute -top-9 left-1/2 -translate-x-1/2 w-[72px] h-[72px] rounded-full flex items-center justify-center overflow-hidden bg-hero-panel shadow-[0_10px_26px_rgba(0,0,0,0.6)] transition-transform active:scale-95 ${
-                path.startsWith('/vade-mecum') ? 'scale-110' : ''
+              className={`absolute -top-9 left-1/2 -translate-x-1/2 w-[72px] h-[72px] md:relative md:top-0 md:left-0 md:translate-x-0 md:w-auto md:h-auto md:bg-transparent md:shadow-none rounded-full flex items-center justify-center overflow-hidden bg-hero-panel shadow-[0_10px_26px_rgba(0,0,0,0.6)] transition-transform active:scale-95 ${
+                path.startsWith('/vade-mecum') ? 'scale-110 md:bg-white/15 md:ring-1 md:ring-white/25' : ''
               }`}
             >
-              <Scale className="relative w-9 h-9 text-white drop-shadow-lg" aria-hidden="true" strokeWidth={1.2} />
-              {/* Reflexo brilhante que passa periodicamente */}
+              <Scale className="relative w-9 h-9 md:w-7 md:h-7 text-white md:text-white/90 drop-shadow-lg" aria-hidden="true" strokeWidth={1.2} />
+              {/* Reflexo brilhante que passa periodicamente no mobile */}
               <span
                 aria-hidden
-                className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 rotate-12 bg-gradient-to-r from-transparent via-white/45 to-transparent motion-safe:animate-[vade-mecum-shine_3.4s_ease-in-out_infinite]"
+                className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 rotate-12 bg-gradient-to-r from-transparent via-white/45 to-transparent motion-safe:animate-[vade-mecum-shine_3.4s_ease-in-out_infinite] md:hidden"
               />
             </span>
-            {/* Spacer invisível ocupando o mesmo espaço do ícone dos outros slots */}
-            <span aria-hidden className="w-8 h-8" />
-            <span className="font-body text-[12px] font-medium leading-tight text-center text-white drop-shadow-sm">Vade Mecum</span>
+            {/* Spacer invisível ocupando o mesmo espaço do ícone dos outros slots no mobile */}
+            <span aria-hidden className="w-8 h-8 md:hidden" />
+            <span className="font-body text-[12px] md:text-[11px] font-medium leading-tight text-center text-white md:text-white/90 drop-shadow-sm">Vade Mecum</span>
           </button>
 
 
@@ -264,13 +265,13 @@ const BottomNav = () => {
             }}
             data-track="bottom_nav_click"
             data-track-destino="ferramentas"
-            className={`flex flex-col items-center justify-center gap-1 py-2 rounded-xl transition-all ${
+            className={`flex flex-col items-center justify-center gap-1 py-2 md:py-3 rounded-xl transition-all ${
               location.pathname.startsWith('/ferramentas') ? 'text-white/90 bg-white/15 ring-1 ring-white/25' : 'text-white/90 hover:bg-white/10'
             }`}
             aria-label="Ferramentas"
           >
-            <Gavel className={`w-8 h-8 transition-transform text-white/90 drop-shadow-md ${location.pathname.startsWith('/ferramentas') ? 'scale-110' : ''}`} strokeWidth={1.2} />
-            <span className="font-body text-[12px] font-medium leading-tight text-center text-white/90 drop-shadow-sm">Ferramentas</span>
+            <Gavel className={`w-8 h-8 md:w-7 md:h-7 transition-transform text-white/90 drop-shadow-md ${location.pathname.startsWith('/ferramentas') ? 'scale-110' : ''}`} strokeWidth={1.2} />
+            <span className="font-body text-[12px] md:text-[11px] font-medium leading-tight text-center text-white/90 drop-shadow-sm">Ferramentas</span>
           </button>
 
 
@@ -281,19 +282,19 @@ const BottomNav = () => {
             onClick={() => { haptic.selection(); navigate('/meu-espaco'); }}
             data-track="bottom_nav_click"
             data-track-destino="meu-espaco"
-            className={`flex flex-col items-center justify-center gap-1 py-2 rounded-xl transition-all ${
+            className={`flex flex-col items-center justify-center gap-1 py-2 md:py-3 rounded-xl transition-all ${
               path.startsWith('/meu-espaco') ? 'text-white/90 bg-white/15 ring-1 ring-white/25' : 'text-white/90 hover:bg-white/10'
             }`}
             aria-label="Meu Espaço"
           >
-            <User className={`w-8 h-8 transition-transform text-white/90 drop-shadow-md ${path.startsWith('/meu-espaco') ? 'scale-110' : ''}`} strokeWidth={1.2} />
-            <span className="font-body text-[12px] font-medium leading-tight text-center text-white/90 drop-shadow-sm">Meu Espaço</span>
+            <User className={`w-8 h-8 md:w-7 md:h-7 transition-transform text-white/90 drop-shadow-md ${path.startsWith('/meu-espaco') ? 'scale-110' : ''}`} strokeWidth={1.2} />
+            <span className="font-body text-[12px] md:text-[11px] font-medium leading-tight text-center text-white/90 drop-shadow-sm">Meu Espaço</span>
           </button>
         </div>
       </div>
     </div>
     {/* Inset de fundo do sistema do celular (preto/escuro) sem puxar a cor do menu */}
-    <div className="bg-black h-[calc(0.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]" />
+    <div className="bg-black h-[calc(0.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] md:hidden" />
   </nav>
 
 

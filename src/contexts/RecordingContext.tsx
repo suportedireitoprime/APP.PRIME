@@ -120,6 +120,15 @@ export function RecordingProvider({ children }: { children: ReactNode }) {
     isRecordingRef.current = status === 'recording';
   }, [status]);
 
+  const setKeepAwake = async (keep: boolean) => {
+    if (!isNative) return;
+    try {
+      const { KeepAwake } = await import('@capacitor-community/keep-awake');
+      if (keep) await KeepAwake.keepAwake();
+      else await KeepAwake.allowSleep();
+    } catch { /* ignora se falhar */ }
+  };
+
   const start = useCallback(async () => {
     const t = title.trim() || `Aula ${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
     setTitle(t);
@@ -153,6 +162,7 @@ export function RecordingProvider({ children }: { children: ReactNode }) {
     setStatus('recording');
     startTicker();
     scheduleOngoingNotification(t);
+    setKeepAwake(true);
     haptic.medium();
   }, [title, isNative]);
 
@@ -187,6 +197,7 @@ export function RecordingProvider({ children }: { children: ReactNode }) {
     if (status === 'recording') accumulated.current += Date.now() - startedAt.current;
     setStatus('saving');
     clearOngoingNotification();
+    setKeepAwake(false);
 
     if (recognition.current) {
       try { recognition.current.stop(); } catch {}
@@ -228,14 +239,26 @@ export function RecordingProvider({ children }: { children: ReactNode }) {
       if (upErr) { toast.error('Falha no upload: ' + upErr.message); setStatus('idle'); return null; }
 
       const durMs = accumulated.current;
+      const finalLiveText = liveText;
+
       const { data: row, error: insErr } = await supabase.from('audio_recordings').insert({
         id: recId, user_id: user.id, title, duration_ms: durMs,
-        file_path: filePath, status: 'pronto', mode: 'aula',
+        file_path: filePath, status: 'processando', mode: 'aula',
+        transcription: finalLiveText // salva o raw text preliminar
       }).select('id').single();
       if (insErr) { toast.error(insErr.message); setStatus('idle'); return null; }
 
-      const finalLiveText = liveText;
-      toast.success('Aula salva!');
+      // Invoca a IA para formatar a transcrição e gerar insights em background
+      if (finalLiveText.trim().length > 10) {
+        supabase.functions.invoke('formatar-transcricao', {
+          body: { recordId: recId, rawText: finalLiveText }
+        }).catch(console.error);
+      } else {
+        // Se não tiver texto suficiente, atualiza pra pronto direto
+        supabase.from('audio_recordings').update({ status: 'pronto' }).eq('id', recId).then();
+      }
+
+      toast.success('Aula salva e sendo processada pela IA!');
       setStatus('idle'); setElapsedMs(0); accumulated.current = 0; setTitle(''); setLiveText('');
       finalChunks.current = [];
       haptic.success();
@@ -250,6 +273,7 @@ export function RecordingProvider({ children }: { children: ReactNode }) {
   const cancel = useCallback(async () => {
     stopTicker();
     clearOngoingNotification();
+    setKeepAwake(false);
     if (recognition.current) {
       try { recognition.current.stop(); } catch {}
     }

@@ -42,7 +42,7 @@ const IndexMobile = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [heroSearchOpen, setHeroSearchOpen] = useState(false);
-  const [homeTab, setHomeTab] = useState<'locais' | 'estudos' | 'documentos' | 'categorias' | 'emalta' | 'areas'>('estudos');
+  const [homeTab, setHomeTab] = useState<'agenda' | 'estudos' | 'faculdade' | 'documentos' | 'categorias' | 'emalta' | 'areas'>('estudos');
   const [newsOpen, setNewsOpen] = useState(false);
   const [assistenteOpen, setAssistenteOpen] = useState(false);
   const [personalizarOpen] = useState(false);
@@ -104,7 +104,7 @@ const IndexMobile = () => {
   void leiPath;
 
   return (
-    <div className="min-h-dvh bg-background pb-20">
+    <div className="min-h-dvh bg-background pb-20 md:pb-0 md:pl-[90px] transition-all">
       <HomeHeaderHero onSearchOpenChange={setHeroSearchOpen} />
       <main ref={contentRef} className="max-w-5xl lg:max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-2">
         <img src={vacatioLogo} alt="" aria-hidden="true" loading="eager" decoding="sync" fetchPriority="high" className="absolute w-0 h-0 opacity-0 pointer-events-none" />

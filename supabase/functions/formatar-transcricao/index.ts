@@ -1,5 +1,6 @@
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { chamarIa, GatewayError } from "../_shared/videoaulaIa.ts";
+import { createClient } from "npm:@supabase/supabase-js@2";
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
@@ -12,9 +13,16 @@ Deno.serve(async (req) => {
 
   try {
     const body = await req.json().catch(() => null);
-    const text = String(body?.text || "");
+    const text = String(body?.text || body?.rawText || "");
+    const recordId = body?.recordId;
 
     if (!text || text.length < 10) {
+      if (recordId) {
+         const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+         const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+         const supabase = createClient(supabaseUrl, supabaseKey);
+         await supabase.from('audio_recordings').update({ status: 'pronto' }).eq('id', recordId);
+      }
       return json({ error: "Texto muito curto ou ausente" }, 400);
     }
 
@@ -36,8 +44,19 @@ ${text}
 Responda APENAS com o texto formatado final. Sem introdução ou conclusão.`;
 
     const textoFormatado = await chamarIa({ prompt, maxTokens: 4096, temperature: 0.3 });
+    const finalResult = textoFormatado.trim();
 
-    return json({ text: textoFormatado.trim() });
+    if (recordId) {
+       const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+       const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+       const supabase = createClient(supabaseUrl, supabaseKey);
+       await supabase.from('audio_recordings').update({ 
+         transcription: finalResult,
+         status: 'pronto' 
+       }).eq('id', recordId);
+    }
+
+    return json({ text: finalResult });
   } catch (e) {
     const status = e instanceof GatewayError ? e.status : 500;
     console.error("[formatar-transcricao]", e);

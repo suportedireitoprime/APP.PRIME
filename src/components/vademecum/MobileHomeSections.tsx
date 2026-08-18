@@ -947,20 +947,24 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
               <div className="grid grid-cols-2 gap-3">
                 <motion.button
                   onClick={() => navigate('/anotacoes/audio')}
-                  className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-5 text-center hover:border-primary/50 transition-colors active:scale-95 shadow-sm relative"
+                  className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-5 text-center hover:border-primary/50 transition-colors active:scale-95 shadow-sm relative group overflow-hidden"
                 >
-                  <ChevronRight className="absolute top-3 right-3 w-4 h-4 text-muted-foreground/60" strokeWidth={2} />
-                  <Mic className="w-8 h-8 text-primary" strokeWidth={1.5} />
-                  <span className="font-display font-bold text-[14px] text-foreground">Gravar Aula</span>
+                  <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 group-hover:scale-110 transition-all">
+                    <ChevronRight className="w-4 h-4 text-primary" strokeWidth={2.5} />
+                  </div>
+                  <Mic className="w-9 h-9 text-primary relative z-10" strokeWidth={1.5} />
+                  <span className="font-display font-bold text-[14px] text-foreground relative z-10">Gravar Aula</span>
                 </motion.button>
                 
                 <motion.button
                   onClick={() => navigate('/faculdade/lousa')}
-                  className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-5 text-center hover:border-primary/50 transition-colors active:scale-95 shadow-sm relative"
+                  className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-5 text-center hover:border-primary/50 transition-colors active:scale-95 shadow-sm relative group overflow-hidden"
                 >
-                  <ChevronRight className="absolute top-3 right-3 w-4 h-4 text-muted-foreground/60" strokeWidth={2} />
-                  <Monitor className="w-8 h-8 text-primary" strokeWidth={1.5} />
-                  <span className="font-display font-bold text-[14px] text-foreground">Lousa Scanner</span>
+                  <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 group-hover:scale-110 transition-all">
+                    <ChevronRight className="w-4 h-4 text-primary" strokeWidth={2.5} />
+                  </div>
+                  <Monitor className="w-9 h-9 text-primary relative z-10" strokeWidth={1.5} />
+                  <span className="font-display font-bold text-[14px] text-foreground relative z-10">Lousa Scanner</span>
                 </motion.button>
               </div>
             </div>
