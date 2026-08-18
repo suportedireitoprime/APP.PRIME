@@ -1,6 +1,7 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sparkles } from 'lucide-react';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { useBuscaConteudo, prefetchBusca, type ConteudoGrupo } from '@/hooks/useBuscaConteudo';
 import { resolveRotaResultado } from '@/lib/buscaRotas';
 import type { CategoriaKey } from './CategoriaFiltroBar';
@@ -49,6 +50,15 @@ export default function ConteudoBusca({
     onNavigate?.();
     navigate(route);
   };
+
+  // Virtualização: só renderiza ~15 itens visíveis, destruindo o resto do DOM
+  const parentRef = useRef<HTMLDivElement>(null);
+  const rowVirtualizer = useVirtualizer({
+    count: filtrados.length,
+    getScrollElement: () => parentRef.current?.closest('[class*="overflow-y-auto"]') as HTMLElement | null,
+    estimateSize: () => 88,
+    overscan: 5,
+  });
 
   return (
     <div className="space-y-3 pt-2">
@@ -113,27 +123,40 @@ export default function ConteudoBusca({
       )}
 
       {!termoCurto && filtrados.length > 0 && (
-        <div className="space-y-2 px-2">
-          {filtrados.map((item, i) => (
-            <ResultadoConteudoCard
-              key={`${item.entity_type}-${item.entity_id}-${i}`}
-              item={item}
-              termo={query}
-              index={i}
-              onClick={() => {
-                registrarBuscaClick(query, {
-                  entity_type: item.entity_type,
-                  entity_id: item.entity_id,
-                  entity_table: item.entity_table,
-                  title: item.title,
-                  subtitle: item.subtitle,
-                  thumb_url: item.thumb_url,
-                  route: item.route,
-                });
-                irPara(item.route);
-              }}
-            />
-          ))}
+        <div ref={parentRef} className="px-2" style={{ position: 'relative', height: rowVirtualizer.getTotalSize(), width: '100%' }}>
+          {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+            const item = filtrados[virtualRow.index];
+            return (
+              <div
+                key={`${item.entity_type}-${item.entity_id}-${virtualRow.index}`}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  transform: `translateY(${virtualRow.start}px)`,
+                }}
+              >
+                <ResultadoConteudoCard
+                  item={item}
+                  termo={query}
+                  index={virtualRow.index}
+                  onClick={() => {
+                    registrarBuscaClick(query, {
+                      entity_type: item.entity_type,
+                      entity_id: item.entity_id,
+                      entity_table: item.entity_table,
+                      title: item.title,
+                      subtitle: item.subtitle,
+                      thumb_url: item.thumb_url,
+                      route: item.route,
+                    });
+                    irPara(item.route);
+                  }}
+                />
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
