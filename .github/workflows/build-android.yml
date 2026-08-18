@@ -3823,6 +3823,19 @@ jobs:
           path: ${{ env.APK_PATH }}
           if-no-files-found: error
 
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: release-${{ env.ARTIFACT_BASENAME }}
+          name: Build ${{ env.ARTIFACT_BASENAME }}
+          files: |
+            ${{ env.AAB_PATH }}
+            ${{ env.APK_PATH }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Upload download-safe TXT artifacts
         uses: actions/upload-artifact@v4
         with:

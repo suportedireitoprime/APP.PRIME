@@ -446,6 +446,10 @@ const ApresentacaoPlayer = () => {
               <button onClick={() => goBack()} className="w-10 h-10 flex items-center justify-center active:scale-95"><ArrowLeft className="w-6 h-6" /></button>
               <div className="min-w-0 flex-1">
                 <p className="font-heading font-bold text-sm truncate">{apres.titulo}</p>
+                <p className="text-[11px] text-white/60 font-body truncate">
+                  Slide {idx + 1} de {slides.length}
+                  {duracoes.length > 0 && duracoes.reduce((a, b) => a + b, 0) > 0 && ` · Total: ${formatarTempo(duracoes.reduce((a, b) => a + b, 0))}`}
+                </p>
               </div>
               <button onClick={() => setDeitado((v) => !v)} className="w-10 h-10 flex items-center justify-center" aria-label="Girar tela">
                 <RotateCw className="w-5 h-5" />
