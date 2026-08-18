@@ -6,7 +6,7 @@ configurarPdfWorker(pdfjsLib);
 
 import {
   Presentation, History, Upload, Loader2, Play, Check, Mic, ChevronRight, Trash2,
-  BookOpen, Scale, BookMarked, Eye, EyeOff, Search, Sparkles, Filter, Terminal
+  BookOpen, Scale, BookMarked, Eye, EyeOff, Search, Sparkles, Filter, Terminal, Clock, Activity, Headphones
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { PageHeader } from '@/components/vademecum/PageHeader';
@@ -772,23 +772,62 @@ const AdminApresentacaoEditar = () => {
             {job?.ativo ? 'Gerando...' : 'Iniciar Geração de Narração'}
           </button>
           
-          {/* Logs Terminal View */}
+          {/* Interface de Progresso e Terminal */}
           {job && (
-            <div className="mt-4 rounded-xl overflow-hidden bg-black/90 border border-border shadow-inner">
-              <div className="flex items-center justify-between px-3 py-2 bg-zinc-900 border-b border-border">
+            <div className="mt-4 rounded-xl border border-border bg-background shadow-lg overflow-hidden flex flex-col">
+              
+              {/* Cabeçalho do Status */}
+              <div className="bg-zinc-950 px-4 py-3 flex items-center justify-between border-b border-border/50">
                 <div className="flex items-center gap-2">
-                  <Terminal className="w-4 h-4 text-primary" />
-                  <span className="text-xs font-mono font-bold text-zinc-300">Terminal de Geração</span>
+                  {job.ativo ? (
+                    <div className="flex gap-0.5 items-end h-4">
+                      {[1, 2, 3, 4].map(i => (
+                        <div key={i} className="w-1 bg-primary animate-pulse rounded-full" style={{ height: `${Math.max(30, Math.random() * 100)}%`, animationDelay: `${i * 0.15}s` }} />
+                      ))}
+                    </div>
+                  ) : job.concluido ? (
+                    <Check className="w-4 h-4 text-green-500" />
+                  ) : (
+                    <Terminal className="w-4 h-4 text-zinc-500" />
+                  )}
+                  <span className="text-sm font-heading font-bold text-zinc-200">
+                    {job.ativo ? "Sintetizando Áudio..." : job.concluido ? "Geração Concluída" : "Terminal de Geração"}
+                  </span>
                 </div>
+                
+                {job.ativo && (
+                  <div className="flex items-center gap-1.5 text-xs font-mono font-medium text-amber-400 bg-amber-400/10 px-2 py-1 rounded-md">
+                    <Clock className="w-3 h-3" />
+                    <span>ETA: {formatarEta(etaSegundos(job))}</span>
+                  </div>
+                )}
                 {!job.ativo && (
                   <button onClick={limparApresJob} className="text-[11px] font-bold text-muted-foreground hover:text-foreground">FECHAR</button>
                 )}
               </div>
-              <div className="p-3 font-mono text-[11px] h-48 overflow-y-auto space-y-1 text-zinc-400">
+
+              {/* Barra de Progresso */}
+              {job.total > 0 && (
+                <div className="bg-zinc-900 px-4 py-3 border-b border-border/50">
+                  <div className="flex justify-between text-xs font-medium text-zinc-400 mb-2">
+                    <span>Progresso ({job.feitos}/{job.total} slides)</span>
+                    <span>{Math.round((job.feitos / job.total) * 100)}%</span>
+                  </div>
+                  <div className="h-2 w-full bg-zinc-800 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-primary transition-all duration-500 ease-out" 
+                      style={{ width: `${(job.feitos / job.total) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Terminal Logs */}
+              <div className="p-3 font-mono text-[11px] h-48 overflow-y-auto space-y-1 text-zinc-400 bg-black/90">
                 {job.logs?.map((l, idx) => (
                   <div key={idx} className="leading-tight">
                     <span className="text-zinc-600">[{new Date(l.time).toLocaleTimeString('pt-BR', {hour12:false})}]</span>{' '}
-                    <span className={l.text.includes('Erro') || l.text.includes('Falha') ? 'text-red-400' : l.text.includes('sucesso') || l.text.includes('pronta') ? 'text-green-400' : 'text-zinc-300'}>
+                    <span className={l.text.includes('Erro') || l.text.includes('Falha') || l.text.includes('not defined') ? 'text-red-400' : l.text.includes('sucesso') || l.text.includes('pronta') ? 'text-green-400' : 'text-zinc-300'}>
                       {l.text}
                     </span>
                   </div>

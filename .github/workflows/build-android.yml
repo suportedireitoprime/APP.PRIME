@@ -97,13 +97,15 @@ jobs:
           fi
 
 
-      - name: Regenerate Android platform
+      - name: Verify Android platform
         run: |
-          # Sempre recria a pasta nativa para eliminar referências antigas de
-          # plugins removidos que podem ter ficado em settings.gradle/build.gradle
-          # após builds anteriores.
-          rm -rf android
-          bunx cap add android
+          # A pasta 'android' deve ser mantida no controle de versão (Git).
+          # Recriar ela do zero aqui no CI destrói modificações nativas feitas
+          # no MainActivity.java (como EdgeToEdge e SplashScreen do Android 15).
+          if [ ! -d "android" ]; then
+            echo "::error::Pasta 'android' não encontrada no repositório! O Capacitor exige que ela seja commitada."
+            exit 1
+          fi
           chmod +x android/gradlew
 
       - name: Bump AGP + Gradle wrapper + force modern Android deps
