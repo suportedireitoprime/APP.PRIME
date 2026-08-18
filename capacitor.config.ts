@@ -83,12 +83,6 @@ const config: CapacitorConfig = {
     PrivacyScreen: {
       enable: false,
     },
-    SafeArea: {
-      statusBarStyle: 'DARK', // ícones claros sobre fundo escuro do app
-      navigationBarStyle: 'DARK',
-      detectViewportFitCoverChanges: true,
-      initialViewportFitCover: true,
-    },
     SystemBars: {
       insetsHandling: 'disable',
     },

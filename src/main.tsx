@@ -27,19 +27,9 @@ function preloadImage(url: string) {
 preloadImage(vacatioLogoUrl);
 preloadImage(horusOwlUrl);
 
-// Inicializa safe-area no Android/iOS. O @capacitor-community/safe-area v8
-// injeta automaticamente --safe-area-inset-* no :root ao carregar; aqui só
-// pinta os system bars com estilo claro (ícones brancos) sobre o fundo do app.
-// Sem o plugin ativo, no Android 15/SDK 35 (edge-to-edge forçado) os insets
-// ficam 0 e o conteúdo desliza para trás da status bar.
-if (Capacitor.isNativePlatform()) {
-  void import("@capacitor-community/safe-area").then(({ SafeArea, SystemBarsStyle }) => {
-    void SafeArea.setSystemBarsStyle({ style: SystemBarsStyle.Dark }).catch(() => {});
-  });
-  // A Splash Screen nativa agora é ocultada sob demanda pelos componentes principais
-  // (ex: IndexMobile.tsx, Auth.tsx) após o primeiro render, evitando a "tela branca"
-  // ou "travadinha" durante o boot.
-}
+// A Splash Screen nativa agora é ocultada sob demanda pelos componentes principais
+// (ex: IndexMobile.tsx, Auth.tsx) após o primeiro render, evitando a "tela branca"
+// ou "travadinha" durante o boot.
 
 // Push: anexa os listeners nativos ANTES do React montar e converte o
 // parâmetro `_pc` da URL em evento de abertura. Sem isso, o toque em uma
