@@ -1484,5 +1484,4 @@ html.light .bg-\[\#212121\]\/95 { background-color: hsl(var(--card) / 0.95) !imp
 @media (prefers-reduced-motion: reduce) {
   .icon-shine-mask { animation: none; opacity: 0; }
 }
- 
- 
+
