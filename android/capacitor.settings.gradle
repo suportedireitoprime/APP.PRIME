@@ -5,9 +5,6 @@ project(':capacitor-android').projectDir = new File('../node_modules/.pnpm/@capa
 include ':aparajita-capacitor-secure-storage'
 project(':aparajita-capacitor-secure-storage').projectDir = new File('../node_modules/.pnpm/@aparajita+capacitor-secure-storage@8.0.0/node_modules/@aparajita/capacitor-secure-storage/android')
 
-include ':capacitor-community-background-geolocation'
-project(':capacitor-community-background-geolocation').projectDir = new File('../node_modules/.pnpm/@capacitor-community+backgr_c8a1372dece1c484c43824db82ad99be/node_modules/@capacitor-community/background-geolocation/android')
-
 include ':capacitor-community-file-opener'
 project(':capacitor-community-file-opener').projectDir = new File('../node_modules/.pnpm/@capacitor-community+file-opener@8.0.1_@capacitor+core@8.5.0/node_modules/@capacitor-community/file-opener/android')
 
@@ -20,9 +17,6 @@ project(':capacitor-community-keep-awake').projectDir = new File('../node_module
 include ':capacitor-community-safe-area'
 project(':capacitor-community-safe-area').projectDir = new File('../node_modules/.pnpm/@capacitor-community+safe-area@8.0.1_@capacitor+core@8.5.0/node_modules/@capacitor-community/safe-area/android')
 
-include ':capacitor-community-speech-recognition'
-project(':capacitor-community-speech-recognition').projectDir = new File('../node_modules/.pnpm/@capacitor-community+speech_07b122593aa50c0adc14d94e0b1d7654/node_modules/@capacitor-community/speech-recognition/android')
-
 include ':capacitor-community-sqlite'
 project(':capacitor-community-sqlite').projectDir = new File('../node_modules/.pnpm/@capacitor-community+sqlite@8.1.0_@capacitor+core@8.5.0/node_modules/@capacitor-community/sqlite/android')
 
@@ -34,6 +28,9 @@ project(':capacitor-firebase-analytics').projectDir = new File('../node_modules/
 
 include ':capacitor-firebase-app'
 project(':capacitor-firebase-app').projectDir = new File('../node_modules/.pnpm/@capacitor-firebase+app@8.3_7467f9befb12d84b7120a85f33b7e4a0/node_modules/@capacitor-firebase/app/android')
+
+include ':capacitor-firebase-authentication'
+project(':capacitor-firebase-authentication').projectDir = new File('../node_modules/.pnpm/@capacitor-firebase+authent_bb470fa558500bd07af72185cdd2de57/node_modules/@capacitor-firebase/authentication/android')
 
 include ':capacitor-firebase-crashlytics'
 project(':capacitor-firebase-crashlytics').projectDir = new File('../node_modules/.pnpm/@capacitor-firebase+crashly_b60542f30be5e4bf987f275a5c7658e3/node_modules/@capacitor-firebase/crashlytics/android')
@@ -119,17 +116,32 @@ project(':capawesome-capacitor-background-task').projectDir = new File('../node_
 include ':capawesome-capacitor-badge'
 project(':capawesome-capacitor-badge').projectDir = new File('../node_modules/.pnpm/@capawesome+capacitor-badge@8.0.2_@capacitor+core@8.5.0/node_modules/@capawesome/capacitor-badge/android')
 
-include ':capawesome-capacitor-maps-launcher'
-project(':capawesome-capacitor-maps-launcher').projectDir = new File('../node_modules/.pnpm/@capawesome+capacitor-maps-_477df0c65a159aa2ca07f2bc0e02e194/node_modules/@capawesome/capacitor-maps-launcher/android')
-
 include ':capgo-capacitor-media-session'
 project(':capgo-capacitor-media-session').projectDir = new File('../node_modules/.pnpm/@capgo+capacitor-media-session@8.0.29_@capacitor+core@8.5.0/node_modules/@capgo/capacitor-media-session/android')
 
 include ':capgo-native-purchases'
 project(':capgo-native-purchases').projectDir = new File('../node_modules/.pnpm/@capgo+native-purchases@8.6.4_@capacitor+core@8.5.0/node_modules/@capgo/native-purchases/android')
 
-include ':capacitor-voice-recorder'
-project(':capacitor-voice-recorder').projectDir = new File('../node_modules/.pnpm/capacitor-voice-recorder@7._c1d009c50212e6b9e3063e914297d59e/node_modules/capacitor-voice-recorder/android')
+include ':capgo-background-geolocation'
+project(':capgo-background-geolocation').projectDir = new File('../node_modules/.pnpm/@capgo+background-geolocation@8.4.2_@capacitor+core@8.5.0/node_modules/@capgo/background-geolocation/android')
 
-include ':send-intent'
-project(':send-intent').projectDir = new File('../node_modules/.pnpm/send-intent@7.0.0_@capacitor+core@8.5.0_supports-color@7.2.0/node_modules/send-intent/android')
+include ':capgo-capacitor-updater'
+project(':capgo-capacitor-updater').projectDir = new File('../node_modules/.pnpm/@capgo+capacitor-updater@8.51.12_@capacitor+core@8.5.0/node_modules/@capgo/capacitor-updater/android')
+
+include ':capacitor-screen-reader'
+project(':capacitor-screen-reader').projectDir = new File('../node_modules/.pnpm/@capacitor+screen-reader@8.0.1_@capacitor+core@8.5.0/node_modules/@capacitor/screen-reader/android')
+
+include ':capawesome-capacitor-file-picker'
+project(':capawesome-capacitor-file-picker').projectDir = new File('../node_modules/.pnpm/@capawesome+capacitor-file-_534f93c3d08f7cc47eb347939297375b/node_modules/@capawesome/capacitor-file-picker/android')
+
+include ':capawesome-capacitor-photo-editor'
+project(':capawesome-capacitor-photo-editor').projectDir = new File('../node_modules/.pnpm/@capawesome+capacitor-photo_21fcc055083131f82bbd184b3cfb325d/node_modules/@capawesome/capacitor-photo-editor/android')
+
+include ':capacitor-community-intercom'
+project(':capacitor-community-intercom').projectDir = new File('../node_modules/.pnpm/@capacitor-community+intercom@8.0.0_@capacitor+core@8.5.0/node_modules/@capacitor-community/intercom/android')
+
+include ':capgo-native-audio'
+project(':capgo-native-audio').projectDir = new File('../node_modules/.pnpm/@capgo+native-audio@8.4.2_@capacitor+core@8.5.0/node_modules/@capgo/native-audio/android')
+
+include ':capacitor-community-media'
+project(':capacitor-community-media').projectDir = new File('../node_modules/.pnpm/@capacitor-community+media@8.0.1_@capacitor+core@8.5.0/node_modules/@capacitor-community/media/android')

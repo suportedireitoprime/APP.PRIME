@@ -189,7 +189,7 @@ async function ttsChunk(texto: string, voz: string, estilo: string): Promise<Uin
     }
   }
 
-   TTS
+  // Fallback via Lovable AI Gateway
   const lovableKey = Deno.env.get('GEMINI_API_KEY');
   if (lovableKey) {
     try {
