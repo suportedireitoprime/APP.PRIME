@@ -69,15 +69,9 @@ const LeiIcon = ({
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.45, ease: 'easeOut' }}
       >
-        <motion.div
-          animate={{
-            opacity: [0.22, 0.45, 0.22],
-            y: [0, -2, 0],
-          }}
-          transition={{
-            duration: 2.4,
-            repeat: Infinity,
-            ease: 'easeInOut',
+        <div
+          style={{
+            animation: 'lei-icon-reflexo 2.4s ease-in-out infinite'
           }}
         >
           <Icon
@@ -90,7 +84,7 @@ const LeiIcon = ({
             }}
             strokeWidth={1.7}
           />
-        </motion.div>
+        </div>
       </motion.div>
     </div>
   );

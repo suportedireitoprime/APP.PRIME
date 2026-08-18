@@ -8,9 +8,10 @@
 
 const WS_HOST = "wss://generativelanguage.googleapis.com/ws";
 const WS_URLS = [
-  `${WS_HOST}/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContentConstrained`,
-  `${WS_HOST}/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContentConstrained`,
+  `${WS_HOST}/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent`,
   `${WS_HOST}/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent`,
+  `${WS_HOST}/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContentConstrained`,
+  `${WS_HOST}/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContentConstrained`,
 ];
 
 /** Primeira instrução falada: faz o professor comentar o que está vendo. */
