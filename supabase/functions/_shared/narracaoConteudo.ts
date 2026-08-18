@@ -188,40 +188,7 @@ async function ttsChunk(texto: string, voz: string, estilo: string): Promise<Uin
       console.error("TTS Gemini falhou, tentando próxima chave:", (e as Error).message);
     }
   }
-
-  // Fallback via Lovable AI Gateway
-  const lovableKey = Deno.env.get('GEMINI_API_KEY');
-  if (lovableKey) {
-    try {
-      const prompt = `${estilo}:\n\n${texto}`;
-      const res = await fetch("https://ai.gateway.lovable.dev/v1/audio/speech", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${lovableKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: 'gemini-2.5-flash-preview-tts',
-          contents: [{ role: "user", parts: [{ text: prompt }] }],
-          generationConfig: {
-            responseModalities: ["AUDIO"],
-            speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: voz } } },
-          },
-        }),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        const b64 = data.candidates?.[0]?.content?.parts?.find((p: any) => p?.inlineData?.data)?.inlineData?.data;
-        if (b64) return b64ToBytes(b64);
-        const buf = new Uint8Array(await res.arrayBuffer());
-        if (buf.length > 100) return buf;
-      }
-    } catch (eLov) {
-      console.error("Lovable TTS falhou:", (eLov as Error).message);
-    }
-  }
-
-  throw new Error("TTS Gemini falhou em todas as chaves e no Lovable AI Gateway.");
+  throw new Error("TTS Gemini falhou em todas as chaves.");
 }
 
 function chunkText(text: string, max = 1400): string[] {
@@ -335,7 +302,6 @@ const TEXTO_MODEL = "gemini-3.1-flash-lite";
 
 async function gerarTextoIA(prompt: string): Promise<string> {
   let errGemini = "";
-  let errLovable = "";
 
   const keys = [Deno.env.get("GEMINI_API_KEY"), Deno.env.get("GEMINI_API_KEY_RESERVA")].filter(Boolean) as string[];
   for (const key of keys) {
@@ -364,37 +330,7 @@ async function gerarTextoIA(prompt: string): Promise<string> {
       console.warn("Gemini direto falhou:", errGemini);
     }
   }
-
-  // Fallback via Lovable AI Gateway
-  const lovableKey = Deno.env.get('GEMINI_API_KEY');
-  if (lovableKey && lovableKey.startsWith("sk_")) {
-    try {
-      const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${lovableKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: 'gemini-3.1-flash-lite',
-          messages: [{ role: "user", content: prompt }],
-        }),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        const txt = data?.choices?.[0]?.message?.content?.trim();
-        if (txt) return txt;
-      } else {
-        errLovable = `Status: ${res.status} Body: ${await res.text()}`;
-        console.warn("Lovable Gateway fetch nao foi ok:", res.status, errLovable);
-      }
-    } catch (eLovable) {
-      errLovable = (eLovable as Error).message;
-      console.error("Lovable Gateway texto falhou:", errLovable);
-    }
-  }
-
-  throw new Error(JSON.stringify({ error: "Falha na geração", details: { gemini: errGemini, lovable: errLovable } }));
+  throw new Error(JSON.stringify({ error: "Falha na geração", details: { gemini: errGemini } }));
 }
 
 async function gerarRoteiroSlide(opts: { titulo: string; indice: number; total: number; texto: string }): Promise<string> {
