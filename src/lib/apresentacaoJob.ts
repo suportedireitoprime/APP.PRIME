@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { FunctionsHttpError } from '@supabase/supabase-js';
 
 export type SlidePreparado = { b64: string; texto: string; thumb: string };
 
@@ -60,14 +61,35 @@ export const formatarEta = (seg: number | null): string => {
 };
 
 const call = async (payload: Record<string, unknown>, timeoutMs = 180000): Promise<any> => {
+  // Refresh session to avoid 401 due to expired JWT
+  await supabase.auth.refreshSession().catch(() => {});
+
   return new Promise<any>((resolve, reject) => {
     const id = setTimeout(() => reject(new Error('Timeout de comunicação com o servidor')), timeoutMs);
     supabase.functions.invoke('narracao', {
       body: { ...payload, fn: 'blog_preview' },
       headers: { 'Content-Type': 'application/json' },
-    }).then(({ data, error }) => {
+    }).then(async ({ data, error }) => {
       clearTimeout(id);
-      if (error) return reject(new Error(error.message));
+      if (error) {
+        // Extract the real error message from the response body
+        let msg = error.message;
+        if (error instanceof FunctionsHttpError) {
+          try {
+            const body = await (error as any).context?.json?.();
+            if (body?.error) msg = body.error;
+          } catch {
+            try {
+              const text = await (error as any).context?.text?.();
+              if (text) {
+                const parsed = JSON.parse(text);
+                if (parsed?.error) msg = parsed.error;
+              }
+            } catch { /* ignore */ }
+          }
+        }
+        return reject(new Error(msg));
+      }
       if ((data as any)?.error) return reject(new Error((data as any).error));
       resolve(data as any);
     }).catch((err) => {
