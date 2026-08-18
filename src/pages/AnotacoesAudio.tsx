@@ -300,18 +300,18 @@ function Gravar({ onDone }: { onDone: () => void }) {
   }
 
   return (
-    <div className="rounded-3xl border border-border bg-card/50 p-8 flex flex-col items-center justify-center min-h-[350px]">
+    <div className="rounded-3xl border border-border bg-card/50 p-8 flex flex-col items-center justify-center min-h-[400px]">
       {rec.status === 'idle' ? (
         <>
-          <p className="mb-8 text-center text-sm text-muted-foreground">Toque para iniciar a captação do áudio da aula</p>
+          <p className="mb-12 text-center text-sm text-muted-foreground">Toque para iniciar a captação do áudio da aula</p>
           <div className="relative flex justify-center items-center">
             <motion.div 
-              className="absolute w-24 h-24 bg-primary/20 rounded-full"
-              animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0, 0.5] }}
+              className="absolute w-36 h-36 bg-primary/20 rounded-full"
+              animate={{ scale: [1, 1.4, 1], opacity: [0.6, 0, 0.6] }}
               transition={{ duration: 2, repeat: Infinity }}
             />
-            <Button size="lg" onClick={rec.start} className="h-24 w-24 rounded-full p-0 bg-primary hover:bg-primary/90 shadow-xl shadow-primary/30 relative z-10">
-              <Mic className="h-10 w-10 text-white" />
+            <Button size="lg" onClick={rec.start} className="h-32 w-32 rounded-full p-0 bg-primary hover:bg-primary/90 shadow-2xl shadow-primary/40 relative z-10 transition-transform active:scale-95">
+              <Mic className="h-12 w-12 text-white" strokeWidth={1.5} />
             </Button>
           </div>
         </>
