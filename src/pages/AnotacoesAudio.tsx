@@ -344,20 +344,34 @@ function Gravar({ onDone }: { onDone: () => void }) {
           </div>
 
           {isRec && (
-             <div className="mt-8 flex justify-center gap-1 items-end h-8">
-               {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map((i) => (
-                 <motion.div
-                   key={i}
-                   className="w-1.5 bg-primary rounded-full"
-                   animate={{ height: ['20%', `${Math.random() * 80 + 20}%`, '20%'] }}
-                   transition={{ duration: Math.random() * 0.5 + 0.3, repeat: Infinity, ease: 'easeInOut' }}
-                 />
-               ))}
-             </div>
+            <div className="flex flex-col w-full mt-8 gap-6">
+              <div className="flex justify-center gap-1 items-end h-8">
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map((i) => (
+                  <motion.div
+                    key={i}
+                    className="w-1.5 bg-primary rounded-full"
+                    animate={{ height: ['20%', `${Math.random() * 80 + 20}%`, '20%'] }}
+                    transition={{ duration: Math.random() * 0.5 + 0.3, repeat: Infinity, ease: 'easeInOut' }}
+                  />
+                ))}
+              </div>
+
+              {rec.liveText && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-background/80 border border-border/50 rounded-2xl p-4 max-h-[150px] overflow-y-auto w-full mx-auto"
+                >
+                  <p className="text-sm italic text-muted-foreground leading-relaxed">
+                    "{rec.liveText}"
+                  </p>
+                </motion.div>
+              )}
+            </div>
           )}
           
           <p className="mt-6 text-center text-xs text-muted-foreground px-4">
-            Você pode minimizar ou navegar pelo app. A gravação continuará em segundo plano.
+            Você pode minimizar ou navegar pelo app. A gravação continuará em segundo plano (mas a transcrição ao vivo pode pausar caso a tela seja bloqueada).
           </p>
         </>
       )}

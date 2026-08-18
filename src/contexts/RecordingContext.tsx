@@ -5,6 +5,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { haptic } from '@/lib/nativeHaptics';
 import { toast } from 'sonner';
 
+declare global {
+  interface Window {
+    SpeechRecognition: any;
+    webkitSpeechRecognition: any;
+  }
+}
+
 type Status = 'idle' | 'recording' | 'paused' | 'saving';
 
 interface Ctx {
@@ -12,6 +19,7 @@ interface Ctx {
   elapsedMs: number;
   title: string;
   setTitle: (t: string) => void;
+  liveText: string;
   start: () => Promise<void>;
   pause: () => Promise<void>;
   resume: () => Promise<void>;
@@ -49,6 +57,7 @@ export function RecordingProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<Status>('idle');
   const [elapsedMs, setElapsedMs] = useState(0);
   const [title, setTitle] = useState<string>('');
+  const [liveText, setLiveText] = useState<string>('');
 
   const isNative = Capacitor.isNativePlatform();
   const startedAt = useRef(0);
@@ -57,6 +66,11 @@ export function RecordingProvider({ children }: { children: ReactNode }) {
   const mediaRec = useRef<MediaRecorder | null>(null);
   const mediaChunks = useRef<Blob[]>([]);
   const mediaStream = useRef<MediaStream | null>(null);
+
+  const recognition = useRef<any>(null);
+  const finalChunks = useRef<string[]>([]); // Armazena texto final caso o motor reinicie
+  // Variável ref local para ajudar o onend a checar status sem dependência pesada
+  const isRecordingRef = useRef(false);
 
   const startTicker = () => {
     startedAt.current = Date.now();
@@ -68,11 +82,51 @@ export function RecordingProvider({ children }: { children: ReactNode }) {
     if (tick.current) { clearInterval(tick.current); tick.current = null; }
   };
 
+  const initSpeechRecognition = () => {
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRec) return;
+    
+    recognition.current = new SpeechRec();
+    recognition.current.continuous = true;
+    recognition.current.interimResults = true;
+    recognition.current.lang = 'pt-BR';
+    
+    recognition.current.onresult = (event: any) => {
+      let interim = '';
+      let final = '';
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          final += event.results[i][0].transcript + ' ';
+        } else {
+          interim += event.results[i][0].transcript;
+        }
+      }
+      if (final) {
+        finalChunks.current.push(final);
+      }
+      const allText = finalChunks.current.join('') + interim;
+      setLiveText(allText);
+    };
+
+    recognition.current.onend = () => {
+      // Reinicia o reconhecimento se ainda estiver gravando
+      if (isRecordingRef.current && recognition.current) {
+        try { recognition.current.start(); } catch {}
+      }
+    };
+  };
+
+  useEffect(() => {
+    isRecordingRef.current = status === 'recording';
+  }, [status]);
+
   const start = useCallback(async () => {
     const t = title.trim() || `Aula ${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
     setTitle(t);
     accumulated.current = 0;
     setElapsedMs(0);
+    setLiveText('');
+    finalChunks.current = [];
 
     if (isNative) {
       const r = await voiceRecorder.start();
@@ -89,6 +143,11 @@ export function RecordingProvider({ children }: { children: ReactNode }) {
       } catch { toast.error('Sem acesso ao microfone.'); return; }
       // Wake lock: mantém a tela acordada no PWA/desktop
       try { (navigator as any).wakeLock?.request?.('screen').catch(() => {}); } catch {}
+    }
+
+    initSpeechRecognition();
+    if (recognition.current) {
+      try { recognition.current.start(); } catch {}
     }
 
     setStatus('recording');
@@ -122,12 +181,16 @@ export function RecordingProvider({ children }: { children: ReactNode }) {
     haptic.selection();
   }, [status, isNative]);
 
-  const stop = useCallback(async (): Promise<{ id: string } | null> => {
+  const stop = useCallback(async (): Promise<{ id: string, liveText: string } | null> => {
     if (status === 'idle') return null;
     stopTicker();
     if (status === 'recording') accumulated.current += Date.now() - startedAt.current;
     setStatus('saving');
     clearOngoingNotification();
+
+    if (recognition.current) {
+      try { recognition.current.stop(); } catch {}
+    }
 
     try {
       let bytes: Uint8Array;
@@ -171,20 +234,25 @@ export function RecordingProvider({ children }: { children: ReactNode }) {
       }).select('id').single();
       if (insErr) { toast.error(insErr.message); setStatus('idle'); return null; }
 
+      const finalLiveText = liveText;
       toast.success('Aula salva!');
-      setStatus('idle'); setElapsedMs(0); accumulated.current = 0; setTitle('');
+      setStatus('idle'); setElapsedMs(0); accumulated.current = 0; setTitle(''); setLiveText('');
+      finalChunks.current = [];
       haptic.success();
-      return { id: row!.id as string };
+      return { id: row!.id as string, liveText: finalLiveText };
     } catch (e: any) {
       toast.error('Erro ao parar: ' + (e?.message ?? 'desconhecido'));
       setStatus('idle');
       return null;
     }
-  }, [status, title, isNative]);
+  }, [status, title, isNative, liveText]);
 
   const cancel = useCallback(async () => {
     stopTicker();
     clearOngoingNotification();
+    if (recognition.current) {
+      try { recognition.current.stop(); } catch {}
+    }
     try {
       if (isNative) await voiceRecorder.stop();
       else {
@@ -193,6 +261,7 @@ export function RecordingProvider({ children }: { children: ReactNode }) {
       }
     } catch {}
     setStatus('idle'); setElapsedMs(0); accumulated.current = 0;
+    setLiveText(''); finalChunks.current = [];
   }, [isNative]);
 
   // Não desmontamos nada: o provider vive no root, então a gravação continua
@@ -200,7 +269,7 @@ export function RecordingProvider({ children }: { children: ReactNode }) {
   useEffect(() => () => { stopTicker(); }, []);
 
   return (
-    <RecordingContext.Provider value={{ status, elapsedMs, title, setTitle, start, pause, resume, stop, cancel }}>
+    <RecordingContext.Provider value={{ status, elapsedMs, title, setTitle, liveText, start, pause, resume, stop, cancel }}>
       {children}
     </RecordingContext.Provider>
   );
