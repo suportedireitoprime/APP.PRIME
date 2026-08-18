@@ -444,17 +444,6 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
               }
             `}</style>
 
-            {onBuscar && (
-              <div className="mb-8">
-                <button
-                  onClick={onBuscar}
-                  className="w-full flex items-center justify-center gap-3 p-4 rounded-2xl bg-hero-panel text-white font-bold shadow-lg shadow-black/10 active:scale-[0.99] transition-all"
-                >
-                  <Search className="w-5 h-5" />
-                  Pesquisar leis e códigos
-                </button>
-              </div>
-            )}
 
             <div className="grid grid-cols-4 gap-2 mb-10 w-full">
               <button onClick={() => navigate('/vade-mecum/favoritos')} className="flex flex-col items-center justify-center gap-2 p-3 rounded-2xl bg-card border border-border/60 hover:border-primary/50 transition-all group">
