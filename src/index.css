@@ -217,10 +217,12 @@ body {
     -ms-overflow-style: none;
   }
 
-  *::-webkit-scrollbar {
-    display: none;
-    width: 0;
-    height: 0;
+  *::-webkit-scrollbar,
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
   }
 
   body {

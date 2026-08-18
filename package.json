@@ -10,7 +10,6 @@
     "dev": "vite",
     "prebuild": "bun run postinstall && node scripts/copy-build-assets.mjs && bunx tsx scripts/generate-sitemap.ts",
     "build": "cross-env NODE_OPTIONS=\"--max-old-space-size=4096\" vite build",
-    "postbuild": "node scripts/clean-offline-bundle.mjs",
     "build:dev": "vite build --mode development",
     "build:electron": "cross-env ELECTRON_BUILD=1 vite build",
     "electron:dev": "electron .",

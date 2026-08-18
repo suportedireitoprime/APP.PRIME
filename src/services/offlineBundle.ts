@@ -20,9 +20,19 @@ async function fetchBundle<T>(name: string): Promise<T[]> {
         return localData;
       }
 
-      // 2. Fallback: Baixar diretamente da nuvem (Supabase CDN)
-      // Como removemos os JSONs do bundle para economizar espaço (Slim Down),
-      // eles não estão mais em /offline-bundle/.
+      // 2. Tentar pegar nativamente no aplicativo (downloaded together)
+      try {
+        const localRes = await fetch(`/offline-bundle/${name}.json`);
+        if (localRes.ok) {
+          const data = (await localRes.json()) as unknown[];
+          cache.set(name, data);
+          return data as T[];
+        }
+      } catch (e) {
+        // Fallback for native fetch error
+      }
+
+      // 3. Fallback: Baixar diretamente da nuvem (Supabase CDN)
       const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
       const res = await fetch(`${SUPABASE_URL}/storage/v1/object/public/offline-bundles/${name}.json`, { cache: 'force-cache' });
       if (!res.ok) return [];
