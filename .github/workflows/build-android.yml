@@ -1143,6 +1143,17 @@ jobs:
                       android:data="vacatio://novidades" />
               </shortcut>
               <shortcut
+                  android:shortcutId="vademecum"
+                  android:enabled="true"
+                  android:icon="@mipmap/ic_launcher"
+                  android:shortcutShortLabel="@string/shortcut_vademecum_short"
+                  android:shortcutLongLabel="@string/shortcut_vademecum_long">
+                  <intent
+                      android:action="android.intent.action.VIEW"
+                      android:targetPackage="br.com.app.gpu2675756.gpu0e7509bfb7bde52aef412888bb17a456"
+                      android:data="vacatio://vade-mecum" />
+              </shortcut>
+              <shortcut
                   android:shortcutId="audio"
                   android:enabled="true"
                   android:icon="@mipmap/ic_launcher"
@@ -1185,6 +1196,8 @@ jobs:
               'shortcut_audio_long': 'Gravar anotação de áudio',
               'shortcut_lembretes_short': 'Lembretes',
               'shortcut_lembretes_long': 'Meus lembretes',
+              'shortcut_vademecum_short': 'Vade Mecum',
+              'shortcut_vademecum_long': 'Abrir Vade Mecum',
           }
           if not p.exists():
               p.parent.mkdir(parents=True, exist_ok=True)
