@@ -616,6 +616,7 @@ function NativeBootstrap() {
           m.runPrefetchNow();
         } catch {}
       });
+      import("@/services/bundleUpdater").then((m) => m.startSilentBundleUpdate()).catch(() => {});
     };
     if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
       const id = (window as any).requestIdleCallback(run, { timeout: 3000 });
