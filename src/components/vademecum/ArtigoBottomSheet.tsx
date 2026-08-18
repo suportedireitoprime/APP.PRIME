@@ -3493,8 +3493,8 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 className="relative z-[80] flex flex-col items-center justify-end gap-1 py-2 touch-manipulation select-none"
                 aria-label={voicePhase === 'recording' ? 'Parar gravação' : 'Gravar voz'}
               >
-                <div className="absolute bottom-[32px] pointer-events-none">
-                  <span className={`relative w-[4.5rem] h-[4.5rem] sm:w-20 sm:h-20 rounded-full flex items-center justify-center shadow-lg ring-4 ring-card transition-all duration-300 pointer-events-auto ${voicePhase === 'recording' ? 'bg-red-500 shadow-red-500/40 scale-105' : voicePhase === 'processing' ? 'bg-secondary' : 'bg-primary shadow-primary/40'}`}>
+                <div className="absolute bottom-[16px] pointer-events-none">
+                  <span className={`relative w-[4rem] h-[4rem] sm:w-[4.5rem] sm:h-[4.5rem] rounded-full flex items-center justify-center shadow-lg ring-4 ring-card transition-all duration-300 pointer-events-auto ${voicePhase === 'recording' ? 'bg-red-500 shadow-red-500/40 scale-105' : voicePhase === 'processing' ? 'bg-secondary' : 'bg-primary shadow-primary/40'}`}>
                     {voicePhase === 'recording' && (
                       <>
                         <span className="absolute inset-0 rounded-full bg-red-500/40 animate-ping" style={{ animationDuration: '1.2s' }} />
@@ -3523,8 +3523,8 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 className="relative z-[80] flex flex-col items-center justify-end gap-1 py-2 touch-manipulation select-none"
                 aria-label="Narrar"
               >
-                <div className="absolute bottom-[32px] pointer-events-none">
-                  <span className={`relative w-[4.5rem] h-[4.5rem] sm:w-20 sm:h-20 rounded-full flex items-center justify-center shadow-lg ring-4 ring-card transition-all duration-300 pointer-events-auto ${narracaoPlaying ? 'bg-primary shadow-primary/40 scale-105' : 'bg-primary shadow-primary/30 hover:bg-primary/90'}`}>
+                <div className="absolute bottom-[16px] pointer-events-none">
+                  <span className={`relative w-[4rem] h-[4rem] sm:w-[4.5rem] sm:h-[4.5rem] rounded-full flex items-center justify-center shadow-lg ring-4 ring-card transition-all duration-300 pointer-events-auto ${narracaoPlaying ? 'bg-primary shadow-primary/40 scale-105' : 'bg-primary shadow-primary/30 hover:bg-primary/90'}`}>
                     {narracaoPlaying && (
                       <>
                         <span className="absolute inset-0 rounded-full bg-primary/30 animate-ping" style={{ animationDuration: '1.5s' }} />
