@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useMemo, useState, useRef } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Capacitor } from '@capacitor/core';
@@ -99,6 +99,16 @@ const Bibliotecas = () => {
   const [customPdfTitle, setCustomPdfTitle] = useState<string>('');
   const [customPdfsList, setCustomPdfsList] = useState<Omit<CustomPdfRecord, 'data'>[]>([]);
   
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.openLivro) {
+      setLivroAberto(location.state.openLivro as LivroNormalizado);
+      // Limpa o state para não reabrir se o usuário fechar o modal e atualizar a página
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, navigate]);
+  
   const aba: AbaBiblioteca = abaUrl && ['performance', 'acervos', 'materias'].includes(abaUrl) ? abaUrl : 'acervos';
   const materiaAberta = materiaUrl || null;
 
@@ -151,7 +161,6 @@ const Bibliotecas = () => {
         const { FilePicker } = await import('@capawesome/capacitor-file-picker');
         const result = await FilePicker.pickFiles({
           types: ['application/pdf'],
-          multiple: false,
           readData: true,
         });
         const file = result.files[0];

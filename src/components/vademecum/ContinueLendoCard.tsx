@@ -29,16 +29,27 @@ export default function ContinueLendoCard() {
   const handleAbrir = () => {
     if (snap.colecaoId === 'vade-mecum' || snap.area) {
       // Normal legislation
-      const slug = leiToSlug({ id: snap.id, nome: snap.titulo });
+      const slug = leiToSlug({ id: String(snap.id), nome: snap.titulo });
       navigate(`/legislacao/${tipoToSlug(snap.area || 'lei-ordinaria')}/${slug}`);
     } else {
       // Fallback or custom logic, probably PDF
       if (snap.download || snap.link) {
         // Not a standard vade-mecum law, could be PDF, but we don't have direct PDF routing here.
-        // Usually, the app handles this with a modal, but let's navigate to the library if needed.
-        // For now, assume it's a generic law or we dispatch an event.
-        // A simple fallback is to just navigate to the category
-        navigate(`/legislacao/${tipoToSlug(snap.area || 'cat-federais')}`);
+        navigate(`/bibliotecas`, {
+          state: {
+            openLivro: {
+              id: snap.id,
+              titulo: snap.titulo,
+              autor: snap.autor ?? null,
+              sobre: snap.sobre ?? null,
+              capa: snap.capa ?? null,
+              link: snap.link ?? null,
+              download: snap.download ?? null,
+              area: snap.area ?? null,
+              colecaoId: snap.colecaoId,
+            }
+          }
+        });
       }
     }
   };
