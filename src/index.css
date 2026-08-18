@@ -40,6 +40,28 @@ html {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* ==========================================================================
+   PERFORMANCE MÁXIMA (CAPACITOR NATIVO)
+   Desativa `backdrop-filter` completamente no celular. 
+   O desfoque custa altíssimo para a GPU em WebViews mobile e derruba o FPS 
+   durante o scroll de listas pesadas.
+   ========================================================================== */
+html.capacitor-native * {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Para compensar a perda do desfoque, escurecemos quase totalmente os 
+   contêineres de "vidro" (glassmorphism) para que o texto continue legível. */
+html.capacitor-native [class*="backdrop-blur"] {
+  background-color: rgba(10, 10, 10, 0.95) !important;
+}
+
+html.capacitor-native .bg-white\/5,
+html.capacitor-native .bg-white\/10 {
+  background-color: rgba(30, 30, 30, 0.95) !important;
+}
+
 /* Reabilita a seleção para campos de texto (para permitir a digitação normal) */
 input, textarea {
   -webkit-user-select: auto;

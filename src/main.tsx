@@ -4,6 +4,11 @@ import "./index.css";
 import { setNativeStatusBar } from "./lib/nativeStatusBar";
 import { initCrashlytics, installGlobalErrorHandlers } from "./lib/nativeCrashlytics";
 import { Capacitor } from "@capacitor/core";
+
+if (Capacitor.isNativePlatform()) {
+  document.documentElement.classList.add('capacitor-native');
+}
+
 // Preload síncrono das duas imagens críticas de marca (aparecem no primeiro paint).
 // Import estático com ?url faz o Vite empacotar a URL com hash já resolvida no bundle
 // inicial — o <link rel="preload"> é injetado ANTES do createRoot, garantindo download
