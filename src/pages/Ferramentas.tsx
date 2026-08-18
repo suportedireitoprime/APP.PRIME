@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { BookOpenText, ScanEye, Camera, ChevronRight, Newspaper, Film, NotebookText, Clapperboard, MapPin, Radar, Layers, Monitor, Scale, FileSignature, Bot, Headphones, Video, Mic, Send, Library, BookOpen, WifiOff, Music, Podcast } from 'lucide-react';
+import { BookOpenText, ScanEye, Camera, ChevronRight, Newspaper, Film, NotebookText, Clapperboard, MapPin, Radar, Layers, Monitor, Scale, FileSignature, Bot, Headphones, Video, Mic, Send, Library, BookOpen, WifiOff, Music, Podcast, FolderOpen } from 'lucide-react';
 
 import { motion } from 'framer-motion';
 import { lazy, Suspense, useState } from 'react';
@@ -10,12 +10,8 @@ import { PageHeader } from '@/components/vademecum/PageHeader';
 import { useTrackArea } from "@/hooks/useTrackArea";
 import { DESKTOP_TOOL_GROUPS, DESKTOP_TOOLS_FLAT } from '@/config/desktopTools';
 
-
-
 import { Trophy, Compass } from 'lucide-react';
 import { ForcaRanking } from '@/components/gamificacao/ForcaRanking';
-
-
 
 const Ferramentas = () => {
   useTrackArea("ferramentas_aberta");
@@ -55,10 +51,9 @@ const Ferramentas = () => {
       case 'modo-offline': navigate('/modo-offline'); break;
       case 'tematica': navigate('/tematica-juridica'); break;
       case 'forca': navigate('/gamificacao/forca'); break;
+      case 'documentos': navigate('/documentos'); break;
     }
   };
-
-
 
   const mobileHeader = (
     <PageHeader
@@ -68,15 +63,14 @@ const Ferramentas = () => {
     />
   );
 
-
   const primaryTools = [
+    { id: 'documentos', label: 'Documentos Prontos', desc: 'Petições, Contratos e mais', icon: FolderOpen, route: '/documentos', color: '#F59E0B' },
     { id: 'desktop', label: 'Modo Desktop', desc: 'Interface completa', icon: Monitor, route: '/desktop', color: '#10B981' },
     { id: 'noticias', label: 'Notícias', desc: 'Notícias e atualizações', icon: Newspaper, route: '/noticias', color: '#EC4899' },
-    { id: 'boletins', label: 'Boletins Jurídicos', desc: 'Vídeo diário', icon: Podcast, route: '/boletins', color: '#EF4444' },
     { id: 'radares', label: 'Radares de Leis', desc: 'Projetos de Lei', icon: Radar, route: '/radares', color: '#0EA5E9' },
   ];
 
-  const primaryIds = ['noticias', 'boletins', 'radares', 'desktop'];
+  const primaryIds = ['noticias', 'boletins', 'radares', 'desktop', 'documentos'];
   const secondaryTools = DESKTOP_TOOLS_FLAT.filter(t => !primaryIds.includes(t.id));
 
   const toolsList = (

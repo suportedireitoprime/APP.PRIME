@@ -127,12 +127,12 @@ const EMALTA_CATS: EmAltaCat[] = [
 ];
 
 
-type Tab = 'agenda' | 'estudos' | 'documentos' | 'categorias' | 'emalta' | 'areas';
+type Tab = 'agenda' | 'estudos' | 'faculdade' | 'documentos' | 'categorias' | 'emalta' | 'areas';
 
 const TABS_HOME: { id: Tab; label: string; icon: any }[] = [
   { id: 'agenda',     label: 'Agenda',     icon: CalendarCheck },
   { id: 'estudos',    label: 'Estudos',    icon: GraduationCap },
-  { id: 'documentos', label: 'Documentos', icon: FolderOpen },
+  { id: 'faculdade',  label: 'Faculdade',  icon: Library },
 ];
 
 const TABS_VADEMECUM: { id: Tab; label: string; icon: any }[] = [
@@ -925,66 +925,75 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
           </motion.div>
         )}
 
-        {currentTab === 'documentos' && (
+        {currentTab === 'faculdade' && (
           <motion.div
-            key="documentos"
+            key="faculdade"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.24, ease: [0.22, 0.61, 0.36, 1] }}
-            className="space-y-3 px-1 pb-8"
+            className="space-y-4 px-1 pb-8 pt-2"
           >
-            <div className="text-center pt-2">
-              <h2 className="font-display text-[18px] md:text-[17px] font-semibold text-foreground tracking-wide uppercase">
-                DOCUMENTOS
-              </h2>
-              <p className="font-body text-muted-foreground text-[11.5px] leading-snug mt-1">
-                Modelos prontos para usar: petições, contestações, contratos, procurações e mais.
-              </p>
+            {/* Seção 1: Essenciais */}
+            <div className="grid grid-cols-2 gap-3">
+              <motion.button
+                onClick={() => navigate('/anotacoes/audio')}
+                className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-5 text-center hover:border-primary/50 transition-colors active:scale-95 shadow-sm"
+              >
+                <Mic className="w-8 h-8 text-primary" strokeWidth={1.5} />
+                <span className="font-display font-bold text-[14px] text-foreground">Gravar Aula</span>
+              </motion.button>
+              
+              <motion.button
+                onClick={() => navigate('/faculdade/lembretes')}
+                className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-5 text-center hover:border-primary/50 transition-colors active:scale-95 shadow-sm"
+              >
+                <BellRing className="w-8 h-8 text-[#0EA5E9]" strokeWidth={1.5} />
+                <span className="font-display font-bold text-[14px] text-foreground">Lembretes</span>
+              </motion.button>
             </div>
-            <div className="h-[1.5px] bg-border/70 w-full mb-2" />
-            {docPastas.isLoading ? (
 
-              <div className="flex items-center justify-center gap-2 py-10 text-muted-foreground">
-                <RefreshCw className="h-4 w-4 animate-spin" />
-                <span className="font-body text-sm">Carregando categorias…</span>
-              </div>
-            ) : docPastas.isError ? (
-              <div className="rounded-2xl border border-border/60 bg-card p-5 text-center">
-                <p className="font-display text-[15px] font-bold text-foreground">Não consegui carregar os documentos</p>
-                <p className="mt-1 font-body text-[13px] text-muted-foreground">Tente novamente em instantes.</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-                {docPastas.pastas.map((p, i) => {
-                  const est = estiloPasta(p.nome);
-                  return (
-                    <motion.button
-                      key={p.id}
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: Math.min(i * 0.04, 0.3), duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}
-                      onClick={() => setDocPasta({ id: p.id, nome: p.nome })}
-                      data-track="home_card_click"
-                      data-track-name={est.label}
-                      data-track-section="documentos"
-                      className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-4 text-center hover:border-primary/50 transition-colors active:scale-95"
-                    >
-                      <est.icon
-                        className="w-8 h-8"
-                        style={{ color: est.color, filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 10px rgba(0,0,0,0.55))' }}
-                        strokeWidth={1.25}
-                      />
-                      <div>
-                        <span className="block font-display font-bold text-[14px] leading-tight text-foreground whitespace-normal break-words">{est.label}</span>
-                        <span className="block text-[11px] text-muted-foreground font-body mt-1 leading-tight">Modelos prontos</span>
-                      </div>
-                    </motion.button>
-                  );
-                })}
-              </div>
-            )}
+            {/* Seção 2: Organização e IA */}
+            <div className="pt-2 pb-1">
+              <h2 className="font-display text-[15px] font-bold text-foreground tracking-wide uppercase px-1">
+                Caderno Inteligente
+              </h2>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-3">
+              <motion.button
+                onClick={() => navigate('/faculdade/resumos')}
+                className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-4 text-center hover:border-primary/50 transition-colors active:scale-95"
+              >
+                <FileText className="w-7 h-7 text-[#F59E0B]" strokeWidth={1.5} />
+                <span className="font-display font-bold text-[13px] text-foreground leading-tight">Gerar<br/>Resumos</span>
+              </motion.button>
+              
+              <motion.button
+                onClick={() => navigate('/flashcards-personalizados')}
+                className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-4 text-center hover:border-primary/50 transition-colors active:scale-95"
+              >
+                <Layers className="w-7 h-7 text-[#22C55E]" strokeWidth={1.5} />
+                <span className="font-display font-bold text-[13px] text-foreground leading-tight">Gerar<br/>Flashcards</span>
+              </motion.button>
 
+              <motion.button
+                onClick={() => navigate('/assistente')}
+                className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-4 text-center hover:border-primary/50 transition-colors active:scale-95"
+              >
+                <Network className="w-7 h-7 text-[#8B5CF6]" strokeWidth={1.5} />
+                <span className="font-display font-bold text-[13px] text-foreground leading-tight">Mapas<br/>Mentais</span>
+              </motion.button>
+
+              <motion.button
+                onClick={() => navigate('/faculdade/lousa')}
+                className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-4 text-center hover:border-primary/50 transition-colors active:scale-95 relative overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent pointer-events-none" />
+                <Monitor className="w-7 h-7 text-primary relative z-10" strokeWidth={1.5} />
+                <span className="font-display font-bold text-[13px] text-foreground leading-tight relative z-10">Lousa<br/>(Scanner)</span>
+              </motion.button>
+            </div>
           </motion.div>
         )}
 

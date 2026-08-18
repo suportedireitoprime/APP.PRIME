@@ -341,7 +341,7 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
           </div>
 
           {/* Results */}
-          <div className="flex-1 overflow-y-auto px-2 pb-6 relative border-t border-border/50">
+          <div className="flex-1 overflow-y-auto px-2 pb-[calc(1.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] relative border-t border-border/50">
             {isLeisMode && (() => {
               const temTextoSemNumero = !artigoQueryDigits && query.trim().length >= 1;
               const leisPorTexto = temTextoSemNumero ? leiResults : [];

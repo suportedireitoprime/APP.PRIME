@@ -1,0 +1,82 @@
+name: Deploy Android to Play Console
+
+on:
+  workflow_dispatch:
+    inputs:
+      track:
+        description: 'Qual trilha do Google Play usar? (internal, alpha, beta, production)'
+        required: true
+        default: 'internal'
+        type: choice
+        options:
+          - internal
+          - alpha
+          - beta
+          - production
+
+jobs:
+  build_and_deploy:
+    name: Build & Deploy Android
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 🚀 Checando o código do repositório
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Configurando Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Ajuste a versão conforme o seu ambiente local
+          cache: 'npm'
+
+      - name: 📦 Instalando dependências (Web)
+        run: npm ci || npm install
+
+      - name: 🏗️ Fazendo Build da aplicação React/Vite
+        run: npm run build
+
+      - name: ⚙️ Configurando Java (JDK 17 para Android)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: 💎 Configurando Ruby (para o Fastlane)
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+
+      - name: 🤖 Sincronizando com Capacitor
+        run: |
+          npm install -g @capacitor/cli
+          npx cap sync android
+
+      - name: 🔑 Decodificando Keystore (.jks/.keystore)
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_FILE }}
+        run: |
+          mkdir -p android/keystore
+          echo "$KEYSTORE_BASE64" | base64 --decode > android/keystore/upload-key.keystore
+
+      - name: 🔑 Criando arquivo de credencial da API do Google Play
+        env:
+          PLAY_CONFIG_JSON: ${{ secrets.PLAY_CONFIG_JSON }}
+        run: |
+          echo "$PLAY_CONFIG_JSON" > android/fastlane/play_config.json
+
+      - name: 🚀 Executando Fastlane (Build + Upload)
+        env:
+          # Para Appfile
+          PLAY_CONFIG_JSON_PATH: "play_config.json"
+          # Para o Gradle assinar o app (Fastfile)
+          KEYSTORE_PATH: "../keystore/upload-key.keystore"
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        working-directory: android
+        run: |
+          # Fastlane não precisa ser instalado globalmente, o ubuntu-latest do Github Actions já o possui
+          # A sobrescrita da trilha pela variável da UI
+          sed -i "s/track: 'internal'/track: '${{ github.event.inputs.track }}'/g" fastlane/Fastfile
+          fastlane deploy_internal

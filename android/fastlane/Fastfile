@@ -1,0 +1,27 @@
+default_platform(:android)
+
+platform :android do
+  desc "Submit a new internal build to the Google Play Store"
+  lane :deploy_internal do
+    # 1. Compila o App Bundle (.aab) no modo Release
+    gradle(
+      task: "bundle",
+      build_type: "Release",
+      properties: {
+        "android.injected.signing.store.file" => ENV["KEYSTORE_PATH"],
+        "android.injected.signing.store.password" => ENV["KEYSTORE_PASSWORD"],
+        "android.injected.signing.key.alias" => ENV["KEY_ALIAS"],
+        "android.injected.signing.key.password" => ENV["KEY_PASSWORD"]
+      }
+    )
+
+    # 2. Faz o upload para a trilha 'internal' no Google Play
+    # (Pode ser alterado depois para 'alpha', 'beta' ou 'production')
+    upload_to_play_store(
+      track: 'internal',
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+end

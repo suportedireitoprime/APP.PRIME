@@ -198,6 +198,12 @@ const VideoaulasAnotacoes = lazy(() => import('@/pages/VideoaulasAnotacoes'));
 const VideoaulasConquistas = lazy(routePrefetch.videoaulasConquistas);
 const VideoaulaView = lazy(routePrefetch.videoaulaView);
 const VideoaulasLista = lazy(routePrefetch.videoaulasLista);
+
+// Novas rotas da Faculdade e Documentos
+const FaculdadeLousa = lazy(() => import("./pages/faculdade/FaculdadeLousa.tsx"));
+const FaculdadeLembretes = lazy(() => import("./pages/faculdade/FaculdadeLembretes.tsx"));
+const FaculdadeResumos = lazy(() => import("./pages/faculdade/FaculdadeResumos.tsx"));
+const DocumentosPage = lazy(() => import("./pages/Documentos.tsx"));
 const VideoaulasTrilhas = lazy(routePrefetch.videoaulasTrilhas);
 const VideoaulasCatalogoTrilha = lazy(routePrefetch.videoaulasCatalogoTrilha);
 
@@ -787,6 +793,10 @@ function AnimatedRoutes() {
           <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
           <Route path="/" element={<ProtectedRoute><HomeGate /></ProtectedRoute>} />
 
+          <Route path="/faculdade/lousa" element={<ProtectedRoute><PageTransition><FaculdadeLousa /></PageTransition></ProtectedRoute>} />
+          <Route path="/faculdade/lembretes" element={<ProtectedRoute><PageTransition><FaculdadeLembretes /></PageTransition></ProtectedRoute>} />
+          <Route path="/faculdade/resumos" element={<ProtectedRoute><PageTransition><FaculdadeResumos /></PageTransition></ProtectedRoute>} />
+          <Route path="/documentos" element={<ProtectedRoute><PageTransition><DocumentosPage /></PageTransition></ProtectedRoute>} />
           <Route path="/legislacao/:tipo" element={<ProtectedRoute><PageTransition><CategoriaLegislacao /></PageTransition></ProtectedRoute>} />
           <Route path="/legislacao/:tipo/:leiSlug" element={<ProtectedRoute><PageTransition><CategoriaLegislacao /></PageTransition></ProtectedRoute>} />
           <Route path="/legislacao/:tipo/:leiSlug/:artigoNumero" element={<ProtectedRoute><PageTransition><CategoriaLegislacao /></PageTransition></ProtectedRoute>} />
