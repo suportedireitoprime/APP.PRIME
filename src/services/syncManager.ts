@@ -23,3 +23,12 @@ export async function syncTableToOffline(tableName: string, id: string, name: st
   await saveOfflinePackage(id, name, rows);
   return rows.length;
 }
+
+export async function downloadJsonBundle(id: string, name: string) {
+  const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+  const res = await fetch(`${SUPABASE_URL}/storage/v1/object/public/offline-bundles/${id}.json`);
+  if (!res.ok) throw new Error(`Falha ao baixar pacote ${id}.json`);
+  const data = await res.json();
+  await saveOfflinePackage(id, name, data);
+  return data.length;
+}

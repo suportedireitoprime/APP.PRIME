@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -15,9 +15,11 @@ import {
   AlertCircle,
   Sparkles,
 } from 'lucide-react';
+import { syncWidgetData } from '@/lib/widgetData';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { useStudyStats, TABLE_NAMES } from '@/hooks/useStudyStats';
 import { track } from '@/lib/analyticsEvents';
+import { agendarNotificacaoOfensiva } from '@/lib/alarmeEstudo';
 
 
 const STUDY_FEATURES = [
@@ -115,6 +117,19 @@ const EstudosHub = () => {
     }
     return count;
   }, [sessionsByDay, today]);
+
+  // Sincronizar dados do Widget Nativo sempre que o progresso ou streak mudar
+  useEffect(() => {
+    syncWidgetData({
+      quote: "Um passo de cada vez.",
+      author: "Vade Mecum",
+      progressPercent: goalPct,
+      streak: streak
+    });
+    
+    // Agenda a notificação para manter a ofensiva viva (para 24h a partir de agora)
+    agendarNotificacaoOfensiva(streak);
+  }, [streak, goalPct]);
 
   // Week strip — Sunday to Saturday of current week
   const weekDays = useMemo(() => {

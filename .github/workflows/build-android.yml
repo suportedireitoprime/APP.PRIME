@@ -148,9 +148,9 @@ jobs:
           }
           """
           if 'resolutionStrategy' not in s:
-              s = s.rstrip() + '\n' + block + '\n'
-              p.write_text(s)
-              print('✅ resolutionStrategy adicionado ao build.gradle root')
+              # s = s.rstrip() + '\n' + block + '\n'
+              # p.write_text(s)
+              print('✅ (DIAGNÓSTICO) resolutionStrategy ignorado')
           else:
               print('resolutionStrategy já presente — mantendo')
           PY
@@ -2254,9 +2254,9 @@ jobs:
               return None
 
           release_block = '''release {
-                  minifyEnabled true
-                  shrinkResources true
-                  proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+                  minifyEnabled false
+                  shrinkResources false
+                  proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
                   signingConfig signingConfigs.release
                   ndk {
                       debugSymbolLevel 'SYMBOL_TABLE'
@@ -2371,7 +2371,7 @@ jobs:
 
           # Aggressive optimizations
           -allowaccessmodification
-          -repackageclasses ''
+          # -repackageclasses ''
 
           # Silence warnings from optional transitive deps
           -dontwarn org.slf4j.**
@@ -3460,18 +3460,7 @@ jobs:
           s = p.read_text()
 
           if 'shrinkResources true' not in s:
-              s2, n = re.subn(
-                  r'(release\s*\{[^}]*?minifyEnabled\s+true)',
-                  r"\1\n            shrinkResources true",
-                  s,
-                  count=1,
-                  flags=re.DOTALL,
-              )
-              if n:
-                  s = s2
-                  print('✅ shrinkResources true adicionado ao buildType release')
-              else:
-                  print('::warning::release{} com minifyEnabled não encontrado — shrinkResources pulado')
+              print('✅ (DIAGNÓSTICO) shrinkResources não adicionado ao buildType release')
           else:
               print('shrinkResources já presente')
 

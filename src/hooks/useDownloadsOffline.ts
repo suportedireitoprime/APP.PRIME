@@ -6,6 +6,7 @@ import {
 } from '@/lib/nativo/audioOffline';
 import { listCachedPdfs } from '@/services/bibliotecaPdfCache';
 import { estimateAudiosSize } from '@/services/audioDownloadService';
+import { listDownloadedPackages } from '@/services/downloadManager';
 
 export interface ResumoCategoria {
   count: number;
@@ -18,6 +19,7 @@ export interface DownloadsOffline {
   apresentacoes: ResumoCategoria;
   narracoes: ResumoCategoria;
   livros: ResumoCategoria;
+  pacotes: ResumoCategoria;
   carregando: boolean;
   recarregar: () => void;
 }
@@ -40,6 +42,7 @@ export function useDownloadsOffline(): DownloadsOffline {
     apresentacoes: vazio,
     narracoes: vazio,
     livros: vazio,
+    pacotes: vazio,
   });
   const [carregando, setCarregando] = useState(true);
 
@@ -48,6 +51,8 @@ export function useDownloadsOffline(): DownloadsOffline {
       const audios: AudioOffline[] = await listarAudiosOffline().catch(() => []);
       const pdfs: { size: number }[] = await listCachedPdfs().catch(() => []);
       const narr: { count: number; bytes: number } = await estimateAudiosSize().catch(() => ({ count: 0, bytes: 0 }));
+      const pkgs = await listDownloadedPackages().catch(() => []);
+      
       setEstado({
         audioaulas: agrupar(audios, 'audioaulas'),
         leisCantadas: agrupar(audios, 'leis-cantadas'),
@@ -59,6 +64,10 @@ export function useDownloadsOffline(): DownloadsOffline {
         livros: {
           count: pdfs.length,
           bytes: pdfs.reduce((s: number, p) => s + (p.size || 0), 0),
+        },
+        pacotes: {
+          count: pkgs.length,
+          bytes: pkgs.reduce((s: number, p) => s + (p.sizeBytes || 0), 0),
         },
       });
       setCarregando(false);

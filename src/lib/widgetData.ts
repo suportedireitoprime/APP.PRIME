@@ -20,9 +20,16 @@ export async function syncWidgetData(data: WidgetData) {
     await Preferences.set({ key: 'widget_progress', value: data.progressPercent.toString() });
     await Preferences.set({ key: 'widget_streak', value: data.streak.toString() });
     
-    // Disparar uma notificação nativa para forçar atualização do Widget (se houver plugin)
-    // Se utilizar um plugin de AppGroup como '@capacitor-community/widget', seria:
-    // await Widget.set({ key: '...', value: '...' })
+    // A configuração group: 'group.br.com.direito.app' já garante que a 
+    // extensão no iOS leia as chaves "widget_quote", "widget_progress", etc.
+    
+    // Disparar uma notificação nativa para forçar atualização da Timeline do Widget
+    try {
+      const { WidgetBridge } = await import('capacitor-widget-bridge');
+      await WidgetBridge.reloadAllTimelines();
+    } catch (e) {
+      console.log('Plugin capacitor-widget-bridge não disponível ou não suportado', e);
+    }
   } catch (error) {
     console.error('Falha ao sincronizar dados com o widget nativo', error);
   }

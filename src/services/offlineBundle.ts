@@ -20,10 +20,11 @@ async function fetchBundle<T>(name: string): Promise<T[]> {
         return localData;
       }
 
-      // 2. Fallback legado: tentar baixar via fetch 
-      // Em produção mobile, os arquivos .json NÃO estarão mais embutidos, então isso vai retornar 404.
-      // Se estivermos na web (onde os arquivos existem no servidor público), isso ainda funcionará.
-      const res = await fetch(`/offline-bundle/${name}.json`, { cache: 'force-cache' });
+      // 2. Fallback: Baixar diretamente da nuvem (Supabase CDN)
+      // Como removemos os JSONs do bundle para economizar espaço (Slim Down),
+      // eles não estão mais em /offline-bundle/.
+      const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+      const res = await fetch(`${SUPABASE_URL}/storage/v1/object/public/offline-bundles/${name}.json`, { cache: 'force-cache' });
       if (!res.ok) return [];
       
       const data = (await res.json()) as unknown[];

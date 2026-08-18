@@ -80,3 +80,32 @@ export async function checarStatusAlarme(): Promise<boolean> {
   const ativo = pendentes.notifications.some(n => n.id >= ALARME_ID_BASE && n.id < ALARME_ID_BASE + 7);
   return ativo;
 }
+
+const OFENSIVA_ID = 9999;
+
+export async function agendarNotificacaoOfensiva(streak: number) {
+  if (!Capacitor.isNativePlatform() || streak === 0) return;
+
+  const hasPermission = await solicitarPermissaoAlarme();
+  if (!hasPermission) return;
+
+  // Cancela a notificação de ofensiva pendente anterior
+  await LocalNotifications.cancel({ notifications: [{ id: OFENSIVA_ID }] });
+
+  // Agenda para daqui a 24 horas (caso o usuário não volte antes disso)
+  const amanha = new Date();
+  amanha.setHours(amanha.getHours() + 24);
+
+  await LocalNotifications.schedule({
+    notifications: [
+      {
+        id: OFENSIVA_ID,
+        title: 'Sua ofensiva está em risco! 🔥',
+        body: `Você já está há ${streak} dias estudando. Faça uma sessão curta agora para não perder o ritmo!`,
+        schedule: { at: amanha, allowWhileIdle: true },
+        smallIcon: 'ic_stat_name',
+      }
+    ]
+  });
+}
+

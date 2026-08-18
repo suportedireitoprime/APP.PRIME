@@ -58,6 +58,9 @@ const config: CapacitorConfig = {
       splashFullScreen: false,
       splashImmersive: false,
     },
+    Preferences: {
+      group: 'group.br.com.direito.app'
+    },
     // StatusBar plugin REMOVIDO: chamava Window.setStatusBarColor no <init>,
     // API descontinuada no Android 15. Edge-to-edge é feito na MainActivity
     // com androidx.activity.EdgeToEdge.enable() + injeção de --sai-* via

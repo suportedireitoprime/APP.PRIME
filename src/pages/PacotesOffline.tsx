@@ -11,7 +11,7 @@ import {
   getTotalOfflineStorageBytes,
   type OfflinePackageMetadata
 } from '@/services/downloadManager';
-import { syncTableToOffline } from '@/services/syncManager';
+import { syncTableToOffline, downloadJsonBundle } from '@/services/syncManager';
 import { formatarBytes } from '@/lib/nativo/audioOffline';
 import { confirmar } from '@/lib/nativo/dialogos';
 import { supabase } from '@/integrations/supabase/client';
@@ -37,13 +37,18 @@ export default function PacotesOffline() {
     void carregar();
   }, []);
 
-  const baixarPacote = async (id: string, name: string, table: string, col?: string, val?: string) => {
+  const baixarPacote = async (id: string, name: string, isStaticBundle: boolean, table?: string, col?: string, val?: string) => {
     if (syncingId) return;
     setSyncingId(id);
     const toastId = toast.loading(`Baixando pacote ${name}...`);
     try {
-      const filter = col && val ? { col, val } : undefined;
-      const count = await syncTableToOffline(table, id, name, filter);
+      let count = 0;
+      if (isStaticBundle) {
+        count = await downloadJsonBundle(id, name);
+      } else if (table) {
+        const filter = col && val ? { col, val } : undefined;
+        count = await syncTableToOffline(table, id, name, filter);
+      }
       toast.success(`Baixado com sucesso! (${count} itens)`, { id: toastId });
       await carregar();
     } catch (e: any) {
@@ -53,9 +58,9 @@ export default function PacotesOffline() {
     }
   };
 
-  const baixarResumos = () => baixarPacote('resumos', 'Resumos Jurídicos Completos', 'resumos_juridicos');
-  const baixarLeis = () => baixarPacote('leis', 'Vade Mecum Base', 'leis'); // Precisamos ver se "leis" é a tabela correta. Vamos ajustar depois.
-  const baixarFlashcardsDecks = () => baixarPacote('flashcards-decks', 'Decks de Flashcards', 'flashcards_decks');
+  const baixarResumos = () => baixarPacote('resumos', 'Resumos Jurídicos Completos', true);
+  const baixarLeis = () => baixarPacote('leis', 'Vade Mecum Base', false, 'leis'); 
+  const baixarFlashcardsDecks = () => baixarPacote('flashcards-decks', 'Decks de Flashcards', true);
   
   const remover = async (id: string) => {
     await removeOfflinePackage(id);
@@ -80,10 +85,10 @@ export default function PacotesOffline() {
   const isDownloaded = (id: string) => pkgs.some((p) => p.id === id);
 
   const pacotesDisponiveis = [
-    { id: 'resumos', name: 'Banco de Resumos Jurídicos', table: 'resumos_juridicos' },
-    { id: 'flashcards-decks', name: 'Decks de Flashcards Base', table: 'flashcards_decks' },
-    { id: 'tematica-obras', name: 'Catálogo da Biblioteca', table: 'tematica_juridica_obras' },
-    { id: 'questoes-areas', name: 'Áreas de Questões (Categorias)', table: 'questoes', rpc: true },
+    { id: 'resumos', name: 'Banco de Resumos Jurídicos', static: true },
+    { id: 'flashcards-decks', name: 'Decks de Flashcards Base', static: true },
+    { id: 'tematica-obras', name: 'Catálogo da Biblioteca', static: true },
+    { id: 'questoes-areas', name: 'Áreas de Questões (Categorias)', static: true },
   ];
 
   return (
@@ -145,8 +150,8 @@ export default function PacotesOffline() {
                     <Button
                       size="sm"
                       variant="secondary"
-                      onClick={() => !p.rpc && baixarPacote(p.id, p.name, p.table)}
-                      disabled={syncingId === p.id || p.rpc}
+                      onClick={() => baixarPacote(p.id, p.name, p.static)}
+                      disabled={syncingId === p.id}
                       className="gap-2 rounded-xl"
                     >
                       {syncingId === p.id ? (
