@@ -793,7 +793,7 @@ function AnimatedRoutes() {
           <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
           <Route path="/" element={<ProtectedRoute><HomeGate /></ProtectedRoute>} />
 
-          <Route path="/faculdade/lousa" element={<ProtectedRoute><PageTransition><FaculdadeLousa /></PageTransition></ProtectedRoute>} />
+          <Route path="/faculdade/lousa" element={<ProtectedRoute><PageTransition><Suspense fallback={<div className="min-h-dvh bg-background" />}><FaculdadeLousa /></Suspense></PageTransition></ProtectedRoute>} />
           <Route path="/faculdade/lembretes" element={<ProtectedRoute><PageTransition><FaculdadeLembretes /></PageTransition></ProtectedRoute>} />
           <Route path="/faculdade/resumos" element={<ProtectedRoute><PageTransition><FaculdadeResumos /></PageTransition></ProtectedRoute>} />
           <Route path="/documentos" element={<ProtectedRoute><PageTransition><DocumentosPage /></PageTransition></ProtectedRoute>} />

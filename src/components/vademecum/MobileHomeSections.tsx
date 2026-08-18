@@ -943,19 +943,20 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
               <div className="grid grid-cols-2 gap-3">
                 <motion.button
                   onClick={() => navigate('/anotacoes/audio')}
-                  className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-5 text-center hover:border-primary/50 transition-colors active:scale-95 shadow-sm"
+                  className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-5 text-center hover:border-primary/50 transition-colors active:scale-95 shadow-sm relative"
                 >
+                  <ChevronRight className="absolute top-3 right-3 w-4 h-4 text-muted-foreground/60" strokeWidth={2} />
                   <Mic className="w-8 h-8 text-primary" strokeWidth={1.5} />
                   <span className="font-display font-bold text-[14px] text-foreground">Gravar Aula</span>
                 </motion.button>
                 
                 <motion.button
                   onClick={() => navigate('/faculdade/lousa')}
-                  className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-5 text-center hover:border-primary/50 transition-colors active:scale-95 shadow-sm relative overflow-hidden"
+                  className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-5 text-center hover:border-primary/50 transition-colors active:scale-95 shadow-sm relative"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent pointer-events-none" />
-                  <Monitor className="w-8 h-8 text-primary relative z-10" strokeWidth={1.5} />
-                  <span className="font-display font-bold text-[14px] text-foreground relative z-10">Lousa Scanner</span>
+                  <ChevronRight className="absolute top-3 right-3 w-4 h-4 text-muted-foreground/60" strokeWidth={2} />
+                  <Monitor className="w-8 h-8 text-primary" strokeWidth={1.5} />
+                  <span className="font-display font-bold text-[14px] text-foreground">Lousa Scanner</span>
                 </motion.button>
               </div>
             </div>
