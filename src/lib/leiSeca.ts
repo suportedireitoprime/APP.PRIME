@@ -48,14 +48,20 @@ export interface LeiSecaProgresso {
   melhor_pontuacao: number;
 }
 
+import { bundle, withBundleFallback } from '@/services/offlineBundle';
+
 export async function listarTrilhas(): Promise<LeiSecaTrilha[]> {
-  const { data, error } = await supabase
-    .from("lei_seca_trilhas")
-    .select("*")
-    .eq("ativa", true)
-    .order("ordem", { ascending: true });
-  if (error) throw error;
-  return (data ?? []) as any;
+  const fetchOnline = (async () => {
+    const { data, error } = await supabase
+      .from("lei_seca_trilhas")
+      .select("*")
+      .eq("ativa", true)
+      .order("ordem", { ascending: true });
+    if (error) throw error;
+    return (data ?? []) as any;
+  })();
+
+  return withBundleFallback<LeiSecaTrilha>(fetchOnline, () => bundle.leiSecaTrilhas<LeiSecaTrilha>());
 }
 
 export async function getTrilha(slug: string): Promise<LeiSecaTrilha | null> {

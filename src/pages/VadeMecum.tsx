@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import VadeMecumHero from '@/components/vademecum/VadeMecumHero';
@@ -6,6 +6,7 @@ import BuscaLeisOverlay, { type LeiSelecionada } from '@/components/vademecum/Bu
 import MobileHomeSections from '@/components/vademecum/MobileHomeSections';
 import VadeMecumBottomNav from '@/components/vademecum/VadeMecumBottomNav';
 import VadeMecumFavoritos from './VadeMecumFavoritos';
+import VadeMecumTutorialOverlay from '@/components/vademecum/VadeMecumTutorialOverlay';
 import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
 import { pushRecente } from '@/lib/leisRecentes';
 
@@ -17,6 +18,19 @@ const VadeMecum = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [buscaOpen, setBuscaOpen] = useState(false);
+  const [tutorialOpen, setTutorialOpen] = useState(false);
+
+  useEffect(() => {
+    const hasSeenTutorial = localStorage.getItem('vademecum_tutorial_v1');
+    if (!hasSeenTutorial) {
+      setTutorialOpen(true);
+    }
+  }, []);
+
+  const fecharTutorial = () => {
+    localStorage.setItem('vademecum_tutorial_v1', 'true');
+    setTutorialOpen(false);
+  };
 
   const abrirLei = (lei: LeiSelecionada) => {
     setBuscaOpen(false);
@@ -75,6 +89,10 @@ const VadeMecum = () => {
       </main>
       <BuscaLeisOverlay open={buscaOpen} onClose={() => setBuscaOpen(false)} onSelectLei={abrirLei} />
       <VadeMecumBottomNav hidden={buscaOpen} />
+
+      <AnimatePresence>
+        {tutorialOpen && <VadeMecumTutorialOverlay onClose={fecharTutorial} />}
+      </AnimatePresence>
     </div>
   );
 };

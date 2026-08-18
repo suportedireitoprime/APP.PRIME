@@ -74,6 +74,7 @@ export const bundle = {
     const safeName = disciplina.replace(/[^a-zA-Z0-9_-]/g, '_');
     return fetchBundle<T>(`questoes_${safeName}`);
   },
+  leiSecaTrilhas: <T = any>() => fetchBundle<T>('lei-seca-trilhas'),
 };
 
 /**

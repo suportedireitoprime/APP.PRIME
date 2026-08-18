@@ -22,8 +22,8 @@ const LeiSecaBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
       transition={{ type: 'spring', damping: 30, stiffness: 300 }}
       className="fixed bottom-0 left-0 right-0 z-50 lg:hidden md:bottom-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-auto pointer-events-auto"
     >
-      <div className="bg-card/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-lg shadow-black/10 pb-[calc(0.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] md:border md:rounded-full md:shadow-2xl md:shadow-black/30 md:pb-0">
-        <div className="grid grid-cols-4 items-end px-1 pt-2.5 pb-2.5 max-w-lg mx-auto md:gap-1 md:px-3 md:py-2">
+      <div className="bg-card/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-[0_-8px_30px_rgba(0,0,0,0.6),0_-2px_10px_rgba(0,0,0,0.4)] pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] md:border md:rounded-full md:shadow-2xl md:shadow-black/30 md:pb-0">
+        <div className="grid grid-cols-4 items-stretch px-2 py-2 max-w-lg mx-auto md:gap-1 md:px-3 md:py-2">
           {TABS.map((tab) => {
             const active = tab.match(pathname);
             const Icon = tab.icon;

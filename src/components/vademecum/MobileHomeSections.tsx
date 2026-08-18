@@ -947,23 +947,27 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
               <div className="grid grid-cols-2 gap-3">
                 <motion.button
                   onClick={() => navigate('/anotacoes/audio')}
-                  className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-5 text-center hover:border-primary/50 transition-colors active:scale-95 shadow-sm relative group overflow-hidden"
+                  className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-5 text-center hover:border-emerald-500/50 transition-colors active:scale-95 shadow-sm relative group overflow-hidden"
                 >
-                  <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 group-hover:scale-110 transition-all">
-                    <ChevronRight className="w-4 h-4 text-primary" strokeWidth={2.5} />
+                  <div className="absolute top-3 right-3 text-muted-foreground group-hover:text-emerald-500 group-hover:translate-x-1 transition-all">
+                    <ChevronRight className="w-5 h-5" strokeWidth={2.5} />
                   </div>
-                  <Mic className="w-9 h-9 text-primary relative z-10" strokeWidth={1.5} />
+                  <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center relative z-10 mb-1">
+                    <Mic className="w-6 h-6 text-emerald-500" strokeWidth={1.5} />
+                  </div>
                   <span className="font-display font-bold text-[14px] text-foreground relative z-10">Gravar Aula</span>
                 </motion.button>
                 
                 <motion.button
                   onClick={() => navigate('/faculdade/lousa')}
-                  className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-5 text-center hover:border-primary/50 transition-colors active:scale-95 shadow-sm relative group overflow-hidden"
+                  className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-5 text-center hover:border-blue-500/50 transition-colors active:scale-95 shadow-sm relative group overflow-hidden"
                 >
-                  <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 group-hover:scale-110 transition-all">
-                    <ChevronRight className="w-4 h-4 text-primary" strokeWidth={2.5} />
+                  <div className="absolute top-3 right-3 text-muted-foreground group-hover:text-blue-500 group-hover:translate-x-1 transition-all">
+                    <ChevronRight className="w-5 h-5" strokeWidth={2.5} />
                   </div>
-                  <Monitor className="w-9 h-9 text-primary relative z-10" strokeWidth={1.5} />
+                  <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center relative z-10 mb-1">
+                    <Monitor className="w-6 h-6 text-blue-500" strokeWidth={1.5} />
+                  </div>
                   <span className="font-display font-bold text-[14px] text-foreground relative z-10">Lousa Scanner</span>
                 </motion.button>
               </div>

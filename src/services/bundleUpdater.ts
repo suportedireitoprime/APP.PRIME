@@ -17,6 +17,7 @@ const BUNDLES_TO_SYNC = [
   'questoes-areas',
   'flashcards-resumo-areas',
   'flashcards-decks',
+  'lei-seca-trilhas',
 ];
 
 // Impede múltiplas execuções simultâneas do updater
