@@ -44,10 +44,10 @@ const VadeMecum = () => {
           {activeTab === 'favoritos' ? (
             <motion.div
               key="favoritos"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.24, ease: [0.22, 0.61, 0.36, 1] }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15, ease: 'easeOut' }}
               className="pt-6"
             >
               <VadeMecumFavoritos />
@@ -55,10 +55,10 @@ const VadeMecum = () => {
           ) : (
             <motion.div
               key="outros"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.24, ease: [0.22, 0.61, 0.36, 1] }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15, ease: 'easeOut' }}
             >
               <MobileHomeSections 
                 noticiasAutoplay={false} 
@@ -67,6 +67,7 @@ const VadeMecum = () => {
                 emAltaLeis 
                 hideTabs
                 activeTab={activeTab as any}
+                onBuscar={() => setBuscaOpen(true)}
               />
             </motion.div>
           )}

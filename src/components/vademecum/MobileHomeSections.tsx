@@ -189,9 +189,11 @@ interface Props {
   hideTabs?: boolean;
   /** Força a aba ativa */
   activeTab?: Tab;
+  /** Passado para renderizar o buscador */
+  onBuscar?: () => void;
 }
 
-const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, hideNoticias = false, noticiasAutoplay = true, emAltaLeis = false, hideTabs = false, activeTab }: Props = {}) => {
+const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, hideNoticias = false, noticiasAutoplay = true, emAltaLeis = false, hideTabs = false, activeTab, onBuscar }: Props = {}) => {
   const navigate = useNavigate();
   const [juriOpen, setJuriOpen] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState<Cat | AreaCat | CategoriaFormal | null>(null);
@@ -435,48 +437,52 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
             transition={{ duration: 0.24, ease: [0.22, 0.61, 0.36, 1] }}
             className="space-y-4 px-1 pb-8"
           >
-            {/* Acesso Rápido */}
             <style>{`
               @keyframes icon-shine-mask {
                 0% { -webkit-mask-position: 250% center; mask-position: 250% center; }
                 100% { -webkit-mask-position: -250% center; mask-position: -250% center; }
               }
             `}</style>
-            <div className="grid grid-cols-4 gap-2 sm:gap-3 mb-12 w-full">
-              {/* Favoritos */}
-              <button onClick={() => navigate('/vade-mecum/favoritos')} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl bg-[#1A1D21] border border-border/40 hover:bg-[#23272B] transition-colors w-full group" data-track="quick_access_favoritos">
-                <div className="relative w-5 h-5 shrink-0">
-                  <Heart className="w-5 h-5 absolute inset-0" style={{ color: 'hsl(348,78%,38%)', filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))' }} strokeWidth={1.15} />
-                  <Heart className="w-5 h-5 absolute inset-0 text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ WebkitMaskImage: 'linear-gradient(-60deg, transparent 30%, white 50%, transparent 70%)', WebkitMaskSize: '250% 100%', WebkitMaskRepeat: 'no-repeat', animation: 'icon-shine-mask 1.5s infinite linear' }} strokeWidth={1.5} />
+
+            {onBuscar && (
+              <div className="mb-8">
+                <button
+                  onClick={onBuscar}
+                  className="w-full flex items-center justify-center gap-3 p-4 rounded-2xl bg-hero-panel text-white font-bold shadow-lg shadow-black/10 active:scale-[0.99] transition-all"
+                >
+                  <Search className="w-5 h-5" />
+                  Pesquisar leis e códigos
+                </button>
+              </div>
+            )}
+
+            <div className="grid grid-cols-4 gap-2 mb-10 w-full">
+              <button onClick={() => navigate('/vade-mecum/favoritos')} className="flex flex-col items-center justify-center gap-2 p-3 rounded-2xl bg-card border border-border/60 hover:border-primary/50 transition-all group">
+                <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-muted/50 text-muted-foreground group-hover:text-primary transition-colors">
+                  <Heart className="w-5 h-5" />
                 </div>
-                <span className="text-[10px] sm:text-[11px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">Favoritos</span>
+                <span className="text-[10px] font-bold text-muted-foreground uppercase">Favoritos</span>
               </button>
               
-              {/* Anotações */}
-              <button onClick={() => toast({ title: 'Em breve', description: 'Suas anotações estarão aqui em breve.' })} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl bg-[#1A1D21] border border-border/40 hover:bg-[#23272B] transition-colors w-full group" data-track="quick_access_anotacoes">
-                <div className="relative w-5 h-5 shrink-0">
-                  <NotebookPen className="w-5 h-5 absolute inset-0" style={{ color: 'hsl(348,78%,38%)', filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))' }} strokeWidth={1.15} />
-                  <NotebookPen className="w-5 h-5 absolute inset-0 text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ WebkitMaskImage: 'linear-gradient(-60deg, transparent 30%, white 50%, transparent 70%)', WebkitMaskSize: '250% 100%', WebkitMaskRepeat: 'no-repeat', animation: 'icon-shine-mask 1.5s infinite linear' }} strokeWidth={1.5} />
+              <button onClick={() => toast({ title: 'Em breve' })} className="flex flex-col items-center justify-center gap-2 p-3 rounded-2xl bg-card border border-border/60 hover:border-primary/50 transition-all group">
+                <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-muted/50 text-muted-foreground group-hover:text-primary transition-colors">
+                  <NotebookPen className="w-5 h-5" />
                 </div>
-                <span className="text-[10px] sm:text-[11px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">Anotações</span>
+                <span className="text-[10px] font-bold text-muted-foreground uppercase">Anotações</span>
               </button>
 
-              {/* Radares */}
-              <button onClick={() => navigate('/radares')} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl bg-[#1A1D21] border border-border/40 hover:bg-[#23272B] transition-colors w-full group" data-track="quick_access_radares">
-                <div className="relative w-5 h-5 shrink-0">
-                  <Radar className="w-5 h-5 absolute inset-0" style={{ color: 'hsl(348,78%,38%)', filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))' }} strokeWidth={1.15} />
-                  <Radar className="w-5 h-5 absolute inset-0 text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ WebkitMaskImage: 'linear-gradient(-60deg, transparent 30%, white 50%, transparent 70%)', WebkitMaskSize: '250% 100%', WebkitMaskRepeat: 'no-repeat', animation: 'icon-shine-mask 1.5s infinite linear' }} strokeWidth={1.5} />
+              <button onClick={() => navigate('/radares')} className="flex flex-col items-center justify-center gap-2 p-3 rounded-2xl bg-card border border-border/60 hover:border-primary/50 transition-all group">
+                <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-muted/50 text-muted-foreground group-hover:text-primary transition-colors">
+                  <Radar className="w-5 h-5" />
                 </div>
-                <span className="text-[10px] sm:text-[11px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">Radares</span>
+                <span className="text-[10px] font-bold text-muted-foreground uppercase">Radares</span>
               </button>
 
-              {/* Histórico */}
-              <button onClick={() => navigate('/vade-mecum/recentes')} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl bg-[#1A1D21] border border-border/40 hover:bg-[#23272B] transition-colors w-full group" data-track="quick_access_historico">
-                <div className="relative w-5 h-5 shrink-0">
-                  <History className="w-5 h-5 absolute inset-0" style={{ color: 'hsl(348,78%,38%)', filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))' }} strokeWidth={1.15} />
-                  <History className="w-5 h-5 absolute inset-0 text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ WebkitMaskImage: 'linear-gradient(-60deg, transparent 30%, white 50%, transparent 70%)', WebkitMaskSize: '250% 100%', WebkitMaskRepeat: 'no-repeat', animation: 'icon-shine-mask 1.5s infinite linear' }} strokeWidth={1.5} />
+              <button onClick={() => navigate('/vade-mecum/recentes')} className="flex flex-col items-center justify-center gap-2 p-3 rounded-2xl bg-card border border-border/60 hover:border-primary/50 transition-all group">
+                <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-muted/50 text-muted-foreground group-hover:text-primary transition-colors">
+                  <History className="w-5 h-5" />
                 </div>
-                <span className="text-[10px] sm:text-[11px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">Histórico</span>
+                <span className="text-[10px] font-bold text-muted-foreground uppercase">Histórico</span>
               </button>
             </div>
 
