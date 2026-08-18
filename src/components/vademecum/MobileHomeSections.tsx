@@ -932,68 +932,127 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.24, ease: [0.22, 0.61, 0.36, 1] }}
-            className="space-y-4 px-1 pb-8 pt-2"
+            className="space-y-6 px-1 pb-8 pt-2"
           >
-            {/* Seção 1: Essenciais */}
-            <div className="grid grid-cols-2 gap-3">
-              <motion.button
-                onClick={() => navigate('/anotacoes/audio')}
-                className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-5 text-center hover:border-primary/50 transition-colors active:scale-95 shadow-sm"
-              >
-                <Mic className="w-8 h-8 text-primary" strokeWidth={1.5} />
-                <span className="font-display font-bold text-[14px] text-foreground">Gravar Aula</span>
-              </motion.button>
-              
-              <motion.button
-                onClick={() => navigate('/faculdade/lousa')}
-                className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-5 text-center hover:border-primary/50 transition-colors active:scale-95 shadow-sm relative overflow-hidden"
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent pointer-events-none" />
-                <Monitor className="w-8 h-8 text-primary relative z-10" strokeWidth={1.5} />
-                <span className="font-display font-bold text-[14px] text-foreground relative z-10">Lousa Scanner</span>
-              </motion.button>
+            {/* Seção 1: Anotações e Captura */}
+            <div>
+              <h3 className="font-display text-foreground text-[18px] font-bold mb-3 flex items-center gap-2">
+                <span className="w-1 h-5 rounded-full bg-primary" />
+                Anotações e Captura
+              </h3>
+              <div className="grid grid-cols-2 gap-3">
+                <motion.button
+                  onClick={() => navigate('/anotacoes/audio')}
+                  className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-5 text-center hover:border-primary/50 transition-colors active:scale-95 shadow-sm"
+                >
+                  <Mic className="w-8 h-8 text-primary" strokeWidth={1.5} />
+                  <span className="font-display font-bold text-[14px] text-foreground">Gravar Aula</span>
+                </motion.button>
+                
+                <motion.button
+                  onClick={() => navigate('/faculdade/lousa')}
+                  className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-5 text-center hover:border-primary/50 transition-colors active:scale-95 shadow-sm relative overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent pointer-events-none" />
+                  <Monitor className="w-8 h-8 text-primary relative z-10" strokeWidth={1.5} />
+                  <span className="font-display font-bold text-[14px] text-foreground relative z-10">Lousa Scanner</span>
+                </motion.button>
+              </div>
             </div>
 
-            {/* Seção 2: Organização e IA */}
-            <div className="pt-2 pb-1">
-              <h2 className="font-display text-[15px] font-bold text-foreground tracking-wide uppercase px-1">
+            {/* Seção 2: Caderno Inteligente */}
+            <div>
+              <h3 className="font-display text-foreground text-[18px] font-bold mb-3 flex items-center gap-2">
+                <span className="w-1 h-5 rounded-full bg-primary" />
                 Caderno Inteligente
-              </h2>
+              </h3>
+              <div className="grid grid-cols-4 gap-2">
+                <motion.button
+                  onClick={() => navigate('/faculdade/resumos')}
+                  className="flex flex-col items-center justify-start gap-2 rounded-2xl border border-border/60 bg-card p-3 text-center hover:border-primary/50 transition-colors active:scale-95"
+                >
+                  <FileText className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />
+                  <span className="font-display font-bold text-[11px] text-foreground leading-tight">Resumos</span>
+                </motion.button>
+                
+                <motion.button
+                  onClick={() => navigate('/flashcards-personalizados')}
+                  className="flex flex-col items-center justify-start gap-2 rounded-2xl border border-border/60 bg-card p-3 text-center hover:border-primary/50 transition-colors active:scale-95"
+                >
+                  <Layers className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />
+                  <span className="font-display font-bold text-[11px] text-foreground leading-tight">Flashcards</span>
+                </motion.button>
+
+                <motion.button
+                  onClick={() => navigate('/assistente')}
+                  className="flex flex-col items-center justify-start gap-2 rounded-2xl border border-border/60 bg-card p-3 text-center hover:border-primary/50 transition-colors active:scale-95"
+                >
+                  <Brain className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />
+                  <span className="font-display font-bold text-[11px] text-foreground leading-tight">Mapas</span>
+                </motion.button>
+
+                <motion.button
+                  onClick={() => navigate('/faculdade/lembretes')}
+                  className="flex flex-col items-center justify-start gap-2 rounded-2xl border border-border/60 bg-card p-3 text-center hover:border-primary/50 transition-colors active:scale-95"
+                >
+                  <BellRing className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />
+                  <span className="font-display font-bold text-[11px] text-foreground leading-tight">Lembretes</span>
+                </motion.button>
+              </div>
             </div>
-            
-            <div className="grid grid-cols-2 gap-3">
-              <motion.button
-                onClick={() => navigate('/faculdade/resumos')}
-                className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-4 text-center hover:border-primary/50 transition-colors active:scale-95"
-              >
-                <FileText className="w-7 h-7 text-[#F59E0B]" strokeWidth={1.5} />
-                <span className="font-display font-bold text-[13px] text-foreground leading-tight">Gerar<br/>Resumos</span>
-              </motion.button>
+
+            {/* Seção 3: Recentes */}
+            <div>
+              <h3 className="font-display text-foreground text-[18px] font-bold mb-4 flex items-center gap-2">
+                <span className="w-1 h-5 rounded-full bg-primary" />
+                Recentes
+              </h3>
               
-              <motion.button
-                onClick={() => navigate('/flashcards-personalizados')}
-                className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-4 text-center hover:border-primary/50 transition-colors active:scale-95"
-              >
-                <Layers className="w-7 h-7 text-[#22C55E]" strokeWidth={1.5} />
-                <span className="font-display font-bold text-[13px] text-foreground leading-tight">Gerar<br/>Flashcards</span>
-              </motion.button>
+              <div className="space-y-4 pl-3 relative before:absolute before:inset-y-0 before:left-[19px] before:w-[2px] before:bg-border">
+                {/* Item 1 */}
+                <div className="relative pl-8">
+                  <div className="absolute left-[2px] top-1 w-2.5 h-2.5 rounded-full bg-primary ring-4 ring-background" />
+                  <div className="bg-card border border-border/50 rounded-2xl p-4 shadow-sm active:scale-[0.98] transition cursor-pointer" onClick={() => navigate('/anotacoes/audio')}>
+                    <div className="flex items-center gap-2 mb-1">
+                      <Mic className="w-4 h-4 text-primary" />
+                      <span className="text-xs font-bold text-muted-foreground">Gravação de Aula</span>
+                      <span className="text-[10px] text-muted-foreground/60 ml-auto">Há 2 horas</span>
+                    </div>
+                    <p className="font-display font-bold text-[14px] text-foreground">Direito Penal - Teoria do Erro</p>
+                    <p className="font-body text-xs text-muted-foreground mt-1">Duração: 45:12 • Resumo inteligente gerado</p>
+                  </div>
+                </div>
 
-              <motion.button
-                onClick={() => navigate('/assistente')}
-                className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-4 text-center hover:border-primary/50 transition-colors active:scale-95"
-              >
-                <Brain className="w-8 h-8 text-[#8B5CF6]" strokeWidth={1.5} />
-                <span className="font-display font-bold text-[13px] text-foreground leading-tight">Mapas<br/>Mentais</span>
-              </motion.button>
+                {/* Item 2 */}
+                <div className="relative pl-8">
+                  <div className="absolute left-[2px] top-1 w-2.5 h-2.5 rounded-full bg-muted-foreground/30 ring-4 ring-background" />
+                  <div className="bg-card border border-border/50 rounded-2xl p-4 shadow-sm active:scale-[0.98] transition cursor-pointer" onClick={() => navigate('/faculdade/lousa')}>
+                    <div className="flex items-center gap-2 mb-1">
+                      <Monitor className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-xs font-bold text-muted-foreground">Lousa Scanner</span>
+                      <span className="text-[10px] text-muted-foreground/60 ml-auto">Ontem, 19:30</span>
+                    </div>
+                    <p className="font-display font-bold text-[14px] text-foreground">Direito Civil - Contratos</p>
+                    <p className="font-body text-xs text-muted-foreground mt-1">2 fotos processadas e transcritas</p>
+                  </div>
+                </div>
 
-              <motion.button
-                onClick={() => navigate('/faculdade/lembretes')}
-                className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-4 text-center hover:border-primary/50 transition-colors active:scale-95"
-              >
-                <BellRing className="w-7 h-7 text-[#0EA5E9]" strokeWidth={1.5} />
-                <span className="font-display font-bold text-[13px] text-foreground leading-tight">Meus<br/>Lembretes</span>
-              </motion.button>
+                {/* Item 3 */}
+                <div className="relative pl-8">
+                  <div className="absolute left-[2px] top-1 w-2.5 h-2.5 rounded-full bg-muted-foreground/30 ring-4 ring-background" />
+                  <div className="bg-card border border-border/50 rounded-2xl p-4 shadow-sm active:scale-[0.98] transition cursor-pointer" onClick={() => navigate('/flashcards-personalizados')}>
+                    <div className="flex items-center gap-2 mb-1">
+                      <Layers className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-xs font-bold text-muted-foreground">Flashcards</span>
+                      <span className="text-[10px] text-muted-foreground/60 ml-auto">15 de Ago</span>
+                    </div>
+                    <p className="font-display font-bold text-[14px] text-foreground">Direito Constitucional</p>
+                    <p className="font-body text-xs text-muted-foreground mt-1">15 novos cards gerados pelo Assistente</p>
+                  </div>
+                </div>
+              </div>
             </div>
+
           </motion.div>
         )}
 
