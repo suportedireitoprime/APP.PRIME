@@ -130,7 +130,7 @@ const EMALTA_CATS: EmAltaCat[] = [
 type Tab = 'agenda' | 'estudos' | 'faculdade' | 'documentos' | 'categorias' | 'emalta' | 'areas';
 
 const TABS_HOME: { id: Tab; label: string; icon: any }[] = [
-  { id: 'agenda',     label: 'Agenda',     icon: CalendarCheck },
+  { id: 'agenda',     label: 'Pendências',     icon: CalendarCheck },
   { id: 'estudos',    label: 'Estudos',    icon: GraduationCap },
   { id: 'faculdade',  label: 'Faculdade',  icon: Library },
 ];
@@ -608,15 +608,22 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.24, ease: [0.22, 0.61, 0.36, 1] }}
-            className="space-y-4 px-1"
+            className="space-y-6 px-1"
           >
-            <div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="w-1 h-5 rounded-full bg-primary" />
-                  <h2 className="font-body text-foreground text-2xl sm:text-3xl font-bold tracking-tight">
-                    Agenda
-                  </h2>
+            {/* Continue de onde parou movido para a aba Pendências */}
+            <div className="-mx-1">
+              <ContinueLendoCard />
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-1 h-5 rounded-full bg-primary" />
+                    <h2 className="font-body text-foreground text-2xl sm:text-3xl font-bold tracking-tight">
+                      Agenda
+                    </h2>
+                  </div>
                 </div>
                 <button 
                   onClick={() => setIsCalendarOpen(true)}
@@ -761,9 +768,6 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
             transition={{ duration: 0.24, ease: [0.22, 0.61, 0.36, 1] }}
             className="space-y-6"
           >
-            {/* Continue de onde parou */}
-            <ContinueLendoCard />
-
             {/* Em Alta — leis (Vade Mecum) ou funções de estudo (home) */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
               {emAltaLeis
