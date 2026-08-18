@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { memo } from 'react';
 import {
   Play, BookOpen, Newspaper, FileText, Film, PenLine,
   BookMarked, Scale, Gavel, ListChecks, Stamp, Search,
@@ -65,20 +65,22 @@ function highlight(text: string, termo: string) {
   }
 }
 
-export default function ResultadoConteudoCard({
+/**
+ * Card de resultado de busca — animação 100% CSS (GPU-only).
+ * Usa `@keyframes` com `transform` + `opacity` para evitar layout thrashing.
+ * `memo` previne re-renders desnecessários durante scroll virtualizado.
+ */
+const ResultadoConteudoCard = memo(function ResultadoConteudoCard({
   item, termo, onClick, index = 0,
 }: { item: ConteudoResultado; termo: string; onClick: () => void; index?: number }) {
   const Icon = ICONS[item.entity_type] || FileText;
   const color = COLORS[item.entity_type] || '#EF4444'; // fallback red
   
   return (
-    <motion.button
-      layout
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.02 }}
+    <button
       onClick={onClick}
-      className="w-full flex items-stretch gap-4 p-3.5 rounded-xl bg-card border border-border hover:border-primary/40 transition-all text-left"
+      className="resultado-card-enter w-full flex items-stretch gap-4 p-3.5 rounded-xl bg-card border border-border hover:border-primary/40 transition-colors text-left will-change-transform"
+      style={{ animationDelay: `${Math.min(index * 20, 200)}ms` }}
     >
       <div className="w-12 flex items-center justify-center shrink-0">
         {item.thumb_url ? (
@@ -108,6 +110,8 @@ export default function ResultadoConteudoCard({
           </p>
         )}
       </div>
-    </motion.button>
+    </button>
   );
-}
+});
+
+export default ResultadoConteudoCard;

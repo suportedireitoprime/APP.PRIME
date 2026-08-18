@@ -62,6 +62,32 @@ html.capacitor-native .bg-white\/10 {
   background-color: rgba(30, 30, 30, 0.95) !important;
 }
 
+/* ==========================================================================
+   ANIMAÇÃO GPU-ONLY PARA CARDS DE BUSCA
+   Usa apenas transform + opacity (propriedades compostas pela GPU).
+   Respeita prefers-reduced-motion para acessibilidade.
+   ========================================================================== */
+@keyframes resultado-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.resultado-card-enter {
+  animation: resultado-fade-up 0.2s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .resultado-card-enter {
+    animation: none;
+  }
+}
+
 /* Reabilita a seleção para campos de texto (para permitir a digitação normal) */
 input, textarea {
   -webkit-user-select: auto;
