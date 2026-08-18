@@ -8,7 +8,7 @@ import {
 
   Cannabis, Car, ChevronRight, CircleDollarSign, Clock, Columns3, Cross, Drama,
   Droplets, Factory, FileCheck, FileLock, FileText, FileWarning, Flame, Gavel,
-  Globe, GraduationCap, HandCoins, Handshake, HeartPulse, Hospital, House, IdCard,
+  Globe, GraduationCap, HandCoins, Handshake, HeartPulse, Hospital, House, IdCard, Layers, Monitor,
   Landmark, LandPlot, LayoutGrid, Leaf, List, Map, MapPin, Mic, MicOff, Network, NotebookPen,
   PiggyBank, Plane, PocketKnife, RadioTower, ReceiptText, Scale, Scroll, ScrollText, Search,
   Shield, ShieldAlert, ShieldCheck, ShieldX, Ship, ShoppingCart, Siren, Award, Sprout, Stamp, Store,
