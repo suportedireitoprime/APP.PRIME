@@ -82,20 +82,6 @@ jobs:
             echo "Removed $removed precompressed files from dist/"
           fi
 
-      - name: Export laws bundle (native offline data)
-        env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || 'https://dnjrgpldcwcpoywamorr.supabase.co' }}
-          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
-          LAWS_BUNDLE_OUT: dist/laws-bundle
-        run: |
-          if [ -z "$VITE_SUPABASE_PUBLISHABLE_KEY" ]; then
-            echo "::warning::VITE_SUPABASE_PUBLISHABLE_KEY não definido — pulando bundle offline"
-          else
-            node scripts/export-laws.mjs
-            ls -lh dist/laws-bundle | head -20
-            du -sh dist/laws-bundle
-          fi
-
 
       - name: Verify Android platform
         run: |

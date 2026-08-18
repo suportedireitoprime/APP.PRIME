@@ -242,8 +242,14 @@ export default function ResumosJuridicosAreas() {
               <Loader2 className="w-5 h-5 animate-spin mr-2" /> Carregando áreas...
             </div>
           ) : filtered.length === 0 ? (
-            <div className="text-center py-16 text-muted-foreground text-sm">
-              Nenhuma área encontrada para &quot;{q}&quot;
+            <div className="text-center py-16 text-muted-foreground text-sm space-y-3">
+              <p>Nenhuma área encontrada para &quot;{q}&quot;.</p>
+              {!navigator.onLine && (
+                <p className="text-xs text-primary max-w-sm mx-auto border border-primary/20 bg-primary/5 p-3 rounded-xl">
+                  Parece que você está offline e não baixou o Banco de Resumos.
+                  Acesse o <b>Modo Offline &gt; Banco de Dados Base</b> para baixá-los quando tiver internet.
+                </p>
+              )}
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">

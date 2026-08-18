@@ -103,5 +103,19 @@ export async function syncDecksOffline(): Promise<Deck[]> {
     console.warn('Falha ao sincronizar decks online, usando fallback offline.', err);
   }
   
-  return getOfflineDecks();
+  const localCache = getOfflineDecks();
+  let bundleDecks: Deck[] = [];
+  try {
+    const { bundle } = await import('@/services/offlineBundle');
+    bundleDecks = await bundle.flashcardsDecks<Deck>();
+  } catch {}
+
+  // Mesclar cache local com o pacote offline, priorizando o cache local (mais recente)
+  const map = new Map<string, Deck>();
+  for (const d of bundleDecks) map.set(d.id, d);
+  for (const d of localCache) map.set(d.id, d);
+
+  return Array.from(map.values()).sort((a, b) => {
+    return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+  });
 }

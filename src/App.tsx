@@ -331,6 +331,7 @@ const ModoOfflineLivros = lazy(() => import("./pages/ModoOfflineLivros.tsx"));
 const ModoOfflineAudioaulas = lazy(() => import("./pages/ModoOfflineAudioaulas.tsx"));
 const ModoOfflineLeisCantadas = lazy(() => import("./pages/ModoOfflineLeisCantadas.tsx"));
 const ModoOfflineApresentacoes = lazy(() => import("./pages/ModoOfflineApresentacoes.tsx"));
+const PacotesOffline = lazy(() => import("./pages/PacotesOffline.tsx"));
 const AdminSecretsDownload = lazy(() => import("./pages/AdminSecretsDownload.tsx"));
 const AdminAppleCsr = lazy(() => import("./pages/AdminAppleCsr.tsx"));
 const AdminPassoAPassoLojas = lazy(() => import("./pages/AdminPassoAPassoLojas.tsx"));
@@ -1045,6 +1046,7 @@ function AnimatedRoutes() {
 
           <Route path="/desktop" element={<PageTransition><DesktopPromo /></PageTransition>} />
           <Route path="/modo-offline" element={<ProtectedRoute><PageTransition><ModoOffline /></PageTransition></ProtectedRoute>} />
+          <Route path="/modo-offline/pacotes" element={<ProtectedRoute><PageTransition><PacotesOffline /></PageTransition></ProtectedRoute>} />
           <Route path="/modo-offline/leis-e-narracoes" element={<ProtectedRoute><PageTransition><ModoOfflineLeis /></PageTransition></ProtectedRoute>} />
           <Route path="/modo-offline/leis" element={<Navigate to="/modo-offline/leis-e-narracoes" replace />} />
           <Route path="/modo-offline/livros" element={<ProtectedRoute><PageTransition><ModoOfflineLivros /></PageTransition></ProtectedRoute>} />

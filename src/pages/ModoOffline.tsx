@@ -1,4 +1,4 @@
-import { ArrowLeft, BookOpen, ChevronRight, CloudDownload, CloudOff, Headphones, Library, Music, PenLine, Presentation, WifiOff, Wifi, Download } from 'lucide-react';
+import { ArrowLeft, BookOpen, ChevronRight, CloudDownload, CloudOff, Headphones, Library, Music, PenLine, Presentation, WifiOff, Wifi, Download, Database } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
@@ -72,6 +72,15 @@ export default function ModoOffline() {
       desc: 'Suas anotações, grifos e favoritos já ficam no aparelho',
       meta: 'Sempre disponível offline',
       to: '/meu-espaco',
+    },
+    {
+      id: 'banco-dados',
+      icon: Database,
+      color: '#ef4444',
+      title: 'Banco de Dados Base',
+      desc: 'Baixe Flashcards, Resumos e Questões para o aparelho',
+      meta: 'Bancos pesados via download sob demanda',
+      to: '/modo-offline/pacotes',
     },
   ];
 

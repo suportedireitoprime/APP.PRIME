@@ -1,11 +1,4 @@
-/**
- * Carrega arquivos JSON gerados por scripts/export-offline-bundle.mjs.
- * No Electron o bundle vive dentro do .exe/.dmg/.AppImage (dist/offline-bundle),
- * no mobile/web ele é servido como static assets do Vite.
- *
- * Todos os leitores respeitam esta política: primeiro tenta Supabase;
- * se der erro OU vier vazio, usa o bundle. Nunca sobrescreve dados online.
- */
+import { getOfflinePackage } from './downloadManager';
 
 const cache = new Map<string, unknown[]>();
 const inflight = new Map<string, Promise<unknown[]>>();
@@ -17,10 +10,22 @@ export function isDesktopApp(): boolean {
 async function fetchBundle<T>(name: string): Promise<T[]> {
   if (cache.has(name)) return cache.get(name) as T[];
   if (inflight.has(name)) return (await inflight.get(name)!) as T[];
+  
   const p = (async () => {
     try {
+      // 1. Tentar pegar do armazenamento offline local (IndexedDB via idb-keyval)
+      const localData = await getOfflinePackage<T>(name);
+      if (localData && localData.length > 0) {
+        cache.set(name, localData);
+        return localData;
+      }
+
+      // 2. Fallback legado: tentar baixar via fetch 
+      // Em produção mobile, os arquivos .json NÃO estarão mais embutidos, então isso vai retornar 404.
+      // Se estivermos na web (onde os arquivos existem no servidor público), isso ainda funcionará.
       const res = await fetch(`/offline-bundle/${name}.json`, { cache: 'force-cache' });
       if (!res.ok) return [];
+      
       const data = (await res.json()) as unknown[];
       cache.set(name, data);
       return data;
@@ -30,6 +35,7 @@ async function fetchBundle<T>(name: string): Promise<T[]> {
       inflight.delete(name);
     }
   })();
+  
   inflight.set(name, p);
   return (await p) as T[];
 }
@@ -41,6 +47,11 @@ export const bundle = {
   tematicaObras: <T = any>() => fetchBundle<T>('tematica-obras'),
   bibliotecaClassicos: <T = any>() => fetchBundle<T>('biblioteca-classicos'),
   bibliotecaOab: <T = any>() => fetchBundle<T>('biblioteca-oab'),
+  bibliotecaEstudos: <T = any>() => fetchBundle<T>('biblioteca-estudos'),
+  bibliotecaPortugues: <T = any>() => fetchBundle<T>('biblioteca-portugues'),
+  bibliotecaLideranca: <T = any>() => fetchBundle<T>('biblioteca-lideranca'),
+  bibliotecaForaDaToga: <T = any>() => fetchBundle<T>('biblioteca-fora-da-toga'),
+  bibliotecaPesquisaCientifica: <T = any>() => fetchBundle<T>('biblioteca-pesquisa-cientifica'),
   questoesAreas: <T = any>() => fetchBundle<T>('questoes-areas'),
   flashcardsResumoAreas: <T = any>() => fetchBundle<T>('flashcards-resumo-areas'),
   flashcardsCardsPorArea: <T = any>(area: string) => {
