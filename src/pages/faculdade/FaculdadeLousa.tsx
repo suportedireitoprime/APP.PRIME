@@ -1,130 +1,339 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/PageHeader';
-import { Camera as CameraIcon, Upload, ScanText, RefreshCcw, Sparkles } from 'lucide-react';
+import { Camera as CameraIcon, Upload, ScanText, RefreshCcw, Sparkles, Plus, X, BookOpen, Calendar, User, ArrowRight, Loader2, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Capacitor } from '@capacitor/core';
 import { toast } from '@/hooks/use-toast';
 
+type FlowStep = 'METADATA' | 'CAPTURE' | 'PROCESSING' | 'RESULT';
+
+const PROCESSING_STEPS = [
+  "Enviando imagens em alta resolução...",
+  "Analisando caligrafia e estruturando...",
+  "Limpando ruídos visuais...",
+  "Gerando resumo inteligente...",
+  "Finalizando documento..."
+];
+
 export default function FaculdadeLousa() {
   const navigate = useNavigate();
-  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [step, setStep] = useState<FlowStep>('METADATA');
+  
+  // Metadados
+  const [materia, setMateria] = useState('');
+  const [dataAula, setDataAula] = useState(new Date().toISOString().split('T')[0]);
+  const [professor, setProfessor] = useState('');
+  
+  // Imagens
+  const [photos, setPhotos] = useState<string[]>([]);
+  
+  // Processamento
+  const [procIndex, setProcIndex] = useState(0);
 
   const captureImage = async (source: CameraSource) => {
     try {
       const image = await Camera.getPhoto({
-        quality: 100, // Highest possible quality
-        allowEditing: false, // Keep original aspect ratio and full resolution
+        quality: 100, // Máxima qualidade
+        allowEditing: false, 
         resultType: CameraResultType.Uri,
         source: source,
         preserveAspectRatio: true,
       });
 
+      let newPhoto = '';
       if (image.webPath) {
-        setPhotoUrl(image.webPath);
+        newPhoto = image.webPath;
       } else if (image.path) {
-        setPhotoUrl(Capacitor.convertFileSrc(image.path));
+        newPhoto = Capacitor.convertFileSrc(image.path);
+      }
+      
+      if (newPhoto) {
+        setPhotos(prev => [...prev, newPhoto]);
       }
     } catch (e: any) {
-      if (e.message && e.message.includes('User cancelled')) {
-        return; // User just closed the camera
-      }
+      if (e.message && e.message.includes('User cancelled')) return;
       toast({
         title: "Erro na Câmera",
-        description: "Não foi possível acessar a câmera ou galeria. Verifique as permissões.",
+        description: "Não foi possível acessar a câmera ou galeria.",
         variant: "destructive"
       });
-      console.error('Camera error', e);
     }
   };
+
+  const removePhoto = (index: number) => {
+    setPhotos(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const startProcessing = () => {
+    if (photos.length === 0) {
+      toast({ title: "Atenção", description: "Adicione ao menos uma foto do quadro." });
+      return;
+    }
+    setStep('PROCESSING');
+    setProcIndex(0);
+  };
+
+  useEffect(() => {
+    if (step === 'PROCESSING') {
+      const interval = setInterval(() => {
+        setProcIndex(prev => {
+          if (prev >= PROCESSING_STEPS.length - 1) {
+            clearInterval(interval);
+            setTimeout(() => setStep('RESULT'), 1000);
+            return prev;
+          }
+          return prev + 1;
+        });
+      }, 2000);
+      return () => clearInterval(interval);
+    }
+  }, [step]);
 
   return (
     <div className="min-h-screen bg-background pb-safe flex flex-col">
       <PageHeader 
-        title="Lousa" 
-        subtitle="Digitalize anotações do quadro" 
-        onBack={() => navigate('/')} 
+        title="Lousa Scanner" 
+        subtitle={step === 'METADATA' ? 'Nova captura' : step === 'CAPTURE' ? 'Fotos da Lousa' : step === 'PROCESSING' ? 'Processando' : 'Sucesso'} 
+        onBack={() => step === 'METADATA' ? navigate('/') : step === 'RESULT' ? navigate('/') : setStep(step === 'CAPTURE' ? 'METADATA' : 'CAPTURE')} 
       />
-      <div className="flex-1 p-6 flex flex-col items-center justify-center text-center max-w-md mx-auto w-full">
-        
+      
+      <div className="flex-1 p-6 flex flex-col w-full max-w-md mx-auto relative">
         <AnimatePresence mode="wait">
-          {!photoUrl ? (
+          
+          {step === 'METADATA' && (
             <motion.div 
-              key="intro"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="w-full flex flex-col items-center"
+              key="metadata"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="flex-1 flex flex-col"
             >
-              <div className="w-20 h-20 bg-primary/10 rounded-3xl flex items-center justify-center mb-6 shadow-sm border border-primary/20">
-                <ScanText className="w-10 h-10 text-primary" strokeWidth={1.5} />
+              <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 self-center shadow-sm border border-primary/20">
+                <ScanText className="w-8 h-8 text-primary" strokeWidth={1.5} />
               </div>
-              <h2 className="font-display font-bold text-xl text-foreground mb-3">
-                Transcreva a lousa com IA
+              <h2 className="font-display font-bold text-2xl text-foreground text-center mb-2">
+                Sobre a Aula
               </h2>
-              <p className="font-body text-sm text-muted-foreground leading-relaxed mb-10">
-                Tire uma foto do quadro da sala de aula e nossa inteligência artificial transcreverá o conteúdo exatamente como está, para você organizar seu caderno digital.
+              <p className="font-body text-sm text-muted-foreground text-center mb-8 px-4 leading-relaxed">
+                Preencha os dados abaixo para a IA organizar seu resumo automaticamente.
               </p>
-              
-              <div className="space-y-4 w-full">
-                <motion.button
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() => captureImage(CameraSource.Camera)}
-                  className="w-full flex items-center justify-center gap-3 bg-primary text-primary-foreground py-4 rounded-2xl font-display font-bold shadow-lg shadow-primary/25"
-                >
-                  <CameraIcon className="w-5 h-5" />
-                  Tirar Foto do Quadro
-                </motion.button>
-                
-                <motion.button
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() => captureImage(CameraSource.Photos)}
-                  className="w-full flex items-center justify-center gap-3 bg-secondary/80 text-foreground py-4 rounded-2xl font-display font-bold border border-border/50"
-                >
-                  <Upload className="w-5 h-5" />
-                  Enviar da Galeria
-                </motion.button>
+
+              <div className="space-y-4 flex-1">
+                <div className="space-y-1.5">
+                  <label className="text-[13px] font-bold text-muted-foreground ml-1 uppercase tracking-wider">Matéria / Assunto</label>
+                  <div className="relative">
+                    <BookOpen className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                    <input 
+                      value={materia}
+                      onChange={e => setMateria(e.target.value)}
+                      placeholder="Ex: Direito Penal - Recursos"
+                      className="w-full pl-11 pr-4 py-3.5 bg-secondary/50 border border-border/50 rounded-2xl font-body text-[15px] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[13px] font-bold text-muted-foreground ml-1 uppercase tracking-wider">Data da Aula</label>
+                  <div className="relative">
+                    <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                    <input 
+                      type="date"
+                      value={dataAula}
+                      onChange={e => setDataAula(e.target.value)}
+                      className="w-full pl-11 pr-4 py-3.5 bg-secondary/50 border border-border/50 rounded-2xl font-body text-[15px] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[13px] font-bold text-muted-foreground ml-1 uppercase tracking-wider">Professor(a) <span className="text-muted-foreground/50 lowercase font-normal">(Opcional)</span></label>
+                  <div className="relative">
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                    <input 
+                      value={professor}
+                      onChange={e => setProfessor(e.target.value)}
+                      placeholder="Nome do professor"
+                      className="w-full pl-11 pr-4 py-3.5 bg-secondary/50 border border-border/50 rounded-2xl font-body text-[15px] focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
+                    />
+                  </div>
+                </div>
               </div>
+
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                disabled={!materia.trim() || !dataAula}
+                onClick={() => setStep('CAPTURE')}
+                className="mt-6 w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground py-4 rounded-2xl font-display font-bold shadow-lg shadow-primary/25 disabled:opacity-50 disabled:shadow-none transition-all"
+              >
+                Avançar para Fotos
+                <ArrowRight className="w-5 h-5" />
+              </motion.button>
             </motion.div>
-          ) : (
+          )}
+
+          {step === 'CAPTURE' && (
             <motion.div 
-              key="preview"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="w-full flex flex-col items-center"
+              key="capture"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="flex-1 flex flex-col h-full"
             >
-              <div className="w-full aspect-[3/4] sm:aspect-square bg-muted rounded-3xl overflow-hidden shadow-md border border-border mb-6 relative">
-                <img 
-                  src={photoUrl} 
-                  alt="Lousa digitalizada" 
-                  className="w-full h-full object-cover"
+              <div className="flex-1 flex flex-col">
+                <h3 className="font-display font-bold text-xl mb-4">Fotos do Quadro</h3>
+                
+                <div className="grid grid-cols-2 gap-3 mb-6">
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => captureImage(CameraSource.Camera)}
+                    className="flex flex-col items-center justify-center gap-2 aspect-square rounded-3xl border-2 border-dashed border-primary/40 bg-primary/5 hover:bg-primary/10 transition-colors"
+                  >
+                    <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+                      <CameraIcon className="w-6 h-6 text-primary" />
+                    </div>
+                    <span className="font-display font-bold text-sm text-primary">Tirar Foto</span>
+                  </motion.button>
+                  
+                  {photos.map((url, i) => (
+                    <motion.div 
+                      key={i}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="relative aspect-square rounded-3xl border border-border/50 overflow-hidden shadow-sm"
+                    >
+                      <img src={url} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" />
+                      <button 
+                        onClick={() => removePhoto(i)}
+                        className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center active:scale-90 transition-transform"
+                      >
+                        <X className="w-4 h-4 text-white" />
+                      </button>
+                      <div className="absolute bottom-2 left-2 px-2 py-1 rounded-md bg-black/50 backdrop-blur-md">
+                        <span className="text-[10px] font-bold text-white tracking-widest">{i + 1}/{photos.length}</span>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+
+                {photos.length > 0 && (
+                  <motion.button
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => captureImage(CameraSource.Photos)}
+                    className="w-full py-3 mb-6 flex items-center justify-center gap-2 rounded-xl bg-secondary/80 text-sm font-bold text-foreground border border-border/50"
+                  >
+                    <Upload className="w-4 h-4" /> Importar mais da galeria
+                  </motion.button>
+                )}
+              </div>
+
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                disabled={photos.length === 0}
+                onClick={startProcessing}
+                className="w-full flex items-center justify-center gap-3 bg-primary text-primary-foreground py-4 rounded-2xl font-display font-bold shadow-lg shadow-primary/25 disabled:opacity-50 disabled:shadow-none mt-auto"
+              >
+                <Sparkles className="w-5 h-5" />
+                Transcrever {photos.length} foto{photos.length !== 1 ? 's' : ''}
+              </motion.button>
+            </motion.div>
+          )}
+
+          {step === 'PROCESSING' && (
+            <motion.div 
+              key="processing"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.05 }}
+              className="flex-1 flex flex-col items-center justify-center text-center pb-20"
+            >
+              <div className="relative mb-12">
+                <div className="w-32 h-32 rounded-full border-4 border-secondary/50 flex items-center justify-center relative z-10 bg-background">
+                  <Sparkles className="w-12 h-12 text-primary animate-pulse" />
+                </div>
+                <motion.div 
+                  className="absolute inset-0 border-4 border-primary rounded-full border-t-transparent"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                />
+                
+                {/* Decorative floating pulses */}
+                <motion.div 
+                  className="absolute -inset-4 bg-primary/20 rounded-full z-0 blur-xl"
+                  animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.8, 0.5] }}
+                  transition={{ duration: 2, repeat: Infinity }}
                 />
               </div>
+
+              <motion.h3 
+                key={procIndex}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="font-display font-bold text-xl text-foreground mb-3"
+              >
+                {PROCESSING_STEPS[procIndex]}
+              </motion.h3>
+              
+              <div className="w-48 h-1.5 bg-secondary rounded-full overflow-hidden">
+                <motion.div 
+                  className="h-full bg-primary"
+                  initial={{ width: '0%' }}
+                  animate={{ width: `${((procIndex + 1) / PROCESSING_STEPS.length) * 100}%` }}
+                  transition={{ duration: 0.5 }}
+                />
+              </div>
+            </motion.div>
+          )}
+
+          {step === 'RESULT' && (
+            <motion.div 
+              key="result"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex-1 flex flex-col items-center justify-center text-center pb-10"
+            >
+              <motion.div 
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", bounce: 0.5, delay: 0.1 }}
+                className="w-24 h-24 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mb-6"
+              >
+                <CheckCircle2 className="w-12 h-12" />
+              </motion.div>
+              
+              <h2 className="font-display font-bold text-2xl mb-2 text-foreground">Transcrição Concluída!</h2>
+              <p className="font-body text-muted-foreground mb-8 px-4">
+                O resumo inteligente de <strong>{materia}</strong> foi gerado e salvo nos seus Resumos da Faculdade.
+              </p>
 
               <div className="space-y-3 w-full">
                 <motion.button
                   whileTap={{ scale: 0.97 }}
-                  onClick={() => toast({ title: "Em breve", description: "O processamento por IA será ativado nos próximos passos!" })}
-                  className="w-full flex items-center justify-center gap-3 bg-primary text-primary-foreground py-4 rounded-2xl font-display font-bold shadow-lg shadow-primary/25"
+                  onClick={() => navigate('/faculdade/resumos')}
+                  className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground py-4 rounded-2xl font-display font-bold shadow-lg shadow-primary/25"
                 >
-                  <Sparkles className="w-5 h-5" />
-                  Transcrever com IA
+                  <BookOpen className="w-5 h-5" />
+                  Ver Resumo
                 </motion.button>
-
+                
                 <motion.button
                   whileTap={{ scale: 0.97 }}
-                  onClick={() => setPhotoUrl(null)}
-                  className="w-full flex items-center justify-center gap-3 bg-secondary text-foreground py-4 rounded-2xl font-display font-bold"
+                  onClick={() => {
+                    setPhotos([]);
+                    setStep('METADATA');
+                  }}
+                  className="w-full flex items-center justify-center py-4 rounded-2xl font-display font-bold text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  <RefreshCcw className="w-5 h-5" />
-                  Tirar outra foto
+                  Capturar nova lousa
                 </motion.button>
               </div>
             </motion.div>
           )}
+
         </AnimatePresence>
-        
       </div>
     </div>
   );

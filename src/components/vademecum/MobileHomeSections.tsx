@@ -945,11 +945,12 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
               </motion.button>
               
               <motion.button
-                onClick={() => navigate('/faculdade/lembretes')}
-                className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-5 text-center hover:border-primary/50 transition-colors active:scale-95 shadow-sm"
+                onClick={() => navigate('/faculdade/lousa')}
+                className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-5 text-center hover:border-primary/50 transition-colors active:scale-95 shadow-sm relative overflow-hidden"
               >
-                <BellRing className="w-8 h-8 text-[#0EA5E9]" strokeWidth={1.5} />
-                <span className="font-display font-bold text-[14px] text-foreground">Lembretes</span>
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent pointer-events-none" />
+                <Monitor className="w-8 h-8 text-primary relative z-10" strokeWidth={1.5} />
+                <span className="font-display font-bold text-[14px] text-foreground relative z-10">Lousa Scanner</span>
               </motion.button>
             </div>
 
@@ -981,17 +982,16 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
                 onClick={() => navigate('/assistente')}
                 className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-4 text-center hover:border-primary/50 transition-colors active:scale-95"
               >
-                <Network className="w-7 h-7 text-[#8B5CF6]" strokeWidth={1.5} />
+                <Brain className="w-8 h-8 text-[#8B5CF6]" strokeWidth={1.5} />
                 <span className="font-display font-bold text-[13px] text-foreground leading-tight">Mapas<br/>Mentais</span>
               </motion.button>
 
               <motion.button
-                onClick={() => navigate('/faculdade/lousa')}
-                className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-4 text-center hover:border-primary/50 transition-colors active:scale-95 relative overflow-hidden"
+                onClick={() => navigate('/faculdade/lembretes')}
+                className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-4 text-center hover:border-primary/50 transition-colors active:scale-95"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent pointer-events-none" />
-                <Monitor className="w-7 h-7 text-primary relative z-10" strokeWidth={1.5} />
-                <span className="font-display font-bold text-[13px] text-foreground leading-tight relative z-10">Lousa<br/>(Scanner)</span>
+                <BellRing className="w-7 h-7 text-[#0EA5E9]" strokeWidth={1.5} />
+                <span className="font-display font-bold text-[13px] text-foreground leading-tight">Meus<br/>Lembretes</span>
               </motion.button>
             </div>
           </motion.div>
