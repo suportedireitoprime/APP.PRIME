@@ -6,9 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Loader2, CheckCircle2, XCircle, Clock, AlertTriangle } from 'lucide-react';
+import { Loader2, CheckCircle2, XCircle, Clock, AlertTriangle, BookOpen } from 'lucide-react';
 import { toast } from 'sonner';
 import { CardFlutuanteCard } from '@/components/lembretes/CardFlutuanteCard';
+import { configurarAlarmeEstudo, checarStatusAlarme } from '@/lib/alarmeEstudo';
 
 interface Prefs {
   timezone: string;
@@ -44,6 +45,8 @@ export default function PreferenciasLembretes() {
   const [saving, setSaving] = useState(false);
   const [prefs, setPrefs] = useState<Prefs>(DEFAULT_PREFS);
   const [history, setHistory] = useState<DispatchRow[]>([]);
+  const [alarmeEstudoAtivo, setAlarmeEstudoAtivo] = useState(false);
+  const [alarmeHora, setAlarmeHora] = useState('19:00');
 
   const load = useCallback(async () => {
     if (!user) return;
@@ -61,10 +64,26 @@ export default function PreferenciasLembretes() {
       failure_alerts: p.failure_alerts,
     });
     setHistory(((hRes as any)?.data as any) || []);
+    
+    // Check local alarms
+    const hasAlarm = await checarStatusAlarme();
+    setAlarmeEstudoAtivo(hasAlarm);
+    
     setLoading(false);
   }, [user]);
 
   useEffect(() => { load(); }, [load]);
+
+  const toggleAlarmeEstudo = async (ativo: boolean) => {
+    setAlarmeEstudoAtivo(ativo);
+    const [h, m] = alarmeHora.split(':').map(Number);
+    await configurarAlarmeEstudo({
+      hora: h,
+      minuto: m,
+      diasDaSemana: [1, 2, 3, 4, 5, 6, 7], // Todos os dias
+      ativo
+    });
+  };
 
   const save = async () => {
     if (!user) return;
@@ -149,6 +168,34 @@ export default function PreferenciasLembretes() {
               <Button className="w-full" onClick={save} disabled={saving}>
                 {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Salvar preferências
               </Button>
+            </section>
+
+            <section className="space-y-4 rounded-2xl border border-border bg-card p-4">
+              <div className="flex items-center gap-3">
+                <BookOpen className="h-6 w-6 text-primary" />
+                <h2 className="font-heading text-lg font-semibold">Despertador de Estudo</h2>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Agende um horário diário para focar. O aplicativo emitirá um som relaxante para te lembrar de estudar.
+              </p>
+              
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex-1">
+                  <Label>Horário do Despertador</Label>
+                  <Input
+                    type="time"
+                    value={alarmeHora}
+                    onChange={(e) => setAlarmeHora(e.target.value)}
+                    disabled={alarmeEstudoAtivo}
+                  />
+                </div>
+                <div className="pt-5">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium">{alarmeEstudoAtivo ? 'Ativado' : 'Desativado'}</span>
+                    <Switch checked={alarmeEstudoAtivo} onCheckedChange={toggleAlarmeEstudo} />
+                  </div>
+                </div>
+              </div>
             </section>
 
             <CardFlutuanteCard />

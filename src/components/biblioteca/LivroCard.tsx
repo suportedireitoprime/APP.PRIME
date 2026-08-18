@@ -23,6 +23,8 @@ interface LivroCardProps {
 const LivroCard = ({ livro, onClick, priority }: LivroCardProps) => {
   const capaUrl = useBibliotecaCapa(livro.capa, 300);
   const isDownloaded = useIsPdfCached(livro.download);
+  // Cálculo de estimativa de tempo (fallback pseudo-realista até termos dados do backend)
+  const tempoEstimado = Math.max(12, Math.floor((livro.titulo.length + (livro.sinopse?.length || 0) * 0.1) * 0.5)) + " min";
 
   return (
     <button
@@ -35,6 +37,9 @@ const LivroCard = ({ livro, onClick, priority }: LivroCardProps) => {
             <CheckCircle2 className="w-3.5 h-3.5 text-green-400" />
           </div>
         )}
+        <div className="absolute bottom-1.5 right-1.5 z-10 bg-black/70 backdrop-blur-md px-1.5 py-0.5 rounded-md border border-white/10 shadow-sm">
+          <span className="text-[9px] font-medium text-white/90 tracking-wide">{tempoEstimado}</span>
+        </div>
         {capaUrl ? (
           <img
             src={capaUrl}

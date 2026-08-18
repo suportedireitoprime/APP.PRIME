@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Search, Scale, Heart, History, X, BookOpen, Gavel } from 'lucide-react';
+import { ArrowLeft, Search, Scale, Heart, History, X, BookOpen, Gavel, Sparkles } from 'lucide-react';
 import { LEIS_CATALOG, type LeiCatalogItem } from '@/data/leisCatalog';
 import { LEI_ICON_MAP, LEI_ICON_DEFAULT_COLOR } from '@/lib/leiIcons';
 import { getFavoritos, type LeiFavorita } from '@/lib/leisFavoritos';
@@ -109,6 +109,7 @@ const BuscaLeisOverlay = ({ open, onClose, onSelectLei }: Props) => {
   const [modo, setModo] = useState<Modo>('artigos');
   const [favoritos, setFavoritos] = useState<LeiFavorita[]>([]);
   const [recentes, setRecentes] = useState<LeiRecente[]>([]);
+  const [buscaIA, setBuscaIA] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -231,6 +232,22 @@ const BuscaLeisOverlay = ({ open, onClose, onSelectLei }: Props) => {
                   </button>
                 )}
               </div>
+              {/* IA Toggle */}
+              {(modo === 'artigos' || modo === 'leis') && (
+                <div className="flex items-center gap-2 mt-3 pl-1">
+                  <button
+                    onClick={() => setBuscaIA(!buscaIA)}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-[13px] font-medium transition-all ${
+                      buscaIA 
+                        ? 'bg-primary/10 text-primary border border-primary/30' 
+                        : 'bg-muted text-muted-foreground border border-transparent'
+                    }`}
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    Busca por Inteligência Artificial
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Resultados */}
@@ -255,7 +272,7 @@ const BuscaLeisOverlay = ({ open, onClose, onSelectLei }: Props) => {
                 ))}
 
               {modo === 'artigos' && (
-                <ConteudoBusca query={debouncedQuery} onNavigate={onClose} />
+                <ConteudoBusca query={debouncedQuery} onNavigate={onClose} buscaIA={buscaIA} />
               )}
 
               {modo === 'jurisprudencia' && (

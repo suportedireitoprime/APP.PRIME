@@ -46,23 +46,7 @@ input, textarea {
   user-select: auto;
 }
 
-/* ============================================================
- * Otimização mobile: backdrop-filter é uma das operações mais caras
- * na GPU de celulares. Em telas <= 768px substituímos por um fundo
- * opaco, mantendo o visual sem o custo de paint durante navegação.
- * ============================================================ */
-@media (max-width: 768px) {
-  .backdrop-blur-sm,
-  .backdrop-blur,
-  .backdrop-blur-md,
-  .backdrop-blur-lg,
-  .backdrop-blur-xl,
-  .backdrop-blur-2xl,
-  .backdrop-blur-3xl {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-  }
-}
+/* Glassmorphism habilitado no mobile a pedido do usuário (Sugestão #28) */
 
 /* Pausa animações CSS enquanto a página está oculta (troca de rota),
  * evita janks quando o usuário volta pra home. */
@@ -122,14 +106,14 @@ body {
 
 @layer base {
   :root {
-    /* Direito Prime — Preto + Vermelho + Cinza Neutro */
-    --background: 220 5% 11%;              /* #1A1B1E - cinza elegante */
+    /* Direito Prime — Preto Absoluto (AMOLED) + Vermelho + Cinza Neutro */
+    --background: 0 0% 0%;                 /* #000000 - preto absoluto */
     --foreground: 0 0% 98%;
 
-    --card: 220 5% 15%;                   /* #25262B */
+    --card: 0 0% 6%;                      /* #0F0F0F - card sutilmente mais claro */
     --card-foreground: 0 0% 98%;
 
-    --popover: 220 5% 15%;
+    --popover: 0 0% 6%;
     --popover-foreground: 0 0% 98%;
 
     --primary: 348 80% 50%;
@@ -240,7 +224,7 @@ body {
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground text-base leading-relaxed;
     font-family: 'Barlow', system-ui, sans-serif;
     font-weight: 400;
     -webkit-font-smoothing: antialiased;

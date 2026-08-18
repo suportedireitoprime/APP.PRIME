@@ -34,6 +34,7 @@ import HomeNoticiasCarousel from './HomeNoticiasCarousel';
 import AprendaSobreLeis from './AprendaSobreLeis';
 import NoticiasJuridicasCarousel from './NoticiasJuridicasCarousel';
 import HomeCard from './HomeCard';
+import ContinueLendoCard from './ContinueLendoCard';
 import { toast } from '@/hooks/use-toast';
 import { useOutrasNormasCounts } from '@/hooks/useOutrasNormasCounts';
 import JurisprudenciaSheet from './JurisprudenciaSheet';
@@ -765,6 +766,9 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
             transition={{ duration: 0.24, ease: [0.22, 0.61, 0.36, 1] }}
             className="space-y-6"
           >
+            {/* Continue de onde parou */}
+            <ContinueLendoCard />
+
             {/* Em Alta — leis (Vade Mecum) ou funções de estudo (home) */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
               {emAltaLeis

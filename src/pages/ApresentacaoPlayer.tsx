@@ -7,6 +7,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { srcOf } from '@/lib/assetUrl';
 import { useGoBack } from '@/hooks/useGoBack';
 import { compartilharNativo, podeCompartilhar } from '@/lib/nativo/compartilhar';
+import { copiarTexto } from '@/lib/nativo/copiar';
 import { motion, AnimatePresence, useAnimation } from 'framer-motion';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
@@ -146,7 +147,7 @@ const ApresentacaoPlayer = () => {
       const resSlides = (s ?? []) as Slide[];
       setSlides(resSlides);
       setLikes(count ?? 0);
-      setComentarios((cs ?? []) as any[]);
+      setComentarios((cs ?? []) as { id: string; texto: string; created_at: string }[]);
       
       if (user) {
         const [{ data: l }, { data: f }] = await Promise.all([
@@ -370,7 +371,7 @@ const ApresentacaoPlayer = () => {
     setNovoComentario('');
     const resp = await supabase.from('apresentacao_comentarios').insert({ apresentacao_id: id, user_id: userId, texto: txt }).select('id, texto, created_at').single();
     if (resp.data) {
-      setComentarios((c) => [resp.data as any, ...c]);
+      setComentarios((c) => [resp.data as { id: string; texto: string; created_at: string }, ...c]);
     }
   };
 
@@ -381,7 +382,8 @@ const ApresentacaoPlayer = () => {
     if (podeCompartilhar()) {
       await compartilharNativo(apres?.titulo || 'Apresentação', txt, url);
     } else {
-      await copiarTexto(url, 'Link da apresentação copiado!');
+      await copiarTexto(url);
+      toast.success('Link da apresentação copiado!');
     }
   };
 

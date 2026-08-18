@@ -40,6 +40,7 @@ import { routePrefetch, prefetchRoute } from "@/lib/routePrefetch";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import OfflineStatusBadge from "@/components/OfflineStatusBadge";
 import OfflineWatcher from "@/components/OfflineWatcher";
+import BackToTop from "@/components/ui/back-to-top";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
@@ -766,6 +767,7 @@ function AnimatedRoutes() {
       <GlobalDesktopHeader />
       <DesktopFileDropOverlay />
       <PersistentHome />
+      <BackToTop />
       <Suspense fallback={<LazyFallback />}>
         <AnimatePresence mode="wait">
           <Routes location={location} key={getRouteKey(location.pathname)}>

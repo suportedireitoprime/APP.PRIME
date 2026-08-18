@@ -159,6 +159,12 @@ const BibliotecaAtividadeRail = ({ onAbrirLivro }: Props) => {
                 {legenda && (
                   <span className="block text-[10px] text-muted-foreground truncate">{legenda}</span>
                 )}
+                {!percent && (
+                  <span className="block text-[9px] text-muted-foreground mt-0.5 flex items-center gap-1">
+                    <Clock className="w-2.5 h-2.5" />
+                    {Math.max(12, Math.floor((snap.titulo.length) * 0.5))} min de leitura
+                  </span>
+                )}
                 {typeof percent === 'number' && (
                   <span className="mt-1 block h-1 rounded-full bg-secondary/70 overflow-hidden">
                     <span

@@ -42,8 +42,8 @@ export interface ConteudoResultado {
 const searchCache = new Map<string, ConteudoResultado[]>();
 const MAX_CACHE_SIZE = 50;
 
-function getCacheKey(termo: string, tipo: string): string {
-  return `${tipo}:${termo.trim().toLowerCase()}`;
+function getCacheKey(termo: string, tipo: string, buscaIA: boolean = false): string {
+  return `${tipo}:${buscaIA ? 'ia' : 'normal'}:${termo.trim().toLowerCase()}`;
 }
 
 export function prefetchBusca(termo: string, tipo: ConteudoTipo | ConteudoGrupo | 'tudo' = 'tudo') {
@@ -75,6 +75,7 @@ export function prefetchBusca(termo: string, tipo: ConteudoTipo | ConteudoGrupo 
 export function useBuscaConteudo(
   termo: string,
   tipo: ConteudoTipo | ConteudoGrupo | 'tudo' = 'tudo',
+  buscaIA: boolean = false
 ) {
   const [resultados, setResultados] = useState<ConteudoResultado[]>([]);
   const [loading, setLoading] = useState(false);
@@ -87,7 +88,7 @@ export function useBuscaConteudo(
       return;
     }
 
-    const cacheKey = getCacheKey(q, tipo);
+    const cacheKey = getCacheKey(q, tipo, buscaIA);
     if (searchCache.has(cacheKey)) {
       setResultados(searchCache.get(cacheKey)!);
       setLoading(false);
@@ -102,16 +103,38 @@ export function useBuscaConteudo(
         let resultsOnline: ConteudoResultado[] = [];
         let errorOnline = null;
 
-        // 1. Tenta Supabase (online)
+        // 1. Tenta Supabase (online ou Edge Function)
         if (navigator.onLine !== false) {
-          const { data, error } = await supabase.rpc('buscar_conteudo', {
-            _termo: q,
-            _tipo: tipo === 'tudo' ? null : tipo,
-            _limit: 60,
-          });
-          errorOnline = error;
-          if (!error && Array.isArray(data)) {
-            resultsOnline = data as ConteudoResultado[];
+          if (buscaIA) {
+            // Busca Semântica
+            const { data, error } = await supabase.functions.invoke('semantic-search', {
+              body: { query: q }
+            });
+            errorOnline = error;
+            if (!error && data?.results) {
+              resultsOnline = data.results.map((r: any) => ({
+                entity_type: 'artigo',
+                entity_id: r.id,
+                entity_table: r.lei_id || 'vade_mecum_artigos',
+                title: `Art. ${r.numero}`,
+                subtitle: `Busca IA ${(r.similarity * 100).toFixed(1)}% match`,
+                snippet: r.texto,
+                thumb_url: null,
+                route: `/vademecum/${r.lei_id}?art=${r.numero}`,
+                score: r.similarity * 100,
+              }));
+            }
+          } else {
+            // Busca textual padrão
+            const { data, error } = await supabase.rpc('buscar_conteudo', {
+              _termo: q,
+              _tipo: tipo === 'tudo' ? null : tipo,
+              _limit: 60,
+            });
+            errorOnline = error;
+            if (!error && Array.isArray(data)) {
+              resultsOnline = data as ConteudoResultado[];
+            }
           }
         }
 
@@ -176,7 +199,7 @@ export function useBuscaConteudo(
     return () => {
       isMounted = false;
     };
-  }, [termo, tipo]);
+  }, [termo, tipo, buscaIA]);
 
   return { resultados, loading };
 }
