@@ -136,13 +136,38 @@ const HUB_ITENS: Array<{ id: View; label: string; desc: string; icon: any }> = [
 function Hub({ goto }: { goto: (v: View) => void }) {
   return (
     <>
-      <p className="mb-5 text-sm text-muted-foreground">
+      <p className="mb-8 text-sm text-muted-foreground">
         Grave, importe e transforme aulas em resumos prontos pra estudar.
       </p>
-      <div className="space-y-3 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
+      <div className="space-y-2">
         {HUB_ITENS.map((f, i) => {
           const Icon = f.icon;
           const primary = f.id === 'gravar';
+          
+          if (primary) {
+            return (
+              <motion.button
+                key={f.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05 }}
+                onClick={() => goto(f.id)}
+                className="flex items-center gap-4 p-5 min-h-[88px] rounded-3xl border w-full transition-all group text-left bg-primary/10 border-primary/40 hover:border-primary mb-6"
+              >
+                <div className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 bg-primary text-primary-foreground shadow-lg shadow-primary/30">
+                  <Icon className="w-7 h-7" strokeWidth={1.8} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-display text-lg font-bold text-foreground group-hover:text-primary transition-colors">
+                    {f.label}
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-0.5 leading-tight">{f.desc}</p>
+                </div>
+                <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+              </motion.button>
+            );
+          }
+
           return (
             <motion.button
               key={f.id}
@@ -150,22 +175,18 @@ function Hub({ goto }: { goto: (v: View) => void }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
               onClick={() => goto(f.id)}
-              className={`flex items-center gap-4 p-5 min-h-[80px] rounded-xl border w-full transition-all group text-left
-                ${primary
-                  ? 'bg-primary/10 border-primary/40 hover:border-primary'
-                  : 'bg-card border-border hover:border-primary/40'}`}
+              className="flex items-center gap-4 p-4 rounded-2xl w-full transition-all group text-left bg-transparent hover:bg-secondary/40 active:scale-[0.98]"
             >
-              <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0
-                ${primary ? 'bg-primary text-primary-foreground' : 'bg-primary/15 text-primary'}`}>
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 bg-secondary/80 text-primary">
                 <Icon className="w-6 h-6" strokeWidth={1.6} />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-display text-base font-bold text-foreground group-hover:text-primary transition-colors">
+                <p className="font-display text-[15px] font-bold text-foreground group-hover:text-primary transition-colors uppercase tracking-wider">
                   {f.label}
                 </p>
-                <p className="text-sm text-muted-foreground mt-0.5 leading-tight">{f.desc}</p>
+                <p className="text-[13px] text-muted-foreground mt-0.5 leading-tight">{f.desc}</p>
               </div>
-              <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+              <ChevronRight className="w-5 h-5 text-muted-foreground/50 group-hover:text-primary transition-colors shrink-0" />
             </motion.button>
           );
         })}
@@ -183,52 +204,160 @@ function Gravar({ onDone }: { onDone: () => void }) {
   const isRec = rec.status === 'recording';
   const isPaused = rec.status === 'paused';
   const isSaving = rec.status === 'saving';
+  
+  const [showSaveForm, setShowSaveForm] = useState(false);
+  const [tempTitle, setTempTitle] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState('');
+
+  const handleStopClick = () => {
+    rec.pause();
+    setTempTitle(`Aula — ${new Date().toLocaleDateString('pt-BR')}`);
+    setShowSaveForm(true);
+  };
+
+  const confirmSave = async () => {
+    if (tempTitle) rec.setTitle(tempTitle);
+    // As tags seriam passadas para o contexto ou salvas depois se o hook expor
+    // Por enquanto passamos o titulo pro rec e paramos.
+    await rec.stop();
+    onDone();
+  };
+
+  const addTag = (t: string) => {
+    const clean = t.trim();
+    if (!clean || tags.includes(clean)) return;
+    setTags((prev) => [...prev, clean]);
+    setTagInput('');
+  };
+
+  const removeTag = (t: string) => setTags((prev) => prev.filter((x) => x !== t));
+
+  if (showSaveForm) {
+    return (
+      <div className="rounded-3xl border border-border bg-card p-6">
+        <h3 className="font-display font-bold text-xl text-foreground mb-4">Salvar Gravação</h3>
+        <div className="mb-4 text-center text-4xl font-mono text-primary tabular-nums">
+          {formatHms(rec.elapsedMs)}
+        </div>
+        
+        <div className="space-y-4">
+          <div>
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Título da Aula</label>
+            <Input
+              value={tempTitle}
+              onChange={(e) => setTempTitle(e.target.value)}
+              className="mt-1"
+            />
+          </div>
+
+          <div>
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1">
+              <TagIcon className="w-3 h-3" /> Etiquetas (Tags)
+            </label>
+            <div className="mt-1 flex gap-2">
+              <Input
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                placeholder="Ex: Constitucional, Dicas..."
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') { e.preventDefault(); addTag(tagInput); }
+                }}
+              />
+              <Button type="button" variant="secondary" onClick={() => addTag(tagInput)}>Adicionar</Button>
+            </div>
+            {tags.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {tags.map((t) => (
+                  <span key={t} className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+                    {t}
+                    <button onClick={() => removeTag(t)} className="ml-1 rounded-full p-0.5 hover:bg-primary/20"><X className="w-3 h-3" /></button>
+                  </span>
+                ))}
+              </div>
+            )}
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {TAG_SUGESTOES.filter((t) => !tags.includes(t)).slice(0, 5).map((t) => (
+                <button key={t} onClick={() => addTag(t)} className="rounded-full border border-border bg-secondary/50 px-3 py-1 text-xs text-muted-foreground hover:bg-secondary hover:text-foreground">
+                  + {t}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-8 flex justify-end gap-3">
+          <Button variant="ghost" onClick={() => setShowSaveForm(false)}>
+            Voltar à Gravação
+          </Button>
+          <Button onClick={confirmSave} disabled={isSaving} className="font-bold">
+            {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Check className="mr-2 h-4 w-4" />}
+            Confirmar e Salvar
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="rounded-3xl border border-border bg-card p-6">
+    <div className="rounded-3xl border border-border bg-card/50 p-8 flex flex-col items-center justify-center min-h-[350px]">
       {rec.status === 'idle' ? (
         <>
-          <Input
-            placeholder="Título da aula (opcional)"
-            value={rec.title}
-            onChange={(e) => rec.setTitle(e.target.value)}
-            className="mb-4"
-          />
-          <div className="flex justify-center">
-            <Button size="lg" onClick={rec.start} className="h-16 w-16 rounded-full p-0">
-              <Mic className="h-7 w-7" />
+          <p className="mb-8 text-center text-sm text-muted-foreground">Toque para iniciar a captação do áudio da aula</p>
+          <div className="relative flex justify-center items-center">
+            <motion.div 
+              className="absolute w-24 h-24 bg-primary/20 rounded-full"
+              animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0, 0.5] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+            <Button size="lg" onClick={rec.start} className="h-24 w-24 rounded-full p-0 bg-primary hover:bg-primary/90 shadow-xl shadow-primary/30 relative z-10">
+              <Mic className="h-10 w-10 text-white" />
             </Button>
           </div>
-          <p className="mt-3 text-center text-xs text-muted-foreground">Toque pra começar a gravar</p>
         </>
       ) : (
         <>
-          <div className="mb-2 flex items-center justify-center gap-2 text-xs text-muted-foreground">
-            <Radio className={`h-3 w-3 ${isRec ? 'text-destructive animate-pulse' : ''}`} />
-            {isRec ? 'Gravando' : isPaused ? 'Pausado' : 'Salvando…'}
-            {rec.title && <> · <span className="max-w-[180px] truncate">{rec.title}</span></>}
+          <div className="mb-4 flex items-center justify-center gap-2 text-sm font-bold text-muted-foreground uppercase tracking-widest">
+            <Radio className={`h-4 w-4 ${isRec ? 'text-red-500 animate-pulse' : ''}`} />
+            {isRec ? <span className="text-red-500">Gravando</span> : isPaused ? 'Pausado' : 'Salvando…'}
           </div>
-          <div className="mb-4 text-center text-5xl font-mono text-primary tabular-nums">
+          
+          <div className="mb-8 text-center text-6xl font-display font-bold text-primary tabular-nums drop-shadow-md">
             {formatHms(rec.elapsedMs)}
           </div>
-          <div className="flex justify-center gap-3">
+          
+          <div className="flex justify-center items-center gap-6">
             {isRec && (
-              <Button size="lg" variant="outline" onClick={rec.pause}>
-                <PauseCircle className="mr-2 h-5 w-5" /> Pausar
+              <Button size="lg" variant="secondary" onClick={rec.pause} className="h-16 rounded-2xl px-6 font-bold text-foreground">
+                <PauseCircle className="mr-2 h-6 w-6" /> Pausar
               </Button>
             )}
             {isPaused && (
-              <Button size="lg" variant="outline" onClick={rec.resume}>
-                <Play className="mr-2 h-5 w-5" /> Retomar
+              <Button size="lg" variant="secondary" onClick={rec.resume} className="h-16 rounded-2xl px-6 font-bold text-foreground">
+                <Play className="mr-2 h-6 w-6" /> Retomar
               </Button>
             )}
-            <Button size="lg" variant="destructive" onClick={() => rec.stop().then(onDone)} disabled={isSaving}>
-              {isSaving ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Square className="mr-2 h-5 w-5" />}
-              Parar e salvar
+            <Button size="lg" variant="destructive" onClick={handleStopClick} disabled={isSaving} className="h-16 rounded-2xl px-6 font-bold shadow-lg shadow-destructive/20">
+              <Square className="mr-2 h-6 w-6" />
+              Encerrar
             </Button>
           </div>
-          <p className="mt-4 text-center text-[11px] text-muted-foreground">
-            Você pode navegar pelo app — a gravação continua num card flutuante.
+
+          {isRec && (
+             <div className="mt-8 flex justify-center gap-1 items-end h-8">
+               {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map((i) => (
+                 <motion.div
+                   key={i}
+                   className="w-1.5 bg-primary rounded-full"
+                   animate={{ height: ['20%', `${Math.random() * 80 + 20}%`, '20%'] }}
+                   transition={{ duration: Math.random() * 0.5 + 0.3, repeat: Infinity, ease: 'easeInOut' }}
+                 />
+               ))}
+             </div>
+          )}
+          
+          <p className="mt-6 text-center text-xs text-muted-foreground px-4">
+            Você pode minimizar ou navegar pelo app. A gravação continuará em segundo plano.
           </p>
         </>
       )}
