@@ -93,6 +93,90 @@ const AudioProgressBar = ({
   );
 };
 
+// Componente para legendas dinâmicas (Remotion-style) sem re-render do React
+const AudioSubtitles = ({ 
+  audioRef, 
+  duration, 
+  roteiro 
+}: { 
+  audioRef: React.MutableRefObject<HTMLAudioElement | null>;
+  duration: number;
+  roteiro: string;
+}) => {
+  const containerRef = useRef<HTMLParagraphElement>(null);
+  
+  useEffect(() => {
+    if (!roteiro) return;
+    const words = roteiro.split(/\s+/).filter(Boolean);
+    if (!words.length) return;
+    
+    if (containerRef.current) {
+      containerRef.current.innerHTML = '';
+      words.forEach((w) => {
+        const span = document.createElement('span');
+        span.textContent = w + ' ';
+        span.className = 'transition-all duration-200 opacity-40 mx-0.5 inline-block';
+        containerRef.current?.appendChild(span);
+      });
+    }
+
+    let frameId: number;
+    const update = () => {
+      if (audioRef.current && duration > 0 && containerRef.current) {
+        const ct = audioRef.current.currentTime;
+        const progress = Math.min(1, Math.max(0, ct / duration));
+        const targetIndex = Math.floor(progress * words.length);
+        
+        const children = containerRef.current.children;
+        let targetEl: HTMLSpanElement | null = null;
+
+        for (let i = 0; i < children.length; i++) {
+          const el = children[i] as HTMLSpanElement;
+          if (i === targetIndex) {
+            el.style.opacity = '1';
+            el.style.color = 'hsl(var(--primary))';
+            el.style.transform = 'scale(1.15)';
+            el.style.fontWeight = 'bold';
+            targetEl = el;
+          } else if (i < targetIndex) {
+            el.style.opacity = '0.75';
+            el.style.color = '#FFF';
+            el.style.transform = 'scale(1)';
+            el.style.fontWeight = 'normal';
+          } else {
+            el.style.opacity = '0.35';
+            el.style.color = '#FFF';
+            el.style.transform = 'scale(1)';
+            el.style.fontWeight = 'normal';
+          }
+        }
+        
+        if (targetEl) {
+           const offset = targetEl.offsetTop;
+           containerRef.current.style.transform = `translateY(-${offset}px)`;
+        }
+      }
+      frameId = requestAnimationFrame(update);
+    };
+    frameId = requestAnimationFrame(update);
+    return () => cancelAnimationFrame(frameId);
+  }, [audioRef, duration, roteiro]);
+
+  if (!roteiro) return null;
+
+  return (
+    <div 
+      className="relative w-full h-20 overflow-hidden pointer-events-none mb-2" 
+      style={{ WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 30%, black 70%, transparent)' }}
+    >
+      <p 
+        ref={containerRef} 
+        className="text-center font-heading text-[18px] md:text-xl leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] w-full px-6 absolute top-8 transition-transform duration-300 ease-out" 
+      />
+    </div>
+  );
+};
+
 const ApresentacaoPlayer = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -433,7 +517,7 @@ const ApresentacaoPlayer = () => {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="relative z-10 px-3 pb-3 pt-[calc(1.25rem+env(safe-area-inset-top,0px))] bg-gradient-to-b from-black/80 to-transparent"
+            className="relative z-10 px-4 pb-4 pt-[calc(2.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] bg-gradient-to-b from-black/90 to-transparent"
           >
             {/* Barrinhas do topo estilo Stories */}
             <div className="flex gap-1 mb-4">
@@ -462,13 +546,13 @@ const ApresentacaoPlayer = () => {
       </AnimatePresence>
 
       {/* Slide Central com Swipe e Double Tap */}
-      <div className="flex-1 relative z-10 flex items-center justify-center overflow-hidden w-full">
+      <div className="flex-1 relative z-10 flex flex-col items-center justify-center overflow-hidden w-full pb-8">
         {/* Lado esquerdo Double Tap */}
         <div className="absolute left-0 top-0 bottom-0 w-1/3 z-20" onDoubleClick={() => doubleTapSeek('esq')} />
         {/* Lado direito Double Tap */}
         <div className="absolute right-0 top-0 bottom-0 w-1/3 z-20" onDoubleClick={() => doubleTapSeek('dir')} />
         
-        <div className={`w-full transition-transform duration-500 ${deitado ? 'rotate-90 scale-[0.72]' : ''}`}>
+        <div className={`w-full transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${deitado ? 'rotate-90 scale-[0.72]' : '-translate-y-2'}`}>
           <AnimatePresence mode="popLayout" custom={direcao}>
             <motion.div
               key={idx}
@@ -502,6 +586,17 @@ const ApresentacaoPlayer = () => {
             </motion.div>
           </AnimatePresence>
         </div>
+
+        {/* Subtitles Overlay (Remotion-style) */}
+        {!deitado && slide?.roteiro && (
+          <div className="w-full max-w-lg mx-auto z-30 transition-opacity duration-500 mt-2">
+            <AudioSubtitles 
+              audioRef={usaARef.current ? audioARef : audioBRef} 
+              duration={duracaoSlide} 
+              roteiro={slide.roteiro} 
+            />
+          </div>
+        )}
 
         {/* Caches */}
         <div className="hidden" aria-hidden>

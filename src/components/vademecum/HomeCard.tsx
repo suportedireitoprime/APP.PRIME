@@ -31,7 +31,7 @@ const HomeCardImpl = ({ icon: Icon, label, sublabel, color, delay = 0, onClick, 
     data-track={dataTrack}
     data-track-name={dataTrackName}
     data-track-section={dataTrackSection}
-    className={`group relative flex h-[118px] min-h-[118px] w-full min-w-0 flex-col items-start justify-between overflow-hidden p-4 rounded-2xl border border-border/60 shadow-sm active:scale-[0.97] transition text-left ${solidColor ? '' : 'bg-card'} ${className}`}
+    className={`group relative flex h-[118px] min-h-[118px] w-full min-w-0 flex-col items-start justify-between overflow-hidden p-4 rounded-2xl border border-white/10 shadow-sm active:scale-[0.97] transition text-left ${solidColor ? '' : 'bg-white/5 backdrop-blur-md'} ${className}`}
     style={solidColor ? { backgroundColor: color } : undefined}
   >
     <div className="absolute top-2.5 right-2.5">
@@ -57,9 +57,13 @@ const HomeCardImpl = ({ icon: Icon, label, sublabel, color, delay = 0, onClick, 
     {solidColor && (
       <div className="absolute -right-3 -bottom-3 w-[84px] h-[84px] pointer-events-none">
         {/* Base (sempre visível) */}
-        <Icon className="w-full h-full text-white/30" strokeWidth={1.5} />
+        <div className="absolute inset-0 opacity-[0.22]">
+          <Icon className="w-full h-full text-white" strokeWidth={1.5} />
+        </div>
         {/* Brilho animado */}
-        <Icon className="absolute inset-0 w-full h-full text-white/70 svg-shine" strokeWidth={1.5} />
+        <div className="absolute inset-0 opacity-[0.6] svg-shine">
+          <Icon className="w-full h-full text-white" strokeWidth={1.5} />
+        </div>
       </div>
     )}
     <div className="w-full mt-3 relative z-10">

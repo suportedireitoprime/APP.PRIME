@@ -85,12 +85,20 @@ const Apresentacoes = () => {
                 onClick={() => abrir(a)}
                 className="text-left rounded-2xl border border-border bg-card overflow-hidden hover:border-primary/50 transition-colors"
               >
-                <span className="block aspect-video bg-muted relative">
+                <span className="block aspect-video bg-muted relative overflow-hidden group">
                   {a.capa_url
-                    ? <img src={a.capa_url} alt={a.titulo} className="w-full h-full object-cover" loading="lazy" />
+                    ? <img src={a.capa_url} alt={a.titulo} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="eager" fetchPriority="high" decoding="async" />
                     : <Presentation className="w-8 h-8 text-primary absolute inset-0 m-auto" />}
-                  <span className="absolute bottom-2 right-2 rounded-full bg-background/85 px-2 py-1 text-[11px] font-body flex items-center gap-1">
-                    <PlayCircle className="w-3.5 h-3.5 text-primary" /> {a.total_slides} slides
+                  
+                  {/* Player de Vidro */}
+                  <span className="absolute inset-0 flex items-center justify-center pointer-events-none transition-transform duration-300 group-hover:scale-110">
+                    <span className="w-12 h-12 rounded-full bg-black/25 backdrop-blur-md border border-white/20 flex items-center justify-center text-white drop-shadow-xl shadow-[0_0_15px_rgba(0,0,0,0.5)]">
+                      <PlayCircle className="w-6 h-6 ml-0.5" strokeWidth={1.5} />
+                    </span>
+                  </span>
+
+                  <span className="absolute bottom-2 right-2 rounded-full bg-background/85 px-2 py-1 text-[11px] font-body flex items-center gap-1 shadow-sm backdrop-blur-sm z-10">
+                    <Presentation className="w-3.5 h-3.5 text-primary" /> {a.total_slides} slides
                   </span>
                 </span>
                 <span className="block p-3">
