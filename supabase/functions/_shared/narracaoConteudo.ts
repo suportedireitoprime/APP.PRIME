@@ -331,7 +331,7 @@ const ESTILO_APRESENTACAO = [
   "Narre o texto a seguir",
 ].join(" ");
 
-const TEXTO_MODEL = "gemini-3.6-flash";
+const TEXTO_MODEL = "gemini-3.1-flash-lite";
 
 async function gerarTextoIA(prompt: string): Promise<string> {
   let errGemini = "";
@@ -376,7 +376,7 @@ async function gerarTextoIA(prompt: string): Promise<string> {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: 'gemini-3.6-flash',
+          model: 'gemini-3.1-flash-lite',
           messages: [{ role: "user", content: prompt }],
         }),
       });
