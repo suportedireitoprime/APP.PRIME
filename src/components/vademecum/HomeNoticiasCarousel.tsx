@@ -411,7 +411,7 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
                 className="snap-center shrink-0 w-[85%] md:w-[46%] lg:w-[31%] active:scale-[0.99] text-left"
               >
                 <div
-                  className={`relative w-full h-[140px] overflow-hidden rounded-2xl transition-all duration-300 flex ${
+                  className={`relative w-full h-[140px] overflow-hidden rounded-2xl transition-all duration-300 flex transform-gpu will-change-transform ${
                     isActive ? 'opacity-100 scale-100 shadow-lg' : 'opacity-60 scale-[0.94]'
                   }`}
                   style={{
@@ -509,7 +509,7 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
               >
 
                 <div
-                  className={`relative w-full h-[140px] overflow-hidden rounded-2xl transition-all duration-300 group-hover:shadow-2xl group-hover:shadow-black/40 group-hover:ring-1 group-hover:ring-primary/40 ${
+                  className={`relative w-full h-[140px] overflow-hidden rounded-2xl transition-all duration-300 group-hover:shadow-2xl group-hover:shadow-black/40 group-hover:ring-1 group-hover:ring-primary/40 transform-gpu will-change-transform ${
                     isActive ? 'opacity-100 scale-100 shadow-lg' : 'opacity-60 scale-[0.94] group-hover:opacity-90'
                   }`}
                   style={{ backgroundColor: palette.deep }}
@@ -592,7 +592,7 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
             >
 
               <div
-                className={`relative w-full h-[140px] overflow-hidden rounded-2xl transition-all duration-300 ${
+                className={`relative w-full h-[140px] overflow-hidden rounded-2xl transition-all duration-300 transform-gpu will-change-transform ${
                   isActive ? 'opacity-100 scale-100 shadow-lg' : 'opacity-60 scale-[0.94]'
                 }`}
                 style={isB && c ? { background: c.bg } : undefined}
