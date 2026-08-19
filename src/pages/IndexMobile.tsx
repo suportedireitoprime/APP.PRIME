@@ -21,7 +21,7 @@ const SideMenu = lazyWithRetry(() => import('@/components/vademecum/SideMenu'));
 const SearchOverlay = lazyWithRetry(() => import('@/components/vademecum/SearchOverlay'));
 const AssistenteOverlay = lazyWithRetry(() => import('@/components/vademecum/AssistenteOverlayV2'));
 import HomeHeaderHero from '@/components/vademecum/HomeHeaderHero';
-const FeatureDiscoveryCard = lazyWithRetry(() => import('@/components/vademecum/FeatureDiscoveryCard'));
+import FeatureDiscoveryCard from '@/components/vademecum/FeatureDiscoveryCard';
 import MobileHomeSections from '@/components/vademecum/MobileHomeSections';
 import { prefetchAllArtigos } from '@/services/legislacaoService';
 import { prefetchResenha } from '@/services/atualizacaoService';
@@ -108,7 +108,7 @@ const IndexMobile = () => {
       <HomeHeaderHero onSearchOpenChange={setHeroSearchOpen} />
       <main ref={contentRef} className="max-w-5xl lg:max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-2">
         <img src={vacatioLogo} alt="" aria-hidden="true" loading="eager" decoding="sync" fetchPriority="high" className="absolute w-0 h-0 opacity-0 pointer-events-none" />
-        <Suspense fallback={null}><FeatureDiscoveryCard /></Suspense>
+        <FeatureDiscoveryCard />
         <MobileHomeSections onTabChange={setHomeTab} onNewsOpenChange={setNewsOpen} />
       </main>
       {homeTab === 'estudos' && !personalizarOpen && !searchOpen && !heroSearchOpen && !newsOpen && !bottomNavHidden && <BottomNav />}
