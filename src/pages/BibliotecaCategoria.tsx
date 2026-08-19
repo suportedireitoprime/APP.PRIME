@@ -14,6 +14,8 @@ import {
   type ColecaoConfig,
 } from '@/lib/bibliotecaColecoes';
 import { directImg } from '@/lib/cdnImg';
+import { getPersistedColecao, setPersistedColecao } from '@/services/offlineDb';
+import { withBundleFallback, bundle } from '@/services/offlineBundle';
 import { useBibliotecaCapa } from '@/hooks/useBibliotecaAsset';
 import { useIsAdmin } from '@/hooks/useVisibleColecoes';
 import LivroDetailSheet from '@/components/biblioteca/LivroDetailSheet';
@@ -54,13 +56,34 @@ function useLivrosDaColecao(colecao: ColecaoConfig | undefined) {
     // Mantém dados anteriores enquanto revalida — sem skeleton em revisitas.
     placeholderData: (prev) => prev,
     queryFn: async () => {
-      if (!colecao) return [] as LivroNormalizado[];
-      let q: any = supabase.from(colecao.table as any).select(colecao.select);
-      if (colecao.orderBy) q = q.order(colecao.orderBy, { ascending: true, nullsFirst: false });
-      q = q.limit(2000);
-      const { data, error } = await q;
-      if (error) throw error;
-      return (data as any[]).map((r) => normalizeLivro(r, colecao));
+      if (!colecao) return [];
+      try {
+        let q: any = supabase.from(colecao.table as any).select(colecao.select);
+        if (colecao.orderBy) q = q.order(colecao.orderBy, { ascending: true, nullsFirst: false });
+        
+        const data = await withBundleFallback(
+          q.limit(2000).then((res: any) => {
+            if (res.error) throw res.error;
+            return res.data;
+          }),
+          async () => {
+             const bundleFnName = 'biblioteca' + colecao.id.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('');
+             if ((bundle as any)[bundleFnName]) {
+               return await (bundle as any)[bundleFnName]();
+             }
+             return [];
+          }
+        );
+        
+        const list = (data as any[]).map((r) => normalizeLivro(r, colecao));
+        setPersistedColecao(colecao.id, list).catch(() => {});
+        return list;
+      } catch (err) {
+        // Fallback da rede extrema para cache indexado persistente
+        const cached = await getPersistedColecao<LivroNormalizado>(colecao.id);
+        if (cached && cached.length) return cached;
+        throw err;
+      }
     },
   });
 }

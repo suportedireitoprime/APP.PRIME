@@ -11,12 +11,14 @@ import {
   MicOff,
   Library,
 } from 'lucide-react';
+import { withBundleFallback, bundle } from '@/services/offlineBundle';
 import { supabase } from '@/integrations/supabase/client';
 import { COLECOES, normalizeLivro, type LivroNormalizado } from '@/lib/bibliotecaColecoes';
 import { useVisibleColecoes } from '@/hooks/useVisibleColecoes';
 import { directImg } from '@/lib/cdnImg';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
 import { getFavoritos, type LivroSnapshot } from '@/lib/bibliotecaTracking';
+import { setPersistedColecao, getPersistedColecao } from '@/lib/storageCache';
 
 type Modo = string; // 'todos' ou id de coleção
 
@@ -92,12 +94,32 @@ const BibliotecaBuscaOverlay = ({ open, onClose, onAbrirLivro }: Props) => {
       enabled: open,
 
       queryFn: async () => {
-        let q: any = supabase.from(colecao.table as any).select(colecao.select);
-        if (colecao.orderBy) q = q.order(colecao.orderBy, { ascending: true, nullsFirst: false });
-        q = q.limit(2000);
-        const { data, error } = await q;
-        if (error) throw error;
-        return (data as any[]).map((r) => normalizeLivro(r, colecao));
+        try {
+          let q: any = supabase.from(colecao.table as any).select(colecao.select);
+          if (colecao.orderBy) q = q.order(colecao.orderBy, { ascending: true, nullsFirst: false });
+          
+          const data = await withBundleFallback(
+            q.limit(2000).then((res: any) => {
+              if (res.error) throw res.error;
+              return res.data;
+            }),
+            async () => {
+               const bundleFnName = 'biblioteca' + colecao.id.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('');
+               if ((bundle as any)[bundleFnName]) {
+                 return await (bundle as any)[bundleFnName]();
+               }
+               return [];
+            }
+          );
+          
+          const list = (data as any[]).map((r) => normalizeLivro(r, colecao));
+          setPersistedColecao(colecao.id, list).catch(() => {});
+          return list;
+        } catch (err) {
+          const cached = await getPersistedColecao<LivroNormalizado>(colecao.id);
+          if (cached && cached.length) return cached;
+          return [];
+        }
       },
     })),
   });

@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { COLECOES, normalizeLivro, type LivroNormalizado } from '@/lib/bibliotecaColecoes';
 import { directImg, prefetchImage } from '@/lib/cdnImg';
 import { getPersistedColecao, setPersistedColecao } from '@/services/offlineDb';
+import { withBundleFallback, bundle } from '@/services/offlineBundle';
 
 interface Props {
   onAbrirLivro: (livro: LivroNormalizado) => void;
@@ -102,14 +103,26 @@ const useColecao = (id: string) => {
       try {
         let q: any = supabase.from(cfg.table as any).select(cfg.select);
         if (cfg.orderBy) q = q.order(cfg.orderBy, { ascending: true, nullsFirst: false });
-        q = q.limit(2000);
-        const { data, error } = await q;
-        if (error) throw error;
+        
+        const data = await withBundleFallback(
+          q.limit(2000).then((res: any) => {
+            if (res.error) throw res.error;
+            return res.data;
+          }),
+          async () => {
+             const bundleFnName = 'biblioteca' + id.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('');
+             if ((bundle as any)[bundleFnName]) {
+               return await (bundle as any)[bundleFnName]();
+             }
+             return [];
+          }
+        );
+        
         const list = (data as any[]).map((r) => normalizeLivro(r, cfg));
         setPersistedColecao(id, list).catch(() => {});
         return list;
       } catch (e) {
-        // Falha de rede: devolve cache persistido para manter carrossel visível.
+        // Falha de rede extrema: devolve cache persistido para manter carrossel visível.
         const cached = await getPersistedColecao<LivroNormalizado>(id);
         if (cached && cached.length) return cached;
         return FALLBACK_CLASSICOS;

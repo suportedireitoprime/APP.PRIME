@@ -60,6 +60,7 @@ export const bundle = {
   bibliotecaOab: <T = any>() => fetchBundle<T>('biblioteca-oab'),
   bibliotecaEstudos: <T = any>() => fetchBundle<T>('biblioteca-estudos'),
   bibliotecaPortugues: <T = any>() => fetchBundle<T>('biblioteca-portugues'),
+  bibliotecaOratoria: <T = any>() => fetchBundle<T>('biblioteca-oratoria'),
   bibliotecaLideranca: <T = any>() => fetchBundle<T>('biblioteca-lideranca'),
   bibliotecaForaDaToga: <T = any>() => fetchBundle<T>('biblioteca-fora-da-toga'),
   bibliotecaPesquisaCientifica: <T = any>() => fetchBundle<T>('biblioteca-pesquisa-cientifica'),

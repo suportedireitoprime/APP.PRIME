@@ -12,8 +12,8 @@ import { startCapasPrefetch } from '@/services/bibliotecaCapasPrefetch';
 import { startLeituraNativaPrefetch } from '@/services/leituraNativaPrefetch';
 import { scheduleWarmBiblioteca } from '@/services/bibliotecaWarmup';
 import { styleForArea, styleForPerformance } from '@/lib/bibliotecaIcons';
-import { getPersistedColecao, setPersistedColecao } from '@/services/offlineDb';
 import { directImg } from '@/lib/cdnImg';
+import { withBundleFallback, bundle } from '@/services/offlineBundle';
 import BibliotecaAtalhosBar from '@/components/biblioteca/BibliotecaAtalhosBar';
 import BibliotecaSearchBar from '@/components/biblioteca/BibliotecaSearchBar';
 import BibliotecaBottomNav from '@/components/biblioteca/BibliotecaBottomNav';
@@ -211,12 +211,23 @@ const Bibliotecas = () => {
       try {
         let q: any = supabase.from(colecaoAreas.table as any).select(colecaoAreas.select);
         if (colecaoAreas.orderBy) q = q.order(colecaoAreas.orderBy, { ascending: true, nullsFirst: false });
-        const { data, error } = await q.limit(2000);
-        if (error) throw error;
+        
+        const data = await withBundleFallback(
+          q.limit(2000).then((res: any) => {
+             if (res.error) throw res.error;
+             return res.data;
+          }),
+          async () => {
+             const rows = await bundle.bibliotecaEstudos();
+             return rows || [];
+          }
+        );
+        
         const normalized = (data as any[]).map((r) => normalizeLivro(r, colecaoAreas));
         setPersistedColecao('areas', normalized).catch(() => {});
         return normalized;
       } catch (err) {
+        // Falha de rede extrema: devolve cache persistido para manter visível.
         const cached = await getPersistedColecao<LivroNormalizado>('areas');
         if (cached && cached.length > 0) return cached;
         throw err;

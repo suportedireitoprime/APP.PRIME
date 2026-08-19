@@ -2,6 +2,7 @@ import type { QueryClient } from '@tanstack/react-query';
 import { Capacitor } from '@capacitor/core';
 import { COLECOES, normalizeLivro, type LivroNormalizado } from '@/lib/bibliotecaColecoes';
 import { supabase } from '@/integrations/supabase/client';
+import { withBundleFallback, bundle } from '@/services/offlineBundle';
 
 const STALE = 10 * 60 * 1000;
 const LOTE = 4;
@@ -42,8 +43,21 @@ async function prefetchColecoes(qc: QueryClient) {
             queryFn: async () => {
               let q: any = supabase.from(colecao.table as any).select(colecao.select);
               if (colecao.orderBy) q = q.order(colecao.orderBy, { ascending: true, nullsFirst: false });
-              const { data, error } = await q.limit(2000);
-              if (error) throw error;
+              
+              const data = await withBundleFallback(
+                q.limit(2000).then((res: any) => {
+                  if (res.error) throw res.error;
+                  return res.data;
+                }),
+                async () => {
+                  const bundleFnName = 'biblioteca' + colecao.id.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('');
+                  if ((bundle as any)[bundleFnName]) {
+                    return await (bundle as any)[bundleFnName]();
+                  }
+                  return [];
+                }
+              );
+              
               const list = (data as any[]).map((r) => normalizeLivro(r, colecao));
               setPersistedColecao(colecao.id, list).catch(() => {});
               return list;
