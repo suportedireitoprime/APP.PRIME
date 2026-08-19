@@ -369,17 +369,17 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
                 onClick={() => setTab(t.id)}
                 data-track="home_tab_switch"
                 data-track-tab={t.id}
-                className="relative flex-1 flex items-center justify-center gap-2 h-10 rounded-full font-display text-[13px] font-bold uppercase tracking-wide transition-colors"
+                className="group relative flex-1 flex items-center justify-center gap-2 h-10 rounded-full font-display text-[13px] font-bold uppercase transition-all"
               >
                 {isActive && (
                   <span className="absolute inset-0 rounded-full shadow-lg shadow-black/20 bg-hero-panel" />
                 )}
-                <span className={`relative flex items-center gap-2 ${
+                <span className={`relative flex items-center gap-2 transition-all duration-300 ease-out ${
                   isActive
-                    ? 'text-white font-bold'
-                    : 'text-muted-foreground'
+                    ? 'text-white font-bold tracking-[0.13em]'
+                    : 'text-muted-foreground hover:tracking-[0.13em] hover:text-foreground'
                 }`}>
-                  <Icon className="w-5 h-5" />
+                  <Icon className="w-5 h-5 transition-transform duration-300 ease-out group-hover:scale-110" />
                   {t.label}
                 </span>
               </button>
