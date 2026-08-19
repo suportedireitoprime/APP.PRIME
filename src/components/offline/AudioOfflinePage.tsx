@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { CheckCheck, Loader2, Trash2, type LucideIcon } from 'lucide-react';
 import { toast } from 'sonner';
+import { confirmar } from '@/lib/nativo/dialogos';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import ItemDownloadRow, { type ItemAudio } from '@/components/offline/ItemDownloadRow';
@@ -69,7 +70,7 @@ export default function AudioOfflinePage({ titulo, subtitulo, icon: Icon, catego
       toast.success('Tudo já está baixado');
       return;
     }
-    if (!confirm(`Baixar ${pendentes.length} ${rotulo}? Use Wi-Fi para economizar dados.`)) return;
+    if (!(await confirmar({ mensagem: `Baixar ${pendentes.length} ${rotulo}? Use Wi-Fi para economizar dados.` }))) return;
 
     setBaixandoTudo(true);
     setProgresso(0);
@@ -91,7 +92,7 @@ export default function AudioOfflinePage({ titulo, subtitulo, icon: Icon, catego
 
   const removerTudo = async () => {
     if (baixados.length === 0) return;
-    if (!confirm(`Remover ${baixados.length} ${rotulo} baixados?`)) return;
+    if (!(await confirmar({ mensagem: `Remover ${baixados.length} ${rotulo} baixados?` }))) return;
     for (const b of baixados) await removerAudioOffline(b.id);
     toast.success('Downloads removidos');
   };

@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { secureStorage } from '@/lib/secureStorage';
 
 export interface ThemePalette {
   id: string;
@@ -95,19 +96,21 @@ function applyTheme(palette: ThemePalette) {
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [currentTheme, setCurrentTheme] = useState<string>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved && PALETTES.find((p) => p.id === saved)) return saved;
-    } catch {}
-    return DARK_PALETTE.id;
-  });
+  const [currentTheme, setCurrentTheme] = useState<string>(DARK_PALETTE.id);
+
+  useEffect(() => {
+    secureStorage.getItem(STORAGE_KEY).then((saved) => {
+      if (saved && PALETTES.find((p) => p.id === saved)) {
+        setCurrentTheme(saved);
+      }
+    });
+  }, []);
 
   useEffect(() => {
     const palette = PALETTES.find((p) => p.id === currentTheme) || DARK_PALETTE;
     applyTheme(palette);
     try {
-      localStorage.setItem(STORAGE_KEY, palette.id);
+      secureStorage.setItem(STORAGE_KEY, palette.id);
     } catch {}
   }, [currentTheme]);
 

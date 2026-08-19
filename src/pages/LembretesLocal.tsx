@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
+import { confirmar } from '@/lib/nativo/dialogos';
 import { geocodeAddress, type GeocodeResult } from '@/lib/nativeGeocoder';
 import { openMap } from '@/lib/nativeMapsLauncher';
 import { refreshGeofenceReminders, startGeofenceWatcher } from '@/lib/nativeGeofence';
@@ -107,7 +108,7 @@ export default function LembretesLocal() {
   };
 
   const remove = async (r: LocReminder) => {
-    if (!confirm(`Excluir "${r.label}"?`)) return;
+    if (!(await confirmar({ mensagem: `Excluir "${r.label}"?` }))) return;
     await supabase.from('location_reminders').delete().eq('id', r.id);
     load();
     if (user) refreshGeofenceReminders(user.id);

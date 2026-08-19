@@ -4,6 +4,7 @@ import { BookOpen, FileDown, Trash2, RefreshCw } from 'lucide-react';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { toast } from 'sonner';
+import { confirmar } from '@/lib/nativo/dialogos';
 import { formatBytes } from '@/data/offlineCatalog';
 import { listCachedPdfs, clearAllPdfs } from '@/services/bibliotecaPdfCache';
 
@@ -17,7 +18,7 @@ export default function ModoOfflineLivros() {
   const bytes = pdfs.reduce((s, p) => s + (p.size || 0), 0);
 
   const handleClear = async () => {
-    if (!confirm('Remover todos os livros baixados?')) return;
+    if (!(await confirmar({ mensagem: 'Remover todos os livros baixados?' }))) return;
     await clearAllPdfs();
     toast.success('Livros removidos');
     refresh();

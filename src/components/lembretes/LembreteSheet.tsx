@@ -170,7 +170,7 @@ const LembreteSheet = ({ open, onClose, reminderId, livroId, livroArea, livroTit
 
   const excluir = async () => {
     if (!id) return;
-    if (!confirm('Apagar este lembrete?')) return;
+    if (!(await confirmar({ mensagem: 'Apagar este lembrete?' }))) return;
     await cancelLocalReminder(id);
     await supabase.from('reading_reminders').delete().eq('id', id);
     toast.success('Lembrete removido');

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, FileSignature, Trash2, ChevronRight, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
+import { confirmar } from '@/lib/nativo/dialogos';
 
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -65,7 +66,7 @@ export default function PeticaoInicial() {
   };
 
   const remove = async (id: string) => {
-    if (!confirm('Excluir esta petição?')) return;
+    if (!(await confirmar({ mensagem: 'Excluir esta petição?' }))) return;
     const { error } = await supabase.from('peticoes_iniciais' as any).delete().eq('id', id);
     if (error) toast.error(error.message);
     else setItems((prev) => prev.filter((x) => x.id !== id));

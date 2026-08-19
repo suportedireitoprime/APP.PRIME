@@ -63,7 +63,7 @@ const AvisosPage = () => {
   };
 
   const excluir = async (id: string) => {
-    if (!confirm("Excluir este aviso?")) return;
+    if (!(await confirmar({ mensagem: "Excluir este aviso?" }))) return;
     await supabase.from("avisos").delete().eq("id", id);
     setAvisos((prev) => prev.filter((x) => x.id !== id));
   };

@@ -19,7 +19,7 @@ import { leiPath, tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
 // the initial mobile bundle stays lean and the home paints faster.
 const SideMenu = lazyWithRetry(() => import('@/components/vademecum/SideMenu'));
 const SearchOverlay = lazyWithRetry(() => import('@/components/vademecum/SearchOverlay'));
-const AssistenteOverlay = lazyWithRetry(() => import('@/components/vademecum/AssistenteOverlay'));
+const AssistenteOverlay = lazyWithRetry(() => import('@/components/vademecum/AssistenteOverlayV2'));
 import HomeHeaderHero from '@/components/vademecum/HomeHeaderHero';
 const FeatureDiscoveryCard = lazyWithRetry(() => import('@/components/vademecum/FeatureDiscoveryCard'));
 import MobileHomeSections from '@/components/vademecum/MobileHomeSections';
@@ -82,7 +82,7 @@ const IndexMobile = () => {
       // Pre-warm overlays e Biblioteca para exibição instantânea (0ms)
       import('@/components/vademecum/SearchOverlay').catch(() => {});
       import('@/components/vademecum/SideMenu').catch(() => {});
-      import('@/components/vademecum/AssistenteOverlay').catch(() => {});
+      import('@/components/vademecum/AssistenteOverlayV2').catch(() => {});
       import('@/components/biblioteca/RecomendacoesCarousel').catch(() => {});
     });
     return () => {

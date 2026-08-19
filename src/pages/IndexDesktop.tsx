@@ -29,7 +29,7 @@ import { useHideSplashScreen } from '@/hooks/useHideSplashScreen';
 // Overlays only mount when opened — lazy so they don't inflate the initial
 // desktop chunk.
 const SearchOverlay = lazyWithRetry(() => import('@/components/vademecum/SearchOverlay'));
-const AssistenteOverlay = lazyWithRetry(() => import('@/components/vademecum/AssistenteOverlay'));
+const AssistenteOverlay = lazyWithRetry(() => import('@/components/vademecum/AssistenteOverlayV2'));
 import { prefetchAllArtigos } from '@/services/legislacaoService';
 import { prefetchResenha } from '@/services/atualizacaoService';
 import { prefetchNoticias } from '@/services/noticiasService';
@@ -77,7 +77,7 @@ const IndexDesktop = () => {
       : (cb) => window.setTimeout(cb, 500);
     const id = ric(() => {
       import('@/components/vademecum/SearchOverlay').catch(() => {});
-      import('@/components/vademecum/AssistenteOverlay').catch(() => {});
+      import('@/components/vademecum/AssistenteOverlayV2').catch(() => {});
     });
     return () => {
       const cic = (window as any).cancelIdleCallback;

@@ -38,8 +38,6 @@ export const lazyWithRetry = <T extends ComponentType<any>>(
   interval: number = 1000
 ): React.LazyExoticComponent<T> => {
   return lazy(() => retryPromise(componentImport, retries, interval).then(component => {
-    // Limpa o contador de reload em caso de sucesso
-    sessionStorage.removeItem('chunk_reload');
     return component;
   }));
 };

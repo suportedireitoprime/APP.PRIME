@@ -184,9 +184,9 @@ async function seedExemplos() {
     );
 
     if (error) {
-      console.error(\`Erro ao inserir \${item.artigo}: \`, error.message);
+      console.error(`Erro ao inserir ${item.artigo}: `, error.message);
     } else {
-      console.log(\`✅ Sucesso ao inserir/atualizar a Masterclass de Exemplo Prático para: \${item.artigo}\`);
+      console.log(`✅ Sucesso ao inserir/atualizar a Masterclass de Exemplo Prático para: ${item.artigo}`);
     }
   }
 

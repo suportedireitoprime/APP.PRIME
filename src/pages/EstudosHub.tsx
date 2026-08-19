@@ -39,7 +39,7 @@ const STUDY_FEATURES = [
     color: 'from-purple-500 to-purple-600',
     iconBg: 'bg-purple-500/15',
     iconColor: 'text-purple-500',
-    route: '/estudos?mode=flashcards',
+    route: '/aprender/flashcards',
   },
   {
     id: 'resumos',

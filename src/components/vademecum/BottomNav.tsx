@@ -5,7 +5,7 @@ import { LayoutGrid, GraduationCap, Monitor, ChevronRight, ChevronDown, X, Searc
 import { supabase } from '@/integrations/supabase/client';
 import MentorOverlay from './MentorOverlay';
 // PessoalSheet removido — Meu Espaço agora é rota dedicada (/meu-espaco).
-import AssistenteOverlay from './AssistenteOverlay';
+import AssistenteOverlay from './AssistenteOverlayV2';
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { haptic } from '@/lib/nativeHaptics';

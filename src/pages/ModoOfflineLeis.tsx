@@ -5,6 +5,7 @@ import { CheckCircle2, ChevronRight, Library, Loader2, Sparkles, Trash2, Volume2
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { toast } from 'sonner';
+import { confirmar } from '@/lib/nativo/dialogos';
 import { supabase } from '@/integrations/supabase/client';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
 import { estimateAudiosSize, removeAllAudios, getDownloadedAudioIds } from '@/services/audioDownloadService';

@@ -39,7 +39,9 @@ export function removeFavorito(leiId: string) {
   list.remove(leiId);
 }
 
+import { haptic } from '@/lib/nativeHaptics';
 export function toggleFavorito(lei: Omit<LeiFavorita, 'favoritedAt'>): boolean {
+  haptic.selection();
   if (isFavorito(lei.leiId)) {
     removeFavorito(lei.leiId);
     return false;

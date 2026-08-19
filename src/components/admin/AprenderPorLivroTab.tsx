@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { fetchAllRows } from '@/lib/fetchAllRows';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { toast } from 'sonner';
+import { confirmar } from '@/lib/nativo/dialogos';
 
 type Livro = { id: string; tema: string; area: string; link: string | null; download: string | null; capa_livro: string | null };
 type OcrRow = {
@@ -187,7 +188,7 @@ export default function AprenderPorLivroTab({ area }: { area: string }) {
       return (l.download || l.link) && (!o || (o.status !== 'pronto' && o.status !== 'processando'));
     });
     if (pend.length === 0) return toast.info('Nada pendente para OCR');
-    if (!confirm(`Liberar OCR de ${pend.length} livro(s)?`)) return;
+    if (!(await confirmar({ mensagem: `Liberar OCR de ${pend.length} livro(s)?` }))) return;
     setLiberandoTodos(true);
     let ok = 0, fail = 0;
     try {
@@ -458,7 +459,7 @@ Responda EXATAMENTE JSON sem markdown: {"aulas":[{"ordem":1,"titulo_original":".
     const pend = sugestoes;
     if (pend.length === 0) return toast.info('Nada pendente');
     const labelEtapa = etapaAtiva === 'teoria' ? 'TEORIA' : etapaAtiva === 'flashcards' ? 'FLASHCARDS' : 'QUESTÕES';
-    if (!confirm(`Gerar ${labelEtapa} de ${pend.length} aula(s)?`)) return;
+    if (!(await confirmar({ mensagem: `Gerar ${labelEtapa} de ${pend.length} aula(s)?` }))) return;
     setGerandoLote(true);
     setLoteInfo({ feitas: 0, total: pend.length, inicio: Date.now(), etapa: labelEtapa });
     try {

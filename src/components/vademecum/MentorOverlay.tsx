@@ -150,7 +150,7 @@ const MentorOverlay = ({ open, onClose }: MentorOverlayProps) => {
 
   const handleFile = async (file: File) => {
     if (file.size > 15 * 1024 * 1024) {
-      alert("Arquivo muito grande (limite 15MB).");
+      await avisar("Arquivo muito grande (limite 15MB).");
       return;
     }
     const buf = await file.arrayBuffer();

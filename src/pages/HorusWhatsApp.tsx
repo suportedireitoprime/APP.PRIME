@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
+import { confirmar } from '@/lib/nativo/dialogos';
 import { MessageCircle, Loader2, CheckCircle2, Trash2 } from 'lucide-react';
 
 type LinkRow = {
@@ -69,7 +70,7 @@ export default function HorusWhatsApp() {
   }
 
   async function unlink() {
-    if (!confirm('Desvincular seu WhatsApp do Horus?')) return;
+    if (!(await confirmar({ mensagem: 'Desvincular seu WhatsApp do Horus?' }))) return;
     await supabase.functions.invoke('horus', { body: { fn: 'verify', action: 'unlink' } });
     setLinked(null);
     toast.success('Desvinculado');

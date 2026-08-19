@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import feat1 from '@/assets/assistente-feature-1.jpg';
 import feat2 from '@/assets/assistente-feature-2.jpg';
 import feat3 from '@/assets/assistente-feature-3.jpg';
-import AssistenteOverlay from '@/components/vademecum/AssistenteOverlay';
+import AssistenteOverlay from '@/components/vademecum/AssistenteOverlayV2';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { track } from '@/lib/analyticsEvents';
 import { useGoBack } from '@/hooks/useGoBack';

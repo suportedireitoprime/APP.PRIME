@@ -947,7 +947,7 @@ const CategoriaLegislacao = () => {
   const artigosVirtualizer = useWindowVirtualizer({
     count: shouldVirtualizeArtigos ? visibleArtigos.length : 0,
     estimateSize: () => 116,
-    overscan: 8,
+    overscan: 20,
     scrollMargin: artigosListOffset,
   });
 

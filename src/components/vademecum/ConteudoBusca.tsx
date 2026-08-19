@@ -57,7 +57,7 @@ export default function ConteudoBusca({
     count: filtrados.length,
     getScrollElement: () => parentRef.current?.closest('[class*="overflow-y-auto"]') as HTMLElement | null,
     estimateSize: () => 88,
-    overscan: 5,
+    overscan: 20,
   });
 
   return (
