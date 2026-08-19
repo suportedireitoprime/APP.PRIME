@@ -693,6 +693,7 @@ function AnimatedRoutes() {
       import('@/lib/resumosLocal'),
       import('@/hooks/useDicionarioPrefs'),
       import('@/lib/flashcardsQueries').then((m) => m.prefetchFlashcardsDashboard(queryClient)),
+      import('@/hooks/useQuestoes').then((m) => m.prefetchQuestoesCache()),
     ]).then(() => import('@/lib/userSync').then((m) => m.pullAllUserSync(true)));
 
 
