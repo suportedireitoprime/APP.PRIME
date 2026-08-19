@@ -272,12 +272,12 @@ body {
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Bebas Neue', 'Barlow Condensed', system-ui, sans-serif;
     font-weight: 400;
-    letter-spacing: 0.075em;
+    letter-spacing: 0.11em;
   }
 }
 
 @layer utilities {
-  .font-display { font-family: 'Bebas Neue', 'Barlow Condensed', system-ui, sans-serif; letter-spacing: 0.075em; }
+  .font-display { font-family: 'Bebas Neue', 'Barlow Condensed', system-ui, sans-serif; letter-spacing: 0.11em; }
   .font-body    { font-family: 'Barlow', system-ui, sans-serif; }
   .font-legal   { font-family: 'Barlow', Georgia, serif; }
 
