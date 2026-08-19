@@ -1,5 +1,6 @@
 import { useMemo, useRef, useEffect, useState, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -187,11 +188,7 @@ const RecomendacoesCarousel = ({ onAbrirLivro }: Props) => {
   const updateActive = useCallback(() => {
     const el = scrollerRef.current;
     if (!el || !BASE_LEN) return;
-    const center = el.scrollLeft + el.clientWidth / 2;
-    const first = el.querySelector<HTMLElement>('[data-cover-item]');
-    if (!first) return;
-    const startOffset = first.offsetLeft + first.offsetWidth / 2;
-    const idx = Math.round((center - startOffset) / STEP);
+    const idx = Math.round(el.scrollLeft / STEP);
     const clamped = Math.max(0, Math.min(lista.length - 1, idx));
     setActiveIdx(clamped);
   }, [lista.length, BASE_LEN]);
@@ -200,14 +197,10 @@ const RecomendacoesCarousel = ({ onAbrirLivro }: Props) => {
   const normalizeLoop = useCallback(() => {
     const el = scrollerRef.current;
     if (!el || !BASE_LEN) return;
-    const items = el.querySelectorAll<HTMLElement>('[data-cover-item]');
-    if (items.length < BASE_LEN * 3) return;
-    const centerOf = (i: number) =>
-      items[i].offsetLeft - (el.clientWidth - items[i].offsetWidth) / 2;
     if (activeIdx < BASE_LEN * 0.5) {
-      el.scrollTo({ left: centerOf(activeIdx + BASE_LEN), behavior: 'auto' });
+      el.scrollTo({ left: (activeIdx + BASE_LEN) * STEP, behavior: 'auto' });
     } else if (activeIdx >= BASE_LEN * 2.5) {
-      el.scrollTo({ left: centerOf(activeIdx - BASE_LEN), behavior: 'auto' });
+      el.scrollTo({ left: (activeIdx - BASE_LEN) * STEP, behavior: 'auto' });
     }
   }, [activeIdx, BASE_LEN]);
 
@@ -215,16 +208,10 @@ const RecomendacoesCarousel = ({ onAbrirLivro }: Props) => {
   useEffect(() => {
     const el = scrollerRef.current;
     if (!el || !BASE_LEN || didInitRef.current) return;
-    const items = el.querySelectorAll<HTMLElement>('[data-cover-item]');
-    if (items.length < BASE_LEN * 3) return;
-    const mid = items[BASE_LEN];
-    el.scrollTo({
-      left: mid.offsetLeft - (el.clientWidth - mid.offsetWidth) / 2,
-      behavior: 'auto',
-    });
+    el.scrollTo({ left: BASE_LEN * STEP, behavior: 'auto' });
     didInitRef.current = true;
     updateActive();
-  }, [BASE_LEN, updateActive, lista.length]);
+  }, [BASE_LEN, updateActive]);
 
   useEffect(() => {
     const el = scrollerRef.current;
@@ -252,11 +239,7 @@ const RecomendacoesCarousel = ({ onAbrirLivro }: Props) => {
       // scroll em segundo plano roubava o toque e travava a interação.
       if (document.querySelector('[role="dialog"],[data-state="open"][data-radix-dialog-content]')) return;
       const next = (activeIdx + 1) % lista.length;
-      const target = el.querySelectorAll<HTMLElement>('[data-cover-item]')[next];
-      if (target) {
-        const left = target.offsetLeft - (el.clientWidth - target.offsetWidth) / 2;
-        el.scrollTo({ left, behavior: 'smooth' });
-      }
+      el.scrollTo({ left: next * STEP, behavior: 'smooth' });
     }, 3200);
     return () => clearInterval(id);
   }, [paused, activeIdx, lista.length]);
@@ -265,6 +248,14 @@ const RecomendacoesCarousel = ({ onAbrirLivro }: Props) => {
   const displayList: (LivroNormalizado | null)[] = isLoading
     ? Array.from({ length: 9 }, () => null)
     : lista;
+
+  const columnVirtualizer = useVirtualizer({
+    horizontal: true,
+    count: displayList.length,
+    getScrollElement: () => scrollerRef.current,
+    estimateSize: () => STEP,
+    overscan: 4,
+  });
 
   const sidePad = 'calc(50% - 55px)'; // metade da tela menos metade do card
 
@@ -352,18 +343,26 @@ const RecomendacoesCarousel = ({ onAbrirLivro }: Props) => {
         onPointerLeave={() => setPaused(false)}
       >
         <div
-          className="flex items-end pb-6 pt-8"
-          style={{ gap: `${GAP}px`, paddingInline: sidePad }}
+          className="relative pb-6 pt-8"
+          style={{ 
+            height: '280px',
+            width: `${columnVirtualizer.getTotalSize()}px`,
+            marginLeft: sidePad,
+            marginRight: sidePad,
+          }}
         >
-          {displayList.map((livro, i) => {
+          {columnVirtualizer.getVirtualItems().map((virtualColumn) => {
+            const i = virtualColumn.index;
+            const livro = displayList[i];
             const isActive = i === activeIdx;
+
             if (!livro) {
               return (
                 <div
-                  key={`skeleton-${i}`}
+                  key={`skeleton-${virtualColumn.key}`}
                   data-cover-item
-                  className="shrink-0 snap-center"
-                  style={{ width: CARD_W }}
+                  className="absolute shrink-0 snap-center top-0 pt-8"
+                  style={{ width: CARD_W, transform: `translateX(${virtualColumn.start}px)` }}
                   aria-hidden
                 >
                   <div
@@ -386,7 +385,7 @@ const RecomendacoesCarousel = ({ onAbrirLivro }: Props) => {
             };
             return (
               <button
-                key={cardKey}
+                key={virtualColumn.key}
                 data-cover-item
                 type="button"
                 onClick={(e) => {
@@ -397,13 +396,17 @@ const RecomendacoesCarousel = ({ onAbrirLivro }: Props) => {
                   openThis();
                 }}
                 draggable={false}
-                className="shrink-0 snap-center outline-none group cursor-pointer"
-                style={{ width: CARD_W, touchAction: 'pan-x pan-y' }}
+                className="absolute top-0 pt-8 shrink-0 snap-center outline-none group cursor-pointer flex flex-col justify-start"
+                style={{ 
+                  width: CARD_W, 
+                  touchAction: 'pan-x pan-y',
+                  transform: `translateX(${virtualColumn.start}px)`,
+                }}
                 aria-label={livro.titulo}
               >
 
                 <div
-                  className="relative rounded-xl overflow-hidden bg-muted transition-transform duration-500 ease-out will-change-transform"
+                  className="relative rounded-xl overflow-hidden bg-muted transition-transform duration-500 ease-out will-change-transform w-full"
                   style={{
                     aspectRatio: '2 / 3',
                     transform: isActive ? 'scale(1.14)' : 'scale(0.86)',
@@ -452,14 +455,14 @@ const RecomendacoesCarousel = ({ onAbrirLivro }: Props) => {
 
                 {/* Título e autor só na capa central */}
                 <div
-                  className="mt-3 text-center transition-opacity duration-300"
+                  className="mt-3 text-center transition-opacity duration-300 w-full"
                   style={{ opacity: isActive ? 1 : 0 }}
                 >
                   <p className="text-[13px] font-semibold text-foreground leading-tight line-clamp-1 px-1">
                     {livro.titulo}
                   </p>
                   {livro.autor && (
-                    <p className="text-[11px] text-muted-foreground line-clamp-1 mt-0.5">
+                    <p className="text-[11px] text-muted-foreground line-clamp-1 mt-0.5 px-1">
                       {livro.autor}
                     </p>
                   )}
