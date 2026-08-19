@@ -239,12 +239,13 @@ const EstudosHub = () => {
             <span className="text-lg font-bold text-primary">{goalPct}%</span>
           </div>
           <div className="h-2.5 rounded-full bg-muted overflow-hidden">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${goalPct}%` }}
-              transition={{ duration: 0.7, ease: 'easeOut' }}
-              className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full"
-            />
+              <motion.div
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: goalPct / 100 }}
+                style={{ transformOrigin: "left" }}
+                transition={{ duration: 0.7, ease: 'easeOut' }}
+                className="h-full w-full bg-gradient-to-r from-primary to-primary/70 rounded-full"
+              />
           </div>
           {goalPct >= 100 && (
             <p className="text-[11px] text-emerald-500 font-medium mt-2">🎉 Meta concluída! Excelente trabalho.</p>

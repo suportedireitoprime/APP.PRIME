@@ -263,9 +263,11 @@ export default function SessaoRunner({ artigos, onSair, artigoIdFoco, leiId }: P
           </div>
           <div className="h-2 rounded-full bg-muted overflow-hidden">
             <motion.div
-              className="h-full bg-destructive rounded-full"
-              animate={{ width: `${pctProgresso}%` }}
-              transition={{ type: "spring", stiffness: 120, damping: 20 }}
+              className="h-full w-full bg-destructive rounded-full"
+              style={{ transformOrigin: "left" }}
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: pctProgresso / 100 }}
+              transition={{ type: "tween", ease: "easeOut", duration: 0.2 }}
             />
           </div>
         </div>

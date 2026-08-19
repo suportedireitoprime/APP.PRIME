@@ -1347,8 +1347,10 @@ const LeitorNativo = ({ livroId, livroTabela, pdfUrl, titulo, onClose, autor, an
             >
               <motion.div
                 className="absolute left-0 right-0 bottom-0 bg-primary rounded-full"
-                animate={{ height: `${((currentIndex + 1) / paginas.length) * 100}%` }}
-                transition={{ type: 'spring', stiffness: 200, damping: 30 }}
+                style={{ transformOrigin: "bottom" }}
+                initial={{ scaleY: 0 }}
+                animate={{ scaleY: (currentIndex + 1) / paginas.length }}
+                transition={{ type: 'tween', ease: 'easeOut', duration: 0.15 }}
               />
             </div>
             <span className="text-[10px] opacity-60 tabular-nums">
@@ -1431,21 +1433,21 @@ const LeitorNativo = ({ livroId, livroTabela, pdfUrl, titulo, onClose, autor, an
                     custom={direction}
                     initial={
                       prefs.pageMode === 'fade'
-                        ? { opacity: 0, filter: 'blur(6px)' }
+                        ? { opacity: 0 }
                         : prefs.pageMode === 'scroll'
                           ? { opacity: 1 }
                           : { x: direction >= 0 ? '100%' : '-100%', opacity: 0.5 }
                     }
                     animate={
                       prefs.pageMode === 'fade'
-                        ? { opacity: 1, filter: 'blur(0px)' }
+                        ? { opacity: 1 }
                         : prefs.pageMode === 'scroll'
                           ? { opacity: 1 }
                           : { x: 0, opacity: 1 }
                     }
                     exit={
                       prefs.pageMode === 'fade'
-                        ? { opacity: 0, filter: 'blur(6px)' }
+                        ? { opacity: 0 }
                         : prefs.pageMode === 'scroll'
                           ? { opacity: 1 }
                           : { x: direction >= 0 ? '-40%' : '40%', opacity: 0 }
@@ -1577,9 +1579,11 @@ const LeitorNativo = ({ livroId, livroTabela, pdfUrl, titulo, onClose, autor, an
           </span>
           <div className={`flex-1 h-1 rounded-full overflow-hidden ${dark ? 'bg-white/10' : 'bg-black/10'}`}>
             <motion.div
-              className="h-full bg-primary"
-              animate={{ width: `${((currentIndex + 1) / paginas.length) * 100}%` }}
-              transition={{ type: 'spring', stiffness: 200, damping: 30 }}
+              className="h-full w-full bg-primary"
+              style={{ transformOrigin: "left" }}
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: (currentIndex + 1) / paginas.length }}
+              transition={{ type: 'tween', ease: 'easeOut', duration: 0.15 }}
             />
           </div>
           <span className="tabular-nums opacity-70">
@@ -1623,9 +1627,11 @@ const LeitorNativo = ({ livroId, livroTabela, pdfUrl, titulo, onClose, autor, an
               </span>
               <div className={`flex-1 h-1 rounded-full overflow-hidden ${dark ? 'bg-white/10' : 'bg-black/10'}`}>
                 <motion.div
-                  className="h-full bg-primary"
-                  animate={{ width: `${((currentIndex + 1) / paginas.length) * 100}%` }}
-                  transition={{ type: 'spring', stiffness: 200, damping: 30 }}
+                  className="h-full w-full bg-primary"
+                  style={{ transformOrigin: "left" }}
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: (currentIndex + 1) / paginas.length }}
+                  transition={{ type: 'tween', ease: 'easeOut', duration: 0.15 }}
                 />
               </div>
               <span className="opacity-60 tabular-nums">p.{currentPage.ocrPage}</span>
@@ -1718,9 +1724,9 @@ const LeitorNativo = ({ livroId, livroTabela, pdfUrl, titulo, onClose, autor, an
               }}
             >
               <motion.div
-                initial={{ y: 24, opacity: 0, scale: 0.92, filter: 'blur(12px)' }}
-                animate={{ y: 0, opacity: 1, scale: 1, filter: 'blur(0px)' }}
-                exit={{ y: -12, opacity: 0, scale: 0.96, filter: 'blur(8px)' }}
+                initial={{ y: 24, opacity: 0, scale: 0.92 }}
+                animate={{ y: 0, opacity: 1, scale: 1 }}
+                exit={{ y: -12, opacity: 0, scale: 0.96 }}
                 transition={{ type: 'spring', stiffness: 260, damping: 24, mass: 0.9 }}
                 className={`relative w-full max-w-sm rounded-[28px] p-6 pointer-events-auto overflow-hidden ${dark ? 'bg-neutral-900/95 text-white' : 'bg-white/95 text-neutral-900'}`}
                 style={{

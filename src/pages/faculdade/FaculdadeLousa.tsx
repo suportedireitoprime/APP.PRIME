@@ -447,9 +447,10 @@ export default function FaculdadeLousa() {
               
               <div className="w-48 h-1.5 bg-secondary rounded-full overflow-hidden">
                 <motion.div 
-                  className="h-full bg-primary"
-                  initial={{ width: '0%' }}
-                  animate={{ width: `${((procIndex + 1) / PROCESSING_STEPS.length) * 100}%` }}
+                  className="h-full w-full bg-primary"
+                  style={{ transformOrigin: "left" }}
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: (procIndex + 1) / PROCESSING_STEPS.length }}
                   transition={{ duration: 0.5 }}
                 />
               </div>

@@ -91,10 +91,11 @@ const OcrProgressOverlay = ({ etapa, progresso, total, totalPaginas, titulo }: P
         {/* Barra de progresso principal (fracionária) */}
         <div className="h-2 rounded-full bg-white/10 overflow-hidden mb-6 border border-white/5">
           <motion.div
-            className="h-full bg-gradient-to-r from-[#d9a448] to-[#f0c674]"
-            initial={{ width: 0 }}
-            animate={{ width: `${pct}%` }}
-            transition={{ type: 'spring', stiffness: 90, damping: 22 }}
+            className="h-full w-full bg-gradient-to-r from-[#d9a448] to-[#f0c674]"
+            style={{ transformOrigin: "left" }}
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: pct / 100 }}
+            transition={{ type: 'tween', ease: 'easeOut', duration: 0.2 }}
           />
         </div>
 
@@ -150,10 +151,11 @@ const OcrProgressOverlay = ({ etapa, progresso, total, totalPaginas, titulo }: P
                         {match ? (
                           <div className="mt-1.5 h-1 rounded-full bg-white/10 overflow-hidden">
                             <motion.div
-                              className="h-full bg-gradient-to-r from-[#d9a448] to-[#f0c674]"
-                              initial={{ width: 0 }}
-                              animate={{ width: `${Math.round(sub * 100)}%` }}
-                              transition={{ type: 'spring', stiffness: 140, damping: 22 }}
+                              className="h-full w-full bg-gradient-to-r from-[#d9a448] to-[#f0c674]"
+                              style={{ transformOrigin: "left" }}
+                              initial={{ scaleX: 0 }}
+                              animate={{ scaleX: sub }}
+                              transition={{ type: 'tween', ease: 'easeOut', duration: 0.2 }}
                             />
                           </div>
                         ) : null}

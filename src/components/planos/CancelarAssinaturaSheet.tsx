@@ -277,10 +277,11 @@ function ProgressRow({ icon: Icon, label, pct, caption }: { icon: any; label: st
       </div>
       <div className="h-1.5 rounded-full bg-muted overflow-hidden">
         <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: `${pct}%` }}
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: pct / 100 }}
+          style={{ transformOrigin: "left" }}
           transition={{ duration: 0.8, ease: 'easeOut' }}
-          className="h-full bg-primary"
+          className="h-full w-full bg-primary"
         />
       </div>
       <p className="font-body text-[11px] text-muted-foreground mt-2 leading-snug">{caption}</p>

@@ -701,10 +701,11 @@ const AdminMonitorUsuarios = () => {
                         </div>
                         <div className="h-1.5 rounded-full bg-muted/50 overflow-hidden">
                           <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: `${pct}%` }}
+                            initial={{ scaleX: 0 }}
+                            animate={{ scaleX: pct / 100 }}
+                            style={{ transformOrigin: 'left' }}
                             transition={{ delay: i * 0.05, duration: 0.5 }}
-                            className="h-full rounded-full bg-primary"
+                            className="h-full w-full rounded-full bg-primary"
                           />
                         </div>
                       </div>
@@ -976,10 +977,11 @@ const AdminMonitorUsuarios = () => {
                         </div>
                         <div className="h-1.5 rounded-full bg-muted/50 overflow-hidden ml-10">
                           <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: `${pct}%` }}
+                            initial={{ scaleX: 0 }}
+                            animate={{ scaleX: pct / 100 }}
+                            style={{ transformOrigin: 'left' }}
                             transition={{ delay: i * 0.04, duration: 0.4 }}
-                            className="h-full rounded-full bg-primary"
+                            className="h-full w-full rounded-full bg-primary"
                           />
                         </div>
                       </div>

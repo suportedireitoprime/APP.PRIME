@@ -163,9 +163,11 @@ export const QuestoesRunner = ({ questoes, onClose }: { questoes: Questao[]; onC
         <div className="px-5 pb-3">
           <div className="h-1 bg-muted rounded-full overflow-hidden">
             <motion.div
-              className="h-full bg-accent"
-              animate={{ width: `${((i + 1) / questoes.length) * 100}%` }}
-              transition={{ ease: 'easeOut' }}
+              className="h-full w-full bg-accent"
+              style={{ transformOrigin: "left" }}
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: (i + 1) / questoes.length }}
+              transition={{ ease: 'easeOut', duration: 0.2 }}
             />
           </div>
         </div>

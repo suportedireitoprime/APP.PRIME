@@ -472,10 +472,10 @@ const ResolverPadrao = ({
             {!resp ? (
               <motion.div
                 key="selecao"
-                initial={{ y: '100%' }}
-                animate={{ y: 0 }}
-                exit={{ y: '100%' }}
-                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                initial={{ y: 40, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 40, opacity: 0 }}
+                transition={{ type: "tween", ease: 'easeOut', duration: 0.15 }}
                 className="pointer-events-auto rounded-t-3xl border-t border-border/50 bg-background/80 px-4 pb-safe-nav pt-4 shadow-2xl backdrop-blur-xl lg:rounded-2xl lg:border lg:mb-8 lg:max-w-[calc(100%-320px-2rem)]"
               >
                 <div className="mx-auto flex max-w-3xl items-center gap-2">
@@ -502,10 +502,10 @@ const ResolverPadrao = ({
             ) : !feedbackOculto ? (
               <motion.div
                 key="feedback"
-                initial={{ y: '100%' }}
-                animate={{ y: 0 }}
-                exit={{ y: '100%' }}
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                initial={{ y: 40, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 40, opacity: 0 }}
+                transition={{ type: "tween", ease: 'easeOut', duration: 0.2 }}
                 className={cn(
                   "pointer-events-auto relative rounded-t-3xl border-t px-5 pb-safe-nav pt-7 shadow-2xl lg:rounded-2xl lg:border lg:mb-8 lg:max-w-[calc(100%-320px-2rem)]",
                   resp.acertou ? "bg-[#0f1f14] border-green-500/30" : "bg-[#1f0a0a] border-red-500/30"
@@ -626,14 +626,14 @@ const ResolverPadrao = ({
                 </div>
               </motion.div>
             ) : (
-              <motion.div
-                key="feedback-oculto"
-                initial={{ y: '100%' }}
-                animate={{ y: 0 }}
-                exit={{ y: '100%' }}
-                transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                className="pointer-events-auto rounded-t-3xl border-t border-border/50 bg-background/80 px-4 pb-safe-nav pt-4 shadow-2xl backdrop-blur-xl lg:rounded-2xl lg:border lg:mb-8 lg:max-w-[calc(100%-320px-2rem)]"
-              >
+                <motion.div
+                  key="feedback-oculto"
+                  initial={{ y: 40, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: 40, opacity: 0 }}
+                  transition={{ type: "tween", ease: 'easeOut', duration: 0.15 }}
+                  className="pointer-events-auto rounded-t-3xl border-t border-border/50 bg-background/80 px-4 pb-safe-nav pt-4 shadow-2xl backdrop-blur-xl lg:rounded-2xl lg:border lg:mb-8 lg:max-w-[calc(100%-320px-2rem)]"
+                >
                 <div className="mx-auto flex max-w-3xl items-center gap-2">
                   <button
                     onClick={() => setFeedbackOculto(false)}

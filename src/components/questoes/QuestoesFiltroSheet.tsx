@@ -218,8 +218,8 @@ export function SelecaoSheet({
 
   return (
     <motion.div
-      initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
-      transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+      initial={{ x: 40, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: 40, opacity: 0 }}
+      transition={{ type: 'tween', ease: 'easeOut', duration: 0.15 }}
       className="absolute inset-0 z-20 flex flex-col bg-zinc-950 text-foreground"
     >
       <div className="flex items-center gap-2 border-b border-zinc-800/80 px-3 pt-safe-header pb-3 bg-zinc-900/90 backdrop-blur-md">
@@ -489,8 +489,8 @@ const QuestoesFiltroSheet = ({
             className="fixed inset-0 z-[70] bg-black/75 backdrop-blur-sm"
           />
           <motion.div
-            initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%', pointerEvents: 'none' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0, pointerEvents: 'none' }}
+            transition={{ type: 'tween', ease: 'easeOut', duration: 0.2 }}
             className="theme-questoes fixed inset-0 z-[71] flex flex-col overflow-hidden bg-zinc-950 text-foreground md:inset-y-0 md:left-auto md:right-0 md:w-full md:max-w-md md:border-l md:border-zinc-800/80 md:shadow-2xl"
           >
             <div className="flex items-center gap-3 px-4 pb-4 pt-safe-header border-b border-zinc-800/80 bg-zinc-900/90 backdrop-blur-md">

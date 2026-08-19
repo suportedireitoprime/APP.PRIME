@@ -21,8 +21,8 @@ const QuestoesBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
       aria-label="Navegação de Questões"
       data-bottom-nav
       initial={false}
-      animate={hidden ? { y: 120, opacity: 0 } : { y: 0, opacity: 1 }}
-      transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+      animate={hidden ? { y: 60, opacity: 0 } : { y: 0, opacity: 1 }}
+      transition={{ type: 'tween', ease: 'easeOut', duration: 0.2 }}
       className="fixed bottom-0 left-0 right-0 z-50  md:bottom-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-auto"
     >
       <div className="bg-card/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-lg shadow-black/10 pb-[calc(0.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] md:border md:rounded-full md:shadow-2xl md:shadow-black/30 md:pb-0">
@@ -45,7 +45,7 @@ const QuestoesBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
                   <motion.span
                     layoutId="questoes-nav-active-pill"
                     className="absolute inset-0 rounded-2xl bg-white/10 ring-1 ring-white/20"
-                    transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                    transition={{ type: 'tween', ease: 'easeOut', duration: 0.15 }}
                     aria-hidden="true"
                   />
                 )}
