@@ -1,4 +1,5 @@
-import { lazy, Suspense, useEffect, useRef, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
+import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowUpRight, ChevronRight, Clock, Film, Star } from 'lucide-react';
@@ -6,7 +7,7 @@ import type { Obra } from '@/components/tematica/ObraDetailSheet';
 import { getCachedObras, loadObras } from '@/lib/tematicaStore';
 import { cdnImg } from '@/lib/cdnImg';
 
-const ObraDetailSheet = lazy(() => import('@/components/tematica/ObraDetailSheet'));
+const ObraDetailSheet = lazyWithRetry(() => import('@/components/tematica/ObraDetailSheet'));
 
 /** Mesma paleta do carrossel da home (cards deitados com fundo colorido). */
 const OBRA_PALETTE: Record<string, { deep: string; mid: string; chipBg: string; chipText: string }> = {

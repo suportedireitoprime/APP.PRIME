@@ -1,4 +1,5 @@
-import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
+import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRight, Check, Volume2, VolumeX } from 'lucide-react';
 import {
@@ -12,7 +13,7 @@ import {
 } from './triagemShared';
 import { useTriagemAudio } from './useTriagemAudio';
 
-const CadastroFeaturesReel = lazy(() => import('../CadastroFeaturesReel'));
+const CadastroFeaturesReel = lazyWithRetry(() => import('../CadastroFeaturesReel'));
 
 type Props = {
   open: boolean;

@@ -1,4 +1,5 @@
-import { lazy, Suspense, useEffect, useMemo, useState, useRef } from 'react';
+import { Suspense, useEffect, useMemo, useState, useRef } from 'react';
+import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -32,7 +33,7 @@ import { saveCustomPdf, listCustomPdfs, removeCustomPdf, getCustomPdf, type Cust
 import { useIsPdfCached } from '@/hooks/useIsPdfCached';
 import { CloudOff, CheckCircle2, HardDrive } from 'lucide-react';
 
-const BibliotecasDesktop = lazy(() => import('./BibliotecasDesktop'));
+const BibliotecasDesktop = lazyWithRetry(() => import('./BibliotecasDesktop'));
 
 function VirtualLivroItem({ virtualRow, livro: l, onClick }: { virtualRow: any, livro: LivroNormalizado, onClick: () => void }) {
   const isDownloaded = useIsPdfCached(l.download);

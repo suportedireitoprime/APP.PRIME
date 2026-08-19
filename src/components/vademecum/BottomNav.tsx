@@ -1,4 +1,5 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate, useLocation } from 'react-router-dom';
 import { LayoutGrid, GraduationCap, Monitor, ChevronRight, ChevronDown, X, Search, Sparkles, MessageCircle, Bot, BookOpen, WifiOff, StickyNote, Newspaper, ScanEye, Scale, Library, Mic, FileText, FileSignature, Image as ImageIcon, Bell, Gavel, Star, Send, Video, Film, Clapperboard, Bird, Headphones, Layers, ScrollText, User, ArrowLeftRight, MicVocal } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -11,7 +12,7 @@ import { haptic } from '@/lib/nativeHaptics';
 import { useKeyboardHeight } from '@/hooks/useKeyboardListeners';
 
 import DicionarioJuridico from '@/components/ferramentas/DicionarioJuridico';
-const SideMenu = lazy(() => import('./SideMenu'));
+const SideMenu = lazyWithRetry(() => import('./SideMenu'));
 import SearchOverlay from './SearchOverlay';
 import { pushRecente } from '@/lib/leisRecentes';
 import { startAppMetrics } from '@/lib/appMetrics';

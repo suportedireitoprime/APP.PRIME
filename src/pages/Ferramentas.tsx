@@ -2,9 +2,10 @@ import { useNavigate } from 'react-router-dom';
 import { BookOpenText, ScanEye, Camera, ChevronRight, Newspaper, Film, NotebookText, Clapperboard, MapPin, Radar, Layers, Monitor, Scale, FileSignature, Bot, Headphones, Video, Mic, Send, Library, BookOpen, WifiOff, Music, Podcast, FolderOpen } from 'lucide-react';
 
 import { motion } from 'framer-motion';
-import { lazy, Suspense, useState } from 'react';
+import { Suspense, useState } from 'react';
+import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import TematicaCarrossel from '@/components/ferramentas/TematicaCarrossel';
-const DicionarioJuridico = lazy(() => import('@/components/ferramentas/DicionarioJuridico'));
+const DicionarioJuridico = lazyWithRetry(() => import('@/components/ferramentas/DicionarioJuridico'));
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { useTrackArea } from "@/hooks/useTrackArea";

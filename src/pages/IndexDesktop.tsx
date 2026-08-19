@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
+import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate } from 'react-router-dom';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { Scale, BookOpen, Gavel, Timer, BookOpenText, ScanEye, Sparkles, GraduationCap, Library, Wrench, MessageSquare, Newspaper, FileSignature, User as UserFn } from 'lucide-react';
@@ -27,8 +28,8 @@ import { leiPath, tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
 import { useHideSplashScreen } from '@/hooks/useHideSplashScreen';
 // Overlays only mount when opened — lazy so they don't inflate the initial
 // desktop chunk.
-const SearchOverlay = lazy(() => import('@/components/vademecum/SearchOverlay'));
-const AssistenteOverlay = lazy(() => import('@/components/vademecum/AssistenteOverlay'));
+const SearchOverlay = lazyWithRetry(() => import('@/components/vademecum/SearchOverlay'));
+const AssistenteOverlay = lazyWithRetry(() => import('@/components/vademecum/AssistenteOverlay'));
 import { prefetchAllArtigos } from '@/services/legislacaoService';
 import { prefetchResenha } from '@/services/atualizacaoService';
 import { prefetchNoticias } from '@/services/noticiasService';

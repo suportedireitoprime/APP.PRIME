@@ -1,8 +1,9 @@
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
+import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { devePerguntarNovamente } from '@/lib/pushPermission';
 import { useAuth } from '@/hooks/useAuth';
 
-const NotificacoesPermissaoStep = lazy(
+const NotificacoesPermissaoStep = lazyWithRetry(
   () => import('@/components/onboarding/NotificacoesPermissaoStep'),
 );
 

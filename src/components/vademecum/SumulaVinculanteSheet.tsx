@@ -5,7 +5,8 @@ import {
   ChevronRight, ExternalLink, Calendar, RotateCw 
 } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { useEffect, useState, useRef, useCallback, lazy, Suspense } from 'react';
+import { useEffect, useState, useRef, useCallback, Suspense } from 'react';
+import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { toast } from 'sonner';
 import type { Sumula } from '@/services/sumulasService';
 import { copiarTexto } from '@/lib/nativo/copiar';
@@ -13,9 +14,9 @@ import { supabase } from '@/integrations/supabase/client';
 import ReactMarkdown from 'react-markdown';
 import brasaoImgAsset from '@/assets/brasao-republica.webp';
 
-const VideoaulasListSheet = lazy(() => import('./VideoaulasListSheet'));
-const VideoaulaSheet = lazy(() => import('./VideoaulaSheet'));
-const QuizView = lazy(() => import('@/components/estudar/QuizView'));
+const VideoaulasListSheet = lazyWithRetry(() => import('./VideoaulasListSheet'));
+const VideoaulaSheet = lazyWithRetry(() => import('./VideoaulaSheet'));
+const QuizView = lazyWithRetry(() => import('@/components/estudar/QuizView'));
 
 interface Props {
   sumula: Sumula;

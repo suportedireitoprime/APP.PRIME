@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect, lazy, Suspense } from 'react';
+import { useState, useRef, useEffect, Suspense } from 'react';
+import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate } from 'react-router-dom';
 
 import heroImageAsset from '@/assets/hero-vademecum.webp';
@@ -16,11 +17,11 @@ import { LEIS_CATALOG } from '@/data/leisCatalog';
 import { leiPath, tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
 // Heavy overlays are only rendered when opened — lazy-load their chunks so
 // the initial mobile bundle stays lean and the home paints faster.
-const SideMenu = lazy(() => import('@/components/vademecum/SideMenu'));
-const SearchOverlay = lazy(() => import('@/components/vademecum/SearchOverlay'));
-const AssistenteOverlay = lazy(() => import('@/components/vademecum/AssistenteOverlay'));
+const SideMenu = lazyWithRetry(() => import('@/components/vademecum/SideMenu'));
+const SearchOverlay = lazyWithRetry(() => import('@/components/vademecum/SearchOverlay'));
+const AssistenteOverlay = lazyWithRetry(() => import('@/components/vademecum/AssistenteOverlay'));
 import HomeHeaderHero from '@/components/vademecum/HomeHeaderHero';
-const FeatureDiscoveryCard = lazy(() => import('@/components/vademecum/FeatureDiscoveryCard'));
+const FeatureDiscoveryCard = lazyWithRetry(() => import('@/components/vademecum/FeatureDiscoveryCard'));
 import MobileHomeSections from '@/components/vademecum/MobileHomeSections';
 import { prefetchAllArtigos } from '@/services/legislacaoService';
 import { prefetchResenha } from '@/services/atualizacaoService';

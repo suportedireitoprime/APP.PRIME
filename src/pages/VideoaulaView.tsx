@@ -1,10 +1,11 @@
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate, useParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { supabase } from '@/integrations/supabase/client';
 import { PageHeader } from '@/components/vademecum/PageHeader';
-const VideoaulaAcoesBar = lazy(() => import('@/components/videoaulas/VideoaulaAcoesBar'));
+const VideoaulaAcoesBar = lazyWithRetry(() => import('@/components/videoaulas/VideoaulaAcoesBar'));
 import { AnotacoesAulaSheet } from '@/components/videoaulas/AnotacoesAulaSheet';
 import { TrilhaAula } from '@/components/videoaulas/TrilhaAula';
 import { useVideoaulaResumo, type AulaCtxInput } from '@/hooks/useVideoaulaAcao';

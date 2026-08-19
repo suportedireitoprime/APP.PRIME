@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback, useMemo, memo, lazy, Suspense, startTransition } from 'react';
+import { useState, useEffect, useCallback, useMemo, memo, Suspense, startTransition } from 'react';
+import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -17,7 +18,7 @@ import {
 } from 'lucide-react';
 import { estiloPasta } from '@/lib/documentosTipos';
 import { usePastasDocumentos } from '@/hooks/useDocumentosDrive';
-const DocumentosSheet = lazy(() => import('@/components/documentos/DocumentosSheet'));
+const DocumentosSheet = lazyWithRetry(() => import('@/components/documentos/DocumentosSheet'));
 import { CalendarCheck, CalendarDays, Inbox } from 'lucide-react';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 
@@ -29,16 +30,16 @@ import { LEI_ICON_MAP } from '@/lib/leiIcons';
 import { PillarIcon } from '@/components/icons/PillarIcon';
 import { leiPath, tipoToSlug } from '@/lib/legislacaoSlugs';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
-const VoiceCaptureOverlay = lazy(() => import('./VoiceCaptureOverlay'));
-const HomeNoticiasCarousel = lazy(() => import('./HomeNoticiasCarousel'));
-const AprendaSobreLeis = lazy(() => import('./AprendaSobreLeis'));
-const NoticiasJuridicasCarousel = lazy(() => import('./NoticiasJuridicasCarousel'));
+const VoiceCaptureOverlay = lazyWithRetry(() => import('./VoiceCaptureOverlay'));
+const HomeNoticiasCarousel = lazyWithRetry(() => import('./HomeNoticiasCarousel'));
+const AprendaSobreLeis = lazyWithRetry(() => import('./AprendaSobreLeis'));
+const NoticiasJuridicasCarousel = lazyWithRetry(() => import('./NoticiasJuridicasCarousel'));
 import HomeCard from './HomeCard';
 import ContinueLendoCard from './ContinueLendoCard';
 import { toast } from '@/hooks/use-toast';
 import { useOutrasNormasCounts } from '@/hooks/useOutrasNormasCounts';
-const JurisprudenciaSheet = lazy(() => import('./JurisprudenciaSheet'));
-const VisuaisJuridicosSheet = lazy(() => import('@/components/visuais/VisuaisJuridicosSheet'));
+const JurisprudenciaSheet = lazyWithRetry(() => import('./JurisprudenciaSheet'));
+const VisuaisJuridicosSheet = lazyWithRetry(() => import('@/components/visuais/VisuaisJuridicosSheet'));
 import { TIPO_SLUG } from '@/lib/visuaisJuridicos/rotas';
 import { bandeiraUF } from '@/data/estadoFlags';
 

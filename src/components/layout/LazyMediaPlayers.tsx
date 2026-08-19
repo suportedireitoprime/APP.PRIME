@@ -1,4 +1,5 @@
-import { lazy, Suspense } from 'react';
+import { Suspense } from 'react';
+import { lazyWithRetry } from "@/utils/lazyWithRetry";
 
 import { useVideoaulasPlayer } from '@/contexts/VideoaulasPlayerContext';
 import { useAudioaulasPlayer } from '@/contexts/AudioaulasPlayerContext';
@@ -7,13 +8,13 @@ import { useResumoLivroPlayer } from '@/contexts/ResumoLivroPlayerContext';
 import { useRecording } from '@/contexts/RecordingContext';
 import { useNarracaoFlutuante } from '@/stores/useNarracaoFlutuante';
 
-const GlobalVideoaulaMiniPlayer = lazy(() => import("@/components/videoaulas/GlobalVideoaulaMiniPlayer"));
-const GlobalAudioaulasMiniPlayer = lazy(() => import("@/components/audioaulas/GlobalAudioaulasMiniPlayer"));
-const GlobalLeisCantadasMiniPlayer = lazy(() => import("@/components/leis-cantadas/GlobalLeisCantadasMiniPlayer"));
-const GlobalResumoMiniPlayer = lazy(() => import("@/components/biblioteca/GlobalResumoMiniPlayer").then(m => ({ default: m.GlobalResumoMiniPlayer })));
-const ResumoLivroAudioSheet = lazy(() => import("@/components/biblioteca/ResumoLivroAudioSheet"));
-const GravacaoFlutuante = lazy(() => import("@/components/GravacaoFlutuante").then(m => ({ default: m.GravacaoFlutuante })));
-const NarracaoMiniPlayer = lazy(() => import("@/components/vademecum/NarracaoMiniPlayer"));
+const GlobalVideoaulaMiniPlayer = lazyWithRetry(() => import("@/components/videoaulas/GlobalVideoaulaMiniPlayer"));
+const GlobalAudioaulasMiniPlayer = lazyWithRetry(() => import("@/components/audioaulas/GlobalAudioaulasMiniPlayer"));
+const GlobalLeisCantadasMiniPlayer = lazyWithRetry(() => import("@/components/leis-cantadas/GlobalLeisCantadasMiniPlayer"));
+const GlobalResumoMiniPlayer = lazyWithRetry(() => import("@/components/biblioteca/GlobalResumoMiniPlayer").then(m => ({ default: m.GlobalResumoMiniPlayer })));
+const ResumoLivroAudioSheet = lazyWithRetry(() => import("@/components/biblioteca/ResumoLivroAudioSheet"));
+const GravacaoFlutuante = lazyWithRetry(() => import("@/components/GravacaoFlutuante").then(m => ({ default: m.GravacaoFlutuante })));
+const NarracaoMiniPlayer = lazyWithRetry(() => import("@/components/vademecum/NarracaoMiniPlayer"));
 
 const VideoaulaWrapper = () => {
   const { atual } = useVideoaulasPlayer();

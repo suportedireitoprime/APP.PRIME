@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
+import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { motion, AnimatePresence } from 'framer-motion';
 import {pickAsset, assetUrl, srcOf } from '@/lib/assetUrl';
 import { Menu as MenuIcon, Search, Scale, BookOpen, Clock, Eye, Quote, Lightbulb, ScrollText, History, ChevronLeft, User as UserIcon, Mic, Radar, MapPin, Monitor, Library, Bell, GraduationCap, Target, CloudOff, ListChecks, Camera } from 'lucide-react';
@@ -55,7 +56,7 @@ import logoVacatioBundled from '@/assets/bundled/logo-vacatio-v2.webp';
 const logoVacatio = pickAsset(logoVacatioBundled, srcOf(logoVacatioAsset));
 import { LEIS_CATALOG } from '@/data/leisCatalog';
 import { leiPath, tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
-const SideMenu = lazy(() => import('./SideMenu'));
+const SideMenu = lazyWithRetry(() => import('./SideMenu'));
 import SearchOverlay from './SearchOverlay';
 import RecentesOverlay from './RecentesOverlay';
 import NotificationsSheet, { useUnreadNotifCount } from './NotificationsSheet';

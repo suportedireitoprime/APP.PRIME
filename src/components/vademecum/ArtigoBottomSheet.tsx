@@ -1,24 +1,25 @@
-import { cloneElement, isValidElement, useState, useCallback, useRef, useEffect, useMemo, lazy, Suspense } from 'react';
+import { cloneElement, isValidElement, useState, useCallback, useRef, useEffect, useMemo, Suspense } from 'react';
+import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Eye, EyeOff, Star, Heart, Highlighter, Copy, Plus, Minus, Type, MessageSquare, ChevronUp, ChevronDown, ChevronRight, ExternalLink, Volume2, Pause, Target, StickyNote, MessageCircle, Loader2, Share2, Network, BookOpen, Layers, Sparkles, GraduationCap, Play, Camera, Feather, History, LayoutGrid, Mic, Square, Bell, Scale, Download, Trash2, Box } from 'lucide-react';
-const LembretesArtigoSheet = lazy(() => import('./LembretesArtigoSheet'));
-const QuizView = lazy(() => import('@/components/estudar/QuizView'));
-const JurisprudenciaArtigoView = lazy(() => import('@/pages/JurisprudenciaArtigo'));
-const BaixarArtigoSheet = lazy(() => import('./BaixarArtigoSheet'));
+const LembretesArtigoSheet = lazyWithRetry(() => import('./LembretesArtigoSheet'));
+const QuizView = lazyWithRetry(() => import('@/components/estudar/QuizView'));
+const JurisprudenciaArtigoView = lazyWithRetry(() => import('@/pages/JurisprudenciaArtigo'));
+const BaixarArtigoSheet = lazyWithRetry(() => import('./BaixarArtigoSheet'));
 // Sheets/overlays pesados são carregados sob demanda: o chunk só desce
 // quando o usuário abre o painel. Reduz o bundle inicial que o
 // ArtigoBottomSheet arrasta para toda navegação do app.
-const GrifoFotoSheet = lazy(() => import('./GrifoFotoSheet'));
-const AnotacoesSheet = lazy(() => import('./AnotacoesSheet'));
+const GrifoFotoSheet = lazyWithRetry(() => import('./GrifoFotoSheet'));
+const AnotacoesSheet = lazyWithRetry(() => import('./AnotacoesSheet'));
 import ArtigoSidePanel from './ArtigoSidePanel';
-const PerguntarSheet = lazy(() => import('./PerguntarSheet'));
-const GrafoOverlay = lazy(() => import('./GrafoOverlay'));
-const GrifoEraseSheet = lazy(() => import('./GrifoEraseSheet'));
-const GrifoVoiceSheet = lazy(() => import('./GrifoVoiceSheet'));
+const PerguntarSheet = lazyWithRetry(() => import('./PerguntarSheet'));
+const GrafoOverlay = lazyWithRetry(() => import('./GrafoOverlay'));
+const GrifoEraseSheet = lazyWithRetry(() => import('./GrifoEraseSheet'));
+const GrifoVoiceSheet = lazyWithRetry(() => import('./GrifoVoiceSheet'));
 import type { VoicePassage } from './GrifoVoiceSheet';
 import GrifoVoicePanel, { type GrifoVoicePanelHandle, type VoicePhase } from './GrifoVoicePanel';
-const KaraokeOverlay = lazy(() => import('./KaraokeOverlay'));
+const KaraokeOverlay = lazyWithRetry(() => import('./KaraokeOverlay'));
 import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
@@ -32,14 +33,14 @@ import { useIsDesktop } from '@/hooks/use-desktop';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useHighlights, type Highlight } from '@/hooks/useHighlights';
 import HighlightColorBar from './HighlightColorBar';
-const GeracaoAnimacaoOverlay = lazy(() =>
+const GeracaoAnimacaoOverlay = lazyWithRetry(() =>
   import('./GeracaoAnimacaoOverlay').then((m) => ({ default: m.GeracaoAnimacaoOverlay })),
 );
 import { supabase } from '@/integrations/supabase/client';
 import { buildPlanaltoArticleUrl } from '@/services/legislacaoService';
 import ShareButtons from './ShareButtons';
-const VideoaulaSheet = lazy(() => import('./VideoaulaSheet'));
-const VideoaulasListSheet = lazy(() => import('./VideoaulasListSheet'));
+const VideoaulaSheet = lazyWithRetry(() => import('./VideoaulaSheet'));
+const VideoaulasListSheet = lazyWithRetry(() => import('./VideoaulasListSheet'));
 import type { VideoaulaItem } from './VideoaulasListSheet';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
 
