@@ -289,21 +289,42 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
     };
   }, [autoplay, activeIndex, items.length, scrollToIndex]);
 
-  const onScroll = useCallback(() => {
+  useEffect(() => {
     const scroller = scrollerRef.current;
-    if (!scroller) return;
-    const center = scroller.scrollLeft + scroller.clientWidth / 2;
-    let best = 0;
-    let bestDist = Infinity;
-    for (let i = 0; i < scroller.children.length; i++) {
-      const child = scroller.children[i] as HTMLElement;
-      const mid = child.offsetLeft + child.clientWidth / 2;
-      const dist = Math.abs(mid - center);
-      if (dist < bestDist) { bestDist = dist; best = i; }
-    }
-    setActiveIndex(best);
-  }, []);
+    if (!scroller || items.length === 0) return;
 
+    const ratios = new Map<Element, number>();
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          ratios.set(entry.target, entry.intersectionRatio);
+        });
+
+        let maxRatio = -1;
+        let bestTarget: Element | null = null;
+        ratios.forEach((ratio, target) => {
+          if (ratio > maxRatio) {
+            maxRatio = ratio;
+            bestTarget = target;
+          }
+        });
+
+        if (bestTarget) {
+          const idx = Array.from(scroller.children).indexOf(bestTarget);
+          if (idx !== -1) setActiveIndex(idx);
+        }
+      },
+      {
+        root: scroller,
+        threshold: Array.from({ length: 11 }, (_, i) => i / 10), // 0, 0.1, 0.2 ... 1.0
+      }
+    );
+
+    Array.from(scroller.children).forEach((child) => observer.observe(child));
+
+    return () => observer.disconnect();
+  }, [items.length]);
   const pauseAutoplay = () => {
     userInteractingRef.current = true;
     window.setTimeout(() => { userInteractingRef.current = false; }, 4000);
@@ -389,7 +410,6 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
 
       <div
         ref={scrollerRef}
-        onScroll={onScroll}
         onPointerDown={pauseAutoplay}
         onTouchStart={pauseAutoplay}
         className="flex gap-3 md:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-1 px-[7.5%] md:px-[4%] lg:px-[3%] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
