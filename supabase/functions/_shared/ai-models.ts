@@ -13,8 +13,8 @@
  */
 
 export const MODELS = {
-  text: "gemini-3.1-flash",
-  textGateway: 'gemini-3.1-flash',
+  text: "gemini-3.1-flash-lite",
+  textGateway: 'gemini-3.1-flash-lite',
   image: "gemini-2.5-flash-image",
   imageGateway: 'gemini-2.5-flash-image',
   tts: "gemini-2.5-flash-preview-tts",
