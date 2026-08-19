@@ -1022,7 +1022,7 @@ function DailyReportSheet({ type, date, onClose }: { type: "enviadas"|"abertas"|
 
       const { data, error } = await supabase
         .from("push_events")
-        .select("id, user_id, platform, event_type, error, created_at, metadata")
+        .select("id, user_id, campaign_id, platform, event_type, error, created_at, metadata")
         .eq("event_type", eventFilter)
         .gte("created_at", inicio.toISOString())
         .lte("created_at", fim.toISOString())
@@ -1031,7 +1031,49 @@ function DailyReportSheet({ type, date, onClose }: { type: "enviadas"|"abertas"|
 
       if (error) toast.error(error.message);
       
-      const list = data ?? [];
+      let list = data ?? [];
+
+      // Deduplica eventos para a mesma campanha e usuário (evita duplicatas na UI se o usuário tiver múltiplos tokens FCM)
+      const uniqueKeys = new Set();
+      list = list.filter(item => {
+        if (!item.campaign_id || !item.user_id) return true;
+        const k = `${item.campaign_id}-${item.user_id}`;
+        if (uniqueKeys.has(k)) return false;
+        uniqueKeys.add(k);
+        return true;
+      });
+
+      if (type === "abertas") {
+        // Buscar jornadas de abertura para calcular rotas e tempo em tela
+
+        // Buscar jornadas de abertura para calcular rotas e tempo em tela
+        const campaignIds = Array.from(new Set(list.filter(x => x.campaign_id).map(x => x.campaign_id)));
+        if (campaignIds.length > 0) {
+          const { data: journeys } = await supabase
+            .from("push_open_journey")
+            .select("campaign_id, user_id, route, created_at")
+            .in("campaign_id", campaignIds)
+            .gte("created_at", inicio.toISOString())
+            .lte("created_at", fim.toISOString())
+            .order("created_at", { ascending: true });
+
+          if (journeys && journeys.length > 0) {
+            list.forEach(item => {
+               const j = journeys.filter(x => x.campaign_id === item.campaign_id && x.user_id === item.user_id);
+               if (j.length > 0) {
+                 const first = new Date(j[0].created_at).getTime();
+                 const last = new Date(j[j.length - 1].created_at).getTime();
+                 const timeS = Math.round((last - first) / 1000);
+                 const routes = Array.from(new Set(j.map(x => x.route?.split("?")[0] || ""))).filter(Boolean);
+                 if (!item.metadata) item.metadata = {};
+                 item.metadata.time_on_screen = timeS;
+                 item.metadata.routes = routes;
+               }
+            });
+          }
+        }
+      }
+
       const userIds = Array.from(new Set(list.filter(x => x.user_id).map(x => x.user_id)));
       if (userIds.length > 0) {
         const { data: profs } = await supabase.from("profiles").select("id, display_name").in("id", userIds);
@@ -1080,14 +1122,14 @@ function DailyReportSheet({ type, date, onClose }: { type: "enviadas"|"abertas"|
               >
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-foreground truncate flex-1">
-                    {r.display_name || r.user_id ? `${r.display_name || 'Usuário'} (${r.user_id?.slice(0, 8)}...)` : "Aparelho Anônimo"}
+                    {r.display_name || (r.user_id ? "Usuário" : "Aparelho Anônimo")}
                   </span>
                   <span className="text-xs text-muted-foreground font-mono ml-2 shrink-0">
                     {new Date(r.created_at).toLocaleTimeString("pt-BR")}
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <span className="capitalize px-2 py-0.5 rounded-md bg-secondary text-[10px] font-bold text-foreground">
+                  <span className="capitalize px-2 py-0.5 rounded-md bg-secondary text-[10px] font-bold text-foreground shrink-0">
                     {r.platform || "android"}
                   </span>
                   {type === "falhas" && (
@@ -1095,9 +1137,13 @@ function DailyReportSheet({ type, date, onClose }: { type: "enviadas"|"abertas"|
                       {r.error || "Token inválido ou notificação desabilitada"}
                     </span>
                   )}
-                  {type === "abertas" && r.metadata?.time_on_screen && (
-                    <span className="text-emerald-400 flex items-center gap-1 font-medium">
-                      <Clock className="w-3 h-3" /> +{r.metadata.time_on_screen}s em tela
+                  {type === "abertas" && (
+                    <span className={`flex items-center gap-1 font-medium ml-2 truncate ${r.metadata?.time_on_screen ? 'text-emerald-400' : 'text-muted-foreground'}`}>
+                      <Clock className="w-3 h-3 shrink-0" />
+                      <span className="truncate">
+                        {r.metadata?.time_on_screen ? `+${r.metadata.time_on_screen}s em tela` : "Saiu logo em seguida"}
+                        {r.metadata?.routes && r.metadata.routes.length > 0 && ` • Rotas: ${r.metadata.routes.join(" → ")}`}
+                      </span>
                     </span>
                   )}
                 </div>

@@ -77,7 +77,7 @@ export async function notificarAdminsWhats(args: NotifyBoletimArgs) {
 }
 
 export async function dispararPushBoletim(args: NotifyBoletimArgs) {
-  const { supa, boletimId, tipo, totalCenas, duracaoS, automationKey, pushEmoji, labelUnidade } = args;
+  const { supa, boletimId, tipo, totalCenas, duracaoS, automationKey, pushEmoji, labelUnidade, capaUrl } = args;
   try {
     const { data: automation } = await supa
       .from("push_automations")
@@ -101,6 +101,7 @@ export async function dispararPushBoletim(args: NotifyBoletimArgs) {
         body,
         url,
         emoji: pushEmoji || automation.emoji || (tipo === "noticias" ? "📰" : "🎬"),
+        image: capaUrl,
         audience: automation.audience || { all: true },
         personalize: true,
         data: {

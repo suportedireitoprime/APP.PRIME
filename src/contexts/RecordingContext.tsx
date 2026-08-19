@@ -234,35 +234,41 @@ export function RecordingProvider({ children }: { children: ReactNode }) {
       const recId = crypto.randomUUID();
       const filePath = `${user.id}/${recId}.${ext}`;
 
-      const { error: upErr } = await supabase.storage.from('aulas-audio')
-        .upload(filePath, new Blob([bytes as any], { type: mime }), { contentType: mime, upsert: false });
-      if (upErr) { toast.error('Falha no upload: ' + upErr.message); setStatus('idle'); return null; }
-
       const durMs = accumulated.current;
       const finalLiveText = liveText;
+      const blob = new Blob([bytes as any], { type: mime });
 
-      const { data: row, error: insErr } = await supabase.from('audio_recordings').insert({
-        id: recId, user_id: user.id, title, duration_ms: durMs,
-        file_path: filePath, status: 'processando', mode: 'aula',
+      const payload = {
+        id: recId,
+        user_id: user.id,
+        title,
+        duration_ms: durMs,
+        file_path: filePath,
+        status: finalLiveText.trim().length > 10 ? 'processando' : 'pronto',
+        mode: 'aula',
         transcription: finalLiveText // salva o raw text preliminar
-      }).select('id').single();
-      if (insErr) { toast.error(insErr.message); setStatus('idle'); return null; }
+      };
 
-      // Invoca a IA para formatar a transcrição e gerar insights em background
-      if (finalLiveText.trim().length > 10) {
-        supabase.functions.invoke('formatar-transcricao', {
-          body: { recordId: recId, rawText: finalLiveText }
-        }).catch(console.error);
-      } else {
-        // Se não tiver texto suficiente, atualiza pra pronto direto
-        supabase.from('audio_recordings').update({ status: 'pronto' }).eq('id', recId).then();
+      try {
+        const { mediaSyncQueue } = await import('@/services/mediaSyncQueue');
+        await mediaSyncQueue.enqueue(
+          blob,
+          'aulas-audio',
+          filePath,
+          'audio_recordings',
+          payload
+        );
+        toast.success('Aula salva! Será sincronizada quando houver conexão.');
+      } catch (err: any) {
+        toast.error('Erro ao salvar localmente: ' + err.message);
+        setStatus('idle'); 
+        return null;
       }
 
-      toast.success('Aula salva e sendo processada pela IA!');
       setStatus('idle'); setElapsedMs(0); accumulated.current = 0; setTitle(''); setLiveText('');
       finalChunks.current = [];
       haptic.success();
-      return { id: row!.id as string, liveText: finalLiveText };
+      return { id: recId, liveText: finalLiveText };
     } catch (e: any) {
       toast.error('Erro ao parar: ' + (e?.message ?? 'desconhecido'));
       setStatus('idle');

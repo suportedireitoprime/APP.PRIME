@@ -115,17 +115,86 @@ export default function FaculdadeLousa() {
     setPhotos(prev => prev.filter((_, i) => i !== index));
   };
 
-  const startProcessing = () => {
+  const startProcessing = async () => {
     if (photos.length === 0) {
       toast({ title: "Atenção", description: "Adicione ao menos uma foto do quadro." });
       return;
     }
+    
     setStep('PROCESSING');
     setProcIndex(0);
-  };
 
-  useEffect(() => {
-    if (step === 'PROCESSING') {
+    try {
+      const { supabase } = await import('@/integrations/supabase/client');
+      const { data: userData } = await supabase.auth.getUser();
+      const user = userData.user;
+      if (!user) throw new Error("Faça login para salvar lousas.");
+
+      const { mediaSyncQueue } = await import('@/services/mediaSyncQueue');
+      const { syncQueue } = await import('@/services/syncQueue');
+      
+      const aulaId = crypto.randomUUID();
+      const dataIso = new Date().toISOString();
+      const finalTitle = materia.trim() || `Lousa ${new Date().toLocaleDateString('pt-BR')}`;
+      
+      // 1. Queue the main Aula row
+      await syncQueue.enqueue({
+        kind: 'table.insert',
+        table: 'aulas',
+        values: {
+          id: aulaId,
+          user_id: user.id,
+          titulo: finalTitle,
+          professor: professor.trim() || null,
+          data: dataIso,
+          duracao_seg: 0,
+          status: 'processando',
+          gratuita: false
+        }
+      });
+
+      // 2. Queue each photo
+      for (let i = 0; i < photos.length; i++) {
+        const url = photos[i];
+        
+        // Fetch the blob from the local blob URL or convert capacitor file src
+        let blob: Blob;
+        if (url.startsWith('blob:') || url.startsWith('http')) {
+          const res = await fetch(url);
+          blob = await res.blob();
+        } else {
+          // If it's a native path, we must read it. Capacitior Filesystem.
+          // But webPath should be a local blob anyway since CameraResultType.Uri gives webPath.
+          const res = await fetch(url);
+          blob = await res.blob();
+        }
+
+        const ext = blob.type.split('/')[1] || 'jpeg';
+        const filePath = `${user.id}/${aulaId}/${i}.${ext}`;
+        const midiaId = crypto.randomUUID();
+
+        const payload = {
+          id: midiaId,
+          user_id: user.id,
+          aula_id: aulaId,
+          tipo: 'imagem_lousa',
+          ordem: i,
+          storage_path: filePath,
+          mime: blob.type,
+          bytes: blob.size,
+          created_at: dataIso
+        };
+
+        await mediaSyncQueue.enqueue(
+          blob,
+          'aulas-lousas', // The bucket must exist, or we use an existing one
+          filePath,
+          'aula_midias',
+          payload
+        );
+      }
+      
+      // Animate progress then show result
       const interval = setInterval(() => {
         setProcIndex(prev => {
           if (prev >= PROCESSING_STEPS.length - 1) {
@@ -135,10 +204,17 @@ export default function FaculdadeLousa() {
           }
           return prev + 1;
         });
-      }, 2000);
-      return () => clearInterval(interval);
+      }, 500);
+
+    } catch (e: any) {
+      toast({ title: "Erro", description: e.message, variant: "destructive" });
+      setStep('METADATA');
     }
-  }, [step]);
+  };
+
+  useEffect(() => {
+    // Only cleanup intervals if unmounted
+  }, []);
 
   return (
     <div className="min-h-screen bg-background pb-safe flex flex-col">

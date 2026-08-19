@@ -120,6 +120,12 @@ Deno.serve(async (req) => {
       displayTitle = `${payload.emoji} ${displayTitle}`.trim();
     }
 
+    // FCM exige URLs absolutas para imagens
+    if (payload.image && payload.image.startsWith("/")) {
+      const APP_URL = Deno.env.get("PUBLIC_SITE_URL") || Deno.env.get("HORUS_APP_URL") || "https://huggable-calc-89.lovable.app";
+      payload.image = `${APP_URL}${payload.image}`;
+    }
+
     // 1) Resolver tokens + user_id + platform
     type Row = { token: string; user_id: string; platform: string };
     let rows: Row[] = [];

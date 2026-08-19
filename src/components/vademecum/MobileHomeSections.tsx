@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo, memo, lazy, Suspense } from 'react';
+import { useState, useEffect, useCallback, useMemo, memo, lazy, Suspense, startTransition } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -194,7 +194,13 @@ interface Props {
 }
 
 const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, hideNoticias = false, noticiasAutoplay = true, emAltaLeis = false, hideTabs = false, activeTab, onBuscar }: Props = {}) => {
-  const navigate = useNavigate();
+  const _navigate = useNavigate();
+  const navigate = useCallback((to: string | number) => {
+    startTransition(() => {
+      // @ts-expect-error react-router typings mismatch for string|number
+      _navigate(to);
+    });
+  }, [_navigate]);
   const [juriOpen, setJuriOpen] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState<Cat | AreaCat | CategoriaFormal | null>(null);
   const [visuaisOpen, setVisuaisOpen] = useState(false);
@@ -806,8 +812,8 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
                           toast({ title: 'Em breve', description: 'Essa função está sendo preparada.' });
                           return;
                         }
-                        if (c.id === 'ea-mapas') { setVisuaisOpen(true); return; }
-                        if (c.id === 'ea-areas') { setAreasOpen(true); return; }
+                        if (c.id === 'ea-mapas') { startTransition(() => setVisuaisOpen(true)); return; }
+                        if (c.id === 'ea-areas') { startTransition(() => setAreasOpen(true)); return; }
 
                         navigate(c.route);
                       }}
@@ -1276,10 +1282,12 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
         <Suspense fallback={null}>
           <VisuaisJuridicosSheet
             open={visuaisOpen}
-            onClose={() => setVisuaisOpen(false)}
+            onClose={() => startTransition(() => setVisuaisOpen(false))}
             onEscolherTipo={(t) => {
-              setVisuaisOpen(false);
-              navigate(`/visuais/${TIPO_SLUG[t]}`);
+              startTransition(() => {
+                setVisuaisOpen(false);
+                navigate(`/visuais/${TIPO_SLUG[t]}`);
+              });
             }}
           />
         </Suspense>
@@ -1337,7 +1345,7 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
         open={voiceSearch.listening}
         partial={voiceSearch.partial}
         onStop={voiceSearch.stop}
-      />
+      /></Suspense>
     </div>
 
   );
