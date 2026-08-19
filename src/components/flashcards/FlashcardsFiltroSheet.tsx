@@ -367,14 +367,21 @@ const FlashcardsFiltroSheet = ({
       const newCache = { ...assuntosCache };
       let updated = false;
       
-      for (const area of f.disciplinas) {
-        if (!newCache[area]) {
-          const { data } = await supabase.rpc('flashcards_temas', { _area: area });
-          if (data) {
-            newCache[area] = ((data as any[]) || []).map(t => t.tema);
-            updated = true;
-          }
-        }
+      const missingAreas = f.disciplinas.filter(area => !newCache[area]);
+      
+      if (missingAreas.length > 0) {
+        const promises = missingAreas.map(area => 
+          supabase.rpc('flashcards_temas', { _area: area }).then(({ data }) => ({
+            area,
+            temas: ((data as any[]) || []).map(t => t.tema)
+          }))
+        );
+        
+        const results = await Promise.all(promises);
+        results.forEach(({ area, temas }) => {
+          newCache[area] = temas;
+        });
+        updated = true;
       }
       
       if (updated) setAssuntosCache(newCache);
