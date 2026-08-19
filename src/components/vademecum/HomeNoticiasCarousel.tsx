@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Clock, ArrowUpRight, Film, Star, Library } from 'lucide-react';
@@ -191,7 +191,7 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
   }, [takeNext]);
 
   // Popula o feed inicial e reidrata quando novas fontes chegam.
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (feed.length === 0) extendFeed(9);
   }, [feed.length, extendFeed]);
 
