@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 import { supabase } from '@/integrations/supabase/client';
 import { voiceRecorder } from '@/lib/nativeVoiceRecorder';
-import { getTimestampKey } from '@/lib/modoAula/storage';
+
 import { AudioVisualizer } from '@/components/ui/AudioVisualizer';
 import { haptic } from '@/lib/nativeHaptics';
 import { toast } from 'sonner';

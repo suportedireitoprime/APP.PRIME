@@ -120,9 +120,7 @@ const MinhasLeituras = lazy(() => import("./pages/MinhasLeituras.tsx"));
 const MeusResumos = lazy(() => import("./pages/MeusResumos.tsx"));
 const MinhasVideoaulas = lazy(() => import("./pages/MinhasVideoaulas.tsx"));
 
-const ModoAula = lazy(() => import("./pages/ModoAula.tsx"));
-const ModoAulaSessao = lazy(() => import("./pages/ModoAulaSessao.tsx"));
-const ModoAulaAula = lazy(() => import("./pages/ModoAulaAula.tsx"));
+
 const MeExplique = lazy(() => import("./pages/MeExplique.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 const Configuracoes = lazy(() => import("./pages/Configuracoes.tsx"));
@@ -1045,10 +1043,7 @@ function AnimatedRoutes() {
           <Route path="/meus-resumos" element={<ProtectedRoute><PageTransition><MeusResumos /></PageTransition></ProtectedRoute>} />
           <Route path="/minhas-videoaulas" element={<ProtectedRoute><PageTransition><MinhasVideoaulas /></PageTransition></ProtectedRoute>} />
 
-          <Route path="/modo-aula" element={<ProtectedRoute><PageTransition><ModoAula /></PageTransition></ProtectedRoute>} />
-          <Route path="/modo-aula/sessao" element={<ProtectedRoute><ModoAulaSessao /></ProtectedRoute>} />
-          <Route path="/modo-aula/aula/:id" element={<ProtectedRoute><PageTransition><ModoAulaAula /></PageTransition></ProtectedRoute>} />
-          <Route path="/modo-aula/disciplina/:id" element={<ProtectedRoute><PageTransition><ModoAula /></PageTransition></ProtectedRoute>} />
+
           <Route path="/me-explique" element={<ProtectedRoute><MeExplique /></ProtectedRoute>} />
           <Route path="/ferramentas/me-explique" element={<ProtectedRoute><MeExplique /></ProtectedRoute>} />
           <Route path="/leis-cantadas" element={<ProtectedRoute><PageTransition><LeisCantadas /></PageTransition></ProtectedRoute>} />

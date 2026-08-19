@@ -1889,7 +1889,7 @@ jobs:
               'android.permission.WAKE_LOCK',
               'android.permission.CAMERA',
               'android.permission.READ_MEDIA_IMAGES',
-              # Me Explique / Modo Aula: captura de áudio do microfone na WebView
+              # Me Explique: captura de áudio do microfone na WebView
               'android.permission.RECORD_AUDIO',
               'android.permission.MODIFY_AUDIO_SETTINGS',
           ]

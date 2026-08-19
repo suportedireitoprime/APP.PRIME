@@ -66,13 +66,6 @@ const FUNCOES: Funcao[] = [
     topicos: ['Julgados comentados', 'Súmulas e informativos', 'Dicionário jurídico', 'Blog diário'],
   },
   {
-    id: 'aula',
-    titulo: 'Modo Aula',
-    legenda: 'da sala para o resumo',
-    Icone: Brain,
-    topicos: ['Gravação da aula', 'Transcrição automática', 'Resumo da aula', 'Exportar em PDF'],
-  },
-  {
     id: 'ia',
     titulo: 'IA jurídica',
     legenda: 'entenda em segundos',

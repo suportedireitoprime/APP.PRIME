@@ -295,7 +295,7 @@ const AppShowcase = ({ onAcessar }: Props) => {
         reverse
         items={[
           { icon: Bot, label: 'IA jurídica', desc: 'Tire dúvidas, peça exemplos práticos e explicações em qualquer nível de profundidade.' },
-          { icon: Mic, label: 'Modo aula', desc: 'Grave a aula da faculdade e receba transcrição, resumo e pontos-chave.' },
+
           { icon: Newspaper, label: 'Radar jurídico', desc: 'Novas leis, decisões e informativos resumidos todos os dias.' },
           { icon: MapPin, label: 'Locais jurídicos', desc: 'Fóruns, tribunais e cartórios perto de você, com rota em um toque.' },
         ]}
