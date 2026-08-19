@@ -49,14 +49,6 @@ export type DesktopToolGroup = {
  */
 export const DESKTOP_TOOL_GROUPS: DesktopToolGroup[] = [
   {
-    id: 'aprender',
-    label: 'Aprender Rápido',
-    hint: 'Consuma conhecimento de forma dinâmica',
-    tools: [
-      { id: 'pilulas', label: 'Pílulas Jurídicas', desc: 'Cards interativos estilo Tinder', icon: Sparkles, route: '/pilulas', color: '#10B981' },
-    ],
-  },
-  {
     id: 'monitoramento',
     label: 'Monitoramento',
     hint: 'Acompanhe alterações legislativas e notícias',
@@ -73,7 +65,6 @@ export const DESKTOP_TOOL_GROUPS: DesktopToolGroup[] = [
     hint: 'Escreva, grave e organize seu material',
     tools: [
       { id: 'peticao', label: 'Petição Inicial', desc: 'Monte peças com apoio de IA', icon: FileSignature, route: '/ferramentas/peticao-inicial', color: '#10B981' },
-      { id: 'gravar', label: 'Gravar aula', desc: 'Grave e transcreva áudios de estudo', icon: Mic, route: '/anotacoes/audio', color: '#F43F5E' },
     ],
   },
   {

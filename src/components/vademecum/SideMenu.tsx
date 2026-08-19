@@ -157,7 +157,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
       'opiniao': '/opiniao',
       'sobre': '/sobre',
       'lembretes': '/meus-lembretes',
-      'pilulas': '/pilulas',
+
     };
 
     if (directRoutes[id]) {
