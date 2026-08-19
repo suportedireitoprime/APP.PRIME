@@ -73,7 +73,7 @@ const VadeMecumBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
         initial={{ y: 120, opacity: 0 }}
         animate={actuallyHidden ? { y: 120, opacity: 0 } : { y: 0, opacity: 1 }}
         transition={{ type: 'spring', damping: 25, stiffness: 220, delay: 0.15 }}
-        className="fixed bottom-0 left-0 right-0 z-50 lg:hidden md:bottom-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-auto"
+        className="fixed bottom-0 left-0 right-0 z-50  md:bottom-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-auto"
       >
         <div className="bg-card/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-lg shadow-black/10 pb-[calc(0.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] md:border md:rounded-full md:shadow-2xl md:shadow-black/30 md:pb-0">
           <div className="grid grid-cols-5 items-end px-1 pt-3.5 pb-3.5 max-w-lg mx-auto md:gap-1 md:px-3 md:py-2">
@@ -131,14 +131,14 @@ const VadeMecumBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setMaisOpen(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] lg:hidden"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] "
             />
             <motion.div
               initial={{ y: '100%' }}
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed bottom-0 left-0 right-0 z-[70] bg-background border-t border-border rounded-t-3xl pb-[calc(2rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-6 px-4 lg:hidden shadow-2xl"
+              className="fixed bottom-0 left-0 right-0 z-[70] bg-background border-t border-border rounded-t-3xl pb-[calc(2rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-6 px-4  shadow-2xl"
             >
               <div className="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-muted rounded-full" />
               <div className="flex items-center justify-between mb-6">

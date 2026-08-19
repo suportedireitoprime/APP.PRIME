@@ -185,7 +185,7 @@ const BottomNav = () => {
       aria-label="Navegação principal"
       role="navigation"
       data-bottom-nav
-      className={`fixed z-50 lg:hidden bg-black transition-all duration-300 ease-out 
+      className={`fixed z-50  bg-black transition-all duration-300 ease-out 
         bottom-0 left-0 right-0 
         md:top-0 md:bottom-0 md:right-auto md:w-[90px] md:border-r md:border-white/10
         ${hideNav ? 'translate-y-[140%] md:-translate-x-[140%] md:translate-y-0 opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'}`}
@@ -314,7 +314,7 @@ const BottomNav = () => {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.18, ease: 'easeOut' }}
             onClick={() => setEstudosOpen(false)}
-            className="fixed inset-0 z-[70] bg-background/80 lg:hidden"
+            className="fixed inset-0 z-[70] bg-background/80 "
           />
           <motion.div
             initial={{ y: '100%' }}
@@ -322,7 +322,7 @@ const BottomNav = () => {
             exit={{ y: '100%' }}
             transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
             style={{ willChange: 'transform', transform: 'translateZ(0)' }}
-            className="fixed bottom-0 left-0 right-0 z-[80] bg-card border-t border-border rounded-t-2xl pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] lg:hidden"
+            className="fixed bottom-0 left-0 right-0 z-[80] bg-card border-t border-border rounded-t-2xl pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] "
           >
             <div className="flex items-center justify-center pt-2 pb-1">
               <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
@@ -383,7 +383,7 @@ const BottomNav = () => {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.18, ease: 'easeOut' }}
             onClick={() => setFerramentasOpen(false)}
-            className="fixed inset-0 z-[70] bg-background/80 lg:hidden"
+            className="fixed inset-0 z-[70] bg-background/80 "
           />
           <motion.div
             initial={{ y: '100%' }}
@@ -391,7 +391,7 @@ const BottomNav = () => {
             exit={{ y: '100%' }}
             transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
             style={{ willChange: 'transform', transform: 'translateZ(0)' }}
-            className="fixed inset-0 z-[80] bg-card lg:hidden flex flex-col h-[100dvh] pt-[var(--sai-top,env(safe-area-inset-top,0px))] pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))]"
+            className="fixed inset-0 z-[80] bg-card  flex flex-col h-[100dvh] pt-[var(--sai-top,env(safe-area-inset-top,0px))] pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))]"
           >
 
             <div className="flex items-center justify-between px-5 pb-4 shrink-0">
@@ -464,7 +464,7 @@ const BottomNav = () => {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.18, ease: 'easeOut' }}
             onClick={() => setAssistenteChooserOpen(false)}
-            className="fixed inset-0 z-[70] bg-background/85 lg:hidden"
+            className="fixed inset-0 z-[70] bg-background/85 "
           />
           <motion.div
             initial={{ y: '100%' }}
@@ -472,7 +472,7 @@ const BottomNav = () => {
             exit={{ y: '100%' }}
             transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
             style={{ willChange: 'transform', transform: 'translateZ(0)' }}
-            className="fixed bottom-0 left-0 right-0 z-[80] h-[92vh] bg-card border-t border-border rounded-t-3xl pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] lg:hidden flex flex-col md:max-w-3xl md:mx-auto md:max-h-[88vh] md:h-auto md:min-h-[70vh] md:rounded-3xl md:mb-6 md:border"
+            className="fixed bottom-0 left-0 right-0 z-[80] h-[92vh] bg-card border-t border-border rounded-t-3xl pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))]  flex flex-col md:max-w-3xl md:mx-auto md:max-h-[88vh] md:h-auto md:min-h-[70vh] md:rounded-3xl md:mb-6 md:border"
           >
             <div className="flex items-center justify-center pt-3 pb-2 shrink-0">
               <div className="w-12 h-1.5 rounded-full bg-muted-foreground/30" />
