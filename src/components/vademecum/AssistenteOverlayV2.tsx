@@ -19,12 +19,22 @@ export default function AssistenteOverlayV2({ open, onClose }: { open: boolean; 
       transition={{ type: "spring", damping: 25, stiffness: 200 }}
       className="fixed inset-0 z-[100] flex flex-col bg-background/95 backdrop-blur-md"
     >
-      <PageHeader title="Horus (Nova Versão)" onBack={onClose} />
+      <PageHeader title="Chat Jurídico" onBack={onClose} />
       
-      <div className="flex-1 overflow-hidden h-full pb-4">
+      <div className="flex-1 overflow-hidden h-full">
         <AssistantRuntimeProvider runtime={runtime}>
           <Thread 
             assistantMessage={{ components: { Text: MarkdownText } }}
+            strings={{
+              composer: {
+                input: {
+                  placeholder: "Escreva uma mensagem..."
+                },
+                send: {
+                  tooltip: "Enviar"
+                }
+              }
+            }}
           />
         </AssistantRuntimeProvider>
       </div>

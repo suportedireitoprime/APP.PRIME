@@ -1,9 +1,10 @@
 import { useLocalRuntime, type ChatModelAdapter } from "@assistant-ui/react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useMemo } from "react";
 
 export function useAssistenteRuntime() {
-  const adapter: ChatModelAdapter = {
+  const adapter = useMemo<ChatModelAdapter>(() => ({
     async *run({ messages, abortSignal }) {
       try {
         // Formatar mensagens para o formato da Edge Function do Supabase
@@ -35,7 +36,7 @@ export function useAssistenteRuntime() {
         };
       }
     }
-  };
+  }), []);
 
   return useLocalRuntime(adapter);
 }
