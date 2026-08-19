@@ -141,11 +141,11 @@ body {
 
 @layer base {
   :root {
-    /* Direito Prime — Preto Absoluto (AMOLED) + Vermelho + Cinza Neutro */
-    --background: 0 0% 0%;                 /* #000000 - preto absoluto */
+    /* Direito Prime — Cinza Escuro + Vermelho + Cinza Neutro */
+    --background: 0 0% 7%;                 /* #121212 - cinza escuro (era preto absoluto) */
     --foreground: 0 0% 98%;
 
-    --card: 0 0% 6%;                      /* #0F0F0F - card sutilmente mais claro */
+    --card: 0 0% 11%;                      /* #1C1C1C - card sutilmente mais claro */
     --card-foreground: 0 0% 98%;
 
     --popover: 0 0% 6%;
