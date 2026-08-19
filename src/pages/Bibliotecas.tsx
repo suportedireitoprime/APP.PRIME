@@ -15,6 +15,7 @@ import { scheduleWarmBiblioteca } from '@/services/bibliotecaWarmup';
 import { styleForArea, styleForPerformance } from '@/lib/bibliotecaIcons';
 import { directImg } from '@/lib/cdnImg';
 import { withBundleFallback, bundle } from '@/services/offlineBundle';
+import { getPersistedColecao, setPersistedColecao } from '@/services/offlineDb';
 import BibliotecaAtalhosBar from '@/components/biblioteca/BibliotecaAtalhosBar';
 import BibliotecaSearchBar from '@/components/biblioteca/BibliotecaSearchBar';
 import BibliotecaBottomNav from '@/components/biblioteca/BibliotecaBottomNav';
