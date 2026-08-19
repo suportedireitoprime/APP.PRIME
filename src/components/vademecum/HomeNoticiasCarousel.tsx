@@ -419,9 +419,7 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
                       'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--brand-burgundy-mid)) 60%, hsl(var(--brand-burgundy-deep)) 100%)',
                   }}
                 >
-                  {isActive && (
-                    <span key={`shine-${i}-${activeIndex}`} className="card-center-shine absolute inset-0 rounded-2xl pointer-events-none" />
-                  )}
+
 
                   {/* SVGs jurídicos decorativos ao fundo */}
                   <svg
@@ -516,9 +514,7 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
                   }`}
                   style={{ backgroundColor: palette.deep }}
                 >
-                  {isActive && (
-                    <span key={`shine-${i}-${activeIndex}`} className="card-center-shine absolute inset-0 rounded-2xl pointer-events-none" />
-                  )}
+
 
                   {/* Fundo removido por performance (blur-xl degrada no WebView). 
                       O degradê CSS com a paleta natural (abaixo) já fornece o fundo necessário. */}
@@ -601,9 +597,7 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
                 }`}
                 style={isB && c ? { background: c.bg } : undefined}
               >
-                {isActive && (
-                  <span key={`shine-${i}-${activeIndex}`} className="card-center-shine absolute inset-0 rounded-2xl pointer-events-none" />
-                )}
+
 
                 {img && (
                   <img
