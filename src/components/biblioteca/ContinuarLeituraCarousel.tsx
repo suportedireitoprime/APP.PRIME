@@ -3,7 +3,7 @@ import { BookOpen, Play, Clock, Timer } from 'lucide-react';
 import type { LivroNormalizado } from '@/lib/bibliotecaColecoes';
 import { subscribeTracking, type LivroSnapshot } from '@/lib/bibliotecaTracking';
 import { readLeituraProgress, formatDuration } from '@/lib/leituraProgress';
-import { directImg } from '@/lib/cdnImg';
+import { directImg, prefetchImage } from '@/lib/cdnImg';
 import { pullLeituraProgress } from '@/lib/leituraProgressSync';
 
 interface Props {
@@ -29,6 +29,11 @@ const ContinuarLeituraCarousel = ({ onAbrirLivro }: Props) => {
     void pullLeituraProgress().then(() => setTick((t) => t + 1));
   }, []);
   const itens = useMemo(() => readLeituraProgress(tick).slice(0, 12), [tick]);
+
+  useEffect(() => {
+    // Pré-carrega as capas dos primeiros itens para navegação instantânea (0ms)
+    itens.slice(0, 4).forEach(item => prefetchImage(item.snap.capa));
+  }, [itens]);
 
   if (itens.length === 0) return null;
 
@@ -61,7 +66,8 @@ const ContinuarLeituraCarousel = ({ onAbrirLivro }: Props) => {
                     <img
                       src={directImg(snap.capa, 320)}
                       alt=""
-                      loading="lazy"
+                      loading="eager"
+                      fetchPriority="high"
                       decoding="async"
                       className="absolute inset-0 w-full h-full object-cover"
                     />

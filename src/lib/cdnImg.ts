@@ -57,4 +57,16 @@ export const directImg = (url: string, w = 400) => otimizar(url, w);
 /** Imagem de notícias/cards */
 export const newsImg = (url: string, w = 640) => otimizar(url, w);
 
+export function prefetchImage(url: string | null | undefined) {
+  if (!url) return;
+  const img = new Image();
+  img.src = directImg(url, 400);
+}
+
+export function prefetchImages(urls: (string | null | undefined)[]) {
+  urls.filter(Boolean).forEach((url) => {
+    const img = new Image();
+    img.src = directImg(url!, 400);
+  });
+}
 

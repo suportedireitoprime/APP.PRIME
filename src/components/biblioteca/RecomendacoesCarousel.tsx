@@ -4,7 +4,7 @@ import { ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { COLECOES, normalizeLivro, type LivroNormalizado } from '@/lib/bibliotecaColecoes';
-import { directImg } from '@/lib/cdnImg';
+import { directImg, prefetchImage } from '@/lib/cdnImg';
 import { getPersistedColecao, setPersistedColecao } from '@/services/offlineDb';
 
 interface Props {
@@ -134,6 +134,11 @@ const RecomendacoesCarousel = ({ onAbrirLivro }: Props) => {
   // Triplica para simular loop infinito: [base | base | base]
   const lista = useMemo(() => (base.length ? [...base, ...base, ...base] : []), [base]);
   const BASE_LEN = base.length;
+
+  useEffect(() => {
+    // Pré-carrega as 4 primeiras capas na memória para eliminar tempo de pintura ao renderizar
+    base.slice(0, 4).forEach(item => prefetchImage(item.capa));
+  }, [base]);
 
   // Drag-to-scroll no desktop (mouse). Precisa ficar antes de qualquer retorno condicional
   // para manter a ordem dos hooks estável enquanto os livros carregam.
@@ -402,7 +407,7 @@ const RecomendacoesCarousel = ({ onAbrirLivro }: Props) => {
                       src={directImg(livro.capa, 480)}
                       alt={livro.titulo}
                       loading={i < 3 ? 'eager' : 'lazy'}
-                      {...(i < 3 ? { fetchpriority: 'high' as any } : {})}
+                      {...(i < 3 ? { fetchPriority: 'high' } : {})}
                       decoding="async"
                       className="absolute inset-0 w-full h-full object-cover"
                     />

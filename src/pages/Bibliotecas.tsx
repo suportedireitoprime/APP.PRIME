@@ -489,7 +489,9 @@ const Bibliotecas = () => {
                     src={c.cover}
                     alt=""
                     className="absolute inset-0 w-full h-full object-cover"
-                    loading={i < 2 ? undefined : 'lazy'}
+                    loading={i < 4 ? 'eager' : 'lazy'}
+                    fetchPriority={i < 4 ? 'high' : 'auto'}
+                    decoding="async"
                   />
                   {/* Fade suave para o card, sem tingir a capa */}
                   <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-r from-transparent to-card pointer-events-none" />
