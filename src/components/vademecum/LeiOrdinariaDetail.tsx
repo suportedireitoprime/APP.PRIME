@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { ExternalLink, FileText, ChevronRight, Scale, Sparkles, Loader2 } from 'lucide-react';
+import { useState, useMemo, useEffect } from 'react';
+import { ExternalLink, FileText, ChevronRight, Scale, Sparkles, Loader2, Check } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import ReactMarkdown from 'react-markdown';
 import { motion } from 'framer-motion';
@@ -392,10 +392,30 @@ export default LeiOrdinariaDetail;
 function ExplicacaoTab({ lei }: { lei: LeiOrdinaria }) {
   const [explicacao, setExplicacao] = useState<string | null>(lei.explicacao ?? null);
   const [loading, setLoading] = useState(false);
+  const [stepIndex, setStepIndex] = useState(0);
+
+  const steps = useMemo(() => [
+    "Analisando texto oficial da norma...",
+    "Consultando doutrina e jurisprudência...",
+    "Sintetizando pontos práticos...",
+    "Gerando explicação jurídica final..."
+  ], []);
+
+  useEffect(() => {
+    if (!loading) {
+      setStepIndex(0);
+      return;
+    }
+    const interval = setInterval(() => {
+      setStepIndex(prev => Math.min(prev + 1, steps.length - 1));
+    }, 2500);
+    return () => clearInterval(interval);
+  }, [loading, steps]);
 
   const gerar = async () => {
     if (loading) return;
     setLoading(true);
+    setStepIndex(0);
     try {
       await invokeResenhaFn('popular-texto-resenha', { id: lei.id, only_explicacao: true, force: true });
       const row = await resenhaById<{ explicacao: string | null }>(lei.id, 'explicacao');
@@ -423,20 +443,47 @@ function ExplicacaoTab({ lei }: { lei: LeiOrdinaria }) {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 gap-4">
+      <div className="flex flex-col items-center justify-center py-12 gap-6">
         <div className="relative">
           <div className="absolute inset-0 rounded-full bg-primary/20 blur-2xl animate-pulse" />
           <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-lg shadow-primary/30">
-            <Sparkles className="w-8 h-8 text-primary-foreground animate-pulse" />
+            <Scale className="w-8 h-8 text-primary-foreground animate-pulse" />
           </div>
         </div>
-        <div className="flex items-center gap-2 text-primary">
-          <Loader2 className="w-4 h-4 animate-spin" />
-          <span className="font-display text-sm font-semibold">Gerando explicação com IA…</span>
+        <div className="flex flex-col items-center gap-1">
+          <span className="font-display text-base font-bold text-primary uppercase tracking-wider">GERANDO EXPLICAÇÃO JURÍDICA...</span>
+          <p className="text-xs text-muted-foreground text-center max-w-[280px]">
+            Isso pode levar alguns segundos dependendo da complexidade e tamanho da norma.
+          </p>
         </div>
-        <p className="text-xs text-muted-foreground max-w-xs text-center">
-          Estamos analisando o texto oficial e escrevendo uma explicação didática. Isso pode levar alguns segundos.
-        </p>
+
+        <div className="w-full max-w-xs space-y-3 mt-2">
+          {steps.map((step, idx) => {
+            const isActive = idx === stepIndex;
+            const isPast = idx < stepIndex;
+            return (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: isActive || isPast ? 1 : 0.4, x: 0 }}
+                className="flex items-center gap-3"
+              >
+                <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 border transition-colors ${isPast ? 'bg-primary border-primary' : isActive ? 'border-primary' : 'border-muted-foreground/30'}`}>
+                  {isPast ? (
+                    <Check className="w-3 h-3 text-primary-foreground" />
+                  ) : isActive ? (
+                    <Loader2 className="w-3 h-3 text-primary animate-spin" />
+                  ) : (
+                    <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
+                  )}
+                </div>
+                <span className={`text-xs font-medium transition-colors ${isActive ? 'text-primary-light' : isPast ? 'text-foreground' : 'text-muted-foreground'}`}>
+                  {step}
+                </span>
+              </motion.div>
+            )
+          })}
+        </div>
       </div>
     );
   }
@@ -444,10 +491,10 @@ function ExplicacaoTab({ lei }: { lei: LeiOrdinaria }) {
   return (
     <div className="flex flex-col items-center justify-center py-12 gap-4 text-center">
       <div className="w-14 h-14 rounded-2xl bg-primary/15 flex items-center justify-center">
-        <Sparkles className="w-7 h-7 text-primary" />
+        <Scale className="w-7 h-7 text-primary" />
       </div>
       <div className="space-y-1">
-        <h3 className="font-display text-base font-semibold text-foreground">Explicação didática com IA</h3>
+        <h3 className="font-display text-base font-semibold text-foreground">Explicação Jurídica com IA</h3>
         <p className="text-sm text-muted-foreground max-w-sm">
           Gere uma explicação clara e acessível deste ato, escrita por IA a partir do texto oficial.
         </p>
@@ -456,7 +503,7 @@ function ExplicacaoTab({ lei }: { lei: LeiOrdinaria }) {
         onClick={gerar}
         className="mt-2 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-display text-sm font-semibold shadow-lg shadow-primary/20 hover:opacity-90 active:scale-[0.98] transition-all"
       >
-        <Sparkles className="w-4 h-4" />
+        <Scale className="w-4 h-4" />
         Gerar explicação
       </button>
     </div>
