@@ -13,11 +13,22 @@ export function CustomSplashScreen({ onComplete }: { onComplete: () => void }) {
   useEffect(() => {
     reduceMotion.current = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    const timeout = setTimeout(() => {
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
       onComplete();
-    }, 3200);
+    };
 
-    return () => clearTimeout(timeout);
+    // Sai assim que o app sinalizar prontidão (ou no máximo em 1.2s)
+    const maxTimeout = setTimeout(finish, 1200);
+    const onReady = () => finish();
+    window.addEventListener('app:ready', onReady);
+
+    return () => {
+      clearTimeout(maxTimeout);
+      window.removeEventListener('app:ready', onReady);
+    };
   }, [onComplete]);
 
   // Variaveis para a animação do texto

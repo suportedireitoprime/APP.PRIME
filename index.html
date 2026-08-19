@@ -43,17 +43,10 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700;800;900&family=Barlow+Condensed:wght@400;600;700;800&display=swap" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700;800;900&family=Barlow+Condensed:wght@400;600;700;800&display=swap"></noscript>
 
-    <!-- Preload LCP hero image -->
-    <link rel="preload" as="image" href="/__l5e/assets-v1/4c94f969-9450-4c6c-821d-7c82c5e23416/hero-vademecum.webp" fetchpriority="high" />
-    <!-- Preload Themis hero cutout (Home LCP) -->
-    <link rel="preload" as="image" href="/__l5e/assets-v1/32858d74-92e9-41a5-ba33-43b073fafa89/themis-marble-cutout.webp" fetchpriority="high" />
-    <!-- Preload auth Themis backgrounds (instant login screen) -->
-    <link rel="preload" as="image" href="/__l5e/assets-v1/b9b519e1-8763-4f18-b315-270d282abf3a/themis-bg.webp" fetchpriority="high" />
-    <link rel="preload" as="image" href="/__l5e/assets-v1/66c25456-3470-4c86-9015-85baada1f014/themis-auth-yellow.webp" fetchpriority="high" />
-    <!-- Preload logo (usado em Home, Auth, Landing, Onboarding) -->
+    <!-- Preload somente imagens críticas para o primeiro paint.
+         As demais (hero, auth-bg) são carregadas sob demanda pelo React. -->
     <link rel="preload" as="image" href="/__l5e/assets-v1/4067f3c5-6837-42c2-bab5-977c31b6f9db/logo-vacatio-v2.png" fetchpriority="high" />
-    <link rel="preload" as="image" href="/__l5e/assets-v1/09b674aa-ed18-4b41-b4ed-caa85d38dfd4/auth-bg-left.webp" />
-    <link rel="preload" as="image" href="/__l5e/assets-v1/9c61445b-e55b-42d2-afeb-e6f3d6b89f01/auth-bg-right.webp" />
+    <link rel="preload" as="image" href="/__l5e/assets-v1/b9b519e1-8763-4f18-b315-270d282abf3a/themis-bg.webp" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />

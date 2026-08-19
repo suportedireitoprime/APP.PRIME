@@ -14,12 +14,19 @@ import { Capacitor } from '@capacitor/core';
 
 
 
-// Boot GA4 o mais cedo possível (Consent Mode v2 default = denied).
+// Boot GA4 diferido — não compete com o parse/render inicial.
 if (typeof window !== "undefined") {
-  initAnalytics();
-  initNavTelemetry();
-  import("@/lib/enableMouseDragScroll").then((m) => m.enableMouseDragScroll());
-  import("@/lib/appMetrics").then((m) => m.startAppMetrics());
+  const bootAnalytics = () => {
+    initAnalytics();
+    initNavTelemetry();
+    import("@/lib/enableMouseDragScroll").then((m) => m.enableMouseDragScroll());
+    import("@/lib/appMetrics").then((m) => m.startAppMetrics());
+  };
+  if ('requestIdleCallback' in window) {
+    (window as any).requestIdleCallback(bootAnalytics, { timeout: 1500 });
+  } else {
+    setTimeout(bootAnalytics, 300);
+  }
 }
 import { QueryClient } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
@@ -110,7 +117,7 @@ const PessoalLivros = lazy(() => import("./pages/pessoal/Livros.tsx"));
 const PessoalFilmes = lazy(() => import("./pages/pessoal/Filmes.tsx"));
 const PessoalJurisprudencias = lazy(() => import("./pages/pessoal/Jurisprudencias.tsx"));
 const PessoalTematicas = lazy(() => import("./pages/pessoal/Tematicas.tsx"));
-import MeuEspaco from "./pages/MeuEspaco.tsx";
+const MeuEspaco = lazy(() => import("./pages/MeuEspaco.tsx"));
 
 const MeusDownloads = lazy(() => import("./pages/MeusDownloads.tsx"));
 const MinhasLeituras = lazy(() => import("./pages/MinhasLeituras.tsx"));
@@ -271,11 +278,11 @@ const GeradorPost = lazy(() => import("./pages/GeradorPost.tsx"));
 const Blog = lazy(routePrefetch.blog);
 const Newsletter = lazy(() => import("./pages/Newsletter.tsx"));
 const DesktopLinkConfirm = lazy(() => import("./pages/DesktopLinkConfirm.tsx"));
-// Biblioteca — eager para abrir sem Suspense fallback
-import Bibliotecas from "./pages/Bibliotecas.tsx";
-import BibliotecaCategoria from "./pages/BibliotecaCategoria.tsx";
-import BibliotecaOffline from "./pages/BibliotecaOffline.tsx";
-import BibliotecaTrilhas from "./pages/BibliotecaTrilhas.tsx";
+// Biblioteca — lazy (eram eager, adicionando ~82KB desnecessários ao boot)
+const Bibliotecas = lazy(() => import("./pages/Bibliotecas.tsx"));
+const BibliotecaCategoria = lazy(() => import("./pages/BibliotecaCategoria.tsx"));
+const BibliotecaOffline = lazy(() => import("./pages/BibliotecaOffline.tsx"));
+const BibliotecaTrilhas = lazy(() => import("./pages/BibliotecaTrilhas.tsx"));
 
 const CompressaoImagens = lazy(() => import("./pages/CompressaoImagens.tsx"));
 const AdminFuncoesAssinantes = lazy(() => import("./pages/AdminFuncoesAssinantes.tsx"));
@@ -330,9 +337,9 @@ const AdminBibliotecaLeisGeral = lazy(() => import("./pages/AdminBibliotecaLeisG
 const AdminBuscadorLeis = lazy(() => import("./pages/AdminBuscadorLeis.tsx"));
 const AdminConcorrentes = lazy(() => import("./pages/AdminConcorrentes.tsx"));
 const AdminConcorrenteDetalhe = lazy(() => import("./pages/AdminConcorrenteDetalhe.tsx"));
-import NovidadesRadarOverlay from "./components/NovidadesRadarOverlay";
-import GlobalDesktopHeader from "./components/layout/GlobalDesktopHeader";
-import DesktopFileDropOverlay from "./components/desktop/DesktopFileDropOverlay";
+const NovidadesRadarOverlay = lazy(() => import("./components/NovidadesRadarOverlay"));
+const GlobalDesktopHeader = lazy(() => import("./components/layout/GlobalDesktopHeader"));
+const DesktopFileDropOverlay = lazy(() => import("./components/desktop/DesktopFileDropOverlay"));
 const ModoOffline = lazy(() => import("./pages/ModoOffline.tsx"));
 const ModoOfflineLeis = lazy(() => import("./pages/ModoOfflineLeis.tsx"));
 const ModoOfflineLivros = lazy(() => import("./pages/ModoOfflineLivros.tsx"));
@@ -373,7 +380,7 @@ const LembretesLocal = lazy(() => import("./pages/LembretesLocal.tsx"));
 const PreferenciasLembretes = lazy(() => import("./pages/PreferenciasLembretes.tsx"));
 const AnotacoesAudio = lazy(() => import("./pages/AnotacoesAudio.tsx"));
 const AssistenteApp = lazy(() => import("./pages/AssistenteApp.tsx"));
-import AssistenteHorus from "./pages/AssistenteHorus.tsx";
+const AssistenteHorus = lazy(() => import("./pages/AssistenteHorus.tsx"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -697,40 +704,50 @@ function AnimatedRoutes() {
     prefetchNearby(location.pathname);
   }, [location.pathname, location.search]);
 
-  // Hidrata o cache das Videoaulas (IndexedDB → memória) logo no boot, em idle:
-  // ao entrar na área, a lista já pinta sem skeleton nem rede.
+  // Hidrata caches de forma escalonada (2 fases em idle) para não competir
+  // com o primeiro paint e as interações iniciais do usuário.
   useEffect(() => {
     if (!user) return;
-    void import('@/lib/videoaulasStore').then((m) => {
-      m.hydrateVideoaulasCache();
-      m.warmVideoaulasCache();
-    });
-    void import('@/lib/tematicaStore').then((m) => {
-      m.hydrateTematicaCache();
-      m.warmTematicaCache();
-    });
-    // Favoritos/recentes (biblioteca, leis, resumos, dicionário) da conta.
-    void Promise.all([
-      import('@/lib/leisFavoritos'),
-      import('@/lib/bibliotecaTracking'),
-      import('@/lib/resumosLocal'),
-      import('@/hooks/useDicionarioPrefs'),
-      import('@/lib/flashcardsQueries').then((m) => m.prefetchFlashcardsDashboard(queryClient)),
-    ]).then(() => import('@/lib/userSync').then((m) => m.pullAllUserSync(true)));
 
+    const ric = (typeof window !== 'undefined' && 'requestIdleCallback' in window)
+      ? (cb: () => void, opts?: { timeout?: number }) => (window as any).requestIdleCallback(cb, opts) as number
+      : undefined;
+    const schedule = (cb: () => void, delay: number, idleTimeout?: number) => {
+      const t = setTimeout(() => { if (ric) ric(cb, { timeout: idleTimeout ?? 3000 }); else cb(); }, delay);
+      return t;
+    };
 
-    // Pré-carrega os chunks das telas de Videoaulas em idle: navegar
-    // (e voltar) passa a resolver do cache de módulos, sem Suspense visível.
-    const carregarChunks = () => {
+    // Fase 1 (2s): hydrate de stores em memória
+    const t1 = schedule(() => {
+      void import('@/lib/videoaulasStore').then((m) => {
+        m.hydrateVideoaulasCache();
+        m.warmVideoaulasCache();
+      });
+      void import('@/lib/tematicaStore').then((m) => {
+        m.hydrateTematicaCache();
+        m.warmTematicaCache();
+      });
+      // Favoritos/recentes (biblioteca, leis, resumos, dicionário) da conta.
+      void Promise.all([
+        import('@/lib/leisFavoritos'),
+        import('@/lib/bibliotecaTracking'),
+        import('@/lib/resumosLocal'),
+        import('@/hooks/useDicionarioPrefs'),
+        import('@/lib/flashcardsQueries').then((m) => m.prefetchFlashcardsDashboard(queryClient)),
+      ]).then(() => import('@/lib/userSync').then((m) => m.pullAllUserSync(true)));
+    }, 2000);
+
+    // Fase 2 (4s): pré-carrega chunks de navegação
+    const t2 = schedule(() => {
       (['videoaulas', 'videoaulasCatalogo', 'videoaulasArea', 'videoaulaView',
         'videoaulasCategorias', 'videoaulasTrilhas', 'videoaulasCatalogoTrilha', 'videoaulasLista',
         'videoaulaView', 'videoaulasConquistas', 'resumosJuridicos', 'resumosJuridicosTemas',
         'resumosJuridicosSubtemas', 'resumosJuridicosLista', 'audioaulas',
         'dicionario', 'biblioteca', 'bibliotecaCategoria', 'blog',
         'tematica'] as const).forEach((k) => prefetchRoute(k));
-    };
-    const ric = (window as any).requestIdleCallback as ((cb: () => void, o?: { timeout?: number }) => number) | undefined;
-    if (ric) ric(carregarChunks, { timeout: 3000 }); else setTimeout(carregarChunks, 1200);
+    }, 4000, 5000);
+
+    return () => { clearTimeout(t1); clearTimeout(t2); };
   }, [user]);
 
   // Sempre voltar ao topo ao navegar (voltar, avançar, clique).
@@ -772,10 +789,10 @@ function AnimatedRoutes() {
       <PushNavListener />
       <DeepLinkBootstrap />
       {user && <PresenceWrapper />}
-      {user && <NovidadesRadarOverlay />}
+      {user && <Suspense fallback={null}><NovidadesRadarOverlay /></Suspense>}
       <HorusAvaliacaoOverlay />
-      <GlobalDesktopHeader />
-      <DesktopFileDropOverlay />
+      <Suspense fallback={null}><GlobalDesktopHeader /></Suspense>
+      <Suspense fallback={null}><DesktopFileDropOverlay /></Suspense>
       <PersistentHome />
       <BackToTop />
       <Suspense fallback={<LazyFallback />}>
