@@ -22,8 +22,6 @@ const PageTransition = ({ children }: PageTransitionProps) => {
       style={{
         width: "100%",
         minHeight: "100dvh",
-        willChange: "transform, opacity", // Força aceleração de hardware (GPU)
-        backfaceVisibility: "hidden", // Evita flicker no iOS
       }}
     >
       {children}
