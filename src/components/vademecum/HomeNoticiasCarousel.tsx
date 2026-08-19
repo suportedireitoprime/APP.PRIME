@@ -186,6 +186,7 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
           cycleStepRef.current++;
         }
       }
+      if (added === 0) return prev; // Evita loop infinito no useLayoutEffect
       return out;
     });
   }, [takeNext]);
