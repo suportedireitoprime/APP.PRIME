@@ -76,7 +76,6 @@ const IndexMobile = () => {
         const img = new Image();
         img.src = src;
       });
-      prefetchAllArtigos(4);
       prefetchResenha();
       prefetchNoticias();
       // Pre-warm overlays e Biblioteca para exibição instantânea (0ms)
