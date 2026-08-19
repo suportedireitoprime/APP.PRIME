@@ -106,6 +106,23 @@ function formatEventLabel(ts: number) {
   const mm = String(new Date(ts).getMonth() + 1).padStart(2, '0');
   return `${dd}/${mm}, ${hh}`;
 }
+const METAS_MOCK = [
+  { id: 'm1', type: 'Missão de Leitura', title: 'Crime e Castigo', subtitle: 'Meta: Ler 15 páginas hoje (Págs 45 a 60)', progress: 0, path: '/pessoal/livros', icon: BookOpen },
+  { id: 'm2', type: 'Trilha de Videoaula', title: 'Processo Penal: Inquérito', subtitle: 'Continuar Aula 04: Prazos do Inquérito', progress: 65, path: '/minhas-videoaulas', icon: Video },
+  { id: 'm3', type: 'Revisão e Exercícios', title: 'Direito Civil: Contratos', subtitle: '10 exercícios separados para hoje', progress: 100, path: '/pessoal/anotacoes', icon: FileText },
+];
+
+const QUICK = [
+  { label: 'Minhas Leituras', icon: BookOpen, path: '/minhas-leituras', color: '#FFD400' },
+  { label: 'Meus Resumos', icon: NotebookPen, path: '/meus-resumos', color: '#22D3EE' },
+  { label: 'Videoaulas', icon: Video, path: '/minhas-videoaulas', color: '#FF2D78' },
+  { label: 'Minhas anotações', icon: StickyNote, path: '/pessoal/anotacoes' },
+  { label: 'Meus grifos', icon: Highlighter, path: '/pessoal/grifos' },
+  { label: 'Livros Salvos', icon: BookMarked, path: '/pessoal/livros' },
+  { label: 'Filmes', icon: Film, path: '/pessoal/filmes' },
+  { label: 'Jurisprudências', icon: Gavel, path: '/pessoal/jurisprudencias' },
+  { label: 'Temáticas', icon: Star, path: '/pessoal/tematicas' },
+];
 
 const MeuEspaco = () => {
   useHideSplashScreen(100);
@@ -126,12 +143,6 @@ const MeuEspaco = () => {
   const [activeTab, setActiveTab] = useState<'meus' | 'metas'>('meus');
   const [clearingStorage, setClearingStorage] = useState(false);
   
-  const METAS_MOCK = [
-    { id: 'm1', type: 'Missão de Leitura', title: 'Crime e Castigo', subtitle: 'Meta: Ler 15 páginas hoje (Págs 45 a 60)', progress: 0, path: '/pessoal/livros', icon: BookOpen },
-    { id: 'm2', type: 'Trilha de Videoaula', title: 'Processo Penal: Inquérito', subtitle: 'Continuar Aula 04: Prazos do Inquérito', progress: 65, path: '/minhas-videoaulas', icon: Video },
-    { id: 'm3', type: 'Revisão e Exercícios', title: 'Direito Civil: Contratos', subtitle: '10 exercícios separados para hoje', progress: 100, path: '/pessoal/anotacoes', icon: FileText },
-  ];
-
 
   // Snapshot local para paint imediato antes do React Query reidratar.
   const initialSnap: any = getCache(PESSOAL_SNAP);
@@ -263,13 +274,13 @@ const MeuEspaco = () => {
         try {
           const { syncQueue } = await import('@/services/syncQueue');
           await syncQueue.enqueue({ kind: 'table.update', table: 'profiles', match: { id: user.id }, values: { bio: val } });
-        } catch {}
+        } catch (e) { console.error("Falha syncQueue:", e); toast.error("Falha ao agendar edição offline."); }
       }
     } else {
       try {
         const { syncQueue } = await import('@/services/syncQueue');
         await syncQueue.enqueue({ kind: 'table.update', table: 'profiles', match: { id: user.id }, values: { bio: val } });
-      } catch {}
+      } catch (e) { console.error("Falha syncQueue:", e); toast.error("Falha ao agendar edição offline."); }
     }
     qc.invalidateQueries({ queryKey: ['profile-summary', user.id] });
     haptic.success();
@@ -287,13 +298,13 @@ const MeuEspaco = () => {
           try {
             const { syncQueue } = await import('@/services/syncQueue');
             await syncQueue.enqueue({ kind: 'table.update', table: 'profiles', match: { id: user.id }, values: { capa_id: id } });
-          } catch {}
+          } catch (e) { console.error("Falha syncQueue:", e); toast.error("Falha ao agendar edição offline."); }
         }
       } else {
         try {
           const { syncQueue } = await import('@/services/syncQueue');
           await syncQueue.enqueue({ kind: 'table.update', table: 'profiles', match: { id: user.id }, values: { capa_id: id } });
-        } catch {}
+        } catch (e) { console.error("Falha syncQueue:", e); toast.error("Falha ao agendar edição offline."); }
       }
       qc.invalidateQueries({ queryKey: ['profile-summary', user.id] });
     }
@@ -312,37 +323,30 @@ const MeuEspaco = () => {
 
   const clearStorage = async () => {
     haptic.selection();
-    if (!window.confirm("Isso apagará o cache de leis e dicionário baixados (eles serão recarregados quando necessário). Tem certeza?")) return;
-    setClearingStorage(true);
-    try {
-      const { localDb } = await import('@/services/localDb');
-      if (localDb.available) {
-        await localDb.clearAll();
+    toast.warning("Tem certeza?", {
+      description: "Isso apagará o cache de leis e dicionário baixados (serão recarregados quando necessário).",
+      action: {
+        label: "Limpar",
+        onClick: async () => {
+          setClearingStorage(true);
+          try {
+            const { localDb } = await import('@/services/localDb');
+            if (localDb.available) {
+              await localDb.clearAll();
+            }
+            const { clearCache } = await import('@/lib/pessoalCache');
+            clearCache();
+            toast.success("Armazenamento offline liberado com sucesso!");
+          } catch (e) {
+            console.error("Erro ao limpar dados offline:", e);
+            toast.error("Houve um erro ao liberar o armazenamento.");
+          } finally {
+            setClearingStorage(false);
+          }
+        }
       }
-      const { clearCache } = await import('@/lib/pessoalCache');
-      clearCache();
-      toast.success("Armazenamento offline liberado com sucesso!");
-    } catch (e) {
-      console.error("Erro ao limpar dados offline:", e);
-      toast.error("Houve um erro ao liberar o armazenamento.");
-    } finally {
-      setClearingStorage(false);
-    }
+    });
   };
-
-  
-  const QUICK = [
-    { label: 'Minhas Leituras', icon: BookOpen, path: '/minhas-leituras', color: '#FFD400' },
-    { label: 'Meus Resumos', icon: NotebookPen, path: '/meus-resumos', color: '#22D3EE' },
-    { label: 'Videoaulas', icon: Video, path: '/minhas-videoaulas', color: '#FF2D78' },
-    { label: 'Minhas anotações', icon: StickyNote, path: '/pessoal/anotacoes' },
-    { label: 'Meus grifos', icon: Highlighter, path: '/pessoal/grifos' },
-    { label: 'Livros Salvos', icon: BookMarked, path: '/pessoal/livros' },
-    { label: 'Filmes', icon: Film, path: '/pessoal/filmes' },
-    { label: 'Jurisprudências', icon: Gavel, path: '/pessoal/jurisprudencias' },
-    { label: 'Temáticas', icon: Star, path: '/pessoal/tematicas' },
-  ];
-
 
   // ---------- Calendar & agrupamento por dia ----------
   const dayList = useMemo(() => getDayList(7), []);
@@ -379,13 +383,13 @@ const MeuEspaco = () => {
         <button
           onClick={handleBack}
           aria-label="Voltar"
-          className="absolute top-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] left-3 w-11 h-11 rounded-full bg-black/55 backdrop-blur flex items-center justify-center text-white active:scale-95 transition"
+          className="absolute top-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] left-3 w-12 h-12 rounded-full bg-black/55 backdrop-blur flex items-center justify-center text-white active:scale-95 transition"
         >
           <ChevronLeft className="w-6 h-6" />
         </button>
         <button
           onClick={() => setCoverPickerOpen(true)}
-          className="absolute top-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] right-3 h-11 px-4 rounded-full bg-black/55 backdrop-blur flex items-center gap-2 text-white text-sm font-medium active:scale-95 transition"
+          className="absolute top-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] right-3 h-12 px-4 rounded-full bg-black/55 backdrop-blur flex items-center gap-2 text-white text-sm font-medium active:scale-95 transition"
         >
           <Camera className="w-4 h-4" />
           Trocar capa
@@ -513,6 +517,28 @@ const MeuEspaco = () => {
                     </p>
                   )}
                 </div>
+              </div>
+
+              {/* Estatísticas */}
+              <div className="px-5 lg:px-0 grid grid-cols-3 gap-3">
+                <StatCell
+                  icon={Scale}
+                  label="Leis lidas"
+                  value={leisCount.toString()}
+                  onClick={() => go('/pessoal/leis')}
+                />
+                <StatCell
+                  icon={Star}
+                  label="Artigos"
+                  value={artigosCount.toString()}
+                  onClick={() => go('/pessoal/artigos')}
+                />
+                <StatCell
+                  icon={BookOpen}
+                  label="Leituras"
+                  value={leiturasCount.toString()}
+                  onClick={() => go('/minhas-leituras')}
+                />
               </div>
 
               {/* Quick access Quadradinhos */}
