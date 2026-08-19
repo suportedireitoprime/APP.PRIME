@@ -66,8 +66,6 @@ const brasaoImg = brasaoImgAsset;
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { RecordingProvider } from "@/contexts/RecordingContext";
-import { LeisCantadasPlayerProvider } from "@/contexts/LeisCantadasPlayerContext";
-import GlobalLeisCantadasMiniPlayer from "@/components/leis-cantadas/GlobalLeisCantadasMiniPlayer";
 import { AudioaulasPlayerProvider } from "@/contexts/AudioaulasPlayerContext";
 import { ResumoLivroPlayerProvider } from "./contexts/ResumoLivroPlayerContext.tsx";
 import { VideoaulasPlayerProvider } from "@/contexts/VideoaulasPlayerContext";

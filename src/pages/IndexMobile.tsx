@@ -36,7 +36,7 @@ const HERO_CONFIG = { radar: camaraHero, legislacao: heroImage, noticias: senado
 type Tab = 'legislacao' | 'noticias' | 'ferramentas';
 
 const IndexMobile = () => {
-  useHideSplashScreen(100);
+  useHideSplashScreen(400); // Give React more time to paint heavy UI before dropping native splash
   const navigate = useNavigate();
   const [, setActiveTab] = useState<Tab>('legislacao');
   const [menuOpen, setMenuOpen] = useState(false);

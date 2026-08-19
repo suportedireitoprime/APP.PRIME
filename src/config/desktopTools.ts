@@ -76,18 +76,7 @@ export const DESKTOP_TOOL_GROUPS: DesktopToolGroup[] = [
       { id: 'offline', label: 'Modo Offline', desc: 'Baixe leis e livros para usar sem internet', icon: CloudDownload, route: '/modo-offline', color: '#64748B' },
     ],
   },
-  {
-    id: 'gamificacao',
-    label: 'Gamificação',
-    hint: 'Aprenda jogando e compita no Ranking Elite',
-    tools: [
 
-      { id: 'forca', label: 'Jogo da Forca', desc: 'Teste seu vocabulário jurídico', icon: Trophy, route: '/gamificacao/forca', color: '#FACC15' },
-      { id: 'caca-palavras', label: 'Caça-palavras', desc: 'Em breve', icon: BookOpenText, route: '#', color: '#6B7280' },
-      { id: 'palavras-cruzadas', label: 'Palavras cruzadas', desc: 'Em breve', icon: NotebookText, route: '#', color: '#6B7280' },
-      { id: 'ranking', label: 'Ranking Elite', desc: 'Veja sua posição no pódio', icon: Trophy, route: '/gamificacao/ranking', color: '#F59E0B' },
-    ],
-  },
 ];
 
 export const DESKTOP_TOOLS_FLAT: DesktopTool[] = DESKTOP_TOOL_GROUPS.flatMap((g) => g.tools);

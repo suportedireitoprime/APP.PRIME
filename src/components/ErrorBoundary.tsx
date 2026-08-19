@@ -18,13 +18,32 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
+    const isChunkLoadFailed = error.message.includes('Failed to fetch dynamically imported module');
+
+    if (isChunkLoadFailed) {
+      const reloadCount = parseInt(sessionStorage.getItem('chunk_reload') || '0', 10);
+      if (reloadCount < 1) {
+        sessionStorage.setItem('chunk_reload', '1');
+        window.location.reload();
+        return;
+      }
+    } else {
+      sessionStorage.removeItem('chunk_reload');
+    }
+
     void recordException(error, {
       source: 'react.ErrorBoundary',
       componentStack: (info.componentStack || '').slice(0, 500),
     });
   }
 
-  reset = () => this.setState({ error: null });
+  reset = () => {
+    if (this.state.error?.message.includes('Failed to fetch dynamically imported module')) {
+      window.location.reload();
+    } else {
+      this.setState({ error: null });
+    }
+  };
 
   render() {
     const { error } = this.state;

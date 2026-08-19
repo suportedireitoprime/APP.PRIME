@@ -222,7 +222,7 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
   }, [noticias.length]);
 
   useEffect(() => {
-    (async () => {
+    const fetchObras = async () => {
       const { data } = await supabase
         .from('tematica_juridica_obras')
         .select('*')
@@ -231,19 +231,28 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
         .order('ordem', { ascending: true })
         .limit(MAX_OBRAS);
       if (data) setObras((data as unknown) as Obra[]);
-    })();
+    };
+    if ('requestIdleCallback' in window) {
+      (window as any).requestIdleCallback(fetchObras, { timeout: 2000 });
+    } else {
+      setTimeout(fetchObras, 500);
+    }
   }, []);
 
-  // Livros clássicos (card dedicado no carrossel)
   useEffect(() => {
-    (async () => {
+    const fetchLivros = async () => {
       const { data } = await supabase
         .from('biblioteca_classicos')
         .select('id, livro, autor, area, imagem, sobre, link, download, capa_horizontal, ano_lancamento, editora, curiosidades, analise_detalhada, audio_resumo_url, paginas, minutos_leitura')
         .not('imagem', 'is', null)
         .limit(MAX_LIVROS);
       if (data) setLivros((data as unknown) as Livro[]);
-    })();
+    };
+    if ('requestIdleCallback' in window) {
+      (window as any).requestIdleCallback(fetchLivros, { timeout: 2500 });
+    } else {
+      setTimeout(fetchLivros, 600);
+    }
   }, []);
 
   useEffect(() => {
