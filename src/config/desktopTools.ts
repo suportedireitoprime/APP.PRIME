@@ -81,7 +81,7 @@ export const DESKTOP_TOOL_GROUPS: DesktopToolGroup[] = [
     label: 'Gamificação',
     hint: 'Aprenda jogando e compita no Ranking Elite',
     tools: [
-      { id: 'tribunal', label: 'Tribunal Simulado', desc: 'Simulador prático de defesa criminal', icon: Scale, route: '/tribunal-simulado', color: '#8B5CF6' },
+
       { id: 'forca', label: 'Jogo da Forca', desc: 'Teste seu vocabulário jurídico', icon: Trophy, route: '/gamificacao/forca', color: '#FACC15' },
       { id: 'caca-palavras', label: 'Caça-palavras', desc: 'Em breve', icon: BookOpenText, route: '#', color: '#6B7280' },
       { id: 'palavras-cruzadas', label: 'Palavras cruzadas', desc: 'Em breve', icon: NotebookText, route: '#', color: '#6B7280' },
