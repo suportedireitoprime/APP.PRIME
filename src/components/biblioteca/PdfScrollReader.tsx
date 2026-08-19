@@ -87,6 +87,8 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId }: Props) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const pdfRef = useRef<any>(null);
   const renderedRef = useRef<Set<number>>(new Set());
+  const renderTasksRef = useRef<Map<number, any>>(new Map());
+  const pagesRef = useRef<Map<number, any>>(new Map());
   const startedAtRef = useRef<number>(Date.now());
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -224,6 +226,17 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId }: Props) => {
     return () => {
       cancelled = true;
       if (timeoutId) window.clearTimeout(timeoutId);
+      
+      renderTasksRef.current.forEach((task) => {
+        try { task.cancel(); } catch {}
+      });
+      renderTasksRef.current.clear();
+
+      pagesRef.current.forEach((page) => {
+        try { page.cleanup(); } catch {}
+      });
+      pagesRef.current.clear();
+
       if (pdfRef.current) {
         try {
           pdfRef.current.destroy();
@@ -258,9 +271,30 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId }: Props) => {
             } else {
               // Virtualização: limpa a página se ela sair da viewport
               if (renderedRef.current.has(idx)) {
+                // Cancela renderização em andamento se houver
+                const pendingTask = renderTasksRef.current.get(idx);
+                if (pendingTask) {
+                  try { pendingTask.cancel(); } catch {}
+                  renderTasksRef.current.delete(idx);
+                }
+
+                // Libera memória bruta do canvas (evita leaks no iOS Safari)
+                const oldCanvas = el.querySelector('canvas');
+                if (oldCanvas) {
+                  oldCanvas.width = 0;
+                  oldCanvas.height = 0;
+                }
+
                 el.style.minHeight = `${el.clientHeight}px`;
                 el.innerHTML = `<div class="text-neutral-400 text-xs py-8 w-full h-full flex items-center justify-center">Página ${idx}</div>`;
                 renderedRef.current.delete(idx);
+
+                // Libera a memória interna que o PDF.js alocou para as estruturas dessa página
+                const pageObj = pagesRef.current.get(idx);
+                if (pageObj) {
+                  try { pageObj.cleanup(); } catch {}
+                  pagesRef.current.delete(idx);
+                }
               }
             }
           });
@@ -307,6 +341,8 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId }: Props) => {
       const pdf = pdfRef.current;
       if (!pdf) return;
       const page = await pdf.getPage(idx);
+      pagesRef.current.set(idx, page);
+      
       const containerWidth = containerRef.current?.clientWidth || window.innerWidth;
       const targetWidth = dualPage
         ? Math.min((containerWidth - 60) / 2, 600)
@@ -324,7 +360,21 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId }: Props) => {
       canvas.style.margin = '0 auto';
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
-      await page.render({ canvasContext: ctx, viewport: finalVp, canvas } as any).promise;
+      
+      const renderTask = page.render({ canvasContext: ctx, viewport: finalVp, canvas } as any);
+      renderTasksRef.current.set(idx, renderTask);
+      
+      try {
+        await renderTask.promise;
+      } catch (e: any) {
+        if (e?.name === 'RenderingCancelledException') {
+          // Renderização cancelada pelo IntersectionObserver (página saiu da tela)
+          return;
+        }
+        throw e;
+      } finally {
+        renderTasksRef.current.delete(idx);
+      }
 
       host.innerHTML = '';
       host.appendChild(canvas);
@@ -390,9 +440,10 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId }: Props) => {
       const achados: Match[] = [];
       
       const fetchPageText = async (i: number) => {
+        let pageObj: any = null;
         try {
-          const page = await pdf.getPage(i);
-          const content = await page.getTextContent();
+          pageObj = await pdf.getPage(i);
+          const content = await pageObj.getTextContent();
           const texto = content.items.map((it: any) => it.str).join(' ').replace(/\s+/g, ' ');
           const textoNormalized = texto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
           const pos = textoNormalized.indexOf(alvoNormalized);
@@ -402,7 +453,11 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId }: Props) => {
               trecho: texto.slice(Math.max(0, pos - 50), pos + alvo.length + 60).trim(),
             };
           }
-        } catch {}
+        } catch {} finally {
+          if (pageObj) {
+            try { pageObj.cleanup(); } catch {}
+          }
+        }
         return null;
       };
 
