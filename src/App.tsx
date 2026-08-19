@@ -88,7 +88,7 @@ const SmartLink = lazyWithRetry(() => import("./pages/SmartLink.tsx"));
 const ResetPassword = lazyWithRetry(() => import("./pages/ResetPassword.tsx"));
 const Onboarding = lazyWithRetry(() => import("./pages/Onboarding.tsx"));
 const QuestoesHistorico = lazyWithRetry(() => import('./pages/QuestoesHistorico'));
-const AdminFuncoes = lazyWithRetry(() => import("./pages/AdminFuncoes.tsx"));
+// const AdminFuncoes = lazyWithRetry(() => import("./pages/AdminFuncoes.tsx"));
 const AdminPush = lazyWithRetry(() => import("./pages/AdminPush.tsx"));
 const AdminPushSection = lazyWithRetry(() => import("./pages/AdminPushSection.tsx"));
 const AdminResumoLivroAudioEditar = lazyWithRetry(() => import("./pages/AdminResumoLivroAudioEditar.tsx"));
@@ -277,7 +277,7 @@ const BibliotecaOffline = lazyWithRetry(() => import("./pages/BibliotecaOffline.
 const BibliotecaTrilhas = lazyWithRetry(() => import("./pages/BibliotecaTrilhas.tsx"));
 
 const CompressaoImagens = lazyWithRetry(() => import("./pages/CompressaoImagens.tsx"));
-const AdminFuncoesAssinantes = lazyWithRetry(() => import("./pages/AdminFuncoesAssinantes.tsx"));
+// const AdminFuncoesAssinantes = lazyWithRetry(() => import("./pages/AdminFuncoesAssinantes.tsx"));
 const AdminVadeMecum = lazyWithRetry(() => import("./pages/AdminVadeMecum.tsx"));
 const AdminLembretes = lazyWithRetry(() => import("./pages/AdminLembretes.tsx"));
 const AdminLembretesBiblioteca = lazyWithRetry(() => import("./pages/AdminLembretesBiblioteca.tsx"));
@@ -886,7 +886,7 @@ function AnimatedRoutes() {
           <Route path="/aprender/questoes" element={<ProtectedRoute><PageTransition><AprenderQuestoes /></PageTransition></ProtectedRoute>} />
           <Route path="/aprender/flashcards" element={<ProtectedRoute><PageTransition><AprenderFlashcards /></PageTransition></ProtectedRoute>} />
           <Route path="/aprender/desempenho" element={<ProtectedRoute><PageTransition><AprenderDesempenho /></PageTransition></ProtectedRoute>} />
-          <Route path="/aprender/aula/:aulaId" element={<ProtectedRoute><AprenderAula /></ProtectedRoute>} />
+          <Route path="/aprender/aula/:aulaId" element={<ProtectedRoute><AprenderAula /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards" element={<ProtectedRoute><PageTransition><Flashcards /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/estudar" element={<ProtectedRoute><PageTransition><FlashcardsEstudo /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/trilhas" element={<ProtectedRoute><PageTransition><FlashcardsTrilhas /></PageTransition></ProtectedRoute>} />
@@ -985,8 +985,8 @@ function AnimatedRoutes() {
 
           
           <Route path="/compressao-imagens" element={<ProtectedRoute><PageTransition><CompressaoImagens /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-funcoes" element={<ProtectedRoute><PageTransition><AdminFuncoes /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-funcoes-assinantes" element={<ProtectedRoute><PageTransition><AdminFuncoesAssinantes /></PageTransition></ProtectedRoute>} />
+          {/* <Route path="/admin-funcoes" element={<ProtectedRoute><PageTransition><AdminFuncoes /></PageTransition></ProtectedRoute>} /> */}
+          {/* <Route path="/admin-funcoes-assinantes" element={<ProtectedRoute><PageTransition><AdminFuncoesAssinantes /></PageTransition></ProtectedRoute>} /> */}
           <Route path="/admin-vade-mecum" element={<ProtectedRoute><PageTransition><AdminVadeMecum /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-vade-mecum-historico" element={<ProtectedRoute><PageTransition><AdminVadeMecumHistorico /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-lembretes" element={<ProtectedRoute><PageTransition><AdminLembretes /></PageTransition></ProtectedRoute>} />

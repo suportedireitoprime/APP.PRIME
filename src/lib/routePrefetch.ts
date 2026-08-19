@@ -22,7 +22,6 @@ export const routePrefetch = {
   perfil: () => import("@/pages/Perfil.tsx"),
   aprender: () => import("@/pages/Aprender.tsx"),
   aprenderModulo: () => import("@/pages/AprenderModulo.tsx"),
-  flashcards: () => import("@/pages/Flashcards.tsx"),
   peticaoInicial: () => import("@/pages/PeticaoInicial.tsx"),
   dicionario: () => import("@/pages/DicionarioJuridicoPage.tsx"),
   leiSeca: () => import("@/pages/LeiSeca/LeiSecaIndex.tsx"),
