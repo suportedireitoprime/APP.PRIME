@@ -486,23 +486,6 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
                     </div>
                   </div>
 
-                  <AnimatePresence>
-                    {isActive && (
-                      <motion.div
-                        key={`shine-${activeIndex}`}
-                        initial={{ x: '-120%', opacity: 0 }}
-                        animate={{ x: '120%', opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 1.1, ease: 'easeOut' }}
-                        className="pointer-events-none absolute inset-y-0 w-1/2 -skew-x-12"
-                        style={{
-                          background:
-                            'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.05) 30%, rgba(255,255,255,0.45) 50%, rgba(255,255,255,0.05) 70%, transparent 100%)',
-                          mixBlendMode: 'overlay',
-                        }}
-                      />
-                    )}
-                  </AnimatePresence>
                 </div>
               </motion.button>
             );
@@ -536,16 +519,8 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
                     <span key={`shine-${i}-${activeIndex}`} className="card-center-shine absolute inset-0 rounded-2xl pointer-events-none" />
                   )}
 
-                  {/* fundo: poster borrado extraindo a paleta natural */}
-                   {bg && (
-                     <img
-                       src={cdnImg(bg, 320)}
-                      alt=""
-                      loading="lazy"
-                      decoding="async"
-                      className="absolute inset-0 w-full h-full object-cover scale-125 blur-xl opacity-40"
-                    />
-                  )}
+                  {/* Fundo removido por performance (blur-xl degrada no WebView). 
+                      O degradê CSS com a paleta natural (abaixo) já fornece o fundo necessário. */}
                   {/* degradê da categoria: entra da direita para a esquerda,
                       conversando com o poster (que fica à esquerda) */}
                   <div

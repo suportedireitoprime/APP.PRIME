@@ -642,7 +642,6 @@ body {
   animation: shimmer-reflect 0.9s ease-out 1 forwards;
   pointer-events: none;
   z-index: 3;
-  mix-blend-mode: screen;
   border-radius: inherit;
 }
 
