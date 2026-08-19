@@ -18,7 +18,7 @@ import { useVisibleColecoes } from '@/hooks/useVisibleColecoes';
 import { directImg } from '@/lib/cdnImg';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
 import { getFavoritos, type LivroSnapshot } from '@/lib/bibliotecaTracking';
-import { setPersistedColecao, getPersistedColecao } from '@/lib/storageCache';
+import { setPersistedColecao, getPersistedColecao } from '@/services/offlineDb';
 
 type Modo = string; // 'todos' ou id de coleção
 
