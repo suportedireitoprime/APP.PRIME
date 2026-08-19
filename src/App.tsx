@@ -69,13 +69,9 @@ import { RecordingProvider } from "@/contexts/RecordingContext";
 import { LeisCantadasPlayerProvider } from "@/contexts/LeisCantadasPlayerContext";
 import GlobalLeisCantadasMiniPlayer from "@/components/leis-cantadas/GlobalLeisCantadasMiniPlayer";
 import { AudioaulasPlayerProvider } from "@/contexts/AudioaulasPlayerContext";
-import GlobalAudioaulasMiniPlayer from "@/components/audioaulas/GlobalAudioaulasMiniPlayer";
 import { ResumoLivroPlayerProvider } from "./contexts/ResumoLivroPlayerContext.tsx";
-import { GlobalResumoMiniPlayer } from "./components/biblioteca/GlobalResumoMiniPlayer.tsx";
-import ResumoLivroAudioSheet from "./components/biblioteca/ResumoLivroAudioSheet.tsx";
 import { VideoaulasPlayerProvider } from "@/contexts/VideoaulasPlayerContext";
-import GlobalVideoaulaMiniPlayer from "@/components/videoaulas/GlobalVideoaulaMiniPlayer";
-import { GravacaoFlutuante } from "@/components/GravacaoFlutuante";
+import { LazyMediaPlayers } from "./components/layout/LazyMediaPlayers.tsx";
 import { GeofencePresenceBanner } from "@/components/GeofencePresenceBanner";
 import { ReminderInAppBanner } from "@/components/ReminderInAppBanner";
 import InAppPushPopup from "@/components/ui/InAppPushPopup";
@@ -247,8 +243,6 @@ const QuestoesCadernos = lazy(() => import("./pages/QuestoesCadernos.tsx"));
 const QuestoesConquistas = lazy(() => import("./pages/QuestoesConquistas.tsx"));
 
 const QuestoesDesempenho = lazy(() => import("./pages/QuestoesDesempenho.tsx"));
-
-const NarracaoMiniPlayer = lazy(() => import("./components/vademecum/NarracaoMiniPlayer.tsx"));
 
 const ResumosJuridicosAreas = lazy(routePrefetch.resumosJuridicos);
 const ResumosJuridicosTemas = lazy(routePrefetch.resumosJuridicosTemas);
@@ -1166,13 +1160,7 @@ const App = () => (
                     <VideoaulasPlayerProvider>
                       <ResumoLivroPlayerProvider>
                         <AnimatedRoutes />
-                        <NarracaoMiniPlayer />
-                        <GravacaoFlutuante />
-                        <GlobalLeisCantadasMiniPlayer />
-                        <GlobalAudioaulasMiniPlayer />
-                        <GlobalVideoaulaMiniPlayer />
-                        <GlobalResumoMiniPlayer />
-                        <ResumoLivroAudioSheet />
+                        <LazyMediaPlayers />
                       </ResumoLivroPlayerProvider>
                     </VideoaulasPlayerProvider>
                   </AudioaulasPlayerProvider>
