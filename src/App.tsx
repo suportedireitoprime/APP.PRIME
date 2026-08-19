@@ -77,18 +77,21 @@ import HorusTakeoverNoticeDialog from "@/components/horus/HorusTakeoverNoticeDia
 // Eagerly loaded (critical path)
 import Index from "./pages/Index.tsx";
 import PersistentHome from "./components/PersistentHome";
-import Auth from "./pages/Auth.tsx";
-import Landing from "./pages/Landing.tsx";
-import SmartLink from "./pages/SmartLink.tsx";
-import ResetPassword from "./pages/ResetPassword.tsx";
-import Onboarding from "./pages/Onboarding.tsx";
-import QuestoesHistorico from '@/pages/QuestoesHistorico';
-import AdminFuncoes from "./pages/AdminFuncoes.tsx";
-import AdminPush from "./pages/AdminPush.tsx";
-import AdminPushSection from "./pages/AdminPushSection.tsx";
-import AdminResumoLivroAudioEditar from "./pages/AdminResumoLivroAudioEditar.tsx";
-import AdminErrosQuestoes from "./pages/AdminErrosQuestoes.tsx";
-import AdminVadeMecumHistorico from './pages/AdminVadeMecumHistorico.tsx';
+
+// Lazy loaded (moved from critical path to reduce bundle size & startup jank)
+const Auth = lazy(() => import("./pages/Auth.tsx"));
+const Landing = lazy(() => import("./pages/Landing.tsx"));
+const SmartLink = lazy(() => import("./pages/SmartLink.tsx"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword.tsx"));
+const Onboarding = lazy(() => import("./pages/Onboarding.tsx"));
+const QuestoesHistorico = lazy(() => import('./pages/QuestoesHistorico'));
+const AdminFuncoes = lazy(() => import("./pages/AdminFuncoes.tsx"));
+const AdminPush = lazy(() => import("./pages/AdminPush.tsx"));
+const AdminPushSection = lazy(() => import("./pages/AdminPushSection.tsx"));
+const AdminResumoLivroAudioEditar = lazy(() => import("./pages/AdminResumoLivroAudioEditar.tsx"));
+const AdminErrosQuestoes = lazy(() => import("./pages/AdminErrosQuestoes.tsx"));
+const AdminVadeMecumHistorico = lazy(() => import('./pages/AdminVadeMecumHistorico.tsx'));
+
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -262,7 +265,6 @@ const LeiSecaLembretes = lazy(routePrefetch.leiSecaLembretes);
 const AdminMonitor = lazy(() => import("./pages/AdminMonitor.tsx"));
 const AdminAvaliacoesLoja = lazy(() => import("./pages/AdminAvaliacoesLoja.tsx"));
 const Perfil = lazy(() => import("./pages/Perfil.tsx"));
-const Landing = lazy(() => import("./pages/Landing.tsx"));
 const Atualizacoes = lazy(() => import("./pages/Atualizacoes.tsx"));
 const SobreApp = lazy(() => import("./pages/SobreApp.tsx"));
 const GeradorPost = lazy(() => import("./pages/GeradorPost.tsx"));

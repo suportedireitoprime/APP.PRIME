@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { estiloPasta } from '@/lib/documentosTipos';
 import { usePastasDocumentos } from '@/hooks/useDocumentosDrive';
-import DocumentosSheet from '@/components/documentos/DocumentosSheet';
+const DocumentosSheet = lazy(() => import('@/components/documentos/DocumentosSheet'));
 import { CalendarCheck, CalendarDays, Inbox } from 'lucide-react';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 
@@ -29,15 +29,15 @@ import { LEI_ICON_MAP } from '@/lib/leiIcons';
 import { PillarIcon } from '@/components/icons/PillarIcon';
 import { leiPath, tipoToSlug } from '@/lib/legislacaoSlugs';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
-import VoiceCaptureOverlay from './VoiceCaptureOverlay';
-import HomeNoticiasCarousel from './HomeNoticiasCarousel';
-import AprendaSobreLeis from './AprendaSobreLeis';
-import NoticiasJuridicasCarousel from './NoticiasJuridicasCarousel';
+const VoiceCaptureOverlay = lazy(() => import('./VoiceCaptureOverlay'));
+const HomeNoticiasCarousel = lazy(() => import('./HomeNoticiasCarousel'));
+const AprendaSobreLeis = lazy(() => import('./AprendaSobreLeis'));
+const NoticiasJuridicasCarousel = lazy(() => import('./NoticiasJuridicasCarousel'));
 import HomeCard from './HomeCard';
 import ContinueLendoCard from './ContinueLendoCard';
 import { toast } from '@/hooks/use-toast';
 import { useOutrasNormasCounts } from '@/hooks/useOutrasNormasCounts';
-import JurisprudenciaSheet from './JurisprudenciaSheet';
+const JurisprudenciaSheet = lazy(() => import('./JurisprudenciaSheet'));
 const VisuaisJuridicosSheet = lazy(() => import('@/components/visuais/VisuaisJuridicosSheet'));
 import { TIPO_SLUG } from '@/lib/visuaisJuridicos/rotas';
 import { bandeiraUF } from '@/data/estadoFlags';
@@ -345,7 +345,7 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
       {/* Carrossel de notícias no topo — full-bleed (sem margens laterais) */}
       {!hideNoticias && (
         <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
-          <HomeNoticiasCarousel onOpenChange={onNewsOpenChange} autoplay={noticiasAutoplay} />
+          <Suspense fallback={<div className="h-48 bg-muted/20 animate-pulse rounded-xl mx-4" />}><HomeNoticiasCarousel onOpenChange={onNewsOpenChange} autoplay={noticiasAutoplay} /></Suspense>
         </div>
       )}
 
@@ -510,7 +510,7 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
             </div>
 
             <div className="pt-6 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
-              <AprendaSobreLeis titleClassName="px-4 sm:px-6 md:px-8 lg:px-12" />
+              <Suspense fallback={<div className="h-32 bg-muted/20 animate-pulse rounded-xl mx-4 mt-8" />}><AprendaSobreLeis titleClassName="px-4 sm:px-6 md:px-8 lg:px-12" /></Suspense>
             </div>
 
             <div className="pt-6">
@@ -824,7 +824,7 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
       {/* Aprenda sobre as Leis — carrossel infinito de posts do blog (categoria Leis) */}
       {!hideBlog && (
         <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 300px' }}>
-          <NoticiasJuridicasCarousel />
+          <Suspense fallback={<div className="h-64 bg-muted/20 animate-pulse rounded-xl mx-4" />}><NoticiasJuridicasCarousel /></Suspense>
         </div>
       )}
 
@@ -1266,7 +1266,7 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
       {/* Jurisprudência bottom sheet */}
       <AnimatePresence>
         {juriOpen && (
-          <JurisprudenciaSheet open={juriOpen} onClose={() => setJuriOpen(false)} />
+          <Suspense fallback={null}><JurisprudenciaSheet open={juriOpen} onClose={() => setJuriOpen(false)} /></Suspense>
         )}
       </AnimatePresence>
 
@@ -1286,7 +1286,7 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
       )}
 
       {/* Documentos — modelos jurídicos vindos do Drive */}
-      <DocumentosSheet categoria={docPasta} open={!!docPasta} onClose={() => setDocPasta(null)} />
+      {docPasta && <Suspense fallback={null}><DocumentosSheet categoria={docPasta} open={!!docPasta} onClose={() => setDocPasta(null)} /></Suspense>}
 
       {/* Áreas do Direito — grade completa (aberta pela aba Estudos) */}
       {areasOpen && createPortal(
@@ -1333,7 +1333,7 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
       )}
 
       {/* Voice capture full-screen overlay (ChatGPT Live style) */}
-      <VoiceCaptureOverlay
+      <Suspense fallback={null}><VoiceCaptureOverlay
         open={voiceSearch.listening}
         partial={voiceSearch.partial}
         onStop={voiceSearch.stop}
