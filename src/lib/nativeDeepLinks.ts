@@ -30,7 +30,7 @@ function parseDeepLink(url: string): string | null {
     const u = new URL(url);
     // Extrai path/params. Suporta tanto esquema custom (direitoprime://lei/...)
     // quanto App Links (https://direitoprime.com.br/lei/...).
-    const isCustomScheme = u.protocol === 'br.com.direitoprime.app:' || u.protocol === 'direitoprime:';
+    const isCustomScheme = u.protocol === 'br.com.direito.app:' || u.protocol === 'direitoprime:';
     const isAppLink =
       (u.protocol === 'https:' || u.protocol === 'http:') &&
       (u.hostname === 'direitoprime.com.br' || u.hostname === 'www.direitoprime.com.br');

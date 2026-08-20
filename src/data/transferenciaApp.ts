@@ -46,7 +46,7 @@ export const TRANSFER_GROUPS: TransferGroup[] = [
       {
         key: 'android_app_id',
         label: 'Package Android (appId)',
-        atual: 'br.com.direitoprime.app',
+        atual: 'br.com.direito.app',
         kind: 'arquivo',
         obrigatorio: true,
         arquivos: [
@@ -79,7 +79,7 @@ export const TRANSFER_GROUPS: TransferGroup[] = [
       {
         key: 'ios_bundle_id',
         label: 'Bundle ID iOS',
-        atual: 'app.vacatio (GoogleService-Info.plist) / br.com.direitoprime.app (export options e AASA)',
+        atual: 'app.vacatio (GoogleService-Info.plist) / br.com.direito.app (export options e AASA)',
         kind: 'arquivo',
         obrigatorio: true,
         arquivos: [
@@ -90,7 +90,7 @@ export const TRANSFER_GROUPS: TransferGroup[] = [
           'src/generated/workflows/build-ios.yml',
         ],
         comoObter:
-          '⚠️ Hoje há divergência: o Firebase iOS usa app.vacatio e o restante usa br.com.direitoprime.app. Ao transferir, padronize UM valor e registre em Apple Developer → Identifiers.',
+          '⚠️ Hoje há divergência: o Firebase iOS usa app.vacatio e o restante usa br.com.direito.app. Ao transferir, padronize UM valor e registre em Apple Developer → Identifiers.',
       },
       {
         key: 'app_name',
@@ -306,7 +306,7 @@ export const TRANSFER_GROUPS: TransferGroup[] = [
     titulo: 'Assinaturas e pagamentos',
     desc: 'Play Billing, In-App Purchase e cobrança',
     itens: [
-      { key: 'android_package_name_secret', label: 'ANDROID_PACKAGE_NAME (secret Supabase)', atual: 'br.com.direitoprime.app', kind: 'secret-supabase', obrigatorio: true, comoObter: 'Mesmo package novo — usado pela função validate-purchase para validar compras do Play.' },
+      { key: 'android_package_name_secret', label: 'ANDROID_PACKAGE_NAME (secret Supabase)', atual: 'br.com.direito.app', kind: 'secret-supabase', obrigatorio: true, comoObter: 'Mesmo package novo — usado pela função validate-purchase para validar compras do Play.' },
       { key: 'play_service_account', label: 'GOOGLE_PLAY_SERVICE_ACCOUNT_JSON', atual: null, kind: 'secret-supabase', obrigatorio: true, comoObter: 'Google Cloud → conta de serviço com acesso à API do Play Developer + convite no Play Console.', naoSubstituivel: true },
       { key: 'play_pubsub_token', label: 'GOOGLE_PLAY_PUBSUB_VERIFICATION_TOKEN', atual: null, kind: 'secret-supabase', comoObter: 'Play Console → Monetização → Notificações em tempo real (token que você define).' },
       { key: 'play_product_ids', label: 'IDs dos produtos/assinaturas do Play', atual: null, kind: 'painel-externo', obrigatorio: true, arquivos: ['supabase/functions/validate-purchase/index.ts'], comoObter: 'Play Console → Produtos → Assinaturas. IDs atuais: prime_premium_mensal (R$ 29,90/mês) e prime_premium_anual (R$ 199,90/ano).' },

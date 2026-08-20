@@ -15,9 +15,9 @@ import { requestReviewNow } from '@/lib/inAppReview';
 import { openExternal } from '@/lib/nativeBrowser';
 
 const PLAY_STORE_URL =
-  'https://play.google.com/store/apps/details?id=br.com.direitoprime.app';
+  'https://play.google.com/store/apps/details?id=br.com.direito.app';
 const APP_STORE_URL = 'https://apps.apple.com/br/app/vacatio/id6793608690';
-const PLAY_MARKET_URL = 'market://details?id=br.com.direitoprime.app';
+const PLAY_MARKET_URL = 'market://details?id=br.com.direito.app';
 const APP_STORE_REVIEW_URL =
   'https://apps.apple.com/br/app/vacatio/id6793608690?action=write-review';
 

@@ -4,7 +4,7 @@ import { Capacitor } from '@capacitor/core';
 import { supabase } from '@/integrations/supabase/client';
 import { parseSmartPath } from '@/lib/nativeDeepLinks';
 
-const PLAY_STORE = 'https://play.google.com/store/apps/details?id=br.com.direitoprime.app';
+const PLAY_STORE = 'https://play.google.com/store/apps/details?id=br.com.direito.app';
 const APP_STORE = 'https://apps.apple.com/br/app/vacatio/id6793608690';
 
 type Platform = 'android' | 'ios' | 'desktop';

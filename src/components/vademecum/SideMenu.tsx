@@ -129,9 +129,9 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
       onClose();
       
       const isIos = Capacitor.getPlatform() === 'ios';
-      const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=br.com.direitoprime.app';
+      const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=br.com.direito.app';
       const APP_STORE_REVIEW_URL = 'https://apps.apple.com/br/app/vacatio/id6793608690?action=write-review';
-      const PLAY_MARKET_URL = 'market://details?id=br.com.direitoprime.app';
+      const PLAY_MARKET_URL = 'market://details?id=br.com.direito.app';
 
       if (Capacitor.isNativePlatform()) {
         const primary = isIos ? APP_STORE_REVIEW_URL : PLAY_MARKET_URL;

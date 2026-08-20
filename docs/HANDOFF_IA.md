@@ -8,7 +8,7 @@
 
 - **Nome comercial:** OAB na Risca
 - **Nome interno / repo:** Vade Mecum 2026 (`vade-comenta-legal`)
-- **Pacote Android:** `br.com.direitoprime.app`
+- **Pacote Android:** `br.com.direito.app`
 - **Público-alvo:** estudantes de OAB, concurseiros e operadores do Direito
 - **URL Lovable publicada:** https://vade-comenta-legal.lovable.app
 - **Google Play:** publicado como "OAB na Risca"
