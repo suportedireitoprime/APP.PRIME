@@ -3,7 +3,7 @@ import { autoPip } from '@/lib/nativo/pip';
 import { telaAcesa } from '@/lib/nativo/telaAcordada';
 import { protegerTela, desprotegerTela } from '@/lib/nativo/protecaoTela';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Loader2, Play, RotateCcw, Check, X as XIcon, ChevronLeft, ChevronRight, MessageCircle, Download, Send, ThumbsUp, ThumbsDown, GraduationCap, Layers, Brain, Trash2, RectangleHorizontal } from 'lucide-react';
+import { ArrowLeft, Loader2, Play, RotateCcw, Check, X as XIcon, ChevronLeft, ChevronRight, MessageCircle, Download, Send, ThumbsUp, ThumbsDown, GraduationCap, Plus, Brain, Trash2, RectangleHorizontal } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import ReactMarkdown from 'react-markdown';
 import { Document, Page, Text, View, StyleSheet, pdf, Font, Image as PdfImage } from '@react-pdf/renderer';
@@ -247,6 +247,32 @@ const VideoaulaSheet = ({ open, onClose, video, tabelaNome, artigoNumero, artigo
 
   // Content
   const [resumo, setResumo] = useState('');
+  const [textoArtigoCompleto, setTextoArtigoCompleto] = useState(artigoTexto || '');
+
+  useEffect(() => {
+    if (artigoTexto) {
+      setTextoArtigoCompleto(artigoTexto);
+      return;
+    }
+    
+    if (tabelaNome && artigoNumero) {
+      const fetchTexto = async () => {
+        try {
+          const { data } = await supabase
+            .from(tabelaNome as any)
+            .select('*')
+            .eq('numero', artigoNumero)
+            .maybeSingle();
+          if (data) {
+            setTextoArtigoCompleto(data.caput || data.conteudo || data.enunciado || '');
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      };
+      fetchTexto();
+    }
+  }, [tabelaNome, artigoNumero, artigoTexto]);
   const [resumoLoading, setResumoLoading] = useState(false);
   const [questoes, setQuestoes] = useState<Questao[]>([]);
   const [questoesLoading, setQuestoesLoading] = useState(false);
@@ -336,7 +362,7 @@ const VideoaulaSheet = ({ open, onClose, video, tabelaNome, artigoNumero, artigo
         canal: video.canal,
         artigoNumero,
         tabelaNome,
-        artigoTexto: (artigoTexto || '').substring(0, 1500),
+        artigoTexto: (textoArtigoCompleto || '').substring(0, 1500),
         tipo,
       },
     });
@@ -554,7 +580,7 @@ const VideoaulaSheet = ({ open, onClose, video, tabelaNome, artigoNumero, artigo
             <View style={pdfStyles.pageTitleBar} />
             <View style={pdfStyles.articleBox}>
               <Text style={pdfStyles.articleNumber}>{artigoNumero} — {tabelaNome}</Text>
-              <Text style={pdfStyles.articleText}>{artigoTexto || 'Texto do artigo não disponível.'}</Text>
+              <Text style={pdfStyles.articleText}>{textoArtigoCompleto || 'Texto do artigo não disponível.'}</Text>
             </View>
             <Footer />
           </Page>
@@ -749,7 +775,7 @@ const VideoaulaSheet = ({ open, onClose, video, tabelaNome, artigoNumero, artigo
                     onClick={() => setRecursosAberto(true)}
                     className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all border bg-secondary/60 text-foreground border-border hover:bg-secondary"
                   >
-                    <Layers className="w-3.5 h-3.5" strokeWidth={2.2} />
+                    <Plus className="w-3.5 h-3.5" strokeWidth={2.2} />
                     <span>Recursos</span>
                   </button>
                 </div>
@@ -797,7 +823,7 @@ const VideoaulaSheet = ({ open, onClose, video, tabelaNome, artigoNumero, artigo
                   <div className="p-4 bg-secondary/30 rounded-xl border border-border">
                     <p className="text-[15px] font-bold text-primary mb-3 font-display">{artigoNumero}</p>
                     <div className="text-[14px] text-foreground/90 leading-[1.8] text-justify whitespace-pre-wrap font-body">
-                      {artigoTexto || 'Texto não disponível.'}
+                      {textoArtigoCompleto || 'Texto não disponível.'}
                     </div>
                   </div>
                 )}
