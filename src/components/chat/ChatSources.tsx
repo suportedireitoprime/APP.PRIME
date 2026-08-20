@@ -1,4 +1,4 @@
-import { ExternalLink, ArrowUpRight, BookOpen } from 'lucide-react';
+import { ExternalLink, ArrowUpRight, BookOpen, ChevronRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { LEIS_CATALOG, type LeiCatalogItem } from '@/data/leisCatalog';
@@ -86,51 +86,55 @@ function domainOf(url: string) {
 export function SourcesFooter({ sources }: { sources: ChatSource[] }) {
   if (!sources?.length) return null;
   return (
-    <div className="mt-3 pt-3 border-t border-border/60">
-      <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2">
-        Fontes citadas
-      </p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
-        {sources.map((s) => {
-          const commonClass =
-            'group flex items-start gap-2 p-2 rounded-lg bg-secondary/60 border border-border hover:border-accent/60 hover:bg-accent/5 transition-colors';
-          const inner = (
-            <>
-            <span className="shrink-0 min-w-[22px] h-[22px] rounded-md bg-accent/20 border border-accent/40 text-[11px] font-bold text-accent flex items-center justify-center">
-              {s.n}
-            </span>
-            <span className="flex-1 min-w-0">
-              <span className="block text-[12px] font-semibold text-foreground truncate leading-tight">
-                {s.title || s.domain || domainOf(s.url)}
+    <div className="mt-4 pt-4 border-t border-border/40">
+      <details className="group [&_summary::-webkit-details-marker]:hidden">
+        <summary className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-muted-foreground font-semibold cursor-pointer select-none hover:text-foreground transition-colors w-fit mb-2">
+          <BookOpen className="w-3.5 h-3.5" />
+          Ver fontes citadas
+          <ChevronRight className="w-3.5 h-3.5 transition-transform group-open:rotate-90 ml-1" />
+        </summary>
+        <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+          {sources.map((s) => {
+            const commonClass =
+              'group flex items-start gap-2 p-2 rounded-lg bg-secondary/60 border border-border hover:border-accent/60 hover:bg-accent/5 transition-colors';
+            const inner = (
+              <>
+              <span className="shrink-0 min-w-[22px] h-[22px] rounded-md bg-accent/20 border border-accent/40 text-[11px] font-bold text-accent flex items-center justify-center">
+                {s.n}
               </span>
-              <span className="block text-[10px] text-muted-foreground truncate flex items-center gap-1">
-                <ExternalLink className="w-2.5 h-2.5" />
-                {s.domain || domainOf(s.url)}
+              <span className="flex-1 min-w-0">
+                <span className="block text-[12px] font-semibold text-foreground truncate leading-tight">
+                  {s.title || s.domain || domainOf(s.url)}
+                </span>
+                <span className="block text-[10px] text-muted-foreground truncate flex items-center gap-1 mt-0.5">
+                  <ExternalLink className="w-2.5 h-2.5" />
+                  {s.domain || domainOf(s.url)}
+                </span>
               </span>
-            </span>
-            </>
-          );
-          if (s.internal && s.url.startsWith('/')) {
-            return (
-              <Link id={`src-${s.n}`} key={s.n} to={s.url} className={commonClass}>
-                {inner}
-              </Link>
+              </>
             );
-          }
-          return (
-            <a
-              id={`src-${s.n}`}
-              key={s.n}
-              href={s.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={commonClass}
-            >
-              {inner}
-            </a>
-          );
-        })}
-      </div>
+            if (s.internal && s.url.startsWith('/')) {
+              return (
+                <Link id={`src-${s.n}`} key={s.n} to={s.url} className={commonClass}>
+                  {inner}
+                </Link>
+              );
+            }
+            return (
+              <a
+                id={`src-${s.n}`}
+                key={s.n}
+                href={s.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={commonClass}
+              >
+                {inner}
+              </a>
+            );
+          })}
+        </div>
+      </details>
     </div>
   );
 }

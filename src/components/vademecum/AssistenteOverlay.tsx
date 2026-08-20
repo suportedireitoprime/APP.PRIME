@@ -99,7 +99,7 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [analyzeStep, setAnalyzeStep] = useState(0);
-  const [webSearch, setWebSearch] = useState(false);
+  const [webSearch, setWebSearch] = useState(true);
   const [powersOpen, setPowersOpen] = useState(false);
   const [attachOpen, setAttachOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -467,20 +467,27 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
           {!isDesktop && (
             <header className="flex items-center justify-between px-3 py-3 shrink-0" style={{ paddingTop: 'calc(var(--sai-top, env(safe-area-inset-top, 0px)) + 0.75rem)' }}>
               <button
-                onClick={() => { haptic.light(); onClose(); }}
+                onClick={() => { haptic.light(); onClose(); setTimeout(newSession, 300); }}
                 aria-label="Fechar"
                 className="w-10 h-10 rounded-full flex items-center justify-center active:bg-secondary transition-colors"
               >
                 <X className="w-6 h-6 text-foreground" />
               </button>
 
-              <button
-                onClick={() => { haptic.selection(); toggleWebSearch(); }}
-                className="flex items-center gap-1.5 text-[15px] font-semibold text-foreground px-4 py-1.5 rounded-xl hover:bg-secondary transition-colors active:scale-95"
-              >
-                Chat Jurídico <span className="text-muted-foreground font-medium ml-1">{webSearch ? 'Web' : '4o'}</span>
-                {webSearch ? <Globe className="w-3.5 h-3.5 text-accent ml-0.5" /> : <Sparkles className="w-3.5 h-3.5 text-muted-foreground ml-0.5" />}
-              </button>
+              <div className="flex flex-col items-center">
+                <span className="text-[14px] font-semibold text-foreground tracking-tight">Chat Jurídico</span>
+                <button
+                  onClick={() => { haptic.selection(); toggleWebSearch(); }}
+                  className={`flex items-center gap-1 mt-0.5 text-[10px] font-bold px-2 py-0.5 rounded-full transition-colors active:scale-95 border ${
+                    webSearch 
+                      ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' 
+                      : 'bg-secondary text-muted-foreground border-transparent'
+                  }`}
+                >
+                  <Globe className="w-3 h-3" />
+                  {webSearch ? 'INTERNET ON' : 'INTERNET OFF'}
+                </button>
+              </div>
 
               <button
                 onClick={() => { haptic.selection(); setHistoryOpen(true); }}
@@ -499,12 +506,66 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
             <div className={isDesktop ? 'max-w-3xl mx-auto w-full space-y-3' : 'contents'}>
             {messages.length === 0 && !loading && (
               <div className="flex flex-col h-full pb-2">
-                <div className="flex-1 flex flex-col items-center justify-center gap-5">
-                  {/* Cérebro Minimalista (ChatGPT Style) */}
-                  <div className="w-14 h-14 rounded-full border border-border bg-card shadow-sm flex items-center justify-center">
-                    <Sparkles className="w-6 h-6 text-foreground" />
+                <div className="flex-1 flex flex-col items-center justify-center gap-6 pb-4">
+                  <div className="relative w-full max-w-[320px] h-48 flex items-center justify-center mt-4">
+                    {/* Cérebro central animado */}
+                    <motion.div
+                      animate={{ 
+                        scale: [1, 1.05, 1], 
+                        boxShadow: [
+                          '0 0 20px -5px rgba(var(--accent-rgb), 0.2)', 
+                          '0 0 40px -5px rgba(var(--accent-rgb), 0.5)', 
+                          '0 0 20px -5px rgba(var(--accent-rgb), 0.2)'
+                        ]
+                      }}
+                      transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                      className="w-20 h-20 rounded-full bg-gradient-to-b from-accent/20 to-accent/5 flex items-center justify-center z-10 border border-accent/20 backdrop-blur-sm shadow-lg"
+                    >
+                      <Brain className="w-9 h-9 text-accent/90" strokeWidth={1.5} />
+                    </motion.div>
+                    
+                    {/* Palavras flutuantes (Badges) alimentando o cérebro */}
+                    {[
+                      { text: 'Jurisprudência', delay: 0, x: -100, y: -55 },
+                      { text: 'Leis Secas', delay: 1.5, x: 90, y: -45 },
+                      { text: 'Tempo real', delay: 0.7, x: -90, y: 65 },
+                      { text: 'Resumos', delay: 2.2, x: 100, y: 50 },
+                    ].map((item, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, x: item.x * 1.5, y: item.y * 1.5, scale: 0.5 }}
+                        animate={{ 
+                          opacity: [0, 1, 1, 0], 
+                          x: [item.x * 1.5, item.x, item.x * 0.4, 0], 
+                          y: [item.y * 1.5, item.y, item.y * 0.4, 0], 
+                          scale: [0.5, 1, 1, 0.3] 
+                        }}
+                        transition={{ 
+                          duration: 4.5, 
+                          repeat: Infinity, 
+                          delay: item.delay, 
+                          times: [0, 0.2, 0.7, 1],
+                          ease: 'easeInOut' 
+                        }}
+                        className="absolute px-3 py-1.5 rounded-full bg-card/90 border border-white/10 text-[11px] font-medium text-foreground/80 backdrop-blur-md shadow-xl whitespace-nowrap z-20"
+                      >
+                        {item.text}
+                      </motion.div>
+                    ))}
+
+                    {/* Pulsos conectores sutis */}
+                    <motion.div
+                      animate={{ opacity: [0, 0.5, 0], scale: [0.8, 2, 2.5] }}
+                      transition={{ duration: 3, repeat: Infinity, ease: 'easeOut' }}
+                      className="absolute w-20 h-20 rounded-full border border-accent/30 z-0"
+                    />
+                    <motion.div
+                      animate={{ opacity: [0, 0.3, 0], scale: [0.8, 3, 4] }}
+                      transition={{ duration: 3, repeat: Infinity, ease: 'easeOut', delay: 1.5 }}
+                      className="absolute w-20 h-20 rounded-full border border-accent/20 z-0"
+                    />
                   </div>
-                  <h2 className="font-display text-2xl font-semibold text-foreground text-center">
+                  <h2 className="font-display text-2xl font-semibold text-foreground text-center tracking-tight">
                     Como posso ajudar?
                   </h2>
                 </div>
