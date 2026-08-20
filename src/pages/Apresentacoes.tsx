@@ -46,7 +46,7 @@ const Apresentacoes = () => {
   const abrir = async (a: Apres) => {
     setAberta(a.id);
     const ok = await gate.run();
-    if (ok) navigate(`/apresentacao/${a.id}`);
+    if (ok) navigate(`/apresentacao/${a.id}`, { state: { capa_url: a.capa_url, titulo: a.titulo } });
   };
 
   return (

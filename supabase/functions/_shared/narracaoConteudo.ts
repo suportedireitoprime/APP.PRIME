@@ -336,10 +336,10 @@ async function gerarTextoIA(prompt: string): Promise<string> {
 async function gerarRoteiroSlide(opts: { titulo: string; indice: number; total: number; texto: string }): Promise<string> {
   const { titulo, indice, total, texto } = opts;
   const posicao = indice === 0
-    ? "Este é o slide de abertura: uma saudação curtíssima e o tema, em uma ou duas frases."
+    ? "Este é o slide de abertura: crie rapidamente um contexto envolvente ou um gancho narrativo (storytelling) em uma ou duas frases antes de anunciar o tema, para entreter o ouvinte."
     : total > 0 && indice === total - 1
-      ? "Este é o slide final: feche com uma síntese rápida e um convite curto à leitura da obra."
-      : "Este é um slide intermediário: vá direto ao ponto principal deste slide.";
+      ? "Este é o slide final: feche com uma síntese rápida amarrando a narrativa e um convite curto à leitura da obra."
+      : "Este é um slide intermediário: continue a linha narrativa e vá direto ao ponto principal deste slide, sem quebrar o engajamento e a história.";
   const prompt = [
     `Você é um professor de Direito narrando uma apresentação em slides sobre a obra "${titulo}".`,
     `Slide ${indice + 1}${total ? ` de ${total}` : ""}. ${posicao}`,
@@ -401,10 +401,10 @@ async function gerarRoteiroSlideTema(opts: {
 }): Promise<string> {
   const { titulo, indice, total, texto, contexto } = opts;
   const posicao = indice === 0
-    ? "Slide de abertura: cumprimente rapidinho, diga o tema da apresentação e o que a pessoa vai aprender."
+    ? "Slide de abertura: comece criando o contexto da história de forma narrativa e envolvente (storytelling), apresentando o cenário para entreter o ouvinte antes de entrar no conteúdo técnico pesado."
     : total > 0 && indice === total - 1
-      ? "Slide final: feche com uma síntese curta do tema e uma despedida simpática."
-      : "Slide intermediário: apresente o ponto deste slide, explique com clareza e amarre ao tema geral.";
+      ? "Slide final: feche com uma síntese curta do tema, como o desfecho da história, e uma despedida simpática."
+      : "Slide intermediário: continue o storytelling, mantendo o engajamento e a cadência narrativa, amarrando o conteúdo técnico deste slide à história principal.";
   const prompt = [
     `Você é um apresentador (professor) de Direito conduzindo uma apresentação em slides sobre "${titulo}".`,
     `Slide ${indice + 1}${total ? ` de ${total}` : ""}. ${posicao}`,

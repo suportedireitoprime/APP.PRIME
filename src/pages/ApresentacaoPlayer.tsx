@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { ArrowLeft, Play, Pause, ChevronLeft, ChevronRight, Heart, Star, Share2, MessageCircle, RotateCw, Loader2, Send, Grid, Subtitles, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -26,12 +26,14 @@ const playHaptic = () => Haptics.impact({ style: ImpactStyle.Light }).catch(() =
 // Componente isolado para a barra de progresso do áudio (Performance/Smooth Seek)
 const AudioProgressBar = ({ 
   audioRef, 
-  duration,
-  onSeek
+  tempoAcumulado,
+  duracaoTotal,
+  onSeekGlobal
 }: { 
   audioRef: React.MutableRefObject<HTMLAudioElement | null>;
-  duration: number;
-  onSeek: (time: number) => void;
+  tempoAcumulado: number;
+  duracaoTotal: number;
+  onSeekGlobal: (globalTime: number) => void;
 }) => {
   const barRef = useRef<HTMLDivElement>(null);
   const timeRef = useRef<HTMLSpanElement>(null);
@@ -41,29 +43,29 @@ const AudioProgressBar = ({
   useEffect(() => {
     let frameId: number;
     const update = () => {
-      if (audioRef.current && duration > 0 && !isDragging.current) {
+      if (audioRef.current && duracaoTotal > 0 && !isDragging.current) {
         const ct = audioRef.current.currentTime;
-        const pct = Math.min(100, (ct / duration) * 100);
+        const globalTime = tempoAcumulado + ct;
+        const pct = Math.min(100, (globalTime / duracaoTotal) * 100);
         if (barRef.current) barRef.current.style.width = `${pct}%`;
-        if (timeRef.current) timeRef.current.textContent = formatarTempo(ct);
+        if (timeRef.current) timeRef.current.textContent = formatarTempo(globalTime);
       }
       frameId = requestAnimationFrame(update);
     };
     frameId = requestAnimationFrame(update);
-    return () => cancelAnimationFrame(frameId);
-  }, [audioRef, duration]);
+  }, [audioRef, tempoAcumulado, duracaoTotal]);
 
   const handleSeek = (e: React.MouseEvent | React.TouchEvent) => {
-    if (!containerRef.current || duration <= 0) return;
+    if (!containerRef.current || duracaoTotal <= 0) return;
     const rect = containerRef.current.getBoundingClientRect();
     const clientX = 'touches' in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
     const offsetX = Math.max(0, Math.min(clientX - rect.left, rect.width));
     const pct = offsetX / rect.width;
-    const newTime = pct * duration;
+    const newGlobalTime = pct * duracaoTotal;
     
     if (barRef.current) barRef.current.style.width = `${pct * 100}%`;
-    if (timeRef.current) timeRef.current.textContent = formatarTempo(newTime);
-    onSeek(newTime);
+    if (timeRef.current) timeRef.current.textContent = formatarTempo(newGlobalTime);
+    onSeekGlobal(newGlobalTime);
   };
 
   return (
@@ -87,7 +89,7 @@ const AudioProgressBar = ({
       </div>
       <div className="flex items-center justify-between text-[11px] text-white/50 font-body tabular-nums">
         <span ref={timeRef}>0:00</span>
-        <span>{duration > 0 ? formatarTempo(duration) : '--:--'}</span>
+        <span>{duracaoTotal > 0 ? formatarTempo(duracaoTotal) : '--:--'}</span>
       </div>
     </div>
   );
@@ -179,6 +181,10 @@ const AudioSubtitles = ({
 
 const ApresentacaoPlayer = () => {
   const { id } = useParams<{ id: string }>();
+  const location = useLocation();
+  const stateCapa = location.state?.capa_url as string | undefined;
+  const stateTitulo = location.state?.titulo as string | undefined;
+
   const navigate = useNavigate();
   const goBack = useGoBack();
   const audioARef = useRef<HTMLAudioElement | null>(null);
@@ -388,6 +394,33 @@ const ApresentacaoPlayer = () => {
     }, 400);
   };
 
+  const irParaGlobal = async (globalTime: number) => {
+    let acc = 0;
+    let targetIdx = 0;
+    let timeInTargetSlide = 0;
+    for (let i = 0; i < duracoes.length; i++) {
+      if (acc + duracoes[i] >= globalTime || i === duracoes.length - 1) {
+        targetIdx = i;
+        timeInTargetSlide = globalTime - acc;
+        break;
+      }
+      acc += duracoes[i];
+    }
+    
+    if (targetIdx !== idx) {
+      await irPara(targetIdx);
+      setTimeout(() => {
+        const a = usaA ? audioARef.current : audioBRef.current; // The new active is usaA? Wait, irPara toggles it.
+        // Actually, just wait a bit and set the time.
+        const nextA = usaARef.current ? audioARef.current : audioBRef.current;
+        if (nextA) nextA.currentTime = timeInTargetSlide;
+      }, 50);
+    } else {
+      const a = elAtivo();
+      if (a) a.currentTime = timeInTargetSlide;
+    }
+  };
+
   const continuarProximo = () => {
     irPara(idx + 1);
   };
@@ -473,9 +506,25 @@ const ApresentacaoPlayer = () => {
 
   if (carregando) {
     return (
-      <div className="min-h-dvh bg-[#0D0D0D] text-white flex flex-col items-center justify-center p-6 text-center">
-        <Loader2 className="w-8 h-8 animate-spin mb-4 text-primary" />
-        <p className="font-heading font-medium">Carregando apresentação...</p>
+      <div className="min-h-dvh bg-black text-white flex flex-col relative overflow-hidden">
+        {stateCapa && (
+          <div className="absolute inset-0 z-0 opacity-30 bg-cover bg-center blur-[100px] scale-150" style={{ backgroundImage: `url(${stateCapa})` }} />
+        )}
+        <div className="absolute inset-0 z-0 bg-black/60 pointer-events-none" />
+        
+        <header className="relative z-10 px-4 pb-4 pt-[calc(2.5rem+env(safe-area-inset-top,0px))] flex gap-3">
+           <button onClick={() => goBack()} className="w-10 h-10 flex items-center justify-center"><ArrowLeft className="w-6 h-6" /></button>
+           <div className="flex-1"><p className="font-heading font-bold text-sm truncate">{stateTitulo || 'Carregando...'}</p></div>
+        </header>
+
+        <div className="flex-1 relative z-10 flex flex-col items-center justify-center w-full pb-8">
+           {stateCapa && (
+             <div className="w-full transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] -translate-y-2">
+               <img src={stateCapa} alt="Capa" className="w-full h-auto shadow-[0_10px_40px_rgba(0,0,0,0.5)] border-y border-white/5 opacity-50" />
+             </div>
+           )}
+           <Loader2 className="w-8 h-8 animate-spin text-white absolute" />
+        </div>
       </div>
     );
   }
@@ -490,6 +539,8 @@ const ApresentacaoPlayer = () => {
   }
 
   const duracaoSlide = duracoes[idx] ?? 0;
+  const tempoAcumulado = duracoes.slice(0, idx).reduce((a, b) => a + b, 0);
+  const duracaoTotal = duracoes.reduce((a, b) => a + b, 0);
 
   return (
     <div 
@@ -537,7 +588,7 @@ const ApresentacaoPlayer = () => {
                   {duracoes.length > 0 && duracoes.reduce((a, b) => a + b, 0) > 0 && ` · Total: ${formatarTempo(duracoes.reduce((a, b) => a + b, 0))}`}
                 </p>
               </div>
-              <button onClick={() => setDeitado((v) => !v)} className="w-10 h-10 flex items-center justify-center" aria-label="Girar tela">
+              <button onClick={() => setDeitado((v) => !v)} className="w-10 h-10 flex items-center justify-center bg-black/20 rounded-full" aria-label="Girar tela">
                 <RotateCw className="w-5 h-5" />
               </button>
             </div>
@@ -552,15 +603,19 @@ const ApresentacaoPlayer = () => {
         {/* Lado direito Double Tap */}
         <div className="absolute right-0 top-0 bottom-0 w-1/3 z-20" onDoubleClick={() => doubleTapSeek('dir')} />
         
-        <div className={`w-full transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${deitado ? 'rotate-90 scale-[0.72]' : '-translate-y-2'}`}>
+        <div className={`transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] flex items-center justify-center ${
+          deitado 
+            ? 'fixed top-1/2 left-1/2 w-[100vh] h-[100vw] -translate-x-1/2 -translate-y-1/2 rotate-90 z-50 bg-black' 
+            : 'w-full relative -translate-y-2'
+        }`}>
           <AnimatePresence mode="popLayout" custom={direcao}>
             <motion.div
               key={idx}
               custom={direcao}
-              initial={{ opacity: 0, x: direcao * 50, scale: 0.95 }}
-              animate={{ opacity: 1, x: 0, scale: 1 }}
-              exit={{ opacity: 0, x: direcao * -50, scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              initial={{ opacity: 0, x: direcao * 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: direcao * -50 }}
+              transition={{ type: "tween", ease: "easeInOut", duration: 0.4 }}
               drag="x"
               dragConstraints={{ left: 0, right: 0 }}
               dragElastic={0.2}
@@ -569,14 +624,14 @@ const ApresentacaoPlayer = () => {
                 if (swipe < -50 || velocity.x < -500) irPara(idx + 1);
                 else if (swipe > 50 || velocity.x > 500) irPara(idx - 1);
               }}
-              className="relative z-10"
+              className={`relative z-10 flex items-center justify-center ${deitado ? 'w-full h-full' : 'w-full'}`}
             >
               {slide?.imagem_url ? (
                 <img
                   src={slide.imagem_url}
                   alt={`Slide ${idx + 1}`}
                   decoding="sync"
-                  className="w-full h-auto shadow-[0_10px_40px_rgba(0,0,0,0.5)] border-y border-white/5"
+                  className={`shadow-[0_10px_40px_rgba(0,0,0,0.5)] border-white/5 ${deitado ? 'w-full h-full object-contain' : 'w-full h-auto border-y'}`}
                 />
               ) : (
                 <div className="aspect-video w-full bg-white/5 shadow-2xl border-y border-white/5 flex items-center justify-center">
@@ -616,11 +671,9 @@ const ApresentacaoPlayer = () => {
             {/* Barra de Progresso Isolada */}
             <AudioProgressBar 
               audioRef={usaARef.current ? audioARef : audioBRef} 
-              duration={duracaoSlide} 
-              onSeek={(t) => {
-                const a = elAtivo();
-                if (a) a.currentTime = t;
-              }}
+              tempoAcumulado={tempoAcumulado}
+              duracaoTotal={duracaoTotal}
+              onSeekGlobal={irParaGlobal}
             />
 
             {/* Playback Controls */}
