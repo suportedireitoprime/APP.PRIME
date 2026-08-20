@@ -64,8 +64,8 @@ function buildQuery(artigoNumero: string, leiNome?: string, isSumula: boolean = 
     // Para súmulas: "Súmula Vinculante 14" explicação
     return `"${lei} ${artigoNumero}" explicação aula`;
   }
-  // Query mais específica com aspas e sinônimos
-  return `"artigo ${artigoNumero}" ${lei} explicação aula`;
+  // Query mais específica com aspas para forçar a lei exata (ex: "Código Penal Militar")
+  return `"artigo ${artigoNumero}" "${lei}" explicação aula`;
 }
 
 async function searchList(
