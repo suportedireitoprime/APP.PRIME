@@ -378,9 +378,21 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
       {open && (
         <motion.div
           initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%', pointerEvents: 'none' }}
-          transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-          className={`fixed inset-0 z-[60] bg-background ${isDesktop ? 'flex flex-row' : 'flex flex-col'}`}
+          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+          className={
+            isDesktop
+              ? 'fixed inset-0 z-[60] bg-background flex flex-row'
+              : 'fixed inset-0 z-[60] flex flex-col'
+          }
         >
+          {/* Immersive Background (Mobile Only) */}
+          {!isDesktop && (
+            <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10 bg-[#08090a]">
+              <div className="absolute top-[-20%] left-[-10%] w-[140%] h-[60%] bg-accent/15 blur-[120px] rounded-full mix-blend-screen" />
+              <div className="absolute bottom-[-10%] right-[-10%] w-[120%] h-[50%] bg-primary/10 blur-[100px] rounded-full mix-blend-screen" />
+            </div>
+          )}
+
           {/* Desktop sidebar (ChatGPT-style) */}
           {isDesktop && (
             <aside className="w-[280px] shrink-0 h-full border-r border-border bg-card/40 flex flex-col">
@@ -469,30 +481,39 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
               <button
                 onClick={() => { haptic.light(); onClose(); setTimeout(newSession, 300); }}
                 aria-label="Fechar"
-                className="w-10 h-10 rounded-full flex items-center justify-center active:bg-secondary transition-colors"
+                className="w-10 h-10 rounded-full flex items-center justify-center bg-secondary/80 hover:bg-secondary active:scale-95 transition-all shadow-sm z-10 border border-white/5"
               >
-                <X className="w-6 h-6 text-foreground" />
+                <X className="w-5 h-5 text-foreground" />
               </button>
 
-              <div className="flex flex-col items-center">
+              <div className="flex flex-col items-center z-10">
                 <span className="text-[14px] font-semibold text-foreground tracking-tight">Chat Jurídico</span>
                 <button
-                  onClick={() => { haptic.selection(); toggleWebSearch(); }}
-                  className={`flex items-center gap-1 mt-0.5 text-[10px] font-bold px-2 py-0.5 rounded-full transition-colors active:scale-95 border ${
-                    webSearch 
-                      ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' 
-                      : 'bg-secondary text-muted-foreground border-transparent'
-                  }`}
+                  onClick={() => { 
+                    haptic.selection(); 
+                    if (!podeUsarPremium) {
+                      setGateFeature('chat_juridico');
+                    } else {
+                      toggleWebSearch(); 
+                    }
+                  }}
+                  className="flex items-center gap-1.5 mt-0.5 px-3 py-1 rounded-full transition-colors active:scale-95 bg-secondary/50 hover:bg-secondary/80 border border-white/5"
                 >
-                  <Globe className="w-3 h-3" />
-                  {webSearch ? 'INTERNET ON' : 'INTERNET OFF'}
+                  <Globe className={`w-3.5 h-3.5 ${webSearch && podeUsarPremium ? 'text-accent' : 'text-muted-foreground'}`} />
+                  <span className={`text-[9px] font-bold uppercase tracking-widest ${webSearch && podeUsarPremium ? 'text-accent' : 'text-muted-foreground'}`}>
+                    Internet
+                  </span>
+                  {/* Chavinha Toggle */}
+                  <div className={`relative w-7 h-4 rounded-full flex items-center transition-colors shadow-inner ${webSearch && podeUsarPremium ? 'bg-accent' : 'bg-muted'}`}>
+                    <div className={`w-3 h-3 rounded-full bg-white transition-transform shadow-sm ${webSearch && podeUsarPremium ? 'translate-x-[14px]' : 'translate-x-[2px]'}`} />
+                  </div>
                 </button>
               </div>
 
               <button
                 onClick={() => { haptic.selection(); setHistoryOpen(true); }}
                 aria-label="Histórico"
-                className="w-10 h-10 rounded-full flex items-center justify-center active:bg-secondary transition-colors"
+                className="w-10 h-10 rounded-full flex items-center justify-center bg-secondary/80 hover:bg-secondary active:scale-95 transition-all shadow-sm z-10 border border-white/5"
               >
                 <HistoryIcon className="w-5 h-5 text-foreground" />
               </button>
@@ -816,6 +837,7 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
                     {
                       key: 'camera',
                       icon: Camera,
+                      color: 'text-sky-400',
                       label: 'Câmera',
                       hint: 'Tirar foto',
                       onClick: () => {
@@ -830,6 +852,7 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
                     {
                       key: 'pdf',
                       icon: FileText,
+                      color: 'text-rose-400',
                       label: 'PDF',
                       hint: 'Anexar documento',
                       onClick: () => {
@@ -844,6 +867,7 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
                     {
                       key: 'audio',
                       icon: Music,
+                      color: 'text-amber-400',
                       label: 'Áudio',
                       hint: 'Anexar áudio',
                       onClick: () => {
@@ -861,14 +885,12 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
                       <button
                         key={opt.key}
                         onClick={() => { haptic.light(); opt.onClick(); }}
-                        className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-accent/15 active:bg-accent/25 transition text-left"
+                        className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-colors text-left"
                       >
-                        <span className="w-9 h-9 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
-                          <Icon className="w-4.5 h-4.5 text-accent" />
-                        </span>
+                        <Icon className={`w-[26px] h-[26px] ${opt.color}`} strokeWidth={1.5} />
                         <span className="flex-1">
-                          <span className="block text-sm font-body font-semibold text-foreground">{opt.label}</span>
-                          <span className="block text-[11px] text-muted-foreground">{opt.hint}</span>
+                          <span className="block text-[15px] font-body font-semibold text-foreground tracking-tight">{opt.label}</span>
+                          <span className="block text-[11px] text-muted-foreground/70">{opt.hint}</span>
                         </span>
                       </button>
                     );
