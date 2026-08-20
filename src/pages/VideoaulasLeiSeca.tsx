@@ -39,8 +39,8 @@ const VideoaulasLeiSeca = () => {
               }}
               className="flex flex-col items-center justify-center p-6 rounded-3xl bg-card border border-border/80 hover:border-primary/50 transition-all active:scale-95 gap-3 text-center shadow-sm"
             >
-              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${cat.bg}`}>
-                <cat.icon className={`w-7 h-7 ${cat.color}`} strokeWidth={1.5} />
+              <div className="w-14 h-14 flex items-center justify-center">
+                <cat.icon className="w-8 h-8 text-zinc-400" strokeWidth={1.25} />
               </div>
               <p className="font-display font-bold text-sm text-foreground leading-tight">
                 {cat.label}
