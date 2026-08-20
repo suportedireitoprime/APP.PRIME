@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 import { pdf, Document, Page, Text as PdfText, StyleSheet } from '@react-pdf/renderer';
 import { track } from '@/lib/analyticsEvents';
 import { useVirtualizer } from '@tanstack/react-virtual';
+import { SphereCloud } from './SphereCloud';
 import {
   FlipFlashcards, QuestoesRunner, MapaMentalCanvas, TermosViewer, ShareSheet,
   type Flashcard, type Questao, type MapaNode, type Termo,
@@ -124,9 +125,9 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
   useEffect(() => { if (open) { setSessions(loadSessions()); } }, [open]);
 
   // Sugestões variam cada vez que o chat abre
-  const [suggestions, setSuggestions] = useState<string[]>(() => pickSuggestions(8));
+  const [suggestions, setSuggestions] = useState<string[]>(() => pickSuggestions(15));
   useEffect(() => {
-    if (open) setSuggestions(pickSuggestions(8));
+    if (open) setSuggestions(pickSuggestions(15));
   }, [open]);
 
   // Ditado por voz — mostra transcrição em tempo real dentro do input
@@ -677,16 +678,12 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
                 </div>
 
                 {/* Sugestões no final da área de scroll */}
-                <div className="w-full max-w-2xl mx-auto flex flex-wrap justify-center items-center gap-2 mt-auto px-4 pb-2">
-                  {suggestions.map((q, i) => (
-                    <button 
-                      key={q} 
-                      onClick={() => { haptic.selection(); setInput(q); }}
-                      className="px-3.5 py-1.5 rounded-xl bg-secondary/50 hover:bg-secondary/80 text-[12px] font-medium text-foreground/90 border border-white/5 active:scale-95 transition-all"
-                    >
-                      {q}
-                    </button>
-                  ))}
+                <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center mt-auto px-4 pb-2">
+                  <SphereCloud 
+                    tags={suggestions} 
+                    onSelect={(q) => { setInput(q); }} 
+                    radius={120} 
+                  />
                 </div>
               </div>
             )}
