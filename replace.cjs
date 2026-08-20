@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const replacements = [
-    { from: /br\.com\.vacatio\.app/g, to: 'br.com.direito.app' },
+    { from: /br\.com\.vacatio\.app/g, to: 'br.com.direitoprime.app' },
     { from: /direitoprime:\/\//g, to: 'direitoprime://' },
     { from: /vacatio\.com\.br/g, to: 'direitoprime.com.br' },
     { from: /suporte\.vacatio@gmail\.com/g, to: 'suporte@direitoprime.com.br' },

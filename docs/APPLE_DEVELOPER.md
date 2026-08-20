@@ -17,7 +17,7 @@ Arquivo de referência com dados da conta Apple Developer usada nos builds e pub
 
 _(A preencher conforme o usuário for enviando: Bundle ID, App Store Connect App ID, Key ID da API Key, Issuer ID, Provisioning Profile UUID, Push Auth Key ID, etc.)_
 
-- Bundle ID: `br.com.direito.app` (Description: `Vacatio App`, tipo: Explicit)
+- Bundle ID: `br.com.direitoprime.app` (Description: `Vacatio App`, tipo: Explicit)
 - App Store Connect App ID: _pendente (criar em App Store Connect → Apps → +)_
 - App Store Connect API Key ID: `53WLPB97Z9` (arquivo `AuthKey_53WLPB97Z9.p8`)
 - App Store Connect Issuer ID: `1604c7ca-cdb0-49ec-aea1-058e12abdafe`
@@ -47,7 +47,7 @@ Com essa flag, o App Store Connect **não pede** documentação de criptografia 
 | Secret | Origem | Status |
 |---|---|---|
 | `APPLE_TEAM_ID` | `DKVT35Y3W5` | ✅ salvo no Supabase — adicionar também no GitHub |
-| `APPLE_BUNDLE_ID` | `br.com.direito.app` | ✅ |
+| `APPLE_BUNDLE_ID` | `br.com.direitoprime.app` | ✅ |
 | `APPLE_APP_STORE_CONNECT_KEY_ID` | `53WLPB97Z9` | ✅ |
 | `APPLE_APP_STORE_CONNECT_ISSUER_ID` | `1604c7ca-cdb0-49ec-aea1-058e12abdafe` | ✅ |
 | `APPLE_APP_STORE_CONNECT_KEY_P8_BASE64` | conteúdo do `.p8` em base64 | ✅ |
@@ -79,7 +79,7 @@ Sem rodar `openssl` no terminal. Use o gerador integrado do app:
 ## Provisioning Profile (App Store)
 
 1. developer.apple.com → Profiles → **+** → **App Store** (iOS).
-2. App ID: `br.com.direito.app`.
+2. App ID: `br.com.direitoprime.app`.
 3. Certificado: o Apple Distribution recém-criado.
 4. Nome sugerido: **`Vacatio App Store`** (o `ios-export-options.plist` já aponta para esse nome).
 5. Baixe o `.mobileprovision` e converta:

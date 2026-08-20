@@ -17,10 +17,10 @@ const GOOGLE_WEB_CLIENT_ID =
 const NATIVE_PACKAGE = 'br.com.app.gpu2675756.gpu0e7509bfb7bde52aef412888bb17a456';
 const OAUTH_DEEP_LINK = `${NATIVE_PACKAGE}://auth-callback`;
 // Esquema legado, mantido só para não quebrar links antigos já espalhados.
-const LEGACY_DEEP_LINK_SCHEMES = ['br.com.direito.app://', 'direitoprime://'];
+const LEGACY_DEEP_LINK_SCHEMES = ['br.com.direitoprime.app://', 'direitoprime://'];
 
 // Bundle ID iOS usado como clientId do Sign in with Apple nativo.
-const APPLE_IOS_BUNDLE_ID = 'br.com.direito.app';
+const APPLE_IOS_BUNDLE_ID = 'br.com.direitoprime.app';
 
 function gerarNonce(tamanho = 32) {
   const bytes = new Uint8Array(tamanho);
