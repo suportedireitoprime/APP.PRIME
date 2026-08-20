@@ -170,8 +170,6 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
     });
   }, [messages, sessionId]);
 
-  }, [messages, sessionId]);
-
   const virtualizer = useVirtualizer({
     count: messages.length + (loading ? 1 : 0),
     getScrollElement: () => scrollRef.current,
