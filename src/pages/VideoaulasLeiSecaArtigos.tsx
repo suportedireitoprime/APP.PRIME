@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, Suspense } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { ChevronRight, PlayCircle } from 'lucide-react';
@@ -84,28 +84,32 @@ const VideoaulasLeiSecaArtigos = () => {
       </div>
 
       {openArtigo && (
-        <VideoaulasListSheet
-          open={!!openArtigo}
-          onClose={() => setOpenArtigo(null)}
-          tabelaNome={lei.tabela_nome}
-          artigoNumero={openArtigo.numero || ''}
-          leiNome={lei.nome}
-          onSelectVideo={(v) => {
-            setVideoaula({ titulo: v.titulo, url: v.url, canal: v.canal, videoId: v.videoId });
-            setOpenArtigo(null);
-            setShowVideoaulaSheet(true);
-          }}
-        />
+        <Suspense fallback={null}>
+          <VideoaulasListSheet
+            open={!!openArtigo}
+            onClose={() => setOpenArtigo(null)}
+            tabelaNome={lei.tabela_nome}
+            artigoNumero={openArtigo.numero || ''}
+            leiNome={lei.nome}
+            onSelectVideo={(v) => {
+              setVideoaula({ titulo: v.titulo, url: v.url, canal: v.canal, videoId: v.videoId });
+              setOpenArtigo(null);
+              setShowVideoaulaSheet(true);
+            }}
+          />
+        </Suspense>
       )}
 
       {showVideoaulaSheet && videoaula && (
-        <VideoaulaSheet
-          open={showVideoaulaSheet}
-          onClose={() => setShowVideoaulaSheet(false)}
-          video={videoaula}
-          tabelaNome={lei.tabela_nome}
-          artigoNumero={openArtigo?.numero || ''}
-        />
+        <Suspense fallback={null}>
+          <VideoaulaSheet
+            open={showVideoaulaSheet}
+            onClose={() => setShowVideoaulaSheet(false)}
+            video={videoaula}
+            tabelaNome={lei.tabela_nome}
+            artigoNumero={openArtigo?.numero || ''}
+          />
+        </Suspense>
       )}
     </div>
   );
