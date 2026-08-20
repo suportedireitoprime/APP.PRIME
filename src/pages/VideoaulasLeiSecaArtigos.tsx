@@ -32,9 +32,9 @@ const VideoaulasLeiSecaArtigos = () => {
 
   const artigosFiltrados = useMemo(() => {
     let result = artigosRaw.filter((art) => {
-      const num = (art.numero || '').toLowerCase();
-      // Keep only actual articles (Art. X or Xº), drop TÍTULO, CAPÍTULO, PARTE GERAL
-      return num.includes('art') || /^\d/.test(num);
+      const num = (art.numero || '').toLowerCase().trim();
+      // Keep only actual articles (Art. X or Xº). Use startsWith to avoid matching "pARTe geral"
+      return num.startsWith('art') || /^\d/.test(num);
     });
 
     if (q.trim()) {
@@ -99,9 +99,9 @@ const VideoaulasLeiSecaArtigos = () => {
               }}
               className="w-full text-left rounded-3xl bg-card hover:bg-secondary/60 transition-all border border-border/80 group flex items-stretch min-h-[72px] active:scale-[0.99] shadow-sm"
             >
-              <div className="w-16 flex flex-col items-center justify-center shrink-0 border-r border-border/40 bg-muted/10 rounded-l-3xl p-2">
+              <div className="w-16 flex flex-col items-center justify-center shrink-0 p-2">
                 <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center border border-rose-500/20 group-hover:bg-rose-500 group-hover:border-rose-500 transition-colors">
-                  <span className="text-[14px] font-bold text-rose-500 group-hover:text-white transition-colors">
+                  <span className="text-[14px] font-bold text-rose-400 group-hover:text-white transition-colors">
                     {getNumeroCurto(art.numero)}
                   </span>
                 </div>
@@ -112,7 +112,7 @@ const VideoaulasLeiSecaArtigos = () => {
                 </p>
               </div>
               <div className="w-14 flex items-center justify-center shrink-0">
-                <PlayCircle className="w-6 h-6 text-rose-500/50 group-hover:text-rose-500 transition-colors" />
+                <PlayCircle className="w-6 h-6 text-rose-500/50 group-hover:text-rose-400 transition-colors" />
               </div>
             </button>
           ))}
