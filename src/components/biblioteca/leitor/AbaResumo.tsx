@@ -22,6 +22,11 @@ export default function AbaResumo({ paginaMd, livroTitulo, capituloTitulo, pagin
   const dark = tema.isDark;
 
   const gerar = async (force = false) => {
+    if (!paginaMd || paginaMd.trim() === '') {
+      setResumo('Esta página não contém texto suficiente para gerar um resumo.');
+      return;
+    }
+
     if (!force) {
       const cached = sessionStorage.getItem(cacheKey);
       if (cached) {

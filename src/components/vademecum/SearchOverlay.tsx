@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowLeft, Search, Scale, BookOpen, Clock, Gavel, Mic, MicOff, X, Loader2, Heart,
-  Play, PenLine, FileText, Newspaper, Film, BookMarked, Stamp, ListChecks 
+  Play, PenLine, FileText, Newspaper, Film, BookMarked, Stamp, ListChecks, ChevronDown
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
@@ -249,99 +249,85 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
           transition={{ type: 'spring', damping: 30, stiffness: 300 }}
           className="fixed z-50 inset-0 bg-background flex flex-col lg:top-[10%] lg:bottom-auto lg:h-[80vh] lg:max-w-[800px] lg:mx-auto lg:rounded-2xl lg:shadow-2xl"
         >
-          {/* Header: back + título */}
-          <div className="flex items-center gap-3 px-4 pt-4 pb-3 border-b border-border">
-            <button
-              onClick={onClose}
-              className="w-12 h-12 rounded-full bg-muted flex items-center justify-center shrink-0"
-              aria-label="Fechar"
-            >
-              <ArrowLeft className="w-6 h-6 text-foreground" />
-            </button>
-            <div className="flex-1 text-center">
-              <h2 className="font-display text-lg font-semibold text-foreground tracking-wide">Pesquise leis e artigos</h2>
+          {/* Header estilizado seguindo o padrão da tela de Resumos */}
+          <div className="bg-hero-panel px-4 pb-4 pt-[calc(0.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] shrink-0 shadow-md">
+            <div className="flex items-center justify-center pb-2">
+              <div className="w-10 h-1 rounded-full bg-white/30" />
             </div>
-            <div className="w-12 shrink-0" />
-          </div>
-
-          {/* Barra de pesquisa */}
-          <div className="flex items-center gap-3 px-4 pt-4 pb-2">
-            <div className="flex-1 relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <Input
-                ref={inputRef}
-                value={voice.listening && voice.partial ? voice.partial : query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder={placeholder}
-                inputMode="text"
-                className="pl-11 pr-4 h-14 bg-muted border-none text-base rounded-xl"
-              />
-              {query !== debouncedQuery && (
-                <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                  <Loader2 className="w-4 h-4 text-muted-foreground animate-spin" />
-                </div>
-              )}
+            <div className="flex items-center gap-2.5">
+              <button
+                onClick={onClose}
+                aria-label="Fechar busca"
+                className="w-11 h-11 rounded-full bg-black/40 border border-white/20 flex items-center justify-center active:scale-95 transition shrink-0"
+              >
+                <ChevronDown className="w-6 h-6 text-white" />
+              </button>
+              <div className="relative flex-1 min-w-0">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/70" />
+                <input
+                  ref={inputRef}
+                  autoFocus
+                  value={voice.listening && voice.partial ? voice.partial : query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder={placeholder}
+                  className="w-full h-12 pl-11 pr-10 rounded-2xl bg-black/40 border border-white/25 text-white placeholder:text-white/50 outline-none focus:border-white/40 transition-colors"
+                />
+                {query !== debouncedQuery && (
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                    <Loader2 className="w-4 h-4 text-white/70 animate-spin" />
+                  </div>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={voice.toggle}
+                aria-label={voice.listening ? "Parar gravação" : "Pesquisar por voz"}
+                className={`shrink-0 w-12 h-12 rounded-full flex items-center justify-center shadow-lg active:scale-95 transition ${
+                  voice.listening
+                    ? "bg-red-500 text-white animate-pulse shadow-red-500/40"
+                    : "bg-black/40 border border-white/25 text-white hover:bg-black/50"
+                }`}
+              >
+                {voice.listening ? <MicOff className="w-5 h-5" strokeWidth={2.4} /> : <Mic className="w-5 h-5" strokeWidth={2.4} />}
+              </button>
             </div>
-            <button
-              onClick={voice.toggle}
-              aria-label={voice.listening ? 'Parar' : 'Buscar por voz'}
-              className={`btn-attention-shine w-14 h-14 rounded-full flex items-center justify-center shrink-0 transition-all shadow-lg ${
-                voice.listening
-                  ? 'bg-red-500 text-white animate-pulse shadow-red-500/40'
-                  : 'bg-primary text-primary-foreground shadow-primary/30'
-              }`}
-            >
-              {voice.listening ? <MicOff className="w-6 h-6 relative z-[2]" /> : <Mic className="w-6 h-6 relative z-[2]" />}
-            </button>
-          </div>
 
-          {/* Unified Tabs Menu (substituindo CategoriaFiltroBar e Mode Toggle) */}
-          <div className="flex gap-2 overflow-x-auto hide-scrollbar px-4 pt-2 pb-3">
-            {UNIFIED_TABS.map((tab) => {
-              const active = activeTab === tab;
-              
-              const getTabIcon = () => {
-                switch (tab) {
-                  case 'tudo': return <Search className="w-4 h-4" />;
-                  case 'leis': return <Scale className="w-4 h-4" />;
-                  case 'jurisprudencia': return <Gavel className="w-4 h-4" />;
-                  case 'videoaula': return <Play className="w-4 h-4" />;
-                  case 'livro': return <BookOpen className="w-4 h-4" />;
-                  case 'blog': return <PenLine className="w-4 h-4" />;
-                  case 'resumo': return <FileText className="w-4 h-4" />;
-                  case 'noticia': return <Newspaper className="w-4 h-4" />;
-                  case 'obra': return <Film className="w-4 h-4" />;
-                  case 'dicionario': return <BookMarked className="w-4 h-4" />;
-                  case 'sumula': return <Stamp className="w-4 h-4" />;
-                  case 'tese': return <ListChecks className="w-4 h-4" />;
-                  case 'informativo': return <Gavel className="w-4 h-4" />;
-                  case 'pesquisa': return <Search className="w-4 h-4" />;
-                  default: return null;
-                }
-              };
-
-              return (
-                <button
-                  key={tab}
-                  onClick={() => {
-                    track('search_tab_selecionada', { tab });
-                    setActiveTab(tab);
-                  }}
-                  className={`shrink-0 px-4 py-2.5 rounded-full text-xs font-bold transition-all border flex items-center gap-2 ${
-                    active
-                      ? 'bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20'
-                      : 'bg-muted text-muted-foreground border-transparent hover:bg-muted/80'
-                  }`}
-                >
-                  {getTabIcon()}
-                  {TAB_LABELS[tab]}
-                </button>
-              );
-            })}
+            {/* Menu de alternância de abas */}
+            <div className="mt-3 flex items-center gap-1 p-1 rounded-full bg-black/30 border border-white/15 overflow-x-auto hide-scrollbar">
+              {UNIFIED_TABS.map((tab) => {
+                const active = activeTab === tab;
+                return (
+                  <button
+                    key={tab}
+                    onClick={() => {
+                      track('search_tab_selecionada', { tab });
+                      setActiveTab(tab);
+                    }}
+                    className={`shrink-0 px-3.5 py-2 rounded-full text-[11px] uppercase tracking-wide font-bold transition-all ${
+                      active
+                        ? "bg-white text-black shadow-sm"
+                        : "text-white/70 hover:bg-white/10 hover:text-white"
+                    }`}
+                  >
+                    {TAB_LABELS[tab]}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {/* Results */}
-          <div className="flex-1 overflow-y-auto px-2 pb-[calc(1.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] relative border-t border-border/50">
+          <div className="flex-1 overflow-y-auto px-2 pb-[calc(3.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] relative border-t border-border/50 pt-2">
+            
+            {/* Conteúdo dinâmico da busca do Supabase (Videoaulas, Livros, Jurisprudência, etc) */}
+            {activeTab !== 'leis' && (
+              <ConteudoBusca 
+                query={debouncedQuery} 
+                onNavigate={onClose} 
+                {...getConteudoBuscaProps()} 
+              />
+            )}
+
             {isLeisMode && (() => {
               const temTextoSemNumero = !artigoQueryDigits && query.trim().length >= 1;
               const leisPorTexto = temTextoSemNumero ? leiResults : [];
@@ -431,15 +417,6 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
               </div>
               );
             })()}
-
-            {/* Conteúdo dinâmico da busca do Supabase (Videoaulas, Livros, Jurisprudência, etc) */}
-            {activeTab !== 'leis' && (
-              <ConteudoBusca 
-                query={debouncedQuery} 
-                onNavigate={onClose} 
-                {...getConteudoBuscaProps()} 
-              />
-            )}
 
           </div>
 

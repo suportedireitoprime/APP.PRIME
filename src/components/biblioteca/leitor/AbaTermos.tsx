@@ -41,6 +41,11 @@ export default function AbaTermos({ paginaMd, livroTitulo, capituloTitulo, pagin
   const dark = tema.isDark;
 
   const gerar = async (force = false) => {
+    if (!paginaMd || paginaMd.trim() === '') {
+      setTermos([]);
+      return;
+    }
+
     if (!force) {
       const cached = sessionStorage.getItem(cacheKey);
       if (cached) {

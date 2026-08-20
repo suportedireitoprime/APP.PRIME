@@ -1,4 +1,4 @@
-import { Sparkles, BookOpen, BookCopy, Download, Monitor, X, Check, Loader2, WifiOff } from 'lucide-react';
+import { Smartphone, BookOpen, BookCopy, Download, Monitor, X, Check, Loader2, WifiOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import { useEffect, useState } from 'react';
@@ -39,7 +39,7 @@ const LerAgoraDialog = ({ open, onClose, onSelect, hasPdf, hasOnline, pdfCached,
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.18 }}
-          className="fixed inset-0 z-[1200] bg-black/60 flex items-center justify-center p-3 sm:p-4"
+          className="fixed inset-0 z-[1200] bg-black/40 backdrop-blur-md flex items-center justify-center p-3 sm:p-4"
           onClick={onClose}
         >
           <motion.div
@@ -66,61 +66,34 @@ const LerAgoraDialog = ({ open, onClose, onSelect, hasPdf, hasOnline, pdfCached,
               </button>
             </div>
 
-            <div className="px-5 py-4 space-y-5">
-              {/* Principais Opções de Leitura */}
+            <div className="px-5 pb-5 space-y-3 mt-4">
               {hasPdf && (
-                <div className="space-y-3">
-                  <div className="text-[10px] uppercase tracking-widest text-primary/90 font-bold">
-                    Opções de Leitura
-                  </div>
-                  
-                  {/* Leitura Nativa (Kindle / IA) */}
-                  <button
+                <>
+                  {/* Leitura Nativa */}
+                  <OptionRow
+                    icon={Smartphone}
+                    title="Leitura Nativa"
+                    desc="Texto adaptado para a tela com busca inteligente."
                     onClick={() => onSelect('nativa')}
-                    className="w-full min-h-[68px] rounded-2xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground p-4 text-left flex items-center gap-3 shadow-lg hover:brightness-110 active:scale-[0.99] transition-all"
-                  >
-                    <div className="w-12 h-12 rounded-xl bg-primary-foreground/15 flex items-center justify-center shrink-0 border border-primary-foreground/20 backdrop-blur-sm">
-                      <Sparkles className="w-5 h-5 text-primary-foreground" strokeWidth={2.25} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-display font-bold text-sm">Leitura Nativa</div>
-                      <div className="text-[11px] opacity-90 leading-tight mt-0.5">
-                        Estilo Kindle, com OCR e busca por IA
-                      </div>
-                    </div>
-                  </button>
+                    iconColor="text-primary"
+                  />
 
                   {/* Ler em PDF */}
-                  <button
+                  <OptionRow
+                    icon={BookOpen}
+                    title="Ler Arquivo Original (PDF)"
+                    desc="Visualização idêntica ao documento original."
                     onClick={() => onSelect('pdf')}
-                    className="w-full min-h-[68px] rounded-2xl bg-gradient-to-br from-zinc-900 via-rose-950/80 to-rose-900/90 text-white p-4 text-left flex items-center gap-3 border border-rose-500/30 shadow-lg hover:brightness-110 active:scale-[0.99] transition-all"
-                  >
-                    <div className="w-12 h-12 rounded-xl bg-rose-500/20 flex items-center justify-center shrink-0 border border-rose-400/30 backdrop-blur-sm">
-                      <BookOpen className="w-5 h-5 text-rose-300" strokeWidth={2.25} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-display font-bold text-sm text-white">Ler em PDF</div>
-                      <div className="text-[11px] text-rose-200/80 leading-tight mt-0.5">
-                        Abre o PDF dentro do app com rolagem contínua
-                      </div>
-                    </div>
-                  </button>
-                </div>
-              )}
+                  />
 
-              {/* Seção Baixar Offline */}
-              {hasPdf && (
-                <div>
-                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2">
-                    Baixar offline
-                  </div>
+                  {/* Baixar Offline */}
                   {isDownloading ? (
-                    <div className="w-full rounded-2xl bg-secondary/60 p-3 border border-border/60">
+                    <div className="w-full min-h-[64px] rounded-2xl bg-white/5 p-4 border border-white/10 flex flex-col justify-center">
                       <div className="flex items-center gap-3">
-                        <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                        <Loader2 className="w-5 h-5 animate-spin text-primary" />
                         <div className="flex-1 text-sm font-semibold text-foreground">Baixando PDF… {downloadProgress}%</div>
                       </div>
-                      <div className="mt-2 h-1.5 bg-background rounded-full overflow-hidden">
+                      <div className="mt-3 h-1.5 bg-background rounded-full overflow-hidden">
                         <div className="h-full bg-primary transition-all" style={{ width: `${downloadProgress}%` }} />
                       </div>
                     </div>
@@ -128,40 +101,28 @@ const LerAgoraDialog = ({ open, onClose, onSelect, hasPdf, hasOnline, pdfCached,
                     <OptionRow
                       icon={Check}
                       title="PDF disponível offline"
-                      desc="Baixado. Toque em 'Ler em PDF' para abrir sem internet."
+                      desc="Arquivo baixado no dispositivo."
                       onClick={() => onSelect('pdf')}
+                      iconColor="text-emerald-400"
                     />
                   ) : (
                     <OptionRow
                       icon={Download}
                       title="Baixar para offline"
-                      desc="Salva o PDF no aparelho para ler sem internet"
+                      desc="Salva o PDF para ler sem internet."
                       onClick={() => onSelect('download')}
                     />
                   )}
-                </div>
+                </>
               )}
 
-              {/* Seção Continuar em outro dispositivo */}
-              <div>
-                <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2">
-                  Continuar em outro dispositivo
-                </div>
-                <button
-                  onClick={() => onSelect('desktop')}
-                  className="w-full min-h-[56px] rounded-2xl bg-secondary/60 hover:bg-secondary active:scale-[0.99] p-3 text-left flex items-center gap-3 transition-all border border-border/60"
-                >
-                  <div className="w-11 h-11 rounded-xl bg-background flex items-center justify-center shrink-0">
-                    <Monitor className="w-5 h-5 text-foreground" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-body font-semibold text-sm text-foreground">Versão desktop</div>
-                    <div className="text-[11px] text-muted-foreground leading-tight mt-0.5">
-                      Ler no computador com layout ampliado
-                    </div>
-                  </div>
-                </button>
-              </div>
+              {/* Versão desktop */}
+              <OptionRow
+                icon={Monitor}
+                title="Versão desktop"
+                desc="Ler no computador com layout ampliado."
+                onClick={() => onSelect('desktop')}
+              />
 
               {!hasPdf && !hasOnline && (
                 <p className="text-sm text-muted-foreground text-center py-2">
@@ -182,22 +143,22 @@ const OptionRow = ({
   title,
   desc,
   onClick,
+  iconColor = "text-muted-foreground",
 }: {
   icon: typeof BookOpen;
   title: string;
   desc: string;
   onClick: () => void;
+  iconColor?: string;
 }) => (
   <button
     onClick={onClick}
-    className="w-full min-h-[52px] rounded-2xl bg-secondary/60 hover:bg-secondary active:scale-[0.99] p-3 text-left flex items-center gap-3 transition-all border border-border/60"
+    className="w-full min-h-[68px] rounded-2xl bg-white/5 hover:bg-white/10 active:scale-[0.99] p-4 text-left flex items-center gap-4 transition-all border border-white/10 hover:border-white/20"
   >
-    <div className="w-9 h-9 rounded-xl bg-background flex items-center justify-center shrink-0">
-      <Icon className="w-4 h-4 text-foreground" strokeWidth={2} />
-    </div>
+    <Icon className={`w-6 h-6 shrink-0 ${iconColor}`} strokeWidth={1.5} />
     <div className="flex-1 min-w-0">
-      <div className="font-body font-semibold text-sm text-foreground">{title}</div>
-      <div className="text-[11px] text-muted-foreground leading-tight mt-0.5">{desc}</div>
+      <div className="font-display font-semibold text-[15px] text-foreground">{title}</div>
+      <div className="text-[12px] text-muted-foreground leading-snug mt-0.5">{desc}</div>
     </div>
   </button>
 );

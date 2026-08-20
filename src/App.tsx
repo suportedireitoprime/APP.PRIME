@@ -136,6 +136,7 @@ const VisualJuridico = lazy(() => import("./pages/VisualJuridico.tsx"));
 const GrafoArtigos = lazy(() => import("./pages/GrafoArtigos.tsx"));
 const Ferramentas = lazy(routePrefetch.ferramentas);
 const LocaisJuridicos = lazy(() => import("./pages/LocaisJuridicos.tsx"));
+const Documentos = lazy(() => import("./pages/Documentos.tsx"));
 const DicionarioJuridicoPage = lazy(routePrefetch.dicionario);
 const PeticaoInicial = lazy(() => import("./pages/PeticaoInicial.tsx"));
 const PeticaoInicialEditor = lazy(() => import("./pages/PeticaoInicialEditor.tsx"));
@@ -289,6 +290,7 @@ const AdminNativeAssets = lazy(() => import("./pages/AdminNativeAssets.tsx"));
 const AdminAprender = lazy(() => import("./pages/AdminAprender.tsx"));
 const AdminLaboratorio = lazy(() => import("./pages/AdminLaboratorio.tsx"));
 const AdminAprenderArea = lazy(() => import("./pages/AdminAprenderArea.tsx"));
+const AdminAvaliacaoLoja = lazy(() => import("./pages/AdminAvaliacaoLoja.tsx"));
 const AdminJurisprudencia = lazy(() => import("./pages/AdminJurisprudencia.tsx"));
 const TribunalSimulado = lazy(() => import("./pages/TribunalSimulado.tsx"));
 const AdminHorus = lazy(() => import('./pages/AdminHorus'));
@@ -697,7 +699,7 @@ function AnimatedRoutes() {
       import('@/lib/resumosLocal'),
       import('@/hooks/useDicionarioPrefs'),
       import('@/lib/flashcardsQueries').then((m) => m.prefetchFlashcardsDashboard(queryClient)),
-      import('@/hooks/useQuestoes').then((m) => m.prefetchQuestoesCache()),
+      // import('@/hooks/useQuestoes').then((m) => m.prefetchQuestoesCache()),
     ]).then(() => import('@/lib/userSync').then((m) => m.pullAllUserSync(true)));
 
 
@@ -812,6 +814,7 @@ function AnimatedRoutes() {
           <Route path="/visuais/*" element={<ProtectedRoute><VisualJuridico /></ProtectedRoute>} />
           <Route path="/grafo-artigos" element={<ProtectedRoute><PageTransition><GrafoArtigos /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas" element={<ProtectedRoute><PageTransition><Ferramentas /></PageTransition></ProtectedRoute>} />
+          <Route path="/documentos" element={<ProtectedRoute><PageTransition><Documentos /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/locais" element={<ProtectedRoute><PageTransition><LocaisJuridicos /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/dicionario" element={<ProtectedRoute><PageTransition><DicionarioJuridicoPage /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/peticao-inicial" element={<ProtectedRoute><PageTransition><PeticaoInicial /></PageTransition></ProtectedRoute>} />
@@ -951,6 +954,7 @@ function AnimatedRoutes() {
           
           <Route path="/compressao-imagens" element={<ProtectedRoute><PageTransition><CompressaoImagens /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-funcoes" element={<ProtectedRoute><PageTransition><AdminFuncoes /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin-avaliacao-loja" element={<ProtectedRoute><PageTransition><AdminAvaliacaoLoja /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-funcoes-assinantes" element={<ProtectedRoute><PageTransition><AdminFuncoesAssinantes /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-vade-mecum" element={<ProtectedRoute><PageTransition><AdminVadeMecum /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-vade-mecum-historico" element={<ProtectedRoute><PageTransition><AdminVadeMecumHistorico /></PageTransition></ProtectedRoute>} />

@@ -454,6 +454,17 @@ Deno.serve(async (req) => {
     );
   } catch (e) {
     console.error("boletim-juridico-gerar erro:", e);
+
+    try {
+      const body = await req.json().catch(() => ({}));
+      const fallbackDataRef = (body.dataRef as string) || hojeBRT();
+      await supa.from("boletins_juridicos")
+          .update({ status: "erro" })
+          .eq("data_ref", fallbackDataRef)
+          .eq("tipo", "juridico")
+          .eq("status", "gerando");
+    } catch (_) {}
+
     return new Response(
       JSON.stringify({ error: String((e as Error).message || e) }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },

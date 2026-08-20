@@ -65,6 +65,12 @@ function highlight(text: string, termo: string) {
   }
 }
 
+function stripMarkdown(text: string) {
+  if (!text) return text;
+  // Remove markdown headers (##), bold (**), italics (*), etc.
+  return text.replace(/[#*`_~]/g, '').trim();
+}
+
 /**
  * Card de resultado de busca — animação 100% CSS (GPU-only).
  * Usa `@keyframes` com `transform` + `opacity` para evitar layout thrashing.
@@ -86,7 +92,7 @@ const ResultadoConteudoCard = memo(function ResultadoConteudoCard({
         {item.thumb_url ? (
           <img src={item.thumb_url} alt="" className="w-10 h-10 object-cover rounded-md" loading="lazy" />
         ) : (
-          <Icon className="w-6 h-6" style={{ color }} />
+          <Icon className="w-6 h-6" style={{ color }} strokeWidth={1.5} />
         )}
       </div>
       <div className="min-w-0 flex-1 py-0.5">
@@ -106,7 +112,7 @@ const ResultadoConteudoCard = memo(function ResultadoConteudoCard({
         </p>
         {item.snippet && (
           <p className="text-xs text-muted-foreground line-clamp-2 mt-1.5 leading-relaxed">
-            {highlight(item.snippet, termo)}
+            {highlight(stripMarkdown(item.snippet), termo)}
           </p>
         )}
       </div>

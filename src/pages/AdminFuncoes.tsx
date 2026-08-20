@@ -6,7 +6,7 @@ import {
   Rss, Palette, Users, GitBranch, Github, ImageIcon, KeyRound, Bug, Newspaper,
   Quote, Monitor, Send, RefreshCcw, Lock, Wrench, FileText, Crown, Search, Target, MapPin, PlayCircle,
   Sparkles, UserPlus, GraduationCap, Scale, Store, Mail, FileSignature,
-  ListChecks, Headphones, ShieldAlert, Layers,
+  ListChecks, Headphones, ShieldAlert, Layers, Star
 } from 'lucide-react';
 
 import { toast } from 'sonner';
@@ -34,6 +34,7 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   '/admin-passo-a-passo-lojas': () => import('./AdminPassoAPassoLojas'),
   '/admin-blog-edicao': () => import('./AdminBlogEdicao'),
   '/admin-design-imagens': () => import('./AdminDesignImagens'),
+  '/admin-avaliacao-loja': () => import('./AdminAvaliacaoLoja'),
   '/admin-hero-home': () => import('./AdminHeroHome'),
   '/admin-home-curiosidades': () => import('./AdminHomeCuriosidades'),
   '/admin-overlay-frases': () => import('./AdminOverlayFrases'),
@@ -164,6 +165,16 @@ const CATEGORIES: Category[] = [
       { id: 'praticar', label: 'Praticar', icon: Target, desc: 'Tiro ao alvo na lei seca (em testes, só admin)', route: '/praticar' },
       { id: 'dicionario', label: 'Dicionário Editar', icon: BookA, desc: 'Termos e definições' },
       { id: 'questoes-editar', label: 'Questões Editar', icon: ListChecks, desc: 'Buscar mais questões, novos cargos e importar do Google Sheets', route: '/admin-questoes' },
+    ],
+  },
+  {
+    id: 'avaliacao-loja',
+    title: 'Avaliação Loja',
+    desc: 'Estatísticas e tracking de avaliações nas lojas',
+    icon: Star,
+    route: '/admin-avaliacao-loja',
+    items: [
+      { id: 'admin-avaliacao-loja', label: 'Avaliação Loja', icon: Star, desc: 'Estatísticas e tracking', route: '/admin-avaliacao-loja' }
     ],
   },
   {

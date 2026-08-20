@@ -1,10 +1,10 @@
-import { Suspense, useEffect, useMemo, useState, useRef } from 'react';
+import { Suspense, useEffect, useMemo, useState, useRef, memo, useCallback } from 'react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Capacitor } from '@capacitor/core';
-import { useVirtualizer } from '@tanstack/react-virtual';
+import { useVirtualizer, type VirtualItem } from '@tanstack/react-virtual';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { COLECOES, findColecao, normalizeLivro, type LivroNormalizado } from '@/lib/bibliotecaColecoes';
 import { useVisibleColecoes } from '@/hooks/useVisibleColecoes';
@@ -32,11 +32,11 @@ import { useGatedFeature } from '@/hooks/useGatedFeature';
 // FilePicker carregado via dynamic import no handleUploadPdf (evita crash se plugin nativo não estiver registrado)
 import { saveCustomPdf, listCustomPdfs, removeCustomPdf, getCustomPdf, type CustomPdfRecord } from '@/services/bibliotecaPersonalizadosDb';
 import { useIsPdfCached } from '@/hooks/useIsPdfCached';
-import { CloudOff, CheckCircle2, HardDrive } from 'lucide-react';
+import { CheckCircle2, HardDrive } from 'lucide-react';
 
 const BibliotecasDesktop = lazyWithRetry(() => import('./BibliotecasDesktop'));
 
-function VirtualLivroItem({ virtualRow, livro: l, onClick }: { virtualRow: any, livro: LivroNormalizado, onClick: () => void }) {
+const VirtualLivroItem = memo(function VirtualLivroItem({ virtualRow, livro: l, onClick }: { virtualRow: VirtualItem, livro: LivroNormalizado, onClick: () => void }) {
   const isDownloaded = useIsPdfCached(l.download);
   return (
     <div
@@ -75,7 +75,7 @@ function VirtualLivroItem({ virtualRow, livro: l, onClick }: { virtualRow: any, 
       </button>
     </div>
   );
-}
+});
 
 /** Coleções que compõem a aba "Performance" (desenvolvimento além do Direito). */
 const PERFORMANCE_IDS = ['fora-da-toga', 'oratoria', 'lideranca', 'portugues', 'pesquisa'];
@@ -146,16 +146,16 @@ const Bibliotecas = () => {
     });
   }, [queryClient]);
 
-  const loadCustomPdfs = async () => {
+  const loadCustomPdfs = useCallback(async () => {
     try {
       const list = await listCustomPdfs();
       setCustomPdfsList(list);
     } catch {}
-  };
+  }, []);
 
   useEffect(() => {
     loadCustomPdfs();
-  }, []);
+  }, [loadCustomPdfs]);
 
   const handleUploadPdf = async () => {
     gate.run(async () => {
@@ -207,12 +207,12 @@ const Bibliotecas = () => {
   const { data: livrosAreas = [], isLoading: loadingAreas } = useQuery({
     queryKey: ['biblioteca-colecao', 'areas'],
     staleTime: 10 * 60 * 1000,
-    placeholderData: (prev: any) => prev,
+    placeholderData: (prev: LivroNormalizado[] | undefined) => prev,
     queryFn: async () => {
       if (!colecaoAreas) return [] as LivroNormalizado[];
       try {
-        let q: any = supabase.from(colecaoAreas.table as any).select(colecaoAreas.select);
-        if (colecaoAreas.orderBy) q = q.order(colecaoAreas.orderBy, { ascending: true, nullsFirst: false });
+        let q = supabase.from(colecaoAreas.table as any).select(colecaoAreas.select);
+        if (colecaoAreas.orderBy) q = q.order(colecaoAreas.orderBy, { ascending: true, nullsFirst: false }) as any;
         
         const data = await withBundleFallback(
           q.limit(2000).then((res: any) => {
@@ -225,7 +225,7 @@ const Bibliotecas = () => {
           }
         );
         
-        const normalized = (data as any[]).map((r) => normalizeLivro(r, colecaoAreas));
+        const normalized = Array.isArray(data) ? data.map((r: any) => normalizeLivro(r, colecaoAreas)) : [];
         setPersistedColecao('areas', normalized).catch(() => {});
         return normalized;
       } catch (err) {

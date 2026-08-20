@@ -15,7 +15,6 @@ import { isAdminEmail } from '@/lib/adminEmails';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 import OpiniaoSheet from '@/components/menu/OpiniaoSheet';
-import AvaliarAppSheet from '@/components/vademecum/AvaliarAppSheet';
 
 interface SideMenuProps {
   open: boolean;
@@ -58,7 +57,6 @@ const GROUPS: Group[] = [
 
 const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
   const [opiniaoOpen, setOpiniaoOpen] = useState(false);
-  const [avaliarOpen, setAvaliarOpen] = useState(false);
   useEscapeKey(open, onClose);
   const navigate = useNavigate();
   const { signOut, user } = useAuth();
@@ -126,11 +124,25 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
       return;
     }
 
-    // Avaliar o app abre o bottom-sheet (prompt nativo da loja quando disponível).
+    // Avaliar o app abre a loja nativa diretamente (conforme pedido)
     if (id === 'avaliar') {
-      // Fecha o menu lateral primeiro para o sheet não abrir atrás dele.
       onClose();
-      setTimeout(() => setAvaliarOpen(true), 180);
+      
+      const isIos = Capacitor.getPlatform() === 'ios';
+      const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=br.com.vacatio.app';
+      const APP_STORE_REVIEW_URL = 'https://apps.apple.com/br/app/vacatio/id6793608690?action=write-review';
+      const PLAY_MARKET_URL = 'market://details?id=br.com.vacatio.app';
+
+      if (Capacitor.isNativePlatform()) {
+        const primary = isIos ? APP_STORE_REVIEW_URL : PLAY_MARKET_URL;
+        import('@capacitor/app-launcher').then(({ AppLauncher }) => {
+          AppLauncher.openUrl({ url: primary }).catch(() => {
+            window.open(isIos ? APP_STORE_REVIEW_URL : PLAY_STORE_URL, '_blank');
+          });
+        });
+      } else {
+        window.open(PLAY_STORE_URL, '_blank');
+      }
       return;
     }
 
@@ -328,11 +340,6 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
     <>
       {sheet}
       <OpiniaoSheet open={opiniaoOpen} onClose={() => setOpiniaoOpen(false)} />
-      <AvaliarAppSheet
-        open={avaliarOpen}
-        onClose={() => setAvaliarOpen(false)}
-        onFeedback={() => { navigate('/suporte'); onClose(); }}
-      />
     </>,
     document.body,
   );

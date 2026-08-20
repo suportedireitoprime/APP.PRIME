@@ -72,6 +72,7 @@
 - **Edição Cirúrgica (`replace_file_content`):** Altere apenas os blocos de código modificados. Evite reescrever arquivos completos.
 - **Respostas Enxutas:** Não cole códigos inteiros nas respostas do chat. Use links clicáveis no formato `[arquivo](file:///caminho#L1-L10)`.
 - **Economia de Contexto:** Reutilize informações já levantadas nos turnos anteriores para evitar consumo excessivo de tokens de contexto.
+- **Prova Real Obrigatória (Double Check):** Toda vez que você alterar um arquivo (especialmente usando `multi_replace_file_content`), você DEVE rodar `tsc.CMD --noEmit` IMEDIATAMENTE após a alteração para verificar se não gerou erros bobos de sintaxe (como "Identifier has already been declared" por duplicação de linhas) ANTES de avisar o usuário que terminou.
 - **Validação Prática:** Nunca declare conclusão de tarefa sem rodar `tsc.CMD --noEmit` ou o comando de verificação adequado.
 
 ## Validação Estrita de Infraestrutura & UI (Camada de Segurança)

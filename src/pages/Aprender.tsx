@@ -7,6 +7,7 @@ import {
   GraduationCap, Microscope, BookText, ClipboardList, Award, Lightbulb, Sparkles, ChevronRight, BookOpen,
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { isAdminEmail } from '@/lib/adminEmails';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import AprenderBottomNav from '@/components/aprender/AprenderBottomNav';
@@ -101,8 +102,34 @@ const Aprender = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const uid = user?.id ?? null;
+  const isAdmin = isAdminEmail(user?.email);
   const { modulesMap } = useAprenderAreaModulesMap();
   const [selectedAreaSlug, setSelectedAreaSlug] = useState<string | null>(null);
+
+  // Timer Countdown logic
+  const targetDate = useMemo(() => new Date('2026-08-25T00:00:00-03:00').getTime(), []);
+  const [timeLeft, setTimeLeft] = useState({ days: 5, hours: 0, minutes: 0, seconds: 0 });
+
+  useEffect(() => {
+    if (isAdmin) return;
+    const interval = setInterval(() => {
+      const now = new Date().getTime();
+      const distance = targetDate - now;
+
+      if (distance < 0) {
+        clearInterval(interval);
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+      } else {
+        setTimeLeft({
+          days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+          seconds: Math.floor((distance % (1000 * 60)) / 1000)
+        });
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [isAdmin, targetDate]);
 
   // Primeiro render já pintado: memória → localStorage (síncrono).
   const [data, setData] = useState<AprenderHomeData>(() => {
@@ -250,7 +277,7 @@ const Aprender = () => {
       mobileHeader={mobileHeader}
       wide
     >
-      <div className="w-full 2xl:max-w-[1750px] mx-auto px-3 sm:px-6 lg:px-8 lg:pt-4 pb-[calc(7rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
+      <div className={cn("w-full 2xl:max-w-[1750px] mx-auto px-3 sm:px-6 lg:px-8 lg:pt-4 pb-[calc(7rem+var(--sai-bottom,env(safe-area-bottom,0px)))]", !isAdmin && "relative h-[100dvh] sm:h-auto overflow-hidden")}>
         <div className="lg:grid lg:grid-cols-12 lg:gap-8 lg:items-start">
           {/* ── Sidebar Esquerda Desktop: Filtros & Lembretes de Estudo ───────────── */}
           <aside className="hidden lg:block lg:col-span-3 space-y-4 bg-card/40 border border-border/60 rounded-2xl p-4 shadow-sm">
@@ -504,6 +531,33 @@ const Aprender = () => {
             </div>
           </aside>
         </div>
+
+        {/* Overlay de Ofuscação para Não-Admins */}
+        {!isAdmin && (
+          <div className="absolute inset-0 z-50 backdrop-blur-[16px] bg-background/50 flex flex-col items-center justify-center p-6 text-center">
+            <div className="bg-card/90 p-8 rounded-3xl border border-white/10 shadow-2xl max-w-sm w-full mx-auto relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent pointer-events-none" />
+              <Sparkles className="w-12 h-12 text-primary mx-auto mb-4 relative z-10" />
+              <h2 className="text-xl font-display font-black text-foreground mb-2 relative z-10">Novidade a Caminho!</h2>
+              <p className="text-sm font-body text-muted-foreground mb-6 relative z-10">Será liberada a nova função em:</p>
+              
+              <div className="flex gap-3 justify-center relative z-10">
+                <div className="bg-background rounded-xl p-3 min-w-[70px] border border-border shadow-sm">
+                  <span className="block text-2xl font-display font-black text-primary">{timeLeft.days.toString().padStart(2, '0')}</span>
+                  <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Dias</span>
+                </div>
+                <div className="bg-background rounded-xl p-3 min-w-[70px] border border-border shadow-sm">
+                  <span className="block text-2xl font-display font-black text-primary">{timeLeft.hours.toString().padStart(2, '0')}</span>
+                  <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Horas</span>
+                </div>
+                <div className="bg-background rounded-xl p-3 min-w-[70px] border border-border shadow-sm">
+                  <span className="block text-2xl font-display font-black text-primary">{timeLeft.minutes.toString().padStart(2, '0')}</span>
+                  <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Minutos</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       <AprenderBottomNav />

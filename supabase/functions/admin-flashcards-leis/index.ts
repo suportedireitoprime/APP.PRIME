@@ -226,7 +226,8 @@ Os 10 flashcards de CADA desmembramento devem seguir OBRIGATORIAMENTE esta estru
 Regras:
 - CUBRA TUDO: Não ignore NENHUM inciso, alínea ou parágrafo.
 - Seja literal: a resposta das lacunas deve ser a exata palavra usada na lei.
-- O campo "dica" DEVE ser preenchido com a indicação exata do dispositivo (ex: "Art. 5º, I, 'a'").
+- O campo "base_legal" DEVE ser preenchido com a indicação exata do dispositivo (ex: "Art. 5º, I, 'a'").
+- O campo "exemplo" DEVE conter um exemplo prático ou caso hipotético aplicando o artigo.
 
 Formato de Saída (JSON APENAS):
 {
@@ -234,8 +235,9 @@ Formato de Saída (JSON APENAS):
     {
       "frente": "A República Federativa do Brasil constitui-se em Estado Democrático de Direito e tem como fundamentos a soberania, a cidadania, a dignidade da pessoa humana, os valores sociais do trabalho e da livre iniciativa e o ____.",
       "verso": "Pluralismo político",
-      "explicacao": "Conforme o texto exato da lei (Art. 1º, V).",
-      "dica": "Art. 1º, V",
+      "explicacao": "Conforme o texto exato da lei.",
+      "base_legal": "Art. 1º, V",
+      "exemplo": "Se um novo partido político quiser se registrar, o Estado deve permitir, pois o pluralismo político garante a multiplicidade de ideologias.",
       "artigo_numero": "Art. 1º"
     }
   ]
@@ -282,7 +284,8 @@ Formato de Saída (JSON APENAS):
           pergunta: String(f.frente).trim(),
           resposta: String(f.verso).trim(),
           reforco_conteudo: f.explicacao ? String(f.explicacao).trim() : null,
-          dica: f.dica ? String(f.dica).trim() : null,
+          base_legal: f.base_legal ? String(f.base_legal).trim() : null,
+          exemplo: f.exemplo ? String(f.exemplo).trim() : null,
           artigo_numero: f.artigo_numero ? String(f.artigo_numero).trim() : null
         });
       }

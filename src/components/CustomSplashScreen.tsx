@@ -20,14 +20,13 @@ export function CustomSplashScreen({ onComplete }: { onComplete: () => void }) {
       onComplete();
     };
 
-    // Sai assim que o app sinalizar prontidão (ou no máximo em 1.2s)
-    const maxTimeout = setTimeout(finish, 1200);
-    const onReady = () => finish();
-    window.addEventListener('app:ready', onReady);
+    // Fica na tela por exatamente 3 segundos, conforme solicitado, 
+    // para dar tempo das requisições pesadas (Suspense) do app terminarem
+    // de carregar atrás da splash, e para rodar a animação completa.
+    const splashTimeout = setTimeout(finish, 3000);
 
     return () => {
-      clearTimeout(maxTimeout);
-      window.removeEventListener('app:ready', onReady);
+      clearTimeout(splashTimeout);
     };
   }, [onComplete]);
 

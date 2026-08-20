@@ -56,7 +56,10 @@ export default function ConteudoBusca({
   const rowVirtualizer = useVirtualizer({
     count: filtrados.length,
     getScrollElement: () => parentRef.current?.closest('[class*="overflow-y-auto"]') as HTMLElement | null,
-    estimateSize: () => 88,
+    estimateSize: (index) => {
+      const isFirst = index === 0 || filtrados[index].entity_type !== filtrados[index - 1].entity_type;
+      return isFirst ? 120 : 88;
+    },
     overscan: 20,
   });
 
@@ -126,17 +129,30 @@ export default function ConteudoBusca({
         <div ref={parentRef} className="px-2" style={{ position: 'relative', height: rowVirtualizer.getTotalSize(), width: '100%' }}>
           {rowVirtualizer.getVirtualItems().map((virtualRow) => {
             const item = filtrados[virtualRow.index];
+            const prevItem = virtualRow.index > 0 ? filtrados[virtualRow.index - 1] : null;
+            const isFirst = !prevItem || prevItem.entity_type !== item.entity_type;
+
             return (
               <div
                 key={`${item.entity_type}-${item.entity_id}-${virtualRow.index}`}
+                data-index={virtualRow.index}
+                ref={rowVirtualizer.measureElement}
                 style={{
                   position: 'absolute',
                   top: 0,
                   left: 0,
                   width: '100%',
                   transform: `translateY(${virtualRow.start}px)`,
+                  paddingBottom: '8px',
                 }}
               >
+                {isFirst && virtualRow.index > 0 && (
+                  <div className="w-full flex items-center gap-3 pt-2 pb-4">
+                    <div className="h-px flex-1 bg-border/40" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-border/60" />
+                    <div className="h-px flex-1 bg-border/40" />
+                  </div>
+                )}
                 <ResultadoConteudoCard
                   item={item}
                   termo={query}

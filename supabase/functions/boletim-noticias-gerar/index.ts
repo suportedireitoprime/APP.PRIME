@@ -343,20 +343,28 @@ Deno.serve(async (req) => {
       texto: "É isso. Boa noite.",
     });
 
+    // Atualizar status para gerando (já feito acima)
+
     const CORES_NOTICIA = "#DC2626"; // vermelho jornalístico
 
-    // Áudio + imagens (paralelo para evitar timeout do edge runtime)
-    await Promise.all(scenes.map(async (s, i) => {
-      const { wav, durationS } = await gerarTTS(s.texto, voz, promptExtra);
-      const path = `${boletimId}/${String(i).padStart(2, "0")}-${s.kind}.wav`;
-      const up = await supa.storage.from(BUCKET_AUDIO).upload(path, wav, { contentType: "audio/wav", upsert: true, cacheControl: "31536000, immutable" });
-      if (up.error) throw up.error;
-      const { data: signed } = await supa.storage.from(BUCKET_AUDIO).createSignedUrl(path, 60 * 60 * 24 * 30);
-      s.audio_url = signed?.signedUrl || "";
-      s.audio_path = path;
-      s.duracao_s = Math.max(2, Math.round(durationS * 10) / 10);
-      s.cor_hex = CORES_NOTICIA;
-      s.tipo_label = "Notícia";
+    // Áudio + imagens (sequencial para evitar rate limit de TTS do Gemini)
+    for (let i = 0; i < scenes.length; i++) {
+      const s = scenes[i];
+      try {
+        const { wav, durationS } = await gerarTTS(s.texto, voz, promptExtra);
+        const path = `${boletimId}/${String(i).padStart(2, "0")}-${s.kind}.wav`;
+        const up = await supa.storage.from(BUCKET_AUDIO).upload(path, wav, { contentType: "audio/wav", upsert: true, cacheControl: "31536000, immutable" });
+        if (up.error) throw up.error;
+        const { data: signed } = await supa.storage.from(BUCKET_AUDIO).createSignedUrl(path, 60 * 60 * 24 * 30);
+        s.audio_url = signed?.signedUrl || "";
+        s.audio_path = path;
+        s.duracao_s = Math.max(2, Math.round(durationS * 10) / 10);
+        s.cor_hex = CORES_NOTICIA;
+        s.tipo_label = "Notícia";
+      } catch (err) {
+        console.error(`[boletim-noticias] erro no TTS da cena ${i}:`, err);
+        throw err;
+      }
 
       // Imagem
       let imagemUrl: string | null = null;
@@ -400,10 +408,9 @@ Deno.serve(async (req) => {
       s.imagem_fonte = imagemFonte;
       s.imagem_credito = imagemCredito;
       delete s._noticia_imagem;
-    }));
+    }
 
     const audioUrls: string[] = scenes.map((s: any) => s.audio_url);
-
 
     const duracaoTotal = scenes.reduce((acc, s) => acc + (s.duracao_s || 0), 0);
     await supa.from("boletins_juridicos").update({
@@ -446,6 +453,22 @@ Deno.serve(async (req) => {
     );
   } catch (e) {
     console.error("boletim-noticias-gerar erro:", e);
+    
+    // Se extraímos um boletimId antes de falhar, podemos marcá-lo como erro.
+    // Como a variável let boletimId está no bloco try e é acessível apenas lá (ou foi extraída no escopo try).
+    // O mais seguro é pegar o body pra ver se tem dataRef e tentar atualizar os gerandos desse dataRef para erro.
+    // Porém a forma mais robusta é capturar o ID se ele existir. 
+    // Como boletimId está restrito ao bloco try, vamos adicionar um fallback pegando pelo dataRef gerando:
+    try {
+      const body = await req.json().catch(() => ({}));
+      const fallbackDataRef = (body.dataRef as string) || hojeBRT();
+      await supa.from("boletins_juridicos")
+          .update({ status: "erro" })
+          .eq("data_ref", fallbackDataRef)
+          .eq("tipo", "noticias")
+          .eq("status", "gerando");
+    } catch (_) {}
+
     return new Response(JSON.stringify({ error: String((e as Error).message || e) }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }

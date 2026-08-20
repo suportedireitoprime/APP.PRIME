@@ -1,80 +1,55 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Clock, Info, Sparkles, ArrowUpRight, Flame } from 'lucide-react';
+import { Info, Sparkles, Flame, BookOpenText } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/PageHeader';
-import { BLOG_POSTS, TEMAS, TEMA_COLORS, type BlogPost, type BlogTema } from '@/data/blogPosts';
+import { TEMAS, type BlogPost, type BlogTema } from '@/data/blogPosts';
 import BlogPostSheet from '@/components/vademecum/BlogPostSheet';
 import BlogHeroHeader from '@/components/vademecum/BlogHeroHeader';
-import BlogCoverImage from '@/components/BlogCoverImage';
-import { blogThumb } from '@/lib/blogImg';
 import { useBlogPostsCache } from '@/hooks/useBlogPostsCache';
 import { useFeatureLimit } from '@/hooks/useFeatureLimit';
 import PremiumGate from '@/components/PremiumGate';
-import { supabase } from '@/integrations/supabase/client';
 import BloggerBottomNav, { type BloggerTab } from '@/components/vademecum/BloggerBottomNav';
 import BiografiaCategoriasView from '@/components/vademecum/BiografiaCategoriasView';
 import BiografiaListView from '@/components/vademecum/BiografiaListView';
 import BiografiaArtigoView from '@/components/vademecum/BiografiaArtigoView';
 import BlogCategoriasView from '@/components/vademecum/BlogCategoriasView';
-import { Input } from '@/components/ui/input';
 import { useIsDesktop } from '@/hooks/use-desktop';
 import { LoadingState, EmptyState } from '@/components/ui/states';
-import { BookOpenText, Share2, Copy, Star } from 'lucide-react';
-import { toast } from 'sonner';
 import { KeepAlive } from '@/components/ui/KeepAlive';
-import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuSeparator,
-  ContextMenuTrigger,
-} from '@/components/ui/context-menu';
 import { recordActivity } from '@/lib/continuity';
 import { useGoBack } from '@/hooks/useGoBack';
-import { copiarTexto } from '@/lib/nativo/copiar';
+import { blogThumb } from '@/lib/blogImg';
 
+// Novos hooks e componentes extraídos na refatoração
+import { useBlogTrending } from '@/hooks/useBlogTrending';
+import { useBlogPostsFilter } from '@/hooks/useBlogPostsFilter';
+import { BlogPostCard } from '@/components/vademecum/BlogPostCard';
 
-type BlogFilter = 'trending' | 'todos' | BlogTema;
-const TRENDING_CACHE_KEY = 'blog_trending_v1';
-const TRENDING_CACHE_TTL_MS = 5 * 60 * 1000;
-
-
-
-
-function formatDate(iso: string) {
-  const d = new Date(iso);
-  const day = d.getDate();
-  const months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
-  return `${day} ${months[d.getMonth()]} · ${d.getFullYear()}`;
-}
+export type BlogFilter = 'trending' | 'todos' | BlogTema;
 
 const Blog = () => {
   const navigate = useNavigate();
   const goBack = useGoBack();
   const location = useLocation();
   const isDesktop = useIsDesktop();
+  
   const [selectedFilter, setSelectedFilter] = useState<BlogFilter>('todos');
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const [infoOpen, setInfoOpen] = useState(false);
   const [gateOpen, setGateOpen] = useState(false);
-  const [trendingIds, setTrendingIds] = useState<string[] | null>(null);
   const [bottomTab, setBottomTab] = useState<BloggerTab>('blogger');
   const [selectedBioCategory, setSelectedBioCategory] = useState<string | null>(null);
   const [selectedBioPerson, setSelectedBioPerson] = useState<string | null>(null);
-  const { canUse, register, used, config } = useFeatureLimit('blog_read');
 
-  // Carrega posts do Blog Edição com stale-while-revalidate (localStorage cache).
+  const { canUse, register, used, config } = useFeatureLimit('blog_read');
   const { posts: dbPosts, loaded: blogLoaded } = useBlogPostsCache();
 
-  const allPosts = useMemo(() => {
-    const byId = new Map<string, BlogPost>();
-    [...dbPosts, ...BLOG_POSTS].forEach((p) => byId.set(p.id, p));
-    return Array.from(byId.values());
-  }, [dbPosts]);
+  // Custom hooks gerenciam o cache de trending e filtragem final de postagens
+  const { trendingIds } = useBlogTrending(selectedFilter);
+  const { allPosts, posts, visiblePosts } = useBlogPostsFilter(dbPosts, selectedFilter, bottomTab, trendingIds, blogLoaded);
 
-
-  // SEO & Título dinâmico por rota/filtro/artigo selecionado
+  // SEO
   useEffect(() => {
     if (selectedPost) {
       document.title = `${selectedPost.titulo} | Blogger Jurídico`;
@@ -87,7 +62,7 @@ const Blog = () => {
     }
   }, [selectedPost, selectedFilter]);
 
-  // Auto-open post from query param (compartilhamento)
+  // Compartilhamento via query string
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const id = params.get('post');
@@ -97,64 +72,7 @@ const Blog = () => {
     }
   }, [location.search, allPosts]);
 
-  // Busca ranking "Em Alta" via RPC (com cache curto em sessionStorage e flag de desmonte)
-  useEffect(() => {
-    if (selectedFilter !== 'trending' || trendingIds !== null) return;
-    let cancelled = false;
-    try {
-      const raw = sessionStorage.getItem(TRENDING_CACHE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as { at: number; ids: string[] };
-        if (Date.now() - parsed.at < TRENDING_CACHE_TTL_MS) {
-          setTrendingIds(parsed.ids);
-          return;
-        }
-      }
-    } catch {}
-    supabase.rpc('blog_posts_trending', { _limit: 50, _dias: 14 }).then(({ data, error }) => {
-      if (cancelled) return;
-      if (error || !data) { setTrendingIds([]); return; }
-      const ids = (data as Array<{ post_id: string }>).map((r) => r.post_id);
-      setTrendingIds(ids);
-      try { sessionStorage.setItem(TRENDING_CACHE_KEY, JSON.stringify({ at: Date.now(), ids })); } catch {}
-    });
-    return () => { cancelled = true; };
-  }, [selectedFilter, trendingIds]);
-
-  const posts = useMemo(() => {
-    const byDate = [...allPosts].sort(
-      (a, b) => new Date(b.data_publicacao).getTime() - new Date(a.data_publicacao).getTime(),
-    );
-    let base = byDate;
-
-    // Filter by bottom tab contexts
-    if (bottomTab === 'favoritos') {
-      try {
-        const cur = new Set<string>(JSON.parse(localStorage.getItem('blog:favorites') || '[]'));
-        base = base.filter((p) => cur.has(p.id));
-      } catch { /* ignore */ }
-    } else if (bottomTab === 'biografia') {
-      base = []; // A aba de biografia tem sua própria view.
-    } else if (bottomTab === 'carreiras') {
-      base = base.filter((p) => p.tema === 'Carreiras Jurídicas');
-    } else if (selectedFilter === 'trending') {
-      if (!trendingIds || trendingIds.length === 0) return byDate; // fallback
-      const map = new Map(allPosts.map((p) => [p.id, p]));
-      const ordered = trendingIds.map((id) => map.get(id)).filter(Boolean) as BlogPost[];
-      const seen = new Set(ordered.map((p) => p.id));
-      byDate.forEach((p) => { if (!seen.has(p.id)) ordered.push(p); });
-      base = ordered;
-    } else if (selectedFilter !== 'todos') {
-      base = base.filter((p) => p.tema === selectedFilter);
-    }
-    
-    return base;
-  }, [allPosts, selectedFilter, trendingIds, bottomTab]);
-
-  const visiblePosts = useMemo(() => blogLoaded ? posts : [], [blogLoaded, posts]);
-
-  // Preload das 3 primeiras thumbs — força o browser a começar o download
-  // antes do React montar os <img>, deixando o "acima da dobra" quase instantâneo.
+  // Preload Above-the-fold
   useEffect(() => {
     if (!visiblePosts.length) return;
     const links: HTMLLinkElement[] = [];
@@ -171,11 +89,15 @@ const Blog = () => {
     return () => { links.forEach((l) => l.remove()); };
   }, [visiblePosts]);
 
-
+  const handleOpenPost = useCallback((post: BlogPost) => {
+    if (!canUse) { setGateOpen(true); return; }
+    setSelectedPost(post);
+    register(post.id);
+    recordActivity({ path: `/blog?post=${post.id}`, label: post.titulo, kind: 'blog' });
+  }, [canUse, register]);
 
   return (
     <div className="min-h-dvh bg-background">
-      {/* Header compacto no topo — sem capa grande */}
       <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-lg">
         <div className="max-w-3xl mx-auto">
           <PageHeader
@@ -199,7 +121,6 @@ const Blog = () => {
           />
         </div>
       </header>
-
 
       <AnimatePresence initial={false}>
         {infoOpen && (
@@ -226,62 +147,61 @@ const Blog = () => {
         )}
       </AnimatePresence>
 
-      {/* Capa grande contextual (Todos + por categoria) */}
       {bottomTab !== 'favoritos' && bottomTab !== 'biografia' && bottomTab !== 'categorias' && (
         <BlogHeroHeader selectedTema={selectedFilter === 'trending' || selectedFilter === 'todos' ? null : selectedFilter} />
       )}
 
-      {/* Chips de tema */}
       {bottomTab !== 'biografia' && bottomTab !== 'categorias' && (
         <div id="blog-filters" className="bg-background border-b border-border/40">
           <div role="tablist" aria-label="Filtros de temas do blog" className="flex gap-2 overflow-x-auto no-scrollbar px-4 py-3 max-w-3xl mx-auto">
-          <button
-            role="tab"
-            aria-selected={selectedFilter === 'todos'}
-            aria-label="Exibir todos os artigos"
-            onClick={() => setSelectedFilter('todos')}
-            className={`shrink-0 min-h-[38px] px-4 py-2 rounded-full text-xs font-body font-semibold uppercase tracking-wide transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
-              selectedFilter === 'todos'
-                ? 'bg-primary text-primary-foreground shadow-md'
-                : 'bg-secondary text-foreground hover:bg-secondary/80'
-            }`}
-          >
-            Todos
-          </button>
-          <button
-            role="tab"
-            aria-selected={selectedFilter === 'trending'}
-            aria-label="Exibir artigos em alta"
-            onClick={() => setSelectedFilter('trending')}
-            className={`shrink-0 min-h-[38px] inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-body font-semibold uppercase tracking-wide transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
-              selectedFilter === 'trending'
-                ? 'bg-primary text-primary-foreground shadow-md'
-                : 'bg-secondary text-amber-400 hover:bg-secondary/80'
-            }`}
-          >
-            <Flame className="w-3.5 h-3.5" strokeWidth={2.5} />
-            Em Alta
-          </button>
-          {[...TEMAS].sort((a, b) => a.localeCompare(b, 'pt-BR')).map((tema) => {
-            const active = selectedFilter === tema;
-            return (
-              <button
-                key={tema}
-                role="tab"
-                aria-selected={active}
-                aria-label={`Filtrar por ${tema}`}
-                onClick={() => setSelectedFilter(tema)}
-                className={`shrink-0 min-h-[38px] px-4 py-2 rounded-full text-xs font-body font-semibold uppercase tracking-wide transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
-                  active ? 'bg-primary text-primary-foreground shadow-md' : 'bg-secondary text-foreground hover:bg-secondary/80'
-                }`}
-              >
-                {tema}
-              </button>
-            );
-          })}
+            <button
+              role="tab"
+              aria-selected={selectedFilter === 'todos'}
+              aria-label="Exibir todos os artigos"
+              onClick={() => setSelectedFilter('todos')}
+              className={`shrink-0 min-h-[38px] px-4 py-2 rounded-full text-xs font-body font-semibold uppercase tracking-wide transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                selectedFilter === 'todos'
+                  ? 'bg-primary text-primary-foreground shadow-md'
+                  : 'bg-secondary text-foreground hover:bg-secondary/80'
+              }`}
+            >
+              Todos
+            </button>
+            <button
+              role="tab"
+              aria-selected={selectedFilter === 'trending'}
+              aria-label="Exibir artigos em alta"
+              onClick={() => setSelectedFilter('trending')}
+              className={`shrink-0 min-h-[38px] inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-body font-semibold uppercase tracking-wide transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                selectedFilter === 'trending'
+                  ? 'bg-primary text-primary-foreground shadow-md'
+                  : 'bg-secondary text-amber-400 hover:bg-secondary/80'
+              }`}
+            >
+              <Flame className="w-3.5 h-3.5" strokeWidth={2.5} />
+              Em Alta
+            </button>
+            {[...TEMAS].sort((a, b) => a.localeCompare(b, 'pt-BR')).map((tema) => {
+              const active = selectedFilter === tema;
+              return (
+                <button
+                  key={tema}
+                  role="tab"
+                  aria-selected={active}
+                  aria-label={`Filtrar por ${tema}`}
+                  onClick={() => setSelectedFilter(tema)}
+                  className={`shrink-0 min-h-[38px] px-4 py-2 rounded-full text-xs font-body font-semibold uppercase tracking-wide transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                    active ? 'bg-primary text-primary-foreground shadow-md' : 'bg-secondary text-foreground hover:bg-secondary/80'
+                  }`}
+                >
+                  {tema}
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
+
       <KeepAlive active={bottomTab === 'biografia'}>
         {selectedBioPerson ? (
           <BiografiaArtigoView 
@@ -315,7 +235,7 @@ const Blog = () => {
       <KeepAlive active={bottomTab === 'categorias'}>
         <BlogCategoriasView 
           onSelectCategoria={(tema) => {
-            setSelectedFilter(tema);
+            setSelectedFilter(tema as BlogFilter);
             setBottomTab('blogger');
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
@@ -325,171 +245,68 @@ const Blog = () => {
       <KeepAlive active={bottomTab !== 'biografia' && bottomTab !== 'categorias'}>
         <div className={isDesktop ? 'mx-auto w-full max-w-7xl px-6 py-4 pb-16 flex gap-6 items-start' : 'max-w-3xl mx-auto px-4 py-4 space-y-3 pb-40'}>
           <div className={isDesktop ? 'w-[420px] shrink-0 space-y-3 max-h-[calc(100dvh-260px)] overflow-y-auto pr-2 -mr-2' : 'w-full space-y-3'}>
-          <AnimatePresence mode="wait">
-            <motion.div
-            key={selectedFilter}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.3, ease: 'easeOut' }}
-            className="space-y-3 -mx-4 md:mx-0"
-          >
-            {visiblePosts.map((post, i) => {
-              const c = TEMA_COLORS[post.tema];
-              const active = isDesktop && selectedPost?.id === post.id;
-              const openPost = () => {
-                if (!canUse) { setGateOpen(true); return; }
-                setSelectedPost(post);
-                register(post.id);
-                recordActivity({ path: `/blog?post=${post.id}`, label: post.titulo, kind: 'blog' });
-              };
-              const shareUrl = `${window.location.origin}/blog?post=${post.id}`;
-              const copyLink = async () => {
-                try { await copiarTexto(shareUrl); toast.success('Link copiado'); }
-                catch { toast.error('Não foi possível copiar'); }
-              };
-              const share = async () => {
-                if ((navigator as any).share) {
-                  try { await (navigator as any).share({ title: post.titulo, url: shareUrl }); }
-                  catch { /* dismissed */ }
-                } else {
-                  copyLink();
-                }
-              };
-              const favorite = () => {
-                try {
-                  const key = 'blog:favorites';
-                  const cur = new Set<string>(JSON.parse(localStorage.getItem(key) || '[]'));
-                  if (cur.has(post.id)) { cur.delete(post.id); toast('Removido dos favoritos'); }
-                  else { cur.add(post.id); toast.success('Adicionado aos favoritos'); }
-                  localStorage.setItem(key, JSON.stringify([...cur]));
-                } catch { /* ignore */ }
-              };
-              const cardNode = (
-                <motion.div
-                  key={post.id}
-                  role="article"
-                  tabIndex={0}
-                  aria-label={`Ler artigo: ${post.titulo}`}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: Math.min(i, 8) * 0.04, duration: 0.35, ease: 'easeOut' }}
-                  onClick={openPost}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      openPost();
-                    }
-                  }}
-                  style={{
-                    background: `linear-gradient(160deg, ${c.chip}22 0%, hsl(var(--card)) 45%, hsl(var(--card)) 100%)`,
-                  }}
-                  className={`group relative flex items-stretch gap-0 border-y md:border md:rounded-2xl transition-colors cursor-pointer overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
-                    active ? 'border-primary ring-1 ring-primary/40' : 'border-border/40 hover:border-primary/40'
-                  }`}
-                >
-                  <div className="w-28 sm:w-32 aspect-square shrink-0 relative overflow-hidden news-cover-shine bg-black/40">
-                    <BlogCoverImage
-                      postId={post.id}
-                      remoteUrl={blogThumb(post.imagem_url)}
-                      alt={post.titulo}
-                      className="absolute inset-0 w-full h-full object-cover object-center"
-                      loading={i < 3 ? 'eager' : 'lazy'}
-                      decoding="async"
-                      fetchPriority={i < 3 ? 'high' : 'auto'}
-                    />
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={selectedFilter}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.3, ease: 'easeOut' }}
+                className="space-y-3 -mx-4 md:mx-0"
+              >
+                {visiblePosts.map((post, i) => (
+                  <BlogPostCard
+                    key={post.id}
+                    post={post}
+                    index={i}
+                    active={isDesktop && selectedPost?.id === post.id}
+                    isDesktop={isDesktop}
+                    canUse={canUse}
+                    onOpen={handleOpenPost}
+                  />
+                ))}
+              </motion.div>
+            </AnimatePresence>
 
-                    {/* Degradê à direita ligando ao card */}
-                    <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-r from-transparent to-card" />
-                  </div>
+            {!blogLoaded && (
+              <LoadingState variant="list" rows={4} label="Carregando artigos mais recentes" className="-mx-4 md:mx-0" />
+            )}
 
-                  <div className="flex-1 min-w-0 flex flex-col justify-between gap-2 p-4">
-                    <h3 className="font-display text-[15px] sm:text-base font-medium text-foreground leading-snug line-clamp-2 transition-colors">
-                      {post.titulo}
-                    </h3>
-                    <div className="flex items-center gap-2 flex-wrap text-[11px] font-body text-muted-foreground">
-                      <span
-                        className="inline-flex items-center gap-1 font-semibold px-1.5 py-0.5 rounded"
-                        style={{ background: c.chip, color: c.chipText }}
-                      >
-                        {post.tema}
-                      </span>
-                      <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
-                      <span className="inline-flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        {post.tempo_leitura_min} min · {formatDate(post.data_publicacao)}
-                      </span>
-                      <ArrowUpRight className="w-3.5 h-3.5 text-muted-foreground/60 ml-auto" />
-                    </div>
-                  </div>
-                </motion.div>
-              );
-              if (!isDesktop) return cardNode;
-              return (
-                <ContextMenu key={post.id}>
-                  <ContextMenuTrigger asChild>{cardNode}</ContextMenuTrigger>
-                  <ContextMenuContent className="w-56">
-                    <ContextMenuItem onClick={openPost}>
-                      <ArrowUpRight className="w-4 h-4 mr-2" /> Abrir artigo
-                    </ContextMenuItem>
-                    <ContextMenuItem onClick={copyLink}>
-                      <Copy className="w-4 h-4 mr-2" /> Copiar link
-                    </ContextMenuItem>
-                    <ContextMenuItem onClick={share}>
-                      <Share2 className="w-4 h-4 mr-2" /> Compartilhar
-                    </ContextMenuItem>
-                    <ContextMenuSeparator />
-                    <ContextMenuItem onClick={favorite}>
-                      <Star className="w-4 h-4 mr-2" /> Favoritar
-                    </ContextMenuItem>
-                  </ContextMenuContent>
-                </ContextMenu>
-              );
-            })}
-
-          </motion.div>
-          </AnimatePresence>
-
-
-        {!blogLoaded && (
-          <LoadingState variant="list" rows={4} label="Carregando artigos mais recentes" className="-mx-4 md:mx-0" />
-        )}
-
-        {blogLoaded && posts.length === 0 && (
-          <EmptyState
-            icon={BookOpenText}
-            title="Nenhum artigo encontrado"
-            description="Ainda não há artigos publicados neste tema. Volte em breve."
-          />
-        )}
-
-        </div>
-
-        {isDesktop && (
-          <div className="flex-1 min-w-0 sticky top-[220px] h-[calc(100dvh-260px)]">
-            {selectedPost ? (
-              <BlogPostSheet
-                inline
-                post={selectedPost}
-                onClose={() => setSelectedPost(null)}
+            {blogLoaded && posts.length === 0 && (
+              <EmptyState
+                icon={BookOpenText}
+                title="Nenhum artigo encontrado"
+                description="Ainda não há artigos publicados neste tema. Volte em breve."
               />
-            ) : (
-              <div className="h-full w-full rounded-2xl border border-dashed border-border/60 bg-card/30 flex flex-col items-center justify-center text-center px-8">
-                <Sparkles className="w-8 h-8 text-primary/70 mb-3" />
-                <h3 className="font-display text-lg text-foreground mb-1">Selecione um artigo</h3>
-                <p className="font-body text-sm text-muted-foreground max-w-sm">
-                  Escolha um post da lista à esquerda para ler aqui, sem sair da página.
-                </p>
-              </div>
             )}
           </div>
-        )}
-      </div>
+
+          {isDesktop && (
+            <div className="flex-1 min-w-0 sticky top-[220px] h-[calc(100dvh-260px)]">
+              {selectedPost ? (
+                <BlogPostSheet
+                  inline
+                  post={selectedPost}
+                  onClose={() => setSelectedPost(null)}
+                />
+              ) : (
+                <div className="h-full w-full rounded-2xl border border-dashed border-border/60 bg-card/30 flex flex-col items-center justify-center text-center px-8">
+                  <Sparkles className="w-8 h-8 text-primary/70 mb-3" />
+                  <h3 className="font-display text-lg text-foreground mb-1">Selecione um artigo</h3>
+                  <p className="font-body text-sm text-muted-foreground max-w-sm">
+                    Escolha um post da lista à esquerda para ler aqui, sem sair da página.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </KeepAlive>
 
       {!isDesktop && (
         <BlogPostSheet post={selectedPost} onClose={() => setSelectedPost(null)} />
       )}
+
       <PremiumGate
         open={gateOpen}
         onClose={() => setGateOpen(false)}
@@ -523,4 +340,3 @@ const Blog = () => {
 };
 
 export default Blog;
-

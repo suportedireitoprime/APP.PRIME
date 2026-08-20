@@ -13,6 +13,7 @@ import { DESKTOP_TOOL_GROUPS, DESKTOP_TOOLS_FLAT } from '@/config/desktopTools';
 
 import { Trophy, Compass } from 'lucide-react';
 import { ForcaRanking } from '@/components/gamificacao/ForcaRanking';
+import { BoletinsBottomSheet } from '@/components/ferramentas/BoletinsBottomSheet';
 
 const Ferramentas = () => {
   useTrackArea("ferramentas_aberta");
@@ -20,10 +21,16 @@ const Ferramentas = () => {
   const [dicionarioOpen, setDicionarioOpen] = useState(false);
 
   const [rankingOpen, setRankingOpen] = useState(false);
+  const [boletinsSheetOpen, setBoletinsSheetOpen] = useState(false);
 
   const handleToolClick = (id: string, route?: string) => {
     if (id === 'ranking') {
       setRankingOpen(true);
+      return;
+    }
+    
+    if (id === 'boletins') {
+      setBoletinsSheetOpen(true);
       return;
     }
     
@@ -44,7 +51,6 @@ const Ferramentas = () => {
       case 'leis-cantadas': navigate('/leis-cantadas'); break;
       case 'gravar-aula': navigate('/anotacoes/audio'); break;
       case 'resumos-juridicos': navigate('/resumos-juridicos'); break;
-      case 'boletins': navigate('/boletins'); break;
       case 'noticias': navigate('/noticias'); break;
       case 'newsletter': navigate('/newsletter'); break;
       case 'biblioteca': navigate('/biblioteca'); break;
@@ -71,7 +77,7 @@ const Ferramentas = () => {
     { id: 'radares', label: 'Radares de Leis', desc: 'Projetos de Lei', icon: Radar, route: '/radares', color: '#0EA5E9' },
   ];
 
-  const primaryIds = ['noticias', 'boletins', 'radares', 'desktop', 'documentos'];
+  const primaryIds = ['noticias', 'radares', 'desktop', 'documentos'];
   const secondaryTools = DESKTOP_TOOLS_FLAT.filter(t => !primaryIds.includes(t.id));
 
   const toolsList = (
@@ -234,6 +240,8 @@ const Ferramentas = () => {
       </Suspense>
 
       <ForcaRanking isOpen={rankingOpen} onClose={() => setRankingOpen(false)} />
+      
+      <BoletinsBottomSheet isOpen={boletinsSheetOpen} onClose={() => setBoletinsSheetOpen(false)} />
     </DesktopPageLayout>
   );
 };

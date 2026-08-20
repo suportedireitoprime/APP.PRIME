@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, BookOpenText, FileText, MessageCircle } from 'lucide-react';
+import { X, BookOpenText, FileText, MessageCircle, ArrowLeft, ChevronRight } from 'lucide-react';
 import type { Tema } from '@/hooks/useLeitorPrefs';
 import AbaTermos from './AbaTermos';
 import AbaResumo from './AbaResumo';
@@ -21,7 +21,7 @@ interface Props {
   lateral?: boolean;
 }
 
-type Aba = 'termos' | 'resumo' | 'chat';
+type Aba = 'menu' | 'termos' | 'resumo' | 'chat';
 
 const TABS: Array<{ id: Aba; label: string; icon: typeof BookOpenText }> = [
   { id: 'termos', label: 'Termos', icon: BookOpenText },
@@ -41,12 +41,13 @@ export default function AssistenteIA({
   fonteFamily,
   lateral = false,
 }: Props) {
-  const [aba, setAba] = useState<Aba>('termos');
+  const [aba, setAba] = useState<Aba>('menu');
   const dark = tema.isDark;
 
   // Trava scroll do body quando aberto
   useEffect(() => {
     if (!open) return;
+    setAba('menu');
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {
@@ -115,6 +116,15 @@ export default function AssistenteIA({
               className="px-4 pt-2 pb-3 flex items-start gap-3 shrink-0 border-b"
               style={{ borderColor: tema.border }}
             >
+              {aba !== 'menu' && (
+                <button
+                  onClick={() => setAba('menu')}
+                  className="mt-1 w-8 h-8 rounded-full flex items-center justify-center shrink-0 active:scale-95 transition"
+                  style={{ background: dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)' }}
+                >
+                  <ArrowLeft className="w-4 h-4 opacity-70" />
+                </button>
+              )}
               <div className="flex-1 min-w-0">
                 <p className="text-[10px] uppercase tracking-[0.15em] opacity-60">
                   Assistente de leitura
@@ -138,7 +148,8 @@ export default function AssistenteIA({
             </div>
 
             {/* Tabs (segmented control) */}
-            <div className="px-4 pt-3 pb-2 shrink-0">
+            {aba !== 'menu' && (
+              <div className="px-4 pt-3 pb-2 shrink-0">
               <div
                 className="flex p-1 rounded-full"
                 style={{ background: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }}
@@ -173,9 +184,52 @@ export default function AssistenteIA({
                 })}
               </div>
             </div>
+            )}
 
             {/* Conteúdo da aba */}
-            <div className="flex-1 min-h-0 overflow-hidden">
+            <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
+              {aba === 'menu' && (
+                <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                  <button
+                    onClick={() => setAba('termos')}
+                    className="w-full min-h-[68px] rounded-2xl p-4 text-left flex items-center gap-4 transition-all active:scale-[0.99]"
+                    style={{ background: dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)', border: `1px solid ${dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}` }}
+                  >
+                    <BookOpenText className="w-6 h-6 shrink-0" style={{ color: 'hsl(var(--primary))' }} strokeWidth={1.5} />
+                    <div className="flex-1 min-w-0">
+                      <div className="font-display font-semibold text-[15px] tracking-wide">EXPLICAR TERMOS</div>
+                      <div className="text-[13px] opacity-70 leading-snug mt-0.5">Identifica e explica termos técnicos ou latim da página.</div>
+                    </div>
+                    <ChevronRight className="w-4 h-4 opacity-40 shrink-0" />
+                  </button>
+
+                  <button
+                    onClick={() => setAba('resumo')}
+                    className="w-full min-h-[68px] rounded-2xl p-4 text-left flex items-center gap-4 transition-all active:scale-[0.99]"
+                    style={{ background: dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)', border: `1px solid ${dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}` }}
+                  >
+                    <FileText className="w-6 h-6 shrink-0" style={{ color: 'hsl(var(--primary))' }} strokeWidth={1.5} />
+                    <div className="flex-1 min-w-0">
+                      <div className="font-display font-semibold text-[15px] tracking-wide">RESUMIR PÁGINA</div>
+                      <div className="text-[13px] opacity-70 leading-snug mt-0.5">Gera um resumo rápido com os pontos principais.</div>
+                    </div>
+                    <ChevronRight className="w-4 h-4 opacity-40 shrink-0" />
+                  </button>
+
+                  <button
+                    onClick={() => setAba('chat')}
+                    className="w-full min-h-[68px] rounded-2xl p-4 text-left flex items-center gap-4 transition-all active:scale-[0.99]"
+                    style={{ background: dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)', border: `1px solid ${dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}` }}
+                  >
+                    <MessageCircle className="w-6 h-6 shrink-0" style={{ color: 'hsl(var(--primary))' }} strokeWidth={1.5} />
+                    <div className="flex-1 min-w-0">
+                      <div className="font-display font-semibold text-[15px] tracking-wide">TIRAR DÚVIDA (CHAT)</div>
+                      <div className="text-[13px] opacity-70 leading-snug mt-0.5">Converse com a IA sobre o conteúdo desta página.</div>
+                    </div>
+                    <ChevronRight className="w-4 h-4 opacity-40 shrink-0" />
+                  </button>
+                </div>
+              )}
               {aba === 'termos' && (
                 <div className="h-full overflow-y-auto">
                   <AbaTermos

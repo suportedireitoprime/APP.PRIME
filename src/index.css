@@ -75,12 +75,14 @@ html {
   }
 }
 
-/* Reabilita a seleção para campos de texto (para permitir a digitação normal) */
-input, textarea, [contenteditable] {
-  -webkit-user-select: text !important;
-  -moz-user-select: text !important;
-  -ms-user-select: text !important;
-  user-select: text !important;
+/* Reabilita a seleção para campos de texto e área do chat (para permitir a digitação normal) */
+input, textarea, [contenteditable], .aui-root, .aui-root *, .ProseMirror {
+  -webkit-touch-callout: default !important;
+  -webkit-user-select: auto !important;
+  -moz-user-select: auto !important;
+  -ms-user-select: auto !important;
+  user-select: auto !important;
+  pointer-events: auto !important;
 }
 
 /* Glassmorphism habilitado no mobile a pedido do usuário (Sugestão #28) */
