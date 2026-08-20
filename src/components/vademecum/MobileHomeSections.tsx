@@ -14,12 +14,13 @@ import {
   PiggyBank, Plane, PocketKnife, RadioTower, ReceiptText, Scale, Scroll, ScrollText, Search,
   Shield, ShieldAlert, ShieldCheck, ShieldX, Ship, ShoppingCart, Siren, Award, Sprout, Stamp, Store,
   Tractor, TreePine, Users, Vote, Wallet, Wifi, X, type LucideIcon,
-  Presentation, FolderOpen, RefreshCw, MessageCircle, Heart, Newspaper, Radar, History, ChevronLeft,
+  Presentation, FolderOpen, RefreshCw, MessageCircle, Heart, Newspaper, Radar, History, ChevronLeft, CalendarCheck,
+  PieChart, CheckCircle2, PlayCircle, Target, Sparkles, Activity
 } from 'lucide-react';
 import { estiloPasta } from '@/lib/documentosTipos';
 import { usePastasDocumentos } from '@/hooks/useDocumentosDrive';
 const DocumentosSheet = lazyWithRetry(() => import('@/components/documentos/DocumentosSheet'));
-import { CalendarCheck, CalendarDays, Inbox } from 'lucide-react';
+import { CalendarDays, Inbox } from 'lucide-react';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 
 
@@ -37,7 +38,9 @@ const NoticiasJuridicasCarousel = lazyWithRetry(() => import('./NoticiasJuridica
 import HomeCard from './HomeCard';
 import ContinueLendoCard from './ContinueLendoCard';
 import { toast } from '@/hooks/use-toast';
+import { DominioRadarChart } from '@/components/graficos/DominioRadarChart';
 import { useOutrasNormasCounts } from '@/hooks/useOutrasNormasCounts';
+import { useMetricasResumo } from '@/hooks/useMetricasResumo';
 const JurisprudenciaSheet = lazyWithRetry(() => import('./JurisprudenciaSheet'));
 const VisuaisJuridicosSheet = lazyWithRetry(() => import('@/components/visuais/VisuaisJuridicosSheet'));
 import { TIPO_SLUG } from '@/lib/visuaisJuridicos/rotas';
@@ -133,7 +136,7 @@ type Tab = 'agenda' | 'estudos' | 'faculdade' | 'documentos' | 'categorias' | 'e
 const TABS_HOME: { id: Tab; label: string; icon: any }[] = [
   { id: 'agenda',     label: 'Pendências',     icon: CalendarCheck },
   { id: 'estudos',    label: 'Estudos',    icon: GraduationCap },
-  { id: 'faculdade',  label: 'Faculdade',  icon: Library },
+  { id: 'faculdade',  label: 'Gráficos',  icon: PieChart },
 ];
 
 const TABS_VADEMECUM: { id: Tab; label: string; icon: any }[] = [
@@ -195,13 +198,7 @@ interface Props {
 }
 
 const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, hideNoticias = false, noticiasAutoplay = true, emAltaLeis = false, hideTabs = false, activeTab, onBuscar }: Props = {}) => {
-  const _navigate = useNavigate();
-  const navigate = useCallback((to: string | number) => {
-    startTransition(() => {
-      // @ts-expect-error react-router typings mismatch for string|number
-      _navigate(to);
-    });
-  }, [_navigate]);
+  const navigate = useNavigate();
   const [juriOpen, setJuriOpen] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState<Cat | AreaCat | CategoriaFormal | null>(null);
   const [visuaisOpen, setVisuaisOpen] = useState(false);
@@ -285,6 +282,7 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
     return () => clearTimeout(t);
   }, []);
 
+  const { data: metricas } = useMetricasResumo();
   const { counts: radarCounts } = useOutrasNormasCounts();
 
   const handle = useCallback((id: string) => {
@@ -904,141 +902,69 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
 
         {currentTab === 'faculdade' && (
           <motion.div
-            key="faculdade"
+            key="graficos"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.24, ease: [0.22, 0.61, 0.36, 1] }}
             className="space-y-6 px-1 pb-8 pt-2"
           >
-            {/* Seção 1: Anotações e Captura */}
-            <div>
-              <h3 className="font-display text-foreground text-[18px] font-bold mb-3 flex items-center gap-2">
-                <span className="w-1 h-5 rounded-full bg-primary" />
-                Anotações e Captura
-              </h3>
-              <div className="grid grid-cols-2 gap-3">
-                <motion.button
-                  onClick={() => navigate('/anotacoes/audio')}
-                  className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-5 text-center hover:border-emerald-500/50 transition-colors active:scale-95 shadow-sm relative group overflow-hidden"
-                >
-                  <div className="absolute top-3 right-3 text-muted-foreground group-hover:text-emerald-500 group-hover:translate-x-1 transition-all">
-                    <ChevronRight className="w-5 h-5" strokeWidth={2.5} />
-                  </div>
-                  <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center relative z-10 mb-1">
-                    <Mic className="w-6 h-6 text-emerald-500" strokeWidth={1.5} />
-                  </div>
-                  <span className="font-display font-bold text-[14px] text-foreground relative z-10">Gravar Aula</span>
-                </motion.button>
-                
-                <motion.button
-                  onClick={() => navigate('/faculdade/lousa')}
-                  className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-5 text-center hover:border-blue-500/50 transition-colors active:scale-95 shadow-sm relative group overflow-hidden"
-                >
-                  <div className="absolute top-3 right-3 text-muted-foreground group-hover:text-blue-500 group-hover:translate-x-1 transition-all">
-                    <ChevronRight className="w-5 h-5" strokeWidth={2.5} />
-                  </div>
-                  <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center relative z-10 mb-1">
-                    <Monitor className="w-6 h-6 text-blue-500" strokeWidth={1.5} />
-                  </div>
-                  <span className="font-display font-bold text-[14px] text-foreground relative z-10">Lousa Scanner</span>
-                </motion.button>
+            {/* Cards Superiores */}
+            <div className="grid grid-cols-3 gap-3">
+              <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-border/60 bg-secondary/30 p-4 text-center relative overflow-hidden">
+                <PlayCircle className="w-6 h-6 text-muted-foreground/70 mb-1" strokeWidth={1.5} />
+                <span className="font-display font-bold text-xl text-foreground leading-none">{metricas?.aulas || 0}</span>
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Aulas</span>
               </div>
-            </div>
-
-            {/* Seção 2: Caderno Inteligente */}
-            <div>
-              <h3 className="font-display text-foreground text-[18px] font-bold mb-3 flex items-center gap-2">
-                <span className="w-1 h-5 rounded-full bg-primary" />
-                Caderno Inteligente
-              </h3>
-              <div className="grid grid-cols-4 gap-2">
-                <motion.button
-                  onClick={() => navigate('/faculdade/resumos')}
-                  className="flex flex-col items-center justify-start gap-2 rounded-2xl border border-border/60 bg-card p-3 text-center hover:border-primary/50 transition-colors active:scale-95"
-                >
-                  <FileText className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />
-                  <span className="font-display font-bold text-[11px] text-foreground leading-tight">Resumos</span>
-                </motion.button>
-                
-                <motion.button
-                  onClick={() => navigate('/flashcards-personalizados')}
-                  className="flex flex-col items-center justify-start gap-2 rounded-2xl border border-border/60 bg-card p-3 text-center hover:border-primary/50 transition-colors active:scale-95"
-                >
-                  <Layers className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />
-                  <span className="font-display font-bold text-[11px] text-foreground leading-tight">Flashcards</span>
-                </motion.button>
-
-                <motion.button
-                  onClick={() => navigate('/assistente')}
-                  className="flex flex-col items-center justify-start gap-2 rounded-2xl border border-border/60 bg-card p-3 text-center hover:border-primary/50 transition-colors active:scale-95"
-                >
-                  <Brain className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />
-                  <span className="font-display font-bold text-[11px] text-foreground leading-tight">Mapas</span>
-                </motion.button>
-
-                <motion.button
-                  onClick={() => navigate('/faculdade/lembretes')}
-                  className="flex flex-col items-center justify-start gap-2 rounded-2xl border border-border/60 bg-card p-3 text-center hover:border-primary/50 transition-colors active:scale-95"
-                >
-                  <BellRing className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />
-                  <span className="font-display font-bold text-[11px] text-foreground leading-tight">Lembretes</span>
-                </motion.button>
-              </div>
-            </div>
-
-            {/* Seção 3: Recentes */}
-            <div>
-              <h3 className="font-display text-foreground text-[18px] font-bold mb-4 flex items-center gap-2">
-                <span className="w-1 h-5 rounded-full bg-primary" />
-                Recentes
-              </h3>
               
-              <div className="space-y-4 pl-3 relative before:absolute before:inset-y-0 before:left-[19px] before:w-[2px] before:bg-border">
-                {/* Item 1 */}
-                <div className="relative pl-8">
-                  <div className="absolute left-[2px] top-1 w-2.5 h-2.5 rounded-full bg-primary ring-4 ring-background" />
-                  <div className="bg-card border border-border/50 rounded-2xl p-4 shadow-sm active:scale-[0.98] transition cursor-pointer" onClick={() => navigate('/anotacoes/audio')}>
-                    <div className="flex items-center gap-2 mb-1">
-                      <Mic className="w-4 h-4 text-primary" />
-                      <span className="text-xs font-bold text-muted-foreground">Gravação de Aula</span>
-                      <span className="text-[10px] text-muted-foreground/60 ml-auto">Há 2 horas</span>
-                    </div>
-                    <p className="font-display font-bold text-[14px] text-foreground">Direito Penal - Teoria do Erro</p>
-                    <p className="font-body text-xs text-muted-foreground mt-1">Duração: 45:12 • Resumo inteligente gerado</p>
-                  </div>
-                </div>
+              <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-border/60 bg-secondary/30 p-4 text-center relative overflow-hidden">
+                <Layers className="w-6 h-6 text-muted-foreground/70 mb-1" strokeWidth={1.5} />
+                <span className="font-display font-bold text-xl text-foreground leading-none">{metricas?.flashcards || 0}</span>
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Flashcards</span>
+              </div>
 
-                {/* Item 2 */}
-                <div className="relative pl-8">
-                  <div className="absolute left-[2px] top-1 w-2.5 h-2.5 rounded-full bg-muted-foreground/30 ring-4 ring-background" />
-                  <div className="bg-card border border-border/50 rounded-2xl p-4 shadow-sm active:scale-[0.98] transition cursor-pointer" onClick={() => navigate('/faculdade/lousa')}>
-                    <div className="flex items-center gap-2 mb-1">
-                      <Monitor className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-xs font-bold text-muted-foreground">Lousa Scanner</span>
-                      <span className="text-[10px] text-muted-foreground/60 ml-auto">Ontem, 19:30</span>
-                    </div>
-                    <p className="font-display font-bold text-[14px] text-foreground">Direito Civil - Contratos</p>
-                    <p className="font-body text-xs text-muted-foreground mt-1">2 fotos processadas e transcritas</p>
-                  </div>
-                </div>
-
-                {/* Item 3 */}
-                <div className="relative pl-8">
-                  <div className="absolute left-[2px] top-1 w-2.5 h-2.5 rounded-full bg-muted-foreground/30 ring-4 ring-background" />
-                  <div className="bg-card border border-border/50 rounded-2xl p-4 shadow-sm active:scale-[0.98] transition cursor-pointer" onClick={() => navigate('/flashcards-personalizados')}>
-                    <div className="flex items-center gap-2 mb-1">
-                      <Layers className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-xs font-bold text-muted-foreground">Flashcards</span>
-                      <span className="text-[10px] text-muted-foreground/60 ml-auto">15 de Ago</span>
-                    </div>
-                    <p className="font-display font-bold text-[14px] text-foreground">Direito Constitucional</p>
-                    <p className="font-body text-xs text-muted-foreground mt-1">15 novos cards gerados pelo Assistente</p>
-                  </div>
-                </div>
+              <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-border/60 bg-secondary/30 p-4 text-center relative overflow-hidden">
+                <CheckCircle2 className="w-6 h-6 text-muted-foreground/70 mb-1" strokeWidth={1.5} />
+                <span className="font-display font-bold text-xl text-foreground leading-none">{metricas?.questoes || 0}</span>
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Questões</span>
               </div>
             </div>
 
+            {/* Radar Chart */}
+            <div>
+              <h3 className="font-display text-foreground text-[18px] font-bold mb-3 flex items-center gap-2">
+                <span className="w-1 h-5 rounded-full bg-primary" />
+                Domínio por Área
+              </h3>
+              <DominioRadarChart />
+            </div>
+
+            {/* Inteligência / Quiz Placeholder */}
+            <div>
+              <h3 className="font-display text-foreground text-[18px] font-bold mb-3 flex items-center gap-2">
+                <span className="w-1 h-5 rounded-full bg-primary" />
+                Avaliação Inteligente
+              </h3>
+              <button onClick={() => navigate('/graficos/avaliacao')} className="w-full text-left rounded-3xl border border-primary/20 bg-primary/5 p-5 relative overflow-hidden group hover:border-primary/40 transition-colors active:scale-[0.98]">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none" />
+                <div className="flex flex-col gap-4 relative z-10">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
+                      <Sparkles className="w-6 h-6 text-primary" strokeWidth={1.5} />
+                    </div>
+                    <div>
+                      <h4 className="font-display font-bold text-foreground text-[16px] mb-1">Descobrir meu Nível</h4>
+                      <p className="text-sm text-muted-foreground leading-relaxed pr-2">
+                        A IA fará perguntas dinâmicas do fácil ao difícil para mapear exatamente onde estão suas lacunas.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="w-full bg-primary text-primary-foreground font-bold py-3 rounded-xl flex items-center justify-center gap-2">
+                    Iniciar Agora <ChevronRight className="w-4 h-4" />
+                  </div>
+                </div>
+              </button>
+            </div>
           </motion.div>
         )}
 

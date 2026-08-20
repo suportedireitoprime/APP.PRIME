@@ -59,13 +59,20 @@ function titleMatchesArticle(titulo: string, numero: string, isSumula: boolean =
 }
 
 function buildQuery(artigoNumero: string, leiNome?: string, isSumula: boolean = false) {
-  const lei = (leiNome || (isSumula ? 'Súmula' : 'legislação brasileira')).trim();
+  // Extrai apenas o número do artigo, ex: "Art. 87" -> "87"
+  const matchNum = artigoNumero.match(/\d+/);
+  const numStr = matchNum ? matchNum[0] : artigoNumero;
+
+  let lei = (leiNome || (isSumula ? 'Súmula' : 'legislação brasileira')).trim();
+  // Transforma nomes de tabela como "codigo_penal" em "codigo penal" para busca mais semântica
+  lei = lei.replace(/_/g, ' ');
+
   if (isSumula) {
     // Para súmulas: "Súmula Vinculante 14" explicação
-    return `"${lei} ${artigoNumero}" explicação aula`;
+    return `"${lei} ${numStr}" explicação aula`;
   }
-  // Query mais específica com aspas para forçar a lei exata (ex: "Código Penal Militar")
-  return `"artigo ${artigoNumero}" "${lei}" explicação aula`;
+  // Query mais específica com aspas para forçar a lei exata (ex: "Código Penal")
+  return `"artigo ${numStr}" "${lei}" explicação aula`;
 }
 
 async function searchList(

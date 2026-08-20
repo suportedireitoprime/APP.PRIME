@@ -210,21 +210,15 @@ export class SessaoMeExplique {
 
 
 
-  /** Tenta os endpoints conhecidos até um aceitar o setup (setupComplete). */
+  /** Conecta ao endpoint primário (v1alpha). */
   private async conectar() {
-    let ultimo = "";
-    for (const url of WS_URLS) {
-      try {
-        await this.abrirWs(url);
-        return;
-      } catch (e) {
-        ultimo = e instanceof Error ? e.message : String(e);
-        this.ws?.close();
-        this.ws = null;
-        if (this.encerrada) throw e;
-      }
+    try {
+      await this.abrirWs(WS_URLS[0]);
+    } catch (e) {
+      this.ws?.close();
+      this.ws = null;
+      throw e;
     }
-    throw new Error(ultimo || "Não foi possível conectar ao professor ao vivo.");
   }
 
   private abrirWs(url: string) {

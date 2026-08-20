@@ -96,6 +96,7 @@ const ResumosJuridicosJurisprudencia = lazy(() => import("./pages/resumos-juridi
 const Noticias = lazy(routePrefetch.noticias);
 const Novidades = lazy(() => import("./pages/Novidades.tsx"));
 const Anotacoes = lazy(() => import("./pages/Anotacoes.tsx"));
+const AvaliacaoInteligente = lazy(() => import("./pages/graficos/AvaliacaoInteligente.tsx"));
 const PessoalAvisos = lazy(() => import("./pages/pessoal/Avisos.tsx"));
 const PessoalGrifos = lazy(() => import("./pages/pessoal/Grifos.tsx"));
 const PessoalArtigos = lazy(() => import("./pages/pessoal/Artigos.tsx"));
@@ -1058,6 +1059,7 @@ function AnimatedRoutes() {
           <Route path="/pessoal/jurisprudencias" element={<ProtectedRoute><PageTransition><PessoalJurisprudencias /></PageTransition></ProtectedRoute>} />
           <Route path="/pessoal/tematicas" element={<ProtectedRoute><PageTransition><PessoalTematicas /></PageTransition></ProtectedRoute>} />
           <Route path="/meu-espaco" element={<ProtectedRoute><PageTransition><MeuEspaco /></PageTransition></ProtectedRoute>} />
+          <Route path="/graficos/avaliacao" element={<ProtectedRoute><PageTransition><AvaliacaoInteligente /></PageTransition></ProtectedRoute>} />
           <Route path="/homepage/meu-espaco" element={<ProtectedRoute><PageTransition><MeuEspaco /></PageTransition></ProtectedRoute>} />
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
 

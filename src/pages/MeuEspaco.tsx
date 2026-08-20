@@ -5,7 +5,7 @@ import {
   ChevronLeft, ChevronRight, Camera, Pencil, Check,
   StickyNote, Highlighter, Star, BookMarked,
   Scale, FileText, Film, Gavel, BookOpen, Sparkles, Calendar,
-  NotebookPen, Video, Database, Trash2
+  NotebookPen, Video, Database, Trash2, Mic, Monitor, Layers, Brain, BellRing
 } from "lucide-react";
 import { toast } from "sonner";
 import { haptic } from "@/lib/nativeHaptics";
@@ -541,8 +541,84 @@ const MeuEspaco = () => {
                 />
               </div>
 
-              {/* Quick access Quadradinhos */}
+              {/* Seção 1: Anotações e Captura */}
               <div className="px-5 lg:px-0">
+                <h3 className="font-display text-foreground text-[18px] font-bold mb-3 flex items-center gap-2">
+                  <span className="w-1 h-5 rounded-full bg-primary" />
+                  Anotações e Captura
+                </h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <motion.button
+                    onClick={() => go('/anotacoes/audio')}
+                    className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-5 text-center hover:border-emerald-500/50 transition-colors active:scale-95 shadow-sm relative group overflow-hidden"
+                  >
+                    <div className="absolute top-3 right-3 text-muted-foreground group-hover:text-emerald-500 group-hover:translate-x-1 transition-all">
+                      <ChevronRight className="w-5 h-5" strokeWidth={2.5} />
+                    </div>
+                    <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center relative z-10 mb-1">
+                      <Mic className="w-6 h-6 text-emerald-500" strokeWidth={1.5} />
+                    </div>
+                    <span className="font-display font-bold text-[14px] text-foreground relative z-10">Gravar Aula</span>
+                  </motion.button>
+                  
+                  <motion.button
+                    onClick={() => go('/faculdade/lousa')}
+                    className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-5 text-center hover:border-blue-500/50 transition-colors active:scale-95 shadow-sm relative group overflow-hidden"
+                  >
+                    <div className="absolute top-3 right-3 text-muted-foreground group-hover:text-blue-500 group-hover:translate-x-1 transition-all">
+                      <ChevronRight className="w-5 h-5" strokeWidth={2.5} />
+                    </div>
+                    <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center relative z-10 mb-1">
+                      <Monitor className="w-6 h-6 text-blue-500" strokeWidth={1.5} />
+                    </div>
+                    <span className="font-display font-bold text-[14px] text-foreground relative z-10">Lousa Scanner</span>
+                  </motion.button>
+                </div>
+              </div>
+
+              {/* Seção 2: Caderno Inteligente */}
+              <div className="px-5 lg:px-0">
+                <h3 className="font-display text-foreground text-[18px] font-bold mb-3 flex items-center gap-2">
+                  <span className="w-1 h-5 rounded-full bg-primary" />
+                  Caderno Inteligente
+                </h3>
+                <div className="grid grid-cols-4 gap-2">
+                  <motion.button
+                    onClick={() => go('/faculdade/resumos')}
+                    className="flex flex-col items-center justify-start gap-2 rounded-2xl border border-border/60 bg-card p-3 text-center hover:border-primary/50 transition-colors active:scale-95"
+                  >
+                    <FileText className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />
+                    <span className="font-display font-bold text-[11px] text-foreground leading-tight">Resumos</span>
+                  </motion.button>
+                  
+                  <motion.button
+                    onClick={() => go('/flashcards-personalizados')}
+                    className="flex flex-col items-center justify-start gap-2 rounded-2xl border border-border/60 bg-card p-3 text-center hover:border-primary/50 transition-colors active:scale-95"
+                  >
+                    <Layers className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />
+                    <span className="font-display font-bold text-[11px] text-foreground leading-tight">Flashcards</span>
+                  </motion.button>
+
+                  <motion.button
+                    onClick={() => go('/assistente')}
+                    className="flex flex-col items-center justify-start gap-2 rounded-2xl border border-border/60 bg-card p-3 text-center hover:border-primary/50 transition-colors active:scale-95"
+                  >
+                    <Brain className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />
+                    <span className="font-display font-bold text-[11px] text-foreground leading-tight">Mapas</span>
+                  </motion.button>
+
+                  <motion.button
+                    onClick={() => go('/faculdade/lembretes')}
+                    className="flex flex-col items-center justify-start gap-2 rounded-2xl border border-border/60 bg-card p-3 text-center hover:border-primary/50 transition-colors active:scale-95"
+                  >
+                    <BellRing className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />
+                    <span className="font-display font-bold text-[11px] text-foreground leading-tight">Lembretes</span>
+                  </motion.button>
+                </div>
+              </div>
+
+              {/* Quick access Quadradinhos */}
+              <div className="px-5 lg:px-0 mt-2">
                 <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold mb-2 px-1">Acesso rápido</p>
                 <div className="grid grid-cols-3 gap-2">
                   {QUICK.map((q) => {
