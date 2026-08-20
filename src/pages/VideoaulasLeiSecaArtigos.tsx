@@ -1,7 +1,7 @@
 import { useState, useMemo, Suspense } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ChevronRight, PlayCircle } from 'lucide-react';
+import { ChevronRight, PlayCircle, Search } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
 import { fetchArtigosPaginado } from '@/services/legislacaoService';
@@ -16,10 +16,11 @@ const VideoaulasListSheet = lazyWithRetry(() => import('@/components/vademecum/V
 const VideoaulasLeiSecaArtigos = () => {
   const { leiId } = useParams();
   const navigate = useNavigate();
+  const [q, setQ] = useState('');
 
   const lei = useMemo(() => LEIS_CATALOG.find((l) => l.id === leiId), [leiId]);
 
-  const { data: artigos = [], isLoading } = useQuery({
+  const { data: artigosRaw = [], isLoading } = useQuery({
     queryKey: ['videoaulas', 'artigos', lei?.tabela_nome],
     queryFn: async () => {
       if (!lei?.tabela_nome) return [];
@@ -28,6 +29,23 @@ const VideoaulasLeiSecaArtigos = () => {
     enabled: !!lei?.tabela_nome,
     staleTime: 1000 * 60 * 60,
   });
+
+  const artigosFiltrados = useMemo(() => {
+    let result = artigosRaw.filter((art) => {
+      const num = (art.numero || '').toLowerCase();
+      // Keep only actual articles (Art. X or Xº), drop TÍTULO, CAPÍTULO, PARTE GERAL
+      return num.includes('art') || /^\d/.test(num);
+    });
+
+    if (q.trim()) {
+      const query = q.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      result = result.filter(art => {
+        const t = (art.caput + ' ' + (art.numero || '')).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        return t.includes(query);
+      });
+    }
+    return result;
+  }, [artigosRaw, q]);
 
   const [openArtigo, setOpenArtigo] = useState<ArtigoLei | null>(null);
   const [videoaula, setVideoaula] = useState<{ titulo: string; url: string; canal: string; videoId: string; transcricao?: string } | null>(null);
@@ -41,46 +59,68 @@ const VideoaulasLeiSecaArtigos = () => {
     );
   }
 
+  // Extrai apenas o número (ex: "Art. 1º" -> "1º") para o ícone
+  const getNumeroCurto = (num: string) => {
+    return num.replace(/^Art\.\s*/i, '').trim();
+  };
+
   return (
     <div className="min-h-screen bg-background pb-32">
       <PageHeader
-        title={lei.nome}
+        title={lei.sigla || lei.nome}
         description="Selecione o artigo para buscar aulas"
         onBack={() => navigate(-1)}
         theme="red"
       />
-      <div className="px-4 mt-6 space-y-3">
-        {isLoading && (
-          Array.from({ length: 8 }).map((_, i) => (
-            <Skeleton key={i} className="h-[72px] w-full rounded-2xl bg-card border border-border/50" />
-          ))
-        )}
+      <div className="px-4 mt-6 space-y-4">
+        <div className="relative">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-muted-foreground" />
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Buscar por número ou texto..."
+            className="w-full h-12 pl-11 pr-4 rounded-2xl bg-card border border-border text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/40"
+          />
+        </div>
 
-        {!isLoading && artigos.map((art) => (
-          <button
-            key={art.id}
-            onClick={() => {
-              haptic.selection();
-              setOpenArtigo(art);
-            }}
-            className="w-full text-left rounded-2xl bg-card hover:bg-secondary/60 transition-all border border-border/80 group flex overflow-hidden min-h-[68px] active:scale-[0.99]"
-          >
-            <div className="w-1.5 bg-rose-500 rounded-l-2xl shrink-0" />
-            <div className="p-4 flex flex-col justify-center min-w-0 flex-1">
-              <span className="text-[13px] font-bold text-rose-500 mb-1">{art.numero}</span>
-              <p className="text-[15px] font-medium leading-snug text-foreground/90 line-clamp-2">
-                {art.caput}
-              </p>
-            </div>
-            <div className="w-12 flex items-center justify-center shrink-0 border-l border-border/40 bg-muted/20">
-              <PlayCircle className="w-5 h-5 text-rose-500/70 group-hover:text-rose-500 transition-colors" />
-            </div>
-          </button>
-        ))}
+        <div className="space-y-3">
+          {isLoading && (
+            Array.from({ length: 8 }).map((_, i) => (
+              <Skeleton key={i} className="h-[72px] w-full rounded-2xl bg-card border border-border/50" />
+            ))
+          )}
 
-        {!isLoading && artigos.length === 0 && (
-          <p className="text-muted-foreground text-sm text-center py-10">Nenhum artigo encontrado.</p>
-        )}
+          {!isLoading && artigosFiltrados.map((art) => (
+            <button
+              key={art.id}
+              onClick={() => {
+                haptic.selection();
+                setOpenArtigo(art);
+              }}
+              className="w-full text-left rounded-3xl bg-card hover:bg-secondary/60 transition-all border border-border/80 group flex items-stretch min-h-[72px] active:scale-[0.99] shadow-sm"
+            >
+              <div className="w-16 flex flex-col items-center justify-center shrink-0 border-r border-border/40 bg-muted/10 rounded-l-3xl p-2">
+                <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center border border-rose-500/20 group-hover:bg-rose-500 group-hover:border-rose-500 transition-colors">
+                  <span className="text-[14px] font-bold text-rose-500 group-hover:text-white transition-colors">
+                    {getNumeroCurto(art.numero)}
+                  </span>
+                </div>
+              </div>
+              <div className="p-4 flex flex-col justify-center min-w-0 flex-1">
+                <p className="text-[14.5px] font-medium leading-snug text-foreground/90 line-clamp-2">
+                  {art.caput}
+                </p>
+              </div>
+              <div className="w-14 flex items-center justify-center shrink-0">
+                <PlayCircle className="w-6 h-6 text-rose-500/50 group-hover:text-rose-500 transition-colors" />
+              </div>
+            </button>
+          ))}
+
+          {!isLoading && artigosFiltrados.length === 0 && (
+            <p className="text-muted-foreground text-sm text-center py-10">Nenhum artigo encontrado.</p>
+          )}
+        </div>
       </div>
 
       {openArtigo && (
