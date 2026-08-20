@@ -460,36 +460,34 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
 
           {/* Main column */}
           <div className="flex-1 flex flex-col min-w-0 min-h-0">
-          {/* Header */}
-          {!isDesktop && <PageHeader
-            title={
+          {/* ChatGPT-style Header (Mobile) */}
+          {!isDesktop && (
+            <header className="flex items-center justify-between px-3 py-3 shrink-0" style={{ paddingTop: 'calc(var(--sai-top, env(safe-area-inset-top, 0px)) + 0.75rem)' }}>
+              <button
+                onClick={() => { haptic.light(); onClose(); }}
+                aria-label="Fechar"
+                className="w-10 h-10 rounded-full flex items-center justify-center active:bg-secondary transition-colors"
+              >
+                <X className="w-6 h-6 text-foreground" />
+              </button>
+
               <button
                 onClick={() => { haptic.selection(); toggleWebSearch(); }}
-                aria-pressed={webSearch}
-                className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border text-xs font-body transition-colors mx-auto ${
-                  webSearch
-                    ? 'bg-accent/20 border-accent text-foreground'
-                    : 'bg-secondary border-border text-muted-foreground hover:text-foreground'
-                }`}
+                className="flex items-center gap-1.5 text-[15px] font-semibold text-foreground px-4 py-1.5 rounded-xl hover:bg-secondary transition-colors active:scale-95"
               >
-                <Globe className={`w-3.5 h-3.5 ${webSearch ? 'text-accent' : ''}`} />
-                Pesquisar na internet
-                <span className={`ml-1 w-8 h-4 rounded-full flex items-center px-0.5 transition-colors ${webSearch ? 'bg-accent justify-end' : 'bg-muted justify-start'}`}>
-                  <span className="w-3 h-3 rounded-full bg-background" />
-                </span>
+                Chat Jurídico <span className="text-muted-foreground font-medium ml-1">{webSearch ? 'Web' : '4o'}</span>
+                {webSearch ? <Globe className="w-3.5 h-3.5 text-accent ml-0.5" /> : <Sparkles className="w-3.5 h-3.5 text-muted-foreground ml-0.5" />}
               </button>
-            }
-            onBack={onClose}
-            rightAction={
+
               <button
                 onClick={() => { haptic.selection(); setHistoryOpen(true); }}
                 aria-label="Histórico"
-                className="w-12 h-12 md:w-11 md:h-11 rounded-full bg-muted flex items-center justify-center active:scale-95 transition-transform"
+                className="w-10 h-10 rounded-full flex items-center justify-center active:bg-secondary transition-colors"
               >
-                <HistoryIcon className="w-[20px] h-[20px] text-foreground" />
+                <HistoryIcon className="w-5 h-5 text-foreground" />
               </button>
-            }
-          />}
+            </header>
+          )}
 
 
 
@@ -497,84 +495,27 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
           <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 py-4 space-y-3">
             <div className={isDesktop ? 'max-w-3xl mx-auto w-full space-y-3' : 'contents'}>
             {messages.length === 0 && !loading && (
-              <div className="flex flex-col items-center justify-center h-full text-center gap-6 pb-6">
-                <div className="relative w-full max-w-[320px] h-48 flex items-center justify-center mb-2 mt-6">
-                  {/* Cérebro central animado */}
-                  <motion.div
-                    animate={{ 
-                      scale: [1, 1.05, 1], 
-                      boxShadow: [
-                        '0 0 20px -5px rgba(var(--accent-rgb), 0.2)', 
-                        '0 0 40px -5px rgba(var(--accent-rgb), 0.5)', 
-                        '0 0 20px -5px rgba(var(--accent-rgb), 0.2)'
-                      ]
-                    }}
-                    transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                    className="w-20 h-20 rounded-full bg-gradient-to-b from-accent/20 to-accent/5 flex items-center justify-center z-10 border border-accent/20 backdrop-blur-sm"
-                  >
-                    <Brain className="w-9 h-9 text-accent/90" strokeWidth={1.5} />
-                  </motion.div>
-                  
-                  {/* Palavras flutuantes (Badges) alimentando o cérebro */}
-                  {[
-                    { text: 'Jurisprudência', delay: 0, x: -100, y: -55 },
-                    { text: 'Leis Secas', delay: 1.5, x: 90, y: -45 },
-                    { text: 'Tempo real', delay: 0.7, x: -90, y: 65 },
-                    { text: 'Resumos', delay: 2.2, x: 100, y: 50 },
-                  ].map((item, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, x: item.x * 1.5, y: item.y * 1.5, scale: 0.5 }}
-                      animate={{ 
-                        opacity: [0, 1, 1, 0], 
-                        x: [item.x * 1.5, item.x, item.x * 0.4, 0], 
-                        y: [item.y * 1.5, item.y, item.y * 0.4, 0], 
-                        scale: [0.5, 1, 1, 0.3] 
-                      }}
-                      transition={{ 
-                        duration: 4.5, 
-                        repeat: Infinity, 
-                        delay: item.delay, 
-                        times: [0, 0.2, 0.7, 1],
-                        ease: 'easeInOut' 
-                      }}
-                      className="absolute px-3 py-1.5 rounded-full bg-card/90 border border-white/10 text-[11px] font-medium text-foreground/80 backdrop-blur-md shadow-xl whitespace-nowrap z-20"
-                    >
-                      {item.text}
-                    </motion.div>
-                  ))}
+              <div className="flex flex-col h-full pb-2">
+                <div className="flex-1 flex flex-col items-center justify-center gap-5">
+                  {/* Cérebro Minimalista (ChatGPT Style) */}
+                  <div className="w-14 h-14 rounded-full border border-border bg-card shadow-sm flex items-center justify-center">
+                    <Sparkles className="w-6 h-6 text-foreground" />
+                  </div>
+                  <h2 className="font-display text-2xl font-semibold text-foreground text-center">
+                    Como posso ajudar?
+                  </h2>
+                </div>
 
-                  {/* Pulsos conectores sutis */}
-                  <motion.div
-                    animate={{ opacity: [0, 0.5, 0], scale: [0.8, 2, 2.5] }}
-                    transition={{ duration: 3, repeat: Infinity, ease: 'easeOut' }}
-                    className="absolute w-20 h-20 rounded-full border border-accent/30 z-0"
-                  />
-                  <motion.div
-                    animate={{ opacity: [0, 0.3, 0], scale: [0.8, 3, 4] }}
-                    transition={{ duration: 3, repeat: Infinity, ease: 'easeOut', delay: 1.5 }}
-                    className="absolute w-20 h-20 rounded-full border border-accent/20 z-0"
-                  />
-                </div>
-                
-                <div className="space-y-1 mt-2">
-                  <h3 className="font-display text-lg font-bold text-foreground">Como posso ajudar?</h3>
-                  <p className="font-body text-sm text-muted-foreground max-w-[280px] mx-auto leading-relaxed">
-                    Pergunte sobre leis, artigos, súmulas ou envie um documento para análise.
-                  </p>
-                </div>
-                <div className="w-full max-w-lg flex flex-wrap justify-center gap-2 mt-4 px-2">
+                {/* Sugestões no final da área de scroll */}
+                <div className="w-full max-w-2xl mx-auto flex flex-wrap justify-center gap-2 mt-auto px-2">
                   {suggestions.map((q, i) => (
-                    <motion.button 
+                    <button 
                       key={q} 
-                      initial={{ opacity: 0, y: 15 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.3 + (i * 0.08), duration: 0.4, ease: "easeOut" }}
                       onClick={() => { haptic.selection(); setInput(q); }}
-                      className="px-4 py-2.5 rounded-full bg-secondary/50 backdrop-blur-sm text-[13px] font-body text-foreground/80 border border-white/5 hover:bg-accent/15 hover:border-accent/30 hover:text-foreground active:scale-[0.98] transition-all shadow-sm"
+                      className="px-4 py-2.5 rounded-2xl bg-secondary/60 text-[13px] font-body text-foreground border border-border/80 hover:bg-secondary hover:text-foreground active:scale-[0.98] transition-all"
                     >
                       {q}
-                    </motion.button>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -697,69 +638,70 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
             </div>
           </div>
 
-          {/* Input area */}
+          {/* Input area (ChatGPT Pill Style) */}
           <div className={
             isDesktop
-              ? 'relative px-6 pt-2 pb-6 bg-gradient-to-t from-background via-background to-transparent'
-              : 'relative px-3 pt-3 pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] border-t border-border bg-card/95 backdrop-blur-md'
+              ? 'relative px-6 pb-6 pt-2 bg-gradient-to-t from-background via-background to-transparent'
+              : 'relative px-4 pb-[calc(0.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-2 bg-gradient-to-t from-background via-background/90 to-transparent'
           }>
-            <div className={isDesktop ? 'max-w-3xl mx-auto w-full rounded-3xl bg-secondary/95 border border-border shadow-[0_8px_32px_-8px_rgba(0,0,0,0.5)] p-2' : 'contents'}>
-            {attachment && (
-              <div className="mb-2 flex items-center gap-2 px-3 py-2 rounded-xl bg-secondary/80 border border-border">
-                <Paperclip className="w-4 h-4 text-accent" />
-                <span className="text-xs font-body text-foreground truncate flex-1">{attachment.name}</span>
-                <button onClick={() => setAttachment(null)} className="p-1"><X className="w-3.5 h-3.5 text-muted-foreground" /></button>
+            <div className={`mx-auto w-full max-w-3xl rounded-[26px] bg-[#2f2f2f] shadow-lg flex flex-col p-1.5 border border-white/5`}>
+              {attachment && (
+                <div className="mb-1 flex items-center gap-2 px-3 py-1.5 mx-1.5 mt-1.5 rounded-xl bg-white/5 border border-white/5">
+                  <Paperclip className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-xs font-body text-foreground truncate flex-1">{attachment.name}</span>
+                  <button onClick={() => setAttachment(null)} className="p-1"><X className="w-3.5 h-3.5 text-muted-foreground" /></button>
+                </div>
+              )}
+              
+              <div className="flex items-end gap-1 relative">
+                <button
+                  onClick={() => { haptic.selection(); abrirAnexos(); }}
+                  aria-label="Anexar"
+                  className="w-10 h-10 mb-0.5 ml-0.5 rounded-full flex items-center justify-center shrink-0 text-muted-foreground hover:bg-white/5 transition-colors active:scale-95"
+                >
+                  <Plus className="w-[22px] h-[22px]" />
+                </button>
+
+                <textarea
+                  ref={textareaRef}
+                  value={input}
+                  onChange={e => setInput(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
+                  rows={1}
+                  placeholder={voice.listening ? 'Ouvindo…' : 'Mensagem...'}
+                  className="flex-1 min-h-[44px] max-h-32 bg-transparent px-1 py-3 text-[16px] font-body text-foreground placeholder:text-muted-foreground focus:outline-none resize-none leading-relaxed"
+                />
+
+                {(input.trim() || attachment) ? (
+                  <button
+                    onClick={() => { haptic.light(); sendMessage(); }}
+                    disabled={loading}
+                    className="w-[34px] h-[34px] mb-1.5 mr-1.5 rounded-full bg-white flex items-center justify-center disabled:opacity-40 shrink-0 transition-opacity active:scale-95"
+                  >
+                    <Send className="w-4 h-4 text-black mr-0.5" />
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => { haptic.selection(); toggleMic(); }}
+                    className={`relative w-10 h-10 mb-0.5 mr-0.5 rounded-full flex items-center justify-center shrink-0 transition-colors active:scale-95 ${
+                      voice.listening ? 'bg-red-500/20 text-red-500' : 'text-muted-foreground hover:bg-white/5'
+                    }`}
+                  >
+                    <Mic className="w-5 h-5" />
+                    {voice.listening && <span className="absolute inset-1.5 rounded-full ring-2 ring-red-500/40 animate-ping" />}
+                  </button>
+                )}
+              </div>
+              <input ref={fileInputRef} type="file" hidden onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ''; }} />
+            </div>
+            
+            {!isDesktop && (
+              <div className="text-center mt-2.5 px-4">
+                <p className="text-[10px] text-muted-foreground/50 font-body tracking-wide">
+                  O Chat Jurídico pode cometer erros. Considere verificar as fontes.
+                </p>
               </div>
             )}
-            <div className="flex items-end gap-2 relative">
-              <button
-                onClick={() => { haptic.selection(); abrirAnexos(); }}
-                aria-label="Anexar"
-                aria-expanded={attachOpen}
-                className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 transition-transform ${attachOpen ? 'bg-accent text-accent-foreground rotate-45' : isDesktop ? 'bg-background/60 text-foreground hover:bg-background' : 'bg-secondary text-foreground'}`}
-              >
-                <Plus className="w-5 h-5" />
-              </button>
-              <textarea
-                ref={textareaRef}
-                value={input}
-                onChange={e => setInput(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
-                rows={1}
-                placeholder={voice.listening ? 'Ouvindo…' : 'Pergunte sobre leis, artigos...'}
-                className={isDesktop
-                  ? "flex-1 min-h-[44px] max-h-40 bg-transparent px-2 py-2.5 text-[15px] font-body text-foreground placeholder:text-muted-foreground focus:outline-none resize-none"
-                  : "flex-1 min-h-[64px] max-h-40 rounded-2xl bg-secondary border border-border px-4 py-4 text-[15px] font-body text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent resize-none"}
-              />
-              {/* Botão híbrido: microfone quando input vazio, enviar quando há texto */}
-              {(input.trim() || attachment) ? (
-                <button
-                  onClick={() => { haptic.light(); sendMessage(); }}
-                  disabled={loading}
-                  aria-label="Enviar"
-                  className="w-11 h-11 rounded-full bg-accent flex items-center justify-center disabled:opacity-40 shrink-0"
-                >
-                  <Send className="w-5 h-5 text-accent-foreground" />
-                </button>
-              ) : (
-                <button
-                  onClick={() => { haptic.selection(); toggleMic(); }}
-                  aria-label={voice.listening ? 'Parar gravação' : 'Falar'}
-                  className={`relative w-11 h-11 rounded-full flex items-center justify-center shrink-0 transition-colors active:scale-95 ${
-                    voice.listening ? 'bg-red-500 text-white' : 'bg-accent text-accent-foreground'
-                  }`}
-                >
-                  <Mic className="w-5 h-5" />
-                  {voice.listening && (
-                    <span className="absolute inset-0 rounded-full ring-4 ring-red-400/40 animate-ping" />
-                  )}
-                </button>
-              )}
-            </div>
-            {/* Toggle de web search removido do rodapé, agora está no cabeçalho */}
-            <input ref={fileInputRef} type="file" hidden
-              onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ''; }} />
-            </div>
           </div>
 
           {voice.listening && (
