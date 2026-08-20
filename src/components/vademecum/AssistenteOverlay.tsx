@@ -123,9 +123,9 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
   useEffect(() => { if (open) { setSessions(loadSessions()); } }, [open]);
 
   // Sugestões variam cada vez que o chat abre
-  const [suggestions, setSuggestions] = useState<string[]>(() => pickSuggestions(4));
+  const [suggestions, setSuggestions] = useState<string[]>(() => pickSuggestions(5));
   useEffect(() => {
-    if (open) setSuggestions(pickSuggestions(4));
+    if (open) setSuggestions(pickSuggestions(5));
   }, [open]);
 
   // Ditado por voz — mostra transcrição em tempo real dentro do input
@@ -563,12 +563,18 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
                     Pergunte sobre leis, artigos, súmulas ou envie um documento para análise.
                   </p>
                 </div>
-                <div className="w-full max-w-md flex flex-col gap-2.5 mt-1 px-2">
-                  {suggestions.map(q => (
-                    <button key={q} onClick={() => { haptic.selection(); setInput(q); }}
-                      className="w-full px-5 py-4 rounded-2xl bg-secondary text-sm font-body text-foreground border border-border text-left hover:bg-accent/15 hover:border-accent/40 active:scale-[0.99] transition">
+                <div className="w-full max-w-lg flex flex-wrap justify-center gap-2 mt-4 px-2">
+                  {suggestions.map((q, i) => (
+                    <motion.button 
+                      key={q} 
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 + (i * 0.08), duration: 0.4, ease: "easeOut" }}
+                      onClick={() => { haptic.selection(); setInput(q); }}
+                      className="px-4 py-2.5 rounded-full bg-secondary/50 backdrop-blur-sm text-[13px] font-body text-foreground/80 border border-white/5 hover:bg-accent/15 hover:border-accent/30 hover:text-foreground active:scale-[0.98] transition-all shadow-sm"
+                    >
                       {q}
-                    </button>
+                    </motion.button>
                   ))}
                 </div>
               </div>
