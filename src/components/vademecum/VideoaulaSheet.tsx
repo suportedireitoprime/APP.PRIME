@@ -3,7 +3,7 @@ import { autoPip } from '@/lib/nativo/pip';
 import { telaAcesa } from '@/lib/nativo/telaAcordada';
 import { protegerTela, desprotegerTela } from '@/lib/nativo/protecaoTela';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Loader2, Play, RotateCcw, Check, X as XIcon, ChevronLeft, ChevronRight, MessageCircle, Download, Send, ThumbsUp, ThumbsDown, GraduationCap, Layers, Brain, Trash2 } from 'lucide-react';
+import { ArrowLeft, Loader2, Play, RotateCcw, Check, X as XIcon, ChevronLeft, ChevronRight, MessageCircle, Download, Send, ThumbsUp, ThumbsDown, GraduationCap, Layers, Brain, Trash2, RectangleHorizontal } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import ReactMarkdown from 'react-markdown';
 import { Document, Page, Text, View, StyleSheet, pdf, Font, Image as PdfImage } from '@react-pdf/renderer';
@@ -286,6 +286,7 @@ const VideoaulaSheet = ({ open, onClose, video, tabelaNome, artigoNumero, artigo
 
   const [pdfExporting, setPdfExporting] = useState(false);
   const [recursosAberto, setRecursosAberto] = useState(false);
+  const [isLandscape, setIsLandscape] = useState(false);
 
   /* ─── Nativo: PiP, tela acesa e proteção de tela ─── */
   useEffect(() => {
@@ -657,13 +658,32 @@ const VideoaulaSheet = ({ open, onClose, video, tabelaNome, artigoNumero, artigo
           >
             <div className="w-full max-w-3xl h-full flex flex-col min-h-0 relative">
               {/* Header */}
-              <div className="flex items-center gap-3 px-4 pt-4 pb-2 shrink-0">
-                <button onClick={onClose} className="p-2 -ml-2 rounded-full hover:bg-secondary transition-colors">
-                  <ArrowLeft className="w-5 h-5 text-foreground" />
-                </button>
-                <div className="flex-1 min-w-0">
-                  <h2 className="text-[13px] font-semibold text-muted-foreground truncate">Videoaula</h2>
-                  <p className="text-[11px] text-muted-foreground/80 truncate">{artigoNumero}</p>
+              <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-border shrink-0">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center shrink-0">
+                    <Play className="w-4 h-4 text-white fill-white" />
+                  </div>
+                  <div className="min-w-0">
+                    <h2 className="font-heading text-base font-semibold text-foreground truncate">Videoaula</h2>
+                    <p className="text-[11px] text-foreground/60 truncate">Art. {artigoNumero}</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-2 shrink-0">
+                  <button 
+                    onClick={() => setIsLandscape(!isLandscape)} 
+                    className="w-8 h-8 rounded-full hover:bg-secondary flex items-center justify-center text-foreground/70"
+                    aria-label="Tela Estendida"
+                  >
+                    <RectangleHorizontal className="w-4 h-4" />
+                  </button>
+                  <button 
+                    onClick={onClose} 
+                    className="w-8 h-8 rounded-full hover:bg-secondary flex items-center justify-center text-foreground/70"
+                    aria-label="Fechar"
+                  >
+                    <XIcon className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
 
@@ -671,13 +691,22 @@ const VideoaulaSheet = ({ open, onClose, video, tabelaNome, artigoNumero, artigo
               <div className="flex-1 overflow-y-auto min-h-0 pb-24">
               {/* Video Player */}
               {video.videoId ? (
-                <div className="aspect-video w-full shrink-0 bg-black">
+                <div className={isLandscape ? "fixed inset-0 z-[100000] bg-black" : "aspect-video w-full shrink-0 bg-black relative"}>
                   <iframe
                     src={`https://www.youtube.com/embed/${video.videoId}?autoplay=1&rel=0`}
-                    className="w-full h-full"
+                    className={isLandscape ? "absolute top-1/2 left-1/2 w-[100vh] h-[100vw] -translate-x-1/2 -translate-y-1/2 rotate-90 border-0" : "w-full h-full border-0"}
                     allow="autoplay; encrypted-media; fullscreen"
                     allowFullScreen
                   />
+                  {isLandscape && (
+                    <button 
+                      onClick={() => setIsLandscape(false)} 
+                      className="absolute top-8 right-8 z-[100001] w-12 h-12 bg-black/50 hover:bg-black/80 rounded-full flex items-center justify-center text-white backdrop-blur-md"
+                      style={{ transform: 'rotate(90deg)' }}
+                    >
+                      <XIcon className="w-6 h-6" />
+                    </button>
+                  )}
                 </div>
               ) : (
                 <div className="aspect-video w-full shrink-0 bg-secondary flex items-center justify-center">
