@@ -550,6 +550,26 @@ const Auth = () => {
     }
   }, [loading, user, navigate]);
 
+  // Pré-aquece a Home/Dashboard assim que o usuário entra na tela de Auth,
+  // garantindo transição instantânea e sem telas pretas após o login.
+  useEffect(() => {
+    const ric: (cb: () => void) => number = (window as any).requestIdleCallback
+      ? (cb) => (window as any).requestIdleCallback(cb, { timeout: 2000 })
+      : (cb) => window.setTimeout(cb, 500);
+      
+    const id = ric(() => {
+      import('@/pages/Index').catch(() => {});
+      import('@/pages/IndexMobile').catch(() => {});
+      import('@/components/vademecum/HomeHeaderHero').catch(() => {});
+      import('@/components/vademecum/MobileHomeSections').catch(() => {});
+    });
+    
+    return () => {
+      const cic = (window as any).cancelIdleCallback;
+      if (cic) cic(id); else window.clearTimeout(id);
+    };
+  }, []);
+
   if (loading) {
     return (
       <main className="min-h-dvh flex items-center justify-center bg-[#0d0f12]">

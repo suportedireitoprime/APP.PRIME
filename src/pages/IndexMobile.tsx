@@ -40,13 +40,6 @@ type Tab = 'legislacao' | 'noticias' | 'ferramentas';
 const IndexMobile = () => {
   useHideSplashScreen(400); // Give React more time to paint heavy UI before dropping native splash
   const navigate = useNavigate();
-  const [isWarmingUp, setIsWarmingUp] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsWarmingUp(false), 2900);
-    return () => clearTimeout(timer);
-  }, []);
-
   const [, setActiveTab] = useState<Tab>('legislacao');
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -114,16 +107,14 @@ const IndexMobile = () => {
   return (
     <div className="min-h-dvh bg-background pb-20 md:pb-0 md:pl-[90px] transition-all">
       <HomeHeaderHero onSearchOpenChange={setHeroSearchOpen} />
-      {!isWarmingUp && (
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: 'easeOut' }}>
-          <main ref={contentRef} className="max-w-5xl lg:max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-2">
-            <img src={primeLogo} alt="" aria-hidden="true" loading="eager" decoding="sync" fetchPriority="high" className="absolute w-0 h-0 opacity-0 pointer-events-none" />
-            <FeatureDiscoveryCard />
-            <MobileHomeSections onTabChange={setHomeTab} onNewsOpenChange={setNewsOpen} />
-          </main>
-          {homeTab === 'estudos' && !personalizarOpen && !searchOpen && !heroSearchOpen && !newsOpen && !bottomNavHidden && <BottomNav />}
-        </motion.div>
-      )}
+      <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: 'easeOut' }}>
+        <main ref={contentRef} className="max-w-5xl lg:max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-2">
+          <img src={primeLogo} alt="" aria-hidden="true" loading="eager" decoding="sync" fetchPriority="high" className="absolute w-0 h-0 opacity-0 pointer-events-none" />
+          <FeatureDiscoveryCard />
+          <MobileHomeSections onTabChange={setHomeTab} onNewsOpenChange={setNewsOpen} />
+        </main>
+        {homeTab === 'estudos' && !personalizarOpen && !searchOpen && !heroSearchOpen && !newsOpen && !bottomNavHidden && <BottomNav />}
+      </motion.div>
       <Suspense fallback={null}>
         {menuOpen && (
           <SideMenu
