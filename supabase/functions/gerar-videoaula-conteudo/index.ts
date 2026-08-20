@@ -41,23 +41,20 @@ async function fetchTranscript(videoId: string): Promise<string> {
 
 async function callGemini(system: string, user: string): Promise<string> {
   const { logAiCall } = await import("../_shared/ai-log.ts");
-  const LOVABLE_API_KEY = undefined;
-  if (!LOVABLE_API_KEY) throw new Error('LOVABLE_API_KEY não configurada');
+  const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY') || Deno.env.get('LOVABLE_API_KEY');
+  if (!GEMINI_API_KEY) throw new Error('GEMINI_API_KEY não configurada');
   const model = 'gemini-3.1-flash-lite';
   const startedAt = Date.now();
   let success = true, errMsg: string | undefined;
   let inputUnits = 0, outputUnits = 0;
   try {
-    const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
+    const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${LOVABLE_API_KEY}` },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model,
-        temperature: 0.4,
-        messages: [
-          { role: 'system', content: system },
-          { role: 'user', content: user },
-        ],
+        system_instruction: { parts: [{ text: system }] },
+        contents: [{ parts: [{ text: user }] }],
+        generationConfig: { temperature: 0.4 },
       }),
     });
     if (!resp.ok) {
@@ -65,9 +62,9 @@ async function callGemini(system: string, user: string): Promise<string> {
       throw new Error(`AI gateway ${resp.status}: ${txt}`);
     }
     const data = await resp.json();
-    inputUnits  = Number(data?.usage?.prompt_tokens ?? 0) || 0;
-    outputUnits = Number(data?.usage?.completion_tokens ?? 0) || 0;
-    return (data?.choices?.[0]?.message?.content || '').trim();
+    inputUnits  = Number(data?.usageMetadata?.promptTokenCount ?? 0) || 0;
+    outputUnits = Number(data?.usageMetadata?.candidatesTokenCount ?? 0) || 0;
+    return (data?.candidates?.[0]?.content?.parts?.[0]?.text || '').trim();
   } catch (e) {
     success = false;
     errMsg = String((e as Error)?.message ?? e).slice(0, 500);

@@ -243,7 +243,7 @@ const renderInline = (text: string) => {
 };
 
 const VideoaulaSheet = ({ open, onClose, video, tabelaNome, artigoNumero, artigoTexto }: VideoaulaSheetProps) => {
-  const [activeTab, setActiveTab] = useState<'resumo' | 'comentarios'>('resumo');
+  const [activeTab, setActiveTab] = useState<'resumo' | 'artigo' | 'comentarios'>('resumo');
 
   // Content
   const [resumo, setResumo] = useState('');
@@ -285,6 +285,7 @@ const VideoaulaSheet = ({ open, onClose, video, tabelaNome, artigoNumero, artigo
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   const [pdfExporting, setPdfExporting] = useState(false);
+  const [recursosAberto, setRecursosAberto] = useState(false);
 
   /* ─── Nativo: PiP, tela acesa e proteção de tela ─── */
   useEffect(() => {
@@ -628,6 +629,7 @@ const VideoaulaSheet = ({ open, onClose, video, tabelaNome, artigoNumero, artigo
 
   const tabs = [
     { id: 'resumo' as const, label: 'Resumo' },
+    { id: 'artigo' as const, label: 'Artigo' },
     { id: 'comentarios' as const, label: `Comentários${comentarios.length ? ` (${comentarios.length})` : ''}` },
   ];
 
@@ -713,6 +715,14 @@ const VideoaulaSheet = ({ open, onClose, video, tabelaNome, artigoNumero, artigo
                     <ThumbsDown className="w-3.5 h-3.5" strokeWidth={2.2} />
                     <span>{dislikes}</span>
                   </button>
+                  
+                  <button
+                    onClick={() => setRecursosAberto(true)}
+                    className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all border bg-secondary/60 text-foreground border-border hover:bg-secondary"
+                  >
+                    <Layers className="w-3.5 h-3.5" strokeWidth={2.2} />
+                    <span>Recursos</span>
+                  </button>
                 </div>
               </div>
 
@@ -750,6 +760,16 @@ const VideoaulaSheet = ({ open, onClose, video, tabelaNome, artigoNumero, artigo
                     ) : (
                       <p className="text-sm text-muted-foreground text-center py-8">Nenhum resumo disponível</p>
                     )}
+                  </div>
+                )}
+
+                {/* ARTIGO */}
+                {activeTab === 'artigo' && (
+                  <div className="p-4 bg-secondary/30 rounded-xl border border-border">
+                    <p className="text-[15px] font-bold text-primary mb-3 font-display">{artigoNumero}</p>
+                    <div className="text-[14px] text-foreground/90 leading-[1.8] text-justify whitespace-pre-wrap font-body">
+                      {artigoTexto || 'Texto não disponível.'}
+                    </div>
                   </div>
                 )}
 
@@ -1101,6 +1121,52 @@ const VideoaulaSheet = ({ open, onClose, video, tabelaNome, artigoNumero, artigo
                     </div>
                   </div>
                 </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* RECURSOS DRAWER */}
+            <AnimatePresence>
+              {recursosAberto && (
+                <>
+                  <motion.div
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute inset-0 bg-black/40 z-[10050]"
+                    onClick={() => setRecursosAberto(false)}
+                  />
+                  <motion.div
+                    initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
+                    transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+                    className="absolute top-0 right-0 bottom-0 w-64 bg-background border-l border-border z-[10051] flex flex-col shadow-2xl"
+                  >
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+                      <h3 className="text-[13px] font-bold text-foreground font-display tracking-wider">RECURSOS</h3>
+                      <button onClick={() => setRecursosAberto(false)} className="p-1.5 rounded-md hover:bg-secondary">
+                        <XIcon className="w-4 h-4 text-muted-foreground" />
+                      </button>
+                    </div>
+                    <div className="p-3 space-y-2 overflow-y-auto">
+                      <button onClick={() => { handleExportPdf(); setRecursosAberto(false); }} className="w-full flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-secondary text-left text-sm text-foreground transition-colors border border-border bg-secondary/30">
+                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                          <Download className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <p className="font-bold text-[13px] font-display">Baixar Resumo (PDF)</p>
+                          <p className="text-[11px] text-muted-foreground leading-tight">Material da aula</p>
+                        </div>
+                      </button>
+                      <button onClick={() => { toast.info('Mapa mental em breve!'); setRecursosAberto(false); }} className="w-full flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-secondary text-left text-sm text-foreground transition-colors border border-border bg-secondary/30">
+                        <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500 shrink-0">
+                          <Brain className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <p className="font-bold text-[13px] font-display">Mapa Mental</p>
+                          <p className="text-[11px] text-muted-foreground leading-tight">Visualizar diagrama</p>
+                        </div>
+                      </button>
+                    </div>
+                  </motion.div>
+                </>
               )}
             </AnimatePresence>
           </motion.div>
