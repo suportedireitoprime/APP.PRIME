@@ -5,7 +5,7 @@ import { haptic } from '@/lib/nativeHaptics';
 
 export const LEI_SECA_CATEGORIAS = [
   { id: 'constitucional', label: 'Constitucional', icon: Book, color: 'text-amber-500', bg: 'bg-amber-500/10', leis: ['cf88'] },
-  { id: 'penal', label: 'Penal', icon: ShieldAlert, color: 'text-rose-500', bg: 'bg-rose-500/10', leis: ['cp', 'cpp', 'cpm', 'cppm'] },
+  { id: 'penal', label: 'Penal', icon: ShieldAlert, color: 'text-rose-500', bg: 'bg-rose-500/10', leis: ['cp', 'cpp', 'cpm', 'cppm', 'lep', 'lmp', 'ld', 'loc', 'laa', 'lit'] },
   { id: 'civil', label: 'Civil', icon: Scale, color: 'text-blue-500', bg: 'bg-blue-500/10', leis: ['cc', 'cpc', 'ccom'] },
   { id: 'trabalhista', label: 'Trabalhista', icon: Briefcase, color: 'text-violet-500', bg: 'bg-violet-500/10', leis: ['clt'] },
   { id: 'tributario', label: 'Tributário', icon: Calculator, color: 'text-emerald-500', bg: 'bg-emerald-500/10', leis: ['ctn'] },

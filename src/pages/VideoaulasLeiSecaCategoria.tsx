@@ -53,8 +53,8 @@ const VideoaulasLeiSecaCategoria = () => {
             }}
             className="w-full flex items-center gap-4 p-4 rounded-3xl bg-card border border-border/80 text-left hover:border-primary/50 transition-all active:scale-[0.98]"
           >
-            <div className={`w-12 h-12 shrink-0 rounded-2xl flex items-center justify-center ${categoria.bg}`}>
-              <categoria.icon className={`w-6 h-6 ${categoria.color}`} strokeWidth={1.5} />
+            <div className="w-12 h-12 shrink-0 flex items-center justify-center">
+              <categoria.icon className={`w-7 h-7 ${categoria.color.replace('500', '400')}`} strokeWidth={1.25} />
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-foreground font-bold text-[15px] truncate">{l.nome}</p>
