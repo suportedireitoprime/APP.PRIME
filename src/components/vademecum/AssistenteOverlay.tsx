@@ -12,6 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { pdf, Document, Page, Text as PdfText, StyleSheet } from '@react-pdf/renderer';
 import { track } from '@/lib/analyticsEvents';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import {
   FlipFlashcards, QuestoesRunner, MapaMentalCanvas, TermosViewer, ShareSheet,
   type Flashcard, type Questao, type MapaNode, type Termo,
@@ -168,7 +169,20 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
     });
   }, [messages, sessionId]);
 
-  useEffect(() => { if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight; }, [messages, loading]);
+  }, [messages, sessionId]);
+
+  const virtualizer = useVirtualizer({
+    count: messages.length + (loading ? 1 : 0),
+    getScrollElement: () => scrollRef.current,
+    estimateSize: () => 120, // Altura estimada média de uma mensagem
+    overscan: 3,
+  });
+
+  useEffect(() => { 
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight; 
+    }
+  }, [messages, loading, virtualizer.getTotalSize()]);
 
   // Analyze cycling
   useEffect(() => {
@@ -594,8 +608,8 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
 
 
           {/* Messages */}
-          <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 py-4 space-y-3">
-            <div className={isDesktop ? 'max-w-3xl mx-auto w-full space-y-3' : 'contents'}>
+          <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 py-4">
+            <div className={isDesktop ? 'max-w-3xl mx-auto w-full' : 'contents'}>
             {messages.length === 0 && !loading && (
               <div className="flex flex-col h-full pb-2">
                 <div className="flex-1 flex flex-col items-center justify-center gap-6 pb-4">
@@ -677,135 +691,147 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
               </div>
             )}
 
-            {messages.map(msg => {
-              const shown = msg.role === 'assistant' ? msg.content.slice(0, revealed[msg.id] ?? msg.content.length) : msg.content;
-              const complete = msg.role !== 'assistant' || shown === msg.content;
-              const maxN = msg.sources?.length ?? 0;
-              const shownWithLinks = msg.role === 'assistant' && maxN > 0
-                ? injectCitationLinks(shown, maxN)
-                : shown;
-              return (
-                <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} w-full`}>
-                  <div className={`${
-                    msg.role === 'user'
-                      ? (isDesktop ? 'max-w-[92%]' : 'max-w-[88%]') + ' rounded-2xl px-4 py-2.5 bg-primary/15 text-foreground border border-primary/40 rounded-br-md'
-                      : 'w-full text-foreground py-1'
-                  }`}>
-                    {msg.attachment && msg.role === 'user' && (
-                      <div className="mb-2 flex items-center gap-2 text-xs opacity-90">
-                        <Paperclip className="w-3 h-3" /> {msg.attachment.name}
-                      </div>
-                    )}
-                    {msg.role === 'assistant' ? (
-                      <>
-                        {msg.thoughtTime && (
-                          <div className="mb-4">
-                            <details className="group [&_summary::-webkit-details-marker]:hidden">
-                              <summary className="flex items-center gap-1.5 text-[13px] font-semibold text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors w-fit">
-                                Pensou por {msg.thoughtTime}s <ChevronRight className="w-3.5 h-3.5 transition-transform group-open:rotate-90" />
-                              </summary>
-                              <div className="mt-3 pl-3 border-l-2 border-border/50 text-xs text-muted-foreground/80 space-y-2.5 font-body">
-                                {ANALYZE_STEPS.map((step) => (
-                                  <div key={step} className="flex items-center gap-2">
-                                    <Check className="w-3 h-3 text-muted-foreground/60" />
-                                    <span>{step}</span>
-                                  </div>
-                                ))}
+            {(messages.length > 0 || loading) && (
+              <div style={{ height: `${virtualizer.getTotalSize()}px`, width: '100%', position: 'relative' }}>
+                {virtualizer.getVirtualItems().map(vItem => {
+                  const isLoader = loading && vItem.index === messages.length;
+                  const msg = isLoader ? null : messages[vItem.index];
+                  
+                  return (
+                    <div
+                      key={vItem.key}
+                      data-index={vItem.index}
+                      ref={virtualizer.measureElement}
+                      className="absolute top-0 left-0 w-full"
+                      style={{ transform: `translateY(${vItem.start}px)` }}
+                    >
+                      <div className="py-1.5">
+                        {isLoader ? (
+                          <div className="flex justify-start w-full mt-2">
+                            <div className="px-1 py-1 w-full">
+                              <div className="flex items-center gap-2 text-[13px] font-semibold text-muted-foreground mb-4">
+                                <Loader2 className="w-4 h-4 animate-spin text-foreground" />
+                                Pensando...
                               </div>
-                            </details>
+                              <ul className="space-y-3 pl-3 border-l-2 border-border/50">
+                                {ANALYZE_STEPS.map((step, i) => {
+                                  const done = i < analyzeStep;
+                                  const active = i === analyzeStep;
+                                  if (!done && !active) return null;
+                                  return (
+                                    <li key={step} className="flex items-center gap-2 text-xs font-body">
+                                      {done ? (
+                                        <Check className="w-3.5 h-3.5 text-muted-foreground/60" />
+                                      ) : (
+                                        <Loader2 className="w-3.5 h-3.5 animate-spin text-foreground" />
+                                      )}
+                                      <span className={done ? 'text-muted-foreground/80' : 'text-foreground font-medium animate-pulse'}>{step}</span>
+                                    </li>
+                                  );
+                                })}
+                              </ul>
+                            </div>
                           </div>
-                        )}
-                        <motion.div
-                          initial={{ opacity: 0.6 }} animate={{ opacity: 1 }}
-                          className="prose prose-base dark:prose-invert max-w-none font-body text-[15px] leading-relaxed [&_p]:my-1.5 [&_ul]:my-1.5 [&_ol]:my-1.5 [&_li]:my-1"
-                          onCopy={(e) => {
-                            const sel = window.getSelection()?.toString() ?? '';
-                            if (!sel) return;
-                            e.preventDefault();
-                            e.clipboardData.setData('text/plain', stripCitations(sel));
-                          }}
-                        >
-                          <ReactMarkdown
-                            components={{
-                              a: ({ href, children, ...rest }) => {
-                                if (href?.startsWith('cite://')) {
-                                  const n = parseInt(href.replace('cite://', ''), 10);
-                                  const source = msg.sources?.find((s) => s.n === n);
-                                  return <CitationChip n={n} source={source} />;
-                                }
-                                return <a href={href} target="_blank" rel="noopener noreferrer" {...rest}>{children}</a>;
-                              },
-                            }}
-                          >
-                            {shownWithLinks}
-                          </ReactMarkdown>
-                        </motion.div>
-                        {complete && msg.sources && msg.sources.length > 0 && (
-                          <SourcesFooter sources={msg.sources} />
-                        )}
-                        {complete && (
-                          <motion.div
-                            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
-                            className="mt-3 pt-3 border-t border-border/60 flex flex-wrap items-center gap-1.5"
-                          >
-                            <ActionBtn icon={FileDown} label="PDF" onClick={() => exportPdf(msg)} />
-                            <ActionBtn icon={Layers} label="Flashcards" onClick={() => generateFromMsg(msg, 'flashcards')} />
-                            <ActionBtn icon={HelpCircle} label="Questões" onClick={() => generateFromMsg(msg, 'questoes')} />
-                            <ActionBtn icon={GitBranch} label="Mapa" onClick={() => generateFromMsg(msg, 'mapa')} />
-                            <ActionBtn icon={BookOpen} label="Termos" onClick={() => generateFromMsg(msg, 'termos')} />
-                            <ActionBtn icon={Share2} label="Enviar" onClick={() => openShare(msg)} />
-                            <span className="ml-auto">
-                              <ChatFeedback
-                                messageId={msg.id}
-                                sessionId={sessionId}
-                                pergunta={
-                                  [...messages].reverse().find((m, i, arr) => {
-                                    const idx = arr.length - 1 - i;
-                                    return m.role === 'user' && idx < messages.findIndex((x) => x.id === msg.id);
-                                  })?.content || ''
-                                }
-                                resposta={msg.content}
-                                webSearch={!!msg.webSearch}
-                                sources={msg.sources}
-                              />
-                            </span>
-                          </motion.div>
-                        )}
-                      </>
-                    ) : (
-                      <p className="font-body text-[15px] leading-relaxed whitespace-pre-wrap">{msg.content}</p>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-
-
-            {loading && (
-              <div className="flex justify-start w-full mt-2">
-                <div className="px-1 py-1 w-full">
-                  <div className="flex items-center gap-2 text-[13px] font-semibold text-muted-foreground mb-4">
-                    <Loader2 className="w-4 h-4 animate-spin text-foreground" />
-                    Pensando...
-                  </div>
-                  <ul className="space-y-3 pl-3 border-l-2 border-border/50">
-                    {ANALYZE_STEPS.map((step, i) => {
-                      const done = i < analyzeStep;
-                      const active = i === analyzeStep;
-                      if (!done && !active) return null; // Revela progressivamente
-                      return (
-                        <li key={step} className="flex items-center gap-2 text-xs font-body">
-                          {done ? (
-                            <Check className="w-3.5 h-3.5 text-muted-foreground/60" />
-                          ) : (
-                            <Loader2 className="w-3.5 h-3.5 animate-spin text-foreground" />
-                          )}
-                          <span className={done ? 'text-muted-foreground/80' : 'text-foreground font-medium animate-pulse'}>{step}</span>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
+                        ) : msg ? (
+                          <div className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} w-full`}>
+                            <div className={`${
+                              msg.role === 'user'
+                                ? (isDesktop ? 'max-w-[92%]' : 'max-w-[88%]') + ' rounded-2xl px-4 py-2.5 bg-primary/15 text-foreground border border-primary/40 rounded-br-md'
+                                : 'w-full text-foreground py-1'
+                            }`}>
+                              {msg.attachment && msg.role === 'user' && (
+                                <div className="mb-2 flex items-center gap-2 text-xs opacity-90">
+                                  <Paperclip className="w-3 h-3" /> {msg.attachment.name}
+                                </div>
+                              )}
+                              {msg.role === 'assistant' ? (
+                                <>
+                                  {msg.thoughtTime && (
+                                    <div className="mb-4">
+                                      <details className="group [&_summary::-webkit-details-marker]:hidden">
+                                        <summary className="flex items-center gap-1.5 text-[13px] font-semibold text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors w-fit">
+                                          Pensou por {msg.thoughtTime}s <ChevronRight className="w-3.5 h-3.5 transition-transform group-open:rotate-90" />
+                                        </summary>
+                                        <div className="mt-3 pl-3 border-l-2 border-border/50 text-xs text-muted-foreground/80 space-y-2.5 font-body">
+                                          {ANALYZE_STEPS.map((step) => (
+                                            <div key={step} className="flex items-center gap-2">
+                                              <Check className="w-3 h-3 text-muted-foreground/60" />
+                                              <span>{step}</span>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </details>
+                                    </div>
+                                  )}
+                                  <motion.div
+                                    initial={{ opacity: 0.6 }} animate={{ opacity: 1 }}
+                                    className="prose prose-base dark:prose-invert max-w-none font-body text-[15px] leading-relaxed [&_p]:my-1.5 [&_ul]:my-1.5 [&_ol]:my-1.5 [&_li]:my-1"
+                                    onCopy={(e) => {
+                                      const sel = window.getSelection()?.toString() ?? '';
+                                      if (!sel) return;
+                                      e.preventDefault();
+                                      e.clipboardData.setData('text/plain', stripCitations(sel));
+                                    }}
+                                  >
+                                    <ReactMarkdown
+                                      components={{
+                                        a: ({ href, children, ...rest }) => {
+                                          if (href?.startsWith('cite://')) {
+                                            const n = parseInt(href.replace('cite://', ''), 10);
+                                            const source = msg.sources?.find((s) => s.n === n);
+                                            return <CitationChip n={n} source={source} />;
+                                          }
+                                          return <a href={href} target="_blank" rel="noopener noreferrer" {...rest}>{children}</a>;
+                                        },
+                                      }}
+                                    >
+                                      {msg.role === 'assistant' && (msg.sources?.length ?? 0) > 0
+                                        ? injectCitationLinks(msg.content.slice(0, revealed[msg.id] ?? msg.content.length), msg.sources?.length ?? 0)
+                                        : msg.content.slice(0, revealed[msg.id] ?? msg.content.length)}
+                                    </ReactMarkdown>
+                                  </motion.div>
+                                  {(msg.role !== 'assistant' || (msg.content.slice(0, revealed[msg.id] ?? msg.content.length) === msg.content)) && msg.sources && msg.sources.length > 0 && (
+                                    <SourcesFooter sources={msg.sources} />
+                                  )}
+                                  {(msg.role !== 'assistant' || (msg.content.slice(0, revealed[msg.id] ?? msg.content.length) === msg.content)) && (
+                                    <motion.div
+                                      initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+                                      className="mt-3 pt-3 border-t border-border/60 flex flex-wrap items-center gap-1.5"
+                                    >
+                                      <ActionBtn icon={FileDown} label="PDF" onClick={() => exportPdf(msg)} />
+                                      <ActionBtn icon={Layers} label="Flashcards" onClick={() => generateFromMsg(msg, 'flashcards')} />
+                                      <ActionBtn icon={HelpCircle} label="Questões" onClick={() => generateFromMsg(msg, 'questoes')} />
+                                      <ActionBtn icon={GitBranch} label="Mapa" onClick={() => generateFromMsg(msg, 'mapa')} />
+                                      <ActionBtn icon={BookOpen} label="Termos" onClick={() => generateFromMsg(msg, 'termos')} />
+                                      <ActionBtn icon={Share2} label="Enviar" onClick={() => openShare(msg)} />
+                                      <span className="ml-auto">
+                                        <ChatFeedback
+                                          messageId={msg.id}
+                                          sessionId={sessionId}
+                                          pergunta={
+                                            [...messages].reverse().find((m, i, arr) => {
+                                              const idx = arr.length - 1 - i;
+                                              return m.role === 'user' && idx < messages.findIndex((x) => x.id === msg.id);
+                                            })?.content || ''
+                                          }
+                                          resposta={msg.content}
+                                          webSearch={!!msg.webSearch}
+                                          sources={msg.sources}
+                                        />
+                                      </span>
+                                    </motion.div>
+                                  )}
+                                </>
+                              ) : (
+                                <p className="font-body text-[15px] leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                              )}
+                            </div>
+                          </div>
+                        ) : null}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
             </div>
