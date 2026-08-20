@@ -186,7 +186,7 @@ const FlashcardsJuristas = lazy(() => import("./pages/flashcards/FlashcardsJuris
 const FlashcardsPrazos = lazy(() => import("./pages/flashcards/FlashcardsPrazos.tsx"));
 const FlashcardsExcecoes = lazy(() => import("./pages/flashcards/FlashcardsExcecoes.tsx"));
 const FlashcardsClassificacoes = lazy(() => import("./pages/flashcards/FlashcardsClassificacoes.tsx"));
-const VideoaulasLeiSeca = lazyWithRetry(() => import('./pages/VideoaulasLeiSeca'));
+const VideoaulasLeiSeca = lazy(() => import('./pages/VideoaulasLeiSeca'));
 const Videoaulas = lazy(routePrefetch.videoaulas);
 const VideoaulasCategorias = lazy(routePrefetch.videoaulasCategorias);
 const VideoaulasCatalogo = lazy(routePrefetch.videoaulasCatalogo);
