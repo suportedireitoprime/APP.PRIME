@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Send, Sparkles, Plus, Globe, History as HistoryIcon,
   FileDown, Layers, HelpCircle, GitBranch, Paperclip, X, Check, Loader2, Zap, FileText, Image as ImageIcon,
-  BookOpen, Share2, Scale, Mic, Camera, Music, Brain,
+  BookOpen, Share2, Scale, Mic, Camera, Music, Brain, ChevronRight,
 } from 'lucide-react';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
 import ReactMarkdown from 'react-markdown';
@@ -36,7 +36,7 @@ import { haptic } from '@/lib/nativeHaptics';
 type ArtifactKind = 'flashcards' | 'questoes' | 'mapa' | 'termos';
 interface Artifact { id: string; kind: ArtifactKind; data: any; sourceId: string; createdAt: number; title: string }
 interface Attachment { mime: string; data: string; name: string; }
-interface Message { id: string; role: 'user' | 'assistant'; content: string; attachment?: Attachment; createdAt: number; sources?: ChatSource[]; webSearch?: boolean; }
+interface Message { id: string; role: 'user' | 'assistant'; content: string; attachment?: Attachment; createdAt: number; sources?: ChatSource[]; webSearch?: boolean; thoughtTime?: number; }
 interface Session { id: string; date: string; title: string; messages: Message[]; artifacts?: Artifact[]; updatedAt: number; }
 
 const HIST_KEY = 'chat_juridico_hist_v2';
@@ -266,6 +266,7 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
     const sentAttachment = attachment;
     setAttachment(null);
     setLoading(true);
+    const startTime = Date.now();
     try {
       const { data, error } = await supabase.functions.invoke('assistente-juridica', {
         body: {
@@ -277,6 +278,7 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
         },
       });
       if (error) throw error;
+      const elapsed = Math.round((Date.now() - startTime) / 1000);
       const webSources: ChatSource[] = Array.isArray(data?.sources) ? data.sources : [];
       const startN = (webSources.length ? Math.max(...webSources.map((s) => s.n)) : 0) + 1;
       const rawReply: string = data?.reply || 'Não consegui gerar uma resposta agora. Tente reformular.';
@@ -287,6 +289,7 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
         createdAt: Date.now(),
         sources: [...webSources, ...statuteSources],
         webSearch,
+        thoughtTime: elapsed > 0 ? elapsed : 1,
       };
       setMessages(prev => [...prev, asMsg]);
       setRevealed(r => ({ ...r, [asMsg.id]: 0 }));
@@ -529,11 +532,11 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
                 ? injectCitationLinks(shown, maxN)
                 : shown;
               return (
-                <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`${isDesktop ? 'max-w-[92%]' : 'max-w-[88%]'} rounded-2xl px-4 py-2.5 ${
+                <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} w-full`}>
+                  <div className={`${
                     msg.role === 'user'
-                      ? 'bg-primary/15 text-foreground border border-primary/40 rounded-br-md'
-                      : 'bg-card border border-border text-foreground rounded-bl-md'
+                      ? (isDesktop ? 'max-w-[92%]' : 'max-w-[88%]') + ' rounded-2xl px-4 py-2.5 bg-primary/15 text-foreground border border-primary/40 rounded-br-md'
+                      : 'w-full text-foreground py-1'
                   }`}>
                     {msg.attachment && msg.role === 'user' && (
                       <div className="mb-2 flex items-center gap-2 text-xs opacity-90">
@@ -542,6 +545,23 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
                     )}
                     {msg.role === 'assistant' ? (
                       <>
+                        {msg.thoughtTime && (
+                          <div className="mb-4">
+                            <details className="group [&_summary::-webkit-details-marker]:hidden">
+                              <summary className="flex items-center gap-1.5 text-[13px] font-semibold text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors w-fit">
+                                Pensou por {msg.thoughtTime}s <ChevronRight className="w-3.5 h-3.5 transition-transform group-open:rotate-90" />
+                              </summary>
+                              <div className="mt-3 pl-3 border-l-2 border-border/50 text-xs text-muted-foreground/80 space-y-2.5 font-body">
+                                {ANALYZE_STEPS.map((step) => (
+                                  <div key={step} className="flex items-center gap-2">
+                                    <Check className="w-3 h-3 text-muted-foreground/60" />
+                                    <span>{step}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </details>
+                          </div>
+                        )}
                         <motion.div
                           initial={{ opacity: 0.6 }} animate={{ opacity: 1 }}
                           className="prose prose-base dark:prose-invert max-w-none font-body text-[15px] leading-relaxed [&_p]:my-1.5 [&_ul]:my-1.5 [&_ol]:my-1.5 [&_li]:my-1"
@@ -609,25 +629,25 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
 
 
             {loading && (
-              <div className="flex justify-start">
-                <div className="bg-card border border-border rounded-2xl rounded-bl-md px-4 py-3 min-w-[220px]">
-                  <p className="text-xs font-body text-muted-foreground mb-2 flex items-center gap-1.5">
-                    <Loader2 className="w-3 h-3 animate-spin" /> Analisando…
-                  </p>
-                  <ul className="space-y-1.5">
+              <div className="flex justify-start w-full mt-2">
+                <div className="px-1 py-1 w-full">
+                  <div className="flex items-center gap-2 text-[13px] font-semibold text-muted-foreground mb-4">
+                    <Loader2 className="w-4 h-4 animate-spin text-foreground" />
+                    Pensando...
+                  </div>
+                  <ul className="space-y-3 pl-3 border-l-2 border-border/50">
                     {ANALYZE_STEPS.map((step, i) => {
                       const done = i < analyzeStep;
                       const active = i === analyzeStep;
+                      if (!done && !active) return null; // Revela progressivamente
                       return (
                         <li key={step} className="flex items-center gap-2 text-xs font-body">
-                          <motion.span
-                            initial={false}
-                            animate={{ scale: active ? 1.1 : 1 }}
-                            className={`w-4 h-4 rounded-full flex items-center justify-center ${done ? 'bg-emerald-500' : active ? 'bg-accent' : 'bg-secondary'}`}
-                          >
-                            {done ? <Check className="w-2.5 h-2.5 text-white" /> : active ? <Loader2 className="w-2.5 h-2.5 animate-spin text-accent-foreground" /> : null}
-                          </motion.span>
-                          <span className={done ? 'text-foreground' : active ? 'text-foreground' : 'text-muted-foreground/60'}>{step}</span>
+                          {done ? (
+                            <Check className="w-3.5 h-3.5 text-muted-foreground/60" />
+                          ) : (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin text-foreground" />
+                          )}
+                          <span className={done ? 'text-muted-foreground/80' : 'text-foreground font-medium animate-pulse'}>{step}</span>
                         </li>
                       );
                     })}
