@@ -7,7 +7,7 @@ const GOOGLE_WEB_CLIENT_ID = process.env.GOOGLE_WEB_CLIENT_ID || '1099228641135-
 const config: CapacitorConfig = {
   // NÃO trocar: este appId é o applicationId do app publicado na Play Store.
   // O bundle ID do iOS é sobrescrito no workflow via secret APPLE_BUNDLE_ID
-  // (br.com.direitoprime.app), então mudar aqui quebraria a atualização no Android.
+  // (br.com.direito.app), então mudar aqui quebraria a atualização no Android.
   appId: 'br.com.app.gpu2675756.gpu0e7509bfb7bde52aef412888bb17a456',
   appName: 'Estudos Jurídicos',
   webDir: 'dist',
@@ -59,7 +59,7 @@ const config: CapacitorConfig = {
       splashImmersive: false,
     },
     Preferences: {
-      group: 'group.br.com.direitoprime.app'
+      group: 'group.br.com.direito.app'
     },
     // StatusBar plugin REMOVIDO: chamava Window.setStatusBarColor no <init>,
     // API descontinuada no Android 15. Edge-to-edge é feito na MainActivity

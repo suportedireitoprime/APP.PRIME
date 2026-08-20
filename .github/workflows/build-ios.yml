@@ -21,7 +21,7 @@ jobs:
       # Identificadores Apple não são segredo. Mantemos fallback aqui para evitar
       # falso erro quando o GitHub não injeta esses 4 valores como secrets.
       APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID || 'DKVT35Y3W5' }}
-      APPLE_BUNDLE_ID: ${{ secrets.APPLE_BUNDLE_ID || 'br.com.direitoprime.app' }}
+      APPLE_BUNDLE_ID: ${{ secrets.APPLE_BUNDLE_ID || 'br.com.direito.app' }}
       APPLE_APP_NAME: ${{ secrets.APPLE_APP_NAME || 'Estudos Jurídicos' }}
       APPLE_API_KEY_ID: ${{ secrets.APPLE_APP_STORE_CONNECT_KEY_ID || 'XR87K5FX25' }}
       APPLE_API_ISSUER_ID: ${{ secrets.APPLE_APP_STORE_CONNECT_ISSUER_ID || '1604c7ca-cdb0-49ec-aea1-058e12abdafe' }}
@@ -104,7 +104,7 @@ jobs:
         run: |
           PLIST="ios/App/App/Info.plist"
           RUN_NUM="${{ github.run_number }}"
-          # A versão publicada na App Store (br.com.direitoprime.app) é 106.0.0, então
+          # A versão publicada na App Store (br.com.direito.app) é 106.0.0, então
           # a marketing version precisa ser MAIOR que ela, senão a Apple rejeita
           # por versão duplicada/menor. Base 107 + run_number.
           VERSION="${APPLE_MARKETING_VERSION:-107.0.${RUN_NUM}}"
