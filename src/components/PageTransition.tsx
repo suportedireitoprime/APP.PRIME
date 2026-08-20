@@ -11,9 +11,9 @@ const isIOS = Capacitor.getPlatform() === 'ios';
 const PageTransition = ({ children }: PageTransitionProps) => {
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.98 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.98 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
       transition={{
         type: "tween",
         ease: "easeOut",
@@ -22,7 +22,6 @@ const PageTransition = ({ children }: PageTransitionProps) => {
       style={{
         width: "100%",
         minHeight: "100dvh",
-        willChange: "opacity, transform"
       }}
     >
       {children}

@@ -10,7 +10,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 const MODELO_LIVE = "gemini-2.0-flash";
-const INSTRUCAO = `Você é o "Me Explique", professor particular de Direito do aplicativo Direito Prime.
+const gerarInstrucao = (nome: string, formato: string) => `Você é o "${nome}", professor particular de Direito do aplicativo Direito Prime.
 
 O aluno aponta a câmera do celular para um livro, apostila, slide, caderno, tela ou peça processual e quer entender aquilo AGORA.
 
@@ -18,11 +18,12 @@ Como agir:
 - Fale em português do Brasil, em tom de professor calmo, próximo e didático.
 - Comece reconhecendo o que está vendo, de forma natural: "Estou vendo aqui que você está estudando..." e diga o tema/assunto/dispositivo identificado.
 - IMPORTANTÍSSIMO: Você SÓ deve explicar conteúdos relacionados ao Direito e aos estudos jurídicos.
-- Se o aluno apontar a câmera para algo que não seja material de estudo ou não for da área jurídica (por exemplo: uma cama, um carro, um sofá, etc.), você DEVE dizer: "Estou vendo que você está mostrando [nome do objeto]. Você quer me mostrar o que deseja explicar na área jurídica?" e aguarde.
+- Se o aluno apontar a câmera para algo que não seja material de estudo ou não for da área jurídica, você DEVE dizer: "Estou vendo que você está mostrando [nome do objeto]. Você quer me mostrar o que deseja explicar na área jurídica?" e aguarde.
 - Depois de confirmar que é da área jurídica, explique o conteúdo em linguagem simples: primeiro a ideia central em uma frase, depois o detalhamento, e por fim um exemplo prático brasileiro.
 - Se identificar artigo de lei, súmula, princípio ou instituto, você DEVE citar explicitamente a base legal correta e completa (ex.: "art. 121 do Código Penal") e aprofundar sua explicação com base nela. Essa parte é importantíssima para garantir que a sua explicação vire um excelente relatório de estudo no final.
 - Você DEVE usar a ferramenta de busca (Google Search) em tempo real para verificar e validar a base legal antes de explicar, auxiliando sua explicação e garantindo que os dados não estejam desatualizados.
 - Respostas faladas curtas: 3 a 6 frases por vez. Termine convidando o aluno a perguntar ("quer que eu aprofunde alguma parte?").
+- O formato do relatório da explicação esperado pelo aluno é: ${formato.toUpperCase()}. Estruture e dite suas explicações para que, ao serem transcritas, sigam esse formato (ex: se for tópicos, fale organizando em tópicos; se for mapa mental, enfatize conexões, etc).
 - Se a imagem estiver ilegível, escura ou distante, peça gentilmente para aproximar ou melhorar a luz.
 - Se o aluno falar por cima, pare e responda a pergunta dele.
 - Nunca invente lei, número de artigo, súmula ou jurisprudência. Busque na internet se não tiver certeza.
@@ -40,6 +41,18 @@ Deno.serve(async (req) => {
     });
 
   try {
+    let body = {};
+    if (req.method === "POST") {
+      try {
+        body = await req.json();
+      } catch (e) {
+        // Body vazio ou inválido
+      }
+    }
+    const reqBody = body as { voz?: string; nome?: string; formatoRelatorio?: string };
+    const voz = reqBody.voz === "masculina" ? "Charon" : "Aoede";
+    const nome = reqBody.nome?.trim() || "Me Explique";
+    const formato = reqBody.formatoRelatorio?.trim() || "resumo padrão";
     // 1) Exige usuário autenticado
     const authHeader = req.headers.get("Authorization") ?? "";
     if (!authHeader.startsWith("Bearer ")) {
@@ -69,10 +82,21 @@ Deno.serve(async (req) => {
     const agora = Date.now();
     // Formato exigido pelo BidiGenerateContent: modalidades ficam em
     // generationConfig; transcrições e systemInstruction no nível do setup.
+    const instrucaoFinal = gerarInstrucao(nome, formato);
+
     const setup = {
       model: `models/${MODELO_LIVE}`,
-      generationConfig: { responseModalities: ["AUDIO"] },
-      systemInstruction: { parts: [{ text: INSTRUCAO }] },
+      generationConfig: {
+        responseModalities: ["AUDIO"],
+        speechConfig: {
+          voiceConfig: {
+            prebuiltVoiceConfig: {
+              voiceName: voz
+            }
+          }
+        }
+      },
+      systemInstruction: { parts: [{ text: instrucaoFinal }] },
       inputAudioTranscription: {},
       outputAudioTranscription: {},
       tools: [{ googleSearch: {} }],

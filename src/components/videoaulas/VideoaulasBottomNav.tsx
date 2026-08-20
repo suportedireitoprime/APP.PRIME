@@ -91,7 +91,7 @@ const VideoaulasBottomNav = () => {
                     }
                   }}
                   className={`relative flex flex-col items-center justify-end gap-1 py-1.5 px-1 rounded-2xl transition-colors ${
-                    active ? 'text-white' : 'text-muted-foreground hover:text-white/80'
+                    active ? 'text-primary' : 'text-muted-foreground hover:text-white/80'
                   }`}
                   aria-label={tab.label}
                   aria-current={active ? 'page' : undefined}
@@ -99,13 +99,13 @@ const VideoaulasBottomNav = () => {
                   {active && (
                     <motion.span
                       layoutId="videoaulas-nav-active-pill"
-                      className="absolute inset-0 rounded-2xl bg-white/10 ring-1 ring-white/20"
+                      className="absolute inset-0 rounded-2xl bg-primary/10 ring-1 ring-primary/20"
                       transition={{ type: 'spring', stiffness: 380, damping: 32 }}
                       aria-hidden="true"
                     />
                   )}
 
-                  <Icon className="relative w-7 h-7 sm:w-8 sm:h-8" strokeWidth={active ? 1.9 : 1.5} />
+                  <Icon className="relative w-7 h-7 sm:w-8 sm:h-8" strokeWidth={active ? 1.5 : 1.25} />
                   <span
                     className={`relative text-[10px] sm:text-[11px] leading-none ${
                       active ? 'font-bold' : 'font-medium'

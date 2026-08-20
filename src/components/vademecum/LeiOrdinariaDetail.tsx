@@ -5,11 +5,16 @@ import ReactMarkdown from 'react-markdown';
 import { motion } from 'framer-motion';
 import { invokeResenhaFn, resenhaById } from '@/lib/resenhaBackend';
 import { toast } from 'sonner';
+import { useSearchParams } from 'react-router-dom';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import brasaoImgAsset from '@/assets/brasao-republica.webp';
 const brasaoImg = brasaoImgAsset;
 import ArtigoBottomSheet from './ArtigoBottomSheet';
+import { lazyWithRetry } from '@/utils/lazyWithRetry';
 import type { LeiOrdinaria } from '@/services/legislacaoService';
+
+const VideoaulaSheet = lazyWithRetry(() => import('./VideoaulaSheet'));
+const VideoaulasListSheet = lazyWithRetry(() => import('./VideoaulasListSheet'));
 
 interface ParsedLei {
   titulo: string;
@@ -208,7 +213,13 @@ interface LeiOrdinariaDetailProps {
 }
 
 const LeiOrdinariaDetail = ({ lei, onBack }: LeiOrdinariaDetailProps) => {
+  const [searchParams] = useSearchParams();
+  const isVideoaulasMode = searchParams.get('mode') === 'videoaulas';
   const [openArtigo, setOpenArtigo] = useState<{ numero: string; texto: string } | null>(null);
+  
+  const [openArtigoVideoaulas, setOpenArtigoVideoaulas] = useState<{ numero: string; texto: string } | null>(null);
+  const [videoaula, setVideoaula] = useState<{ titulo: string; url: string; canal: string; videoId: string; transcricao?: string } | null>(null);
+  const [showVideoaulaSheet, setShowVideoaulaSheet] = useState(false);
   
   const parsed = useMemo(() => {
     if (!lei.texto_completo) return null;
@@ -286,7 +297,13 @@ const LeiOrdinariaDetail = ({ lei, onBack }: LeiOrdinariaDetailProps) => {
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.02 }}
-                        onClick={() => setOpenArtigo(art)}
+                        onClick={() => {
+                          if (isVideoaulasMode) {
+                            setOpenArtigoVideoaulas(art);
+                          } else {
+                            setOpenArtigo(art);
+                          }
+                        }}
                         className="w-full text-left rounded-2xl bg-card hover:bg-secondary/60 transition-all group flex overflow-hidden min-h-[68px]"
                       >
                         <div className="w-1.5 bg-primary rounded-l-2xl shrink-0" />
@@ -381,6 +398,31 @@ const LeiOrdinariaDetail = ({ lei, onBack }: LeiOrdinariaDetailProps) => {
           }}
           tabelaNome={`resenha_${lei.id}`}
           onClose={() => setOpenArtigo(null)}
+        />
+      )}
+
+      {openArtigoVideoaulas && (
+        <VideoaulasListSheet
+          open={!!openArtigoVideoaulas}
+          onClose={() => setOpenArtigoVideoaulas(null)}
+          tabelaNome={lei.tabela || lei.id}
+          artigoNumero={openArtigoVideoaulas.numero || ''}
+          leiNome={lei.nome}
+          onSelectVideo={(v) => {
+            setVideoaula({ titulo: v.titulo, url: v.url, canal: v.canal, videoId: v.videoId });
+            setOpenArtigoVideoaulas(null);
+            setShowVideoaulaSheet(true);
+          }}
+        />
+      )}
+
+      {showVideoaulaSheet && videoaula && (
+        <VideoaulaSheet
+          open={showVideoaulaSheet}
+          onClose={() => setShowVideoaulaSheet(false)}
+          video={videoaula}
+          tabelaNome={lei.tabela || lei.id}
+          artigoNumero={openArtigoVideoaulas?.numero || ''}
         />
       )}
     </div>

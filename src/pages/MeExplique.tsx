@@ -14,8 +14,10 @@ import {
   Clock,
   HelpCircle,
   CheckCircle2,
-  Crown,
-  AlertTriangle
+  AlertTriangle,
+  Settings2,
+  Speech,
+  Bot
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -27,6 +29,7 @@ import { haptic, telaAcesa } from '@/lib/nativo';
 import { SessaoMeExplique, type FalaTranscrita, type StatusLive } from '@/lib/meExplique/liveClient';
 import { CameraMeExplique, type RecursosCamera } from '@/lib/meExplique/camera';
 import TranscricaoSheet, { type FalaSalva } from '@/components/meExplique/TranscricaoSheet';
+import MeExpliqueConfigSheet, { type MeExpliqueConfig, DEFAULT_CONFIG } from '@/components/meExplique/MeExpliqueConfigSheet';
 import { useTrackArea } from '@/hooks/useTrackArea';
 
 const SUGESTOES = [
@@ -66,6 +69,13 @@ export default function MeExplique() {
   const [falaParcial, setFalaParcial] = useState<FalaTranscrita | null>(null);
   const [historico, setHistorico] = useState<FalaSalva[]>([]);
   const [transcricaoAberta, setTranscricaoAberta] = useState(false);
+
+  // Configurações do Assistente
+  const [config, setConfig] = useState<MeExpliqueConfig>(() => {
+    const saved = localStorage.getItem('me_explique_config');
+    return saved ? JSON.parse(saved) : DEFAULT_CONFIG;
+  });
+  const [configAberta, setConfigAberta] = useState(false);
 
   // Tutorial Flutuante no 1º Acesso
   const [showTutorial, setShowTutorial] = useState(() => {
@@ -208,7 +218,9 @@ export default function MeExplique() {
     try {
       if (!cameraRef.current.ativa) await abrirPreview();
 
-      const { data, error } = await supabase.functions.invoke('me-explique-token');
+      const { data, error } = await supabase.functions.invoke('me-explique-token', {
+        body: config
+      });
       if (error) throw new Error(error.message);
       const resposta = data as { token?: string; modelo?: string; setup?: Record<string, unknown> | null } | null;
       const token = resposta?.token;
@@ -379,6 +391,18 @@ export default function MeExplique() {
           <p className="font-display text-base font-bold leading-tight">Me Explique</p>
           <p className="text-[13px] leading-tight text-white/70">{ROTULO[status]}</p>
         </div>
+
+        {/* Configurações */}
+        <button
+          onClick={() => {
+            void haptic.light();
+            setConfigAberta(true);
+          }}
+          aria-label="Configurações do professor"
+          className="flex h-11 w-11 min-h-[48px] min-w-[48px] items-center justify-center rounded-full bg-white/15 backdrop-blur active:scale-95 transition-transform"
+        >
+          <Settings2 className="h-5 w-5" />
+        </button>
 
         {/* Badge do Timer */}
         <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/50 border border-white/20 backdrop-blur text-xs font-mono font-extrabold text-amber-300">
@@ -566,7 +590,7 @@ export default function MeExplique() {
             ) : status === 'erro' || status === 'encerrado' ? (
               <RefreshCw className="h-5 w-5" />
             ) : (
-              <Sparkles className="h-5 w-5 text-amber-300" />
+              <Bot className="h-5 w-5 text-amber-300" />
             )}
             {status === 'erro' || status === 'encerrado' ? 'Tentar de novo' : 'Me explique'}
           </button>
@@ -579,6 +603,17 @@ export default function MeExplique() {
         open={transcricaoAberta}
         onClose={() => setTranscricaoAberta(false)}
         falas={historico}
+      />
+
+      {/* Sheet de Configurações */}
+      <MeExpliqueConfigSheet
+        open={configAberta}
+        onClose={() => setConfigAberta(false)}
+        configAtual={config}
+        onSave={(novaConfig) => {
+          setConfig(novaConfig);
+          localStorage.setItem('me_explique_config', JSON.stringify(novaConfig));
+        }}
       />
 
       {/* Modal de Alerta de Limite de Tempo */}

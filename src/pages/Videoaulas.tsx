@@ -1,12 +1,24 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight, History, Play, Video, Search, Mic, X } from 'lucide-react';
+import { ChevronRight, Play, Video, Search, Mic, X, ListVideo, BarChart3, Scale, ChevronDown } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import ThumbImg from '@/components/videoaulas/ThumbImg';
 import VideoaulasBottomNav from '@/components/videoaulas/VideoaulasBottomNav';
+import VideoaulasDesempenhoSheet from '@/components/videoaulas/VideoaulasDesempenhoSheet';
 import { areaIconFor } from '@/lib/areasDireitoIcons';
 import { CATALOGOS, limparTitulo, simplificarNomeArea, slugify, ytThumb, getCapaDaArea } from '@/lib/videoaulasCatalogos';
+import { cn } from '@/lib/utils';
+import hero1 from '@/assets/aprender-hero/hero-1.png.asset.json';
+import hero2 from '@/assets/aprender-hero/hero-2.png.asset.json';
+import hero3 from '@/assets/aprender-hero/hero-3.png.asset.json';
+import hero4 from '@/assets/aprender-hero/hero-4.png.asset.json';
+import hero5 from '@/assets/aprender-hero/hero-5.png.asset.json';
+import hero6 from '@/assets/aprender-hero/hero-6.png.asset.json';
+import { srcOf } from '@/lib/assetUrl';
+
+const HERO_ILLUSTRATIONS = [srcOf(hero1), srcOf(hero2), srcOf(hero3), srcOf(hero4), srcOf(hero5), srcOf(hero6)];
+
 import {
   Drawer,
   DrawerContent,
@@ -27,7 +39,6 @@ import {
 import { haptic } from '@/lib/nativeHaptics';
 import { useIsDesktop } from '@/hooks/use-desktop';
 import { VideoaulasDesktop } from './VideoaulasDesktop';
-import ContinuarAssistindoCarousel from '@/components/videoaulas/ContinuarAssistindoCarousel';
 
 function escapeRegExp(string: string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -70,7 +81,9 @@ const Videoaulas = () => {
   const [filtro, setFiltro] = useState<'todas' | 'andamento'>('todas');
   const [busca, setBusca] = useState('');
   const [drawerBusca, setDrawerBusca] = useState(false);
+  const [showDesempenho, setShowDesempenho] = useState(false);
   const [drawerCategoria, setDrawerCategoria] = useState('Todos');
+  const [heroIdx, setHeroIdx] = useState(0);
 
   useEffect(() => {
     if (!drawerBusca) {
@@ -78,6 +91,19 @@ const Videoaulas = () => {
       setDrawerCategoria('Todos');
     }
   }, [drawerBusca]);
+
+  useEffect(() => {
+    let id: number | undefined;
+    const start = setTimeout(() => {
+      id = window.setInterval(() => {
+        setHeroIdx((i) => (i + 1) % HERO_ILLUSTRATIONS.length);
+      }, 4500);
+    }, 1200);
+    return () => {
+      clearTimeout(start);
+      if (id) clearInterval(id);
+    };
+  }, []);
 
   useEffect(() => {
     let alive = true;
@@ -197,50 +223,78 @@ const Videoaulas = () => {
     );
   }
 
+  const horasAssistidas = Math.floor(data.totalConcluidas * 0.5);
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-dvh bg-background pb-32 lg:pb-0 overflow-x-hidden w-full">
       <PageHeader title="Videoaulas" onBack={() => navigate('/')} />
 
       <div className="mx-auto w-full max-w-3xl pb-32 lg:max-w-[1400px] lg:px-10 lg:pt-6 2xl:max-w-[1600px]">
-        {/* Continuar Assistindo no Mobile */}
-        <div className="px-4">
-           <ContinuarAssistindoCarousel />
-        </div>
-
         {/* Painel — mesmo do Aprender */}
         <section
-          className="bg-hero-yellow relative isolate overflow-hidden border-b border-black/10 lg:rounded-3xl lg:border lg:border-black/10 lg:shadow-xl"
+          className="bg-primary relative isolate overflow-hidden border-b border-black/10 lg:rounded-3xl lg:border lg:border-black/10 lg:shadow-xl"
           aria-label="Seu progresso em videoaulas"
         >
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.25),transparent_60%)]" />
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.18),transparent_65%)]" />
 
+          <div
+            className="pointer-events-none absolute inset-y-0 right-0 w-[42%] sm:w-[34%] overflow-hidden"
+            aria-hidden="true"
+          >
+            {HERO_ILLUSTRATIONS.map((url, i) => (
+              <img
+                key={url}
+                src={url}
+                alt=""
+                className={cn(
+                  'absolute inset-0 h-full w-full object-cover object-left opacity-[0.12] sm:opacity-[0.18] transition-opacity duration-[2000ms] ease-in-out',
+                  i === heroIdx ? 'opacity-100' : 'opacity-0',
+                )}
+                style={{
+                  maskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)',
+                  WebkitMaskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)',
+                }}
+              />
+            ))}
+          </div>
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.18),transparent_65%)]" />
+
           <div className="relative p-4 sm:p-5 lg:flex lg:items-center lg:gap-10 lg:p-8">
 
             <div className="flex items-start gap-3 lg:min-w-0 lg:flex-1 lg:items-center lg:gap-6">
-              <div className="relative shrink-0" style={{ width: size, height: size }}>
-                <svg width={size} height={size} className="-rotate-90">
-                  <circle cx={size / 2} cy={size / 2} r={r} stroke="rgba(255,255,255,0.2)" strokeWidth={stroke} fill="none" />
-                  <circle
-                    cx={size / 2}
-                    cy={size / 2}
-                    r={r}
-                    stroke="#fff"
-                    strokeWidth={stroke}
-                    strokeLinecap="round"
-                    fill="none"
-                    strokeDasharray={c}
-                    strokeDashoffset={dash}
-                    style={{ transition: 'stroke-dashoffset 600ms ease' }}
-                  />
-                </svg>
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="font-display text-base font-black leading-none text-white">{pct}%</span>
-                  <span className="mt-0.5 text-[8px] font-bold uppercase tracking-wider text-white/70">
-                    Assistido
-                  </span>
+              <div
+                  className="relative h-[72px] w-[72px] sm:h-20 sm:w-20 lg:h-24 lg:w-24 shrink-0 active:scale-95 transition-transform cursor-pointer"
+                  onClick={() => { haptic.selection(); setShowDesempenho(true); }}
+                >
+                  <svg className="absolute inset-0 h-full w-full -rotate-90 transform" viewBox="0 0 100 100">
+                    <circle
+                      className="text-white/20"
+                      strokeWidth="8"
+                      stroke="currentColor"
+                      fill="transparent"
+                      r="40"
+                      cx="50"
+                      cy="50"
+                    />
+                    <circle
+                      className="text-white"
+                      strokeWidth="8"
+                      strokeLinecap="round"
+                      fill="none"
+                      strokeDasharray={c}
+                      strokeDashoffset={dash}
+                      style={{ transition: 'stroke-dashoffset 600ms ease' }}
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center pt-0.5">
+                    <span className="font-display text-[22px] font-black leading-none text-white">{horasAssistidas}h</span>
+                    <span className="mt-0.5 text-[7px] font-bold uppercase tracking-wider text-white/70">
+                      Assistidas
+                    </span>
+                    <ChevronDown className="w-3.5 h-3.5 text-white/50 mt-0.5" />
+                  </div>
                 </div>
-              </div>
 
               <div className="min-w-0 max-w-[58%] lg:max-w-none lg:flex-1">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-white/75">Sua trilha</p>
@@ -282,60 +336,93 @@ const Videoaulas = () => {
           </div>
         </section>
 
-        <div className="space-y-5 px-4 pt-5 sm:px-6 lg:space-y-8 lg:px-0 lg:pt-8">
-          {/* Continue assistindo */}
-          {data.recentes.length > 0 && (
-            <div>
-              <div className="mb-2 flex items-center gap-1.5">
-                <History className="h-3.5 w-3.5 text-primary" />
-                <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-                  Continue assistindo
-                </p>
-              </div>
-              <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none lg:grid lg:grid-cols-4 lg:gap-5 lg:overflow-visible lg:pb-0 xl:grid-cols-5 2xl:grid-cols-6">
-                {data.recentes.map((r, i) => (
-                  <button
-                    key={r.rota}
-                    onClick={() => navigate(r.rota)}
-                    className="w-40 shrink-0 overflow-hidden rounded-2xl border border-border bg-card text-left transition-all hover:border-primary/40 hover:shadow-lg active:scale-[0.98] lg:w-auto"
-                  >
-                    <div className="relative aspect-video bg-muted">
-                      <ThumbImg
-                        src={getCapaDaArea(r.area) || ytThumb(r.videoId, 'mq')}
-                        alt={r.titulo}
-                        priority={i < 3}
-                        fallback={<Play className="h-6 w-6 text-primary/50" />}
-                      />
-                      <span
-                        className="absolute bottom-0 left-0 h-1 bg-primary"
-                        style={{ width: `${r.percentual}%` }}
-                      />
-                    </div>
-                    <p className="line-clamp-2 px-2 pt-1.5 text-[11.5px] font-semibold leading-snug text-foreground">
-                      {limparTitulo(r.titulo)}
-                    </p>
-                    <p className="px-2 pb-1.5 pt-0.5 text-[10.5px] text-muted-foreground">
-                      {Math.round(r.percentual)}% assistido
-                    </p>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+        <div className="space-y-6 px-4 pt-6 sm:px-6 lg:space-y-8 lg:px-0 lg:pt-8">
 
-          {/* Search Bar - Abre Drawer */}
-          <button 
-            onClick={() => { haptic.selection(); setDrawerBusca(true); }}
-            className="relative w-full mb-6 group text-left"
-          >
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
-            <div className="w-full h-12 bg-black/40 border border-white/10 rounded-2xl pl-12 pr-12 text-muted-foreground flex items-center group-hover:border-white/20 transition-all">
-              Pesquisar disciplina...
+          {/* ── Card Principal com Botão de Pesquisa ───────────────── */}
+          <div className="bg-card/60 border border-border/80 p-5 rounded-3xl backdrop-blur-md shadow-xl">
+            <div className="flex items-center gap-2">
+              <span className="h-5 w-1 rounded-full bg-amber-500" />
+              <h2 className="text-lg font-extrabold leading-tight text-foreground sm:text-xl drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] uppercase">Procurar Aula</h2>
             </div>
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-white/5 rounded-full transition-colors pointer-events-none">
-              <Mic className="h-4 w-4 text-muted-foreground" />
+            <p className="ml-3 mt-1 mb-4 text-xs text-muted-foreground">
+              Encontre videoaulas por disciplina, assunto ou termo.
+            </p>
+
+            <button 
+              onClick={() => { haptic.selection(); setDrawerBusca(true); }}
+              className="relative w-full group text-left transition-all active:scale-[0.99]"
+            >
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+              <div className="w-full h-14 sm:h-16 bg-black/40 border border-white/10 rounded-2xl pl-12 pr-12 text-muted-foreground flex items-center group-hover:border-primary/50 transition-all text-base font-medium shadow-inner shadow-black/50">
+                Pesquisar no catálogo...
+              </div>
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-white/5 rounded-full transition-colors pointer-events-none">
+                <Mic className="h-5 w-5 text-muted-foreground" />
+              </div>
+            </button>
+          </div>
+
+          {/* ── Título Atalhos ─────────────────────────────── */}
+          <div className="mb-3 px-1 mt-6">
+            <div className="flex items-center gap-2">
+              <span className="h-5 w-1 rounded-full bg-primary" />
+              <h2 className="text-lg font-extrabold leading-tight text-foreground uppercase drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">Atalhos</h2>
             </div>
-          </button>
+            <p className="ml-3 mt-1 text-xs text-muted-foreground">
+              Ações rápidas para continuar, playlists e histórico.
+            </p>
+          </div>
+
+          {/* ── Ações Rápidas (4 botões) ───────────────── */}
+          <section className="grid grid-cols-4 gap-2.5">
+            <button
+              onClick={() => { haptic.selection(); navigate('/videoaulas/recentes'); }}
+              className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-amber-500/50 transition-all active:scale-95 gap-2 text-center"
+            >
+              <div className="relative w-10 h-10 flex items-center justify-center">
+                <Play className="w-7 h-7 sm:w-8 sm:h-8 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110" strokeWidth={2} />
+              </div>
+              <div>
+                <p className="text-[11px] sm:text-xs font-extrabold text-foreground leading-tight">Continuar</p>
+              </div>
+            </button>
+
+            <button
+              onClick={() => { haptic.selection(); navigate('/videoaulas/playlist'); }}
+              className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-amber-500/50 transition-all active:scale-95 gap-2 text-center"
+            >
+              <div className="relative w-10 h-10 flex items-center justify-center">
+                <ListVideo className="w-7 h-7 sm:w-8 sm:h-8 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110" strokeWidth={2} />
+              </div>
+              <div>
+                <p className="text-[11px] sm:text-xs font-extrabold text-foreground leading-tight">Playlist</p>
+              </div>
+            </button>
+
+            <button
+              onClick={() => { haptic.selection(); navigate('/videoaulas/desempenho'); }}
+              className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-amber-500/50 transition-all active:scale-95 gap-2 text-center"
+            >
+              <div className="relative w-10 h-10 flex items-center justify-center">
+                <BarChart3 className="w-7 h-7 sm:w-8 sm:h-8 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110" strokeWidth={2} />
+              </div>
+              <div>
+                <p className="text-[11px] sm:text-xs font-extrabold text-foreground leading-tight">Desempenho</p>
+              </div>
+            </button>
+
+            <button
+              onClick={() => { haptic.selection(); navigate('/videoaulas/lei-seca'); }}
+              className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-amber-500/50 transition-all active:scale-95 gap-2 text-center"
+            >
+              <div className="relative w-10 h-10 flex items-center justify-center">
+                <Scale className="w-7 h-7 sm:w-8 sm:h-8 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110" strokeWidth={2} />
+              </div>
+              <div>
+                <p className="text-[11px] sm:text-xs font-extrabold text-foreground leading-tight">Lei Seca</p>
+              </div>
+            </button>
+          </section>
 
           {/* Áreas do Direito */}
           <div>
@@ -573,6 +660,12 @@ const Videoaulas = () => {
       </Drawer>
 
       <VideoaulasBottomNav />
+      {/* Modal Desempenho */}
+      <VideoaulasDesempenhoSheet 
+        open={showDesempenho} 
+        onClose={() => setShowDesempenho(false)} 
+        horasTotais={horasAssistidas} 
+      />
     </div>
   );
 };
