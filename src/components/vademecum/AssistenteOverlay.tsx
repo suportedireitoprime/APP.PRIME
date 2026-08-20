@@ -268,31 +268,102 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
     setLoading(true);
     const startTime = Date.now();
     try {
-      const { data, error } = await supabase.functions.invoke('assistente-juridica', {
-        body: {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+      
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/assistente-juridica`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({
           messages: newMessages.map(m => ({
             role: m.role, content: m.content,
             ...(m.attachment ? { attachment: { mime: m.attachment.mime, data: m.attachment.data } } : {}),
           })),
           webSearch,
-        },
+          stream: true,
+        })
       });
-      if (error) throw error;
+
+      if (!res.ok) throw new Error('Falha ao conectar');
+      
+      const asMsgId = crypto.randomUUID();
       const elapsed = Math.round((Date.now() - startTime) / 1000);
-      const webSources: ChatSource[] = Array.isArray(data?.sources) ? data.sources : [];
-      const startN = (webSources.length ? Math.max(...webSources.map((s) => s.n)) : 0) + 1;
-      const rawReply: string = data?.reply || 'Não consegui gerar uma resposta agora. Tente reformular.';
-      const { text: enrichedReply, sources: statuteSources } = extractStatuteSources(rawReply, startN);
-      const asMsg: Message = {
-        id: crypto.randomUUID(), role: 'assistant',
-        content: enrichedReply,
-        createdAt: Date.now(),
-        sources: [...webSources, ...statuteSources],
-        webSearch,
-        thoughtTime: elapsed > 0 ? elapsed : 1,
-      };
-      setMessages(prev => [...prev, asMsg]);
-      setRevealed(r => ({ ...r, [asMsg.id]: 0 }));
+      const contentType = res.headers.get('Content-Type') || '';
+      
+      if (!contentType.includes('text/event-stream') || !res.body) {
+        // Fallback for JSON
+        const data = await res.json();
+        const webSources: ChatSource[] = Array.isArray(data?.sources) ? data.sources : [];
+        const startN = (webSources.length ? Math.max(...webSources.map((s) => s.n)) : 0) + 1;
+        const rawReply: string = data?.reply || 'Não consegui gerar uma resposta agora. Tente reformular.';
+        const { text: enrichedReply, sources: statuteSources } = extractStatuteSources(rawReply, startN);
+        const asMsg: Message = {
+          id: asMsgId, role: 'assistant',
+          content: enrichedReply,
+          createdAt: Date.now(),
+          sources: [...webSources, ...statuteSources],
+          webSearch,
+          thoughtTime: Math.max(1, elapsed),
+        };
+        setMessages(prev => [...prev, asMsg]);
+        setRevealed(r => ({ ...r, [asMsg.id]: 0 }));
+        return;
+      }
+      
+      // Streaming SSE
+      setLoading(false); // Stop 'analyzing'
+      setMessages(prev => [...prev, {
+        id: asMsgId, role: 'assistant', content: '', createdAt: Date.now(), webSearch, thoughtTime: Math.max(1, elapsed)
+      }]);
+      setRevealed(r => ({ ...r, [asMsgId]: 999999 })); // Disable fluid reveal for stream
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let fullText = '';
+      let buffer = '';
+      let webSources: ChatSource[] = [];
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const dataStr = line.slice(6).trim();
+            if (dataStr === '[DONE]') continue;
+            try {
+              const data = JSON.parse(dataStr);
+              const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+              if (text) {
+                fullText += text;
+                setMessages(prev => prev.map(m => m.id === asMsgId ? { ...m, content: fullText } : m));
+              }
+              const chunks = data?.candidates?.[0]?.groundingMetadata?.groundingChunks;
+              if (chunks && !webSources.length) {
+                webSources = chunks.map((c: any, i: number) => {
+                  const w = c?.web;
+                  if (!w?.uri) return null;
+                  let domain = '';
+                  try { domain = new URL(w.uri).hostname.replace(/^www\./, ''); } catch {}
+                  return { n: i + 1, title: w.title || domain || w.uri, url: w.uri, domain };
+                }).filter(Boolean) as ChatSource[];
+              }
+            } catch (e) { /* partial chunk */ }
+          }
+        }
+      }
+      
+      // Post-process for statutes
+      const startN = (webSources.length ? Math.max(...webSources.map(s => s.n)) : 0) + 1;
+      const { text: enrichedReply, sources: statuteSources } = extractStatuteSources(fullText, startN);
+      setMessages(prev => prev.map(m => m.id === asMsgId ? { ...m, content: enrichedReply, sources: [...webSources, ...statuteSources] } : m));
+
     } catch (err) {
       console.error(err);
       setMessages(prev => [...prev, { id: crypto.randomUUID(), role: 'assistant', content: '⚠️ Erro ao processar. Tente novamente.', createdAt: Date.now() }]);

@@ -644,10 +644,21 @@ Regras:
         const keyToUse = geminiKeys[attempt % geminiKeys.length];
         const modelsToTry = ["gemini-3.1-flash-lite"];
         const modelToUse = modelsToTry[attempt % modelsToTry.length];
-        const res = await geminiFetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelToUse}:generateContent?key=${keyToUse}`,
+        
+        const endpoint = body.stream ? 'streamGenerateContent?alt=sse&' : 'generateContent?';
+        const res = await geminiFetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelToUse}:${endpoint}key=${keyToUse}`,
           { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(geminiBody) }
         );
         if (res.ok) {
+          if (body.stream) {
+            if (!body.isPreWarm && _callerUserId) {
+              logAiCall({ user_id: _callerUserId, action: mode || 'chat_stream', tokens_used: 150, prompt_type: 'stream', request_time_ms: Date.now() - _t0, cached: false }).catch(() => {});
+            }
+            return new Response(res.body, {
+              status: 200,
+              headers: { ...corsHeaders, 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', 'Connection': 'keep-alive' }
+            });
+          }
           data = await res.json();
         } else {
           const errText = await res.text();
