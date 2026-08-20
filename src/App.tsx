@@ -187,6 +187,8 @@ const FlashcardsPrazos = lazy(() => import("./pages/flashcards/FlashcardsPrazos.
 const FlashcardsExcecoes = lazy(() => import("./pages/flashcards/FlashcardsExcecoes.tsx"));
 const FlashcardsClassificacoes = lazy(() => import("./pages/flashcards/FlashcardsClassificacoes.tsx"));
 const VideoaulasLeiSeca = lazy(() => import('./pages/VideoaulasLeiSeca'));
+const VideoaulasLeiSecaCategoria = lazy(() => import('./pages/VideoaulasLeiSecaCategoria'));
+const VideoaulasLeiSecaArtigos = lazy(() => import('./pages/VideoaulasLeiSecaArtigos'));
 const Videoaulas = lazy(routePrefetch.videoaulas);
 const VideoaulasCategorias = lazy(routePrefetch.videoaulasCategorias);
 const VideoaulasCatalogo = lazy(routePrefetch.videoaulasCatalogo);
@@ -875,6 +877,8 @@ function AnimatedRoutes() {
           <Route path="/videoaulas/:catalogo/trilha" element={<ProtectedRoute><PageTransition><VideoaulasCatalogoTrilha /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/praticar" element={<ProtectedRoute><PageTransition><VideoaulasPraticar /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/lei-seca" element={<ProtectedRoute><PageTransition><VideoaulasLeiSeca /></PageTransition></ProtectedRoute>} />
+          <Route path="/videoaulas/lei-seca/categoria/:categoriaId" element={<ProtectedRoute><PageTransition><VideoaulasLeiSecaCategoria /></PageTransition></ProtectedRoute>} />
+          <Route path="/videoaulas/lei-seca/lei/:leiId" element={<ProtectedRoute><PageTransition><VideoaulasLeiSecaArtigos /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/anotacoes" element={<ProtectedRoute><PageTransition><VideoaulasAnotacoes /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/categorias" element={<ProtectedRoute><PageTransition><VideoaulasCategorias /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/concurso/:id" element={<ProtectedRoute><PageTransition><VideoaulasConcurso /></PageTransition></ProtectedRoute>} />
