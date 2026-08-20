@@ -75,14 +75,19 @@ html {
   }
 }
 
-/* Reabilita a seleção para campos de texto e área do chat (para permitir a digitação normal) */
-input, textarea, [contenteditable], .aui-root, .aui-root *, .ProseMirror {
+/* Reabilita a seleção para campos de texto (para permitir a digitação normal) */
+input, textarea, [contenteditable], .ProseMirror, .aui-composer-input, [data-aui-composer-input] {
   -webkit-touch-callout: default !important;
-  -webkit-user-select: auto !important;
-  -moz-user-select: auto !important;
-  -ms-user-select: auto !important;
-  user-select: auto !important;
-  pointer-events: auto !important;
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
+}
+
+/* Garante que a raiz do assistant-ui permita seleção sem quebrar pointer-events de placeholders */
+.aui-root {
+  -webkit-user-select: text !important;
+  user-select: text !important;
 }
 
 /* Glassmorphism habilitado no mobile a pedido do usuário (Sugestão #28) */
