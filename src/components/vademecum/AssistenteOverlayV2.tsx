@@ -21,21 +21,23 @@ export default function AssistenteOverlayV2({ open, onClose }: { open: boolean; 
     >
       <PageHeader title="Chat Jurídico" onBack={onClose} />
       
-      <div className="flex-1 overflow-hidden h-full">
+      <div className="flex-1 overflow-hidden h-full pointer-events-auto select-auto">
         <AssistantRuntimeProvider runtime={runtime}>
-          <Thread 
-            assistantMessage={{ components: { Text: MarkdownText } }}
-            strings={{
-              composer: {
-                input: {
-                  placeholder: "Escreva uma mensagem..."
-                },
-                send: {
-                  tooltip: "Enviar"
+          <div className="h-full w-full pointer-events-auto select-auto touch-auto [&_*]:pointer-events-auto [&_*]:select-auto [&_input]:pointer-events-auto [&_textarea]:pointer-events-auto [&_[contenteditable]]:pointer-events-auto">
+            <Thread 
+              assistantMessage={{ components: { Text: MarkdownText } }}
+              strings={{
+                composer: {
+                  input: {
+                    placeholder: "Escreva uma mensagem..."
+                  },
+                  send: {
+                    tooltip: "Enviar"
+                  }
                 }
-              }
-            }}
-          />
+              }}
+            />
+          </div>
         </AssistantRuntimeProvider>
       </div>
     </motion.div>
