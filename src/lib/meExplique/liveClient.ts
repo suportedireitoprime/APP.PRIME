@@ -223,8 +223,8 @@ export class SessaoMeExplique {
 
   private abrirWs(url: string) {
     return new Promise<void>((resolve, reject) => {
-      const ehTokenEfêmero = this.opcoes.token.length > 50 || this.opcoes.token.includes('.');
-      const parametro = ehTokenEfêmero ? 'access_token' : 'key';
+      const isApiKey = this.opcoes.token.startsWith('AIza');
+      const parametro = isApiKey ? 'key' : 'access_token';
       const ws = new WebSocket(`${url}?${parametro}=${encodeURIComponent(this.opcoes.token)}`);
       this.ws = ws;
       let resolvido = false;
