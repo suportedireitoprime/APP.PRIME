@@ -123,9 +123,9 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
   useEffect(() => { if (open) { setSessions(loadSessions()); } }, [open]);
 
   // Sugestões variam cada vez que o chat abre
-  const [suggestions, setSuggestions] = useState<string[]>(() => pickSuggestions(5));
+  const [suggestions, setSuggestions] = useState<string[]>(() => pickSuggestions(8));
   useEffect(() => {
-    if (open) setSuggestions(pickSuggestions(5));
+    if (open) setSuggestions(pickSuggestions(8));
   }, [open]);
 
   // Ditado por voz — mostra transcrição em tempo real dentro do input
@@ -592,12 +592,12 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
                 </div>
 
                 {/* Sugestões no final da área de scroll */}
-                <div className="w-full max-w-2xl mx-auto flex flex-wrap justify-center gap-2 mt-auto px-2">
+                <div className="w-full max-w-2xl mx-auto flex flex-wrap justify-center items-center gap-2 mt-auto px-4 pb-2">
                   {suggestions.map((q, i) => (
                     <button 
                       key={q} 
                       onClick={() => { haptic.selection(); setInput(q); }}
-                      className="px-4 py-2.5 rounded-2xl bg-secondary/60 text-[13px] font-body text-foreground border border-border/80 hover:bg-secondary hover:text-foreground active:scale-[0.98] transition-all"
+                      className="px-3.5 py-1.5 rounded-xl bg-secondary/50 hover:bg-secondary/80 text-[12px] font-medium text-foreground/90 border border-white/5 active:scale-95 transition-all"
                     >
                       {q}
                     </button>
