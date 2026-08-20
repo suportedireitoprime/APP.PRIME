@@ -5,10 +5,10 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { Scale, BookOpen, Gavel, Timer, BookOpenText, ScanEye, Sparkles, GraduationCap, Library, Wrench, MessageSquare, Newspaper, FileSignature, User as UserFn } from 'lucide-react';
 import heroImageAsset from '@/assets/hero-vademecum.webp';
 const heroImage = heroImageAsset;
-import vacatioLogoAsset from '@/assets/logo-vacatio-v2.png.asset.json';
-import vacatioLogoBundled from '@/assets/bundled/logo-vacatio-v2.webp';
+import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
+import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
 import {pickAsset, srcOf } from '@/lib/assetUrl';
-const vacatioLogo = pickAsset(vacatioLogoBundled, srcOf(vacatioLogoAsset));
+const primeLogo = pickAsset(primeLogoBundled, srcOf(primeLogoAsset));
 import camaraHeroAsset from '@/assets/radar/camara-hero.webp';
 const camaraHero = camaraHeroAsset;
 import senadoHeroAsset from '@/assets/radar/senado-hero.webp';
@@ -112,7 +112,7 @@ const IndexDesktop = () => {
       ? (cb) => (window as any).requestIdleCallback(cb, { timeout: 1500 })
       : (cb) => window.setTimeout(cb, 300);
     const id = ric(() => {
-      [vacatioLogo, ...Object.values(HERO_CONFIG).map(c => c.image)].forEach(src => {
+      [primeLogo, ...Object.values(HERO_CONFIG).map(c => c.image)].forEach(src => {
         const img = new Image();
         img.src = src;
       });

@@ -35,11 +35,11 @@ export async function scanOnce(): Promise<string | null> {
 }
 
 /**
- * Handles a scanned vacatio:// deep link.
+ * Handles a scanned direitoprime:// deep link.
  * Formats aceitos:
- *   vacatio://study/<lei>/<artigo>
- *   vacatio://coupon/<code>
- *   vacatio://room/<id>
+ *   direitoprime://study/<lei>/<artigo>
+ *   direitoprime://coupon/<code>
+ *   direitoprime://room/<id>
  * Retorna a rota interna para navigate() ou null.
  */
 export function resolveScannedLink(raw: string): { path: string; toast?: string } | null {
@@ -48,7 +48,7 @@ export function resolveScannedLink(raw: string): { path: string; toast?: string 
   if (/^https?:\/\//i.test(s)) {
     return { path: s };
   }
-  const m = s.match(/^vacatio:\/\/([^/]+)\/?(.*)$/i);
+  const m = s.match(/^direitoprime:\/\/([^/]+)\/?(.*)$/i);
   if (!m) return null;
   const [, kind, rest] = m;
   if (kind === 'study') {

@@ -9,8 +9,8 @@ import { trackStartJourney } from '@/lib/fbPixel';
 import {pickAsset, srcOf } from '@/lib/assetUrl';
 import { useHideSplashScreen } from '@/hooks/useHideSplashScreen';
 
-import logoAsset from '@/assets/logo-vacatio-v2.png.asset.json';
-import logoBundled from '@/assets/bundled/logo-vacatio-v2.webp';
+import logoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
+import logoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
 import HeroTribunal from '@/components/landing/HeroTribunal';
 import AppShowcase from '@/components/landing/AppShowcase';
 const appLogo = pickAsset(logoBundled, srcOf(logoAsset));

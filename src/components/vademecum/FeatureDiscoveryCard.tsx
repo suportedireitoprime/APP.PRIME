@@ -32,7 +32,7 @@ const SUGESTOES: Sugestao[] = [
 ];
 
 const DISMISS_MS = 30 * 86400000;
-const chaveDismiss = (id: string) => `vacatio:discovery-dismiss:${id}`;
+const chaveDismiss = (id: string) => `direitoprime:discovery-dismiss:${id}`;
 
 function dispensadoRecentemente(id: string) {
   try {

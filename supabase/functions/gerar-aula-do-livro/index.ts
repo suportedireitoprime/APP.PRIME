@@ -13,7 +13,7 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-const ADMIN_EMAILS = new Set(["wn7corporation@gmail.com", "suporte.vacatio@gmail.com", "wn7juridico@gmail.com"]);
+const ADMIN_EMAILS = new Set(["wn7corporation@gmail.com", "suporte@direitoprime.com.br", "wn7juridico@gmail.com"]);
 // v8 — leitura nativa usa SOMENTE a GEMINI_API_KEY direta, via Gemini native API.
 // (redeploy forçado: build antiga ainda usava Lovable AI Gateway)
 const geminiKey = () => (Deno.env.get("GEMINI_API_KEY") ?? "").trim();

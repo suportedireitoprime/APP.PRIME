@@ -5,9 +5,9 @@ import { tipoToSlug } from '@/lib/legislacaoSlugs';
 import { getLeisPorTipo } from '@/data/leisCatalog';
 import SuporteSheet from './SuporteSheet';
 import DesktopCategoriaSheet from './DesktopCategoriaSheet';
-import vacatioLogoAsset from '@/assets/logo-vacatio-v2.png.asset.json';
-import vacatioLogoBundled from '@/assets/bundled/logo-vacatio-v2.webp';
-const vacatioLogo = pickAsset(vacatioLogoBundled, srcOf(vacatioLogoAsset));
+import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
+import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
+const primeLogo = pickAsset(primeLogoBundled, srcOf(primeLogoAsset));
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -352,11 +352,11 @@ const DesktopSidebar = ({ activeTab, onTabChange }: DesktopSidebarProps) => {
       <div className="p-4 border-t border-border">
         {collapsed ? (
           <div className="flex justify-center">
-            <img src={vacatioLogo} alt="Direito Prime" className="w-5 h-5 rounded-full object-cover opacity-50" />
+            <img src={primeLogo} alt="Direito Prime" className="w-5 h-5 rounded-full object-cover opacity-50" />
           </div>
         ) : (
           <div className="flex items-center justify-between">
-            <img src={vacatioLogo} alt="Direito Prime" className="w-6 h-6 rounded-lg object-cover opacity-70" />
+            <img src={primeLogo} alt="Direito Prime" className="w-6 h-6 rounded-lg object-cover opacity-70" />
             <p className="text-[10px] font-body text-muted-foreground">© 2026 Direito Prime</p>
           </div>
         )}

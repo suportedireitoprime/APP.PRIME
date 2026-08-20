@@ -1,4 +1,4 @@
-# 📱 Vacatio — App Nativo (Capacitor)
+# 📱 Direito Prime — App Nativo (Capacitor)
 
 Este guia mostra como transformar o app web em um **AAB** para publicar na
 Google Play Store. iOS segue o mesmo caminho no futuro.
@@ -163,7 +163,7 @@ O login Google nativo depende de três configurações batendo exatamente entre 
 
 2. **Google Cloud/Firebase — OAuth Android**
    - Deve existir um OAuth Client ID do tipo **Android**.
-   - Package name obrigatório: `br.com.vacatio.app`.
+   - Package name obrigatório: `br.com.direito.app`.
    - SHA-1 obrigatório: precisa ser o SHA-1 da chave que assinou o app instalado.
      - APK baixado do GitHub Actions: use o SHA-1 do keystore do workflow.
      - AAB publicado na Play Store: adicione também o SHA-1 da **App signing key certificate** em Play Console → Setup → App integrity.
@@ -179,7 +179,7 @@ O login Google nativo depende de três configurações batendo exatamente entre 
 
 Se, depois de escolher a conta Google, aparecer `The user canceled the sign-in flow`, `12501` ou `DEVELOPER_ERROR 10`, trate como erro de OAuth/SHA-1 até provar o contrário: o Google Play Services está recusando o app antes de entregar o token ao Supabase.
 
-O workflow Android valida automaticamente se o `google-services.json` tem OAuth Web, OAuth Android para `br.com.vacatio.app`, e se o SHA-1 da chave de release está cadastrado.
+O workflow Android valida automaticamente se o `google-services.json` tem OAuth Web, OAuth Android para `br.com.direito.app`, e se o SHA-1 da chave de release está cadastrado.
 
 ---
 
@@ -189,7 +189,7 @@ O código já registra e salva os tokens do usuário na tabela `device_tokens`.
 Para enviar push de verdade:
 
 1. Criar projeto no [Firebase Console](https://console.firebase.google.com)
-2. Adicionar app Android com o `applicationId` `br.com.vacatio.app`
+2. Adicionar app Android com o `applicationId` `br.com.direito.app`
 3. Baixar `google-services.json` e colar em `android/app/`
 4. Aplicar o setup do Gradle (está em `android-config/GRADLE_SETUP.md`)
 5. Criar a chave de conta de serviço para a edge function enviar push:

@@ -10,8 +10,8 @@ import { LegalSheet } from '@/components/auth/LegalSheet';
 import { track } from '@/lib/analyticsEvents';
 
 import { pickAsset, srcOf } from '@/lib/assetUrl';
-import logoOABnaRiscaAsset from '@/assets/logo-vacatio-v2.png.asset.json';
-import logoOABnaRiscaBundled from '@/assets/bundled/logo-vacatio-v2.webp';
+import logoOABnaRiscaAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
+import logoOABnaRiscaBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
 const logoOABnaRisca = pickAsset(logoOABnaRiscaBundled, srcOf(logoOABnaRiscaAsset));
 
 import authJudgeScene from '@/assets/auth-judge-scene.jpeg';

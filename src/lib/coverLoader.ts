@@ -8,7 +8,7 @@ import { Capacitor } from '@capacitor/core';
 import landingBibliotecaAsset from '@/assets/landing-biblioteca.webp.asset.json';
 import landingRadarAsset from '@/assets/landing-radar.webp.asset.json';
 import landingVideoaulasAsset from '@/assets/landing-videoaulas.webp.asset.json';
-import logoVacatioAsset from '@/assets/logo-vacatio-v2.png.asset.json';
+import logoVacatioAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
 import themisMarbleCutoutAsset from '@/assets/themis-marble-cutout.webp.asset.json';
 
 import cp from '@/assets/lei-cover-cp.webp';

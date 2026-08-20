@@ -19,7 +19,7 @@ function getInstallId(): string {
   }
 }
 
-const PENDING_EVENTS_KEY = 'vacatio:push-pending-events';
+const PENDING_EVENTS_KEY = 'direitoprime:push-pending-events';
 
 type PendingEvent = {
   campaign_id: string;
@@ -78,7 +78,7 @@ function trackPush(campaignId: string, eventType: 'opened' | 'delivered' | 'conv
   // Marca a sessão de jornada quando a notificação é aberta
   if (eventType === 'opened' && typeof window !== 'undefined') {
     try {
-      window.sessionStorage.setItem('vacatio:push-journey', JSON.stringify({
+      window.sessionStorage.setItem('direitoprime:push-journey', JSON.stringify({
         campaign_id: campaignId, started_at: Date.now(), install_id: getInstallId(),
       }));
     } catch {}
@@ -224,7 +224,7 @@ export async function ensureNativePushListeners() {
             
             // Dispara evento — App.tsx escuta e usa react-router `navigate()`
             // para evitar reload completo quando o app já está aberto.
-            window.dispatchEvent(new CustomEvent('vacatio:push-navigate', { detail: { path } }));
+            window.dispatchEvent(new CustomEvent('direitoprime:push-navigate', { detail: { path } }));
             // Fallback: se ninguém tratar em 250ms, faz navegação hard.
             window.setTimeout(() => {
               const currentPathWithSearch = window.location.pathname + window.location.search;

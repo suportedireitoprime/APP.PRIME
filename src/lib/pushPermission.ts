@@ -6,7 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
  * Guarda quando pedimos, o resultado e quantas vezes já insistimos, para
  * re-perguntar de forma educada em vez de nunca mais tocar no assunto.
  */
-const KEY = 'vacatio:push-permission-state';
+const KEY = 'direitoprime:push-permission-state';
 const DIAS_ATE_REPERGUNTAR = 3;
 const MAX_PEDIDOS = 3;
 

@@ -12,8 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import html2canvas from 'html2canvas';
-import logoImgAsset from '@/assets/logo-vacatio-v2.png.asset.json';
-import logoImgBundled from '@/assets/bundled/logo-vacatio-v2.webp';
+import logoImgAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
+import logoImgBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
 const logoImg = pickAsset(logoImgBundled, srcOf(logoImgAsset));
 
 // ─── Background Images (for text-only mode) ───

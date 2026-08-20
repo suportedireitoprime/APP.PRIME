@@ -6,13 +6,13 @@ Depois disso, toda vez que você rodar `./gradlew bundleRelease` (ou `assembleRe
 o arquivo sairá como:
 
 ```
-app-vacatio-1.0.65.aab
-app-vacatio-1.0.66.aab
+app-direitoprime-1.0.65.aab
+app-direitoprime-1.0.66.aab
 ...
-app-vacatio-1.0.99.aab
-app-vacatio-1.1.0.aab
-app-vacatio-1.1.0.1.aab
-app-vacatio-1.1.0.2.aab
+app-direitoprime-1.0.99.aab
+app-direitoprime-1.1.0.aab
+app-direitoprime-1.1.0.1.aab
+app-direitoprime-1.1.0.2.aab
 ...
 ```
 
@@ -124,14 +124,14 @@ versionName appVersionName
 
 ### 2.3 — Ainda dentro de `android { ... }` (fora de `defaultConfig`)
 
-Cole este bloco. Ele renomeia o **APK** e o **AAB** com o padrão `app-vacatio-<versão>`:
+Cole este bloco. Ele renomeia o **APK** e o **AAB** com o padrão `app-direitoprime-<versão>`:
 
 ```gradle
 // Renomeia o APK (assembleRelease / assembleDebug)
 applicationVariants.all { variant ->
     variant.outputs.all { output ->
         def ext = output.outputFile.name.endsWith('.aab') ? 'aab' : 'apk'
-        outputFileName = "app-vacatio-${appVersionName}.${ext}"
+        outputFileName = "app-direitoprime-${appVersionName}.${ext}"
     }
 }
 
@@ -143,8 +143,8 @@ tasks.configureEach { task ->
         task.doLast {
             def outDir = file("${buildDir}/outputs/bundle/${task.name.replaceFirst('bundle','').uncapitalize()}")
             outDir.listFiles()?.each { f ->
-                if (f.name.endsWith('.aab') && !f.name.startsWith('app-vacatio-')) {
-                    def target = new File(f.parent, "app-vacatio-${appVersionName}.aab")
+                if (f.name.endsWith('.aab') && !f.name.startsWith('app-direitoprime-')) {
+                    def target = new File(f.parent, "app-direitoprime-${appVersionName}.aab")
                     if (target.exists()) target.delete()
                     f.renameTo(target)
                 }
@@ -165,7 +165,7 @@ cd android
 Como o `version.properties` está em `PATCH=64`, a próxima build sairá como:
 
 ```
-android/app/build/outputs/bundle/release/app-vacatio-1.0.65.aab
+android/app/build/outputs/bundle/release/app-direitoprime-1.0.65.aab
 ```
 
 E as próximas: `1.0.66`, `1.0.67`, … , `1.0.99`, `1.1.0`, `1.1.0.1`, `1.1.0.2`, …

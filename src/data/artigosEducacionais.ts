@@ -49,7 +49,7 @@ export const CATEGORIAS_EDUCACIONAIS: CategoriaEducacional[] = [
       { slug: 'hierarquia-das-normas', titulo: 'Hierarquia das Normas Jurídicas', categoria: 'Fundamentos da Lei', descricao: 'Pirâmide de Kelsen e a organização do ordenamento jurídico' },
       { slug: 'diferenca-lei-decreto', titulo: 'Diferença entre Lei e Decreto', categoria: 'Fundamentos da Lei', descricao: 'Quando se usa lei e quando se usa decreto' },
       { slug: 'vigencia-vs-eficacia', titulo: 'Vigência vs Eficácia', categoria: 'Fundamentos da Lei', descricao: 'Quando uma lei começa a valer e quando produz efeitos' },
-      { slug: 'vacatio-legis', titulo: 'Direito Prime Legis', categoria: 'Fundamentos da Lei', descricao: 'O período entre a publicação e a entrada em vigor da lei' },
+      { slug: 'direitoprime-legis', titulo: 'Direito Prime Legis', categoria: 'Fundamentos da Lei', descricao: 'O período entre a publicação e a entrada em vigor da lei' },
       { slug: 'retroatividade-da-lei', titulo: 'Retroatividade da Lei', categoria: 'Fundamentos da Lei', descricao: 'Quando uma lei pode ser aplicada a fatos anteriores' },
       { slug: 'analogia-no-direito', titulo: 'Analogia no Direito', categoria: 'Fundamentos da Lei', descricao: 'Como preencher lacunas na legislação' },
       { slug: 'costume-como-fonte', titulo: 'Costume como Fonte do Direito', categoria: 'Fundamentos da Lei', descricao: 'O papel dos costumes na formação das regras jurídicas' },

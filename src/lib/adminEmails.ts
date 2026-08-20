@@ -1,7 +1,7 @@
 // E-mails com acesso administrativo completo ao aplicativo.
 export const ADMIN_EMAILS = [
   'wn7corporation@gmail.com',
-  'suporte.vacatio@gmail.com',
+  'suporte@direitoprime.com.br',
   'wn7juridico@gmail.com',
 ] as const;
 

@@ -14,11 +14,11 @@ const GRAY_100: [number, number, number] = [238, 239, 244];
 const GRAY_50: [number, number, number] = [246, 247, 250];
 const TEXT: [number, number, number] = [28, 28, 32];
 
-const APP_LINE1 = 'VACATIO';
+const APP_LINE1 = 'DIREITO PRIME';
 const APP_LINE2 = 'vade mecum';
-const APP_URL = 'https://vacatio.com.br';
-const STORE_APPLE = 'https://vacatio.com.br';
-const STORE_ANDROID = 'https://vacatio.com.br';
+const APP_URL = 'https://direitoprime.com.br';
+const STORE_APPLE = 'https://direitoprime.com.br';
+const STORE_ANDROID = 'https://direitoprime.com.br';
 
 // ============= Utilidades =============
 async function urlToDataUrl(url: string): Promise<string | null> {
@@ -398,7 +398,7 @@ export async function gerarJurisprudenciaPDF(data: JurisPdfInput) {
     doc.setFontSize(9);
     doc.setTextColor(...GRAY_800);
     const hdrCS = 1.4;
-    const vacatio = 'VACATIO';
+    const vacatio = 'DIREITO PRIME';
     const vacatioW = doc.getTextWidth(vacatio) + hdrCS * (vacatio.length - 1);
     doc.text(vacatio, mLeft, 14, { charSpace: hdrCS });
     doc.setFont('helvetica', 'normal');

@@ -14,7 +14,7 @@ if (Capacitor.isNativePlatform()) {
 // inicial — o <link rel="preload"> é injetado ANTES do createRoot, garantindo download
 // paralelo ao parse do JS. Sem isso, a webp só começa a baixar depois do primeiro render.
 import horusOwlUrl from "./assets/horus/horus-owl.webp?url";
-import vacatioLogoUrl from "./assets/bundled/logo-vacatio-v2.webp?url";
+import primeLogoUrl from "./assets/bundled/logo-direitoprime-v2.webp?url";
 
 function preloadImage(url: string) {
   const link = document.createElement("link");
@@ -29,7 +29,7 @@ function preloadImage(url: string) {
   img.decoding = "async";
   img.src = url;
 }
-preloadImage(vacatioLogoUrl);
+preloadImage(primeLogoUrl);
 preloadImage(horusOwlUrl);
 
 // A Splash Screen nativa agora é ocultada sob demanda pelos componentes principais

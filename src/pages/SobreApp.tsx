@@ -5,11 +5,11 @@ import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Capacitor } from '@capacitor/core';
-import vacatioLogoAsset from '@/assets/logo-vacatio-v2.png.asset.json';
-import vacatioLogoBundled from '@/assets/bundled/logo-vacatio-v2.webp';
+import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
+import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { checkForAppUpdate } from '@/lib/appUpdate';
-const vacatioLogo = pickAsset(vacatioLogoBundled, srcOf(vacatioLogoAsset));
+const primeLogo = pickAsset(primeLogoBundled, srcOf(primeLogoAsset));
 
 const APP_VERSION = '1.0.0';
 
@@ -44,7 +44,7 @@ const SobreApp = () => {
       <div className="p-4 lg:px-8 space-y-6 max-w-lg lg:max-w-4xl mx-auto pb-16">
         {/* Logo + Title */}
         <div className="flex flex-col items-center gap-3 py-6">
-          <img src={vacatioLogo} alt="Direito Prime" className="w-20 h-20 rounded-2xl object-cover border-2 border-primary/30" />
+          <img src={primeLogo} alt="Direito Prime" className="w-20 h-20 rounded-2xl object-cover border-2 border-primary/30" />
           <h2 className="font-display text-2xl font-bold text-foreground">Direito Prime</h2>
           <p className="text-sm text-muted-foreground font-body">Vade Mecum Jurídico Profissional • Versão {APP_VERSION}</p>
         </div>

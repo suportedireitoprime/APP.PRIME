@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { getPushInstallId } from "@/lib/nativePush";
 
-const KEY = "vacatio:push-journey";
+const KEY = "direitoprime:push-journey";
 const MAX_MS = 5 * 60 * 1000; // 5 min de janela
 const MAX_STEPS = 40;
 

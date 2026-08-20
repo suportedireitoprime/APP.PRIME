@@ -11,7 +11,7 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
-const ADMIN_EMAILS = ['wn7corporation@gmail.com', 'suporte.vacatio@gmail.com'];
+const ADMIN_EMAILS = ['wn7corporation@gmail.com', 'suporte@direitoprime.com.br'];
 const BUCKET = 'mobile-config';
 
 // arquivos permitidos + validações

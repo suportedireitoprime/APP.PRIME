@@ -20,11 +20,11 @@ import { toast } from 'sonner';
 import { scanOnce } from '@/lib/qrScanner';
 import desktopImgAsset from '@/assets/desktop-promo-laptop.webp';
 const desktopImg = desktopImgAsset;
-import vacatioLogoAsset from '@/assets/logo-vacatio-v2.png.asset.json';
-import vacatioLogoBundled from '@/assets/bundled/logo-vacatio-v2.webp';
+import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
+import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
 import { useGoBack } from '@/hooks/useGoBack';
 import { copiarTexto } from '@/lib/nativo/copiar';
-const vacatioLogo = pickAsset(vacatioLogoBundled, srcOf(vacatioLogoAsset));
+const primeLogo = pickAsset(primeLogoBundled, srcOf(primeLogoAsset));
 
 const SITE_URL = 'www.direitoprime.com.br';
 
@@ -126,7 +126,7 @@ const DesktopPromo = () => {
           <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/40 to-transparent" />
           <div className="absolute bottom-3 left-4 right-4 flex items-center gap-2">
             <img
-              src={vacatioLogo}
+              src={primeLogo}
               alt="Direito Prime"
               className="w-9 h-9 rounded-lg border border-primary/40"
             />

@@ -6,7 +6,7 @@ import rousseauImg from '@/assets/blog/o-contrato-social.webp';
 import leiOQueEImg from '@/assets/blog/leis/o-que-e-uma-lei.webp';
 import leiEstruturaImg from '@/assets/blog/leis/artigo-paragrafo-inciso-alinea.webp';
 import leiProcessoImg from '@/assets/blog/leis/processo-legislativo.webp';
-import leiVacatioImg from '@/assets/blog/leis/vacatio-legis.webp';
+import leiVacatioImg from '@/assets/blog/leis/direitoprime-legis.webp';
 import leiOrdComplImg from '@/assets/blog/leis/lei-ordinaria-complementar.webp';
 import leiRevogacaoImg from '@/assets/blog/leis/revogacao-leis.webp';
 import leiLegalidadeImg from '@/assets/blog/leis/principio-legalidade.webp';
@@ -626,7 +626,7 @@ Esse período entre publicação e vigência chama-se **vacatio legis** — um "
 Entender o processo legislativo é entender **onde a democracia acontece de verdade**: no debate, na comissão, no plenário, no veto, na derrubada do veto. Quando você acompanha uma pauta legislativa sabendo cada etapa, deixa de ser espectador do noticiário — e passa a ler o Brasil como quem lê a partitura de dentro.`,
   },
   {
-    id: 'leis-vacatio-legis-quando-a-lei-comeca-a-valer',
+    id: 'leis-direitoprime-legis-quando-a-lei-comeca-a-valer',
     titulo: 'Vacatio legis: por que uma lei publicada hoje pode só valer daqui a meses',
     resumo:
       'Publicação não é vigência. Entenda o intervalo entre uma coisa e outra — e por que a LINDB criou esse "respiro" antes de qualquer nova regra pegar você.',

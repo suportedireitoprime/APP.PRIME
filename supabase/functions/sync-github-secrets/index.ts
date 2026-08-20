@@ -137,7 +137,7 @@ Deno.serve(async (req) => {
     if (claimsErr || !claimsData?.claims) return json({ error: 'Unauthorized' }, 401);
 
     const email = (claimsData.claims.email as string || '').toLowerCase();
-    const DEFAULT_ADMINS = ['wn7corporation@gmail.com', 'suporte.vacatio@gmail.com'];
+    const DEFAULT_ADMINS = ['wn7corporation@gmail.com', 'suporte@direitoprime.com.br'];
     const envAdmins = (Deno.env.get('ADMIN_DOWNLOAD_EMAILS') || '')
       .split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
     const admins = new Set([...DEFAULT_ADMINS, ...envAdmins]);

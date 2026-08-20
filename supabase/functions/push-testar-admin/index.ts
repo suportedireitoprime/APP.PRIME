@@ -4,7 +4,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { evolution } from "../_shared/evolution.ts";
 
-const ADMIN_EMAILS = ["wn7corporation@gmail.com", "suporte.vacatio@gmail.com"];
+const ADMIN_EMAILS = ["wn7corporation@gmail.com", "suporte@direitoprime.com.br"];
 const ADMIN_PHONE = "+5511991897603";
 
 Deno.serve(async (req) => {

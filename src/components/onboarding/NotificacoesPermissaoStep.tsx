@@ -11,7 +11,7 @@ import { useAuth } from '@/hooks/useAuth';
 
 function setBottomNavHidden(hidden: boolean) {
   try {
-    window.dispatchEvent(new CustomEvent('vacatio:bottom-nav-visibility', { detail: { hidden } }));
+    window.dispatchEvent(new CustomEvent('direitoprime:bottom-nav-visibility', { detail: { hidden } }));
   } catch {}
 }
 

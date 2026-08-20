@@ -4,7 +4,7 @@
 import { evolution } from './evolution.ts';
 
 const ADMIN_PHONE_FALLBACK = '5511991897603';
-const ADMIN_EMAILS_FALLBACK = ['wn7corporation@gmail.com', 'suporte.vacatio@gmail.com'];
+const ADMIN_EMAILS_FALLBACK = ['wn7corporation@gmail.com', 'suporte@direitoprime.com.br'];
 
 const ROTA_RULES: { test: RegExp; label: string }[] = [
   { test: /^\/$/, label: 'Início' },

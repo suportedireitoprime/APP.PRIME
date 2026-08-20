@@ -4,7 +4,7 @@ import { Capacitor } from '@capacitor/core';
 import { supabase } from '@/integrations/supabase/client';
 import { parseSmartPath } from '@/lib/nativeDeepLinks';
 
-const PLAY_STORE = 'https://play.google.com/store/apps/details?id=br.com.vacatio.app';
+const PLAY_STORE = 'https://play.google.com/store/apps/details?id=br.com.direito.app';
 const APP_STORE = 'https://apps.apple.com/br/app/vacatio/id6793608690';
 
 type Platform = 'android' | 'ios' | 'desktop';
@@ -22,7 +22,7 @@ function detectPlatform(): Platform {
  *
  * Fluxo:
  *   1. Se estiver dentro do próprio app (Capacitor), navega direto pra rota interna.
- *   2. Web: tenta abrir `vacatio://<path>` (se app instalado, o SO intercepta).
+ *   2. Web: tenta abrir `direitoprime://<path>` (se app instalado, o SO intercepta).
  *   3. Após 1.2s sem intercepção → registra "claim" (deferred) e manda pra loja.
  *   4. Desktop → renderiza CTA de download com QR + botão "abrir no navegador".
  */
@@ -53,7 +53,7 @@ export default function SmartLink() {
     setRedirecting(true);
 
     // Tenta abrir esquema custom (se app instalado, o browser some/troca de app)
-    const scheme = `vacatio:/${smartPath}`.replace(':////', '://').replace(':///', '://');
+    const scheme = `direitoprime:/${smartPath}`.replace(':////', '://').replace(':///', '://');
     // usar window.location pra iOS (iframe não funciona em iOS moderno)
     const attemptOpen = () => {
       try {

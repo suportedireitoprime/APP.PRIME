@@ -151,17 +151,17 @@ function readFavoritas(): string[] {
 }
 function writeFavoritas(ids: string[]) {
   try { localStorage.setItem(FAV_LEIS_KEY, JSON.stringify(ids)); } catch { /* ignore */ }
-  try { window.dispatchEvent(new CustomEvent('vacatio:leis-favoritas-changed')); } catch { /* ignore */ }
+  try { window.dispatchEvent(new CustomEvent('direitoprime:leis-favoritas-changed')); } catch { /* ignore */ }
 }
 
 function useFavoritasLeis() {
   const [ids, setIds] = useState<string[]>(() => readFavoritas());
   useEffect(() => {
     const sync = () => setIds(readFavoritas());
-    window.addEventListener('vacatio:leis-favoritas-changed', sync);
+    window.addEventListener('direitoprime:leis-favoritas-changed', sync);
     window.addEventListener('storage', sync);
     return () => {
-      window.removeEventListener('vacatio:leis-favoritas-changed', sync);
+      window.removeEventListener('direitoprime:leis-favoritas-changed', sync);
       window.removeEventListener('storage', sync);
     };
   }, []);

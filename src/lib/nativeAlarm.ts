@@ -48,7 +48,7 @@ export async function scheduleExactAlarm(a: ExactAlarm): Promise<boolean> {
       toastNative.error('Autorize alarmes exatos nas configurações do Android.');
       try {
         const { AppLauncher } = await import('@capacitor/app-launcher');
-        await AppLauncher.openUrl({ url: 'package:br.com.vacatio.app' });
+        await AppLauncher.openUrl({ url: 'package:br.com.direito.app' });
       } catch {}
     }
     return false;

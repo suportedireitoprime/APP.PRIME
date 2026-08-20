@@ -5,10 +5,10 @@ import { useNavigate } from 'react-router-dom';
 
 import heroImageAsset from '@/assets/hero-vademecum.webp';
 const heroImage = heroImageAsset;
-import vacatioLogoAsset from '@/assets/logo-vacatio-v2.png.asset.json';
-import vacatioLogoBundled from '@/assets/bundled/logo-vacatio-v2.webp';
+import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
+import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
 import {pickAsset, srcOf } from '@/lib/assetUrl';
-const vacatioLogo = pickAsset(vacatioLogoBundled, srcOf(vacatioLogoAsset));
+const primeLogo = pickAsset(primeLogoBundled, srcOf(primeLogoAsset));
 import camaraHeroAsset from '@/assets/radar/camara-hero.webp';
 const camaraHero = camaraHeroAsset;
 import senadoHeroAsset from '@/assets/radar/senado-hero.webp';
@@ -65,8 +65,8 @@ const IndexMobile = () => {
         setBottomNavHidden(detail.hidden);
       }
     };
-    window.addEventListener('vacatio:bottom-nav-visibility', handler as EventListener);
-    return () => window.removeEventListener('vacatio:bottom-nav-visibility', handler as EventListener);
+    window.addEventListener('direitoprime:bottom-nav-visibility', handler as EventListener);
+    return () => window.removeEventListener('direitoprime:bottom-nav-visibility', handler as EventListener);
   }, []);
 
   // SEO & Título dinâmico da Home
@@ -81,7 +81,7 @@ const IndexMobile = () => {
       ? (cb) => (window as any).requestIdleCallback(cb, { timeout: 1500 })
       : (cb) => window.setTimeout(cb, 300);
     const id = ric(() => {
-      [vacatioLogo, ...Object.values(HERO_CONFIG)].forEach(src => {
+      [primeLogo, ...Object.values(HERO_CONFIG)].forEach(src => {
         const img = new Image();
         img.src = src;
       });
@@ -117,7 +117,7 @@ const IndexMobile = () => {
       {!isWarmingUp && (
         <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: 'easeOut' }}>
           <main ref={contentRef} className="max-w-5xl lg:max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-2">
-            <img src={vacatioLogo} alt="" aria-hidden="true" loading="eager" decoding="sync" fetchPriority="high" className="absolute w-0 h-0 opacity-0 pointer-events-none" />
+            <img src={primeLogo} alt="" aria-hidden="true" loading="eager" decoding="sync" fetchPriority="high" className="absolute w-0 h-0 opacity-0 pointer-events-none" />
             <FeatureDiscoveryCard />
             <MobileHomeSections onTabChange={setHomeTab} onNewsOpenChange={setNewsOpen} />
           </main>

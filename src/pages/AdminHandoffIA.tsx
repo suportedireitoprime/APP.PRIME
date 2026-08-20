@@ -33,7 +33,7 @@ export default function AdminHandoffIA() {
 
   const openGitHub = () => {
     window.open(
-      'https://github.com/suportevacatio/vade-comenta-legal/blob/main/docs/HANDOFF_IA.md',
+      'https://github.com/suporteprime/vade-comenta-legal/blob/main/docs/HANDOFF_IA.md',
       '_blank',
       'noopener,noreferrer',
     );

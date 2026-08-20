@@ -99,7 +99,7 @@ function decodeHtml(s: string): string {
  */
 export async function fetchBuscaSP(tipoId: number, ano: number, page = 0, size = 100): Promise<string> {
   const url = `${SP_BASE}/norma/busca?idsTipoNorma=${tipoId}&ano=${ano}&page=${page}&size=${size}&tipoPesquisa=E`;
-  const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 Vacatio' } });
+  const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 DireitoPrime' } });
   if (!res.ok) throw new Error(`SP busca ${res.status}: ${url}`);
   const buf = await res.arrayBuffer();
   return new TextDecoder('iso-8859-1').decode(buf);

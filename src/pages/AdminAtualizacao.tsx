@@ -131,7 +131,7 @@ const AdminAtualizacao = () => {
     },
     {
       title: '6. Baixar os artefatos (.aab e .apk)',
-      desc: 'Quando o run terminar em verde, abra o run e role até "Artifacts" no final da página. Baixe vacatio-release-aab (para Play Store) e vacatio-release-apk (para instalar direto no celular).',
+      desc: 'Quando o run terminar em verde, abra o run e role até "Artifacts" no final da página. Baixe direitoprime-release-aab (para Play Store) e direitoprime-release-apk (para instalar direto no celular).',
       icon: Download,
       actions: [
         { label: 'Ver runs recentes', href: links.workflow },

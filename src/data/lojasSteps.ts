@@ -68,7 +68,7 @@ export const APPLE_FASES: FaseLoja[] = [
       {
         key: "registrar-bundle",
         titulo: "Registrar App ID",
-        descricao: "Crie um Identifier tipo 'App IDs → App' com Bundle ID EXPLICIT (ex: br.com.vacatio.app). Ative Push Notifications e Associated Domains se for usar.",
+        descricao: "Crie um Identifier tipo 'App IDs → App' com Bundle ID EXPLICIT (ex: br.com.direito.app). Ative Push Notifications e Associated Domains se for usar.",
         link: { url: "https://developer.apple.com/account/resources/identifiers/add/bundleId", label: "Novo Identifier" },
         secrets: [{ name: "APPLE_BUNDLE_ID", label: "Bundle ID" }],
       },
@@ -151,7 +151,7 @@ export const APPLE_FASES: FaseLoja[] = [
       {
         key: "novo-app",
         titulo: "Registrar o app",
-        descricao: "Apps → + → New App. Plataforma iOS, Bundle ID já registrado, Idioma principal Português (Brasil), SKU único (ex: vacatio-ios-001).",
+        descricao: "Apps → + → New App. Plataforma iOS, Bundle ID já registrado, Idioma principal Português (Brasil), SKU único (ex: direitoprime-ios-001).",
         link: { url: "https://appstoreconnect.apple.com/apps", label: "Meus Apps" },
         secrets: [{ name: "APPLE_APP_STORE_CONNECT_APP_ID", label: "Apple ID do app (número)" }],
       },
@@ -302,7 +302,7 @@ export const GOOGLE_FASES: FaseLoja[] = [
       {
         key: "novo-app",
         titulo: "Create app",
-        descricao: "Nome (30 chars), idioma padrão, tipo App ou Game, gratuito ou pago. Package name = br.com.vacatio.app (não pode mudar depois!).",
+        descricao: "Nome (30 chars), idioma padrão, tipo App ou Game, gratuito ou pago. Package name = br.com.direito.app (não pode mudar depois!).",
         link: { url: "https://play.google.com/console", label: "Play Console" },
         secrets: [{ name: "ANDROID_PACKAGE_NAME", label: "Package name" }],
       },

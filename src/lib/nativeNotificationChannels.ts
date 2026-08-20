@@ -13,7 +13,7 @@ import { FirebaseMessaging } from "@capacitor-firebase/messaging";
 
 export type PerfilUsuario = "estudante" | "concurseiro" | "advogado";
 
-export const DEFAULT_PUSH_CHANNEL_ID = "vacatio-alertas-v2";
+export const DEFAULT_PUSH_CHANNEL_ID = "direitoprime-alertas-v2";
 
 export const CANAIS_POR_PERFIL: Record<PerfilUsuario, { id: string; sound: string }> = {
   estudante: { id: "oab-estudante", sound: "oab_estudante" },

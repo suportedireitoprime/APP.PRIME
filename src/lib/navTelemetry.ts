@@ -26,7 +26,7 @@ function emit(e: TelemetryEvent) {
     console.info('[nav-telemetry]', e);
     listeners.forEach((l) => { try { l(e); } catch {} });
     if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('vacatio:nav-telemetry', { detail: e }));
+      window.dispatchEvent(new CustomEvent('direitoprime:nav-telemetry', { detail: e }));
     }
   } catch {}
 }

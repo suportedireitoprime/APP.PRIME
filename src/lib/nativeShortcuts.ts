@@ -17,7 +17,7 @@ const SHORTCUT_PATHS: Record<string, string> = {
 
 /**
  * Chamado pelo listener global de deep-links (nativeDeepLinks.ts) quando
- * a URL começar com vacatio://shortcut/<slug>. Devolve a rota interna.
+ * a URL começar com direitoprime://shortcut/<slug>. Devolve a rota interna.
  */
 export function resolveShortcut(slug: string): string | null {
   return SHORTCUT_PATHS[slug] ?? null;

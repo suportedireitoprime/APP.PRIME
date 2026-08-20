@@ -16,7 +16,7 @@ interface SubscriptionState {
 
 const ADMIN_EMAILS = new Set([
   'wn7corporation@gmail.com',
-  'suporte.vacatio@gmail.com',
+  'suporte@direitoprime.com.br',
   'wn7juridico@gmail.com',
 ]);
 
@@ -39,7 +39,7 @@ export function useSubscription(options: Options = {}): SubscriptionState {
   const wasPremium = useRef(false);
   // Snapshot offline: hidrata imediatamente do cache local para não travar telas
   // premium quando o dispositivo está sem rede.
-  const cacheKey = user ? `vacatio:sub:${user.id}` : null;
+  const cacheKey = user ? `direitoprime:sub:${user.id}` : null;
   const emailLower = (user?.email || '').toLowerCase();
   const isAdminEmail = ADMIN_EMAILS.has(emailLower);
   const [state, setState] = useState<Omit<SubscriptionState, 'refresh'>>(() => {

@@ -428,7 +428,7 @@ export default function AdminAppleCsr() {
             </div>
             <p className="text-xs text-muted-foreground">
               Baixe o <code>.mobileprovision</code> em developer.apple.com → Profiles → "+" →
-              App Store Connect, selecione o Bundle ID <code>br.com.vacatio.app</code> e o
+              App Store Connect, selecione o Bundle ID <code>br.com.direito.app</code> e o
               certificado que você criou. Envie o arquivo aqui.
             </p>
 

@@ -48,7 +48,7 @@ Deno.serve(async (req) => {
     const email = (claimsData.claims.email as string || '').toLowerCase();
     // Fallback: admins fixos do app (src/lib/adminEmails.ts). O env var
     // ADMIN_DOWNLOAD_EMAILS estende essa lista, mas não é obrigatório.
-    const DEFAULT_ADMINS = ['wn7corporation@gmail.com', 'suporte.vacatio@gmail.com'];
+    const DEFAULT_ADMINS = ['wn7corporation@gmail.com', 'suporte@direitoprime.com.br'];
     const envAdmins = (Deno.env.get('ADMIN_DOWNLOAD_EMAILS') || '')
       .split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
     const admins = new Set([...DEFAULT_ADMINS, ...envAdmins]);

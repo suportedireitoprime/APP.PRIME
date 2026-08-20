@@ -35,7 +35,7 @@ async function getAccessToken(): Promise<string> {
 
 async function gerarThumbnail(titulo: string, tipoLabel: string, dataBr: string): Promise<Uint8Array | null> {
   if (!LOVABLE_API_KEY) return null;
-  const prompt = `Thumbnail estilo jornal jurídico brasileiro, fundo escuro elegante com detalhes dourados, palavra grande '${tipoLabel}' no topo, título '${titulo}' abaixo em tipografia bold, data '${dataBr}' no canto, logo Vacatio discreto. Alto contraste, sem pessoas, 1280x720.`;
+  const prompt = `Thumbnail estilo jornal jurídico brasileiro, fundo escuro elegante com detalhes dourados, palavra grande '${tipoLabel}' no topo, título '${titulo}' abaixo em tipografia bold, data '${dataBr}' no canto, logo Direito Prime discreto. Alto contraste, sem pessoas, 1280x720.`;
   const resp = await fetch("https://ai.gateway.lovable.dev/v1/images/generations", {
     method: "POST",
     headers: {
@@ -109,7 +109,7 @@ Deno.serve(async (req) => {
     const metadata = {
       snippet: {
         title: b.titulo,
-        description: `Boletim Jurídico diário do Vacatio — ${dataBr}. Fique por dentro das normas publicadas no Diário Oficial. Acesse o app Vacatio para mais conteúdo.`,
+        description: `Boletim Jurídico diário do Direito Prime — ${dataBr}. Fique por dentro das normas publicadas no Diário Oficial. Acesse o app Vacatio para mais conteúdo.`,
         tags: ["direito", "juridico", "boletim", "leis", "vacatio"],
         categoryId: "25", // News & Politics
       },

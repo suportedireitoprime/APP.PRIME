@@ -74,8 +74,8 @@ Base: LGPD + política do Google Play (2024/2025).
 
 ## 6. Links obrigatórios
 
-- Política de privacidade: `https://vacatio.com.br/privacidade`
-- Termos de uso: `https://vacatio.com.br/termos`
+- Política de privacidade: `https://direitoprime.com.br/privacidade`
+- Termos de uso: `https://direitoprime.com.br/termos`
 - Contato DPO: `wn7corporation@gmail.com`
 
 ## 7. Permissões runtime declaradas
@@ -93,6 +93,6 @@ Base: LGPD + política do Google Play (2024/2025).
 
 - [ ] Preencher o formulário Data Safety no Play Console com os itens acima
 - [ ] Publicar `/privacidade` e `/termos` (rotas já existem — validar conteúdo LGPD)
-- [ ] Publicar `public/.well-known/assetlinks.json` no domínio `vacatio.com.br` (substituir `REPLACE_WITH_RELEASE_SHA256_FINGERPRINT`)
+- [ ] Publicar `public/.well-known/assetlinks.json` no domínio `direitoprime.com.br` (substituir `REPLACE_WITH_RELEASE_SHA256_FINGERPRINT`)
 - [ ] Extrair SHA-256 da chave de release: `keytool -list -v -keystore release.keystore -alias <alias>`
 - [ ] Marcar "Ads": **Não** (o app não exibe ads)

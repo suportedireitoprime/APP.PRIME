@@ -7,7 +7,7 @@ import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 
 const ADMIN_EMAILS = new Set([
   'wn7corporation@gmail.com',
-  'suporte.vacatio@gmail.com',
+  'suporte@direitoprime.com.br',
   'wn7juridico@gmail.com',
 ]);
 

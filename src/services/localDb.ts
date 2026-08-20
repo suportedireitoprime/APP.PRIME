@@ -10,7 +10,7 @@
 
 import { Capacitor } from '@capacitor/core';
 
-const DB_NAME = 'vacatio_local';
+const DB_NAME = 'direito_prime_local';
 const DB_VERSION = 1;
 
 let readyPromise: Promise<void> | null = null;

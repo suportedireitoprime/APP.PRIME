@@ -9,7 +9,7 @@ import { callDesktopLink } from '@/lib/desktopLinkApi';
 
 // QR encoda uma URL universal — se o celular tiver o app Direito Prime instalado,
 // abre a rota /desktop-link/:token via deep link (Android App Links + intent
-// filter para vacatio://). Sem o app, abre a mesma rota no navegador e a
+// filter para direitoprime://). Sem o app, abre a mesma rota no navegador e a
 // versão web mostra o mesmo botão "Confirmar login".
 const APP_LINK_FALLBACK = 'https://present-whisper-glow.lovable.app';
 
@@ -253,7 +253,7 @@ const DesktopQrLogin = () => {
             </svg>
           </a>
           <a
-            href="https://play.google.com/store/apps/details?id=br.com.vacatio.app"
+            href="https://play.google.com/store/apps/details?id=br.com.direito.app"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Baixar no Google Play"

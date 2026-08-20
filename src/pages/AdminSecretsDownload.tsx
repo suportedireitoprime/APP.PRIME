@@ -37,7 +37,7 @@ const SECRET_DETAILS: Record<string, string> = {
   ANDROID_KEY_ALIAS: 'Alias da chave dentro do keystore.',
   GOOGLE_WEB_CLIENT_ID: 'Client ID web usado pelo login Google nativo.',
   APPLE_TEAM_ID: 'Team ID da conta Apple Developer (ex: DKVT35Y3W5).',
-  APPLE_BUNDLE_ID: 'Bundle Identifier do app iOS (ex: br.com.vacatio.app).',
+  APPLE_BUNDLE_ID: 'Bundle Identifier do app iOS (ex: br.com.direito.app).',
   APPLE_APP_STORE_CONNECT_KEY_ID: 'Key ID da API do App Store Connect (10 caracteres).',
   APPLE_APP_STORE_CONNECT_ISSUER_ID: 'Issuer ID da API do App Store Connect (UUID).',
   APPLE_APP_STORE_CONNECT_KEY_P8_BASE64: 'Arquivo .p8 da API Key convertido em base64.',
@@ -321,7 +321,7 @@ export default function AdminSecretsDownload() {
             </p>
 
             <Step n={1} title="Preparar o projeto (Capacitor)">
-              Instale <code className="text-xs bg-muted/40 px-1 rounded">@capacitor/core @capacitor/android @capacitor/cli</code> e rode <code className="text-xs bg-muted/40 px-1 rounded">npx cap init</code>. Configure <code className="text-xs bg-muted/40 px-1 rounded">appId</code> (ex: <code className="text-xs bg-muted/40 px-1 rounded">br.com.vacatio.app</code>) em <code className="text-xs bg-muted/40 px-1 rounded">capacitor.config.ts</code>.
+              Instale <code className="text-xs bg-muted/40 px-1 rounded">@capacitor/core @capacitor/android @capacitor/cli</code> e rode <code className="text-xs bg-muted/40 px-1 rounded">npx cap init</code>. Configure <code className="text-xs bg-muted/40 px-1 rounded">appId</code> (ex: <code className="text-xs bg-muted/40 px-1 rounded">br.com.direito.app</code>) em <code className="text-xs bg-muted/40 px-1 rounded">capacitor.config.ts</code>.
               <DocLink href="https://capacitorjs.com/docs/getting-started">Docs Capacitor</DocLink>
             </Step>
 
@@ -368,7 +368,7 @@ export default function AdminSecretsDownload() {
             </p>
 
             <Step n={1} title="Conta Apple Developer + Bundle ID">
-              Ative a conta Apple Developer (US$ 99/ano). Em <b>App Store Connect</b>, registre o <b>Bundle ID</b> do app (ex: <code className="text-xs bg-muted/40 px-1 rounded">br.com.vacatio.app</code>) e salve em <code>APPLE_BUNDLE_ID</code>. O <b>Team ID</b> aparece no canto superior direito — salve em <code>APPLE_TEAM_ID</code>.
+              Ative a conta Apple Developer (US$ 99/ano). Em <b>App Store Connect</b>, registre o <b>Bundle ID</b> do app (ex: <code className="text-xs bg-muted/40 px-1 rounded">br.com.direito.app</code>) e salve em <code>APPLE_BUNDLE_ID</code>. O <b>Team ID</b> aparece no canto superior direito — salve em <code>APPLE_TEAM_ID</code>.
               <DocLink href="https://developer.apple.com/account">Portal Apple Developer</DocLink>
             </Step>
 

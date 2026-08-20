@@ -296,7 +296,7 @@ Deno.serve(async (req) => {
               // Canal precisa existir no app (criado em nativeNotificationChannels.ts).
               // Sem channel_id explícito, Android 8+ pode cair em canal "Miscellaneous"
               // com importância baixa e o banner não aparece.
-              channel_id: "vacatio-alertas-v2",
+              channel_id: "direitoprime-alertas-v2",
               notification_priority: "PRIORITY_HIGH",
               visibility: "PUBLIC",
               sound: "default",

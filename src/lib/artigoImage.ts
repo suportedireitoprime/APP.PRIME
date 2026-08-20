@@ -4,7 +4,7 @@ import type { ArtigoPdfInput, ArtigoPdfModo } from './artigoPdf';
 import { baixarBlob } from '@/lib/nativo';
 
 const APP_NAME = 'Direito Prime — Vade Mecum';
-const APP_URL = 'vacatio.com.br';
+const APP_URL = 'direitoprime.com.br';
 const LOGO_URL = '/icon-512.png';
 const YELLOW = '#EF4444';
 const GRAY_DARK = '#2D2D30';

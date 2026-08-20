@@ -42,7 +42,7 @@ Deno.serve(async (req) => {
         const msg =
 `${oi}! Aqui é o Horus 🦉
 
-Seu teste grátis do Vacatio termina em ${label}. Se quiser continuar sem interrupção, seu plano ${planoLabel} entra em vigor automaticamente — nada que precise fazer.
+Seu teste grátis do Direito Prime termina em ${label}. Se quiser continuar sem interrupção, seu plano ${planoLabel} entra em vigor automaticamente — nada que precise fazer.
 
 Se preferir não continuar, é só cancelar antes pelo próprio Google Play (Assinaturas) e não haverá cobrança.
 

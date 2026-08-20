@@ -648,7 +648,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
   const [magicLoading, setMagicLoading] = useState(false);
   const [magicTooltip, setMagicTooltip] = useState<{ grifo: MagicGrifo; rect: DOMRect } | null>(null);
   // Preferência: mostrar Grifo Mágico por padrão ao abrir o artigo (persistida em localStorage).
-  const GRIFO_IA_DEFAULT_KEY = 'vacatio:grifoia:default:on';
+  const GRIFO_IA_DEFAULT_KEY = 'direitoprime:grifoia:default:on';
   const [grifoIaDefaultOn, setGrifoIaDefaultOn] = useState<boolean>(() => {
     try {
       const v = typeof localStorage !== 'undefined' ? localStorage.getItem(GRIFO_IA_DEFAULT_KEY) : null;

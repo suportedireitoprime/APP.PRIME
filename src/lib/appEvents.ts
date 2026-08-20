@@ -68,7 +68,7 @@ async function logDb(event_name: string, metadata: Record<string, unknown> = {})
  */
 export function logAreaEvent(event_name: string, metadata: Record<string, unknown> = {}) {
   try {
-    const chave = `vacatio:area-ev:${event_name}`;
+    const chave = `direitoprime:area-ev:${event_name}`;
     if (typeof window !== "undefined") {
       if (window.sessionStorage.getItem(chave)) return;
       window.sessionStorage.setItem(chave, "1");

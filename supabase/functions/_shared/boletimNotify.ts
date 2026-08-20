@@ -2,7 +2,7 @@
 // quando um boletim (jurídico ou de notícias) fica pronto.
 import { evolution } from "./evolution.ts";
 
-const ADMIN_EMAILS = ["wn7corporation@gmail.com", "suporte.vacatio@gmail.com"];
+const ADMIN_EMAILS = ["wn7corporation@gmail.com", "suporte@direitoprime.com.br"];
 
 export interface NotifyBoletimArgs {
   supa: any; // SupabaseClient (service role)

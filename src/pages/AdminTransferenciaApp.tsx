@@ -16,7 +16,7 @@ import {
   type TransferKind,
 } from '@/data/transferenciaApp';
 
-const LOCAL_KEY = 'vacatio:transferencia-app';
+const LOCAL_KEY = 'direitoprime:transferencia-app';
 
 const KIND_STYLE: Record<TransferKind, string> = {
   arquivo: 'bg-primary/15 text-primary border-primary/30',

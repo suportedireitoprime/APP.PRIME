@@ -46,7 +46,7 @@ export default function PushDiagnosticoTab() {
         try {
           const r = await FirebaseMessaging.listChannels();
           d.channels = (r.channels ?? []).map((c: any) => ({ id: c.id, importance: c.importance, name: c.name, sound: c.sound }));
-          d.hasDefaultChannel = d.channels.some((c) => c.id === "vacatio-alertas-v2" && (c.importance ?? 0) >= 4);
+          d.hasDefaultChannel = d.channels.some((c) => c.id === "direitoprime-alertas-v2" && (c.importance ?? 0) >= 4);
         } catch (e) { d.channels = []; }
       }
 
@@ -111,7 +111,7 @@ export default function PushDiagnosticoTab() {
               <>
                 <Row label="Permissão push">{status(diag.pushPerm === "granted", diag.pushPerm ?? "-", diag.pushPerm ?? "-")}</Row>
                 <Row label="Permissão local notif">{status(diag.localPerm === "granted", diag.localPerm ?? "-", diag.localPerm ?? "-")}</Row>
-                <Row label="Canal vacatio-alertas-v2 (importância ≥ 4)">
+                <Row label="Canal direitoprime-alertas-v2 (importância ≥ 4)">
                   {status(diag.hasDefaultChannel, "ok", "faltando ou baixo")}
                 </Row>
                 {diag.channels && diag.channels.length > 0 && (
@@ -159,7 +159,7 @@ export default function PushDiagnosticoTab() {
         <ul className="list-disc pl-4 space-y-1">
           <li>APK instalado precisa ser o mais recente (rebuild via GitHub Actions após mudanças em <code>capacitor.config.ts</code> ou <code>nativePush.ts</code>).</li>
           <li>Permissão de notificação deve estar "granted" acima.</li>
-          <li>Canal <code>vacatio-alertas-v2</code> deve existir com importância ≥ 4 (Alta).</li>
+          <li>Canal <code>direitoprime-alertas-v2</code> deve existir com importância ≥ 4 (Alta).</li>
           <li>Modo "Não perturbe" ou economia de bateria pode suprimir o banner.</li>
           <li>Após envio, veja <code>push_events</code> — se houver <code>sent</code> mas nenhum <code>delivered</code>, o problema é do lado do aparelho (permissão/canal/DND).</li>
         </ul>

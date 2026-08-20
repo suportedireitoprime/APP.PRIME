@@ -20,11 +20,11 @@ import { usePrefetchProfileSummary } from '@/hooks/useProfileSummary';
 import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
 import {pickAsset, srcOf } from '@/lib/assetUrl';
 import { prefetchRoute, type PrefetchKey } from '@/lib/routePrefetch';
-import vacatioLogoAsset from '@/assets/logo-vacatio-v2.png.asset.json';
-import vacatioLogoBundled from '@/assets/bundled/logo-vacatio-v2.webp';
+import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
+import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
 
 // Logo do app (web usa CDN, nativo usa bundle)
-const vacatioLogo = pickAsset(vacatioLogoBundled, srcOf(vacatioLogoAsset));
+const primeLogo = pickAsset(primeLogoBundled, srcOf(primeLogoAsset));
 
 // Ícone oficial do WhatsApp (lucide não inclui logos de marca)
 const WhatsAppIcon = ({ className }: { className?: string }) => (
@@ -584,7 +584,7 @@ const BottomNav = () => {
                       className="w-20 h-20 rounded-3xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-xl shadow-primary/40 overflow-hidden ring-4 ring-background"
                     >
                       <img
-                        src={vacatioLogo}
+                        src={primeLogo}
                         alt="Direito Prime"
                         className="w-14 h-14 object-contain"
                       />

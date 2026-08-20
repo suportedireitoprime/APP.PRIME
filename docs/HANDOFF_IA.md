@@ -8,7 +8,7 @@
 
 - **Nome comercial:** OAB na Risca
 - **Nome interno / repo:** Vade Mecum 2026 (`vade-comenta-legal`)
-- **Pacote Android:** `br.com.vacatio.app`
+- **Pacote Android:** `br.com.direito.app`
 - **Público-alvo:** estudantes de OAB, concurseiros e operadores do Direito
 - **URL Lovable publicada:** https://vade-comenta-legal.lovable.app
 - **Google Play:** publicado como "OAB na Risca"
@@ -89,7 +89,7 @@ Todas as chamadas de IA passam pelo **Lovable AI Gateway** (`https://ai.gateway.
   2. Injeta `google-services.json` (Firebase) via secret
   3. Aplica deep links, shortcuts, Play Billing, ícone adaptativo, splash
   4. Assina com keystore vindo dos secrets (`admin-download-secret` permite baixar as senhas)
-  5. Gera `app-vacatio-<versão>.aab` + `.apk`
+  5. Gera `app-direitoprime-<versão>.aab` + `.apk`
 
 ### Versionamento automático
 - **Regra:** `versionName` cresce automaticamente por `run_number`.

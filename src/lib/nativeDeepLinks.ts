@@ -5,10 +5,10 @@ import { App as CapacitorApp } from '@capacitor/app';
 /**
  * Roteador genérico de deep links nativos.
  * Formatos suportados:
- *   - vacatio://lei/{slug}/art-{numero}
- *   - vacatio://noticia/{id}
- *   - vacatio://radar/pl/{id}
- *   - https://vacatio.com.br/lei/{slug}/art-{numero}  (App Links, mesmo layout)
+ *   - direitoprime://lei/{slug}/art-{numero}
+ *   - direitoprime://noticia/{id}
+ *   - direitoprime://radar/pl/{id}
+ *   - https://direitoprime.com.br/lei/{slug}/art-{numero}  (App Links, mesmo layout)
  *
  * Uso: chamar `initDeepLinkRouter(navigate)` uma vez no root do app.
  * O router ignora URLs de OAuth (delegadas ao useAuth) — nunca duplica.
@@ -19,7 +19,7 @@ let appUrlOpened = false;
 
 type NavigateFn = (path: string) => void;
 
-const SMART_LINK_ORIGIN = 'https://vacatio.com.br';
+const SMART_LINK_ORIGIN = 'https://direitoprime.com.br';
 const DEFERRED_CONSUMED_KEY = 'vacatio.deferred_deep_link_consumed';
 
 function parseDeepLink(url: string): string | null {
@@ -28,17 +28,17 @@ function parseDeepLink(url: string): string | null {
 
   try {
     const u = new URL(url);
-    // Extrai path/params. Suporta tanto esquema custom (vacatio://lei/...)
-    // quanto App Links (https://vacatio.com.br/lei/...).
-    const isCustomScheme = u.protocol === 'br.com.vacatio.app:' || u.protocol === 'vacatio:';
+    // Extrai path/params. Suporta tanto esquema custom (direitoprime://lei/...)
+    // quanto App Links (https://direitoprime.com.br/lei/...).
+    const isCustomScheme = u.protocol === 'br.com.direito.app:' || u.protocol === 'direitoprime:';
     const isAppLink =
       (u.protocol === 'https:' || u.protocol === 'http:') &&
-      (u.hostname === 'vacatio.com.br' || u.hostname === 'www.vacatio.com.br');
+      (u.hostname === 'direitoprime.com.br' || u.hostname === 'www.direitoprime.com.br');
 
     if (!isCustomScheme && !isAppLink) return null;
 
-    // Em vacatio://lei/xyz, o hostname vira "lei" e pathname "/xyz"
-    // Em https://vacatio.com.br/lei/xyz, hostname é o domínio e pathname "/lei/xyz"
+    // Em direitoprime://lei/xyz, o hostname vira "lei" e pathname "/xyz"
+    // Em https://direitoprime.com.br/lei/xyz, hostname é o domínio e pathname "/lei/xyz"
     const rawPath = isCustomScheme
       ? `/${u.hostname}${u.pathname}`.replace(/\/+/g, '/')
       : u.pathname;
@@ -97,7 +97,7 @@ function parseDeepLink(url: string): string | null {
       case 'dicionario':
         return rest[0] ? `/dicionario?termo=${encodeURIComponent(rest[0])}` : '/dicionario';
       case 'shortcut': {
-        // vacatio://shortcut/<slug>
+        // direitoprime://shortcut/<slug>
         // Fallback: delega ao mapa em nativeShortcuts.ts
         return rest[0] ? `/${rest[0]}` : '/';
       }
@@ -196,7 +196,7 @@ export function buildArtigoShareUrl(slug: string, numero?: string): string {
 }
 
 /**
- * Gera um smart link universal `https://vacatio.com.br/ir/...` para qualquer
+ * Gera um smart link universal `https://direitoprime.com.br/ir/...` para qualquer
  * tipo de conteúdo compartilhável no app.
  *
  * Exemplos:

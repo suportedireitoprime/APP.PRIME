@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 /**
  * Página PÚBLICA (sem login) explicando como excluir a conta.
  * Exigência do Google Play desde 2024: URL pública acessível sem cadastro.
- * URL a ser cadastrada no Play Console: https://www.vacatio.com.br/excluir-conta
+ * URL a ser cadastrada no Play Console: https://www.direitoprime.com.br/excluir-conta
  */
 export default function ExcluirContaPublico() {
   return (

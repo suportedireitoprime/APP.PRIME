@@ -642,10 +642,10 @@ function PushNavListener() {
       const detail = (e as CustomEvent).detail as { rota?: string } | undefined;
       if (detail?.rota) navigate(detail.rota);
     };
-    window.addEventListener('vacatio:push-navigate', handler as EventListener);
+    window.addEventListener('direitoprime:push-navigate', handler as EventListener);
     window.addEventListener('app:atalho', atalhoHandler as EventListener);
     return () => {
-      window.removeEventListener('vacatio:push-navigate', handler as EventListener);
+      window.removeEventListener('direitoprime:push-navigate', handler as EventListener);
       window.removeEventListener('app:atalho', atalhoHandler as EventListener);
     };
   }, [navigate]);

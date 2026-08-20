@@ -9,7 +9,7 @@ const corsHeaders = {
 
 const BASE = 'https://www.migalhas.com.br';
 const LIST_URL = `${BASE}/quentes`;
-const UA = 'Mozilla/5.0 (compatible; VacatioBot/1.0)';
+const UA = 'Mozilla/5.0 (compatible; DireitoPrimeBot/1.0)';
 
 interface Item {
   titulo: string;

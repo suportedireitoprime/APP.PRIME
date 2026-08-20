@@ -18,7 +18,7 @@ export interface ProfileSummary {
 }
 
 const KEY = (uid: string | null | undefined) => ['profile-summary', uid ?? 'anon'] as const;
-const LS_KEY = (uid: string) => `vacatio:profile-summary:${uid}`;
+const LS_KEY = (uid: string) => `direitoprime:profile-summary:${uid}`;
 
 function readCache(uid: string): ProfileSummary | undefined {
   if (typeof localStorage === 'undefined') return undefined;

@@ -51,8 +51,8 @@ const SUBTITLES = [
   'Para Servidores',
   'Para Magistrados',
 ];
-import logoVacatioAsset from '@/assets/logo-vacatio-v2.png.asset.json';
-import logoVacatioBundled from '@/assets/bundled/logo-vacatio-v2.webp';
+import logoVacatioAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
+import logoVacatioBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
 const logoVacatio = pickAsset(logoVacatioBundled, srcOf(logoVacatioAsset));
 import { LEIS_CATALOG } from '@/data/leisCatalog';
 import { leiPath, tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';

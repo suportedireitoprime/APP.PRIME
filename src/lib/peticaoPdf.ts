@@ -13,7 +13,7 @@ const GRAY_100: [number, number, number] = [238, 239, 244];
 const TEXT: [number, number, number] = [28, 28, 32];
 const BLUE: [number, number, number] = [37, 99, 235];
 
-const APP_URL = 'https://vacatio.com.br';
+const APP_URL = 'https://direitoprime.com.br';
 
 async function urlToDataUrl(url: string): Promise<string | null> {
   try {
@@ -184,7 +184,7 @@ export async function gerarPeticaoPDF(input: PeticaoPdfInput) {
   doc.setTextColor(255, 255, 255);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(34);
-  doc.text('VACATIO', pageW / 2, wmY, { align: 'center', charSpace: 2.2 });
+  doc.text('DIREITO PRIME', pageW / 2, wmY, { align: 'center', charSpace: 2.2 });
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(13);
   doc.setTextColor(...YELLOW);
@@ -279,7 +279,7 @@ export async function gerarPeticaoPDF(input: PeticaoPdfInput) {
     doc.setFontSize(9);
     doc.setTextColor(...GRAY_800);
     const cs = 1.4;
-    const t = 'VACATIO';
+    const t = 'DIREITO PRIME';
     const w = doc.getTextWidth(t) + cs * (t.length - 1);
     doc.text(t, mLeft, 14, { charSpace: cs });
     doc.setFont('helvetica', 'normal');

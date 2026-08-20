@@ -25,14 +25,14 @@ import { Switch } from '@/components/ui/switch';
 import HorusOnboardingOverlay from '@/components/horus/onboarding/HorusOnboardingOverlay';
 import { useHorusOnboarding } from '@/components/horus/onboarding/useHorusOnboarding';
 import { track } from '@/lib/analyticsEvents';
-import vacatioLogoAsset from '@/assets/logo-vacatio-v2.png.asset.json';
-import vacatioLogoBundled from '@/assets/bundled/logo-vacatio-v2.webp';
+import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
+import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
 import horusOwlAsset from '@/assets/horus/horus-owl.png.asset.json';
 import horusOwlBundled from '@/assets/horus/horus-owl.webp';
 import { useGoBack } from '@/hooks/useGoBack';
 import { abrirLink } from '@/lib/nativo';
 
-const vacatioLogo = pickAsset(vacatioLogoBundled, srcOf(vacatioLogoAsset));
+const primeLogo = pickAsset(primeLogoBundled, srcOf(primeLogoAsset));
 const horusOwl = pickAsset(horusOwlBundled, srcOf(horusOwlAsset));
 
 

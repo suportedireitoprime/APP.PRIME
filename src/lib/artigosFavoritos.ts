@@ -84,10 +84,10 @@ export class FavoritoLimitError extends Error {
 
 /** Premium a partir do snapshot local do useSubscription (evita dependência de hook aqui). */
 function isPremiumSnapshot(userId: string, email?: string | null): boolean {
-  const adminEmails = ['wn7corporation@gmail.com', 'suporte.vacatio@gmail.com', 'wn7juridico@gmail.com'];
+  const adminEmails = ['wn7corporation@gmail.com', 'suporte@direitoprime.com.br', 'wn7juridico@gmail.com'];
   if (email && adminEmails.includes(email.toLowerCase())) return true;
   try {
-    const raw = localStorage.getItem(`vacatio:sub:${userId}`);
+    const raw = localStorage.getItem(`direitoprime:sub:${userId}`);
     if (!raw) return false;
     return !!JSON.parse(raw)?.isPremium;
   } catch { return false; }

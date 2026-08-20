@@ -4,9 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import { Bell } from 'lucide-react';
-import vacatioLogoAsset from '@/assets/logo-vacatio-v2.png.asset.json';
-import vacatioLogoBundled from '@/assets/bundled/logo-vacatio-v2.webp';
-const vacatioLogo = pickAsset(vacatioLogoBundled, srcOf(vacatioLogoAsset));
+import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
+import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
+const primeLogo = pickAsset(primeLogoBundled, srcOf(primeLogoAsset));
 import { getNoticiasCache, prefetchNoticias, type Noticia } from '@/services/noticiasService';
 import { getLatestDayCount, getResenhaCache, prefetchResenha } from '@/services/atualizacaoService';
 import { newsImg } from '@/lib/cdnImg';
@@ -88,7 +88,7 @@ const HeroCarousel = () => {
   /* ── Logo + Novidades overlays (shared) ──────────────── */
   const logoOverlay = (
     <div className="absolute top-3 left-4 md:top-5 md:left-6 lg:top-6 lg:left-10 z-20 flex items-center gap-2 md:gap-2.5 lg:gap-3">
-      <img src={vacatioLogo} alt="Direito Prime" loading="eager" decoding="sync" fetchPriority="high" className="w-9 h-9 md:w-12 md:h-12 lg:w-14 lg:h-14 rounded-full md:rounded-xl lg:rounded-2xl object-cover border border-primary/30 lg:border-2 lg:shadow-lg" />
+      <img src={primeLogo} alt="Direito Prime" loading="eager" decoding="sync" fetchPriority="high" className="w-9 h-9 md:w-12 md:h-12 lg:w-14 lg:h-14 rounded-full md:rounded-xl lg:rounded-2xl object-cover border border-primary/30 lg:border-2 lg:shadow-lg" />
       <div>
         <h1 className="font-display text-base md:text-xl lg:text-2xl text-gradient-gold leading-none">Direito Prime</h1>
         <p className="font-display text-[10px] md:text-xs lg:text-sm text-white/60">Vade Mecum Profissional</p>

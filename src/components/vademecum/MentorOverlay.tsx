@@ -7,11 +7,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
 import { haptic } from "@/lib/nativeHaptics";
 import { pickAsset, srcOf } from "@/lib/assetUrl";
-import vacatioLogoAsset from "@/assets/logo-vacatio-v2.png.asset.json";
-import vacatioLogoBundled from "@/assets/bundled/logo-vacatio-v2.webp";
+import primeLogoAsset from "@/assets/logo-direitoprime-v2.png.asset.json";
+import primeLogoBundled from "@/assets/bundled/logo-direitoprime-v2.webp";
 import { confirmar } from '@/lib/nativo';
 
-const vacatioLogo = pickAsset(vacatioLogoBundled, srcOf(vacatioLogoAsset));
+const primeLogo = pickAsset(primeLogoBundled, srcOf(primeLogoAsset));
 
 interface Message {
   id: string;
@@ -237,7 +237,7 @@ const MentorOverlay = ({ open, onClose }: MentorOverlayProps) => {
             </button>
             <div className="flex items-center gap-2.5 flex-1 min-w-0">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg shadow-primary/30 shrink-0 overflow-hidden">
-                <img src={vacatioLogo} alt="Logo" className="w-7 h-7 object-contain" />
+                <img src={primeLogo} alt="Logo" className="w-7 h-7 object-contain" />
               </div>
               <div className="min-w-0">
                 <h2 className="font-display text-base font-bold text-foreground leading-tight">Mentor</h2>
@@ -405,7 +405,7 @@ const MentorOverlay = ({ open, onClose }: MentorOverlayProps) => {
             {messages.length === 0 && !loading && (
               <div className="flex flex-col items-center justify-center py-8 text-center gap-5">
                 <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-xl shadow-primary/40 overflow-hidden">
-                  <img src={vacatioLogo} alt="Mentor" className="w-14 h-14 object-contain" />
+                  <img src={primeLogo} alt="Mentor" className="w-14 h-14 object-contain" />
                 </div>
                 <div>
                   <p className="font-display text-xl font-bold text-foreground">Olá! Eu sou o Mentor 👋</p>
@@ -528,7 +528,7 @@ const MentorOverlay = ({ open, onClose }: MentorOverlayProps) => {
                   <div className="relative w-5 h-5 shrink-0">
                     <span className="absolute inset-0 rounded-full bg-primary/30 animate-ping" />
                     <span className="absolute inset-0.5 rounded-full bg-primary/70 flex items-center justify-center">
-                      <img src={vacatioLogo} alt="" className="w-2.5 h-2.5 object-contain" />
+                      <img src={primeLogo} alt="" className="w-2.5 h-2.5 object-contain" />
                     </span>
                   </div>
                   <AnimatePresence mode="wait">

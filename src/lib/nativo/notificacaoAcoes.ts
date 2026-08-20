@@ -16,7 +16,7 @@ export const TIPO_AUDIO = 'LEMBRETE_AUDIO';
 let registrado = false;
 
 function navegar(rota: string) {
-  window.dispatchEvent(new CustomEvent('vacatio:push-navigate', { detail: { path: rota } }));
+  window.dispatchEvent(new CustomEvent('direitoprime:push-navigate', { detail: { path: rota } }));
 }
 
 async function adiarUmaHora(notificacao: { title?: string; body?: string; id?: number }) {

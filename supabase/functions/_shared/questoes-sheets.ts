@@ -9,7 +9,7 @@ export const corsHeaders = {
 
 export const ADMIN_EMAILS = new Set([
   "wn7corporation@gmail.com",
-  "suporte.vacatio@gmail.com",
+  "suporte@direitoprime.com.br",
   "wn7juridico@gmail.com",
 ]);
 
