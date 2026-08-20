@@ -1,38 +1,64 @@
-# Remix of VACATIO
+# Direito Prime (APP.PRIME) ⚖️
 
-I want to create an amazing slide making app in Lovable. 
+Um aplicativo multiplataforma premium de Estudos Jurídicos e Vade Mecum, projetado para oferecer a melhor experiência de leitura, consulta e aprendizado ativo para profissionais e estudantes de Direito.
 
-Core ideas/architecture:
-1. All slides have locked size/aspect ratio. Should look similar at whatever zoom I look into it (no dynamic reizing weidness). PDF-style
-2. Commenting functionality (overlay on top of slides). Resolution/threads
-3. See all slides on left bar (iframe or similar? Idk)
-4. Be able to reorder slides (via storing the slide HTML → supabase link)
-5. Slide structure should be powerful but very flexible. People will eg generate competely custom animations, charts etc... But w estill want to make sure some basic things are easy to do and consistent. Eg title slides, title location, positinoning. Should ideally be fixed. Perhaps some kind of cooridnate system + 10 high level templates for how 'components' cna be poisitione,d hten components can be anything (or something of preselted?) Help me create right abstraction here 
-6. Create new slide functionality in the Left slide left bar. When doing that you have option to just 'enter desription' of slide to supabase. When you do that,  lovable will be able to ready supabase later and improve on the slides. later when using the chat
-7. Start off with a bunch of example slides showcasing the functionality, content etc... 
-8. Setup a basic CMS in supabase. All strings should be from there
-9. Document your setup throughly in setup.md. This will be later used to create reusale template from this project 
-10. Each slide should aim to be very inependent from others → changing one wont change others easily to make agent easier to rason about
+## 🚀 Tecnologias e Stack
 
-This project was built with [Lovable](https://lovable.dev).
+O projeto utiliza uma stack moderna e híbrida, garantindo alta performance tanto na Web quanto em dispositivos móveis e desktop:
 
-**Live app**: https://story-canvas-2478.lovable.app
+- **Frontend:** React 18, TypeScript, Vite
+- **Estilização:** Tailwind CSS, Shadcn UI, Framer Motion, Radix UI
+- **Backend/BaaS:** Supabase (PostgreSQL, Edge Functions, Storage, Realtime)
+- **Mobile (iOS/Android):** Capacitor 8 (com suporte total a modos offline, notificações nativas e integrações com o SO)
+- **Desktop:** Electron (via Vite)
+- **IA Integrada:** Gemini Live API (Recurso "Me Explique" interativo e por voz)
+- **Armazenamento e Offline:** IndexedDB (idb-keyval), SQLite, Dexie e React Query Persister
+- **Visualização:** Three.js, React PDF, Lottie e Remotion (para animações cinematográficas e biográficas)
 
-## Build with Lovable
+## 📦 Funcionalidades Principais
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/fd8460c1-acd4-49a6-945f-c5d24f55ee54).
+1. **Leitor Jurídico Avançado (Vade Mecum):** Visualização de leis, códigos e constituição com formatação de alto contraste, modo noturno e ferramentas nativas de busca.
+2. **"Me Explique" (Tutor IA):** Um overlay interativo turbinado pelo Gemini Live, que tira dúvidas do usuário através de voz ou texto de forma conversacional e com baixa latência utilizando WebSockets e tokens efêmeros.
+3. **Sincronização Offline First:** Utilizando a API do SQLite nativo e persistência via React Query, a maior parte do conteúdo pode ser baixada e consumida sem internet.
+4. **Layout Híbrido Responsivo:** Totalmente adaptado para Mobile (com áreas de toque ampliadas), Tablet (layouts list-detail) e Desktop (sidebars).
+5. **Gamificação:** Controle de XP, sequências (streaks) e progresso de leitura inspirados em apps como Duolingo.
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+## 🛠️ Como executar o projeto localmente
 
-## Development
+### Pré-requisitos
+- Node.js (v24 recomendado) ou Bun
+- Gerenciador de pacotes Bun ou npm
+- Supabase CLI (caso queira manipular funções locais ou o banco de dados)
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+### Passos para inicialização
 
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
+1. Instale as dependências:
+```bash
+bun install
+# ou
+npm install
+```
+
+2. Inicialize o servidor de desenvolvimento:
+```bash
+bun run dev
+# ou
 npm run dev
 ```
+
+3. (Opcional) Executar ambiente Electron (Desktop):
+```bash
+bun run electron:dev
+```
+
+## 📱 Build e Deploy (Mobile / iOS)
+
+O projeto possui uma esteira CI/CD madura rodando via **GitHub Actions** (`build-ios.yml`).
+Sempre que precisar gerar uma nova build para o **TestFlight**, basta disparar o workflow no GitHub ou via API. 
+
+As assinaturas do iOS (certificados e perfis) são geridas automaticamente pelo App Store Connect API (`scripts/asc-create-profile.py`) e armazenadas de forma segura nos `Secrets` do repositório.
+
+## 🛡️ Regras de Qualidade
+- **Verificação Contínua:** `tsc --noEmit` deve ser rodado para garantir que não existam erros de tipagem.
+- **Acessibilidade (WCAG):** Elementos interativos devem ter suporte total para navegação e bom contraste.
+- **Microinterações:** Feedback tátil (Haptics) acoplado aos cliques e navegação (Framer Motion).
