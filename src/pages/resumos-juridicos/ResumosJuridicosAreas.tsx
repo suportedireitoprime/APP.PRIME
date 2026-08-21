@@ -288,7 +288,7 @@ export default function ResumosJuridicosAreas() {
           {/* CARGOS */}
           <section className="space-y-3 pt-4 pb-20">
             <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">Cargos</p>
-            <div className="grid grid-cols-4 gap-2.5">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <button onClick={() => { haptic.selection(); navigate('/resumos-juridicos/cargos/magistratura'); }} className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#38bdf8]/50 transition-all active:scale-95 gap-2 text-center">
                 <div className="relative w-10 h-10 flex items-center justify-center">
                   <Scale className="w-7 h-7 sm:w-8 sm:h-8 text-[#38bdf8] transition-all duration-300 group-hover:scale-110" strokeWidth={1.5} />
