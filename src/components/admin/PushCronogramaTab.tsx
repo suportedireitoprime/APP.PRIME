@@ -308,6 +308,8 @@ export default function PushCronogramaTab() {
       } else if (skipLog) {
         status = "nao_enviado";
         badge = skipLog.payload?.reason === "sem_leis_novas" ? "Sem leis novas hoje" : "Sem conteúdo pendente";
+        status = "agendado"; // User wants them to be "green" (agendado) instead of previsto
+        badge = "Disparo Ativo";
       }
 
       lista.push({
@@ -663,16 +665,21 @@ export default function PushCronogramaTab() {
             <div key={ev.automation_key + i} className="relative group">
               {/* Ícone marcador da timeline */}
               <div
+                style={{
+                   backgroundColor: enviado ? "#10b981" : erro ? "#ef4444" : isProximo ? "rgba(16, 185, 129, 0.2)" : agendado ? "rgba(16, 185, 129, 0.2)" : "transparent",
+                   borderColor: enviado ? "#10b981" : erro ? "#ef4444" : isProximo ? "#10b981" : agendado ? "#10b981" : "#3f3f46",
+                   color: enviado ? "#000" : erro ? "#fff" : isProximo ? "#10b981" : agendado ? "#10b981" : "#a1a1aa"
+                }}
                 className={`absolute -left-[27px] top-3.5 w-7 h-7 rounded-full border-2 flex items-center justify-center shadow-md transition-all ${
                   enviado
-                    ? "bg-emerald-500 border-emerald-400 text-black font-bold ring-4 ring-emerald-500/20"
+                    ? "font-bold ring-4 ring-emerald-500/20"
                     : erro
-                    ? "bg-red-500 border-red-400 text-white font-bold ring-4 ring-red-500/20 animate-bounce"
+                    ? "font-bold ring-4 ring-red-500/20 animate-bounce"
                     : isProximo
-                    ? "bg-primary border-primary text-primary-foreground ring-4 ring-primary/20 animate-pulse"
+                    ? "ring-4 ring-emerald-500/20 animate-pulse"
                     : agendado
-                    ? "bg-background border-primary/80 text-primary"
-                    : "bg-background border-muted-foreground/40 text-muted-foreground"
+                    ? ""
+                    : ""
                 }`}
               >
                 {enviado ? (
@@ -682,7 +689,7 @@ export default function PushCronogramaTab() {
                 ) : isProximo ? (
                   <Bell className="w-3.5 h-3.5" />
                 ) : agendado ? (
-                  <Clock className="w-3.5 h-3.5" />
+                  <Check className="w-3.5 h-3.5" strokeWidth={3} />
                 ) : (
                   <CircleDashed className="w-3.5 h-3.5" />
                 )}
@@ -690,13 +697,17 @@ export default function PushCronogramaTab() {
 
               {/* CARD PRINCIPAL COM DESTAQUE CONDICIONAL */}
               <Card
+                style={{
+                  backgroundColor: enviado ? "rgba(16, 185, 129, 0.1)" : erro ? "rgba(239, 68, 68, 0.1)" : isProximo ? "rgba(16, 185, 129, 0.05)" : agendado ? "rgba(16, 185, 129, 0.05)" : undefined,
+                  borderColor: enviado ? "rgba(16, 185, 129, 0.4)" : erro ? "rgba(239, 68, 68, 0.6)" : isProximo ? "rgba(16, 185, 129, 0.6)" : agendado ? "rgba(16, 185, 129, 0.3)" : undefined
+                }}
                 className={`p-4 rounded-2xl transition-all duration-200 border ${
                   enviado
-                    ? "bg-emerald-950/20 border-emerald-500/40 shadow-[0_0_20px_rgba(16,185,129,0.06)] hover:border-emerald-500/70"
+                    ? "shadow-[0_0_20px_rgba(16,185,129,0.06)] hover:border-emerald-500/70"
                     : erro
-                    ? "bg-red-950/20 border-red-500/60 shadow-[0_0_20px_rgba(239,68,68,0.12)] hover:border-red-500"
+                    ? "shadow-[0_0_20px_rgba(239,68,68,0.12)] hover:border-red-500"
                     : isProximo
-                    ? "bg-card border-primary/60 shadow-md ring-1 ring-primary/30"
+                    ? "shadow-md ring-1 ring-emerald-500/30"
                     : "bg-card/70 border-border/70 hover:border-border"
                 }`}
               >
@@ -714,18 +725,18 @@ export default function PushCronogramaTab() {
 
                       {/* BADGES DE STATUS */}
                       {enviado && (
-                        <Badge className="bg-emerald-500 text-black font-black text-[10px] gap-1 shadow-sm">
+                        <Badge style={{ backgroundColor: "#10b981", color: "#000" }} className="font-black text-[10px] gap-1 shadow-sm hover:bg-emerald-400">
                           <CheckCircle2 className="w-3 h-3" /> ENVIADO COM SUCESSO
                         </Badge>
                       )}
                       {erro && (
-                        <Badge className="bg-red-500 text-white font-black text-[10px] gap-1 shadow-sm animate-pulse">
+                        <Badge style={{ backgroundColor: "#ef4444", color: "#fff" }} className="font-black text-[10px] gap-1 shadow-sm animate-pulse hover:bg-red-400">
                           <XCircle className="w-3 h-3" /> ERRO NO DISPARO
                         </Badge>
                       )}
                       {agendado && (
-                        <Badge variant="outline" className="text-[10px] border-primary text-primary font-bold">
-                          <Clock className="w-3 h-3 mr-1" /> AGENDADO
+                        <Badge variant="outline" style={{ borderColor: "#10b981", color: "#10b981", backgroundColor: "rgba(16, 185, 129, 0.1)" }} className="text-[10px] font-bold">
+                          <Check className="w-3 h-3 mr-1" strokeWidth={3} /> ATIVO
                         </Badge>
                       )}
                       {ev.status === "previsto" && (
