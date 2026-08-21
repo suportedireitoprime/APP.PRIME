@@ -51,7 +51,21 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       }
     };
 
-    return <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} onClick={handleClick} {...props} />;
+    // Acessibilidade extrema: garantir que variant icon tenha aria-label se ausente, ou emitir um console.warn em dev
+    if (variant === 'icon' && size === 'icon' && !props['aria-label'] && process.env.NODE_ENV !== 'production') {
+      console.warn(`Acessibilidade [a11y]: Botão de ícone renderizado sem 'aria-label' descritivo. \nClasse: ${className}`);
+    }
+
+    return (
+      <Comp 
+        className={cn(buttonVariants({ variant, size, className }))} 
+        ref={ref} 
+        onClick={handleClick} 
+        // Melhora a compatibilidade com leitores de tela em elementos Slot customizados
+        role={asChild ? "button" : undefined}
+        {...props} 
+      />
+    );
   },
 );
 Button.displayName = "Button";

@@ -287,12 +287,13 @@ const LeiOrdinariaDetail = ({ lei, onBack }: LeiOrdinariaDetailProps) => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.02 }}
                         onClick={() => setOpenArtigo(art)}
-                        className="w-full text-left rounded-2xl bg-card hover:bg-secondary/60 transition-all group flex overflow-hidden min-h-[68px]"
+                        aria-label={`Abrir ${art.numero}`}
+                        className="w-full text-left rounded-2xl bg-card hover:bg-secondary/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary transition-all group flex overflow-hidden min-h-[68px]"
                       >
-                        <div className="w-1.5 bg-primary rounded-l-2xl shrink-0" />
+                        <div className="w-1.5 bg-primary rounded-l-2xl shrink-0" aria-hidden="true" />
                         <div className="flex items-center gap-3 p-4 flex-1 min-w-0">
-                          <div className="w-9 h-9 rounded-lg bg-primary/15 flex items-center justify-center shrink-0">
-                            <Scale className="w-4 h-4 text-primary-light" />
+                          <div className="w-9 h-9 rounded-lg bg-primary/15 flex items-center justify-center shrink-0" aria-hidden="true">
+                            <Scale className="w-4 h-4 text-primary-light" aria-hidden="true" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <h4 className="font-display text-[15px] font-bold text-primary-light mb-0.5">
@@ -302,7 +303,7 @@ const LeiOrdinariaDetail = ({ lei, onBack }: LeiOrdinariaDetailProps) => {
                               {art.texto.substring(0, 150)}{art.texto.length > 150 ? '...' : ''}
                             </p>
                           </div>
-                          <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary shrink-0 transition-colors" />
+                          <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary shrink-0 transition-colors" aria-hidden="true" />
                         </div>
                       </motion.button>
                     ))}
@@ -501,9 +502,9 @@ function ExplicacaoTab({ lei }: { lei: LeiOrdinaria }) {
       </div>
       <button
         onClick={gerar}
-        className="mt-2 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-display text-sm font-semibold shadow-lg shadow-primary/20 hover:opacity-90 active:scale-[0.98] transition-all"
+        className="mt-2 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-display text-sm font-semibold shadow-lg shadow-primary/20 hover:opacity-90 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all"
       >
-        <Scale className="w-4 h-4" />
+        <Scale className="w-4 h-4" aria-hidden="true" />
         Gerar explicação
       </button>
     </div>

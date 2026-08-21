@@ -377,23 +377,24 @@ function MenuRow({
     return (
       <button
         onClick={onClick}
-        className="group relative w-full flex items-center gap-3 px-4 py-[18px] text-left overflow-hidden transition-transform active:scale-[0.99] text-white"
+        aria-label={label}
+        className="group relative w-full flex items-center gap-3 px-4 py-[18px] text-left overflow-hidden transition-transform active:scale-[0.99] text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
         style={{
           background:
             'linear-gradient(135deg, hsl(350 68% 32%) 0%, hsl(350 74% 42%) 50%, hsl(348 80% 50%) 100%)',
         }}
       >
         <span
-          aria-hidden
+          aria-hidden="true"
           className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 -skew-x-12 animate-[planos-shine_3.2s_ease-in-out_infinite]"
           style={{
             background:
               'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.45) 50%, transparent 100%)',
           }}
         />
-        <Icon className="relative w-5 h-5 text-white" strokeWidth={2.4} />
+        <Icon className="relative w-5 h-5 text-white" strokeWidth={2.4} aria-hidden="true" />
         <span className="relative font-body text-[15px] font-bold flex-1">{label}</span>
-        <ChevronRight className="relative w-4 h-4 opacity-90" strokeWidth={2.6} />
+        <ChevronRight className="relative w-4 h-4 opacity-90" strokeWidth={2.6} aria-hidden="true" />
       </button>
     );
   }
@@ -401,37 +402,39 @@ function MenuRow({
     return (
       <button
         onClick={onClick}
-        className="group relative w-full flex items-center gap-3 px-4 py-[18px] text-left overflow-hidden transition-transform active:scale-[0.99] text-[hsl(43_80%_12%)]"
+        aria-label={label}
+        className="group relative w-full flex items-center gap-3 px-4 py-[18px] text-left overflow-hidden transition-transform active:scale-[0.99] text-[hsl(43_80%_12%)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
         style={{
           background: 'linear-gradient(135deg, hsl(45 95% 58%) 0%, hsl(43 90% 50%) 55%, hsl(40 88% 44%) 100%)',
         }}
       >
         {/* Shine reflection sweep — plays only on this row */}
         <span
-          aria-hidden
+          aria-hidden="true"
           className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 -skew-x-12 animate-[planos-shine_3.2s_ease-in-out_infinite]"
           style={{
             background:
               'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.55) 50%, transparent 100%)',
           }}
         />
-        <Icon className="relative w-5 h-5 text-[hsl(43_80%_12%)]" strokeWidth={2.4} />
+        <Icon className="relative w-5 h-5 text-[hsl(43_80%_12%)]" strokeWidth={2.4} aria-hidden="true" />
         <span className="relative font-body text-[15px] font-bold flex-1">{label}</span>
         <span className="relative text-[10px] uppercase tracking-widest font-display font-bold px-2 py-0.5 rounded-full bg-[hsl(43_80%_12%)]/15">
           Pro
         </span>
-        <ChevronRight className="relative w-4 h-4 opacity-80" strokeWidth={2.6} />
+        <ChevronRight className="relative w-4 h-4 opacity-80" strokeWidth={2.6} aria-hidden="true" />
       </button>
     );
   }
   return (
     <button
       onClick={onClick}
-      className={`w-full flex items-center gap-3 px-4 py-[18px] text-left transition-colors active:bg-muted/60 ${
+      aria-label={label}
+      className={`w-full flex items-center gap-3 px-4 py-[18px] text-left transition-colors active:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset ${
         danger ? 'text-red-400 hover:text-red-300' : 'text-foreground/90 hover:bg-secondary'
       }`}
     >
-      <Icon className={`w-5 h-5 shrink-0 ${danger ? 'text-red-400' : 'text-hero-panel'}`} />
+      <Icon className={`w-5 h-5 shrink-0 ${danger ? 'text-red-400' : 'text-hero-panel'}`} aria-hidden="true" />
       <span className="font-body text-[15px] flex-1">{label}</span>
     </button>
   );
