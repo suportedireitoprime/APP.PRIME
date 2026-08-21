@@ -904,14 +904,14 @@ function normalizeGeminiTextModel(model: unknown): string | null {
   const raw = String(model || "").trim();
   if (!raw) return null;
   const bare = raw.replace(/^google\//i, "");
-  // Aceita gemini-2.5-flash-lite diretamente
-  if (/gemini-3\.1-flash-lite/i.test(bare)) return "gemini-2.5-flash-lite";
+  // Aceita gemini-3.1-flash-lite diretamente
+  if (/gemini-3\.1-flash-lite/i.test(bare)) return "gemini-3.1-flash-lite";
   // Bloqueia aliases -latest, 2.5-pro e 2.5-flash "puro" — normaliza p/ 3.1-flash-lite.
   if (/-latest$/i.test(bare) ||
       /gemini-2\.5-pro/i.test(bare) ||
       /gemini-2\.5-flash(?!-lite)(?!-image)(?!-preview-tts)/i.test(bare)) {
-    console.warn(`[horus] modelo "${raw}" bloqueado pela política — usando gemini-2.5-flash-lite`);
-    return "gemini-2.5-flash-lite";
+    console.warn(`[horus] modelo "${raw}" bloqueado pela política — usando gemini-3.1-flash-lite`);
+    return "gemini-3.1-flash-lite";
   }
   if (/flash-lite/i.test(bare)) return bare;
   return null;

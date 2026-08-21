@@ -2,7 +2,7 @@
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 
 const LOVABLE_API_KEY = undefined;
-const MODEL = 'gemini-2.5-flash-lite';
+const MODEL = 'gemini-3.1-flash-lite';
 
 export const handler = (async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });

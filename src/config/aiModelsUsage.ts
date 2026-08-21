@@ -2,13 +2,13 @@
 // Mantido em sincronia com supabase/functions/_shared/ai-models.ts.
 //
 // POLÍTICA: modelo fixado em versão específica (nunca alias `-latest`).
-// O texto usa `gemini-2.5-flash-lite` (mais barato disponível na chave do projeto).
+// O texto usa `gemini-3.1-flash-lite` (mais barato disponível na chave do projeto).
 // Ref: https://ai.google.dev/gemini-api/docs/models
 
 export const MODEL_POLICY_NOTE =
   "Todos os modelos estão fixados em versões explícitas. " +
   "Aliases `-latest` são proibidos para evitar troca silenciosa de modelo. " +
-  "Texto: gemini-2.5-flash-lite. Imagem: gemini-2.5-flash-image. TTS: gemini-2.5-flash-preview-tts.";
+  "Texto: gemini-3.1-flash-lite. Imagem: gemini-2.5-flash-image. TTS: gemini-2.5-flash-preview-tts.";
 
 
 export type ModelKind = "text" | "image" | "tts";
@@ -21,8 +21,8 @@ export interface FunctionUsage {
 
 export const ACTIVE_MODELS = {
   text: {
-    id: "gemini-2.5-flash-lite",
-    gateway: "google/gemini-2.5-flash-lite",
+    id: "gemini-3.1-flash-lite",
+    gateway: "google/gemini-3.1-flash-lite",
     label: "Gemini 3.1 Flash Lite",
     category: "Texto (chat, análise, extração, JSON)",
     docs: "https://ai.google.dev/gemini-api/docs/models",

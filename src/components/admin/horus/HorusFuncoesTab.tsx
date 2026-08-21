@@ -23,7 +23,7 @@ type Funcao = {
 const empty: Partial<Funcao> = {
   nome: '', descricao: '', prompt: '', icone: 'Sparkles', keywords: [],
   ativo: true, apenas_premium: false, ordem: 0,
-  prioridade: 100, requer_cadastro: true, modelo: 'gemini-2.5-flash-lite',
+  prioridade: 100, requer_cadastro: true, modelo: 'gemini-3.1-flash-lite',
   temperatura: 0.6, max_tokens: 2048, usar_busca_web: true, usa_estatisticas: true,
 };
 
@@ -125,7 +125,7 @@ export function HorusFuncoesTab() {
                 <div><Label>Prioridade (menor = antes)</Label><Input type="number" value={editing.prioridade ?? 100} onChange={(e) => setEditing({ ...editing, prioridade: Number(e.target.value) })} /></div>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <div><Label>Modelo</Label><Input value={editing.modelo || ''} onChange={(e) => setEditing({ ...editing, modelo: e.target.value })} placeholder="gemini-2.5-flash-lite" /></div>
+                <div><Label>Modelo</Label><Input value={editing.modelo || ''} onChange={(e) => setEditing({ ...editing, modelo: e.target.value })} placeholder="gemini-3.1-flash-lite" /></div>
                 <div><Label>Ordem</Label><Input type="number" value={editing.ordem ?? 0} onChange={(e) => setEditing({ ...editing, ordem: Number(e.target.value) })} /></div>
               </div>
               <div className="grid grid-cols-2 gap-3">

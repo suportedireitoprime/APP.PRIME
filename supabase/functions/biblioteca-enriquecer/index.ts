@@ -79,7 +79,7 @@ Regras: sem markdown, sem texto fora do JSON, sem \`\`\`. Se não souber algo co
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'gemini-2.5-flash-lite',
+          model: 'gemini-3.1-flash-lite',
           messages: [
             { role: 'system', content: 'Retorne apenas JSON válido, sem markdown.' },
             { role: 'user', content: prompt },
@@ -206,8 +206,8 @@ function json(data: unknown, status = 200) {
 // Body: { action: 'termos'|'resumo'|'chat'|'sugestoes'|'frase_marcante', ...payload }
 // ============================================================================
 
-const IA_MODEL = 'gemini-2.5-flash-lite';
-const IA_MODEL_FRASE = 'gemini-2.5-flash-lite';
+const IA_MODEL = 'gemini-3.1-flash-lite';
+const IA_MODEL_FRASE = 'gemini-3.1-flash-lite';
 
 const IA_SYSTEM_TERMOS = `Você é um professor que ajuda leitores a entender palavras difíceis, expressões técnicas, termos jurídicos, termos em latim, nomes históricos e conceitos abstratos que aparecem em um trecho de um livro.
 

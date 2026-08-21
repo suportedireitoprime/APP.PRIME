@@ -10,7 +10,7 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-const MODEL = "gemini-2.5-flash-lite";
+const MODEL = "gemini-3.1-flash-lite";
 const PROVIDER = "gemini-direto";
 
 const SYSTEM_PROMPT = `Você é um professor e especialista em Direito criando FLASHCARDS ricos e VARIADOS para estudantes e concurseiros.

@@ -7,7 +7,7 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-const MODEL = "gemini-2.5-flash-lite";
+const MODEL = "gemini-3.1-flash-lite";
 
 function requireEnv(name: string): string {
   const v = Deno.env.get(name);

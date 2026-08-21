@@ -24,7 +24,7 @@ Deno.serve(async (req) => {
       .maybeSingle();
 
     const promptSistema = config?.prompt_sistema || 'A lei foi alterada recentemente. Resuma a mudança com base na tag de alteração informada.';
-    const modeloIa = config?.modelo_ia || 'gemini-2.5-flash-lite';
+    const modeloIa = config?.modelo_ia || 'gemini-3.1-flash-lite';
     const geminiKey = Deno.env.get('GEMINI_API_KEY');
 
     // 2. Pegar todas as leis que têm planalto_url

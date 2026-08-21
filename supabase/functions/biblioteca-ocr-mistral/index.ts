@@ -15,7 +15,7 @@ const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("CUSTOM_SERVICE_ROLE_KEY") ?? Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
 const ADMIN_EMAILS = new Set(["wn7corporation@gmail.com", "suporte@direitoprime.com.br", "wn7juridico@gmail.com"]);
-const FUNCTION_VERSION = "biblioteca-ocr-mistral-gemini-2-5-flash-lite-v1";
+const FUNCTION_VERSION = "biblioteca-ocr-mistral-gemini-3.1-flash-lite-v1";
 
 interface Body {
   livro_id: string;
@@ -723,8 +723,8 @@ function tryDriveAltUrl(url: string): string | null {
 // REFINO GEMINI (empacotado nesta função)
 // ============================================================
 const geminiKey = () => (Deno.env.get("GEMINI_API_KEY") ?? "").trim();
-const MODEL_FAST = "gemini-2.5-flash-lite";
-const MODEL_PRO = "gemini-2.5-flash-lite";
+const MODEL_FAST = "gemini-3.1-flash-lite";
+const MODEL_PRO = "gemini-3.1-flash-lite";
 const GEMINI_PROVIDER = "gemini-direto";
 
 interface RefinoBody { action: "refino"; livro_id: string; livro_tabela: string; force?: boolean; }

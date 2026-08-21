@@ -3,7 +3,7 @@ import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const GATEWAY_URL = 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions';
-const MODEL = 'gemini-2.5-flash-lite';
+const MODEL = 'gemini-3.1-flash-lite';
 
 const PROMPTS: Record<string, string> = {
   cornell: `Você é um professor de Direito brasileiro. Produza um estudo no MÉTODO CORNELL sobre o conteúdo enviado.

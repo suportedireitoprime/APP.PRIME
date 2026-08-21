@@ -98,7 +98,7 @@ function formatArticle(row: ArtigoRow): string {
 
 async function callGemini(prompt: string): Promise<string> {
   const { logAiCall } = await import("../_shared/ai-log.ts");
-  const model = "gemini-2.5-flash-lite";
+  const model = "gemini-3.1-flash-lite";
   const keys = [GEMINI_API_KEY].filter(Boolean);
   const startedAt = Date.now();
   let success = true, errMsg: string | undefined;

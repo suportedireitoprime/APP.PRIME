@@ -97,7 +97,7 @@ export function extractOpenAiUsage(data: any): { inputUnits: number; outputUnits
 // Wrapper de conveniência para envolver uma chamada de IA com timing + log.
 // Uso:
 //   const result = await withAiLog(
-//     { functionName: "meu-endpoint", kind: "text", model: "gemini-2.5-flash-lite", triggerType: "manual" },
+//     { functionName: "meu-endpoint", kind: "text", model: "gemini-3.1-flash-lite", triggerType: "manual" },
 //     async () => {
 //       const res = await fetch(...);
 //       const data = await res.json();
