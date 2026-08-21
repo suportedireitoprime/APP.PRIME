@@ -7,7 +7,6 @@ import {
   ChevronDown,
   ChevronRight,
   Loader2,
-  NotebookText,
   Search,
   Landmark,
   Leaf,
@@ -32,26 +31,19 @@ import {
   X,
   Mic,
   MicOff,
+  Scroll,
 } from "lucide-react";
 import ResumosBottomNav from "@/components/resumos/ResumosBottomNav";
 import ResumosCargoHero from "@/components/resumos/ResumosCargoHero";
 import { AREAS_LEIS, leisDaArea, AreaLeis } from "@/lib/leisPorArea";
 import type { LeiCatalogItem } from "@/data/leisCatalog";
 import LeiArtigosSheet from "@/components/resumos-juridicos/LeiArtigosSheet";
-import { leiPath } from "@/lib/legislacaoSlugs";
 import { LEI_ICON_MAP } from "@/lib/leiIcons";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
-import { Scroll, History, Bookmark, Clock, ListPlus } from "lucide-react";
 import { PageHeader } from "@/components/vademecum/PageHeader";
 import { haptic } from "@/lib/nativeHaptics";
 
-type Aba = "home" | "areas" | "leis" | "jurisprudencia";
-
-const ABAS: { id: Aba; label: string; icon: typeof Gavel }[] = [
-  { id: "leis", label: "Leis", icon: ScrollText },
-  { id: "areas", label: "Matérias", icon: BookOpen },
-  { id: "jurisprudencia", label: "Jurisprudência", icon: Gavel },
-];
+type Aba = "areas" | "leis" | "jurisprudencia";
 
 const JURIS_ITENS: { label: string; desc: string; rota: string; color: string }[] = [
   { label: "Súmulas Vinculantes", desc: "STF · efeito vinculante", rota: "/resumos-juridicos/jurisprudencia/sumulas-vinculantes", color: "#f87171" },
@@ -68,24 +60,24 @@ const JURIS_ITENS: { label: string; desc: string; rota: string; color: string }[
 
 type AreaRow = { area: string; total: number };
 
-// Ícone e cor (hex) por área — inline style para evitar purge do Tailwind
+// Ícone e cor (hex) por área
 const AREA_STYLE: Record<string, { icon: any; color: string }> = {
-  administrativo: { icon: Landmark, color: "#38bdf8" },      // sky
-  ambiental: { icon: Leaf, color: "#34d399" },               // emerald
-  civil: { icon: Users, color: "#60a5fa" },                  // blue
-  concorrencial: { icon: Building2, color: "#22d3ee" },      // cyan
-  constitucional: { icon: Scale, color: "#c2274a" },         // amber
-  desportivo: { icon: Trophy, color: "#fb923c" },            // orange
-  trabalho: { icon: Briefcase, color: "#fb7185" },           // rose
-  eleitoral: { icon: Vote, color: "#a78bfa" },               // violet
-  internacional: { icon: Globe, color: "#2dd4bf" },          // teal
-  penal: { icon: Gavel, color: "#f87171" },                  // red
-  processo: { icon: ScrollText, color: "#818cf8" },          // indigo
+  administrativo: { icon: Landmark, color: "#38bdf8" },
+  ambiental: { icon: Leaf, color: "#34d399" },
+  civil: { icon: Users, color: "#60a5fa" },
+  concorrencial: { icon: Building2, color: "#22d3ee" },
+  constitucional: { icon: Scale, color: "#c2274a" },
+  desportivo: { icon: Trophy, color: "#fb923c" },
+  trabalho: { icon: Briefcase, color: "#fb7185" },
+  eleitoral: { icon: Vote, color: "#a78bfa" },
+  internacional: { icon: Globe, color: "#2dd4bf" },
+  penal: { icon: Gavel, color: "#f87171" },
+  processo: { icon: ScrollText, color: "#818cf8" },
   processual: { icon: ScrollText, color: "#818cf8" },
-  previdenciario: { icon: Shield, color: "#c2274a" },        // yellow
-  tributario: { icon: Receipt, color: "#a3e635" },           // lime
-  empresarial: { icon: Building2, color: "#e879f9" },        // fuchsia
-  consumidor: { icon: Wallet, color: "#f472b6" },            // pink
+  previdenciario: { icon: Shield, color: "#c2274a" },
+  tributario: { icon: Receipt, color: "#a3e635" },
+  empresarial: { icon: Building2, color: "#e879f9" },
+  consumidor: { icon: Wallet, color: "#f472b6" },
   familia: { icon: Baby, color: "#f472b6" },
   transito: { icon: Car, color: "#fb923c" },
   imobiliario: { icon: Home, color: "#c2274a" },
@@ -116,7 +108,7 @@ export default function ResumosJuridicosAreas() {
   const [loading, setLoading] = useState(!areasCache);
   const [q, setQ] = useState("");
   const [buscaAberta, setBuscaAberta] = useState(false);
-  const [aba, setAba] = useState<Aba>("home");
+  const [aba, setAba] = useState<Aba>("areas");
   const [areaLeis, setAreaLeis] = useState<AreaLeis | null>(null);
   const [leiArtigos, setLeiArtigos] = useState<{ lei: LeiCatalogItem; area: string } | null>(null);
   const [buscaLeis, setBuscaLeis] = useState("");
@@ -124,15 +116,12 @@ export default function ResumosJuridicosAreas() {
   const voiceBusca = useVoiceInput((t: string) => setQ(t));
   const [filtroBusca, setFiltroBusca] = useState<"todos" | "areas" | "leis" | "jurisprudencia">("todos");
 
-
-
-
   useEffect(() => {
+    // Scroll top when switching tabs
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
   }, [aba]);
 
   useEffect(() => {
-    // 1. Tenta carregar do localStorage imediatamente (0ms de espera)
     if (!areasCache) {
       try {
         const stored = localStorage.getItem("resumos_areas_cache");
@@ -154,7 +143,6 @@ export default function ResumosJuridicosAreas() {
       if (!areasCache) setLoading(true);
       let list: AreaRow[] = [];
 
-      // 2. Tenta função RPC no Supabase para agregação direta em 1 único request super rápido
       try {
         const { data: rpcData, error: rpcErr } = await (supabase as any).rpc("get_resumos_areas_counts");
         if (!rpcErr && Array.isArray(rpcData) && rpcData.length > 0) {
@@ -162,7 +150,6 @@ export default function ResumosJuridicosAreas() {
         }
       } catch {}
 
-      // 3. Fallback: consulta agrupada tradicional
       if (list.length === 0) {
         const map = new Map<string, number>();
         let from = 0;
@@ -219,211 +206,172 @@ export default function ResumosJuridicosAreas() {
 
   return (
     <div className="min-h-dvh bg-background pb-[calc(7rem+env(safe-area-inset-bottom,0px))] lg:pb-[calc(3rem+env(safe-area-inset-bottom,0px))] overflow-x-hidden">
-      {aba === "home" ? (
-        <PageHeader title="Resumos Jurídicos" onBack={() => navigate("/")} />
-      ) : (
-        <PageHeader 
-          title={aba === "areas" ? "Matérias" : aba === "leis" ? "Leis" : "Jurisprudência"} 
-          onBack={() => { haptic.selection(); setAba("home"); }} 
-        />
-      )}
+      <PageHeader title="Resumos Jurídicos" onBack={() => navigate("/")} />
 
-      {aba === "home" && (
-        <div className="mx-auto w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] px-3 sm:px-6 lg:px-8 mt-2">
-          
-          <div className="-mx-3 sm:-mx-6 lg:-mx-8 mb-6 mt-1">
-            <ResumosCargoHero 
-              pct={0} 
-              total={0} 
-              hoje={0} 
-              meta={100} 
-              disponiveis={totalAcervo || 1200} 
-              streak={0}
-            />
-          </div>
-
-          {/* PAINEL PRINCIPAL */}
-          <div className="bg-card/60 border border-border/80 p-5 rounded-3xl backdrop-blur-md shadow-xl mt-2">
-            <div className="flex items-center gap-2">
-              <span className="h-5 w-1 rounded-full bg-[#38bdf8]" />
-              <h2 className="text-lg font-extrabold leading-tight text-foreground sm:text-xl drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] uppercase">Explorar Resumos</h2>
-            </div>
-            <p className="ml-3 mt-1 text-xs text-muted-foreground">
-              Pesquise qualquer matéria, lei ou súmula no acervo.
-            </p>
-
-            <button
-              onClick={() => { haptic.selection(); setBuscaAberta(true); }}
-              className="group mt-4 flex h-14 sm:h-16 min-h-[56px] w-full items-center justify-start px-4 gap-3 rounded-2xl bg-[#0b3b46] backdrop-blur-md border border-[#38bdf8]/30 shadow-lg shadow-black/30 transition-all active:scale-[0.99]"
-            >
-              <Search className="h-6 w-6 text-white shrink-0" strokeWidth={2} />
-              <span className="tracking-wide text-white/70 flex-1 text-left truncate font-medium">Pesquise o resumo...</span>
-              <div className="h-10 px-4 rounded-xl bg-[#38bdf8] text-black font-display text-[12px] font-bold tracking-wider flex items-center justify-center shadow-md shrink-0">
-                PESQUISAR
-              </div>
-            </button>
-          </div>
-
-          {/* CATEGORIAS */}
-          <section className="space-y-3 pt-6 pb-4">
-            <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">Categorias Principais</p>
-            <div className="grid grid-cols-4 gap-2.5">
-              <button onClick={() => { haptic.selection(); setAba('areas'); }} className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#38bdf8]/50 transition-all active:scale-95 gap-2 text-center">
-                <div className="relative w-10 h-10 flex items-center justify-center">
-                  <BookOpen className="w-7 h-7 sm:w-8 sm:h-8 text-[#38bdf8] transition-all duration-300 group-hover:scale-110" strokeWidth={1.5} />
-                </div>
-                <p className="text-xs font-extrabold text-foreground leading-tight">Matérias</p>
-              </button>
-              <button onClick={() => { haptic.selection(); setAba('leis'); }} className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#38bdf8]/50 transition-all active:scale-95 gap-2 text-center">
-                <div className="relative w-10 h-10 flex items-center justify-center">
-                  <Scale className="w-7 h-7 sm:w-8 sm:h-8 text-[#38bdf8] transition-all duration-300 group-hover:scale-110" strokeWidth={1.5} />
-                </div>
-                <p className="text-xs font-extrabold text-foreground leading-tight">Leis</p>
-              </button>
-              <button onClick={() => { haptic.selection(); setAba('jurisprudencia'); }} className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#38bdf8]/50 transition-all active:scale-95 gap-2 text-center">
-                <div className="relative w-10 h-10 flex items-center justify-center">
-                  <Gavel className="w-7 h-7 sm:w-8 sm:h-8 text-[#38bdf8] transition-all duration-300 group-hover:scale-110" strokeWidth={1.5} />
-                </div>
-                <p className="text-[10px] sm:text-xs font-extrabold text-foreground leading-tight">Jurisprudência</p>
-              </button>
-              <button onClick={() => { haptic.selection(); navigate('/resumos-juridicos/termos'); }} className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#38bdf8]/50 transition-all active:scale-95 gap-2 text-center">
-                <div className="relative w-10 h-10 flex items-center justify-center">
-                  <FileText className="w-7 h-7 sm:w-8 sm:h-8 text-[#38bdf8] transition-all duration-300 group-hover:scale-110" strokeWidth={1.5} />
-                </div>
-                <p className="text-xs font-extrabold text-foreground leading-tight">Termos</p>
-              </button>
-            </div>
-          </section>
-
-          {/* CARGOS */}
-          <section className="space-y-3 pt-4 pb-20">
-            <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">Cargos</p>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <button onClick={() => { haptic.selection(); navigate('/resumos-juridicos/cargos/magistratura'); }} className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#38bdf8]/50 transition-all active:scale-95 gap-2 text-center">
-                <div className="relative w-10 h-10 flex items-center justify-center">
-                  <Scale className="w-7 h-7 sm:w-8 sm:h-8 text-[#38bdf8] transition-all duration-300 group-hover:scale-110" strokeWidth={1.5} />
-                </div>
-                <p className="text-[10px] sm:text-xs font-extrabold text-foreground leading-tight">Magistratura</p>
-              </button>
-              <button onClick={() => { haptic.selection(); navigate('/resumos-juridicos/cargos/oab'); }} className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#38bdf8]/50 transition-all active:scale-95 gap-2 text-center">
-                <div className="relative w-10 h-10 flex items-center justify-center">
-                  <Briefcase className="w-7 h-7 sm:w-8 sm:h-8 text-[#38bdf8] transition-all duration-300 group-hover:scale-110" strokeWidth={1.5} />
-                </div>
-                <p className="text-xs font-extrabold text-foreground leading-tight">OAB</p>
-              </button>
-              <button onClick={() => { haptic.selection(); navigate('/resumos-juridicos/cargos/ministerio-publico'); }} className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#38bdf8]/50 transition-all active:scale-95 gap-2 text-center">
-                <div className="relative w-10 h-10 flex items-center justify-center">
-                  <Building2 className="w-7 h-7 sm:w-8 sm:h-8 text-[#38bdf8] transition-all duration-300 group-hover:scale-110" strokeWidth={1.5} />
-                </div>
-                <p className="text-[10px] sm:text-xs font-extrabold text-foreground leading-tight">Ministério Público</p>
-              </button>
-              <button onClick={() => { haptic.selection(); navigate('/resumos-juridicos/cargos/carreiras-policiais'); }} className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#38bdf8]/50 transition-all active:scale-95 gap-2 text-center">
-                <div className="relative w-10 h-10 flex items-center justify-center">
-                  <Shield className="w-7 h-7 sm:w-8 sm:h-8 text-[#38bdf8] transition-all duration-300 group-hover:scale-110" strokeWidth={1.5} />
-                </div>
-                <p className="text-[10px] sm:text-xs font-extrabold text-foreground leading-tight">Carreira Policial</p>
-              </button>
-            </div>
-          </section>
+      <div className="mx-auto w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] px-3 sm:px-6 lg:px-8 mt-2">
+        
+        {/* HERO SECTION */}
+        <div className="-mx-3 sm:-mx-6 lg:-mx-8 mb-6 mt-1">
+          <ResumosCargoHero 
+            pct={0} 
+            total={0} 
+            hoje={0} 
+            meta={100} 
+            disponiveis={totalAcervo || 1200} 
+            streak={0}
+          />
         </div>
-      )}
 
-      {aba === "areas" && (
-        <div className="max-w-5xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 pt-4">
-          {loading ? (
-            <div className="flex items-center justify-center py-16 text-muted-foreground">
-              <Loader2 className="w-5 h-5 animate-spin mr-2" /> Carregando áreas...
+        {/* BUSCA PRINCIPAL */}
+        <div className="bg-card/60 border border-border/80 p-5 rounded-3xl backdrop-blur-md shadow-xl mt-2 mb-6">
+          <div className="flex items-center gap-2">
+            <span className="h-5 w-1 rounded-full bg-[#38bdf8]" />
+            <h2 className="text-lg font-extrabold leading-tight text-foreground sm:text-xl drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] uppercase">Explorar Resumos</h2>
+          </div>
+          <p className="ml-3 mt-1 text-xs text-muted-foreground">
+            Pesquise qualquer matéria, lei ou súmula no acervo.
+          </p>
+
+          <button
+            onClick={() => { haptic.selection(); setBuscaAberta(true); }}
+            className="group mt-4 flex h-14 sm:h-16 min-h-[56px] w-full items-center justify-start px-4 gap-3 rounded-2xl bg-[#0b3b46] backdrop-blur-md border border-[#38bdf8]/30 shadow-lg shadow-black/30 transition-all active:scale-[0.99]"
+          >
+            <Search className="h-6 w-6 text-white shrink-0" strokeWidth={2} />
+            <span className="tracking-wide text-white/70 flex-1 text-left truncate font-medium">Pesquise o resumo...</span>
+            <div className="h-10 px-4 rounded-xl bg-[#38bdf8] text-black font-display text-[12px] font-bold tracking-wider flex items-center justify-center shadow-md shrink-0">
+              PESQUISAR
             </div>
-          ) : filtered.length === 0 ? (
-            <div className="text-center py-16 text-muted-foreground text-sm space-y-3">
-              <p>Nenhuma área encontrada para &quot;{q}&quot;.</p>
-              {!navigator.onLine && (
-                <p className="text-xs text-primary max-w-sm mx-auto border border-primary/20 bg-primary/5 p-3 rounded-xl">
-                  Parece que você está offline e não baixou o Banco de Resumos.
-                  Acesse o <b>Modo Offline &gt; Banco de Dados Base</b> para baixá-los quando tiver internet.
-                </p>
-              )}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-              {filtered.map((r, i) => {
-                const s = styleForArea(r.area);
-                const Icon = s.icon;
-                return (
-                  <motion.button
-                    key={r.area}
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: Math.min(i * 0.02, 0.3) }}
-                    onClick={() => navigate(`/resumos-juridicos/${encodeURIComponent(r.area)}`)}
-                    className="flex items-center gap-3 p-4 rounded-2xl bg-card border border-border hover:border-primary/40 transition-all text-left hover:scale-[1.02] shadow-sm"
-                  >
-                    <Icon className="w-7 h-7 shrink-0" style={{ color: s.color }} strokeWidth={1.7} />
-                    <div className="flex-1 min-w-0">
-                      <div className="font-display font-bold text-foreground truncate">{r.area.replace(/^DIREITO\s+/i, '')}</div>
-                      <div className="text-xs text-muted-foreground mt-0.5">
-                        {r.total} {r.total === 1 ? "resumo" : "resumos"}
-                      </div>
-                    </div>
-                    <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
-                  </motion.button>
-                );
-              })}
-            </div>
-          )}
+          </button>
         </div>
-      )}
 
-      {aba === "leis" && (
-        <div className="max-w-5xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 pt-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
-          {AREAS_LEIS.map((a, i) => {
-            const Icon = styleForArea(a.nome).icon;
+        {/* MENU DE ALTERNÂNCIA (SEGMENTED CONTROL) */}
+        <div className="flex w-full bg-secondary/50 rounded-2xl p-1 gap-1 mb-5">
+          {([
+            { id: "areas", label: "Matérias" },
+            { id: "leis", label: "Leis" },
+            { id: "jurisprudencia", label: "Jurisprudência" },
+          ] as { id: Aba; label: string }[]).map((o) => {
+            const ativo = aba === o.id;
             return (
+              <button
+                key={o.id}
+                onClick={() => { haptic.selection(); setAba(o.id); }}
+                className={`flex-1 py-3 rounded-xl text-[12px] font-bold transition-all uppercase tracking-wide ${
+                  ativo ? 'bg-[#38bdf8] text-black shadow-md scale-[1.02]' : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {o.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* LISTA: MATÉRIAS */}
+        {aba === "areas" && (
+          <div>
+            {loading ? (
+              <div className="flex items-center justify-center py-16 text-muted-foreground">
+                <Loader2 className="w-5 h-5 animate-spin mr-2" /> Carregando áreas...
+              </div>
+            ) : filtered.length === 0 ? (
+              <div className="text-center py-16 text-muted-foreground text-sm space-y-3">
+                <p>Nenhuma área encontrada para &quot;{q}&quot;.</p>
+                {!navigator.onLine && (
+                  <p className="text-xs text-primary max-w-sm mx-auto border border-primary/20 bg-primary/5 p-3 rounded-xl">
+                    Parece que você está offline e não baixou o Banco de Resumos.
+                    Acesse o <b>Modo Offline &gt; Banco de Dados Base</b> para baixá-los quando tiver internet.
+                  </p>
+                )}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                {filtered.map((r, i) => {
+                  const s = styleForArea(r.area);
+                  const Icon = s.icon;
+                  return (
+                    <motion.button
+                      key={r.area}
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: Math.min(i * 0.02, 0.3) }}
+                      onClick={() => navigate(`/resumos-juridicos/${encodeURIComponent(r.area)}`)}
+                      className="flex items-center gap-4 p-4 rounded-2xl bg-card border border-border hover:border-[#38bdf8]/40 transition-all text-left hover:scale-[1.02] shadow-sm group"
+                    >
+                      <div className="w-12 h-12 rounded-xl bg-secondary/50 flex items-center justify-center group-hover:bg-[#38bdf8]/10 transition-colors">
+                        <Icon className="w-6 h-6 shrink-0" style={{ color: s.color }} strokeWidth={1.7} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-display font-bold text-[14px] uppercase text-foreground truncate">{r.area.replace(/^DIREITO\s+/i, '')}</div>
+                        <div className="text-[12px] text-muted-foreground mt-0.5">
+                          {r.total} {r.total === 1 ? "resumo" : "resumos"}
+                        </div>
+                      </div>
+                      <ChevronRight className="w-5 h-5 text-muted-foreground/40 group-hover:text-[#38bdf8] transition-colors shrink-0" />
+                    </motion.button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* LISTA: LEIS */}
+        {aba === "leis" && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+            {AREAS_LEIS.map((a, i) => {
+              const Icon = styleForArea(a.nome).icon;
+              return (
+                <motion.button
+                  key={a.id}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: Math.min(i * 0.02, 0.3) }}
+                  onClick={() => { setBuscaLeis(""); setAreaLeis(a); }}
+                  className="flex items-center gap-4 p-4 rounded-2xl bg-card border border-border hover:border-[#38bdf8]/40 transition-all text-left hover:scale-[1.02] shadow-sm group"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-secondary/50 flex items-center justify-center group-hover:bg-[#38bdf8]/10 transition-colors">
+                    <Icon className="w-6 h-6 shrink-0" style={{ color: a.color }} strokeWidth={1.7} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-display font-bold text-[14px] uppercase text-foreground truncate">{a.nome.replace(/^DIREITO\s+/i, '')}</div>
+                    <div className="text-[12px] text-muted-foreground mt-0.5">
+                      {leisDaArea(a).length} {leisDaArea(a).length === 1 ? "lei" : "leis"}
+                    </div>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-muted-foreground/40 group-hover:text-[#38bdf8] transition-colors shrink-0" />
+                </motion.button>
+              );
+            })}
+          </div>
+        )}
+
+        {/* LISTA: JURISPRUDÊNCIA */}
+        {aba === "jurisprudencia" && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+            {JURIS_ITENS.map((j, i) => (
               <motion.button
-                key={a.id}
+                key={j.rota}
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: Math.min(i * 0.02, 0.3) }}
-                onClick={() => { setBuscaLeis(""); setAreaLeis(a); }}
-                className="relative flex flex-col gap-2 p-4 rounded-2xl bg-card border border-border hover:border-primary/40 transition-all text-left min-h-[112px] hover:scale-[1.02] shadow-sm"
+                onClick={() => navigate(j.rota)}
+                className="flex items-center gap-4 p-4 rounded-2xl bg-card border border-border hover:border-[#38bdf8]/40 transition-all text-left hover:scale-[1.02] shadow-sm group"
               >
-                <ChevronRight className="absolute top-3 right-3 w-4 h-4 text-muted-foreground" />
-                <Icon className="w-7 h-7 shrink-0" style={{ color: a.color }} strokeWidth={1.7} />
-                <div className="font-display font-bold text-foreground text-[13px] leading-tight uppercase line-clamp-2">
-                  {a.nome.replace(/^DIREITO\s+/i, '')}
+                <div className="w-12 h-12 rounded-xl bg-secondary/50 flex items-center justify-center group-hover:bg-[#38bdf8]/10 transition-colors">
+                  <Scroll className="w-6 h-6 shrink-0" style={{ color: j.color }} strokeWidth={1.7} />
                 </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-display font-bold text-[14px] uppercase text-foreground truncate">{j.label}</div>
+                  <div className="text-[12px] text-muted-foreground mt-0.5 truncate">{j.desc}</div>
+                </div>
+                <ChevronRight className="w-5 h-5 text-muted-foreground/40 group-hover:text-[#38bdf8] transition-colors shrink-0" />
               </motion.button>
-            );
-          })}
+            ))}
+          </div>
+        )}
+      </div>
 
-        </div>
-      )}
-
-      {aba === "jurisprudencia" && (
-        <div className="max-w-5xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 pt-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-          {JURIS_ITENS.map((j, i) => (
-            <motion.button
-              key={j.rota}
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: Math.min(i * 0.02, 0.3) }}
-              onClick={() => navigate(j.rota)}
-              className="relative flex flex-col gap-2 p-4 rounded-2xl bg-card border border-border hover:border-primary/40 transition-all text-left min-h-[120px] hover:scale-[1.02] shadow-sm"
-            >
-              <ChevronRight className="absolute top-3 right-3 w-4 h-4 text-muted-foreground" />
-              <Scroll className="w-7 h-7 shrink-0" style={{ color: j.color }} strokeWidth={1.7} />
-              <div className="font-display font-bold text-foreground text-[13px] leading-tight uppercase line-clamp-2">
-                {j.label}
-              </div>
-              <div className="text-[11px] text-muted-foreground line-clamp-1">{j.desc}</div>
-            </motion.button>
-          ))}
-        </div>
-      )}
-
-
-
-      {/* Painel de leis da área (de baixo para cima, 90%) */}
+      {/* OVERLAY: LEIS DA ÁREA */}
       <AnimatePresence>
         {areaLeis && (
           <>
@@ -522,7 +470,7 @@ export default function ResumosJuridicosAreas() {
                             setLeiArtigos({ lei, area: areaLeis.nome });
                             setAreaLeis(null);
                           }}
-                          className="w-full flex items-center gap-4 p-4 min-h-[84px] rounded-2xl bg-secondary/40 border border-border/50 active:scale-[0.99] transition"
+                          className="w-full flex items-center gap-4 p-4 min-h-[84px] rounded-2xl bg-secondary/40 border border-border/50 active:scale-[0.99] transition text-left"
                         >
                           <LawIcon
                             className="w-8 h-8 shrink-0"
@@ -532,7 +480,7 @@ export default function ResumosJuridicosAreas() {
                             }}
                             strokeWidth={1.3}
                           />
-                          <div className="flex-1 min-w-0 text-left">
+                          <div className="flex-1 min-w-0">
                             <p className="font-display text-foreground text-[16px] font-bold leading-tight line-clamp-1 uppercase tracking-[0.08em]">
                               {lei.nome}
                             </p>
@@ -547,13 +495,11 @@ export default function ResumosJuridicosAreas() {
                 </div>
               </div>
             </motion.div>
-
           </>
         )}
       </AnimatePresence>
 
-
-      {/* Overlay de busca (de baixo para cima, 90%) */}
+      {/* OVERLAY DE BUSCA PRINCIPAL */}
       <AnimatePresence>
         {buscaAberta && (
           <>
@@ -607,7 +553,6 @@ export default function ResumosJuridicosAreas() {
                   </button>
                 </div>
 
-                {/* Menu de alternância */}
                 <div className="mt-3 flex items-center gap-1 p-1 rounded-full bg-black/30 border border-white/15">
                   {([
                     { id: "todos", label: "Todos" },
@@ -724,7 +669,6 @@ export default function ResumosJuridicosAreas() {
       />
 
       <ResumosBottomNav hidden={buscaAberta || !!leiArtigos} />
-
     </div>
   );
 }
