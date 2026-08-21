@@ -7,7 +7,9 @@ import {
   Search,
   ChevronRight,
   Heart,
-  FileText
+  FileText,
+  NotebookText,
+  BookOpen
 } from "lucide-react";
 import { PageHeader } from "@/components/vademecum/PageHeader";
 import { Input } from "@/components/ui/input";
@@ -21,9 +23,10 @@ const temasCache = new Map<string, Row[]>();
 const subtemasCache = new Map<string, ResumoRow[]>();
 
 /** Vermelho oficial do app */
-const RED = "hsl(348 78% 45%)";
+const RED = "#ef4444";
 
 type Ordem = "crono" | "alpha" | "fav";
+type Tab = "resumo" | "exemplos" | "termos";
 
 export default function ResumosJuridicosTemas() {
   const { area } = useParams<{ area: string }>();
@@ -38,6 +41,8 @@ export default function ResumosJuridicosTemas() {
   const [subtemas, setSubtemas] = useState<ResumoRow[]>([]);
   const [subLoading, setSubLoading] = useState(false);
   const [selected, setSelected] = useState<ResumoRow | null>(null);
+  const [selectedTab, setSelectedTab] = useState<Tab>("resumo");
+  const [expandedId, setExpandedId] = useState<string | null>(null);
   const [ordem, setOrdem] = useState<Ordem>("crono");
   const [favs, setFavs] = useState<string[]>(() => resumosLocal.favoritos().map((f) => f.id));
 
@@ -156,6 +161,7 @@ export default function ResumosJuridicosTemas() {
     const loadSubtemas = async () => {
       setQ(""); // reseta a busca ao trocar de tema
       setOrdem("crono"); // reseta a ordenação
+      setExpandedId(null); // reseta o accordion
       const key = `${decodedArea}::${activeTema}`;
       if (subtemasCache.has(key)) {
         setSubtemas(subtemasCache.get(key)!);
@@ -225,8 +231,19 @@ export default function ResumosJuridicosTemas() {
     }
   };
 
+  const openReader = (r: ResumoRow, tabId: Tab) => {
+    resumosLocal.registrarRecente({
+      id: r.id,
+      area: r.area,
+      tema: r.tema,
+      subtema: r.subtema,
+    });
+    setSelectedTab(tabId);
+    setSelected(r);
+  };
+
   return (
-    <div className="min-h-dvh bg-background pb-24">
+    <div className="min-h-dvh bg-background pb-32">
       {/* HEADER FIXO E CHIPS (Glassmorphism) */}
       <div className="sticky top-0 z-10 bg-background/90 backdrop-blur-md border-b border-border shadow-sm">
         <PageHeader
@@ -270,7 +287,7 @@ export default function ResumosJuridicosTemas() {
                   className={`
                     flex items-center justify-center px-4 py-1.5 rounded-full text-[13px] font-semibold whitespace-nowrap transition-all select-none border shrink-0
                     ${isActive 
-                      ? 'bg-[hsl(348,78%,45%)] text-white border-[hsl(348,78%,45%)] shadow-md shadow-red-900/20 scale-105 mx-1' 
+                      ? 'bg-[#ef4444] text-white border-[#ef4444] shadow-md shadow-red-900/20 scale-105 mx-1' 
                       : 'bg-secondary/60 text-muted-foreground border-transparent hover:bg-secondary hover:text-foreground active:scale-95'}
                   `}
                 >
@@ -286,30 +303,6 @@ export default function ResumosJuridicosTemas() {
       {/* CONTEÚDO PRINCIPAL (Subtemas) */}
       <div className="max-w-5xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 pt-4">
         
-        {/* Controles de Ordenação */}
-        {activeTema && !loading && subtemas.length > 0 && (
-          <div className="flex w-full bg-secondary/40 rounded-xl p-1 gap-1 mb-4 md:w-[320px]">
-            {([
-              { id: "crono", label: "Cronológica" },
-              { id: "alpha", label: "Alfabética" },
-              { id: "fav", label: "Favoritos" },
-            ] as { id: Ordem; label: string }[]).map((o) => {
-              const ativo = ordem === o.id;
-              return (
-                <button
-                  key={o.id}
-                  onClick={() => setOrdem(o.id)}
-                  className={`flex-1 py-1.5 rounded-lg text-[11px] uppercase tracking-wider font-bold transition-all ${
-                    ativo ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  {o.label}
-                </button>
-              );
-            })}
-          </div>
-        )}
-
         {/* Lista de Cards */}
         {subLoading ? (
           <div className="flex items-center justify-center py-24 text-muted-foreground">
@@ -329,54 +322,95 @@ export default function ResumosJuridicosTemas() {
                   ordem === "crono" ? i + 1 : subtemas.findIndex((s) => s.id === r.id) + 1
                 ).padStart(2, "0");
                 const isFav = favs.includes(r.id);
+                const isExpanded = expandedId === r.id;
                 
                 return (
-                  <motion.button
+                  <motion.div
                     layout
                     key={r.id}
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.2 }}
-                    onClick={() => {
-                      resumosLocal.registrarRecente({
-                        id: r.id,
-                        area: r.area,
-                        tema: r.tema,
-                        subtema: r.subtema,
-                      });
-                      setSelected(r);
-                    }}
-                    className="flex items-center gap-3 px-4 py-3 min-h-[76px] rounded-2xl bg-card border border-border hover:border-primary/40 hover:bg-secondary/20 transition-all text-left shadow-sm group relative overflow-hidden"
+                    className={`flex flex-col rounded-2xl bg-card border hover:border-[#ef4444]/40 transition-all shadow-sm group relative overflow-hidden ${
+                      isExpanded ? 'border-[#ef4444]/40' : 'border-border'
+                    }`}
                   >
-                    <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-[#7A1220] to-[#b31b2e] opacity-20 group-hover:opacity-100 transition-opacity" />
-                    <span
-                      className="font-display font-bold text-[22px] shrink-0 w-8 tabular-nums opacity-80 group-hover:opacity-100 transition-opacity ml-1"
-                      style={{ color: RED }}
+                    {/* Botão Principal (Abre o Accordion) */}
+                    <button
+                      onClick={() => setExpandedId(isExpanded ? null : r.id)}
+                      className="flex items-center gap-3 px-4 py-3 min-h-[84px] hover:bg-secondary/20 transition-all text-left w-full relative"
                     >
-                      {numero}
-                    </span>
-                    
-                    <div className="flex-1 min-w-0 pr-2">
-                      <h3 className="font-body font-semibold text-[15px] text-foreground leading-snug line-clamp-2">
-                        {r.subtema || r.tema}
-                      </h3>
-                      <div className="flex gap-2 mt-1.5 flex-wrap">
-                        {r.markdown && <span className="text-[9px] uppercase tracking-wider font-bold text-primary/80 bg-primary/10 px-1.5 py-0.5 rounded-sm">Resumo</span>}
-                        {r.exemplos && <span className="text-[9px] uppercase tracking-wider font-bold text-emerald-500/80 bg-emerald-500/10 px-1.5 py-0.5 rounded-sm">Exemplos</span>}
-                        {r.termos && <span className="text-[9px] uppercase tracking-wider font-bold text-amber-500/80 bg-amber-500/10 px-1.5 py-0.5 rounded-sm">Termos</span>}
+                      <div className={`absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-[#ef4444] to-[#7f1d1d] opacity-20 group-hover:opacity-100 transition-opacity ${isExpanded ? 'opacity-100' : ''}`} />
+                      
+                      <span
+                        className="font-display font-bold text-[22px] shrink-0 w-8 tabular-nums opacity-80 group-hover:opacity-100 transition-opacity ml-1"
+                        style={{ color: RED }}
+                      >
+                        {numero}
+                      </span>
+                      
+                      <div className="flex-1 min-w-0 pr-2">
+                        <h3 className="font-body font-semibold text-[15px] text-foreground leading-snug line-clamp-2">
+                          {r.subtema || r.tema}
+                        </h3>
+                        <div className="flex gap-2 mt-1.5 flex-wrap">
+                          {r.markdown && <span className="text-[9px] uppercase tracking-wider font-bold text-primary/80 bg-primary/10 px-1.5 py-0.5 rounded-sm">Resumo</span>}
+                          {r.exemplos && <span className="text-[9px] uppercase tracking-wider font-bold text-emerald-500/80 bg-emerald-500/10 px-1.5 py-0.5 rounded-sm">Exemplos</span>}
+                          {r.termos && <span className="text-[9px] uppercase tracking-wider font-bold text-amber-500/80 bg-amber-500/10 px-1.5 py-0.5 rounded-sm">Termos</span>}
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="flex flex-col items-end gap-2 shrink-0">
-                      {isFav ? (
-                        <Heart className="w-4 h-4" style={{ fill: RED, color: RED }} />
-                      ) : (
-                        <div className="w-4 h-4" />
+                      <div className="flex flex-col items-end gap-2 shrink-0">
+                        {isFav ? (
+                          <Heart className="w-4 h-4" style={{ fill: RED, color: RED }} />
+                        ) : (
+                          <div className="w-4 h-4" />
+                        )}
+                        <ChevronRight className={`w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-transform duration-300 ${isExpanded ? 'rotate-90' : ''}`} />
+                      </div>
+                    </button>
+
+                    {/* Accordion de Opções */}
+                    <AnimatePresence>
+                      {isExpanded && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          className="border-t border-border/50 bg-secondary/10"
+                        >
+                          <div className="flex gap-2 p-3">
+                            <button
+                              onClick={() => openReader(r, "resumo")}
+                              disabled={!r.markdown}
+                              className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-all disabled:opacity-30 disabled:hover:bg-primary/10 active:scale-95"
+                            >
+                              <FileText className="w-5 h-5" />
+                              <span className="font-bold text-[10px] uppercase tracking-wider">Resumo</span>
+                            </button>
+                            <button
+                              onClick={() => openReader(r, "exemplos")}
+                              disabled={!r.exemplos}
+                              className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3 rounded-xl bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 transition-all disabled:opacity-30 disabled:hover:bg-emerald-500/10 active:scale-95"
+                            >
+                              <NotebookText className="w-5 h-5" />
+                              <span className="font-bold text-[10px] uppercase tracking-wider">Exemplos</span>
+                            </button>
+                            <button
+                              onClick={() => openReader(r, "termos")}
+                              disabled={!r.termos}
+                              className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3 rounded-xl bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 transition-all disabled:opacity-30 disabled:hover:bg-amber-500/10 active:scale-95"
+                            >
+                              <BookOpen className="w-5 h-5" />
+                              <span className="font-bold text-[10px] uppercase tracking-wider">Termos</span>
+                            </button>
+                          </div>
+                        </motion.div>
                       )}
-                      <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors" />
-                    </div>
-                  </motion.button>
+                    </AnimatePresence>
+
+                  </motion.div>
                 );
               })}
             </AnimatePresence>
@@ -384,8 +418,35 @@ export default function ResumosJuridicosTemas() {
         )}
       </div>
 
+      {/* MENU DE ORDENAÇÃO FIXO NO RODAPÉ */}
+      {activeTema && !loading && subtemas.length > 0 && (
+        <div className="fixed bottom-0 left-0 right-0 z-40 bg-background/90 backdrop-blur-md border-t border-border p-3 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] flex justify-center shadow-[0_-4px_24px_rgba(0,0,0,0.5)]">
+          <div className="flex w-full max-w-sm bg-secondary/80 rounded-full p-1 gap-1">
+            {([
+              { id: "crono", label: "Cronológica" },
+              { id: "alpha", label: "Alfabética" },
+              { id: "fav", label: "Favoritos" },
+            ] as { id: Ordem; label: string }[]).map((o) => {
+              const ativo = ordem === o.id;
+              return (
+                <button
+                  key={o.id}
+                  onClick={() => setOrdem(o.id)}
+                  className={`flex-1 py-2 rounded-full text-[10px] sm:text-[11px] uppercase tracking-wider font-bold transition-all ${
+                    ativo ? 'bg-[#ef4444] text-white shadow-md scale-105' : 'text-muted-foreground hover:text-foreground active:scale-95'
+                  }`}
+                >
+                  {o.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       <ResumoJuridicoReaderSheet
         resumo={selected}
+        initialTab={selectedTab}
         onClose={() => setSelected(null)}
         onFavoritoChange={refreshFavs}
       />

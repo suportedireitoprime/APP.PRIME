@@ -53,12 +53,13 @@ interface Props {
   /** Gera Cornell e Feynman automaticamente quando ainda não existem. */
   pregerarMetodos?: boolean;
   initialMetodo?: Metodo;
+  initialTab?: Tab;
 }
 
 type Tab = "resumo" | "exemplos" | "termos";
 
 /** Vermelho oficial do app (mesmo do rodapé / início) */
-const RED = "hsl(348 78% 45%)";
+const RED = "#ef4444";
 
 const METODOS: { id: Metodo; label: string }[] = [
   { id: "conceitos", label: "Conceitos" },
@@ -66,7 +67,7 @@ const METODOS: { id: Metodo; label: string }[] = [
   { id: "feynman", label: "Feynman" },
 ];
 
-export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoChange, pregerarMetodos, initialMetodo }: Props) {
+export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoChange, pregerarMetodos, initialMetodo, initialTab }: Props) {
   const gateResumo = useGatedFeature('resumo_ver', 'resumo', { scope: resumo?.id ? String(resumo.id) : null });
   const gateDownload = useGatedFeature('resumo_download', 'resumo_download');
   const isDesktop = useIsDesktop();
@@ -87,7 +88,7 @@ export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoC
   useEffect(() => {
     if (resumo && scrollRef.current) {
       scrollRef.current.scrollTo({ top: 0, behavior: "auto" });
-      setTab("resumo");
+      setTab(initialTab || "resumo");
       setMetodo(initialMetodo || "conceitos");
       setCornell(null);
       setFeynman(null);
@@ -97,7 +98,7 @@ export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoC
       setCopiado(false);
       setFav(resumosLocal.isFavorito(resumo.id));
     }
-  }, [resumo?.id]);
+  }, [resumo?.id, initialTab]);
 
   // Plano gratuito: 1 resumo por dia (o mesmo resumo não conta duas vezes).
   useEffect(() => {
