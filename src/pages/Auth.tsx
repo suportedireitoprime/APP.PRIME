@@ -4,6 +4,8 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, User, Eye, EyeOff, ArrowRight, Loader2, ArrowLeft, KeyRound, CheckCircle, ChevronDown, HelpCircle, Leaf, Scale, X } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useIsDesktop } from '@/hooks/use-desktop';
+import DesktopQrLogin from '@/components/auth/DesktopQrLogin';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { LegalSheet } from '@/components/auth/LegalSheet';
@@ -605,6 +607,7 @@ const AuthDecorations = () => {
 /* ─── Main Auth Page (Cakto Style) ─── */
 const Auth = () => {
   const { user, loading } = useAuth();
+  const isDesktop = useIsDesktop();
   const navigate = useNavigate();
   const [drawerMode, setDrawerMode] = useState<'login' | 'signup' | 'forgot' | null>(null);
   const [legalOpen, setLegalOpen] = useState<'termos' | 'privacidade' | null>(null);
@@ -688,7 +691,7 @@ const Auth = () => {
           <div className="flex flex-col items-center justify-center gap-4">
             <div className="relative rounded-full overflow-hidden border-2 border-primary/40 shadow-[0_8px_32px_rgba(225,29,72,0.4)] bg-[#2b181b] logo-shine">
               <img
-                src="/logo-prime.png"
+                src={logoOABnaRisca}
                 alt="Logo Direito Prime"
                 className="w-20 h-20 xl:w-24 xl:h-24 object-contain bg-black/20 relative z-10"
               />
@@ -711,29 +714,40 @@ const Auth = () => {
         </motion.div>
       </div>
 
-      {/* Área dos Botões Inferiores */}
-      <div className="relative z-10 w-full px-5 pb-[calc(var(--sai-bottom,env(safe-area-inset-bottom,0px))+2rem)] flex flex-col gap-4">
+      {/* Área dos Botões Inferiores / QR Code */}
+      <div className="relative z-10 w-full px-5 pb-[calc(var(--sai-bottom,env(safe-area-inset-bottom,0px))+2rem)] flex flex-col items-center justify-center gap-4">
         
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-          className="flex flex-col gap-3"
-        >
-          <button
-            onClick={() => setDrawerMode('login')}
-            className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-body font-bold text-[17px] shadow-[0_8px_32px_rgba(225,29,72,0.6)] active:scale-[0.98] transition-transform overflow-hidden relative shine-effect"
+        {isDesktop ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            className="w-full max-w-md mx-auto"
           >
-            <span className="relative z-10">Acessar conta</span>
-          </button>
-          
-          <button
-            onClick={() => setDrawerMode('signup')}
-            className="w-full py-4 bg-black/40 backdrop-blur-lg border-2 border-white/20 text-white rounded-2xl font-body font-bold text-[17px] active:scale-[0.98] transition-all hover:bg-black/60 shadow-xl"
+            <DesktopQrLogin />
+          </motion.div>
+        ) : (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            className="flex flex-col gap-3 w-full"
           >
-            Criar uma conta
-          </button>
-        </motion.div>
+            <button
+              onClick={() => setDrawerMode('login')}
+              className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-body font-bold text-[17px] shadow-[0_8px_32px_rgba(225,29,72,0.6)] active:scale-[0.98] transition-transform overflow-hidden relative shine-effect"
+            >
+              <span className="relative z-10">Acessar conta</span>
+            </button>
+            
+            <button
+              onClick={() => setDrawerMode('signup')}
+              className="w-full py-4 bg-black/40 backdrop-blur-lg border-2 border-white/20 text-white rounded-2xl font-body font-bold text-[17px] active:scale-[0.98] transition-all hover:bg-black/60 shadow-xl"
+            >
+              Criar uma conta
+            </button>
+          </motion.div>
+        )}
 
         <motion.div 
           initial={{ opacity: 0 }}
