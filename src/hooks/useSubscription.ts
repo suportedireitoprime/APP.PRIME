@@ -95,133 +95,92 @@ export function useSubscription(options: Options = {}): SubscriptionState {
 
     const fetchOnce = async (skipStoreSync = false): Promise<boolean> => {
       try {
-      // 0) Checagem de cancelamento — se o usuário cancelou, rebaixa para gratuito
-      //    mesmo se for admin (permite o admin testar o fluxo de cancelamento).
-      const { data: canceled } = await supabase
-        .from('assinatura_cancelamentos' as any)
-        .select('canceled_at')
-        .eq('user_id', user.id)
-        .maybeSingle();
+        const nowIso = new Date().toISOString();
 
-      // Atalho por e-mail: administradores recebem Premium Anual iniciado hoje
-      // (incondicional — ignora cancelamentos e falhas de rede).
-      const email = (user.email || '').toLowerCase();
-      if (ADMIN_EMAILS.has(email)) {
-        const startedAt = new Date();
-        const expiresAt = new Date(startedAt);
-        expiresAt.setFullYear(expiresAt.getFullYear() + 1);
-        persist({
-          isPremium: true,
-          loading: false,
-          plano: 'anual',
-          startedAt: startedAt.toISOString(),
-          expiresAt: expiresAt.toISOString(),
-          source: 'play',
-          status: 'SUBSCRIPTION_STATE_ACTIVE',
-          isAdminOverride: true,
-        });
-        return true;
-      }
-      if (cancelled) return true;
+        // 1. Paralelizar a busca de cancelamentos e das assinaturas ativas em todas as lojas
+        const [cancelRes, playRes, appleRes, legadoRes] = await Promise.all([
+          supabase.from('assinatura_cancelamentos' as any).select('canceled_at').eq('user_id', user.id).maybeSingle(),
+          supabase.from('play_subscriptions').select('product_id, status, expires_at').eq('user_id', user.id).in('status', ACTIVE_STATUSES).or(`expires_at.is.null,expires_at.gt.${nowIso}`).order('expires_at', { ascending: false }).limit(1).maybeSingle(),
+          supabase.from('apple_subscriptions').select('product_id, status, expires_at, start_time').eq('user_id', user.id).in('status', ['active', 'in_grace']).or(`expires_at.is.null,expires_at.gt.${nowIso}`).order('expires_at', { ascending: false }).limit(1).maybeSingle(),
+          supabase.from('asaas_subscriptions' as any).select('plano, status, expires_at, started_at').eq('user_id', user.id).in('status', ['ACTIVE', 'ACTIVE_GRACE']).or(`expires_at.is.null,expires_at.gt.${nowIso}`).limit(1).maybeSingle()
+        ]);
 
-      // 1) Google Play (play_subscriptions) — fonte real usada por is_premium_user()
-      const nowIso = new Date().toISOString();
-      const { data: play } = await supabase
-        .from('play_subscriptions')
-        .select('product_id, status, expires_at')
-        .eq('user_id', user.id)
-        .in('status', ACTIVE_STATUSES)
-        .or(`expires_at.is.null,expires_at.gt.${nowIso}`)
-        .order('expires_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
+        if (cancelled) return true;
 
-      if (cancelled) return true;
-      if (play) {
-        persist({
-          isPremium: true, loading: false,
-          plano: play.product_id, expiresAt: play.expires_at, startedAt: null, source: 'play',
-          status: play.status as string,
-          isAdminOverride: false,
-        });
-        return true;
-      }
+        // 2. Atalho incondicional para e-mails administradores
+        const email = (user.email || '').toLowerCase();
+        if (ADMIN_EMAILS.has(email)) {
+          const startedAt = new Date();
+          const expiresAt = new Date(startedAt);
+          expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+          persist({
+            isPremium: true, loading: false, plano: 'anual', startedAt: startedAt.toISOString(), expiresAt: expiresAt.toISOString(), source: 'play', status: 'SUBSCRIPTION_STATE_ACTIVE', isAdminOverride: true,
+          });
+          return true;
+        }
 
-      // 2) Apple App Store (apple_subscriptions)
-      const { data: apple } = await supabase
-        .from('apple_subscriptions')
-        .select('product_id, status, expires_at, start_time')
-        .eq('user_id', user.id)
-        .in('status', ['active', 'in_grace'])
-        .or(`expires_at.is.null,expires_at.gt.${nowIso}`)
-        .order('expires_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
+        // 3. Avaliar as respostas em ordem de prioridade
+        if (cancelRes.data) return true; // Cancelou, rebaixa
 
-      if (cancelled) return true;
-      if (apple) {
-        persist({
-          isPremium: true, loading: false,
-          plano: apple.product_id, expiresAt: apple.expires_at, startedAt: apple.start_time, source: 'apple',
-          status: apple.status as string,
-          isAdminOverride: false,
-        });
-        return true;
-      }
+        if (playRes.data) {
+          persist({
+            isPremium: true, loading: false,
+            plano: playRes.data.product_id, expiresAt: playRes.data.expires_at, startedAt: null, source: 'play',
+            status: playRes.data.status as string, isAdminOverride: false,
+          });
+          return true;
+        }
 
-      // 3) Assinantes migrados do app antigo (vitalícios e mensais via Asaas)
-      const { data: legado } = await supabase
-        .from('asaas_subscriptions' as any)
-        .select('plano, status, expires_at, started_at')
-        .eq('user_id', user.id)
-        .in('status', ['ACTIVE', 'ACTIVE_GRACE'])
-        .or(`expires_at.is.null,expires_at.gt.${nowIso}`)
-        .limit(1)
-        .maybeSingle();
+        if (appleRes.data) {
+          persist({
+            isPremium: true, loading: false,
+            plano: appleRes.data.product_id, expiresAt: appleRes.data.expires_at, startedAt: appleRes.data.start_time, source: 'apple',
+            status: appleRes.data.status as string, isAdminOverride: false,
+          });
+          return true;
+        }
 
-      if (cancelled) return true;
-      if (legado) {
-        const l = legado as any;
-        persist({
-          isPremium: true, loading: false,
-          plano: l.plano, expiresAt: l.expires_at, startedAt: l.started_at, source: 'asaas',
-          status: l.status as string,
-          isAdminOverride: false,
-        });
-        return true;
-      }
+        if (legadoRes.data) {
+          const l = legadoRes.data as { plano: string, status: string, expires_at: string, started_at: string };
+          persist({
+            isPremium: true, loading: false,
+            plano: l.plano, expiresAt: l.expires_at, startedAt: l.started_at, source: 'asaas',
+            status: l.status, isAdminOverride: false,
+          });
+          return true;
+        }
 
-      // 4) Sem plano: tenta resgatar (1× por sessão) uma assinatura do app antigo
-      //    ligada a este e-mail e revalida.
-      if (!skipStoreSync && !claimedOnce.has(user.id)) {
-        claimedOnce.add(user.id);
-        try {
-          const { data: claimed } = await supabase.rpc('claim_my_legacy_subscription' as any);
-          if (cancelled) return true;
-          if (claimed === true) return fetchOnce(true);
-        } catch { /* ignore */ }
-      }
-
-      // 5) Nada no banco: antes de rebaixar para gratuito, revalida em silêncio
-      //    as compras que o aparelho possui na loja (cobre renovações cuja
-      //    notificação do Google/Apple não chegou a gravar).
-      if (!skipStoreSync) {
-        try {
-          const { isBillingAvailable, syncEntitlements } = await import('@/lib/billing');
-          if (isBillingAvailable()) {
-            const synced = await syncEntitlements();
+        // 4. Sem plano: tenta resgatar (1× por sessão) uma assinatura do app antigo
+        if (!skipStoreSync && !claimedOnce.has(user.id)) {
+          claimedOnce.add(user.id);
+          try {
+            const { data: claimed } = await supabase.rpc('claim_my_legacy_subscription' as any);
             if (cancelled) return true;
-            if (synced > 0) return fetchOnce(true);
-          }
-        } catch { /* ignore */ }
-      }
+            if (claimed === true) return fetchOnce(true);
+          } catch { /* ignore */ }
+        }
 
-      persist({
-        isPremium: false, loading: false, plano: null, expiresAt: null, startedAt: null,
-        source: null, status: null, isAdminOverride: false,
-      });
-      return false;
-      } catch {
+        // 5. Nada no banco: antes de rebaixar para gratuito, revalida em silêncio compras offline da loja
+        if (!skipStoreSync) {
+          try {
+            const { isBillingAvailable, syncEntitlements } = await import('@/lib/billing');
+            if (isBillingAvailable()) {
+              const synced = await syncEntitlements();
+              if (cancelled) return true;
+              if (synced > 0) return fetchOnce(true);
+            }
+          } catch { /* ignore */ }
+        }
+
+        // 6. Nenhuma assinatura encontrada
+        persist({
+          isPremium: false, loading: false, plano: null, expiresAt: null, startedAt: null,
+          source: null, status: null, isAdminOverride: false,
+        });
+        return false;
+
+      } catch (err) {
+        if (cancelled) return true;
         // Rede caiu no meio do fetch: mantém o snapshot em cache visível.
         setState(prev => ({ ...prev, loading: false }));
         return true;

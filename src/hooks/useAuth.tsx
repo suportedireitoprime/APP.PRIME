@@ -7,35 +7,12 @@ import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 import { App as CapacitorApp } from '@capacitor/app';
 
 
-// Client ID Web — mesmo valor de capacitor.config.ts. Serve como audience
-// do idToken para o Supabase (signInWithIdToken).
-const GOOGLE_WEB_CLIENT_ID =
-  '1099228641135-ercuuds9lvrgel1ilgne82fssucltacv.apps.googleusercontent.com';
-
 // Package/appId nativo atual (mesmo valor de capacitor.config.ts). O esquema de
 // deep link do OAuth é exatamente esse package: <appId>://auth-callback.
 const NATIVE_PACKAGE = 'br.com.app.gpu2675756.gpu0e7509bfb7bde52aef412888bb17a456';
 const OAUTH_DEEP_LINK = `${NATIVE_PACKAGE}://auth-callback`;
 // Esquema legado, mantido só para não quebrar links antigos já espalhados.
 const LEGACY_DEEP_LINK_SCHEMES = ['br.com.direito.app://', 'direitoprime://'];
-
-// Bundle ID iOS usado como clientId do Sign in with Apple nativo.
-const APPLE_IOS_BUNDLE_ID = 'br.com.direito.app';
-
-function gerarNonce(tamanho = 32) {
-  const bytes = new Uint8Array(tamanho);
-  crypto.getRandomValues(bytes);
-  return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
-}
-
-async function sha256Hex(input: string) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(input));
-  return Array.from(new Uint8Array(buf), (b) => b.toString(16).padStart(2, '0')).join('');
-}
-
-
-
-
 const getNativeGoogleError = (error: unknown) => {
   const err = error as { message?: string; code?: string; status?: string | number; statusCode?: string | number };
   const code = String(err?.code ?? err?.status ?? err?.statusCode ?? '');
@@ -102,18 +79,6 @@ const readCachedSession = (): Session | null => {
   return null;
 };
 
-// Só faz sentido "esperar" o Supabase quando a URL traz retorno de OAuth
-// (code/access_token). Sem isso, a sessão já está (ou não está) no
-// localStorage — e travar a tela num spinner preto só atrasa o app.
-const hasPendingAuthCallback = (): boolean => {
-  if (typeof window === 'undefined') return false;
-  try {
-    const { search, hash } = window.location;
-    return /[?&]code=/.test(search) || /access_token=|refresh_token=/.test(hash);
-  } catch {
-    return false;
-  }
-};
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [initialSession] = useState<Session | null>(() => readCachedSession());
@@ -123,7 +88,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 
   useEffect(() => {
+    let isMounted = true;
+    let appListener: { remove: () => void } | null = null;
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!isMounted) return;
       startTransition(() => {
         setSession(session);
         setUser(session?.user ?? null);
@@ -143,32 +112,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // GA4: eventos de auth (respeitam Consent Mode v2)
       import('@/lib/appEvents').then(({ appEvents, identifyUser }) => {
-        const provider = (session?.user?.app_metadata as any)?.provider || 'email';
+        const provider = (session?.user?.app_metadata as Record<string, unknown>)?.provider || 'email';
         if (_event === 'SIGNED_IN') {
           identifyUser({
             id: session?.user?.id,
             email: session?.user?.email,
-            phone: (session?.user?.user_metadata as any)?.telefone ?? null,
+            phone: (session?.user?.user_metadata as Record<string, unknown>)?.telefone as string ?? null,
           });
-          appEvents.login(provider);
+          appEvents.login(provider as string);
         } else if (_event === 'SIGNED_OUT') appEvents.logout();
       }).catch(() => {});
     });
 
-    const sessionTimeout = new Promise<{ data: { session: null } }>((resolve) =>
+    const sessionTimeout = new Promise<{ data: { session: Session | null } }>((resolve) =>
       setTimeout(() => resolve({ data: { session: null } }), 4000),
     );
-    Promise.race([supabase.auth.getSession(), sessionTimeout]).then((result: any) => {
-      const session = result?.data?.session ?? null;
-      startTransition(() => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
+    
+    Promise.race([supabase.auth.getSession(), sessionTimeout])
+      .then((result) => {
+        if (!isMounted) return;
+        const currentSession = result?.data?.session ?? null;
+        startTransition(() => {
+          setSession(currentSession);
+          setUser(currentSession?.user ?? null);
+          setLoading(false);
+        });
+      })
+      .catch((err) => {
+        console.error('[Auth] Erro ao recuperar sessão', err);
+        if (isMounted) setLoading(false);
       });
-    });
 
     // Handle OAuth deep link on native (<appId>://auth-callback?code=...)
-    let appListener: { remove: () => void } | undefined;
     if (Capacitor.isNativePlatform()) {
       CapacitorApp.addListener('appUrlOpen', async ({ url }) => {
         const aceito =
@@ -195,10 +170,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } finally {
           try { await Browser.close(); } catch {}
         }
-      }).then((l) => { appListener = l; });
+      }).then((l) => { 
+        if (isMounted) {
+          appListener = l; 
+        } else {
+          // If unmounted while promise was pending, remove immediately
+          l.remove();
+        }
+      });
     }
 
     return () => {
+      isMounted = false;
       subscription.unsubscribe();
       appListener?.remove();
     };
@@ -287,7 +270,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
 
         return { error: null };
-      } catch (e: any) {
+      } catch (e) {
         console.error('[GoogleAuth] Exceção no login nativo', e);
         return { error: getNativeGoogleError(e) };
       }
@@ -328,9 +311,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return { error: new Error(error.message) };
         }
         return { error: null };
-      } catch (e: any) {
-        const msg = String(e?.message || e || '');
-        if (/cancel/i.test(msg) || e?.code === '1001') {
+      } catch (e) {
+        const err = e as { message?: string, code?: string };
+        const msg = String(err?.message || e || '');
+        if (/cancel/i.test(msg) || err?.code === '1001') {
           return { error: null };
         }
         console.error('[Apple/iOS] native sign-in failed', e);
@@ -362,9 +346,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           windowName: '_self',
         });
         return { error: null };
-      } catch (e: any) {
-        console.error('[Apple/Android] in-app OAuth failed', e);
-        return { error: new Error(e?.message || 'Não consegui abrir o login com a Apple.') };
+      } catch (e) {
+        const err = e as { message?: string };
+        console.error('[Apple/Android] in-app OAuth failed', err);
+        return { error: new Error(err?.message || 'Não consegui abrir o login com a Apple.') };
       }
     }
 

@@ -46,14 +46,17 @@ export function useQuestoesCargos() {
   const [loading, setLoading] = useState(() => cargos.length === 0);
 
   useEffect(() => {
+    let isMounted = true;
     db.from('questoes_cargos').select('*').eq('ativo', true).order('ordem')
-      .then(({ data }: any) => {
+      .then(({ data }: { data: Cargo[] | null }) => {
+        if (!isMounted) return;
         if (data && data.length > 0) {
           setCargos(data);
           try { localStorage.setItem('questoes_cargos_cache', JSON.stringify(data)); } catch {}
         }
         setLoading(false);
       });
+    return () => { isMounted = false; };
   }, []);
   return { cargos, loading };
 }
@@ -72,22 +75,26 @@ export function useQuestoesAreas(nivel?: string | null, cargoId?: string | null)
   const [loading, setLoading] = useState(() => areas.length === 0);
 
   useEffect(() => {
+    let isMounted = true;
     if (areas.length === 0) setLoading(true);
 
     const onlineReq = db.rpc('questoes_areas', { _nivel: nivel ?? null, _cargo_id: cargoId ?? null })
-      .then(({ data }) => data);
+      .then(({ data }: { data: { area: string; total: number }[] | null }) => data);
 
     // Fallback: se online falhar ou vier vazio (e.g. offline), usa o bundle instantâneo
     withBundleFallback(
       onlineReq,
       () => bundle.questoesAreas()
-    ).then((data: any) => {
+    ).then((data: { area: string; total: number }[] | null) => {
+      if (!isMounted) return;
       if (data) {
         setAreas(data);
         try { localStorage.setItem(cacheKey, JSON.stringify(data)); } catch {}
       }
       setLoading(false);
     });
+    
+    return () => { isMounted = false; };
   }, [nivel, cargoId]);
   return { areas, loading };
 }
@@ -122,8 +129,15 @@ export function useQuestoesSessao(opts: SortearOpts) {
   const inicio = useRef<number>(Date.now());
 
   const [sessaoIdAtiva, setSessaoIdAtiva] = useState<string | null>(null);
+  const isMounted = useRef(true);
+
+  useEffect(() => {
+    isMounted.current = true;
+    return () => { isMounted.current = false; };
+  }, []);
 
   const carregar = useCallback(async () => {
+    if (!isMounted.current) return;
     setLoading(true);
     const o = JSON.parse(key) as SortearOpts;
     
@@ -131,6 +145,7 @@ export function useQuestoesSessao(opts: SortearOpts) {
     if (o.sessaoId) {
       const sessao = getSessaoById(o.sessaoId);
       if (sessao && sessao.questoes && sessao.questoes.length > 0) {
+        if (!isMounted.current) return;
         setQuestoes(sessao.questoes);
         setSessaoIdAtiva(sessao.id);
         inicio.current = Date.now();
@@ -173,6 +188,7 @@ export function useQuestoesSessao(opts: SortearOpts) {
       }
     }
 
+    if (!isMounted.current) return;
     setQuestoes(res);
     setSessaoIdAtiva(Date.now().toString());
     inicio.current = Date.now();
@@ -218,8 +234,10 @@ export function useQuestoesDesempenho() {
   const [loading, setLoading] = useState(() => !dados);
 
   useEffect(() => {
+    let isMounted = true;
     if (!user) { setLoading(false); return; }
-    db.rpc('questoes_desempenho').then(({ data }: any) => {
+    db.rpc('questoes_desempenho').then(({ data }: { data: Record<string, unknown> | null }) => {
+      if (!isMounted) return;
       if (data) {
         setDados(data);
         if (cacheKey) {
@@ -228,6 +246,7 @@ export function useQuestoesDesempenho() {
       }
       setLoading(false);
     });
+    return () => { isMounted = false; };
   }, [user, cacheKey]);
   return { dados, loading };
 }
