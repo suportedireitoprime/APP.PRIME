@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, type PanInfo } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
   ChevronLeft, ChevronRight, ChevronUp, Clock, Heart, Loader2, PlayCircle, CheckCircle2, XCircle, X, RotateCw, Sparkles, AlertTriangle, ScanText, FileText, Plus, MessageSquare, Trophy, Grid2X2, Mic, Layers
@@ -19,6 +19,33 @@ import { ProfessoraInline } from './ProfessoraInline';
 import { getSessaoById, saveSessao } from '@/lib/questoesSessoes';
 
 const db = supabase as any;
+
+/* ─── Fila Offline de Respostas ─── */
+const OFFLINE_QUEUE_KEY = 'APP_PRIME_RESPOSTAS_OFFLINE';
+interface QueuedResposta { questao_id: string; alternativa: string; acertou: boolean; contexto: string; tempo_ms: number; user_id: string; ts: number; }
+
+function enqueueResposta(item: QueuedResposta) {
+  try {
+    const queue: QueuedResposta[] = JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY) || '[]');
+    queue.push(item);
+    localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(queue));
+  } catch { /* storage full — ignora */ }
+}
+
+async function flushRespostaQueue() {
+  try {
+    const raw = localStorage.getItem(OFFLINE_QUEUE_KEY);
+    if (!raw) return;
+    const queue: QueuedResposta[] = JSON.parse(raw);
+    if (!queue.length) return;
+    // Tenta enviar em lote
+    const rows = queue.map(({ ts, ...rest }) => rest);
+    const { error } = await db.from('questoes_respostas').insert(rows);
+    if (!error) {
+      localStorage.removeItem(OFFLINE_QUEUE_KEY);
+    }
+  } catch { /* rede indisponível — tenta na próxima vez */ }
+}
 
 type Props = {
   questoes: Questao[];
@@ -55,11 +82,70 @@ const ResolverPadrao = ({
   const [gradeAberta, setGradeAberta] = useState(false);
   const [streak, setStreak] = useState(0);
   const [abaAtiva, setAbaAtiva] = useState<'texto' | 'questao'>('questao');
+  const [eliminadas, setEliminadas] = useState<Record<string, Set<string>>>({});
   const [ocrLoading, setOcrLoading] = useState<Record<string, boolean>>({});
   const [ocrText, setOcrText] = useState<Record<string, string>>({});
   const topoRef = useRef<HTMLDivElement>(null);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const gateQuestoes = useGatedFeature('questoes', 'questoes');
   const gateFuncoes = useGatedFeature('questao_funcoes', 'questao_funcoes');
+
+  // Flush da fila offline ao montar e quando a rede voltar
+  useEffect(() => {
+    flushRespostaQueue();
+    const handleOnline = () => flushRespostaQueue();
+    window.addEventListener('online', handleOnline);
+    return () => window.removeEventListener('online', handleOnline);
+  }, []);
+
+  // Direção do swipe para animação (1 = direita→esquerda, -1 = esquerda→direita)
+  const [swipeDir, setSwipeDir] = useState(1);
+
+  const handleSwipe = useCallback((_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    const THRESHOLD = 60;
+    const VELOCITY = 300;
+    if (Math.abs(info.offset.x) > THRESHOLD || Math.abs(info.velocity.x) > VELOCITY) {
+      if (info.offset.x < 0 && idx < questoes.length - 1) {
+        setSwipeDir(1);
+        setIdx(i => i + 1);
+        haptic.selection?.();
+      } else if (info.offset.x > 0 && idx > 0) {
+        setSwipeDir(-1);
+        setIdx(i => i - 1);
+        haptic.selection?.();
+      }
+    }
+  }, [idx, questoes.length]);
+
+  // Long-press para eliminar alternativa
+  const handleLongPressStart = useCallback((letra: string) => {
+    if (resp) return; // Já respondeu
+    longPressTimer.current = setTimeout(() => {
+      haptic.impact?.();
+      setEliminadas(prev => {
+        const qid = questoes[idx]?.id;
+        if (!qid) return prev;
+        const current = new Set(prev[qid] || []);
+        if (current.has(letra)) {
+          current.delete(letra); // Desriscar
+        } else {
+          current.add(letra); // Riscar
+        }
+        // Se a seleção atual foi eliminada, limpa
+        if (current.has(selecao ?? '')) setSelecao(null);
+        return { ...prev, [qid]: current };
+      });
+    }, 500);
+  }, [resp, idx, questoes, selecao]);
+
+  const handleLongPressEnd = useCallback(() => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  }, []);
+
+  const eliminadasAtuais = atual ? (eliminadas[atual.id] ?? new Set()) : new Set<string>();
 
   useEffect(() => {
     if (questoes.length === 0) return;
@@ -187,9 +273,17 @@ const ResolverPadrao = ({
     setStreak(acertou ? streak + 1 : 0);
     
     setRespostas((prev) => ({ ...prev, [atual.id]: { escolha: selecao, acertou } }));
+
+    // Offline-first: enfileira localmente e tenta enviar
+    if (user) {
+      const tempo = Date.now();
+      enqueueResposta({ questao_id: atual.id, alternativa: selecao, acertou, contexto, tempo_ms: tempo, user_id: user.id, ts: tempo });
+    }
     onRegistrar(atual.id, selecao, acertou, contexto);
+    // Tenta flush assíncrono sem bloquear UI
+    void flushRespostaQueue();
     void gateQuestoes.run();
-  }, [atual, selecao, resp, gateQuestoes, correta, streak, contexto, onRegistrar]);
+  }, [atual, selecao, resp, gateQuestoes, correta, streak, contexto, onRegistrar, user]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -293,50 +387,68 @@ const ResolverPadrao = ({
     );
   }
 
+  const progresso = questoes.length > 0 ? (Object.keys(respostas).length / questoes.length) * 100 : 0;
+
   return (
     <div ref={topoRef} className={cn("flex min-h-screen flex-col bg-background", resp ? "pb-[260px]" : "pb-32")}>
       {gateQuestoes.gateNode}
       {gateFuncoes.gateNode}
 
-      <div className="sticky top-0 z-50 flex items-center justify-between bg-primary px-4 pb-4 pt-safe-header text-primary-foreground shadow-sm">
-        <button onClick={onBack} aria-label="Voltar" className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-black/15 hover:bg-black/25 transition-colors">
-          <ChevronLeft className="h-6 w-6" />
-        </button>
-        <div className="flex-1 px-3 flex flex-col items-center justify-center">
-          <div className="flex items-center gap-2">
-            <p className="line-clamp-1 text-[16px] font-bold leading-tight">{atual.disciplina}</p>
-            <AnimatePresence>
-              {streak >= 3 && (
-                <motion.div
-                  initial={{ scale: 0.8, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 0.8, opacity: 0 }}
-                  className="flex items-center gap-1 rounded-full bg-orange-500/20 px-2 py-0.5"
-                >
-                  <Trophy className="h-3 w-3 text-orange-500" />
-                  <span className="text-[12px] font-bold text-orange-500">{streak}</span>
-                </motion.div>
-              )}
-            </AnimatePresence>
+      <div className="sticky top-0 z-50 flex flex-col">
+        <div className="flex items-center justify-between bg-primary px-4 pb-4 pt-safe-header text-primary-foreground shadow-sm">
+          <button onClick={onBack} aria-label="Voltar" className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-black/15 hover:bg-black/25 transition-colors">
+            <ChevronLeft className="h-6 w-6" />
+          </button>
+          <div className="flex-1 px-3 flex flex-col items-center justify-center">
+            <div className="flex items-center gap-2">
+              <p className="line-clamp-1 text-[16px] font-bold leading-tight">{atual.disciplina}</p>
+              <AnimatePresence>
+                {streak >= 3 && (
+                  <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.8, opacity: 0 }}
+                    className="flex items-center gap-1 rounded-full bg-orange-500/20 px-2 py-0.5"
+                  >
+                    <Trophy className="h-3 w-3 text-orange-500" />
+                    <span className="text-[12px] font-bold text-orange-500">{streak}</span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
+          <button onClick={agendarNotificacaoErro} aria-label="Reportar Erro" className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-black/15 hover:bg-black/25 transition-colors">
+            <AlertTriangle className="h-5 w-5" />
+          </button>
         </div>
-        <button onClick={agendarNotificacaoErro} aria-label="Reportar Erro" className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-black/15 hover:bg-black/25 transition-colors">
-          <AlertTriangle className="h-5 w-5" />
-        </button>
+        {/* ── Barra de Progresso Viva ── */}
+        <div className="h-[3px] w-full bg-black/20">
+          <motion.div
+            className="h-full bg-gradient-to-r from-green-400 via-emerald-400 to-green-500 rounded-r-full"
+            initial={false}
+            animate={{ width: `${progresso}%` }}
+            transition={{ type: 'spring', stiffness: 120, damping: 20 }}
+          />
+        </div>
       </div>
 
       <div className={cn("relative mx-auto w-full max-w-7xl px-0 lg:px-8 lg:grid lg:grid-cols-[1fr_320px] lg:gap-8 lg:items-start flex-1 transition-all", feedbackOculto ? "pb-24 lg:pb-8" : "pb-32 lg:pb-8")}>
         
         {/* Main Content Column */}
         <div className="relative w-full max-w-3xl mx-auto lg:max-w-none lg:mx-0 px-4 sm:px-6 pt-6 sm:pt-8 flex flex-col min-w-0">
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait" custom={swipeDir}>
           <motion.div
             key={atual.id}
-            initial={{ opacity: 0, x: 15 }}
+            custom={swipeDir}
+            initial={{ opacity: 0, x: swipeDir * 40 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -15 }}
-            transition={{ duration: 0.25, ease: 'easeOut' }}
-            className="flex flex-col"
+            exit={{ opacity: 0, x: swipeDir * -40 }}
+            transition={{ duration: 0.22, ease: 'easeOut' }}
+            drag={resp ? false : 'x'}
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.15}
+            onDragEnd={handleSwipe}
+            className="flex flex-col touch-pan-y"
           >
         <div className="flex items-end justify-between border-b border-border/50 pb-4">
           <div className="flex items-baseline gap-1.5">
@@ -445,15 +557,21 @@ const ResolverPadrao = ({
                 const escolhida = selecao === op.letra;
                 const revela = !!resp && op.letra === correta;
                 const errou = !!resp && resp.escolha === op.letra && !resp.acertou;
+                const riscada = eliminadasAtuais.has(op.letra);
                 return (
                   <button
                     key={op.letra}
-                    disabled={!!resp}
-                    onClick={() => { haptic.selection?.(); setSelecao(op.letra); setAbaAtiva('questao'); }}
+                    disabled={!!resp || riscada}
+                    onClick={() => { if (riscada) return; haptic.selection?.(); setSelecao(op.letra); setAbaAtiva('questao'); }}
+                    onPointerDown={() => handleLongPressStart(op.letra)}
+                    onPointerUp={handleLongPressEnd}
+                    onPointerLeave={handleLongPressEnd}
+                    onContextMenu={(e) => e.preventDefault()}
                     className={cn(
-                      'flex min-h-[60px] w-full items-center gap-4 rounded-2xl border p-4 text-left transition-all',
+                      'relative flex min-h-[60px] w-full items-center gap-4 rounded-2xl border p-4 text-left transition-all select-none',
                       revela ? 'border-green-500 bg-green-500/10'
                         : errou ? 'border-red-500 bg-red-500/10'
+                        : riscada ? 'border-border/30 bg-muted/20 opacity-40'
                         : escolhida ? 'border-primary bg-primary/5'
                         : 'border-border/60 bg-muted/40 hover:border-border hover:bg-accent/50',
                     )}
@@ -464,10 +582,23 @@ const ResolverPadrao = ({
                     )}>
                       {op.letra}
                     </span>
-                    <span className="flex-1 text-[16px] leading-[1.5] text-foreground/90">{op.texto}</span>
+                    <span className={cn('flex-1 text-[16px] leading-[1.5] text-foreground/90', riscada && 'line-through text-muted-foreground/50')}>
+                      {op.texto}
+                    </span>
+                    {/* Linha diagonal de eliminação */}
+                    {riscada && !resp && (
+                      <div className="absolute inset-y-0 left-4 right-4 flex items-center pointer-events-none">
+                        <div className="h-[2px] w-full bg-red-500/40 rounded-full" />
+                      </div>
+                    )}
                   </button>
                 );
               })}
+              {!resp && (
+                <p className="text-center text-[12px] text-muted-foreground/50 pt-1">
+                  Segure para eliminar uma alternativa
+                </p>
+              )}
             </div>
           </motion.div>
         )}
