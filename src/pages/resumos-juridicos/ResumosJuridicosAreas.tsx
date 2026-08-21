@@ -128,6 +128,10 @@ export default function ResumosJuridicosAreas() {
 
 
   useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [aba]);
+
+  useEffect(() => {
     // 1. Tenta carregar do localStorage imediatamente (0ms de espera)
     if (!areasCache) {
       try {
