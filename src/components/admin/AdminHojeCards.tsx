@@ -121,6 +121,7 @@ export function AdminHojeCards() {
   const [novosKeys, setNovosKeys] = useState<Set<string>>(new Set());
   const [open, setOpen] = useState<CardId | null>(null);
   const [rows, setRows] = useState<Row[]>([]);
+  const [filtroUser, setFiltroUser] = useState<'todos' | 'gratuitos' | 'assinantes'>('todos');
   const [loading, setLoading] = useState(false);
   const [dossie, setDossie] = useState<Row | null>(null);
   const [dia, setDia] = useState<Date>(() => new Date());
@@ -334,6 +335,12 @@ export function AdminHojeCards() {
       ? 'Ontem'
       : dia.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' });
 
+  const filteredRows = rows.filter(r => {
+    if (filtroUser === 'gratuitos') return !r.isPremium;
+    if (filtroUser === 'assinantes') return r.isPremium;
+    return true;
+  });
+
   return (
     <>
       <div className="grid grid-cols-5 gap-2 mb-3">
@@ -365,7 +372,7 @@ export function AdminHojeCards() {
                   {open ? `${titles[open]} · ${rotuloDia}` : ''}
                 </SheetTitle>
                 <p className="font-body text-[11.5px] text-muted-foreground mt-0.5">
-                  {loading ? 'Carregando…' : `${rows.length} registro${rows.length === 1 ? '' : 's'}`}
+                  {loading ? 'Carregando…' : `${filteredRows.length} registro${filteredRows.length === 1 ? '' : 's'}`}
                 </p>
               </div>
               <button
@@ -377,6 +384,23 @@ export function AdminHojeCards() {
                 Totais
               </button>
             </div>
+
+            <div className="flex bg-secondary/50 p-1 rounded-xl mt-4 w-full">
+              {(['todos', 'gratuitos', 'assinantes'] as const).map((t) => (
+                <button
+                  key={t}
+                  onClick={() => setFiltroUser(t)}
+                  className={cn(
+                    'flex-1 text-[11.5px] font-semibold py-1.5 rounded-lg capitalize transition-all',
+                    filtroUser === t 
+                      ? 'bg-background shadow-sm text-foreground' 
+                      : 'text-muted-foreground hover:text-foreground'
+                  )}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
           </SheetHeader>
 
 
@@ -387,13 +411,13 @@ export function AdminHojeCards() {
               <div className="flex justify-center py-10 text-muted-foreground">
                 <Loader2 className="w-5 h-5 animate-spin" />
               </div>
-            ) : rows.length === 0 ? (
+            ) : filteredRows.length === 0 ? (
               <p className="font-body text-sm text-muted-foreground text-center py-10">
-                Nenhum registro em {rotuloDia.toLowerCase()}.
+                Nenhum registro encontrado.
               </p>
             ) : (
               <div className="rounded-2xl border border-border/60 bg-secondary/30 divide-y divide-border/50 overflow-hidden">
-                {rows.map((r) => (
+                {filteredRows.map((r) => (
                   <button
                     key={r.key}
                     type="button"
