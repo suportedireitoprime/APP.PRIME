@@ -12,7 +12,7 @@
 import { LEIS_SUPABASE_URL, leisAuthHeaders } from '@/lib/legislacaoBackend';
 
 export const RESENHA_SELECT =
-  'id,tipo_ato,numero_ato,ementa,url,data_publicacao,data_dou,texto_completo,explicacao';
+  'id,tipo_ato,numero_ato,ementa,url,data_publicacao,data_dou,texto_completo,explicacao,created_at';
 
 /** SELECT genérico em `resenha_diaria` via PostgREST (backend de legislação). */
 export async function resenhaSelect<T = any>(

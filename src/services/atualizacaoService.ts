@@ -10,6 +10,7 @@ export interface ResenhaItem {
   explicacao: string | null;
   data_publicacao: string;
   data_dou: string;
+  created_at: string;
 }
 
 let resenhaCache: ResenhaItem[] | null = null;
