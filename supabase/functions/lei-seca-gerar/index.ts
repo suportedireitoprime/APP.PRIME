@@ -6,7 +6,7 @@ import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const LOVABLE_API_KEY = undefined!;
+const GOOGLE_API_KEY = Deno.env.get("GEMINI_API_KEY")!;
 const MODEL = 'gemini-3.1-flash-lite';
 
 function repairAndParseJson(raw: string): any | null {
@@ -30,7 +30,7 @@ async function callAI(prompt: string): Promise<any> {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Lovable-API-Key": LOVABLE_API_KEY,
+      "Authorization": GEMINI_API_KEY,
     },
     body: JSON.stringify({
       model: MODEL,

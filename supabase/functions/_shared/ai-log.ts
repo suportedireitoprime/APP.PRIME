@@ -85,7 +85,7 @@ export function extractGeminiUsage(data: any): { inputUnits: number; outputUnits
   };
 }
 
-// Extrai tokens de uma resposta OpenAI-compatível (Lovable Gateway).
+// Extrai tokens de uma resposta OpenAI-compatível (Gemini Gateway).
 export function extractOpenAiUsage(data: any): { inputUnits: number; outputUnits: number } {
   const u = data?.usage ?? {};
   return {

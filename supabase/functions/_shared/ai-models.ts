@@ -41,7 +41,7 @@ const DENY_PATTERNS: RegExp[] = [
 
 /**
  * Força qualquer id de modelo de texto para `gemini-3.1-flash-lite`.
- * Se o id vier na forma `google/...` (Lovable Gateway), preserva o prefixo.
+ * Se o id vier na forma `google/...` (Gemini Gateway), preserva o prefixo.
  * Loga warning para qualquer tentativa fora da política.
  */
 export function assertTextModel(id: string): string {

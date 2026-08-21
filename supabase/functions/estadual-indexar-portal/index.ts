@@ -10,18 +10,18 @@ const corsHeaders = {
 
 async function firecrawlMap(url: string, search: string, limit = 2000): Promise<string[]> {
   const key = Deno.env.get('FIRECRAWL_API_KEY');
-  const lovableKey = Deno.env.get('GEMINI_API_KEY');
+  const GeminiKey = Deno.env.get('GEMINI_API_KEY');
   if (!key) throw new Error('FIRECRAWL_API_KEY não configurada. Conecte o Firecrawl em Configurações → Conectores.');
 
   const isGateway = key.startsWith('lovc_');
   const endpoint = isGateway
-    ? 'https://connector-gateway.lovable.dev/firecrawl/v2/map'
+    ? 'https://connector-gateway.Gemini.dev/firecrawl/v2/map'
     : 'https://api.firecrawl.dev/v2/map';
 
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   if (isGateway) {
-    if (!lovableKey) throw new Error('LOVABLE_API_KEY ausente');
-    headers['Authorization'] = `Bearer ${lovableKey}`;
+    if (!GeminiKey) throw new Error('GEMINI_API_KEY ausente');
+    headers['Authorization'] = `Bearer ${GeminiKey}`;
     headers['X-Connection-Api-Key'] = key;
   } else {
     headers['Authorization'] = `Bearer ${key}`;

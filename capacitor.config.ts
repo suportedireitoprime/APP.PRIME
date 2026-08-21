@@ -26,7 +26,6 @@ const config: CapacitorConfig = {
     // 🔗 Deep Links / App Links — permite abrir o app direto de:
     //   - estudosjuridicos://lei/cf88/art-5 (esquema legado: direitoprime://)
     //   - br.com.app.gpu2675756.gpu0e7509bfb7bde52aef412888bb17a456://qualquer-caminho
-    //   - https://slide-canvas-magic-77.lovable.app/lei/cf88/art-5 (assetlinks.json)
     // Para App Links verificados, hospedar /.well-known/assetlinks.json no domínio
     // com o SHA-256 da chave de assinatura de release.
     // Os <intent-filter> concretos vivem no workflow build-android.yml (steps

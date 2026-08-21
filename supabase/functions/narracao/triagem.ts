@@ -1,5 +1,5 @@
 // Edge function: generate TTS narration per scene for admin triagem preview.
-// Uses Lovable AI Gateway with Gemini TTS (google/gemini-2.5-flash-tts).
+// Uses Gemini API with Gemini TTS (google/gemini-2.5-flash-tts).
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -9,14 +9,14 @@ const corsHeaders = {
 type SceneIn = { id: string; text: string };
 type Body = { voice?: string; scenes: SceneIn[]; model?: string };
 
-const LOVABLE_API_KEY = undefined;
+
 
 async function speakOne(text: string, voice: string, model: string): Promise<string> {
   const prompt = `Fale em português brasileiro, com tom acolhedor, ritmo natural e sem pressa: ${text}`;
-  const res = await fetch('https://ai.gateway.lovable.dev/v1/audio/speech', {
+  const res = await fetch('https://ai.gateway.Gemini.dev/v1/audio/speech', {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${LOVABLE_API_KEY}`,
+      Authorization: `Bearer ${GEMINI_API_KEY}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -49,8 +49,8 @@ async function speakOne(text: string, voice: string, model: string): Promise<str
 export const handler = (async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   try {
-    if (!LOVABLE_API_KEY) {
-      return new Response(JSON.stringify({ error: 'LOVABLE_API_KEY missing' }), {
+    if (!GEMINI_API_KEY) {
+      return new Response(JSON.stringify({ error: 'GEMINI_API_KEY missing' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });

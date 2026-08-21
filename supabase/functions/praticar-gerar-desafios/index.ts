@@ -8,7 +8,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-const LOVABLE_API_KEY = undefined;
+
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 const MODEL = 'gemini-3.1-flash-lite';
@@ -54,8 +54,8 @@ Deno.serve(async (req) => {
       }
     }
 
-    if (!LOVABLE_API_KEY) {
-      return new Response(JSON.stringify({ error: "LOVABLE_API_KEY missing" }), {
+    if (!GEMINI_API_KEY) {
+      return new Response(JSON.stringify({ error: "GEMINI_API_KEY missing" }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -76,7 +76,7 @@ Regras:
     const resp = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
       method: "POST",
       headers: {
-        "Lovable-API-Key": LOVABLE_API_KEY,
+        "Authorization": GEMINI_API_KEY,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({

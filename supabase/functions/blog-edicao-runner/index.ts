@@ -5,17 +5,17 @@ import { buildCoverPrompt, type CoverBrief } from "../_shared/blog-cover-style-v
 import { evolution, buildHorusTrackedUrl } from "../_shared/evolution.ts";
 
 async function generateCoverOnce(_apiKey: string, prompt: string): Promise<Uint8Array | null> {
-  // 1) Tenta primeiro o Lovable AI Gateway (google/gemini-2.5-flash-image)
+  // 1) Tenta primeiro o Gemini API (google/gemini-2.5-flash-image)
   // Isto evita depender dos créditos pré-pagos da conta GEMINI direta, que já
   // ficaram exauridos em produção e causaram capas ausentes nos posts.
-  const lovableKey = Deno.env.get('GEMINI_API_KEY');
-  if (lovableKey) {
+  const GeminiKey = Deno.env.get('GEMINI_API_KEY');
+  if (GeminiKey) {
     try {
       const res = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${lovableKey}`,
+          Authorization: `Bearer ${GeminiKey}`,
         },
         body: JSON.stringify({
           model: 'gemini-3-pro-image',
@@ -267,7 +267,7 @@ Deno.serve(async (req) => {
 
   try {
     const geminiKey = Deno.env.get("GEMINI_API_KEY") || "";
-    // callGemini agora usa Lovable AI Gateway; a chave direta é opcional.
+    // callGemini agora usa Gemini API; a chave direta é opcional.
 
     const { data: cfg } = await supabase.from("blog_edicao_config").select("*").limit(1).single();
     if (!cfg) return json({ error: "config ausente" }, 500);
@@ -728,7 +728,7 @@ async function broadcastHorus(
   const appBaseUrl =
     Deno.env.get("HORUS_APP_URL") ||
     Deno.env.get("HORUS_PLAY_STORE_URL") ||
-    "https://vade-lex-genius.lovable.app";
+    "https://vade-lex-genius.Gemini.app";
   const targetUrl = `${appBaseUrl.replace(/\/$/, "")}/blog?post=${encodeURIComponent(
     opts.postId,
   )}`;

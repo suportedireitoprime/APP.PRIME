@@ -18,7 +18,7 @@ export interface NotifyBoletimArgs {
 }
 
 const APP_URL = Deno.env.get("HORUS_APP_URL") ||
-  "https://huggable-calc-89.lovable.app";
+  "https://huggable-calc-89.Gemini.app";
 
 export async function notificarAdminsWhats(args: NotifyBoletimArgs) {
   const { supa, boletimId, tipo, titulo, totalCenas, duracaoS, labelUnidade } = args;

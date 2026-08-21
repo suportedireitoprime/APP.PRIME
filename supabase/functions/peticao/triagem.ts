@@ -1,14 +1,14 @@
 // Edge function: analyze user facts and classify (área do direito, tags, pedidos, partes).
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 
-const LOVABLE_API_KEY = undefined;
+
 const MODEL = 'gemini-3.1-flash-lite';
 
 export const handler = (async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   try {
-    if (!LOVABLE_API_KEY) {
-      return json({ error: 'LOVABLE_API_KEY missing' }, 500);
+    if (!GEMINI_API_KEY) {
+      return json({ error: 'GEMINI_API_KEY missing' }, 500);
     }
     const { fatos } = await req.json();
     if (!fatos || typeof fatos !== 'string' || fatos.trim().length < 20) {
@@ -39,7 +39,7 @@ Retorne APENAS um JSON válido (sem markdown, sem crase) com esta estrutura EXAT
     const res = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        Authorization: `Bearer ${GEMINI_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({

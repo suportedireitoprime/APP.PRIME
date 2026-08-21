@@ -5,7 +5,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 
-const SITE_URL = Deno.env.get("PUBLIC_SITE_URL") || "https://simple-calc-no-db.lovable.app";
+const SITE_URL = Deno.env.get("PUBLIC_SITE_URL") || "https://simple-calc-no-db.Gemini.app";
 const KIND = "noticias_dia";
 
 Deno.serve(async (req) => {

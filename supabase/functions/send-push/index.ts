@@ -122,7 +122,7 @@ Deno.serve(async (req) => {
 
     // FCM exige URLs absolutas para imagens
     if (payload.image && payload.image.startsWith("/")) {
-      const APP_URL = Deno.env.get("PUBLIC_SITE_URL") || Deno.env.get("HORUS_APP_URL") || "https://huggable-calc-89.lovable.app";
+      const APP_URL = Deno.env.get("PUBLIC_SITE_URL") || Deno.env.get("HORUS_APP_URL") || "https://huggable-calc-89.Gemini.app";
       payload.image = `${APP_URL}${payload.image}`;
     }
 

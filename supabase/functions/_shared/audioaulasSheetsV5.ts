@@ -1,7 +1,7 @@
 // Helpers de integração com a planilha Google Sheets das Audioaulas.
 // Uma aba por área do Direito + uma aba "Prompts".
 
-const GATEWAY = "https://connector-gateway.lovable.dev/google_sheets/v4";
+const GATEWAY = "https://sheets.googleapis.com/v4";
 
 export const CAB_AREA = [
   "Ordem",
@@ -29,8 +29,7 @@ async function gw(path: string, init?: RequestInit) {
   const res = await fetch(`${GATEWAY}${path}`, {
     ...init,
     headers: {
-      Authorization: `Bearer ${env("LOVABLE_API_KEY")}`,
-      "X-Connection-Api-Key": env("GOOGLE_SHEETS_API_KEY"),
+      "X-Goog-Api-Key": env("GOOGLE_SHEETS_API_KEY"),
       "Content-Type": "application/json",
       ...(init?.headers ?? {}),
     },

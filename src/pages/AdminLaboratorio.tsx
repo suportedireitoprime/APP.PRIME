@@ -1,5 +1,5 @@
 import React, { useState, Suspense, lazy } from 'react';
-import { X, Book, Wand2, Cpu, ChevronRight, ArrowLeft, PlayCircle, Music, Upload } from 'lucide-react';
+import { X, Book, Wand2, Cpu, ChevronRight, ArrowLeft, PlayCircle, Music, Upload, User, FileSignature } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import AnimacaoExemplo from '@/components/laboratorio/AnimacaoExemplo';
@@ -132,6 +132,44 @@ const AdminLaboratorio = () => {
                   </div>
                 </div>
                 <ChevronRight className="text-muted-foreground group-hover:text-orange-400 transition-colors relative z-10 flex-shrink-0" size={24} />
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => navigate('/meu-espaco')}
+                className="group relative overflow-hidden bg-secondary/20 border border-border/50 hover:border-emerald-500/50 rounded-2xl p-6 flex items-center justify-between transition-all w-full shadow-lg"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="flex items-center gap-5 relative z-10 text-left w-full">
+                  <div className="w-14 h-14 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white transition-colors shrink-0">
+                    <User size={28} />
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="text-xl font-bold text-white mb-1 group-hover:text-emerald-400 transition-colors">Meu Espaço & Hórus</h2>
+                    <p className="text-sm text-muted-foreground line-clamp-2">Acesso ao painel pessoal, lembretes e assistente Hórus para lapidação.</p>
+                  </div>
+                </div>
+                <ChevronRight className="text-muted-foreground group-hover:text-emerald-400 transition-colors relative z-10 flex-shrink-0" size={24} />
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => navigate('/ferramentas/peticao-inicial')}
+                className="group relative overflow-hidden bg-secondary/20 border border-border/50 hover:border-cyan-500/50 rounded-2xl p-6 flex items-center justify-between transition-all w-full shadow-lg"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="flex items-center gap-5 relative z-10 text-left w-full">
+                  <div className="w-14 h-14 rounded-full bg-cyan-500/20 flex items-center justify-center text-cyan-400 group-hover:bg-cyan-500 group-hover:text-white transition-colors shrink-0">
+                    <FileSignature size={28} />
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="text-xl font-bold text-white mb-1 group-hover:text-cyan-400 transition-colors">Petição Inicial (IA)</h2>
+                    <p className="text-sm text-muted-foreground line-clamp-2">Acesso ao gerador de peças e jurisprudência para lapidação.</p>
+                  </div>
+                </div>
+                <ChevronRight className="text-muted-foreground group-hover:text-cyan-400 transition-colors relative z-10 flex-shrink-0" size={24} />
               </motion.button>
             </motion.div>
           ) : (

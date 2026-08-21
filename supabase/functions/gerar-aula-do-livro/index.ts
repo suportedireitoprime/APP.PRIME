@@ -15,7 +15,7 @@ const corsHeaders = {
 
 const ADMIN_EMAILS = new Set(["wn7corporation@gmail.com", "suporte@direitoprime.com.br", "wn7juridico@gmail.com"]);
 // v8 — leitura nativa usa SOMENTE a GEMINI_API_KEY direta, via Gemini native API.
-// (redeploy forçado: build antiga ainda usava Lovable AI Gateway)
+// (redeploy forçado: build antiga ainda usava Gemini API)
 const geminiKey = () => (Deno.env.get("GEMINI_API_KEY") ?? "").trim();
 const MODEL = "gemini-3.1-flash-lite";
 const MODELS = ["gemini-3.1-flash-lite", "gemini-3.1-flash-lite"];
@@ -517,8 +517,8 @@ Deno.serve(async (req) => {
       if (aiRes.status === 402 || aiRes.status === 401 || aiRes.status === 403) {
         const detail = await aiRes.text().catch(() => "");
         const msg = aiRes.status === 402
-          ? "Sua conta/projeto Google Gemini recusou por cobrança/crédito (HTTP 402). Não foi usado Lovable AI."
-          : `Sua chave do Gemini foi recusada (HTTP ${aiRes.status}). Verifique a GEMINI_API_KEY e se a API Generative Language está habilitada. Não foi usado Lovable AI.`;
+          ? "Sua conta/projeto Google Gemini recusou por cobrança/crédito (HTTP 402). Não foi usado Gemini AI."
+          : `Sua chave do Gemini foi recusada (HTTP ${aiRes.status}). Verifique a GEMINI_API_KEY e se a API Generative Language está habilitada. Não foi usado Gemini AI.`;
         console.error(`[gerar-aula-do-livro] gemini ${aiRes.status}: ${detail}`);
         return json({ error: msg, status: aiRes.status, detail, provider: PROVIDER, model }, aiRes.status);
       }

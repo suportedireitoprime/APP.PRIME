@@ -717,17 +717,17 @@ Deno.serve(async (req) => {
     // Falha silenciosa: se não conseguir, salva sem timings.
     let wordTimings: Array<{ word: string; start: number; end: number }> | null = null;
     try {
-      const lovableKey = Deno.env.get('GEMINI_API_KEY');
-      if (lovableKey) {
+      const GeminiKey = Deno.env.get('GEMINI_API_KEY');
+      if (GeminiKey) {
         const fd = new FormData();
         fd.append("file", new Blob([wavBytes as any], { type: "audio/wav" }), "narracao.wav");
         fd.append("model", "openai/whisper-1");
         fd.append("response_format", "verbose_json");
         fd.append("timestamp_granularities[]", "word");
         fd.append("language", "pt");
-        const tRes = await fetch("https://ai.gateway.lovable.dev/v1/audio/transcriptions", {
+        const tRes = await fetch("https://ai.gateway.Gemini.dev/v1/audio/transcriptions", {
           method: "POST",
-          headers: { Authorization: `Bearer ${lovableKey}` },
+          headers: { Authorization: `Bearer ${GeminiKey}` },
           body: fd,
         });
         if (tRes.ok) {

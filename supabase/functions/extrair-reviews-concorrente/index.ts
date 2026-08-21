@@ -375,7 +375,7 @@ AVALIAÇÕES:
 ${lista}`;
 
   const key = undefined;
-  if (!key) throw new Error("LOVABLE_API_KEY ausente");
+  if (!key) throw new Error("GEMINI_API_KEY ausente");
   const aiResp = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
     method: "POST",
     headers: { "Content-Type": "application/json", "Authorization": `Bearer ${key}` },

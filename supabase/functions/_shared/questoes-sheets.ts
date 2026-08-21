@@ -14,8 +14,8 @@ export const ADMIN_EMAILS = new Set([
 ]);
 
 export const PASTA_DRIVE = "1_i0Sp5uvElQx1rHSj7g-_2p7ELZHcbEk";
-const SHEETS_GW = "https://connector-gateway.lovable.dev/google_sheets/v4";
-const DRIVE_GW = "https://connector-gateway.lovable.dev/google_drive/drive/v3";
+const SHEETS_GW = "https://sheets.googleapis.com/v4";
+const DRIVE_GW = "https://www.googleapis.com/drive/v3";
 
 export function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -62,8 +62,7 @@ async function gw(url: string, key: string) {
   for (let tentativa = 0; tentativa < 5; tentativa++) {
     const r = await fetch(url, {
       headers: {
-        Authorization: `Bearer ${Deno.env.get('GEMINI_API_KEY')}`,
-        "X-Connection-Api-Key": key,
+        "X-Goog-Api-Key": key,
       },
     });
     const txt = await r.text();

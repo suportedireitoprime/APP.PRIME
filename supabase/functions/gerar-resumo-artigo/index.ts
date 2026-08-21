@@ -27,7 +27,7 @@ Deno.serve(async (req) => {
 
   try {
     const apiKey = Deno.env.get('GEMINI_API_KEY');
-    if (!apiKey) return json({ error: 'LOVABLE_API_KEY ausente' }, 500);
+    if (!apiKey) return json({ error: 'GEMINI_API_KEY ausente' }, 500);
 
     const body = await req.json().catch(() => ({}));
     const tabela = body?.tabela_codigo;

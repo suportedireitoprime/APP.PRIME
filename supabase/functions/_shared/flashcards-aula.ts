@@ -168,8 +168,8 @@ export async function handleGerarFlashcardsAula(req: Request, raw?: any): Promis
       const msg = aiRes.status === 429
         ? "Limite de requisições do Gemini atingido. Tente novamente em instantes."
         : aiRes.status === 402
-          ? `Sua conta/projeto Google Gemini recusou por cobrança/crédito (HTTP 402). Não foi usado Lovable AI. ${detail.slice(0, 300)}`
-          : `Sua chave do Gemini falhou (HTTP ${aiRes.status}). Não foi usado Lovable AI. ${detail.slice(0, 300)}`;
+          ? `Sua conta/projeto Google Gemini recusou por cobrança/crédito (HTTP 402). Não foi usado Gemini AI. ${detail.slice(0, 300)}`
+          : `Sua chave do Gemini falhou (HTTP ${aiRes.status}). Não foi usado Gemini AI. ${detail.slice(0, 300)}`;
       return json(
         { error: msg, status: aiRes.status, detail, provider: PROVIDER, model: MODEL },
         aiRes.status === 429 || aiRes.status === 401 || aiRes.status === 403 ? aiRes.status : 502,

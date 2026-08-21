@@ -891,11 +891,11 @@ async function askGemini(history: Array<{ role: string; content: string }>, syst
     console.error("gemini error missing GEMINI_API_KEY");
   }
 
-  const gatewayReply = await askLovableGateway(history, systemPrompt, agent).catch((e) => {
-    console.error("lovable gateway error", String(e?.message || e));
+  const gatewayReply = await askGeminiGateway(history, systemPrompt, agent).catch((e) => {
+    console.error("Gemini gateway error", String(e?.message || e));
     return "";
   });
-  if (gatewayReply) return { text: gatewayReply, model: "lovable-gateway", usage: { input: 0, output: 0, total: 0 } };
+  if (gatewayReply) return { text: gatewayReply, model: "Gemini-gateway", usage: { input: 0, output: 0, total: 0 } };
 
   return { text: "Desculpe, tive um problema para responder agora. Tente novamente em instantes.", model: "", usage: { input: 0, output: 0, total: 0 } };
 }
@@ -917,9 +917,9 @@ function normalizeGeminiTextModel(model: unknown): string | null {
   return null;
 }
 
-async function askLovableGateway(history: Array<{ role: string; content: string }>, systemPrompt: string, agent: any): Promise<string> {
-  const lovableKey = undefined || "";
-  if (!lovableKey) return "";
+async function askGeminiGateway(history: Array<{ role: string; content: string }>, systemPrompt: string, agent: any): Promise<string> {
+  const GeminiKey = undefined || "";
+  if (!GeminiKey) return "";
 
   const messages = [
     { role: "system", content: systemPrompt },
@@ -935,8 +935,8 @@ async function askLovableGateway(history: Array<{ role: string; content: string 
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${lovableKey}`,
-      "Lovable-API-Key": lovableKey,
+      "Authorization": `Bearer ${GeminiKey}`,
+      "Authorization": GeminiKey,
     },
     body: JSON.stringify({
       model: MODELS.textGateway,
@@ -947,7 +947,7 @@ async function askLovableGateway(history: Array<{ role: string; content: string 
   });
 
   if (!resp.ok) {
-    console.error("lovable gateway error", resp.status, await resp.text().catch(() => ""));
+    console.error("Gemini gateway error", resp.status, await resp.text().catch(() => ""));
     return "";
   }
 

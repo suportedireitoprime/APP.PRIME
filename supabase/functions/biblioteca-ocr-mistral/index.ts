@@ -2,8 +2,8 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { handleGerarFlashcardsAula } from "../_shared/flashcards-aula.ts";
 import { handleGerarQuestoesAula } from "../_shared/questoes-aula.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
-// v2 — Refino da leitura nativa usa Gemini direto via GEMINI_API_KEY, sem Lovable AI Gateway.
-// (redeploy forçado: build antiga ainda usava Lovable AI Gateway)
+// v2 — Refino da leitura nativa usa Gemini direto via GEMINI_API_KEY, sem Gemini API.
+// (redeploy forçado: build antiga ainda usava Gemini API)
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -814,7 +814,7 @@ async function handleAnalisarSumarioLivro(req: Request, body: any) {
 
   if (aulas.length === 0) {
     return json({
-      error: "Gemini não retornou aulas para o sumário. Não foi usado Lovable AI.",
+      error: "Gemini não retornou aulas para o sumário. Não foi usado Gemini AI.",
       provider: GEMINI_PROVIDER,
       model: MODEL_FAST,
       raw: raw.slice(0, 800),
@@ -1208,7 +1208,7 @@ function delay(ms: number) { return new Promise((resolve) => setTimeout(resolve,
 
 async function chatGemini(model: string, system: string, user: string, jsonMode = false) {
   const currentGeminiKey = geminiKey();
-  if (!currentGeminiKey) throw new Error("GEMINI_API_KEY ausente. Não foi usado Lovable AI.");
+  if (!currentGeminiKey) throw new Error("GEMINI_API_KEY ausente. Não foi usado Gemini AI.");
   const body: any = {
     systemInstruction: { parts: [{ text: system }] },
     contents: [{ role: "user", parts: [{ text: user }] }],
@@ -1232,8 +1232,8 @@ async function chatGemini(model: string, system: string, user: string, jsonMode 
   if (!resp.ok) {
     const detail = await resp.text().catch(() => "");
     const prefix = resp.status === 402
-      ? "Gemini direto recusou por cobrança/crédito (não foi usado Lovable AI)"
-      : "Gemini direto falhou (não foi usado Lovable AI)";
+      ? "Gemini direto recusou por cobrança/crédito (não foi usado Gemini AI)"
+      : "Gemini direto falhou (não foi usado Gemini AI)";
     throw new Error(`${prefix} ${resp.status}; provider=${GEMINI_PROVIDER}; model=${model}: ${detail.slice(0, 400)}`);
   }
   const d = await resp.json();

@@ -2,7 +2,7 @@
 //
 // Pipeline em duas etapas:
 //   1) CORPUS927 (fonte oficial da Enfam com STF/STJ):
-//      • Um sub-agente Lovable AI lê os fatos + área do direito e escolhe
+//      • Um sub-agente Gemini AI lê os fatos + área do direito e escolhe
 //        as combinações {slug_local, numero_artigo} mais relevantes dentre
 //        as leis mapeadas em `jurisprudencia_leis_map`.
 //      • Para cada combinação chama `corpus927-fetch` (que já cacheia no DB)
@@ -16,7 +16,6 @@
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { geminiFetch } from '../_shared/geminiFetch.ts';
 
-const LOVABLE_API_KEY = undefined ?? '';
 const GEMINI_KEY = Deno.env.get('GEMINI_API_KEY') ?? '';
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_ANON_KEY =
@@ -61,11 +60,11 @@ function safeJson<T>(txt: string, fallback: T): T {
   }
 }
 
-async function chamarLovableJson(system: string, user: string): Promise<string> {
+async function chamarGeminiJson(system: string, user: string): Promise<string> {
   const res = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${LOVABLE_API_KEY}`,
+      Authorization: `Bearer ${GEMINI_API_KEY}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -194,7 +193,7 @@ REGRAS:
 export const handler = (async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   try {
-    if (!LOVABLE_API_KEY) return json({ error: 'LOVABLE_API_KEY missing' }, 500);
+    if (!GEMINI_API_KEY) return json({ error: 'GEMINI_API_KEY missing' }, 500);
 
     const body = await req.json().catch(() => ({}));
     const {
@@ -247,7 +246,7 @@ Retorne APENAS JSON:
 { "selecoes": [ { "slug_local": "...", "numero_artigo": "...", "motivo": "..." } ] }`;
 
       try {
-        const raw = await chamarLovableJson(
+        const raw = await chamarGeminiJson(
           'Você retorna apenas JSON válido, sem markdown.',
           promptSelecao,
         );

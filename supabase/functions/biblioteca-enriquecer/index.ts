@@ -1,6 +1,6 @@
 // Edge function: biblioteca-enriquecer
 // Gera capa horizontal + análise técnica (ano, editora, curiosidades, análise detalhada)
-// para um livro da biblioteca usando Lovable AI Gateway.
+// para um livro da biblioteca usando Gemini API.
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 
@@ -44,8 +44,8 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
     );
 
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY') || Deno.env.get('GEMINI_API_KEY');
-    if (!LOVABLE_API_KEY) return json({ error: 'API_KEY ausente' }, 500);
+    const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY');
+    if (!GEMINI_API_KEY) return json({ error: 'API_KEY ausente' }, 500);
 
     // Busca livro
     const { data: livro, error: eLivro } = await supabase
@@ -75,7 +75,7 @@ Regras: sem markdown, sem texto fora do JSON, sem \`\`\`. Se não souber algo co
       const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          Authorization: `Bearer ${GEMINI_API_KEY}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -138,10 +138,10 @@ Estilo: arte vetorial editorial cinematográfica, alto contraste, paleta bordô 
 ${learningBlock}`;
       promptUsed = imgPrompt;
 
-      const imgResp = await fetch('https://ai.gateway.lovable.dev/v1/images/generations', {
+      const imgResp = await fetch('https://ai.gateway.Gemini.dev/v1/images/generations', {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          Authorization: `Bearer ${GEMINI_API_KEY}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -298,13 +298,13 @@ Regras:
 }
 
 async function iaCallGateway(body: any) {
-  const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY') || Deno.env.get('GEMINI_API_KEY');
-  if (!LOVABLE_API_KEY) throw new Error('API_KEY não configurada');
+  const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY');
+  
   return fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${LOVABLE_API_KEY}`,
+      Authorization: `Bearer ${GEMINI_API_KEY}`,
     },
     body: JSON.stringify(body),
   });

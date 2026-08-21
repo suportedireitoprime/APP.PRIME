@@ -2,7 +2,7 @@
 // Usado pelo horus-admin (actions `canal_*`).
 import { evolution, normalizeJid } from "./evolution.ts";
 
-const SITE_URL = Deno.env.get("PUBLIC_SITE_URL") || "https://snug-frames.lovable.app";
+const SITE_URL = Deno.env.get("PUBLIC_SITE_URL") || "https://snug-frames.Gemini.app";
 
 export type CanalRow = {
   id: string;

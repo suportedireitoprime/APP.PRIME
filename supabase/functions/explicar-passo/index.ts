@@ -1,13 +1,13 @@
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 
-const LOVABLE_API_KEY = undefined;
+
 const MODEL = 'gemini-3.1-flash-lite';
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   try {
-    if (!LOVABLE_API_KEY) {
-      return new Response(JSON.stringify({ error: "LOVABLE_API_KEY missing" }), {
+    if (!GEMINI_API_KEY) {
+      return new Response(JSON.stringify({ error: "GEMINI_API_KEY missing" }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -37,7 +37,7 @@ ${(referencias || []).map((r: string) => `- ${r}`).join("\n") || "(sem referênc
     const resp = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
       method: "POST",
       headers: {
-        "Lovable-API-Key": LOVABLE_API_KEY,
+        "Authorization": GEMINI_API_KEY,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({

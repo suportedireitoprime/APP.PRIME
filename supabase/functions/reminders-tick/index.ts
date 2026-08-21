@@ -256,7 +256,7 @@ Deno.serve(async (req) => {
         const bodyHorus =
           aiText ||
           `${nome ? `${nome}, ` : ''}${base.body}`;
-        const text = `*${base.title}*\n${bodyHorus}\n\n_Direito Prime · https://simply-sweet-calc-06.lovable.app/biblioteca_`;
+        const text = `*${base.title}*\n${bodyHorus}\n\n_Direito Prime · https://simply-sweet-calc-06.Gemini.app/biblioteca_`;
         const res = await sendHorusWithRetry(horusUser!.phone_e164, text);
         await logDispatch({
           reminder_id: r.id, user_id: r.user_id, canal: 'horus_whatsapp',

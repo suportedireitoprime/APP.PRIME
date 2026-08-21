@@ -2,12 +2,79 @@ import { useState, useEffect, startTransition } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Lock, User, Eye, EyeOff, ArrowRight, Loader2, ArrowLeft, KeyRound, CheckCircle, ChevronDown, HelpCircle, Leaf, Scale } from 'lucide-react';
+import { Mail, Lock, User, Eye, EyeOff, ArrowRight, Loader2, ArrowLeft, KeyRound, CheckCircle, ChevronDown, HelpCircle, Leaf, Scale, X } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { LegalSheet } from '@/components/auth/LegalSheet';
 import { track } from '@/lib/analyticsEvents';
+
+const AjudaSheet = ({ open, onClose }: { open: boolean, onClose: () => void }) => {
+  const [openQ, setOpenQ] = useState<number | null>(null);
+  
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-[100] flex flex-col bg-[#050505] overflow-y-auto">
+      <div className="flex items-center justify-between p-6 border-b border-white/10 sticky top-0 bg-[#050505]/90 backdrop-blur-md z-10">
+        <h2 className="text-xl font-display font-bold text-white">Central de Ajuda</h2>
+        <button onClick={onClose} className="p-2 -mr-2 text-white/70 hover:text-white rounded-full bg-white/5">
+          <X className="w-6 h-6" />
+        </button>
+      </div>
+
+      <div className="p-6 max-w-2xl mx-auto w-full flex-1 flex flex-col gap-6">
+        <div className="space-y-4">
+          <h3 className="text-lg font-bold text-white mb-2">Dúvidas Frequentes</h3>
+          
+          {[
+            {
+              q: "Não estou conseguindo entrar com meu e-mail",
+              a: "Verifique se você digitou o e-mail corretamente e se já realizou a sua assinatura. Caso tenha esquecido a senha, utilize a opção 'Esqueceu sua senha?' na tela de login."
+            },
+            {
+              q: "Fiz a assinatura mas o acesso está bloqueado",
+              a: "As assinaturas podem levar alguns minutos para serem processadas. Se você pagou via Boleto, pode levar até 3 dias úteis. Caso tenha sido via Pix ou Cartão, mande um e-mail para o nosso suporte com o comprovante."
+            },
+            {
+              q: "Como cancelar minha assinatura?",
+              a: "O cancelamento pode ser feito a qualquer momento diretamente pelas configurações da sua conta dentro do aplicativo, na aba 'Meu Espaço'."
+            }
+          ].map((faq, i) => (
+            <div key={i} className="border border-white/10 rounded-2xl bg-white/5 overflow-hidden">
+              <button 
+                onClick={() => setOpenQ(openQ === i ? null : i)}
+                className="w-full flex items-center justify-between p-5 text-left text-white font-medium hover:bg-white/5 transition-colors"
+              >
+                {faq.q}
+                <ChevronDown className={`w-5 h-5 text-white/50 transition-transform ${openQ === i ? 'rotate-180' : ''}`} />
+              </button>
+              {openQ === i && (
+                <div className="px-5 pb-5 text-white/70 text-sm leading-relaxed">
+                  {faq.a}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-8 p-6 rounded-3xl bg-primary/10 border border-primary/20 text-center">
+          <Mail className="w-8 h-8 text-primary mx-auto mb-3" />
+          <h3 className="text-lg font-bold text-white mb-2">Ainda precisa de ajuda?</h3>
+          <p className="text-sm text-white/70 mb-4">
+            Envie um e-mail para nossa equipe de suporte. Nosso tempo útil de resposta é de <strong className="text-white">até 2 dias</strong>.
+          </p>
+          <a 
+            href="mailto:suporte.direitoprime@gmail.com"
+            className="inline-block w-full py-3 bg-primary text-primary-foreground rounded-xl font-bold transition-all hover:opacity-90"
+          >
+            suporte.direitoprime@gmail.com
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 import { pickAsset, srcOf } from '@/lib/assetUrl';
 import logoOABnaRiscaAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
@@ -540,6 +607,8 @@ const Auth = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [drawerMode, setDrawerMode] = useState<'login' | 'signup' | 'forgot' | null>(null);
+  const [legalOpen, setLegalOpen] = useState<'termos' | 'privacidade' | null>(null);
+  const [ajudaOpen, setAjudaOpen] = useState(false);
 
   // Em vez de <Navigate> síncrono que pode causar Suspense error, navegamos via useEffect com startTransition
   useEffect(() => {
@@ -672,7 +741,10 @@ const Auth = () => {
           transition={{ delay: 0.4, duration: 0.5 }}
           className="mt-2 text-center"
         >
-          <button className="inline-flex items-center gap-2 text-sm font-body text-white/70 hover:text-white transition-colors p-2 drop-shadow">
+          <button 
+            onClick={() => setAjudaOpen(true)}
+            className="inline-flex items-center gap-2 text-sm font-body text-white/70 hover:text-white transition-colors p-2 drop-shadow"
+          >
             Precisa de ajuda?
             <HelpCircle className="w-4 h-4" />
           </button>
@@ -689,6 +761,7 @@ const Auth = () => {
           />
         )}
       </AnimatePresence>
+      <AjudaSheet open={ajudaOpen} onClose={() => setAjudaOpen(false)} />
     </main>
   );
 };

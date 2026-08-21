@@ -35,6 +35,7 @@ import hero3 from '@/assets/aprender-hero/hero-3.png.asset.json';
 import hero4 from '@/assets/aprender-hero/hero-4.png.asset.json';
 import hero5 from '@/assets/aprender-hero/hero-5.png.asset.json';
 import hero6 from '@/assets/aprender-hero/hero-6.png.asset.json';
+import horusOwl from '@/assets/horus/horus-owl.webp';
 import { useTrackArea } from "@/hooks/useTrackArea";
 import { srcOf } from '@/lib/assetUrl';
 import { cn } from '@/lib/utils';
@@ -256,16 +257,6 @@ const Aprender = () => {
     <PageHeader
       title={<span className="font-display font-black text-[22px] sm:text-[24px] uppercase tracking-wide">APRENDER</span>}
       onBack={() => navigate('/')}
-      rightAction={
-        <button
-          onClick={() => setLembretesOpen(true)}
-          className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-xs font-semibold text-foreground hover:border-primary/40"
-          aria-label="Lembretes"
-        >
-          <Bell className="h-4 w-4" />
-          Lembretes
-        </button>
-      }
     />
   );
 
@@ -534,25 +525,19 @@ const Aprender = () => {
 
         {/* Overlay de Ofuscação para Não-Admins */}
         {!isAdmin && (
-          <div className="absolute inset-0 z-50 backdrop-blur-[16px] bg-background/50 flex flex-col items-center justify-center p-6 text-center">
-            <div className="bg-card/90 p-8 rounded-3xl border border-white/10 shadow-2xl max-w-sm w-full mx-auto relative overflow-hidden">
+          <div className="absolute inset-0 z-[60] backdrop-blur-[16px] bg-background/50 flex flex-col items-center justify-center p-6 text-center">
+            <div className="bg-card/90 p-8 rounded-3xl border border-white/10 shadow-2xl max-w-sm w-full mx-auto relative overflow-hidden flex flex-col items-center">
               <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent pointer-events-none" />
-              <Sparkles className="w-12 h-12 text-primary mx-auto mb-4 relative z-10" />
+              <img src={horusOwl} alt="Hórus" className="w-24 h-24 mb-4 relative z-10 rounded-full shadow-[0_0_20px_rgba(37,211,102,0.3)] object-cover" />
               <h2 className="text-xl font-display font-black text-foreground mb-2 relative z-10">Novidade a Caminho!</h2>
-              <p className="text-sm font-body text-muted-foreground mb-6 relative z-10">Será liberada a nova função em:</p>
+              <p className="text-sm font-body text-muted-foreground mb-6 relative z-10">
+                O seu hub de estudos inteligente estará disponível em breve com cronogramas gerados pela IA.
+              </p>
               
               <div className="flex gap-3 justify-center relative z-10">
-                <div className="bg-background rounded-xl p-3 min-w-[70px] border border-border shadow-sm">
-                  <span className="block text-2xl font-display font-black text-primary">{timeLeft.days.toString().padStart(2, '0')}</span>
-                  <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Dias</span>
-                </div>
-                <div className="bg-background rounded-xl p-3 min-w-[70px] border border-border shadow-sm">
-                  <span className="block text-2xl font-display font-black text-primary">{timeLeft.hours.toString().padStart(2, '0')}</span>
-                  <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Horas</span>
-                </div>
-                <div className="bg-background rounded-xl p-3 min-w-[70px] border border-border shadow-sm">
-                  <span className="block text-2xl font-display font-black text-primary">{timeLeft.minutes.toString().padStart(2, '0')}</span>
-                  <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Minutos</span>
+                <div className="bg-background rounded-xl p-3 min-w-[70px] border border-border shadow-sm flex flex-col items-center justify-center">
+                  <span className="block text-3xl font-display font-black text-primary leading-none">5</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mt-1">Dias Restantes</span>
                 </div>
               </div>
             </div>
@@ -560,7 +545,6 @@ const Aprender = () => {
         )}
       </div>
 
-      <AprenderBottomNav />
       <AprenderLembretesSheet open={lembretesOpen} onOpenChange={setLembretesOpen} />
     </DesktopPageLayout>
   );

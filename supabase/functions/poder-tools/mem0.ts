@@ -56,10 +56,10 @@ export const handler = (async (req) => {
 
 async function embed(text: string): Promise<number[]> {
   const key = undefined;
-  if (!key) throw new Error('LOVABLE_API_KEY não configurado');
+  if (!key) throw new Error('GEMINI_API_KEY não configurado');
   const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/embeddings', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Lovable-API-Key': key },
+    headers: { 'Content-Type': 'application/json', 'Authorization': key },
     body: JSON.stringify({ model: 'gemini-embedding-001', input: text }),
   });
   if (!resp.ok) throw new Error(`embedding ${resp.status}: ${await resp.text()}`);

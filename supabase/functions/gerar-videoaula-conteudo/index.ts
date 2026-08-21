@@ -41,7 +41,7 @@ async function fetchTranscript(videoId: string): Promise<string> {
 
 async function callGemini(system: string, user: string): Promise<string> {
   const { logAiCall } = await import("../_shared/ai-log.ts");
-  const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY') || Deno.env.get('LOVABLE_API_KEY');
+  const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY') || Deno.env.get('GEMINI_API_KEY');
   if (!GEMINI_API_KEY) throw new Error('GEMINI_API_KEY não configurada');
   const model = 'gemini-3.1-flash-lite';
   const startedAt = Date.now();

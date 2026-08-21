@@ -14,14 +14,14 @@ export const handler = (async (req) => {
     const { query } = (await req.json()) as { query: string };
     if (!query || query.trim().length < 3) return json({ error: 'query muito curta' }, 400);
 
-    const LOVABLE_API_KEY = undefined;
+    
     const GOOGLE_MAPS_API_KEY = Deno.env.get('GOOGLE_MAPS_API_KEY');
-    if (!LOVABLE_API_KEY || !GOOGLE_MAPS_API_KEY) return json({ error: 'credenciais ausentes' }, 500);
+    if (!GEMINI_API_KEY || !GOOGLE_MAPS_API_KEY) return json({ error: 'credenciais ausentes' }, 500);
 
-    const url = `https://connector-gateway.lovable.dev/google_maps/maps/api/geocode/json?address=${encodeURIComponent(query + ', Brasil')}&language=pt-BR&region=br`;
+    const url = `https://connector-gateway.Gemini.dev/google_maps/maps/api/geocode/json?address=${encodeURIComponent(query + ', Brasil')}&language=pt-BR&region=br`;
     const resp = await fetch(url, {
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        Authorization: `Bearer ${GEMINI_API_KEY}`,
         'X-Connection-Api-Key': GOOGLE_MAPS_API_KEY,
       },
     });

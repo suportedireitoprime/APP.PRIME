@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Radio, UserPlus, Sparkles, Loader2, Mail, BarChart3, ChevronRight } from 'lucide-react';
+import { Radio, UserPlus, Sparkles, Loader2, Mail, BarChart3, ChevronRight, Crown, Zap } from 'lucide-react';
 import { SiGoogle, SiApple } from 'react-icons/si';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { supabase } from '@/integrations/supabase/client';
@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { UserDossieSheet } from './UserDossieSheet';
 import { rotaParaFuncao } from '@/lib/rotaFuncoes';
 
-type CardId = 'online' | 'cadastros' | 'trial';
+type CardId = 'online5m' | 'online' | 'cadastros' | 'trial';
 
 interface Row {
   key: string;
@@ -18,6 +18,8 @@ interface Row {
   email?: string | null;
   provider?: string | null;
   acessos?: number | null;
+  avatarUrl?: string | null;
+  isPremium?: boolean;
 }
 
 const ProviderTag = ({ provider }: { provider?: string | null }) => {
@@ -104,10 +106,11 @@ const writeSeen = (id: CardId, d: Date, seen: Seen) => {
 };
 
 export function AdminHojeCards() {
-  const [counts, setCounts] = useState<Record<CardId, number>>({ online: 0, cadastros: 0, trial: 0 });
+  const [counts, setCounts] = useState<Record<CardId, number>>({ online5m: 0, online: 0, cadastros: 0, trial: 0 });
   const [seenCounts, setSeenCounts] = useState<Record<CardId, number>>(() => {
     const hoje = new Date();
     return {
+      online5m: readSeen('online5m', hoje).count,
       online: readSeen('online', hoje).count,
       cadastros: readSeen('cadastros', hoje).count,
       trial: readSeen('trial', hoje).count,
@@ -169,26 +172,30 @@ export function AdminHojeCards() {
   }, [open]);
 
   const load = useCallback(async () => {
-    const hoje = new Date();
-    const { data } = await supabase.rpc('admin_metricas_dia' as any, { _dia: isoDate(hoje) });
+    const { data } = await supabase.rpc('admin_metricas_dia' as any, { _dia: isoDate(dia) });
     const m = (data as any) || {};
-    const novos: Record<CardId, number> = { online: m.online || 0, cadastros: m.cadastros || 0, trial: m.trial || 0 };
+    const novos: Record<CardId, number> = { online5m: m.online5m || 0, online: m.online || 0, cadastros: m.cadastros || 0, trial: m.trial || 0 };
     setCounts(novos);
-    // Primeira visita do dia: considera tudo como já visto (sem badge)
-    (['online', 'cadastros', 'trial'] as CardId[]).forEach((id) => {
-      if (!localStorage.getItem(seenStorageKey(id, hoje))) {
-        writeSeen(id, hoje, { count: novos[id], keys: [] });
-        setSeenCounts((c) => ({ ...c, [id]: novos[id] }));
-      }
-    });
-  }, []);
+    if (sameDay(dia, new Date())) {
+      (['online5m', 'online', 'cadastros', 'trial'] as CardId[]).forEach((id) => {
+        if (!localStorage.getItem(seenStorageKey(id, dia))) {
+          writeSeen(id, dia, { count: novos[id], keys: [] });
+          setSeenCounts((c) => ({ ...c, [id]: novos[id] }));
+        }
+      });
+    } else {
+      setSeenCounts({ online5m: 0, online: 0, cadastros: 0, trial: 0 });
+    }
+  }, [dia]);
 
 
   useEffect(() => {
     load();
-    const t = setInterval(load, 30_000);
-    return () => clearInterval(t);
-  }, [load]);
+    if (sameDay(dia, new Date())) {
+      const t = setInterval(load, 30_000);
+      return () => clearInterval(t);
+    }
+  }, [load, dia]);
 
   const fetchRows = useCallback(async (id: CardId, date: Date) => {
     setLoading(true);
@@ -200,9 +207,11 @@ export function AdminHojeCards() {
         userId: r.user_id,
         title: r.title || 'Usuário',
         email: r.email || null,
-        subtitle: id === 'online' ? rotaParaFuncao(r.subtitle).label : r.subtitle,
+        subtitle: (id === 'online' || id === 'online5m') ? rotaParaFuncao(r.subtitle).label : r.subtitle,
         meta: hora(r.at),
         acessos: typeof r.acessos === 'number' ? r.acessos : null,
+        avatarUrl: r.avatar_url,
+        isPremium: r.is_premium,
       }));
       setRows(list);
       if (sameDay(date, new Date())) {
@@ -228,18 +237,16 @@ export function AdminHojeCards() {
 
 
   const openCard = useCallback((id: CardId) => {
-    const hoje = new Date();
     setOpen(id);
-    setDia(hoje);
-    fetchRows(id, hoje);
-  }, [fetchRows]);
+    fetchRows(id, dia);
+  }, [fetchRows, dia]);
 
   // Deep link vindo do push do admin: /admin-funcoes?card=cadastros|trial|online
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const card = params.get('card');
-    if (card === 'cadastros' || card === 'trial' || card === 'online') {
-      openCard(card);
+    if (card === 'cadastros' || card === 'trial' || card === 'online' || card === 'online5m') {
+      openCard(card as CardId);
       params.delete('card');
       const qs = params.toString();
       window.history.replaceState({}, '', window.location.pathname + (qs ? `?${qs}` : ''));
@@ -263,12 +270,14 @@ export function AdminHojeCards() {
 
 
   const CARDS: { id: CardId; label: string; icon: any }[] = [
+    { id: 'online5m', label: 'Online 5 min', icon: Zap },
     { id: 'online', label: 'Online hoje', icon: Radio },
     { id: 'cadastros', label: 'Cadastrados hoje', icon: UserPlus },
     { id: 'trial', label: 'Iniciou teste', icon: Sparkles },
   ];
 
   const titles: Record<CardId, string> = {
+    online5m: 'Online (Últimos 5 min)',
     online: 'Online',
     cadastros: 'Cadastrados',
     trial: 'Iniciaram assinatura teste',
@@ -285,7 +294,38 @@ export function AdminHojeCards() {
 
   return (
     <>
-      <div className="grid grid-cols-3 gap-2 mb-3">
+      <div className="flex gap-2 overflow-x-auto pb-3 mb-1 scrollbar-none">
+        {dias.map((d) => {
+          const ativo = sameDay(d, dia);
+          const ehHoje = sameDay(d, hoje);
+          const ehOntem = sameDay(d, ontem);
+          return (
+            <button
+              key={d.toISOString()}
+              type="button"
+              onClick={() => selecionarDia(d)}
+              className={cn(
+                'shrink-0 min-w-[64px] rounded-2xl border px-3 py-2.5 text-center transition-colors',
+                ativo
+                  ? 'bg-primary text-primary-foreground border-primary'
+                  : 'bg-secondary/30 border-border/60 text-muted-foreground hover:bg-secondary/60',
+              )}
+            >
+              <div className="font-body text-[10.5px] uppercase tracking-wide opacity-80">
+                {ehHoje ? 'Hoje' : ehOntem ? 'Ontem' : DIAS[d.getDay()]}
+              </div>
+              <div className={cn('font-display text-lg font-bold leading-none mt-1', ativo ? '' : 'text-foreground')}>
+                {String(d.getDate()).padStart(2, '0')}
+              </div>
+              <div className="font-body text-[10px] opacity-70 mt-0.5">
+                {d.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '')}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="grid grid-cols-4 gap-2 mb-3">
         {CARDS.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
@@ -329,38 +369,7 @@ export function AdminHojeCards() {
           </SheetHeader>
 
 
-          <div className="border-b border-border/50 bg-background/95 sticky top-0 z-10">
-            <div className="flex gap-2 overflow-x-auto px-3 py-3 scrollbar-none">
-              {dias.map((d) => {
-                const ativo = sameDay(d, dia);
-                const ehHoje = sameDay(d, hoje);
-                const ehOntem = sameDay(d, ontem);
-                return (
-                  <button
-                    key={d.toISOString()}
-                    type="button"
-                    onClick={() => selecionarDia(d)}
-                    className={cn(
-                      'shrink-0 min-w-[64px] rounded-2xl border px-3 py-2.5 text-center transition-colors',
-                      ativo
-                        ? 'bg-primary text-primary-foreground border-primary'
-                        : 'bg-secondary/30 border-border/60 text-muted-foreground hover:bg-secondary/60',
-                    )}
-                  >
-                    <div className="font-body text-[10.5px] uppercase tracking-wide opacity-80">
-                      {ehHoje ? 'Hoje' : ehOntem ? 'Ontem' : DIAS[d.getDay()]}
-                    </div>
-                    <div className={cn('font-display text-lg font-bold leading-none mt-1', ativo ? '' : 'text-foreground')}>
-                      {String(d.getDate()).padStart(2, '0')}
-                    </div>
-                    <div className="font-body text-[10px] opacity-70 mt-0.5">
-                      {d.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '')}
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+
 
           <div className="p-3">
             {loading ? (
@@ -383,13 +392,26 @@ export function AdminHojeCards() {
                       novosKeys.has(r.key) && 'bg-emerald-500/10',
                     )}
                   >
+                    {r.avatarUrl && r.avatarUrl !== 'null' ? (
+                      <div className="relative shrink-0 w-8 h-8 rounded-full overflow-hidden border border-border bg-primary/10 flex items-center justify-center">
+                        <span className="font-display font-bold text-primary text-sm uppercase">{r.title.charAt(0)}</span>
+                        <img src={r.avatarUrl} alt={r.title} referrerPolicy="no-referrer" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                      </div>
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
+                        <span className="font-display font-bold text-primary text-sm uppercase">{r.title.charAt(0)}</span>
+                      </div>
+                    )}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 min-w-0">
                         <div className="font-body text-sm font-semibold text-foreground truncate">{r.title}</div>
+                        {r.isPremium && (
+                          <Crown className="w-4 h-4 text-[#FFD700] fill-[#FFD700] drop-shadow-md shrink-0" />
+                        )}
                         {typeof r.acessos === 'number' && r.acessos > 0 && (
                           <span
                             title={`${r.acessos} acesso${r.acessos === 1 ? '' : 's'} no dia`}
-                            className="shrink-0 rounded-full bg-primary/15 border border-primary/40 px-1.5 py-[1px] font-body text-[9.5px] font-bold text-primary"
+                            className="shrink-0 font-body text-[10.5px] font-bold text-rose-400"
                           >
                             {r.acessos}x
                           </span>
@@ -400,9 +422,10 @@ export function AdminHojeCards() {
                           </span>
                         )}
                       </div>
-                      {r.subtitle && (
-                        <div className="font-body text-[11px] text-muted-foreground truncate">{r.subtitle}</div>
-                      )}
+                      <div className="font-body text-[11.5px] text-muted-foreground truncate mt-0.5">
+                        {r.email && <span className="mr-1.5 opacity-80">{r.email}</span>}
+                        {r.subtitle}
+                      </div>
                     </div>
                     <ProviderTag provider={r.provider} />
                     <div className="font-body text-[11px] text-muted-foreground shrink-0">{r.meta}</div>
@@ -537,6 +560,16 @@ export function AdminHojeCards() {
                     onClick={() => setDossie(r)}
                     className="w-full text-left flex items-center gap-3 px-4 py-3 hover:bg-secondary/60 active:bg-secondary transition-colors"
                   >
+                    {r.avatarUrl && r.avatarUrl !== 'null' ? (
+                      <div className="relative shrink-0 w-8 h-8 rounded-full overflow-hidden border border-border bg-primary/10 flex items-center justify-center">
+                        <span className="font-display font-bold text-primary text-sm uppercase">{r.title.charAt(0)}</span>
+                        <img src={r.avatarUrl} alt={r.title} referrerPolicy="no-referrer" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                      </div>
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
+                        <span className="font-display font-bold text-primary text-sm uppercase">{r.title.charAt(0)}</span>
+                      </div>
+                    )}
                     <div className="flex-1 min-w-0">
                       <div className="font-body text-sm font-semibold text-foreground truncate">{r.title}</div>
                       {r.subtitle && (

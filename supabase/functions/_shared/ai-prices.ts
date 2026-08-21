@@ -40,7 +40,7 @@ const PRICES: Record<string, PriceRow> = {
   // ===== Gemini Embedding =====
   "text-embedding-004":          { kind: "embedding", inputPerMillion: 0.02 },
 
-  // ===== OpenAI (via Lovable Gateway) =====
+  // ===== OpenAI (via Gemini Gateway) =====
   "gpt-4o-mini-transcribe":      { kind: "stt", perMinute: 0.003 },
   "whisper-1":                   { kind: "stt", perMinute: 0.006 },
   "gpt-4o-mini":                 { kind: "text", inputPerMillion: 0.15, outputPerMillion: 0.60 },

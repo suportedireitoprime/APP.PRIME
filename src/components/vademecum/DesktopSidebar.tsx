@@ -53,15 +53,12 @@ const CONTEUDO_ITEMS = [
 
 const FERRAMENTAS_ITEMS = [
   { id: 'ferramentas', label: 'Todas as Ferramentas', icon: Wrench, route: '/ferramentas', color: '#DC2626' },
-  { id: 'peticao', label: 'Petição Inicial', icon: FileSignature, route: '/ferramentas/peticao-inicial', color: '#10B981' },
   { id: 'dicionario', label: 'Dicionário Jurídico', icon: BookOpenText, route: '/ferramentas/dicionario', color: '#3B82F6' },
   { id: 'gravar', label: 'Gravar aula', icon: Mic, route: '/anotacoes/audio', color: '#F43F5E' },
   { id: 'offline', label: 'Modo Offline', icon: CloudDownload, route: '/modo-offline', color: '#64748B' },
 ];
 
 const CONTA_ITEMS = [
-  { id: 'meu-espaco', label: 'Meu Espaço', icon: UserIcon, route: '/meu-espaco', color: '#A855F7' },
-  { id: 'lembretes', label: 'Meus Lembretes', icon: BellRing, route: '/meus-lembretes', color: '#DC2626' },
   { id: 'assinatura', label: 'Assinatura', icon: CreditCard, route: '/assinatura', color: '#10B981' },
   { id: 'suporte', label: 'Suporte', icon: LifeBuoy, route: '/suporte', color: '#EC4899' },
   { id: 'opiniao', label: 'Opinião', icon: MessageSquare, route: '/opiniao', color: '#0891B2' },

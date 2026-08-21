@@ -2,7 +2,7 @@
 // trechos e cores a grifar, retorna passages com line/start/end.
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 
-const LOVABLE_API_KEY = undefined;
+
 
 const CORES = ['amarelo', 'verde', 'azul', 'rosa', 'laranja'] as const;
 
@@ -53,8 +53,8 @@ function findInLines(quote: string, lines: string[]): { lineIndex: number; start
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
-  if (!LOVABLE_API_KEY) {
-    return new Response(JSON.stringify({ error: 'LOVABLE_API_KEY não configurado' }), {
+  if (!GEMINI_API_KEY) {
+    return new Response(JSON.stringify({ error: 'GEMINI_API_KEY não configurado' }), {
       status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
@@ -139,7 +139,7 @@ Regras:
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+        'Authorization': `Bearer ${GEMINI_API_KEY}`,
       },
       body: JSON.stringify(body),
     });

@@ -81,30 +81,7 @@ ${contexto}`;
 
 async function gerarCapa(supabase: any, atos: Ato[], slug: string): Promise<string | null> {
   try {
-    const key = undefined;
-    if (!key) return null;
-    const tipo = atos[0]?.tipo_ato ?? "Diário Oficial";
-    const prompt = `Capa vertical minimalista para notificação push jurídica. Tema: "${tipo}". Estilo: gradiente escuro azul-índigo com detalhes dourados, símbolo jurídico central (balança, martelo ou brasão), sem texto. Cinemático, alto contraste, 1024x1024.`;
-    const resp = await fetch("https://ai.gateway.lovable.dev/v1/images/generations", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${key}` },
-      body: JSON.stringify({ model: 'gemini-2.5-flash-image', prompt, size: "1024x1024", n: 1 }),
-    });
-    if (!resp.ok) { console.error("capa gen fail", resp.status); return null; }
-    const j = await resp.json();
-    const b64 = j?.data?.[0]?.b64_json;
-    const url = j?.data?.[0]?.url;
-    let bytes: Uint8Array | null = null;
-    if (b64) bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
-    else if (url) {
-      const r = await fetch(url); const buf = new Uint8Array(await r.arrayBuffer()); bytes = buf;
-    }
-    if (!bytes) return null;
-    const path = `${new Date().toISOString().slice(0,10)}/${slug}-${crypto.randomUUID()}.png`;
-    const up = await supabase.storage.from("push-covers").upload(path, bytes, { contentType: "image/png", upsert: true });
-    if (up.error) { console.error("upload cover", up.error); return null; }
-    const signed = await supabase.storage.from("push-covers").createSignedUrl(path, 60 * 60 * 24 * 365);
-    return signed?.data?.signedUrl ?? null;
+    return null;
   } catch (e) { console.error("gerarCapa", e); return null; }
 }
 

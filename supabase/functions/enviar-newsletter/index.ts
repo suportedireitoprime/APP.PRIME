@@ -93,7 +93,7 @@ Deno.serve(async (req) => {
         noticias = [{
           titulo: 'Câmara aprova novo projeto de modernização do processo civil',
           resumo: 'A proposta visa celeridade processual e ampliação dos meios digitais para intimação e audiências.',
-          link: 'https://vademecum-legal-guide.lovable.app/noticias'
+          link: 'https://vademecum-legal-guide.Gemini.app/noticias'
         }]
       }
     }
@@ -110,7 +110,7 @@ Deno.serve(async (req) => {
           tipo_ato: 'Lei Ordinária',
           numero_ato: 'Nº 15.487, de 6.8.2026',
           ementa: 'Altera dispositivos do Código de Processo Penal para reforçar as garantias do contraditório.',
-          url: 'https://vademecum-legal-guide.lovable.app/resenha-diaria'
+          url: 'https://vademecum-legal-guide.Gemini.app/resenha-diaria'
         }]
       }
     }
@@ -293,12 +293,12 @@ function buildEmailHTML(sections: string[], date: string, userName: string, forc
   
   <div class="app-button-container">
     <p style="color:#BBBBBB; font-size:14px; margin-bottom:16px;">Você pode acompanhar todas essas leis, notícias e muito mais diretamente no aplicativo!</p>
-    <a href="https://vademecum-legal-guide.lovable.app/" class="app-button">Acessar Aplicativo</a>
+    <a href="https://vademecum-legal-guide.Gemini.app/" class="app-button">Acessar Aplicativo</a>
   </div>
 
   <div class="footer">
     <p>Este e-mail foi gerado automaticamente de acordo com as suas preferências no APP PRIME.</p>
-    <p>Para alterar os horários ou cancelar inscrições, acesse o <a href="https://vademecum-legal-guide.lovable.app/newsletter">painel do aplicativo</a>.</p>
+    <p>Para alterar os horários ou cancelar inscrições, acesse o <a href="https://vademecum-legal-guide.Gemini.app/newsletter">painel do aplicativo</a>.</p>
   </div>
 </div>
 </body>
@@ -341,7 +341,7 @@ function buildTematicaSection(t: any): string {
       ${t.capa_url ? `<img src="${t.capa_url}" class="cover-img" alt="Capa" />` : ''}
       <h3>${escapeHtml(t.titulo)} (${t.ano}) — ${escapeHtml(t.tipo)}</h3>
       <p>${escapeHtml(t.sinopse)}</p>
-      <a href="https://vademecum-legal-guide.lovable.app/tematica-juridica/${t.id}" target="_blank">Ver detalhes no app →</a>
+      <a href="https://vademecum-legal-guide.Gemini.app/tematica-juridica/${t.id}" target="_blank">Ver detalhes no app →</a>
     </div>
   </div>`
 }
@@ -352,7 +352,7 @@ function buildBoletimSection(b: any): string {
     <div class="item">
       <h3>${escapeHtml(b.titulo)}</h3>
       <p>${escapeHtml(b.descricao)}</p>
-      <a href="https://vademecum-legal-guide.lovable.app/boletins" target="_blank">Assistir ao vídeo agora →</a>
+      <a href="https://vademecum-legal-guide.Gemini.app/boletins" target="_blank">Assistir ao vídeo agora →</a>
     </div>
   </div>`
 }

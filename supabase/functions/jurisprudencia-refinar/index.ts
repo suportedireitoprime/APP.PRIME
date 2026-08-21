@@ -1,5 +1,5 @@
 // Refina com IA a ementa/observação de um acórdão de Pesquisa Pronta.
-// Recebe { resultado_id, force? } — busca a linha, chama Lovable AI (gpt-5.5)
+// Recebe { resultado_id, force? } — busca a linha, chama Gemini AI (gpt-5.5)
 // para estruturar/limpar o texto, e persiste em ementa_refinada / observacao_refinada.
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';

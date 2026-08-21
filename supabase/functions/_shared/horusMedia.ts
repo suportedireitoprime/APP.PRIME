@@ -31,7 +31,7 @@ async function callGemini(
   const primary = Deno.env.get("GEMINI_API_KEY") ?? "";
   const reserva = Deno.env.get("GEMINI_API_KEY_RESERVA") ?? "";
   if (!primary && !reserva) {
-    console.warn(`horusMedia ${kind}: GEMINI_API_KEY ausente — não foi usado Lovable AI`);
+    console.warn(`horusMedia ${kind}: GEMINI_API_KEY ausente — não foi usado Gemini AI`);
     return "";
   }
 

@@ -360,9 +360,9 @@ Deno.serve(async (req) => {
   try {
     const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY');
     const GEMINI_API_KEY_RESERVA = Deno.env.get('GEMINI_API_KEY_RESERVA');
-    const LOVABLE_API_KEY = undefined;
+    
     const geminiKeys = [GEMINI_API_KEY, GEMINI_API_KEY_RESERVA].filter(Boolean) as string[];
-    if (!geminiKeys.length && !LOVABLE_API_KEY) {
+    if (!geminiKeys.length ) {
       return new Response(JSON.stringify({ error: 'Nenhuma chave de IA configurada' }), {
         status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -588,11 +588,11 @@ Regras:
     let _lastErr = "";
     const _t0 = Date.now();
     // Se as chaves diretas do Gemini estiverem ausentes/invalidas, caímos para o
-    // Lovable AI Gateway (mesmo modelo, cobrança pela plataforma).
+    // Gemini API (mesmo modelo, cobrança pela plataforma).
     let geminiDisabled = geminiKeys.length === 0;
 
     async function gatewayGenerate(): Promise<any | null> {
-      if (!LOVABLE_API_KEY) return null;
+      
       const msgs: any[] = [{ role: 'system', content: systemPrompt }];
       for (const c of (contents as any[])) {
         const textParts = (c.parts || []).filter((p: any) => typeof p?.text === 'string').map((p: any) => p.text).join('\n');
@@ -611,7 +611,7 @@ Regras:
       }
       const r = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Lovable-API-Key': LOVABLE_API_KEY },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${GEMINI_API_KEY}` },
         body: JSON.stringify({
           model: 'gemini-3.1-flash-lite',
           messages: msgs,
@@ -622,7 +622,7 @@ Regras:
       });
       if (!r.ok) {
         _lastErr = (await r.text()).slice(0, 200);
-        console.error('Lovable Gateway error:', r.status, _lastErr);
+        console.error('Gemini Gateway error:', r.status, _lastErr);
         return null;
       }
       const j = await r.json();
@@ -667,7 +667,7 @@ Regras:
           const invalidKey = res.status === 400 && /API_KEY_INVALID|API key not valid/i.test(errText);
           const noQuota = res.status === 429 || res.status === 403;
           if (invalidKey || noQuota) {
-            console.error('Gemini indisponível ou chave inválida, tentando Lovable AI Gateway:', errText.slice(0, 200));
+            console.error('Gemini indisponível ou chave inválida, tentando Gemini API:', errText.slice(0, 200));
             geminiDisabled = true;
           } else {
             const isUnavailable = res.status === 503 || errText.includes('UNAVAILABLE') || res.status === 404;
@@ -679,6 +679,7 @@ Regras:
       if (!data && geminiDisabled) {
         data = await gatewayGenerate();
         if (!data) fatal = true;
+        else _lastErr = "";
       }
 
       if (fatal) break;

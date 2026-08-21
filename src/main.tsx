@@ -101,8 +101,7 @@ if ('serviceWorker' in navigator) {
   const isInIframe = (() => {
     try { return window.self !== window.top; } catch { return true; }
   })();
-  const isPreview = window.location.hostname.includes('id-preview--') ||
-    window.location.hostname.includes('lovableproject.com');
+  const isPreview = window.location.hostname.includes('id-preview--');
 
   if (!isInIframe && !isPreview) {
     navigator.serviceWorker.register('/sw-cache.js').catch(() => {});

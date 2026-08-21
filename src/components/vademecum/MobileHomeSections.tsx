@@ -833,65 +833,9 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
         </div>
       )}
 
-      {/* Lembretes e Assistente */}
-      <div className="px-1 pb-6">
-        <h3 className="font-display text-foreground text-[18px] font-bold mb-3 flex items-center gap-2">
-          <span className="w-1 h-5 rounded-full bg-primary" />
-          Lembretes & Hórus
-        </h3>
-        <p className="font-body text-muted-foreground text-[12.5px] leading-snug mb-3 ml-3">
-          Todos os lembretes que você ativou no app e o seu assistente jurídico.
-        </p>
-        <div className="space-y-2.5">
-          <button
-            onClick={() => navigate('/lembretes')}
-            data-track="home_lembretes_click"
-            className="w-full flex items-center gap-3 px-4 py-5 min-h-[76px] rounded-2xl bg-card border border-border/60 shadow-sm active:scale-[0.99] transition"
-          >
-            <BellRing
-              className="w-8 h-8 shrink-0"
-              style={{
-                color: '#F59E0B',
-                filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))',
-              }}
-              strokeWidth={1.15}
-            />
-            <div className="flex-1 min-w-0 text-left">
-              <p className="font-display text-foreground text-[15.5px] font-bold leading-tight truncate">
-                Meus Lembretes
-              </p>
-              <p className="font-body text-muted-foreground text-[12px] leading-tight truncate mt-0.5">
-                Estudo, leitura, questões, Lei Seca e geolocalização
-              </p>
-            </div>
-            <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
-          </button>
+      {/* Espaço de segurança para garantir que o último elemento não fique atrás do BottomNav */}
+      <div className="h-28 w-full shrink-0 pointer-events-none" />
 
-          <button
-            onClick={() => navigate('/assistente-horus')}
-            data-track="home_horus_click"
-            className="w-full flex items-center gap-3 px-4 py-5 min-h-[76px] rounded-2xl bg-card border border-border/60 shadow-sm active:scale-[0.99] transition"
-          >
-            <MessageCircle
-              className="w-8 h-8 shrink-0"
-              style={{
-                color: '#25D366', // Cor verde do WhatsApp
-                filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))',
-              }}
-              strokeWidth={1.15}
-            />
-            <div className="flex-1 min-w-0 text-left">
-              <p className="font-display text-foreground text-[15.5px] font-bold leading-tight truncate">
-                Hórus
-              </p>
-              <p className="font-body text-muted-foreground text-[12px] leading-tight truncate mt-0.5">
-                Seu assistente jurídico no WhatsApp
-              </p>
-            </div>
-            <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
-          </button>
-        </div>
-      </div>
 
 
 

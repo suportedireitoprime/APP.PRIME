@@ -36,7 +36,7 @@ Deno.serve(async (req) => {
     if (check.status === 404) {
       return new Response(JSON.stringify({
         error: "Workflow render-boletim.yml não encontrado no repositório",
-        hint: `Faça o push do arquivo .github/workflows/render-boletim.yml para o branch '${branch}' do repo '${repoFinal}' (Lovable → GitHub sync). Depois tente novamente.`,
+        hint: `Faça o push do arquivo .github/workflows/render-boletim.yml para o branch '${branch}' do repo '${repoFinal}' (Gemini → GitHub sync). Depois tente novamente.`,
         repo: repoFinal,
         ref: branch,
       }), { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } });

@@ -1,7 +1,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LayoutGrid, GraduationCap, Monitor, ChevronRight, ChevronDown, X, Search, Sparkles, MessageCircle, Bot, BookOpen, WifiOff, StickyNote, Newspaper, ScanEye, Scale, Library, Mic, FileText, FileSignature, Image as ImageIcon, Bell, Gavel, Star, Send, Video, Film, Clapperboard, Bird, Headphones, Layers, ScrollText, User, ArrowLeftRight, MicVocal } from 'lucide-react';
+import { LayoutGrid, GraduationCap, Monitor, ChevronRight, ChevronDown, X, Search, Sparkles, MessageCircle, Bot, BookOpen, WifiOff, StickyNote, Newspaper, ScanEye, Scale, Library, Mic, FileText, FileSignature, Image as ImageIcon, Bell, Gavel, Star, Send, Video, Film, Clapperboard, Bird, Headphones, Layers, ScrollText, User, ArrowLeftRight, MicVocal, CloudDownload } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import MentorOverlay from './MentorOverlay';
 // PessoalSheet removido — Meu Espaço agora é rota dedicada (/meu-espaco).
@@ -148,8 +148,6 @@ const BottomNav = () => {
   const FERRAMENTAS: Array<{ id: string; label: string; desc: string; icon: any; action: () => void; hot?: boolean; prefetch?: PrefetchKey }> = [
     { id: 'desktop', label: 'Desktop', desc: 'Versão para computador', icon: Monitor, action: () => navigate('/desktop'), hot: true, prefetch: 'desktop' },
     { id: 'vade-mecum', label: 'Vade Mecum', desc: 'Legislação completa: códigos, estatutos e leis', icon: Scale, action: () => navigate('/vade-mecum') },
-    { id: 'peticao-inicial', label: 'Petição Inicial', desc: 'Gere petições com IA e jurisprudência real do STF/STJ', icon: FileSignature, action: () => navigate('/ferramentas/peticao-inicial'), prefetch: 'peticaoInicial' },
-
 
     { id: 'audioaulas', label: 'Audioaulas', desc: 'Aulas em áudio por área do Direito', icon: Headphones, action: () => navigate('/audioaulas') },
     { id: 'videoaulas', label: 'Videoaulas', desc: 'Aulas em vídeo com flashcards, questões e lei seca por IA', icon: Video, action: () => navigate('/videoaulas') },
@@ -276,20 +274,20 @@ const BottomNav = () => {
           </button>
 
 
-          {/* Slot 5: Meu Espaço */}
+          {/* Slot 5: Modo Offline */}
           <button
-            onPointerDown={() => prefetchRoute('meuEspaco')}
-            onMouseEnter={() => prefetchRoute('meuEspaco')}
-            onClick={() => { haptic.selection(); navigate('/meu-espaco'); }}
+            onPointerDown={() => prefetchRoute('modoOffline')}
+            onMouseEnter={() => prefetchRoute('modoOffline')}
+            onClick={() => { haptic.selection(); navigate('/modo-offline'); }}
             data-track="bottom_nav_click"
-            data-track-destino="meu-espaco"
+            data-track-destino="modo-offline"
             className={`flex flex-col items-center justify-center gap-1 py-2 md:py-3 rounded-xl transition-all ${
-              path.startsWith('/meu-espaco') ? 'text-white/90 bg-white/15 ring-1 ring-white/25' : 'text-white/90 hover:bg-white/10'
+              path.startsWith('/modo-offline') ? 'text-white/90 bg-white/15 ring-1 ring-white/25' : 'text-white/90 hover:bg-white/10'
             }`}
-            aria-label="Meu Espaço"
+            aria-label="Offline"
           >
-            <User className={`w-8 h-8 md:w-7 md:h-7 transition-transform text-white/90 drop-shadow-md ${path.startsWith('/meu-espaco') ? 'scale-110' : ''}`} strokeWidth={1.2} />
-            <span className="font-body text-[12px] md:text-[11px] font-medium leading-tight text-center text-white/90 drop-shadow-sm">Meu Espaço</span>
+            <CloudDownload className={`w-8 h-8 md:w-7 md:h-7 transition-transform text-white/90 drop-shadow-md ${path.startsWith('/modo-offline') ? 'scale-110' : ''}`} strokeWidth={1.2} />
+            <span className="font-body text-[12px] md:text-[11px] font-medium leading-tight text-center text-white/90 drop-shadow-sm">Offline</span>
           </button>
         </div>
       </div>

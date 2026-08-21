@@ -1,12 +1,12 @@
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-const GATEWAY_URL = 'https://connector-gateway.lovable.dev/github';
+const GATEWAY_URL = 'https://connector-gateway.Gemini.dev/github';
 const GITHUB_DIRECT_URL = 'https://api.github.com';
-const LOVABLE_API_KEY = undefined;
+
 const GITHUB_API_KEY = Deno.env.get('GITHUB_API_KEY');
 // If the stored GITHUB_API_KEY looks like a raw GitHub PAT, call the API directly
-// (bypasses the Lovable connector gateway, which needs a linked connection key).
+// (bypasses the Gemini connector gateway, which needs a linked connection key).
 const IS_PAT = !!GITHUB_API_KEY && /^(ghp_|github_pat_|gho_|ghu_|ghs_)/.test(GITHUB_API_KEY);
 
 function ghHeaders() {
@@ -19,7 +19,7 @@ function ghHeaders() {
   }
   return {
     Accept: 'application/vnd.github+json',
-    Authorization: `Bearer ${LOVABLE_API_KEY}`,
+    Authorization: `Bearer ${GEMINI_API_KEY}`,
     'X-Connection-Api-Key': GITHUB_API_KEY!,
   };
 }
@@ -85,7 +85,7 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   try {
-    if (!LOVABLE_API_KEY || !GITHUB_API_KEY) {
+    if (!GEMINI_API_KEY || !GITHUB_API_KEY) {
       return json({ error: 'GitHub connector not configured' }, 500);
     }
 

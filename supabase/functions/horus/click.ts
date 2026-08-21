@@ -49,7 +49,7 @@ export const handler = async (req: Request) => {
   const fallbackTarget =
     Deno.env.get("HORUS_APP_URL") ||
     Deno.env.get("HORUS_PLAY_STORE_URL") ||
-    "https://vade-mecum-comentado.lovable.app";
+    "https://vade-mecum-comentado.Gemini.app";
 
   const finalTarget = target && /^https?:\/\//i.test(target) ? target : fallbackTarget;
 

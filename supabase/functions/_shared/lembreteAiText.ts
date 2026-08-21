@@ -1,4 +1,4 @@
-// Gera texto de lembrete "humanizado" via Lovable AI Gateway.
+// Gera texto de lembrete "humanizado" via Gemini API.
 // Recebe o contexto do lembrete (o que o usuário escreveu, título do
 // artigo/livro, nome) e devolve UMA mensagem curta pronta pra WhatsApp,
 // SEMPRE citando o primeiro nome quando informado.

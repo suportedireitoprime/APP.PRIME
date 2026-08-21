@@ -22,10 +22,10 @@ export function slugify(s: string): string {
 }
 
 /**
- * Chama LLM via Lovable AI Gateway (OpenAI-compatível).
+ * Chama LLM via Gemini API (OpenAI-compatível).
  * `model` deve ser um id do catálogo (ex.: 'gemini-3.1-flash-lite').
  * Aceita ids antigos sem prefixo (ex.: "gemini-3.1-flash-lite") e normaliza.
- * O parâmetro `apiKey` é mantido por compat, mas usamos LOVABLE_API_KEY.
+ * O parâmetro `apiKey` é mantido por compat, mas usamos GEMINI_API_KEY.
  * `context` (opcional): registra em ai_usage_log — { functionName, triggerType, refId }.
  */
 export async function callGemini(
@@ -35,8 +35,8 @@ export async function callGemini(
   maxTokens = 8192,
   context?: { functionName?: string; triggerType?: "manual" | "auto"; refId?: string | null },
 ): Promise<string> {
-  const lovableKey = Deno.env.get('GEMINI_API_KEY');
-  if (!lovableKey) throw new Error("LOVABLE_API_KEY ausente no ambiente");
+  const GeminiKey = Deno.env.get('GEMINI_API_KEY');
+  if (!GeminiKey) throw new Error("GEMINI_API_KEY ausente no ambiente");
 
   // Normaliza ids legados salvos no banco
   let normalized = model;
@@ -64,7 +64,7 @@ export async function callGemini(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${lovableKey}`,
+        Authorization: `Bearer ${GeminiKey}`,
       },
       body: JSON.stringify({
         model: normalized,

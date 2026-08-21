@@ -40,8 +40,8 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    const LOVABLE_API_KEY = undefined;
-    if (!LOVABLE_API_KEY) {
+    
+    if (!GEMINI_API_KEY) {
       return new Response(JSON.stringify({ error: 'missing_api_key' }), {
         status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -55,7 +55,7 @@ Deno.serve(async (req: Request) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        Authorization: `Bearer ${GEMINI_API_KEY}`,
       },
       body: JSON.stringify({
         model: 'gemini-3.1-flash-lite',

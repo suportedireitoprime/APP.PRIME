@@ -950,7 +950,7 @@ export const evolution = {
 export const HORUS_APP_URL =
   Deno.env.get("HORUS_PLAY_STORE_URL") ||
   Deno.env.get("HORUS_APP_URL") ||
-  "https://vade-mecum-comentado.lovable.app";
+  "https://vade-mecum-comentado.Gemini.app";
 
 /**
  * Envolve uma URL de destino pelo redirect rastreado `horus-click`.

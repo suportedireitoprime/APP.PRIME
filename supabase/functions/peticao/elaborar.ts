@@ -7,7 +7,7 @@
 // inclui `iteracoes` para eventual auditoria/UX.
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 
-const LOVABLE_API_KEY = undefined;
+
 const MODEL = 'gemini-3.1-flash-lite';
 
 // Ordem das seções — o cliente chama uma por vez.
@@ -24,7 +24,7 @@ async function llm(system: string, user: string, opts: { json?: boolean } = {}) 
   const res = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${LOVABLE_API_KEY}`,
+      Authorization: `Bearer ${GEMINI_API_KEY}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -63,7 +63,7 @@ function safeJson<T>(txt: string, fallback: T): T {
 export const handler = (async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   try {
-    if (!LOVABLE_API_KEY) return json({ error: 'LOVABLE_API_KEY missing' }, 500);
+    if (!GEMINI_API_KEY) return json({ error: 'GEMINI_API_KEY missing' }, 500);
     const body = await req.json();
     const {
       secao_id,

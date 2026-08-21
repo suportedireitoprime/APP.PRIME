@@ -20,14 +20,14 @@ export const handler = (async (req) => {
     const { origem, destino } = (await req.json()) as Body;
     if (!origem?.lat || !destino?.lat) return json({ error: 'origem/destino obrigatórios' }, 400);
 
-    const LOVABLE_API_KEY = undefined;
+    
     const GOOGLE_MAPS_API_KEY = Deno.env.get('GOOGLE_MAPS_API_KEY');
-    if (!LOVABLE_API_KEY || !GOOGLE_MAPS_API_KEY) return json({ error: 'credenciais Google Maps ausentes' }, 500);
+    if (!GEMINI_API_KEY || !GOOGLE_MAPS_API_KEY) return json({ error: 'credenciais Google Maps ausentes' }, 500);
 
-    const resp = await fetch('https://connector-gateway.lovable.dev/google_maps/routes/directions/v2:computeRoutes', {
+    const resp = await fetch('https://connector-gateway.Gemini.dev/google_maps/routes/directions/v2:computeRoutes', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        Authorization: `Bearer ${GEMINI_API_KEY}`,
         'X-Connection-Api-Key': GOOGLE_MAPS_API_KEY,
         'Content-Type': 'application/json',
         'X-Goog-FieldMask':
