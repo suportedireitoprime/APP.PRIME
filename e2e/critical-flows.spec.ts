@@ -45,4 +45,9 @@ test.describe('Fluxos cr\u00edticos', () => {
     await page.goto(BASE + '/rota-que-nao-existe-xyz', { waitUntil: 'domcontentloaded' });
     await expect(page.getByText(/n\u00e3o encontrad|404/i).first()).toBeVisible({ timeout: 10_000 });
   });
+
+  test('Vade Mecum abre a Constituição', async ({ page }) => {
+    await page.goto(BASE + '/legislacao/constituicao', { waitUntil: 'domcontentloaded' });
+    await expect(page.getByText(/Constitui\u00e7\u00e3o|Art\./i).first()).toBeVisible({ timeout: 10_000 });
+  });
 });

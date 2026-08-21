@@ -12,7 +12,13 @@ const BLOG_COVERS_STORAGE = '/storage/v1/object/sign/blog-capas/';
 const IMG_LIMIT = 200;
 const RUNTIME_LIMIT = 60;
 
-self.addEventListener('install', () => self.skipWaiting());
+self.addEventListener('install', (e) => {
+  e.waitUntil((async () => {
+    const cache = await caches.open(ASSET_CACHE);
+    await cache.add('/index.html');
+  })());
+  self.skipWaiting();
+});
 self.addEventListener('activate', (e) => {
   e.waitUntil((async () => {
     const keys = await caches.keys();
@@ -89,6 +95,22 @@ self.addEventListener('fetch', (e) => {
   // GETs de API do Supabase (metadados leves): SWR curto p/ resiliência offline
   if (url.hostname.endsWith('supabase.co') && url.pathname.startsWith('/rest/v1/')) {
     e.respondWith(staleWhileRevalidate(req, RUNTIME_CACHE, RUNTIME_LIMIT));
+    return;
+  }
+
+  // SPA Navigation Fallback (Retornar index.html do cache caso offline)
+  if (req.mode === 'navigate') {
+    e.respondWith(
+      fetch(req).catch(async () => {
+        const cache = await caches.open(ASSET_CACHE);
+        const cachedResponse = await cache.match('/index.html');
+        // Fallback genérico de PWA
+        return cachedResponse || new Response('Você está offline.', {
+          status: 503,
+          headers: { 'Content-Type': 'text/plain' }
+        });
+      })
+    );
     return;
   }
 });

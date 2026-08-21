@@ -104,6 +104,7 @@ async function fetchPlanaltoText(rawUrl: string): Promise<{ text: string; finalU
       const resp = await fetch(brUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal: AbortSignal.timeout(12000),
         body: JSON.stringify({ url, content: true, waitForTimeout: 10000, ttl: 60000 }),
       });
       if (resp.ok) {
@@ -125,6 +126,7 @@ async function fetchPlanaltoText(rawUrl: string): Promise<{ text: string; finalU
     const jinaUrl = `https://r.jina.ai/${url}`;
     const resp = await fetch(jinaUrl, {
       headers: { "Accept": "text/html", "X-Return-Format": "html" },
+      signal: AbortSignal.timeout(12000),
     });
     if (resp.ok) {
       const rawText = await resp.text();
@@ -142,6 +144,7 @@ async function fetchPlanaltoText(rawUrl: string): Promise<{ text: string; finalU
   try {
     const res = await fetch(url, {
       redirect: "follow",
+      signal: AbortSignal.timeout(12000),
       headers: {
         "User-Agent": UA,
         "Accept": "text/html,application/xhtml+xml",
@@ -168,26 +171,38 @@ async function gerarExplicacao(numero: string, tipo: string, texto: string): Pro
   if (!GEMINI_KEY) return null;
   const model = MODELS.text;
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_KEY}`;
+  
   const prompt =
-    `Explique, de forma didática e objetiva, o que muda com a norma abaixo (${tipo} ${numero}). ` +
-    `Estruture em: 1) O que é; 2) Principais pontos; 3) A quem se aplica; 4) Impacto prático. ` +
-    `Use markdown com títulos curtos e listas. Máximo 350 palavras. ` +
-    `Base-se apenas no texto oficial fornecido:\n\n${texto.slice(0, 15000)}`;
+    `Você é um professor de Direito altamente didático, paciente e focado em concursos públicos e exames da OAB.\n\n` +
+    `Explique de forma direta o que muda com a norma: ${tipo} ${numero}. ` +
+    `Se a lei não for clara sobre um ponto, não invente, diga que não há previsão legal expressa. ` +
+    `Estruture em: 1) O que é; 2) Principais pontos; 3) Impacto prático. ` +
+    `Use formatação limpa (Markdown), parágrafos curtos, listas e cite artigos em **negrito**. ` +
+    `Responda em no máximo 3 parágrafos curtos. Não introduza a si mesmo. Vá direto à explicação da dúvida.\n\n` +
+    `Base-se APENAS no texto oficial fornecido:\n\n${texto.slice(0, 15000)}`;
+    
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout para não pendurar a Edge Function
+
     const res = await geminiFetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      signal: controller.signal,
       body: JSON.stringify({
         contents: [{ role: "user", parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.3, maxOutputTokens: 900 },
+        generationConfig: { temperature: 0.2, maxOutputTokens: 600 },
       }),
     });
+    
+    clearTimeout(timeoutId);
+    
     if (!res.ok) return null;
     const data = await res.json();
     const out = data?.candidates?.[0]?.content?.parts?.map((p: any) => p?.text ?? "").join("\n").trim();
     return out || null;
   } catch (e) {
-    console.warn("explicacao err", e);
+    console.warn("[gerarExplicacao] Timeout ou erro:", e);
     return null;
   }
 }
