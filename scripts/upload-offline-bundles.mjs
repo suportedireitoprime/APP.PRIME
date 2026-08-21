@@ -23,7 +23,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 const BUCKET_NAME = 'offline-bundles';
 
 // Vamos ler os JSONs que sobraram dentro do APK antes da limpeza total
-const srcDir = path.join(root, 'android/app/src/main/assets/public/offline-bundle');
+const srcDir = path.join(root, 'public/offline-bundle');
 
 async function ensureBucket() {
   const { data: buckets, error: listError } = await supabase.storage.listBuckets();
