@@ -54,6 +54,7 @@ const ResolverPadrao = ({
   const [feedbackOculto, setFeedbackOculto] = useState(false);
   const [gradeAberta, setGradeAberta] = useState(false);
   const [streak, setStreak] = useState(0);
+  const [abaAtiva, setAbaAtiva] = useState<'texto' | 'questao'>('questao');
   const [ocrLoading, setOcrLoading] = useState<Record<string, boolean>>({});
   const [ocrText, setOcrText] = useState<Record<string, string>>({});
   const topoRef = useRef<HTMLDivElement>(null);
@@ -95,6 +96,12 @@ const ResolverPadrao = ({
     
     setIdx(0); setRespostas({}); setSelecao(null); setSegundos(0); setFeedbackOculto(false); setStreak(0);
   }, [questoes, contexto, sessaoId]);
+
+  useEffect(() => {
+    if (questoes.length === 0) return;
+    const q = questoes[idx];
+    setAbaAtiva(q?.texto_associado ? 'texto' : 'questao');
+  }, [idx, questoes]);
 
   useEffect(() => {
     if (questoes.length === 0) return;
@@ -385,42 +392,85 @@ const ResolverPadrao = ({
           )}
         </div>
 
-        <div className="flex flex-col gap-4 pb-6">
-          {atual.texto_associado && (
-            <div className="max-h-60 overflow-y-auto rounded-xl bg-muted/40 p-4 text-[15.5px] leading-[1.65] text-muted-foreground">{atual.texto_associado}</div>
-          )}
-          <p className="text-[16.5px] font-normal leading-[1.7] text-foreground sm:text-[17.5px]">{atual.enunciado}</p>
-        </div>
+        {atual.texto_associado && (
+          <div className="mb-6 flex w-full max-w-[400px] items-center gap-1 rounded-xl bg-muted/50 p-1">
+            <button
+              onClick={() => setAbaAtiva('texto')}
+              className={cn(
+                "flex-1 rounded-lg py-2 text-[14px] font-bold transition-all",
+                abaAtiva === 'texto' ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              Texto
+            </button>
+            <button
+              onClick={() => setAbaAtiva('questao')}
+              className={cn(
+                "flex-1 rounded-lg py-2 text-[14px] font-bold transition-all",
+                abaAtiva === 'questao' ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              Questão
+            </button>
+          </div>
+        )}
 
-        <div className="space-y-3">
-          {alternativas.map((op) => {
-            const escolhida = selecao === op.letra;
-            const revela = !!resp && op.letra === correta;
-            const errou = !!resp && resp.escolha === op.letra && !resp.acertou;
-            return (
-              <button
-                key={op.letra}
-                disabled={!!resp}
-                onClick={() => { haptic.selection?.(); setSelecao(op.letra); }}
-                className={cn(
-                  'flex min-h-[60px] w-full items-center gap-4 rounded-2xl border p-4 text-left transition-all',
-                  revela ? 'border-green-500 bg-green-500/10'
-                    : errou ? 'border-red-500 bg-red-500/10'
-                    : escolhida ? 'border-primary bg-primary/5'
-                    : 'border-border/60 bg-muted/40 hover:border-border hover:bg-accent/50',
-                )}
-              >
-                <span className={cn(
-                  'flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[15px] font-bold',
-                  revela ? 'bg-green-500 text-white' : errou ? 'bg-red-500 text-white' : escolhida ? 'bg-primary text-primary-foreground' : 'bg-foreground/5 text-foreground/60',
-                )}>
-                  {op.letra}
-                </span>
-                <span className="flex-1 text-[16px] leading-[1.5] text-foreground/90">{op.texto}</span>
-              </button>
-            );
-          })}
-        </div>
+        {abaAtiva === 'texto' && atual.texto_associado ? (
+          <motion.div 
+            key="texto"
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+            className="flex flex-col pb-6"
+          >
+            <div className="rounded-2xl border border-border/50 bg-muted/20 p-5 text-[16px] leading-[1.75] text-muted-foreground whitespace-pre-wrap shadow-sm">
+              {atual.texto_associado}
+            </div>
+            <button
+              onClick={() => setAbaAtiva('questao')}
+              className="mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary text-[15px] font-extrabold text-primary-foreground shadow-lg shadow-primary/25 transition-all active:scale-[0.98]"
+            >
+              Ir para Questão <ChevronRight className="h-5 w-5" />
+            </button>
+          </motion.div>
+        ) : (
+          <motion.div 
+            key="questao"
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+          >
+            <div className="flex flex-col gap-4 pb-6">
+              <p className="text-[16.5px] font-normal leading-[1.75] text-foreground sm:text-[17.5px] whitespace-pre-wrap">{atual.enunciado}</p>
+            </div>
+
+            <div className="space-y-3">
+              {alternativas.map((op) => {
+                const escolhida = selecao === op.letra;
+                const revela = !!resp && op.letra === correta;
+                const errou = !!resp && resp.escolha === op.letra && !resp.acertou;
+                return (
+                  <button
+                    key={op.letra}
+                    disabled={!!resp}
+                    onClick={() => { haptic.selection?.(); setSelecao(op.letra); setAbaAtiva('questao'); }}
+                    className={cn(
+                      'flex min-h-[60px] w-full items-center gap-4 rounded-2xl border p-4 text-left transition-all',
+                      revela ? 'border-green-500 bg-green-500/10'
+                        : errou ? 'border-red-500 bg-red-500/10'
+                        : escolhida ? 'border-primary bg-primary/5'
+                        : 'border-border/60 bg-muted/40 hover:border-border hover:bg-accent/50',
+                    )}
+                  >
+                    <span className={cn(
+                      'flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[15px] font-bold',
+                      revela ? 'bg-green-500 text-white' : errou ? 'bg-red-500 text-white' : escolhida ? 'bg-primary text-primary-foreground' : 'bg-foreground/5 text-foreground/60',
+                    )}>
+                      {op.letra}
+                    </span>
+                    <span className="flex-1 text-[16px] leading-[1.5] text-foreground/90">{op.texto}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
         </motion.div>
         </AnimatePresence>
         </div>
@@ -470,35 +520,44 @@ const ResolverPadrao = ({
         <div className="mx-auto w-full max-w-7xl lg:px-8">
           <AnimatePresence mode="wait">
             {!resp ? (
-              <motion.div
-                key="selecao"
-                initial={{ y: 40, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: 40, opacity: 0 }}
-                transition={{ type: "tween", ease: 'easeOut', duration: 0.15 }}
-                className="pointer-events-auto rounded-t-3xl border-t border-border/50 bg-background/80 px-4 pb-safe-nav pt-4 shadow-2xl backdrop-blur-xl lg:rounded-2xl lg:border lg:mb-8 lg:max-w-[calc(100%-320px-2rem)]"
-              >
-                <div className="mx-auto flex max-w-3xl items-center gap-2">
-                  <button
-                    onClick={responder}
-                    disabled={!selecao}
-                    className={cn(
-                      "flex h-12 flex-1 items-center justify-center gap-2 rounded-xl text-[15px] font-extrabold shadow-lg transition-all active:scale-[0.97]",
-                      selecao ? "bg-primary text-primary-foreground shadow-primary/25 hover:bg-primary/90" : "bg-muted/50 text-muted-foreground cursor-not-allowed"
-                    )}
-                  >
-                    {selecao ? (
-                      <>Responder <CheckCircle2 className="h-5 w-5" /></>
-                    ) : 'Selecione uma alternativa'}
-                  </button>
+              selecao ? (
+                <motion.div
+                  key="selecao"
+                  initial={{ y: 80, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: 80, opacity: 0 }}
+                  transition={{ type: "tween", ease: 'easeOut', duration: 0.15 }}
+                  className="pointer-events-auto rounded-t-3xl border-t border-border/50 bg-background/80 px-4 pb-safe-nav pt-4 shadow-[0_-10px_40px_rgba(0,0,0,0.15)] backdrop-blur-xl lg:rounded-2xl lg:border lg:mb-8 lg:max-w-[calc(100%-320px-2rem)]"
+                >
+                  <div className="mx-auto flex max-w-3xl items-center gap-2">
+                    <button
+                      onClick={responder}
+                      disabled={!selecao}
+                      className={cn(
+                        "flex h-12 flex-1 items-center justify-center gap-2 rounded-xl text-[15px] font-extrabold shadow-lg transition-all active:scale-[0.97]",
+                        selecao ? "bg-primary text-primary-foreground shadow-primary/25 hover:bg-primary/90" : "bg-muted/50 text-muted-foreground cursor-not-allowed"
+                      )}
+                    >
+                      Responder <CheckCircle2 className="h-5 w-5" />
+                    </button>
+                    <button 
+                      onClick={() => setGradeAberta(true)}
+                      className="flex h-12 items-center justify-center rounded-xl bg-muted/50 px-4 text-foreground/60 transition-colors hover:bg-muted active:scale-[0.97] lg:hidden"
+                    >
+                      <Grid2X2 className="h-5 w-5" />
+                    </button>
+                  </div>
+                </motion.div>
+              ) : (
+                <div key="botoes-auxiliares" className="absolute bottom-6 right-6 pointer-events-auto flex flex-col gap-3 lg:hidden">
                   <button 
                     onClick={() => setGradeAberta(true)}
-                    className="flex h-12 items-center justify-center rounded-xl bg-muted/50 px-4 text-foreground/60 transition-colors hover:bg-muted active:scale-[0.97] lg:hidden"
+                    className="flex h-14 w-14 items-center justify-center rounded-full bg-muted/80 text-foreground/70 shadow-lg backdrop-blur-md transition-all hover:bg-muted active:scale-[0.95] border border-border/50"
                   >
-                    <Grid2X2 className="h-5 w-5" />
+                    <Grid2X2 className="h-6 w-6" />
                   </button>
                 </div>
-              </motion.div>
+              )
             ) : !feedbackOculto ? (
               <motion.div
                 key="feedback"
