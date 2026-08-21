@@ -255,7 +255,7 @@ export default function ResumosJuridicosAreas() {
           </div>
 
           {/* CATEGORIAS */}
-          <section className="space-y-3 pt-6 pb-20">
+          <section className="space-y-3 pt-6 pb-4">
             <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">Categorias Principais</p>
             <div className="grid grid-cols-4 gap-2.5">
               <button onClick={() => { haptic.selection(); setAba('areas'); }} className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#38bdf8]/50 transition-all active:scale-95 gap-2 text-center">
@@ -281,6 +281,37 @@ export default function ResumosJuridicosAreas() {
                   <FileText className="w-7 h-7 sm:w-8 sm:h-8 text-[#38bdf8] transition-all duration-300 group-hover:scale-110" strokeWidth={1.5} />
                 </div>
                 <p className="text-xs font-extrabold text-foreground leading-tight">Termos</p>
+              </button>
+            </div>
+          </section>
+
+          {/* CARGOS */}
+          <section className="space-y-3 pt-4 pb-20">
+            <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">Cargos</p>
+            <div className="grid grid-cols-4 gap-2.5">
+              <button onClick={() => { haptic.selection(); navigate('/resumos-juridicos/cargos/magistratura'); }} className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#38bdf8]/50 transition-all active:scale-95 gap-2 text-center">
+                <div className="relative w-10 h-10 flex items-center justify-center">
+                  <Scale className="w-7 h-7 sm:w-8 sm:h-8 text-[#38bdf8] transition-all duration-300 group-hover:scale-110" strokeWidth={1.5} />
+                </div>
+                <p className="text-[10px] sm:text-xs font-extrabold text-foreground leading-tight">Magistratura</p>
+              </button>
+              <button onClick={() => { haptic.selection(); navigate('/resumos-juridicos/cargos/oab'); }} className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#38bdf8]/50 transition-all active:scale-95 gap-2 text-center">
+                <div className="relative w-10 h-10 flex items-center justify-center">
+                  <Briefcase className="w-7 h-7 sm:w-8 sm:h-8 text-[#38bdf8] transition-all duration-300 group-hover:scale-110" strokeWidth={1.5} />
+                </div>
+                <p className="text-xs font-extrabold text-foreground leading-tight">OAB</p>
+              </button>
+              <button onClick={() => { haptic.selection(); navigate('/resumos-juridicos/cargos/ministerio-publico'); }} className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#38bdf8]/50 transition-all active:scale-95 gap-2 text-center">
+                <div className="relative w-10 h-10 flex items-center justify-center">
+                  <Building2 className="w-7 h-7 sm:w-8 sm:h-8 text-[#38bdf8] transition-all duration-300 group-hover:scale-110" strokeWidth={1.5} />
+                </div>
+                <p className="text-[10px] sm:text-xs font-extrabold text-foreground leading-tight">Ministério Público</p>
+              </button>
+              <button onClick={() => { haptic.selection(); navigate('/resumos-juridicos/cargos/carreiras-policiais'); }} className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#38bdf8]/50 transition-all active:scale-95 gap-2 text-center">
+                <div className="relative w-10 h-10 flex items-center justify-center">
+                  <Shield className="w-7 h-7 sm:w-8 sm:h-8 text-[#38bdf8] transition-all duration-300 group-hover:scale-110" strokeWidth={1.5} />
+                </div>
+                <p className="text-[10px] sm:text-xs font-extrabold text-foreground leading-tight">Carreira Policial</p>
               </button>
             </div>
           </section>
