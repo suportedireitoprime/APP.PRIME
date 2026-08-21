@@ -378,26 +378,23 @@ export default function ResumosJuridicosTemas() {
                           <div className="flex gap-2 p-3">
                             <button
                               onClick={() => openReader(r, "conceitos")}
-                              disabled={!r.markdown}
-                              className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-all disabled:opacity-30 disabled:hover:bg-primary/10 active:scale-95"
+                              className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3.5 rounded-xl bg-secondary/80 border border-border/50 text-foreground shadow-sm hover:border-[#ef4444] transition-all active:scale-95"
                             >
-                              <FileText className="w-5 h-5" />
+                              <FileText className="w-5 h-5 text-[#ef4444]" />
                               <span className="font-bold text-[10px] uppercase tracking-wider">Conceitos</span>
                             </button>
                             <button
                               onClick={() => openReader(r, "cornell")}
-                              disabled={!r.markdown}
-                              className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3 rounded-xl bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 transition-all disabled:opacity-30 disabled:hover:bg-emerald-500/10 active:scale-95"
+                              className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3.5 rounded-xl bg-secondary/80 border border-border/50 text-foreground shadow-sm hover:border-[#ef4444] transition-all active:scale-95"
                             >
-                              <NotebookText className="w-5 h-5" />
+                              <NotebookText className="w-5 h-5 text-[#ef4444]" />
                               <span className="font-bold text-[10px] uppercase tracking-wider">Cornell</span>
                             </button>
                             <button
                               onClick={() => openReader(r, "feynman")}
-                              disabled={!r.markdown}
-                              className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3 rounded-xl bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 transition-all disabled:opacity-30 disabled:hover:bg-amber-500/10 active:scale-95"
+                              className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3.5 rounded-xl bg-secondary/80 border border-border/50 text-foreground shadow-sm hover:border-[#ef4444] transition-all active:scale-95"
                             >
-                              <BookOpen className="w-5 h-5" />
+                              <BookOpen className="w-5 h-5 text-[#ef4444]" />
                               <span className="font-bold text-[10px] uppercase tracking-wider">Feynman</span>
                             </button>
                           </div>
