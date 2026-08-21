@@ -142,6 +142,33 @@ export default function GlobalVideoaulaMiniPlayer() {
     };
   }, [setTocandoState]);
 
+  // Teclas de atalho (Space, Setas)
+  useEffect(() => {
+    if (!atual) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignorar se o usuário estiver digitando em um input
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement).tagName)) return;
+      
+      if (e.code === 'Space') {
+        e.preventDefault();
+        togglePlay();
+      } else if (e.code === 'ArrowRight') {
+        e.preventDefault();
+        const nextTime = Math.min(duracao, tempo + 10);
+        playerRef.current?.seekTo?.(nextTime, true);
+        setTempoState(nextTime);
+      } else if (e.code === 'ArrowLeft') {
+        e.preventDefault();
+        const prevTime = Math.max(0, tempo - 10);
+        playerRef.current?.seekTo?.(prevTime, true);
+        setTempoState(prevTime);
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [atual, tempo, duracao, togglePlay, setTempoState, playerRef]);
+
   // Track the placeholder when on the video page
   useLayoutEffect(() => {
     if (!atual) return;

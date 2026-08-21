@@ -107,7 +107,7 @@ export function VideoaulasDesktop({
             <h2 className="text-xl font-bold text-foreground font-display">Cursos Regulares</h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
             {lista.length === 0 ? (
               <div className="col-span-full py-10 text-center text-muted-foreground">
                  Nenhuma área encontrada.
@@ -120,7 +120,7 @@ export function VideoaulasDesktop({
                     key={`${a.catalogo}-${a.slug}`}
                     onPointerDown={() => prefetchCatalogo('areas')}
                     onClick={() => handleAreaClick(a.slug)}
-                    className="group flex flex-col items-start gap-4 rounded-3xl border border-border/60 bg-card p-5 text-left transition-all hover:border-primary/40 hover:shadow-md hover:-translate-y-1"
+                    className="group flex flex-col items-start gap-4 rounded-3xl border border-border/80 bg-card/60 backdrop-blur-md p-5 text-left transition-all hover:border-primary/50 hover:bg-card hover:shadow-xl hover:-translate-y-1"
                   >
                     <div className="flex w-full items-center justify-between">
                       <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-muted/30 group-hover:bg-primary/10 transition-colors">
@@ -159,7 +159,7 @@ export function VideoaulasDesktop({
 
         {/* === PAINEL DIREITO: Widgets e Histórico === */}
         <aside className="hidden lg:block lg:col-span-3 space-y-6 pt-3 lg:pt-0">
-          <div className="bg-card/40 border border-border/50 rounded-2xl p-5 shadow-sm">
+          <div className="bg-card/30 backdrop-blur-md border border-border/50 rounded-2xl p-5 shadow-sm">
             <div className="flex items-center gap-2 mb-4">
               <Clock className="w-4 h-4 text-primary" />
               <h2 className="text-sm font-bold uppercase tracking-widest">Atividade Recente</h2>

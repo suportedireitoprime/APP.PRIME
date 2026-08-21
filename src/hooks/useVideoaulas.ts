@@ -24,6 +24,7 @@ export function useVideoaulas() {
   const [loading, setLoading] = useState(() => !resumoVideoaulasSincrono());
   const [filtro, setFiltro] = useState<'todas' | 'andamento'>('todas');
   const [busca, setBusca] = useState('');
+  const [buscaDebounced, setBuscaDebounced] = useState('');
   const [drawerBusca, setDrawerBusca] = useState(false);
   const [showDesempenho, setShowDesempenho] = useState(false);
   const [drawerCategoria, setDrawerCategoria] = useState('Todos');
@@ -35,6 +36,11 @@ export function useVideoaulas() {
       setDrawerCategoria('Todos');
     }
   }, [drawerBusca]);
+
+  useEffect(() => {
+    const t = setTimeout(() => setBuscaDebounced(busca), 300);
+    return () => clearTimeout(t);
+  }, [busca]);
 
   useEffect(() => {
     let id: number | undefined;
@@ -93,19 +99,19 @@ export function useVideoaulas() {
       return a.area.localeCompare(b.area, 'pt-BR');
     });
     let result = filtro === 'andamento' ? l.filter((a) => a.pct > 0) : l;
-    if (busca.trim()) {
-      const termos = normalizeTexto(busca).split(/\s+/).filter(Boolean);
+    if (buscaDebounced.trim()) {
+      const termos = normalizeTexto(buscaDebounced).split(/\s+/).filter(Boolean);
       result = result.filter(a => {
         const areaNormalizada = normalizeTexto(a.area);
         return termos.every(t => areaNormalizada.includes(t));
       });
     }
     return result;
-  }, [areasDireito, filtro, busca]);
+  }, [areasDireito, filtro, buscaDebounced]);
 
   const buscaAulas = useMemo(() => {
-    if (!busca.trim()) return [];
-    const termos = normalizeTexto(busca).split(/\s+/).filter(Boolean);
+    if (!buscaDebounced.trim()) return [];
+    const termos = normalizeTexto(buscaDebounced).split(/\s+/).filter(Boolean);
     const hits: AulaHit[] = [];
     for (const cat of CATALOGOS) {
       const cache = getCachedCatalogo(cat.id);
@@ -127,7 +133,7 @@ export function useVideoaulas() {
       if (hits.length >= 300) break;
     }
     return hits;
-  }, [busca]);
+  }, [buscaDebounced]);
 
   const areasDosResultados = useMemo(() => {
     if (!buscaAulas.length) return [];
