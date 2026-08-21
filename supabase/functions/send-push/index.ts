@@ -202,8 +202,10 @@ Deno.serve(async (req) => {
         { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    // Personalização: monta mapa user_id -> primeiro nome.
-    // Ativa se `personalize: true` OU se os templates já usam placeholders.
+    // Personalização: ativa por padrão para aumentar CTR (a menos que seja explicitamente false)
+    if (payload.personalize === undefined) {
+      payload.personalize = true;
+    }
     const hasPlaceholder = /\{(primeiro_)?nome\}/i.test(payload.title) ||
       /\{(primeiro_)?nome\}/i.test(payload.body);
     const personalizeOn = Boolean(payload.personalize) || hasPlaceholder;
