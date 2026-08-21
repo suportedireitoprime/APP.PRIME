@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { UserDossieSheet } from './UserDossieSheet';
 import { rotaParaFuncao } from '@/lib/rotaFuncoes';
 
-type CardId = 'online5m' | 'online' | 'cadastros' | 'trial';
+type CardId = 'online5m' | 'online' | 'cadastros' | 'paywall' | 'trial';
 
 interface Row {
   key: string;
@@ -107,13 +107,14 @@ const writeSeen = (id: CardId, d: Date, seen: Seen) => {
 };
 
 export function AdminHojeCards() {
-  const [counts, setCounts] = useState<Record<CardId, number>>({ online5m: 0, online: 0, cadastros: 0, trial: 0 });
+  const [counts, setCounts] = useState<Record<CardId, number>>({ online5m: 0, online: 0, cadastros: 0, paywall: 0, trial: 0 });
   const [seenCounts, setSeenCounts] = useState<Record<CardId, number>>(() => {
     const hoje = new Date();
     return {
       online5m: readSeen('online5m', hoje).count,
       online: readSeen('online', hoje).count,
       cadastros: readSeen('cadastros', hoje).count,
+      paywall: readSeen('paywall', hoje).count,
       trial: readSeen('trial', hoje).count,
     };
   });
@@ -188,18 +189,19 @@ export function AdminHojeCards() {
       online5m: count5m, 
       online: countOnline, 
       cadastros: m.cadastros || 0, 
+      paywall: m.paywall || 0,
       trial: m.trial || 0 
     };
     setCounts(novos);
     if (sameDay(dia, new Date())) {
-      (['online5m', 'online', 'cadastros', 'trial'] as CardId[]).forEach((id) => {
+      (['online5m', 'online', 'cadastros', 'paywall', 'trial'] as CardId[]).forEach((id) => {
         if (!localStorage.getItem(seenStorageKey(id, dia))) {
           writeSeen(id, dia, { count: novos[id], keys: [] });
           setSeenCounts((c) => ({ ...c, [id]: novos[id] }));
         }
       });
     } else {
-      setSeenCounts({ online5m: 0, online: 0, cadastros: 0, trial: 0 });
+      setSeenCounts({ online5m: 0, online: 0, cadastros: 0, paywall: 0, trial: 0 });
     }
   }, [dia]);
 
@@ -283,7 +285,7 @@ export function AdminHojeCards() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const card = params.get('card');
-    if (card === 'cadastros' || card === 'trial' || card === 'online' || card === 'online5m') {
+    if (card === 'cadastros' || card === 'trial' || card === 'online' || card === 'online5m' || card === 'paywall') {
       openCard(card as CardId);
       params.delete('card');
       const qs = params.toString();
@@ -311,6 +313,7 @@ export function AdminHojeCards() {
     { id: 'online5m', label: 'Online 5 min', icon: Zap },
     { id: 'online', label: 'Online hoje', icon: Radio },
     { id: 'cadastros', label: 'Cadastrados', icon: UserPlus },
+    { id: 'paywall', label: 'Viu planos', icon: Sparkles },
     { id: 'trial', label: 'Iniciou teste', icon: DollarSign },
   ];
 
@@ -318,6 +321,7 @@ export function AdminHojeCards() {
     online5m: 'Online (Últimos 5 min)',
     online: 'Online',
     cadastros: 'Cadastrados',
+    paywall: 'Visualizaram Planos',
     trial: 'Iniciaram assinatura teste',
   };
 
@@ -332,7 +336,7 @@ export function AdminHojeCards() {
 
   return (
     <>
-      <div className="grid grid-cols-4 gap-2 mb-3">
+      <div className="grid grid-cols-5 gap-2 mb-3">
         {CARDS.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
