@@ -63,7 +63,13 @@ const AdminLeituraNativa = () => {
       g.itens.push(it);
       map.set(it.colecao.id, g);
     }
-    return Array.from(map.values()).sort((a, b) => a.label.localeCompare(b.label, 'pt-BR'));
+    return Array.from(map.values()).sort((a, b) => {
+      const aPendentes = a.itens.filter(i => (i.download || i.link) && !(i.leitura?.status === 'pronto' && i.leitura?.refino_status === 'pronto')).length;
+      const bPendentes = b.itens.filter(i => (i.download || i.link) && !(i.leitura?.status === 'pronto' && i.leitura?.refino_status === 'pronto')).length;
+      if (aPendentes > 0 && bPendentes === 0) return -1;
+      if (aPendentes === 0 && bPendentes > 0) return 1;
+      return a.label.localeCompare(b.label, 'pt-BR');
+    });
   }, [filtered]);
 
   const keyOf = (it: LivroLeituraItem) => `${it.colecao.table}::${it.id}`;
@@ -229,6 +235,8 @@ const AdminLeituraNativa = () => {
           <div className="space-y-2">
             {grupos.map((g) => {
               const isOpen = openColecao === g.id;
+              
+              // Calculate stats for the group
               const prontos = g.itens.filter((i) => i.leitura?.status === 'pronto' && i.leitura?.refino_status === 'pronto').length;
               const rodando = g.itens.filter((i) => i.leitura?.status === 'processando' || i.leitura?.refino_status === 'processando').length;
               const erros = g.itens.filter((i) => i.leitura?.status === 'erro' || i.leitura?.refino_status === 'erro').length;
@@ -236,18 +244,27 @@ const AdminLeituraNativa = () => {
                 (i) => (i.download || i.link) && !(i.leitura?.status === 'pronto' && i.leitura?.refino_status === 'pronto'),
               );
               const selecionadosGrupo = g.itens.filter((i) => selected.has(keyOf(i)));
+              
               return (
-                <div key={g.id} className="rounded-2xl border border-white/10 bg-white/[0.03] overflow-hidden">
+                <div key={g.id} className={`rounded-2xl border ${pendentesGrupo.length > 0 ? 'border-yellow-500/30 bg-yellow-500/[0.02]' : 'border-white/10 bg-white/[0.03]'} overflow-hidden transition-colors`}>
                   <button
                     onClick={() => setOpenColecao(isOpen ? null : g.id)}
-                    className="w-full flex items-center gap-3 p-3 hover:bg-white/[0.04] transition text-left"
+                    className="w-full flex items-center gap-3 p-4 hover:bg-white/[0.04] transition text-left"
                   >
-                    {isOpen ? <ChevronDown className="h-4 w-4 text-white/60 shrink-0" /> : <ChevronRight className="h-4 w-4 text-white/60 shrink-0" />}
+                    {isOpen ? <ChevronDown className="h-5 w-5 text-white/60 shrink-0" /> : <ChevronRight className="h-5 w-5 text-white/60 shrink-0" />}
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-semibold break-words">{g.label}</div>
-                      <div className="text-[11px] text-white/50 flex flex-wrap gap-2 mt-0.5">
+                      <div className="text-sm font-semibold break-words flex items-center gap-2">
+                        {g.label}
+                        {pendentesGrupo.length > 0 && !isOpen && (
+                          <span className="px-1.5 py-0.5 rounded text-[10px] bg-yellow-500/20 text-yellow-300 border border-yellow-500/30">
+                            {pendentesGrupo.length} pendentes
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-[11px] text-white/50 flex flex-wrap gap-2 mt-1">
                         <span>{g.itens.length} livro(s)</span>
                         <span className="text-emerald-400">• {prontos} prontos</span>
+                        {pendentesGrupo.length > 0 && <span className="text-yellow-300">• {pendentesGrupo.length} pendentes</span>}
                         {rodando > 0 && <span className="text-amber-300">• {rodando} rodando</span>}
                         {erros > 0 && <span className="text-red-300">• {erros} erros</span>}
                       </div>
@@ -255,9 +272,9 @@ const AdminLeituraNativa = () => {
                   </button>
 
                   {isOpen && (
-                    <div className="border-t border-white/10 p-2 space-y-2">
-                      <div className="rounded-xl bg-black/40 border border-white/10 p-3 space-y-3">
-                        <div className="grid grid-cols-4 gap-2 text-center">
+                    <div className="border-t border-white/10 p-3 space-y-3">
+                      <div className="rounded-xl bg-black/40 border border-white/10 p-4 space-y-4">
+                        <div className="grid grid-cols-4 gap-3 text-center">
                           <MiniStat label="Total" value={g.itens.length} tone="text-white" />
                           <MiniStat label="Prontos" value={prontos} tone="text-emerald-400" />
                           <MiniStat label="Pendentes" value={pendentesGrupo.length} tone="text-yellow-300" />
@@ -296,9 +313,15 @@ const AdminLeituraNativa = () => {
                         titulo={g.label}
                       />
 
-
-
-                      {g.itens.map((it) => {
+                      {(() => {
+                        const sortedItens = [...g.itens].sort((a, b) => {
+                          const aPend = (a.download || a.link) && !(a.leitura?.status === 'pronto' && a.leitura?.refino_status === 'pronto') ? 1 : 0;
+                          const bPend = (b.download || b.link) && !(b.leitura?.status === 'pronto' && b.leitura?.refino_status === 'pronto') ? 1 : 0;
+                          if (aPend > bPend) return -1;
+                          if (aPend < bPend) return 1;
+                          return a.titulo.localeCompare(b.titulo, 'pt-BR');
+                        });
+                        return sortedItens.map((it) => {
                         const k = keyOf(it);
                         const b = badgeFor(it);
                         const B = b.Icon;
@@ -356,7 +379,7 @@ const AdminLeituraNativa = () => {
                             </div>
                           </div>
                         );
-                      })}
+                      })})}
                     </div>
                   )}
                 </div>
