@@ -7,12 +7,14 @@
  */
 
 const WS_HOST = "wss://generativelanguage.googleapis.com/ws";
-const WS_URLS = [
-  `${WS_HOST}/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent`,
-  `${WS_HOST}/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent`,
-  `${WS_HOST}/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContentConstrained`,
-  `${WS_HOST}/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContentConstrained`,
-];
+
+/**
+ * Endpoints ordenados por prioridade:
+ * 1. v1beta BidiGenerateContent — endpoint atual recomendado (API Key via ?key=)
+ * 2. v1beta BidiGenerateContentConstrained — para ephemeral tokens (via ?access_token=)
+ */
+const WS_URL_APIKEY = `${WS_HOST}/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent`;
+const WS_URL_EPHEMERAL = `${WS_HOST}/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent`;
 
 /** Primeira instrução falada: faz o professor comentar o que está vendo. */
 const ABERTURA =
@@ -34,6 +36,8 @@ export interface FalaTranscrita {
 export interface OpcoesLive {
   token: string;
   modelo: string;
+  /** true quando o token é um ephemeral token gerado pelo backend. */
+  ephemeral?: boolean;
   /** Setup completo quando o token não trava a configuração no servidor. */
   setup?: Record<string, unknown> | null;
   video?: HTMLVideoElement;
@@ -210,10 +214,20 @@ export class SessaoMeExplique {
 
 
 
-  /** Conecta ao endpoint primário (v1alpha). */
+  /** Conecta ao endpoint v1beta correto. */
   private async conectar() {
+    // Ephemeral tokens usam access_token; API Keys usam key.
+    const tokenLimpo = this.opcoes.token.replace(/^["'\s]+|["'\s]+$/g, '');
+    const isEphemeral = this.opcoes.ephemeral === true;
+    const isApiKey = tokenLimpo.startsWith('AIza') || tokenLimpo.startsWith('AQ');
+    
+    // Seleciona o endpoint: ephemeral → BidiGenerateContent com access_token
+    // API Key → BidiGenerateContent com key
+    const url = isEphemeral ? WS_URL_EPHEMERAL : WS_URL_APIKEY;
+    const parametro = (isEphemeral && !isApiKey) ? 'access_token' : 'key';
+
     try {
-      await this.abrirWs(WS_URLS[0]);
+      await this.abrirWs(url, parametro, tokenLimpo);
     } catch (e) {
       this.ws?.close();
       this.ws = null;
@@ -221,11 +235,9 @@ export class SessaoMeExplique {
     }
   }
 
-  private abrirWs(url: string) {
+  private abrirWs(url: string, parametro: string, tokenLimpo: string) {
     return new Promise<void>((resolve, reject) => {
-      const isApiKey = this.opcoes.token.startsWith('AIza');
-      const parametro = isApiKey ? 'key' : 'access_token';
-      const ws = new WebSocket(`${url}?${parametro}=${encodeURIComponent(this.opcoes.token)}`);
+      const ws = new WebSocket(`${url}?${parametro}=${encodeURIComponent(tokenLimpo)}`);
       this.ws = ws;
       let resolvido = false;
 

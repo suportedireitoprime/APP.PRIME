@@ -54,7 +54,7 @@ export async function logAiCall(input: LogAiCallInput): Promise<void> {
       error: input.error ?? null,
       user_id: input.userId ?? null,
       ref_id: input.refId ?? null,
-    });
+    } as any);
   } catch (e) {
     console.warn("[ai-log] failed", (e as Error)?.message ?? e);
   }

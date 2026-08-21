@@ -79,7 +79,6 @@ Deno.serve(async (req) => {
       return json({ error: "GEMINI_API_KEY não configurada." }, 500);
     }
 
-    const agora = Date.now();
     // Formato exigido pelo BidiGenerateContent: modalidades ficam em
     // generationConfig; transcrições e systemInstruction no nível do setup.
     const instrucaoFinal = gerarInstrucao(nome, formato);
@@ -100,20 +99,60 @@ Deno.serve(async (req) => {
       inputAudioTranscription: {},
       outputAudioTranscription: {},
       tools: [{ googleSearch: {} }],
-      // OBS: não enviar `mediaResolution` aqui — o schema de setup do
-      // BidiGenerateContent nesta versão rejeita o campo ("Unknown name
-      // mediaResolution at 'setup'"). A economia de vídeo vem do envio de
-      // 1 frame a cada 2s no cliente (liveClient.ts).
     };
 
+    // ── Gerar Ephemeral Token via REST /v1beta/auth_tokens ──────────
+    // Documentação: https://ai.google.dev/gemini-api/docs/live-api
+    // A Google descontinuou chaves AIzaSy "Standard" em jun/2026 e agora
+    // recomenda ephemeral tokens para conexões WebSocket client-side.
+    let tokenEfemero: string | null = null;
 
-    // Em vez de gerar um token efêmero (que pode estar falhando na API do Google),
-    // retornamos a chave da API diretamente para o cliente conectar,
-    // conforme solicitado ("use minhac chave api da gemini live").
+    for (const chave of chaves) {
+      try {
+        const agora = Date.now();
+        const expira = new Date(agora + 30 * 60 * 1000).toISOString();       // 30 min
+        const novasessao = new Date(agora + 2 * 60 * 1000).toISOString();    // 2 min para criar sessão
+
+        const res = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/auth_tokens?key=${encodeURIComponent(chave.trim())}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              expireTime: expira,
+              newSessionExpireTime: novasessao,
+              uses: 1,
+            }),
+          },
+        );
+
+        if (res.ok) {
+          const body = await res.json();
+          // O campo retornado é "name" (ex: "authTokens/abc123...")
+          tokenEfemero = body.name ?? body.token ?? null;
+          if (tokenEfemero) {
+            console.log("[me-explique-token] Ephemeral token gerado com sucesso.");
+            break;
+          }
+        } else {
+          const erro = await res.text();
+          console.warn(`[me-explique-token] Falha ao gerar ephemeral token com chave ${chave.substring(0, 8)}...: ${res.status} ${erro}`);
+        }
+      } catch (e) {
+        console.warn("[me-explique-token] Erro na chamada auth_tokens:", (e as Error)?.message ?? e);
+      }
+    }
+
+    // Fallback: se nenhuma chave conseguiu gerar ephemeral token,
+    // devolve a chave diretamente (menos seguro, mas funciona com Auth Keys AQ...)
+    const tokenFinal = tokenEfemero ?? chaves[0].trim();
+    const isEphemeral = !!tokenEfemero;
+
     return json({
-      token: chaves[0],
+      token: tokenFinal,
       modelo: MODELO_LIVE,
       setup: setup,
+      ephemeral: isEphemeral,
     });
 
   } catch (e) {

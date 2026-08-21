@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback, useState } from 'react';
+import { useEffect, useRef, useCallback, useState, useLayoutEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Pause, Maximize2, X, Move, Loader2 } from 'lucide-react';
@@ -143,7 +143,7 @@ export default function GlobalVideoaulaMiniPlayer() {
   }, [setTocandoState]);
 
   // Track the placeholder when on the video page
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!atual) return;
     const el = playerWrapperRef.current;
     if (!el) return;
@@ -203,14 +203,15 @@ export default function GlobalVideoaulaMiniPlayer() {
   return (
     <AnimatePresence>
       <motion.div
+        layout
         ref={playerWrapperRef}
         initial={false}
         animate={
           onVideoPage
-            ? { opacity: 1, scale: 1, y: 0, width: 'auto', height: 'auto', bottom: 'auto', right: 'auto', display: 'block' }
+            ? { opacity: 1, scale: 1, x: 0, y: 0, width: 'auto', height: 'auto', bottom: 'auto', right: 'auto', display: 'block' }
             : tocando
-              ? { opacity: 1, scale: 1, y: 0, width: 320, height: 180, bottom: 80, right: 16, display: 'block' }
-              : { opacity: 0, scale: 0.8, y: 20, width: 320, height: 180, bottom: 80, right: 16, transitionEnd: { display: 'none' } }
+              ? { opacity: 1, scale: 1, x: 0, y: 0, width: 320, height: 180, bottom: 80, right: 16, display: 'block' }
+              : { opacity: 0, scale: 0.8, x: 0, y: 20, width: 320, height: 180, bottom: 80, right: 16, transitionEnd: { display: 'none' } }
         }
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
         drag={!onVideoPage && tocando}
@@ -226,7 +227,7 @@ export default function GlobalVideoaulaMiniPlayer() {
         {/* Fachada Customizada (Apenas onVideoPage) */}
         {onVideoPage && !playing && (
           <div 
-            className="absolute inset-0 z-[60] flex items-center justify-center bg-black cursor-pointer group pointer-events-auto"
+            className={`absolute inset-0 z-[60] flex items-center justify-center bg-black transition-opacity duration-500 cursor-pointer group ${tentouTocar ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}
             onClick={(e) => {
               e.stopPropagation();
               if (tentouTocar) return;
@@ -257,7 +258,9 @@ export default function GlobalVideoaulaMiniPlayer() {
         )}
 
         {/* Container do Iframe (sempre montado) */}
-        <div ref={containerRef} className="w-full h-full pointer-events-auto bg-black" />
+        <div className="w-full h-full pointer-events-auto bg-black">
+          <div ref={containerRef} className="w-full h-full" />
+        </div>
 
         {/* Overlays apenas no modo Mini Player */}
         {!onVideoPage && (

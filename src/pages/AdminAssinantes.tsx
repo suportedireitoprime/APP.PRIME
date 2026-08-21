@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { RefreshCw, Crown, AlertTriangle, Copy, ExternalLink, Search, Users, TrendingUp, XCircle, FlaskConical, CircleDollarSign, PieChart as PieIcon, DownloadCloud } from 'lucide-react';
+import { RefreshCw, Crown, AlertTriangle, Copy, ExternalLink, Search, Users, TrendingUp, XCircle, FlaskConical, CircleDollarSign, PieChart as PieIcon, PlayCircle, Smartphone, ArrowLeft } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -148,6 +148,7 @@ const AdminAssinantes = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [dateFilter, setDateFilter] = useState<string>('all');
   const [activeChart, setActiveChart] = useState<'mrr' | 'gross' | 'sales' | 'subs'>('mrr');
+  const [viewMode, setViewMode] = useState<'dashboard' | 'asaas' | 'play' | 'apple'>('dashboard');
   const [selectedMonthId, setSelectedMonthId] = useState<string>('');
   const [syncingAsaas, setSyncingAsaas] = useState(false);
   const [modalDetails, setModalDetails] = useState<'mrr' | 'gross' | null>(null);
@@ -257,6 +258,11 @@ const AdminAssinantes = () => {
         }
       }
       if (!matchesStatus) return false;
+
+      // Filter by viewMode (Provider)
+      if (viewMode === 'asaas' && r.source !== 'asaas' && r.source !== 'old') return false;
+      if (viewMode === 'play' && r.source !== 'play') return false;
+      if (viewMode === 'apple' && r.source !== 'apple') return false;
       
       // Date filter
       if (dateFilter !== 'all') {
@@ -463,218 +469,228 @@ const AdminAssinantes = () => {
           </div>
         )}
 
-        <div className="flex flex-wrap gap-2 items-center justify-between">
-          {(syncFatal || syncErrors.length > 0) ? (
-            <div className="flex-1 rounded-lg border border-amber-500/40 bg-amber-500/10 p-4 text-sm space-y-2">
-              <div className="flex items-center gap-2 font-medium text-amber-600">
-                <AlertTriangle className="w-4 h-4" />
-                {sync403 ? 'Falta permissão no Play Console' : 'Erro ao consultar o Google Play'}
+        {viewMode === 'dashboard' && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <button onClick={() => setViewMode('asaas')} className="flex items-center justify-between p-4 rounded-xl border border-blue-500/20 bg-blue-500/10 hover:bg-blue-500/20 transition-colors text-left group">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Crown className="w-5 h-5 text-blue-500" />
+                </div>
+                <div>
+                  <div className="font-bold text-foreground">Asaas</div>
+                  <div className="text-xs text-muted-foreground">Assinantes Legado e Vitalício</div>
+                </div>
               </div>
-              {syncFatal && <p className="text-xs font-mono break-all text-muted-foreground">{syncFatal}</p>}
-              {syncErrors.map((e, i) => (
-                <p key={i} className="text-xs font-mono break-all text-muted-foreground">
-                  HTTP {e.status} — {e.message}
-                </p>
-              ))}
-            </div>
-          ) : sync ? (
-            <div className="rounded-lg border border-border bg-card p-3 text-xs text-muted-foreground flex-1">
-              Última Sincronização Google Play: <strong className="text-foreground">{sync.checked ?? 0}</strong> compra(s),{' '}
-              <strong className="text-foreground">{sync.updated ?? 0}</strong> atualizada(s).
-            </div>
-          ) : <div className="flex-1" />}
-
-          <button
-            onClick={handleSyncAll}
-            disabled={syncingAsaas}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600/10 text-blue-500 border border-blue-500/20 hover:bg-blue-600/20 disabled:opacity-50 text-sm font-medium transition-colors"
-          >
-            {syncingAsaas ? <RefreshCw className="w-4 h-4 animate-spin" /> : <DownloadCloud className="w-4 h-4" />}
-            Sincronizar (Play + Asaas)
-          </button>
-        </div>
-
-        {/* HERO — Receita estimada */}
-        <section className="rounded-2xl overflow-hidden border border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-amber-400/5 to-transparent p-4 md:p-5">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-xl bg-amber-500/20 flex items-center justify-center">
-                <CircleDollarSign className="w-5 h-5 text-amber-500" />
+            </button>
+            
+            <button onClick={() => setViewMode('play')} className="flex items-center justify-between p-4 rounded-xl border border-[#3DDC84]/20 bg-[#3DDC84]/10 hover:bg-[#3DDC84]/20 transition-colors text-left group">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#3DDC84]/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <PlayCircle className="w-5 h-5 text-[#3DDC84]" />
+                </div>
+                <div>
+                  <div className="font-bold text-foreground">Google Play</div>
+                  <div className="text-xs text-muted-foreground">Assinaturas no Android</div>
+                </div>
               </div>
-              <div>
-                <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Receita recorrente estimada</div>
-                <div className="text-xs text-muted-foreground">com base em {revenue.paying} assinante(s) pagante(s)</div>
+            </button>
+            
+            <button onClick={() => setViewMode('apple')} className="flex items-center justify-between p-4 rounded-xl border border-zinc-500/20 bg-zinc-500/10 hover:bg-zinc-500/20 transition-colors text-left group">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-zinc-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Smartphone className="w-5 h-5 text-zinc-400" />
+                </div>
+                <div>
+                  <div className="font-bold text-foreground">Apple iPhone</div>
+                  <div className="text-xs text-muted-foreground">Assinaturas no iOS</div>
+                </div>
               </div>
-            </div>
-            <span className="text-[10px] px-2 py-1 rounded-full bg-background/60 text-muted-foreground">BRL</span>
+            </button>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <RevenueCard label="MRR" value={fmtBRL(revenue.mrr)} hint="mensal" accent="from-amber-500 to-orange-500" onClick={() => setModalDetails('mrr')} />
-            <RevenueCard label="ARR" value={fmtBRL(revenue.arr)} hint="anualizado" accent="from-emerald-500 to-teal-500" />
-            <RevenueCard label="Ticket médio" value={fmtBRL(revenue.avgTicket)} hint="por assinante/mês" accent="from-blue-500 to-cyan-500" />
-            <RevenueCard label="Bruto acumulado" value={fmtBRL(grossAccumulated)} hint="ciclos vendidos" accent="from-purple-500 to-fuchsia-500" onClick={() => setModalDetails('gross')} />
-          </div>
-        </section>
-
-        {/* Gráfico timeline (Apenas Play Billing) */}
-        {timeline.length > 0 && (
-          <section className="rounded-2xl border border-border bg-card p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <TrendingUp className="w-4 h-4 text-primary" />
-              <h2 className="text-sm font-semibold">Evolução Play (últimos 30 dias)</h2>
-            </div>
-            <div className="h-56 -ml-2">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={timeline}>
-                  <defs>
-                    <linearGradient id="gNovos" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="hsl(217 91% 60%)" stopOpacity={0.4} />
-                      <stop offset="100%" stopColor="hsl(217 91% 60%)" stopOpacity={0} />
-                    </linearGradient>
-                    <linearGradient id="gCanc" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="hsl(346 87% 60%)" stopOpacity={0.4} />
-                      <stop offset="100%" stopColor="hsl(346 87% 60%)" stopOpacity={0} />
-                    </linearGradient>
-                    <linearGradient id="gAtivos" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="hsl(160 84% 45%)" stopOpacity={0.35} />
-                      <stop offset="100%" stopColor="hsl(160 84% 45%)" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                  <XAxis dataKey="label" fontSize={10} stroke="hsl(var(--muted-foreground))" tickLine={false} axisLine={false} />
-                  <YAxis fontSize={10} stroke="hsl(var(--muted-foreground))" tickLine={false} axisLine={false} width={28} />
-                  <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 12 }} />
-                  <Legend wrapperStyle={{ fontSize: 11 }} />
-                  <Area type="monotone" dataKey="ativos" name="Ativos" stroke="hsl(160 84% 45%)" fill="url(#gAtivos)" strokeWidth={2} />
-                  <Area type="monotone" dataKey="novos" name="Novos" stroke="hsl(217 91% 60%)" fill="url(#gNovos)" strokeWidth={2} />
-                  <Area type="monotone" dataKey="cancelados" name="Cancelados" stroke="hsl(346 87% 60%)" fill="url(#gCanc)" strokeWidth={2} />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </section>
         )}
 
-        {/* Métricas locais */}
-        <section className="space-y-2">
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground px-1">
-            Visão Geral (Play + Asaas)
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-            <StatCard icon={Users} label="Total registradas" value={loading ? '…' : combinedRows.length} tint="text-primary" />
-            <StatCard icon={Crown} label="Premium agora" value={loading ? '…' : activeToday} tint="text-amber-500" />
-            <StatCard icon={FlaskConical} label="Testes" value={loading ? '…' : data?.local.stats.test ?? 0} tint="text-purple-500" />
-            <StatCard icon={TrendingUp} label="SKUs ativos" value={loading ? '…' : revenue.byPlan.length} tint="text-cyan-500" />
-          </div>
-          {revenue.byPlan.length > 0 && (
-            <div className="rounded-2xl border border-border bg-card p-4">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+        {viewMode === 'dashboard' && (
+          <>
+            <section className="rounded-2xl overflow-hidden border border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-amber-400/5 to-transparent p-4 md:p-5">
+              <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <PieIcon className="w-4 h-4 text-primary" />
-                  <h3 className="text-sm font-semibold">Análise de Assinaturas</h3>
+                  <div className="w-9 h-9 rounded-xl bg-amber-500/20 flex items-center justify-center">
+                    <CircleDollarSign className="w-5 h-5 text-amber-500" />
+                  </div>
+                  <div>
+                    <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Receita recorrente estimada</div>
+                    <div className="text-xs text-muted-foreground">com base em {revenue.paying} assinante(s) pagante(s)</div>
+                  </div>
                 </div>
-                <div className="flex items-center rounded-lg bg-muted p-1 text-xs">
-                  <button onClick={() => setActiveChart('mrr')} className={`px-2 py-1 rounded-md transition-colors ${activeChart === 'mrr' ? 'bg-background shadow-sm font-medium text-foreground' : 'text-muted-foreground hover:text-foreground'}`}>MRR</button>
-                  <button onClick={() => setActiveChart('gross')} className={`px-2 py-1 rounded-md transition-colors ${activeChart === 'gross' ? 'bg-background shadow-sm font-medium text-foreground' : 'text-muted-foreground hover:text-foreground'}`}>Faturamento</button>
-                  <button onClick={() => setActiveChart('sales')} className={`px-2 py-1 rounded-md transition-colors ${activeChart === 'sales' ? 'bg-background shadow-sm font-medium text-foreground' : 'text-muted-foreground hover:text-foreground'}`}>Vendas Mês</button>
-                  <button onClick={() => setActiveChart('subs')} className={`px-2 py-1 rounded-md transition-colors ${activeChart === 'subs' ? 'bg-background shadow-sm font-medium text-foreground' : 'text-muted-foreground hover:text-foreground'}`}>Volume</button>
-                </div>
+                <span className="text-[10px] px-2 py-1 rounded-full bg-background/60 text-muted-foreground">BRL</span>
               </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <RevenueCard label="MRR" value={fmtBRL(revenue.mrr)} hint="mensal" accent="from-amber-500 to-orange-500" onClick={() => setModalDetails('mrr')} />
+                <RevenueCard label="ARR" value={fmtBRL(revenue.arr)} hint="anualizado" accent="from-emerald-500 to-teal-500" />
+                <RevenueCard label="Ticket médio" value={fmtBRL(revenue.avgTicket)} hint="por assinante/mês" accent="from-blue-500 to-cyan-500" />
+                <RevenueCard label="Bruto acumulado" value={fmtBRL(grossAccumulated)} hint="ciclos vendidos" accent="from-purple-500 to-fuchsia-500" onClick={() => setModalDetails('gross')} />
+              </div>
+            </section>
 
-              {activeChart === 'sales' && currentMonthData && (
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <select
-                      value={selectedMonthId || currentMonthData.monthId}
-                      onChange={(e) => setSelectedMonthId(e.target.value)}
-                      className="text-xs bg-muted border border-border rounded-md px-2 py-1 outline-none"
-                    >
-                      {monthlyRevenueData.map(m => (
-                        <option key={m.monthId} value={m.monthId}>{m.label}</option>
-                      ))}
-                    </select>
-                    <span className="text-xs font-bold text-primary">Faturamento Total: {fmtBRL(currentMonthData.total)}</span>
-                  </div>
-                  <div className="h-44">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={currentMonthChartData} layout="vertical" margin={{ left: 4, right: 12 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
-                        <XAxis type="number" fontSize={10} stroke="hsl(var(--muted-foreground))" tickFormatter={(v) => `R$${v.toFixed(0)}`} />
-                        <YAxis type="category" dataKey="plan" fontSize={10} width={110} stroke="hsl(var(--muted-foreground))" />
-                        <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 12 }} formatter={(v: any) => fmtBRL(Number(v))} />
-                        <Bar dataKey="gross" name="Vendas (Bruto)" radius={[0, 6, 6, 0]}>
-                          {currentMonthChartData.map((_, i) => <Cell key={i} fill={['hsl(280 65% 60%)', 'hsl(217 91% 60%)', 'hsl(160 84% 45%)', 'hsl(0 96% 56%)'][i % 4]} />)}
-                        </Bar>
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
+            {/* Gráfico timeline (Apenas Play Billing) */}
+            {timeline.length > 0 && (
+              <section className="rounded-2xl border border-border bg-card p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <TrendingUp className="w-4 h-4 text-primary" />
+                  <h2 className="text-sm font-semibold">Evolução Play (últimos 30 dias)</h2>
                 </div>
-              )}
-
-              {activeChart === 'mrr' && (
-                <div className="h-44">
+                <div className="h-56 -ml-2">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={revenue.byPlan.filter(p => p.mrr > 0)} layout="vertical" margin={{ left: 4, right: 12 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
-                      <XAxis type="number" fontSize={10} stroke="hsl(var(--muted-foreground))" tickFormatter={(v) => `R$${v.toFixed(0)}`} />
-                      <YAxis type="category" dataKey="plan" fontSize={10} width={110} stroke="hsl(var(--muted-foreground))" />
-                      <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 12 }} formatter={(v: any) => fmtBRL(Number(v))} />
-                      <Bar dataKey="mrr" name="MRR Mensal" radius={[0, 6, 6, 0]}>
-                        {revenue.byPlan.map((_, i) => <Cell key={i} fill={['hsl(0 96% 56%)', 'hsl(160 84% 45%)', 'hsl(217 91% 60%)', 'hsl(280 65% 60%)'][i % 4]} />)}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              )}
-
-              {activeChart === 'gross' && (
-                <div className="h-44">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={revenue.byPlan.filter(p => p.gross > 0)} layout="vertical" margin={{ left: 4, right: 12 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
-                      <XAxis type="number" fontSize={10} stroke="hsl(var(--muted-foreground))" tickFormatter={(v) => `R$${v.toFixed(0)}`} />
-                      <YAxis type="category" dataKey="plan" fontSize={10} width={110} stroke="hsl(var(--muted-foreground))" />
-                      <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 12 }} formatter={(v: any) => fmtBRL(Number(v))} />
-                      <Bar dataKey="gross" name="Faturamento Total" radius={[0, 6, 6, 0]}>
-                        {revenue.byPlan.map((_, i) => <Cell key={i} fill={['hsl(217 91% 60%)', 'hsl(160 84% 45%)', 'hsl(280 65% 60%)', 'hsl(0 96% 56%)'][i % 4]} />)}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              )}
-
-              {activeChart === 'subs' && (
-                <div className="h-44">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={subsByMonth} margin={{ left: 4, right: 4, top: 10 }}>
+                    <AreaChart data={timeline}>
+                      <defs>
+                        <linearGradient id="gNovos" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="hsl(217 91% 60%)" stopOpacity={0.4} />
+                          <stop offset="100%" stopColor="hsl(217 91% 60%)" stopOpacity={0} />
+                        </linearGradient>
+                        <linearGradient id="gCanc" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="hsl(346 87% 60%)" stopOpacity={0.4} />
+                          <stop offset="100%" stopColor="hsl(346 87% 60%)" stopOpacity={0} />
+                        </linearGradient>
+                        <linearGradient id="gAtivos" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="hsl(160 84% 45%)" stopOpacity={0.35} />
+                          <stop offset="100%" stopColor="hsl(160 84% 45%)" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                      <XAxis dataKey="month" fontSize={10} stroke="hsl(var(--muted-foreground))" />
-                      <YAxis fontSize={10} stroke="hsl(var(--muted-foreground))" width={30} />
-                      <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 12 }} cursor={{ fill: 'var(--muted)' }} />
-                      <Bar dataKey="count" name="Novas Assinaturas" radius={[4, 4, 0, 0]} fill="hsl(160 84% 45%)" />
-                    </BarChart>
+                      <XAxis dataKey="label" fontSize={10} stroke="hsl(var(--muted-foreground))" tickLine={false} axisLine={false} />
+                      <YAxis fontSize={10} stroke="hsl(var(--muted-foreground))" tickLine={false} axisLine={false} width={28} />
+                      <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 12 }} />
+                      <Legend wrapperStyle={{ fontSize: 11 }} />
+                      <Area type="monotone" dataKey="ativos" name="Ativos" stroke="hsl(160 84% 45%)" fill="url(#gAtivos)" strokeWidth={2} />
+                      <Area type="monotone" dataKey="novos" name="Novos" stroke="hsl(217 91% 60%)" fill="url(#gNovos)" strokeWidth={2} />
+                      <Area type="monotone" dataKey="cancelados" name="Cancelados" stroke="hsl(346 87% 60%)" fill="url(#gCanc)" strokeWidth={2} />
+                    </AreaChart>
                   </ResponsiveContainer>
                 </div>
-              )}
+              </section>
+            )}
 
-              <div className="mt-4 space-y-1.5 border-t border-border pt-4">
-                {revenue.byPlan.map((p) => (
-                  <div key={p.plan} className="flex justify-between items-center text-xs">
-                    <span className="text-muted-foreground">{p.plan}</span>
-                    <div className="flex flex-col items-end">
-                      <span className="font-medium">{p.count} assinaturas{p.mrr > 0 ? ` · ${fmtBRL(p.mrr)}/mês` : ''}</span>
-                      {p.gross > 0 && <span className="text-[10px] text-muted-foreground">Faturamento: {fmtBRL(p.gross)}</span>}
+            {/* Métricas locais */}
+            <section className="space-y-2">
+              <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground px-1">
+                Visão Geral (Play + Asaas)
+              </h2>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                <StatCard icon={Users} label="Total registradas" value={loading ? '…' : combinedRows.length} tint="text-primary" />
+                <StatCard icon={Crown} label="Premium agora" value={loading ? '…' : activeToday} tint="text-amber-500" />
+                <StatCard icon={FlaskConical} label="Testes" value={loading ? '…' : data?.local.stats.test ?? 0} tint="text-purple-500" />
+                <StatCard icon={TrendingUp} label="SKUs ativos" value={loading ? '…' : revenue.byPlan.length} tint="text-cyan-500" />
+              </div>
+              {revenue.byPlan.length > 0 && (
+                <div className="rounded-2xl border border-border bg-card p-4">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+                    <div className="flex items-center gap-2">
+                      <PieIcon className="w-4 h-4 text-primary" />
+                      <h3 className="text-sm font-semibold">Análise de Assinaturas</h3>
+                    </div>
+                    <div className="flex items-center rounded-lg bg-muted p-1 text-xs">
+                      <button onClick={() => setActiveChart('mrr')} className={`px-2 py-1 rounded-md transition-colors ${activeChart === 'mrr' ? 'bg-background shadow-sm font-medium text-foreground' : 'text-muted-foreground hover:text-foreground'}`}>MRR</button>
+                      <button onClick={() => setActiveChart('gross')} className={`px-2 py-1 rounded-md transition-colors ${activeChart === 'gross' ? 'bg-background shadow-sm font-medium text-foreground' : 'text-muted-foreground hover:text-foreground'}`}>Faturamento</button>
+                      <button onClick={() => setActiveChart('sales')} className={`px-2 py-1 rounded-md transition-colors ${activeChart === 'sales' ? 'bg-background shadow-sm font-medium text-foreground' : 'text-muted-foreground hover:text-foreground'}`}>Vendas Mês</button>
+                      <button onClick={() => setActiveChart('subs')} className={`px-2 py-1 rounded-md transition-colors ${activeChart === 'subs' ? 'bg-background shadow-sm font-medium text-foreground' : 'text-muted-foreground hover:text-foreground'}`}>Volume</button>
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </section>
 
-        {/* Lista */}
-        <section className="space-y-2">
-          <div className="flex items-center gap-2">
-            <div className="flex-1 relative">
+                  {activeChart === 'sales' && currentMonthData && (
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <select
+                          value={selectedMonthId || currentMonthData.monthId}
+                          onChange={(e) => setSelectedMonthId(e.target.value)}
+                          className="text-xs bg-muted border border-border rounded-md px-2 py-1 outline-none"
+                        >
+                          {monthlyRevenueData.map(m => (
+                            <option key={m.monthId} value={m.monthId}>{m.label}</option>
+                          ))}
+                        </select>
+                        <span className="text-xs font-bold text-primary">Faturamento Total: {fmtBRL(currentMonthData.total)}</span>
+                      </div>
+                      <div className="h-44">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart data={currentMonthChartData} layout="vertical" margin={{ left: 4, right: 12 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
+                            <XAxis type="number" fontSize={10} stroke="hsl(var(--muted-foreground))" tickFormatter={(v) => `R$${v.toFixed(0)}`} />
+                            <YAxis type="category" dataKey="plan" fontSize={10} width={110} stroke="hsl(var(--muted-foreground))" />
+                            <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 12 }} formatter={(v: any) => fmtBRL(Number(v))} />
+                            <Bar dataKey="gross" name="Vendas (Bruto)" radius={[0, 6, 6, 0]}>
+                              {currentMonthChartData.map((_, i) => <Cell key={i} fill={['hsl(280 65% 60%)', 'hsl(217 91% 60%)', 'hsl(160 84% 45%)', 'hsl(0 96% 56%)'][i % 4]} />)}
+                            </Bar>
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
+                  )}
+
+                  {activeChart === 'mrr' && (
+                    <div className="h-44">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={revenue.byPlan.filter(p => p.mrr > 0)} layout="vertical" margin={{ left: 4, right: 12 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
+                          <XAxis type="number" fontSize={10} stroke="hsl(var(--muted-foreground))" tickFormatter={(v) => `R$${v.toFixed(0)}`} />
+                          <YAxis type="category" dataKey="plan" fontSize={10} width={110} stroke="hsl(var(--muted-foreground))" />
+                          <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 12 }} formatter={(v: any) => fmtBRL(Number(v))} />
+                          <Bar dataKey="mrr" name="MRR Mensal" radius={[0, 6, 6, 0]}>
+                            {revenue.byPlan.map((_, i) => <Cell key={i} fill={['hsl(0 96% 56%)', 'hsl(160 84% 45%)', 'hsl(217 91% 60%)', 'hsl(280 65% 60%)'][i % 4]} />)}
+                          </Bar>
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  )}
+
+                  {activeChart === 'gross' && (
+                    <div className="h-44">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={revenue.byPlan.filter(p => p.gross > 0)} layout="vertical" margin={{ left: 4, right: 12 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
+                          <XAxis type="number" fontSize={10} stroke="hsl(var(--muted-foreground))" tickFormatter={(v) => `R$${v.toFixed(0)}`} />
+                          <YAxis type="category" dataKey="plan" fontSize={10} width={110} stroke="hsl(var(--muted-foreground))" />
+                          <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 12 }} formatter={(v: any) => fmtBRL(Number(v))} />
+                          <Bar dataKey="gross" name="Faturamento Total" radius={[0, 6, 6, 0]}>
+                            {revenue.byPlan.map((_, i) => <Cell key={i} fill={['hsl(217 91% 60%)', 'hsl(160 84% 45%)', 'hsl(280 65% 60%)', 'hsl(0 96% 56%)'][i % 4]} />)}
+                          </Bar>
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  )}
+
+                  {activeChart === 'subs' && (
+                    <div className="h-44">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={subsByMonth} margin={{ left: 4, right: 4, top: 10 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                          <XAxis dataKey="month" fontSize={10} stroke="hsl(var(--muted-foreground))" />
+                          <YAxis fontSize={10} stroke="hsl(var(--muted-foreground))" width={24} />
+                          <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 12 }} />
+                          <Bar dataKey="total" name="Total Ativas" fill="hsl(160 84% 45%)" radius={[4, 4, 0, 0]} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  )}
+                </div>
+              )}
+            </section>
+          </>
+        )}
+
+        {/* LISTA FILTRADA */}
+        {viewMode !== 'dashboard' && (
+          <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
+            <div className="flex items-center gap-3 mb-2">
+              <button onClick={() => setViewMode('dashboard')} className="p-2 -ml-2 rounded-full hover:bg-muted transition-colors">
+                <ArrowLeft className="w-5 h-5" />
+              </button>
+              <h2 className="text-lg font-bold">
+                {viewMode === 'asaas' ? 'Assinantes Asaas' : viewMode === 'play' ? 'Assinantes Google Play' : 'Assinantes iPhone'}
+              </h2>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              <div className="relative flex-1">
               <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <input
                 value={q}
@@ -780,7 +796,8 @@ const AdminAssinantes = () => {
               );
             })}
           </div>
-        </section>
+        </div>
+        )}
       </div>
 
       {/* Modal Details */}

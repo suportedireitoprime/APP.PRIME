@@ -4,10 +4,18 @@ import capaPenal from '@/assets/direito-penal.webp.asset.json';
 import capaCivil from '@/assets/direito-civil.webp.asset.json';
 import capaConstituicao from '@/assets/direito-constituicao.webp.asset.json';
 import capaClt from '@/assets/direito-clt.webp.asset.json';
+import capaMedico from '@/assets/capa-direito-medico.jpg';
+import capaFilosofia from '@/assets/capa-filosofia.jpg';
+import capaLeiPenalEspecial from '@/assets/capa-lei-penal-especial.jpg';
+import capaProcessoPenal from '@/assets/capa-processo-penal.jpg';
 
 export const CAPA_HUB = srcOf(capaAudioaulas);
 const CAPAS: { re: RegExp; url: string }[] = [
-  { re: /penal|processo penal/i, url: srcOf(capaPenal) },
+  { re: /médico|medico/i, url: capaMedico },
+  { re: /filosofia/i, url: capaFilosofia },
+  { re: /lei penal especial/i, url: capaLeiPenalEspecial },
+  { re: /processo penal/i, url: capaProcessoPenal },
+  { re: /penal/i, url: srcOf(capaPenal) },
   { re: /civil/i, url: srcOf(capaCivil) },
   { re: /constitu/i, url: srcOf(capaConstituicao) },
   { re: /trabalh|clt/i, url: srcOf(capaClt) },

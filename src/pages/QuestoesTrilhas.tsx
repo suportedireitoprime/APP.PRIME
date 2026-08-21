@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Trash2, Route as RouteIcon, Clock, Check, Loader2 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Plus, Trash2, Route as RouteIcon, Clock, Check, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { v4 as uuidv4 } from 'uuid';
 import { Capacitor } from '@capacitor/core';
@@ -41,7 +41,8 @@ export default function QuestoesTrilhas() {
   
   // Modal de Criação (Drawer)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [novaMateria, setNovaMateria] = useState('');
+  const [novasMaterias, setNovasMaterias] = useState<string[]>([]);
+  const [isMateriasSheetOpen, setIsMateriasSheetOpen] = useState(false);
   const [novaMeta, setNovaMeta] = useState(10);
   const [novosDias, setNovosDias] = useState<string[]>(['seg', 'ter', 'qua', 'qui', 'sex']);
   const [novoHorario, setNovoHorario] = useState('20:00');
@@ -106,8 +107,8 @@ export default function QuestoesTrilhas() {
   };
 
   const handleSaveTrilha = async () => {
-    if (!novaMateria) {
-      toast.error('Selecione uma matéria.');
+    if (novasMaterias.length === 0) {
+      toast.error('Selecione ao menos uma matéria.');
       return;
     }
     if (novosDias.length === 0) {
@@ -116,10 +117,11 @@ export default function QuestoesTrilhas() {
     }
 
     haptic.success();
+    const materiasStr = novasMaterias.join(', ');
     const novaTrilha: QuestoesTrilha = {
       id: uuidv4(),
-      nome: `${novaMateria} - ${novaMeta}q`,
-      materia: novaMateria,
+      nome: `${novasMaterias.length === 1 ? novasMaterias[0] : novasMaterias.length + ' Matérias'} - ${novaMeta}q`,
+      materia: materiasStr,
       metaDiaria: novaMeta,
       dias: novosDias,
       horario: novoHorario,
@@ -133,7 +135,7 @@ export default function QuestoesTrilhas() {
     await agendarNotificacoesLocais(novaTrilha);
     
     // Reset state
-    setNovaMateria('');
+    setNovasMaterias([]);
     setNovaMeta(10);
     setNovosDias(['seg', 'ter', 'qua', 'qui', 'sex']);
     setNovoHorario('20:00');
@@ -267,16 +269,19 @@ export default function QuestoesTrilhas() {
                 {loadingAreas ? (
                   <div className="flex items-center gap-2 text-zinc-500 text-sm"><Loader2 className="w-4 h-4 animate-spin" /> Carregando...</div>
                 ) : (
-                  <select 
-                    value={novaMateria}
-                    onChange={(e) => setNovaMateria(e.target.value)}
-                    className="w-full bg-zinc-900 border border-white/10 rounded-2xl h-14 px-4 text-white font-semibold focus:outline-none focus:border-hero-panel"
+                  <button
+                    onClick={() => { haptic.selection(); setIsMateriasSheetOpen(true); }}
+                    className="w-full flex items-center justify-between bg-zinc-900 border border-white/10 rounded-2xl h-14 px-4 text-left font-semibold hover:border-hero-panel transition-colors"
                   >
-                    <option value="" disabled>Selecione uma matéria</option>
-                    {areas.map(a => (
-                      <option key={a.area} value={a.area}>{a.area}</option>
-                    ))}
-                  </select>
+                    <span className={novasMaterias.length > 0 ? "text-white" : "text-zinc-500"}>
+                      {novasMaterias.length === 0 
+                        ? "Selecione a(s) matéria(s)" 
+                        : novasMaterias.length === 1 
+                          ? novasMaterias[0] 
+                          : `${novasMaterias.length} matérias selecionadas`}
+                    </span>
+                    <ChevronRight className="w-5 h-5 text-zinc-500" />
+                  </button>
                 )}
               </div>
 
@@ -346,6 +351,72 @@ export default function QuestoesTrilhas() {
           </DrawerContent>
         </DrawerPortal>
       </Drawer>
+      {/* SELETOR DE MATÉRIAS (FULL SCREEN OVERLAY) */}
+      <AnimatePresence>
+        {isMateriasSheetOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: '100%' }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: '100%' }}
+            transition={{ type: 'spring', bounce: 0, duration: 0.3 }}
+            className="fixed inset-0 z-[120] bg-zinc-950 flex flex-col"
+          >
+            <div className="flex items-center justify-between px-4 py-4 pt-safe-header border-b border-white/10 bg-zinc-900/50">
+              <button 
+                onClick={() => { haptic.selection(); setIsMateriasSheetOpen(false); }}
+                className="w-10 h-10 rounded-full flex items-center justify-center bg-white/5 hover:bg-white/10 active:scale-95 transition-all text-white"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+              <h3 className="font-bold text-white flex-1 text-center pr-10">Selecionar Disciplinas</h3>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto px-4 py-4 pb-[100px]">
+              <div className="space-y-2">
+                {areas.map(a => {
+                  const { icon: Icon, color } = visualDaArea(a.area);
+                  const isSel = novasMaterias.includes(a.area);
+                  return (
+                    <button
+                      key={a.area}
+                      onClick={() => {
+                        haptic.selection();
+                        setNovasMaterias(prev => 
+                          prev.includes(a.area) ? prev.filter(x => x !== a.area) : [...prev, a.area]
+                        );
+                      }}
+                      className={`w-full flex items-center gap-3 p-4 rounded-2xl border transition-all ${
+                        isSel ? 'bg-hero-panel/10 border-hero-panel/30 shadow-md' : 'bg-white/5 border-white/5 hover:bg-white/10'
+                      }`}
+                    >
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-black/20" style={{ color: isSel ? '#E11D48' : color }}>
+                        <Icon className="w-5 h-5" />
+                      </div>
+                      <span className={`font-semibold flex-1 text-left ${isSel ? 'text-white' : 'text-zinc-300'}`}>
+                        {a.area}
+                      </span>
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center border transition-all ${
+                        isSel ? 'bg-hero-panel border-hero-panel text-white' : 'border-zinc-600'
+                      }`}>
+                        {isSel && <Check className="w-3.5 h-3.5" />}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            
+            <div className="absolute bottom-0 left-0 right-0 p-4 pt-2 bg-gradient-to-t from-zinc-950 via-zinc-950 to-transparent pb-safe-nav">
+              <button
+                onClick={() => { haptic.success(); setIsMateriasSheetOpen(false); }}
+                className="w-full h-14 bg-hero-panel text-white font-black text-lg rounded-2xl shadow-lg active:scale-[0.98] transition-transform"
+              >
+                Confirmar ({novasMaterias.length})
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

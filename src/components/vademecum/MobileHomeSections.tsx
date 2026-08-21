@@ -450,33 +450,45 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
             `}</style>
 
 
-            <div className="grid grid-cols-4 gap-2 mb-10 w-full">
-              <button onClick={() => navigate('/vade-mecum/favoritos')} className="flex flex-col items-center justify-center gap-2 p-3 rounded-2xl bg-card border border-border/60 hover:border-primary/50 transition-all group">
-                <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-muted/50 text-muted-foreground group-hover:text-primary transition-colors">
-                  <Heart className="w-5 h-5" />
+            <div className="grid grid-cols-4 gap-2.5 mb-10 w-full">
+              <button onClick={() => navigate('/vade-mecum/favoritos')} className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-zinc-400/50 transition-all active:scale-95 gap-2 text-center">
+                <div className="relative w-10 h-10 flex items-center justify-center">
+                  <Heart className="w-7 h-7 sm:w-8 sm:h-8 text-zinc-400 transition-all duration-300 group-hover:text-zinc-300 group-hover:scale-110" strokeWidth={2} />
+                  <Heart className="absolute inset-auto w-7 h-7 sm:w-8 sm:h-8 text-white opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300 icon-shine-mask" strokeWidth={2} />
                 </div>
-                <span className="text-[10px] font-bold text-muted-foreground uppercase">Favoritos</span>
+                <div>
+                  <p className="text-xs font-extrabold text-foreground leading-tight uppercase">Favoritos</p>
+                </div>
               </button>
               
-              <button onClick={() => toast({ title: 'Em breve' })} className="flex flex-col items-center justify-center gap-2 p-3 rounded-2xl bg-card border border-border/60 hover:border-primary/50 transition-all group">
-                <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-muted/50 text-muted-foreground group-hover:text-primary transition-colors">
-                  <NotebookPen className="w-5 h-5" />
+              <button onClick={() => toast({ title: 'Em breve' })} className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-zinc-400/50 transition-all active:scale-95 gap-2 text-center">
+                <div className="relative w-10 h-10 flex items-center justify-center">
+                  <NotebookPen className="w-7 h-7 sm:w-8 sm:h-8 text-zinc-400 transition-all duration-300 group-hover:text-zinc-300 group-hover:scale-110" strokeWidth={2} />
+                  <NotebookPen className="absolute inset-auto w-7 h-7 sm:w-8 sm:h-8 text-white opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300 icon-shine-mask" strokeWidth={2} />
                 </div>
-                <span className="text-[10px] font-bold text-muted-foreground uppercase">Anotações</span>
+                <div>
+                  <p className="text-xs font-extrabold text-foreground leading-tight uppercase">Anotações</p>
+                </div>
               </button>
 
-              <button onClick={() => navigate('/radares')} className="flex flex-col items-center justify-center gap-2 p-3 rounded-2xl bg-card border border-border/60 hover:border-primary/50 transition-all group">
-                <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-muted/50 text-muted-foreground group-hover:text-primary transition-colors">
-                  <Radar className="w-5 h-5" />
+              <button onClick={() => navigate('/radares')} className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-zinc-400/50 transition-all active:scale-95 gap-2 text-center">
+                <div className="relative w-10 h-10 flex items-center justify-center">
+                  <Radar className="w-7 h-7 sm:w-8 sm:h-8 text-zinc-400 transition-all duration-300 group-hover:text-zinc-300 group-hover:scale-110" strokeWidth={2} />
+                  <Radar className="absolute inset-auto w-7 h-7 sm:w-8 sm:h-8 text-white opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300 icon-shine-mask" strokeWidth={2} />
                 </div>
-                <span className="text-[10px] font-bold text-muted-foreground uppercase">Radares</span>
+                <div>
+                  <p className="text-xs font-extrabold text-foreground leading-tight uppercase">Radares</p>
+                </div>
               </button>
 
-              <button onClick={() => navigate('/vade-mecum/recentes')} className="flex flex-col items-center justify-center gap-2 p-3 rounded-2xl bg-card border border-border/60 hover:border-primary/50 transition-all group">
-                <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-muted/50 text-muted-foreground group-hover:text-primary transition-colors">
-                  <History className="w-5 h-5" />
+              <button onClick={() => navigate('/vade-mecum/recentes')} className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-zinc-400/50 transition-all active:scale-95 gap-2 text-center">
+                <div className="relative w-10 h-10 flex items-center justify-center">
+                  <History className="w-7 h-7 sm:w-8 sm:h-8 text-zinc-400 transition-all duration-300 group-hover:text-zinc-300 group-hover:scale-110" strokeWidth={2} />
+                  <History className="absolute inset-auto w-7 h-7 sm:w-8 sm:h-8 text-white opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300 icon-shine-mask" strokeWidth={2} />
                 </div>
-                <span className="text-[10px] font-bold text-muted-foreground uppercase">Histórico</span>
+                <div>
+                  <p className="text-xs font-extrabold text-foreground leading-tight uppercase">Histórico</p>
+                </div>
               </button>
             </div>
 

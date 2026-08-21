@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Radio, UserPlus, Sparkles, Loader2, Mail, BarChart3, ChevronRight, Crown, Zap } from 'lucide-react';
+import { Radio, UserPlus, Sparkles, Loader2, Mail, BarChart3, ChevronRight, Crown, Zap, DollarSign } from 'lucide-react';
 import { SiGoogle, SiApple } from 'react-icons/si';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { supabase } from '@/integrations/supabase/client';
@@ -20,6 +20,7 @@ interface Row {
   acessos?: number | null;
   avatarUrl?: string | null;
   isPremium?: boolean;
+  funcaoPreferida?: string | null;
 }
 
 const ProviderTag = ({ provider }: { provider?: string | null }) => {
@@ -172,9 +173,23 @@ export function AdminHojeCards() {
   }, [open]);
 
   const load = useCallback(async () => {
-    const { data } = await supabase.rpc('admin_metricas_dia' as any, { _dia: isoDate(dia) });
-    const m = (data as any) || {};
-    const novos: Record<CardId, number> = { online5m: m.online5m || 0, online: m.online || 0, cadastros: m.cadastros || 0, trial: m.trial || 0 };
+    const [{ data: mData }, { data: list5m }, { data: listOnline }] = await Promise.all([
+      supabase.rpc('admin_metricas_dia' as any, { _dia: isoDate(dia) }),
+      supabase.rpc('admin_lista_dia' as any, { _tipo: 'online5m', _dia: isoDate(dia) }),
+      supabase.rpc('admin_lista_dia' as any, { _tipo: 'online', _dia: isoDate(dia) })
+    ]);
+    
+    const m = (mData as any) || {};
+    
+    const count5m = ((list5m as any[]) || []).filter(r => r.email !== 'wn7corporation@gmail.com' && r.email !== 'suporte@direitoprime.com.br' && r.email !== 'wn7juridico@gmail.com').length;
+    const countOnline = ((listOnline as any[]) || []).filter(r => r.email !== 'wn7corporation@gmail.com' && r.email !== 'suporte@direitoprime.com.br' && r.email !== 'wn7juridico@gmail.com').length;
+
+    const novos: Record<CardId, number> = { 
+      online5m: count5m, 
+      online: countOnline, 
+      cadastros: m.cadastros || 0, 
+      trial: m.trial || 0 
+    };
     setCounts(novos);
     if (sameDay(dia, new Date())) {
       (['online5m', 'online', 'cadastros', 'trial'] as CardId[]).forEach((id) => {
@@ -212,7 +227,7 @@ export function AdminHojeCards() {
         acessos: typeof r.acessos === 'number' ? r.acessos : null,
         avatarUrl: r.avatar_url,
         isPremium: r.is_premium,
-      }));
+      })).filter(r => r.email !== 'wn7corporation@gmail.com' && r.email !== 'suporte@direitoprime.com.br' && r.email !== 'wn7juridico@gmail.com');
       setRows(list);
       if (sameDay(date, new Date())) {
         const seen = readSeen(id, date);
@@ -228,7 +243,30 @@ export function AdminHojeCards() {
       if (ids.length) {
         const { data: provs } = await supabase.rpc('admin_user_auth_providers' as any, { _ids: ids });
         const map = new Map<string, string>(((provs as any[]) || []).map((p) => [p.user_id, p.provider]));
-        setRows((current) => current.map((r) => ({ ...r, provider: map.get(r.userId || r.key) || r.provider })));
+
+        // Fetch favorite function (most frequent initial_route in user_sessions)
+        const { data: sessions } = await supabase.from('user_sessions')
+          .select('user_id, initial_route')
+          .in('user_id', ids);
+
+        const mapFav = new Map<string, string>();
+        if (sessions && sessions.length > 0) {
+          ids.forEach(uid => {
+            const userSessions = sessions.filter(s => s.user_id === uid && s.initial_route);
+            if (userSessions.length > 0) {
+              const freq: Record<string, number> = {};
+              userSessions.forEach(s => { freq[s.initial_route!] = (freq[s.initial_route!] || 0) + 1; });
+              const fav = Object.keys(freq).reduce((a, b) => freq[a] > freq[b] ? a : b);
+              mapFav.set(uid, rotaParaFuncao(fav).label);
+            }
+          });
+        }
+
+        setRows((current) => current.map((r) => ({ 
+          ...r, 
+          provider: map.get(r.userId || r.key) || r.provider,
+          funcaoPreferida: mapFav.get(r.userId || r.key)
+        })));
       }
     } finally {
       setLoading(false);
@@ -272,8 +310,8 @@ export function AdminHojeCards() {
   const CARDS: { id: CardId; label: string; icon: any }[] = [
     { id: 'online5m', label: 'Online 5 min', icon: Zap },
     { id: 'online', label: 'Online hoje', icon: Radio },
-    { id: 'cadastros', label: 'Cadastrados hoje', icon: UserPlus },
-    { id: 'trial', label: 'Iniciou teste', icon: Sparkles },
+    { id: 'cadastros', label: 'Cadastrados', icon: UserPlus },
+    { id: 'trial', label: 'Iniciou teste', icon: DollarSign },
   ];
 
   const titles: Record<CardId, string> = {
@@ -294,37 +332,6 @@ export function AdminHojeCards() {
 
   return (
     <>
-      <div className="flex gap-2 overflow-x-auto pb-3 mb-1 scrollbar-none">
-        {dias.map((d) => {
-          const ativo = sameDay(d, dia);
-          const ehHoje = sameDay(d, hoje);
-          const ehOntem = sameDay(d, ontem);
-          return (
-            <button
-              key={d.toISOString()}
-              type="button"
-              onClick={() => selecionarDia(d)}
-              className={cn(
-                'shrink-0 min-w-[64px] rounded-2xl border px-3 py-2.5 text-center transition-colors',
-                ativo
-                  ? 'bg-primary text-primary-foreground border-primary'
-                  : 'bg-secondary/30 border-border/60 text-muted-foreground hover:bg-secondary/60',
-              )}
-            >
-              <div className="font-body text-[10.5px] uppercase tracking-wide opacity-80">
-                {ehHoje ? 'Hoje' : ehOntem ? 'Ontem' : DIAS[d.getDay()]}
-              </div>
-              <div className={cn('font-display text-lg font-bold leading-none mt-1', ativo ? '' : 'text-foreground')}>
-                {String(d.getDate()).padStart(2, '0')}
-              </div>
-              <div className="font-body text-[10px] opacity-70 mt-0.5">
-                {d.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '')}
-              </div>
-            </button>
-          );
-        })}
-      </div>
-
       <div className="grid grid-cols-4 gap-2 mb-3">
         {CARDS.map(({ id, label, icon: Icon }) => (
           <button

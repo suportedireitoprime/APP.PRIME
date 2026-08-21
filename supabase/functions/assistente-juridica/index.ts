@@ -397,7 +397,7 @@ Deno.serve(async (req) => {
     }
 
     let systemPrompt: string;
-    let contents: Array<{ role: string; parts: Array<{ text: string }> }>;
+    let contents: Array<{ role: string; parts: Array<{ text: string }> | Array<any> }> = [];
 
     if (mode === 'headline' && ementa) {
       systemPrompt = SYSTEM_PROMPT_HEADLINE;
@@ -592,48 +592,30 @@ Regras:
     let geminiDisabled = geminiKeys.length === 0;
 
     async function gatewayGenerate(): Promise<any | null> {
-      
-      const msgs: any[] = [{ role: 'system', content: systemPrompt }];
-      for (const c of (contents as any[])) {
-        const textParts = (c.parts || []).filter((p: any) => typeof p?.text === 'string').map((p: any) => p.text).join('\n');
-        const inline = (c.parts || []).find((p: any) => p?.inlineData?.data);
-        if (inline) {
-          msgs.push({
-            role: c.role === 'model' ? 'assistant' : 'user',
-            content: [
-              ...(textParts ? [{ type: 'text', text: textParts }] : []),
-              { type: 'image_url', image_url: { url: `data:${inline.inlineData.mimeType};base64,${inline.inlineData.data}` } },
-            ],
-          });
-        } else {
-          msgs.push({ role: c.role === 'model' ? 'assistant' : 'user', content: textParts || ' ' });
-        }
-      }
-      const r = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
+      const endpoint = body.stream ? 'streamGenerateContent?alt=sse&' : 'generateContent?';
+      const r = await geminiFetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:${endpoint}key=${GEMINI_API_KEY}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${GEMINI_API_KEY}` },
-        body: JSON.stringify({
-          model: 'gemini-3.1-flash-lite',
-          messages: msgs,
-          temperature: geminiBody.generationConfig.temperature,
-          max_tokens: geminiBody.generationConfig.maxOutputTokens,
-          ...(isJsonMode ? { response_format: { type: 'json_object' } } : {}),
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(geminiBody)
       });
+      
       if (!r.ok) {
         _lastErr = (await r.text()).slice(0, 200);
         console.error('Gemini Gateway error:', r.status, _lastErr);
         return null;
       }
-      const j = await r.json();
-      const text = j?.choices?.[0]?.message?.content ?? '';
-      return {
-        candidates: [{ content: { parts: [{ text }] } }],
-        usageMetadata: {
-          promptTokenCount: j?.usage?.prompt_tokens ?? 0,
-          candidatesTokenCount: j?.usage?.completion_tokens ?? 0,
-        },
-      };
+      
+      if (body.stream) {
+        if (!body.isPreWarm && _callerUserId) {
+          logAiCall({ functionName: 'assistente-juridica', kind: 'text', model: 'gemini-3.1-flash-lite', userId: _callerUserId, outputUnits: 150, triggerType: 'auto', durationMs: Date.now() - _t0 }).catch(() => {});
+        }
+        return new Response(r.body, {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', 'Connection': 'keep-alive' }
+        });
+      }
+      
+      return await r.json();
     }
 
     for (let attempt = 0; attempt < 3; attempt++) {
@@ -652,7 +634,7 @@ Regras:
         if (res.ok) {
           if (body.stream) {
             if (!body.isPreWarm && _callerUserId) {
-              logAiCall({ user_id: _callerUserId, action: mode || 'chat_stream', tokens_used: 150, prompt_type: 'stream', request_time_ms: Date.now() - _t0, cached: false }).catch(() => {});
+              logAiCall({ functionName: 'assistente-juridica', kind: 'text', model: 'gemini-3.1-flash-lite', userId: _callerUserId, outputUnits: 150, triggerType: 'auto', durationMs: Date.now() - _t0 }).catch(() => {});
             }
             return new Response(res.body, {
               status: 200,
@@ -678,6 +660,7 @@ Regras:
 
       if (!data && geminiDisabled) {
         data = await gatewayGenerate();
+        if (data instanceof Response) return data;
         if (!data) fatal = true;
         else _lastErr = "";
       }
@@ -687,7 +670,7 @@ Regras:
       if (data) {
         _lastUsage = data?.usageMetadata || null;
         const candidateReply = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-        if (!candidateReply && res.ok) {
+        if (!candidateReply && typeof data !== 'undefined' && data !== null) {
             _lastErr = `Empty candidateReply! Data: ${JSON.stringify(data).slice(0, 300)}`;
         }
 

@@ -12,6 +12,8 @@ import { voiceRecorder } from '@/lib/nativeVoiceRecorder';
 import { AudioVisualizer } from '@/components/ui/AudioVisualizer';
 import { haptic } from '@/lib/nativeHaptics';
 import { toast } from 'sonner';
+import { useSubscription } from '@/hooks/useSubscription';
+import { useGatedFeature } from '@/hooks/useGatedFeature';
 
 interface AnotacaoAula {
   id: string;
@@ -44,6 +46,10 @@ export function AnotacoesAulaSheet({
   const [tempoGravacao, setTempoGravacao] = useState(0);
   const [transcrevendo, setTranscrevendo] = useState(false);
   const timerRef = useRef<any>(null);
+
+  const { isPremium, loading: loadingPlano } = useSubscription();
+  const gate = useGatedFeature('videoaula_funcoes', 'videoaula_funcoes');
+  const bloqueado = !loadingPlano && !isPremium && gate.blocked;
 
   const storageKey = `videoaula:anotacoes:${videoId}`;
 
@@ -88,6 +94,10 @@ export function AnotacoesAulaSheet({
 
   // Gravador de Voz com Transcrição Automática por IA
   const iniciarGravacao = async () => {
+    if (bloqueado) {
+      gate.openGate();
+      return;
+    }
     try {
       haptic.medium?.();
       setTempoGravacao(0);
@@ -196,14 +206,18 @@ export function AnotacoesAulaSheet({
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          {gate.gateNode}
           {/* Caixa de Digitação / Gravação */}
           <div className="rounded-2xl border border-border bg-card/60 p-3 space-y-3 shadow-sm">
-            <Textarea
-              value={novaTexto}
-              onChange={(e) => setNovaTexto(e.target.value)}
-              placeholder="Digite suas anotações sobre a aula..."
-              className="min-h-[90px] border-none bg-transparent focus-visible:ring-0 text-sm placeholder:text-muted-foreground/60 resize-none"
-            />
+            <div onClick={() => { if (bloqueado) gate.openGate(); }}>
+              <Textarea
+                value={novaTexto}
+                readOnly={bloqueado}
+                onChange={(e) => setNovaTexto(e.target.value)}
+                placeholder={bloqueado ? "Assine para adicionar anotações..." : "Digite suas anotações sobre a aula..."}
+                className="min-h-[90px] border-none bg-transparent focus-visible:ring-0 text-sm placeholder:text-muted-foreground/60 resize-none"
+              />
+            </div>
 
             <div className="flex items-center justify-between pt-2 border-t border-border/50">
               {gravando ? (

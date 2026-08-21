@@ -90,12 +90,12 @@ export default function VideoaulaAcoesBar({ input, gridLayout, extras, hideQuest
   // Funções da aula são exclusivas de assinantes (limite editável no admin).
   const bloqueado = !loadingPlano && !isPremium && gate.blocked;
 
-  const guard = (fn: () => void) => () => {
+  const guard = <T extends any[]>(fn: (...args: T) => void) => (...args: T) => {
     if (bloqueado) {
       gate.openGate();
       return;
     }
-    fn();
+    fn(...args);
   };
 
 
@@ -128,20 +128,20 @@ export default function VideoaulaAcoesBar({ input, gridLayout, extras, hideQuest
       {gridLayout ? (
         <div className={cn("grid gap-1 w-full", gridColsClass)}>
           {onOpenAnotacoes && <RailBtn icon={PenTool} label="Anotações" onClick={onOpenAnotacoes} />}
-          <RailBtn icon={Layers} label="Flashcards" onClick={() => setSeletor("flash")} />
-          <RailBtn icon={AlertTriangle} label="Pegadinhas" onClick={() => setAba("pegadinhas")} />
+          <RailBtn icon={Layers} label="Flashcards" onClick={guard(() => setSeletor("flash"))} />
+          <RailBtn icon={AlertTriangle} label="Pegadinhas" onClick={guard(() => setAba("pegadinhas"))} />
           <RailBtn icon={BookOpenText} label="Resumos" onClick={() => setSeletor("resumos")} />
-          <RailBtn icon={Scale} label="Lei seca" onClick={() => setAba("lei")} />
-          <RailBtn icon={BookA} label="Termos" onClick={() => setAba("termos")} />
-          {!hideQuestoes && <RailBtn icon={ListChecks} label="Questões" onClick={() => setAba("questoes")} />}
+          <RailBtn icon={Scale} label="Lei seca" onClick={guard(() => setAba("lei"))} />
+          <RailBtn icon={BookA} label="Termos" onClick={guard(() => setAba("termos"))} />
+          {!hideQuestoes && <RailBtn icon={ListChecks} label="Questões" onClick={guard(() => setAba("questoes"))} />}
           {extras}
         </div>
       ) : (
-        <div className="relative z-10 bg-card/95 backdrop-blur shadow-[0_-8px_30px_rgba(0,0,0,0.6),0_-2px_10px_rgba(0,0,0,0.4)] w-[calc(100%+16px)] -mx-2 -my-2 -mb-[calc(12px+var(--sai-bottom,0px))] pb-[calc(12px+var(--sai-bottom,0px))] rounded-t-2xl border-t border-border">
+        <div className="relative z-10 bg-card/95 backdrop-blur shadow-[0_-8px_30px_rgba(0,0,0,0.6),0_-2px_10px_rgba(0,0,0,0.4)] w-full pb-[calc(1.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] rounded-t-2xl border-t border-border">
           <div className="max-w-2xl mx-auto px-2 py-2">
             <div className="grid grid-cols-5 items-stretch">
               <button
-                onClick={guard(() => { haptic.selection(); setSeletor("resumos"); })}
+                onClick={() => { haptic.selection(); setSeletor("resumos"); }}
                 className="flex flex-col items-center justify-center gap-1 py-2 rounded-xl transition-all text-muted-foreground hover:bg-muted/50"
               >
                 <BookOpenText className="w-7 h-7 sm:w-8 sm:h-8 drop-shadow-md" strokeWidth={1.2} />
@@ -149,7 +149,7 @@ export default function VideoaulaAcoesBar({ input, gridLayout, extras, hideQuest
               </button>
 
               <button
-                onClick={guard(() => { haptic.selection(); if (onOpenAnotacoes) onOpenAnotacoes(); })}
+                onClick={() => { haptic.selection(); if (onOpenAnotacoes) onOpenAnotacoes(); }}
                 className="flex flex-col items-center justify-center gap-1 py-2 rounded-xl transition-all text-muted-foreground hover:bg-muted/50"
               >
                 <PenTool className="w-7 h-7 sm:w-8 sm:h-8 drop-shadow-md" strokeWidth={1.2} />
@@ -176,7 +176,7 @@ export default function VideoaulaAcoesBar({ input, gridLayout, extras, hideQuest
               </button>
 
               <button
-                onClick={guard(() => { haptic.selection(); setMaisOpen(true); })}
+                onClick={() => { haptic.selection(); setMaisOpen(true); }}
                 className="flex flex-col items-center justify-center gap-1 py-2 rounded-xl transition-all text-muted-foreground hover:bg-muted/50"
               >
                 <div className="w-7 h-7 sm:w-8 sm:h-8 flex gap-0.5 items-center justify-center drop-shadow-md">
@@ -197,19 +197,19 @@ export default function VideoaulaAcoesBar({ input, gridLayout, extras, hideQuest
                   <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-border mb-4" />
                   <h3 className="text-xl font-display font-bold mb-4 text-foreground">Mais Opções</h3>
                   <div className="grid grid-cols-3 gap-4">
-                    <button onClick={() => { setMaisOpen(false); setTimeout(() => setAba("pegadinhas"), 200); }} className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-secondary/50 border border-border hover:bg-secondary/70 transition-colors">
+                    <button onClick={guard(() => { setMaisOpen(false); setTimeout(() => setAba("pegadinhas"), 200); })} className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-secondary/50 border border-border hover:bg-secondary/70 transition-colors">
                       <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                         <AlertTriangle className="w-5 h-5 text-primary" />
                       </div>
                       <span className="text-xs font-semibold text-foreground">Pegadinhas</span>
                     </button>
-                    <button onClick={() => { setMaisOpen(false); setTimeout(() => setAba("lei"), 200); }} className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-secondary/50 border border-border hover:bg-secondary/70 transition-colors">
+                    <button onClick={guard(() => { setMaisOpen(false); setTimeout(() => setAba("lei"), 200); })} className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-secondary/50 border border-border hover:bg-secondary/70 transition-colors">
                       <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                         <Scale className="w-5 h-5 text-primary" />
                       </div>
                       <span className="text-xs font-semibold text-foreground">Lei Seca</span>
                     </button>
-                    <button onClick={() => { setMaisOpen(false); setTimeout(() => setAba("termos"), 200); }} className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-secondary/50 border border-border hover:bg-secondary/70 transition-colors">
+                    <button onClick={guard(() => { setMaisOpen(false); setTimeout(() => setAba("termos"), 200); })} className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-secondary/50 border border-border hover:bg-secondary/70 transition-colors">
                       <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                         <BookA className="w-5 h-5 text-primary" />
                       </div>
@@ -233,7 +233,7 @@ export default function VideoaulaAcoesBar({ input, gridLayout, extras, hideQuest
               titulo="Método de resumo"
               opcoes={METODOS_RESUMO}
               onClose={() => setSeletor(null)}
-              onPick={(id) => { setSeletor(null); setAba(id); }}
+              onPick={guard((id) => { setSeletor(null); setAba(id); })}
             />
           )}
           {seletor === "flash" && (
@@ -242,7 +242,7 @@ export default function VideoaulaAcoesBar({ input, gridLayout, extras, hideQuest
               titulo="Tipo de flashcard"
               opcoes={TIPOS_FLASH}
               onClose={() => setSeletor(null)}
-              onPick={(id) => { setSeletor(null); setAba(id as AulaAcaoTipo); }}
+              onPick={guard((id) => { setSeletor(null); setAba(id as AulaAcaoTipo); })}
             />
           )}
           {aba && (

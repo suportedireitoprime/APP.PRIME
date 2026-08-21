@@ -128,6 +128,15 @@ type Category = {
 
 const CATEGORIES: Category[] = [
   {
+    id: 'assinantes-top',
+    title: 'Assinantes',
+    desc: 'Lista de todos os assinantes ativos',
+    icon: Users,
+    items: [
+      { id: 'admin-assinantes', label: 'Assinantes Asaas', icon: Users, desc: 'Lista de todos os assinantes do Asaas', route: '/admin-assinantes' },
+    ],
+  },
+  {
     id: 'push',
     title: 'Notificações Push',
     desc: 'Campanhas, agendamento e métricas',
@@ -340,7 +349,6 @@ const CATEGORIES: Category[] = [
     icon: Crown,
     items: [
       { id: 'admin-funcoes-assinantes', label: 'Funções Assinantes', icon: Crown, desc: 'Limite de uso free por função (blog, narração, biblioteca, IA…)', route: '/admin-funcoes-assinantes' },
-      { id: 'admin-assinantes', label: 'Assinantes Play', icon: Users, desc: 'Métricas do Google Play + lista de quem assinou', route: '/admin-assinantes' },
     ],
   },
   {

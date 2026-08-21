@@ -71,6 +71,17 @@ import { GeofencePresenceBanner } from "@/components/GeofencePresenceBanner";
 import { ReminderInAppBanner } from "@/components/ReminderInAppBanner";
 import InAppPushPopup from "@/components/ui/InAppPushPopup";
 import HorusTakeoverNoticeDialog from "@/components/horus/HorusTakeoverNoticeDialog";
+import ForceUpdateScreen from "@/components/ForceUpdateScreen";
+import { useAppUpdateStore } from "@/lib/appUpdateStore";
+
+function ForceUpdateWrapper() {
+  const isUpdateRequired = useAppUpdateStore((s) => s.isUpdateRequired);
+  return (
+    <AnimatePresence>
+      {isUpdateRequired && <ForceUpdateScreen />}
+    </AnimatePresence>
+  );
+}
 
 // Eagerly loaded (critical path)
 import Index from "./pages/Index.tsx";
@@ -1130,6 +1141,7 @@ const App = () => (
               <ReminderInAppBanner />
               <InAppPushPopup />
               <HorusTakeoverNoticeDialog />
+              <ForceUpdateWrapper />
               {/* <IntroOverlay /> — desativado por preferência (splash estático) */}
               <RecordingProvider>
                 <LeisCantadasPlayerProvider>

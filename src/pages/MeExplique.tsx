@@ -222,7 +222,7 @@ export default function MeExplique() {
         body: config
       });
       if (error) throw new Error(error.message);
-      const resposta = data as { token?: string; modelo?: string; setup?: Record<string, unknown> | null } | null;
+      const resposta = data as { token?: string; modelo?: string; setup?: Record<string, unknown> | null; ephemeral?: boolean } | null;
       const token = resposta?.token;
       const modelo = resposta?.modelo;
       if (!token || !modelo) throw new Error('Não foi possível autorizar a sessão ao vivo.');
@@ -233,6 +233,7 @@ export default function MeExplique() {
       const sessao = new SessaoMeExplique({
         token,
         modelo,
+        ephemeral: resposta?.ephemeral ?? false,
         setup: resposta?.setup ?? null,
         video,
         streamVideo: cameraRef.current.obterStream(),

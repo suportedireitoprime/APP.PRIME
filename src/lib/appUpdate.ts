@@ -10,9 +10,7 @@
  * switch to IMMEDIATE mode (blocking) when the installed version is lower.
  */
 import { Capacitor } from '@capacitor/core';
-import { App as CapApp } from '@capacitor/app';
-import { Preferences } from '@capacitor/preferences';
-import { toast } from 'sonner';
+import { useAppUpdateStore } from '@/lib/appUpdateStore';
 
 // Google Play install status codes
 const INSTALL_STATUS_DOWNLOADED = 11;
@@ -39,47 +37,14 @@ export async function checkForAppUpdate(): Promise<void> {
     const info = await AppUpdate.getAppUpdateInfo();
     if (info.updateAvailability !== AppUpdateAvailability.UPDATE_AVAILABLE) return;
 
-    // Should we force update?
-    let force = false;
-    try {
-      const { value: minVersion } = await Preferences.get({
-        key: 'force_update_min_version',
-      });
-      if (minVersion) {
-        const { version } = await CapApp.getInfo();
-        force = compareVersions(version, minVersion) < 0;
+    if (Capacitor.getPlatform() === 'ios') {
+      // iOS: Trigger our custom React blocking UI
+      useAppUpdateStore.getState().setUpdateRequired(true);
+    } else {
+      // Android: Google Play native immediate/blocking UI
+      if (info.immediateUpdateAllowed) {
+        await AppUpdate.performImmediateUpdate();
       }
-    } catch {
-      /* noop */
-    }
-
-    if (force && info.immediateUpdateAllowed) {
-      await AppUpdate.performImmediateUpdate();
-      return;
-    }
-
-    if (info.flexibleUpdateAllowed) {
-      await AppUpdate.startFlexibleUpdate();
-      AppUpdate.addListener('onFlexibleUpdateStateChange', async (state: any) => {
-        if (state?.installStatus === INSTALL_STATUS_DOWNLOADED) {
-          toast.success('Nova versão pronta para instalar', {
-            duration: 15000,
-            description: 'Toque em Reiniciar para aplicar a atualização.',
-            action: {
-              label: 'Reiniciar',
-              onClick: async () => {
-                try {
-                  await AppUpdate.completeFlexibleUpdate();
-                } catch (e) {
-                  console.warn('completeFlexibleUpdate failed', e);
-                }
-              },
-            },
-          });
-        }
-      });
-    } else if (info.immediateUpdateAllowed) {
-      await AppUpdate.performImmediateUpdate();
     }
   } catch (e) {
     console.warn('[AppUpdate] check skipped', e);
