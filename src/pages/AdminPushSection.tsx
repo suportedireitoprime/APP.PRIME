@@ -708,7 +708,7 @@ export default function AdminPushSection() {
       </div>
 
       <CampaignDetailDialog campaign={detailCampaign} onClose={() => setDetailCampaign(null)} />
-      <OpensTodayDialog open={opensTodayOpen} onClose={() => setOpensTodayOpen(false)} />
+      <OpensHistoryDialog open={opensTodayOpen} onClose={() => setOpensTodayOpen(false)} />
     </div>
   );
 }
@@ -740,7 +740,7 @@ function DashboardSection({ campaigns, loading, tipoFiltro, setTipoFiltro, onRef
   setTipoFiltro: (v: string) => void;
   onRefresh: () => void;
   onOpenDetail: (c: Campaign) => void;
-  onOpenOpensToday: () => void;
+  onOpenOpensHistory: () => void;
 }) {
   const todayStart = useMemo(() => {
     const d = new Date(); d.setHours(0, 0, 0, 0); return d;
@@ -810,7 +810,7 @@ function DashboardSection({ campaigns, loading, tipoFiltro, setTipoFiltro, onRef
         </Card>
         <button
           type="button"
-          onClick={onOpenOpensToday}
+          onClick={onOpenOpensHistory}
           className="text-left focus:outline-none focus:ring-2 focus:ring-emerald-500/40 rounded-xl"
           aria-label="Ver quem abriu"
         >
@@ -1120,7 +1120,7 @@ function PlatformBadge({ platform }: { platform: string | null | undefined }) {
   );
 }
 
-function OpensTodayDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
+function OpensHistoryDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [rows, setRows] = useState<OpenRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
@@ -1130,7 +1130,15 @@ function OpensTodayDialog({ open, onClose }: { open: boolean; onClose: () => voi
     if (!open) return;
     setLoading(true);
     (async () => {
-      const { data, error } = await supabase.rpc("admin_list_opens_today");
+      const { data, error } = await supabase.rpc("admin_list_opens_recent");
+      if (error && error.message.includes("could not find the function")) {
+        // Fallback for when the migration hasn't propagated yet
+        const res = await supabase.rpc("admin_list_opens_today");
+        if (res.error) toast.error("Falha ao carregar aberturas: " + res.error.message);
+        else setRows((res.data ?? []) as OpenRow[]);
+        setLoading(false);
+        return;
+      }
       if (error) toast.error("Falha ao carregar aberturas: " + error.message);
       let list = ((data ?? []) as OpenRow[]).slice();
 
@@ -1190,7 +1198,7 @@ function OpensTodayDialog({ open, onClose }: { open: boolean; onClose: () => voi
       <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-base flex items-center gap-2">
-            <MousePointerClick className="w-4 h-4 text-emerald-600" /> Aberturas de hoje
+            <MousePointerClick className="w-4 h-4 text-emerald-600" /> Aberturas (últimos 7 dias)
           </DialogTitle>
         </DialogHeader>
 
@@ -1199,7 +1207,7 @@ function OpensTodayDialog({ open, onClose }: { open: boolean; onClose: () => voi
         )}
 
         {!loading && rows.length === 0 && (
-          <p className="text-center text-muted-foreground text-sm py-8">Nenhuma abertura registrada hoje.</p>
+          <p className="text-center text-muted-foreground text-sm py-8">Nenhuma abertura registrada recentemente.</p>
         )}
 
         <div className="space-y-4">
@@ -1242,7 +1250,12 @@ function OpensTodayDialog({ open, onClose }: { open: boolean; onClose: () => voi
                         </div>
                         <div className="text-right shrink-0">
                           <div className="text-[11px] font-mono">
-                            {new Date(row.opened_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+                            {(() => {
+                              const d = new Date(row.opened_at);
+                              const isToday = new Date().toDateString() === d.toDateString();
+                              const timeStr = d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", hour12: false });
+                              return isToday ? `Hoje, ${timeStr}` : `${d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })}, ${timeStr}`;
+                            })()}
                           </div>
                         </div>
                       </button>
