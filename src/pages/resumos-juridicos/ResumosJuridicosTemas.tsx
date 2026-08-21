@@ -26,7 +26,7 @@ const subtemasCache = new Map<string, ResumoRow[]>();
 const RED = "#ef4444";
 
 type Ordem = "crono" | "alpha" | "fav";
-type Tab = "resumo" | "exemplos" | "termos";
+type Metodo = "conceitos" | "cornell" | "feynman";
 
 export default function ResumosJuridicosTemas() {
   const { area } = useParams<{ area: string }>();
@@ -41,7 +41,7 @@ export default function ResumosJuridicosTemas() {
   const [subtemas, setSubtemas] = useState<ResumoRow[]>([]);
   const [subLoading, setSubLoading] = useState(false);
   const [selected, setSelected] = useState<ResumoRow | null>(null);
-  const [selectedTab, setSelectedTab] = useState<Tab>("resumo");
+  const [selectedMetodo, setSelectedMetodo] = useState<Metodo>("conceitos");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [ordem, setOrdem] = useState<Ordem>("crono");
   const [favs, setFavs] = useState<string[]>(() => resumosLocal.favoritos().map((f) => f.id));
@@ -231,14 +231,14 @@ export default function ResumosJuridicosTemas() {
     }
   };
 
-  const openReader = (r: ResumoRow, tabId: Tab) => {
+  const openReader = (r: ResumoRow, metodoId: Metodo) => {
     resumosLocal.registrarRecente({
       id: r.id,
       area: r.area,
       tema: r.tema,
       subtema: r.subtema,
     });
-    setSelectedTab(tabId);
+    setSelectedMetodo(metodoId);
     setSelected(r);
   };
 
@@ -354,11 +354,6 @@ export default function ResumosJuridicosTemas() {
                         <h3 className="font-body font-semibold text-[15px] text-foreground leading-snug line-clamp-2">
                           {r.subtema || r.tema}
                         </h3>
-                        <div className="flex gap-2 mt-1.5 flex-wrap">
-                          {r.markdown && <span className="text-[9px] uppercase tracking-wider font-bold text-primary/80 bg-primary/10 px-1.5 py-0.5 rounded-sm">Resumo</span>}
-                          {r.exemplos && <span className="text-[9px] uppercase tracking-wider font-bold text-emerald-500/80 bg-emerald-500/10 px-1.5 py-0.5 rounded-sm">Exemplos</span>}
-                          {r.termos && <span className="text-[9px] uppercase tracking-wider font-bold text-amber-500/80 bg-amber-500/10 px-1.5 py-0.5 rounded-sm">Termos</span>}
-                        </div>
                       </div>
 
                       <div className="flex flex-col items-end gap-2 shrink-0">
@@ -382,28 +377,28 @@ export default function ResumosJuridicosTemas() {
                         >
                           <div className="flex gap-2 p-3">
                             <button
-                              onClick={() => openReader(r, "resumo")}
+                              onClick={() => openReader(r, "conceitos")}
                               disabled={!r.markdown}
                               className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-all disabled:opacity-30 disabled:hover:bg-primary/10 active:scale-95"
                             >
                               <FileText className="w-5 h-5" />
-                              <span className="font-bold text-[10px] uppercase tracking-wider">Resumo</span>
+                              <span className="font-bold text-[10px] uppercase tracking-wider">Conceitos</span>
                             </button>
                             <button
-                              onClick={() => openReader(r, "exemplos")}
-                              disabled={!r.exemplos}
+                              onClick={() => openReader(r, "cornell")}
+                              disabled={!r.markdown}
                               className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3 rounded-xl bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 transition-all disabled:opacity-30 disabled:hover:bg-emerald-500/10 active:scale-95"
                             >
                               <NotebookText className="w-5 h-5" />
-                              <span className="font-bold text-[10px] uppercase tracking-wider">Exemplos</span>
+                              <span className="font-bold text-[10px] uppercase tracking-wider">Cornell</span>
                             </button>
                             <button
-                              onClick={() => openReader(r, "termos")}
-                              disabled={!r.termos}
+                              onClick={() => openReader(r, "feynman")}
+                              disabled={!r.markdown}
                               className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3 rounded-xl bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 transition-all disabled:opacity-30 disabled:hover:bg-amber-500/10 active:scale-95"
                             >
                               <BookOpen className="w-5 h-5" />
-                              <span className="font-bold text-[10px] uppercase tracking-wider">Termos</span>
+                              <span className="font-bold text-[10px] uppercase tracking-wider">Feynman</span>
                             </button>
                           </div>
                         </motion.div>
@@ -446,7 +441,7 @@ export default function ResumosJuridicosTemas() {
 
       <ResumoJuridicoReaderSheet
         resumo={selected}
-        initialTab={selectedTab}
+        initialMetodo={selectedMetodo}
         onClose={() => setSelected(null)}
         onFavoritoChange={refreshFavs}
       />
