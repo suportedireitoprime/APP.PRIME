@@ -58,7 +58,7 @@ Deno.serve(async (req: Request) => {
         Authorization: `Bearer ${LOVABLE_API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'gemini-3.1-flash-lite',
+        model: 'gemini-2.5-flash-lite',
         temperature: 0.2,
         response_format: { type: 'json_object' },
         messages: [

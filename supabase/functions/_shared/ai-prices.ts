@@ -20,11 +20,11 @@ type PriceRow = {
 // Chave = model id normalizado (sem prefixo de vendor).
 const PRICES: Record<string, PriceRow> = {
   // ===== Gemini Texto =====
-  "gemini-3.1-flash-lite":       { kind: "text", inputPerMillion: 0.10, outputPerMillion: 0.40 },
-  "gemini-3.1-flash-lite":            { kind: "text", inputPerMillion: 0.30, outputPerMillion: 2.50 },
+  "gemini-2.5-flash-lite":       { kind: "text", inputPerMillion: 0.10, outputPerMillion: 0.40 },
+  "gemini-2.5-flash-lite":            { kind: "text", inputPerMillion: 0.30, outputPerMillion: 2.50 },
   "gemini-2.5-pro":              { kind: "text", inputPerMillion: 1.25, outputPerMillion: 10.00 },
   "gemini-3-flash-preview":      { kind: "text", inputPerMillion: 0.30, outputPerMillion: 2.50 },
-  "gemini-3.1-flash-lite":       { kind: "text", inputPerMillion: 0.10, outputPerMillion: 0.40 },
+  "gemini-2.5-flash-lite":       { kind: "text", inputPerMillion: 0.10, outputPerMillion: 0.40 },
 
   // ===== Gemini Vision (usa mesmo preço de texto do modelo) =====
   // (fica separado como "vision" pra segmentar no dashboard)

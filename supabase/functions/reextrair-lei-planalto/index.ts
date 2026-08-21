@@ -437,7 +437,7 @@ REGRAS:
 Retorne em texto livre listando cada sugestão com nome oficial, URL do Planalto e resumo de 1 frase.`;
 
       const groundResp = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${key}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${key}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -462,7 +462,7 @@ Retorne em texto livre listando cada sugestão com nome oficial, URL do Planalto
         grounding?.groundingChunks?.map((c: any) => c?.web?.uri).filter(Boolean) ?? [];
 
       const structResp = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${key}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${key}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

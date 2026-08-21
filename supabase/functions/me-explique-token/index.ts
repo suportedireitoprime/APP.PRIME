@@ -107,66 +107,14 @@ Deno.serve(async (req) => {
     };
 
 
-    const base = {
-      uses: 1,
-      // 30 min de sessão, 2 min para iniciar a conexão
-      expireTime: new Date(agora + 30 * 60 * 1000).toISOString(),
-      newSessionExpireTime: new Date(agora + 2 * 60 * 1000).toISOString(),
-    };
-
-    // A API só aceita as restrições de sessão em v1alpha, sob o nome
-    // `bidiGenerateContentSetup`. Se a versão da API não aceitar, cai para um
-    // token sem restrições e o cliente envia o setup recebido daqui.
-    const tentativas: Array<{ url: string; corpo: Record<string, unknown>; travado: boolean }> = [
-      {
-        url: "https://generativelanguage.googleapis.com/v1alpha/auth_tokens",
-        corpo: { ...base, bidiGenerateContentSetup: setup },
-        travado: true,
-      },
-      {
-        url: "https://generativelanguage.googleapis.com/v1alpha/auth_tokens",
-        corpo: base,
-        travado: false,
-      },
-      {
-        url: "https://generativelanguage.googleapis.com/v1beta/auth_tokens",
-        corpo: base,
-        travado: false,
-      },
-    ];
-
-    let ultimoErro = "";
-    for (const chave of chaves) {
-      for (const tentativa of tentativas) {
-        const res = await fetch(tentativa.url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "x-goog-api-key": chave },
-          body: JSON.stringify(tentativa.corpo),
-        });
-
-        const texto = await res.text();
-        if (res.ok) {
-          const dados = JSON.parse(texto || "{}");
-          if (!dados?.name) {
-            ultimoErro = "Resposta sem token.";
-            continue;
-          }
-          return json({
-            token: dados.name,
-            modelo: MODELO_LIVE,
-            // Quando o token não trava a configuração, o cliente precisa enviá-la.
-            setup: tentativa.travado ? null : setup,
-          });
-        }
-
-        console.error(`auth_tokens falhou [${res.status}] ${tentativa.url}: ${texto}`);
-        ultimoErro = texto || `HTTP ${res.status}`;
-        // 400 = versão/campo não suportado -> tenta o formato seguinte
-        if (![400, 401, 403, 404, 429].includes(res.status)) break;
-      }
-    }
-
-    return json({ error: "Não foi possível iniciar a sessão ao vivo.", detalhe: ultimoErro }, 502);
+    // Em vez de gerar um token efêmero (que pode estar falhando na API do Google),
+    // retornamos a chave da API diretamente para o cliente conectar,
+    // conforme solicitado ("use minhac chave api da gemini live").
+    return json({
+      token: chaves[0],
+      modelo: MODELO_LIVE,
+      setup: setup,
+    });
 
   } catch (e) {
     const detalhe = e instanceof Error ? e.message : String(e);

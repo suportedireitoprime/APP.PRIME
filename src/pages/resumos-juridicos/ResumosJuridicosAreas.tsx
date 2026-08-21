@@ -43,7 +43,7 @@ import { useVoiceInput } from "@/hooks/useVoiceInput";
 import { PageHeader } from "@/components/vademecum/PageHeader";
 import { haptic } from "@/lib/nativeHaptics";
 
-type Aba = "areas" | "leis" | "jurisprudencia";
+type Aba = "cargos" | "areas" | "leis" | "jurisprudencia";
 
 const JURIS_ITENS: { label: string; desc: string; rota: string; color: string }[] = [
   { label: "Súmulas Vinculantes", desc: "STF · efeito vinculante", rota: "/resumos-juridicos/jurisprudencia/sumulas-vinculantes", color: "#f87171" },
@@ -55,6 +55,13 @@ const JURIS_ITENS: { label: string; desc: string; rota: string; color: string }[
   { label: "Teses do STJ", desc: "Jurisprudência em teses", rota: "/resumos-juridicos/jurisprudencia/teses-stj", color: "#fb923c" },
   { label: "Pesquisas prontas STF", desc: "Temas selecionados", rota: "/resumos-juridicos/jurisprudencia/prontas-stf", color: "#f472b6" },
   { label: "Pesquisas prontas STJ", desc: "Temas selecionados", rota: "/resumos-juridicos/jurisprudencia/prontas-stj", color: "#a3e635" },
+];
+
+const CARGOS = [
+  { id: "magistratura", nome: "Magistratura", color: "#c2274a", icon: Scale },
+  { id: "ministerio-publico", nome: "Ministério Público", color: "#38bdf8", icon: Landmark },
+  { id: "carreira-policial", nome: "Carreira Policial", color: "#fbbf24", icon: Shield },
+  { id: "oab", nome: "OAB", color: "#f87171", icon: Briefcase },
 ];
 
 
@@ -108,7 +115,7 @@ export default function ResumosJuridicosAreas() {
   const [loading, setLoading] = useState(!areasCache);
   const [q, setQ] = useState("");
   const [buscaAberta, setBuscaAberta] = useState(false);
-  const [aba, setAba] = useState<Aba>("areas");
+  const [aba, setAba] = useState<Aba>("cargos");
   const [areaLeis, setAreaLeis] = useState<AreaLeis | null>(null);
   const [leiArtigos, setLeiArtigos] = useState<{ lei: LeiCatalogItem; area: string } | null>(null);
   const [buscaLeis, setBuscaLeis] = useState("");
@@ -247,6 +254,7 @@ export default function ResumosJuridicosAreas() {
         {/* MENU DE ALTERNÂNCIA (SEGMENTED CONTROL) */}
         <div className="flex w-full bg-secondary/50 rounded-2xl p-1 gap-1 mb-5">
           {([
+            { id: "cargos", label: "Cargos" },
             { id: "areas", label: "Matérias" },
             { id: "leis", label: "Leis" },
             { id: "jurisprudencia", label: "Jurisprudência" },
@@ -265,6 +273,32 @@ export default function ResumosJuridicosAreas() {
             );
           })}
         </div>
+
+        {/* LISTA: CARGOS */}
+        {aba === "cargos" && (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            {CARGOS.map((c, i) => {
+              const Icon = c.icon;
+              return (
+                <motion.button
+                  key={c.id}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: Math.min(i * 0.02, 0.3) }}
+                  onClick={() => navigate(`/resumos-juridicos/cargos/${c.id}`)}
+                  className="flex flex-col items-center justify-center gap-3 p-5 rounded-3xl bg-card border border-border hover:border-[#38bdf8]/40 transition-all text-center hover:scale-[1.02] shadow-sm group"
+                >
+                  <div className="w-16 h-16 rounded-2xl bg-secondary/50 flex items-center justify-center group-hover:bg-[#38bdf8]/10 transition-colors">
+                    <Icon className="w-8 h-8 shrink-0" style={{ color: c.color }} strokeWidth={1.7} />
+                  </div>
+                  <div className="font-display font-bold text-[14px] uppercase text-foreground leading-tight">
+                    {c.nome}
+                  </div>
+                </motion.button>
+              );
+            })}
+          </div>
+        )}
 
         {/* LISTA: MATÉRIAS */}
         {aba === "areas" && (

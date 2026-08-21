@@ -723,8 +723,8 @@ function tryDriveAltUrl(url: string): string | null {
 // REFINO GEMINI (empacotado nesta função)
 // ============================================================
 const geminiKey = () => (Deno.env.get("GEMINI_API_KEY") ?? "").trim();
-const MODEL_FAST = "gemini-3.1-flash-lite";
-const MODEL_PRO = "gemini-3.1-flash-lite";
+const MODEL_FAST = "gemini-2.5-flash-lite";
+const MODEL_PRO = "gemini-2.5-flash-lite";
 const GEMINI_PROVIDER = "gemini-direto";
 
 interface RefinoBody { action: "refino"; livro_id: string; livro_tabela: string; force?: boolean; }

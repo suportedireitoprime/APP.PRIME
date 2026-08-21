@@ -243,6 +243,11 @@ const ResumosJuridicosLista = lazy(routePrefetch.resumosJuridicosLista);
 const LeiSecaIndex = lazy(routePrefetch.leiSeca);
 const LeiSecaTrilha = lazy(routePrefetch.leiSecaTrilha);
 const LeiSecaParte = lazy(routePrefetch.leiSecaParte);
+const Magistratura = lazy(() => import("./pages/resumos-juridicos/cargos/Magistratura.tsx"));
+const Oab = lazy(() => import("./pages/resumos-juridicos/cargos/Oab.tsx"));
+const MinisterioPublico = lazy(() => import("./pages/resumos-juridicos/cargos/MinisterioPublico.tsx"));
+const CarreiraPolicial = lazy(() => import("./pages/resumos-juridicos/cargos/CarreiraPolicial.tsx"));
+
 // Remonta a página quando o slug/parte muda — evita reaproveitar o render da lei anterior.
 function LeiSecaTrilhaRoute() {
   const { slug = "" } = useParams();
@@ -914,6 +919,10 @@ function AnimatedRoutes() {
           <Route path="/resumos" element={<Navigate to="/resumos-juridicos" replace />} />
 
           <Route path="/resumos-juridicos" element={<ProtectedRoute><PageTransition><ResumosJuridicosAreas /></PageTransition></ProtectedRoute>} />
+          <Route path="/resumos-juridicos/cargos/magistratura" element={<ProtectedRoute><PageTransition><Magistratura /></PageTransition></ProtectedRoute>} />
+          <Route path="/resumos-juridicos/cargos/oab" element={<ProtectedRoute><PageTransition><Oab /></PageTransition></ProtectedRoute>} />
+          <Route path="/resumos-juridicos/cargos/ministerio-publico" element={<ProtectedRoute><PageTransition><MinisterioPublico /></PageTransition></ProtectedRoute>} />
+          <Route path="/resumos-juridicos/cargos/carreira-policial" element={<ProtectedRoute><PageTransition><CarreiraPolicial /></PageTransition></ProtectedRoute>} />
           <Route path="/resumos-juridicos/favoritos" element={<ProtectedRoute><PageTransition><ResumosJuridicosLista modo="favoritos" /></PageTransition></ProtectedRoute>} />
           <Route path="/resumos-juridicos/recentes" element={<ProtectedRoute><PageTransition><ResumosJuridicosLista modo="recentes" /></PageTransition></ProtectedRoute>} />
           <Route path="/resumos-juridicos/jurisprudencia/:categoria" element={<ProtectedRoute><PageTransition><ResumosJuridicosJurisprudencia /></PageTransition></ProtectedRoute>} />

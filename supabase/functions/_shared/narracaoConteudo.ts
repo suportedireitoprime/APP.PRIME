@@ -298,7 +298,7 @@ const ESTILO_APRESENTACAO = [
   "Narre o texto a seguir",
 ].join(" ");
 
-const TEXTO_MODEL = "gemini-3.1-flash-lite";
+const TEXTO_MODEL = "gemini-2.5-flash-lite";
 
 async function gerarTextoIA(prompt: string): Promise<string> {
   let errGemini = "";

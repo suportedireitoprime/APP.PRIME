@@ -16,7 +16,7 @@ const ADMIN_EMAILS = new Set([
   "wn7juridico@gmail.com",
 ]);
 
-const MODEL = "gemini-3.1-flash-lite";
+const MODEL = "gemini-2.5-flash-lite";
 const VERSION = "audioaulas-gerar-v1";
 
 const SYSTEM_PROMPT = `Você é um curador de conteúdo que transforma livros jurídicos em uma série de AUDIOAULAS (aula explicativa narrada por um professor).

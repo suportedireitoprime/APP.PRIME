@@ -2,7 +2,7 @@
 //
 // Usa a API do Gemini diretamente (GEMINI_API_KEY / GEMINI_API_KEY_RESERVA),
 // via geminiFetch — mesma chave usada no chat jurídico. Modelo:
-// gemini-3.1-flash-lite (multimodal: aceita image, audio e PDF inline).
+// gemini-2.5-flash-lite (multimodal: aceita image, audio e PDF inline).
 //
 // Endpoint: generativelanguage.googleapis.com/v1beta/models/{model}:generateContent
 // Payload multimodal: parts[].inlineData = { mimeType, data (base64 puro) }.

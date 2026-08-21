@@ -2,7 +2,7 @@
  * Modelos Gemini permitidos no app — FONTE ÚNICA DE VERDADE.
  *
  * Política oficial: TODA chamada de texto/multimodal usa
- * `gemini-3.1-flash-lite` (modelo de texto rápido, eficiente e de última geração).
+ * `gemini-3.5-flash-lite` (modelo de texto rápido, eficiente e de última geração).
  *
  * Documentação canônica:
  * https://ai.google.dev/gemini-api/docs/models
@@ -13,8 +13,8 @@
  */
 
 export const MODELS = {
-  text: "gemini-3.1-flash-lite",
-  textGateway: 'gemini-3.1-flash-lite',
+  text: "gemini-3.5-flash-lite",
+  textGateway: 'gemini-3.5-flash-lite',
   image: "gemini-2.5-flash-image",
   imageGateway: 'gemini-2.5-flash-image',
   tts: "gemini-2.5-flash-preview-tts",
@@ -28,7 +28,7 @@ export const TEXT_MODEL_FALLBACKS = [
 
 export const ALLOWED_TEXT_MODELS = new Set<string>([
   "gemini-3.1-flash",
-  "gemini-3.1-flash-lite",
+  "gemini-3.5-flash-lite",
   "gemini-3.5-flash",
   "gemini-2.5-flash",
 ]);
@@ -40,7 +40,7 @@ const DENY_PATTERNS: RegExp[] = [
 ];
 
 /**
- * Força qualquer id de modelo de texto para `gemini-3.1-flash-lite`.
+ * Força qualquer id de modelo de texto para `gemini-3.5-flash-lite`.
  * Se o id vier na forma `google/...` (Lovable Gateway), preserva o prefixo.
  * Loga warning para qualquer tentativa fora da política.
  */

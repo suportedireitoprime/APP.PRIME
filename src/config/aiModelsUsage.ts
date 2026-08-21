@@ -21,8 +21,8 @@ export interface FunctionUsage {
 
 export const ACTIVE_MODELS = {
   text: {
-    id: "gemini-3.1-flash-lite",
-    gateway: "google/gemini-3.1-flash-lite",
+    id: "gemini-2.5-flash-lite",
+    gateway: "google/gemini-2.5-flash-lite",
     label: "Gemini 3.1 Flash Lite",
     category: "Texto (chat, análise, extração, JSON)",
     docs: "https://ai.google.dev/gemini-api/docs/models",

@@ -1,7 +1,7 @@
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 
 const LOVABLE_API_KEY = undefined;
-const MODEL = 'gemini-3.1-flash-lite';
+const MODEL = 'gemini-2.5-flash-lite';
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });

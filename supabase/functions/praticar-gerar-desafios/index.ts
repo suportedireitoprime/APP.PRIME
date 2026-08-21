@@ -11,7 +11,7 @@ const corsHeaders = {
 const LOVABLE_API_KEY = undefined;
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-const MODEL = 'gemini-3.1-flash-lite';
+const MODEL = 'gemini-2.5-flash-lite';
 
 function hashTexto(s: string): string {
   let h = 0;

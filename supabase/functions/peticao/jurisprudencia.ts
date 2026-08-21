@@ -21,7 +21,7 @@ const GEMINI_KEY = Deno.env.get('GEMINI_API_KEY') ?? '';
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_ANON_KEY =
   Deno.env.get('SUPABASE_ANON_KEY') ?? Deno.env.get('SUPABASE_PUBLISHABLE_KEY') ?? '';
-const MODEL_SELECAO = 'gemini-3.1-flash-lite';
+const MODEL_SELECAO = 'gemini-2.5-flash-lite';
 
 type LeiMap = { slug_local: string; corpus_lei_id: number; nome_exibicao: string };
 type Selecao = { slug_local: string; numero_artigo: string; motivo?: string };
@@ -154,7 +154,7 @@ REGRAS:
 - NUNCA invente número, tese ou link.
 - Se nada for confiável, retorne {"jurisprudencias": []}.`;
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${GEMINI_KEY}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${GEMINI_KEY}`;
   const res = await geminiFetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

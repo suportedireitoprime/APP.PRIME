@@ -124,7 +124,7 @@ async function buildBriefDaCapa(titulo: string, artigoCompleto: string, categori
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
       body: JSON.stringify({
-        model: 'gemini-3.1-flash-lite',
+        model: 'gemini-2.5-flash-lite',
         messages: [
           {
             role: "system",
@@ -474,7 +474,7 @@ Retorne APENAS JSON válido (sem markdown em volta do JSON, sem \`\`\`):
         tentativa === 1
           ? artPrompt
           : `${artPrompt}\n\nATENÇÃO: a resposta anterior não era JSON válido (${ultimoErro}). Retorne SOMENTE o objeto JSON, sem markdown, sem comentários, com todas as quebras de linha escapadas como \\n.`,
-        cfg.modelo_texto || "gemini-3.1-flash-lite",
+        cfg.modelo_texto || "gemini-2.5-flash-lite",
         8192,
         { functionName: "blog-edicao-runner", triggerType: "auto" },
       );

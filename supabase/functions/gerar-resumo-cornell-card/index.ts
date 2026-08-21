@@ -4,7 +4,7 @@ const corsHeaders = {
 };
 
 const GATEWAY_URL = 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions';
-const MODEL = 'gemini-3.1-flash-lite';
+const MODEL = 'gemini-2.5-flash-lite';
 
 const SYSTEM_PROMPT = `Você é um doutrinador e professor especialista em Direito Brasileiro (OAB e Concursos de Alto Nível).
 Com base no Flashcard fornecido (Pergunta, Resposta Explicada, Área e Tema), crie um RESUMO NO MÉTODO CORNELL completo, altamente didático e direto ao ponto.

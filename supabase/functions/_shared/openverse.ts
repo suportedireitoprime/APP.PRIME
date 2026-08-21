@@ -4,7 +4,7 @@
 import { geminiFetch } from "./geminiFetch.ts";
 
 const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY") ?? "";
-const TEXT_MODEL = "gemini-3.1-flash-lite";
+const TEXT_MODEL = "gemini-2.5-flash-lite";
 
 export type OpenverseHit = {
   url: string;

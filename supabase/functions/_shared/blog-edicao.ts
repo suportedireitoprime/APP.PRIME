@@ -23,15 +23,15 @@ export function slugify(s: string): string {
 
 /**
  * Chama LLM via Lovable AI Gateway (OpenAI-compatível).
- * `model` deve ser um id do catálogo (ex.: 'gemini-3.1-flash-lite').
- * Aceita ids antigos sem prefixo (ex.: "gemini-3.1-flash-lite") e normaliza.
+ * `model` deve ser um id do catálogo (ex.: 'gemini-2.5-flash-lite').
+ * Aceita ids antigos sem prefixo (ex.: "gemini-2.5-flash-lite") e normaliza.
  * O parâmetro `apiKey` é mantido por compat, mas usamos LOVABLE_API_KEY.
  * `context` (opcional): registra em ai_usage_log — { functionName, triggerType, refId }.
  */
 export async function callGemini(
   _apiKey: string,
   prompt: string,
-  model = 'gemini-3.1-flash-lite',
+  model = 'gemini-2.5-flash-lite',
   maxTokens = 8192,
   context?: { functionName?: string; triggerType?: "manual" | "auto"; refId?: string | null },
 ): Promise<string> {
@@ -47,11 +47,11 @@ export async function callGemini(
   // O Gateway só aceita ids da allowlist: aliases "-latest" (salvos no banco em
   // configs antigas) devolvem 400. Cai para o flash-lite (mais barato).
   const GATEWAY_TEXT_ALLOWED = new Set([
-    'gemini-3.1-flash-lite',
+    'gemini-2.5-flash-lite',
   ]);
   if (!GATEWAY_TEXT_ALLOWED.has(normalized)) {
-    console.warn(`[blog-edicao] modelo "${normalized}" fora da allowlist do Gateway; usando google/gemini-3.1-flash-lite`);
-    normalized = 'gemini-3.1-flash-lite';
+    console.warn(`[blog-edicao] modelo "${normalized}" fora da allowlist do Gateway; usando google/gemini-2.5-flash-lite`);
+    normalized = 'gemini-2.5-flash-lite';
   }
 
   const startedAt = Date.now();

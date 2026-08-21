@@ -4,7 +4,7 @@
 import { corsHeaders, json, adminClient } from "../_shared/questoes-sheets.ts";
 
 const GATEWAY = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
-const MODEL = "gemini-3.1-flash-lite";
+const MODEL = "gemini-2.5-flash-lite";
 
 type Tipo =
   | "comentario" | "lei-erradas" | "aula" | "flashcards"

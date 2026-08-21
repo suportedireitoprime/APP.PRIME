@@ -8,8 +8,8 @@ import { assertTextModel } from '../_shared/ai-models.ts';
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY')!;
-// Política do app: sempre gemini-3.1-flash-lite (env pode conter alias antigo).
-const GEMINI_MODEL = assertTextModel(Deno.env.get('GEMINI_MODEL') || 'gemini-3.1-flash-lite');
+// Política do app: sempre gemini-2.5-flash-lite (env pode conter alias antigo).
+const GEMINI_MODEL = assertTextModel(Deno.env.get('GEMINI_MODEL') || 'gemini-2.5-flash-lite');
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
