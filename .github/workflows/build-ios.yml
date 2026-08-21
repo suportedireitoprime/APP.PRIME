@@ -94,10 +94,8 @@ jobs:
             echo "Removed $removed precompressed files from dist/"
           fi
 
-      - name: Regenerate iOS platform
+      - name: Sync iOS platform
         run: |
-          rm -rf ios
-          bunx cap add ios
           bunx cap sync ios
 
       - name: Set version + build number + app name
@@ -121,121 +119,13 @@ jobs:
             || /usr/libexec/PlistBuddy -c "Add :CFBundleDisplayName string ${APPLE_APP_NAME}" "$PLIST"
           echo "Version: $VERSION ($BUILD_NUM) — name: ${APPLE_APP_NAME}"
 
-      - name: Inject App Icon (full AppIcon.appiconset)
+      - name: Generate iOS Assets (@capacitor/assets)
         run: |
           set -euo pipefail
-          ICON_SRC="build-assets/ios-app-icon.png"
-          ICONSET="ios/App/App/Assets.xcassets/AppIcon.appiconset"
-          if [ ! -f "$ICON_SRC" ]; then
-            echo "::error::Ícone iOS não encontrado em $ICON_SRC"
-            exit 1
-          fi
-          rm -rf "$ICONSET"
-          mkdir -p "$ICONSET"
-
-          # App Store Connect usa o slot ios-marketing (1024x1024 @1x) para
-          # extrair o ícone exibido no painel do app. Os demais tamanhos evitam
-          # fallback/placeholder em superfícies menores do iOS/TestFlight.
-          cp "$ICON_SRC" "$ICONSET/AppIcon-1024.png"
-          make_icon() {
-            local size="$1"
-            local file="$2"
-            sips -z "$size" "$size" "$ICON_SRC" --out "$ICONSET/$file" >/dev/null
-          }
-          make_icon 40  "AppIcon-20@2x.png"
-          make_icon 60  "AppIcon-20@3x.png"
-          make_icon 58  "AppIcon-29@2x.png"
-          make_icon 87  "AppIcon-29@3x.png"
-          make_icon 80  "AppIcon-40@2x.png"
-          make_icon 120 "AppIcon-40@3x.png"
-          make_icon 120 "AppIcon-60@2x.png"
-          make_icon 180 "AppIcon-60@3x.png"
-          make_icon 20  "AppIcon-20-ipad@1x.png"
-          make_icon 40  "AppIcon-20-ipad@2x.png"
-          make_icon 29  "AppIcon-29-ipad@1x.png"
-          make_icon 58  "AppIcon-29-ipad@2x.png"
-          make_icon 40  "AppIcon-40-ipad@1x.png"
-          make_icon 80  "AppIcon-40-ipad@2x.png"
-          make_icon 76  "AppIcon-76-ipad@1x.png"
-          make_icon 152 "AppIcon-76-ipad@2x.png"
-          make_icon 167 "AppIcon-83.5-ipad@2x.png"
-
-          cat > "$ICONSET/Contents.json" <<'JSON'
-          {
-            "images": [
-              { "filename": "AppIcon-20@2x.png", "idiom": "iphone", "scale": "2x", "size": "20x20" },
-              { "filename": "AppIcon-20@3x.png", "idiom": "iphone", "scale": "3x", "size": "20x20" },
-              { "filename": "AppIcon-29@2x.png", "idiom": "iphone", "scale": "2x", "size": "29x29" },
-              { "filename": "AppIcon-29@3x.png", "idiom": "iphone", "scale": "3x", "size": "29x29" },
-              { "filename": "AppIcon-40@2x.png", "idiom": "iphone", "scale": "2x", "size": "40x40" },
-              { "filename": "AppIcon-40@3x.png", "idiom": "iphone", "scale": "3x", "size": "40x40" },
-              { "filename": "AppIcon-60@2x.png", "idiom": "iphone", "scale": "2x", "size": "60x60" },
-              { "filename": "AppIcon-60@3x.png", "idiom": "iphone", "scale": "3x", "size": "60x60" },
-              { "filename": "AppIcon-20-ipad@1x.png", "idiom": "ipad", "scale": "1x", "size": "20x20" },
-              { "filename": "AppIcon-20-ipad@2x.png", "idiom": "ipad", "scale": "2x", "size": "20x20" },
-              { "filename": "AppIcon-29-ipad@1x.png", "idiom": "ipad", "scale": "1x", "size": "29x29" },
-              { "filename": "AppIcon-29-ipad@2x.png", "idiom": "ipad", "scale": "2x", "size": "29x29" },
-              { "filename": "AppIcon-40-ipad@1x.png", "idiom": "ipad", "scale": "1x", "size": "40x40" },
-              { "filename": "AppIcon-40-ipad@2x.png", "idiom": "ipad", "scale": "2x", "size": "40x40" },
-              { "filename": "AppIcon-76-ipad@1x.png", "idiom": "ipad", "scale": "1x", "size": "76x76" },
-              { "filename": "AppIcon-76-ipad@2x.png", "idiom": "ipad", "scale": "2x", "size": "76x76" },
-              { "filename": "AppIcon-83.5-ipad@2x.png", "idiom": "ipad", "scale": "2x", "size": "83.5x83.5" },
-              { "filename": "AppIcon-1024.png", "idiom": "ios-marketing", "scale": "1x", "size": "1024x1024" }
-            ],
-            "info": { "author": "xcode", "version": 1 }
-          }
-          JSON
-          echo "AppIcon.appiconset atualizado:"
-          ls -la "$ICONSET"
-          python3 - <<'PY'
-          import json
-          from pathlib import Path
-
-          iconset = Path('ios/App/App/Assets.xcassets/AppIcon.appiconset')
-          contents = json.loads((iconset / 'Contents.json').read_text())
-          marketing = [img for img in contents['images'] if img.get('idiom') == 'ios-marketing']
-          if len(marketing) != 1:
-              raise SystemExit('ios-marketing icon slot ausente ou duplicado')
-          icon = iconset / marketing[0]['filename']
-          if not icon.exists():
-              raise SystemExit(f'Arquivo do ícone ios-marketing não existe: {icon}')
-          print(icon)
-          PY
-          MARKETING_ICON="$ICONSET/AppIcon-1024.png"
-          WIDTH="$(sips -g pixelWidth "$MARKETING_ICON" | awk '/pixelWidth/ {print $2}')"
-          HEIGHT="$(sips -g pixelHeight "$MARKETING_ICON" | awk '/pixelHeight/ {print $2}')"
-          if [ "$WIDTH" != "1024" ] || [ "$HEIGHT" != "1024" ]; then
-            echo "::error::Ícone App Store inválido: ${WIDTH}x${HEIGHT}. Precisa ser 1024x1024."
-            exit 1
-          fi
-          echo "Validated ios-marketing app icon: $MARKETING_ICON (${WIDTH}x${HEIGHT})"
-
-      - name: Inject Splash (Splash.imageset)
-        run: |
-          set -euo pipefail
-          SPLASH_SRC="build-assets/ios-splash.png"
-          IMAGESET="ios/App/App/Assets.xcassets/Splash.imageset"
-          if [ ! -f "$SPLASH_SRC" ]; then
-            echo "::error::Splash iOS não encontrada em $SPLASH_SRC"
-            exit 1
-          fi
-          rm -rf "$IMAGESET"
-          mkdir -p "$IMAGESET"
-          cp "$SPLASH_SRC" "$IMAGESET/splash-2732x2732.png"
-          cp "$SPLASH_SRC" "$IMAGESET/splash-2732x2732-1.png"
-          cp "$SPLASH_SRC" "$IMAGESET/splash-2732x2732-2.png"
-          cat > "$IMAGESET/Contents.json" <<'JSON'
-          {
-            "images": [
-              { "filename": "splash-2732x2732.png", "idiom": "universal", "scale": "1x" },
-              { "filename": "splash-2732x2732-1.png", "idiom": "universal", "scale": "2x" },
-              { "filename": "splash-2732x2732-2.png", "idiom": "universal", "scale": "3x" }
-            ],
-            "info": { "author": "xcode", "version": 1 }
-          }
-          JSON
-          echo "Splash.imageset atualizado:"
-          ls -la "$IMAGESET"
+          mkdir -p assets
+          cp build-assets/ios-app-icon.png assets/icon.png
+          cp build-assets/ios-splash.png assets/splash.png
+          bunx @capacitor/assets generate --ios
 
 
 

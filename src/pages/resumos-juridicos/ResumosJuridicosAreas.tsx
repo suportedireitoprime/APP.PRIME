@@ -33,18 +33,19 @@ import {
   Mic,
   MicOff,
 } from "lucide-react";
-import ResumosHero from "@/components/resumos/ResumosHero";
 import ResumosBottomNav from "@/components/resumos/ResumosBottomNav";
+import ResumosCargoHero from "@/components/resumos/ResumosCargoHero";
 import { AREAS_LEIS, leisDaArea, AreaLeis } from "@/lib/leisPorArea";
 import type { LeiCatalogItem } from "@/data/leisCatalog";
 import LeiArtigosSheet from "@/components/resumos-juridicos/LeiArtigosSheet";
 import { leiPath } from "@/lib/legislacaoSlugs";
 import { LEI_ICON_MAP } from "@/lib/leiIcons";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
-import { Scroll } from "lucide-react";
+import { Scroll, History, Bookmark, Clock, ListPlus } from "lucide-react";
+import { PageHeader } from "@/components/vademecum/PageHeader";
+import { haptic } from "@/lib/nativeHaptics";
 
-
-type Aba = "areas" | "leis" | "jurisprudencia";
+type Aba = "home" | "areas" | "leis" | "jurisprudencia";
 
 const ABAS: { id: Aba; label: string; icon: typeof Gavel }[] = [
   { id: "leis", label: "Leis", icon: ScrollText },
@@ -115,7 +116,7 @@ export default function ResumosJuridicosAreas() {
   const [loading, setLoading] = useState(!areasCache);
   const [q, setQ] = useState("");
   const [buscaAberta, setBuscaAberta] = useState(false);
-  const [aba, setAba] = useState<Aba>("areas");
+  const [aba, setAba] = useState<Aba>("home");
   const [areaLeis, setAreaLeis] = useState<AreaLeis | null>(null);
   const [leiArtigos, setLeiArtigos] = useState<{ lei: LeiCatalogItem; area: string } | null>(null);
   const [buscaLeis, setBuscaLeis] = useState("");
@@ -204,36 +205,127 @@ export default function ResumosJuridicosAreas() {
     })();
   }, []);
 
-  const filtered = rows.filter((r) => r.area.toLowerCase().includes(q.toLowerCase()));
+  const totalAcervo = rows.reduce((acc, row) => acc + row.total, 0);
 
   return (
-    <div className="min-h-dvh bg-background pb-28">
-      <ResumosHero onBuscar={() => setBuscaAberta(true)} />
+    <div className="min-h-dvh bg-background pb-[calc(7rem+env(safe-area-inset-bottom,0px))] lg:pb-[calc(3rem+env(safe-area-inset-bottom,0px))] overflow-x-hidden">
+      {aba === "home" ? (
+        <PageHeader title="Resumos Jurídicos" onBack={() => navigate("/")} />
+      ) : (
+        <PageHeader 
+          title={aba === "areas" ? "Matérias" : aba === "leis" ? "Leis" : "Jurisprudência"} 
+          onBack={() => { haptic.selection(); setAba("home"); }} 
+        />
+      )}
 
-      {/* Menu de alternância */}
-      <div className="max-w-5xl mx-auto px-4 pt-4">
-        <div className="relative flex items-center gap-1 p-1 rounded-full bg-secondary/60 border border-border/60">
-          {ABAS.map((a) => {
-            const ativo = aba === a.id;
-            const Icon = a.icon;
-            return (
-              <button
-                key={a.id}
-                onClick={() => setAba(a.id)}
-                className="relative flex-1 flex items-center justify-center gap-2 h-10 rounded-full font-display text-[13px] font-bold uppercase tracking-wide transition-colors"
-              >
-                {ativo && (
-                  <span className="absolute inset-0 rounded-full bg-hero-panel-cyan shadow-lg shadow-black/20" />
-                )}
-                <span className={`relative flex items-center gap-2 ${ativo ? "text-white" : "text-muted-foreground"}`}>
-                  <Icon className="w-5 h-5" />
-                  {a.label}
-                </span>
+      {aba === "home" && (
+        <div className="mx-auto w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] px-3 sm:px-6 lg:px-8 mt-2">
+          
+          <div className="-mx-3 sm:-mx-6 lg:-mx-8 mb-6 mt-1">
+            <ResumosCargoHero 
+              pct={0} 
+              total={0} 
+              hoje={0} 
+              meta={100} 
+              disponiveis={totalAcervo || 1200} 
+              streak={0}
+            />
+          </div>
+
+          {/* PAINEL PRINCIPAL */}
+          <div className="bg-card/60 border border-border/80 p-5 rounded-3xl backdrop-blur-md shadow-xl mt-2">
+            <div className="flex items-center gap-2">
+              <span className="h-5 w-1 rounded-full bg-[#38bdf8]" />
+              <h2 className="text-lg font-extrabold leading-tight text-foreground sm:text-xl drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] uppercase">Explorar Resumos</h2>
+            </div>
+            <p className="ml-3 mt-1 text-xs text-muted-foreground">
+              Pesquise qualquer matéria, lei ou súmula no acervo.
+            </p>
+
+            <button
+              onClick={() => { haptic.selection(); setBuscaAberta(true); }}
+              className="group mt-4 flex h-14 sm:h-16 min-h-[56px] w-full items-center justify-start px-4 gap-3 rounded-2xl bg-[#0b3b46] backdrop-blur-md border border-[#38bdf8]/30 shadow-lg shadow-black/30 transition-all active:scale-[0.99]"
+            >
+              <Search className="h-6 w-6 text-white shrink-0" strokeWidth={2} />
+              <span className="tracking-wide text-white/70 flex-1 text-left truncate font-medium">Pesquise o resumo...</span>
+              <div className="h-10 px-4 rounded-xl bg-[#38bdf8] text-black font-display text-[12px] font-bold tracking-wider flex items-center justify-center shadow-md shrink-0">
+                PESQUISAR
+              </div>
+            </button>
+          </div>
+
+          {/* AÇÕES RÁPIDAS */}
+          <section className="grid grid-cols-4 gap-2.5 mt-6">
+            <button
+              onClick={() => { haptic.selection(); navigate('/resumos-juridicos/historico'); }}
+              className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#38bdf8]/50 transition-all active:scale-95 gap-2 text-center"
+            >
+              <div className="relative w-10 h-10 flex items-center justify-center">
+                <History className="w-7 h-7 sm:w-8 sm:h-8 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110" strokeWidth={2} />
+              </div>
+              <p className="text-xs font-extrabold text-foreground leading-tight">Histórico</p>
+            </button>
+            <button
+              onClick={() => { haptic.selection(); navigate('/resumos-juridicos/favoritos'); }}
+              className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#38bdf8]/50 transition-all active:scale-95 gap-2 text-center"
+            >
+              <div className="relative w-10 h-10 flex items-center justify-center">
+                <Bookmark className="w-7 h-7 sm:w-8 sm:h-8 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110" strokeWidth={2} />
+              </div>
+              <p className="text-xs font-extrabold text-foreground leading-tight">Favoritos</p>
+            </button>
+            <button
+              onClick={() => { haptic.selection(); navigate('/resumos-juridicos/recentes'); }}
+              className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#38bdf8]/50 transition-all active:scale-95 gap-2 text-center"
+            >
+              <div className="relative w-10 h-10 flex items-center justify-center">
+                <Clock className="w-7 h-7 sm:w-8 sm:h-8 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110" strokeWidth={2} />
+              </div>
+              <p className="text-xs font-extrabold text-foreground leading-tight">Recentes</p>
+            </button>
+            <button
+              onClick={() => { haptic.selection(); navigate('/resumos-juridicos/anotacoes'); }}
+              className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#38bdf8]/50 transition-all active:scale-95 gap-2 text-center"
+            >
+              <div className="relative w-10 h-10 flex items-center justify-center">
+                <ListPlus className="w-7 h-7 sm:w-8 sm:h-8 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110" strokeWidth={2} />
+              </div>
+              <p className="text-xs font-extrabold text-foreground leading-tight">Anotações</p>
+            </button>
+          </section>
+
+          {/* CATEGORIAS */}
+          <section className="space-y-3 pt-6 pb-20">
+            <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">Categorias Principais</p>
+            <div className="grid grid-cols-4 gap-2 sm:gap-3">
+              <button onClick={() => { haptic.selection(); setAba('areas'); }} className="group flex flex-col items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#38bdf8]/50 transition-colors active:scale-95">
+                <div className="flex items-center justify-center text-[#38bdf8] group-hover:scale-110 transition-transform">
+                  <BookOpen className="h-7 w-7 sm:h-8 sm:w-8" strokeWidth={1.5} />
+                </div>
+                <span className="text-[11px] sm:text-sm font-bold text-foreground">Matérias</span>
               </button>
-            );
-          })}
+              <button onClick={() => { haptic.selection(); setAba('leis'); }} className="group flex flex-col items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#38bdf8]/50 transition-colors active:scale-95">
+                <div className="flex items-center justify-center text-[#38bdf8] group-hover:scale-110 transition-transform">
+                  <Scale className="h-7 w-7 sm:h-8 sm:w-8" strokeWidth={1.5} />
+                </div>
+                <span className="text-[11px] sm:text-sm font-bold text-foreground">Leis</span>
+              </button>
+              <button onClick={() => { haptic.selection(); setAba('jurisprudencia'); }} className="group flex flex-col items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#38bdf8]/50 transition-colors active:scale-95 text-center">
+                <div className="flex items-center justify-center text-[#38bdf8] group-hover:scale-110 transition-transform">
+                  <Gavel className="h-7 w-7 sm:h-8 sm:w-8" strokeWidth={1.5} />
+                </div>
+                <span className="text-[10px] sm:text-sm leading-tight font-bold text-foreground">Jurisprudência</span>
+              </button>
+              <button onClick={() => { haptic.selection(); navigate('/resumos-juridicos/termos'); }} className="group flex flex-col items-center justify-center gap-2 p-3 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#38bdf8]/50 transition-colors active:scale-95">
+                <div className="flex items-center justify-center text-[#38bdf8] group-hover:scale-110 transition-transform">
+                  <FileText className="h-7 w-7 sm:h-8 sm:w-8" strokeWidth={1.5} />
+                </div>
+                <span className="text-[11px] sm:text-sm font-bold text-foreground">Termos</span>
+              </button>
+            </div>
+          </section>
         </div>
-      </div>
+      )}
 
       {aba === "areas" && (
         <div className="max-w-5xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 pt-4">
