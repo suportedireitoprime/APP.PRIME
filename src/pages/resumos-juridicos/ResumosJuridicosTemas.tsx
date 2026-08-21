@@ -241,7 +241,7 @@ export default function ResumosJuridicosTemas() {
     <div className="min-h-dvh bg-background pb-24">
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-md border-b border-border">
         <PageHeader
-          title={decodedArea}
+          title={decodedArea.replace(/^DIREITO\s+/i, '')}
           subtitle="Área"
           onBack={() => navigate("/resumos-juridicos")}
           className="border-b-0"
@@ -322,7 +322,7 @@ export default function ResumosJuridicosTemas() {
                 </button>
                 <div className="flex-1 min-w-0">
                   <p className="text-[10px] uppercase tracking-wide text-muted-foreground break-words">
-                    {decodedArea}
+                    {decodedArea.replace(/^DIREITO\s+/i, '')}
                   </p>
                   <h2 className="font-display text-base font-bold leading-tight break-words">{openTema}</h2>
                 </div>

@@ -207,6 +207,12 @@ export default function ResumosJuridicosAreas() {
 
   const totalAcervo = rows.reduce((acc, row) => acc + row.total, 0);
 
+  const filtered = useMemo(() => {
+    if (!q) return rows;
+    const t = normalize(q.trim());
+    return rows.filter((r) => normalize(r.area).includes(t));
+  }, [rows, q]);
+
   return (
     <div className="min-h-dvh bg-background pb-[calc(7rem+env(safe-area-inset-bottom,0px))] lg:pb-[calc(3rem+env(safe-area-inset-bottom,0px))] overflow-x-hidden">
       {aba === "home" ? (
@@ -350,7 +356,7 @@ export default function ResumosJuridicosAreas() {
                   >
                     <Icon className="w-7 h-7 shrink-0" style={{ color: s.color }} strokeWidth={1.7} />
                     <div className="flex-1 min-w-0">
-                      <div className="font-display font-bold text-foreground truncate">{r.area}</div>
+                      <div className="font-display font-bold text-foreground truncate">{r.area.replace(/^DIREITO\s+/i, '')}</div>
                       <div className="text-xs text-muted-foreground mt-0.5">
                         {r.total} {r.total === 1 ? "resumo" : "resumos"}
                       </div>
@@ -380,7 +386,7 @@ export default function ResumosJuridicosAreas() {
                 <ChevronRight className="absolute top-3 right-3 w-4 h-4 text-muted-foreground" />
                 <Icon className="w-7 h-7 shrink-0" style={{ color: a.color }} strokeWidth={1.7} />
                 <div className="font-display font-bold text-foreground text-[13px] leading-tight uppercase line-clamp-2">
-                  {a.nome}
+                  {a.nome.replace(/^DIREITO\s+/i, '')}
                 </div>
               </motion.button>
             );
@@ -450,7 +456,7 @@ export default function ResumosJuridicosAreas() {
                   </div>
                   <div className="min-w-0">
                     <h3 className="font-display text-xl text-foreground font-bold leading-none truncate uppercase">
-                      {areaLeis.nome}
+                      {areaLeis.nome.replace(/^DIREITO\s+/i, '')}
                     </h3>
                     <p className="text-muted-foreground text-[12px] font-body leading-tight mt-1 truncate">
                       {leisDaArea(areaLeis).map((l) => l.sigla).join(", ")}
@@ -637,7 +643,7 @@ export default function ResumosJuridicosAreas() {
                       >
                         <Icon className="w-6 h-6 shrink-0" style={{ color: s.color }} strokeWidth={1.7} />
                         <div className="flex-1 min-w-0">
-                          <div className="font-display font-bold text-foreground truncate">{r.area}</div>
+                          <div className="font-display font-bold text-foreground truncate">{r.area.replace(/^DIREITO\s+/i, '')}</div>
                           <div className="text-xs text-muted-foreground/90 mt-0.5">
                             {r.total} {r.total === 1 ? "resumo" : "resumos"}
                           </div>
