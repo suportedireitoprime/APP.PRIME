@@ -666,9 +666,9 @@ export default function PushCronogramaTab() {
               {/* Ícone marcador da timeline */}
               <div
                 style={{
-                   backgroundColor: enviado ? "#10b981" : erro ? "#ef4444" : isProximo ? "rgba(16, 185, 129, 0.2)" : agendado ? "rgba(16, 185, 129, 0.2)" : "transparent",
-                   borderColor: enviado ? "#10b981" : erro ? "#ef4444" : isProximo ? "#10b981" : agendado ? "#10b981" : "#3f3f46",
-                   color: enviado ? "#000" : erro ? "#fff" : isProximo ? "#10b981" : agendado ? "#10b981" : "#a1a1aa"
+                   backgroundColor: enviado ? "#10b981" : erro ? "#ef4444" : isProximo ? "rgba(16, 185, 129, 0.2)" : (agendado || ev.status === "previsto") ? "rgba(16, 185, 129, 0.2)" : "transparent",
+                   borderColor: enviado ? "#10b981" : erro ? "#ef4444" : isProximo ? "#10b981" : (agendado || ev.status === "previsto") ? "#10b981" : "#3f3f46",
+                   color: enviado ? "#000" : erro ? "#fff" : isProximo ? "#10b981" : (agendado || ev.status === "previsto") ? "#10b981" : "#a1a1aa"
                 }}
                 className={`absolute -left-[27px] top-3.5 w-7 h-7 rounded-full border-2 flex items-center justify-center shadow-md transition-all ${
                   enviado
@@ -677,8 +677,8 @@ export default function PushCronogramaTab() {
                     ? "font-bold ring-4 ring-red-500/20 animate-bounce"
                     : isProximo
                     ? "ring-4 ring-emerald-500/20 animate-pulse"
-                    : agendado
-                    ? ""
+                    : (agendado || ev.status === "previsto")
+                    ? "font-bold"
                     : ""
                 }`}
               >
@@ -688,7 +688,7 @@ export default function PushCronogramaTab() {
                   <XCircle className="w-4 h-4" strokeWidth={3} />
                 ) : isProximo ? (
                   <Bell className="w-3.5 h-3.5" />
-                ) : agendado ? (
+                ) : (agendado || ev.status === "previsto") ? (
                   <Check className="w-3.5 h-3.5" strokeWidth={3} />
                 ) : (
                   <CircleDashed className="w-3.5 h-3.5" />
@@ -698,8 +698,8 @@ export default function PushCronogramaTab() {
               {/* CARD PRINCIPAL COM DESTAQUE CONDICIONAL */}
               <Card
                 style={{
-                  backgroundColor: enviado ? "rgba(16, 185, 129, 0.1)" : erro ? "rgba(239, 68, 68, 0.1)" : isProximo ? "rgba(16, 185, 129, 0.05)" : agendado ? "rgba(16, 185, 129, 0.05)" : undefined,
-                  borderColor: enviado ? "rgba(16, 185, 129, 0.4)" : erro ? "rgba(239, 68, 68, 0.6)" : isProximo ? "rgba(16, 185, 129, 0.6)" : agendado ? "rgba(16, 185, 129, 0.3)" : undefined
+                  backgroundColor: enviado ? "rgba(16, 185, 129, 0.1)" : erro ? "rgba(239, 68, 68, 0.1)" : isProximo ? "rgba(16, 185, 129, 0.05)" : (agendado || ev.status === "previsto") ? "rgba(16, 185, 129, 0.05)" : undefined,
+                  borderColor: enviado ? "rgba(16, 185, 129, 0.4)" : erro ? "rgba(239, 68, 68, 0.6)" : isProximo ? "rgba(16, 185, 129, 0.6)" : (agendado || ev.status === "previsto") ? "rgba(16, 185, 129, 0.3)" : undefined
                 }}
                 className={`p-4 rounded-2xl transition-all duration-200 border ${
                   enviado
@@ -708,6 +708,8 @@ export default function PushCronogramaTab() {
                     ? "shadow-[0_0_20px_rgba(239,68,68,0.12)] hover:border-red-500"
                     : isProximo
                     ? "shadow-md ring-1 ring-emerald-500/30"
+                    : (agendado || ev.status === "previsto")
+                    ? "shadow-sm border-emerald-500/30"
                     : "bg-card/70 border-border/70 hover:border-border"
                 }`}
               >
@@ -740,8 +742,8 @@ export default function PushCronogramaTab() {
                         </Badge>
                       )}
                       {ev.status === "previsto" && (
-                        <Badge variant="outline" className="text-[10px] text-muted-foreground border-border">
-                          <CircleDashed className="w-3 h-3 mr-1" /> PREVISTO
+                        <Badge variant="outline" style={{ borderColor: "#10b981", color: "#10b981", backgroundColor: "rgba(16, 185, 129, 0.1)" }} className="text-[10px] font-bold">
+                          <Check className="w-3 h-3 mr-1" strokeWidth={3} /> ATIVO
                         </Badge>
                       )}
                       {naoEnviado && (
