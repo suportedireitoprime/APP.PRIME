@@ -803,9 +803,9 @@ function DashboardSection({ campaigns, loading, tipoFiltro, setTipoFiltro, onRef
     <div className="space-y-4">
       {/* Métricas de hoje — cards grandes */}
       <div className="grid grid-cols-2 gap-2">
-        <Card className="p-4 bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
+        <Card className="p-4 bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-blue-500/20">
           <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Enviadas hoje</div>
-          <div className="text-3xl font-bold text-primary mt-1">{totals.sent}</div>
+          <div className="text-3xl font-bold text-blue-500 mt-1">{totals.sent}</div>
           <div className="text-[11px] text-muted-foreground mt-1">{todayCampaigns.length} campanha(s)</div>
         </Card>
         <button
@@ -816,7 +816,7 @@ function DashboardSection({ campaigns, loading, tipoFiltro, setTipoFiltro, onRef
         >
           <Card className="p-4 bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border-emerald-500/20 hover:from-emerald-500/20 transition h-full">
             <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Abertas hoje</div>
-            <div className="text-3xl font-bold text-emerald-600 mt-1">{totals.opened}</div>
+            <div className="text-3xl font-bold text-emerald-500 mt-1">{totals.opened}</div>
             <div className="text-[11px] text-muted-foreground mt-1">{openRateToday}% · toque para ver</div>
           </Card>
         </button>
@@ -853,9 +853,9 @@ function DashboardSection({ campaigns, loading, tipoFiltro, setTipoFiltro, onRef
                 labelStyle={{ fontWeight: 600 }}
               />
               <Legend wrapperStyle={{ fontSize: 11 }} iconType="circle" />
-              <Line type="monotone" dataKey="enviadas" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 3 }} />
+              <Line type="monotone" dataKey="enviadas" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3 }} />
               <Line type="monotone" dataKey="abertas" stroke="#10b981" strokeWidth={2} dot={{ r: 3 }} />
-              <Line type="monotone" dataKey="convertidas" stroke="#a81f40" strokeWidth={2} dot={{ r: 3 }} />
+              <Line type="monotone" dataKey="convertidas" stroke="#f59e0b" strokeWidth={2} dot={{ r: 3 }} />
             </LineChart>
           </ResponsiveContainer>
         </div>
