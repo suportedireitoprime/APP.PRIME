@@ -358,12 +358,12 @@ body {
     --primary-light: 348 80% 60%;
     --ring: 348 80% 50%;
   }
-  /* Escopo de tema do módulo Questões — alinhado à cor de Direito Penal (#F87171) */
+  /* Escopo de tema do módulo Questões — alinhado à cor padrão (APP PRIME) */
   .theme-questoes {
-    --primary: 0 91% 71%;
+    --primary: 348 80% 50%;
     --primary-foreground: 0 0% 100%;
-    --primary-light: 0 92% 82%;
-    --ring: 0 91% 71%;
+    --primary-light: 348 80% 60%;
+    --ring: 348 80% 50%;
   }
   
   /* Escopo de tema do módulo Aprender — Vermelho Vivo, Luminous & Deep Dark */
