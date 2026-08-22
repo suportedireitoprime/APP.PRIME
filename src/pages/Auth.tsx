@@ -78,10 +78,7 @@ const AjudaSheet = ({ open, onClose }: { open: boolean, onClose: () => void }) =
   );
 };
 
-import { pickAsset, srcOf } from '@/lib/assetUrl';
-import logoOABnaRiscaAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
-import logoOABnaRiscaBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
-const logoOABnaRisca = pickAsset(logoOABnaRiscaBundled, srcOf(logoOABnaRiscaAsset));
+
 
 import authJudgeScene from '@/assets/auth-judge-scene.jpeg';
 
@@ -690,7 +687,7 @@ const Auth = () => {
           {/* Logo transparente e reflexo, fonte tipografia idêntica ao app */}
           <div className="flex flex-col items-center justify-center gap-4">
             <img
-              src={logoOABnaRisca}
+              src="/logo-prime.png"
               alt="Logo Direito Prime"
               className="w-32 h-32 xl:w-40 xl:h-40 object-contain drop-shadow-2xl relative z-10"
             />
