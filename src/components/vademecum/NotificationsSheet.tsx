@@ -339,11 +339,25 @@ export default function NotificationsSheet({ open, onClose }: Props) {
         }}
       >
         <header className="relative border-b border-border/50 bg-gradient-to-b from-primary/10 via-background to-background">
+          <style>{`
+            @keyframes bell-wiggle {
+              0%, 100% { transform: rotate(0deg); }
+              10%, 30%, 50% { transform: rotate(-10deg); }
+              20%, 40% { transform: rotate(10deg); }
+              60% { transform: rotate(0deg); }
+            }
+          `}</style>
           <div className="px-4 pt-4 pb-4 sm:px-5 sm:pt-5 sm:pb-5 flex items-start gap-3">
-            <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-primary/15 border border-primary/25 flex items-center justify-center shrink-0 shadow-sm">
-              <Bell className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+            <div className="relative w-12 h-12 flex items-center justify-center shrink-0">
+              <Bell 
+                className="w-7 h-7 text-foreground" 
+                style={{ 
+                  animation: unreadCount > 0 ? 'bell-wiggle 2s ease-in-out infinite' : 'none',
+                  transformOrigin: 'top center'
+                }} 
+              />
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 min-w-[20px] h-5 px-1.5 rounded-full bg-primary text-muted-foreground text-[10px] font-bold flex items-center justify-center border-2 border-background">
+                <span className="absolute top-1 right-1 min-w-[18px] h-4.5 px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center border-2 border-background">
                   {unreadCount > 99 ? '99+' : unreadCount}
                 </span>
               )}
@@ -370,9 +384,9 @@ export default function NotificationsSheet({ open, onClose }: Props) {
             <div className="px-4 sm:px-5 pb-3 flex justify-end">
               <button
                 onClick={markAllRead}
-                className="text-[12px] font-semibold text-primary hover:underline flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/25 active:scale-95 transition"
+                className="text-xs font-semibold text-muted-foreground hover:text-foreground flex items-center gap-1.5 px-4 py-2 rounded-xl bg-secondary/80 hover:bg-secondary transition-colors active:scale-95"
               >
-                <CheckCheck className="w-3.5 h-3.5" />
+                <CheckCheck className="w-4 h-4" />
                 Marcar todas como lidas
               </button>
             </div>
@@ -423,12 +437,12 @@ export default function NotificationsSheet({ open, onClose }: Props) {
                     </span>
                     <span className="w-1.5 h-1.5 rounded-full bg-primary" aria-label="não lida" />
                     <span
-                      className="ml-auto inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-primary/15 text-primary"
+                      className="ml-auto inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-md bg-secondary/80 text-muted-foreground"
                       title={abs}
                     >
                       <Clock className="w-2.5 h-2.5" />
                       {rel}
-                      <span className="opacity-60">· {abs}</span>
+                      <span className="opacity-70">· {abs}</span>
                     </span>
                   </div>
                   <p className="text-[13.5px] font-semibold text-foreground leading-snug line-clamp-2">
