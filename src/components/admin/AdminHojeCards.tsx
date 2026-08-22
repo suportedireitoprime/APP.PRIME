@@ -218,10 +218,17 @@ export function AdminHojeCards() {
       const trials = (data as any[]) || [];
       trials.forEach(r => {
         const subtitle = r.subtitle || '';
-        if (subtitle.toLowerCase().includes('anual')) {
+        const title = r.title || '';
+        const combined = (subtitle + ' ' + title).toLowerCase();
+        
+        if (combined.includes('anual')) {
           totalTrialValor += 297;
-        } else if (subtitle.toLowerCase().includes('mensal')) {
+        } else if (combined.includes('mensal')) {
           totalTrialValor += 39.90;
+        } else {
+          // If we can't tell (e.g. base_plan_id is null and display_name hides product_id),
+          // assume Annual since the main CTA in PremiumGate forces ?plano=anual&trial=1
+          totalTrialValor += 297;
         }
       });
     });
@@ -434,7 +441,7 @@ export function AdminHojeCards() {
             <Icon className="w-4 h-4 text-primary mb-1.5" />
             <div className="font-display text-xl font-bold text-foreground leading-none">
               {counts[id]}
-              {id === 'trial' && counts.trialValor > 0 && (
+              {id === 'trial' && (
                 <span className="block text-[10px] text-emerald-400 font-bold mt-1 opacity-90 truncate">
                   {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(counts.trialValor)}
                 </span>

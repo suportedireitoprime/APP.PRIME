@@ -74,6 +74,8 @@ interface PremiumGateProps {
   /** Texto extra tipo "Você já usou 1 de 1 narração hoje" */
   usageLabel?: string;
 }
+import { track } from '@/lib/analyticsEvents';
+import { logAreaEvent } from '@/lib/appEvents';
 
 const PremiumGate = ({
   open,
@@ -89,7 +91,15 @@ const PremiumGate = ({
   const shownTitle = title ?? info.title;
   const shownDesc = description ?? info.description;
   const [showBenefits, setShowBenefits] = useState(false);
-  useEffect(() => { if (!open) setShowBenefits(false); }, [open]);
+  
+  useEffect(() => { 
+    if (!open) {
+      setShowBenefits(false); 
+    } else {
+      track('assinatura_aberta', { modal: true, feature });
+      logAreaEvent('assinatura_aberta', { modal: true, feature });
+    }
+  }, [open, feature]);
 
   // Mensalidade do plano anual — a App Store exige o patamar de R$ 19,90.
   const isIOS = useMemo(() => Capacitor.getPlatform() === 'ios', []);
@@ -99,7 +109,6 @@ const PremiumGate = ({
 
   useEffect(() => {
     if (!open) {
-      setShowBenefits(false);
       return;
     }
     const loadPricing = async () => {
