@@ -54,7 +54,7 @@ def main():
     try:
         # 1. Atualizar status para processando
         print(f"Atualizando status no DB para 'processando' (ID: {livro_id})")
-        supabase.table("biblioteca_leitura_nativa").update({"status": "processando", "erro_detalhe": None}).eq("livro_id", livro_id).eq("livro_tabela", livro_tabela).execute()
+        supabase.table("biblioteca_leitura_nativa").update({"status": "processando", "etapa": "Iniciando worker e baixando PDF", "erro_detalhe": None}).eq("livro_id", livro_id).eq("livro_tabela", livro_tabela).execute()
         
         # 2. Baixar o PDF (Resolvendo Google Drive)
         direct_url = resolve_drive_pdf_url(pdf_url)
@@ -133,10 +133,10 @@ def main():
                     capitulos_lista.append(pg)
 
         for page_num in range(total_paginas):
-            if page_num % 50 == 0:
+            if page_num % 10 == 0 or page_num == total_paginas - 1:
                 print(f"Processando página {page_num + 1}/{total_paginas}...")
                 try:
-                    supabase.table("biblioteca_leitura_nativa").update({"progresso": page_num, "total_etapas": total_paginas}).eq("livro_id", livro_id).eq("livro_tabela", livro_tabela).execute()
+                    supabase.table("biblioteca_leitura_nativa").update({"progresso": page_num + 1, "total_etapas": total_paginas, "etapa": f"Extraindo pág. {page_num + 1}"}).eq("livro_id", livro_id).eq("livro_tabela", livro_tabela).execute()
                 except:
                     pass
 
