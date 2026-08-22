@@ -56,25 +56,13 @@ export default defineConfig(({ mode }) => ({
   optimizeDeps: {
     include: ["jeep-sqlite/loader", "jeep-sqlite"],
     exclude: ["@capacitor-community/sqlite"],
-    entries: ["index.html", "src/**/*.{js,jsx,ts,tsx}"],
+    entries: ["index.html"],
   },
 
   build: {
-    // Split heavy vendors so initial route doesn't ship them.
     rollupOptions: {
       output: {
-        manualChunks(id) {
-          if (!id.includes("node_modules")) return;
-          if (id.includes("framer-motion")) return "motion";
-          if (id.includes("reactflow") || id.includes("@xyflow")) return "flow";
-          if (id.includes("jspdf") || id.includes("react-pdf") || id.includes("pdfjs-dist")) return "pdf";
-          if (id.includes("tesseract.js")) return "ocr";
-          if (id.includes("@tanstack/react-virtual")) return "virtual";
-          if (id.includes("recharts") || id.includes("d3-")) return "charts";
-          if (id.includes("dexie")) return "dexie";
-          if (id.includes("fuse.js")) return "search";
-          if (id.includes("lucide-react")) return "icons";
-        },
+        // Letting Rollup handle chunking natively to avoid OOM
       },
     },
   },

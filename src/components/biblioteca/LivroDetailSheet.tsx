@@ -493,6 +493,7 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
             url={pdfUrlForReader || livro.download!}
             titulo={livro.titulo}
             livroId={String(livro.id)}
+            capaUrl={capaUrl}
             onClose={() => { setReaderMode(null); setPdfUrlForReader(null); }}
           />
         </ErrorBoundary>

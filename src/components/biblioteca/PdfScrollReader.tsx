@@ -68,6 +68,7 @@ interface Props {
   titulo: string;
   onClose: () => void;
   livroId?: number | string | null;
+  capaUrl?: string | null;
 }
 
 interface OutlineItem { titulo: string; pagina: number; nivel: number }
@@ -83,7 +84,7 @@ const MAX_ZOOM = 4;
  * Leitor de PDF com suporte a scroll contínuo e modo página dupla (lado a lado) no desktop.
  * Renderiza páginas em <canvas> conforme entram no viewport.
  */
-const PdfScrollReader = ({ url, titulo, onClose, livroId }: Props) => {
+const PdfScrollReader = ({ url, titulo, onClose, livroId, capaUrl }: Props) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const pdfRef = useRef<any>(null);
   const renderedRef = useRef<Set<number>>(new Set());
@@ -92,6 +93,7 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId }: Props) => {
   const startedAtRef = useRef<number>(Date.now());
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [loadingProgress, setLoadingProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [bookmark, setBookmark] = useState<number | null>(() => {
@@ -149,12 +151,7 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId }: Props) => {
         try {
           (task as any).onProgress = (p: { loaded: number; total: number }) => {
             if (p?.total) {
-              console.info('[PdfScrollReader] progress', {
-                url,
-                pct: Math.round((p.loaded / p.total) * 100),
-                loadedKb: Math.round(p.loaded / 1024),
-                totalKb: Math.round(p.total / 1024),
-              });
+              setLoadingProgress(Math.round((p.loaded / p.total) * 100));
             }
           };
         } catch {}
@@ -504,7 +501,13 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId }: Props) => {
   const progress = totalPages ? (currentPage / totalPages) * 100 : 0;
 
   const reader = (
-    <div className="fixed inset-0 z-[1300] h-[100dvh] max-h-[100dvh] bg-neutral-900 flex flex-col overflow-hidden">
+    <motion.div
+      initial={{ opacity: 0, y: 30, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 20, scale: 0.98 }}
+      transition={{ type: 'spring', stiffness: 260, damping: 28 }}
+      className="fixed inset-0 z-[1300] h-[100dvh] max-h-[100dvh] bg-neutral-900 flex flex-col overflow-hidden"
+    >
       {/* Prompt: Continuar de onde parou */}
       <AnimatePresence>
         {promptContinuarPage != null && (
@@ -614,9 +617,68 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId }: Props) => {
           onTouchEnd={onTouchEnd}
         >
           {loading && (
-            <div className="flex flex-col items-center justify-center h-full text-white/70 gap-2">
-              <Loader2 className="w-8 h-8 animate-spin" />
-              <p className="text-xs">Carregando PDF…</p>
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-neutral-950 text-white z-[50]">
+              {capaUrl && (
+                <div className="absolute inset-0 z-0 overflow-hidden opacity-30">
+                  <img src={capaUrl} alt="" className="w-full h-full object-cover blur-[100px] scale-125 mix-blend-screen" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/60 to-neutral-950" />
+                </div>
+              )}
+              
+              <div className="z-10 flex flex-col items-center w-full max-w-xs px-6">
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{ type: 'spring', damping: 20, stiffness: 200 }}
+                  className="relative w-32 h-44 mb-8 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.8)] rounded-lg overflow-hidden ring-1 ring-white/10"
+                >
+                  {capaUrl ? (
+                    <img src={capaUrl} alt="Capa" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-neutral-800 flex items-center justify-center">
+                      <List className="w-10 h-10 text-white/20" />
+                    </div>
+                  )}
+                  
+                  {/* Sweep loading overlay */}
+                  <motion.div 
+                    initial={{ top: '100%' }}
+                    animate={{ top: `${100 - loadingProgress}%` }}
+                    className="absolute inset-x-0 bottom-0 bg-primary/20 backdrop-blur-[2px] transition-all duration-300 ease-out"
+                  />
+                </motion.div>
+
+                <motion.h3 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="font-display font-semibold text-lg text-center mb-1 text-white/90"
+                >
+                  {titulo}
+                </motion.h3>
+                
+                <motion.p 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="text-xs text-white/50 mb-6 font-medium uppercase tracking-widest"
+                >
+                  Preparando documento...
+                </motion.p>
+                
+                <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden shadow-inner">
+                  <motion.div 
+                    className="h-full bg-primary"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${loadingProgress}%` }}
+                    transition={{ ease: "easeOut" }}
+                  />
+                </div>
+                <div className="w-full flex justify-between mt-2 text-[10px] text-white/40 font-semibold tabular-nums">
+                  <span>Carregando</span>
+                  <span>{loadingProgress}%</span>
+                </div>
+              </div>
             </div>
           )}
           {error && (
@@ -799,7 +861,7 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId }: Props) => {
               className="w-12 h-12 rounded-full flex items-center justify-center text-white hover:bg-white/10 transition"
               title="Procurar palavra"
             >
-              <Search className="w-[18px] h-[18px]" />
+              <Search className="w-5 h-5" />
             </button>
             <button
               onClick={() => setShowSumario(true)}
