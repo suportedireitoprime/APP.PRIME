@@ -98,6 +98,22 @@ function stripRedacao(text: string): string {
   return text.replace(/\s*\((?:Redação|Incluído|Acrescido|Alterado|Vide|Regulamento|Vigência|Vetado)[^)]*\)/gi, '');
 }
 
+const MAGIC_COLORS: Record<string, string> = {
+  amarelo: 'rgba(220,38,38, 0.55)',
+  verde: 'rgba(34, 197, 94, 0.55)',
+  azul: 'rgba(59, 130, 246, 0.55)',
+  rosa: 'rgba(236, 72, 153, 0.55)',
+  laranja: 'rgba(220,38,38, 0.55)',
+};
+
+const MAGIC_LABELS: Record<string, string> = {
+  amarelo: 'Chave',
+  verde: 'Exceção',
+  azul: 'Efeito',
+  rosa: 'Termo',
+  laranja: 'Pegadinha',
+};
+
 // Deve acompanhar NARRATION_CACHE_VERSION da edge function narrar-artigo
 const NARRACAO_CACHE_VERSION = 'v6-pronuncia-juridica';
 
@@ -172,7 +188,7 @@ function alinharTimingsComTexto(
   for (let i = 0; i < renderedTokens.length; i++) {
     if (mapeado[i]) { resultado.push({ word: renderedTokens[i], ...mapeado[i]! }); continue; }
     // busca âncoras anterior e posterior
-    let anteriorFim = i > 0 && resultado[i - 1] ? resultado[i - 1].end : timings[melhorInicio].start;
+    const anteriorFim = i > 0 && resultado[i - 1] ? resultado[i - 1].end : timings[melhorInicio].start;
     let proxIdx = -1;
     for (let j = i + 1; j < renderedTokens.length; j++) {
       if (mapeado[j]) { proxIdx = j; break; }
@@ -499,7 +515,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
     import('@/lib/appEvents').then(({ appEvents }) =>
       appEvents.viewArtigo({ tabela: tabelaNome, numero: artigo.numero })
     ).catch(() => {});
-  }, [artigo?.id, tabelaNome]);
+  }, [artigo?.id, artigo?.numero, tabelaNome]);
 
   // Prefetch de jurisprudência: começa em background assim que o artigo abre,
   // para a tela abrir instantaneamente quando o usuário clicar em "Jurisprudência".
@@ -513,7 +529,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         .catch(() => {});
     }, 600);
     return () => clearTimeout(t);
-  }, [artigo?.id, tabelaNome]);
+  }, [artigo?.id, artigo?.numero, tabelaNome]);
 
   // Prefetch das demais funções (chunks + dados) assim que o artigo abre,
   // para que cada item do menu "Funções" abra instantaneamente.
@@ -664,22 +680,6 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
   // Bump manual para forçar releitura da contagem depois de gravar anotações
   // (o efeito abaixo roda antes das inserções do grifo mágico terminarem).
   const [anotacoesRefreshTick, setAnotacoesRefreshTick] = useState(0);
-
-  const MAGIC_COLORS: Record<string, string> = {
-    amarelo: 'rgba(220,38,38, 0.55)',
-    verde: 'rgba(34, 197, 94, 0.55)',
-    azul: 'rgba(59, 130, 246, 0.55)',
-    rosa: 'rgba(236, 72, 153, 0.55)',
-    laranja: 'rgba(220,38,38, 0.55)',
-  };
-
-  const MAGIC_LABELS: Record<string, string> = {
-    amarelo: 'Chave',
-    verde: 'Exceção',
-    azul: 'Efeito',
-    rosa: 'Termo',
-    laranja: 'Pegadinha',
-  };
 
   // Persiste grifos IA em `artigos_grifos` (1 linha/artigo) e cria uma
   // anotação por grifo em `artigos_anotacoes`, com dedupe por texto.
@@ -2396,13 +2396,11 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
               charPos += children.length;
               if (result.length === 1 && typeof result[0] === 'string') return node; // unchanged
               const { children: _, ...restProps } = el.props;
-              // @ts-ignore
               return <el.type {...restProps} key={el.key || `mn${idx}`}>{result}</el.type>;
             }
             if (Array.isArray(children)) {
               const newChildren = children.map((c: React.ReactNode, ci: number) => processNode(c, idx * 100 + ci));
               const { children: _, ...restProps } = el.props;
-              // @ts-ignore
               return <el.type {...restProps} key={el.key || `mn${idx}`}>{newChildren}</el.type>;
             }
           }
