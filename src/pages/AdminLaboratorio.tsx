@@ -7,9 +7,11 @@ import AnimacaoPixi from '@/components/laboratorio/AnimacaoPixi';
 import AnimacaoThreeJs from '@/components/laboratorio/AnimacaoThreeJs';
 import DynamicSceneLoader from '@/components/laboratorio/DynamicSceneLoader';
 import AIGeneratorPanel from '@/components/laboratorio/AIGeneratorPanel';
+import Criacao3DPanel from '@/components/laboratorio/Criacao3DPanel';
 import { motion, AnimatePresence } from 'framer-motion';
 import FilosofoPresentationOverlay from '@/components/vademecum/FilosofoPresentationOverlay';
 
+const CenaArtigo1 = lazy(() => import('@/components/laboratorio/cenas/CenaArtigo1'));
 const CenaArtigo2 = lazy(() => import('@/components/laboratorio/cenas/CenaArtigo2'));
 const CenaArtigo3 = lazy(() => import('@/components/laboratorio/cenas/CenaArtigo3'));
 const CenaArtigo4 = lazy(() => import('@/components/laboratorio/cenas/CenaArtigo4'));
@@ -22,7 +24,7 @@ const CenaArtigo312 = lazy(() => import('@/components/laboratorio/cenas/CenaArti
 
 const AdminLaboratorio = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'cenas' | 'generator' | 'remotion' | null>(null);
+  const [activeTab, setActiveTab] = useState<'cenas' | 'generator' | 'remotion' | 'criacao-3d' | null>(null);
   const [activeEngine, setActiveEngine] = useState('threejs');
   const [activeArtigoId, setActiveArtigoId] = useState<number | null>(null);
   const [showPenalModal, setShowPenalModal] = useState(false);
@@ -39,6 +41,7 @@ const AdminLaboratorio = () => {
   ];
 
   const artigosCurados = [
+    { artigo: 'Art. 1º - Princípio da Legalidade', desc: 'Não há crime sem lei anterior que o defina.', engineId: 'art1' },
     { artigo: 'Art. 2º - Abolitio Criminis', desc: 'Ninguém pode ser punido por fato que lei posterior deixa de considerar crime.', engineId: 'art2' },
     { artigo: 'Art. 3º - Lei Temporária', desc: 'Aplica-se ao fato praticado durante sua vigência, mesmo após revogada.', engineId: 'art3' },
     { artigo: 'Art. 4º - Tempo do Crime (3D)', desc: 'Considera-se praticado o crime no momento da ação ou omissão.', engineId: 'art4' },
@@ -94,6 +97,25 @@ const AdminLaboratorio = () => {
                   </div>
                 </div>
                 <ChevronRight className="text-muted-foreground group-hover:text-primary transition-colors relative z-10 flex-shrink-0" size={24} />
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setActiveTab('criacao-3d')}
+                className="group relative overflow-hidden bg-secondary/20 border border-border/50 hover:border-pink-500/50 rounded-2xl p-6 flex items-center justify-between transition-all w-full shadow-lg"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-pink-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="flex items-center gap-5 relative z-10 text-left w-full">
+                  <div className="w-14 h-14 rounded-full bg-pink-500/20 flex items-center justify-center text-pink-400 group-hover:bg-pink-500 group-hover:text-white transition-colors shrink-0">
+                    <Wand2 size={28} />
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="text-xl font-bold text-white mb-1 group-hover:text-pink-400 transition-colors">Criação 3D</h2>
+                    <p className="text-sm text-muted-foreground line-clamp-2">Gere novas cenas cinematográficas em Three.js guiadas por IA para os Artigos Penais.</p>
+                  </div>
+                </div>
+                <ChevronRight className="text-muted-foreground group-hover:text-pink-400 transition-colors relative z-10 flex-shrink-0" size={24} />
               </motion.button>
 
               <motion.button
@@ -222,6 +244,7 @@ const AdminLaboratorio = () => {
                     {activeEngine === 'css' && <AnimacaoExemplo />}
                     
                     <Suspense fallback={<div className="w-full h-full flex items-center justify-center text-muted-foreground">Carregando cena curada...</div>}>
+                      {activeEngine === 'art1' && <CenaArtigo1 />}
                       {activeEngine === 'art2' && <CenaArtigo2 />}
                       {activeEngine === 'art3' && <CenaArtigo3 />}
                       {activeEngine === 'art4' && <CenaArtigo4 />}
@@ -261,6 +284,17 @@ const AdminLaboratorio = () => {
                     </motion.div>
                   )}
                 </div>
+              )}
+
+              {activeTab === 'criacao-3d' && (
+                <Criacao3DPanel 
+                  onBack={() => setActiveTab(null)} 
+                  onPlayScene={(id) => {
+                    setActiveTab('cenas');
+                    setActiveEngine('art' + id);
+                    setActiveArtigoId(id);
+                  }}
+                />
               )}
 
               {/* Tab 2: Gerador de IA */}

@@ -286,6 +286,7 @@ import BibliotecaTrilhas from "./pages/BibliotecaTrilhas.tsx";
 
 const CompressaoImagens = lazy(() => import("./pages/CompressaoImagens.tsx"));
 const AdminFuncoesAssinantes = lazy(() => import("./pages/AdminFuncoesAssinantes.tsx"));
+const AdminInstagramPosts = lazy(() => import("./pages/AdminInstagramPosts.tsx"));
 const AdminVadeMecum = lazy(() => import("./pages/AdminVadeMecum.tsx"));
 const AdminLembretes = lazy(() => import("./pages/AdminLembretes.tsx"));
 const AdminLembretesBiblioteca = lazy(() => import("./pages/AdminLembretesBiblioteca.tsx"));
@@ -348,7 +349,7 @@ const ModoOfflineLeisCantadas = lazy(() => import("./pages/ModoOfflineLeisCantad
 const ModoOfflineApresentacoes = lazy(() => import("./pages/ModoOfflineApresentacoes.tsx"));
 const AdminSecretsDownload = lazy(() => import("./pages/AdminSecretsDownload.tsx"));
 const AdminAppleCsr = lazy(() => import("./pages/AdminAppleCsr.tsx"));
-const AdminPassoAPassoLojas = lazy(() => import("./pages/AdminPassoAPassoLojas.tsx"));
+
 const AdminHandoffIA = lazy(() => import("./pages/AdminHandoffIA.tsx"));
 const AdminTransferenciaApp = lazy(() => import("./pages/AdminTransferenciaApp.tsx"));
 const BoletinsJuridicos = lazy(routePrefetch.boletins);
@@ -974,6 +975,7 @@ function AnimatedRoutes() {
           
           <Route path="/compressao-imagens" element={<ProtectedRoute><PageTransition><CompressaoImagens /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-funcoes" element={<ProtectedRoute><PageTransition><AdminFuncoes /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin-instagram-posts" element={<ProtectedRoute><PageTransition><AdminInstagramPosts /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-avaliacao-loja" element={<ProtectedRoute><PageTransition><AdminAvaliacaoLoja /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-funcoes-assinantes" element={<ProtectedRoute><PageTransition><AdminFuncoesAssinantes /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-vade-mecum" element={<ProtectedRoute><PageTransition><AdminVadeMecum /></PageTransition></ProtectedRoute>} />
@@ -1066,8 +1068,7 @@ function AnimatedRoutes() {
           <Route path="/modo-offline/apresentacoes" element={<ProtectedRoute><PageTransition><ModoOfflineApresentacoes /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-secrets" element={<ProtectedRoute><PageTransition><AdminSecretsDownload /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-apple-csr" element={<ProtectedRoute><PageTransition><AdminAppleCsr /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-passo-a-passo-lojas" element={<ProtectedRoute><PageTransition><AdminPassoAPassoLojas /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-lojas" element={<ProtectedRoute><PageTransition><AdminPassoAPassoLojas /></PageTransition></ProtectedRoute>} />
+
           <Route path="/admin-handoff" element={<ProtectedRoute><PageTransition><AdminHandoffIA /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-transferencia-app" element={<ProtectedRoute><PageTransition><AdminTransferenciaApp /></PageTransition></ProtectedRoute>} />
           <Route path="/assistente" element={<ProtectedRoute><PageTransition><AssistenteApp /></PageTransition></ProtectedRoute>} />

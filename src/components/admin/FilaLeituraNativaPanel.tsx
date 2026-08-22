@@ -42,9 +42,12 @@ interface Props {
   /** Restringe a fila a uma coleção/categoria (tabela do livro). */
   livroTabela?: string;
   titulo?: string;
+  /** Se a fila estiver vazia ao rodar, tenta enfileirar os pendentes automaticamente. */
+  onAutoEnqueue?: () => Promise<boolean>;
 }
 
-export default function FilaLeituraNativaPanel({ onRefresh, livroTabela, titulo }: Props) {
+export default function FilaLeituraNativaPanel(props: Props) {
+  const { onRefresh, livroTabela, titulo } = props;
   const [counts, setCounts] = useState<Counts>(ZERO);
   const [recentes, setRecentes] = useState<JobRow[]>([]);
   const logStorageKey = `fila-leitura-nativa-logs:${livroTabela ?? 'todas'}`;
@@ -236,8 +239,22 @@ export default function FilaLeituraNativaPanel({ onRefresh, livroTabela, titulo 
       toast.info('Fila pausada');
       return;
     }
-    setSessao({ ciclos: 0, iniciados: 0, ok: 0, erro: 0, faltam: counts.agendado, etapa: 'iniciando' });
-    addLog(`Iniciando processamento${titulo ? ` de ${titulo}` : ''}… (continua rodando no servidor)`);
+
+    let agendadosAgora = counts.agendado;
+    if (agendadosAgora === 0 && typeof props.onAutoEnqueue === 'function') {
+      const ok = await props.onAutoEnqueue();
+      if (!ok) return; // falhou ao enfileirar ou n tinha nada
+      const c = await carregarFila();
+      agendadosAgora = c.agendado;
+    }
+
+    if (agendadosAgora === 0) {
+      toast.warning('Nenhum livro agendado na fila.');
+      return;
+    }
+
+    setSessao({ ciclos: 0, iniciados: 0, ok: 0, erro: 0, faltam: agendadosAgora, etapa: 'iniciando' });
+    addLog(`Iniciando processamento${props.titulo ? ` de ${props.titulo}` : ''}… (continua rodando no servidor)`);
     await gravarEstado(true);
     const job = await chutarWorker();
     if (!job) { await gravarEstado(false); return; }

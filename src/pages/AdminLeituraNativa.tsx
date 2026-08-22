@@ -148,7 +148,7 @@ const AdminLeituraNativa = () => {
 
   async function enfileirar(alvos: LivroLeituraItem[]) {
     const comPdf = alvos.filter((it) => it.download || it.link);
-    if (!comPdf.length) { toast.error('Nenhum livro com PDF disponível'); return; }
+    if (!comPdf.length) { toast.error('Nenhum livro com PDF disponível'); return false; }
     const rows = comPdf.map((it, idx) => ({
       livro_tabela: it.colecao.table,
       livro_id: String(it.id),
@@ -158,9 +158,10 @@ const AdminLeituraNativa = () => {
       scheduled_for: new Date(Date.now() + idx * 1000).toISOString(),
     }));
     const { error } = await supabase.from('biblioteca_leitura_jobs' as any).insert(rows);
-    if (error) { toast.error(error.message); return; }
-    toast.success(`${rows.length} livro(s) enfileirados — use "Rodar fila agora"`);
+    if (error) { toast.error(error.message); return false; }
+    toast.success(`${rows.length} livro(s) enfileirados`);
     setSelected(new Set());
+    return true;
   }
 
 
@@ -285,17 +286,23 @@ const AdminLeituraNativa = () => {
                             size="sm"
                             className="bg-yellow-400 text-primary-foreground hover:bg-yellow-300"
                             disabled={!pendentesGrupo.length}
-                            onClick={() => enfileirar(pendentesGrupo)}
+                            onClick={async () => {
+                              const ok = await enfileirar(pendentesGrupo);
+                              if (ok) toast.info('Livros enfileirados. Role para baixo e clique em "Rodar fila".');
+                            }}
                           >
-                            <Sparkles className="h-3 w-3 mr-1" /> Gerar todos ({pendentesGrupo.length})
+                            <Sparkles className="h-3 w-3 mr-1" /> Enfileirar todos ({pendentesGrupo.length})
                           </Button>
                           <Button
                             size="sm"
                             variant="outline"
                             disabled={!selecionadosGrupo.length}
-                            onClick={() => enfileirar(selecionadosGrupo)}
+                            onClick={async () => {
+                              const ok = await enfileirar(selecionadosGrupo);
+                              if (ok) toast.info('Livros enfileirados. Role para baixo e clique em "Rodar fila".');
+                            }}
                           >
-                            <Sparkles className="h-3 w-3 mr-1" /> Gerar selecionados ({selecionadosGrupo.length})
+                            <Sparkles className="h-3 w-3 mr-1" /> Enfileirar selecionados ({selecionadosGrupo.length})
                           </Button>
                           <Button size="sm" variant="ghost" onClick={() => toggleGrupo(g)}>
                             <ListChecks className="h-3 w-3 mr-1" /> Selecionar todos
@@ -311,6 +318,7 @@ const AdminLeituraNativa = () => {
                         onRefresh={reload}
                         livroTabela={g.itens[0]?.colecao.table}
                         titulo={g.label}
+                        onAutoEnqueue={pendentesGrupo.length > 0 ? () => enfileirar(pendentesGrupo) : undefined}
                       />
 
                       {(() => {

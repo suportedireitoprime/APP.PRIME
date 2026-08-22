@@ -31,7 +31,6 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   '/admin-handoff': () => import('./AdminHandoffIA'),
   '/admin-transferencia-app': () => import('./AdminTransferenciaApp'),
   '/admin-secrets': () => import('./AdminSecretsDownload'),
-  '/admin-passo-a-passo-lojas': () => import('./AdminPassoAPassoLojas'),
   '/admin-blog-edicao': () => import('./AdminBlogEdicao'),
   '/admin-design-imagens': () => import('./AdminDesignImagens'),
   '/admin-avaliacao-loja': () => import('./AdminAvaliacaoLoja'),
@@ -134,6 +133,16 @@ const CATEGORIES: Category[] = [
     icon: Users,
     items: [
       { id: 'admin-assinantes', label: 'Assinantes Asaas', icon: Users, desc: 'Lista de todos os assinantes do Asaas', route: '/admin-assinantes' },
+    ],
+  },
+  {
+    id: 'instagram-posts-cat',
+    title: 'Instagram Posts',
+    desc: 'Criação de carrosséis de imagens com IA',
+    icon: ImageIcon,
+    route: '/admin-instagram-posts',
+    items: [
+      { id: 'instagram-posts', label: 'Instagram Posts', icon: ImageIcon, desc: 'Gerar carrosséis com IA no padrão Vade Mecum', route: '/admin-instagram-posts' },
     ],
   },
   {
@@ -269,16 +278,7 @@ const CATEGORIES: Category[] = [
       { id: 'monitor-apis', label: 'APIs', icon: Activity, desc: 'Funções que usam IA (custo, manual/auto)', route: '/admin-monitor-apis' },
     ],
   },
-  {
-    id: 'passo-a-passo-lojas',
-    title: 'Passo a Passo Lojas',
-    desc: 'Apple App Store e Google Play — publicação do Direito Prime',
-    icon: Store,
-    route: '/admin-passo-a-passo-lojas',
-    items: [
-      { id: 'admin-passo-a-passo-lojas', label: 'Passo a Passo Lojas', icon: Store, desc: 'Guia com 25 passos para publicar no Google Play e App Store', route: '/admin-passo-a-passo-lojas' },
-    ],
-  },
+
 
   {
     id: 'horus-exclusivo',

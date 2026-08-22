@@ -304,25 +304,21 @@ const AdminMonitorUsuarios = () => {
         .from('user_activity_log')
         .select('*')
         .gte('last_seen_at', fiveMinAgo)
-        .not('email', 'in', ADMIN_EMAILS_LIST)
         .order('last_seen_at', { ascending: false }),
       supabase
         .from('user_activity_log')
         .select('*')
         .gte('last_seen_at', startOfDay.toISOString())
-        .not('email', 'in', ADMIN_EMAILS_LIST)
         .order('last_seen_at', { ascending: false }),
       supabase
         .from('user_activity_log')
         .select('*')
         .gte('last_seen_at', startOfWeek.toISOString())
-        .not('email', 'in', ADMIN_EMAILS_LIST)
         .order('last_seen_at', { ascending: false }),
       supabase
         .from('user_activity_log')
         .select('*')
         .gte('last_seen_at', startOfMonth.toISOString())
-        .not('email', 'in', ADMIN_EMAILS_LIST)
         .order('last_seen_at', { ascending: false }),
       supabase
         .from('profiles')
@@ -337,10 +333,10 @@ const AdminMonitorUsuarios = () => {
       supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('is_premium', true),
     ]);
 
-    if (r5.data) setLast5min(r5.data as ActivityRow[]);
-    if (rToday.data) setToday(rToday.data as ActivityRow[]);
-    if (rWeek.data) setWeekData(rWeek.data as ActivityRow[]);
-    if (rMonth.data) setMonthData(rMonth.data as ActivityRow[]);
+    if (r5.data) setLast5min((r5.data as ActivityRow[]).filter(r => !isAdminEmail(r.email)));
+    if (rToday.data) setToday((rToday.data as ActivityRow[]).filter(r => !isAdminEmail(r.email)));
+    if (rWeek.data) setWeekData((rWeek.data as ActivityRow[]).filter(r => !isAdminEmail(r.email)));
+    if (rMonth.data) setMonthData((rMonth.data as ActivityRow[]).filter(r => !isAdminEmail(r.email)));
     setSignupsToday(rSignups.count ?? 0);
     setTrialClicksToday(rTrial.count ?? 0);
     setTotalUsers(rTotal.count ?? 0);
@@ -365,13 +361,12 @@ const AdminMonitorUsuarios = () => {
       .select('user_id, email, display_name, initial_route, started_at')
       .gte('started_at', start.toISOString())
       .lt('started_at', end.toISOString())
-      .not('email', 'in', ADMIN_EMAILS_LIST)
       .order('started_at', { ascending: false })
       .limit(2000);
     if (data) {
       // Normaliza pro shape que o resto do arquivo já espera (ActivityRow)
       setDateUsers(
-        (data as any[]).map((r) => ({
+        (data as any[]).filter(r => !isAdminEmail(r.email)).map((r) => ({
           user_id: r.user_id,
           email: r.email,
           display_name: r.display_name,
@@ -402,13 +397,12 @@ const AdminMonitorUsuarios = () => {
     // Complementar: rotas visitadas (usa user_activity_log como fallback).
     const { data: activity } = await supabase
       .from('user_activity_log')
-      .select('current_route, last_seen_at')
+      .select('current_route, last_seen_at, email')
       .eq('user_id', user.id)
-      .not('email', 'in', ADMIN_EMAILS_LIST)
       .order('last_seen_at', { ascending: true });
 
     const sess = ((sessions ?? []) as unknown) as Array<{ initial_route: string | null; started_at: string }>;
-    const acts = ((activity ?? []) as unknown) as Array<{ current_route: string | null; last_seen_at: string }>;
+    const acts = ((activity ?? []).filter((a: any) => !isAdminEmail(a.email)) as unknown) as Array<{ current_route: string | null; last_seen_at: string }>;
 
     // Contagem de acessos = número de sessions (mínimo 1 se houver activity)
     const totalAccesses = sess.length > 0 ? sess.length : acts.length;

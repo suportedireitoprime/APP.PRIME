@@ -740,7 +740,7 @@ function DashboardSection({ campaigns, loading, tipoFiltro, setTipoFiltro, onRef
   setTipoFiltro: (v: string) => void;
   onRefresh: () => void;
   onOpenDetail: (c: Campaign) => void;
-  onOpenOpensHistory: () => void;
+  onOpenOpensToday: () => void;
 }) {
   const todayStart = useMemo(() => {
     const d = new Date(); d.setHours(0, 0, 0, 0); return d;
@@ -810,7 +810,7 @@ function DashboardSection({ campaigns, loading, tipoFiltro, setTipoFiltro, onRef
         </Card>
         <button
           type="button"
-          onClick={onOpenOpensHistory}
+          onClick={onOpenOpensToday}
           className="text-left focus:outline-none focus:ring-2 focus:ring-emerald-500/40 rounded-xl"
           aria-label="Ver quem abriu"
         >
