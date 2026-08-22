@@ -22,6 +22,8 @@ interface Row {
   avatarUrl?: string | null;
   isPremium?: boolean;
   funcaoPreferida?: string | null;
+  planValue?: number;
+  planTag?: { plano: string, status: string, expires_at: string | null };
 }
 
 const ProviderTag = ({ provider }: { provider?: string | null }) => {
@@ -214,24 +216,38 @@ export function AdminHojeCards() {
       totalTrial += m.trial || 0;
     });
 
+    const allTrialUsers = new Set<string>();
     trialResults.forEach(({ data }) => {
       const trials = (data as any[]) || [];
       trials.forEach(r => {
-        const subtitle = r.subtitle || '';
-        const title = r.title || '';
-        const combined = (subtitle + ' ' + title).toLowerCase();
-        
-        if (combined.includes('anual')) {
-          totalTrialValor += 297;
-        } else if (combined.includes('mensal')) {
-          totalTrialValor += 39.90;
-        } else {
-          // If we can't tell (e.g. base_plan_id is null and display_name hides product_id),
-          // assume Annual since the main CTA in PremiumGate forces ?plano=anual&trial=1
-          totalTrialValor += 297;
-        }
+        if (r.user_id) allTrialUsers.add(r.user_id);
       });
     });
+
+    if (allTrialUsers.size > 0) {
+      try {
+        const { data: enriched } = await supabase.functions.invoke('admin-play-trials', { body: { user_ids: Array.from(allTrialUsers) } });
+        if (enriched && Array.isArray(enriched)) {
+          const map = new Map(enriched.map((e: any) => [e.user_id, e]));
+          allTrialUsers.forEach(uid => {
+            const sub = map.get(uid);
+            if (sub) {
+              if (sub.product_id?.includes('mensal')) {
+                totalTrialValor += 39.90;
+              } else {
+                totalTrialValor += 297;
+              }
+            } else {
+              totalTrialValor += 297;
+            }
+          });
+        } else {
+          totalTrialValor += (allTrialUsers.size * 297);
+        }
+      } catch (err) {
+        totalTrialValor += (allTrialUsers.size * 297);
+      }
+    }
 
     // online and online5m only make sense for 'hoje' conceptually, but we sum them if it's multiple days? 
     // Actually, distinct users online over 7 days is hard to calculate without a distinct query.
@@ -315,12 +331,12 @@ export function AdminHojeCards() {
                 const isAnual = sub.product_id?.includes('anual');
                 const isMensal = sub.product_id?.includes('mensal');
                 const plano = isAnual ? 'Anual' : isMensal ? 'Mensal' : (sub.product_id || 'Plano');
-                let status = 'ACTIVE';
+                let status = 'Ativo';
                 if (sub.status === 'SUBSCRIPTION_STATE_CANCELED') status = 'Cancelado';
                 else if (sub.status === 'SUBSCRIPTION_STATE_ACTIVE') status = 'Ativo';
                 else if (sub.status) status = sub.status.replace('SUBSCRIPTION_STATE_', '');
                 
-                let txt = `${plano} · ${status}`;
+                let expiresStr = null;
                 if (sub.expires_at) {
                   const d = new Date(sub.expires_at);
                   const dia = d.getDate().toString().padStart(2, '0');
@@ -328,9 +344,14 @@ export function AdminHojeCards() {
                   const ano = d.getFullYear().toString().slice(2);
                   const h = d.getHours().toString().padStart(2, '0');
                   const m = d.getMinutes().toString().padStart(2, '0');
-                  txt += ` (Exp: ${dia}/${mes}/${ano} ${h}:${m})`;
+                  expiresStr = `${dia}/${mes}/${ano} ${h}:${m}`;
                 }
-                r.subtitle = txt;
+                
+                r.planValue = isMensal ? 39.90 : 297;
+                r.planTag = { plano, status, expires_at: expiresStr };
+              } else {
+                r.planValue = 297;
+                r.planTag = { plano: 'Anual', status: 'Ativo', expires_at: null };
               }
             });
           }
@@ -584,9 +605,34 @@ export function AdminHojeCards() {
                           </span>
                         )}
                       </div>
-                      <div className="font-body text-[11.5px] text-muted-foreground truncate mt-0.5">
-                        {r.email && <span className="mr-1.5 opacity-80">{r.email}</span>}
-                        {r.subtitle}
+                      <div className="flex flex-col gap-1.5 mt-1">
+                        <div className="font-body text-[11px] text-muted-foreground truncate">
+                          {r.email && <span className="opacity-80">{r.email}</span>}
+                          {!r.planTag && r.subtitle && <span className="ml-1.5">{r.subtitle}</span>}
+                        </div>
+                        {r.planTag && (
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="inline-flex items-center rounded-md bg-secondary border border-border/50 px-1.5 py-0.5 text-[9.5px] font-bold text-foreground">
+                              {r.planTag.plano.toUpperCase()}
+                            </span>
+                            <span className="inline-flex items-center rounded-md bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 text-[10px] font-bold text-emerald-400">
+                              {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(r.planValue || 0)}
+                            </span>
+                            <span className={cn(
+                              "inline-flex items-center rounded-md border px-1.5 py-0.5 text-[9.5px] font-bold",
+                              r.planTag.status.toLowerCase() === 'ativo' ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' :
+                              r.planTag.status.toLowerCase() === 'cancelado' ? 'bg-rose-500/10 border-rose-500/20 text-rose-400' :
+                              'bg-secondary/50 border-border/50 text-muted-foreground'
+                            )}>
+                              {r.planTag.status.toUpperCase()}
+                            </span>
+                            {r.planTag.expires_at && (
+                              <span className="inline-flex items-center text-[10px] font-medium text-muted-foreground ml-0.5 opacity-80">
+                                Até {r.planTag.expires_at}
+                              </span>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </div>
                     <ProviderTag provider={r.provider} />
