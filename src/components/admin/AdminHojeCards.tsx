@@ -302,6 +302,43 @@ export function AdminHojeCards() {
         avatarUrl: r.avatar_url,
         isPremium: r.is_premium,
       })).filter(r => r.email !== 'wn7corporation@gmail.com' && r.email !== 'suporte@direitoprime.com.br' && r.email !== 'wn7juridico@gmail.com');
+
+      if (id === 'trial' && list.length > 0) {
+        const userIds = list.map(r => r.userId).filter(Boolean);
+        try {
+          const { data: enriched } = await supabase.functions.invoke('admin-play-trials', { body: { user_ids: userIds } });
+          if (enriched && Array.isArray(enriched)) {
+            const map = new Map(enriched.map((e: any) => [e.user_id, e]));
+            list.forEach(r => {
+              const sub = map.get(r.userId);
+              if (sub) {
+                const isAnual = sub.product_id?.includes('anual');
+                const isMensal = sub.product_id?.includes('mensal');
+                const plano = isAnual ? 'Anual' : isMensal ? 'Mensal' : (sub.product_id || 'Plano');
+                let status = 'ACTIVE';
+                if (sub.status === 'SUBSCRIPTION_STATE_CANCELED') status = 'Cancelado';
+                else if (sub.status === 'SUBSCRIPTION_STATE_ACTIVE') status = 'Ativo';
+                else if (sub.status) status = sub.status.replace('SUBSCRIPTION_STATE_', '');
+                
+                let txt = `${plano} · ${status}`;
+                if (sub.expires_at) {
+                  const d = new Date(sub.expires_at);
+                  const dia = d.getDate().toString().padStart(2, '0');
+                  const mes = (d.getMonth() + 1).toString().padStart(2, '0');
+                  const ano = d.getFullYear().toString().slice(2);
+                  const h = d.getHours().toString().padStart(2, '0');
+                  const m = d.getMinutes().toString().padStart(2, '0');
+                  txt += ` (Exp: ${dia}/${mes}/${ano} ${h}:${m})`;
+                }
+                r.subtitle = txt;
+              }
+            });
+          }
+        } catch (err) {
+          console.error("Falha ao enriquecer trials", err);
+        }
+      }
+
       setRows(list);
       if (sameDay(date, new Date())) {
         const seen = readSeen(id, date);
