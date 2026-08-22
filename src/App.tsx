@@ -91,13 +91,14 @@ import Landing from "./pages/Landing.tsx";
 import SmartLink from "./pages/SmartLink.tsx";
 import ResetPassword from "./pages/ResetPassword.tsx";
 import Onboarding from "./pages/Onboarding.tsx";
-import QuestoesHistorico from '@/pages/QuestoesHistorico';
-import AdminFuncoes from "./pages/AdminFuncoes.tsx";
-import AdminPush from "./pages/AdminPush.tsx";
-import AdminPushSection from "./pages/AdminPushSection.tsx";
-import AdminResumoLivroAudioEditar from "./pages/AdminResumoLivroAudioEditar.tsx";
-import AdminErrosQuestoes from "./pages/AdminErrosQuestoes.tsx";
-import AdminVadeMecumHistorico from './pages/AdminVadeMecumHistorico.tsx';
+
+const QuestoesHistorico = lazy(() => import('@/pages/QuestoesHistorico'));
+const AdminFuncoes = lazy(() => import("./pages/AdminFuncoes.tsx"));
+const AdminPush = lazy(() => import("./pages/AdminPush.tsx"));
+const AdminPushSection = lazy(() => import("./pages/AdminPushSection.tsx"));
+const AdminResumoLivroAudioEditar = lazy(() => import("./pages/AdminResumoLivroAudioEditar.tsx"));
+const AdminErrosQuestoes = lazy(() => import("./pages/AdminErrosQuestoes.tsx"));
+const AdminVadeMecumHistorico = lazy(() => import('./pages/AdminVadeMecumHistorico.tsx'));
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -117,7 +118,7 @@ const PessoalLivros = lazy(() => import("./pages/pessoal/Livros.tsx"));
 const PessoalFilmes = lazy(() => import("./pages/pessoal/Filmes.tsx"));
 const PessoalJurisprudencias = lazy(() => import("./pages/pessoal/Jurisprudencias.tsx"));
 const PessoalTematicas = lazy(() => import("./pages/pessoal/Tematicas.tsx"));
-import MeuEspaco from "./pages/MeuEspaco.tsx";
+const MeuEspaco = lazy(() => import("./pages/MeuEspaco.tsx"));
 
 const MeusDownloads = lazy(() => import("./pages/MeusDownloads.tsx"));
 const MinhasLeituras = lazy(() => import("./pages/MinhasLeituras.tsx"));
@@ -380,7 +381,7 @@ const LembretesLocal = lazy(() => import("./pages/LembretesLocal.tsx"));
 const PreferenciasLembretes = lazy(() => import("./pages/PreferenciasLembretes.tsx"));
 const AnotacoesAudio = lazy(() => import("./pages/AnotacoesAudio.tsx"));
 const AssistenteApp = lazy(() => import("./pages/AssistenteApp.tsx"));
-import AssistenteHorus from "./pages/AssistenteHorus.tsx";
+const AssistenteHorus = lazy(() => import("./pages/AssistenteHorus.tsx"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
