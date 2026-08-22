@@ -64,8 +64,8 @@ const AdminLeituraNativa = () => {
       map.set(it.colecao.id, g);
     }
     return Array.from(map.values()).sort((a, b) => {
-      const aPendentes = a.itens.filter(i => (i.download || i.link) && !(i.leitura?.status === 'pronto' && i.leitura?.refino_status === 'pronto')).length;
-      const bPendentes = b.itens.filter(i => (i.download || i.link) && !(i.leitura?.status === 'pronto' && i.leitura?.refino_status === 'pronto')).length;
+      const aPendentes = a.itens.filter(i => (i.download) && !(i.leitura?.status === 'pronto' && i.leitura?.refino_status === 'pronto')).length;
+      const bPendentes = b.itens.filter(i => (i.download) && !(i.leitura?.status === 'pronto' && i.leitura?.refino_status === 'pronto')).length;
       if (aPendentes > 0 && bPendentes === 0) return -1;
       if (aPendentes === 0 && bPendentes > 0) return 1;
       return a.label.localeCompare(b.label, 'pt-BR');
@@ -101,7 +101,7 @@ const AdminLeituraNativa = () => {
   }
 
   async function processar(it: LivroLeituraItem, tipo: 'ocr' | 'refino' | 'completo') {
-    const pdf_url = it.download || it.link || '';
+    const pdf_url = it.download || '';
     if ((tipo === 'ocr' || tipo === 'completo') && !pdf_url) {
       toast.error('Livro sem PDF'); return;
     }
@@ -147,12 +147,12 @@ const AdminLeituraNativa = () => {
   }
 
   async function enfileirar(alvos: LivroLeituraItem[]) {
-    const comPdf = alvos.filter((it) => it.download || it.link);
+    const comPdf = alvos.filter((it) => it.download);
     if (!comPdf.length) { toast.error('Nenhum livro com PDF disponível'); return false; }
     const rows = comPdf.map((it, idx) => ({
       livro_tabela: it.colecao.table,
       livro_id: String(it.id),
-      pdf_url: it.download || it.link || null,
+      pdf_url: it.download || null,
       titulo: it.titulo,
       tipo: 'completo',
       scheduled_for: new Date(Date.now() + idx * 1000).toISOString(),
@@ -242,7 +242,7 @@ const AdminLeituraNativa = () => {
               const rodando = g.itens.filter((i) => i.leitura?.status === 'processando' || i.leitura?.refino_status === 'processando').length;
               const erros = g.itens.filter((i) => i.leitura?.status === 'erro' || i.leitura?.refino_status === 'erro').length;
               const pendentesGrupo = g.itens.filter(
-                (i) => (i.download || i.link) && !(i.leitura?.status === 'pronto' && i.leitura?.refino_status === 'pronto'),
+                (i) => (i.download) && !(i.leitura?.status === 'pronto' && i.leitura?.refino_status === 'pronto'),
               );
               const selecionadosGrupo = g.itens.filter((i) => selected.has(keyOf(i)));
               
