@@ -689,13 +689,11 @@ const Auth = () => {
         >
           {/* Logo transparente e reflexo, fonte tipografia idêntica ao app */}
           <div className="flex flex-col items-center justify-center gap-4">
-            <div className="relative rounded-full overflow-hidden border-2 border-primary/40 shadow-[0_8px_32px_rgba(225,29,72,0.4)] bg-[#2b181b] logo-shine">
-              <img
-                src={logoOABnaRisca}
-                alt="Logo Direito Prime"
-                className="w-20 h-20 xl:w-24 xl:h-24 object-contain bg-black/20 relative z-10"
-              />
-            </div>
+            <img
+              src={logoOABnaRisca}
+              alt="Logo Direito Prime"
+              className="w-32 h-32 xl:w-40 xl:h-40 object-contain drop-shadow-2xl relative z-10"
+            />
             
             <div className="flex flex-col items-center justify-center gap-1 mt-1 w-full">
               <h1 className="font-serif italic font-bold text-[28px] xl:text-[32px] text-white tracking-tight leading-none drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)] whitespace-nowrap">
@@ -708,8 +706,8 @@ const Auth = () => {
           </div>
           
           {/* Subtítulo eficiente e focado na dor, sem ser caixa alta */}
-          <p className="font-body text-white/95 text-base leading-snug font-medium max-w-[280px] drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] mt-2 bg-black/30 backdrop-blur-sm px-4 py-2 rounded-2xl border border-white/10">
-            A plataforma que entende quem vive de estudar e <span className="text-primary font-bold drop-shadow-md">não tem tempo a perder.</span>
+          <p className="font-body text-white/95 text-base leading-snug font-medium max-w-[300px] drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] mt-2 bg-black/30 backdrop-blur-sm px-4 py-3 rounded-2xl border border-white/10">
+            Todo o conhecimento jurídico que você precisa reunido em <span className="text-primary font-bold drop-shadow-md">uma única plataforma.</span>
           </p>
         </motion.div>
       </div>
