@@ -3452,7 +3452,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
 
         {/* Bottom nav bar — only visible on "artigo" tab; fixed as a flex item below the scrollable area */}
         {(activeTab ?? 'artigo') === 'artigo' && !isDesktop && (
-        <div className="shrink-0 relative z-[55] bg-card/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-lg shadow-black/10 pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))]">
+        <div className="shrink-0 relative z-[55] bg-card/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-lg shadow-black/10 pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
           <div className="relative grid grid-cols-5 items-end px-2 py-2 max-w-lg mx-auto">
             {(highlightMode || voiceGrifoActive) ? (
               <button
@@ -3494,7 +3494,8 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 className="relative z-[80] flex flex-col items-center justify-end gap-1 py-2 touch-manipulation select-none"
                 aria-label={voicePhase === 'recording' ? 'Parar gravação' : 'Gravar voz'}
               >
-                <div className="absolute bottom-[16px] pointer-events-none">
+                <div className="w-7 h-7 sm:w-8 sm:h-8 invisible" aria-hidden="true" />
+                <div className="absolute bottom-[28px] sm:bottom-[32px] pointer-events-none">
                   <span className={`relative w-[4rem] h-[4rem] sm:w-[4.5rem] sm:h-[4.5rem] rounded-full flex items-center justify-center shadow-lg ring-4 ring-card transition-all duration-300 pointer-events-auto ${voicePhase === 'recording' ? 'bg-red-500 shadow-red-500/40 scale-105' : voicePhase === 'processing' ? 'bg-secondary' : 'bg-primary shadow-primary/40'}`}>
                     {voicePhase === 'recording' && (
                       <>
@@ -3524,7 +3525,8 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 className="relative z-[80] flex flex-col items-center justify-end gap-1 py-2 touch-manipulation select-none"
                 aria-label="Narrar"
               >
-                <div className="absolute bottom-[16px] pointer-events-none">
+                <div className="w-7 h-7 sm:w-8 sm:h-8 invisible" aria-hidden="true" />
+                <div className="absolute bottom-[28px] sm:bottom-[32px] pointer-events-none">
                   <span className={`relative w-[4rem] h-[4rem] sm:w-[4.5rem] sm:h-[4.5rem] rounded-full flex items-center justify-center shadow-lg ring-4 ring-card transition-all duration-300 pointer-events-auto ${narracaoPlaying ? 'bg-primary shadow-primary/40 scale-105' : 'bg-primary shadow-primary/30 hover:bg-primary/90'}`}>
                     {narracaoPlaying && (
                       <>
