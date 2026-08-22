@@ -199,6 +199,7 @@ export default function PushCronogramaTab() {
   const [loading, setLoading] = useState(false);
   const [campanhas, setCampanhas] = useState<CampaignRow[]>([]);
   const [logs, setLogs] = useState<LogRow[]>([]);
+  const [pushEvents, setPushEvents] = useState<any[]>([]);
   const [detalhe, setDetalhe] = useState<EventoBase | null>(null);
   const [testando, setTestando] = useState<string | null>(null);
   const [reportType, setReportType] = useState<"enviadas" | "abertas" | "entregues" | "falhas" | null>(null);
@@ -215,7 +216,7 @@ export default function PushCronogramaTab() {
     try {
       const inicio = new Date(dataFiltro); inicio.setHours(0, 0, 0, 0);
       const fim = new Date(dataFiltro); fim.setHours(23, 59, 59, 999);
-      const [campRes, logRes] = await Promise.all([
+      const [campRes, logRes, eventsRes] = await Promise.all([
         supabase
           .from("push_campaigns")
           .select("id,title,body,status,automation_key,scheduled_at,next_run_at,created_at,sent_count,failed_count,opened_count,delivered_count,image_url,emoji")
@@ -229,9 +230,15 @@ export default function PushCronogramaTab() {
           .gte("created_at", inicio.toISOString())
           .order("created_at", { ascending: false })
           .limit(200),
+        supabase
+          .from("push_events")
+          .select("event_type")
+          .gte("created_at", inicio.toISOString())
+          .lte("created_at", fim.toISOString())
       ]);
       setCampanhas((campRes.data ?? []) as CampaignRow[]);
       setLogs((logRes.data ?? []) as LogRow[]);
+      setPushEvents(eventsRes.data ?? []);
     } finally {
       setLoading(false);
     }
@@ -365,18 +372,25 @@ export default function PushCronogramaTab() {
 
   const resumo = useMemo(() => {
     let enviadas = 0, falhas = 0, abertas = 0, entregues = 0, campanhasSent = 0, comErro = 0;
+    
+    // Contagem real baseada nos eventos individuais (garante que bate com o modal)
+    for (const ev of pushEvents) {
+      if (ev.event_type === 'sent') enviadas++;
+      else if (ev.event_type === 'failed') falhas++;
+      else if (ev.event_type === 'opened') abertas++;
+      else if (ev.event_type === 'delivered') entregues++;
+    }
+
+    // Mantemos os metadados de campanhas também (se existirem)
     for (const c of campanhas) {
-      enviadas += c.sent_count ?? 0;
-      falhas += c.failed_count ?? 0;
-      abertas += c.opened_count ?? 0;
-      entregues += c.delivered_count ?? 0;
       if ((c.sent_count ?? 0) > 0) campanhasSent++;
       if (c.status === "failed" || ((c.sent_count ?? 0) === 0 && (c.failed_count ?? 0) > 0)) comErro++;
     }
+
     const taxaAbertura = enviadas > 0 ? Math.round((abertas / enviadas) * 100) : 0;
     const taxaEntrega = enviadas > 0 ? Math.round(((enviadas - falhas) / enviadas) * 100) : 100;
     return { enviadas, falhas, abertas, entregues, campanhasSent, comErro, taxaAbertura, taxaEntrega };
-  }, [campanhas]);
+  }, [campanhas, pushEvents]);
 
   const proximoIdx = eventos.findIndex(
     (e) => (e.status === "previsto" || e.status === "agendado") && e.hora + e.minuto / 60 >= horaAtual,
@@ -1090,9 +1104,18 @@ function DailyReportSheet({ type, date, onClose }: { type: "enviadas"|"abertas"|
       const userIds = Array.from(new Set(list.filter(x => x.user_id).map(x => x.user_id)));
       if (userIds.length > 0) {
         const { data: profs } = await supabase.from("profiles").select("id, display_name").in("id", userIds);
+        const { data: acts } = await supabase.from("user_activity_log").select("user_id, email, display_name").in("user_id", userIds);
+        
         const pMap = new Map(profs?.map(p => [p.id, p.display_name]) ?? []);
+        const actMap = new Map(acts?.map(a => [a.user_id, a]) ?? []);
+        
         list.forEach(item => {
-           (item as any).display_name = pMap.get(item.user_id);
+           let n = pMap.get(item.user_id);
+           const act = actMap.get(item.user_id);
+           if (!n && act?.display_name) n = act.display_name;
+           if (!n && act?.email) n = act.email.split("@")[0]; // usa email como fallback se nome nulo
+           
+           (item as any).display_name = n;
         });
       }
       
