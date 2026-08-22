@@ -689,7 +689,7 @@ const Auth = () => {
             <img
               src="/logo-prime.png"
               alt="Logo Direito Prime"
-              className="w-32 h-32 xl:w-40 xl:h-40 object-contain drop-shadow-2xl relative z-10"
+              className="w-24 h-24 xl:w-32 xl:h-32 object-contain drop-shadow-2xl relative z-10"
             />
             
             <div className="flex flex-col items-center justify-center gap-1 mt-1 w-full">
