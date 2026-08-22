@@ -8,6 +8,7 @@ import { UserDossieSheet } from './UserDossieSheet';
 import { rotaParaFuncao } from '@/lib/rotaFuncoes';
 
 type CardId = 'online5m' | 'online' | 'cadastros' | 'paywall' | 'trial';
+type PeriodoId = 'hoje' | 'ontem' | '7d' | '30d';
 
 interface Row {
   key: string;
@@ -107,7 +108,7 @@ const writeSeen = (id: CardId, d: Date, seen: Seen) => {
 };
 
 export function AdminHojeCards() {
-  const [counts, setCounts] = useState<Record<CardId, number>>({ online5m: 0, online: 0, cadastros: 0, paywall: 0, trial: 0 });
+  const [counts, setCounts] = useState<Record<CardId | 'trialValor', number>>({ online5m: 0, online: 0, cadastros: 0, paywall: 0, trial: 0, trialValor: 0 });
   const [seenCounts, setSeenCounts] = useState<Record<CardId, number>>(() => {
     const hoje = new Date();
     return {
@@ -124,6 +125,7 @@ export function AdminHojeCards() {
   const [filtroUser, setFiltroUser] = useState<'todos' | 'gratuitos' | 'assinantes'>('todos');
   const [loading, setLoading] = useState(false);
   const [dossie, setDossie] = useState<Row | null>(null);
+  const [periodo, setPeriodo] = useState<PeriodoId>('hoje');
   const [dia, setDia] = useState<Date>(() => new Date());
   const [totaisOpen, setTotaisOpen] = useState(false);
   const [totais, setTotais] = useState<any>(null);
@@ -174,53 +176,115 @@ export function AdminHojeCards() {
     }
   }, [open]);
 
-  const load = useCallback(async () => {
-    const [{ data: mData }, { data: list5m }, { data: listOnline }] = await Promise.all([
-      supabase.rpc('admin_metricas_dia' as any, { _dia: isoDate(dia) }),
-      supabase.rpc('admin_lista_dia' as any, { _tipo: 'online5m', _dia: isoDate(dia) }),
-      supabase.rpc('admin_lista_dia' as any, { _tipo: 'online', _dia: isoDate(dia) })
-    ]);
-    
-    const m = (mData as any) || {};
-    
-    const count5m = ((list5m as any[]) || []).filter(r => r.email !== 'wn7corporation@gmail.com' && r.email !== 'suporte@direitoprime.com.br' && r.email !== 'wn7juridico@gmail.com').length;
-    const countOnline = ((listOnline as any[]) || []).filter(r => r.email !== 'wn7corporation@gmail.com' && r.email !== 'suporte@direitoprime.com.br' && r.email !== 'wn7juridico@gmail.com').length;
+  const getDatasPeriodo = useCallback((p: PeriodoId) => {
+    const hoje = new Date();
+    if (p === 'hoje') return [hoje];
+    if (p === 'ontem') {
+      const ontem = new Date(); ontem.setDate(hoje.getDate() - 1); return [ontem];
+    }
+    const dias = p === '7d' ? 7 : 30;
+    return Array.from({ length: dias }, (_, i) => {
+      const d = new Date(); d.setDate(hoje.getDate() - i); return d;
+    });
+  }, []);
 
-    const novos: Record<CardId, number> = { 
+  const load = useCallback(async () => {
+    const datas = getDatasPeriodo(periodo);
+    
+    // Fetch metrics and trials for all dates in the period
+    const metricasPromises = datas.map(d => supabase.rpc('admin_metricas_dia' as any, { _dia: isoDate(d) }));
+    const list5mPromise = supabase.rpc('admin_lista_dia' as any, { _tipo: 'online5m', _dia: isoDate(datas[0]) }); // only makes sense for 'hoje', but we pass datas[0] anyway
+    const listOnlinePromise = supabase.rpc('admin_lista_dia' as any, { _tipo: 'online', _dia: isoDate(datas[0]) });
+    const trialPromises = datas.map(d => supabase.rpc('admin_lista_dia' as any, { _tipo: 'trial', _dia: isoDate(d) }));
+
+    const metricasResults = await Promise.all(metricasPromises);
+    const { data: list5m } = await list5mPromise;
+    const { data: listOnline } = await listOnlinePromise;
+    const trialResults = await Promise.all(trialPromises);
+    
+    let totalCadastros = 0;
+    let totalPaywall = 0;
+    let totalTrial = 0;
+    let totalTrialValor = 0;
+
+    metricasResults.forEach(({ data }) => {
+      const m = (data as any) || {};
+      totalCadastros += m.cadastros || 0;
+      totalPaywall += m.paywall || 0;
+      totalTrial += m.trial || 0;
+    });
+
+    trialResults.forEach(({ data }) => {
+      const trials = (data as any[]) || [];
+      trials.forEach(r => {
+        const subtitle = r.subtitle || '';
+        if (subtitle.toLowerCase().includes('anual')) {
+          totalTrialValor += 297;
+        } else if (subtitle.toLowerCase().includes('mensal')) {
+          totalTrialValor += 39.90;
+        }
+      });
+    });
+
+    // online and online5m only make sense for 'hoje' conceptually, but we sum them if it's multiple days? 
+    // Actually, distinct users online over 7 days is hard to calculate without a distinct query.
+    // For now, if not 'hoje', we'll just show 0 or the last known for online.
+    const count5m = periodo === 'hoje' ? ((list5m as any[]) || []).filter(r => r.email !== 'wn7corporation@gmail.com' && r.email !== 'suporte@direitoprime.com.br' && r.email !== 'wn7juridico@gmail.com').length : 0;
+    const countOnline = periodo === 'hoje' ? ((listOnline as any[]) || []).filter(r => r.email !== 'wn7corporation@gmail.com' && r.email !== 'suporte@direitoprime.com.br' && r.email !== 'wn7juridico@gmail.com').length : 0;
+
+    const novos: Record<CardId | 'trialValor', number> = { 
       online5m: count5m, 
       online: countOnline, 
-      cadastros: m.cadastros || 0, 
-      paywall: m.paywall || 0,
-      trial: m.trial || 0 
+      cadastros: totalCadastros, 
+      paywall: totalPaywall,
+      trial: totalTrial,
+      trialValor: totalTrialValor
     };
     setCounts(novos);
-    if (sameDay(dia, new Date())) {
+    
+    if (periodo === 'hoje') {
       (['online5m', 'online', 'cadastros', 'paywall', 'trial'] as CardId[]).forEach((id) => {
-        if (!localStorage.getItem(seenStorageKey(id, dia))) {
-          writeSeen(id, dia, { count: novos[id], keys: [] });
+        if (!localStorage.getItem(seenStorageKey(id, datas[0]))) {
+          writeSeen(id, datas[0], { count: novos[id], keys: [] });
           setSeenCounts((c) => ({ ...c, [id]: novos[id] }));
         }
       });
     } else {
       setSeenCounts({ online5m: 0, online: 0, cadastros: 0, paywall: 0, trial: 0 });
     }
-  }, [dia]);
+  }, [periodo, getDatasPeriodo]);
 
 
   useEffect(() => {
     load();
-    if (sameDay(dia, new Date())) {
+    if (periodo === 'hoje') {
       const t = setInterval(load, 30_000);
       return () => clearInterval(t);
     }
-  }, [load, dia]);
+  }, [load, periodo]);
 
   const fetchRows = useCallback(async (id: CardId, date: Date) => {
+    // If period is not 'hoje' or 'ontem', we'd need to fetch multiple days for the list as well.
+    // To keep it simple, if they open the card, we fetch the first day of the period, OR we fetch all days.
+    // Let's fetch all days if possible.
     setLoading(true);
     setRows([]);
     try {
-      const { data } = await supabase.rpc('admin_lista_dia' as any, { _tipo: id, _dia: isoDate(date) });
-      const list = ((data as any[]) || []).map((r) => ({
+      const datas = getDatasPeriodo(periodo);
+      const listPromises = datas.map(d => supabase.rpc('admin_lista_dia' as any, { _tipo: id, _dia: isoDate(d) }));
+      const results = await Promise.all(listPromises);
+      
+      let allLists: any[] = [];
+      results.forEach(({ data }) => {
+        allLists = allLists.concat((data as any[]) || []);
+      });
+
+      // Deduplicate by key (since same user could be online on multiple days)
+      const uniqueMap = new Map();
+      allLists.forEach(r => {
+        if (!uniqueMap.has(r.key)) uniqueMap.set(r.key, r);
+      });
+      const list = Array.from(uniqueMap.values()).map((r) => ({
         key: r.key,
         userId: r.user_id,
         title: r.title || 'Usuário',
@@ -274,13 +338,13 @@ export function AdminHojeCards() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [periodo, getDatasPeriodo]);
 
 
   const openCard = useCallback((id: CardId) => {
     setOpen(id);
-    fetchRows(id, dia);
-  }, [fetchRows, dia]);
+    fetchRows(id, new Date()); // Date argument is mostly ignored now, uses getDatasPeriodo
+  }, [fetchRows]);
 
   // Deep link vindo do push do admin: /admin-funcoes?card=cadastros|trial|online
   useEffect(() => {
@@ -297,9 +361,9 @@ export function AdminHojeCards() {
 
 
 
-  const selecionarDia = (d: Date) => {
-    setDia(d);
-    if (open) fetchRows(open, d);
+  const selecionarPeriodo = (p: PeriodoId) => {
+    setPeriodo(p);
+    setOpen(null); // Fechar a aba atual se mudar o período
   };
 
   const dias = Array.from({ length: 14 }, (_, i) => {
@@ -326,14 +390,12 @@ export function AdminHojeCards() {
     trial: 'Iniciaram assinatura teste',
   };
 
-  const hoje = new Date();
-  const ontem = new Date();
-  ontem.setDate(ontem.getDate() - 1);
-  const rotuloDia = sameDay(dia, hoje)
-    ? 'Hoje'
-    : sameDay(dia, ontem)
-      ? 'Ontem'
-      : dia.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' });
+  const rotuloPeriodo = {
+    hoje: 'Hoje',
+    ontem: 'Ontem',
+    '7d': 'Últimos 7 dias',
+    '30d': 'Últimos 30 dias',
+  }[periodo];
 
   const filteredRows = rows.filter(r => {
     if (filtroUser === 'gratuitos') return !r.isPremium;
@@ -343,6 +405,20 @@ export function AdminHojeCards() {
 
   return (
     <>
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="font-display text-sm font-bold tracking-wider text-muted-foreground uppercase opacity-70">Visão Geral</h2>
+        <select 
+          value={periodo} 
+          onChange={(e) => selecionarPeriodo(e.target.value as PeriodoId)}
+          className="bg-secondary/40 border border-border/60 text-foreground text-xs font-semibold py-1.5 px-3 rounded-xl outline-none appearance-none cursor-pointer hover:bg-secondary/60 focus:border-primary/50 transition-colors"
+        >
+          <option value="hoje">Hoje</option>
+          <option value="ontem">Ontem</option>
+          <option value="7d">Últimos 7 dias</option>
+          <option value="30d">Últimos 30 dias</option>
+        </select>
+      </div>
+
       <div className="grid grid-cols-5 gap-2 mb-3">
         {CARDS.map(({ id, label, icon: Icon }) => (
           <button
@@ -356,7 +432,14 @@ export function AdminHojeCards() {
               </span>
             )}
             <Icon className="w-4 h-4 text-primary mb-1.5" />
-            <div className="font-display text-xl font-bold text-foreground leading-none">{counts[id]}</div>
+            <div className="font-display text-xl font-bold text-foreground leading-none">
+              {counts[id]}
+              {id === 'trial' && counts.trialValor > 0 && (
+                <span className="block text-[10px] text-emerald-400 font-bold mt-1 opacity-90 truncate">
+                  {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(counts.trialValor)}
+                </span>
+              )}
+            </div>
             <div className="font-body text-[10.5px] text-muted-foreground mt-1 leading-tight">{label}</div>
           </button>
 
@@ -369,7 +452,7 @@ export function AdminHojeCards() {
             <div className="flex items-start justify-between gap-3 pr-9">
               <div className="min-w-0">
                 <SheetTitle className="font-display text-base font-bold text-foreground">
-                  {open ? `${titles[open]} · ${rotuloDia}` : ''}
+                  {open ? `${titles[open]} · ${rotuloPeriodo}` : ''}
                 </SheetTitle>
                 <p className="font-body text-[11.5px] text-muted-foreground mt-0.5">
                   {loading ? 'Carregando…' : `${filteredRows.length} registro${filteredRows.length === 1 ? '' : 's'}`}

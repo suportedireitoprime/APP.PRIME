@@ -187,6 +187,16 @@ const CATEGORIES: Category[] = [
     ],
   },
   {
+    id: 'triagem-entrada',
+    title: 'Triagem / Onboarding',
+    desc: 'Ver respostas dos usuários e escolher versão do onboarding',
+    icon: Target,
+    route: '/admin-triagem',
+    items: [
+      { id: 'admin-triagem', label: 'Triagem de Entrada', icon: Target, desc: 'Ver respostas de usuários e alterar design', route: '/admin-triagem' },
+    ],
+  },
+  {
     id: 'vade-mecum',
     title: 'Vade Mecum',
     desc: 'Varredura de leis (Planalto) e atualização do histórico de artigos',
@@ -278,7 +288,6 @@ const CATEGORIES: Category[] = [
     items: [
       { id: 'admin-horus', label: 'Painel do Horus', icon: MessageCircle, desc: 'Instância, QR Code, usuários vinculados e conversas', route: '/admin-horus' },
       { id: 'admin-horus-template', label: 'Horus Templates 3D', icon: ImageIcon, desc: 'Pré-visualização e guias de cenas 3D do Horus', route: '/admin-horus-template' },
-      { id: 'admin-triagem', label: 'Triagem de Entrada', icon: Target, desc: 'Onboarding com Horus, metas e curadoria', route: '/admin-triagem' },
     ],
   },
   {

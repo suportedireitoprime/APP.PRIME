@@ -1,6 +1,7 @@
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { BookOpen, Radar, MessageCircle, Bell, Sparkles, ArrowRight, Layers } from 'lucide-react';
+import { BookOpen, Radar, MessageCircle, Bell, Sparkles, ArrowRight, Layers, FileText } from 'lucide-react';
+import { FILOSOFOS } from './versoes/triagemShared';
 
 type Props = {
   nome: string;
@@ -11,124 +12,190 @@ type Props = {
 type Scene = {
   id: string;
   duration: number; // ms
-  glow: string;
   eyebrow: string;
   title: React.ReactNode;
   body: string;
-  Icon: React.ComponentType<{ className?: string }>;
+  mock: React.ReactNode;
+  bgImage: string;
 };
 
 const SERIF = 'Georgia, "Times New Roman", serif';
+const YELLOW = '#F5C518';
+const INK = '#0A0A0A';
+const CREAM = '#FAF7EF';
+
+// Componente visual: Raio rotativo sutil de fundo
+function BackdropRays() {
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden bg-[#0A0A0A]">
+      <motion.div
+        animate={{ rotate: [0, 360] }}
+        transition={{ repeat: Infinity, duration: 40, ease: 'linear' }}
+        className="absolute w-[200vw] h-[200vw] -top-[50vw] -left-[50vw] opacity-40 blur-[50px]"
+        style={{
+          background: `conic-gradient(from 0deg at 50% 50%,
+            transparent 0deg,
+            rgba(201, 76, 76, 0.15) 40deg,
+            transparent 90deg,
+            rgba(201, 76, 76, 0.12) 160deg,
+            transparent 220deg,
+            rgba(201, 76, 76, 0.18) 300deg,
+            transparent 360deg)`,
+        }}
+      />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_100%,_rgba(201,76,76,0.25)_0%,_transparent_60%)]" />
+    </div>
+  );
+}
+
+// Componente visual: Partículas
+function Sparkles({ count = 30 }: { count?: number }) {
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden z-10">
+      {Array.from({ length: count }).map((_, i) => {
+        const size = 2 + (i % 4);
+        return (
+          <motion.div
+            key={i}
+            className="absolute rounded-full"
+            style={{
+              left: `${5 + (i * 13) % 90}%`,
+              width: size,
+              height: size,
+              background: '#FFDD57',
+              boxShadow: `0 0 ${size * 2}px ${YELLOW}`,
+            }}
+            initial={{ y: '110vh', opacity: 0 }}
+            animate={{ y: '-20vh', opacity: [0, 1, 1, 0] }}
+            transition={{
+              repeat: Infinity,
+              duration: 4 + (i % 5),
+              delay: i * 0.2,
+              ease: 'linear',
+            }}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+// Componente visual: Eyebrow igual do Hórus
+function Eyebrow({ text }: { text: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ type: 'spring', stiffness: 200, damping: 20, delay: 0.1 }}
+      className="inline-flex items-center gap-3 px-5 py-2 rounded-full border border-[#C94C4C]/40 bg-[#C94C4C]/10 self-start shadow-xl"
+    >
+      <div className="w-2.5 h-2.5 rounded-full bg-[#F5C518] shadow-[0_0_12px_#F5C518]" />
+      <span className="font-bold text-[11px] text-[#F5C518] tracking-[0.2em] uppercase">
+        {text}
+      </span>
+    </motion.div>
+  );
+}
+
+// Mock: Icone Estilizado
+function IconMock({ Icon }: { Icon: any }) {
+  return (
+    <motion.div
+      initial={{ scale: 0.8, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ type: 'spring', stiffness: 200, damping: 20, delay: 0.3 }}
+      className="w-32 h-32 rounded-3xl bg-white/[0.04] border border-[#C94C4C]/30 flex items-center justify-center shadow-[0_24px_60px_rgba(0,0,0,0.5),inset_0_0_40px_rgba(201,76,76,0.15)] relative overflow-hidden"
+    >
+      <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-50" />
+      <Icon className="w-12 h-12 text-[#F5C518] drop-shadow-[0_0_15px_rgba(245,197,24,0.5)] relative z-10" />
+    </motion.div>
+  );
+}
+
+// Mock: Chat Hórus (simplificado)
+function ChatMock() {
+  return (
+    <motion.div
+      initial={{ y: 30, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ type: 'spring', stiffness: 200, damping: 20, delay: 0.3 }}
+      className="w-64 rounded-3xl bg-[#0b141a] border-[4px] border-[#222] shadow-[0_40px_80px_rgba(0,0,0,0.6),0_0_0_1px_rgba(201,76,76,0.3)] overflow-hidden"
+    >
+      <div className="bg-[#202c33] p-3 flex items-center gap-3">
+        <div className="w-8 h-8 rounded-full bg-[#F5C518] text-[#0A0A0A] flex items-center justify-center font-bold text-sm">H</div>
+        <div>
+          <div className="text-white text-xs font-bold">Horus</div>
+          <div className="text-[#25D366] text-[9px]">online</div>
+        </div>
+      </div>
+      <div className="p-4 space-y-3 flex flex-col">
+        <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.6 }} className="self-end bg-[#005c4b] text-white text-[11px] p-2 rounded-lg rounded-tr-sm max-w-[85%]">
+          O que é usucapião?
+        </motion.div>
+        <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1.2 }} className="self-start bg-[#202c33] text-white text-[11px] p-2 rounded-lg rounded-tl-sm max-w-[85%]">
+          Quando alguém vira dono pelo uso prolongado...
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+}
 
 function build(nome: string): Scene[] {
   const primeiro = (nome.trim().split(' ')[0] || '').slice(0, 14);
   return [
     {
       id: 'saudacao',
-      duration: 1700,
-      glow: 'rgba(242, 96, 96, 0.55)',
+      duration: 3500,
       eyebrow: 'PRAZER EM TE CONHECER',
-      title: primeiro ? (
-        <>
-          Olá, <span className="italic">{primeiro}</span>.
-        </>
-      ) : (
-        <>Bem-vindo(a).</>
-      ),
-      body: 'Em 10 segundos você vê tudo que o Direito Prime faz por você.',
-      Icon: Sparkles,
+      title: primeiro ? <>Olá, <span className="italic" style={{ color: YELLOW }}>{primeiro}</span>.</> : <>Bem-vindo(a).</>,
+      body: 'Em poucos segundos você vê tudo que o Direito Prime faz por você.',
+      mock: <IconMock Icon={Sparkles} />,
+      bgImage: FILOSOFOS[0].src,
     },
     {
       id: 'biblioteca',
-      duration: 1900,
-      glow: 'rgba(242, 96, 96, 0.45)',
+      duration: 4000,
       eyebrow: '01 · BIBLIOTECA',
-      title: (
-        <>
-          Milhares de livros
-          <br />
-          <span className="italic">num só lugar.</span>
-        </>
-      ),
+      title: <>Milhares de livros <span className="italic" style={{ color: YELLOW }}>num só lugar.</span></>,
       body: 'Códigos comentados, doutrina clássica e resumos, sempre à mão.',
-      Icon: BookOpen,
+      mock: <IconMock Icon={BookOpen} />,
+      bgImage: FILOSOFOS[1].src,
     },
     {
       id: 'flashcards',
-      duration: 1900,
-      glow: 'rgba(255, 128, 96, 0.45)',
+      duration: 4000,
       eyebrow: '02 · FLASHCARDS',
-      title: (
-        <>
-          Mais de 100 mil cards
-          <br />
-          <span className="italic">pra fixar de vez.</span>
-        </>
-      ),
-      body: 'Estude por área, monte decks e acompanhe seu progresso.',
-      Icon: Layers,
+      title: <>Repetição <span className="italic" style={{ color: YELLOW }}>espaçada.</span></>,
+      body: 'Mais de 100 mil cards pra você fixar o que importa de vez.',
+      mock: <IconMock Icon={Layers} />,
+      bgImage: FILOSOFOS[2].src,
     },
     {
       id: 'radar',
-      duration: 1900,
-      glow: 'rgba(226, 74, 74, 0.5)',
+      duration: 4000,
       eyebrow: '03 · RADAR DE LEIS',
-      title: (
-        <>
-          Toda lei nova,
-          <br />
-          <span className="italic">com resumo pronto.</span>
-        </>
-      ),
-      body: 'A gente monitora Diários e o Congresso — você lê só o que importa.',
-      Icon: Radar,
+      title: <>Toda lei nova,<br /><span className="italic" style={{ color: YELLOW }}>já resumida.</span></>,
+      body: 'Nós monitoramos Diários e o Congresso — você lê só o que cai.',
+      mock: <IconMock Icon={Radar} />,
+      bgImage: FILOSOFOS[3].src,
     },
     {
       id: 'horus',
-      duration: 1900,
-      glow: 'rgba(255, 110, 110, 0.5)',
+      duration: 5000,
       eyebrow: '04 · HORUS NO WHATSAPP',
-      title: (
-        <>
-          Seu assistente
-          <br />
-          <span className="italic">24h no bolso.</span>
-        </>
-      ),
-      body: 'Tira dúvidas por texto, foto ou áudio direto no WhatsApp.',
-      Icon: MessageCircle,
-    },
-    {
-      id: 'notificacoes',
-      duration: 1800,
-      glow: 'rgba(200, 60, 60, 0.5)',
-      eyebrow: '05 · NOTIFICAÇÕES',
-      title: (
-        <>
-          Só o que interessa,
-          <br />
-          <span className="italic">nada de spam.</span>
-        </>
-      ),
-      body: 'Alertas da sua área, no seu ritmo. Você escolhe o que chega.',
-      Icon: Bell,
+      title: <>Seu assistente <span className="italic" style={{ color: YELLOW }}>24h no bolso.</span></>,
+      body: 'Tira dúvidas por texto, áudio ou foto direto no WhatsApp.',
+      mock: <ChatMock />,
+      bgImage: FILOSOFOS[4].src,
     },
     {
       id: 'final',
-      duration: 2400,
-      glow: 'rgba(242, 96, 96, 0.6)',
+      duration: 999999, // Fica parado aguardando o usuário clicar
       eyebrow: 'TUDO PRONTO',
-      title: primeiro ? (
-        <>
-          Bora estudar,
-          <br />
-          <span className="italic">{primeiro}!</span>
-        </>
-      ) : (
-        <>Bora estudar!</>
-      ),
-      body: 'Seu Direito Prime já está personalizado.',
-      Icon: Sparkles,
+      title: primeiro ? <>Bora estudar, <span className="italic" style={{ color: YELLOW }}>{primeiro}!</span></> : <>Bora estudar!</>,
+      body: 'Seu Direito Prime já está personalizado e pronto.',
+      mock: <IconMock Icon={Sparkles} />,
+      bgImage: FILOSOFOS[5].src,
     },
   ];
 }
@@ -160,11 +227,15 @@ function CadastroFeaturesReelInner({ nome, onDone, playSfx }: Props) {
   }, [scenes.length, finalizar, playSfx]);
 
   const anterior = useCallback(() => {
-    setI((v) => (v > 0 ? v - 1 : v));
-  }, []);
+    setI((v) => {
+      if (v > 0) playSfx?.('whoosh');
+      return v > 0 ? v - 1 : v;
+    });
+  }, [playSfx]);
 
+  // Avanço automático das cenas (exceto a última que aguarda clique)
   useEffect(() => {
-    if (saindo) return;
+    if (saindo || i === scenes.length - 1) return;
     const s = scenes[i];
     if (!s) return;
     const t = setTimeout(proximo, s.duration);
@@ -172,7 +243,6 @@ function CadastroFeaturesReelInner({ nome, onDone, playSfx }: Props) {
   }, [i, scenes, proximo, saindo]);
 
   const cur = scenes[i];
-  const Icon = cur.Icon;
   const ultima = i === scenes.length - 1;
 
   return (
@@ -180,149 +250,99 @@ function CadastroFeaturesReelInner({ nome, onDone, playSfx }: Props) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[110] overflow-hidden bg-[#0B0B0C] text-white select-none"
+      className="fixed inset-0 z-[110] overflow-hidden bg-[#0A0A0A] text-[#FAF7EF] select-none font-sans"
     >
-      {/* Glow de fundo — muda de intensidade a cada cena */}
-      <motion.div
-        className="pointer-events-none absolute inset-0 transition-colors duration-700 ease-in-out"
-        style={{
-          background: `radial-gradient(ellipse 80% 55% at 50% 26%, ${cur.glow} 0%, rgba(20,8,8,0.55) 45%, #0B0B0C 78%)`,
-        }}
-      />
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.07]"
-        style={{
-          backgroundImage:
-            'repeating-linear-gradient(0deg, rgba(255,255,255,0.6) 0px, rgba(255,255,255,0.6) 1px, transparent 1px, transparent 3px)',
-        }}
-      />
+      <BackdropRays />
 
-      {/* Zonas de toque: esquerda volta, direita avança */}
-      <button
-        aria-label="Voltar"
-        onClick={anterior}
-        className="absolute left-0 top-0 z-20 h-full w-1/3"
-        tabIndex={-1}
-      />
-      <button
-        aria-label="Avançar"
-        onClick={proximo}
-        className="absolute right-0 top-0 z-20 h-full w-2/3"
-        tabIndex={-1}
-      />
+      {/* Imagem de Fundo Vazada (Filósofos) */}
+      <div className="absolute inset-0 z-0 overflow-hidden opacity-[0.08] pointer-events-none flex items-center justify-center">
+        <AnimatePresence mode="wait">
+          {cur && (
+            <motion.img
+              key={cur.bgImage}
+              src={cur.bgImage}
+              initial={{ opacity: 0, scale: 1.05, x: 15 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              exit={{ opacity: 0, scale: 0.95, x: -15 }}
+              transition={{ duration: 2.5, ease: "easeOut" }}
+              className="w-auto h-[120%] object-contain"
+            />
+          )}
+        </AnimatePresence>
+      </div>
 
-      {/* Barra de progresso */}
-      <div
-        className="absolute inset-x-0 z-30 flex items-center gap-1.5 px-4"
-        style={{ top: 'calc(env(safe-area-inset-top,0px) + 14px)' }}
-      >
+      <Sparkles />
+
+      {/* Touch zones */}
+      <button aria-label="Voltar" onClick={anterior} className="absolute left-0 top-0 z-20 h-full w-1/3" tabIndex={-1} />
+      <button aria-label="Avançar" onClick={proximo} className="absolute right-0 top-0 z-20 h-full w-2/3" tabIndex={-1} />
+
+      {/* Barra de progresso superior */}
+      <div className="absolute inset-x-0 z-30 flex items-center gap-1.5 px-6" style={{ top: 'calc(env(safe-area-inset-top,0px) + 20px)' }}>
         {scenes.map((s, idx) => (
-          <div key={s.id} className="flex-1 h-[3px] rounded-full bg-white/15 overflow-hidden">
+          <div key={s.id} className="flex-1 h-1 rounded-full bg-white/10 overflow-hidden">
             <motion.div
-              className="h-full rounded-full"
-              style={{
-                background: 'hsl(var(--primary))',
-                width: idx < i ? '100%' : undefined,
-              }}
+              className="h-full rounded-full bg-[#F5C518]"
+              style={{ width: idx < i ? '100%' : '0%' }}
               initial={idx === i ? { width: '0%' } : false}
-              animate={{ width: idx <= i ? '100%' : '0%' }}
-              transition={
-                idx === i && !reduce
-                  ? { duration: s.duration / 1000, ease: 'linear' }
-                  : { duration: 0.2 }
-              }
-              key={idx === i ? `${s.id}-run-${i}` : `${s.id}-static`}
+              animate={{ width: idx < i ? '100%' : idx === i ? (ultima ? '100%' : '100%') : '0%' }}
+              transition={idx === i && !ultima ? { duration: s.duration / 1000, ease: 'linear' } : { duration: 0.3 }}
             />
           </div>
         ))}
       </div>
 
-      {/* Pular */}
-      <button
-        onClick={finalizar}
-        disabled={saindo}
-        className="absolute z-40 right-4 h-9 px-4 rounded-full bg-white/10 border border-white/15 backdrop-blur text-white/90 text-[11px] font-bold tracking-[0.2em] active:scale-95 disabled:opacity-50"
-        style={{ top: 'calc(env(safe-area-inset-top,0px) + 30px)' }}
-      >
-        {saindo ? 'ABRINDO…' : 'PULAR'}
-      </button>
-
       <AnimatePresence mode="wait">
         <motion.div
           key={cur.id}
-          initial={reduce ? { opacity: 0 } : { opacity: 0, y: 14 }}
+          initial={reduce ? { opacity: 0 } : { opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={reduce ? { opacity: 0 } : { opacity: 0, y: -14 }}
-          transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-          className="relative z-10 h-full flex flex-col pointer-events-none"
+          exit={reduce ? { opacity: 0 } : { opacity: 0, y: -20 }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          className="relative z-10 h-full flex flex-col pointer-events-none px-8"
         >
-          {/* Ícone */}
+          {/* Mock visual no topo */}
           <div
-            className="relative flex-1 flex items-end justify-center"
-            style={{
-              paddingTop: 'calc(env(safe-area-inset-top,0px) + 80px)',
-              paddingBottom: '24px',
-            }}
+            className="relative flex-[1.2] flex items-end justify-center"
+            style={{ paddingTop: 'calc(env(safe-area-inset-top,0px) + 60px)', paddingBottom: '30px' }}
           >
-            <motion.div
-              initial={reduce ? {} : { scale: 0.82, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: 'spring', stiffness: 260, damping: 22 }}
-              className="rounded-[34px] flex items-center justify-center"
-              style={{
-                width: 'min(40vw, 168px)',
-                height: 'min(40vw, 168px)',
-                background: 'rgba(255,255,255,0.06)',
-                border: '1px solid hsl(var(--primary) / 0.45)',
-                boxShadow: '0 24px 60px rgba(0,0,0,0.5), inset 0 0 40px hsl(var(--primary) / 0.18)',
-              }}
-            >
-              <Icon className="w-[42%] h-[42%] text-primary" />
-            </motion.div>
+            {cur.mock}
           </div>
 
-          {/* Texto */}
-          <div
-            className="relative flex-1 px-7 flex flex-col justify-start"
-            style={{ paddingBottom: 'calc(env(safe-area-inset-bottom,0px) + 32px)' }}
-          >
-            <motion.div
-              initial={reduce ? {} : { opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.06, duration: 0.3 }}
-              className="text-[10px] font-black tracking-[0.4em] mb-3 text-primary"
-            >
-              {cur.eyebrow}
-            </motion.div>
+          {/* Textos embaixo */}
+          <div className="relative flex-1 flex flex-col justify-start pb-8">
+            <Eyebrow text={cur.eyebrow} />
+            
             <motion.h2
-              initial={reduce ? {} : { opacity: 0, y: 14 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1, duration: 0.34 }}
-              className="font-black leading-[0.95] tracking-tight text-foreground"
-              style={{ fontFamily: SERIF, fontSize: 'clamp(2.1rem, 7.6vw, 3.2rem)' }}
+              transition={{ delay: 0.2, duration: 0.4 }}
+              className="mt-6 font-black leading-[1.05] tracking-tight text-[#FAF7EF]"
+              style={{ fontFamily: SERIF, fontSize: 'clamp(2.2rem, 8vw, 3.5rem)' }}
             >
               {cur.title}
             </motion.h2>
+            
             <motion.p
-              initial={reduce ? {} : { opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.16, duration: 0.32 }}
-              className="mt-4 max-w-md text-white/70"
-              style={{ fontSize: 'clamp(0.92rem, 3.5vw, 1.05rem)', lineHeight: 1.45 }}
+              transition={{ delay: 0.3, duration: 0.4 }}
+              className="mt-4 text-[#FAF7EF]/70 font-medium max-w-sm"
+              style={{ fontSize: 'clamp(1rem, 4vw, 1.15rem)', lineHeight: 1.5 }}
             >
               {cur.body}
             </motion.p>
 
             {ultima && (
               <motion.button
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.3 }}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.4, type: 'spring' }}
                 onClick={finalizar}
                 disabled={saindo}
-                className="pointer-events-auto mt-7 h-14 w-full max-w-md rounded-2xl bg-primary text-primary-foreground font-black tracking-wide flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-60"
+                className="pointer-events-auto mt-8 h-14 w-full max-w-sm rounded-2xl bg-[#C94C4C] text-[#150C05] font-black tracking-wide flex items-center justify-center gap-2 active:scale-95 disabled:opacity-60 shadow-2xl"
               >
-                {saindo ? 'Abrindo o app…' : 'Entrar no app'}
+                {saindo ? 'Preparando...' : 'Entrar no App'}
                 {!saindo && <ArrowRight className="w-5 h-5" />}
               </motion.button>
             )}

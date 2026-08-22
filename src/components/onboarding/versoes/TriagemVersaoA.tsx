@@ -17,8 +17,8 @@ type Props = {
   previewMode?: boolean;
 };
 
-type Step = 'persona' | 'areas' | 'interesses' | 'nome' | 'whatsapp';
-const ORDER: Step[] = ['persona', 'areas', 'interesses', 'nome', 'whatsapp'];
+type Step = 'persona' | 'foco' | 'solucao' | 'areas' | 'interesses' | 'nome' | 'whatsapp';
+const ORDER: Step[] = ['persona', 'foco', 'solucao', 'areas', 'interesses', 'nome', 'whatsapp'];
 
 const STEP_META: Record<Step, { eyebrow: string; title: string; sub: string; bg: string }> = {
   persona: {
@@ -27,28 +27,40 @@ const STEP_META: Record<Step, { eyebrow: string; title: string; sub: string; bg:
     sub: 'Isso muda tudo que aparece pra você depois.',
     bg: 'radial-gradient(circle at 20% 20%, rgba(239,68,68,0.28), transparent 55%), linear-gradient(135deg, #0A0A0A 0%, #1a1408 100%)',
   },
+  foco: {
+    eyebrow: '02 · O PROBLEMA',
+    title: 'Você sente que perde\no foco estudando?',
+    sub: 'Muitas abas abertas, PDFs pesados e leis desatualizadas...',
+    bg: 'radial-gradient(circle at 50% 50%, rgba(139,92,246,0.25), transparent 55%), linear-gradient(135deg, #0A0A0A 0%, #170f1a 100%)',
+  },
+  solucao: {
+    eyebrow: '03 · A SOLUÇÃO',
+    title: 'A culpa não é sua.\nFalta a ferramenta certa.',
+    sub: 'O Direito Prime centraliza a lei atualizada, doutrina e questões num só lugar. É o essencial para sua aprovação.',
+    bg: 'radial-gradient(circle at 50% 80%, rgba(45,212,168,0.35), transparent 55%), linear-gradient(135deg, #0A0A0A 0%, #071612 100%)',
+  },
   areas: {
-    eyebrow: '02 · ÁREAS DO DIREITO',
+    eyebrow: '04 · ÁREAS DO DIREITO',
     title: 'O que te move\nno estudo?',
     sub: 'Escolha 2 ou mais. Vamos priorizar seu conteúdo.',
     bg: 'radial-gradient(circle at 80% 20%, rgba(232,93,58,0.32), transparent 55%), linear-gradient(135deg, #0A0A0A 0%, #1c0f0a 100%)',
   },
   interesses: {
-    eyebrow: '03 · SEU FOCO',
+    eyebrow: '05 · SEU FOCO',
     title: 'O que você\nmais procura?',
     sub: 'Vamos deixar isso na porta de entrada.',
     bg: 'radial-gradient(circle at 20% 80%, rgba(45,212,168,0.28), transparent 55%), linear-gradient(135deg, #0A0A0A 0%, #071612 100%)',
   },
   nome: {
-    eyebrow: '04 · QUASE LÁ',
+    eyebrow: '06 · QUASE LÁ',
     title: 'Como posso\nte chamar?',
     sub: 'Vou usar seu nome nas mensagens.',
     bg: 'radial-gradient(circle at 80% 80%, rgba(59,130,246,0.28), transparent 55%), linear-gradient(135deg, #0A0A0A 0%, #06101f 100%)',
   },
   whatsapp: {
-    eyebrow: '05 · OPCIONAL',
-    title: 'Recebe lembretes\nno WhatsApp?',
-    sub: 'Só se você quiser. Pode pular sem problema.',
+    eyebrow: '07 · OPCIONAL',
+    title: 'Qual seu\nWhatsApp?',
+    sub: 'Vamos enviar o acesso e informações importantes por lá.',
     bg: 'radial-gradient(circle at 50% 30%, rgba(239,68,68,0.32), transparent 55%), linear-gradient(135deg, #0A0A0A 0%, #1a1408 100%)',
   },
 };
@@ -152,10 +164,10 @@ export default function TriagemVersaoA({ open, onFinished, previewMode }: Props)
           {step === 'persona' && (
             <motion.div
               key="persona"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ delay: 0.2, duration: 0.5, staggerChildren: 0.08 }}
+              initial={{ opacity: 0, y: 30, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -20, scale: 0.95 }}
+              transition={{ duration: 0.5, staggerChildren: 0.1 }}
               className="grid grid-cols-2 gap-3 max-w-md mx-auto"
             >
               {PERSONAS.map((p, i) => {
@@ -163,26 +175,55 @@ export default function TriagemVersaoA({ open, onFinished, previewMode }: Props)
                 return (
                   <motion.button
                     key={p.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.25 + i * 0.08 }}
+                    initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 24, delay: 0.1 + i * 0.1 }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={() => {
                       playSfx('tap');
                       advance({ persona: p.id as PersonaId, personaLabel: p.label });
                     }}
-                    className="relative overflow-hidden rounded-2xl aspect-[3/4] border border-white/10 active:scale-95 transition"
+                    className="relative overflow-hidden rounded-2xl aspect-[3/4] border border-white/10 transition-all hover:border-white/30 hover:shadow-lg hover:shadow-black/50"
                   >
-                    <img src={p.cover} alt="" className="absolute inset-0 w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+                    <motion.img 
+                      src={p.cover} 
+                      alt="" 
+                      className="absolute inset-0 w-full h-full object-cover" 
+                      initial={{ scale: 1.1 }}
+                      animate={{ scale: 1 }}
+                      transition={{ duration: 1.5, ease: "easeOut" }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
                     <div className="absolute inset-x-0 bottom-0 p-3 text-left">
-                      <Icon className="w-5 h-5 mb-1" style={{ color: p.accent }} />
-                      <div className="text-white font-bold text-sm leading-tight">{p.label}</div>
-                      <div className="text-white/60 text-[11px] mt-0.5 leading-tight">{p.desc}</div>
+                      <Icon className="w-5 h-5 mb-1 drop-shadow-md" style={{ color: p.accent }} />
+                      <div className="text-white font-bold text-sm leading-tight drop-shadow-md">{p.label}</div>
+                      <div className="text-white/70 text-[11px] mt-0.5 leading-tight drop-shadow-md">{p.desc}</div>
                     </div>
                   </motion.button>
                 );
               })}
             </motion.div>
+          )}
+
+          {step === 'foco' && (
+            <FocoStep
+              key="foco"
+              onSelect={() => {
+                playSfx('tap');
+                advance({});
+              }}
+            />
+          )}
+
+          {step === 'solucao' && (
+            <SolucaoStep
+              key="solucao"
+              onContinue={() => {
+                playSfx('ding');
+                advance({});
+              }}
+            />
           )}
 
           {step === 'areas' && (
@@ -259,43 +300,59 @@ function MultiChipsStep({
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ delay: 0.2 }}
+      initial={{ opacity: 0, y: 30, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -20, scale: 0.95 }}
+      transition={{ duration: 0.4 }}
       className="max-w-md mx-auto"
     >
-      <div className="flex flex-wrap gap-2 justify-center">
-        {options.map((o, i) => {
+      <motion.div 
+        className="flex flex-wrap gap-2 justify-center"
+        initial="hidden"
+        animate="visible"
+        variants={{
+          visible: { transition: { staggerChildren: 0.05 } }
+        }}
+      >
+        {options.map((o) => {
           const on = selected.includes(o.id);
           return (
             <motion.button
               key={o.id}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.25 + i * 0.04 }}
+              variants={{
+                hidden: { opacity: 0, scale: 0.8 },
+                visible: { opacity: 1, scale: 1, transition: { type: 'spring', stiffness: 300, damping: 20 } }
+              }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.9 }}
               onClick={() => onSelect(o.id)}
-              className={`px-4 h-11 rounded-full border-2 text-sm font-semibold transition active:scale-95 ${
+              className={`px-4 h-11 rounded-full border-2 text-sm font-semibold transition-colors ${
                 on
-                  ? 'bg-[#F5C518] border-[#F5C518] text-black'
-                  : 'bg-white/5 border-white/15 text-white hover:border-white/40'
+                  ? 'bg-[#F5C518] border-[#F5C518] text-black shadow-lg shadow-[#F5C518]/20'
+                  : 'bg-white/5 border-white/15 text-white hover:bg-white/10'
               }`}
             >
               {o.label}
             </motion.button>
           );
         })}
-      </div>
-      <div className="mt-8 flex flex-col items-center gap-2">
-        <button
+      </motion.div>
+      <motion.div 
+        className="mt-8 flex flex-col items-center gap-2"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+      >
+        <motion.button
           disabled={selected.length < min}
           onClick={onContinue}
-          className="h-14 px-8 rounded-full bg-[#F5C518] text-black font-bold flex items-center gap-2 active:scale-95 disabled:opacity-30"
+          whileTap={{ scale: 0.95 }}
+          className="h-14 px-8 rounded-full bg-[#F5C518] text-black font-bold flex items-center gap-2 disabled:opacity-30 disabled:scale-100 transition-opacity"
         >
           Continuar <ArrowRight className="w-5 h-5" strokeWidth={2.5} />
-        </button>
+        </motion.button>
         <p className="text-white/70 text-xs">Selecione ao menos {min}</p>
-      </div>
+      </motion.div>
     </motion.div>
   );
 }
@@ -311,50 +368,75 @@ function MultiInteressesStep({
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ delay: 0.2 }}
+      initial={{ opacity: 0, y: 30, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -20, scale: 0.95 }}
+      transition={{ duration: 0.4 }}
       className="max-w-md mx-auto space-y-3"
     >
-      {INTERESSES.map((it, i) => {
-        const Icon = it.icon;
-        const on = selected.includes(it.id);
-        return (
-          <motion.button
-            key={it.id}
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.25 + i * 0.1 }}
-            onClick={() => onSelect(it.id)}
-            className={`w-full text-left rounded-2xl border-2 p-4 flex items-center gap-4 active:scale-[0.98] transition ${
-              on
-                ? 'bg-[#2DD4A8]/20 border-[#2DD4A8]'
-                : 'bg-white/5 border-white/10 hover:border-white/25'
-            }`}
-          >
-            <div
-              className={`w-11 h-11 rounded-xl flex items-center justify-center ${
-                on ? 'bg-[#2DD4A8]/30' : 'bg-white/10'
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={{ visible: { transition: { staggerChildren: 0.08 } } }}
+        className="space-y-3"
+      >
+        {INTERESSES.map((it) => {
+          const Icon = it.icon;
+          const on = selected.includes(it.id);
+          return (
+            <motion.button
+              key={it.id}
+              variants={{
+                hidden: { opacity: 0, x: -30 },
+                visible: { opacity: 1, x: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } }
+              }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => onSelect(it.id)}
+              className={`w-full text-left rounded-2xl border-2 p-4 flex items-center gap-4 transition-colors ${
+                on
+                  ? 'bg-[#2DD4A8]/20 border-[#2DD4A8] shadow-lg shadow-[#2DD4A8]/10'
+                  : 'bg-white/5 border-white/10 hover:bg-white/10'
               }`}
             >
-              <Icon className="w-5 h-5" />
-            </div>
-            <div className="flex-1">
-              <div className="font-bold text-sm">{it.label}</div>
-              <div className="text-white/50 text-xs">{it.desc}</div>
-            </div>
-            {on && <Check className="w-5 h-5 text-[#2DD4A8]" />}
-          </motion.button>
-        );
-      })}
-      <button
+              <div
+                className={`w-11 h-11 rounded-xl flex items-center justify-center transition-colors ${
+                  on ? 'bg-[#2DD4A8]/30' : 'bg-white/10'
+                }`}
+              >
+                <Icon className="w-5 h-5" />
+              </div>
+              <div className="flex-1">
+                <div className="font-bold text-sm">{it.label}</div>
+                <div className="text-white/60 text-xs">{it.desc}</div>
+              </div>
+              <AnimatePresence>
+                {on && (
+                  <motion.div
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0, opacity: 0 }}
+                    transition={{ type: 'spring', stiffness: 500, damping: 25 }}
+                  >
+                    <Check className="w-5 h-5 text-[#2DD4A8]" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.button>
+          );
+        })}
+      </motion.div>
+      <motion.button
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+        whileTap={{ scale: 0.95 }}
         onClick={onContinue}
         disabled={selected.length === 0}
-        className="mt-4 w-full h-14 rounded-full bg-[#F5C518] text-black font-bold flex items-center justify-center gap-2 active:scale-95 disabled:opacity-30"
+        className="mt-6 w-full h-14 rounded-full bg-[#F5C518] text-black font-bold flex items-center justify-center gap-2 disabled:opacity-30 disabled:scale-100 transition-opacity"
       >
         Continuar <ArrowRight className="w-5 h-5" strokeWidth={2.5} />
-      </button>
+      </motion.button>
     </motion.div>
   );
 }
@@ -422,31 +504,114 @@ function WhatsappStep({
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ delay: 0.2 }}
+      initial={{ opacity: 0, y: 30, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -20, scale: 0.95 }}
+      transition={{ duration: 0.4 }}
       className="max-w-sm mx-auto space-y-4"
     >
-      <input
+      <motion.input
+        initial={{ x: -20, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ delay: 0.1, type: 'spring' }}
         value={value}
         onChange={(e) => onChange(e.target.value.replace(/[^\d+\s()-]/g, '').slice(0, 20))}
         placeholder="(11) 98765-4321"
-        className="w-full h-14 px-5 rounded-2xl bg-white/10 border border-white/20 text-white text-lg outline-none focus:border-[#F5C518]"
+        className="w-full h-14 px-5 rounded-2xl bg-white/10 border border-white/20 text-white text-lg outline-none focus:border-[#F5C518] focus:bg-white/15 transition-all shadow-inner"
       />
-      <button
+      <motion.button
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.2 }}
+        whileTap={{ scale: 0.95 }}
         onClick={() => onContinue(value.trim())}
         disabled={!value.trim() || value.replace(/\D/g, '').length < 10}
-        className="w-full h-14 rounded-full bg-[#F5C518] text-black font-bold flex items-center justify-center gap-2 active:scale-95 disabled:opacity-30"
+        className="w-full h-14 rounded-full bg-[#F5C518] text-black font-bold flex items-center justify-center gap-2 disabled:opacity-30 disabled:scale-100 transition-opacity"
       >
         Finalizar <ArrowRight className="w-5 h-5" strokeWidth={2.5} />
-      </button>
-      <button
+      </motion.button>
+      <motion.button
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3 }}
+        whileTap={{ scale: 0.95 }}
         onClick={() => onContinue('')}
-        className="w-full h-12 rounded-full bg-transparent border border-white/20 text-white/70 font-semibold active:scale-95"
+        className="w-full h-12 rounded-full bg-transparent border border-white/20 text-white/70 font-semibold hover:bg-white/5 transition-colors"
       >
-        Pular
-      </button>
+        Pular (Não quero receber novidades)
+      </motion.button>
+    </motion.div>
+  );
+}
+
+function FocoStep({ onSelect }: { onSelect: () => void }) {
+  const options = [
+    { id: 'sim', label: 'Sim, perco o foco fácil' },
+    { id: 'asvezes', label: 'Às vezes me perco' },
+  ];
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -20, scale: 0.95 }}
+      transition={{ duration: 0.4 }}
+      className="max-w-sm mx-auto space-y-4"
+    >
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={{ visible: { transition: { staggerChildren: 0.15 } } }}
+        className="space-y-3"
+      >
+        {options.map((o) => (
+          <motion.button
+            key={o.id}
+            variants={{
+              hidden: { opacity: 0, y: 20 },
+              visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } }
+            }}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.96 }}
+            onClick={onSelect}
+            className="w-full h-16 rounded-2xl border-2 border-white/10 bg-white/5 text-white font-bold text-[15px] flex items-center justify-center hover:bg-white/10 hover:border-white/20 transition-all shadow-lg"
+          >
+            {o.label}
+          </motion.button>
+        ))}
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function SolucaoStep({ onContinue }: { onContinue: () => void }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -20, scale: 0.95 }}
+      transition={{ duration: 0.4 }}
+      className="max-w-sm mx-auto flex flex-col items-center pt-4"
+    >
+      <motion.div 
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: 'spring', stiffness: 200, damping: 20, delay: 0.1 }}
+        className="w-20 h-20 bg-[#2DD4A8]/20 rounded-full flex items-center justify-center mb-8 border border-[#2DD4A8]/40 shadow-[0_0_40px_rgba(45,212,168,0.2)]"
+      >
+        <Check className="w-10 h-10 text-[#2DD4A8]" />
+      </motion.div>
+
+      <motion.button
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.4, type: 'spring' }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={onContinue}
+        className="w-full h-14 rounded-full bg-[#2DD4A8] text-black font-bold flex items-center justify-center gap-2 shadow-lg shadow-[#2DD4A8]/20"
+      >
+        Entendi, quero conhecer <ArrowRight className="w-5 h-5" strokeWidth={2.5} />
+      </motion.button>
     </motion.div>
   );
 }

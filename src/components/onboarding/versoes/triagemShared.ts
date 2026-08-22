@@ -33,7 +33,7 @@ export const FILOSOFOS = [
   { nome: 'Tomás de Aquino', src: filAquino },
 ];
 
-export type PersonaId = 'faculdade' | 'oab' | 'concurso' | 'advogado';
+export type PersonaId = 'faculdade' | 'oab' | 'estudante_oab' | 'concurso' | 'advogado';
 
 export type TriagemResult = {
   persona: PersonaId | null;

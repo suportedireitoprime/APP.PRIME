@@ -11,6 +11,7 @@ export type CadastroResult = {
   nome: string;
   areas?: string[];
   interesses?: string[];
+  dores?: string[];
   whatsapp?: string | null;
 };
 
@@ -59,6 +60,7 @@ export default function CadastroOnboardingOverlay({
       nome: r.nome,
       areas: r.areas,
       interesses: r.interesses,
+      dores: r.dores,
       whatsapp: r.whatsapp,
     });
   };

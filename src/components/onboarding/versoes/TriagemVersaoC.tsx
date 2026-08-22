@@ -1,7 +1,7 @@
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowRight, Check, Volume2, VolumeX } from 'lucide-react';
+import { ArrowRight, Check, ChevronRight, Volume2, VolumeX, X } from 'lucide-react';
 import {
   DORES,
   FILOSOFOS,
@@ -21,14 +21,24 @@ type Props = {
   previewMode?: boolean;
 };
 
-type Step = 'abertura' | 'persona' | 'interesses' | 'dores' | 'nome' | 'whatsapp' | 'features';
-const CONTENT_STEPS: Step[] = ['persona', 'interesses', 'dores', 'nome', 'whatsapp'];
+type Step = 'abertura' | 'intro1' | 'intro2' | 'persona' | 'interesses' | 'dores' | 'nome' | 'whatsapp' | 'features';
+const CONTENT_STEPS: Step[] = ['intro1', 'intro2', 'persona', 'interesses', 'dores', 'nome', 'whatsapp'];
 
 // Paleta editorial — mesma linguagem da abertura "O Direito pensado por quem o
 // construiu": marrom profundo, tipografia serifada e detalhe dourado.
 const SERIF = 'Georgia, "Times New Roman", serif';
 
 const CARD_BG: Record<Exclude<Step, 'abertura' | 'features'>, { grad: string; accent: string; label: string }> = {
+  intro1: {
+    grad: 'radial-gradient(ellipse at 50% 0%, #301B11 0%, #1A0D08 55%, #0B0503 100%)',
+    accent: '#F3E7D6',
+    label: 'BEM-VINDO',
+  },
+  intro2: {
+    grad: 'radial-gradient(ellipse at 50% 0%, #351C12 0%, #1D0F09 55%, #0D0604 100%)',
+    accent: '#F3E7D6',
+    label: 'EVOLUÇÃO',
+  },
   persona: {
     grad: 'radial-gradient(ellipse at 50% 0%, #4A2A18 0%, #2A1810 55%, #120906 100%)',
     accent: '#F3E7D6',
@@ -58,7 +68,7 @@ const CARD_BG: Record<Exclude<Step, 'abertura' | 'features'>, { grad: string; ac
 
 const GOLD = '#C94C4C';
 
-export default function TriagemVersaoC({ open, onFinished }: Props) {
+export default function TriagemVersaoC({ open, onFinished, previewMode }: Props) {
   const [step, setStep] = useState<Step>('abertura');
   const [data, setData] = useState<TriagemResult>(emptyResult());
   const { muted, toggleMute, playSfx } = useTriagemAudio(open);
@@ -86,7 +96,7 @@ export default function TriagemVersaoC({ open, onFinished }: Props) {
     const next = { ...data, ...patch };
     setData(next);
     if (step === 'abertura') {
-      setStep('persona');
+      setStep('intro1');
       return;
     }
     const nx = CONTENT_STEPS[stepIndex + 1];
@@ -108,7 +118,7 @@ export default function TriagemVersaoC({ open, onFinished }: Props) {
       className="fixed inset-0 z-[100] flex flex-col overflow-hidden bg-[#0A0A0A]"
     >
       {/* Top bar — só aparece após abertura */}
-      {step !== 'abertura' && (
+      {step !== 'abertura' && step !== 'features' && (
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -133,6 +143,14 @@ export default function TriagemVersaoC({ open, onFinished }: Props) {
               </div>
             ))}
           </div>
+          {previewMode && (
+            <button
+              onClick={() => onFinished(data)}
+              className="w-10 h-10 rounded-full bg-white/15 backdrop-blur-md text-white flex items-center justify-center active:scale-95 ml-3"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
         </motion.div>
       )}
 
@@ -145,7 +163,14 @@ export default function TriagemVersaoC({ open, onFinished }: Props) {
       >
         <AnimatePresence mode="wait">
           {step === 'abertura' ? (
-            <AberturaCinematografica key="abertura" onDone={() => advance({})} muted={muted} toggleMute={toggleMute} />
+            <AberturaCinematografica 
+              key="abertura" 
+              onDone={() => advance({})} 
+              muted={muted} 
+              toggleMute={toggleMute} 
+              previewMode={previewMode}
+              onClose={() => onFinished(data)}
+            />
           ) : step === 'features' ? (
             <Suspense key="features" fallback={<div className="absolute inset-0 bg-black" />}>
               <CadastroFeaturesReel
@@ -160,7 +185,7 @@ export default function TriagemVersaoC({ open, onFinished }: Props) {
               initial={{ x: 120, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: -120, opacity: 0 }}
-              transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
               className="relative w-full max-w-lg rounded-[36px] overflow-hidden flex flex-col shadow-2xl border border-[#C94C4C]/25"
               style={{ background: bg.grad, color: bg.accent, minHeight: 0, maxHeight: '100%', willChange: 'transform, opacity' }}
             >
@@ -189,10 +214,14 @@ function AberturaCinematografica({
   onDone,
   muted,
   toggleMute,
+  previewMode,
+  onClose,
 }: {
   onDone: () => void;
   muted: boolean;
   toggleMute: () => void;
+  previewMode?: boolean;
+  onClose?: () => void;
 }) {
   // Roteiro (frames em ms): filósofos aparecem em cascata sobre marrom → flash amarelo → título
   const [phase, setPhase] = useState<0 | 1 | 2>(0);
@@ -227,14 +256,26 @@ function AberturaCinematografica({
         background: 'radial-gradient(ellipse at 50% 40%, #4A2A18 0%, #2A1810 55%, #150A05 100%)',
       }}
     >
-      {/* Botão mute discreto */}
-      <button
-        onClick={toggleMute}
-        className="absolute top-4 right-4 z-30 w-10 h-10 rounded-full bg-white/15 backdrop-blur text-white flex items-center justify-center"
+      {/* Controles do topo (mute + fechar no preview) */}
+      <div 
+        className="absolute top-4 right-4 z-30 flex items-center gap-2"
         style={{ top: 'calc(var(--sai-top, env(safe-area-inset-top,0px)) + 12px)' }}
       >
-        {muted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-      </button>
+        <button
+          onClick={toggleMute}
+          className="w-10 h-10 rounded-full bg-white/15 backdrop-blur text-white flex items-center justify-center active:scale-95 transition-transform"
+        >
+          {muted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+        </button>
+        {previewMode && onClose && (
+          <button
+            onClick={onClose}
+            className="w-10 h-10 rounded-full bg-white/15 backdrop-blur text-white flex items-center justify-center active:scale-95 transition-transform"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        )}
+      </div>
 
       {/* Vinheta */}
       <div className="pointer-events-none absolute inset-0" style={{ background: 'radial-gradient(circle at 50% 45%, transparent 40%, rgba(0,0,0,0.55) 100%)' }} />
@@ -342,7 +383,7 @@ function AberturaCinematografica({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
-              className="mt-4 text-[#F3E7D6]/70 text-base max-w-sm mx-auto"
+              className="mt-6 text-[#F3E7D6]/70 text-lg leading-relaxed max-w-sm mx-auto"
             >
               Cinco toques rápidos pra ajustar o app ao seu jeito de estudar.
             </motion.p>
@@ -350,8 +391,9 @@ function AberturaCinematografica({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7, type: 'spring', stiffness: 200 }}
+              whileTap={{ scale: 0.92 }}
               onClick={onDone}
-              className="mt-8 h-14 px-8 rounded-full bg-[#C94C4C] text-[#150C05] font-black text-base inline-flex items-center gap-2 active:scale-95 shadow-2xl"
+              className="mt-8 h-14 px-8 rounded-full bg-[#C94C4C] text-[#150C05] font-black text-base inline-flex items-center gap-2 shadow-2xl"
             >
               Começar <ArrowRight className="w-5 h-5" />
             </motion.button>
@@ -417,40 +459,89 @@ function CardContent({
       className="relative z-10 flex-1 min-h-0 flex flex-col px-6 pt-4 overflow-hidden"
       style={{ paddingBottom: 'calc(var(--sai-bottom, env(safe-area-inset-bottom,0px)) + 24px)' }}
     >
+      {step === 'intro1' && (
+        <>
+          <motion.h2 
+            initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.4 }}
+            className="text-3xl sm:text-4xl font-black leading-[1.05] mt-2 mb-6" style={{ fontFamily: SERIF }}
+          >
+            O Direito <span className="italic">evoluiu</span>.
+          </motion.h2>
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.4 }} className="text-base opacity-80 mb-6 leading-relaxed">
+            A forma como você estuda e consome conteúdo jurídico também precisa evoluir. Chega de materiais espalhados e desatualizados.
+          </motion.p>
+          <div className="flex-1" />
+          <ContinueBtn disabled={false} onClick={() => advance({})} />
+        </>
+      )}
+
+      {step === 'intro2' && (
+        <>
+          <motion.h2 
+            initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.4 }}
+            className="text-3xl sm:text-4xl font-black leading-[1.05] mt-2 mb-6" style={{ fontFamily: SERIF }}
+          >
+            Seu novo <br /><span className="italic">ecossistema</span>.
+          </motion.h2>
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.4 }} className="text-base opacity-80 mb-6 leading-relaxed">
+            O Direito Prime foi construído para se adaptar à sua rotina. Vamos configurar sua experiência em poucos passos.
+          </motion.p>
+          <div className="flex-1" />
+          <ContinueBtn disabled={false} onClick={() => advance({})} />
+        </>
+      )}
+
       {step === 'persona' && (
         <>
-          <h2 className="text-3xl sm:text-4xl font-black leading-[1.05] mt-2 mb-4" style={{ fontFamily: SERIF }}>
-            Qual é o <span className="italic">seu perfil</span>?
-          </h2>
-          <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain touch-pan-y [-webkit-overflow-scrolling:touch] grid grid-cols-2 gap-3 mt-2 content-start pb-2">
-            {PERSONAS.map((p) => (
-              <motion.button
-                key={p.id}
-                whileTap={{ scale: 0.94 }}
-                onClick={() => {
-                  playSfx('tap');
-                  advance({ persona: p.id as PersonaId, personaLabel: p.label });
-                }}
-                className="relative overflow-hidden rounded-2xl aspect-[3/4] shadow-lg border border-[#C94C4C]/25"
-              >
-                <img src={p.cover} alt="" loading="eager" decoding="async" className="absolute inset-0 w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
-                <div className="absolute inset-x-0 bottom-0 p-3 text-left text-white">
-                  <div className="font-black text-sm leading-tight" style={{ fontFamily: SERIF }}>{p.label}</div>
-                  <div className="text-white/70 text-[11px]">{p.desc}</div>
-                </div>
-              </motion.button>
-            ))}
+          <motion.h2 
+            initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.4 }}
+            className="text-3xl sm:text-4xl font-black leading-[1.05] mt-2 mb-6" style={{ fontFamily: SERIF }}
+          >
+            Onde você está <span className="italic">na sua jornada</span>?
+          </motion.h2>
+          <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain touch-pan-y [-webkit-overflow-scrolling:touch] flex flex-col justify-start pb-4">
+            <div className="relative pl-3 border-l-2 border-white/10 space-y-5 ml-2 mt-2">
+              {[
+                { id: 'estudante_oab', label: 'Estudante de Direito / OAB', desc: 'Foco na faculdade ou Exame de Ordem' },
+                { id: 'concurso', label: 'Concurseiro(a)', desc: 'Magistratura, MP, Delegado, Carreiras...' },
+                { id: 'advogado', label: 'Advogado(a)', desc: 'Já possuo inscrição na OAB' }
+              ].map((p, i) => (
+                  <motion.button
+                  key={p.id}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.1, duration: 0.4 }}
+                  whileTap={{ scale: 0.96 }}
+                  onClick={() => {
+                    playSfx('tap');
+                    advance({ persona: p.id as PersonaId, personaLabel: p.label });
+                  }}
+                  className="relative w-full rounded-2xl px-5 py-4 flex items-center text-left transition-colors border border-white/5 bg-white/[0.04] hover:bg-white/[0.08]"
+                >
+                  <div className="absolute top-[22px] -left-[18px] w-2.5 h-2.5 rounded-full bg-[#C94C4C] shadow-[0_0_8px_#C94C4C]" />
+                  <div className="flex-1 min-w-0 pr-3">
+                    <div className="font-bold text-[16px] leading-tight" style={{ fontFamily: SERIF }}>{p.label}</div>
+                    <div className="text-[12px] opacity-70 mt-1">{p.desc}</div>
+                  </div>
+                  <ChevronRight className="w-5 h-5 opacity-40 shrink-0" />
+                </motion.button>
+              ))}
+            </div>
           </div>
         </>
       )}
 
       {step === 'interesses' && (
         <>
-          <h2 className="text-3xl sm:text-4xl font-black leading-[1.05] mt-2 mb-1" style={{ fontFamily: SERIF }}>
-            O que <span className="italic">procura</span>?
-          </h2>
-          <p className="text-sm opacity-70 mb-3">Marque as funções que mais te interessam</p>
+          <motion.h2 
+            initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.4 }}
+            className="text-3xl sm:text-4xl font-black leading-[1.05] mt-2 mb-1" style={{ fontFamily: SERIF }}
+          >
+            O que é <span className="italic">prioridade</span> pra você hoje?
+          </motion.h2>
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.4 }} className="text-sm opacity-70 mb-3">
+            Marque as funções que mais te interessam
+          </motion.p>
           <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain touch-pan-y [-webkit-overflow-scrolling:touch] space-y-2 pb-2 -mx-1 px-1">
             {INTERESSES.map((it) => {
               const Icon = it.icon;
@@ -490,10 +581,15 @@ function CardContent({
 
       {step === 'dores' && (
         <>
-          <h2 className="text-3xl sm:text-4xl font-black leading-[1.05] mt-2 mb-1" style={{ fontFamily: SERIF }}>
-            Quais são suas <span className="italic">dores</span>?
-          </h2>
-          <p className="text-sm opacity-70 mb-3">Marque o que trava seus estudos na lei</p>
+          <motion.h2 
+            initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.4 }}
+            className="text-3xl sm:text-4xl font-black leading-[1.05] mt-2 mb-1" style={{ fontFamily: SERIF }}
+          >
+            O que mais <span className="italic">trava</span> seus estudos hoje?
+          </motion.h2>
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.4 }} className="text-sm opacity-70 mb-3">
+            Marque o que trava seus estudos na lei
+          </motion.p>
           <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain touch-pan-y [-webkit-overflow-scrolling:touch] space-y-2 pb-2 -mx-1 px-1">
             {DORES.map((d) => {
               const Icon = d.icon;
@@ -533,10 +629,15 @@ function CardContent({
 
       {step === 'nome' && (
         <>
-          <h2 className="text-3xl sm:text-4xl font-black leading-[1.05] mt-2 mb-1" style={{ fontFamily: SERIF }}>
-            Bora estudar{nome1 ? <>, <span className="italic">{nome1}</span>!</> : '...'}
-          </h2>
-          <p className="text-sm opacity-70 mb-6">Como quer ser chamado?</p>
+          <motion.h2 
+            initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.4 }}
+            className="text-3xl sm:text-4xl font-black leading-[1.05] mt-2 mb-1" style={{ fontFamily: SERIF }}
+          >
+            Sua jornada <span className="italic">começa aqui</span>{nome1 ? <>, {nome1}</> : ''}.
+          </motion.h2>
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.4 }} className="text-base opacity-80 mb-6 leading-relaxed">
+            O seu novo jeito de estudar Direito está quase pronto. Como você quer ser chamado?
+          </motion.p>
           <input
             autoFocus
             value={data.nome}
@@ -553,10 +654,15 @@ function CardContent({
 
       {step === 'whatsapp' && (
         <>
-          <h2 className="text-3xl sm:text-4xl font-black leading-[1.05] mt-2 mb-1" style={{ fontFamily: SERIF }}>
-            Um <span className="italic">WhatsApp</span>?
-          </h2>
-          <p className="text-sm opacity-70 mb-6">Pra receber lembretes de leitura. Opcional.</p>
+          <motion.h2 
+            initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.4 }}
+            className="text-3xl sm:text-4xl font-black leading-[1.05] mt-2 mb-1" style={{ fontFamily: SERIF }}
+          >
+            Acelere com o <span className="italic">Hórus</span>.
+          </motion.h2>
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.4 }} className="text-base opacity-80 mb-6 leading-relaxed">
+            Coloque seu WhatsApp para liberar a nossa Inteligência Artificial direto no seu bolso, além de alertas rápidos de novas leis (opcional).
+          </motion.p>
           <input
             value={data.whatsapp || ''}
             onChange={(e) =>

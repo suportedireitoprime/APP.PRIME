@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Play, MessageCircle, UserPlus, Sparkles, Check } from 'lucide-react';
+import { Play, MessageCircle, UserPlus, Sparkles, Check, Database, Activity, MapPin } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import HorusOnboardingOverlay from '@/components/horus/onboarding/HorusOnboardingOverlay';
@@ -9,6 +9,8 @@ import CadastroOnboardingOverlay, {
   setActiveTriagemVersion,
 } from '@/components/onboarding/CadastroOnboardingOverlay';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 const VERSIONS: {
   id: 'A' | 'B' | 'C';
@@ -42,6 +44,31 @@ export default function AdminTriagem() {
   const [previewHorus, setPreviewHorus] = useState(false);
   const [active, setActive] = useState<'A' | 'B' | 'C'>(getActiveTriagemVersion());
 
+  // Respostas State
+  const [respostas, setRespostas] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchRespostas();
+  }, []);
+
+  const fetchRespostas = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id, display_name, status_perfil, faixa_etaria, areas_interesse, interesses, whatsapp_number, onboarding_completed_at')
+      .not('onboarding_completed_at', 'is', null)
+      .order('onboarding_completed_at', { ascending: false })
+      .limit(100);
+      
+    if (error) {
+      toast.error('Erro ao buscar respostas: ' + error.message);
+    } else if (data) {
+      setRespostas(data);
+    }
+    setLoading(false);
+  };
+
   const definir = (v: 'A' | 'B' | 'C') => {
     setActiveTriagemVersion(v);
     setActive(v);
@@ -61,9 +88,12 @@ export default function AdminTriagem() {
       <PageHeader title="Triagem" onBack={() => navigate('/admin-funcoes')} />
       <div className="max-w-5xl mx-auto p-4 pb-24">
         <Tabs defaultValue="cadastro" className="w-full">
-          <TabsList className="grid grid-cols-2 w-full mb-4">
+          <TabsList className="grid grid-cols-3 w-full mb-4">
             <TabsTrigger value="cadastro" className="gap-2">
               <UserPlus className="w-4 h-4" /> Cadastro
+            </TabsTrigger>
+            <TabsTrigger value="respostas" className="gap-2">
+              <Database className="w-4 h-4" /> Respostas
             </TabsTrigger>
             <TabsTrigger value="horus" className="gap-2">
               <MessageCircle className="w-4 h-4" /> Horus
@@ -135,6 +165,81 @@ export default function AdminTriagem() {
                   </div>
                 );
               })}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="respostas" className="space-y-4">
+            <div className="rounded-2xl border border-border bg-card p-5">
+              <div className="flex items-center justify-between gap-3 mb-4">
+                <div>
+                  <h2 className="font-bold text-lg flex items-center gap-2">
+                    <Database className="w-5 h-5 text-primary" />
+                    Últimas 100 Respostas
+                  </h2>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Visualização em tempo real de quem terminou a triagem.
+                  </p>
+                </div>
+                <button
+                  onClick={fetchRespostas}
+                  disabled={loading}
+                  className="h-10 px-4 rounded-lg bg-primary/10 text-primary text-xs font-bold hover:bg-primary/20 transition-colors flex items-center gap-2"
+                >
+                  <Activity className="w-4 h-4" />
+                  {loading ? 'Carregando...' : 'Atualizar'}
+                </button>
+              </div>
+
+              {respostas.length === 0 && !loading && (
+                <div className="py-12 text-center text-muted-foreground">
+                  Nenhuma resposta encontrada.
+                </div>
+              )}
+
+              {respostas.length > 0 && (
+                <div className="border border-border rounded-xl overflow-hidden">
+                  <ScrollArea className="w-full max-w-full">
+                    <table className="w-full text-sm text-left">
+                      <thead className="bg-secondary/40 border-b border-border text-xs uppercase text-muted-foreground">
+                        <tr>
+                          <th className="px-4 py-3 font-semibold whitespace-nowrap">Nome</th>
+                          <th className="px-4 py-3 font-semibold whitespace-nowrap">Perfil</th>
+                          <th className="px-4 py-3 font-semibold whitespace-nowrap">Faixa Etária</th>
+                          <th className="px-4 py-3 font-semibold whitespace-nowrap">Interesses</th>
+                          <th className="px-4 py-3 font-semibold whitespace-nowrap">Data</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-border/50">
+                        {respostas.map((r, i) => (
+                          <tr key={r.id || i} className="hover:bg-muted/50 transition-colors">
+                            <td className="px-4 py-3 whitespace-nowrap">
+                              <div className="font-medium text-foreground">{r.display_name || 'Anônimo'}</div>
+                              {r.whatsapp_number && <div className="text-[11px] text-muted-foreground">{r.whatsapp_number}</div>}
+                            </td>
+                            <td className="px-4 py-3 whitespace-nowrap">
+                              <span className="inline-flex items-center rounded-md bg-primary/10 px-2 py-1 text-[11px] font-medium text-primary ring-1 ring-inset ring-primary/20">
+                                {r.status_perfil || '-'}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 whitespace-nowrap text-muted-foreground">
+                              {r.faixa_etaria || '-'}
+                            </td>
+                            <td className="px-4 py-3 max-w-[200px] truncate">
+                              <div className="text-xs text-muted-foreground truncate" title={r.areas_interesse?.join(', ')}>
+                                {r.areas_interesse?.length ? r.areas_interesse.join(', ') : '-'}
+                              </div>
+                            </td>
+                            <td className="px-4 py-3 whitespace-nowrap text-xs text-muted-foreground">
+                              {r.onboarding_completed_at ? new Date(r.onboarding_completed_at).toLocaleString('pt-BR') : '-'}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    <ScrollBar orientation="horizontal" />
+                  </ScrollArea>
+                </div>
+              )}
             </div>
           </TabsContent>
 
