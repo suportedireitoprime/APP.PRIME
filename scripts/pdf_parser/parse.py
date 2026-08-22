@@ -189,7 +189,7 @@ def main():
                         linhas_refinadas.append(linha)
                         continue
                         
-                    if re.match(r'(?i)^(cap[ií]tulo|parte|se[çc][ãa]o|livro|t[íi]tulo)\s+([IVXLCDM\d]+)', linha_limpa):
+                    if re.match(r'^(cap[ií]tulo|parte|se[çc][ãa]o|livro|t[íi]tulo)\s+([IVXLCDM\d]+)', linha_limpa, flags=re.IGNORECASE):
                         is_heading = True
                         heading_level = 2
                             
@@ -223,7 +223,7 @@ def main():
                         if L.isdigit():
                             start_idx = i_linha + 1
                             continue
-                        if re.match(r'(?i)^(cap[íi]tulo|parte|se[çc][ãa]o|livro|t[íi]tulo)\s+([IVXLCDM\d]+)$', L):
+                        if re.match(r'^(cap[íi]tulo|parte|se[çc][ãa]o|livro|t[íi]tulo)\s+([IVXLCDM\d]+)$', L, flags=re.IGNORECASE):
                             start_idx = i_linha + 1
                             continue
                         

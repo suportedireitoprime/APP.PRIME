@@ -1858,10 +1858,6 @@ async function handleWorker(livroTabela: string | null = null, imediato = false,
         if (!r.ok) throw new Error(`ocr ${r.status}`);
       }
 
-      if (job.tipo === "refino" || job.tipo === "completo") {
-        const r = await invokeSelf({ action: "refino", livro_id: job.livro_id, livro_tabela: job.livro_tabela, force: true });
-        if (!r.ok) throw new Error(`refino ${r.status}`);
-      }
       await supabase.from("biblioteca_leitura_jobs")
         .update({ status: "ok", finished_at: new Date().toISOString(), erro: null })
         .eq("id", job.id);
