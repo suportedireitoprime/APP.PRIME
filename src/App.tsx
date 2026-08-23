@@ -535,9 +535,10 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
     return <Navigate to="/auth" replace state={{ from: location.pathname }} />;
   }
 
-  if (requireOnboarding && !initialCheckDone) {
-    return null; // Aguarda a checagem terminar antes de renderizar a rota ou navegar. Evita o travamento do AnimatePresence.
-  }
+  // Removido o bloqueio estrito `if (!initialCheckDone) return null;` para 
+  // permitir que a UI principal (Home) renderize de forma otimista, eliminando a
+  // tela preta e o "engasgo" de dezenas de nós DOM sendo montados de uma vez
+  // após o timeout do Supabase. O cache ou a flag justSignedUp já resolvem 99% dos casos.
 
   // Redireciona para /onboarding se a triagem está pendente, MAS apenas quando
   // NÃO estamos já em /onboarding (senão o <Onboarding /> nunca renderizaria
@@ -602,13 +603,26 @@ function LazyFallback() {
   );
 }
 
-function PresenceWrapper() {
-  const { user } = useAuth();
+function PresenceWrapperInner({ user }: { user: any }) {
   usePresenceTracker();
   useHorusStatsSync();
   useSessionTracker();
   useDesktopSessionGuard(!!user);
   return <AtivarNotificacoesGate />;
+}
+
+function PresenceWrapper() {
+  const { user } = useAuth();
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    // Adia a inicialização de trackers pesados para liberar a main thread no boot
+    const t = setTimeout(() => setMounted(true), 1500);
+    return () => clearTimeout(t);
+  }, []);
+
+  if (!mounted) return null;
+  return <PresenceWrapperInner user={user} />;
 }
 
 function NativeBootstrap() {
@@ -755,7 +769,7 @@ function AnimatedRoutes() {
   // mesmo enquanto a autenticação ainda está resolvendo.
   const HomeGate = () => {
     if (!user) return <Landing />;
-    return null;
+    return <Index />;
   };
 
 
