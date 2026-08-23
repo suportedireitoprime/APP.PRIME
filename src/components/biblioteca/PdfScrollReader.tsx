@@ -1025,7 +1025,7 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId, capaUrl }: Props) => {
           </>
         )}
       </AnimatePresence>
-    </div>
+    </motion.div>
   );
 
   return typeof document === 'undefined' ? reader : createPortal(reader, document.body);
