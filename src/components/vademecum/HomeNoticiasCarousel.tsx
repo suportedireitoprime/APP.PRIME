@@ -91,170 +91,73 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
   const [selectedObra, setSelectedObra] = useState<Obra | null>(null);
   const [selectedLivro, setSelectedLivro] = useState<LivroNormalizado | null>(null);
 
-  const postsAll = useMemo(() => [...BLOG_POSTS], []);
-
-  // Filas persistentes por sessão do carrossel (mantidas em ref, não causam re-render).
-  const blogQueueRef = useRef<BlogPost[]>(shuffle(postsAll));
-  const noticiaQueueRef = useRef<Noticia[]>([]);
-  const obraQueueRef = useRef<Obra[]>([]);
-  const livroQueueRef = useRef<Livro[]>([]);
-  const usedNoticiaIdsRef = useRef<Set<string>>(new Set());
-  const usedObraIdsRef = useRef<Set<string>>(new Set());
-  const usedLivroIdsRef = useRef<Set<string>>(new Set());
-  const cycleStepRef = useRef(0);
-
   const [feed, setFeed] = useState<FeedItem[]>([]);
 
-  // Recalcula a fila de notícias sempre que a fonte muda: sempre a mais recente
-  // ainda não exibida vai na frente. Notícias já mostradas não voltam.
   useEffect(() => {
-    const sorted = [...noticias].sort(
-      (a, b) => new Date(b.data_publicacao).getTime() - new Date(a.data_publicacao).getTime(),
-    );
-    noticiaQueueRef.current = sorted.filter((n) => !usedNoticiaIdsRef.current.has(String(n.id)));
-  }, [noticias]);
+    let mounted = true;
 
-  // Fila de obras: recalcula quando a fonte muda, removendo já exibidas.
-  useEffect(() => {
-    obraQueueRef.current = obras.filter((o) => !usedObraIdsRef.current.has(String(o.id)));
-  }, [obras]);
+    async function loadAll() {
+      // Noticias cacheadas ou aguarda
+      let loadedNoticias = getNoticiasCache() ?? [];
 
-  // Fila de livros clássicos.
-  useEffect(() => {
-    livroQueueRef.current = livros.filter((l) => !usedLivroIdsRef.current.has(String(l.id)));
-  }, [livros]);
-
-  const takeNext = useCallback((kind: 'blog' | 'noticia' | 'obra' | 'livro'): FeedItem | null => {
-    if (kind === 'blog') {
-      if (blogQueueRef.current.length === 0) {
-        blogQueueRef.current = shuffle(postsAll);
-      }
-      const p = blogQueueRef.current.shift();
-      if (!p) return null;
-      return { kind: 'blog', id: `b-${p.id}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`, data: p };
-    }
-    if (kind === 'noticia') {
-      if (noticiaQueueRef.current.length === 0) {
-        // esgotou — reabastece a partir do que há, removendo o histórico p/ reiniciar do topo
-        usedNoticiaIdsRef.current.clear();
-        noticiaQueueRef.current = [...noticias].sort(
-          (a, b) => new Date(b.data_publicacao).getTime() - new Date(a.data_publicacao).getTime(),
-        );
-      }
-      const n = noticiaQueueRef.current.shift();
-      if (!n) return null;
-      usedNoticiaIdsRef.current.add(String(n.id));
-      return { kind: 'noticia', id: `n-${n.id}-${Date.now()}`, data: n };
-    }
-    if (kind === 'livro') {
-      if (livroQueueRef.current.length === 0) {
-        usedLivroIdsRef.current.clear();
-        livroQueueRef.current = shuffle(livros);
-      }
-      const l = livroQueueRef.current.shift();
-      if (!l) return null;
-      usedLivroIdsRef.current.add(String(l.id));
-      return { kind: 'livro', id: `l-${l.id}-${Date.now()}`, data: l };
-    }
-    // obra
-    if (obraQueueRef.current.length === 0) {
-      usedObraIdsRef.current.clear();
-      obraQueueRef.current = [...obras];
-    }
-    const o = obraQueueRef.current.shift();
-    if (!o) return null;
-    usedObraIdsRef.current.add(String(o.id));
-    return { kind: 'obra', id: `o-${o.id}-${Date.now()}`, data: o };
-  }, [noticias, obras, livros, postsAll]);
-
-  const extendFeed = useCallback((minItemsAhead: number) => {
-    setFeed((prev) => {
-      const out = [...prev];
-      // Empurra até o ciclo produzir pelo menos `minItemsAhead` itens novos
-      let added = 0;
-      let guard = 0;
-      while (added < minItemsAhead && guard < 64) {
-        guard++;
-        const slot = CYCLE[cycleStepRef.current % CYCLE.length];
-        const item = takeNext(slot);
-        if (item) {
-          out.push(item);
-          added++;
-          cycleStepRef.current++;
-        } else {
-          // fila vazia (ex.: obras ainda carregando) — pula o slot e continua o ciclo
-          cycleStepRef.current++;
-        }
-      }
-      if (added === 0) return prev; // Evita loop infinito no useLayoutEffect
-      return out;
-    });
-  }, [takeNext]);
-
-  // Popula o feed inicial e reidrata quando novas fontes chegam.
-  useLayoutEffect(() => {
-    if (feed.length === 0) extendFeed(9);
-  }, [feed.length, extendFeed]);
-
-  // Manter o feed estável ao carregar novas fontes (não reseta o feed visível nem troca os cards após 1s)
-  const rebuiltRef = useRef({ livros: false, obras: false });
-  useEffect(() => {
-    const needLivros = livros.length > 0 && !rebuiltRef.current.livros;
-    const needObras = obras.length > 0 && !rebuiltRef.current.obras;
-    if (!needLivros && !needObras) return;
-    rebuiltRef.current = { livros: livros.length > 0, obras: obras.length > 0 };
-    livroQueueRef.current = shuffle(livros);
-    obraQueueRef.current = [...obras];
-  }, [livros, obras]);
-
-  // À medida que o usuário se aproxima do fim, adiciona mais um ciclo.
-  useEffect(() => {
-    if (feed.length - activeIndex <= 3) extendFeed(9);
-  }, [activeIndex, feed.length, extendFeed]);
-
-  const items = feed;
-
-  const activeItem = items[activeIndex];
-
-  useEffect(() => {
-    if (noticias.length === 0) prefetchNoticias().catch(() => {});
-    const unsub = subscribeNoticias((data) => setNoticias(data.slice(0, MAX_NEWS)));
-    return unsub;
-  }, [noticias.length]);
-
-  useEffect(() => {
-    const fetchObras = async () => {
-      const { data } = await supabase
+      // Promessas paralelas para carregamento rápido
+      const obrasP = supabase
         .from('tematica_juridica_obras')
         .select('*')
         .eq('ativo', true)
         .order('destaque', { ascending: false })
-        .order('ordem', { ascending: true })
-        .limit(MAX_OBRAS);
-      if (data) setObras((data as unknown) as Obra[]);
-    };
-    if ('requestIdleCallback' in window) {
-      (window as any).requestIdleCallback(fetchObras, { timeout: 2000 });
-    } else {
-      setTimeout(fetchObras, 500);
-    }
-  }, []);
+        .limit(30)
+        .then(res => (res.data as unknown as Obra[]) || []);
 
-  useEffect(() => {
-    const fetchLivros = async () => {
-      const { data } = await supabase
+      const livrosP = supabase
         .from('biblioteca_classicos')
         .select('id, livro, autor, area, imagem, sobre, link, download, capa_horizontal, ano_lancamento, editora, curiosidades, analise_detalhada, audio_resumo_url, paginas, minutos_leitura')
         .not('imagem', 'is', null)
-        .limit(MAX_LIVROS);
-      if (data) setLivros((data as unknown) as Livro[]);
-    };
-    if ('requestIdleCallback' in window) {
-      (window as any).requestIdleCallback(fetchLivros, { timeout: 2500 });
-    } else {
-      setTimeout(fetchLivros, 600);
+        .limit(30)
+        .then(res => (res.data as unknown as Livro[]) || []);
+
+      const [loadedObras, loadedLivros] = await Promise.all([obrasP, livrosP]);
+
+      if (!mounted) return;
+
+      const pool: FeedItem[] = [];
+
+      const pick = (arr: any[], kind: string, count: number) => {
+        return shuffle(arr).slice(0, count).map(x => ({ kind, id: `${kind}-${x.id}-${Math.random()}`, data: x } as FeedItem));
+      };
+
+      pool.push(...pick(loadedObras, 'obra', 2));
+      pool.push(...pick(loadedLivros, 'livro', 2));
+      pool.push(...pick(loadedNoticias, 'noticia', 2));
+      pool.push(...pick(BLOG_POSTS, 'blog', 2));
+
+      // Preenche buracos se faltarem itens nas bases
+      if (pool.length < 8) {
+        const missing = 8 - pool.length;
+        const remainingBlogs = BLOG_POSTS.filter(b => !pool.find(p => p.kind === 'blog' && p.data.id === b.id));
+        pool.push(...pick(remainingBlogs, 'blog', missing));
+      }
+
+      setFeed(shuffle(pool).slice(0, 8));
+      
+      // Salva no estado para uso (caso alguém precise ler os raw arrays)
+      setObras(loadedObras);
+      setLivros(loadedLivros);
+      setNoticias(loadedNoticias);
     }
+
+    loadAll();
+
+    // Mantém a subscrição de notícias atualizada no fundo, mas não altera os 8 itens fixos da sessão.
+    const unsub = subscribeNoticias((data) => setNoticias(data.slice(0, 20)));
+    return () => {
+      mounted = false;
+      unsub();
+    };
   }, []);
+
+  const items = feed;
+  const activeItem = items[activeIndex];
 
   useEffect(() => {
     const hasOpen = !!selectedNoticia || !!selectedPost || !!selectedObra || !!selectedLivro;

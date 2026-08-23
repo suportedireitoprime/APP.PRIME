@@ -769,7 +769,9 @@ function AnimatedRoutes() {
   // mesmo enquanto a autenticação ainda está resolvendo.
   const HomeGate = () => {
     if (!user) return <Landing />;
-    return <Index />;
+    // O PersistentHome já renderiza a Home para usuários logados.
+    // Retornamos null aqui para evitar duplicação do Index no DOM.
+    return null;
   };
 
 

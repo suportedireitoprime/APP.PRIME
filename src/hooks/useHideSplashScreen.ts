@@ -13,15 +13,19 @@ export function useHideSplashScreen(delay = 100) {
     
     let cancelled = false;
     
-    // Pequeno delay para garantir que o render no DOM já ocorreu
-    // antes de dropar a tela de splash nativa.
-    setTimeout(() => {
-      if (cancelled || hasHidden) return;
-      hasHidden = true;
-      import('@capacitor/splash-screen').then(({ SplashScreen }) => {
-        SplashScreen.hide({ fadeOutDuration: 250 }).catch(() => {});
+    // Garante que o React já fez o commit e o browser já fez o paint inicial
+    // antes de começarmos a contar o tempo de saída, eliminando concorrência.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          if (cancelled || hasHidden) return;
+          hasHidden = true;
+          import('@capacitor/splash-screen').then(({ SplashScreen }) => {
+            SplashScreen.hide({ fadeOutDuration: 250 }).catch(() => {});
+          });
+        }, delay);
       });
-    }, delay);
+    });
     
     return () => {
       cancelled = true;
