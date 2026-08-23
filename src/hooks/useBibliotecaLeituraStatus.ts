@@ -44,8 +44,13 @@ export function useBibliotecaLeituraStatus() {
     if (!silent) setLoading(true);
     // 1) Livros de todas as coleções (em paralelo)
     const allLivros: LivroLeituraItem[] = [];
+    const { getPersistedColecao } = await import('@/services/offlineDb');
     const results = await Promise.all(
       COLECOES.map(async (col) => {
+        try {
+          const cached = await getPersistedColecao<LivroNormalizado>(col.id);
+          if (cached && cached.length > 0) return cached.map(row => ({ ...row, colecao: col }));
+        } catch {}
         const { data, error } = await supabase
           .from(col.table as any)
           .select(col.select)

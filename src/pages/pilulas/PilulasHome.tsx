@@ -24,7 +24,7 @@ export default function PilulasHome() {
     async function loadDecks() {
       const { data, error } = await supabase
         .from('pilulas_decks')
-        .select('*')
+        .select('id, slug, titulo, descricao, imagem, quantidade_estimada')
         .order('created_at', { ascending: true });
       
       if (!error && data) {

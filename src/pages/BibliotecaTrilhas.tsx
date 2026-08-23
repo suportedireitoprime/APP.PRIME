@@ -26,7 +26,13 @@ const SetupLivro = ({ onSelect, onCancel }: { onSelect: (livro: LivroNormalizado
     const fetchLivros = async () => {
       setLoading(true);
       try {
+        const { getPersistedColecao } = await import('@/services/offlineDb');
         const promises = COLECOES.filter(c => !c.adminOnly).map(async (colecao) => {
+          try {
+            const cached = await getPersistedColecao<LivroNormalizado>(colecao.id);
+            if (cached && cached.length > 0) return cached;
+          } catch {}
+          
           const { data } = await supabase.from(colecao.table as any).select(colecao.select).limit(2000);
           return (data || []).map((r: any) => normalizeLivro(r, colecao));
         });
