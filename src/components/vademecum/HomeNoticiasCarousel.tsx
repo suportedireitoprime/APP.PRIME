@@ -378,6 +378,7 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
                         src={cdnImg(l.imagem, 240)}
                         alt=""
                         loading={i < 2 ? 'eager' : 'lazy'}
+                        fetchPriority={i < 2 ? 'high' : 'auto'}
                         decoding="async"
                         className="h-[118px] w-auto max-w-full object-contain rounded-md"
                         style={{
@@ -457,7 +458,7 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
                         src={cdnImg(poster, 200)}
                         alt={o.titulo}
                         loading={i < 2 ? 'eager' : 'lazy'}
-                        {...(i < 2 ? { fetchpriority: 'high' as any } : {})}
+                        fetchPriority={i < 2 ? 'high' : 'auto'}
                         decoding="async"
                         className="w-full h-full object-cover"
                       />
@@ -527,7 +528,7 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
                     src={img}
                     alt=""
                     loading={i < 2 ? 'eager' : 'lazy'}
-                    {...(i < 2 ? { fetchpriority: 'high' as any } : {})}
+                    fetchPriority={i < 2 ? 'high' : 'auto'}
                     decoding="async"
                     className={`absolute inset-0 w-full h-full object-cover ${
                       isB ? 'object-top opacity-90' : 'brightness-110 contrast-105 saturate-110'
