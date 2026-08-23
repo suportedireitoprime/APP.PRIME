@@ -2509,6 +2509,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         }}
         className={`text-foreground leading-[1.8] ${extra} ${highlightBg} ${!highlightMode && focusedSegment && focusedSegment === (lineSegmentMap[lineIndex] || 'caput') ? 'rounded-md ring-1 ring-primary/25' : ''}`}
         style={{ fontSize: `${fontSize}px` }}
+      >
         {isFirst && !isRevogado && artLabel && (
           <>
             <span className="font-bold text-primary">{artLabel}</span>
