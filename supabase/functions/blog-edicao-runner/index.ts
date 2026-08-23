@@ -265,6 +265,19 @@ Deno.serve(async (req) => {
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
   );
 
+  // EARLY RETURN: Evita uso de recursos/logs se for apenas um "idle ping" do cron sem temas
+  if (!specificTemaId && !publicarTemaId && !regenerateCoverPostId) {
+    const { count } = await supabase
+      .from("blog_edicao_temas")
+      .select("*", { count: "exact", head: true })
+      .in("status", ["pendente", "agendado"])
+      .or(`agendado_para.is.null,agendado_para.lte.${new Date().toISOString()}`);
+      
+    if (!count) {
+      return json({ ok: true, message: "Nenhum tema agendado para agora (early-return)" });
+    }
+  }
+
   try {
     const geminiKey = Deno.env.get("GEMINI_API_KEY") || "";
     // callGemini agora usa Gemini API; a chave direta é opcional.
