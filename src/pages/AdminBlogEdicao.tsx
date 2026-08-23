@@ -89,7 +89,7 @@ const mesmoDia = (isoOrDate: string | Date | null | undefined) => {
 export default function AdminBlogEdicao() {
   const navigate = useNavigate();
   const goBack = useGoBack();
-  const [tab, setTab] = useState<'biblioteca' | 'em_fila' | 'concluidos' | 'banco'>('em_fila');
+  const [tab, setTab] = useState<'em_fila' | 'gerados'>('em_fila');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [bancoPosts, setBancoPosts] = useState<BancoPost[]>([]);
   const [editingPost, setEditingPost] = useState<BancoPost | null>(null);
@@ -241,10 +241,10 @@ export default function AdminBlogEdicao() {
   );
 
   const filtered = useMemo(() => {
-    if (tab === 'biblioteca') return biblioteca;
     if (tab === 'em_fila') return filaHoje;
+    // 'gerados' = todos os concluídos
     return concluidos;
-  }, [tab, biblioteca, filaHoje, concluidos]);
+  }, [tab, filaHoje, concluidos]);
 
   // Próxima geração: primeiro horário >= agora, dentre os horários do dia
   const proximaGeracao = useMemo(() => {
@@ -608,13 +608,11 @@ export default function AdminBlogEdicao() {
           )}
         </div>
 
-        {/* Menu Principal */}
+        {/* Menu Principal — só Em fila e Gerados */}
         <div className="space-y-2 mt-4">
           {([
             { id: 'em_fila', label: 'Em fila', count: filaHoje.length, icon: CalendarClock, color: 'text-blue-400', bg: 'bg-blue-500/10' },
-            { id: 'biblioteca', label: 'Biblioteca', count: biblioteca.length, icon: Library, color: 'text-purple-400', bg: 'bg-purple-500/10' },
-            { id: 'concluidos', label: 'Concluídos', count: concluidos.length, icon: CheckCircle2, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-            { id: 'banco', label: 'Banco Oficial', count: bancoPosts.length > 0 ? bancoPosts.length : '?', icon: Database, color: 'text-amber-400', bg: 'bg-amber-500/10' },
+            { id: 'gerados', label: 'Gerados', count: concluidos.length, icon: CheckCircle2, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
           ] as const).map(t => {
             const Icon = t.icon;
             return (
@@ -642,7 +640,7 @@ export default function AdminBlogEdicao() {
         <DrawerContent className="max-h-[85vh]">
           <DrawerHeader className="border-b border-border/40 pb-4">
             <DrawerTitle>
-              {tab === 'em_fila' ? 'Em fila' : tab === 'biblioteca' ? 'Biblioteca' : tab === 'concluidos' ? 'Concluídos' : 'Banco Oficial'}
+              {tab === 'em_fila' ? 'Em fila hoje' : 'Gerados'}
             </DrawerTitle>
           </DrawerHeader>
           <div className="p-4 overflow-y-auto" style={{ overscrollBehavior: 'contain' }}>
@@ -671,46 +669,15 @@ export default function AdminBlogEdicao() {
             </button>
           )}
 
-          {!loading && tab !== 'banco' && filtered.length === 0 && (
+          {!loading && filtered.length === 0 && (
             <div className="text-center text-muted-foreground py-8 text-sm">
               {tab === 'em_fila'
-                ? 'Nenhum artigo agendado para hoje.'
-                : tab === 'biblioteca'
-                ? 'Biblioteca vazia. Gere temas em Configurações.'
-                : 'Ainda nada publicado.'}
+                ? 'Nenhum artigo agendado para hoje. Verifique se há temas pendentes e se a configuração de horários está definida.'
+                : 'Ainda nenhum artigo gerado.'}
             </div>
           )}
-          {!loading && tab === 'banco' && bancoPosts.length === 0 && (
-            <div className="text-center text-muted-foreground py-8 text-sm">
-              Nenhum artigo no banco.
-            </div>
-          )}
-          {tab === 'banco' && bancoPosts.map(p => (
-            <div key={p.id} className="rounded-xl bg-secondary/40 border border-border/50 p-3">
-              <div className="flex items-start gap-3">
-                {p.imagem_url && (
-                  <img src={p.imagem_url} alt={p.titulo} loading="lazy" className="w-20 h-20 rounded-lg object-cover border border-border/50 flex-shrink-0" />
-                )}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${p.publicado ? 'bg-emerald-500/20 text-emerald-300' : 'bg-secondary text-muted-foreground'}`}>{p.publicado ? 'Publicado' : 'Rascunho'}</span>
-                    <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-md bg-secondary text-muted-foreground">{new Date(p.created_at).toLocaleDateString('pt-BR')}</span>
-                  </div>
-                  <div className="text-sm font-semibold text-foreground line-clamp-2">{p.titulo}</div>
-                  <div className="text-xs text-muted-foreground mt-1 line-clamp-2">{p.categoria}</div>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <button onClick={() => setEditingPost(p)} className="p-2 rounded-lg bg-blue-500/10 text-blue-300 hover:bg-blue-500/20" title="Editar">
-                    <Edit3 className="w-3.5 h-3.5" />
-                  </button>
-                  <button onClick={() => { regerarCapa(p.id); }} className="p-2 rounded-lg bg-amber-500/10 text-amber-300 hover:bg-amber-500/20" title="Regerar capa">
-                    <ImageIcon className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-          {tab !== 'banco' && filtered.map(t => {
+          {/* Banco removido do menu principal — acesso via Configurações */}
+          {filtered.map(t => {
             const horario = (t as any).horario as string | undefined;
             const isConcluido = t.status === 'concluido';
             return (
