@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, Suspense } from 'react';
+import { useState, useEffect, useRef, Suspense, useCallback } from 'react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate } from 'react-router-dom';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -129,12 +129,15 @@ const IndexDesktop = () => {
     };
   }, []);
 
-  const handleSearchSelectLei = (lei: { tipo: string; leiId: string; nome: string; descricao: string; tabela_nome: string; artigoNumero?: string }) => {
+  const handleSearchSelectLei = useCallback((lei: { tipo: string; leiId: string; nome: string; descricao: string; tabela_nome: string; artigoNumero?: string }) => {
     pushRecente({ tipo: lei.tipo, leiId: lei.leiId, nome: lei.nome, descricao: lei.descricao, tabela_nome: lei.tabela_nome });
     const slug = leiToSlug({ id: lei.leiId, nome: lei.nome });
     const base = `/legislacao/${tipoToSlug(lei.tipo)}/${slug}`;
     navigate(lei.artigoNumero ? `${base}/${encodeURIComponent(lei.artigoNumero)}` : base);
-  };
+  }, [navigate]);
+
+  const handleSearchClose = useCallback(() => setSearchOpen(false), []);
+  const handleAssistenteClose = useCallback(() => setAssistenteOpen(false), []);
 
   return (
     <div className="min-h-dvh bg-background flex flex-col">
@@ -254,10 +257,10 @@ const IndexDesktop = () => {
         <DesktopNewsSidebar />
         <Suspense fallback={null}>
           {searchOpen && (
-            <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} onSelectLei={handleSearchSelectLei} />
+            <SearchOverlay open={searchOpen} onClose={handleSearchClose} onSelectLei={handleSearchSelectLei} />
           )}
           {assistenteOpen && (
-            <AssistenteOverlay open={assistenteOpen} onClose={() => setAssistenteOpen(false)} />
+            <AssistenteOverlay open={assistenteOpen} onClose={handleAssistenteClose} />
           )}
         </Suspense>
       </div>

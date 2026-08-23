@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, Suspense } from 'react';
+import { useState, useRef, useEffect, Suspense, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate } from 'react-router-dom';
@@ -92,13 +92,22 @@ const IndexMobile = () => {
     };
   }, []);
 
-  const handleSearchSelectLei = (lei: { tipo: string; leiId: string; nome: string; descricao: string; tabela_nome: string; artigoNumero?: string }) => {
+  const handleSearchSelectLei = useCallback((lei: { tipo: string; leiId: string; nome: string; descricao: string; tabela_nome: string; artigoNumero?: string }) => {
     track('lei_search_selected', { tipo: lei.tipo, lei_id: lei.leiId, lei_nome: lei.nome, has_artigo: Boolean(lei.artigoNumero) });
     pushRecente({ tipo: lei.tipo, leiId: lei.leiId, nome: lei.nome, descricao: lei.descricao, tabela_nome: lei.tabela_nome });
     const slug = leiToSlug({ id: lei.leiId, nome: lei.nome });
     const base = `/legislacao/${tipoToSlug(lei.tipo)}/${slug}`;
     navigate(lei.artigoNumero ? `${base}/${encodeURIComponent(lei.artigoNumero)}` : base);
-  };
+  }, [navigate]);
+
+  const handleMenuClose = useCallback(() => setMenuOpen(false), []);
+  const handleMenuNavigate = useCallback((section: string) => {
+    if (section === 'atualizacao') setActiveTab('noticias');
+    else if (section === 'novidades') { /* handled by SideMenu */ }
+    else setActiveTab('legislacao');
+  }, []);
+  const handleSearchClose = useCallback(() => setSearchOpen(false), []);
+  const handleAssistenteClose = useCallback(() => setAssistenteOpen(false), []);
 
   // Silence unused import warning; retained for future navigation flows.
   void LEIS_CATALOG;
@@ -119,19 +128,15 @@ const IndexMobile = () => {
         {menuOpen && (
           <SideMenu
             open={menuOpen}
-            onClose={() => setMenuOpen(false)}
-            onNavigate={(section) => {
-              if (section === 'atualizacao') setActiveTab('noticias');
-              else if (section === 'novidades') { /* handled by SideMenu */ }
-              else setActiveTab('legislacao');
-            }}
+            onClose={handleMenuClose}
+            onNavigate={handleMenuNavigate}
           />
         )}
         {searchOpen && (
-          <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} onSelectLei={handleSearchSelectLei} />
+          <SearchOverlay open={searchOpen} onClose={handleSearchClose} onSelectLei={handleSearchSelectLei} />
         )}
         {assistenteOpen && (
-          <AssistenteOverlay open={assistenteOpen} onClose={() => setAssistenteOpen(false)} />
+          <AssistenteOverlay open={assistenteOpen} onClose={handleAssistenteClose} />
         )}
       </Suspense>
     </div>
