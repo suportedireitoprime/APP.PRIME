@@ -3325,9 +3325,10 @@ jobs:
 
           drawable_dir = Path('android/app/src/main/res/drawable')
           drawable_dir.mkdir(parents=True, exist_ok=True)
-          dst = drawable_dir / 'notification_icon.png'
-          shutil.copy(src, dst)
-          print(f'✅ notification_icon copiado -> {dst}')
+          if not (drawable_dir / 'notification_icon.xml').exists():
+              dst = drawable_dir / 'notification_icon.png'
+              shutil.copy(src, dst)
+              print(f'✅ notification_icon copiado -> {dst}')
 
           # colors.xml — adiciona notification_color=#FFD500 (idempotente)
           colors = Path('android/app/src/main/res/values/colors.xml')
@@ -3891,3 +3892,4 @@ jobs:
             git pull --rebase origin ${GITHUB_REF#refs/heads/} || true
           done
           echo "::warning::Não foi possível commitar o bump de versão. Próxima build pode reusar buildNumber (versionCode ainda cresce via timestamp)."
+
