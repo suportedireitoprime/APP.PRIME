@@ -111,7 +111,7 @@ const InAppWebView = ({ url, titulo, onClose, autoFallback = false }: InAppWebVi
         {/* Header */}
         <div className="flex items-center gap-2 px-3 h-14 border-b border-border/60 bg-background/95 backdrop-blur">
           <button
-            onClick={onClose}
+            onClick={() => { import('@/lib/nativeHaptics').then(m => m.haptic.selection()); onClose(); }}
             aria-label="Voltar"
             className="w-12 h-12 rounded-full touch-manipulation flex items-center justify-center hover:bg-secondary transition"
           >

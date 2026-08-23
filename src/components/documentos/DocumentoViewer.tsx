@@ -162,7 +162,7 @@ const DocumentoViewer = ({ blob, nome, mime, onClose, onBaixar, baixando }: Prop
     <div className="fixed inset-0 z-[95] flex flex-col bg-background">
       <div className="flex items-start gap-3 border-b border-border/60 px-3 pt-[calc(1.25rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-3">
         <button
-          onClick={onClose}
+          onClick={() => { import('@/lib/nativeHaptics').then(m => m.haptic.selection()); onClose(); }}
           aria-label="Voltar"
           className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-border/60 bg-card active:scale-95 transition"
         >

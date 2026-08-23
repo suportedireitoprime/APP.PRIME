@@ -16,6 +16,7 @@ import { PageHeader } from '@/components/vademecum/PageHeader';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 import OpiniaoSheet from '@/components/menu/OpiniaoSheet';
 import { useBodyScrollLock, resetBodyScrollLock } from '@/hooks/useBodyScrollLock';
+import { haptic } from '@/lib/nativeHaptics';
 
 interface SideMenuProps {
   open: boolean;
@@ -115,6 +116,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
   ];
 
   const handleItemClick = async (id: string) => {
+    haptic.selection();
     if (id === 'sair') {
       // Fecha o menu e limpa locks imediatamente
       resetBodyScrollLock();

@@ -134,7 +134,7 @@ export default function AssistenteIA({
                 <p className="text-[11px] opacity-60 mt-0.5">Página {paginaNum}</p>
               </div>
               <button
-                onClick={onClose}
+                onClick={() => { import('@/lib/nativeHaptics').then(m => m.haptic.selection()); onClose(); }}
                 aria-label="Fechar"
                 className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 active:scale-95 transition"
                 style={{

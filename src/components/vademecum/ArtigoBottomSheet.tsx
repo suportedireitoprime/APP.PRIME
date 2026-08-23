@@ -2509,8 +2509,6 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         }}
         className={`text-foreground leading-[1.8] ${extra} ${highlightBg} ${!highlightMode && focusedSegment && focusedSegment === (lineSegmentMap[lineIndex] || 'caput') ? 'rounded-md ring-1 ring-primary/25' : ''}`}
         style={{ fontSize: `${fontSize}px` }}
-      >
-
         {isFirst && !isRevogado && artLabel && (
           <>
             <span className="font-bold text-primary">{artLabel}</span>
@@ -2526,6 +2524,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
   const commentsWithText = highlights.filter(h => h.comment && h.comment.trim().length > 0);
 
   const handleSheetClose = () => {
+    import('@/lib/nativeHaptics').then((m) => m.haptic.selection());
     // Se a narração está tocando, transfere o áudio para o player flutuante
     // em vez de destruí-lo. Assim a pessoa continua ouvindo mesmo após fechar.
     const currentAudio = narracaoAudioRef.current;

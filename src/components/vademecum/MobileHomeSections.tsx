@@ -294,7 +294,10 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
             return (
               <button
                 key={t.id}
-                onClick={() => setTab(t.id)}
+                onClick={() => {
+                  import('@/lib/nativeHaptics').then((m) => m.haptic.selection());
+                  setTab(t.id);
+                }}
                 data-track="home_tab_switch"
                 data-track-tab={t.id}
                 className="group relative flex-1 flex items-center justify-center gap-2 h-10 rounded-full font-display text-[13px] font-bold uppercase transition-all"
