@@ -120,49 +120,64 @@ export function CustomSplashScreen({ onComplete }: { onComplete: () => void }) {
         />
       </div>
 
+      {/* Estilos injetados para animação CSS via Compositor Thread (fluidez 100% mesmo com CPU ocupada) */}
+      <style>{`
+        @keyframes splash-logo {
+          0% { transform: scale(0.5); opacity: 0; }
+          60% { transform: scale(1.05); opacity: 1; }
+          100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes splash-title {
+          0% { transform: translateY(15px); opacity: 0; }
+          100% { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes splash-subtitle {
+          0% { transform: translateY(10px); opacity: 0; }
+          100% { transform: translateY(0); opacity: 1; }
+        }
+        .anim-splash-logo {
+          animation: splash-logo 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+          will-change: transform, opacity;
+        }
+        .anim-splash-title {
+          opacity: 0;
+          animation: splash-title 0.8s ease-out forwards;
+          animation-delay: 0.3s;
+          will-change: transform, opacity;
+        }
+        .anim-splash-subtitle {
+          opacity: 0;
+          animation: splash-subtitle 0.8s ease-out forwards;
+          animation-delay: 1.8s;
+          will-change: transform, opacity;
+        }
+      `}</style>
+
       {/* Logo Central */}
-      <motion.div
-        initial={{ scale: 0.5, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{
-          type: "spring",
-          stiffness: 260,
-          damping: 20,
-          duration: 0.8
-        }}
-        className="mb-8 relative z-10 flex flex-col items-center"
-      >
+      <div className="mb-8 relative z-10 flex flex-col items-center anim-splash-logo">
         <img
           src="/logo-prime.png"
           alt="Direito Prime"
           className="w-40 h-40 sm:w-48 sm:h-48 object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.6)]"
           decoding="async"
         />
-      </motion.div>
+      </div>
       
       {/* Textos */}
       <div className="flex flex-col items-center relative z-10 overflow-hidden px-4">
         <div className="h-14 flex items-center justify-center relative">
-          <motion.span 
-            className="text-white font-serif italic text-[36px] sm:text-5xl font-semibold tracking-tight text-center relative flex"
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3, ease: 'easeOut' }}
-            style={{ textShadow: '0 4px 12px rgba(0,0,0,0.5)', willChange: 'transform, opacity' }}
+          <span 
+            className="text-white font-serif italic text-[36px] sm:text-5xl font-semibold tracking-tight text-center relative flex anim-splash-title"
+            style={{ textShadow: '0 4px 12px rgba(0,0,0,0.5)' }}
           >
             {text}
-          </motion.span>
+          </span>
         </div>
-        <motion.div 
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1.8 }}
-          className="mt-3"
-        >
+        <div className="mt-3 anim-splash-subtitle">
           <span className="text-white/90 font-sans text-xs sm:text-sm font-bold tracking-[0.25em] uppercase">
             Uso Profissional
           </span>
-        </motion.div>
+        </div>
       </div>
     </motion.div>
   );
