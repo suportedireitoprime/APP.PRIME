@@ -37,16 +37,24 @@ export function useHeroMotifsConfig() {
 
   useEffect(() => {
     load();
-    const channel = supabase
-      .channel('hero-motifs-config')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'hero_motifs_config' },
-        () => load(),
-      )
-      .subscribe();
+    // Use a unique channel name per mount to avoid Supabase Realtime errors
+    // when React StrictMode double-mounts or HMR reloads reuse a channel name.
+    const channelName = `hero-motifs-config-${Date.now()}`;
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+    try {
+      channel = supabase
+        .channel(channelName)
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'hero_motifs_config' },
+          () => load(),
+        )
+        .subscribe();
+    } catch (e) {
+      console.warn('[useHeroMotifsConfig] realtime subscription failed:', e);
+    }
     return () => {
-      supabase.removeChannel(channel);
+      if (channel) supabase.removeChannel(channel);
     };
   }, [load]);
 
