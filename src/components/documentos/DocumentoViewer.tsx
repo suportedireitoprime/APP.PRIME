@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ChevronLeft, Download, Loader2, FileWarning } from 'lucide-react';
+import useBodyScrollLock from '@/hooks/useBodyScrollLock';
 
 interface Props {
   /** Conteúdo já baixado do documento (preview 100% offline, dentro do app). */
@@ -34,13 +35,7 @@ const DocumentoViewer = ({ blob, nome, mime, onClose, onBaixar, baixando }: Prop
 
   const ext = useMemo(() => extensao(nome), [nome]);
 
-  useEffect(() => {
-    const anterior = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = anterior;
-    };
-  }, []);
+  useBodyScrollLock(true);
 
   useEffect(() => {
     let cancelado = false;

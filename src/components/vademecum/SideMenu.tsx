@@ -15,6 +15,7 @@ import { isAdminEmail } from '@/lib/adminEmails';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 import OpiniaoSheet from '@/components/menu/OpiniaoSheet';
+import { useBodyScrollLock, resetBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 interface SideMenuProps {
   open: boolean;
@@ -62,6 +63,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
   const { signOut, user } = useAuth();
   const { isPremium } = useSubscription();
   const { formattedToday, pctToday } = useAppUsageTime();
+  useBodyScrollLock(open);
 
   useEffect(() => {
     window.dispatchEvent(new CustomEvent('sidemenu-state', { detail: { open } }));
@@ -115,7 +117,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
   const handleItemClick = async (id: string) => {
     if (id === 'sair') {
       // Fecha o menu e limpa locks imediatamente
-      purgeBodyLocks();
+      resetBodyScrollLock();
       onClose();
       // signOut direto — delay mínimo para garantir que o menu fechou
       setTimeout(() => {
@@ -321,18 +323,8 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
   // Purge agressivo de todos os locks de scroll/pointer que o Radix
   // ou outros modais possam deixar no body ao desmontar abruptamente.
   const purgeBodyLocks = () => {
-    document.body.style.pointerEvents = '';
-    document.body.style.overflow = '';
-    document.body.style.position = '';
-    document.body.style.top = '';
-    document.body.style.width = '';
-    document.body.style.paddingRight = '';
-    document.body.removeAttribute('data-scroll-locked');
+    resetBodyScrollLock();
     delete document.body.dataset.sideMenuOpen;
-    // Remove qualquer data-scroll-locked residual de elementos filhos
-    document.querySelectorAll('[data-scroll-locked]').forEach((el) =>
-      el.removeAttribute('data-scroll-locked'),
-    );
   };
 
   if (typeof document === 'undefined') return null;

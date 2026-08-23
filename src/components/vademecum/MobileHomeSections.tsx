@@ -22,6 +22,7 @@ import { usePastasDocumentos } from '@/hooks/useDocumentosDrive';
 const DocumentosSheet = lazyWithRetry(() => import('@/components/documentos/DocumentosSheet'));
 import { CalendarDays, Inbox } from 'lucide-react';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
+import useBodyScrollLock from '@/hooks/useBodyScrollLock';
 
 
 import { LEIS_CATALOG } from '@/data/leisCatalog';
@@ -272,18 +273,7 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
   const CategorySheetIcon = categoryOpen?.icon || BookMarked;
 
   // Lock background scroll while any bottom sheet is open
-  useEffect(() => {
-    const anyOpen = !!categoryOpen || juriOpen;
-    if (!anyOpen) return;
-    const prevOverflow = document.body.style.overflow;
-    const prevTouch = document.body.style.touchAction;
-    document.body.style.overflow = 'hidden';
-    document.body.style.touchAction = 'none';
-    return () => {
-      document.body.style.overflow = prevOverflow;
-      document.body.style.touchAction = prevTouch;
-    };
-  }, [categoryOpen, juriOpen]);
+  useBodyScrollLock(!!categoryOpen || juriOpen);
 
   return (
     <div className="space-y-6 pt-4">

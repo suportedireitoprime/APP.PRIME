@@ -5,6 +5,7 @@ import { Capacitor } from '@capacitor/core';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { logPdfEvent } from '@/lib/pdfTelemetry';
+import useBodyScrollLock from '@/hooks/useBodyScrollLock';
 import { copiarTexto } from '@/lib/nativo/copiar';
 
 interface InAppWebViewProps {
@@ -29,11 +30,7 @@ const InAppWebView = ({ url, titulo, onClose, autoFallback = false }: InAppWebVi
   const loadedRef = useRef(false);
 
   // Lock scroll da página de trás
-  useEffect(() => {
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = prev; };
-  }, []);
+  useBodyScrollLock(true);
 
   // Telemetria de abertura
   useEffect(() => {

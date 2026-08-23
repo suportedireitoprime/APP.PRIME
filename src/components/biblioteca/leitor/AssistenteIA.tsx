@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, BookOpenText, FileText, MessageCircle, ArrowLeft, ChevronRight } from 'lucide-react';
 import type { Tema } from '@/hooks/useLeitorPrefs';
+import useBodyScrollLock from '@/hooks/useBodyScrollLock';
 import AbaTermos from './AbaTermos';
 import AbaResumo from './AbaResumo';
 import AbaChatPagina from './AbaChatPagina';
@@ -45,14 +46,12 @@ export default function AssistenteIA({
   const dark = tema.isDark;
 
   // Trava scroll do body quando aberto
+  useBodyScrollLock(open);
+  
   useEffect(() => {
-    if (!open) return;
-    setAba('menu');
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = prev;
-    };
+    if (open) {
+      setAba('menu');
+    }
   }, [open]);
 
   const cacheKeyTermos = useMemo(() => `ia-termos:${livroId}:${paginaNum}`, [livroId, paginaNum]);

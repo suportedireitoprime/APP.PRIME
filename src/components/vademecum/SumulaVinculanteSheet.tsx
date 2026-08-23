@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import type { Sumula } from '@/services/sumulasService';
 import { copiarTexto } from '@/lib/nativo/copiar';
 import { supabase } from '@/integrations/supabase/client';
+import useBodyScrollLock from '@/hooks/useBodyScrollLock';
 import ReactMarkdown from 'react-markdown';
 import brasaoImgAsset from '@/assets/brasao-republica.webp';
 
@@ -296,10 +297,10 @@ export function SumulaVinculanteSheet({ sumula, tribunal, isFavorita = false, on
     }
   };
 
+  useBodyScrollLock(true);
+
   useEffect(() => {
-    document.body.style.overflow = 'hidden';
     return () => {
-      document.body.style.overflow = '';
       if (narracaoAudioRef.current) {
         narracaoAudioRef.current.pause();
         narracaoAudioRef.current = null;

@@ -22,6 +22,8 @@ import GrifoVoicePanel, { type GrifoVoicePanelHandle, type VoicePhase } from './
 const KaraokeOverlay = lazyWithRetry(() => import('./KaraokeOverlay'));
 import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import useBodyScrollLock from '@/hooks/useBodyScrollLock';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import ReactMarkdown from 'react-markdown';
@@ -1939,12 +1941,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
   const tooltipHighlight = tooltipData ? highlights.find(h => h.id === tooltipData.id) : null;
 
   // Lock body scroll when sheet is open
-  useEffect(() => {
-    if (!artigo) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = prev; };
-  }, [artigo]);
+  useBodyScrollLock(!!artigo);
 
   // Auto-scroll to first modified line when opening from novidades
   useEffect(() => {
