@@ -62,7 +62,14 @@ export default defineConfig(({ mode }) => ({
   build: {
     rollupOptions: {
       output: {
-        // Letting Rollup handle chunking natively to avoid OOM
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-ui': ['lucide-react', 'framer-motion', 'clsx', 'tailwind-merge'],
+          'vendor-radix': ['@radix-ui/react-accordion', '@radix-ui/react-dialog', '@radix-ui/react-popover', '@radix-ui/react-slot', '@radix-ui/react-tabs'],
+          'vendor-supabase': ['@supabase/supabase-js'],
+          'vendor-query': ['@tanstack/react-query'],
+          'vendor-charts': ['recharts'],
+        }
       },
     },
   },
