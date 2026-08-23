@@ -76,9 +76,10 @@ const QuestoesHero = ({ pct, total, hoje, acertos, disponiveis, onBack }: Props)
       </div>
 
       <section
-        className="relative isolate overflow-hidden bg-hero-panel"
-        aria-label="Seu progresso em questões"
+        className="relative isolate overflow-hidden"
+        aria-label="Painel Principal de Questões"
       >
+        <div className="absolute inset-0 bg-hero-panel -z-10" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.22),transparent_60%)]" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.28),transparent_65%)]" />
 

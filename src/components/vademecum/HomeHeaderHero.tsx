@@ -215,7 +215,7 @@ const HomeHeaderHero = ({ onSearchOpenChange }: { onSearchOpenChange?: (open: bo
     <>
       {/* Unified yellow shell — hero cover as full background; gray profile card floats inset with side margins */}
       <div
-        className="bg-hero-panel relative overflow-hidden rounded-b-[36px] border-b border-white/10 shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))]"
+        className="relative overflow-hidden rounded-b-[36px] border-b border-white/10 shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))]"
         style={{
           // Força layer de composição próprio no Android WebView. Sem isso, ao
           // sair/voltar da viewport o WebView descarta o raster do conteúdo
@@ -227,6 +227,7 @@ const HomeHeaderHero = ({ onSearchOpenChange }: { onSearchOpenChange?: (open: bo
           contain: 'paint',
         }}
       >
+        <div className="absolute inset-0 bg-hero-panel -z-10" />
         {/* Overlays radiais idênticos ao painel do DIREITO PRIME */}
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,180,180,0.22),transparent_60%)]" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.5),transparent_65%)]" />

@@ -48,9 +48,10 @@ const ResumosHero = ({ onBuscar, titulo = 'Resumos Jurídicos', voltarPara = '/'
 
   return (
     <div
-      className="bg-hero-panel-cyan relative overflow-hidden rounded-b-[36px] border-b border-white/10 shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))]"
+      className="relative overflow-hidden rounded-b-[36px] border-b border-white/10 shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))]"
       style={{ transform: 'translateZ(0)', isolation: 'isolate', contain: 'paint' }}
     >
+      <div className="absolute inset-0 bg-hero-panel-cyan -z-10" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(190,245,255,0.22),transparent_60%)]" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.5),transparent_65%)]" />
 
