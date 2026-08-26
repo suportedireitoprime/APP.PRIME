@@ -132,7 +132,7 @@ const Ferramentas = () => {
 
       <section className="space-y-3 mt-4">
         <div className="flex items-baseline gap-2 pb-1 border-b border-border/40 px-1">
-          <h2 className="font-display text-lg font-bold text-foreground">Explorar</h2>
+          <h2 className="font-display text-lg font-bold text-foreground">Outros destaques</h2>
         </div>
         <div className="space-y-3">
           {secondaryTools.map((tool, i) => {

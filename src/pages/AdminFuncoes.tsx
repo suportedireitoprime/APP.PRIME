@@ -6,7 +6,7 @@ import {
   Rss, Palette, Users, GitBranch, Github, ImageIcon, KeyRound, Bug, Newspaper,
   Quote, Monitor, Send, RefreshCcw, Lock, Wrench, FileText, Crown, Search, Target, MapPin, PlayCircle,
   Sparkles, UserPlus, GraduationCap, Scale, Store, Mail, FileSignature,
-  ListChecks, Headphones, ShieldAlert, Layers, Star
+  ListChecks, Headphones, ShieldAlert, Layers, Star, CloudDownload
 } from 'lucide-react';
 
 import { toast } from 'sonner';
@@ -245,6 +245,16 @@ const CATEGORIES: Category[] = [
     items: [
       { id: 'admin-narracao-biblioteca', label: 'Narração Biblioteca', icon: BookOpen, desc: 'Escolha o livro, a voz e narre página por página ou em fila', route: '/admin-narracao/biblioteca' },
       { id: 'admin-narracao-blog', label: 'Narração Blog e Artigos', icon: Newspaper, desc: 'Prévia de voz e narração dos artigos do Blogger', route: '/admin-narracao/blog' },
+    ],
+  },
+  {
+    id: 'utilitarios',
+    title: 'Utilitários',
+    desc: 'Funções restritas para admin',
+    icon: FileSignature,
+    items: [
+      { id: 'peticao', label: 'Petição Inicial', icon: FileSignature, desc: 'Monte peças com apoio de IA', route: '/ferramentas/peticao-inicial' },
+      { id: 'offline', label: 'Modo Offline', icon: CloudDownload, desc: 'Baixe leis e livros para usar sem internet', route: '/modo-offline' },
     ],
   },
   {

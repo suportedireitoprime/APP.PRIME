@@ -60,20 +60,11 @@ export const DESKTOP_TOOL_GROUPS: DesktopToolGroup[] = [
     ],
   },
   {
-    id: 'producao',
-    label: 'Produção',
-    hint: 'Escreva, grave e organize seu material',
-    tools: [
-      { id: 'peticao', label: 'Petição Inicial', desc: 'Monte peças com apoio de IA', icon: FileSignature, route: '/ferramentas/peticao-inicial', color: '#10B981' },
-    ],
-  },
-  {
     id: 'utilitarios',
     label: 'Utilitários',
     hint: 'Recursos adicionais do aplicativo',
     tools: [
       { id: 'locais', label: 'Locais Jurídicos', desc: 'Fóruns, cartórios e delegacias', icon: MapPin, route: '/ferramentas/locais', color: '#EAB308' },
-      { id: 'offline', label: 'Modo Offline', desc: 'Baixe leis e livros para usar sem internet', icon: CloudDownload, route: '/modo-offline', color: '#64748B' },
     ],
   },
 
