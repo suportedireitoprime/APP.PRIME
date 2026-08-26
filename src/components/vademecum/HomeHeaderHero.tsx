@@ -66,6 +66,8 @@ import { useShortcutBadges } from '@/hooks/useShortcutBadges';
 import { prefetchHeroRoutesIdle, prefetchRoute, type PrefetchKey } from '@/lib/routePrefetch';
 import laurel from '@/assets/landing-tribunal/laurel-leaf.png';
 import scales from '@/assets/landing-tribunal/scales.png';
+import HeroMotifs from './HeroMotifs';
+import HeroCoverCarousel from './HeroCoverCarousel';
 
 const TIME_KEY = 'tempo_no_app_segundos';
 const DAILY_GOAL_SECONDS = 60 * 60; // 1h/dia para o anel de progresso
@@ -99,9 +101,7 @@ const HomeHeaderHero = ({ onSearchOpenChange }: { onSearchOpenChange?: (open: bo
   const [recentesOpen, setRecentesOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const unreadCount = useUnreadNotifCount();
-  const [coverIndex, setCoverIndex] = useState(() => Math.floor(Math.random() * Math.max(1, HERO_COVERS.length)));
   const [subtitleIndex, setSubtitleIndex] = useState(0);
-  const [motifTick, setMotifTick] = useState(0);
   const [perfilLabel, setPerfilLabel] = useState<string>('');
   const reduceMotion = useRef(false);
 
@@ -120,55 +120,7 @@ const HomeHeaderHero = ({ onSearchOpenChange }: { onSearchOpenChange?: (open: bo
     idle(() => { import('./SideMenu').catch(() => {}); });
   }, []);
 
-  // Warm the browser cache for the *next* hero cover in idle time so the
-  // crossfade is instant. Uses `<link rel="preload">` when possible and falls
-  // back to `new Image()`.
-  useEffect(() => {
-    if (HERO_COVERS.length <= 1) return;
-    const next = HERO_COVERS[(coverIndex + 1) % HERO_COVERS.length];
-    if (!next?.url) return;
-    const w: any = window;
-    const idle = w.requestIdleCallback || ((cb: any) => setTimeout(cb, 400));
-    const cancel = w.cancelIdleCallback || clearTimeout;
-    const handle = idle(() => {
-      const img = new Image();
-      img.decoding = 'async';
-      img.src = next.url;
-    });
-    return () => cancel(handle);
-  }, [coverIndex, HERO_COVERS]);
-
-
-
-  useEffect(() => {
-    if (HERO_COVERS.length <= 1) return;
-    let id: ReturnType<typeof setInterval> | null = null;
-    const start = () => {
-      if (id) return;
-      id = setInterval(() => setCoverIndex((i) => (i + 1) % HERO_COVERS.length), 9000);
-    };
-    const stop = () => { if (id) { clearInterval(id); id = null; } };
-    if (!document.hidden) start();
-    const onVis = () => (document.hidden ? stop() : start());
-    document.addEventListener('visibilitychange', onVis);
-    return () => { stop(); document.removeEventListener('visibilitychange', onVis); };
-  }, [HERO_COVERS.length]);
-
-  // Rotação suave dos ícones jurídicos: a cada ~6s a constelação muda de
-  // preset (topo → meio ao redor do logo → laterais → base) com transição
-  // elegante de transform+opacity via CSS.
-  useEffect(() => {
-    let id: ReturnType<typeof setInterval> | null = null;
-    const start = () => {
-      if (id) return;
-      id = setInterval(() => setMotifTick((t) => t + 1), 6000);
-    };
-    const stop = () => { if (id) { clearInterval(id); id = null; } };
-    if (!document.hidden) start();
-    const onVis = () => (document.hidden ? stop() : start());
-    document.addEventListener('visibilitychange', onVis);
-    return () => { stop(); document.removeEventListener('visibilitychange', onVis); };
-  }, []);
+  // Carrossel de capas e motivos decorativos foram isolados em HeroCoverCarousel e HeroMotifs para performance.
 
 
   useEffect(() => {
@@ -234,177 +186,8 @@ const HomeHeaderHero = ({ onSearchOpenChange }: { onSearchOpenChange?: (open: bo
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.5),transparent_65%)]" />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
 
-
-        {/* Decorative legal motifs — apenas ao redor das bordas, com float + shimmer */}
-        <svg
-          className="pointer-events-none absolute inset-0 w-full h-full opacity-[0.32]"
-          viewBox="0 0 400 300"
-          preserveAspectRatio="xMidYMid slice"
-          aria-hidden
-        >
-          <defs>
-            {/*
-              Família unificada — monoline gravado a buril, traço 2.0,
-              desenhados dentro de uma caixa de ~56x56 centrada na origem,
-              para leitura clara e proporção idêntica entre símbolos.
-            */}
-            {/* Balança da justiça — coluna, viga, pratos e base evidentes */}
-            <g id="legal-scales" stroke="rgba(0,0,0,0.95)" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="0" cy="-26" r="2.4" fill="rgba(0,0,0,0.95)" stroke="none" />
-              <line x1="0" y1="-24" x2="0" y2="18" />
-              {/* Viga */}
-              <line x1="-22" y1="-18" x2="22" y2="-18" />
-              {/* Correntes */}
-              <line x1="-22" y1="-18" x2="-22" y2="-10" />
-              <line x1="22" y1="-18" x2="22" y2="-10" />
-              {/* Prato esquerdo */}
-              <path d="M -30 -10 Q -22 -2 -14 -10" />
-              <line x1="-30" y1="-10" x2="-14" y2="-10" />
-              {/* Prato direito */}
-              <path d="M 14 -10 Q 22 -2 30 -10" />
-              <line x1="14" y1="-10" x2="30" y2="-10" />
-              {/* Base */}
-              <path d="M -12 18 L 12 18 L 9 22 L -9 22 Z" />
-              <line x1="-14" y1="22" x2="14" y2="22" />
-            </g>
-            {/* Martelo do juiz (gavel) — cabeça + sound block visíveis */}
-            <g id="legal-gavel" stroke="rgba(0,0,0,0.95)" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
-              <g transform="rotate(-30)">
-                {/* Cabeça */}
-                <rect x="-16" y="-9" width="32" height="14" rx="2.5" />
-                <line x1="-10" y1="-9" x2="-10" y2="5" />
-                <line x1="10" y1="-9" x2="10" y2="5" />
-                {/* Cabo */}
-                <line x1="6" y1="5" x2="22" y2="21" strokeWidth="2.6" />
-                <circle cx="22" cy="21" r="1.8" fill="rgba(0,0,0,0.95)" stroke="none" />
-              </g>
-              {/* Sound block */}
-              <rect x="-18" y="16" width="36" height="5" rx="1.2" />
-              <line x1="-16" y1="21" x2="16" y2="21" />
-            </g>
-            {/* Livro aberto — páginas com linhas de texto claras */}
-            <g id="legal-book" stroke="rgba(0,0,0,0.95)" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
-              {/* Lombada */}
-              <line x1="0" y1="-14" x2="0" y2="16" />
-              {/* Página esquerda */}
-              <path d="M 0 -12 Q -12 -16 -22 -14 L -22 14 Q -12 12 0 16 Z" />
-              {/* Página direita */}
-              <path d="M 0 -12 Q 12 -16 22 -14 L 22 14 Q 12 12 0 16 Z" />
-              {/* Linhas de texto */}
-              <line x1="-18" y1="-8" x2="-4" y2="-6" />
-              <line x1="-18" y1="-2" x2="-4" y2="0" />
-              <line x1="-18" y1="4"  x2="-4" y2="6" />
-              <line x1="4" y1="-6"  x2="18" y2="-8" />
-              <line x1="4" y1="0"   x2="18" y2="-2" />
-              <line x1="4" y1="6"   x2="18" y2="4" />
-            </g>
-            {/* Espada — mesma família, ~56 de altura */}
-            <g id="legal-sword" stroke="rgba(0,0,0,0.95)" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="0" y1="-26" x2="0" y2="14" />
-              <path d="M -3 -26 Q 0 -30 3 -26" />
-              <line x1="-12" y1="14" x2="12" y2="14" />
-              <line x1="0" y1="14" x2="0" y2="24" />
-              <path d="M -5 24 Q 0 28 5 24" />
-            </g>
-          </defs>
-
-          {/*
-            Distribuição organizada: grade simétrica ao longo das bordas
-            (topo, laterais e base), com rotações discretas para não competir
-            com o personagem. Icons ficam estáticos — visíveis, ordenados,
-            sem shuffle contínuo que polui a leitura.
-          */}
-          {(() => {
-            type Spot = { x: number; y: number; r: number; s: number };
-            // Quatro constelações — a cada tick a mesma <g> vai para a
-            // posição correspondente na próxima constelação, criando a
-            // sensação de que os símbolos "flutuam" pelo painel, inclusive
-            // orbitando o logo/personagem no centro.
-            const LAYOUTS: Spot[][] = [
-              // 0) Topo + laterais altas
-              [
-                { x:  70, y:  46, r: -8, s: 1.0  },
-                { x: 200, y:  36, r:  0, s: 1.15 },
-                { x: 330, y:  46, r:  8, s: 1.0  },
-                { x:  34, y: 118, r: -14, s: 0.95 },
-                { x: 366, y: 118, r:  14, s: 0.95 },
-                { x:  30, y: 210, r:  10, s: 0.9  },
-                { x: 370, y: 210, r: -10, s: 0.9  },
-                { x: 110, y: 268, r:   6, s: 0.9  },
-                { x: 200, y: 276, r:   0, s: 1.0  },
-                { x: 290, y: 268, r:  -6, s: 0.9  },
-              ],
-              // 1) Orbitando o logo/personagem (constelação central)
-              [
-                { x: 200, y:  56, r:   0, s: 1.05 },
-                { x: 110, y:  96, r: -18, s: 0.95 },
-                { x: 290, y:  96, r:  18, s: 0.95 },
-                { x:  56, y: 160, r: -10, s: 0.9  },
-                { x: 344, y: 160, r:  10, s: 0.9  },
-                { x: 110, y: 220, r:  12, s: 0.95 },
-                { x: 290, y: 220, r: -12, s: 0.95 },
-                { x: 200, y: 250, r:   0, s: 1.1  },
-                { x:  30, y:  90, r: -30, s: 0.85 },
-                { x: 370, y:  90, r:  30, s: 0.85 },
-              ],
-              // 2) Diagonal — cascata elegante do canto sup-esq ao inf-dir
-              [
-                { x:  40, y:  50, r: -12, s: 0.95 },
-                { x: 108, y:  86, r:  -6, s: 1.0  },
-                { x: 178, y: 122, r:   0, s: 1.05 },
-                { x: 248, y: 158, r:   6, s: 1.0  },
-                { x: 318, y: 194, r:  12, s: 0.95 },
-                { x:  60, y: 232, r:  18, s: 0.9  },
-                { x: 360, y:  72, r: -18, s: 0.9  },
-                { x: 200, y:  36, r:   0, s: 0.95 },
-                { x: 130, y: 270, r:  10, s: 0.9  },
-                { x: 290, y: 270, r: -10, s: 0.9  },
-              ],
-              // 3) Base + laterais baixas (espelha o preset 0)
-              [
-                { x:  70, y: 264, r:   8, s: 1.0  },
-                { x: 200, y: 274, r:   0, s: 1.15 },
-                { x: 330, y: 264, r:  -8, s: 1.0  },
-                { x:  34, y: 200, r:  14, s: 0.95 },
-                { x: 366, y: 200, r: -14, s: 0.95 },
-                { x:  30, y: 110, r: -10, s: 0.9  },
-                { x: 370, y: 110, r:  10, s: 0.9  },
-                { x: 110, y:  48, r:  -6, s: 0.9  },
-                { x: 200, y:  40, r:   0, s: 1.0  },
-                { x: 290, y:  48, r:   6, s: 0.9  },
-              ],
-            ];
-            const ICONS = [
-              'legal-scales',
-              'legal-gavel',
-              'legal-book',
-              'legal-scales',
-              'legal-gavel',
-              'legal-book',
-              'legal-scales',
-              'legal-gavel',
-              'legal-book',
-              'legal-scales',
-            ];
-            const preset = LAYOUTS[motifTick % LAYOUTS.length];
-            return ICONS.map((id, i) => {
-              const slot = preset[i];
-              return (
-                <g
-                  key={i}
-                  className="hero-legal-icon"
-                  style={{
-                    transform: `translate(${slot.x}px, ${slot.y}px) rotate(${slot.r}deg) scale(${slot.s})`,
-                    transition:
-                      'transform 1400ms cubic-bezier(0.22, 1, 0.36, 1), opacity 900ms ease',
-                  }}
-                >
-                  <use href={`#${id}`} />
-                </g>
-              );
-            });
-          })()}
-        </svg>
+        {/* Decorative legal motifs isolados */}
+        <HeroMotifs />
 
         {/* Folhas de louro caindo (teto do painel) */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden z-[2]">
@@ -465,60 +248,8 @@ const HomeHeaderHero = ({ onSearchOpenChange }: { onSearchOpenChange?: (open: bo
         
 
 
-        {/* Cover art — cross-fading Ken Burns rotation, alternating positions */}
-        <div className="pointer-events-none absolute inset-0 select-none overflow-hidden">
-          <AnimatePresence initial={false}>
-            {(() => {
-              const current = HERO_COVERS[coverIndex % HERO_COVERS.length];
-              if (!current) return null;
-              const pos = COVER_POSITIONS[coverIndex % COVER_POSITIONS.length];
-              const posClass =
-                pos === 'right'
-                  ? 'right-[4%] left-auto origin-bottom-right'
-                  : pos === 'left'
-                  ? 'left-[4%] right-auto origin-bottom-left'
-                  : 'left-1/2 -translate-x-1/2 origin-bottom';
-              // Fade-in com um leve zoom (entrada suave, sem "seca").
-              // Mantém-se leve em mobile/tablet: sem spring, sem loop.
-              // Crossfade: incoming fades in slowly while outgoing fades out —
-              // exit runs at the same time as enter, giving no dry cuts.
-              const preset = {
-                initial: { opacity: 0 },
-                animate: { opacity: 1 },
-                exit: { opacity: 0 },
-                transition: { duration: 1.6, ease: [0.22, 1, 0.36, 1] as const },
-              };
-              // Continuous Ken Burns pan+zoom while displayed. Alternates
-              // direction per image so it always feels like it's breathing.
-              const kenBurnsAnim = (coverIndex % 2 === 0)
-                ? 'ken-burns-a 12s ease-in-out infinite alternate'
-                : 'ken-burns-b 12s ease-in-out infinite alternate';
-              return (
-                <motion.img
-                  key={coverIndex}
-                  src={current.url}
-                  alt=""
-                  loading="eager"
-                  decoding="async"
-                  // @ts-expect-error non-standard yet-widely-supported hint
-                  fetchpriority="high"
-                  width={1024}
-                  height={1024}
-                  onError={(e) => {
-                    const el = e.currentTarget as HTMLImageElement;
-                    el.style.opacity = '0';
-                  }}
-                  initial={preset.initial}
-                  animate={preset.animate}
-                  exit={preset.exit}
-                  transition={preset.transition}
-                  style={{ animation: kenBurnsAnim, willChange: 'transform' }}
-                  className={`absolute bottom-0 h-[88%] w-auto max-w-[70%] object-contain object-bottom drop-shadow-[0_10px_28px_rgba(0,0,0,0.35)] ${posClass}`}
-                />
-              );
-            })()}
-          </AnimatePresence>
-        </div>
+        {/* Cover art — isolado */}
+        <HeroCoverCarousel covers={HERO_COVERS} />
 
         {/* Bottom-up gradient for text legibility */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent" />
