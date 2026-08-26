@@ -594,11 +594,9 @@ export function UserDossieSheet({ userId, nome, email, provider, avatarUrl, onCl
         </SheetContent>
       </Sheet>
 
-      {/* Lightbox fullscreen da foto */}
-      {fotoFull && avatarUrl && createPortal(
+      {fotoFull && avatarUrl ? createPortal(
         <div
-          className="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-sm flex items-center justify-center cursor-pointer"
-          style={{ animation: 'fadeIn 200ms ease-out' }}
+          className="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-sm flex items-center justify-center cursor-pointer transition-opacity duration-200"
           onClick={() => setFotoFull(false)}
         >
           <button
@@ -613,17 +611,12 @@ export function UserDossieSheet({ userId, nome, email, provider, avatarUrl, onCl
             src={avatarUrl}
             alt={nome || 'Avatar'}
             referrerPolicy="no-referrer"
-            className="max-w-[90vw] max-h-[85vh] rounded-2xl object-contain shadow-2xl"
-            style={{ animation: 'zoomIn 300ms ease-out' }}
+            className="max-w-[90vw] max-h-[85vh] rounded-2xl object-contain shadow-2xl transition-transform duration-300"
             onClick={(e) => e.stopPropagation()}
           />
-          <style>{`
-            @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
-            @keyframes zoomIn { from { opacity: 0; transform: scale(0.85) } to { opacity: 1; transform: scale(1) } }
-          `}</style>
         </div>,
         document.body
-      )}
+      ) : null}
     </>
   );
 }
