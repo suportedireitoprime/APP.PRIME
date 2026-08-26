@@ -12,6 +12,7 @@ import { loadObras } from '@/lib/tematicaStore';
 import { montarAgenda } from '@/lib/tematicaRecomendacoes';
 import { lazyWithRetry } from '@/utils/lazyWithRetry';
 import { toast } from 'sonner';
+import { haptic } from '@/lib/nativeHaptics';
 
 const BoletimPlayer = lazyWithRetry(() => import('@/components/boletim/BoletimPlayer'));
 
@@ -248,11 +249,11 @@ export default function NovidadesRadarOverlay() {
     }
   };
 
-  const dismiss = () => {
-    markSeen();
-    setOpen(false);
-    setLanded(false);
-    // Stop keyboard sound on dismiss
+  const dismiss = () => { 
+    haptic.selection();
+    markSeen(); 
+    setOpen(false); 
+    setLanded(false); 
     if (tecladoRef.current) { tecladoRef.current.pause(); tecladoRef.current = null; }
   };
   const first = items[0];
