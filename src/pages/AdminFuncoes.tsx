@@ -180,6 +180,7 @@ const CATEGORIES: Category[] = [
       // Radar Legislativo
       { id: 'camara-deputados', label: 'Câmara Editar', icon: Building2, desc: 'Radar legislativo', route: '/radar/deputados' },
       // Estudo & Jogos
+      { id: 'aprender-viewer', label: 'Aprender (WIP)', icon: GraduationCap, desc: 'Acesso ao módulo principal Aprender (oculto para usuários)', route: '/aprender' },
       { id: 'praticar', label: 'Praticar', icon: Target, desc: 'Tiro ao alvo na lei seca (em testes, só admin)', route: '/praticar' },
       { id: 'dicionario', label: 'Dicionário Editar', icon: BookA, desc: 'Termos e definições' },
       { id: 'questoes-editar', label: 'Questões Editar', icon: ListChecks, desc: 'Buscar mais questões, novos cargos e importar do Google Sheets', route: '/admin-questoes' },
