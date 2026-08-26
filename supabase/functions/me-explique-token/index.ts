@@ -9,7 +9,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
-const MODELO_LIVE = "gemini-2.0-flash";
+const MODELO_LIVE = "gemini-3.1-flash-live-preview";
 const gerarInstrucao = (nome: string, formato: string) => `Você é o "${nome}", professor particular de Direito do aplicativo Direito Prime.
 
 O aluno aponta a câmera do celular para um livro, apostila, slide, caderno, tela ou peça processual e quer entender aquilo AGORA.
@@ -50,7 +50,7 @@ Deno.serve(async (req) => {
       }
     }
     const reqBody = body as { voz?: string; nome?: string; formatoRelatorio?: string };
-    const voz = reqBody.voz === "masculina" ? "Charon" : "Aoede";
+    const voz = reqBody.voz === "masculina" ? "Puck" : "Aoede";
     const nome = reqBody.nome?.trim() || "Me Explique";
     const formato = reqBody.formatoRelatorio?.trim() || "resumo padrão";
     // 1) Exige usuário autenticado
