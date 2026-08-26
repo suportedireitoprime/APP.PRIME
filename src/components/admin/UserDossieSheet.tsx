@@ -243,8 +243,7 @@ export function UserDossieSheet({ userId, nome, email, provider, avatarUrl, onCl
   );
 
   return (
-    <>
-      <Sheet open={!!userId} onOpenChange={(v) => !v && onClose()}>
+    <Sheet open={!!userId} onOpenChange={(v) => !v && onClose()}>
       <SheetContent
         side="bottom"
         className="rounded-t-2xl h-[90vh] max-h-[90vh] overflow-y-auto p-0 bg-background border-border"
@@ -594,31 +593,31 @@ export function UserDossieSheet({ userId, nome, email, provider, avatarUrl, onCl
         </SheetContent>
       </Sheet>
 
-      {fotoFull && avatarUrl ? createPortal(
-        <div
-          className="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-sm flex items-center justify-center cursor-pointer transition-opacity duration-200"
-          onClick={() => setFotoFull(false)}
-        >
-          <button
-            type="button"
-            onClick={() => setFotoFull(false)}
-            className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 border border-white/20 text-white flex items-center justify-center hover:bg-white/20 transition-colors z-10"
-            aria-label="Fechar foto"
-          >
-            <X className="w-5 h-5" />
-          </button>
-          <img
-            src={avatarUrl}
-            alt={nome || 'Avatar'}
-            referrerPolicy="no-referrer"
-            className="max-w-[90vw] max-h-[85vh] rounded-2xl object-contain shadow-2xl transition-transform duration-300"
-            onClick={(e) => e.stopPropagation()}
-          />
-        </div>,
-        document.body
-      ) : null}
-    </>
+      {fotoFull && avatarUrl
+        ? createPortal(
+            <div
+              className="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-sm flex items-center justify-center cursor-pointer transition-opacity duration-200"
+              onClick={() => setFotoFull(false)}
+            >
+              <button
+                type="button"
+                onClick={() => setFotoFull(false)}
+                className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 border border-white/20 text-white flex items-center justify-center hover:bg-white/20 transition-colors z-10"
+                aria-label="Fechar foto"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              <img
+                src={avatarUrl}
+                alt={nome || 'Avatar'}
+                referrerPolicy="no-referrer"
+                className="max-w-[90vw] max-h-[85vh] rounded-2xl object-contain shadow-2xl transition-transform duration-300"
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>,
+            document.body,
+          )
+        : null}
+    </Sheet>
   );
 }
-
-
