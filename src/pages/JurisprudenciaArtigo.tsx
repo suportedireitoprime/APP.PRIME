@@ -21,6 +21,14 @@ import {
   type JurisCategoriaCache,
 } from '@/lib/jurisprudenciaCache';
 import { copiarTexto } from '@/lib/nativo/copiar';
+import { useSubscription } from '@/hooks/useSubscription';
+import PremiumGate from '@/components/PremiumGate';
+import { Crown } from 'lucide-react';
+import horusOwlBundled from '@/assets/horus/horus-owl.webp';
+import horusOwlAsset from '@/assets/horus/horus-owl.png.asset.json';
+import { pickAsset, srcOf } from '@/lib/assetUrl';
+
+const horusOwl = pickAsset(horusOwlBundled, srcOf(horusOwlAsset));
 
 interface JurisItem {
   id: number | string;
@@ -106,6 +114,8 @@ export default function JurisprudenciaArtigo({ slugLeiProp, numeroArtigoProp, em
       navigate('/');
     }
   };
+  const { isPremium, loading: loadingSubscription } = useSubscription();
+  const [showPremiumGate, setShowPremiumGate] = useState(false);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -282,7 +292,15 @@ export default function JurisprudenciaArtigo({ slugLeiProp, numeroArtigoProp, em
     }
   };
 
-  useEffect(() => { carregar(false);   }, [slugLei, numeroArtigo]);
+  useEffect(() => {
+    if (!loadingSubscription && !isPremium) {
+      setLoading(false);
+      return;
+    }
+    if (slugLei && numeroArtigo) {
+      carregar(false);
+    }
+  }, [slugLei, numeroArtigo, isPremium, loadingSubscription]);
 
   const toggleFav = async (cat: JurisCategoria, item: JurisItem) => {
     const { data: userData } = await supabase.auth.getUser();
@@ -371,7 +389,27 @@ export default function JurisprudenciaArtigo({ slugLeiProp, numeroArtigoProp, em
       <div className={embedded
         ? 'flex-1 w-full overflow-y-auto px-4 pb-10 pt-4'
         : 'flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 pb-24 pt-4 lg:max-w-[1400px] lg:px-12 lg:pb-12 lg:pt-6 2xl:px-16'}>
-        {loading ? (
+        {!loadingSubscription && !isPremium ? (
+          <div className="flex flex-col items-center justify-center py-16 px-6 text-center max-w-md mx-auto">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-b from-amber-500/20 to-primary/20 p-2 border border-amber-500/30 flex items-center justify-center mb-4 shadow-xl shadow-primary/25">
+              <img src={horusOwl} alt="Horus" className="w-16 h-16 object-contain" />
+            </div>
+            <h3 className="font-display text-2xl font-bold text-foreground mb-2">
+              Jurisprudência é Exclusivo Prime
+            </h3>
+            <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+              Consulte súmulas vinculantes, teses de repercussão geral, recursos repetitivos e acórdãos do STF e STJ vinculados diretamente a cada artigo da lei.
+            </p>
+            <Button
+              onClick={() => setShowPremiumGate(true)}
+              className="w-full h-12 rounded-xl bg-primary text-primary-foreground font-bold text-sm shadow-lg shadow-primary/30 active:scale-95 transition-all flex items-center justify-center gap-2"
+            >
+              <Crown className="w-4 h-4 fill-current" />
+              Começar 3 dias grátis
+            </Button>
+            <PremiumGate open={showPremiumGate} onClose={() => setShowPremiumGate(false)} feature="jurisprudencia" />
+          </div>
+        ) : loading ? (
           <div className="flex items-center justify-center py-16 text-muted-foreground">
             <Loader2 className="w-6 h-6 animate-spin mr-2" /> Consultando Corpus927…
           </div>

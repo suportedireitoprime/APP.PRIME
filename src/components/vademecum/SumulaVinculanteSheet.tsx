@@ -15,6 +15,9 @@ import useBodyScrollLock from '@/hooks/useBodyScrollLock';
 import ReactMarkdown from 'react-markdown';
 import brasaoImgAsset from '@/assets/brasao-republica.webp';
 
+import { useSubscription } from '@/hooks/useSubscription';
+import PremiumGate, { type PremiumFeatureKey } from '@/components/PremiumGate';
+
 const VideoaulasListSheet = lazyWithRetry(() => import('./VideoaulasListSheet'));
 const VideoaulaSheet = lazyWithRetry(() => import('./VideoaulaSheet'));
 const QuizView = lazyWithRetry(() => import('@/components/estudar/QuizView'));
@@ -135,6 +138,15 @@ function formatarDataPublicacao(dataStr: string | null | undefined): string | nu
 }
 
 export function SumulaVinculanteSheet({ sumula, tribunal, isFavorita = false, onToggleFavorita, onClose }: Props) {
+  const { isPremium } = useSubscription();
+  const [showPremiumGate, setShowPremiumGate] = useState(false);
+  const [premiumGateFeature, setPremiumGateFeature] = useState<PremiumFeatureKey>('default');
+
+  const openPremiumGate = (feat: PremiumFeatureKey) => {
+    setPremiumGateFeature(feat);
+    setShowPremiumGate(true);
+  };
+
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState('sumula');
   const [aiLoading, setAiLoading] = useState(false);
@@ -227,6 +239,10 @@ export function SumulaVinculanteSheet({ sumula, tribunal, isFavorita = false, on
   }, [clearAudioState, startProgressTracking]);
 
   const handleNarrar = async () => {
+    if (!narracaoPlaying && !isPremium) {
+      openPremiumGate('narracao');
+      return;
+    }
     if (narracaoPlaying) {
       if (narracaoAudioRef.current) {
         narracaoAudioRef.current.pause();
@@ -346,7 +362,13 @@ export function SumulaVinculanteSheet({ sumula, tribunal, isFavorita = false, on
           <div className="px-4 pt-1 pb-2 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-2">
               <motion.button
-                onClick={onToggleFavorita}
+                onClick={() => {
+                  if (!isPremium) {
+                    openPremiumGate('favorito');
+                    return;
+                  }
+                  onToggleFavorita?.();
+                }}
                 whileTap={{ scale: 0.85 }}
                 className={`w-11 h-11 rounded-full flex items-center justify-center transition-colors ${isFavorita ? 'bg-rose-500/15' : 'hover:bg-secondary active:bg-secondary'}`}
                 title={isFavorita ? 'Remover favorito' : 'Favoritar'}
@@ -400,6 +422,10 @@ export function SumulaVinculanteSheet({ sumula, tribunal, isFavorita = false, on
           <Tabs 
             value={activeTab} 
             onValueChange={(v) => { 
+              if (v !== 'sumula' && !isPremium) {
+                openPremiumGate(v as PremiumFeatureKey);
+                return;
+              }
               setActiveTab(v); 
               if (v !== 'sumula') fetchAiData(); 
             }} 
@@ -591,7 +617,13 @@ export function SumulaVinculanteSheet({ sumula, tribunal, isFavorita = false, on
 
               {/* 2. Praticar */}
               <button
-                onClick={() => setShowQuiz(true)}
+                onClick={() => {
+                  if (!isPremium) {
+                    openPremiumGate('praticar');
+                    return;
+                  }
+                  setShowQuiz(true);
+                }}
                 className="flex flex-col items-center justify-end gap-1.5 py-1.5 text-foreground hover:text-primary transition-colors"
                 aria-label="Praticar"
               >
@@ -630,7 +662,13 @@ export function SumulaVinculanteSheet({ sumula, tribunal, isFavorita = false, on
 
               {/* 4. Vídeo-aulas */}
               <button
-                onClick={() => setShowVideoaulasListSheet(true)}
+                onClick={() => {
+                  if (!isPremium) {
+                    openPremiumGate('videoaula');
+                    return;
+                  }
+                  setShowVideoaulasListSheet(true);
+                }}
                 className="flex flex-col items-center justify-end gap-1.5 py-1.5 text-foreground hover:text-primary transition-colors"
                 aria-label="Vídeo-aulas"
               >
@@ -700,6 +738,11 @@ export function SumulaVinculanteSheet({ sumula, tribunal, isFavorita = false, on
                       desc: 'Desafios e questões geradas por IA sobre a súmula',
                       color: '#DC2626',
                       onClick: () => {
+                        if (!isPremium) {
+                          setShowFuncoesSheet(false);
+                          openPremiumGate('praticar');
+                          return;
+                        }
                         setShowFuncoesSheet(false);
                         setShowQuiz(true);
                       }
@@ -710,6 +753,11 @@ export function SumulaVinculanteSheet({ sumula, tribunal, isFavorita = false, on
                       desc: 'Aulas e comentários em vídeo dos principais professores',
                       color: '#DC2626',
                       onClick: () => {
+                        if (!isPremium) {
+                          setShowFuncoesSheet(false);
+                          openPremiumGate('videoaula');
+                          return;
+                        }
                         setShowFuncoesSheet(false);
                         setShowVideoaulasListSheet(true);
                       }
@@ -795,6 +843,13 @@ export function SumulaVinculanteSheet({ sumula, tribunal, isFavorita = false, on
             </motion.div>
           )}
         </Suspense>
+
+        {/* PremiumGate Modal */}
+        <PremiumGate
+          open={showPremiumGate}
+          onClose={() => setShowPremiumGate(false)}
+          feature={premiumGateFeature}
+        />
       </motion.div>
     </AnimatePresence>
   );

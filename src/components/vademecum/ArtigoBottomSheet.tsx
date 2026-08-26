@@ -47,13 +47,17 @@ import type { VideoaulaItem } from './VideoaulasListSheet';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
 
 import { useSubscription } from '@/hooks/useSubscription';
-import { usePremiumUsage } from '@/hooks/usePremiumUsage';
 import PremiumGate, { type PremiumFeatureKey } from '@/components/PremiumGate';
 import { toast } from 'sonner';
 import { requireOnline } from '@/lib/offlineFeatures';
 import { readArtigoGrifos, writeArtigoGrifos } from '@/lib/artigoGrifosSnapshot';
 import { parseAiSections, buildLineSegmentMap, type AiSection } from '@/lib/artigoSegments';
 import ArtigoIAFullscreen from './ArtigoIAFullscreen';
+import horusOwlBundled from '@/assets/horus/horus-owl.webp';
+import horusOwlAsset from '@/assets/horus/horus-owl.png.asset.json';
+import { pickAsset, srcOf } from '@/lib/assetUrl';
+
+const horusOwl = pickAsset(horusOwlBundled, srcOf(horusOwlAsset));
 
 import { setupMediaSession, clearMediaSession } from '@/lib/mediaSession';
 import GrifoMagicoLoader from '@/components/vademecum/GrifoMagicoLoader';
@@ -621,7 +625,6 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
     }
   }, [activeActionMenu]);
   const { isPremium } = useSubscription();
-  const { canUse, canUseRef, registerUsage } = usePremiumUsage();
 
   const openPremiumGate = (feature: PremiumFeatureKey, desc?: string) => {
     setPremiumGateFeature(feature);
@@ -630,26 +633,17 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
   };
 
   /**
-   * Gate padrão das funções do artigo: 3 usos/mês na conta gratuita.
-   * O mesmo artigo não consome cota duas vezes (contagem por `ref_key`).
+   * Gate padrão das funções do artigo: 100% exclusivo para assinantes Prime.
+   * A única função gratuita é 'Copiar artigo'.
    */
-  const gateFeature = async (
-    featureKey: string,
+  const gateFeature = (
+    _featureKey: string,
     gateKey: PremiumFeatureKey,
-    label: string,
+    _label: string,
     action: () => void,
   ) => {
     if (isPremium) { action(); return; }
-    const ref = `${tabelaNome}_${artigo?.numero}`;
-    try {
-      const ok = await canUseRef(featureKey, ref);
-      if (!ok) {
-        openPremiumGate(gateKey, `Você usou seus 3 usos gratuitos deste mês em ${label}. Comece 3 dias grátis para liberar.`);
-        return;
-      }
-      await registerUsage(featureKey, ref);
-    } catch { /* falha de rede: não bloqueia */ }
-    action();
+    openPremiumGate(gateKey);
   };
 
 
@@ -1220,30 +1214,23 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
     narrarActionInFlightRef.current = true;
 
     try {
-      // Gate premium: bloqueia ao iniciar a reprodução de outro artigo, inclusive cache já gerado.
-      const articleRefKey = tabelaNome && artigo?.numero ? `${tabelaNome}_${artigo.numero}` : null;
-      const iniciandoReproducao = !narracaoPlaying && !!articleRefKey;
-      if (iniciandoReproducao && !isPremium && !(await canUseRef('narracao', articleRefKey))) {
-        openPremiumGate('narracao', 'Você usou suas 3 narrações gratuitas deste mês. Comece 3 dias grátis para ouvir sem limite.');
+      // Gate premium: narração de artigos com voz humana é 100% exclusiva para assinantes Prime
+      if (!narracaoPlaying && !isPremium) {
+        openPremiumGate('narracao');
         return;
-      }
-
-      if (iniciandoReproducao && !isPremium && articleRefKey) {
-        await registerUsage('narracao', articleRefKey);
       }
       await handleNarrar();
     } catch (e) {
-      console.error('Erro ao validar limite de narração:', e);
+      console.error('Erro ao acionar narração:', e);
       if (isPremium) {
         toast.error('Não consegui iniciar a narração agora. Tente novamente.');
       } else {
-        openPremiumGate('narracao', 'Não consegui validar seu limite gratuito agora. Assine para ouvir sem limite.');
+        openPremiumGate('narracao');
       }
-
     } finally {
       narrarActionInFlightRef.current = false;
     }
-  }, [artigo?.numero, canUseRef, handleNarrar, isPremium, narracaoLoading, narracaoPlaying, registerUsage, tabelaNome]);
+  }, [handleNarrar, isPremium, narracaoLoading, narracaoPlaying]);
 
   const planaltoUrl = useMemo(() => {
     if (!tabelaNome || !artigo?.numero) return null;
@@ -2016,6 +2003,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
   // Fetch AI content: check DB cache first, then generate
   useEffect(() => {
     if (activeTab === 'artigo' || !artigo) return;
+    if (!isPremium) return;
     if (aiContent[activeTab] || aiLoading[activeTab]) return;
     if (modificationInfo && activeTab !== 'explicacao') return;
 
@@ -2578,6 +2566,10 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
               <>
                 <motion.button
                   onClick={() => {
+                    if (!isPremium) {
+                      openPremiumGate('favorito');
+                      return;
+                    }
                     import('@/lib/appEvents').then(({ appEvents }) =>
                       appEvents.favoritarArtigo({ tabela: tabelaNome, numero: artigo.numero, on: !isFavorito })
                     ).catch(() => {});
@@ -2819,8 +2811,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
           };
           if (v === 'explicacao' || v === 'exemplo') {
             if (!isPremium) {
-              const label = v === 'explicacao' ? 'Explicação' : 'Exemplo';
-              gateFeature(v, v as PremiumFeatureKey, label, () => openIA(v));
+              openPremiumGate(v as PremiumFeatureKey);
               return;
             }
             openIA(v);
@@ -3174,6 +3165,24 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                   })()}
                 </div>
               </div>
+            ) : !isPremium ? (
+              <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-b from-amber-500/20 to-primary/20 p-2 border border-amber-500/30 flex items-center justify-center mb-3 shadow-lg shadow-primary/20">
+                  <img src={horusOwl} alt="Horus" className="w-12 h-12 object-contain" />
+                </div>
+                <h4 className="font-display text-lg font-bold text-foreground mb-1.5">
+                  Explicação com IA é Exclusivo Prime
+                </h4>
+                <p className="text-xs text-muted-foreground max-w-xs mb-4 leading-relaxed">
+                  Destrinche dispositivos complexos com explicações didáticas, linguagem clara e doutrina aplicada geradas pela nossa IA jurídica.
+                </p>
+                <button
+                  onClick={() => openPremiumGate('explicacao')}
+                  className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-xs shadow-lg shadow-primary/30 active:scale-95 transition-all flex items-center gap-2"
+                >
+                  <Crown className="w-4 h-4 fill-current" /> Começar 3 dias grátis
+                </button>
+              </div>
             ) : (
               <div className="space-y-4">
                 {aiLoading.explicacao ? (
@@ -3220,7 +3229,25 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
           </TabsContent>
 
           <TabsContent value="exemplo" className="px-5 pb-[calc(8rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-4">
-            {aiLoading.exemplo ? (
+            {!isPremium ? (
+              <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-b from-amber-500/20 to-primary/20 p-2 border border-amber-500/30 flex items-center justify-center mb-3 shadow-lg shadow-primary/20">
+                  <img src={horusOwl} alt="Horus" className="w-12 h-12 object-contain" />
+                </div>
+                <h4 className="font-display text-lg font-bold text-foreground mb-1.5">
+                  Exemplos Práticos são Exclusivos Prime
+                </h4>
+                <p className="text-xs text-muted-foreground max-w-xs mb-4 leading-relaxed">
+                  Veja a norma aplicada em casos concretos do dia a dia e situações reais cobradas nas provas da OAB e concursos públicos.
+                </p>
+                <button
+                  onClick={() => openPremiumGate('exemplo')}
+                  className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-xs shadow-lg shadow-primary/30 active:scale-95 transition-all flex items-center gap-2"
+                >
+                  <Crown className="w-4 h-4 fill-current" /> Começar 3 dias grátis
+                </button>
+              </div>
+            ) : aiLoading.exemplo ? (
               <div className="flex flex-col items-center justify-center py-12 gap-3">
                 <Loader2 className="w-6 h-6 animate-spin text-primary" />
                 <p className="text-sm text-muted-foreground font-body">Gerando exemplos práticos com IA...</p>
@@ -3340,8 +3367,8 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 ...(tabelaNome ? [{ icon: Network, label: 'Grafo de conexões', desc: 'Ver relações do artigo', color: '#10B981', onClick: () => { setActiveActionMenu(null); gateFeature('grafo', 'grafo', 'Grafo de conexões', () => setShowGrafo(true)); } }] : []),
                 { icon: Copy, label: 'Copiar artigo', desc: 'Texto para a área de transferência', color: '#8B5CF6', onClick: () => { setActiveActionMenu(null); handleCopy(); } },
                 { icon: Bell, label: 'Lembretes', desc: 'Avisar ao chegar em um local', color: '#DC2626', onClick: () => { setActiveActionMenu(null); import('./LembretesArtigoSheet'); gateFeature('lembretes', 'lembretes', 'Lembretes', () => setShowLembretesLocal(true)); } },
-                { icon: Download, label: 'Baixar artigo', desc: 'PDF ou imagem, lei seca ou comentado', color: '#0EA5E9', onClick: () => { setActiveActionMenu(null); setShowBaixarSheet(true); } },
-                { icon: Share2, label: 'Compartilhar', desc: 'Enviar para outro app', color: '#06B6D4', onClick: () => { setActiveActionMenu(null); setShowSharePanel(p => !p); } },
+                { icon: Download, label: 'Baixar artigo', desc: 'PDF ou imagem, lei seca ou comentado', color: '#0EA5E9', onClick: () => { setActiveActionMenu(null); gateFeature('baixar', 'baixar', 'Baixar artigo', () => setShowBaixarSheet(true)); } },
+                { icon: Share2, label: 'Compartilhar', desc: 'Enviar para outro app', color: '#06B6D4', onClick: () => { setActiveActionMenu(null); gateFeature('default', 'default', 'Compartilhar', () => setShowSharePanel(p => !p)); } },
               ];
 
               const gateGrifo = (label: string, action: () => void) =>
@@ -3478,7 +3505,13 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
               <div aria-hidden="true" />
             ) : (
               <button
-                onClick={() => gateFeature('praticar', 'praticar', 'Praticar', () => setShowPraticarSheet(true))}
+                onClick={() => {
+                  if (!isPremium) {
+                    openPremiumGate('praticar');
+                    return;
+                  }
+                  setShowPraticarSheet(true);
+                }}
                 className="flex flex-col items-center justify-end gap-1 py-2 text-foreground hover:text-primary transition-colors"
               >
                 <Target className="w-7 h-7 sm:w-8 sm:h-8" />
@@ -3569,7 +3602,14 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
               <div aria-hidden="true" />
             ) : (
               <button
-                onClick={() => gateFeature('lei_anotacao', 'anotacoes', 'Anotações', () => { setShowAnotacoesSheet(true); setShowFontControls(false); })}
+                onClick={() => {
+                  if (!isPremium) {
+                    openPremiumGate('anotacoes');
+                    return;
+                  }
+                  setShowAnotacoesSheet(true);
+                  setShowFontControls(false);
+                }}
                 className="relative flex flex-col items-center justify-end gap-1 py-2 text-foreground hover:text-primary transition-colors"
               >
                 <span className="relative">
@@ -3600,7 +3640,13 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
               </button>
             ) : (
               <button
-                onClick={() => setActiveActionMenu('grifar')}
+                onClick={() => {
+                  if (!isPremium) {
+                    openPremiumGate('grifo');
+                    return;
+                  }
+                  setActiveActionMenu('grifar');
+                }}
                 className={`relative flex flex-col items-center justify-end gap-1 py-2 transition-colors ${activeActionMenu === 'grifar' || magicMode || highlightMode ? 'text-primary' : 'text-foreground hover:text-primary'}`}
               >
                 <span className="relative">
@@ -3786,8 +3832,38 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 <p className="px-5 pt-3 text-[12.5px] text-foreground/60">Art. {artigo?.numero} — Escolha o modo de estudo</p>
                 <div className="flex-1 py-2">
                   {[
-                    { icon: Target, label: 'Questões', desc: 'Múltipla escolha com comentários e exemplos', color: '#DC2626', onClick: () => { setShowPraticarSheet(false); if (isDesktop) { setShowQuestoesPanel(true); } else { navigate(`/estudos?mode=questoes&tabela=${tabelaNome}&artigo=${artigo?.numero}`); } } },
-                    { icon: Layers, label: 'Flashcards', desc: 'Cards com flip animado e exemplos práticos', color: '#DC2626', onClick: () => { setShowPraticarSheet(false); navigate(`/estudos?mode=flashcards&tabela=${tabelaNome}&artigo=${artigo?.numero}`); } },
+                    {
+                      icon: Target,
+                      label: 'Questões',
+                      desc: 'Múltipla escolha com comentários e exemplos',
+                      color: '#DC2626',
+                      onClick: () => {
+                        setShowPraticarSheet(false);
+                        if (!isPremium) {
+                          openPremiumGate('questoes');
+                          return;
+                        }
+                        if (isDesktop) {
+                          setShowQuestoesPanel(true);
+                        } else {
+                          navigate(`/estudos?mode=questoes&tabela=${tabelaNome}&artigo=${artigo?.numero}`);
+                        }
+                      },
+                    },
+                    {
+                      icon: Layers,
+                      label: 'Flashcards',
+                      desc: 'Cards com flip animado e exemplos práticos',
+                      color: '#DC2626',
+                      onClick: () => {
+                        setShowPraticarSheet(false);
+                        if (!isPremium) {
+                          openPremiumGate('flashcards');
+                          return;
+                        }
+                        navigate(`/estudos?mode=flashcards&tabela=${tabelaNome}&artigo=${artigo?.numero}`);
+                      },
+                    },
                   ].map((item, i, arr) => {
                     const Icon = item.icon;
                     return (
@@ -3995,8 +4071,14 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
           type RailItem = { icon: any; label: string; color?: string; active?: boolean; onClick: (e: any) => void };
           const principais: RailItem[] = [
             { icon: Volume2, label: 'Narração', color: '#22C55E', onClick: (e) => handleNarrarButtonPress(e) },
-            { icon: Feather, label: 'Grifar', color: '#DC2626', active: activeActionMenu === 'grifar', onClick: () => setActiveActionMenu(activeActionMenu === 'grifar' ? null : 'grifar') },
-            { icon: StickyNote, label: 'Anotações', color: '#38BDF8', onClick: () => gateFeature('lei_anotacao', 'anotacoes', 'Anotações', () => setShowAnotacoesSheet(true)) },
+            { icon: Feather, label: 'Grifar', color: '#DC2626', active: activeActionMenu === 'grifar', onClick: () => {
+              if (!isPremium) {
+                openPremiumGate('grifo');
+                return;
+              }
+              setActiveActionMenu(activeActionMenu === 'grifar' ? null : 'grifar');
+            } },
+            { icon: StickyNote, label: 'Anotações', color: '#38BDF8', onClick: () => gateFeature('anotacoes', 'anotacoes', 'Anotações', () => setShowAnotacoesSheet(true)) },
             { icon: Target, label: 'Praticar', color: '#A855F7', onClick: () => gateFeature('praticar', 'praticar', 'Praticar', () => setShowPraticarSheet(true)) },
           ];
           const secundarias: RailItem[] = [
@@ -4015,8 +4097,8 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
             ...(tabelaNome ? [{ icon: Network, label: 'Grafo', color: '#10B981', onClick: () => gateFeature('grafo', 'grafo', 'Grafo de conexões', () => setShowGrafo(true)) }] : []),
             { icon: Copy, label: 'Copiar', color: '#8B5CF6', onClick: () => handleCopy() },
             { icon: Bell, label: 'Lembretes', color: '#DC2626', onClick: () => { import('./LembretesArtigoSheet'); gateFeature('lembretes', 'lembretes', 'Lembretes', () => setShowLembretesLocal(true)); } },
-            { icon: Download, label: 'Baixar', color: '#0EA5E9', onClick: () => setShowBaixarSheet(true) },
-            { icon: Share2, label: 'Compartilhar', color: '#06B6D4', onClick: () => setShowSharePanel(p => !p) },
+            { icon: Download, label: 'Baixar', color: '#0EA5E9', onClick: () => gateFeature('baixar', 'baixar', 'Baixar artigo', () => setShowBaixarSheet(true)) },
+            { icon: Share2, label: 'Compartilhar', color: '#06B6D4', onClick: () => gateFeature('default', 'default', 'Compartilhar', () => setShowSharePanel(p => !p)) },
             { icon: Type, label: 'Fonte', onClick: () => { setShowFontControls(v => !v); setShowCommentPanel(false); } },
           ];
           const anyPanelOpen = showAnotacoesSheet || showPerguntarSheet || showPraticarSheet || showQuestoesPanel
