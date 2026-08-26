@@ -12,7 +12,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { toast } from 'sonner';
 import { confirmar } from '@/lib/nativo/dialogos';
 import { geocodeAddress, type GeocodeResult } from '@/lib/nativeGeocoder';
@@ -198,7 +197,7 @@ export default function LembretesLocal() {
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={(o) => { setDialogOpen(o); if (!o) resetForm(); }}>
-        <DialogContent className="max-w-md max-h-[90dvh] overflow-y-auto sm:rounded-2xl">
+        <DialogContent className="max-w-md max-h-[90dvh] overflow-y-auto sm:rounded-3xl rounded-3xl">
           <DialogHeader>
             <DialogTitle className="text-xl font-semibold tracking-normal text-foreground">
               Novo lembrete por local
@@ -325,67 +324,65 @@ export default function LembretesLocal() {
         </DialogContent>
       </Dialog>
 
-      <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
-        <DrawerContent>
-          <div className="mx-auto w-full max-w-sm px-4 pb-8 pt-4">
-            <DrawerHeader className="px-0 text-left">
-              <DrawerTitle className="text-xl font-bold font-display tracking-tight text-foreground">
-                Criar Novo Lembrete
-              </DrawerTitle>
-            </DrawerHeader>
+      <Dialog open={drawerOpen} onOpenChange={setDrawerOpen}>
+        <DialogContent className="max-w-sm sm:rounded-3xl rounded-3xl p-6">
+          <DialogHeader className="text-left mb-2">
+            <DialogTitle className="text-xl font-bold font-display tracking-tight text-foreground">
+              Criar Novo Lembrete
+            </DialogTitle>
+          </DialogHeader>
 
-            <div className="mt-4 flex flex-col gap-3">
-              {/* Lembrete por Horário */}
-              <button
-                onClick={() => {
-                  setDrawerOpen(false);
-                  toast('Lembrete por horário em breve!');
-                }}
-                className="group relative flex items-center justify-between overflow-hidden rounded-2xl border border-border bg-card p-4 text-left shadow-sm transition-all hover:bg-muted active:scale-[0.98]"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    <Clock className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-foreground">Por Horário</h3>
-                    <p className="text-xs text-muted-foreground mt-0.5">Defina uma hora e dia específico.</p>
-                  </div>
+          <div className="flex flex-col gap-3">
+            {/* Lembrete por Horário */}
+            <button
+              onClick={() => {
+                setDrawerOpen(false);
+                toast('Lembrete por horário em breve!');
+              }}
+              className="group relative flex items-center justify-between overflow-hidden rounded-2xl border border-border bg-card p-4 text-left shadow-sm transition-all hover:bg-muted active:scale-[0.98]"
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <Clock className="h-5 w-5" />
                 </div>
-                <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
-              </button>
+                <div>
+                  <h3 className="font-semibold text-foreground">Por Horário</h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">Defina uma hora e dia específico.</p>
+                </div>
+              </div>
+              <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+            </button>
 
-              {/* Lembrete por Local */}
-              <button
-                onClick={() => {
-                  setDrawerOpen(false);
-                  setTimeout(() => setDialogOpen(true), 150);
-                }}
-                className="group relative flex items-center justify-between overflow-hidden rounded-2xl border border-primary/20 bg-primary/[0.03] p-4 text-left shadow-sm transition-all hover:bg-primary/5 active:scale-[0.98]"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/20 text-primary">
-                    <MapPin className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-1.5">
-                      <h3 className="font-semibold text-foreground">Por Local</h3>
-                      <div 
-                        onClick={(e) => { e.stopPropagation(); setInfoOpen(true); }}
-                        className="p-1 rounded-full text-muted-foreground hover:bg-foreground/5 hover:text-foreground transition-colors cursor-pointer"
-                      >
-                        <Info className="h-3.5 w-3.5" />
-                      </div>
+            {/* Lembrete por Local */}
+            <button
+              onClick={() => {
+                setDrawerOpen(false);
+                setTimeout(() => setDialogOpen(true), 150);
+              }}
+              className="group relative flex items-center justify-between overflow-hidden rounded-2xl border border-primary/20 bg-primary/[0.03] p-4 text-left shadow-sm transition-all hover:bg-primary/5 active:scale-[0.98]"
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/20 text-primary">
+                  <MapPin className="h-5 w-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <h3 className="font-semibold text-foreground">Por Local</h3>
+                    <div 
+                      onClick={(e) => { e.stopPropagation(); setInfoOpen(true); }}
+                      className="p-1 rounded-full text-muted-foreground hover:bg-foreground/5 hover:text-foreground transition-colors cursor-pointer"
+                    >
+                      <Info className="h-3.5 w-3.5" />
                     </div>
-                    <p className="text-xs text-muted-foreground mt-0.5">Seja avisado ao chegar em um endereço.</p>
                   </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">Seja avisado ao chegar em um endereço.</p>
                 </div>
-                <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
-              </button>
-            </div>
+              </div>
+              <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+            </button>
           </div>
-        </DrawerContent>
-      </Drawer>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={infoOpen} onOpenChange={setInfoOpen}>
         <DialogContent className="max-w-sm rounded-3xl p-6 text-center">
