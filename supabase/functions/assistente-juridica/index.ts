@@ -539,7 +539,7 @@ Regras:
           break;
         default: systemPrompt = SYSTEM_PROMPT_EXPLICACAO;
       }
-      if (mode !== 'perguntar' && !contents!) {
+      if (mode !== 'perguntar' && contents.length === 0) {
         const prompt = `${leiNome ? `Lei: ${leiNome}\n` : ''}${artigoNumero ? `Artigo: ${artigoNumero}\n` : ''}Texto do artigo:\n\n${artigoTexto}`;
         contents = [{ role: 'user', parts: [{ text: prompt }] }];
       }
