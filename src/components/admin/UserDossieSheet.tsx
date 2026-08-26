@@ -243,7 +243,8 @@ export function UserDossieSheet({ userId, nome, email, provider, avatarUrl, onCl
   );
 
   return (
-    <Sheet open={!!userId} onOpenChange={(v) => !v && onClose()}>
+    <>
+      <Sheet open={!!userId} onOpenChange={(v) => !v && onClose()}>
       <SheetContent
         side="bottom"
         className="rounded-t-2xl h-[90vh] max-h-[90vh] overflow-y-auto p-0 bg-background border-border"
@@ -592,7 +593,6 @@ export function UserDossieSheet({ userId, nome, email, provider, avatarUrl, onCl
           </div>
         </SheetContent>
       </Sheet>
-    </Sheet>
 
       {/* Lightbox fullscreen da foto */}
       {fotoFull && avatarUrl && createPortal(
@@ -624,6 +624,7 @@ export function UserDossieSheet({ userId, nome, email, provider, avatarUrl, onCl
         </div>,
         document.body
       )}
+    </>
   );
 }
 
