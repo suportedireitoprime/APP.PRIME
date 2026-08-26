@@ -593,7 +593,7 @@ Regras:
 
     async function gatewayGenerate(): Promise<any | null> {
       const endpoint = body.stream ? 'streamGenerateContent?alt=sse&' : 'generateContent?';
-      const r = await geminiFetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:${endpoint}key=${GEMINI_API_KEY}`, {
+      const r = await geminiFetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-live-preview:${endpoint}key=${GEMINI_API_KEY}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(geminiBody)
@@ -607,7 +607,7 @@ Regras:
       
       if (body.stream) {
         if (!body.isPreWarm && _callerUserId) {
-          logAiCall({ functionName: 'assistente-juridica', kind: 'text', model: 'gemini-3.1-flash-lite', userId: _callerUserId, outputUnits: 150, triggerType: 'auto', durationMs: Date.now() - _t0 }).catch(() => {});
+          logAiCall({ functionName: 'assistente-juridica', kind: 'text', model: 'gemini-3.1-flash-live-preview', userId: _callerUserId, outputUnits: 150, triggerType: 'auto', durationMs: Date.now() - _t0 }).catch(() => {});
         }
         return new Response(r.body, {
           status: 200,
@@ -624,7 +624,7 @@ Regras:
 
       if (!geminiDisabled) {
         const keyToUse = geminiKeys[attempt % geminiKeys.length];
-        const modelsToTry = ["gemini-3.1-flash-lite"];
+        const modelsToTry = ["gemini-3.1-flash-live-preview"];
         const modelToUse = modelsToTry[attempt % modelsToTry.length];
         
         const endpoint = body.stream ? 'streamGenerateContent?alt=sse&' : 'generateContent?';
@@ -634,7 +634,7 @@ Regras:
         if (res.ok) {
           if (body.stream) {
             if (!body.isPreWarm && _callerUserId) {
-              logAiCall({ functionName: 'assistente-juridica', kind: 'text', model: 'gemini-3.1-flash-lite', userId: _callerUserId, outputUnits: 150, triggerType: 'auto', durationMs: Date.now() - _t0 }).catch(() => {});
+              logAiCall({ functionName: 'assistente-juridica', kind: 'text', model: 'gemini-3.1-flash-live-preview', userId: _callerUserId, outputUnits: 150, triggerType: 'auto', durationMs: Date.now() - _t0 }).catch(() => {});
             }
             return new Response(res.body, {
               status: 200,
@@ -771,7 +771,7 @@ Regras:
     await logAiCall({
       functionName: "assistente-juridica",
       kind: "text",
-      model: "gemini-3.1-flash-lite",
+      model: "gemini-3.1-flash-live-preview",
       triggerType: "manual",
       inputUnits: _lastUsage?.promptTokenCount ?? 0,
       outputUnits: _lastUsage?.candidatesTokenCount ?? 0,
