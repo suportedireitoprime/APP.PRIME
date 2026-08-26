@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Loader2, Clock, Activity, Flame, Star, Calendar, Crown, Phone, Mail,
   GraduationCap, LayoutGrid, MessageCircle, MapPin, Trash2, X, Ban, ShieldAlert, User
@@ -62,6 +63,7 @@ export function UserDossieSheet({ userId, nome, email, provider, avatarUrl, onCl
   const [d, setD] = useState<Dossie | null>(null);
   const [confirmar, setConfirmar] = useState<null | 'menu' | 'ban' | 'delete'>(null);
   const [executando, setExecutando] = useState(false);
+  const [fotoFull, setFotoFull] = useState(false);
 
   const executarAcao = async (acao: 'ban' | 'delete') => {
     if (!userId) return;
@@ -103,7 +105,7 @@ export function UserDossieSheet({ userId, nome, email, provider, avatarUrl, onCl
           .eq('user_id', userId).eq('event_name', 'page_view').gte('created_at', desde30)
           .order('created_at', { ascending: true }).limit(2000),
         supabase.from('user_sessions' as any)
-          .select('started_at, platform, initial_route, pais, uf, cidade, timezone, locale')
+          .select('started_at, platform, initial_route, pais, uf, cidade, timezone, locale, user_agent')
           .eq('user_id', userId).gte('started_at', desde30)
           .order('started_at', { ascending: false }).limit(500),
         supabase.from('feature_usage' as any)
@@ -191,6 +193,14 @@ export function UserDossieSheet({ userId, nome, email, provider, avatarUrl, onCl
           cidade: sessoes.find((x) => x.cidade)?.cidade ?? (perfilR.data as any)?.cidade ?? null,
           timezone: sessoes.find((x) => x.timezone)?.timezone ?? (perfilR.data as any)?.timezone ?? null,
           locale: sessoes.find((x) => x.locale)?.locale ?? (perfilR.data as any)?.locale ?? null,
+          deviceModel: (() => {
+            const ua = sessoes.find((x) => x.user_agent)?.user_agent;
+            if (!ua) return null;
+            if (ua.includes('iPhone')) return 'iPhone';
+            if (ua.includes('iPad')) return 'iPad';
+            const match = ua.match(/\(Linux; Android [^;]+; ([^;]+)\s+Build/);
+            return match ? match[1] : (ua.includes('Macintosh') ? 'Mac' : (ua.includes('Windows') ? 'Windows' : null));
+          })()
         },
         plataformas: countBy(sessoes.filter((x) => x.platform), 'platform'),
         ultimaSessao: sessoes[0]?.started_at ?? null,
@@ -245,7 +255,9 @@ export function UserDossieSheet({ userId, nome, email, provider, avatarUrl, onCl
                 <img 
                   src={avatarUrl} 
                   alt="Avatar" 
-                  className="w-12 h-12 rounded-full border border-border object-cover shrink-0" 
+                  className="w-12 h-12 rounded-full border border-border object-cover shrink-0 cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all active:scale-95" 
+                  onClick={() => setFotoFull(true)}
+                  referrerPolicy="no-referrer"
                 />
               ) : (
                 <div className="w-12 h-12 rounded-full border border-border bg-secondary/50 flex items-center justify-center shrink-0 text-muted-foreground">
@@ -387,10 +399,7 @@ export function UserDossieSheet({ userId, nome, email, provider, avatarUrl, onCl
                 <Campo label="Primeira sessão" value={dia(d.primeiraSessao)} />
                 <Campo label="Última sessão" value={`${dia(d.ultimaSessao)} ${hora(d.ultimaSessao)}`} />
                 <Campo label="Sessões (30 dias)" value={d.sessoesTotal} />
-                <Campo
-                  label="Onboarding"
-                  value={d.perfil?.onboarding_completed_at ? `Concluído ${dia(d.perfil.onboarding_completed_at)}` : 'Não concluído'}
-                />
+                <Campo label="Dispositivo" value={d.geo.deviceModel || 'Não identificado'} />
               </div>
               {!d.geo.pais && (
                 <p className="font-body text-[13px] text-muted-foreground">
@@ -584,6 +593,37 @@ export function UserDossieSheet({ userId, nome, email, provider, avatarUrl, onCl
         </SheetContent>
       </Sheet>
     </Sheet>
+
+      {/* Lightbox fullscreen da foto */}
+      {fotoFull && avatarUrl && createPortal(
+        <div
+          className="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-sm flex items-center justify-center cursor-pointer"
+          style={{ animation: 'fadeIn 200ms ease-out' }}
+          onClick={() => setFotoFull(false)}
+        >
+          <button
+            type="button"
+            onClick={() => setFotoFull(false)}
+            className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 border border-white/20 text-white flex items-center justify-center hover:bg-white/20 transition-colors z-10"
+            aria-label="Fechar foto"
+          >
+            <X className="w-5 h-5" />
+          </button>
+          <img
+            src={avatarUrl}
+            alt={nome || 'Avatar'}
+            referrerPolicy="no-referrer"
+            className="max-w-[90vw] max-h-[85vh] rounded-2xl object-contain shadow-2xl"
+            style={{ animation: 'zoomIn 300ms ease-out' }}
+            onClick={(e) => e.stopPropagation()}
+          />
+          <style>{`
+            @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+            @keyframes zoomIn { from { opacity: 0; transform: scale(0.85) } to { opacity: 1; transform: scale(1) } }
+          `}</style>
+        </div>,
+        document.body
+      )}
   );
 }
 
