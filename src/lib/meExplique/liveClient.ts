@@ -250,7 +250,10 @@ export class SessaoMeExplique {
       ws.onopen = () => {
         // Se o token já trava a configuração, basta o modelo; senão enviamos o
         // setup completo devolvido pela edge function.
-        const setup = this.opcoes.setup ?? { model: `models/${this.opcoes.modelo}` };
+        // O BidiGenerateContent em v1alpha exige o sufixo -exp ou -alpha para o modelo 2.0
+        let modelId = this.opcoes.modelo;
+        if (modelId === "gemini-2.0-flash") modelId = "gemini-2.0-flash-exp";
+        const setup = this.opcoes.setup ?? { model: `models/${modelId}` };
         ws.send(JSON.stringify({ setup }));
       };
 
