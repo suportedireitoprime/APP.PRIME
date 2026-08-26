@@ -25,6 +25,7 @@ import { ptBR } from 'date-fns/locale';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 
 import { ADMIN_EMAILS, isAdminEmail } from '@/lib/adminEmails';
@@ -56,6 +57,8 @@ interface NormalizedUser {
   isOnline: boolean;
   accesses?: number;
 }
+
+type PeriodoId = 'hoje' | 'ontem' | '7d' | '30d';
 
 interface RouteVisit {
   label: string;
@@ -225,6 +228,21 @@ interface MetricCard {
   clickable: boolean;
   users?: NormalizedUser[];
 }
+
+const isoDate = (d: Date) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+const getDatasPeriodo = (p: PeriodoId) => {
+  const hoje = new Date();
+  if (p === 'hoje') return [hoje];
+  if (p === 'ontem') {
+    const ontem = new Date(); ontem.setDate(hoje.getDate() - 1); return [ontem];
+  }
+  const dias = p === '7d' ? 7 : 30;
+  return Array.from({ length: dias }, (_, i) => {
+    const d = new Date(); d.setDate(hoje.getDate() - i); return d;
+  });
+};
 
 const AdminMonitorUsuarios = () => {
   const navigate = useNavigate();
