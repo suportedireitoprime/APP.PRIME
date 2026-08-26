@@ -2613,6 +2613,15 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                     : <EyeOff className="w-6 h-6 text-muted-foreground" />
                   }
                 </motion.button>
+                <motion.button
+                  onClick={() => setShowFontControls(v => !v)}
+                  whileTap={{ scale: 0.9 }}
+                  className={`w-11 h-11 rounded-full flex items-center justify-center transition-colors ${showFontControls ? 'bg-primary text-primary-foreground shadow-md' : 'hover:bg-secondary active:bg-secondary text-muted-foreground'}`}
+                  title="Tamanho da fonte"
+                  aria-label="Tamanho da fonte"
+                >
+                  <Type className="w-5 h-5" />
+                </motion.button>
               </>
             )}
           </div>
@@ -2630,6 +2639,43 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
             )}
           </div>
         </div>
+
+        {/* Painel expansível de ajuste de tamanho de fonte */}
+        <AnimatePresence>
+          {showFontControls && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="overflow-hidden px-4 pb-2"
+            >
+              <div className="flex items-center justify-between gap-3 px-4 py-2 rounded-2xl bg-secondary/80 border border-border backdrop-blur-md">
+                <span className="text-xs font-semibold text-foreground/80 flex items-center gap-1.5">
+                  <Type className="w-3.5 h-3.5 text-primary" /> Tamanho do texto
+                </span>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setFontSize(prev => Math.max(prev - 1, 12))}
+                    className="w-8 h-8 rounded-full bg-card hover:bg-card/80 border border-border flex items-center justify-center text-foreground active:scale-95 transition"
+                    aria-label="Diminuir fonte"
+                  >
+                    <Minus className="w-3.5 h-3.5" />
+                  </button>
+                  <span className="text-xs font-bold text-foreground min-w-[36px] text-center">
+                    {fontSize}px
+                  </span>
+                  <button
+                    onClick={() => setFontSize(prev => Math.min(prev + 1, 26))}
+                    className="w-8 h-8 rounded-full bg-card hover:bg-card/80 border border-border flex items-center justify-center text-foreground active:scale-95 transition"
+                    aria-label="Aumentar fonte"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Breadcrumb: PARTE > TÍTULO / descrição */}
         {(breadcrumb?.parte || breadcrumb?.titulo) && (
@@ -3267,182 +3313,144 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
 
         </div>
 
-        {/* Floating FABs — Font size */}
-        <div className={`absolute ${activeTab === 'artigo' && !isDesktop ? 'bottom-32 sm:bottom-36' : 'bottom-6'} right-4 sm:right-5 z-[60] flex flex-col items-end gap-2`}>
+        {/* Bottom-up action sheet for Funções / Grifar.
+            IMPORTANTE: o createPortal fica FORA do AnimatePresence — um portal não é
+            um elemento React válido, então o AnimatePresence o descartaria e o menu
+            nunca apareceria (bug do menu de rodapé no mobile). */}
+        {(activeTab ?? 'artigo') === 'artigo' && createPortal(
           <AnimatePresence>
-            {showFontControls && (
-              <motion.div
-                initial={{ opacity: 0, y: 10, scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 10, scale: 0.9 }}
-                className="bg-card border border-border rounded-2xl shadow-lg p-3 flex flex-col items-center gap-2 mb-2"
-              >
-                <button
-                  onClick={() => setFontSize(prev => Math.min(prev + 1, 24))}
-                  className="w-10 h-10 rounded-full bg-secondary hover:bg-secondary/80 flex items-center justify-center transition-colors"
-                >
-                  <Plus className="w-4 h-4 text-foreground" />
-                </button>
-                <span className="text-foreground text-xs font-bold">{fontSize}px</span>
-                <button
-                  onClick={() => setFontSize(prev => Math.max(prev - 1, 10))}
-                  className="w-10 h-10 rounded-full bg-secondary hover:bg-secondary/80 flex items-center justify-center transition-colors"
-                >
-                  <Minus className="w-4 h-4 text-foreground" />
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-          {/* Bottom-up action sheet for Funções / Grifar.
-              IMPORTANTE: o createPortal fica FORA do AnimatePresence — um portal não é
-              um elemento React válido, então o AnimatePresence o descartaria e o menu
-              nunca apareceria (bug do menu de rodapé no mobile). */}
-          {(activeTab ?? 'artigo') === 'artigo' && createPortal(
-              <AnimatePresence>
-                {activeActionMenu && (() => {
-                  const funcoesItems = [
-                    { icon: Scale, label: 'Jurisprudência', desc: 'Súmulas, temas e acórdãos do STF/STJ', color: '#D4AF37', onClick: () => {
-                      setActiveActionMenu(null);
-                      if (!requireOnline('Jurisprudência')) return;
-                      if (!tabelaNome || !artigo?.numero) { toast.error('Artigo não identificado'); return; }
-                      gateFeature('jurisprudencia', 'jurisprudencia', 'Jurisprudência', () =>
-                        navigate(`/jurisprudencia/${tabelaNome}/${encodeURIComponent(String(artigo.numero))}`),
-                      );
-                    } },
-                    { icon: Play, label: 'Videoaulas', desc: 'Aulas em vídeo sobre este artigo', color: 'hsl(348 78% 38%)', onClick: () => {
-                      setActiveActionMenu(null);
-                      if (!requireOnline('Videoaulas')) return;
-                      gateFeature('videoaula', 'videoaula', 'Videoaulas', () => setShowVideoaulasListSheet(true));
-                    } },
-                    
-                    { icon: BookOpen, label: 'Termos jurídicos', desc: 'Vocabulário do artigo explicado', color: '#F97316', onClick: () => { setActiveActionMenu(null); if (!requireOnline('Termos jurídicos')) return; gateFeature('termos', 'termos', 'Termos jurídicos', () => setShowTermosSheet(true)); } },
-                    { icon: MessageCircle, label: 'Perguntar', desc: 'Tire dúvidas com a IA', color: '#A855F7', onClick: () => { setActiveActionMenu(null); if (!requireOnline('Perguntar à IA')) return; gateFeature('perguntar', 'perguntar', 'Perguntar à IA', () => setShowPerguntarSheet(true)); } },
-                    ...(tabelaNome ? [{ icon: Network, label: 'Grafo de conexões', desc: 'Ver relações do artigo', color: '#10B981', onClick: () => { setActiveActionMenu(null); gateFeature('grafo', 'grafo', 'Grafo de conexões', () => setShowGrafo(true)); } }] : []),
-                    { icon: Copy, label: 'Copiar artigo', desc: 'Texto para a área de transferência', color: '#8B5CF6', onClick: () => { setActiveActionMenu(null); handleCopy(); } },
-                    { icon: Bell, label: 'Lembretes', desc: 'Avisar ao chegar em um local', color: '#DC2626', onClick: () => { setActiveActionMenu(null); import('./LembretesArtigoSheet'); gateFeature('lembretes', 'lembretes', 'Lembretes', () => setShowLembretesLocal(true)); } },
-                    { icon: Download, label: 'Baixar artigo', desc: 'PDF ou imagem, lei seca ou comentado', color: '#0EA5E9', onClick: () => { setActiveActionMenu(null); setShowBaixarSheet(true); } },
-                    { icon: Share2, label: 'Compartilhar', desc: 'Enviar para outro app', color: '#06B6D4', onClick: () => { setActiveActionMenu(null); setShowSharePanel(p => !p); } },
-                  ];
+            {activeActionMenu && (() => {
+              const funcoesItems = [
+                { icon: Scale, label: 'Jurisprudência', desc: 'Súmulas, temas e acórdãos do STF/STJ', color: '#D4AF37', onClick: () => {
+                  setActiveActionMenu(null);
+                  if (!requireOnline('Jurisprudência')) return;
+                  if (!tabelaNome || !artigo?.numero) { toast.error('Artigo não identificado'); return; }
+                  gateFeature('jurisprudencia', 'jurisprudencia', 'Jurisprudência', () =>
+                    navigate(`/jurisprudencia/${tabelaNome}/${encodeURIComponent(String(artigo.numero))}`),
+                  );
+                } },
+                { icon: Play, label: 'Videoaulas', desc: 'Aulas em vídeo sobre este artigo', color: 'hsl(348 78% 38%)', onClick: () => {
+                  setActiveActionMenu(null);
+                  if (!requireOnline('Videoaulas')) return;
+                  gateFeature('videoaula', 'videoaula', 'Videoaulas', () => setShowVideoaulasListSheet(true));
+                } },
+                
+                { icon: BookOpen, label: 'Termos jurídicos', desc: 'Vocabulário do artigo explicado', color: '#F97316', onClick: () => { setActiveActionMenu(null); if (!requireOnline('Termos jurídicos')) return; gateFeature('termos', 'termos', 'Termos jurídicos', () => setShowTermosSheet(true)); } },
+                { icon: MessageCircle, label: 'Perguntar', desc: 'Tire dúvidas com a IA', color: '#A855F7', onClick: () => { setActiveActionMenu(null); if (!requireOnline('Perguntar à IA')) return; gateFeature('perguntar', 'perguntar', 'Perguntar à IA', () => setShowPerguntarSheet(true)); } },
+                ...(tabelaNome ? [{ icon: Network, label: 'Grafo de conexões', desc: 'Ver relações do artigo', color: '#10B981', onClick: () => { setActiveActionMenu(null); gateFeature('grafo', 'grafo', 'Grafo de conexões', () => setShowGrafo(true)); } }] : []),
+                { icon: Copy, label: 'Copiar artigo', desc: 'Texto para a área de transferência', color: '#8B5CF6', onClick: () => { setActiveActionMenu(null); handleCopy(); } },
+                { icon: Bell, label: 'Lembretes', desc: 'Avisar ao chegar em um local', color: '#DC2626', onClick: () => { setActiveActionMenu(null); import('./LembretesArtigoSheet'); gateFeature('lembretes', 'lembretes', 'Lembretes', () => setShowLembretesLocal(true)); } },
+                { icon: Download, label: 'Baixar artigo', desc: 'PDF ou imagem, lei seca ou comentado', color: '#0EA5E9', onClick: () => { setActiveActionMenu(null); setShowBaixarSheet(true); } },
+                { icon: Share2, label: 'Compartilhar', desc: 'Enviar para outro app', color: '#06B6D4', onClick: () => { setActiveActionMenu(null); setShowSharePanel(p => !p); } },
+              ];
 
-                  const gateGrifo = (label: string, action: () => void) =>
-                    gateFeature('grifo', 'grifo', label, action);
-                  const grifarItems = [
-                    { icon: Highlighter, label: highlightMode ? 'Desativar grifo manual' : 'Grifo manual', desc: 'Marcar com o dedo', color: '#EC4899', active: highlightMode, onClick: () => { setActiveActionMenu(null); if (highlightMode) { toggleMode(); return; } gateGrifo('Grifar', () => toggleMode()); } },
-                    { icon: Sparkles, label: 'Grifo mágico (IA)', desc: 'Destaques automáticos', color: '#DC2626', active: magicMode, spin: magicLoading, badge: magicHighlights.length, onClick: () => { setActiveActionMenu(null); gateGrifo('Grifar', () => handleToggleMagic()); } },
-                    { icon: Mic, label: 'Grifar por voz', desc: 'Dite o trecho a destacar', color: '#DC2626', onClick: () => { setActiveActionMenu(null); gateGrifo('Grifar', () => setVoiceGrifoActive(true)); } },
-                    { icon: Camera, label: 'Grifar de foto', desc: 'OCR de imagem', color: '#3B82F6', onClick: () => { setActiveActionMenu(null); gateGrifo('Grifar', () => setShowGrifoFoto(true)); } },
-                    { icon: Trash2, label: 'Apagar grifos', desc: 'Escolha por cor ou apague todos', color: 'hsl(348 78% 38%)', badge: eraseSheetHighlights.length, onClick: () => { setActiveActionMenu(null); setShowEraseSheet(true); } },
-                  ];
-                  const isGrifar = activeActionMenu === 'grifar';
-                  const items = isGrifar ? grifarItems : funcoesItems;
-                  const title = isGrifar ? 'Grifar' : 'Funções';
-                  const HeaderIcon = isGrifar ? Feather : LayoutGrid;
-                  return (
-                    <>
-
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        data-artigo-menu=""
+              const gateGrifo = (label: string, action: () => void) =>
+                gateFeature('grifo', 'grifo', label, action);
+              const grifarItems = [
+                { icon: Highlighter, label: highlightMode ? 'Desativar grifo manual' : 'Grifo manual', desc: 'Marcar com o dedo', color: '#EC4899', active: highlightMode, onClick: () => { setActiveActionMenu(null); if (highlightMode) { toggleMode(); return; } gateGrifo('Grifar', () => toggleMode()); } },
+                { icon: Sparkles, label: 'Grifo mágico (IA)', desc: 'Destaques automáticos', color: '#DC2626', active: magicMode, spin: magicLoading, badge: magicHighlights.length, onClick: () => { setActiveActionMenu(null); gateGrifo('Grifar', () => handleToggleMagic()); } },
+                { icon: Mic, label: 'Grifar por voz', desc: 'Dite o trecho a destacar', color: '#DC2626', onClick: () => { setActiveActionMenu(null); gateGrifo('Grifar', () => setVoiceGrifoActive(true)); } },
+                { icon: Camera, label: 'Grifar de foto', desc: 'OCR de imagem', color: '#3B82F6', onClick: () => { setActiveActionMenu(null); gateGrifo('Grifar', () => setShowGrifoFoto(true)); } },
+                { icon: Trash2, label: 'Apagar grifos', desc: 'Escolha por cor ou apague todos', color: 'hsl(348 78% 38%)', badge: eraseSheetHighlights.length, onClick: () => { setActiveActionMenu(null); setShowEraseSheet(true); } },
+              ];
+              const isGrifar = activeActionMenu === 'grifar';
+              const items = isGrifar ? grifarItems : funcoesItems;
+              const title = isGrifar ? 'Grifar' : 'Funções';
+              const HeaderIcon = isGrifar ? Feather : LayoutGrid;
+              return (
+                <>
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    data-artigo-menu=""
+                    onClick={() => setActiveActionMenu(null)}
+                    style={{ pointerEvents: 'auto' }}
+                    className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[10005]"
+                  />
+                  <motion.aside
+                    initial={{ y: '100%' }}
+                    animate={{ y: 0 }}
+                    exit={{ y: '100%' }}
+                    data-artigo-menu=""
+                    style={{ pointerEvents: 'auto' }}
+                    transition={{ type: 'spring', damping: 26, stiffness: 260 }}
+                    className="fixed bottom-0 left-0 right-0 z-[10006] bg-card border-t border-border rounded-t-3xl shadow-2xl flex flex-col pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] min-h-[74vh] max-h-[92vh] mx-auto max-w-lg md:left-1/2 md:right-auto md:-translate-x-1/2 md:bottom-6 md:top-auto md:w-[92vw] md:max-w-2xl md:rounded-3xl md:border md:border-border md:shadow-2xl md:min-h-0"
+                  >
+                    <div className="pt-3 pb-2 flex justify-center">
+                      <span className="w-10 h-1 rounded-full bg-border" />
+                    </div>
+                    <div className="flex items-center justify-between px-5 pb-3 border-b border-border">
+                      <div className="flex items-center gap-2">
+                        <HeaderIcon className={`w-5 h-5 ${isGrifar ? 'text-primary' : 'text-primary'}`} />
+                        <h3 className="font-heading text-base font-semibold text-foreground">{title}</h3>
+                      </div>
+                      <button
                         onClick={() => setActiveActionMenu(null)}
-                        style={{ pointerEvents: 'auto' }}
-                        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[10005]"
-                      />
-                      <motion.aside
-                        initial={{ y: '100%' }}
-                        animate={{ y: 0 }}
-                        exit={{ y: '100%' }}
-                        data-artigo-menu=""
-                        style={{ pointerEvents: 'auto' }}
-                        transition={{ type: 'spring', damping: 26, stiffness: 260 }}
-                        className="fixed bottom-0 left-0 right-0 z-[10006] bg-card border-t border-border rounded-t-3xl shadow-2xl flex flex-col pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] min-h-[74vh] max-h-[92vh] mx-auto max-w-lg md:left-1/2 md:right-auto md:-translate-x-1/2 md:bottom-6 md:top-auto md:w-[92vw] md:max-w-2xl md:rounded-3xl md:border md:border-border md:shadow-2xl md:min-h-0"
+                        className="w-8 h-8 rounded-full hover:bg-secondary flex items-center justify-center text-foreground/70"
+                        aria-label="Fechar"
                       >
-                        <div className="pt-3 pb-2 flex justify-center">
-                          <span className="w-10 h-1 rounded-full bg-border" />
-                        </div>
-                        <div className="flex items-center justify-between px-5 pb-3 border-b border-border">
-                          <div className="flex items-center gap-2">
-                            <HeaderIcon className={`w-5 h-5 ${isGrifar ? 'text-primary' : 'text-primary'}`} />
-                            <h3 className="font-heading text-base font-semibold text-foreground">{title}</h3>
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <div className="flex-1 overflow-y-auto py-2">
+                      {items.map((item, i, arr) => {
+                        const Icon = item.icon;
+                        return (
+                          <div key={i}>
+                            <button
+                              onClick={item.onClick}
+                              className={`w-full min-h-[68px] flex items-center gap-3 px-5 py-3.5 transition-colors text-left ${(item as any).active ? 'bg-primary/10' : 'hover:bg-secondary/60'}`}
+                            >
+                              <span
+                                className="w-9 h-9 flex items-center justify-center shrink-0"
+                                style={{ color: item.color }}
+                              >
+                                <Icon className={`w-[22px] h-[22px] ${(item as any).spin ? 'animate-spin' : ''}`} strokeWidth={2} />
+                              </span>
+                              <span className="flex-1 min-w-0">
+                                <span className="block text-[14.5px] font-medium text-foreground truncate">{item.label}</span>
+                                <span className="block text-[12px] text-foreground/60 truncate mt-0.5">{item.desc}</span>
+                              </span>
+                              {(item as any).badge > 0 && (
+                                <span className="ml-2 inline-flex min-w-[22px] h-[22px] px-1.5 rounded-full bg-primary text-primary-foreground text-[11px] font-bold items-center justify-center">
+                                  {(item as any).badge}
+                                </span>
+                              )}
+                            </button>
+                            {i < arr.length - 1 && (
+                              <div className="mx-5 h-px bg-border/60" />
+                            )}
+                          </div>
+                        );
+                      })}
+                      {isGrifar && (
+                        <div className="mt-2 mx-5 p-3 rounded-2xl bg-secondary/40 border border-border flex items-center justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="text-[13.5px] font-medium text-foreground">Mostrar grifo por padrão</p>
+                            <p className="text-[11.5px] text-foreground/60 mt-0.5">Ao abrir o artigo, exibe os grifos da IA automaticamente.</p>
                           </div>
                           <button
-                            onClick={() => setActiveActionMenu(null)}
-                            className="w-8 h-8 rounded-full hover:bg-secondary flex items-center justify-center text-foreground/70"
-                            aria-label="Fechar"
+                            type="button"
+                            role="switch"
+                            aria-checked={grifoIaDefaultOn}
+                            onClick={() => setGrifoIaDefault(!grifoIaDefaultOn)}
+                            className={`relative shrink-0 w-11 h-6 rounded-full transition-colors ${grifoIaDefaultOn ? 'bg-primary' : 'bg-muted'}`}
                           >
-                            <X className="w-4 h-4" />
+                            <span
+                              className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${grifoIaDefaultOn ? 'translate-x-5' : ''}`}
+                            />
                           </button>
                         </div>
-                        <div className="flex-1 overflow-y-auto py-2">
-                          {items.map((item, i, arr) => {
-                            const Icon = item.icon;
-                            return (
-                              <div key={i}>
-                                <button
-                                  onClick={item.onClick}
-                                  className={`w-full min-h-[68px] flex items-center gap-3 px-5 py-3.5 transition-colors text-left ${(item as any).active ? 'bg-primary/10' : 'hover:bg-secondary/60'}`}
-                                >
-                                  <span
-                                    className="w-9 h-9 flex items-center justify-center shrink-0"
-                                    style={{ color: item.color }}
-                                  >
-                                    <Icon className={`w-[22px] h-[22px] ${(item as any).spin ? 'animate-spin' : ''}`} strokeWidth={2} />
-                                  </span>
-                                  <span className="flex-1 min-w-0">
-                                    <span className="block text-[14.5px] font-medium text-foreground truncate">{item.label}</span>
-                                    <span className="block text-[12px] text-foreground/60 truncate mt-0.5">{item.desc}</span>
-                                  </span>
-                                  {(item as any).badge > 0 && (
-                                    <span className="ml-2 inline-flex min-w-[22px] h-[22px] px-1.5 rounded-full bg-primary text-primary-foreground text-[11px] font-bold items-center justify-center">
-                                      {(item as any).badge}
-                                    </span>
-                                  )}
-                                </button>
-                                {i < arr.length - 1 && (
-                                  <div className="mx-5 h-px bg-border/60" />
-                                )}
-                              </div>
-                            );
-                          })}
-                          {isGrifar && (
-                            <div className="mt-2 mx-5 p-3 rounded-2xl bg-secondary/40 border border-border flex items-center justify-between gap-3">
-                              <div className="min-w-0">
-                                <p className="text-[13.5px] font-medium text-foreground">Mostrar grifo por padrão</p>
-                                <p className="text-[11.5px] text-foreground/60 mt-0.5">Ao abrir o artigo, exibe os grifos da IA automaticamente.</p>
-                              </div>
-                              <button
-                                type="button"
-                                role="switch"
-                                aria-checked={grifoIaDefaultOn}
-                                onClick={() => setGrifoIaDefault(!grifoIaDefaultOn)}
-                                className={`relative shrink-0 w-11 h-6 rounded-full transition-colors ${grifoIaDefaultOn ? 'bg-primary' : 'bg-muted'}`}
-                              >
-                                <span
-                                  className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${grifoIaDefaultOn ? 'translate-x-5' : ''}`}
-                                />
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      </motion.aside>
-                    </>
-                  );
-                })()}
-              </AnimatePresence>,
-              document.body
-          )}
-          {!isDesktop && (
-            <>
-              <button
-                onClick={() => { setShowFontControls(!showFontControls); setShowCommentPanel(false); }}
-                className="w-11 h-11 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center hover:bg-primary/90 transition-colors"
-              >
-                <Type className="w-5 h-5" />
-              </button>
-            </>
-          )}
-        </div>
+                      )}
+                    </div>
+                  </motion.aside>
+                </>
+              );
+            })()}
+          </AnimatePresence>,
+          document.body
+        )}
 
 
         {/* Bottom nav bar — only visible on "artigo" tab; fixed as a flex item below the scrollable area */}
