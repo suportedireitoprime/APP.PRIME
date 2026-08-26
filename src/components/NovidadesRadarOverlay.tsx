@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { X, ArrowRight, Play } from 'lucide-react';
+import { X, ArrowRight, Play, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { resenhaSelect } from '@/lib/resenhaBackend';
 import { useAuth } from '@/hooks/useAuth';
@@ -10,6 +10,10 @@ import horusAsset from '@/assets/horus/horus-owl.webp';
 import tecladoSfx from '@/assets/teclado.mp3';
 import { loadObras } from '@/lib/tematicaStore';
 import { montarAgenda } from '@/lib/tematicaRecomendacoes';
+import { lazyWithRetry } from '@/utils/lazyWithRetry';
+import { toast } from 'sonner';
+
+const BoletimPlayer = lazyWithRetry(() => import('@/components/boletim/BoletimPlayer'));
 
 type OrigemOverlay = 'radar' | 'boletim_noticia' | 'boletim_juridico' | 'recomendacao';
 
@@ -103,6 +107,8 @@ export default function NovidadesRadarOverlay() {
   const [items, setItems] = useState<OverlayItem[]>([]);
   const [landed, setLanded] = useState(false);
   const tecladoRef = useRef<HTMLAudioElement | null>(null);
+  const [boletimAtivo, setBoletimAtivo] = useState<{ id: string; roteiro_json: any[]; youtube_url?: string; data_ref: string } | null>(null);
+  const [loadingBoletim, setLoadingBoletim] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
@@ -250,7 +256,42 @@ export default function NovidadesRadarOverlay() {
     if (tecladoRef.current) { tecladoRef.current.pause(); tecladoRef.current = null; }
   };
   const first = items[0];
-  const goTo = () => { 
+  const goTo = async () => {
+    const isBoletim = first?.origem === 'boletim_noticia' || first?.origem === 'boletim_juridico';
+
+    if (isBoletim) {
+      // Buscar roteiro completo e abrir player inline
+      setLoadingBoletim(true);
+      try {
+        const { data, error } = await supabase
+          .from('boletins_juridicos')
+          .select('id,data_ref,roteiro_json,youtube_url')
+          .eq('id', first.id)
+          .single();
+        if (error || !data) throw error || new Error('Boletim não encontrado');
+        markSeen();
+        // Stop keyboard sound
+        if (tecladoRef.current) { tecladoRef.current.pause(); tecladoRef.current = null; }
+        setBoletimAtivo({
+          id: data.id,
+          roteiro_json: (data as any).roteiro_json || [],
+          youtube_url: (data as any).youtube_url || undefined,
+          data_ref: (data as any).data_ref,
+        });
+      } catch (e: any) {
+        console.error('Erro ao carregar boletim:', e);
+        toast.error('Não foi possível carregar o boletim');
+        // Fallback: navegar normalmente
+        markSeen();
+        setOpen(false);
+        setLanded(false);
+        if (first?.url) navigate(first.url);
+      } finally {
+        setLoadingBoletim(false);
+      }
+      return;
+    }
+
     markSeen(); 
     setOpen(false); 
     setLanded(false); 
@@ -293,10 +334,11 @@ export default function NovidadesRadarOverlay() {
 
   const typed = useTypewriter(speech, open && landed);
 
-  if (!open || items.length === 0) return null;
+  if (!open && !boletimAtivo) return null;
 
-  return (
+  return (<>
     <AnimatePresence>
+      {open && items.length > 0 && (
       <motion.div
         key="backdrop"
         initial={{ opacity: 0 }}
@@ -460,16 +502,56 @@ export default function NovidadesRadarOverlay() {
                 </button>
                 <button
                   onClick={goTo}
-                  className="flex-1 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/30 hover:brightness-110 transition"
+                  disabled={loadingBoletim}
+                  className={`flex-1 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/30 hover:brightness-110 transition disabled:opacity-70 ${
+                    (first?.origem === 'boletim_noticia' || first?.origem === 'boletim_juridico') ? 'btn-attention-shine-loop' : ''
+                  }`}
                 >
-                  {first?.origem === 'boletim_noticia' || first?.origem === 'boletim_juridico' ? 'Ouvir agora' : 'Ver agora'}
-                  {first?.origem === 'boletim_noticia' || first?.origem === 'boletim_juridico' ? <Play className="w-4 h-4 fill-current" /> : <ArrowRight className="w-4 h-4" />}
+                  {loadingBoletim ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : first?.origem === 'boletim_noticia' || first?.origem === 'boletim_juridico' ? (
+                    <><span className="relative z-[2]">Ouvir agora</span><Play className="w-4 h-4 fill-current relative z-[2]" /></>
+                  ) : (
+                    <><span>Ver agora</span><ArrowRight className="w-4 h-4" /></>
+                  )}
                 </button>
               </div>
             </div>
           </motion.div>
         </div>
       </motion.div>
+      )}
     </AnimatePresence>
-  );
+
+    {/* BoletimPlayer inline — abre sobre o overlay sem navegar */}
+    <AnimatePresence>
+      {boletimAtivo && (
+        <motion.div
+          key="boletim-player-overlay"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[90]"
+        >
+          <Suspense fallback={
+            <div className="fixed inset-0 z-[90] bg-black flex items-center justify-center">
+              <Loader2 className="w-10 h-10 text-primary animate-spin" />
+            </div>
+          }>
+            <BoletimPlayer
+              boletimId={boletimAtivo.id}
+              scenes={boletimAtivo.roteiro_json}
+              youtubeUrl={boletimAtivo.youtube_url}
+              dataRef={boletimAtivo.data_ref}
+              onClose={() => {
+                setBoletimAtivo(null);
+                setOpen(false);
+                setLanded(false);
+              }}
+            />
+          </Suspense>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  </>);
 }
