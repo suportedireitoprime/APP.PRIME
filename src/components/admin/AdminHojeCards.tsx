@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { Radio, UserPlus, Sparkles, Loader2, Mail, BarChart3, ChevronRight, Crown, Zap, DollarSign } from 'lucide-react';
 import { SiGoogle, SiApple } from 'react-icons/si';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
@@ -24,6 +24,7 @@ interface Row {
   funcaoPreferida?: string | null;
   planValue?: number;
   planTag?: { plano: string, status: string, expires_at: string | null };
+  googleId?: string | null;
 }
 
 const ProviderTag = ({ provider }: { provider?: string | null }) => {
@@ -135,6 +136,7 @@ export function AdminHojeCards() {
   const [provOpen, setProvOpen] = useState<string | null>(null);
   const [provRows, setProvRows] = useState<Row[]>([]);
   const [provLoading, setProvLoading] = useState(false);
+  const rowsCache = useRef<Record<string, Row[]>>({});
 
 
   const abrirProvider = useCallback(
@@ -233,21 +235,24 @@ export function AdminHojeCards() {
             const sub = map.get(uid);
             if (sub) {
               if (sub.product_id?.includes('mensal')) {
-                totalTrialValor += 39.90;
+                totalTrialValor += 29.90;
               } else {
-                totalTrialValor += 297;
+                totalTrialValor += 199.90;
               }
             } else {
-              totalTrialValor += 297;
+              totalTrialValor += 199.90;
             }
           });
         } else {
-          totalTrialValor += (allTrialUsers.size * 297);
+          totalTrialValor += (allTrialUsers.size * 199.90);
         }
       } catch (err) {
-        totalTrialValor += (allTrialUsers.size * 297);
+        totalTrialValor += (allTrialUsers.size * 199.90);
       }
     }
+
+    // Ensure paywall is at least equal to trial, since they must have viewed plans to start a trial
+    totalPaywall = Math.max(totalPaywall, totalTrial);
 
     // online and online5m only make sense for 'hoje' conceptually, but we sum them if it's multiple days? 
     // Actually, distinct users online over 7 days is hard to calculate without a distinct query.
@@ -287,11 +292,15 @@ export function AdminHojeCards() {
   }, [load, periodo]);
 
   const fetchRows = useCallback(async (id: CardId, date: Date) => {
-    // If period is not 'hoje' or 'ontem', we'd need to fetch multiple days for the list as well.
-    // To keep it simple, if they open the card, we fetch the first day of the period, OR we fetch all days.
-    // Let's fetch all days if possible.
-    setLoading(true);
-    setRows([]);
+    // If we have cached rows for this id and period is 'hoje', show them instantly
+    if (rowsCache.current[id] && periodo === 'hoje') {
+      setRows(rowsCache.current[id]);
+      setLoading(false); // don't show spinner if we have cached data
+    } else {
+      setLoading(true);
+      setRows([]);
+    }
+    
     try {
       const datas = getDatasPeriodo(periodo);
       const listPromises = datas.map(d => supabase.rpc('admin_lista_dia' as any, { _tipo: id, _dia: isoDate(d) }));
@@ -347,10 +356,11 @@ export function AdminHojeCards() {
                   expiresStr = `${dia}/${mes}/${ano} ${h}:${m}`;
                 }
                 
-                r.planValue = isMensal ? 39.90 : 297;
+                r.planValue = isMensal ? 29.90 : 199.90;
                 r.planTag = { plano, status, expires_at: expiresStr };
+                r.googleId = sub.linked_purchase_token || sub.purchase_token || sub.order_id;
               } else {
-                r.planValue = 297;
+                r.planValue = 199.90;
                 r.planTag = { plano: 'Anual', status: 'Ativo', expires_at: null };
               }
             });
@@ -394,11 +404,17 @@ export function AdminHojeCards() {
           });
         }
 
-        setRows((current) => current.map((r) => ({ 
-          ...r, 
-          provider: map.get(r.userId || r.key) || r.provider,
-          funcaoPreferida: mapFav.get(r.userId || r.key)
-        })));
+        setRows((current) => {
+          const updated = current.map((r) => ({ 
+            ...r, 
+            provider: map.get(r.userId || r.key) || r.provider,
+            funcaoPreferida: mapFav.get(r.userId || r.key)
+          }));
+          if (periodo === 'hoje') rowsCache.current[id] = updated;
+          return updated;
+        });
+      } else {
+        if (periodo === 'hoje') rowsCache.current[id] = list;
       }
     } finally {
       setLoading(false);
@@ -636,7 +652,14 @@ export function AdminHojeCards() {
                       </div>
                     </div>
                     <ProviderTag provider={r.provider} />
-                    <div className="font-body text-[11px] text-muted-foreground shrink-0">{r.meta}</div>
+                    <div className="font-body text-[11px] text-muted-foreground shrink-0 text-right">
+                      {r.meta}
+                      {r.googleId && (
+                        <div className="text-[9px] opacity-70 mt-1 uppercase" title="Google Subscription ID / Token">
+                          {r.googleId.slice(0, 15)}...
+                        </div>
+                      )}
+                    </div>
                   </button>
                 ))}
 
@@ -800,6 +823,7 @@ export function AdminHojeCards() {
         nome={dossie?.title}
         email={dossie?.email}
         provider={dossie?.provider}
+        avatarUrl={dossie?.avatarUrl}
         onClose={() => setDossie(null)}
       />
     </>

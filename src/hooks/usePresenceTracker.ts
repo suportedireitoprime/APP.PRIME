@@ -32,7 +32,15 @@ export function usePresenceTracker() {
       current_route: location.pathname,
       online_at: new Date().toISOString(),
     });
+    // Log page view historically so we can calculate screen time accurately
+    supabase.from('app_events').insert({
+      user_id: user.id,
+      email: user.email ?? '',
+      event_name: 'page_view',
+      metadata: { route: location.pathname }
+    }).then(() => {});
   }, [location.pathname, user]);
+
 
   // Connect channel once per user session
   useEffect(() => {

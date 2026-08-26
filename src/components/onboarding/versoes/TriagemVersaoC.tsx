@@ -678,21 +678,13 @@ function CardContent({
           <div className="flex-1" />
           <div className="flex gap-2 shrink-0">
             <button
-              onClick={() => advance({ whatsapp: null })}
-              className="flex-1 h-14 rounded-2xl bg-white/[0.07] border border-white/20 font-bold active:scale-95"
-            >
-              Pular
-            </button>
-            <button
+              disabled={!data.whatsapp || data.whatsapp.replace(/\D/g, '').length < 10}
               onClick={() =>
                 advance({
-                  whatsapp:
-                    data.whatsapp && data.whatsapp.replace(/\D/g, '').length >= 10
-                      ? data.whatsapp
-                      : null,
+                  whatsapp: data.whatsapp!
                 })
               }
-              className="flex-1 h-14 rounded-2xl bg-[#C94C4C] text-[#150C05] font-bold flex items-center justify-center gap-2 active:scale-95"
+              className="w-full h-14 rounded-2xl bg-[#C94C4C] text-[#150C05] font-bold flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50 disabled:scale-100"
             >
               Finalizar <ArrowRight className="w-5 h-5" />
             </button>

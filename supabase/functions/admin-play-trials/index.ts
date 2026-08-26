@@ -46,10 +46,9 @@ serve(async (req) => {
       return new Response(JSON.stringify([]), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
     }
 
-    // Fetch subscriptions
     const { data: subs, error } = await adminClient
       .from('play_subscriptions')
-      .select('user_id, product_id, base_plan_id, expires_at, status')
+      .select('user_id, product_id, base_plan_id, expires_at, status, linked_purchase_token, purchase_token, order_id')
       .in('user_id', user_ids)
 
     if (error) throw error

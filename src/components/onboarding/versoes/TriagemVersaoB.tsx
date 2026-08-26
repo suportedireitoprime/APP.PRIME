@@ -421,12 +421,6 @@ function WaDock({
           <ArrowRight className="w-5 h-5" />
         </button>
       </div>
-      <button
-        onClick={() => onSubmit('')}
-        className="w-full h-10 rounded-2xl bg-transparent border border-white/15 text-white/70 text-sm font-semibold"
-      >
-        Pular
-      </button>
     </div>
   );
 }

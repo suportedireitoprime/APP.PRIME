@@ -530,16 +530,6 @@ function WhatsappStep({
       >
         Finalizar <ArrowRight className="w-5 h-5" strokeWidth={2.5} />
       </motion.button>
-      <motion.button
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => onContinue('')}
-        className="w-full h-12 rounded-full bg-transparent border border-white/20 text-white/70 font-semibold hover:bg-white/5 transition-colors"
-      >
-        Pular (Não quero receber novidades)
-      </motion.button>
     </motion.div>
   );
 }

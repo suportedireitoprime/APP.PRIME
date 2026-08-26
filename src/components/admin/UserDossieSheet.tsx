@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   Loader2, Clock, Activity, Flame, Star, Calendar, Crown, Phone, Mail,
-  GraduationCap, LayoutGrid, MessageCircle, MapPin, Trash2, X, Ban, ShieldAlert,
+  GraduationCap, LayoutGrid, MessageCircle, MapPin, Trash2, X, Ban, ShieldAlert, User
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { supabase } from '@/integrations/supabase/client';
@@ -14,6 +14,7 @@ interface Props {
   nome?: string | null;
   email?: string | null;
   provider?: string | null;
+  avatarUrl?: string | null;
   onClose: () => void;
 }
 
@@ -56,7 +57,7 @@ const hora = (v?: string | null) =>
   v ? new Date(v).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '—';
 const dia = (v?: string | null) => (v ? new Date(v).toLocaleDateString('pt-BR') : '—');
 
-export function UserDossieSheet({ userId, nome, email, provider, onClose }: Props) {
+export function UserDossieSheet({ userId, nome, email, provider, avatarUrl, onClose }: Props) {
   const [loading, setLoading] = useState(false);
   const [d, setD] = useState<Dossie | null>(null);
   const [confirmar, setConfirmar] = useState<null | 'menu' | 'ban' | 'delete'>(null);
@@ -97,10 +98,10 @@ export function UserDossieSheet({ userId, nome, email, provider, onClose }: Prop
 
       const [perfilR, logR, sessR, featR, evR, favR, grifR, anotR, assR, horusR, horusStatsR] = await Promise.all([
         supabase.from('profiles' as any).select('*').eq('id', userId).maybeSingle(),
-        supabase.from('user_activity_log' as any)
-          .select('current_route, last_seen_at')
-          .eq('user_id', userId).gte('last_seen_at', desde30)
-          .order('last_seen_at', { ascending: true }).limit(2000),
+        supabase.from('app_events' as any)
+          .select('metadata, created_at')
+          .eq('user_id', userId).eq('event_name', 'page_view').gte('created_at', desde30)
+          .order('created_at', { ascending: true }).limit(2000),
         supabase.from('user_sessions' as any)
           .select('started_at, platform, initial_route, pais, uf, cidade, timezone, locale')
           .eq('user_id', userId).gte('started_at', desde30)
@@ -135,25 +136,31 @@ export function UserDossieSheet({ userId, nome, email, provider, onClose }: Prop
       let ultimaHoje: string | null = null;
 
       logs.forEach((row, i) => {
-        const { label, grupo } = rotaParaFuncao(row.current_route);
-        const t = new Date(row.last_seen_at).getTime();
-        const next = logs[i + 1] ? new Date(logs[i + 1].last_seen_at).getTime() : t;
+        const route = (row.metadata as any)?.route || '/';
+        const { label, grupo } = rotaParaFuncao(route);
+        const t = new Date(row.created_at).getTime();
+        const next = logs[i + 1] ? new Date(logs[i + 1].created_at).getTime() : t;
         const delta = Math.min(Math.max(next - t, 0), GAP_MAX) / 1000;
-        const cur = byFunc.get(label) || { label, grupo, hits: 0, segundos: 0, ultimaVez: row.last_seen_at };
+        const cur = byFunc.get(label) || { label, grupo, hits: 0, segundos: 0, ultimaVez: row.created_at };
         cur.hits += 1;
         cur.segundos += delta;
-        cur.ultimaVez = row.last_seen_at;
+        cur.ultimaVez = row.created_at;
         byFunc.set(label, cur);
         totalSegundos += delta;
-        if (row.last_seen_at >= desdeHoje) {
+        if (row.created_at >= desdeHoje) {
           hitsHoje += 1;
           segundosHoje += delta;
-          if (!primeiraHoje) primeiraHoje = row.last_seen_at;
-          ultimaHoje = row.last_seen_at;
         }
       });
 
       const sessoes = ((sessR.data as any[]) || []);
+      const sessoesDeHoje = sessoes.filter((s) => s.started_at >= desdeHoje);
+      
+      if (sessoesDeHoje.length > 0) {
+        primeiraHoje = sessoesDeHoje[sessoesDeHoje.length - 1].started_at; // last in array is first in time
+        ultimaHoje = sessoesDeHoje[0].started_at; // first in array is most recent
+      }
+
       const countBy = (arr: any[], key: string) => {
         const m = new Map<string, number>();
         arr.forEach((r) => m.set(r[key], (m.get(r[key]) || 0) + 1));
@@ -233,13 +240,26 @@ export function UserDossieSheet({ userId, nome, email, provider, onClose }: Prop
       >
         <SheetHeader className="px-4 pt-6 pb-4 border-b border-border/50 text-left sticky top-0 bg-background z-10">
           <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0 flex-1">
-              <SheetTitle className="font-display text-xl font-bold text-foreground truncate">
-                {nome || email || 'Usuário'}
-              </SheetTitle>
-              <p className="font-body text-[14px] text-muted-foreground mt-1 truncate">
-                {email || '—'} {provider ? `· ${provider}` : ''}
-              </p>
+            <div className="flex items-center gap-3 min-w-0 flex-1">
+              {avatarUrl ? (
+                <img 
+                  src={avatarUrl} 
+                  alt="Avatar" 
+                  className="w-12 h-12 rounded-full border border-border object-cover shrink-0" 
+                />
+              ) : (
+                <div className="w-12 h-12 rounded-full border border-border bg-secondary/50 flex items-center justify-center shrink-0 text-muted-foreground">
+                  <User className="w-6 h-6" />
+                </div>
+              )}
+              <div className="min-w-0 flex-1">
+                <SheetTitle className="font-display text-xl font-bold text-foreground truncate">
+                  {nome || email || 'Usuário'}
+                </SheetTitle>
+                <p className="font-body text-[14px] text-muted-foreground mt-1 truncate">
+                  {email || '—'} {provider ? `· ${provider}` : ''}
+                </p>
+              </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <button
