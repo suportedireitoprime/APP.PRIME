@@ -143,6 +143,7 @@ const CATEGORIES: Category[] = [
     route: '/admin-instagram-posts',
     items: [
       { id: 'instagram-posts', label: 'Instagram Posts', icon: ImageIcon, desc: 'Gerar carrosséis com IA no padrão Vade Mecum', route: '/admin-instagram-posts' },
+      { id: 'ranking-funcoes', label: 'Ranking de Funções', icon: Activity, desc: 'Funções e subfunções mais acessadas pelos usuários', route: '/admin-ranking-funcoes' },
     ],
   },
   {

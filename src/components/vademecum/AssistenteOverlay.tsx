@@ -258,6 +258,13 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
   const sendMessage = async () => {
     const text = input.trim();
     if ((!text && !attachment) || loading) return;
+    
+    // Bloqueio fixo para não assinantes (conforme solicitado pelo usuário)
+    if (!podeUsarPremium) {
+      setGateFeature('chat_juridico');
+      return;
+    }
+    
     if (!chatLimit.canUse) { setGateFeature('chat_juridico'); return; }
     chatLimit.register();
 

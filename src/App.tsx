@@ -287,6 +287,7 @@ import BibliotecaTrilhas from "./pages/BibliotecaTrilhas.tsx";
 
 const CompressaoImagens = lazy(() => import("./pages/CompressaoImagens.tsx"));
 const AdminFuncoesAssinantes = lazy(() => import("./pages/AdminFuncoesAssinantes.tsx"));
+const AdminRankingFuncoes = lazy(() => import("./pages/AdminRankingFuncoes.tsx"));
 const AdminInstagramPosts = lazy(() => import("./pages/AdminInstagramPosts.tsx"));
 const AdminVadeMecum = lazy(() => import("./pages/AdminVadeMecum.tsx"));
 const AdminLembretes = lazy(() => import("./pages/AdminLembretes.tsx"));
@@ -995,6 +996,7 @@ function AnimatedRoutes() {
           <Route path="/admin-instagram-posts" element={<ProtectedRoute><PageTransition><AdminInstagramPosts /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-avaliacao-loja" element={<ProtectedRoute><PageTransition><AdminAvaliacaoLoja /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-funcoes-assinantes" element={<ProtectedRoute><PageTransition><AdminFuncoesAssinantes /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin-ranking-funcoes" element={<ProtectedRoute><PageTransition><AdminRankingFuncoes /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-vade-mecum" element={<ProtectedRoute><PageTransition><AdminVadeMecum /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-vade-mecum-historico" element={<ProtectedRoute><PageTransition><AdminVadeMecumHistorico /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-lembretes" element={<ProtectedRoute><PageTransition><AdminLembretes /></PageTransition></ProtectedRoute>} />
