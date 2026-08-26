@@ -6,7 +6,6 @@ import { getNoticiasCache, prefetchNoticias, subscribeNoticias, type Noticia } f
 import { newsImg, cdnImg } from '@/lib/cdnImg';
 import NoticiaViewerSheet from '@/components/vademecum/NoticiaViewerSheet';
 import BlogPostSheet from '@/components/vademecum/BlogPostSheet';
-import ObraDetailSheet, { type Obra } from '@/components/tematica/ObraDetailSheet';
 import LivroDetailSheet from '@/components/biblioteca/LivroDetailSheet';
 import { findColecao, normalizeLivro, type LivroNormalizado } from '@/lib/bibliotecaColecoes';
 import { BLOG_POSTS, TEMA_COLORS, type BlogPost } from '@/data/blogPosts';
@@ -23,7 +22,6 @@ type Livro = any;
 type FeedItem =
   | { kind: 'noticia'; id: string; data: Noticia }
   | { kind: 'blog'; id: string; data: BlogPost }
-  | { kind: 'obra'; id: string; data: Obra }
   | { kind: 'livro'; id: string; data: Livro };
 
 function formatTime(dateStr: string) {
@@ -37,29 +35,6 @@ function formatTime(dateStr: string) {
   const months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
   return `${day} ${months[d.getMonth()]} · ${hh}:${mm}`;
 }
-
-function tipoLabel(o: Obra): string {
-  if ((o.categorias_juridicas ?? []).includes('Documentário')) return 'Documentário';
-  return o.tipo === 'tv' ? 'Série' : 'Filme';
-}
-
-// Paleta por categoria — combina com o tema Wine/Ivory do app.
-// Filme → wine/bordô (primary do app). Série → índigo profundo. Documentário → verde-musgo.
-const OBRA_PALETTE: Record<string, { deep: string; mid: string; chipBg: string; chipText: string }> = {
-  Filme:         { deep: '#2a0a12', mid: '#4a1524', chipBg: '#e01f47', chipText: '#fff5f7' },
-  Série:         { deep: '#0d1230', mid: '#1e2757', chipBg: '#6366f1', chipText: '#f0f2ff' },
-  Documentário:  { deep: '#0f1f14', mid: '#1e3a26', chipBg: '#10b981', chipText: '#ecfdf5' },
-};
-
-// Padrão do carrossel (um ciclo = 2 blogs + 1 livro + 1 notícia + 1 filme):
-//   2 blogs → 1 livro clássico → 1 notícia → 1 obra (filme) → repete.
-// Filas garantem que nada repita antes de esgotar cada fonte.
-const CYCLE: Array<'blog' | 'noticia' | 'obra' | 'livro'> = [
-  'blog', 'blog',
-  'livro',
-  'noticia',
-  'obra',
-];
 
 
 function shuffle<T>(arr: T[]): T[] {
@@ -83,12 +58,10 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
   const autoplayRef = useRef<number | null>(null);
   const userInteractingRef = useRef(false);
   const [noticias, setNoticias] = useState<Noticia[]>(() => (getNoticiasCache() ?? []).slice(0, MAX_NEWS));
-  const [obras, setObras] = useState<Obra[]>([]);
   const [livros, setLivros] = useState<Livro[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedNoticia, setSelectedNoticia] = useState<Noticia | null>(null);
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
-  const [selectedObra, setSelectedObra] = useState<Obra | null>(null);
   const [selectedLivro, setSelectedLivro] = useState<LivroNormalizado | null>(null);
 
   const [feed, setFeed] = useState<FeedItem[]>([]);
@@ -101,14 +74,6 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
       let loadedNoticias = getNoticiasCache() ?? [];
 
       // Promessas paralelas para carregamento rápido
-      const obrasP = supabase
-        .from('tematica_juridica_obras')
-        .select('*')
-        .eq('ativo', true)
-        .order('destaque', { ascending: false })
-        .limit(30)
-        .then(res => (res.data as unknown as Obra[]) || []);
-
       const livrosP = supabase
         .from('biblioteca_classicos')
         .select('id, livro, autor, area, imagem, sobre, link, download, capa_horizontal, ano_lancamento, editora, curiosidades, analise_detalhada, audio_resumo_url, paginas, minutos_leitura')
@@ -116,7 +81,7 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
         .limit(30)
         .then(res => (res.data as unknown as Livro[]) || []);
 
-      const [loadedObras, loadedLivros] = await Promise.all([obrasP, livrosP]);
+      const [loadedLivros] = await Promise.all([livrosP]);
 
       if (!mounted) return;
 
@@ -126,7 +91,6 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
         return shuffle(arr).slice(0, count).map(x => ({ kind, id: `${kind}-${x.id}-${Math.random()}`, data: x } as FeedItem));
       };
 
-      pool.push(...pick(loadedObras, 'obra', 2));
       pool.push(...pick(loadedLivros, 'livro', 2));
       pool.push(...pick(loadedNoticias, 'noticia', 2));
       pool.push(...pick(BLOG_POSTS, 'blog', 2));
@@ -141,7 +105,6 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
       setFeed(shuffle(pool).slice(0, 8));
       
       // Salva no estado para uso (caso alguém precise ler os raw arrays)
-      setObras(loadedObras);
       setLivros(loadedLivros);
       setNoticias(loadedNoticias);
     }
@@ -160,12 +123,12 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
   const activeItem = items[activeIndex];
 
   useEffect(() => {
-    const hasOpen = !!selectedNoticia || !!selectedPost || !!selectedObra || !!selectedLivro;
+    const hasOpen = !!selectedNoticia || !!selectedPost || !!selectedLivro;
     onOpenChange?.(hasOpen);
     if (!hasOpen) {
       resetBodyScrollLock();
     }
-  }, [selectedNoticia, selectedPost, selectedObra, selectedLivro, onOpenChange]);
+  }, [selectedNoticia, selectedPost, selectedLivro, onOpenChange]);
 
 
   const scrollToIndex = useCallback((idx: number, behavior: ScrollBehavior = 'smooth') => {
@@ -257,7 +220,6 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
       };
       setSelectedLivro(normalized);
     }
-    else setSelectedObra(item.data);
   };
 
 
@@ -275,16 +237,12 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
   const headerTitle =
     kind === 'blog'
       ? 'Blogger Jurídico'
-      : kind === 'obra'
-      ? 'Temática Jurídica'
       : kind === 'livro'
       ? 'Recomendação de Livro'
       : 'Notícias Jurídicas';
   const headerSubtitle =
     kind === 'blog'
       ? 'artigos, filosofia e curiosidades do Direito'
-      : kind === 'obra'
-      ? 'filmes, séries e documentários para juristas'
       : kind === 'livro'
       ? 'clássicos e obras do Direito'
       : 'notícias do mundo jurídico em tempo real';
@@ -414,86 +372,6 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
             );
           }
 
-          // OBRA — poster vertical à esquerda + fundo com poster borrado (paleta natural)
-          if (item.kind === 'obra') {
-            const o = item.data;
-            const poster = o.poster_url;
-            const bg = o.backdrop_url || poster;
-            const label = tipoLabel(o);
-            const palette = OBRA_PALETTE[label] ?? OBRA_PALETTE.Filme;
-            const meta = [o.ano, o.nota ? `★ ${o.nota.toFixed(1)}` : null].filter(Boolean).join(' · ');
-            return (
-              <motion.button
-                key={item.id}
-                onClick={() => handleOpen(item)}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: Math.min(i * 0.04, 0.2) }}
-                className="group snap-center shrink-0 w-[85%] md:w-[46%] lg:w-[31%] active:scale-[0.99] text-left cursor-pointer transition-transform duration-200 hover:-translate-y-0.5"
-              >
-
-                <div
-                  className={`relative w-full h-[140px] overflow-hidden rounded-2xl transition-all duration-300 group-hover:shadow-2xl group-hover:shadow-black/40 group-hover:ring-1 group-hover:ring-primary/40 transform-gpu will-change-transform ${
-                    isActive ? 'opacity-100 scale-100 shadow-lg' : 'opacity-60 scale-[0.94] group-hover:opacity-90'
-                  }`}
-                  style={{ backgroundColor: palette.deep }}
-                >
-
-
-                  {/* Fundo removido por performance (blur-xl degrada no WebView). 
-                      O degradê CSS com a paleta natural (abaixo) já fornece o fundo necessário. */}
-                  {/* degradê da categoria: entra da direita para a esquerda,
-                      conversando com o poster (que fica à esquerda) */}
-                  <div
-                    className="absolute inset-0"
-                    style={{
-                      background: `linear-gradient(to left, ${palette.deep} 42%, ${palette.mid}cc 68%, transparent 100%)`,
-                    }}
-                  />
-
-                  {/* poster vertical à esquerda */}
-                  <div className="absolute inset-y-2 left-2 w-[92px] rounded-lg overflow-hidden shadow-xl ring-1 ring-white/10">
-                    {poster ? (
-                      <img
-                        src={cdnImg(poster, 200)}
-                        alt={o.titulo}
-                        loading={i < 2 ? 'eager' : 'lazy'}
-                        fetchPriority={i < 2 ? 'high' : 'auto'}
-                        decoding="async"
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-neutral-800">
-                        <Film className="w-6 h-6 text-white/50" />
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white/15 backdrop-blur-md border border-white/25 flex items-center justify-center shadow-md">
-                    <ArrowUpRight className="w-3.5 h-3.5 text-white" strokeWidth={2.2} />
-                  </div>
-
-                  <span
-                    className="absolute top-2.5 left-[108px] text-[9.5px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider"
-                    style={{ background: palette.chipBg, color: palette.chipText }}
-                  >
-                    {label}
-                  </span>
-
-                  <div className="absolute inset-y-0 right-0 left-[108px] flex flex-col justify-end pr-4 pb-3">
-                    <div className="flex items-center gap-2 mb-1 text-[11.5px] text-white/90">
-                      {o.nota ? <Star className="w-3 h-3 fill-amber-400 text-amber-400" /> : <Clock className="w-3 h-3" />}
-                      <span className="truncate">{meta || 'Temática jurídica'}</span>
-                    </div>
-                    <p className="font-display text-white text-[15px] font-normal leading-snug line-clamp-2 drop-shadow-sm">
-                      {o.titulo}
-                    </p>
-                  </div>
-                </div>
-              </motion.button>
-            );
-          }
-
           const isB = item.kind === 'blog';
           const c = isB ? TEMA_COLORS[(item.data as BlogPost).tema] : null;
           const rawImg = isB
@@ -580,7 +458,6 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
 
       <NoticiaViewerSheet noticia={selectedNoticia} onClose={() => setSelectedNoticia(null)} />
       <BlogPostSheet post={selectedPost} onClose={() => setSelectedPost(null)} />
-      <ObraDetailSheet obra={selectedObra} open={!!selectedObra} onClose={() => setSelectedObra(null)} />
       <LivroDetailSheet livro={selectedLivro} open={!!selectedLivro} onClose={() => setSelectedLivro(null)} />
     </div>
   );
