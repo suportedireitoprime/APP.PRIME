@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, Plus, Trash2, Loader2, Search, Navigation2, Map as MapIcon, Clock, Info, ChevronRight } from 'lucide-react';
+import { MapPin, Plus, Trash2, Loader2, Search, Navigation2, Map as MapIcon, Clock, Info, ChevronRight, LocateFixed } from 'lucide-react';
+import { Geolocation } from '@capacitor/geolocation';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import LembretesBottomNav from '@/components/lembretes/LembretesBottomNav';
 import { useAuth } from '@/hooks/useAuth';
@@ -18,7 +19,6 @@ import { geocodeAddress, type GeocodeResult } from '@/lib/nativeGeocoder';
 import { openMap } from '@/lib/nativeMapsLauncher';
 import { refreshGeofenceReminders, startGeofenceWatcher } from '@/lib/nativeGeofence';
 import { MapaLembrete } from '@/components/mapa/MapaLembrete';
-import { GeofenceStatusCard } from '@/components/lembretes/GeofenceStatusCard';
 
 interface LocReminder {
   id: string;
@@ -69,12 +69,34 @@ export default function LembretesLocal() {
   useEffect(() => { load(); }, [load]);
 
   const doSearch = async () => {
-    if (addressQ.trim().length < 3) return;
+    if (!addressQ.trim()) return;
     setSearching(true);
-    const r = await geocodeAddress(addressQ, 5);
-    setHits(r);
+    setHits([]);
+    try {
+      const res = await geocodeAddress(addressQ);
+      setHits(res);
+      if (res.length === 0) toast('Nenhum endereço encontrado.');
+    } catch (e) {
+      toast.error('Erro ao buscar endereço.');
+    }
     setSearching(false);
-    if (!r.length) toast.error('Nenhum endereço encontrado.');
+  };
+
+  const useMyLocation = async () => {
+    setSearching(true);
+    try {
+      const pos = await Geolocation.getCurrentPosition();
+      setSelected({
+        displayName: 'Minha Localização',
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude,
+      });
+      setAddressQ('Minha Localização');
+    } catch (err) {
+      toast.error('Não foi possível obter a localização atual.');
+    } finally {
+      setSearching(false);
+    }
   };
 
   const resetForm = () => {
@@ -129,8 +151,6 @@ export default function LembretesLocal() {
           No app instalado, o aviso chega mesmo com o app fechado.
         </p>
 
-        <GeofenceStatusCard />
-
         <Button className="w-full mb-6 lg:w-auto lg:px-8" onClick={() => setDrawerOpen(true)}>
           <Plus className="mr-2 h-4 w-4" /> Novo lembrete
         </Button>
@@ -178,28 +198,48 @@ export default function LembretesLocal() {
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={(o) => { setDialogOpen(o); if (!o) resetForm(); }}>
-        <DialogContent className="max-w-md max-h-[90dvh] overflow-y-auto">
-          <DialogHeader><DialogTitle>Novo lembrete por local</DialogTitle></DialogHeader>
-          <div className="space-y-4">
+        <DialogContent className="max-w-md max-h-[90dvh] overflow-y-auto sm:rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold tracking-normal text-foreground">
+              Novo lembrete por local
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-5 py-2">
             <div>
-              <Label>Nome</Label>
-              <Input value={label} onChange={(e) => setLabel(e.target.value)} placeholder="Faculdade, Fórum, OAB..." />
+              <Label className="text-muted-foreground mb-1 block">Nome do Lembrete</Label>
+              <Input value={label} onChange={(e) => setLabel(e.target.value)} placeholder="Ex: Faculdade, Fórum, OAB..." className="bg-muted/30" />
             </div>
-            <div>
-              <Label>Endereço</Label>
-              <div className="flex gap-2">
-                <Input
-                  value={addressQ}
-                  onChange={(e) => setAddressQ(e.target.value)}
-                  placeholder="Ex: Fórum Rui Barbosa, Recife"
-                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); doSearch(); } }}
-                />
-                <Button type="button" size="icon" onClick={doSearch} disabled={searching}>
-                  {searching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+            
+            <div className="rounded-xl border border-border p-4 bg-muted/10 space-y-4">
+              <div>
+                <Label className="text-muted-foreground mb-1 block">Endereço ou Local</Label>
+                <div className="flex gap-2">
+                  <Input
+                    value={addressQ}
+                    onChange={(e) => setAddressQ(e.target.value)}
+                    placeholder="Digite o endereço..."
+                    onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); doSearch(); } }}
+                  />
+                  <Button type="button" size="icon" variant="secondary" onClick={doSearch} disabled={searching}>
+                    {searching && !addressQ.includes('Minha') ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+                  </Button>
+                </div>
+                
+                <Button 
+                  type="button" 
+                  variant="ghost" 
+                  size="sm" 
+                  className="mt-2 text-primary hover:bg-primary/10 h-8 px-2"
+                  onClick={useMyLocation}
+                  disabled={searching}
+                >
+                  <LocateFixed className="w-3.5 h-3.5 mr-1.5" />
+                  Usar minha localização
                 </Button>
               </div>
+              
               {hits.length > 0 && (
-                <ul className="mt-2 max-h-40 overflow-y-auto rounded-lg border border-border divide-y divide-border">
+                <ul className="max-h-40 overflow-y-auto rounded-lg border border-border divide-y divide-border bg-background shadow-sm">
                   {hits.map((h, i) => (
                     <li key={i}>
                       <button
@@ -214,27 +254,30 @@ export default function LembretesLocal() {
                 </ul>
               )}
               {selected && (
-                <>
-                  <p className="mt-2 text-xs text-muted-foreground">
-                    📍 {selected.lat.toFixed(4)}, {selected.lng.toFixed(4)}
+                <div className="mt-2">
+                  <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
+                    <MapPin className="w-3 h-3 text-primary" />
+                    {selected.lat.toFixed(4)}, {selected.lng.toFixed(4)}
                   </p>
                   <MapaLembrete
-                    className="mt-3"
+                    className="rounded-xl overflow-hidden border border-border"
                     destino={{ lat: selected.lat, lng: selected.lng }}
                     label={label || selected.displayName}
                     raioM={radius}
                   />
-                </>
+                </div>
               )}
             </div>
+
             <div>
-              <Label>Raio (metros)</Label>
-              <div className="mt-2 flex flex-wrap gap-2">
+              <Label className="text-muted-foreground mb-1 block">Área de disparo (Raio em metros)</Label>
+              <div className="flex flex-wrap gap-2">
                 {RADII.map((r) => (
                   <Button
                     key={r}
                     type="button"
                     size="sm"
+                    className="rounded-full"
                     variant={radius === r ? 'default' : 'outline'}
                     onClick={() => setRadius(r)}
                   >
@@ -243,18 +286,21 @@ export default function LembretesLocal() {
                 ))}
               </div>
             </div>
+
             <div>
-              <Label>Mensagem do lembrete</Label>
+              <Label className="text-muted-foreground mb-1 block">Mensagem da Notificação</Label>
               <Textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="Ex: Revisar apostila de constitucional antes da aula"
+                placeholder="Ex: Revisar apostila de constitucional..."
                 rows={3}
+                className="bg-muted/30 resize-none"
               />
             </div>
-            <Button className="w-full" onClick={save} disabled={saving}>
-              {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-              Criar lembrete
+            
+            <Button className="w-full mt-2 rounded-xl h-11 text-base font-semibold" onClick={save} disabled={saving}>
+              {saving ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : null}
+              Salvar Lembrete
             </Button>
           </div>
         </DialogContent>

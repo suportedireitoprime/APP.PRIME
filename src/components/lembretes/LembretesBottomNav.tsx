@@ -9,16 +9,20 @@ type Tab = {
   to: string;
   icon: typeof BellRing;
   match: (path: string) => boolean;
+  color: string;
+  bg: string;
 };
 
 const TABS: Tab[] = [
-  { id: 'tudo', label: 'Tudo', to: '/lembretes', icon: LayoutGrid, match: (p) => p === '/lembretes' },
+  { id: 'tudo', label: 'Tudo', to: '/lembretes', icon: LayoutGrid, match: (p) => p === '/lembretes', color: 'text-zinc-200', bg: 'bg-zinc-800/50' },
   {
     id: 'meus',
     label: 'Meus',
     to: '/lembretes/meus',
     icon: BellRing,
     match: (p) => p.startsWith('/lembretes/meus'),
+    color: 'text-indigo-400',
+    bg: 'bg-indigo-500/15'
   },
   {
     id: 'leitura',
@@ -26,6 +30,8 @@ const TABS: Tab[] = [
     to: '/lembretes/leitura',
     icon: BookOpen,
     match: (p) => p.startsWith('/lembretes/leitura'),
+    color: 'text-emerald-400',
+    bg: 'bg-emerald-500/15'
   },
   {
     id: 'videoaulas',
@@ -33,6 +39,8 @@ const TABS: Tab[] = [
     to: '/lembretes/videoaulas',
     icon: Video,
     match: (p) => p.startsWith('/lembretes/videoaulas'),
+    color: 'text-orange-400',
+    bg: 'bg-orange-500/15'
   },
   {
     id: 'resumos',
@@ -40,13 +48,8 @@ const TABS: Tab[] = [
     to: '/lembretes/resumos',
     icon: NotebookText,
     match: (p) => p.startsWith('/lembretes/resumos'),
-  },
-  {
-    id: 'questoes',
-    label: 'Questões',
-    to: '/lembretes/questoes',
-    icon: ListChecks,
-    match: (p) => p.startsWith('/lembretes/questoes'),
+    color: 'text-sky-400',
+    bg: 'bg-sky-500/15'
   },
 ];
 
@@ -63,7 +66,7 @@ const LembretesBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
       className="fixed bottom-0 left-0 right-0 z-50 md:bottom-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-auto"
     >
       <div className="bg-card/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-lg shadow-black/10 pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] md:border md:rounded-full md:shadow-2xl md:shadow-black/30 md:pb-0">
-        <div className="grid grid-cols-6 items-end px-1 pt-3 pb-3 max-w-lg mx-auto md:gap-1 md:px-3 md:py-2">
+        <div className="grid grid-cols-5 items-end px-1 pt-3 pb-3 max-w-lg mx-auto md:gap-1 md:px-3 md:py-2">
           {TABS.map((tab) => {
             const active = tab.match(pathname);
             const Icon = tab.icon;
@@ -75,7 +78,7 @@ const LembretesBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
                   if (!active) navigate(tab.to);
                 }}
                 className={`relative flex flex-col items-center justify-end gap-1 py-1.5 px-0.5 rounded-2xl transition-colors ${
-                  active ? 'text-foreground' : 'text-muted-foreground'
+                  active ? tab.color : 'text-zinc-500'
                 }`}
                 aria-label={tab.label}
                 aria-current={active ? 'page' : undefined}
@@ -83,7 +86,7 @@ const LembretesBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
                 {active && (
                   <motion.span
                     layoutId="lembretes-nav-active-pill"
-                    className="absolute inset-0 rounded-2xl bg-primary/15 ring-1 ring-primary/30"
+                    className={`absolute inset-0 rounded-2xl ${tab.bg} ring-1 ring-white/5`}
                     transition={{ type: 'spring', stiffness: 380, damping: 32 }}
                     aria-hidden="true"
                   />
