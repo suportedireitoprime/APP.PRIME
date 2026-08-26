@@ -7,6 +7,8 @@ import { persistedInitial, savePersisted } from "@/lib/queryPersist";
 import { Button } from "@/components/ui/button";
 import { Star, Lock, Check, Loader2, Play, Trophy, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useSubscription } from "@/hooks/useSubscription";
+import { PremiumGate } from "@/components/PremiumGate";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { getMateriaByTrilha } from "@/lib/leiSecaMaterias";
@@ -47,7 +49,9 @@ export default function LeiSecaParte() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const { user } = useAuth();
+  const { isPremium } = useSubscription();
   const [estruturando, setEstruturando] = useState(false);
+  const [premiumGateOpen, setPremiumGateOpen] = useState(false);
 
   // Hidrata cache do sessionStorage ANTES da primeira pintura — pinta header em ~0ms.
   if (slug && parte) hydrateLeiSecaFromSession(qc, slug, parte);
@@ -272,7 +276,7 @@ export default function LeiSecaParte() {
         </div>
       </section>
 
-      <div className="max-w-5xl mx-auto px-4 py-6 pb-[calc(6rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
+      <div className="max-w-5xl mx-auto px-4 py-6 pb-[calc(7.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
         {(licoesQ.isLoading || estruturando) && (
           <div className="text-center py-12 text-muted-foreground animate-fade-in">
             <Loader2 className="h-8 w-8 mx-auto mb-3 animate-spin" style={{ color: tema.solid }} />
@@ -313,7 +317,13 @@ export default function LeiSecaParte() {
                   <li key={l.id} className="animate-fade-in-up" style={{ animationDelay: `${(gi * 40) + li * 30}ms` }}>
                     <button
                       disabled={!desbloq}
-                      onClick={() => navigate(`/lei-seca/${slug}/${parte}/licao/${l.id}`)}
+                      onClick={() => {
+                        if (!isPremium) {
+                          setPremiumGateOpen(true);
+                          return;
+                        }
+                        navigate(`/lei-seca/${slug}/${parte}/licao/${l.id}`);
+                      }}
                       className={cn(
                         "w-full flex items-center gap-3 rounded-2xl border px-3 py-3 text-left transition-all duration-200 active:scale-[0.99]",
                         desbloq
@@ -389,6 +399,12 @@ export default function LeiSecaParte() {
           </div>
         )}
       </div>
+
+      <PremiumGate
+        open={premiumGateOpen}
+        onClose={() => setPremiumGateOpen(false)}
+        feature="lei_seca"
+      />
     </div>
   );
 }
