@@ -19,7 +19,7 @@ export default function AdminFunil() {
     try {
       // Carrega os dados reais de assinaturas (usando 'reporting' normal) para fazer o cruzamento
       const { data: reportData, error: reportError } = await supabase.functions.invoke('play-billing', {
-        body: { action: 'reporting' }
+        body: { fn: 'reporting' }
       });
       if (reportError) throw reportError;
       
