@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useSearchParams, Navigate } from "react-router-dom";
+import { supabase } from '@/integrations/supabase/client';
 import { motion } from "framer-motion";
 import { Capacitor } from '@capacitor/core';
 import { Zap, Check, Shield, Brain, Loader2, Smartphone, RotateCw, Monitor, Sparkles, Star, MessageCircle, Headphones, FileText, Library, Scale, Briefcase } from "lucide-react";
@@ -142,7 +143,7 @@ export default function Assinatura() {
     else window.localStorage.removeItem('assinatura_platform_override');
     setDevSheetOpen(false);
   };
-  const [tab, setTab] = useState<PlanoTab>('anual');
+  const [tab, setTab] = useState<'mensal' | 'vitalicio'>('mensal');
 
   const PRO_FEATURES = [
     { icon: Scale, text: 'Vade Mecum completo — todas as leis em vigor, sempre atualizadas' },
@@ -158,16 +159,49 @@ export default function Assinatura() {
     { icon: Zap, text: 'Sem anúncios · Suporte prioritário · Atualizações antecipadas' },
   ];
 
-  const startPurchase = (plano: PlanoTab) => {
-    track('subscription_started', { plano, metodo: nativeBilling ? 'play' : 'web', source: 'planos_page' });
+  const startPurchase = async (plano: 'mensal' | 'vitalicio') => {
+    track('subscription_started', { plano, metodo: 'web', source: 'planos_page' });
     import('@/lib/appEvents')
       .then(({ appEvents }) => {
-        appEvents.verPlano({ plano });
-        appEvents.assinaturaIniciada({ plano, metodo: nativeBilling ? 'play' : 'web' });
+        appEvents.verPlano({ plano: plano as any });
+        appEvents.assinaturaIniciada({ plano: plano as any, metodo: 'web' });
       })
       .catch(() => {});
-    // Antes de abrir a loja, mostra a linha do tempo do teste grátis.
-    setTrialSheetPlan(plano);
+      
+    if (!session) { toast.error('Faça login para assinar'); return; }
+    
+    setPlayLoading(true);
+    try {
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      const token = currentSession?.access_token;
+      
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/asaas-checkout`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ 
+          plan: plano, 
+          name: session.user.user_metadata?.full_name || '', 
+          email: session.user.email 
+        })
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Falha ao gerar cobrança');
+      
+      if (json.invoiceUrl) {
+         import('@capacitor/browser').then(({ Browser }) => {
+             Browser.open({ url: json.invoiceUrl });
+         });
+         toast.success('Página de pagamento aberta com sucesso!');
+      }
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || 'Erro ao iniciar checkout');
+    } finally {
+      setPlayLoading(false);
+    }
   };
 
   const hasUsedTrial = useMemo(() => {
@@ -294,16 +328,16 @@ export default function Assinatura() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setTab('anual')}
+                  onClick={() => setTab('vitalicio')}
                   className={`flex-1 py-2 rounded-lg font-display text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
-                    tab === 'anual' || tab === 'anual_parcelado'
+                    tab === 'vitalicio'
                       ? 'bg-primary text-primary-foreground shadow-md'
                       : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
-                  <span>Anual</span>
+                  <span>Vitalício</span>
                   <span className="px-1.5 py-0.5 rounded-full bg-white/20 text-[9px] font-black uppercase">
-                    {isIOS ? '-33%' : '-44%'}
+                    ÚNICO
                   </span>
                 </button>
               </div>
@@ -327,28 +361,27 @@ export default function Assinatura() {
                   </div>
 
                   <p className="text-xs font-bold text-primary">
-                    3 dias grátis · Cobrado mensalmente
+                    Cobrado mensalmente
                   </p>
                 </div>
               ) : (
                 <div className="relative rounded-2xl border-2 border-primary bg-card/90 p-5 shadow-2xl text-center space-y-3">
                   <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-primary text-primary-foreground font-display text-xs font-black tracking-wider uppercase shadow-md">
-                    {isIOS ? 'ECONOMIZE 33%' : 'ECONOMIZE 44%'}
+                    O MAIS VENDIDO
                   </div>
 
                   <p className="font-display text-xs font-bold uppercase tracking-widest text-muted-foreground pt-1">
-                    DIREITO PRIME PRO ANUAL
+                    DIREITO PRIME PRO VITALÍCIO
                   </p>
 
                   <div className="flex items-baseline justify-center gap-1.5">
                     <span className="font-display text-3xl sm:text-4xl font-black text-foreground">
-                      {isIOS ? '12x R$ 19,90' : '12x R$ 16,66'}
+                      R$ 199,90
                     </span>
-                    <span className="text-xs font-semibold text-muted-foreground">/mês</span>
                   </div>
 
                   <p className="text-xs font-bold text-primary">
-                    {isIOS ? 'Total R$ 238,80 por ano · 3 dias grátis' : 'Total R$ 199,90 por ano · 3 dias grátis'}
+                    Pagamento único · Acesso para sempre
                   </p>
                 </div>
               )}
@@ -357,14 +390,14 @@ export default function Assinatura() {
             {/* Botão CTA Principal */}
             <div className="pt-2 px-2 space-y-3">
               <Button
-                onClick={() => startPurchase(tab === 'mensal' ? 'mensal' : (isIOS ? 'anual' : 'anual_parcelado'))}
+                onClick={() => startPurchase(tab)}
                 disabled={playLoading}
                 className="btn-shine-loop relative overflow-hidden w-full h-14 rounded-2xl bg-gradient-to-r from-[hsl(348_78%_38%)] via-primary to-[hsl(348_78%_38%)] text-primary-foreground font-display text-lg font-black tracking-wider shadow-[0_10px_30px_rgba(224,31,71,0.4)] hover:brightness-110 active:scale-[0.99] transition-all"
               >
                 {playLoading ? (
                   <span className="flex items-center gap-2"><Loader2 className="w-5 h-5 animate-spin" /> Processando…</span>
                 ) : (
-                  <span>{hasUsedTrial ? 'Assinar agora' : 'Começar 3 dias grátis'}</span>
+                  <span>Assinar agora</span>
                 )}
               </Button>
 
@@ -426,15 +459,15 @@ export default function Assinatura() {
                   Posso cancelar quando quiser?
                 </AccordionTrigger>
                 <AccordionContent className="font-body text-sm text-muted-foreground leading-relaxed">
-                  Sim. O cancelamento é feito direto pela sua conta da Google Play, com um toque, sem burocracia. Você mantém o acesso Premium até o fim do período pago.
+                  O cancelamento é feito direto pelo suporte no WhatsApp ou no painel do Asaas. A renovação do plano mensal pode ser interrompida a qualquer momento. No plano Vitalício, não há renovação.
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="teste" className="border-border">
                 <AccordionTrigger className="font-body text-sm font-semibold text-foreground text-left hover:no-underline">
-                  Como funciona o período grátis?
+                  Quais são as formas de pagamento?
                 </AccordionTrigger>
                 <AccordionContent className="font-body text-sm text-muted-foreground leading-relaxed">
-                  Você testa 3 dias grátis em qualquer um dos planos. Durante o teste, todas as funções Premium ficam liberadas. Cancele antes do fim para não ser cobrado.
+                  Aceitamos pagamentos via PIX e Cartão de Crédito de forma 100% segura. O acesso é liberado no mesmo instante.
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="pagamento" className="border-border">
@@ -442,7 +475,7 @@ export default function Assinatura() {
                   O pagamento é seguro?
                 </AccordionTrigger>
                 <AccordionContent className="font-body text-sm text-muted-foreground leading-relaxed">
-                  O pagamento é processado pela Google Play, com a mesma segurança usada em milhões de aplicativos. O Direito Prime nunca tem acesso aos dados do seu cartão.
+                  O pagamento é processado pelo Asaas (Instituição de Pagamento autorizada pelo Banco Central), com a mesma segurança usada em milhares de empresas. O Direito Prime nunca tem acesso aos dados do seu cartão.
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="dispositivos" className="border-border-0 border-b-0">

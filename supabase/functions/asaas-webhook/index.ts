@@ -61,6 +61,21 @@ Deno.serve(async (req) => {
       }
     }
     if (!legacy) {
+      // Caso não seja um legado, verificamos se é um usuário novo vindo do app (externalReference = user_id)
+      const externalRef = payment.externalReference || body?.customer?.externalReference;
+      if (externalRef) {
+        // Mock a legacy object just to pass the checks, but with claimed_user_id
+        legacy = {
+          id: 'new_user',
+          tipo: payment.value >= 199 ? 'vitalicio' : 'mensal', // inferido pelo valor ou description
+          claimed_user_id: externalRef,
+          asaas_customer_id: customerId,
+          asaas_subscription_id: subscriptionId,
+        };
+      }
+    }
+
+    if (!legacy) {
       return new Response(JSON.stringify({ ok: true, ignored: 'assinante não encontrado' }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -91,10 +106,12 @@ Deno.serve(async (req) => {
     // Já passou da carência? corta na hora. Senão o cron diário corta ao vencer.
     const cortarAgora = !vitalicio && (perdido || (atrasado && Date.now() > venc + CARENCIA_MS));
 
-    await admin.from('legacy_subscribers').update({
-      status: cortarAgora ? 'inactive' : 'active',
-      expires_at: proximo ?? legacy.expires_at,
-    }).eq('id', legacy.id);
+    if (legacy.id !== 'new_user') {
+      await admin.from('legacy_subscribers').update({
+        status: cortarAgora ? 'inactive' : 'active',
+        expires_at: proximo ?? legacy.expires_at,
+      }).eq('id', legacy.id);
+    }
 
     if (legacy.claimed_user_id) {
       await admin.from('asaas_subscriptions').upsert({

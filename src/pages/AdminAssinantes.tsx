@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { RefreshCw, Crown, AlertTriangle, Copy, ExternalLink, Search, Users, TrendingUp, XCircle, FlaskConical, CircleDollarSign, PieChart as PieIcon, PlayCircle, Smartphone, ArrowLeft } from 'lucide-react';
+import { RefreshCw, Crown, AlertTriangle, Copy, ExternalLink, Search, Users, User, TrendingUp, XCircle, FlaskConical, CircleDollarSign, PieChart as PieIcon, PlayCircle, Smartphone, ArrowLeft, Filter } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -81,6 +81,7 @@ type Payload = {
     metrics: Metrics;
   };
   legacy: LegacySubscriber[];
+  funnel: any[];
   packageName: string;
   serviceAccountEmail: string | null;
 };
@@ -152,10 +153,29 @@ const AdminAssinantes = () => {
   const [selectedMonthId, setSelectedMonthId] = useState<string>('');
   const [syncingAsaas, setSyncingAsaas] = useState(false);
   const [modalDetails, setModalDetails] = useState<'mrr' | 'gross' | null>(null);
+  const [funnelStage, setFunnelStage] = useState<'assinatura_aberta' | 'trial_click' | 'start_trial' | 'purchase' | null>(null);
+  const [funnelPlatform, setFunnelPlatform] = useState<'native' | 'asaas'>('native');
+
+  const funnelMetrics = useMemo(() => {
+    if (!data?.funnel) return null;
+    
+    const filteredEvents = data.funnel.filter((e: any) => {
+      if (e.event_name === 'assinatura_aberta') return true;
+      const isWeb = e.metadata?.metodo === 'web' || e.metadata?.source === 'planos_page';
+      return funnelPlatform === 'native' ? !isWeb : isWeb;
+    });
+
+    return {
+      assinatura_aberta: filteredEvents.filter((e: any) => e.event_name === 'assinatura_aberta'),
+      trial_click: filteredEvents.filter((e: any) => e.event_name === 'trial_click'),
+      start_trial: filteredEvents.filter((e: any) => e.event_name === 'start_trial'),
+      purchase: filteredEvents.filter((e: any) => e.event_name === 'purchase')
+    };
+  }, [data, funnelPlatform]);
 
   const load = async (syncPlay = false) => {
     setLoading(true); setError(null);
-    const { data: res, error: err } = await supabase.functions.invoke('play-billing', { body: { fn: 'reporting', sync: syncPlay } });
+    const { data: res, error: err } = await supabase.functions.invoke('play-billing', { body: { fn: 'reporting', sync: syncPlay, funnelDays: 7 } });
     if (err) {
       setError(err.message ?? 'Erro ao carregar dados locais');
     } else {
@@ -570,6 +590,116 @@ const AdminAssinantes = () => {
               </section>
             )}
 
+            {/* Funil de Assinatura */}
+            {funnelMetrics && (
+              <section className="bg-card rounded-2xl border border-border p-5 relative overflow-hidden">
+                <div className="flex items-center gap-2 mb-6 justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 bg-blue-500/10 rounded-xl">
+                      <Filter className="w-5 h-5 text-blue-500" />
+                    </div>
+                    <div>
+                      <h2 className="font-black text-lg">Funil de Conversão (App Events)</h2>
+                      <p className="text-xs text-muted-foreground">Últimos 7 dias. Medição baseada nos cliques do usuário.</p>
+                    </div>
+                  </div>
+                  
+                  <button 
+                    onClick={() => navigate('/admin/funil')}
+                    className="absolute top-5 right-5 text-xs font-semibold px-3 py-1.5 rounded-full bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 transition-colors border border-blue-500/20"
+                  >
+                    Ver completo
+                  </button>
+                  
+                  {/* Toggle Plataforma do Funil */}
+                  <div className="flex items-center bg-muted/50 rounded-full p-1 border border-border/50">
+                    <button
+                      onClick={() => setFunnelPlatform('native')}
+                      className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
+                        funnelPlatform === 'native' 
+                          ? 'bg-blue-500 text-white shadow-sm' 
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      Google / Apple
+                    </button>
+                    <button
+                      onClick={() => setFunnelPlatform('asaas')}
+                      className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
+                        funnelPlatform === 'asaas' 
+                          ? 'bg-blue-500 text-white shadow-sm' 
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      Asaas (Novo)
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="space-y-3">
+                  <div 
+                    onClick={() => setFunnelStage('assinatura_aberta')}
+                    className="relative cursor-pointer hover:bg-background/40 transition-colors rounded-xl border border-border p-3 flex justify-between items-center overflow-hidden"
+                  >
+                    <div className="absolute left-0 top-0 bottom-0 w-full bg-blue-500/10 pointer-events-none" />
+                    <span className="text-sm font-medium relative z-10">1. Acessaram a tela de Planos</span>
+                    <span className="font-bold text-blue-500 relative z-10">{funnelMetrics.assinatura_aberta.length}</span>
+                  </div>
+                  
+                  <div 
+                    onClick={() => setFunnelStage('trial_click')}
+                    className="relative cursor-pointer hover:bg-background/40 transition-colors rounded-xl border border-border p-3 flex justify-between items-center overflow-hidden ml-4"
+                  >
+                    <div 
+                      className="absolute left-0 top-0 bottom-0 bg-blue-500/20 pointer-events-none transition-all" 
+                      style={{ width: funnelMetrics.assinatura_aberta.length ? `${(funnelMetrics.trial_click.length / funnelMetrics.assinatura_aberta.length) * 100}%` : '0%' }}
+                    />
+                    <span className="text-sm font-medium relative z-10">2. Clicaram em Assinar / Ver Modal</span>
+                    <div className="flex items-center gap-3 relative z-10">
+                      {funnelMetrics.assinatura_aberta.length > 0 && (
+                        <span className="text-xs text-muted-foreground">{Math.min(100, Math.round((funnelMetrics.trial_click.length / funnelMetrics.assinatura_aberta.length) * 100))}%</span>
+                      )}
+                      <span className="font-bold text-blue-500">{funnelMetrics.trial_click.length}</span>
+                    </div>
+                  </div>
+                  
+                  <div 
+                    onClick={() => setFunnelStage('start_trial')}
+                    className="relative cursor-pointer hover:bg-background/40 transition-colors rounded-xl border border-border p-3 flex justify-between items-center overflow-hidden ml-8"
+                  >
+                    <div 
+                      className="absolute left-0 top-0 bottom-0 bg-blue-500/30 pointer-events-none transition-all" 
+                      style={{ width: funnelMetrics.trial_click.length ? `${(funnelMetrics.start_trial.length / funnelMetrics.trial_click.length) * 100}%` : '0%' }}
+                    />
+                    <span className="text-sm font-medium relative z-10">3. Iniciaram Checkout / Teste Grátis</span>
+                    <div className="flex items-center gap-3 relative z-10">
+                      {funnelMetrics.trial_click.length > 0 && (
+                        <span className="text-xs text-muted-foreground">{Math.min(100, Math.round((funnelMetrics.start_trial.length / funnelMetrics.trial_click.length) * 100))}%</span>
+                      )}
+                      <span className="font-bold text-blue-500">{funnelMetrics.start_trial.length}</span>
+                    </div>
+                  </div>
+
+                  <div 
+                    onClick={() => setFunnelStage('purchase')}
+                    className="relative cursor-pointer hover:bg-background/40 transition-colors rounded-xl border border-border p-3 flex justify-between items-center overflow-hidden ml-12"
+                  >
+                    <div 
+                      className="absolute left-0 top-0 bottom-0 bg-blue-500/40 pointer-events-none transition-all" 
+                      style={{ width: funnelMetrics.start_trial.length ? `${(funnelMetrics.purchase.length / funnelMetrics.start_trial.length) * 100}%` : '0%' }}
+                    />
+                    <span className="text-sm font-medium relative z-10">4. Pagamento Confirmado</span>
+                    <div className="flex items-center gap-3 relative z-10">
+                      {funnelMetrics.start_trial.length > 0 && (
+                        <span className="text-xs text-muted-foreground">{Math.min(100, Math.round((funnelMetrics.purchase.length / funnelMetrics.start_trial.length) * 100))}%</span>
+                      )}
+                      <span className="font-bold text-blue-500">{funnelMetrics.purchase.length}</span>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            )}
+
             {/* Métricas locais */}
             <section className="space-y-2">
               <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground px-1">
@@ -856,6 +986,123 @@ const AdminAssinantes = () => {
               <span className="text-lg font-bold">
                 {fmtBRL((modalDetails === 'mrr' ? revenue.mrrUsers : revenue.grossUsers).reduce((acc: number, u: any) => acc + u.value, 0))}
               </span>
+            </div>
+          </div>
+        </div>
+      )}
+      {funnelStage && funnelMetrics && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
+          <div className="bg-card w-full max-w-lg rounded-2xl shadow-xl border border-border flex flex-col max-h-[85vh]">
+            <div className="p-4 border-b border-border flex items-center justify-between">
+              <div>
+                <h3 className="font-bold text-lg">
+                  {funnelStage === 'assinatura_aberta' ? 'Acessaram a tela de Planos' : 
+                   funnelStage === 'trial_click' ? 'Clicaram em Assinar / Ver Modal' : 
+                   funnelStage === 'start_trial' ? 'Iniciaram Checkout / Teste Grátis' :
+                   'Pagamento Confirmado'}
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  {
+                    Object.keys(
+                      funnelMetrics[funnelStage].reduce((acc: any, ev: any) => {
+                        const key = ev.email || ev.user_id || 'anonymous';
+                        acc[key] = true;
+                        return acc;
+                      }, {})
+                    ).length
+                  } usuário(s) único(s) em {funnelMetrics[funnelStage].length} evento(s)
+                </p>
+              </div>
+              <button onClick={() => setFunnelStage(null)} className="p-2 rounded-full hover:bg-muted text-muted-foreground">
+                <XCircle className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-4 overflow-y-auto flex-1 space-y-2">
+              {funnelMetrics[funnelStage].length === 0 ? (
+                <div className="text-center text-muted-foreground p-8">Nenhum evento registrado.</div>
+              ) : (
+                Object.values(
+                  funnelMetrics[funnelStage].reduce((acc: any, ev: any) => {
+                    const key = ev.email || ev.user_id || 'anonymous';
+                    if (!acc[key]) acc[key] = { ...ev, count: 1 };
+                    else acc[key].count += 1;
+                    return acc;
+                  }, {})
+                ).map((ev: any, idx: number) => {
+                  // Procura correspondência nos assinantes reais (Play Billing ou Asaas)
+                  const match = combinedRows.find(r => r.email === ev.email || (ev.user_id && r.id?.includes(ev.user_id)));
+                  // Ignoramos a tag 'Concluído' para os usuários Asaas antigos (old)
+                  const isConcluded = match && (match.status === 'active' || match.status === 'ACTIVE' || match.status === 'SUBSCRIPTION_STATE_ACTIVE') && match.source !== 'old';
+
+                  return (
+                    <div key={idx} className="p-3 rounded-lg border border-border bg-muted/30">
+                      <div className="flex items-start justify-between gap-3">
+                        
+                        {/* Avatar do Usuário */}
+                        <div className="mt-1">
+                          {match?.avatar_url ? (
+                            <img src={match.avatar_url} alt="Avatar" className="w-8 h-8 rounded-full border border-border/50 object-cover" />
+                          ) : (
+                            <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center border border-border/50">
+                              <User className="w-4 h-4 text-muted-foreground/50" />
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="flex-1 overflow-hidden">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <div className="font-medium text-sm break-all">{ev.email || 'Usuário Anônimo'}</div>
+                            {ev.count > 1 && (
+                              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-500/20 text-blue-500 font-bold">
+                                {ev.count} vezes
+                              </span>
+                            )}
+                            {isConcluded ? (
+                              <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#3DDC84] text-black font-extrabold uppercase tracking-wider">
+                                Concluído ({match.source})
+                              </span>
+                            ) : (
+                              <span className="text-[9px] px-1.5 py-0.5 rounded bg-muted/80 text-muted-foreground font-bold uppercase tracking-wider">
+                                Não Concluído
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-[11px] text-muted-foreground">ID: {ev.user_id || 'Não logado'}</div>
+                          
+                          {match && match.order_id && (
+                            <div className="text-[10px] text-amber-500 mt-1 truncate">
+                              Pedido: {match.order_id}
+                            </div>
+                          )}
+
+                          {ev.metadata && Object.keys(ev.metadata).length > 0 && (
+                            <div className="mt-2 flex flex-wrap gap-1">
+                              {ev.metadata.plano && (
+                                <span className="text-[10px] bg-red-500/20 text-red-400 font-medium px-2 py-0.5 rounded-full border border-red-500/30">
+                                  Plano: {ev.metadata.plano.replace('_', ' ')}
+                                </span>
+                              )}
+                              {ev.metadata.dias && (
+                                <span className="text-[10px] bg-purple-500/20 text-purple-300 font-medium px-2 py-0.5 rounded-full border border-purple-500/30">
+                                  {ev.metadata.dias} dias de teste
+                                </span>
+                              )}
+                              {ev.metadata.value !== undefined && (
+                                <span className="text-[10px] bg-green-500/20 text-green-400 font-medium px-2 py-0.5 rounded-full border border-green-500/30">
+                                  {ev.metadata.currency || 'BRL'} {ev.metadata.value}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                        <div className="text-[10px] text-muted-foreground whitespace-nowrap bg-background px-2 py-1 rounded-full border border-border">
+                          {new Date(ev.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </div>
         </div>

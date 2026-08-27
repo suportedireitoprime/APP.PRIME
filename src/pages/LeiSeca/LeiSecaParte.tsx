@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Star, Lock, Check, Loader2, Play, Trophy, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
-import { PremiumGate } from "@/components/PremiumGate";
+import PremiumGate from "@/components/PremiumGate";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { getMateriaByTrilha } from "@/lib/leiSecaMaterias";

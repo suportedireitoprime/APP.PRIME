@@ -23,7 +23,7 @@ function emit(e: TelemetryEvent) {
   try {
     // Console tag: greppable in remote logs (logcat / os_log / DevTools).
      
-    console.info('[nav-telemetry]', e);
+    console.info(`[nav-telemetry: ${e.type}]`, e);
     listeners.forEach((l) => { try { l(e); } catch {} });
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('direitoprime:nav-telemetry', { detail: e }));

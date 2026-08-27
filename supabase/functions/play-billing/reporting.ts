@@ -352,10 +352,28 @@ export const handler = (async (req) => {
       
     const legacy = (legacyData ?? []).filter((r: any) => !r.tipo?.toLowerCase().includes('vade_mecum'));
 
+    // Funnel events filtering
+    const { funnelDays } = await req.json().catch(() => ({})) || {};
+    let funnelQuery = admin
+      .from('app_events')
+      .select('event_name, email, created_at, user_id, metadata')
+      .in('event_name', ['assinatura_aberta', 'trial_click', 'start_trial', 'purchase']);
+      
+    if (funnelDays) {
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - parseInt(funnelDays, 10));
+      funnelQuery = funnelQuery.gte('created_at', startDate.toISOString());
+    }
+
+    const { data: funnelData } = await funnelQuery
+      .order('created_at', { ascending: false })
+      .limit(5000);
+
     return new Response(JSON.stringify({
       sync,
       local,
       legacy: legacy ?? [],
+      funnel: funnelData ?? [],
       packageName: PACKAGE_NAME,
       serviceAccountEmail,
     }), {

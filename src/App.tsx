@@ -245,9 +245,7 @@ const QuestoesCadernos = lazy(() => import("./pages/QuestoesCadernos.tsx"));
 const QuestoesConquistas = lazy(() => import("./pages/QuestoesConquistas.tsx"));
 
 const QuestoesDesempenho = lazy(() => import("./pages/QuestoesDesempenho.tsx"));
-
-const NarracaoMiniPlayer = lazy(() => import("./components/vademecum/NarracaoMiniPlayer.tsx"));
-
+import { LazyMediaPlayers } from "./components/layout/LazyMediaPlayers.tsx";
 const ResumosJuridicosAreas = lazy(routePrefetch.resumosJuridicos);
 const ResumosJuridicosTemas = lazy(routePrefetch.resumosJuridicosTemas);
 const ResumosJuridicosSubtemas = lazy(routePrefetch.resumosJuridicosSubtemas);
@@ -300,6 +298,7 @@ const ApresentacaoPlayer = lazy(() => import("./pages/ApresentacaoPlayer.tsx"));
 const Apresentacoes = lazy(() => import("./pages/Apresentacoes.tsx"));
 const AdminApresentacaoEditar = lazy(() => import("./pages/AdminApresentacaoEditar.tsx"));
 const AdminAssinantes = lazy(() => import("./pages/AdminAssinantes.tsx"));
+const AdminFunil = lazy(() => import("./pages/AdminFunil.tsx"));
 const TestePush = lazy(() => import("./pages/TestePush.tsx"));
 const AdminMonitorUsuarios = lazy(() => import("./pages/AdminMonitorUsuarios.tsx"));
 const AdminMonitoramento = lazy(() => import("./pages/AdminMonitoramento.tsx"));
@@ -802,6 +801,9 @@ function AnimatedRoutes() {
           <Route path="/landing" element={<Landing />} />
 
           <Route path="/ir/*" element={<SmartLink />} />
+            <Route path="/admin/assinantes" element={<AdminAssinantes />} />
+            <Route path="/admin/funil" element={<AdminFunil />} />
+            <Route path="/admin/monitor/usuarios" element={<AdminMonitorUsuarios />} />
           <Route path="/privacidade" element={<Privacidade />} />
           <Route path="/termos" element={<Termos />} />
           <Route path="/excluir-conta" element={<ExcluirContaPublico />} />
@@ -1169,13 +1171,7 @@ const App = () => (
                     <VideoaulasPlayerProvider>
                       <ResumoLivroPlayerProvider>
                         <AnimatedRoutes />
-                        <NarracaoMiniPlayer />
-                        <GravacaoFlutuante />
-                        <GlobalLeisCantadasMiniPlayer />
-                        <GlobalAudioaulasMiniPlayer />
-                        <GlobalVideoaulaMiniPlayer />
-                        <GlobalResumoMiniPlayer />
-                        <ResumoLivroAudioSheet />
+                        <LazyMediaPlayers />
                       </ResumoLivroPlayerProvider>
                     </VideoaulasPlayerProvider>
                   </AudioaulasPlayerProvider>
