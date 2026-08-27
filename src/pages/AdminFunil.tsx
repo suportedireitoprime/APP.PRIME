@@ -23,8 +23,8 @@ export default function AdminFunil() {
       });
       if (reportError) throw reportError;
       
-      const { sync, local, legacy } = reportData;
-      setCombinedRows([...(sync ?? []), ...(local ?? []), ...(legacy ?? [])]);
+      const { local, legacy } = reportData;
+      setCombinedRows([...(local?.rows ?? []), ...(legacy ?? [])]);
 
       // Carrega os eventos do funil com o filtro de dias
       const { data: funnelRes, error: funnelError } = await supabase.functions.invoke('play-billing', {
