@@ -428,7 +428,7 @@ const CategoriaLegislacao = () => {
           return next;
         });
         setPremiumGateFeature('favorito');
-        setPremiumGateDesc(`Contas gratuitas podem manter até ${err.limite} artigos favoritos. Comece 7 dias grátis para favoritar sem limite.`);
+        setPremiumGateDesc(`Contas gratuitas podem manter até ${err.limite} artigos favoritos. Comece 3 dias grátis para favoritar sem limite.`);
         setShowPremiumGate(true);
       });
     }

@@ -1,8 +1,7 @@
-import { useEffect, useState } from 'react';
-import TriagemVersaoA from './versoes/TriagemVersaoA';
-import TriagemVersaoB from './versoes/TriagemVersaoB';
-import TriagemVersaoC from './versoes/TriagemVersaoC';
+import { useState } from 'react';
+import TriagemForm from './versoes/TriagemForm';
 import type { TriagemResult } from './versoes/triagemShared';
+import AppIntroOverlay from './AppIntroOverlay';
 
 export type CadastroResult = {
   persona: TriagemResult['persona'];
@@ -20,40 +19,19 @@ type Props = {
   onFinished: (r: CadastroResult) => void;
   previewMode?: boolean;
   initialName?: string;
-  /** Forces a specific version, ignoring localStorage. */
-  forceVersion?: 'A' | 'B' | 'C';
   playerRefExternal?: any;
 };
-
-const VERSION_KEY = 'triagem:version';
-
-export function getActiveTriagemVersion(): 'A' | 'B' | 'C' {
-  if (typeof window === 'undefined') return 'C';
-  const v = window.localStorage.getItem(VERSION_KEY);
-  return v === 'A' || v === 'B' || v === 'C' ? v : 'C';
-}
-
-export function setActiveTriagemVersion(v: 'A' | 'B' | 'C') {
-  try {
-    window.localStorage.setItem(VERSION_KEY, v);
-  } catch {}
-}
 
 export default function CadastroOnboardingOverlay({
   open,
   onFinished,
   previewMode,
-  forceVersion,
 }: Props) {
-  const [version, setVersion] = useState<'A' | 'B' | 'C'>(() => forceVersion || getActiveTriagemVersion());
+  const [phase, setPhase] = useState<'form' | 'video'>('form');
+  const [result, setResult] = useState<CadastroResult | null>(null);
 
-  useEffect(() => {
-    if (forceVersion) setVersion(forceVersion);
-    else if (open) setVersion(getActiveTriagemVersion());
-  }, [open, forceVersion]);
-
-  const handleFinished = (r: TriagemResult) => {
-    onFinished({
+  const handleFormFinished = (r: TriagemResult) => {
+    setResult({
       persona: r.persona,
       personaLabel: r.personaLabel,
       faixa: r.faixa,
@@ -63,9 +41,28 @@ export default function CadastroOnboardingOverlay({
       dores: r.dores,
       whatsapp: r.whatsapp,
     });
+    setPhase('video');
+  };
+
+  const handleVideoFinished = () => {
+    if (result) onFinished(result);
   };
 
   if (!open) return null;
-  const Comp = version === 'B' ? TriagemVersaoB : version === 'C' ? TriagemVersaoC : TriagemVersaoA;
-  return <Comp open={open} onFinished={handleFinished} previewMode={previewMode} />;
+
+  return (
+    <>
+      {phase === 'form' && (
+        <TriagemForm open={true} onFinished={handleFormFinished} previewMode={previewMode} />
+      )}
+      {phase === 'video' && result && (
+        <AppIntroOverlay 
+          open={true} 
+          nome={result.nome} 
+          onFinished={handleVideoFinished} 
+          previewMode={previewMode} 
+        />
+      )}
+    </>
+  );
 }

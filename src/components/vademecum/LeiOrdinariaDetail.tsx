@@ -249,7 +249,7 @@ const LeiOrdinariaDetail = ({ lei, onBack }: LeiOrdinariaDetailProps) => {
           </TabsList>
 
           <TabsContent value="lei" className="space-y-6">
-            {parsed ? (
+            {parsed && parsed.artigos.length > 0 ? (
               <>
                 {/* Title */}
                 {parsed.titulo && (
@@ -328,22 +328,29 @@ const LeiOrdinariaDetail = ({ lei, onBack }: LeiOrdinariaDetailProps) => {
               </>
             ) : lei.texto_completo ? (
               <div className="space-y-4">
-                {lei.ementa && (
+                {(parsed?.ementa || lei.ementa) && (
                   <div className="bg-card/50 border border-destructive/20 rounded-2xl p-4">
                     <p className="text-destructive font-body italic text-sm leading-relaxed">
-                      {lei.ementa}
+                      {parsed?.ementa || lei.ementa}
                     </p>
                   </div>
                 )}
+                {parsed?.titulo && (
+                  <h2 className="text-primary-light font-display text-lg font-bold text-center">
+                    {parsed.titulo}
+                  </h2>
+                )}
                 <div className="rounded-2xl bg-card p-6 space-y-4 font-body text-sm leading-relaxed text-foreground whitespace-pre-wrap">
-                  {lei.texto_completo}
+                  {normalizeLegislativeText(lei.texto_completo)}
                 </div>
               </div>
             ) : (
               /* Fallback: show ementa only */
-              <p className="text-foreground font-body text-sm leading-relaxed">
-                {lei.ementa}
-              </p>
+              <div className="rounded-2xl bg-card p-6">
+                <p className="text-foreground font-body text-sm leading-relaxed">
+                  {lei.ementa}
+                </p>
+              </div>
             )}
 
             {/* Ver texto oficial */}

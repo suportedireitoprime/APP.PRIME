@@ -209,7 +209,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Aquecimento do chunk da triagem — abre imediato quando o app
       // navegar pra /onboarding.
       import('@/components/onboarding/CadastroOnboardingOverlay').catch(() => {});
-      import('@/components/onboarding/CadastroFeaturesReel').catch(() => {});
     }
     return { error: error as Error | null };
   }, []);

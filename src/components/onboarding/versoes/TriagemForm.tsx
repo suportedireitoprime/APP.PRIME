@@ -13,15 +13,13 @@ import {
 } from './triagemShared';
 import { useTriagemAudio } from './useTriagemAudio';
 
-const CadastroFeaturesReel = lazyWithRetry(() => import('../CadastroFeaturesReel'));
-
 type Props = {
   open: boolean;
   onFinished: (r: TriagemResult) => void;
   previewMode?: boolean;
 };
 
-type Step = 'abertura' | 'intro1' | 'intro2' | 'persona' | 'interesses' | 'dores' | 'nome' | 'whatsapp' | 'features';
+type Step = 'abertura' | 'intro1' | 'intro2' | 'persona' | 'interesses' | 'dores' | 'nome' | 'whatsapp';
 const CONTENT_STEPS: Step[] = ['intro1', 'intro2', 'persona', 'interesses', 'dores', 'nome', 'whatsapp'];
 
 // Paleta editorial — mesma linguagem da abertura "O Direito pensado por quem o
@@ -102,9 +100,9 @@ export default function TriagemVersaoC({ open, onFinished, previewMode }: Props)
     const nx = CONTENT_STEPS[stepIndex + 1];
     if (nx) setStep(nx);
     else {
-      // Última pergunta respondida → entra no reel de funções antes de fechar.
+      // Última pergunta respondida – finaliza a coleta de dados
       playSfx('ding');
-      setStep('features');
+      onFinished(next);
     }
   };
 
@@ -118,7 +116,7 @@ export default function TriagemVersaoC({ open, onFinished, previewMode }: Props)
       className="fixed inset-0 z-[100] flex flex-col overflow-hidden bg-[#0A0A0A]"
     >
       {/* Top bar — só aparece após abertura */}
-      {step !== 'abertura' && step !== 'features' && (
+      {step !== 'abertura' && (
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -171,14 +169,6 @@ export default function TriagemVersaoC({ open, onFinished, previewMode }: Props)
               previewMode={previewMode}
               onClose={() => onFinished(data)}
             />
-          ) : step === 'features' ? (
-            <Suspense key="features" fallback={<div className="absolute inset-0 bg-black" />}>
-              <CadastroFeaturesReel
-                nome={data.nome}
-                onDone={() => onFinished(data)}
-                playSfx={playSfx}
-              />
-            </Suspense>
           ) : (
             <motion.div
               key={step}

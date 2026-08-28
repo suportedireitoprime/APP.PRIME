@@ -149,7 +149,6 @@ const AuthDrawer = ({ mode, setMode, onClose }: { mode: 'login' | 'signup' | 'fo
     if (mode === 'signup' || mode === 'login') {
       import('@/pages/Onboarding').catch(() => {});
       import('@/components/onboarding/CadastroOnboardingOverlay').catch(() => {});
-      import('@/components/onboarding/CadastroFeaturesReel').catch(() => {});
       import('@/components/onboarding/NotificacoesPermissaoStep').catch(() => {});
     }
   }, [mode]);
