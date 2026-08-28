@@ -1079,7 +1079,7 @@ const AdminAssinantes = () => {
                             <div className="mt-2 flex flex-wrap gap-1">
                               {ev.metadata.plano && (
                                 <span className="text-[10px] bg-red-500/20 text-red-400 font-medium px-2 py-0.5 rounded-full border border-red-500/30">
-                                  Plano: {ev.metadata.plano.replace('_', ' ')}
+                                  Plano: {String(ev.metadata.plano).replace('_', ' ')}
                                 </span>
                               )}
                               {ev.metadata.dias && (

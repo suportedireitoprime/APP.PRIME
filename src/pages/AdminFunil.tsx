@@ -50,23 +50,48 @@ export default function AdminFunil() {
     const filteredEvents = data.filter((e: any) => {
       if (e.event_name === 'assinatura_aberta') return true;
       const isWeb = e.metadata?.metodo === 'web' || e.metadata?.source === 'planos_page';
-      return funnelPlatform === 'native' ? !isWeb : isWeb;
+      if (funnelPlatform === 'native' ? isWeb : !isWeb) return false;
+      
+      if (days && e.created_at) {
+        const diff = Date.now() - new Date(e.created_at).getTime();
+        if (diff > days * 24 * 60 * 60 * 1000) return false;
+      }
+      
+      return true;
     });
 
     return {
       assinatura_aberta: filteredEvents.filter((e: any) => e.event_name === 'assinatura_aberta'),
       trial_click: filteredEvents.filter((e: any) => e.event_name === 'trial_click'),
       start_trial: filteredEvents.filter((e: any) => e.event_name === 'start_trial'),
-      purchase: filteredEvents.filter((e: any) => e.event_name === 'purchase')
+      purchase: combinedRows.filter((r: any) => {
+        const isNative = r.source === 'play' || r.source === 'apple';
+        if (funnelPlatform === 'native' && !isNative) return false;
+        if (funnelPlatform === 'asaas' && r.source !== 'asaas') return false;
+
+        if (days && r.start_time) {
+          const diff = Date.now() - new Date(r.start_time).getTime();
+          if (diff > days * 24 * 60 * 60 * 1000) return false;
+        }
+
+        if (r.source === 'old') return false;
+        const s = String(r.status).toUpperCase();
+        if (s !== 'ACTIVE' && s !== 'SUBSCRIPTION_STATE_ACTIVE') return false;
+
+        return true;
+      }).map((r: any) => ({
+        event_name: 'purchase',
+        email: r.email,
+        user_id: r.user_id || (r.id?.includes('-') ? r.id.split('-')[0] : r.id)
+      }))
     };
-  }, [data, funnelPlatform]);
+  }, [data, combinedRows, funnelPlatform, days]);
 
   return (
     <div className="min-h-screen bg-background text-foreground pb-20">
       <PageHeader 
         title="Funil Completo" 
         onBack={() => navigate('/admin/assinantes')}
-        rightContent={<Filter className="w-5 h-5 text-muted-foreground" />}
       />
 
       <div className="p-4 md:p-8 max-w-4xl mx-auto space-y-6">

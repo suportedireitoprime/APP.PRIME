@@ -357,7 +357,7 @@ export function UserDossieSheet({ userId, nome, email, provider, avatarUrl, onCl
               </div>
               <div className="grid grid-cols-2 gap-3 pt-1">
                 <div className="flex items-center gap-2 font-body text-[15px] text-foreground">
-                  <Crown className="w-4 h-4 text-muted-foreground shrink-0" /> {d.perfil?.is_premium ? 'Premium' : 'Gratuito'}
+                  <Crown className="w-4 h-4 text-muted-foreground shrink-0" /> {(d.perfil?.is_premium || d.assinatura?.status === 'SUBSCRIPTION_STATE_ACTIVE' || d.assinatura?.status === 'ACTIVE') ? 'Premium' : 'Gratuito'}
                 </div>
                 <div className="flex items-center gap-2 font-body text-[15px] text-foreground">
                   <Calendar className="w-4 h-4 text-muted-foreground shrink-0" /> Desde {dia(d.perfil?.created_at)}

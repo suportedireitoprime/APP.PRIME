@@ -359,6 +359,10 @@ export function AdminHojeCards() {
                 r.planValue = isMensal ? 29.90 : 199.90;
                 r.planTag = { plano, status, expires_at: expiresStr };
                 r.googleId = sub.linked_purchase_token || sub.purchase_token || sub.order_id;
+                
+                if (status === 'Ativo') {
+                  r.isPremium = true;
+                }
               } else {
                 r.planValue = 199.90;
                 r.planTag = { plano: 'Anual', status: 'Ativo', expires_at: null };
@@ -636,11 +640,11 @@ export function AdminHojeCards() {
                             </span>
                             <span className={cn(
                               "inline-flex items-center rounded-md border px-1.5 py-0.5 text-[9.5px] font-bold",
-                              r.planTag.status.toLowerCase() === 'ativo' ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' :
-                              r.planTag.status.toLowerCase() === 'cancelado' ? 'bg-rose-500/10 border-rose-500/20 text-rose-400' :
+                              r.planTag.status?.toLowerCase() === 'ativo' ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' :
+                              r.planTag.status?.toLowerCase() === 'cancelado' ? 'bg-rose-500/10 border-rose-500/20 text-rose-400' :
                               'bg-secondary/50 border-border/50 text-muted-foreground'
                             )}>
-                              {r.planTag.status.toUpperCase()}
+                              {String(r.planTag.status).toUpperCase()}
                             </span>
                             {r.planTag.expires_at && (
                               <span className="inline-flex items-center text-[10px] font-medium text-muted-foreground ml-0.5 opacity-80">
