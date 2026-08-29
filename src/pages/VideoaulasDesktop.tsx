@@ -1,6 +1,6 @@
 import { useMemo, useState, memo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Play, Video, Search, Mic, Clock, ChevronRight } from 'lucide-react';
+import { Video, Clock, ChevronRight, Scale, BookOpenText, Gavel, Library, MessageSquare, GraduationCap } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { areaIconFor } from '@/lib/areasDireitoIcons';
 import { simplificarNomeArea } from '@/lib/videoaulasCatalogos';
@@ -9,6 +9,18 @@ import { cn } from '@/lib/utils';
 import { haptic } from '@/lib/nativeHaptics';
 import ContinuarAssistindoCarousel from '@/components/videoaulas/ContinuarAssistindoCarousel';
 import { prefetchCatalogo } from '@/lib/videoaulasStore';
+import { prefetchRoute, type PrefetchKey } from '@/lib/routePrefetch';
+import DesktopSidebar from '@/components/vademecum/DesktopSidebar';
+import DesktopOnboardingOverlay from '@/components/desktop/DesktopOnboardingOverlay';
+
+const DESKTOP_TABS: Array<{ id: string; label: string; icon: any; path: string; prefetch?: PrefetchKey }> = [
+  { id: 'legislacao', label: 'Legislação', icon: Scale, path: '/' },
+  { id: 'biblioteca', label: 'Biblioteca', icon: Library, path: '/bibliotecas' },
+  { id: 'ferramentas', label: 'Ferramentas', icon: Gavel, path: '/ferramentas', prefetch: 'ferramentas' },
+  { id: 'aprender', label: 'Aprender', icon: GraduationCap, path: '/aprender', prefetch: 'aprender' },
+  { id: 'chat', label: 'Chat', icon: MessageSquare, path: '/assistente-horus' },
+  { id: 'vademecum', label: 'Vade Mecum', icon: BookOpenText, path: '/vade-mecum' },
+];
 
 const AreaCard = memo(({ a, handleAreaClick }: any) => {
   const { Icon, color } = areaIconFor(a.area);
@@ -73,14 +85,49 @@ export const VideoaulasDesktop = memo(function VideoaulasDesktop({
     navigate(`/videoaulas/areas/${slug}`);
   }, [navigate]);
 
-  return (
-    <div className="min-h-screen bg-background pb-16">
-      <PageHeader title="Videoaulas" onBack={() => navigate('/')} />
+  const handleTabChange = useCallback((t: string) => {
+    const tab = DESKTOP_TABS.find(x => x.id === t);
+    if (tab) navigate(tab.path);
+  }, [navigate]);
 
-      <div className="w-full 2xl:max-w-[1750px] mx-auto px-6 lg:pt-6 lg:grid lg:grid-cols-12 lg:gap-8 lg:items-start">
+  return (
+    <div className="min-h-dvh bg-background flex flex-col">
+      <DesktopOnboardingOverlay />
+      
+      <div className="flex flex-1 min-h-0">
+        <DesktopSidebar activeTab={'aprender' as any} onTabChange={handleTabChange} />
         
-        {/* === PAINEL CENTRAL: Conteúdo Principal (Lista de Áreas) === */}
-        <div className="lg:col-span-9 space-y-6">
+        <div className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden relative contain-content overscroll-contain">
+          <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-md border-b border-border">
+            <div className="flex items-center gap-1 px-8 h-12">
+              {DESKTOP_TABS.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = 'aprender' === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => navigate(tab.path)}
+                    onMouseEnter={() => { if (tab.prefetch) prefetchRoute(tab.prefetch); }}
+                    onFocus={() => { if (tab.prefetch) prefetchRoute(tab.prefetch); }}
+                    className={`relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-body font-medium transition-colors ${
+                      isActive
+                        ? 'text-primary bg-primary/10'
+                        : 'text-foreground/60 hover:text-foreground hover:bg-secondary/60'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    <span>{tab.label}</span>
+                    {isActive && <div className="absolute bottom-0 left-3 right-3 h-0.5 bg-primary rounded-full" />}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="px-8 py-6 2xl:px-14 lg:grid lg:grid-cols-12 lg:gap-8 lg:items-start">
+            
+            {/* === PAINEL CENTRAL: Conteúdo Principal (Lista de Áreas) === */}
+            <div className="lg:col-span-9 space-y-6">
           <ContinuarAssistindoCarousel />
 
           <div className="flex items-center justify-between mb-4 mt-8">
@@ -119,8 +166,9 @@ export const VideoaulasDesktop = memo(function VideoaulasDesktop({
               <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-transform group-hover:translate-x-1" />
             </button>
           </div>
-        </aside>
-
+            </aside>
+          </div>
+        </div>
       </div>
     </div>
   );
