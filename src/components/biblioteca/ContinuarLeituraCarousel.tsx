@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, memo } from 'react';
 import { BookOpen, Play, Clock, Timer } from 'lucide-react';
 import type { LivroNormalizado } from '@/lib/bibliotecaColecoes';
 import { subscribeTracking, type LivroSnapshot } from '@/lib/bibliotecaTracking';
@@ -125,4 +125,4 @@ const ContinuarLeituraCarousel = ({ onAbrirLivro }: Props) => {
   );
 };
 
-export default ContinuarLeituraCarousel;
+export default memo(ContinuarLeituraCarousel);

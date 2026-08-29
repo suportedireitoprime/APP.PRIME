@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import {pickAsset, srcOf } from '@/lib/assetUrl';
 import { Scale, BookOpen, FileText, Newspaper, Landmark, Shield, ScrollText, Gavel, Settings, PanelLeftClose, Radar, RefreshCw, Bell, Info, LogOut, BookMarked, HeartPulse, Lock, User as UserIcon, Clapperboard, Mail, Wrench, FileSignature, BookOpenText, Mic, CloudDownload, BellRing, CreditCard, LifeBuoy, MessageSquare, MicVocal, CalendarDays, Library, HardDrive, Route as RouteIcon, FileUp, Heart } from 'lucide-react';
 import { abrirAtalhoBiblioteca } from '@/components/biblioteca/BibliotecaBottomNav';
@@ -74,7 +74,7 @@ const CONFIG_ITEMS = [
 ];
 
 
-const DesktopSidebar = ({ activeTab, onTabChange }: DesktopSidebarProps) => {
+const DesktopSidebar = memo(({ activeTab, onTabChange }: DesktopSidebarProps) => {
   const navigate = useNavigate();
   const { signOut, user } = useAuth();
   const isAdmin = isAdminEmail(user?.email);
@@ -215,7 +215,7 @@ const DesktopSidebar = ({ activeTab, onTabChange }: DesktopSidebarProps) => {
 
 
       {/* Scrollable content */}
-      <div className="flex-1 overflow-y-auto py-1">
+      <div className="flex-1 overflow-y-auto py-1 overscroll-contain">
         {/* Funções Admin - only for admin */}
         {isAdmin && (
           <div className="pb-1">
@@ -482,7 +482,7 @@ const DesktopSidebar = ({ activeTab, onTabChange }: DesktopSidebarProps) => {
     </AlertDialog>
     </>
   );
-};
+});
 
 export default DesktopSidebar;
 

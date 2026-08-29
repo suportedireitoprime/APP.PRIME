@@ -1,4 +1,4 @@
-import { useMemo, useRef, useEffect, useState, useCallback } from 'react';
+import { useMemo, useRef, useEffect, useState, useCallback, memo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { ChevronRight } from 'lucide-react';
@@ -485,4 +485,4 @@ const RecomendacoesCarousel = ({ onAbrirLivro }: Props) => {
   );
 };
 
-export default RecomendacoesCarousel;
+export default memo(RecomendacoesCarousel);

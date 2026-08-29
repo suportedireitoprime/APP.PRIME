@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Library, Scale, FileUp, Gauge, Route as RouteIcon, BookMarked, Heart,
@@ -20,7 +21,7 @@ interface Props {
   onUploadPdf?: () => void;
 }
 
-const DesktopBibliotecaGrid = ({ onScrollToAcervo, onUploadPdf }: Props) => {
+const DesktopBibliotecaGrid = memo(({ onScrollToAcervo, onUploadPdf }: Props) => {
   const navigate = useNavigate();
 
   const ITEMS: Item[] = [
@@ -80,10 +81,10 @@ const DesktopBibliotecaGrid = ({ onScrollToAcervo, onUploadPdf }: Props) => {
               key={it.id}
               onClick={handleClick}
               data-track-name={`biblioteca_${it.id}`}
-              className="group relative flex items-center gap-5 overflow-hidden rounded-2xl border border-border bg-card px-6 py-6 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10"
+              className="group relative flex items-center gap-5 overflow-hidden rounded-2xl border border-border bg-card px-6 py-6 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 will-change-transform"
             >
               <Icon
-                className="relative z-10 h-11 w-11 shrink-0 transition-transform duration-200 group-hover:scale-110"
+                className="relative z-10 h-11 w-11 shrink-0 transition-transform duration-200 group-hover:scale-110 will-change-transform"
                 style={{ color: it.color }}
                 strokeWidth={1.6}
               />
@@ -99,6 +100,6 @@ const DesktopBibliotecaGrid = ({ onScrollToAcervo, onUploadPdf }: Props) => {
       </div>
     </section>
   );
-};
+});
 
 export default DesktopBibliotecaGrid;
