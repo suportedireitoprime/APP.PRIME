@@ -10,8 +10,6 @@ import VadeMecumTutorialOverlay from '@/components/vademecum/VadeMecumTutorialOv
 import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
 import { pushRecente } from '@/lib/leisRecentes';
 import { useIsDesktop } from '@/hooks/use-desktop';
-import DesktopTopHeader from '@/components/vademecum/DesktopTopHeader';
-import DesktopBreadcrumb from '@/components/vademecum/DesktopBreadcrumb';
 import DesktopSidebar from '@/components/vademecum/DesktopSidebar';
 import { Scale, BookOpen, Gavel, Library, MessageSquare, BookOpenText, GraduationCap } from 'lucide-react';
 
@@ -110,8 +108,6 @@ const VadeMecum = () => {
   if (isDesktop) {
     return (
       <div className="min-h-dvh bg-background flex flex-col theme-vademecum">
-        <DesktopTopHeader onAssistenteClick={() => navigate('/assistente-horus')} />
-        <DesktopBreadcrumb />
         <div className="flex flex-1 min-h-0">
           <DesktopSidebar 
             activeTab={'vademecum' as any} 
