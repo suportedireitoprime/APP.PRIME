@@ -33,39 +33,6 @@ const ESTUDOS: Item[] = [
 const DesktopEstudosGrid = (_props: Props) => {
   const navigate = useNavigate();
 
-  const Card = ({ it }: { it: Item }) => {
-    const Icon = it.icon;
-    const handleClick = () => {
-      if (it.id === 'mapas' && _props.onChatClick) {
-        _props.onChatClick();
-      } else if (it.onClick) {
-        it.onClick();
-      } else if (it.route) {
-        navigate(it.route);
-      }
-    };
-
-    return (
-      <button
-        onClick={handleClick}
-        data-track-name={it.label}
-        className="group relative flex items-center gap-5 overflow-hidden rounded-2xl border border-border bg-card px-6 py-6 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10"
-      >
-        <Icon
-          className="relative z-10 h-11 w-11 shrink-0 transition-transform duration-200 group-hover:scale-110"
-          style={{ color: it.color }}
-          strokeWidth={1.6}
-        />
-        <span className="relative z-10 min-w-0">
-          <span className="block truncate font-display text-lg font-bold tracking-tight text-foreground transition-colors group-hover:text-primary">
-            {it.label}
-          </span>
-          <span className="block truncate text-[13.5px] leading-tight text-muted-foreground mt-0.5">{it.sublabel}</span>
-        </span>
-      </button>
-    );
-  };
-
   return (
     <div className="space-y-7">
       <section>
@@ -74,7 +41,39 @@ const DesktopEstudosGrid = (_props: Props) => {
           Estudos
         </p>
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {ESTUDOS.map((it) => <Card key={it.id} it={it} />)}
+          {ESTUDOS.map((it) => {
+            const Icon = it.icon;
+            const handleClick = () => {
+              if (it.id === 'mapas' && _props.onChatClick) {
+                _props.onChatClick();
+              } else if (it.onClick) {
+                it.onClick();
+              } else if (it.route) {
+                navigate(it.route);
+              }
+            };
+
+            return (
+              <button
+                key={it.id}
+                onClick={handleClick}
+                data-track-name={it.label}
+                className="group relative flex items-center gap-5 overflow-hidden rounded-2xl border border-border bg-card px-6 py-6 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10"
+              >
+                <Icon
+                  className="relative z-10 h-11 w-11 shrink-0 transition-transform duration-200 group-hover:scale-110"
+                  style={{ color: it.color }}
+                  strokeWidth={1.6}
+                />
+                <span className="relative z-10 min-w-0">
+                  <span className="block truncate font-display text-lg font-bold tracking-tight text-foreground transition-colors group-hover:text-primary">
+                    {it.label}
+                  </span>
+                  <span className="block truncate text-[13.5px] leading-tight text-muted-foreground mt-0.5">{it.sublabel}</span>
+                </span>
+              </button>
+            );
+          })}
         </div>
       </section>
     </div>
