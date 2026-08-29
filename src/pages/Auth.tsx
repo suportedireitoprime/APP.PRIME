@@ -81,6 +81,7 @@ const AjudaSheet = ({ open, onClose }: { open: boolean, onClose: () => void }) =
 
 
 import authJudgeScene from '@/assets/auth-judge-scene.jpeg';
+import themisAuthYellow from '@/assets/themis-auth-yellow.webp';
 
 /** Traduz mensagens de erro comuns do Supabase Auth para PT-BR. */
 const traduzirErroAuth = (raw?: string): string => {
@@ -652,16 +653,35 @@ const Auth = () => {
     <main className="min-h-dvh w-full relative flex flex-col bg-[#0d0f12] overflow-hidden">
       {/* Background Image full screen */}
       <div className="absolute inset-0 w-full h-full">
-        <img
-          src={authJudgeScene}
-          alt="Tribunal de Justiça"
-          loading="eager"
-          decoding="sync"
-          fetchPriority="high"
-          className="w-full h-full object-cover object-center"
-        />
-        {/* Remover escurecimento excessivo, deixando a cor real - só gradient pra legibilidade no final */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent h-[40%] top-auto" />
+        {isDesktop ? (
+          <>
+            <img
+              src={themisAuthYellow}
+              alt="Themis e a advocacia"
+              loading="eager"
+              decoding="sync"
+              fetchPriority="high"
+              className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none"
+            />
+            {/* Bottom gradient wash — black only at the very beginning, lighter above */}
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/25 to-[#0e0e0c]" />
+            {/* Left-to-right subtle darken for headline legibility */}
+            <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/15 to-black/30" />
+          </>
+        ) : (
+          <>
+            <img
+              src={authJudgeScene}
+              alt="Tribunal de Justiça"
+              loading="eager"
+              decoding="sync"
+              fetchPriority="high"
+              className="w-full h-full object-cover object-center"
+            />
+            {/* Remover escurecimento excessivo, deixando a cor real - só gradient pra legibilidade no final */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent h-[40%] top-auto" />
+          </>
+        )}
       </div>
 
       <AuthDecorations />
