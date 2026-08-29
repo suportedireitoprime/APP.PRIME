@@ -210,14 +210,16 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
         {open && (
           <motion.div
             key="sheet"
-            initial={inline ? { opacity: 0, scale: 0.98 } : { y: '100%' }}
-            animate={inline ? { opacity: 1, scale: 1 } : { y: 0 }}
-            exit={inline ? { opacity: 0, scale: 0.98 } : { y: '100%', pointerEvents: 'none' }}
-            transition={inline ? { duration: 0.2 } : { type: 'spring', stiffness: 260, damping: 30 }}
+            initial={inline ? { opacity: 0, scale: 0.98 } : (isDesktop ? { opacity: 0, scale: 0.95 } : { y: '100%' })}
+            animate={inline ? { opacity: 1, scale: 1 } : (isDesktop ? { opacity: 1, scale: 1 } : { y: 0 })}
+            exit={inline ? { opacity: 0, scale: 0.98 } : (isDesktop ? { opacity: 0, scale: 0.95 } : { y: '100%', pointerEvents: 'none' })}
+            transition={{ type: 'spring', stiffness: 400, damping: 35 }}
             className={
               inline
                 ? "relative w-full h-full flex flex-col overflow-hidden rounded-3xl bg-card border border-border/50 shadow-xl"
-                : "fixed inset-x-0 bottom-0 z-[1001] h-[90dvh] mx-auto w-full md:max-w-[720px] bg-background flex flex-col overflow-hidden rounded-t-3xl md:border md:border-border md:border-b-0 shadow-[0_-8px_32px_-8px_rgba(0,0,0,0.5)]"
+                : isDesktop
+                  ? "fixed inset-0 m-auto z-[1001] w-full max-w-[720px] h-[85dvh] bg-background flex flex-col overflow-hidden rounded-3xl border border-border shadow-2xl"
+                  : "fixed inset-x-0 bottom-0 z-[1001] h-[90dvh] w-full bg-background flex flex-col overflow-hidden rounded-t-3xl shadow-[0_-8px_32px_-8px_rgba(0,0,0,0.5)]"
             }
           >
 
@@ -228,7 +230,7 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
                 aria-label="Fechar"
                 className="w-11 h-11 rounded-full bg-white/15 hover:bg-white/25 backdrop-blur-xl backdrop-saturate-150 transition-colors flex items-center justify-center border border-white/25 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.25)]"
               >
-                {inline ? <X className="w-5 h-5 text-white" /> : <ChevronDown className="w-5 h-5 text-white" />}
+                {(inline || isDesktop) ? <X className="w-5 h-5 text-white" /> : <ChevronDown className="w-5 h-5 text-white" />}
               </button>
             </div>
             <div className="absolute top-[calc(var(--sai-top,0px)+0.75rem)] right-4 z-20 flex gap-2">
