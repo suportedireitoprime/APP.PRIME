@@ -131,7 +131,7 @@ export function QuestoesMateriaSheet({ materia, aberto, onOpenChange }: Questoes
                     step={2} label="Quantas questões?"
                     hint={qtd === 'Todas' ? 'Todas as questões disponíveis' : `${qtd} questões`}
                     active={passo === 'quantidade'}
-                    done={true}
+                    done={false}
                     onClick={() => setPasso('quantidade')}
                   />
                 </>

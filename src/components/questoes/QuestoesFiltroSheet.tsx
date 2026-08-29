@@ -321,14 +321,14 @@ export function SelecaoSheet({
                         'block text-[15px] font-semibold leading-tight transition-colors',
                         ativo ? 'text-white' : 'text-zinc-200 group-hover:text-white',
                       )}>
-                        {o}
+                        {o.split(' > ').pop()?.trim() || o}
                       </span>
                       {descricoes?.[o] && (
                         <span className="mt-1 block text-[12px] leading-snug text-zinc-400">{descricoes[o]}</span>
                       )}
                     </span>
                     {contagens?.[o] !== undefined && (
-                      <span className="grid h-6 min-w-[44px] place-items-center rounded-full bg-[#E11D48]/15 px-2 text-[11px] font-extrabold tabular-nums text-[#E11D48]">
+                      <span className="grid h-6 min-w-[44px] place-items-center rounded-full bg-transparent px-2 text-[13px] font-extrabold tabular-nums text-rose-400">
                         {fmt(contagens[o])}
                       </span>
                     )}
