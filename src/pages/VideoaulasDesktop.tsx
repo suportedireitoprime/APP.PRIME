@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Play, Video, Search, Mic, Clock } from 'lucide-react';
+import { Play, Video, Search, Mic, Clock, ChevronRight } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { areaIconFor } from '@/lib/areasDireitoIcons';
 import { simplificarNomeArea } from '@/lib/videoaulasCatalogos';
