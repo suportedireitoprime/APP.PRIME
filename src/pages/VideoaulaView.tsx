@@ -194,81 +194,86 @@ const VideoaulaView = () => {
         }
       />
 
-      <div className="w-full 2xl:max-w-[1750px] mx-auto px-2 sm:px-4 lg:px-6 lg:pt-4 lg:grid lg:grid-cols-12 lg:gap-6 lg:items-start">
-        {/* Sidebar Lateral Esquerda Desktop */}
-        <VideoaulaSidebarDesktop 
-          aulasDaArea={state.aulasDaArea}
-          videoId={videoId}
-          catalogoId={state.catalogo.id}
-          areaSlug={areaSlug}
-        />
+      <div className="w-full 2xl:max-w-[1750px] mx-auto px-2 sm:px-4 lg:px-6 lg:pt-4 lg:grid lg:grid-cols-12 lg:gap-8 lg:items-start">
+        {/* Coluna Principal: Player de Vídeo e Recursos */}
+        <div className="lg:col-span-8 xl:col-span-9 space-y-6">
+          <div className="space-y-4">
+            <div 
+              id="videoaula-placeholder"
+              className="relative w-[calc(100%+1rem)] sm:w-[calc(100%+2rem)] lg:w-full -mx-2 sm:-mx-4 lg:mx-0 bg-transparent aspect-video lg:rounded-2xl lg:overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-black/10 animate-pulse pointer-events-none" />
+            </div>
 
-        {/* Coluna Principal Central: Player de Vídeo Expandido & Centralizado */}
-        <div className="lg:col-span-6 xl:col-span-6 space-y-4">
-          <div 
-            id="videoaula-placeholder"
-            className="relative w-[calc(100%+1rem)] sm:w-[calc(100%+2rem)] lg:w-full -mx-2 sm:-mx-4 lg:mx-0 bg-transparent aspect-video lg:rounded-2xl lg:overflow-hidden"
-          >
-            <div className="absolute inset-0 bg-black/10 animate-pulse pointer-events-none" />
+            <div className="px-3 lg:px-0 space-y-2">
+              <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-primary transition-[width] duration-500"
+                  style={{ width: `${pctAtual}%` }}
+                />
+              </div>
+              <div className="flex items-center justify-between text-[12px] text-muted-foreground tabular-nums">
+                <span>{formatTempo(tempo)}</span>
+                <span>{displayDuracao > 0 ? formatTempo(displayDuracao) : '--:--'}</span>
+              </div>
+              <h1 className="text-[17px] sm:text-xl lg:text-2xl font-bold leading-snug text-foreground">{tituloLimpo}</h1>
+            </div>
+
+            <div className="px-3 lg:px-0 py-2 mt-4 space-y-2">
+              <p className="text-[11px] sm:text-[12px] uppercase tracking-wider text-muted-foreground font-bold pl-1">
+                Siga estas etapas para concluir a aula
+              </p>
+              {videoId && (
+                <TrilhaAula 
+                  videoId={videoId} 
+                  concluida={state.concluida} 
+                  pctAtual={pctAtual} 
+                  onMarcarConcluida={marcarConcluida} 
+                />
+              )}
+            </div>
+
+            <VideoaulaControlesAcao 
+              concluida={state.concluida}
+              favorito={state.favorito}
+              marcarConcluida={marcarConcluida}
+              toggleFavorito={toggleFavorito}
+              user={user}
+              area={state.aula?.area ?? state.catalogo?.titulo ?? 'Estudos Jurídicos'}
+              videoId={videoId}
+            />
           </div>
 
-          <div className="px-3 lg:px-0 space-y-2">
-            <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
-              <div
-                className="h-full rounded-full bg-primary transition-[width] duration-500"
-                style={{ width: `${pctAtual}%` }}
+          {/* Recursos da Aula e Panorama (abaixo do vídeo) */}
+          <div className="hidden lg:block space-y-6 lg:bg-card/40 lg:border lg:border-border/60 lg:rounded-2xl lg:p-6 lg:shadow-sm">
+            <div className="space-y-4">
+              <h2 className="text-sm font-bold uppercase tracking-wider text-primary border-b border-border/60 pb-2">Recursos da Aula</h2>
+              <Suspense fallback={<div className="h-20 animate-pulse bg-muted rounded-xl" />}>
+                <VideoaulaAcoesBar input={input} gridLayout gridCols={4} onOpenAnotacoes={() => setShowAnotacoes(true)} />
+              </Suspense>
+            </div>
+
+            <div className="space-y-4 pt-2">
+              <h2 className="text-sm font-bold text-foreground pb-2 border-b border-border/60">
+                Panorama & Estudo com IA
+              </h2>
+              <VideoaulaPanoramaIA 
+                resumo={resumo.data?.resumo}
+                sobreAula={state.aula?.sobre_aula}
+                descricao={state.aula?.descricao}
+                isLoading={resumo.isLoading}
               />
             </div>
-            <div className="flex items-center justify-between text-[12px] text-muted-foreground tabular-nums">
-              <span>{formatTempo(tempo)}</span>
-              <span>{displayDuracao > 0 ? formatTempo(displayDuracao) : '--:--'}</span>
-            </div>
-            <h1 className="text-[17px] sm:text-xl lg:text-2xl font-bold leading-snug text-foreground">{tituloLimpo}</h1>
           </div>
-
-          <div className="px-3 lg:px-0 py-2 mt-4 space-y-2">
-            <p className="text-[11px] sm:text-[12px] uppercase tracking-wider text-muted-foreground font-bold pl-1">
-              Siga estas etapas para concluir a aula
-            </p>
-            {videoId && (
-              <TrilhaAula 
-                videoId={videoId} 
-                concluida={state.concluida} 
-                pctAtual={pctAtual} 
-                onMarcarConcluida={marcarConcluida} 
-              />
-            )}
-          </div>
-
-          <VideoaulaControlesAcao 
-            concluida={state.concluida}
-            favorito={state.favorito}
-            marcarConcluida={marcarConcluida}
-            toggleFavorito={toggleFavorito}
-            user={user}
-            area={state.aula?.area ?? state.catalogo?.titulo ?? 'Estudos Jurídicos'}
-            videoId={videoId}
-          />
         </div>
 
-        {/* Coluna Lateral Direita: Ações da Aula & Panorama */}
-        <div className="lg:col-span-3 xl:col-span-3 pt-3 lg:pt-0 space-y-4 lg:bg-card/40 lg:border lg:border-white/10 lg:rounded-2xl lg:p-4 lg:shadow-xl">
-          <div className="hidden lg:block space-y-2 border-b border-border/60 pb-4">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-primary">Recursos da Aula</h2>
-            <Suspense fallback={<div className="h-20 animate-pulse bg-muted rounded-xl" />}>
-              <VideoaulaAcoesBar input={input} gridLayout gridCols={3} onOpenAnotacoes={() => setShowAnotacoes(true)} />
-            </Suspense>
-          </div>
-
-          <h2 className="hidden lg:block text-sm font-bold text-foreground pb-2 border-b border-border">
-            Panorama & Estudo com IA
-          </h2>
-
-          <VideoaulaPanoramaIA 
-            resumo={resumo.data?.resumo}
-            sobreAula={state.aula?.sobre_aula}
-            descricao={state.aula?.descricao}
-            isLoading={resumo.isLoading}
+        {/* Coluna Direita: Aulas da Matéria */}
+        <div className="hidden lg:block lg:col-span-4 xl:col-span-3">
+          <VideoaulaSidebarDesktop 
+            aulasDaArea={state.aulasDaArea}
+            videoId={videoId}
+            catalogoId={state.catalogo.id}
+            areaSlug={areaSlug}
           />
         </div>
       </div>

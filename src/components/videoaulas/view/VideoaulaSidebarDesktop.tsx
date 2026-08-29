@@ -22,7 +22,7 @@ export const VideoaulaSidebarDesktop = React.memo(function VideoaulaSidebarDeskt
   const navigate = useNavigate();
 
   return (
-    <aside className="hidden lg:block lg:col-span-3 xl:col-span-3 space-y-3 bg-card/40 border border-border/60 rounded-2xl p-4 shadow-sm max-h-[85vh] overflow-y-auto">
+    <aside className="hidden lg:block space-y-3 bg-card/40 border border-border/60 rounded-2xl p-4 shadow-sm max-h-[85vh] overflow-y-auto">
       <div className="flex items-center justify-between border-b border-border/60 pb-2.5">
         <h2 className="text-sm font-bold text-foreground">Aulas da Matéria</h2>
         <span className="text-[11px] font-semibold text-primary px-2 py-0.5 rounded-full bg-primary/10">
