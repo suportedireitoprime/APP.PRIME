@@ -42,7 +42,7 @@ const SEGMENTOS = [
   { id: 'oab', label: 'OAB', desc: 'Exame de Ordem (FGV).' },
 ];
 
-const STATUS = [
+export const STATUS = [
   { id: 'nao_resolvidas', label: 'Não resolvi' },
   { id: 'resolvidas', label: 'Resolvi' },
   { id: 'acertei', label: 'Acertei' },

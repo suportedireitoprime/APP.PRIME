@@ -1,12 +1,11 @@
 # Diretivas do Projeto & Skills Nativas Incorporadas
 
-## Git & GitHub (Auto-Commit & Push)
-- Sempre que alterações no código forem finalizadas com sucesso (criação de arquivos, correções, refatorações ou novas funcionalidades), a IA deve automaticamente executar os comandos para enviar as atualizações ao GitHub:
-  1. `git add .`
-  2. `git commit -m "<descrição detalhada das alterações>"`
-  3. `git push`
+## Git & GitHub (Auto-Commit & Push 100% Automático)
+- **REGRA SUPREMA DE VERSIONAMENTO:** Toda vez que qualquer alteração no código for finalizada com sucesso (criação, correção, refatoração), você **JÁ DEVE ENVIAR para o GitHub AUTOMATICAMENTE**, sem esperar que o usuário peça. O objetivo é engatilhar a build (Vercel/etc) instantaneamente.
+- **Comando no PowerShell:** O PowerShell no Windows não aceita `&&`. Use ponto e vírgula (`;`) para encadear os comandos na mesma linha, exemplo:
+  `git add . ; git commit -m "sua descrição" ; git push`
 - **Executável Git no Windows:** Se o comando `git` padrão não for localizado no `PATH`, utilize o caminho absoluto da instalação do GitHub Desktop:
-  `C:\Users\ext_wpereira\AppData\Local\GitHubDesktop\app-3.6.3\resources\app\git\cmd\git.exe`
+  `C:\Users\ext_wpereira\AppData\Local\GitHubDesktop\app-3.6.3\resources\app\git\cmd\git.exe add . ; C:\...\git.exe commit -m "..." ; C:\...\git.exe push`
 
 ## Ambiente & Comandos de Execução (Windows / PowerShell)
 - **Verificação de Tipos TypeScript:** Executar `.\node_modules\.bin\tsc.CMD --noEmit` para validar a ausência de erros de compilação.
