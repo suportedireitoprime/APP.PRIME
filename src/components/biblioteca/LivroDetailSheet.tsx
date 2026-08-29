@@ -324,16 +324,7 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
                   <Button
                     className="w-full h-14 text-lg font-semibold gap-2.5 rounded-2xl shadow-lg"
                     onClick={() => {
-                      // No desktop, pula o dialog mobile e vai direto para a
-                      // leitura nativa (layout desktop já implementado dentro
-                      // do LeitorNativo).
-                      if (isDesktop) {
-                        if (!canUse) { setGateOpen(true); return; }
-                        register(String(livro.id));
-                        setReaderMode('nativa');
-
-                        return;
-                      }
+                      if (!canUse) { setGateOpen(true); return; }
                       setLerDialog(true);
                     }}
                     disabled={!hasPdf && !hasOnline}

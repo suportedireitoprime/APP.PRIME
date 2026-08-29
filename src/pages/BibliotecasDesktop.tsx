@@ -134,39 +134,19 @@ const BibliotecasDesktop = () => {
             </section>
           </div>
 
-          {/* ➡️ Coluna direita: atividade do usuário ou detalhe do livro ➡️ */}
+          {/* ➡️ Coluna direita: atividade do usuário ➡️ */}
           <aside className="hidden lg:block col-span-12 lg:col-span-4 xl:col-span-3 2xl:col-span-3 h-[calc(100vh-6rem)] sticky top-6">
-            <AnimatePresence mode="wait">
-              {livroAberto ? (
-                <motion.div
-                  key="detalhe"
-                  className="h-full"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                >
-                  <LivroDetailSheet
-                    livro={livroAberto}
-                    open={true}
-                    onClose={() => setLivroAberto(null)}
-                    inline={true}
-                  />
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="atividade"
-                  className="h-full"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                >
-                  <BibliotecaAtividadeRail onAbrirLivro={(l) => setLivroAberto(l)} />
-                </motion.div>
-              )}
-            </AnimatePresence>
+            <BibliotecaAtividadeRail onAbrirLivro={(l) => setLivroAberto(l)} />
           </aside>
         </div>
       </main>
+
+      <LivroDetailSheet
+        livro={livroAberto}
+        open={!!livroAberto}
+        onClose={() => setLivroAberto(null)}
+        inline={false}
+      />
     </div>
   );
 };

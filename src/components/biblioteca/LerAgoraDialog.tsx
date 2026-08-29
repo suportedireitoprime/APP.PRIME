@@ -2,6 +2,7 @@ import { Smartphone, BookOpen, BookCopy, Download, Monitor, X, Check, Loader2, W
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import { useEffect, useState } from 'react';
+import { Capacitor } from '@capacitor/core';
 
 export type LerModo = 'nativa' | 'pdf' | 'online' | 'download' | 'desktop';
 
@@ -87,42 +88,46 @@ const LerAgoraDialog = ({ open, onClose, onSelect, hasPdf, hasOnline, pdfCached,
                   />
 
                   {/* Baixar Offline */}
-                  {isDownloading ? (
-                    <div className="w-full min-h-[64px] rounded-2xl bg-white/5 p-4 border border-white/10 flex flex-col justify-center">
-                      <div className="flex items-center gap-3">
-                        <Loader2 className="w-5 h-5 animate-spin text-primary" />
-                        <div className="flex-1 text-sm font-semibold text-foreground">Baixando PDF… {downloadProgress}%</div>
+                  {Capacitor.isNativePlatform() && (
+                    isDownloading ? (
+                      <div className="w-full min-h-[64px] rounded-2xl bg-white/5 p-4 border border-white/10 flex flex-col justify-center">
+                        <div className="flex items-center gap-3">
+                          <Loader2 className="w-5 h-5 animate-spin text-primary" />
+                          <div className="flex-1 text-sm font-semibold text-foreground">Baixando PDF… {downloadProgress}%</div>
+                        </div>
+                        <div className="mt-3 h-1.5 bg-background rounded-full overflow-hidden">
+                          <div className="h-full bg-primary transition-all" style={{ width: `${downloadProgress}%` }} />
+                        </div>
                       </div>
-                      <div className="mt-3 h-1.5 bg-background rounded-full overflow-hidden">
-                        <div className="h-full bg-primary transition-all" style={{ width: `${downloadProgress}%` }} />
-                      </div>
-                    </div>
-                  ) : pdfCached ? (
-                    <OptionRow
-                      icon={Check}
-                      title="PDF disponível offline"
-                      desc="Arquivo baixado no dispositivo."
-                      onClick={() => onSelect('pdf')}
-                      iconColor="text-emerald-400"
-                    />
-                  ) : (
-                    <OptionRow
-                      icon={Download}
-                      title="Baixar para offline"
-                      desc="Salva o PDF para ler sem internet."
-                      onClick={() => onSelect('download')}
-                    />
+                    ) : pdfCached ? (
+                      <OptionRow
+                        icon={Check}
+                        title="PDF disponível offline"
+                        desc="Arquivo baixado no dispositivo."
+                        onClick={() => onSelect('pdf')}
+                        iconColor="text-emerald-400"
+                      />
+                    ) : (
+                      <OptionRow
+                        icon={Download}
+                        title="Baixar para offline"
+                        desc="Salva o PDF para ler sem internet."
+                        onClick={() => onSelect('download')}
+                      />
+                    )
                   )}
                 </>
               )}
 
               {/* Versão desktop */}
-              <OptionRow
-                icon={Monitor}
-                title="Versão desktop"
-                desc="Ler no computador com layout ampliado."
-                onClick={() => onSelect('desktop')}
-              />
+              {Capacitor.isNativePlatform() && (
+                <OptionRow
+                  icon={Monitor}
+                  title="Versão desktop"
+                  desc="Ler no computador com layout ampliado."
+                  onClick={() => onSelect('desktop')}
+                />
+              )}
 
               {!hasPdf && !hasOnline && (
                 <p className="text-sm text-muted-foreground text-center py-2">
