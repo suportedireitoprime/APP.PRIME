@@ -23,9 +23,11 @@ interface DesktopPageLayoutProps {
   mobileHeader?: React.ReactNode;
   /** Usa toda a largura disponível (com margens laterais fluidas) em vez do container estreito. */
   wide?: boolean;
+  /** Esconde a barra de abas principal (Legislação, Biblioteca, etc). Útil para sub-telas. */
+  hideTabs?: boolean;
 }
 
-const DesktopPageLayout = ({ children, activeId, title, subtitle, mobileHeader, wide }: DesktopPageLayoutProps) => {
+const DesktopPageLayout = ({ children, activeId, title, subtitle, mobileHeader, wide, hideTabs }: DesktopPageLayoutProps) => {
   const navigate = useNavigate();
   const isDesktop = useIsDesktop();
   const location = useLocation();
@@ -55,33 +57,35 @@ const DesktopPageLayout = ({ children, activeId, title, subtitle, mobileHeader, 
 
 
       {/* Tab bar */}
-      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-md border-b border-border">
-        <div className="flex items-center justify-center gap-1 h-12">
-          {TABS.map((tab) => {
-            const Icon = tab.icon;
-            const isActive = tab.id === activeId;
-            return (
-              <button
-                key={tab.id}
-                onMouseEnter={() => { if (tab.prefetch) prefetchRoute(tab.prefetch); }}
-                onFocus={() => { if (tab.prefetch) prefetchRoute(tab.prefetch); }}
-                onClick={() => navigate(tab.path)}
-                className={`relative flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-body font-medium transition-colors min-w-[130px] ${
-                  isActive
-                    ? 'text-primary bg-primary/10'
-                    : 'text-foreground/60 hover:text-foreground hover:bg-secondary/60'
-                }`}
-              >
-                <Icon className="w-4 h-4 shrink-0" />
-                <span className="whitespace-nowrap">{tab.label}</span>
-                {isActive && (
-                  <div className="absolute bottom-0 left-3 right-3 h-0.5 bg-primary rounded-full" />
-                )}
-              </button>
-            );
-          })}
+      {!hideTabs && (
+        <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-md border-b border-border">
+          <div className="flex items-center justify-center gap-1 h-12">
+            {TABS.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = tab.id === activeId;
+              return (
+                <button
+                  key={tab.id}
+                  onMouseEnter={() => { if (tab.prefetch) prefetchRoute(tab.prefetch); }}
+                  onFocus={() => { if (tab.prefetch) prefetchRoute(tab.prefetch); }}
+                  onClick={() => navigate(tab.path)}
+                  className={`relative flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-body font-medium transition-colors min-w-[130px] ${
+                    isActive
+                      ? 'text-primary bg-primary/10'
+                      : 'text-foreground/60 hover:text-foreground hover:bg-secondary/60'
+                  }`}
+                >
+                  <Icon className="w-4 h-4 shrink-0" />
+                  <span className="whitespace-nowrap">{tab.label}</span>
+                  {isActive && (
+                    <div className="absolute bottom-0 left-3 right-3 h-0.5 bg-primary rounded-full" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto">

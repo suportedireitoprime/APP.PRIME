@@ -113,7 +113,7 @@ const Audioaulas = () => {
 
   if (isDesktop) {
     return (
-      <DesktopPageLayout activeId="aprender" title={areaAtual ? `Audioaulas - ${areaAtual}` : "Audioaulas"} wide>
+      <DesktopPageLayout activeId="aprender" title={areaAtual ? `Audioaulas - ${areaAtual}` : "Audioaulas"} wide hideTabs>
         {content}
       </DesktopPageLayout>
     );
