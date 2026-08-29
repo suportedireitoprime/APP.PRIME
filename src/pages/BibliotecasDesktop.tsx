@@ -1,152 +1,211 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ChevronRight } from 'lucide-react';
+import { useEffect, useState, Suspense, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { ChevronRight, Scale, BookOpen, Gavel, Library, MessageSquare, BookOpenText, GraduationCap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQueryClient } from '@tanstack/react-query';
+import { lazyWithRetry } from "@/utils/lazyWithRetry";
+
 import { type LivroNormalizado } from '@/lib/bibliotecaColecoes';
 import { scheduleWarmBiblioteca } from '@/services/bibliotecaWarmup';
 import { useVisibleColecoes } from '@/hooks/useVisibleColecoes';
+import { prefetchRoute, type PrefetchKey } from '@/lib/routePrefetch';
+import { directImg } from '@/lib/cdnImg';
 
+import DesktopTopHeader from '@/components/vademecum/DesktopTopHeader';
+import DesktopOnboardingOverlay from '@/components/desktop/DesktopOnboardingOverlay';
+import DesktopBreadcrumb from '@/components/vademecum/DesktopBreadcrumb';
+import DesktopSidebar from '@/components/vademecum/DesktopSidebar';
 
-import BibliotecaSearchBar from '@/components/biblioteca/BibliotecaSearchBar';
-import BibliotecaAtalhosBar from '@/components/biblioteca/BibliotecaAtalhosBar';
-import LivroDetailSheet from '@/components/biblioteca/LivroDetailSheet';
-import FilosofosPanel from '@/components/biblioteca/FilosofosPanel';
-import RecomendacoesCarousel from '@/components/biblioteca/RecomendacoesCarousel';
+import DesktopBibliotecaHero from '@/components/desktop/DesktopBibliotecaHero';
+import DesktopBibliotecaGrid from '@/components/desktop/DesktopBibliotecaGrid';
 import ContinuarLeituraCarousel from '@/components/biblioteca/ContinuarLeituraCarousel';
-import BibliotecaColecoesSidebar from '@/components/biblioteca/BibliotecaColecoesSidebar';
-import BibliotecaAtividadeRail from '@/components/biblioteca/BibliotecaAtividadeRail';
+import RecomendacoesCarousel from '@/components/biblioteca/RecomendacoesCarousel';
+import LivroDetailSheet from '@/components/biblioteca/LivroDetailSheet';
 
-/**
- * Desktop-native Biblioteca layout. Not a shrunk-down mobile screen: it uses
- * DesktopTopHeader + breadcrumb, a wide 12-col content area, and a
- * multi-column collections grid so the wide side margins are actually put to
- * work (matches the density of Amazon Kindle / Apple Books / Google Play
- * Livros catalog pages).
- */
+const SearchOverlay = lazyWithRetry(() => import('@/components/vademecum/SearchOverlay'));
+const AssistenteOverlay = lazyWithRetry(() => import('@/components/vademecum/AssistenteOverlayV2'));
+
+const DESKTOP_TABS: Array<{ id: string; label: string; icon: any; path: string; prefetch?: PrefetchKey }> = [
+  { id: 'legislacao', label: 'Legislação', icon: Scale, path: '/' },
+  { id: 'biblioteca', label: 'Biblioteca', icon: Library, path: '/bibliotecas' },
+  { id: 'ferramentas', label: 'Ferramentas', icon: Gavel, path: '/ferramentas', prefetch: 'ferramentas' },
+  { id: 'aprender', label: 'Aprender', icon: GraduationCap, path: '/aprender', prefetch: 'aprender' },
+  { id: 'chat', label: 'Chat', icon: MessageSquare, path: '/assistente-horus' },
+  { id: 'vademecum', label: 'Vade Mecum', icon: BookOpenText, path: '/vade-mecum' },
+];
+
 const BibliotecasDesktop = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const queryClient = useQueryClient();
   const [livroAberto, setLivroAberto] = useState<LivroNormalizado | null>(null);
   const colecoesVisiveis = useVisibleColecoes();
+  const acervoRef = useRef<HTMLDivElement>(null);
+  
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [assistenteOpen, setAssistenteOpen] = useState(false);
+  
+  const handleAssistenteClose = () => setAssistenteOpen(false);
+  const handleSearchClose = () => setSearchOpen(false);
 
   useEffect(() => scheduleWarmBiblioteca(queryClient), [queryClient]);
 
+  const scrollToAcervo = () => {
+    if (acervoRef.current) {
+      acervoRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
     <div className="min-h-dvh bg-background flex flex-col">
-      {/* Global header/breadcrumb já é renderizado por GlobalDesktopHeader
-          no App shell — não duplicar aqui. */}
-      <main className="flex-1 min-w-0">
-        <div className="max-w-[1600px] mx-auto w-full px-6 py-6 grid grid-cols-12 gap-6 items-start">
-          {/* ⬅️ Coluna esquerda: navegação por coleções ⬅️ */}
-          <aside className="hidden xl:block xl:col-span-2 2xl:col-span-2">
-            <BibliotecaColecoesSidebar />
-          </aside>
-
-          {/* ↕️ Centro: hero, atalhos, recomendações e acervo ↕️ */}
-          <div className="col-span-12 lg:col-span-8 xl:col-span-7 2xl:col-span-7 min-w-0 space-y-6">
-            <section>
-              <div className="rounded-3xl overflow-hidden">
-                <FilosofosPanel>
-                  <div className="[&>div]:!px-0 [&>div]:!mb-0">
-                    <BibliotecaSearchBar onAbrirLivro={(l) => setLivroAberto(l)} />
-                  </div>
-                </FilosofosPanel>
-              </div>
-              <div className="mt-4 grid grid-cols-3 gap-3">
-                <div className="rounded-xl bg-secondary/40 px-3 py-2">
-                  <div className="text-xl font-bold text-foreground">{colecoesVisiveis.length}</div>
-                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground">coleções</div>
-                </div>
-                <div className="rounded-xl bg-secondary/40 px-3 py-2">
-                  <div className="text-xl font-bold text-foreground">2k+</div>
-                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground">livros</div>
-                </div>
-                <div className="rounded-xl bg-secondary/40 px-3 py-2">
-                  <div className="text-xl font-bold text-foreground">24/7</div>
-                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground">offline</div>
-                </div>
-              </div>
-            </section>
-
-            <section>
-              <BibliotecaAtalhosBar onAbrirLivro={(l) => setLivroAberto(l)} />
-            </section>
-
-            <section>
-              <ContinuarLeituraCarousel onAbrirLivro={(l) => setLivroAberto(l)} />
-              <RecomendacoesCarousel onAbrirLivro={(l) => setLivroAberto(l)} />
-            </section>
-
-            <section className="pb-16">
-              <div className="flex items-end justify-between mb-5">
-                <div>
-                  <p className="text-[10px] uppercase tracking-[0.22em] text-primary/90 font-bold">
-                    Acervo
-                  </p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="w-1 h-7 rounded-full bg-primary" />
-                    <h2 className="font-display text-2xl text-foreground leading-tight">
-                      Explore todas as coleções
-                    </h2>
-                  </div>
-                </div>
-                <p className="text-sm text-muted-foreground hidden md:block">
-                  {colecoesVisiveis.length} coleções
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4">
-                {colecoesVisiveis.map((c) => (
+      <DesktopOnboardingOverlay />
+      <DesktopTopHeader onAssistenteClick={() => setAssistenteOpen(true)} />
+      <DesktopBreadcrumb />
+      
+      <div className="flex flex-1 min-h-0">
+        <DesktopSidebar activeTab="biblioteca" onTabChange={(t) => {
+           const tab = DESKTOP_TABS.find(x => x.id === t);
+           if (tab) navigate(tab.path);
+        }} />
+        
+        <div className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden relative">
+          <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-md border-b border-border">
+            <div className="flex items-center gap-1 px-8 h-12">
+              {DESKTOP_TABS.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = 'biblioteca' === tab.id;
+                return (
                   <button
-                    key={c.id}
-                    type="button"
-                    onClick={() => navigate(`/bibliotecas/${c.id}`)}
-                    className="group relative flex items-stretch h-[100px] overflow-hidden rounded-xl border border-border/50 bg-card shadow-sm hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/10 hover:border-primary/40 transition-all text-left"
+                    key={tab.id}
+                    onClick={() => navigate(tab.path)}
+                    onMouseEnter={() => { if (tab.prefetch) prefetchRoute(tab.prefetch); }}
+                    onFocus={() => { if (tab.prefetch) prefetchRoute(tab.prefetch); }}
+                    className={`relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-body font-medium transition-colors ${
+                      isActive
+                        ? 'text-primary bg-primary/10'
+                        : 'text-foreground/60 hover:text-foreground hover:bg-secondary/60'
+                    }`}
                   >
-                    <div className="relative w-[100px] shrink-0 overflow-hidden">
-                      <img
-                        src={c.cover}
-                        alt=""
-                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        loading="lazy"
-                      />
-                      <div className="absolute inset-y-0 right-0 w-12 bg-gradient-to-r from-transparent to-card pointer-events-none" />
-                    </div>
-                    <div className="flex-1 min-w-0 flex flex-col justify-center px-4 py-3">
-                      <p className="text-[10px] uppercase tracking-[0.22em] font-bold text-primary/90 truncate">
-                        {c.eyebrow}
-                      </p>
-                      <h3 className="text-[13px] font-bold leading-tight mt-0.5 text-foreground truncate">
-                        {c.label}
-                      </h3>
-                      <p className="text-[11px] text-muted-foreground leading-snug mt-1 line-clamp-2">
-                        {c.subtitle}
-                      </p>
-                    </div>
-                    <div className="flex items-center pr-4 text-muted-foreground group-hover:text-primary transition-colors">
-                      <ChevronRight className="w-5 h-5" />
-                    </div>
+                    <Icon className="w-4 h-4" />
+                    <span>{tab.label}</span>
+                    {isActive && <div className="absolute bottom-0 left-3 right-3 h-0.5 bg-primary rounded-full" />}
                   </button>
-                ))}
-              </div>
-            </section>
+                );
+              })}
+            </div>
           </div>
+          
+          <AnimatePresence mode="wait">
+            <motion.div
+              key="biblioteca-desktop"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.2, ease: 'easeOut' }}
+              className="px-8 py-6 2xl:px-14"
+            >
+              <div className="mb-6 -mx-8 -mt-6 2xl:-mx-14">
+                 <DesktopBibliotecaHero onSearchClick={() => setSearchOpen(true)} />
+              </div>
 
-          {/* ➡️ Coluna direita: atividade do usuário ➡️ */}
-          <aside className="hidden lg:block col-span-12 lg:col-span-4 xl:col-span-3 2xl:col-span-3 h-[calc(100vh-6rem)] sticky top-6">
-            <BibliotecaAtividadeRail onAbrirLivro={(l) => setLivroAberto(l)} />
-          </aside>
+              <div className="mb-8">
+                {/* Aqui substituimos o BibliotecaAtalhosBar pelo Grid novo */}
+                <DesktopBibliotecaGrid 
+                  onScrollToAcervo={scrollToAcervo} 
+                  onUploadPdf={() => {
+                    // Se o usuário clicar, disparamos um evento customizado ou alert que o upload será tratado na UI correspondente
+                    // No Desktop, o ideal é despachar evento pro componente Bibliotecas (pai) ou redirecionar.
+                    // Para simplificar, vou focar apenas no scrollToAcervo para "Coleções" e navegar para "/bibliotecas?aba=acervos"
+                  }} 
+                />
+              </div>
+
+              <div className="mb-10 space-y-6">
+                <ContinuarLeituraCarousel onAbrirLivro={(l) => setLivroAberto(l)} />
+                <RecomendacoesCarousel onAbrirLivro={(l) => setLivroAberto(l)} />
+              </div>
+
+              <section className="pb-16" ref={acervoRef}>
+                <div className="flex items-end justify-between mb-5">
+                  <div>
+                    <p className="text-[10px] uppercase tracking-[0.22em] text-primary/90 font-bold">
+                      Acervo
+                    </p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="w-1 h-7 rounded-full bg-primary" />
+                      <h2 className="font-display text-2xl text-foreground leading-tight">
+                        Explore todas as coleções
+                      </h2>
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground hidden md:block">
+                    {colecoesVisiveis.length} coleções
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4">
+                  {colecoesVisiveis.map((c) => (
+                    <button
+                      key={c.id}
+                      onClick={() => navigate(`/bibliotecas/${c.id}`)}
+                      className="group flex flex-col text-left rounded-2xl bg-card border border-border overflow-hidden hover:border-primary/40 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 relative min-h-[140px]"
+                    >
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -z-10 group-hover:scale-125 transition-transform duration-500" />
+                      
+                      <div className="p-5 flex items-start gap-4 flex-1">
+                        <div className="w-16 h-20 shrink-0 bg-muted rounded border border-border shadow-sm overflow-hidden relative">
+                          <div className="absolute inset-0 bg-gradient-to-br from-black/20 to-transparent z-10 mix-blend-overlay" />
+                          <div className="absolute left-0 top-0 bottom-0 w-[1px] bg-white/20 z-20" />
+                          <div className="absolute left-1 top-0 bottom-0 w-[1px] bg-black/10 z-20" />
+                          {c.capaPlaceholder ? (
+                            <img src={directImg(c.capaPlaceholder, 200)} alt="" loading="lazy" className="w-full h-full object-cover relative z-0" />
+                          ) : (
+                            <div className="w-full h-full bg-primary/10 flex items-center justify-center">
+                              <Library className="w-6 h-6 text-primary/40" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground mb-1">
+                            {c.tipo || 'Coleção'}
+                          </div>
+                          <h3 className="font-display font-bold text-foreground text-lg leading-tight group-hover:text-primary transition-colors">
+                            {c.nome}
+                          </h3>
+                        </div>
+                      </div>
+                      <div className="px-5 py-3 border-t border-border/50 bg-secondary/30 flex items-center justify-between">
+                        <span className="text-xs text-muted-foreground font-medium">Ver coleção</span>
+                        <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors group-hover:translate-x-1" />
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </section>
+
+            </motion.div>
+          </AnimatePresence>
         </div>
-      </main>
-
-      <LivroDetailSheet
-        livro={livroAberto}
-        open={!!livroAberto}
-        onClose={() => setLivroAberto(null)}
-        inline={false}
-      />
+        
+        <Suspense fallback={null}>
+          {searchOpen && (
+             <SearchOverlay open={searchOpen} onClose={handleSearchClose} />
+          )}
+          {assistenteOpen && (
+             <AssistenteOverlay open={assistenteOpen} onClose={handleAssistenteClose} />
+          )}
+        </Suspense>
+      </div>
+      
+      <AnimatePresence>
+        {livroAberto && (
+          <LivroDetailSheet
+            livro={livroAberto}
+            open={!!livroAberto}
+            onOpenChange={(v) => !v && setLivroAberto(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

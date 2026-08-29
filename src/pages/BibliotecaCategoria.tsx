@@ -381,7 +381,7 @@ const BibliotecaCategoria = () => {
               <LivroCard
                 key={`${colecao.id}-${l.id}`}
                 livro={l}
-                priority={i < 6}
+                priority={i < 12}
                 badge={badges.getBadge(colecao.id, colecao.table, l.id)}
                 onClick={() => setLivroAberto(l)}
               />

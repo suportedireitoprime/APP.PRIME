@@ -1,13 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Bell, Scale, Gavel, BookOpen, Landmark, Feather, ScrollText, Bird } from 'lucide-react';
-import {pickAsset, srcOf } from '@/lib/assetUrl';
-import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
-import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
+import appLogo from '@/assets/direitoprime-logo.webp';
 import NotificationsSheet, { useUnreadNotifCount } from './NotificationsSheet';
 import DesktopToolsMenu from './DesktopToolsMenu';
-
-const primeLogo = pickAsset(primeLogoBundled, srcOf(primeLogoAsset));
 
 // Ícones decorativos flutuando ao fundo — bem discretos, low-opacity.
 const BACKDROP_ICONS = [
@@ -59,15 +55,15 @@ const DesktopTopHeader = ({ onAssistenteClick }: Props) => {
           <div className="relative">
             <div className="absolute inset-0 blur-xl bg-primary/40 rounded-full scale-125" />
             <div className="relative w-14 h-14 rounded-2xl overflow-hidden shadow-xl border-2 border-primary-foreground/20 bg-background/40">
-              <img src={primeLogo} alt="Direito Prime" className="w-full h-full object-cover" />
+              <img src={appLogo} alt="Estudos Jurídicos" className="w-full h-full object-contain" />
             </div>
           </div>
           <div className="flex flex-col items-start leading-tight">
-            <span className="font-display text-xl font-bold text-white tracking-tight drop-shadow-sm">
-              Direito Prime
+            <span className="font-display text-xl font-bold text-white tracking-tight drop-shadow-sm uppercase">
+              Estudos Jurídicos
             </span>
             <span className="font-body text-[11px] uppercase tracking-[0.24em] text-white/90">
-              Vade Mecum 2026
+              Uso Profissional
             </span>
           </div>
         </button>

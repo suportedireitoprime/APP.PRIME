@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Scale, BookOpen, Gavel, Library, MessageSquare, BookOpenText } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import DesktopHeroBanner from '@/components/vademecum/DesktopHeroBanner';
 import DesktopTopHeader from '@/components/vademecum/DesktopTopHeader';
 import DesktopBreadcrumb from '@/components/vademecum/DesktopBreadcrumb';
@@ -88,14 +89,23 @@ const DesktopPageLayout = ({ children, activeId, title, subtitle, mobileHeader, 
       )}
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto">
-        <div className={wide ? 'w-full max-w-[1600px] mx-auto px-6 lg:px-10 2xl:px-16 py-8' : 'w-full max-w-6xl mx-auto px-6 lg:px-10 2xl:px-14 py-8'}>
-          <div className="mb-6">
-            <h1 className="font-display text-2xl text-foreground font-bold">{title}</h1>
-            {subtitle && <p className="text-muted-foreground text-sm mt-1">{subtitle}</p>}
-          </div>
-          {children}
-        </div>
+      <div className="flex-1 overflow-y-auto overflow-x-hidden relative">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={location.pathname}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+            className={wide ? 'w-full max-w-[1600px] mx-auto px-6 lg:px-10 2xl:px-16 py-8' : 'w-full max-w-6xl mx-auto px-6 lg:px-10 2xl:px-14 py-8'}
+          >
+            <div className="mb-6">
+              <h1 className="font-display text-2xl text-foreground font-bold">{title}</h1>
+              {subtitle && <p className="text-muted-foreground text-sm mt-1">{subtitle}</p>}
+            </div>
+            {children}
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   );

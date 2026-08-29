@@ -422,8 +422,8 @@ const RecomendacoesCarousel = ({ onAbrirLivro }: Props) => {
                     <img
                       src={directImg(livro.capa, 480)}
                       alt={livro.titulo}
-                      loading={i < 3 ? 'eager' : 'lazy'}
-                      {...(i < 3 ? { fetchPriority: 'high' } : {})}
+                      loading={i < 8 ? 'eager' : 'lazy'}
+                      {...(i < 8 ? { fetchPriority: 'high' } : {})}
                       decoding="async"
                       className="absolute inset-0 w-full h-full object-cover"
                     />

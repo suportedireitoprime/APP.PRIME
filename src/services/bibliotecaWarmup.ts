@@ -6,7 +6,7 @@ import { withBundleFallback, bundle } from '@/services/offlineBundle';
 
 const STALE = 10 * 60 * 1000;
 const LOTE = 4;
-const CAPAS_POR_COLECAO = 12;
+const CAPAS_POR_COLECAO = 24;
 
 let started = false;
 let inflight: Promise<void> | null = null;
@@ -79,7 +79,7 @@ async function aquecerCapas(qc: QueryClient) {
       if (!l.capa) return;
       const img = new Image();
       img.decoding = 'async';
-      (img as any).fetchPriority = 'low';
+      (img as any).fetchPriority = 'high';
       img.src = directImg(l.capa, 300);
     });
   });
