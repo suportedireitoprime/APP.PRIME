@@ -13,7 +13,7 @@ import camaraHeroAsset from '@/assets/radar/camara-hero.webp';
 const camaraHero = camaraHeroAsset;
 import senadoHeroAsset from '@/assets/radar/senado-hero.webp';
 const senadoHero = senadoHeroAsset;
-import DesktopNewsSidebar from '@/components/vademecum/DesktopNewsSidebar';
+
 import DesktopHeroBanner from '@/components/vademecum/DesktopHeroBanner';
 import DesktopTopHeader from '@/components/vademecum/DesktopTopHeader';
 import DesktopOnboardingOverlay from '@/components/desktop/DesktopOnboardingOverlay';
@@ -254,7 +254,7 @@ const IndexDesktop = () => {
             </div>
           </div>
         </div>
-        <DesktopNewsSidebar />
+
         <Suspense fallback={null}>
           {searchOpen && (
             <SearchOverlay open={searchOpen} onClose={handleSearchClose} onSelectLei={handleSearchSelectLei} />
