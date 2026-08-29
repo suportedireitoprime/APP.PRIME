@@ -9,6 +9,20 @@ import VadeMecumFavoritos from './VadeMecumFavoritos';
 import VadeMecumTutorialOverlay from '@/components/vademecum/VadeMecumTutorialOverlay';
 import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
 import { pushRecente } from '@/lib/leisRecentes';
+import { useIsDesktop } from '@/hooks/use-desktop';
+import DesktopTopHeader from '@/components/vademecum/DesktopTopHeader';
+import DesktopBreadcrumb from '@/components/vademecum/DesktopBreadcrumb';
+import DesktopSidebar from '@/components/vademecum/DesktopSidebar';
+import { Scale, BookOpen, Gavel, Library, MessageSquare, BookOpenText, GraduationCap } from 'lucide-react';
+
+const DESKTOP_TABS: { id: string; label: string; icon: any }[] = [
+  { id: 'legislacao', label: 'Legislação', icon: Scale },
+  { id: 'biblioteca', label: 'Biblioteca', icon: Library },
+  { id: 'ferramentas', label: 'Ferramentas', icon: Gavel },
+  { id: 'aprender', label: 'Aprender', icon: GraduationCap },
+  { id: 'chat', label: 'Chat', icon: MessageSquare },
+  { id: 'vademecum', label: 'Vade Mecum', icon: BookOpenText },
+];
 
 /**
  * Hub do Vade Mecum — mesmo painel do início do app, em verde,
@@ -17,6 +31,7 @@ import { pushRecente } from '@/lib/leisRecentes';
 const VadeMecum = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const isDesktop = useIsDesktop();
   const [buscaOpen, setBuscaOpen] = useState(false);
   const [tutorialOpen, setTutorialOpen] = useState(false);
 
@@ -47,13 +62,15 @@ const VadeMecum = () => {
 
   const activeTab = getActiveTab();
 
-  return (
-    <div className={`theme-vademecum min-h-dvh bg-background pb-24 ${activeTab !== 'emalta' && activeTab !== 'favoritos' ? 'pt-8' : ''}`}>
+  const renderContent = () => (
+    <>
       {activeTab === 'emalta' && (
-        <VadeMecumHero onBuscar={() => setBuscaOpen(true)} />
+        <div className={isDesktop ? "-mx-8 -mt-6 2xl:-mx-14" : ""}>
+          <VadeMecumHero onBuscar={() => setBuscaOpen(true)} />
+        </div>
       )}
 
-      <main className="max-w-5xl lg:max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-2 relative">
+      <main className={`relative ${isDesktop ? 'mt-8' : 'max-w-5xl lg:max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-2'}`}>
         <AnimatePresence mode="wait">
           {activeTab === 'favoritos' ? (
             <motion.div
@@ -62,7 +79,7 @@ const VadeMecum = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15, ease: 'easeOut' }}
-              className="pt-6"
+              className={isDesktop ? '' : 'pt-6'}
             >
               <VadeMecumFavoritos />
             </motion.div>
@@ -79,7 +96,7 @@ const VadeMecum = () => {
                 hideNoticias 
                 hideBlog 
                 emAltaLeis 
-                hideTabs
+                hideTabs={!isDesktop}
                 activeTab={activeTab as any}
                 onBuscar={() => setBuscaOpen(true)}
               />
@@ -87,6 +104,83 @@ const VadeMecum = () => {
           )}
         </AnimatePresence>
       </main>
+    </>
+  );
+
+  if (isDesktop) {
+    return (
+      <div className="min-h-dvh bg-background flex flex-col theme-vademecum">
+        <DesktopTopHeader onAssistenteClick={() => navigate('/assistente-horus')} />
+        <DesktopBreadcrumb />
+        <div className="flex flex-1 min-h-0">
+          <DesktopSidebar 
+            activeTab={'vademecum' as any} 
+            onTabChange={(tab) => {
+              const routes: Record<string, string> = {
+                legislacao: '/',
+                noticias: '/noticias',
+                ferramentas: '/ferramentas',
+                biblioteca: '/bibliotecas',
+                aprender: '/aprender',
+                chat: '/assistente-horus',
+                vademecum: '/vade-mecum',
+              };
+              if (routes[tab]) navigate(routes[tab]);
+            }} 
+          />
+          <div className="flex-1 min-w-0 overflow-y-auto">
+            <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-md border-b border-border">
+              <div className="flex items-center gap-1 px-8 h-12">
+                {DESKTOP_TABS.map((tab) => {
+                  const Icon = tab.icon;
+                  const isActive = tab.id === 'vademecum';
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => {
+                        const routes: Record<string, string> = {
+                          legislacao: '/',
+                          noticias: '/noticias',
+                          ferramentas: '/ferramentas',
+                          biblioteca: '/bibliotecas',
+                          aprender: '/aprender',
+                          chat: '/assistente-horus',
+                          vademecum: '/vade-mecum',
+                        };
+                        if (routes[tab.id]) navigate(routes[tab.id]);
+                      }}
+                      className={`relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-body font-medium transition-colors ${
+                        isActive
+                          ? 'text-primary bg-primary/10'
+                          : 'text-foreground/60 hover:text-foreground hover:bg-secondary/60'
+                      }`}
+                    >
+                      <Icon className="w-4 h-4" />
+                      <span>{tab.label}</span>
+                      {isActive && <div className="absolute bottom-0 left-3 right-3 h-0.5 bg-primary rounded-full" />}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            
+            <div className="px-8 py-6 2xl:px-14">
+              {renderContent()}
+            </div>
+          </div>
+        </div>
+        
+        <BuscaLeisOverlay open={buscaOpen} onClose={() => setBuscaOpen(false)} onSelectLei={abrirLei} />
+        <AnimatePresence>
+          {tutorialOpen && <VadeMecumTutorialOverlay onClose={fecharTutorial} />}
+        </AnimatePresence>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`theme-vademecum min-h-dvh bg-background pb-24 ${activeTab !== 'emalta' && activeTab !== 'favoritos' ? 'pt-8' : ''}`}>
+      {renderContent()}
       <BuscaLeisOverlay open={buscaOpen} onClose={() => setBuscaOpen(false)} onSelectLei={abrirLei} />
       <VadeMecumBottomNav hidden={buscaOpen} />
 
