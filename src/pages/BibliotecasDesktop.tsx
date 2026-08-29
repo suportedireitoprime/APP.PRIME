@@ -39,13 +39,13 @@ const BibliotecasDesktop = () => {
           no App shell — não duplicar aqui. */}
       <main className="flex-1 min-w-0">
         <div className="max-w-[1600px] mx-auto w-full px-6 py-6 grid grid-cols-12 gap-6 items-start">
-          {/* ── Coluna esquerda: navegação por coleções ── */}
-          <aside className="hidden xl:block col-span-3 2xl:col-span-2">
+          {/* ⬅️ Coluna esquerda: navegação por coleções ⬅️ */}
+          <aside className="hidden xl:block xl:col-span-3 2xl:col-span-2">
             <BibliotecaColecoesSidebar />
           </aside>
 
-          {/* ── Centro: hero, atalhos, recomendações e acervo ── */}
-          <div className="col-span-12 xl:col-span-5 2xl:col-span-6 min-w-0 space-y-8">
+          {/* ↕️ Centro: hero, atalhos, recomendações e acervo ↕️ */}
+          <div className="col-span-12 lg:col-span-8 xl:col-span-6 2xl:col-span-7 min-w-0 space-y-8">
             <section>
               <div className="rounded-3xl overflow-hidden">
                 <FilosofosPanel>
@@ -97,7 +97,7 @@ const BibliotecasDesktop = () => {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4">
                 {colecoesVisiveis.map((c) => (
                   <button
                     key={c.id}
@@ -134,8 +134,8 @@ const BibliotecasDesktop = () => {
             </section>
           </div>
 
-          {/* ── Coluna direita: atividade do usuário ou detalhe do livro ── */}
-          <aside className="hidden lg:block col-span-12 lg:col-span-4 xl:col-span-4 2xl:col-span-4 h-[calc(100vh-6rem)] sticky top-6">
+          {/* ➡️ Coluna direita: atividade do usuário ou detalhe do livro ➡️ */}
+          <aside className="hidden lg:block col-span-12 lg:col-span-4 xl:col-span-3 2xl:col-span-3 h-[calc(100vh-6rem)] sticky top-6">
             <AnimatePresence mode="wait">
               {livroAberto ? (
                 <motion.div
