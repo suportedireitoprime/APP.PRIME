@@ -58,8 +58,8 @@ const DesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClick }: Prop
           
           <div className="flex-1 max-w-3xl space-y-6">
             <div className="space-y-3">
-              <h2 className="font-display text-3xl xl:text-4xl font-bold text-foreground leading-snug tracking-tight">
-                Estudos Jurídicos.
+              <h2 className="font-serif italic text-4xl xl:text-5xl font-bold text-foreground leading-[1.05] tracking-tight drop-shadow-md">
+                Estudos Jurídicos
               </h2>
               <p className="text-muted-foreground text-base xl:text-lg font-body leading-relaxed max-w-2xl">
                 Pesquise por legislação, jurisprudência, resumos e materiais de estudo.
