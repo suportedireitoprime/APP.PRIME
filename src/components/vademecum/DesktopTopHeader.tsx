@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Bell, Scale, Gavel, BookOpen, Landmark, Feather, ScrollText, Bird } from 'lucide-react';
-import appLogo from '@/assets/direitoprime-logo.webp';
+import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
+import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
+import { pickAsset, srcOf } from '@/lib/assetUrl';
+
+const primeLogo = pickAsset(primeLogoBundled, srcOf(primeLogoAsset));
 import NotificationsSheet, { useUnreadNotifCount } from './NotificationsSheet';
 import DesktopToolsMenu from './DesktopToolsMenu';
 
@@ -55,7 +59,7 @@ const DesktopTopHeader = ({ onAssistenteClick }: Props) => {
           <div className="relative">
             <div className="absolute inset-0 blur-xl bg-primary/40 rounded-full scale-125" />
             <div className="relative w-14 h-14 rounded-2xl overflow-hidden shadow-xl border-2 border-primary-foreground/20 bg-background/40">
-              <img src={appLogo} alt="Estudos Jurídicos" className="w-full h-full object-contain" />
+              <img src={primeLogo} alt="Estudos Jurídicos" className="w-full h-full object-contain" />
             </div>
           </div>
           <div className="flex flex-col items-start leading-tight">

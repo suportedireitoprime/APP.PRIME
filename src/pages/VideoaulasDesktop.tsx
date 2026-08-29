@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, memo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Play, Video, Search, Mic, Clock, ChevronRight } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/PageHeader';
@@ -10,6 +10,45 @@ import { haptic } from '@/lib/nativeHaptics';
 import ContinuarAssistindoCarousel from '@/components/videoaulas/ContinuarAssistindoCarousel';
 import { prefetchCatalogo } from '@/lib/videoaulasStore';
 
+const AreaCard = memo(({ a, handleAreaClick }: any) => {
+  const { Icon, color } = areaIconFor(a.area);
+  return (
+    <button
+      onPointerDown={() => prefetchCatalogo('areas')}
+      onClick={() => handleAreaClick(a.slug)}
+      className="group flex flex-col items-start gap-4 rounded-3xl border border-border/80 bg-card/60 backdrop-blur-md p-5 text-left transition-all hover:border-primary/50 hover:bg-card hover:shadow-xl hover:-translate-y-1 will-change-transform"
+    >
+      <div className="flex w-full items-center justify-between">
+        <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-muted/30 group-hover:bg-primary/10 transition-colors">
+          <Icon className="h-8 w-8 transition-transform group-hover:scale-110 will-change-transform" strokeWidth={1.9} style={{ color }} />
+        </div>
+        {a.pct > 0 && (
+          <div className="flex items-center gap-1.5 bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20">
+            <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+            <span className="text-[11px] font-bold text-primary">{a.pct}%</span>
+          </div>
+        )}
+      </div>
+      
+      <div>
+        <p className="text-base font-bold text-foreground leading-tight">
+          {simplificarNomeArea(a.area)}
+        </p>
+        <p className="mt-1 flex items-center gap-1 text-[13px] text-muted-foreground">
+          <Video className="h-3.5 w-3.5" />
+          <span>{a.total} aulas</span>
+        </p>
+      </div>
+
+      {a.pct > 0 && (
+        <div className="w-full h-1 bg-border/50 rounded-full overflow-hidden mt-1">
+          <div className="h-full bg-primary transition-all duration-1000 ease-out" style={{ width: `${a.pct}%` }} />
+        </div>
+      )}
+    </button>
+  );
+});
+
 interface VideoaulasDesktopProps {
   data: ResumoVideoaulas;
   filtro: 'todas' | 'andamento';
@@ -19,7 +58,7 @@ interface VideoaulasDesktopProps {
   lista: any[];
 }
 
-export function VideoaulasDesktop({
+export const VideoaulasDesktop = memo(function VideoaulasDesktop({
   data,
   filtro,
   setFiltro,
@@ -29,10 +68,10 @@ export function VideoaulasDesktop({
 }: VideoaulasDesktopProps) {
   const navigate = useNavigate();
 
-  const handleAreaClick = (slug: string) => {
+  const handleAreaClick = useCallback((slug: string) => {
     haptic.selection();
     navigate(`/videoaulas/areas/${slug}`);
-  };
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-background pb-16">
@@ -54,46 +93,9 @@ export function VideoaulasDesktop({
                  Nenhuma área encontrada.
               </div>
             ) : (
-              lista.map((a) => {
-                const { Icon, color } = areaIconFor(a.area);
-                return (
-                  <button
-                    key={`${a.catalogo}-${a.slug}`}
-                    onPointerDown={() => prefetchCatalogo('areas')}
-                    onClick={() => handleAreaClick(a.slug)}
-                    className="group flex flex-col items-start gap-4 rounded-3xl border border-border/80 bg-card/60 backdrop-blur-md p-5 text-left transition-all hover:border-primary/50 hover:bg-card hover:shadow-xl hover:-translate-y-1"
-                  >
-                    <div className="flex w-full items-center justify-between">
-                      <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-muted/30 group-hover:bg-primary/10 transition-colors">
-                        <Icon className="h-8 w-8 transition-transform group-hover:scale-110" strokeWidth={1.9} style={{ color }} />
-                      </div>
-                      {a.pct > 0 && (
-                        <div className="flex items-center gap-1.5 bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20">
-                          <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                          <span className="text-[11px] font-bold text-primary">{a.pct}%</span>
-                        </div>
-                      )}
-                    </div>
-                    
-                    <div>
-                      <p className="text-base font-bold text-foreground leading-tight">
-                        {simplificarNomeArea(a.area)}
-                      </p>
-                      <p className="mt-1 flex items-center gap-1 text-[13px] text-muted-foreground">
-                        <Video className="h-3.5 w-3.5" />
-                        <span>{a.total} aulas</span>
-                      </p>
-                    </div>
-
-                    {/* Progress Bar Sutil */}
-                    {a.pct > 0 && (
-                      <div className="w-full h-1 bg-border/50 rounded-full overflow-hidden mt-1">
-                        <div className="h-full bg-primary transition-all duration-1000 ease-out" style={{ width: `${a.pct}%` }} />
-                      </div>
-                    )}
-                  </button>
-                );
-              })
+              lista.map((a) => (
+                <AreaCard key={`${a.catalogo}-${a.slug}`} a={a} handleAreaClick={handleAreaClick} />
+              ))
             )}
           </div>
         </div>

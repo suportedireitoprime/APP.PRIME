@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Play, PlayCircle, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -25,7 +25,7 @@ interface UltimaAula {
   slug: string;
 }
 
-export function ContinuarAssistindoCarousel() {
+export const ContinuarAssistindoCarousel = memo(function ContinuarAssistindoCarousel() {
   const navigate = useNavigate();
   const [ultimaAula, setUltimaAula] = useState<UltimaAula | null>(null);
   const [loading, setLoading] = useState(true);
