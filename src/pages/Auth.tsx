@@ -655,18 +655,34 @@ const Auth = () => {
       <div className="absolute inset-0 w-full h-full">
         {isDesktop ? (
           <>
-            <img
-              src={themisAuthYellow}
-              alt="Themis e a advocacia"
-              loading="eager"
-              decoding="sync"
-              fetchPriority="high"
-              className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none"
-            />
-            {/* Bottom gradient wash — black only at the very beginning, lighter above */}
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/25 to-[#0e0e0c]" />
-            {/* Left-to-right subtle darken for headline legibility */}
-            <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/15 to-black/30" />
+            <div className="absolute inset-0 flex w-full h-full">
+              <div className="w-1/2 h-full relative">
+                <img
+                  src={authJudgeScene}
+                  alt="Tribunal de Justiça"
+                  loading="eager"
+                  decoding="sync"
+                  fetchPriority="high"
+                  className="w-full h-full object-cover object-center pointer-events-none select-none opacity-80"
+                />
+                <div className="absolute inset-y-0 right-0 w-48 bg-gradient-to-l from-[#0d0f12] to-transparent z-10" />
+              </div>
+              <div className="w-1/2 h-full relative">
+                <img
+                  src={themisAuthYellow}
+                  alt="Themis e a advocacia"
+                  loading="eager"
+                  decoding="sync"
+                  fetchPriority="high"
+                  className="w-full h-full object-cover object-center pointer-events-none select-none opacity-80"
+                />
+                <div className="absolute inset-y-0 left-0 w-48 bg-gradient-to-r from-[#0d0f12] to-transparent z-10" />
+              </div>
+            </div>
+            
+            {/* Overlay escuro em tudo para manter o texto legível e o clima dark */}
+            <div className="absolute inset-0 bg-black/40 z-20" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f12] via-transparent to-transparent h-1/2 mt-auto z-20" />
           </>
         ) : (
           <>

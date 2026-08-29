@@ -36,7 +36,7 @@ export function useDesktopSessionGuard(enabled: boolean) {
         } else if (j?.status === 'expired' || j?.status === 'not_found') {
           window.localStorage.removeItem(DESKTOP_SESSION_KEY);
           await supabase.auth.signOut();
-          toast.info('Sua sessão de 24h expirou. Escaneie o QR novamente.');
+          toast.info('Sua sessão no desktop expirou. Escaneie o QR novamente.');
           window.location.href = '/auth';
         }
       } catch {

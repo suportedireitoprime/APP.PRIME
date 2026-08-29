@@ -143,7 +143,7 @@ export default function Assinatura() {
     else window.localStorage.removeItem('assinatura_platform_override');
     setDevSheetOpen(false);
   };
-  const [tab, setTab] = useState<'mensal' | 'vitalicio'>('mensal');
+  const [tab, setTab] = useState<'mensal' | 'anual'>('mensal');
 
   const PRO_FEATURES = [
     { icon: Scale, text: 'Vade Mecum completo — todas as leis em vigor, sempre atualizadas' },
@@ -159,48 +159,28 @@ export default function Assinatura() {
     { icon: Zap, text: 'Sem anúncios · Suporte prioritário · Atualizações antecipadas' },
   ];
 
-  const startPurchase = async (plano: 'mensal' | 'vitalicio') => {
-    track('subscription_started', { plano, metodo: 'web', source: 'planos_page' });
+  const startPurchase = async (plano: 'mensal' | 'anual') => {
+    track('subscription_started', { plano, metodo: 'native', source: 'planos_page' });
     import('@/lib/appEvents')
       .then(({ appEvents }) => {
         appEvents.verPlano({ plano: plano as any });
-        appEvents.assinaturaIniciada({ plano: plano as any, metodo: 'web' });
+        appEvents.assinaturaIniciada({ plano: plano as any, metodo: 'native' });
       })
       .catch(() => {});
       
     if (!session) { toast.error('Faça login para assinar'); return; }
     
-    setPlayLoading(true);
-    try {
-      const { data: { session: currentSession } } = await supabase.auth.getSession();
-      const token = currentSession?.access_token;
-      
-      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/asaas-checkout`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ 
-          plan: plano, 
-          name: session.user.user_metadata?.full_name || '', 
-          email: session.user.email 
-        })
+    if (plano === 'anual' && !hasUsedTrial) {
+      setTrialSheetPlan(plano);
+      return;
+    }
+
+    if (nativeBilling) {
+      handlePlayPurchase(plano);
+    } else {
+      toast.info('Assinatura disponível no aplicativo móvel', {
+        description: 'Por favor, baixe o app Direito Prime no Google Play ou na App Store no seu celular para realizar a assinatura.'
       });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || 'Falha ao gerar cobrança');
-      
-      if (json.invoiceUrl) {
-         import('@capacitor/browser').then(({ Browser }) => {
-             Browser.open({ url: json.invoiceUrl });
-         });
-         toast.success('Página de pagamento aberta com sucesso!');
-      }
-    } catch (err: any) {
-      console.error(err);
-      toast.error(err.message || 'Erro ao iniciar checkout');
-    } finally {
-      setPlayLoading(false);
     }
   };
 
@@ -328,17 +308,19 @@ export default function Assinatura() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setTab('vitalicio')}
+                  onClick={() => setTab('anual')}
                   className={`flex-1 py-2 rounded-lg font-display text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
-                    tab === 'vitalicio'
+                    tab === 'anual'
                       ? 'bg-primary text-primary-foreground shadow-md'
                       : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
-                  <span>Vitalício</span>
-                  <span className="px-1.5 py-0.5 rounded-full bg-white/20 text-[9px] font-black uppercase">
-                    ÚNICO
-                  </span>
+                  <span>Anual</span>
+                  {!hasUsedTrial && (
+                    <span className="px-1.5 py-0.5 rounded-full bg-white/20 text-[9px] font-black uppercase">
+                      3 DIAS GRÁTIS
+                    </span>
+                  )}
                 </button>
               </div>
             </div>
@@ -366,23 +348,29 @@ export default function Assinatura() {
                 </div>
               ) : (
                 <div className="relative rounded-2xl border-2 border-primary bg-card/90 p-5 shadow-2xl text-center space-y-3">
-                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-primary text-primary-foreground font-display text-xs font-black tracking-wider uppercase shadow-md">
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-primary text-primary-foreground font-display text-xs font-black tracking-wider uppercase shadow-md flex items-center gap-1.5">
                     O MAIS VENDIDO
                   </div>
 
                   <p className="font-display text-xs font-bold uppercase tracking-widest text-muted-foreground pt-1">
-                    DIREITO PRIME PRO VITALÍCIO
+                    DIREITO PRIME PRO ANUAL
                   </p>
 
-                  <div className="flex items-baseline justify-center gap-1.5">
-                    <span className="font-display text-3xl sm:text-4xl font-black text-foreground">
-                      R$ 199,90
-                    </span>
+                  <div className="flex flex-col items-center justify-center gap-0">
+                    <div className="flex items-baseline gap-1">
+                      <span className="font-display text-3xl sm:text-4xl font-black text-foreground">R$ 199,90</span>
+                      <span className="text-xs font-semibold text-muted-foreground">/ano</span>
+                    </div>
+                    <span className="text-xs font-bold text-muted-foreground pt-0.5">equivalente a R$ 16,65 /mês</span>
                   </div>
 
-                  <p className="text-xs font-bold text-primary">
-                    Pagamento único · Acesso para sempre
-                  </p>
+                  <div className="text-xs font-bold text-primary flex items-center justify-center gap-1 pt-1">
+                    {!hasUsedTrial ? (
+                      <>Comece com <span className="bg-primary/10 px-1.5 py-0.5 rounded text-primary uppercase font-black text-[10px]">3 DIAS GRÁTIS</span></>
+                    ) : (
+                      'Cobrado anualmente'
+                    )}
+                  </div>
                 </div>
               )}
             </div>
@@ -459,7 +447,7 @@ export default function Assinatura() {
                   Posso cancelar quando quiser?
                 </AccordionTrigger>
                 <AccordionContent className="font-body text-sm text-muted-foreground leading-relaxed">
-                  O cancelamento é feito direto pelo suporte no WhatsApp ou no painel do Asaas. A renovação do plano mensal pode ser interrompida a qualquer momento. No plano Vitalício, não há renovação.
+                  O cancelamento é feito direto pelo sistema de assinaturas da App Store ou do Google Play. A renovação dos planos pode ser interrompida a qualquer momento nas configurações do seu celular.
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="teste" className="border-border">

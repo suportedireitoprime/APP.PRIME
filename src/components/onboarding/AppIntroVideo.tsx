@@ -28,33 +28,29 @@ const displayFont =
   '"Space Grotesk", "Inter", ui-sans-serif, system-ui, sans-serif';
 const bodyFont = '"Inter", ui-sans-serif, system-ui, sans-serif';
 
-/* Animated background — subtle yellow rays + noise. Present in every scene. */
+/* Animated background  subtle dark + red gradient */
 const BackdropRays: React.FC = () => {
-  const frame = useCurrentFrame();
-  const rotate = interpolate(frame, [0, 900], [0, 360]);
   return (
-    <AbsoluteFill style={{ background: INK, overflow: 'hidden' }}>
+    <AbsoluteFill style={{ background: '#0A0A0A', overflow: 'hidden' }}>
       <div
         style={{
           position: 'absolute',
-          inset: '-30%',
-          background: `conic-gradient(from ${rotate}deg at 50% 55%,
-            rgba(239,68,68,0) 0deg,
-            rgba(239,68,68,0.12) 40deg,
-            rgba(239,68,68,0) 90deg,
-            rgba(239,68,68,0.10) 160deg,
-            rgba(239,68,68,0) 220deg,
-            rgba(239,68,68,0.14) 300deg,
-            rgba(239,68,68,0) 360deg)`,
-          filter: 'blur(40px)',
+          inset: 0,
+          background: 'radial-gradient(ellipse at top right, rgba(224,31,71,0.22), transparent 60%)',
         }}
       />
       <div
         style={{
           position: 'absolute',
           inset: 0,
-          background:
-            'radial-gradient(ellipse at 50% 100%, rgba(239,68,68,0.18) 0%, rgba(0,0,0,0) 55%)',
+          background: 'radial-gradient(ellipse at bottom left, rgba(0,0,0,0.5), transparent 65%)',
+        }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(to top, rgba(0,0,0,0.6), transparent)',
         }}
       />
     </AbsoluteFill>
@@ -95,7 +91,7 @@ const Sparkles: React.FC<{ count?: number }> = ({ count = 14 }) => {
   );
 };
 
-/* Section label — small yellow eyebrow used across feature scenes */
+/* Section label  small yellow eyebrow used across feature scenes */
 const Eyebrow: React.FC<{ text: string; delay?: number }> = ({
   text,
   delay = 0,
@@ -147,83 +143,57 @@ const Eyebrow: React.FC<{ text: string; delay?: number }> = ({
 };
 
 /* ------------------------------------------------------------------ */
-/*  Scene 1 — ABERTURA                                                */
+/*  Scene 1  ABERTURA                                                */
 /* ------------------------------------------------------------------ */
 
-const SceneAbertura: React.FC<{ owlSrc: string }> = ({ owlSrc }) => {
+const SceneAbertura: React.FC<{ owlSrc: string }> = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  const owlIn = spring({ frame, fps, config: { damping: 12, stiffness: 130 } });
-  const owlScale = interpolate(owlIn, [0, 1], [0.4, 1]);
-  const owlY = interpolate(owlIn, [0, 1], [80, 0]);
-  const owlFloat = Math.sin(frame / 12) * 6;
-
-  const letters = 'HORUS'.split('');
+  const scale = spring({ frame: frame - 10, fps, config: { damping: 12, stiffness: 130 } });
 
   return (
     <AbsoluteFill>
       <BackdropRays />
       <Sparkles />
-      <AbsoluteFill
-        style={{ alignItems: 'center', justifyContent: 'center', gap: 40 }}
-      >
-        <div
-          style={{
-            transform: `translateY(${owlY + owlFloat}px) scale(${owlScale})`,
-            filter: `drop-shadow(0 30px 60px rgba(239,68,68,0.35))`,
-          }}
-        >
-          <Img
-            src={owlSrc}
-            style={{ width: 460, height: 460, objectFit: 'contain' }}
-          />
-        </div>
+      <AbsoluteFill style={{ alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ transform: `scale(${scale}) translateY(-30px)`, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div style={{
+            marginBottom: 40, padding: 30, borderRadius: 40,
+            background: 'rgba(224,31,71,0.2)',
+            border: '1px solid rgba(224,31,71,0.3)',
+            boxShadow: '0 0 40px rgba(224,31,71,0.2)'
+          }}>
+            <svg width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="#E01F47" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>
+          </div>
+          
+          <div style={{
+             fontFamily: displayFont,
+             fontSize: 34,
+             fontWeight: 700,
+             letterSpacing: '0.25em',
+             color: 'rgba(255,255,255,0.9)',
+             textTransform: 'uppercase',
+             opacity: interpolate(frame, [25, 40], [0, 1], { extrapolateRight: 'clamp' }),
+             transform: `translateY(${interpolate(frame, [25, 40], [10, 0], { extrapolateRight: 'clamp' })}px)`
+          }}>
+             Direito Prime
+          </div>
 
-        <div style={{ display: 'flex', gap: 6 }}>
-          {letters.map((L, i) => {
-            const s = spring({
-              frame: frame - 12 - i * 4,
-              fps,
-              config: { damping: 14, stiffness: 200 },
-            });
-            const y = interpolate(s, [0, 1], [40, 0]);
-            const op = interpolate(s, [0, 1], [0, 1]);
-            return (
-              <span
-                key={i}
-                style={{
-                  fontFamily: displayFont,
-                  fontWeight: 900,
-                  fontSize: 168,
-                  lineHeight: 1,
-                  color: CREAM,
-                  transform: `translateY(${y}px)`,
-                  opacity: op,
-                  letterSpacing: '-0.04em',
-                  textShadow: `0 8px 40px rgba(239,68,68,0.4)`,
-                }}
-              >
-                {L}
-              </span>
-            );
-          })}
-        </div>
-
-        <div
-          style={{
-            fontFamily: bodyFont,
-            fontSize: 40,
-            color: YELLOW,
-            fontWeight: 600,
-            letterSpacing: '0.24em',
-            textTransform: 'uppercase',
-            opacity: interpolate(frame, [30, 55], [0, 1], {
-              extrapolateRight: 'clamp',
-            }),
-          }}
-        >
-          Seu assistente jurídico
+          <div style={{
+             fontFamily: 'serif',
+             fontStyle: 'italic',
+             fontSize: 96,
+             fontWeight: 700,
+             color: '#FFF',
+             lineHeight: 1,
+             marginTop: 15,
+             opacity: interpolate(frame, [40, 55], [0, 1], { extrapolateRight: 'clamp' }),
+             transform: `translateY(${interpolate(frame, [40, 55], [10, 0], { extrapolateRight: 'clamp' })}px)`,
+             textShadow: '0 4px 20px rgba(0,0,0,0.8)'
+          }}>
+             Estudos Jur�dicos
+          </div>
         </div>
       </AbsoluteFill>
     </AbsoluteFill>
@@ -231,10 +201,10 @@ const SceneAbertura: React.FC<{ owlSrc: string }> = ({ owlSrc }) => {
 };
 
 /* ------------------------------------------------------------------ */
-/*  Scene 2 — APRESENTAÇÃO                                            */
+/*  Scene 2  APRESENTA��O                                            */
 /* ------------------------------------------------------------------ */
 
-const SceneApresentacao: React.FC<{ owlSrc: string }> = ({ owlSrc }) => {
+const SceneApresentacao: React.FC<{ owlSrc: string }> = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const enter = spring({
@@ -242,9 +212,7 @@ const SceneApresentacao: React.FC<{ owlSrc: string }> = ({ owlSrc }) => {
     fps,
     config: { damping: 18, stiffness: 130 },
   });
-  const owlX = interpolate(enter, [0, 1], [400, 0]);
   const textX = interpolate(enter, [0, 1], [400, 0]);
-  const owlFloat = Math.sin(frame / 10) * 8;
 
   return (
     <AbsoluteFill>
@@ -267,21 +235,6 @@ const SceneApresentacao: React.FC<{ owlSrc: string }> = ({ owlSrc }) => {
         >
           <div
             style={{
-              transform: `translateX(${-owlX}px) translateY(${owlFloat}px)`,
-            }}
-          >
-            <Img
-              src={owlSrc}
-              style={{
-                width: 340,
-                height: 340,
-                objectFit: 'contain',
-                filter: 'drop-shadow(0 20px 40px rgba(239,68,68,0.35))',
-              }}
-            />
-          </div>
-          <div
-            style={{
               transform: `translateX(${textX}px)`,
               textAlign: 'center',
             }}
@@ -289,7 +242,7 @@ const SceneApresentacao: React.FC<{ owlSrc: string }> = ({ owlSrc }) => {
             <p
               style={{
                 fontFamily: bodyFont,
-                fontSize: 30,
+                fontSize: 34,
                 color: YELLOW,
                 letterSpacing: '0.24em',
                 textTransform: 'uppercase',
@@ -297,21 +250,20 @@ const SceneApresentacao: React.FC<{ owlSrc: string }> = ({ owlSrc }) => {
                 fontWeight: 700,
               }}
             >
-              Prazer, eu sou o Horus
+              Seu Assistente Jur�dico
             </p>
             <h2
               style={{
                 fontFamily: displayFont,
                 fontWeight: 900,
-                fontSize: 96,
+                fontSize: 100,
                 color: CREAM,
                 lineHeight: 0.95,
                 margin: '20px 0 0',
                 letterSpacing: '-0.03em',
               }}
             >
-              Deixa eu te mostrar o{' '}
-              <span style={{ color: YELLOW }}>que eu faço</span>
+              Deixa eu te mostrar o <br/><span style={{ color: YELLOW }}>que preparamos</span>
             </h2>
           </div>
         </div>
@@ -321,7 +273,7 @@ const SceneApresentacao: React.FC<{ owlSrc: string }> = ({ owlSrc }) => {
 };
 
 /* ------------------------------------------------------------------ */
-/*  Feature scenes — reusable structure                                */
+/*  Feature scenes  reusable structure                                */
 /* ------------------------------------------------------------------ */
 
 type FeatureSceneProps = {
@@ -365,10 +317,10 @@ const FeatureScene: React.FC<FeatureSceneProps> = ({
       <BackdropRays />
       <AbsoluteFill
         style={{
-          padding: '90px 70px',
+          padding: '60px 40px',
           display: 'flex',
           flexDirection: 'column',
-          gap: 32,
+          gap: 20,
         }}
       >
         <Eyebrow text={step} delay={0} />
@@ -463,7 +415,7 @@ const FeatureScene: React.FC<FeatureSceneProps> = ({
             marginTop: 'auto',
             display: 'flex',
             justifyContent: 'center',
-            transform: `translateY(${interpolate(mockS, [0, 1], [60, 0])}px)`,
+            transform: `translateY(${interpolate(mockS, [0, 1], [60, 0])}px) scale(1.15)`,
             opacity: mockS,
           }}
         >
@@ -514,13 +466,13 @@ const WhatsMock: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const bubbles = [
-    { me: true, text: 'Oi Horus! O que é usucapião?', at: 20 },
+    { me: true, text: 'Oi Horus! O que � usucapi�o?', at: 20 },
     {
       me: false,
-      text: 'Usucapião é quando alguém vira dono de um imóvel pelo uso prolongado. Quer que eu explique com um exemplo?',
+      text: 'Usucapi�o � quando algu�m vira dono de um im�vel pelo uso prolongado. Quer que eu explique com um exemplo?',
       at: 40,
     },
-    { me: true, text: 'Sim, por favor 🙏', at: 65 },
+    { me: true, text: 'Sim, por favor =O', at: 65 },
   ];
   return (
     <PhoneFrame height={520}>
@@ -674,7 +626,7 @@ const DocMock: React.FC = () => {
           fontWeight: 900,
         }}
       >
-        →
+        �
       </div>
       <div
         style={{
@@ -699,7 +651,7 @@ const DocMock: React.FC = () => {
         >
           Resumo
         </div>
-        {['Objeto do contrato', 'Prazo: 24 meses', 'Multa rescisória: 20%', 'Foro: Comarca da Capital'].map(
+        {['Objeto do contrato', 'Prazo: 24 meses', 'Multa rescis�ria: 20%', 'Foro: Comarca da Capital'].map(
           (t, i) => {
             const s = spring({
               frame: frame - 25 - i * 10,
@@ -716,7 +668,7 @@ const DocMock: React.FC = () => {
                   transform: `translateX(${interpolate(s, [0, 1], [10, 0])}px)`,
                 }}
               >
-                • {t}
+                " {t}
               </div>
             );
           },
@@ -733,25 +685,26 @@ const OCRMock: React.FC = () => {
   return (
     <div
       style={{
-        width: 380,
-        height: 260,
+        width: 600,
+        height: 400,
         borderRadius: 24,
         background: '#1a1a1a',
-        border: '2px solid rgba(239,68,68,0.4)',
+        border: '3px solid rgba(224,31,71,0.4)',
         position: 'relative',
         overflow: 'hidden',
-        padding: 18,
+        padding: 30,
         fontFamily: bodyFont,
+        boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
       }}
     >
       <div
         style={{
-          fontSize: 13,
+          fontSize: 16,
           color: YELLOW,
           letterSpacing: '0.2em',
           textTransform: 'uppercase',
           fontWeight: 700,
-          marginBottom: 10,
+          marginBottom: 16,
         }}
       >
         Foto do caderno
@@ -769,7 +722,7 @@ const OCRMock: React.FC = () => {
           overflow: 'hidden',
         }}
       >
-        "Art. 5º Todos são iguais perante a lei…"
+        "Art. 5� Todos s�o iguais perante a lei&"
         <div
           style={{
             position: 'absolute',
@@ -782,23 +735,47 @@ const OCRMock: React.FC = () => {
           }}
         />
       </div>
-      <div style={{ marginTop: 14, display: 'flex', alignItems: 'center', gap: 10 }}>
+      <div
+        style={{
+          background: 'rgba(255,255,255,0.05)',
+          padding: 24,
+          borderRadius: 12,
+          marginBottom: 24,
+        }}
+      >
         <div
           style={{
-            padding: '6px 12px',
-            borderRadius: 999,
+            width: '90%',
+            height: 12,
+            background: 'rgba(255,255,255,0.2)',
+            borderRadius: 6,
+            marginBottom: 14,
+          }}
+        />
+        <div
+          style={{
+            width: '60%',
+            height: 12,
+            background: 'rgba(255,255,255,0.1)',
+            borderRadius: 6,
+          }}
+        />
+      </div>
+      <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+        <div
+          style={{
             background: YELLOW,
-            color: INK,
-            fontSize: 12,
-            fontWeight: 800,
+            color: '#000',
+            padding: '8px 16px',
+            borderRadius: 8,
+            fontSize: 16,
+            fontWeight: 700,
           }}
         >
-          {spring({ frame: frame - 20, fps, config: { damping: 20 } }) > 0.5
-            ? 'Reconhecido ✓'
-            : 'Lendo…'}
+          Reconhecido 
         </div>
-        <div style={{ color: '#888', fontSize: 12 }}>
-          CF/88 · Art. 5º · Direitos Fundamentais
+        <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 16 }}>
+          CF/88 - Art. 5� - Direitos Fundamentais
         </div>
       </div>
     </div>
@@ -830,7 +807,7 @@ const AudioMock: React.FC = () => {
           fontWeight: 700,
         }}
       >
-        Você enviou um áudio
+        Voc� enviou um �udio
       </div>
       <div
         style={{
@@ -882,8 +859,8 @@ const RadarMock: React.FC = () => {
   const { fps } = useVideoConfig();
   const pulse = ((frame % 60) / 60) * 100;
   const items = [
-    { t: 'Nova Lei sancionada', d: 'PL 2.338/23 · IA no setor público' },
-    { t: 'STF publica súmula', d: 'Súmula Vinculante 59' },
+    { t: 'Nova Lei sancionada', d: 'PL 2.338/23 � IA no setor p�blico' },
+    { t: 'STF publica s�mula', d: 'S�mula Vinculante 59' },
     { t: 'Portaria MJ', d: 'Regulamenta atendimento em delegacias' },
   ];
   return (
@@ -968,7 +945,7 @@ const CHECK_ITEMS = [
   'Explico artigos e leis em linguagem simples',
   'Resumo PDFs, provas e documentos',
   'Leio imagens do caderno ou da prova',
-  'Entendo áudios e respondo em áudio',
+  'Entendo �udios e respondo em �udio',
   'Aviso sobre novas leis e boletins',
   'Tudo direto no seu WhatsApp',
 ];
@@ -1092,14 +1069,14 @@ const SceneChecklist: React.FC = () => {
 };
 
 /* ------------------------------------------------------------------ */
-/*  Scene — LIMITES (o que eu NÃO faço)                                */
+/*  Scene  LIMITES (o que eu N�O fa�o)                                */
 /* ------------------------------------------------------------------ */
 
 const LIMITS = [
-  'Não substituo um advogado',
-  'Não emito parecer oficial nem faço petição',
+  'N�o substituo um advogado',
+  'N�o emito parecer oficial nem fa�o peti��o',
   'Sempre confira antes de agir em processo',
-  'Não guardo nem exponho seus dados pessoais',
+  'N�o guardo nem exponho seus dados pessoais',
 ];
 
 const SceneLimites: React.FC = () => {
@@ -1130,7 +1107,7 @@ const SceneLimites: React.FC = () => {
             letterSpacing: '-0.03em',
           }}
         >
-          O que eu <span style={{ color: YELLOW }}>não faço</span>
+          O que eu <span style={{ color: YELLOW }}>n�o fa�o</span>
         </h2>
 
         <p
@@ -1144,7 +1121,7 @@ const SceneLimites: React.FC = () => {
             maxWidth: 900,
           }}
         >
-          Sou seu companheiro de estudos e consulta rápida — mas conhecer meus
+          Sou seu companheiro de estudos e consulta r�pida  mas conhecer meus
           limites te protege.
         </p>
 
@@ -1217,7 +1194,7 @@ const SceneLimites: React.FC = () => {
 };
 
 /* ------------------------------------------------------------------ */
-/*  Scene — PERGUNTA NOME                                             */
+/*  Scene  PERGUNTA NOME                                             */
 /* ------------------------------------------------------------------ */
 
 const ScenePerguntaNome: React.FC<{ owlSrc: string }> = ({ owlSrc }) => {
@@ -1264,7 +1241,7 @@ const ScenePerguntaNome: React.FC<{ owlSrc: string }> = ({ owlSrc }) => {
               fontWeight: 700,
             }}
           >
-            Uma última coisa
+            Uma �ltima coisa
           </p>
           <h2
             style={{
@@ -1286,42 +1263,30 @@ const ScenePerguntaNome: React.FC<{ owlSrc: string }> = ({ owlSrc }) => {
 };
 
 /* ------------------------------------------------------------------ */
-/*  Scene — SAUDAÇÃO FINAL                                            */
+/*  Scene  SAUDA��O FINAL                                            */
 /* ------------------------------------------------------------------ */
 
 const SceneSaudacao: React.FC<{ owlSrc: string; nome: string }> = ({
-  owlSrc,
   nome,
 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const s = spring({ frame, fps, config: { damping: 12, stiffness: 140 } });
-  const owlScale = interpolate(s, [0, 1], [0.6, 1]);
-  const wave = Math.sin(frame / 5) * 8;
-
-  const primeiro = (nome || 'você').trim().split(/\s+/)[0];
+  const s = spring({
+    frame: frame - 10,
+    fps,
+    config: { damping: 14, stiffness: 120 },
+  });
+  const primeiro = (nome || 'voc�').split(' ')[0];
 
   return (
     <AbsoluteFill>
       <BackdropRays />
-      <Sparkles count={18} />
       <AbsoluteFill
-        style={{ alignItems: 'center', justifyContent: 'center', gap: 40 }}
+        style={{
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
       >
-        <div
-          style={{
-            transform: `translateY(${wave}px) scale(${owlScale}) rotate(${
-              Math.sin(frame / 8) * 4
-            }deg)`,
-            filter: 'drop-shadow(0 30px 60px rgba(239,68,68,0.5))',
-          }}
-        >
-          <Img
-            src={owlSrc}
-            style={{ width: 420, height: 420, objectFit: 'contain' }}
-          />
-        </div>
-
         <div
           style={{ textAlign: 'center', opacity: s, padding: '0 60px' }}
         >
@@ -1336,7 +1301,7 @@ const SceneSaudacao: React.FC<{ owlSrc: string; nome: string }> = ({
               fontWeight: 700,
             }}
           >
-            Prazer em te conhecer
+            Tudo pronto
           </p>
           <h1
             style={{
@@ -1349,11 +1314,11 @@ const SceneSaudacao: React.FC<{ owlSrc: string; nome: string }> = ({
               letterSpacing: '-0.04em',
             }}
           >
-            Olá,{' '}
+            Ol�,{' '}
             <span
               style={{
                 color: YELLOW,
-                textShadow: '0 8px 40px rgba(239,68,68,0.5)',
+                textShadow: '0 8px 40px rgba(224,31,71,0.5)',
               }}
             >
               {primeiro}!
@@ -1368,7 +1333,7 @@ const SceneSaudacao: React.FC<{ owlSrc: string; nome: string }> = ({
               fontWeight: 500,
             }}
           >
-            Estou pronto para te ajudar.
+            Sua jornada come�a agora.
           </p>
         </div>
       </AbsoluteFill>
@@ -1377,7 +1342,7 @@ const SceneSaudacao: React.FC<{ owlSrc: string; nome: string }> = ({
 };
 
 /* ------------------------------------------------------------------ */
-/*  Composição principal                                              */
+/*  Composi��o principal                                              */
 /* ------------------------------------------------------------------ */
 
 export type AppIntroProps = {
@@ -1386,14 +1351,14 @@ export type AppIntroProps = {
 };
 
 /**
- * Sequências (30fps):
- *   1. Abertura              90     (0–90)
- *   2. Apresentação          70
- *   3. Feature 1 — Biblioteca 150
- *   4. Feature 2 — Flashcards 150
- *   5. Feature 3 — Radar     150
- *   6. Feature 4 — Hórus     150
- *   7. Saudação final        120
+ * Sequ�ncias (30fps):
+ *   1. Abertura              90     (090)
+ *   2. Apresenta��o          70
+ *   3. Feature 1  Biblioteca 150
+ *   4. Feature 2  Flashcards 150
+ *   5. Feature 3  Radar     150
+ *   6. Feature 4  H�rus     150
+ *   7. Sauda��o final        120
  */
 export const APP_INTRO_FPS = 30;
 export const APP_INTRO_WIDTH = 1080;
@@ -1453,10 +1418,10 @@ export const AppIntroVideo: React.FC<AppIntroProps> = ({
             step="01 / 04"
             title="Biblioteca"
             titleAccent="Inteligente"
-            description="Todos os Vade Mecums, leis e códigos atualizados diariamente. Leia de forma fluida e encontre o que precisa em segundos."
+            description="Todos os Vade Mecums, leis e c�digos atualizados diariamente. Leia de forma fluida e encontre o que precisa em segundos."
             bullets={[
-              'Atualização diária garantida',
-              'Busca semântica avançada',
+              'Atualiza��o di�ria garantida',
+              'Busca sem�ntica avan�ada',
               'Leitura adaptativa para telas de qualquer tamanho',
             ]}
             mock={<DocMock />}
@@ -1471,12 +1436,12 @@ export const AppIntroVideo: React.FC<AppIntroProps> = ({
           <FeatureScene
             step="02 / 04"
             title="Flashcards e"
-            titleAccent="Questões"
-            description="Memorize a lei seca com repetição espaçada. Crie cards com um clique a partir de qualquer artigo."
+            titleAccent="Quest�es"
+            description="Memorize a lei seca com repeti��o espa�ada. Crie cards com um clique a partir de qualquer artigo."
             bullets={[
-              'Algoritmo de repetição espaçada',
-              'Mais de 50.000 questões comentadas',
-              'Criação de cards com 1 clique',
+              'Algoritmo de repeti��o espa�ada',
+              'Mais de 50.000 quest�es comentadas',
+              'Cria��o de cards com 1 clique',
             ]}
             mock={<OCRMock />}
           />
@@ -1491,10 +1456,10 @@ export const AppIntroVideo: React.FC<AppIntroProps> = ({
             step="03 / 04"
             title="Radar"
             titleAccent="de Leis"
-            description="Nunca mais estude material desatualizado. O Radar te avisa sempre que uma lei ou súmula importante mudar."
+            description="Nunca mais estude material desatualizado. O Radar te avisa sempre que uma lei ou s�mula importante mudar."
             bullets={[
               'Avisos em tempo real',
-              'Resumos das alterações',
+              'Resumos das altera��es',
               'Monitoramento do STF e STJ',
             ]}
             mock={<RadarMock />}
@@ -1508,12 +1473,12 @@ export const AppIntroVideo: React.FC<AppIntroProps> = ({
         <TransitionSeries.Sequence durationInFrames={SEQ.featHorus}>
           <FeatureScene
             step="04 / 04"
-            title="Hórus"
+            title="H�rus"
             titleAccent="Assistente AI"
-            description="Dúvidas complexas? O Hórus responde, explica e exemplifica, direto no app ou no seu WhatsApp."
+            description="D�vidas complexas? O H�rus responde, explica e exemplifica, direto no app ou no seu WhatsApp."
             bullets={[
-              'Disponível 24 horas por dia',
-              'Entende áudios e imagens',
+              'Dispon�vel 24 horas por dia',
+              'Entende �udios e imagens',
               'Integrado ao seu WhatsApp',
             ]}
             mock={<WhatsMock />}

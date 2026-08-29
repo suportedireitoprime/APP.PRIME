@@ -123,6 +123,8 @@ Deno.serve(async (req) => {
       const authHeader = req.headers.get('Authorization');
       if (!authHeader) return json({ error: 'missing_auth' }, 401);
 
+      const expiresIn = String(body?.expires_in || 'session');
+
       const supabaseUser = createClient(
         Deno.env.get('SUPABASE_URL') ?? '',
         Deno.env.get('SUPABASE_ANON_KEY') ?? '',
@@ -158,15 +160,22 @@ Deno.serve(async (req) => {
         .eq('user_id', user.id)
         .is('revoked_at', null);
 
-      // Cria nova sessão desktop (24h) — só se soubermos o desktop_id.
+      // Cria nova sessão desktop — só se soubermos o desktop_id.
       let sessionId: string | null = null;
       if (row.desktop_id) {
+        let hours = 12; // fallback de segurança para 'session'
+        if (expiresIn === '6h') hours = 6;
+        else if (expiresIn === '24h') hours = 24;
+
+        const expiresAt = new Date(Date.now() + hours * 3600000).toISOString();
+
         const { data: sess } = await admin
           .from('desktop_sessions')
           .insert({
             user_id: user.id,
             desktop_id: row.desktop_id,
             user_agent: req.headers.get('user-agent')?.slice(0, 300) ?? null,
+            expires_at: expiresAt,
           })
           .select('id')
           .single();

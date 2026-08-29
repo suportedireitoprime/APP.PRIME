@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {pickAsset, srcOf } from '@/lib/assetUrl';
 import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/PageHeader';
@@ -13,11 +13,17 @@ import {
   ChevronRight,
   Copy,
   Check,
+  Clock,
+  History,
+  Laptop,
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Capacitor } from '@capacitor/core';
 import { toast } from 'sonner';
 import { scanOnce } from '@/lib/qrScanner';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { callDesktopLink } from '@/lib/desktopLinkApi';
 import desktopImgAsset from '@/assets/desktop-promo-laptop.webp';
 const desktopImg = desktopImgAsset;
 import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
@@ -63,8 +69,40 @@ const benefits = [
 const DesktopPromo = () => {
   const navigate = useNavigate();
   const goBack = useGoBack();
+  const { user } = useAuth();
   const [scanning, setScanning] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [selectedDuration, setSelectedDuration] = useState('session');
+  const [history, setHistory] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (!user) return;
+    (async () => {
+      const { data } = await supabase
+        .from('desktop_sessions')
+        .select('created_at, user_agent, revoked_at')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(3);
+      if (data) setHistory(data);
+    })();
+  }, [user]);
+
+  function parseUserAgent(ua: string | null) {
+    if (!ua) return 'Dispositivo desconhecido';
+    let browser = 'Navegador';
+    if (ua.includes('Chrome')) browser = 'Chrome';
+    else if (ua.includes('Safari') && !ua.includes('Chrome')) browser = 'Safari';
+    else if (ua.includes('Firefox')) browser = 'Firefox';
+    else if (ua.includes('Edge')) browser = 'Edge';
+
+    let os = 'Desktop';
+    if (ua.includes('Windows')) os = 'Windows';
+    else if (ua.includes('Mac OS')) os = 'Mac';
+    else if (ua.includes('Linux')) os = 'Linux';
+    
+    return `${browser} em ${os}`;
+  }
 
   const copySite = async () => {
     try {
@@ -97,7 +135,15 @@ const DesktopPromo = () => {
         toast.error('QR-code inválido. Escaneie o código exibido no computador.');
         return;
       }
-      navigate(`/desktop-link/${match[1]}`);
+      
+      const toastId = toast.loading('Liberando acesso...');
+      const j = await callDesktopLink<any>({ action: 'claim', token: match[1], expires_in: selectedDuration });
+      if (j?.ok) {
+        toast.success('Acesso liberado no computador!', { id: toastId });
+        setHistory(prev => [{ created_at: new Date().toISOString(), user_agent: navigator.userAgent }, ...prev].slice(0, 3));
+      } else {
+        toast.error(j?.error || 'Erro ao liberar acesso.', { id: toastId });
+      }
     } catch (e) {
       toast.error((e as Error)?.message || 'Não foi possível escanear');
     } finally {
@@ -174,7 +220,34 @@ const DesktopPromo = () => {
             )}
           </button>
 
-          {/* CTA principal — escanear (Posicionado diretamente abaixo do endereço do site) */}
+          {/* Seleção de tempo */}
+          <div className="mt-5 space-y-2">
+            <label className="text-[11px] font-body font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+              <Clock className="w-3.5 h-3.5" />
+              Tempo de acesso liberado
+            </label>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { id: 'session', label: 'Até fechar' },
+                { id: '6h', label: '6 horas' },
+                { id: '24h', label: '24 horas' },
+              ].map((opt) => (
+                <button
+                  key={opt.id}
+                  onClick={() => setSelectedDuration(opt.id)}
+                  className={`py-2 px-1 rounded-lg border text-xs font-bold font-body transition-all ${
+                    selectedDuration === opt.id
+                      ? 'bg-primary/20 border-primary text-primary'
+                      : 'bg-background/50 border-border text-muted-foreground hover:bg-background/80'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* CTA principal — escanear */}
           <motion.button
             onClick={handleScan}
             disabled={scanning}
@@ -198,6 +271,30 @@ const DesktopPromo = () => {
             <ShieldCheck className="w-3.5 h-3.5 text-primary" />
             Código válido por 3 minutos e único por acesso
           </div>
+
+          {/* Histórico */}
+          {history.length > 0 && (
+            <div className="mt-6 pt-5 border-t border-border">
+              <h3 className="text-[11px] font-body font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5 mb-3">
+                <History className="w-3.5 h-3.5" />
+                Últimos acessos
+              </h3>
+              <div className="space-y-2">
+                {history.map((h, i) => (
+                  <div key={i} className="flex items-center gap-3 p-2.5 rounded-lg bg-background/50 border border-border/50">
+                    <Laptop className="w-4 h-4 text-primary shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-semibold text-foreground truncate">{parseUserAgent(h.user_agent)}</p>
+                      <p className="text-[10px] text-muted-foreground">
+                        {new Date(h.created_at).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}
+                        {h.revoked_at ? ' • Revogado' : ' • Válido'}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </section>
 
         {/* Passo a passo */}

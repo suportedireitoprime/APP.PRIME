@@ -71,10 +71,10 @@ const VideoaulasBottomNav = () => {
     <>
       <nav
         aria-label="Navegação Videoaulas"
-        className="fixed bottom-0 left-0 right-0 z-40  md:bottom-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-auto"
+        className="fixed bottom-0 left-0 right-0 z-[100] md:bottom-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-auto lg:top-[calc(var(--sai-top,env(safe-area-inset-top,0px))+1rem)] lg:bottom-auto lg:right-6 lg:left-auto lg:translate-x-0 lg:shadow-none lg:bg-transparent"
       >
-        <div className="bg-card/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-lg shadow-black/10 pb-[calc(0.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] md:border md:rounded-full md:shadow-2xl md:shadow-black/30 md:pb-0">
-          <div className="grid grid-cols-5 items-end px-1 pt-3.5 pb-3.5 max-w-lg mx-auto md:gap-1 md:px-3 md:py-2">
+        <div className="bg-card/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-lg shadow-black/10 pb-[calc(0.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] md:border md:rounded-full md:shadow-2xl md:shadow-black/30 md:pb-0 lg:bg-transparent lg:border-none lg:shadow-none">
+          <div className="grid grid-cols-5 items-end px-1 pt-3.5 pb-3.5 max-w-lg mx-auto md:gap-1 md:px-3 md:py-2 lg:flex lg:items-center lg:gap-4 lg:p-0">
             {TABS.map((tab) => {
               const active = tab.id === 'mais' ? drawerOpen : tab.match(pathname);
               const Icon = tab.icon;
@@ -90,8 +90,8 @@ const VideoaulasBottomNav = () => {
                       navigate(tab.to);
                     }
                   }}
-                  className={`relative flex flex-col items-center justify-end gap-1 py-1.5 px-1 rounded-2xl transition-colors ${
-                    active ? 'text-primary' : 'text-muted-foreground hover:text-white/80'
+                  className={`relative flex flex-col items-center justify-end gap-1 py-1.5 px-1 rounded-2xl transition-colors lg:flex-row lg:justify-start lg:gap-2 lg:px-3 lg:py-2 ${
+                    active ? 'text-primary bg-primary/10 lg:bg-transparent' : 'text-muted-foreground hover:text-white/80 hover:bg-white/5'
                   }`}
                   aria-label={tab.label}
                   aria-current={active ? 'page' : undefined}
@@ -99,15 +99,15 @@ const VideoaulasBottomNav = () => {
                   {active && (
                     <motion.span
                       layoutId="videoaulas-nav-active-pill"
-                      className="absolute inset-0 rounded-2xl bg-primary/10 ring-1 ring-primary/20"
+                      className="absolute inset-0 rounded-2xl bg-primary/10 ring-1 ring-primary/20 hidden md:block"
                       transition={{ type: 'spring', stiffness: 380, damping: 32 }}
                       aria-hidden="true"
                     />
                   )}
 
-                  <Icon className="relative w-7 h-7 sm:w-8 sm:h-8" strokeWidth={active ? 1.5 : 1.25} />
+                  <Icon className="relative w-7 h-7 sm:w-8 sm:h-8 lg:w-5 lg:h-5" strokeWidth={active ? 1.5 : 1.25} />
                   <span
-                    className={`relative text-[10px] sm:text-[11px] leading-none ${
+                    className={`relative text-[10px] sm:text-[11px] lg:text-[13px] leading-none ${
                       active ? 'font-bold' : 'font-medium'
                     }`}
                   >

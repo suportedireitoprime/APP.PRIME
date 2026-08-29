@@ -9,7 +9,7 @@ export const PRODUCT_IDS = {
 
 export const PLAN_IDS = {
   mensal: 'mensal',
-  anual: 'anual',
+  anual: 'anual-novo-teste-3-dias',
   anual_parcelado: 'anual-parcelado',
 } as const;
 

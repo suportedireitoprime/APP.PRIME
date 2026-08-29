@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import {pickAsset, srcOf } from '@/lib/assetUrl';
 import { Scale, BookOpen, FileText, Newspaper, Landmark, Shield, ScrollText, Gavel, Settings, PanelLeftClose, Radar, RefreshCw, Bell, Info, LogOut, BookMarked, HeartPulse, Lock, User as UserIcon, Clapperboard, Mail, Wrench, FileSignature, BookOpenText, Mic, CloudDownload, BellRing, CreditCard, LifeBuoy, MessageSquare, MicVocal } from 'lucide-react';
 import { tipoToSlug } from '@/lib/legislacaoSlugs';
@@ -31,21 +31,21 @@ interface DesktopSidebarProps {
 }
 
 const CATEGORIAS = [
-  { id: 'constituicao', tipo: 'constituicao', label: 'ConstituiÃ§Ã£o', icon: Landmark, color: '#FFD400' },
-  { id: 'codigo', tipo: 'codigo', label: 'CÃ³digos', icon: BookOpen, color: '#3B82F6' },
+  { id: 'constituicao', tipo: 'constituicao', label: 'Constituição', icon: Landmark, color: '#FFD400' },
+  { id: 'codigo', tipo: 'codigo', label: 'Códigos', icon: BookOpen, color: '#3B82F6' },
   { id: 'estatuto', tipo: 'estatuto', label: 'Estatutos', icon: Shield, color: '#F43F5E' },
-  { id: 'lei-ordinaria', tipo: 'lei-ordinaria', label: 'Leis OrdinÃ¡rias', icon: FileText, color: '#DC2626' },
+  { id: 'lei-ordinaria', tipo: 'lei-ordinaria', label: 'Leis Ordinárias', icon: FileText, color: '#DC2626' },
   { id: 'decreto', tipo: 'decreto', label: 'Decretos', icon: ScrollText, color: '#F97316' },
-  { id: 'sumula', tipo: 'sumula', label: 'SÃºmulas', icon: Gavel, color: 'hsl(348 78% 38%)' },
+  { id: 'sumula', tipo: 'sumula', label: 'Súmulas', icon: Gavel, color: 'hsl(348 78% 38%)' },
   { id: 'lei-especial', tipo: 'lei-especial', label: 'Leis Especiais', icon: BookMarked, color: '#A855F7' },
-  { id: 'previdenciario', tipo: 'previdenciario', label: 'PrevidenciÃ¡rio', icon: HeartPulse, color: '#14B8A6' },
+  { id: 'previdenciario', tipo: 'previdenciario', label: 'Previdenciário', icon: HeartPulse, color: '#14B8A6' },
 ];
 
 
 const CONTEUDO_ITEMS = [
-  { id: 'explicacao', label: 'Artigos e AnÃ¡lises', icon: FileText, color: '#6366F1' },
-  { id: 'atualizacao', label: 'NotÃ­cias JurÃ­dicas', icon: Newspaper, route: '/noticias', color: '#EC4899' },
-  { id: 'boletins', label: 'Boletins JurÃ­dicos', icon: MicVocal, route: '/boletins', color: 'hsl(348 78% 38%)' },
+  { id: 'explicacao', label: 'Artigos e Análises', icon: FileText, color: '#6366F1' },
+  { id: 'atualizacao', label: 'Notícias Jurídicas', icon: Newspaper, route: '/noticias', color: '#EC4899' },
+  { id: 'boletins', label: 'Boletins Jurídicos', icon: MicVocal, route: '/boletins', color: 'hsl(348 78% 38%)' },
   { id: 'newsletter', label: 'Newsletter', icon: Mail, route: '/newsletter', color: '#F97316' },
   { id: 'blog', label: 'Blog', icon: BookOpen, route: '/blog', color: '#0EA5E9' },
   { id: 'novidades', label: 'Novidades', icon: Bell, route: '/novidades', color: '#8B5CF6' },
@@ -53,7 +53,7 @@ const CONTEUDO_ITEMS = [
 
 const FERRAMENTAS_ITEMS = [
   { id: 'ferramentas', label: 'Todas as Ferramentas', icon: Wrench, route: '/ferramentas', color: '#DC2626' },
-  { id: 'dicionario', label: 'DicionÃ¡rio JurÃ­dico', icon: BookOpenText, route: '/ferramentas/dicionario', color: '#3B82F6' },
+  { id: 'dicionario', label: 'Dicionário Jurídico', icon: BookOpenText, route: '/ferramentas/dicionario', color: '#3B82F6' },
   { id: 'gravar', label: 'Gravar aula', icon: Mic, route: '/anotacoes/audio', color: '#F43F5E' },
   { id: 'offline', label: 'Modo Offline', icon: CloudDownload, route: '/modo-offline', color: '#64748B' },
 ];
@@ -61,7 +61,7 @@ const FERRAMENTAS_ITEMS = [
 const CONTA_ITEMS = [
   { id: 'assinatura', label: 'Assinatura', icon: CreditCard, route: '/assinatura', color: '#10B981' },
   { id: 'suporte', label: 'Suporte', icon: LifeBuoy, route: '/suporte', color: '#EC4899' },
-  { id: 'opiniao', label: 'OpiniÃ£o', icon: MessageSquare, route: '/opiniao', color: '#0891B2' },
+  { id: 'opiniao', label: 'Opinião', icon: MessageSquare, route: '/opiniao', color: '#0891B2' },
 ];
 
 const CONFIG_ITEMS = [
@@ -100,7 +100,7 @@ const DesktopSidebar = ({ activeTab, onTabChange }: DesktopSidebarProps) => {
   }, [user]);
 
   const handleItemClick = async (item: { id: string; route?: string }) => {
-    console.log('[DesktopSidebar] click', item.id, 'â†’', item.route ?? '(sem rota)');
+    console.log('[DesktopSidebar] click', item.id, '� ', item.route ?? '(sem rota)');
     if (item.id === 'sair') {
       setLogoutPrompt(true);
       return;
@@ -168,7 +168,7 @@ const DesktopSidebar = ({ activeTab, onTabChange }: DesktopSidebarProps) => {
   return (
     <>
     <aside className={`${collapsed ? 'w-[68px]' : 'w-[268px]'} shrink-0 sticky top-0 min-h-dvh bg-card border-r border-border flex flex-col`} style={{ transitionProperty: 'width', transitionDuration: '320ms', transitionTimingFunction: 'cubic-bezier(0.22, 0.61, 0.36, 1)' }}>
-      {/* Header â€” user profile */}
+      {/* Header � user profile */}
       <div className="p-3 border-b border-border">
         {collapsed ? (
           <button
@@ -213,7 +213,7 @@ const DesktopSidebar = ({ activeTab, onTabChange }: DesktopSidebarProps) => {
 
       {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto py-1">
-        {/* FunÃ§Ãµes Admin - only for admin */}
+        {/* Funções Admin - only for admin */}
         {isAdmin && (
           <div className="pb-1">
             {!collapsed && (
@@ -224,13 +224,13 @@ const DesktopSidebar = ({ activeTab, onTabChange }: DesktopSidebarProps) => {
             <button
               onPointerDown={() => { import('@/pages/AdminFuncoes.tsx').catch(() => {}); }}
               onClick={() => navigate('/admin-funcoes')}
-              title={collapsed ? 'FunÃ§Ãµes Admin' : undefined}
+              title={collapsed ? 'Funções Admin' : undefined}
               className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body text-foreground/75 hover:bg-secondary hover:text-foreground transition-colors`}
             >
               <div className="w-7 h-7 rounded-lg bg-primary/15 flex items-center justify-center shrink-0">
                 <Lock className="w-[16px] h-[16px] text-primary" />
               </div>
-              {!collapsed && <span className="font-semibold">FunÃ§Ãµes Admin</span>}
+              {!collapsed && <span className="font-semibold">Funções Admin</span>}
             </button>
           </div>
         )}
@@ -239,13 +239,13 @@ const DesktopSidebar = ({ activeTab, onTabChange }: DesktopSidebarProps) => {
         <div className={`pb-1 ${isAdmin ? 'border-t border-border/50 pt-1' : ''}`}>
           {!collapsed && (
             <p className="px-5 py-1 text-[9px] font-body font-semibold text-muted-foreground uppercase tracking-widest">
-              SeÃ§Ãµes
+              Seções
             </p>
           )}
           {[
             { id: 'radar', label: 'Radar Legislativo', icon: Radar, color: '#0EA5E9', route: '/radar-360' },
-            { id: 'legislacao' as Tab, label: 'LegislaÃ§Ã£o', icon: Scale, color: '#DC2626' },
-            { id: 'noticias' as Tab, label: 'AtualizaÃ§Ãµes', icon: RefreshCw, color: '#10B981' },
+            { id: 'legislacao' as Tab, label: 'Legislação', icon: Scale, color: '#DC2626' },
+            { id: 'noticias' as Tab, label: 'Atualizações', icon: RefreshCw, color: '#10B981' },
           ].map(item => {
             const Icon = item.icon;
             const route = (item as any).route as string | undefined;
@@ -257,7 +257,7 @@ const DesktopSidebar = ({ activeTab, onTabChange }: DesktopSidebarProps) => {
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  console.log('[DesktopSidebar] seÃ§Ã£o click', item.id, 'â†’', route ?? '(tab)');
+                  console.log('[DesktopSidebar] seção click', item.id, '� ', route ?? '(tab)');
                   if (route) navigate(route);
                   else onTabChange(item.id as Tab);
                 }}
@@ -285,7 +285,7 @@ const DesktopSidebar = ({ activeTab, onTabChange }: DesktopSidebarProps) => {
           })}
         </div>
 
-        {/* Categorias â€” book spine style */}
+        {/* Categorias - book spine style */}
         <div className="pb-1 border-t border-border/50 pt-1">
           {!collapsed && (
             <p className="px-5 py-1 text-[9px] font-body font-semibold text-muted-foreground uppercase tracking-widest">
@@ -301,13 +301,13 @@ const DesktopSidebar = ({ activeTab, onTabChange }: DesktopSidebarProps) => {
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  // ConstituiÃ§Ã£o Ã© Ãºnica no seu tipo â†’ abre direto.
+                  // Constituição é única no seu tipo �  abre direto.
                   if (cat.tipo === 'constituicao') {
                     navigate(`/legislacao/${tipoToSlug(cat.tipo)}`);
                     return;
                   }
-                  // Categorias carregadas do banco (leis ordinÃ¡rias, decretos,
-                  // sÃºmulas) tÃªm pÃ¡gina prÃ³pria; as demais abrem o painel.
+                  // Categorias carregadas do banco (leis ordinárias, decretos,
+                  // súmulas) têm página própria; as demais abrem o painel.
                   const doCatalogo = getLeisPorTipo(cat.tipo);
                   if (doCatalogo.length === 0) {
                     navigate(`/legislacao/${tipoToSlug(cat.tipo)}`);
@@ -332,8 +332,8 @@ const DesktopSidebar = ({ activeTab, onTabChange }: DesktopSidebarProps) => {
         </div>
 
 
-        {/* ConteÃºdo */}
-        {renderSection('ConteÃºdo', CONTEUDO_ITEMS)}
+        {/* Conteúdo */}
+        {renderSection('Conteúdo', CONTEUDO_ITEMS)}
 
         {/* Ferramentas */}
         {renderSection('Ferramentas', FERRAMENTAS_ITEMS)}
@@ -341,8 +341,8 @@ const DesktopSidebar = ({ activeTab, onTabChange }: DesktopSidebarProps) => {
         {/* Minha conta */}
         {renderSection('Minha conta', CONTA_ITEMS)}
 
-        {/* ConfiguraÃ§Ãµes */}
-        {renderSection('ConfiguraÃ§Ãµes', CONFIG_ITEMS)}
+        {/* Configurações */}
+        {renderSection('Configurações', CONFIG_ITEMS)}
       </div>
 
       {/* Footer */}
@@ -354,7 +354,7 @@ const DesktopSidebar = ({ activeTab, onTabChange }: DesktopSidebarProps) => {
         ) : (
           <div className="flex items-center justify-between">
             <img src={primeLogo} alt="Direito Prime" className="w-6 h-6 rounded-lg object-cover opacity-70" />
-            <p className="text-[10px] font-body text-muted-foreground">Â© 2026 Direito Prime</p>
+            <p className="text-[10px] font-body text-muted-foreground">© 2026 Direito Prime</p>
           </div>
         )}
       </div>
@@ -373,7 +373,7 @@ const DesktopSidebar = ({ activeTab, onTabChange }: DesktopSidebarProps) => {
         <AlertDialogHeader>
           <AlertDialogTitle>Sair da conta</AlertDialogTitle>
           <AlertDialogDescription>
-            VocÃª quer realmente sair da conta?
+            Você quer realmente sair da conta?
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="flex-col gap-2 sm:flex-row">
@@ -401,3 +401,4 @@ const DesktopSidebar = ({ activeTab, onTabChange }: DesktopSidebarProps) => {
 };
 
 export default DesktopSidebar;
+

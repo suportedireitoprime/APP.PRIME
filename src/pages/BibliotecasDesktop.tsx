@@ -40,12 +40,12 @@ const BibliotecasDesktop = () => {
       <main className="flex-1 min-w-0">
         <div className="max-w-[1600px] mx-auto w-full px-6 py-6 grid grid-cols-12 gap-6 items-start">
           {/* ⬅️ Coluna esquerda: navegação por coleções ⬅️ */}
-          <aside className="hidden xl:block xl:col-span-3 2xl:col-span-2">
+          <aside className="hidden xl:block xl:col-span-2 2xl:col-span-2">
             <BibliotecaColecoesSidebar />
           </aside>
 
           {/* ↕️ Centro: hero, atalhos, recomendações e acervo ↕️ */}
-          <div className="col-span-12 lg:col-span-8 xl:col-span-6 2xl:col-span-7 min-w-0 space-y-8">
+          <div className="col-span-12 lg:col-span-8 xl:col-span-7 2xl:col-span-7 min-w-0 space-y-6">
             <section>
               <div className="rounded-3xl overflow-hidden">
                 <FilosofosPanel>
@@ -103,25 +103,25 @@ const BibliotecasDesktop = () => {
                     key={c.id}
                     type="button"
                     onClick={() => navigate(`/bibliotecas/${c.id}`)}
-                    className="group relative flex items-stretch h-[132px] overflow-hidden rounded-2xl border border-border/50 bg-card shadow-sm hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/10 hover:border-primary/40 transition-all text-left"
+                    className="group relative flex items-stretch h-[100px] overflow-hidden rounded-xl border border-border/50 bg-card shadow-sm hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/10 hover:border-primary/40 transition-all text-left"
                   >
-                    <div className="relative w-[130px] shrink-0 overflow-hidden">
+                    <div className="relative w-[100px] shrink-0 overflow-hidden">
                       <img
                         src={c.cover}
                         alt=""
                         className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         loading="lazy"
                       />
-                      <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-r from-transparent to-card pointer-events-none" />
+                      <div className="absolute inset-y-0 right-0 w-12 bg-gradient-to-r from-transparent to-card pointer-events-none" />
                     </div>
-                    <div className="flex-1 min-w-0 flex flex-col justify-center px-5 py-4">
+                    <div className="flex-1 min-w-0 flex flex-col justify-center px-4 py-3">
                       <p className="text-[10px] uppercase tracking-[0.22em] font-bold text-primary/90 truncate">
                         {c.eyebrow}
                       </p>
-                      <h3 className="text-base font-bold leading-tight mt-1 text-foreground truncate">
+                      <h3 className="text-[13px] font-bold leading-tight mt-0.5 text-foreground truncate">
                         {c.label}
                       </h3>
-                      <p className="text-xs text-muted-foreground leading-snug mt-1.5 line-clamp-2">
+                      <p className="text-[11px] text-muted-foreground leading-snug mt-1 line-clamp-2">
                         {c.subtitle}
                       </p>
                     </div>

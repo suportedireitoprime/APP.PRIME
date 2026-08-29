@@ -47,7 +47,6 @@ const GROUPS: Group[] = [
     title: 'Sistema',
     items: [
       { id: 'sobre', label: 'Sobre o App', icon: Info },
-      { id: 'novidades', label: 'Atualizações', icon: BellIcon },
     ],
   },
   {
@@ -133,9 +132,9 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
       onClose();
       
       const isIos = Capacitor.getPlatform() === 'ios';
-      const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=br.com.direito.app';
-      const APP_STORE_REVIEW_URL = 'https://apps.apple.com/br/app/vacatio/id6793608690?action=write-review';
-      const PLAY_MARKET_URL = 'market://details?id=br.com.direito.app';
+      const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=br.com.app.gpu2675756.gpu0e7509bfb7bde52aef412888bb17a456';
+      const APP_STORE_REVIEW_URL = 'https://apps.apple.com/us/app/direito-estudos-jur%C3%ADdicos/id6450845861?action=write-review';
+      const PLAY_MARKET_URL = 'market://details?id=br.com.app.gpu2675756.gpu0e7509bfb7bde52aef412888bb17a456';
 
       if (Capacitor.isNativePlatform()) {
         const primary = isIos ? APP_STORE_REVIEW_URL : PLAY_MARKET_URL;
@@ -155,7 +154,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
       'planos': '/assinatura',
       'meu-espaco': '/meu-espaco',
       'suporte': '/suporte',
-      'novidades': '/atualizacoes',
+      'sobre': '/sobre',
       'atualizacao': '/noticias',
       'explicacao': '/explicacao-lei',
       'constituicao': '/legislacao/constituicao',
