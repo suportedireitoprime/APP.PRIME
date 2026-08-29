@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import {pickAsset, srcOf } from '@/lib/assetUrl';
-import { Scale, BookOpen, FileText, Newspaper, Landmark, Shield, ScrollText, Gavel, Settings, PanelLeftClose, Radar, RefreshCw, Bell, Info, LogOut, BookMarked, HeartPulse, Lock, User as UserIcon, Clapperboard, Mail, Wrench, FileSignature, BookOpenText, Mic, CloudDownload, BellRing, CreditCard, LifeBuoy, MessageSquare, MicVocal, CalendarDays } from 'lucide-react';
+import { Scale, BookOpen, FileText, Newspaper, Landmark, Shield, ScrollText, Gavel, Settings, PanelLeftClose, Radar, RefreshCw, Bell, Info, LogOut, BookMarked, HeartPulse, Lock, User as UserIcon, Clapperboard, Mail, Wrench, FileSignature, BookOpenText, Mic, CloudDownload, BellRing, CreditCard, LifeBuoy, MessageSquare, MicVocal, CalendarDays, Library, HardDrive } from 'lucide-react';
 import { tipoToSlug } from '@/lib/legislacaoSlugs';
 import { getLeisPorTipo } from '@/data/leisCatalog';
 import { COLECOES } from '@/lib/bibliotecaColecoes';
