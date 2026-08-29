@@ -59,8 +59,6 @@ const BibliotecasDesktop = () => {
   return (
     <div className="min-h-dvh bg-background flex flex-col">
       <DesktopOnboardingOverlay />
-      <DesktopTopHeader onAssistenteClick={() => setAssistenteOpen(true)} />
-      <DesktopBreadcrumb />
       
       <div className="flex flex-1 min-h-0">
         <DesktopSidebar activeTab="biblioteca" onTabChange={(t) => {

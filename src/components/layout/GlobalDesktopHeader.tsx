@@ -28,10 +28,10 @@ const GlobalDesktopHeader = () => {
   if (EXCLUDED_PREFIXES.some((p) => location.pathname.startsWith(p))) return null;
 
   return (
-    <>
+    <div className={location.pathname.startsWith('/bibliotecas') ? 'theme-biblioteca' : ''}>
       <DesktopTopHeader />
       <DesktopBreadcrumb />
-    </>
+    </div>
   );
 };
 

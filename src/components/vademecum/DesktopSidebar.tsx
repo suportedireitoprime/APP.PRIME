@@ -3,6 +3,7 @@ import {pickAsset, srcOf } from '@/lib/assetUrl';
 import { Scale, BookOpen, FileText, Newspaper, Landmark, Shield, ScrollText, Gavel, Settings, PanelLeftClose, Radar, RefreshCw, Bell, Info, LogOut, BookMarked, HeartPulse, Lock, User as UserIcon, Clapperboard, Mail, Wrench, FileSignature, BookOpenText, Mic, CloudDownload, BellRing, CreditCard, LifeBuoy, MessageSquare, MicVocal, CalendarDays } from 'lucide-react';
 import { tipoToSlug } from '@/lib/legislacaoSlugs';
 import { getLeisPorTipo } from '@/data/leisCatalog';
+import { COLECOES } from '@/lib/bibliotecaColecoes';
 import SuporteSheet from './SuporteSheet';
 import DesktopCategoriaSheet from './DesktopCategoriaSheet';
 import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
@@ -245,8 +246,9 @@ const DesktopSidebar = ({ activeTab, onTabChange }: DesktopSidebarProps) => {
           )}
           {[
             { id: 'radar', label: 'Radar Legislativo', icon: Radar, color: '#0EA5E9', route: '/radar-360' },
-            { id: 'legislacao' as Tab, label: 'Legislação', icon: Scale, color: '#DC2626' },
-            { id: 'noticias' as Tab, label: 'Atualizações', icon: RefreshCw, color: '#10B981' },
+            { id: 'legislacao' as Tab, label: 'Legislação', icon: Scale, color: '#DC2626', route: '/' },
+            { id: 'biblioteca' as Tab, label: 'Biblioteca', icon: Library, color: '#D97706', route: '/bibliotecas' },
+            { id: 'noticias' as Tab, label: 'Atualizações', icon: RefreshCw, color: '#10B981', route: '/noticias' },
           ].map(item => {
             const Icon = item.icon;
             const route = (item as any).route as string | undefined;
@@ -283,61 +285,127 @@ const DesktopSidebar = ({ activeTab, onTabChange }: DesktopSidebarProps) => {
                 {!collapsed && <span>{item.label}</span>}
               </button>
             );
-          })}
-        </div>
-
-        {/* Categorias - book spine style */}
-        <div className="pb-1 border-t border-border/50 pt-1">
-          {!collapsed && (
-            <p className="px-5 py-1 text-[9px] font-body font-semibold text-muted-foreground uppercase tracking-widest">
-              Categorias
-            </p>
-          )}
-          {CATEGORIAS.map(cat => {
-            const Icon = cat.icon;
-            return (
+        {activeTab === 'biblioteca' ? (
+          <>
+            <div className="pb-1 border-t border-border/50 pt-1">
+              {!collapsed && (
+                <p className="px-5 py-1 text-[9px] font-body font-semibold text-muted-foreground uppercase tracking-widest">
+                  Meu Acervo
+                </p>
+              )}
               <button
-                key={cat.id}
                 type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  // Constituição é única no seu tipo �  abre direto.
-                  if (cat.tipo === 'constituicao') {
-                    navigate(`/legislacao/${tipoToSlug(cat.tipo)}`);
-                    return;
-                  }
-                  // Categorias carregadas do banco (leis ordinárias, decretos,
-                  // súmulas) têm página própria; as demais abrem o painel.
-                  const doCatalogo = getLeisPorTipo(cat.tipo);
-                  if (doCatalogo.length === 0) {
-                    navigate(`/legislacao/${tipoToSlug(cat.tipo)}`);
-                    return;
-                  }
-                  setCatSheet({ tipo: cat.tipo, label: cat.label, color: cat.color });
-                }}
-                title={collapsed ? cat.label : undefined}
-                className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body text-foreground/75 hover:bg-secondary hover:text-foreground transition-colors group`}
+                onClick={() => navigate('/modo-offline')}
+                title={collapsed ? 'Meus Downloads' : undefined}
+                className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body text-foreground/75 hover:bg-secondary hover:text-foreground transition-colors`}
               >
-                <div
-                  className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden shadow-sm"
-                  style={{ backgroundColor: `${cat.color}33`, boxShadow: `0 2px 6px -2px ${cat.color}55` }}
-                >
-                  <span className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ backgroundColor: cat.color }} />
-                  <Icon className="w-[16px] h-[16px] drop-shadow-sm" style={{ color: cat.color, filter: 'saturate(1.4) brightness(1.15)' }} />
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: '#10B98133', boxShadow: '0 2px 6px -2px #10B98155' }}>
+                  <HardDrive className="w-[16px] h-[16px]" style={{ color: '#10B981' }} />
                 </div>
-                {!collapsed && <span>{cat.label}</span>}
+                {!collapsed && <span>Meus Downloads</span>}
               </button>
-            );
-          })}
-        </div>
+              <button
+                type="button"
+                disabled
+                title={collapsed ? 'Lidos Recentemente' : undefined}
+                className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body text-muted-foreground/40 cursor-not-allowed`}
+              >
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden shadow-sm">
+                  <BookOpen className="w-[16px] h-[16px] opacity-40" />
+                </div>
+                {!collapsed && <span>Lidos Recentemente</span>}
+              </button>
+              <button
+                type="button"
+                disabled
+                title={collapsed ? 'Favoritos' : undefined}
+                className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body text-muted-foreground/40 cursor-not-allowed`}
+              >
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden shadow-sm">
+                  <BookMarked className="w-[16px] h-[16px] opacity-40" />
+                </div>
+                {!collapsed && <span>Favoritos</span>}
+              </button>
+            </div>
+            
+            <div className="pb-1 border-t border-border/50 pt-1">
+              {!collapsed && (
+                <p className="px-5 py-1 text-[9px] font-body font-semibold text-muted-foreground uppercase tracking-widest">
+                  Coleções
+                </p>
+              )}
+              {COLECOES.map(cat => (
+                <button
+                  key={cat.id}
+                  type="button"
+                  title={collapsed ? cat.label : undefined}
+                  className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body text-foreground/75 hover:bg-secondary hover:text-foreground transition-colors group`}
+                >
+                  <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden shadow-sm" style={{ backgroundColor: '#D9770633', boxShadow: '0 2px 6px -2px #D9770655' }}>
+                    <span className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ backgroundColor: '#D97706' }} />
+                    <BookOpenText className="w-[16px] h-[16px] drop-shadow-sm" style={{ color: '#D97706' }} />
+                  </div>
+                  {!collapsed && <span className="truncate">{cat.label}</span>}
+                </button>
+              ))}
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Categorias - book spine style */}
+            <div className="pb-1 border-t border-border/50 pt-1">
+              {!collapsed && (
+                <p className="px-5 py-1 text-[9px] font-body font-semibold text-muted-foreground uppercase tracking-widest">
+                  Categorias
+                </p>
+              )}
+              {CATEGORIAS.map(cat => {
+                const Icon = cat.icon;
+                return (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      // Constituição é única no seu tipo    abre direto.
+                      if (cat.tipo === 'constituicao') {
+                        navigate(`/legislacao/${tipoToSlug(cat.tipo)}`);
+                        return;
+                      }
+                      // Categorias carregadas do banco (leis ordinárias, decretos,
+                      // súmulas) têm página própria; as demais abrem o painel.
+                      const doCatalogo = getLeisPorTipo(cat.tipo);
+                      if (doCatalogo.length === 0) {
+                        navigate(`/legislacao/${tipoToSlug(cat.tipo)}`);
+                        return;
+                      }
+                      setCatSheet({ tipo: cat.tipo, label: cat.label, color: cat.color });
+                    }}
+                    title={collapsed ? cat.label : undefined}
+                    className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body text-foreground/75 hover:bg-secondary hover:text-foreground transition-colors group`}
+                  >
+                    <div
+                      className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden shadow-sm"
+                      style={{ backgroundColor: `${cat.color}33`, boxShadow: `0 2px 6px -2px ${cat.color}55` }}
+                    >
+                      <span className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ backgroundColor: cat.color }} />
+                      <Icon className="w-[16px] h-[16px] drop-shadow-sm" style={{ color: cat.color, filter: 'saturate(1.4) brightness(1.15)' }} />
+                    </div>
+                    {!collapsed && <span>{cat.label}</span>}
+                  </button>
+                );
+              })}
+            </div>
 
 
-        {/* Conteúdo */}
-        {renderSection('Conteúdo', CONTEUDO_ITEMS)}
+            {/* Conteúdo */}
+            {renderSection('Conteúdo', CONTEUDO_ITEMS)}
 
-        {/* Ferramentas */}
-        {renderSection('Ferramentas', FERRAMENTAS_ITEMS)}
+            {/* Ferramentas */}
+            {renderSection('Ferramentas', FERRAMENTAS_ITEMS)}
+          </>
+        )}
 
         {/* Minha conta */}
         {renderSection('Minha conta', CONTA_ITEMS)}
