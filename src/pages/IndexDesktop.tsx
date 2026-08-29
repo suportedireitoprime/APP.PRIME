@@ -54,6 +54,7 @@ const DESKTOP_TABS: { id: string; label: string; icon: any }[] = [
   { id: 'ferramentas', label: 'Ferramentas', icon: Gavel },
   { id: 'aprender', label: 'Aprender', icon: GraduationCap },
   { id: 'chat', label: 'Chat', icon: MessageSquare },
+  { id: 'vademecum', label: 'Vade Mecum', icon: BookOpenText },
 ];
 
 
@@ -163,6 +164,7 @@ const IndexDesktop = () => {
                         biblioteca: '/bibliotecas',
                         aprender: '/aprender',
                         chat: '/assistente-horus',
+                        vademecum: '/vade-mecum',
                       };
                       if (routes[tab.id]) { navigate(routes[tab.id]); return; }
                       setActiveTab(tab.id as Tab);

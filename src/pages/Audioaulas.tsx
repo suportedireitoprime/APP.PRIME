@@ -2,6 +2,8 @@ import { useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import AudioaulasBottomNav from '@/components/audioaulas/AudioaulasBottomNav';
+import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
+import { useIsDesktop } from '@/hooks/use-desktop';
 
 import { useAudioaulas } from '@/hooks/useAudioaulas';
 import { AudioaulasHero } from '@/components/audioaulas/home/AudioaulasHero';
@@ -16,10 +18,11 @@ const Audioaulas = () => {
   const areaAtual = area ? decodeURIComponent(area) : null;
   const buscaRef = useRef<HTMLInputElement | null>(null);
 
+  const isDesktop = useIsDesktop();
   const state = useAudioaulas(areaAtual);
 
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-zinc-950 via-background to-background text-foreground pb-40">
+  const content = (
+    <div className={`w-full bg-gradient-to-b from-zinc-950 via-background to-background text-foreground relative ${isDesktop ? 'rounded-2xl pb-12 min-h-[700px] border border-white/5 overflow-hidden' : 'min-h-screen pb-40'}`}>
       {state.gateNodes}
 
       <AudioaulasHero 
@@ -107,6 +110,16 @@ const Audioaulas = () => {
       />
     </div>
   );
+
+  if (isDesktop) {
+    return (
+      <DesktopPageLayout activeId="aprender" title={areaAtual ? `Audioaulas - ${areaAtual}` : "Audioaulas"} wide>
+        {content}
+      </DesktopPageLayout>
+    );
+  }
+
+  return content;
 };
 
 export default Audioaulas;
