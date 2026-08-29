@@ -170,7 +170,6 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
       'resumos': '/resumos-juridicos',
       'biblioteca': '/biblioteca',
       'opiniao': '/opiniao',
-      'sobre': '/sobre',
       'lembretes': '/meus-lembretes',
 
     };

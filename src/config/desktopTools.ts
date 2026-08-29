@@ -23,6 +23,7 @@ import {
   Scale,
   Trophy,
   Bot,
+  CalendarDays,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -65,6 +66,7 @@ export const DESKTOP_TOOL_GROUPS: DesktopToolGroup[] = [
     hint: 'Recursos adicionais do aplicativo',
     tools: [
       { id: 'locais', label: 'Locais Jurídicos', desc: 'Fóruns, cartórios e delegacias', icon: MapPin, route: '/ferramentas/locais', color: '#EAB308' },
+      { id: 'plano-estudos', label: 'Plano de Estudos', desc: 'Gerador inteligente com IA', icon: CalendarDays, route: '/ferramentas/plano-estudos', color: '#8B5CF6' },
     ],
   },
 

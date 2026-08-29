@@ -13,6 +13,7 @@ import { openPdfNative } from '@/lib/fileOpener';
 import { useBibliotecaCapa } from '@/hooks/useBibliotecaAsset';
 import { useIsDesktop } from '@/hooks/use-desktop';
 import PdfScrollReader from './PdfScrollReader';
+import PdfPaginatedReader from './PdfPaginatedReader';
 import LeitorNativo from './LeitorNativo';
 import LerAgoraDialog, { LerModo } from './LerAgoraDialog';
 import InAppWebView from './InAppWebView';
@@ -480,13 +481,23 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
       {/* Leitores em fullscreen */}
       {readerMode === 'pdf' && (pdfUrlForReader || livro.download) && (
         <ErrorBoundary>
-          <PdfScrollReader
-            url={pdfUrlForReader || livro.download!}
-            titulo={livro.titulo}
-            livroId={String(livro.id)}
-            capaUrl={capaUrl}
-            onClose={() => { setReaderMode(null); setPdfUrlForReader(null); }}
-          />
+          {isDesktop ? (
+            <PdfPaginatedReader
+              url={pdfUrlForReader || livro.download!}
+              titulo={livro.titulo}
+              livroId={String(livro.id)}
+              capaUrl={capaUrl}
+              onClose={() => { setReaderMode(null); setPdfUrlForReader(null); }}
+            />
+          ) : (
+            <PdfScrollReader
+              url={pdfUrlForReader || livro.download!}
+              titulo={livro.titulo}
+              livroId={String(livro.id)}
+              capaUrl={capaUrl}
+              onClose={() => { setReaderMode(null); setPdfUrlForReader(null); }}
+            />
+          )}
         </ErrorBoundary>
       )}
       {readerMode === 'nativa' && livro.download && (
