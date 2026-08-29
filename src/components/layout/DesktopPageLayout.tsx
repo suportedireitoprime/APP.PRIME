@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Scale, BookOpen, Gavel } from 'lucide-react';
+import { Scale, BookOpen, Gavel, Library, MessageSquare } from 'lucide-react';
 import DesktopHeroBanner from '@/components/vademecum/DesktopHeroBanner';
 import DesktopTopHeader from '@/components/vademecum/DesktopTopHeader';
 import DesktopBreadcrumb from '@/components/vademecum/DesktopBreadcrumb';
@@ -8,8 +8,10 @@ import { prefetchRoute, type PrefetchKey } from '@/lib/routePrefetch';
 
 const TABS: Array<{ id: string; label: string; icon: any; path: string; prefetch?: PrefetchKey }> = [
   { id: 'legislacao', label: 'Legislação', icon: Scale, path: '/' },
-  { id: 'aprender', label: 'Aprender', icon: BookOpen, path: '/aprender', prefetch: 'aprender' },
+  { id: 'biblioteca', label: 'Biblioteca', icon: Library, path: '/bibliotecas' },
   { id: 'ferramentas', label: 'Ferramentas', icon: Gavel, path: '/ferramentas', prefetch: 'ferramentas' },
+  { id: 'aprender', label: 'Aprender', icon: BookOpen, path: '/aprender', prefetch: 'aprender' },
+  { id: 'chat', label: 'Chat', icon: MessageSquare, path: '/assistente-horus' },
 ];
 
 interface DesktopPageLayoutProps {

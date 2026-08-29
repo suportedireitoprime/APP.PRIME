@@ -48,11 +48,12 @@ const HERO_CONFIG: Record<string, { image: string; title: string }> = {
 
 type Tab = 'legislacao' | 'noticias' | 'ferramentas';
 
-const DESKTOP_TABS: { id: string; label: string; icon: typeof Scale }[] = [
+const DESKTOP_TABS: { id: string; label: string; icon: any }[] = [
   { id: 'legislacao', label: 'Legislação', icon: Scale },
   { id: 'biblioteca', label: 'Biblioteca', icon: Library },
   { id: 'ferramentas', label: 'Ferramentas', icon: Gavel },
   { id: 'aprender', label: 'Aprender', icon: GraduationCap },
+  { id: 'chat', label: 'Chat', icon: MessageSquare },
 ];
 
 
@@ -161,6 +162,7 @@ const IndexDesktop = () => {
                         ferramentas: '/ferramentas',
                         biblioteca: '/bibliotecas',
                         aprender: '/aprender',
+                        chat: '/assistente-horus',
                       };
                       if (routes[tab.id]) { navigate(routes[tab.id]); return; }
                       setActiveTab(tab.id as Tab);
