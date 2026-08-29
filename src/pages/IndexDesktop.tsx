@@ -22,7 +22,7 @@ import DesktopSidebar from '@/components/vademecum/DesktopSidebar';
 import AtualizacaoTab from '@/components/vademecum/AtualizacaoTab';
 import DesktopEstudosGrid from '@/components/desktop/DesktopEstudosGrid';
 import HomeNoticiasCarousel from '@/components/vademecum/HomeNoticiasCarousel';
-import ContinueBanner from '@/components/desktop/ContinueBanner';
+
 import { LEIS_CATALOG } from '@/data/leisCatalog';
 import { leiPath, tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
 import { useHideSplashScreen } from '@/hooks/useHideSplashScreen';
@@ -186,7 +186,7 @@ const IndexDesktop = () => {
                   <div className="mb-6 -mx-8 -mt-6 2xl:-mx-14">
                     <DesktopHeroBanner typingHint={typingHint} onSearchClick={() => setSearchOpen(true)} />
                   </div>
-                  <div className="mb-6"><ContinueBanner /></div>
+
                   <div className="mb-8">
                     <DesktopEstudosGrid
                       onChatClick={() => setAssistenteOpen(true)}
