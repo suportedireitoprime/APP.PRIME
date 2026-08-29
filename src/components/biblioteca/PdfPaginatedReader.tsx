@@ -75,6 +75,36 @@ const PdfPaginatedReader = ({ url, titulo, onClose, livroId }: Props) => {
   });
   
   const [dualPage, setDualPage] = useState<boolean>(true);
+  const [renderedPages, setRenderedPages] = useState<number[]>([]);
+
+  // Sliding window de pré-renderização para troca instantânea de páginas
+  useEffect(() => {
+    if (totalPages === 0) return;
+    setRenderedPages(prev => {
+      const step = dualPage ? 2 : 1;
+      const toKeep = new Set<number>();
+      
+      // Mantém a página atual, a anterior e a próxima pré-carregadas
+      for (let i = -1; i <= 1; i++) {
+        const p1 = currentPage + (i * step);
+        if (p1 >= 1 && p1 <= totalPages) toKeep.add(p1);
+        if (dualPage) {
+          const p2 = p1 + 1;
+          if (p2 >= 1 && p2 <= totalPages) toKeep.add(p2);
+        }
+      }
+      
+      const nextPages = new Set(prev);
+      toKeep.forEach(p => nextPages.add(p));
+      
+      // Limpa páginas muito distantes para poupar memória
+      Array.from(nextPages).forEach(p => {
+        if (!toKeep.has(p)) nextPages.delete(p);
+      });
+      
+      return Array.from(nextPages).sort((a, b) => a - b);
+    });
+  }, [currentPage, dualPage, totalPages]);
 
   // Load PDF
   useEffect(() => {
@@ -279,24 +309,29 @@ const PdfPaginatedReader = ({ url, titulo, onClose, livroId }: Props) => {
                   <ChevronLeft className="w-6 h-6" />
                 </button>
                 
-                <div className="flex-1 flex justify-center items-center h-full min-w-0">
+                <div className="flex-1 flex justify-center items-center h-full min-w-0 relative">
                   <div className={`flex justify-center items-center h-full gap-1 sm:gap-2 ${dualPage ? 'w-full' : 'w-auto'}`}>
-                    <PdfPage 
-                      pdf={pdfRef.current} 
-                      pageNumber={currentPage} 
-                      isDual={dualPage} 
-                      containerRef={containerRef}
-                      renderTasksRef={renderTasksRef}
-                    />
-                    {dualPage && currentPage + 1 <= totalPages && (
-                      <PdfPage 
-                        pdf={pdfRef.current} 
-                        pageNumber={currentPage + 1} 
-                        isDual={dualPage} 
-                        containerRef={containerRef}
-                        renderTasksRef={renderTasksRef}
-                      />
-                    )}
+                    {renderedPages.map(p => {
+                      const isVisible = dualPage 
+                        ? (p === currentPage || p === currentPage + 1)
+                        : (p === currentPage);
+                        
+                      return (
+                        <div 
+                          key={p} 
+                          className={isVisible ? "flex-shrink-0" : "absolute w-0 h-0 overflow-hidden opacity-0 pointer-events-none"}
+                          style={!isVisible ? { zIndex: -10 } : {}}
+                        >
+                          <PdfPage 
+                            pdf={pdfRef.current} 
+                            pageNumber={p} 
+                            isDual={dualPage} 
+                            containerRef={containerRef}
+                            renderTasksRef={renderTasksRef}
+                          />
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
 
