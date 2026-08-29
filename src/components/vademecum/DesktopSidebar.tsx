@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import {pickAsset, srcOf } from '@/lib/assetUrl';
-import { Scale, BookOpen, FileText, Newspaper, Landmark, Shield, ScrollText, Gavel, Settings, PanelLeftClose, Radar, RefreshCw, Bell, Info, LogOut, BookMarked, HeartPulse, Lock, User as UserIcon, Clapperboard, Mail, Wrench, FileSignature, BookOpenText, Mic, CloudDownload, BellRing, CreditCard, LifeBuoy, MessageSquare, MicVocal, CalendarDays, Library, HardDrive } from 'lucide-react';
+import { Scale, BookOpen, FileText, Newspaper, Landmark, Shield, ScrollText, Gavel, Settings, PanelLeftClose, Radar, RefreshCw, Bell, Info, LogOut, BookMarked, HeartPulse, Lock, User as UserIcon, Clapperboard, Mail, Wrench, FileSignature, BookOpenText, Mic, CloudDownload, BellRing, CreditCard, LifeBuoy, MessageSquare, MicVocal, CalendarDays, Library, HardDrive, Route as RouteIcon, FileUp, Heart } from 'lucide-react';
+import { abrirAtalhoBiblioteca } from '@/components/biblioteca/BibliotecaBottomNav';
 import { tipoToSlug } from '@/lib/legislacaoSlugs';
 import { getLeisPorTipo } from '@/data/leisCatalog';
 import { COLECOES } from '@/lib/bibliotecaColecoes';
@@ -298,36 +299,47 @@ const DesktopSidebar = ({ activeTab, onTabChange }: DesktopSidebarProps) => {
               )}
               <button
                 type="button"
-                onClick={() => navigate('/modo-offline')}
-                title={collapsed ? 'Meus Downloads' : undefined}
+                onClick={() => abrirAtalhoBiblioteca('leitura')}
+                title={collapsed ? 'Leitura' : undefined}
                 className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body text-foreground/75 hover:bg-secondary hover:text-foreground transition-colors`}
               >
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: '#10B98133', boxShadow: '0 2px 6px -2px #10B98155' }}>
-                  <HardDrive className="w-[16px] h-[16px]" style={{ color: '#10B981' }} />
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden shadow-sm" style={{ backgroundColor: 'hsl(var(--primary) / 0.2)', boxShadow: '0 2px 6px -2px hsl(var(--primary) / 0.3)' }}>
+                  <BookMarked className="w-[16px] h-[16px] text-primary" />
                 </div>
-                {!collapsed && <span>Meus Downloads</span>}
+                {!collapsed && <span>Leitura</span>}
               </button>
               <button
                 type="button"
-                disabled
-                title={collapsed ? 'Lidos Recentemente' : undefined}
-                className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body text-muted-foreground/40 cursor-not-allowed`}
+                onClick={() => navigate('/bibliotecas/trilhas')}
+                title={collapsed ? 'Trilhas' : undefined}
+                className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body text-foreground/75 hover:bg-secondary hover:text-foreground transition-colors`}
               >
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden shadow-sm">
-                  <BookOpen className="w-[16px] h-[16px] opacity-40" />
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden shadow-sm" style={{ backgroundColor: 'hsl(var(--primary) / 0.2)', boxShadow: '0 2px 6px -2px hsl(var(--primary) / 0.3)' }}>
+                  <RouteIcon className="w-[16px] h-[16px] text-primary" />
                 </div>
-                {!collapsed && <span>Lidos Recentemente</span>}
+                {!collapsed && <span>Trilhas</span>}
               </button>
               <button
                 type="button"
-                disabled
+                onClick={() => abrirAtalhoBiblioteca('favoritos')}
                 title={collapsed ? 'Favoritos' : undefined}
-                className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body text-muted-foreground/40 cursor-not-allowed`}
+                className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body text-foreground/75 hover:bg-secondary hover:text-foreground transition-colors`}
               >
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden shadow-sm">
-                  <BookMarked className="w-[16px] h-[16px] opacity-40" />
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden shadow-sm" style={{ backgroundColor: 'hsl(var(--primary) / 0.2)', boxShadow: '0 2px 6px -2px hsl(var(--primary) / 0.3)' }}>
+                  <Heart className="w-[16px] h-[16px] text-primary" />
                 </div>
                 {!collapsed && <span>Favoritos</span>}
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate('/modo-offline')}
+                title={collapsed ? 'Personalizado' : undefined}
+                className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-0' : 'px-3 mx-1'} py-1.5 rounded-lg text-sm font-body text-foreground/75 hover:bg-secondary hover:text-foreground transition-colors`}
+              >
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden shadow-sm" style={{ backgroundColor: 'hsl(var(--primary) / 0.2)', boxShadow: '0 2px 6px -2px hsl(var(--primary) / 0.3)' }}>
+                  <FileUp className="w-[16px] h-[16px] text-primary" />
+                </div>
+                {!collapsed && <span>Personalizado</span>}
               </button>
             </div>
             

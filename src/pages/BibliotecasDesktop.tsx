@@ -21,6 +21,7 @@ import DesktopBibliotecaGrid from '@/components/desktop/DesktopBibliotecaGrid';
 import ContinuarLeituraCarousel from '@/components/biblioteca/ContinuarLeituraCarousel';
 import RecomendacoesCarousel from '@/components/biblioteca/RecomendacoesCarousel';
 import LivroDetailSheet from '@/components/biblioteca/LivroDetailSheet';
+import BibliotecaAtalhosBar from '@/components/biblioteca/BibliotecaAtalhosBar';
 
 const SearchOverlay = lazyWithRetry(() => import('@/components/vademecum/SearchOverlay'));
 const AssistenteOverlay = lazyWithRetry(() => import('@/components/vademecum/AssistenteOverlayV2'));
@@ -155,8 +156,8 @@ const BibliotecasDesktop = () => {
                           <div className="absolute inset-0 bg-gradient-to-br from-black/20 to-transparent z-10 mix-blend-overlay" />
                           <div className="absolute left-0 top-0 bottom-0 w-[1px] bg-white/20 z-20" />
                           <div className="absolute left-1 top-0 bottom-0 w-[1px] bg-black/10 z-20" />
-                          {c.capaPlaceholder ? (
-                            <img src={directImg(c.capaPlaceholder, 200)} alt="" loading="lazy" className="w-full h-full object-cover relative z-0" />
+                          {c.cover ? (
+                            <img src={directImg(c.cover, 200)} alt="" loading="lazy" className="w-full h-full object-cover relative z-0" />
                           ) : (
                             <div className="w-full h-full bg-primary/10 flex items-center justify-center">
                               <Library className="w-6 h-6 text-primary/40" />
@@ -165,10 +166,10 @@ const BibliotecasDesktop = () => {
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground mb-1">
-                            {c.tipo || 'Coleção'}
+                            {c.eyebrow || 'Coleção'}
                           </div>
                           <h3 className="font-display font-bold text-foreground text-lg leading-tight group-hover:text-primary transition-colors">
-                            {c.nome}
+                            {c.label}
                           </h3>
                         </div>
                       </div>
@@ -204,6 +205,8 @@ const BibliotecasDesktop = () => {
           />
         )}
       </AnimatePresence>
+      
+      <BibliotecaAtalhosBar onAbrirLivro={setLivroAberto} />
     </div>
   );
 };

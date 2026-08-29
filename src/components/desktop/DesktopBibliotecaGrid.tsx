@@ -1,8 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import {
-  Library, Scale, FileUp, Gauge,
+  Library, Scale, FileUp, Gauge, Route as RouteIcon, BookMarked, Heart,
   type LucideIcon, BookA
 } from 'lucide-react';
+import { abrirAtalhoBiblioteca } from '@/components/biblioteca/BibliotecaBottomNav';
 
 interface Item {
   id: string;
@@ -24,36 +25,36 @@ const DesktopBibliotecaGrid = ({ onScrollToAcervo, onUploadPdf }: Props) => {
 
   const ITEMS: Item[] = [
     { 
-      id: 'colecoes', 
-      label: 'Coleções', 
-      sublabel: 'Explore todo o acervo jurídico', 
-      icon: Library, 
+      id: 'leitura', 
+      label: 'Leitura', 
+      sublabel: 'Continue de onde parou', 
+      icon: BookMarked, 
       color: 'hsl(var(--primary))', 
-      onClick: onScrollToAcervo 
+      onClick: () => abrirAtalhoBiblioteca('leitura') 
     },
     { 
-      id: 'classicos', 
-      label: 'Clássicos do Direito', 
-      sublabel: 'Obras fundamentais', 
-      icon: Scale, 
+      id: 'trilhas', 
+      label: 'Trilhas', 
+      sublabel: 'Roteiros de estudo guiados', 
+      icon: RouteIcon, 
       color: 'hsl(var(--primary))', 
-      route: '/bibliotecas/classicos-do-direito' 
+      route: '/bibliotecas/trilhas' 
+    },
+    { 
+      id: 'favoritos', 
+      label: 'Favoritos', 
+      sublabel: 'Suas obras marcadas', 
+      icon: Heart, 
+      color: 'hsl(var(--primary))', 
+      onClick: () => abrirAtalhoBiblioteca('favoritos') 
     },
     { 
       id: 'pdfs', 
-      label: 'PDFs Personalizados', 
+      label: 'Personalizado', 
       sublabel: 'Seus próprios materiais', 
       icon: FileUp, 
       color: 'hsl(var(--primary))', 
       onClick: onUploadPdf 
-    },
-    { 
-      id: 'performance', 
-      label: 'Performance', 
-      sublabel: 'Oratória, liderança e mais', 
-      icon: Gauge, 
-      color: '#e4e4e7', // Cinza para contrastar
-      route: '/bibliotecas?aba=performance' 
     },
   ];
 
