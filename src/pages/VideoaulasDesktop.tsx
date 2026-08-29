@@ -172,7 +172,7 @@ export const VideoaulasDesktop = memo(function VideoaulasDesktop({
       </div>
     </div>
   );
-}
+});
 
 export default VideoaulasDesktop;
 
