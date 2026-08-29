@@ -35,9 +35,19 @@ const DesktopEstudosGrid = (_props: Props) => {
 
   const Card = ({ it }: { it: Item }) => {
     const Icon = it.icon;
+    const handleClick = () => {
+      if (it.id === 'mapas' && _props.onChatClick) {
+        _props.onChatClick();
+      } else if (it.onClick) {
+        it.onClick();
+      } else if (it.route) {
+        navigate(it.route);
+      }
+    };
+
     return (
       <button
-        onClick={() => (it.onClick ? it.onClick() : it.route && navigate(it.route))}
+        onClick={handleClick}
         data-track-name={it.label}
         className="group relative flex items-center gap-5 overflow-hidden rounded-2xl border border-border bg-card px-6 py-6 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10"
       >
