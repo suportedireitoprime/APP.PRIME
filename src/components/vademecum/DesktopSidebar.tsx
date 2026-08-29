@@ -285,6 +285,9 @@ const DesktopSidebar = ({ activeTab, onTabChange }: DesktopSidebarProps) => {
                 {!collapsed && <span>{item.label}</span>}
               </button>
             );
+          })}
+        </div>
+
         {activeTab === 'biblioteca' ? (
           <>
             <div className="pb-1 border-t border-border/50 pt-1">
