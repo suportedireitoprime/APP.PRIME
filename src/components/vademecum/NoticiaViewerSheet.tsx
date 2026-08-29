@@ -126,11 +126,11 @@ export default function NoticiaViewerSheet({ noticia, onClose }: Props) {
                 <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/60 to-transparent" />
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-card via-card/80 to-transparent" />
                 <button
-                  onClick={onClose}
+                  onClick={handleClose}
                   aria-label="Fechar"
-                  className="absolute top-4 left-4 w-11 h-11 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white shadow-lg hover:bg-white/30 active:scale-95 transition-all"
+                  className="absolute top-4 left-4 w-11 h-11 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white shadow-lg hover:bg-white/30 active:scale-95 transition-all z-20 pointer-events-auto"
                 >
-                  <ChevronDown className="w-5 h-5" strokeWidth={2.5} />
+                  {isDesktop ? <X className="w-5 h-5" strokeWidth={2.5} /> : <ChevronDown className="w-5 h-5" strokeWidth={2.5} />}
                 </button>
                 <button
                   onClick={toggleFav}
@@ -221,15 +221,17 @@ export default function NoticiaViewerSheet({ noticia, onClose }: Props) {
               </div>
 
               <div className="space-y-4 px-5 pt-1">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-primary text-primary-foreground uppercase tracking-wide">
-                    <Scale className="w-3 h-3" />
+                <div className="flex items-center gap-2 flex-wrap mb-1">
+                  <span className="inline-flex items-center text-[10px] font-bold text-primary uppercase tracking-wide">
                     Migalhas
                   </span>
                   {noticia.categoria && (
-                    <span className="px-2 py-0.5 rounded-md bg-primary/15 text-primary text-[10px] font-bold">
-                      {noticia.categoria}
-                    </span>
+                    <>
+                      <span className="text-primary text-[10px] font-bold">•</span>
+                      <span className="text-primary text-[10px] font-bold uppercase tracking-wide">
+                        {noticia.categoria}
+                      </span>
+                    </>
                   )}
                 </div>
                 <h2 className="font-display text-2xl md:text-3xl text-foreground leading-[1.15] font-bold tracking-tight">
