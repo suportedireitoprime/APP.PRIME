@@ -3,13 +3,9 @@ import { motion } from 'framer-motion';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { haptic } from '@/lib/nativeHaptics';
 import { BookMarked } from 'lucide-react';
-import { COLECOES } from '@/lib/bibliotecaColecoes';
 
 export default function PilulasHome() {
   const navigate = useNavigate();
-  
-  // Calculate total books in classicos
-  const totalClassicos = COLECOES.classicos.livros.length;
 
   const handleSelectClassicos = () => {
     haptic.selection();
@@ -52,7 +48,7 @@ export default function PilulasHome() {
             {/* Content */}
             <div className="relative z-10 flex flex-col justify-end h-full p-5 w-full">
               <span className="inline-block px-2.5 py-1 mb-3 rounded-full bg-[#36AF85]/20 text-[#36AF85] text-[11px] font-black uppercase tracking-widest border border-[#36AF85]/30 self-start">
-                {totalClassicos} Obras
+                Clássicos
               </span>
               <h3 className="text-[20px] font-black text-white leading-tight drop-shadow-md">
                 Clássicos do Direito
