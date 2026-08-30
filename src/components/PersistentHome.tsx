@@ -16,6 +16,25 @@ const PersistentHome = () => {
   const location = useLocation();
   const { user, loading } = useAuth();
 
+  const [onboardingChecked, setOnboardingChecked] = useState(() => {
+    if (!user) return false;
+    if (typeof window === 'undefined') return false;
+    return localStorage.getItem(`onboarding_completed:${user.id}`) === '1';
+  });
+
+  useEffect(() => {
+    if (!user) return;
+    const cacheKey = `onboarding_completed:${user.id}`;
+    if (localStorage.getItem(cacheKey) === '1') {
+      setOnboardingChecked(true);
+      return;
+    }
+    
+    const handleCheck = () => setOnboardingChecked(true);
+    window.addEventListener('onboarding_checked', handleCheck);
+    return () => window.removeEventListener('onboarding_checked', handleCheck);
+  }, [user]);
+
   // Só monta depois que a auth resolveu e temos usuário — evita rodar
   // efeitos da Home no fluxo público (auth/landing/etc).
   if (loading || !user) return null;
@@ -38,25 +57,6 @@ const PersistentHome = () => {
   const isPublic =
     publicPaths.has(location.pathname) ||
     location.pathname.startsWith("/desktop-link/");
-
-  const [onboardingChecked, setOnboardingChecked] = useState(() => {
-    if (!user) return false;
-    if (typeof window === 'undefined') return false;
-    return localStorage.getItem(`onboarding_completed:${user.id}`) === '1';
-  });
-
-  useEffect(() => {
-    if (!user) return;
-    const cacheKey = `onboarding_completed:${user.id}`;
-    if (localStorage.getItem(cacheKey) === '1') {
-      setOnboardingChecked(true);
-      return;
-    }
-    
-    const handleCheck = () => setOnboardingChecked(true);
-    window.addEventListener('onboarding_checked', handleCheck);
-    return () => window.removeEventListener('onboarding_checked', handleCheck);
-  }, [user]);
 
   if (isPublic) return null;
 
