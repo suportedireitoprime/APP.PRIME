@@ -75,16 +75,36 @@ export default function AdminPilulas() {
   async function carregarCP() {
     setLoadingCP(true);
     try {
-      const { data, error } = await supabase
-        .from('CP_CODIGO_PENAL')
-        .select('id, numero, audio_pilula_url')
-        .order('ordem_numero', { ascending: true });
+      // 1. Obter o ID do Código Penal
+      const { data: leiData, error: leiError } = await supabase
+        .from('vade_mecum_leis')
+        .select('id')
+        .eq('slug', 'codigo-penal')
+        .single();
         
-      if (error) {
-        console.error('Erro ao carregar Código Penal:', error);
+      if (leiError || !leiData) {
+        console.error('Erro ao buscar ID do CP:', leiError);
         return;
       }
-      setArtigosCP(data as any[]);
+      
+      const { data, error } = await supabase
+        .from('vade_mecum_artigos')
+        .select('id, numero, narracao_url')
+        .eq('lei_id', leiData.id)
+        .order('ordem', { ascending: true });
+        
+      if (error) {
+        console.error('Erro ao carregar artigos do Código Penal:', error);
+        return;
+      }
+      
+      // Mapear narracao_url para audio_pilula_url para manter compatibilidade com o resto do código
+      const artigosFormatados = (data || []).map(art => ({
+        ...art,
+        audio_pilula_url: art.narracao_url
+      }));
+      
+      setArtigosCP(artigosFormatados as any[]);
     } catch (err) {
       toast.error('Erro ao carregar artigos do Código Penal');
     } finally {
@@ -149,8 +169,8 @@ export default function AdminPilulas() {
         ));
       } else {
         const { error: dbError } = await supabase
-          .from('CP_CODIGO_PENAL')
-          .update({ audio_pilula_url: rawUrl })
+          .from('vade_mecum_artigos')
+          .update({ narracao_url: rawUrl })
           .eq('id', itemId);
         if (dbError) throw dbError;
 
