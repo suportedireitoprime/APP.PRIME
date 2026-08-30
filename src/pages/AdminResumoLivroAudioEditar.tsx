@@ -142,10 +142,9 @@ export default function AdminResumoLivroAudioEditar() {
         setSelectedBook(novos.find((l) => l.livro.id === item.livro.id) || null);
       }
       toast.success('Áudio atualizado com sucesso!', { id: toastId });
-    } catch (err: any) {
-      console.error(err);
-      toast.error('Erro ao processar/enviar áudio.', { id: toastId });
-    } finally {
+    } catch (error: any) {
+      console.error('Erro no upload de áudio:', error);
+      toast.error(`Erro: ${error?.message || error || 'ao processar/enviar áudio'}`, { id: toastId, duration: 10000 });
       setUploadingId(null);
       setCompressingId(null);
     }

@@ -137,7 +137,7 @@ export default function AdminPilulas() {
       }
     } catch (err: any) {
       console.error(err);
-      toast.error(err.message || 'Erro ao processar/enviar áudio', { id: toastId });
+      toast.error(`Erro: ${err?.message || err || 'ao processar/enviar áudio'}`, { id: toastId, duration: 10000 });
     } finally {
       setUploadingId(null);
       setCompressingId(null);
