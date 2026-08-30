@@ -202,11 +202,11 @@ export default function PilulasPlayer() {
           className="flex flex-col items-center w-full max-w-md"
         >
           {/* Capa */}
-          <div className="w-56 sm:w-72 rounded-2xl overflow-hidden shadow-2xl mb-8 border border-white/10 shrink-0">
+          <div className="w-56 sm:w-72 aspect-[2/3] rounded-2xl overflow-hidden shadow-2xl mb-8 border border-white/10 shrink-0">
             {livro.capa ? (
-              <img src={livro.capa} alt={livro.titulo} className="w-full h-auto object-cover" />
+              <img src={livro.capa} alt={livro.titulo} className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-80 sm:h-[400px] bg-white/5 flex items-center justify-center text-white/20">
+              <div className="w-full h-full bg-white/5 flex items-center justify-center text-white/20">
                 <BookOpen className="w-16 h-16" />
               </div>
             )}
@@ -280,32 +280,28 @@ export default function PilulasPlayer() {
           {/* Soundwave Animation */}
           <div className="flex items-center justify-center gap-1 h-12 mb-8">
             {[
-              ["20%", "80%", "40%", "90%", "20%"],
-              ["40%", "100%", "30%", "70%", "40%"],
-              ["60%", "30%", "100%", "50%", "60%"],
-              ["30%", "90%", "20%", "100%", "30%"],
-              ["80%", "20%", "90%", "40%", "80%"],
-              ["40%", "100%", "30%", "70%", "40%"],
-              ["100%", "40%", "80%", "30%", "100%"],
-              ["20%", "80%", "40%", "90%", "20%"],
-              ["60%", "30%", "100%", "50%", "60%"],
-              ["30%", "90%", "20%", "100%", "30%"],
-              ["50%", "20%", "80%", "30%", "50%"],
-            ].map((heights, i) => (
+              { anim: ["20%", "80%", "40%", "90%", "20%"], paused: "20%" },
+              { anim: ["40%", "100%", "30%", "70%", "40%"], paused: "40%" },
+              { anim: ["60%", "30%", "100%", "50%", "60%"], paused: "60%" },
+              { anim: ["30%", "90%", "20%", "100%", "30%"], paused: "30%" },
+              { anim: ["80%", "20%", "90%", "40%", "80%"], paused: "80%" },
+              { anim: ["40%", "100%", "30%", "70%", "40%"], paused: "40%" },
+              { anim: ["100%", "40%", "80%", "30%", "100%"], paused: "100%" },
+              { anim: ["20%", "80%", "40%", "90%", "20%"], paused: "20%" },
+              { anim: ["60%", "30%", "100%", "50%", "60%"], paused: "60%" },
+              { anim: ["30%", "90%", "20%", "100%", "30%"], paused: "30%" },
+              { anim: ["50%", "20%", "80%", "30%", "50%"], paused: "50%" },
+            ].map((wave, i) => (
               <motion.div
                 key={i}
                 className="w-1.5 bg-primary rounded-full"
-                animate={
-                  isPlaying 
-                    ? { height: heights }
-                    : { height: "15%" }
-                }
+                animate={{ height: isPlaying ? wave.anim : wave.paused }}
                 transition={{
-                  duration: 0.5 + (i % 3) * 0.1, // Randomize duration slightly to make it look less uniform
-                  repeat: Infinity,
+                  duration: isPlaying ? 0.5 + (i % 3) * 0.1 : 0.3,
+                  repeat: isPlaying ? Infinity : 0,
                   repeatType: "mirror",
                   ease: "easeInOut",
-                  delay: i * 0.05,
+                  delay: isPlaying ? i * 0.05 : 0,
                 }}
               />
             ))}
