@@ -189,13 +189,14 @@ NÃO retorne blocos de código markdown (como \`\`\`json), apenas o texto JSON p
                 </div>
               </div>
               <div className="flex-1">
-              <Label className="text-white text-base">Assinatura no Rodapé (Opcional)</Label>
-              <Input 
-                value={username} 
-                onChange={e => setUsername(e.target.value)} 
-                placeholder="@seuperfil" 
-                className="mt-2 h-12 text-lg bg-black/40 border-white/10 text-white placeholder:text-white/30"
-              />
+                <Label className="text-white text-base">Assinatura no Rodapé (Opcional)</Label>
+                <Input 
+                  value={username} 
+                  onChange={e => setUsername(e.target.value)} 
+                  placeholder="@seuperfil" 
+                  className="mt-2 h-12 text-lg bg-black/40 border-white/10 text-white placeholder:text-white/30"
+                />
+              </div>
             </div>
           </div>
           
