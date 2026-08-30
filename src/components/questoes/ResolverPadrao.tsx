@@ -690,7 +690,7 @@ const ResolverPadrao = ({
                   </button>
                 </div>
               )
-            {!feedbackOculto && (resp || (idx === questoes.length - 1 && selecao)) ? (
+            ) : !feedbackOculto && (resp || (idx === questoes.length - 1 && selecao)) ? (
               <>
                 <motion.div
                   key="feedback-overlay"
