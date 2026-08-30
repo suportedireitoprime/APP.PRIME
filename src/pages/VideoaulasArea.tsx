@@ -430,15 +430,29 @@ const VideoaulasArea = () => {
               </div>
             </div>
 
-            <div className="max-w-md lg:max-w-7xl mx-auto px-4 pt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <motion.div 
+              className="max-w-md lg:max-w-7xl mx-auto px-4 pt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+              variants={{
+                hidden: { opacity: 0 },
+                show: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.1 } }
+              }}
+              initial="hidden"
+              animate="show"
+            >
               {lista.map((a, i) => {
                 const p = progresso[a.video_id];
                 const pct = p?.concluida ? 100 : Math.min(100, Math.round(p?.percentual ?? 0));
                 return (
-                  <button
+                  <motion.button
+                    variants={{
+                      hidden: { opacity: 0, y: 15 },
+                      show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+                    }}
+                    whileHover={{ scale: 1.015, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
                     key={String(a.id)}
                     onClick={() => navigate(`/videoaulas/${catalogo.id}/${areaSlug}/${a.video_id}`)}
-                    className="w-full text-left rounded-2xl border border-border/40 bg-card/60 backdrop-blur-md shadow-lg hover:border-primary/50 transition-all overflow-hidden flex gap-3 p-2.5 active:scale-[0.98] h-auto"
+                    className="w-full text-left rounded-2xl border border-border/40 bg-card/60 backdrop-blur-md shadow-lg hover:border-primary/50 transition-all overflow-hidden flex gap-3 p-2.5 active:scale-[0.98] h-auto focus-visible:outline-none"
                   >
                     <div 
                       className="relative w-[130px] sm:w-[150px] aspect-video shrink-0 rounded-xl overflow-hidden bg-muted self-center shadow-inner"
@@ -490,7 +504,7 @@ const VideoaulasArea = () => {
                         </div>
                       </div>
                     </div>
-                  </button>
+                  </motion.button>
                 );
               })}
 
@@ -502,7 +516,7 @@ const VideoaulasArea = () => {
                   <p className="text-muted-foreground">Nenhuma aula encontrada.</p>
                 </div>
               )}
-            </div>
+            </motion.div>
           </motion.div>
         )}
 
