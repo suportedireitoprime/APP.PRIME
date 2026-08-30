@@ -121,40 +121,38 @@ export default function AdminPilulas() {
   }
 
   const copyToClipboard = async (text: string, successMsg: string) => {
-    // Fallback clássico que funciona em qualquer WebView
-    const fallbackCopy = (str: string): boolean => {
-      const textarea = document.createElement('textarea');
-      textarea.value = str;
-      textarea.setAttribute('readonly', '');
-      textarea.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
-      document.body.appendChild(textarea);
-      textarea.select();
-      let ok = false;
-      try { ok = document.execCommand('copy'); } catch { ok = false; }
-      document.body.removeChild(textarea);
-      return ok;
-    };
-
-    // Tenta Capacitor primeiro
+    // 1. Tenta execCommand PRIMEIRO (síncrono, preserva gesto do usuário no WebView)
     try {
-      await Clipboard.write({ string: text });
-      toast.success(successMsg);
-      return;
-    } catch { /* ignora */ }
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.setAttribute('readonly', '');
+      textarea.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;padding:0;border:none;outline:none;box-shadow:none;background:transparent;opacity:0.01';
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      const ok = document.execCommand('copy');
+      document.body.removeChild(textarea);
+      if (ok) {
+        toast.success(successMsg);
+        return;
+      }
+    } catch { /* ignora e tenta próximo */ }
 
-    // Tenta navigator.clipboard
+    // 2. Tenta navigator.clipboard (precisa de HTTPS + gesto)
     try {
       await navigator.clipboard.writeText(text);
       toast.success(successMsg);
       return;
     } catch { /* ignora */ }
 
-    // Fallback execCommand
-    if (fallbackCopy(text)) {
+    // 3. Tenta Capacitor nativo
+    try {
+      await Clipboard.write({ string: text });
       toast.success(successMsg);
-    } else {
-      toast.error('Erro ao copiar');
-    }
+      return;
+    } catch { /* ignora */ }
+
+    toast.error('Não foi possível copiar. Selecione o texto manualmente.');
   };
 
   return (
