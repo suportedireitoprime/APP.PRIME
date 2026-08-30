@@ -27,10 +27,7 @@ import PdfScrollReader from '@/components/biblioteca/PdfScrollReader';
 import { useIsDesktop } from '@/hooks/use-desktop';
 import { track } from '@/lib/analyticsEvents';
 import { useTrackArea } from "@/hooks/useTrackArea";
-import { FileUp, ChevronRight, Library, BookOpen, Gauge, X, Lock } from 'lucide-react';
-import { useGatedFeature } from '@/hooks/useGatedFeature';
-// FilePicker carregado via dynamic import no handleUploadPdf (evita crash se plugin nativo não estiver registrado)
-import { saveCustomPdf, listCustomPdfs, removeCustomPdf, getCustomPdf, type CustomPdfRecord } from '@/services/bibliotecaPersonalizadosDb';
+import { ChevronRight, Library, BookOpen, Gauge } from 'lucide-react';
 import { useIsPdfCached } from '@/hooks/useIsPdfCached';
 import { CheckCircle2, HardDrive } from 'lucide-react';
 
@@ -99,7 +96,6 @@ const Bibliotecas = () => {
   const [livroAberto, setLivroAberto] = useState<LivroNormalizado | null>(null);
   const [customPdfUrl, setCustomPdfUrl] = useState<string | null>(null);
   const [customPdfTitle, setCustomPdfTitle] = useState<string>('');
-  const [customPdfsList, setCustomPdfsList] = useState<Omit<CustomPdfRecord, 'data'>[]>([]);
   
   const location = useLocation();
 
@@ -132,7 +128,6 @@ const Bibliotecas = () => {
 
   const isDesktop = useIsDesktop();
   const colecoesVisiveis = useVisibleColecoes();
-  const gate = useGatedFeature('pdf_personalizado', 'default');
   const parentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -146,54 +141,7 @@ const Bibliotecas = () => {
     });
   }, [queryClient]);
 
-  const loadCustomPdfs = useCallback(async () => {
-    try {
-      const list = await listCustomPdfs();
-      setCustomPdfsList(list);
-    } catch {}
-  }, []);
 
-  useEffect(() => {
-    loadCustomPdfs();
-  }, [loadCustomPdfs]);
-
-  const handleUploadPdf = async () => {
-    gate.run(async () => {
-      try {
-        const { FilePicker } = await import('@capawesome/capacitor-file-picker');
-        const result = await FilePicker.pickFiles({
-          types: ['application/pdf'],
-          readData: true,
-        });
-        const file = result.files[0];
-        if (file && file.data) {
-          const t = file.name || 'PDF Personalizado';
-          const d = `data:application/pdf;base64,${file.data}`;
-          const id = crypto.randomUUID();
-          await saveCustomPdf(id, t, d);
-          await loadCustomPdfs();
-          setCustomPdfTitle(t);
-          setCustomPdfUrl(d);
-        }
-      } catch (e) {
-        console.log('User cancelled or error picking file', e);
-      }
-    });
-  };
-
-  const handleOpenCustomPdf = async (id: string, titulo: string) => {
-    const record = await getCustomPdf(id);
-    if (record) {
-      setCustomPdfTitle(record.titulo);
-      setCustomPdfUrl(record.data);
-    }
-  };
-
-  const handleDeleteCustomPdf = async (e: React.MouseEvent, id: string) => {
-    e.stopPropagation();
-    await removeCustomPdf(id);
-    await loadCustomPdfs();
-  };
 
   const colecoesPerformance = useMemo(
     () => colecoesVisiveis.filter((c) => PERFORMANCE_IDS.includes(c.id)),
@@ -314,54 +262,16 @@ const Bibliotecas = () => {
             <BibliotecaSearchBar onAbrirLivro={(l) => setLivroAberto(l)} />
           </div>
         </FilosofosPanel>
-        {/* Painéis hospedados pelo rodapé (Leitura, Favoritos, Recentes, Offline) */}
-        <BibliotecaAtalhosBar onAbrirLivro={(l) => setLivroAberto(l)} />
+        {/* Painéis hospedados pelo rodapé (Leitura, Favoritos, Recentes, Personalizado) */}
+        <BibliotecaAtalhosBar 
+          onAbrirLivro={(l) => setLivroAberto(l)} 
+          onAbrirCustomPdf={(titulo, url) => {
+            setCustomPdfTitle(titulo);
+            setCustomPdfUrl(url);
+          }}
+        />
 
-        <div className="px-4 mt-6">
-          <button
-            onClick={handleUploadPdf}
-            className="w-full flex items-center justify-between p-4 rounded-2xl bg-card hover:bg-secondary/50 border border-border/50 shadow-sm transition-colors relative overflow-hidden group"
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="flex items-center gap-4 relative z-10">
-              <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500">
-                <FileUp className="w-5 h-5" />
-              </div>
-              <div className="text-left">
-                <p className="text-[15px] font-bold text-foreground flex items-center gap-2">
-                  Personalizado
-                  {!gate.isPremium && <Lock className="w-3 h-3 text-muted-foreground" />}
-                </p>
-                <p className="text-[12px] text-muted-foreground mt-0.5">Leia seus próprios PDFs no app</p>
-              </div>
-            </div>
-            <ChevronRight className="w-5 h-5 text-muted-foreground relative z-10" />
-          </button>
-          
-          {customPdfsList.length > 0 && (
-            <div className="mt-3 space-y-2">
-              {customPdfsList.map(pdf => (
-                <div key={pdf.id} className="flex items-center justify-between p-3 rounded-xl bg-card/50 border border-border/40">
-                  <button 
-                    onClick={() => handleOpenCustomPdf(pdf.id, pdf.titulo)}
-                    className="flex-1 text-left min-w-0"
-                  >
-                    <p className="text-sm font-semibold text-foreground truncate">{pdf.titulo}</p>
-                    <p className="text-[11px] text-muted-foreground mt-0.5">
-                      Salvo em {new Date(pdf.createdAt).toLocaleDateString()}
-                    </p>
-                  </button>
-                  <button
-                    onClick={(e) => handleDeleteCustomPdf(e, pdf.id)}
-                    className="p-2 text-muted-foreground hover:text-red-500 transition-colors ml-2"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+
 
         <div className="mt-8">
           <ContinuarLeituraCarousel onAbrirLivro={(l) => setLivroAberto(l)} />
@@ -652,8 +562,7 @@ const Bibliotecas = () => {
         )}
       </AnimatePresence>
 
-      {gate.gateNode}
-    </main>
+
   );
 };
 

@@ -18,20 +18,24 @@ import { COLECOES, type LivroNormalizado } from '@/lib/bibliotecaColecoes';
 import { isPdfCached, downloadPdf, removePdfFromCache } from '@/services/bibliotecaPdfCache';
 import { Capacitor } from '@capacitor/core';
 import { toast } from 'sonner';
+import { FileUp, X, Lock } from 'lucide-react';
+import { useGatedFeature } from '@/hooks/useGatedFeature';
+import { saveCustomPdf, listCustomPdfs, removeCustomPdf, getCustomPdf, type CustomPdfRecord } from '@/services/bibliotecaPersonalizadosDb';
 
-type Tab = 'favoritos' | 'recentes' | 'leitura' | 'offline';
+type Tab = 'favoritos' | 'recentes' | 'leitura' | 'personalizado';
 
 interface Props {
   onAbrirLivro: (livro: LivroNormalizado) => void;
   /** Quando definido, os painéis mostram apenas livros daquela área. */
   filtroArea?: string | null;
+  onAbrirCustomPdf?: (titulo: string, url: string) => void;
 }
 
 const TABS: { id: Tab; label: string; icon: typeof Heart }[] = [
   { id: 'leitura', label: 'Leitura', icon: BookMarked },
   { id: 'favoritos', label: 'Favoritos', icon: Heart },
   { id: 'recentes', label: 'Recentes', icon: Clock },
-  { id: 'offline', label: 'Offline', icon: HardDrive },
+  { id: 'personalizado', label: 'Meus PDFs', icon: HardDrive as any },
 ];
 
 import { readLeituraProgress, formatDuration, type EmProgresso } from '@/lib/leituraProgress';
@@ -60,7 +64,7 @@ function snapToNormalizado(s: LivroSnapshot): LivroNormalizado {
   };
 }
 
-const BibliotecaAtalhosBar = ({ onAbrirLivro, filtroArea = null }: Props) => {
+const BibliotecaAtalhosBar = ({ onAbrirLivro, filtroArea = null, onAbrirCustomPdf }: Props) => {
   const [active, setActive] = useState<Tab | null>(null);
   const [tick, setTick] = useState(0);
   const navigate = useNavigate();
@@ -138,16 +142,19 @@ const BibliotecaAtalhosBar = ({ onAbrirLivro, filtroArea = null }: Props) => {
               {active === 'recentes' && <Clock className="w-5 h-5 text-primary" />}
               {active === 'leitura' && <BookMarked className="w-5 h-5 text-primary" />}
               {active === 'offline' && <HardDrive className="w-5 h-5 text-primary" />}
+              {active === 'personalizado' && <HardDrive className="w-5 h-5 text-purple-500" />}
               {active === 'favoritos' && 'Favoritos'}
               {active === 'recentes' && 'Lidos recentemente'}
               {active === 'leitura' && 'Minha leitura'}
               {active === 'offline' && 'Disponível offline'}
+              {active === 'personalizado' && 'Meus PDFs Personalizados'}
             </SheetTitle>
             <SheetDescription className="text-sm">
               {active === 'favoritos' && 'Livros que você marcou com o coração.'}
               {active === 'recentes' && 'Sua trilha de leitura mais recente.'}
               {active === 'leitura' && 'Livros que você começou a ler — continue de onde parou.'}
               {active === 'offline' && 'Livros baixados no aparelho para leitura sem internet.'}
+              {active === 'personalizado' && 'Leia seus próprios arquivos PDF no aplicativo.'}
             </SheetDescription>
           </SheetHeader>
 
@@ -185,6 +192,14 @@ const BibliotecaAtalhosBar = ({ onAbrirLivro, filtroArea = null }: Props) => {
                   onAbrirLivro(snapToNormalizado(l));
                 }}
                 onOpenLembrete={(l) => setLembreteLivro(l)}
+              />
+            )}
+            {active === 'personalizado' && (
+              <PersonalizadoLista 
+                onOpen={(titulo, url) => {
+                  setActive(null);
+                  onAbrirCustomPdf?.(titulo, url);
+                }} 
               />
             )}
             {active === 'offline' && (
@@ -588,6 +603,107 @@ function OfflineRow({
       >
         {busy ? '...' : cached ? 'Remover' : 'Baixar'}
       </button>
+    </div>
+  );
+}
+
+function PersonalizadoLista({ onOpen }: { onOpen: (titulo: string, url: string) => void }) {
+  const [customPdfsList, setCustomPdfsList] = useState<Omit<CustomPdfRecord, 'data'>[]>([]);
+  const gate = useGatedFeature('pdf_personalizado', 'default');
+  
+  const loadCustomPdfs = async () => {
+    try {
+      const list = await listCustomPdfs();
+      setCustomPdfsList(list);
+    } catch {}
+  };
+
+  useEffect(() => {
+    loadCustomPdfs();
+  }, []);
+
+  const handleUploadPdf = async () => {
+    gate.run(async () => {
+      try {
+        const { FilePicker } = await import('@capawesome/capacitor-file-picker');
+        const result = await FilePicker.pickFiles({
+          types: ['application/pdf'],
+          readData: true,
+        });
+        const file = result.files[0];
+        if (file && file.data) {
+          const t = file.name || 'PDF Personalizado';
+          const d = `data:application/pdf;base64,${file.data}`;
+          const id = crypto.randomUUID();
+          await saveCustomPdf(id, t, d);
+          await loadCustomPdfs();
+          onOpen(t, d);
+        }
+      } catch (e) {
+        console.log('User cancelled or error picking file', e);
+      }
+    });
+  };
+
+  const handleOpenCustomPdf = async (id: string, titulo: string) => {
+    const record = await getCustomPdf(id);
+    if (record) {
+      onOpen(record.titulo, record.data);
+    }
+  };
+
+  const handleDeleteCustomPdf = async (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    await removeCustomPdf(id);
+    await loadCustomPdfs();
+  };
+
+  return (
+    <div className="space-y-6 pt-1">
+      <button
+        onClick={handleUploadPdf}
+        className="w-full flex items-center justify-between p-4 rounded-2xl bg-card hover:bg-secondary/50 border border-border/50 shadow-sm transition-colors relative overflow-hidden group"
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+        <div className="flex items-center gap-4 relative z-10">
+          <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500">
+            <FileUp className="w-5 h-5" />
+          </div>
+          <div className="text-left">
+            <p className="text-[15px] font-bold text-foreground flex items-center gap-2">
+              Adicionar PDF
+              {!gate.isPremium && <Lock className="w-3 h-3 text-muted-foreground" />}
+            </p>
+            <p className="text-[12px] text-muted-foreground mt-0.5">Leia seus próprios PDFs no app</p>
+          </div>
+        </div>
+        <ChevronRight className="w-5 h-5 text-muted-foreground relative z-10" />
+      </button>
+
+      {customPdfsList.length > 0 && (
+        <div className="mt-3 space-y-2">
+          {customPdfsList.map(pdf => (
+            <div key={pdf.id} className="flex items-center justify-between p-3 rounded-xl bg-card/50 border border-border/40">
+              <button 
+                onClick={() => handleOpenCustomPdf(pdf.id, pdf.titulo)}
+                className="flex-1 text-left min-w-0"
+              >
+                <p className="text-sm font-semibold text-foreground truncate">{pdf.titulo}</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">
+                  Salvo em {new Date(pdf.createdAt).toLocaleDateString()}
+                </p>
+              </button>
+              <button
+                onClick={(e) => handleDeleteCustomPdf(e, pdf.id)}
+                className="p-2 text-muted-foreground hover:text-red-500 transition-colors ml-2"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+      {gate.gateNode}
     </div>
   );
 }

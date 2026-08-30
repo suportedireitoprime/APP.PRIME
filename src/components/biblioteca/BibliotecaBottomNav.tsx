@@ -4,15 +4,15 @@ import { motion } from 'framer-motion';
 import { BookMarked, Heart, HardDrive, Library, Route as RouteIcon } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
-export type BibliotecaAtalhoTab = 'leitura' | 'favoritos' | 'recentes' | 'offline' | 'trilhas';
+export type BibliotecaAtalhoTab = 'leitura' | 'favoritos' | 'recentes' | 'personalizado' | 'trilhas';
 
-/** Abre um dos painéis da BibliotecaAtalhosBar (Leitura, Favoritos, Recentes, Offline). */
+/** Abre um dos painéis da BibliotecaAtalhosBar (Leitura, Favoritos, Recentes, Personalizado). */
 export function abrirAtalhoBiblioteca(tab: BibliotecaAtalhoTab) {
   window.dispatchEvent(new CustomEvent('biblioteca-atalho', { detail: { tab } }));
 }
 
 type Slot = {
-  id: 'leitura' | 'favoritos' | 'biblioteca' | 'recentes' | 'offline' | 'trilhas';
+  id: 'leitura' | 'favoritos' | 'biblioteca' | 'recentes' | 'personalizado' | 'trilhas';
   label: string;
   icon: typeof Heart;
 };
@@ -22,7 +22,7 @@ const SLOTS: Slot[] = [
   { id: 'leitura', label: 'Leitura', icon: BookMarked },
   { id: 'trilhas', label: 'Trilhas', icon: RouteIcon },
   { id: 'favoritos', label: 'Favoritos', icon: Heart },
-  { id: 'offline', label: 'Offline', icon: HardDrive },
+  { id: 'personalizado', label: 'Meus PDFs', icon: HardDrive },
 ];
 
 /**
