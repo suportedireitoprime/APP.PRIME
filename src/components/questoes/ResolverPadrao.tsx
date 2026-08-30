@@ -89,6 +89,7 @@ const ResolverPadrao = ({
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const gateQuestoes = useGatedFeature('questoes', 'questoes');
   const gateFuncoes = useGatedFeature('questao_funcoes', 'questao_funcoes');
+  const isFreeFuncoes = !gateFuncoes.isPremium && !gateFuncoes.isAdmin;
 
   const atual = questoes[idx];
   const resp = atual ? respostas[atual.id] : undefined;
@@ -747,7 +748,7 @@ const ResolverPadrao = ({
                   </div>
                   <div className="flex flex-col gap-4 py-1">
                     <button
-                      onClick={() => { if (gateFuncoes.blocked) { gateFuncoes.openGate(); return; } setComentarioAberto(true); }}
+                      onClick={() => { if (isFreeFuncoes) { gateFuncoes.openGate(); return; } setComentarioAberto(true); }}
                       className={cn("relative overflow-hidden flex h-[60px] w-full items-center justify-between rounded-2xl border px-5 shadow-sm transition-all active:scale-[0.98]", 
                         resp.acertou 
                           ? "bg-green-500/10 border-green-500/20 text-green-500 hover:bg-green-500/20" 

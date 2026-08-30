@@ -43,6 +43,7 @@ export function QuestaoAcoesBar({ source, chaveRevisao, layout = 'horizontal' }:
   const [aba, setAba] = useState<Aba>(null);
   const [seletor, setSeletor] = useState<SeletorTipo>(null);
   const gate = useGatedFeature('questao_funcoes', 'questao_funcoes');
+  const isFree = !gate.isPremium && !gate.isAdmin;
 
   useEffect(() => { setAba(null); setSeletor(null); }, [chaveRevisao]);
 
@@ -51,7 +52,7 @@ export function QuestaoAcoesBar({ source, chaveRevisao, layout = 'horizontal' }:
       return (
         <button
           type="button"
-          onClick={() => { if (gate.blocked) { gate.openGate(); return; } onClick(); }}
+          onClick={() => { if (isFree) { gate.openGate(); return; } onClick(); }}
           className="flex h-12 w-full shrink-0 items-center gap-3 rounded-xl border border-white/5 bg-black/20 px-4 text-left transition-all hover:bg-black/30 active:scale-[0.98]"
         >
           <Icon className="h-5 w-5 text-primary" strokeWidth={2} />
@@ -63,7 +64,7 @@ export function QuestaoAcoesBar({ source, chaveRevisao, layout = 'horizontal' }:
       return (
         <button
           type="button"
-          onClick={() => { if (gate.blocked) { gate.openGate(); return; } onClick(); }}
+          onClick={() => { if (isFree) { gate.openGate(); return; } onClick(); }}
           className="flex h-16 flex-col items-center justify-center gap-1.5 rounded-2xl border border-white/5 bg-black/20 px-1 text-white/60 transition-all hover:bg-black/40 hover:text-white active:scale-95"
         >
           <Icon className="h-5 w-5 text-primary" strokeWidth={1.5} />
@@ -74,7 +75,7 @@ export function QuestaoAcoesBar({ source, chaveRevisao, layout = 'horizontal' }:
     return (
       <button
         type="button"
-        onClick={() => { if (gate.blocked) { gate.openGate(); return; } onClick(); }}
+        onClick={() => { if (isFree) { gate.openGate(); return; } onClick(); }}
         className="flex shrink-0 snap-start flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground min-w-[76px]"
       >
         <Icon className="h-8 w-8" strokeWidth={1.2} />
