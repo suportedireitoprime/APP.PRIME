@@ -211,13 +211,8 @@ NÃO retorne blocos de código (como \`\`\`json), apenas o texto JSON puro para 
     const toastId = toast.loading(`Transcrevendo áudio de ${item.livro.titulo}... (Isso pode levar alguns minutos)`);
 
     try {
-      // O path é algo como "resumos-livros/nome.mp3". Extraindo do URL:
-      const pathParts = item.livro.audioResumoUrl.split('/audios/');
-      if (pathParts.length < 2) throw new Error("URL do áudio inválida");
-      const filePath = pathParts[1].split('?')[0]; // tira a query string se houver
-
       const { data, error } = await supabase.functions.invoke('transcrever-audio', {
-        body: { filePath, bucketName: 'audios', language: 'pt' }
+        body: { fileUrl: item.livro.audioResumoUrl, language: 'pt' }
       });
 
       if (error) throw error;

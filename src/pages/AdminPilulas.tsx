@@ -130,12 +130,8 @@ export default function AdminPilulas() {
     const toastId = toast.loading(`Transcrevendo pílula de ${item.livro.titulo}... (Isso pode levar alguns minutos)`);
 
     try {
-      const pathParts = item.livro.audioResumoUrl.split('/audios/');
-      if (pathParts.length < 2) throw new Error("URL do áudio inválida");
-      const filePath = pathParts[1].split('?')[0];
-
       const { data, error } = await supabase.functions.invoke('transcrever-audio', {
-        body: { filePath, bucketName: 'audios', language: 'pt' }
+        body: { fileUrl: item.livro.audioResumoUrl, language: 'pt' }
       });
 
       if (error) throw error;

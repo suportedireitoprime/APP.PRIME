@@ -17,12 +17,23 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { audioBase64, mimeType, filePath, bucketName } = await req.json();
+    const { audioBase64, mimeType, filePath, bucketName, fileUrl } = await req.json();
 
     let base64: string = audioBase64 || "";
     let mime = mimeType || "audio/ogg";
 
-    if (filePath) {
+    if (fileUrl) {
+      // Baixa diretamente da URL pública/assinada
+      const response = await fetch(fileUrl);
+      if (!response.ok) {
+        return new Response(JSON.stringify({ error: `Falha ao baixar áudio da URL: ${response.statusText}` }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const buffer = await response.arrayBuffer();
+      base64 = encodeBase64(buffer);
+      mime = response.headers.get("content-type") || mime;
+    } else if (filePath) {
       const supabase = createClient(
         Deno.env.get("SUPABASE_URL")!,
         Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
@@ -30,7 +41,7 @@ Deno.serve(async (req) => {
       const bucket = bucketName || "aulas-audio";
       const { data, error } = await supabase.storage.from(bucket).download(filePath);
       if (error || !data) {
-        return new Response(JSON.stringify({ error: `Falha ao baixar arquivo do bucket ${bucket}: ` + (error?.message ?? "?") }), {
+        return new Response(JSON.stringify({ error: `Falha ao baixar arquivo do bucket ${bucket}: ` + (error?.message ?? String(error)) }), {
           status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
@@ -38,7 +49,7 @@ Deno.serve(async (req) => {
       base64 = encodeBase64(buffer);
       mime = data.type || mime;
     } else if (!audioBase64) {
-      return new Response(JSON.stringify({ error: "audioBase64 ou filePath obrigatório" }), {
+      return new Response(JSON.stringify({ error: "audioBase64, filePath ou fileUrl obrigatório" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
