@@ -28,15 +28,21 @@ const LinhaAula = React.memo(function LinhaAula({
   const fav = favoritos.has(audioIdOf(a));
 
   return (
-    <div
+    <motion.div
+      variants={{
+        hidden: { opacity: 0, y: 15 },
+        show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+      }}
       className={`flex items-center gap-3 px-3 py-3 rounded-xl transition ${
         ativo ? 'bg-primary/15 border border-primary/20 shadow-sm' : 'hover:bg-white/5'
       }`}
     >
-      <button
+      <motion.button
+        whileHover={{ scale: 1.015 }}
+        whileTap={{ scale: 0.98 }}
         onClick={() => void handleTocarAula(a)}
         disabled={!a.url_audio}
-        className="flex items-center gap-3 min-w-0 flex-1 text-left disabled:opacity-50 group"
+        className="flex items-center gap-3 min-w-0 flex-1 text-left disabled:opacity-50 group focus-visible:outline-none"
       >
         <span className="relative h-12 w-12 shrink-0 rounded-xl overflow-hidden bg-zinc-800 shadow-md">
           <CapaOtimizada
@@ -61,7 +67,7 @@ const LinhaAula = React.memo(function LinhaAula({
             {a.url_audio ? a.tema || a.area : 'Áudio em breve'}
           </p>
         </div>
-      </button>
+      </motion.button>
 
       <BotaoDownloadAudio aula={a} />
 
@@ -72,7 +78,7 @@ const LinhaAula = React.memo(function LinhaAula({
       >
         <Heart className={`h-4 w-4 ${fav ? 'fill-rose-400 text-rose-400' : 'text-muted-foreground'}`} />
       </button>
-    </div>
+    </motion.div>
   );
 });
 
@@ -117,7 +123,15 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
               <span className="h-2 w-2 rounded-full bg-primary" />
               {tema}
             </h2>
-            <div className="divide-y divide-white/[0.06]">
+            <motion.div 
+              className="divide-y divide-white/[0.06]"
+              variants={{
+                hidden: { opacity: 0 },
+                show: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.1 } }
+              }}
+              initial="hidden"
+              animate="show"
+            >
               {lista.map((a, i) => (
                 <LinhaAula
                   key={a.id}
@@ -130,7 +144,7 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                   handleTocarAula={handleTocarAula}
                 />
               ))}
-            </div>
+            </motion.div>
           </section>
         ))}
       </div>
@@ -155,7 +169,15 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                 : 'Digite o nome de uma aula, tema ou área.'}
         </p>
       ) : (
-        <div className="rounded-2xl bg-white/[0.02] border border-white/[0.05] p-2 divide-y divide-white/[0.06] lg:grid lg:grid-cols-2 lg:divide-y-0 lg:gap-2 2xl:grid-cols-3">
+        <motion.div 
+          className="rounded-2xl bg-white/[0.02] border border-white/[0.05] p-2 divide-y divide-white/[0.06] lg:grid lg:grid-cols-2 lg:divide-y-0 lg:gap-2 2xl:grid-cols-3"
+          variants={{
+            hidden: { opacity: 0 },
+            show: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.1 } }
+          }}
+          initial="hidden"
+          animate="show"
+        >
           {listaAba.map((a) => (
             <LinhaAula
               key={a.id}
@@ -167,7 +189,7 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
               handleTocarAula={handleTocarAula}
             />
           ))}
-        </div>
+        </motion.div>
       )}
     </div>
   );

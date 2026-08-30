@@ -92,7 +92,16 @@ function RankRow({ f, pos, valor, unidade, onClick }: {
   const destaque = pos <= 3;
 
   return (
-    <button onClick={onClick} className={`w-full flex items-center gap-3 rounded-xl text-left transition ${destaque ? "p-3 bg-white/5 hover:bg-white/10" : "p-2.5 hover:bg-white/5"}`}>
+    <motion.button
+      variants={{
+        hidden: { opacity: 0, y: 15 },
+        show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+      }}
+      whileHover={{ scale: 1.015 }}
+      whileTap={{ scale: 0.98 }}
+      onClick={onClick}
+      className={`w-full flex items-center gap-3 rounded-xl text-left transition focus-visible:outline-none ${destaque ? "p-3 bg-white/5 hover:bg-white/10" : "p-2.5 hover:bg-white/5"}`}
+    >
       <span className={`text-center font-black shrink-0 ${destaque ? "w-7 text-2xl text-fuchsia-300" : "w-6 text-lg text-muted-foreground"}`}>{pos}</span>
       <span className={`relative shrink-0 rounded-lg overflow-hidden ${destaque ? "h-14 w-14" : "h-11 w-11"}`}>
         <img src={CAPA_PENAL} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" />
@@ -105,7 +114,7 @@ function RankRow({ f, pos, valor, unidade, onClick }: {
         <p className="text-xs text-muted-foreground truncate">{f.lei_nome}</p>
       </div>
       <span className="text-xs text-muted-foreground shrink-0">{valor} {unidade}</span>
-    </button>
+    </motion.button>
   );
 }
 
@@ -482,20 +491,37 @@ export default function LeisCantadasPage() {
                   : "Nenhuma faixa disponível."}
               </p>
             ) : (
-              <div className="divide-y divide-white/[0.06]">
+              <motion.div 
+                className="divide-y divide-white/[0.06]"
+                variants={{
+                  hidden: { opacity: 0 },
+                  show: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.1 } }
+                }}
+                initial="hidden"
+                animate="show"
+              >
                 {lista.map((f) => {
                   const ativo = f.id === atualId;
                   const fav = favoritos.has(f.id);
                   return (
-                    <div key={f.id}
+                    <motion.div key={f.id}
+                      variants={{
+                        hidden: { opacity: 0, y: 15 },
+                        show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+                      }}
                       className={`flex items-center gap-3 px-2.5 py-3 transition first:rounded-t-xl last:rounded-b-xl ${
                         ativo ? "bg-white/10" : "hover:bg-white/5"
                       }`}>
-                      <button onClick={() => abrirFaixa(f)} className="flex items-center gap-3 min-w-0 flex-1 text-left">
+                      <motion.button 
+                        whileHover={{ scale: 1.015 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => abrirFaixa(f)} 
+                        className="flex items-center gap-3 min-w-0 flex-1 text-left focus-visible:outline-none"
+                      >
                         <span className="relative h-11 w-11 shrink-0 rounded-lg overflow-hidden">
-                          <img src={CAPA_PENAL} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" />
+                          <img src={CAPA_PENAL} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform hover:scale-105" />
                           <span className="absolute inset-0 grid place-items-center bg-black/35 text-white">
-                            {ativo && tocando ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
+                            {ativo && tocando ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 ml-0.5" />}
                           </span>
                         </span>
                         <div className="min-w-0 flex-1">
@@ -504,7 +530,7 @@ export default function LeisCantadasPage() {
                           </p>
                           <p className="text-xs text-muted-foreground truncate">{f.lei_nome}</p>
                         </div>
-                      </button>
+                      </motion.button>
                       <div className="flex items-center gap-3 shrink-0 text-xs text-muted-foreground tabular-nums">
                         <span className="inline-flex items-center gap-1" title="Reproduções">
                           <Headphones className="h-3.5 w-3.5" /> {fmtN(plays(f.id))}
@@ -566,20 +592,37 @@ export default function LeisCantadasPage() {
                   : "Nenhum resumo disponível."}
               </p>
             ) : (
-              <div className="divide-y divide-white/[0.06]">
+              <motion.div 
+                className="divide-y divide-white/[0.06]"
+                variants={{
+                  hidden: { opacity: 0 },
+                  show: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.1 } }
+                }}
+                initial="hidden"
+                animate="show"
+              >
                 {lista.map((f) => {
                   const ativo = f.id === atualId;
                   const fav = favoritos.has(f.id);
                   return (
-                    <div key={f.id}
+                    <motion.div key={f.id}
+                      variants={{
+                        hidden: { opacity: 0, y: 15 },
+                        show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+                      }}
                       className={`flex items-center gap-3 px-2.5 py-3 transition first:rounded-t-xl last:rounded-b-xl ${
                         ativo ? "bg-white/10" : "hover:bg-white/5"
                       }`}>
-                      <button onClick={() => abrirFaixa(f)} className="flex items-center gap-3 min-w-0 flex-1 text-left">
+                      <motion.button 
+                        whileHover={{ scale: 1.015 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => abrirFaixa(f)} 
+                        className="flex items-center gap-3 min-w-0 flex-1 text-left focus-visible:outline-none"
+                      >
                         <span className="relative h-11 w-11 shrink-0 rounded-lg overflow-hidden bg-fuchsia-900/40">
-                          <img src={CAPA_PENAL} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" />
+                          <img src={CAPA_PENAL} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform hover:scale-105" />
                           <span className="absolute inset-0 grid place-items-center bg-black/35 text-white">
-                            {ativo && tocando ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
+                            {ativo && tocando ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 ml-0.5" />}
                           </span>
                         </span>
                         <div className="min-w-0 flex-1">
@@ -588,7 +631,7 @@ export default function LeisCantadasPage() {
                           </p>
                           <p className="text-xs text-muted-foreground truncate">{f.lei_nome}</p>
                         </div>
-                      </button>
+                      </motion.button>
                       <div className="flex items-center gap-3 shrink-0 text-xs text-muted-foreground tabular-nums">
                         <span className="inline-flex items-center gap-1" title="Reproduções">
                           <Headphones className="h-3.5 w-3.5" /> {fmtN(plays(f.id))}
@@ -696,7 +739,15 @@ export default function LeisCantadasPage() {
                   </button>
                 </div>
               </div>
-              <div className="space-y-1.5">
+              <motion.div 
+                className="space-y-1.5"
+                variants={{
+                  hidden: { opacity: 0 },
+                  show: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.1 } }
+                }}
+                initial="hidden"
+                animate="show"
+              >
                 {(rankAba === "ouvidas" ? topOuvidas : topCurtidas).map((f, i) => (
                   <RankRow
                     key={f.id}
@@ -707,7 +758,7 @@ export default function LeisCantadasPage() {
                     onClick={() => abrirFaixa(f)}
                   />
                 ))}
-              </div>
+              </motion.div>
               {rankingCompleto.length > 3 && (
                 <button
                   onClick={() => setVerTodos(true)}
