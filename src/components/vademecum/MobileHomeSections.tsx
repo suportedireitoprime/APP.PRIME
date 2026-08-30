@@ -424,15 +424,29 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
                   Acompanhe publicações diárias, radares e boletins jurídicos
                 </p>
               </div>
-              <div className="space-y-2.5">
+              <motion.div 
+                className="space-y-2.5"
+                variants={{
+                  hidden: { opacity: 0 },
+                  show: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.1 } }
+                }}
+                initial="hidden"
+                animate="show"
+              >
                 {RADAR_CATS.map((c) => {
                   const Icon = c.icon;
                   return (
-                    <button
+                    <motion.button
                       key={c.id}
+                      variants={{
+                        hidden: { opacity: 0, x: -10 },
+                        show: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+                      }}
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.98 }}
                       onClick={() => handle(c.id)}
                       data-track="home_radar_cat_click"
-                      className="w-full flex items-center gap-3 px-4 py-5 min-h-[76px] rounded-2xl bg-card border border-border/60 shadow-sm active:scale-[0.99] transition"
+                      className="w-full flex items-center gap-3 px-4 py-5 min-h-[76px] rounded-2xl bg-card border border-border/60 shadow-sm transition focus-visible:outline-none"
                     >
                       <Icon
                         className="w-8 h-8 shrink-0"
@@ -451,10 +465,10 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
                         </p>
                       </div>
                       <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
-                    </button>
+                    </motion.button>
                   );
                 })}
-              </div>
+              </motion.div>
             </div>
           </motion.div>
         )}

@@ -28,6 +28,8 @@ const HomeCardImpl = ({ icon: Icon, label, sublabel, color, delay = 0, onClick, 
     initial={{ opacity: 0, y: 8 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay, duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}
+    whileHover={{ scale: 1.015 }}
+    whileTap={{ scale: 0.95 }}
     onClick={() => {
       haptic.selection();
       onClick();
@@ -35,7 +37,7 @@ const HomeCardImpl = ({ icon: Icon, label, sublabel, color, delay = 0, onClick, 
     data-track={dataTrack}
     data-track-name={dataTrackName}
     data-track-section={dataTrackSection}
-    className={`group relative flex h-[118px] min-h-[118px] w-full min-w-0 flex-col items-start justify-between overflow-hidden p-4 rounded-2xl border shadow-sm active:scale-[0.97] transition text-left ${
+    className={`group relative flex h-[118px] min-h-[118px] w-full min-w-0 flex-col items-start justify-between overflow-hidden p-4 rounded-2xl border shadow-sm transition focus-visible:outline-none text-left ${
       solidColor 
         ? 'bg-[#1A1D21] border-border/40 hover:bg-[#23272B]' 
         : 'bg-white/10 backdrop-blur-md border-white/10'

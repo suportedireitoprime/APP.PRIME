@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, Suspense, useCallback } from 'react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate } from 'react-router-dom';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { motion } from 'framer-motion';
 import { Scale, Gavel, BookOpenText, GraduationCap, Library, MessageSquare } from 'lucide-react';
 import heroImageAsset from '@/assets/hero-vademecum.webp';
 const heroImage = heroImageAsset;
@@ -150,8 +151,9 @@ const IndexDesktop = () => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
                 return (
-                  <button
+                  <motion.button
                     key={tab.id}
+                    whileTap={{ scale: 0.95 }}
                     onClick={() => {
                       const ROUTES: Record<string, string> = {
                         noticias: '/noticias',
@@ -167,7 +169,7 @@ const IndexDesktop = () => {
                       }
                       setActiveTab(tab.id as Tab);
                     }}
-                    className={`relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-body font-medium transition-colors ${
+                    className={`relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-body font-medium transition-colors focus-visible:outline-none ${
                       isActive
                         ? 'text-primary bg-primary/10'
                         : 'text-foreground/60 hover:text-foreground hover:bg-secondary/60'
@@ -175,8 +177,8 @@ const IndexDesktop = () => {
                   >
                     <Icon className="w-4 h-4" />
                     <span>{tab.label}</span>
-                    {isActive && <div className="absolute bottom-0 left-3 right-3 h-0.5 bg-primary rounded-full" />}
-                  </button>
+                    {isActive && <motion.div layoutId="desktop-tab-indicator" className="absolute bottom-0 left-3 right-3 h-0.5 bg-primary rounded-full" />}
+                  </motion.button>
                 );
               })}
             </div>
@@ -223,17 +225,31 @@ const IndexDesktop = () => {
                         <p className="mb-3 border-b border-border pb-2 text-[11px] font-body font-semibold uppercase tracking-widest text-muted-foreground">
                           {group.label}
                         </p>
-                        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3">
+                        <motion.div 
+                          className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3"
+                          variants={{
+                            hidden: { opacity: 0 },
+                            show: { opacity: 1, transition: { staggerChildren: 0.05 } }
+                          }}
+                          initial="hidden"
+                          animate="show"
+                        >
                           {group.tools.map((tool) => {
                             const Icon = tool.icon;
                             return (
-                              <button
+                              <motion.button
                                 key={tool.id}
+                                variants={{
+                                  hidden: { opacity: 0, y: 15 },
+                                  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+                                }}
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.95 }}
                                 onClick={() => {
                                   if (tool.id === 'assistente') { setAssistenteOpen(true); return; }
                                   navigate(tool.route);
                                 }}
-                                className="flex items-center gap-3 p-3 rounded-2xl bg-card border border-border hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/10 active:translate-y-0 transition-all text-left group cursor-pointer"
+                                className="flex items-center gap-3 p-3 rounded-2xl bg-card border border-border hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/10 transition-all text-left group cursor-pointer focus-visible:outline-none"
                               >
                                 <span
                                   className="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center shadow-sm"
@@ -245,10 +261,10 @@ const IndexDesktop = () => {
                                   <span className="block font-display text-[13px] font-bold text-foreground group-hover:text-primary transition-colors truncate">{tool.label}</span>
                                   <span className="block text-[11px] text-muted-foreground leading-tight line-clamp-1">{tool.desc}</span>
                                 </span>
-                              </button>
+                              </motion.button>
                             );
                           })}
-                        </div>
+                        </motion.div>
                       </section>
                     ))}
                   </div>
