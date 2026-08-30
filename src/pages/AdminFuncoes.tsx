@@ -25,7 +25,7 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   '/admin-horus': () => import('./AdminHorus'),
   '/admin-horus-template': () => import('./AdminHorusTemplate'),
   '/admin-triagem': () => import('./AdminTriagem'),
-  '/teste-push': () => import('./TestePush'),
+
   '/admin-atualizacao': () => import('./AdminAtualizacao'),
   '/admin-native-assets': () => import('./AdminNativeAssets'),
   '/admin-handoff': () => import('./AdminHandoffIA'),
