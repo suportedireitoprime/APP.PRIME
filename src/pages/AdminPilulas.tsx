@@ -121,18 +121,39 @@ export default function AdminPilulas() {
   }
 
   const copyToClipboard = async (text: string, successMsg: string) => {
+    // Fallback clássico que funciona em qualquer WebView
+    const fallbackCopy = (str: string): boolean => {
+      const textarea = document.createElement('textarea');
+      textarea.value = str;
+      textarea.setAttribute('readonly', '');
+      textarea.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      let ok = false;
+      try { ok = document.execCommand('copy'); } catch { ok = false; }
+      document.body.removeChild(textarea);
+      return ok;
+    };
+
+    // Tenta Capacitor primeiro
     try {
       await Clipboard.write({ string: text });
       toast.success(successMsg);
-    } catch (err) {
-      console.error('Erro ao copiar com Capacitor:', err);
-      // Fallback
-      try {
-        await navigator.clipboard.writeText(text);
-        toast.success(successMsg);
-      } catch (e) {
-        toast.error('Erro ao copiar');
-      }
+      return;
+    } catch { /* ignora */ }
+
+    // Tenta navigator.clipboard
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success(successMsg);
+      return;
+    } catch { /* ignora */ }
+
+    // Fallback execCommand
+    if (fallbackCopy(text)) {
+      toast.success(successMsg);
+    } else {
+      toast.error('Erro ao copiar');
     }
   };
 
