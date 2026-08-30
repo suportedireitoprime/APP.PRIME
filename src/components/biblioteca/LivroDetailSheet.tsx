@@ -12,8 +12,9 @@ import type { LivroNormalizado } from '@/lib/bibliotecaColecoes';
 import { openPdfNative } from '@/lib/fileOpener';
 import { useBibliotecaCapa } from '@/hooks/useBibliotecaAsset';
 import { useIsDesktop } from '@/hooks/use-desktop';
-import PdfScrollReader from './PdfScrollReader';
-import PdfPaginatedReader from './PdfPaginatedReader';
+import { lazy, Suspense } from 'react';
+const PdfScrollReader = lazy(() => import('./PdfScrollReader'));
+const PdfPaginatedReader = lazy(() => import('./PdfPaginatedReader'));
 import LeitorNativo from './LeitorNativo';
 import LerAgoraDialog, { LerModo } from './LerAgoraDialog';
 import InAppWebView from './InAppWebView';
@@ -483,23 +484,25 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
       {/* Leitores em fullscreen */}
       {readerMode === 'pdf' && (pdfUrlForReader || livro.download) && (
         <ErrorBoundary>
-          {isDesktop ? (
-            <PdfPaginatedReader
-              url={pdfUrlForReader || livro.download!}
-              titulo={livro.titulo}
-              livroId={String(livro.id)}
-              capaUrl={capaUrl}
-              onClose={() => { setReaderMode(null); setPdfUrlForReader(null); }}
-            />
-          ) : (
-            <PdfScrollReader
-              url={pdfUrlForReader || livro.download!}
-              titulo={livro.titulo}
-              livroId={String(livro.id)}
-              capaUrl={capaUrl}
-              onClose={() => { setReaderMode(null); setPdfUrlForReader(null); }}
-            />
-          )}
+          <Suspense fallback={<div className="flex h-full items-center justify-center p-8 text-zinc-400">Carregando leitor...</div>}>
+            {isDesktop ? (
+              <PdfPaginatedReader
+                url={pdfUrlForReader || livro.download!}
+                titulo={livro.titulo}
+                livroId={String(livro.id)}
+                capaUrl={capaUrl}
+                onClose={() => { setReaderMode(null); setPdfUrlForReader(null); }}
+              />
+            ) : (
+              <PdfScrollReader
+                url={pdfUrlForReader || livro.download!}
+                titulo={livro.titulo}
+                livroId={String(livro.id)}
+                capaUrl={capaUrl}
+                onClose={() => { setReaderMode(null); setPdfUrlForReader(null); }}
+              />
+            )}
+          </Suspense>
         </ErrorBoundary>
       )}
       {readerMode === 'nativa' && livro.download && (

@@ -69,6 +69,8 @@ export default defineConfig(({ mode }) => ({
           'vendor-supabase': ['@supabase/supabase-js'],
           'vendor-query': ['@tanstack/react-query'],
           'vendor-charts': ['recharts'],
+          'vendor-pdf': ['pdfjs-dist'],
+          'vendor-export': ['jspdf', 'html2canvas'],
         }
       },
     },
