@@ -8,6 +8,7 @@ import { Loader2, Headphones, Search, UploadCloud, CheckCircle2, AlertCircle, Co
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { COLECOES, type ColecaoConfig, type LivroNormalizado, normalizeLivro } from '@/lib/bibliotecaColecoes';
+import { Clipboard } from '@capacitor/clipboard';
 
 interface LivroComColecao {
   colecao: ColecaoConfig;
@@ -119,12 +120,20 @@ export default function AdminPilulas() {
     }
   }
 
-  const copyToClipboard = (text: string, successMsg: string) => {
-    navigator.clipboard.writeText(text).then(() => {
+  const copyToClipboard = async (text: string, successMsg: string) => {
+    try {
+      await Clipboard.write({ string: text });
       toast.success(successMsg);
-    }).catch(() => {
-      toast.error('Erro ao copiar');
-    });
+    } catch (err) {
+      console.error('Erro ao copiar com Capacitor:', err);
+      // Fallback
+      try {
+        await navigator.clipboard.writeText(text);
+        toast.success(successMsg);
+      } catch (e) {
+        toast.error('Erro ao copiar');
+      }
+    }
   };
 
   return (
