@@ -243,9 +243,9 @@ const FlashcardsRevisar = () => {
                         </p>
                       </div>
                       <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-0.5 transition-transform shrink-0" />
-                    </button>
+                    </motion.button>
                   ))}
-                </div>
+                </motion.div>
               )}
             </div>
           )}
