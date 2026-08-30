@@ -86,6 +86,7 @@ const QuestoesDesempenho = () => {
               <p className="py-6 text-center text-[14px] text-muted-foreground">
                 Responda algumas questões para ver seu desempenho por área.
               </p>
+            ) : (
               <motion.div 
                 className="space-y-2"
                 initial="hidden"
@@ -129,6 +130,7 @@ const QuestoesDesempenho = () => {
                   );
                 })}
               </motion.div>
+            )}
           </>
         )}
       </div>
