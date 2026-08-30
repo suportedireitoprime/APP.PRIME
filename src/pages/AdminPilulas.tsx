@@ -8,7 +8,7 @@ import { Loader2, Headphones, Search, UploadCloud, CheckCircle2, AlertCircle, Co
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { COLECOES, type ColecaoConfig, type LivroNormalizado, normalizeLivro } from '@/lib/bibliotecaColecoes';
-import { Clipboard } from '@capacitor/clipboard';
+import { copiar } from '@/lib/nativo/copiar';
 
 interface LivroComColecao {
   colecao: ColecaoConfig;
@@ -120,39 +120,8 @@ export default function AdminPilulas() {
     }
   }
 
-  const copyToClipboard = async (text: string, successMsg: string) => {
-    // 1. Tenta execCommand PRIMEIRO (síncrono, preserva gesto do usuário no WebView)
-    try {
-      const textarea = document.createElement('textarea');
-      textarea.value = text;
-      textarea.setAttribute('readonly', '');
-      textarea.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;padding:0;border:none;outline:none;box-shadow:none;background:transparent;opacity:0.01';
-      document.body.appendChild(textarea);
-      textarea.focus();
-      textarea.select();
-      const ok = document.execCommand('copy');
-      document.body.removeChild(textarea);
-      if (ok) {
-        toast.success(successMsg);
-        return;
-      }
-    } catch { /* ignora e tenta próximo */ }
-
-    // 2. Tenta navigator.clipboard (precisa de HTTPS + gesto)
-    try {
-      await navigator.clipboard.writeText(text);
-      toast.success(successMsg);
-      return;
-    } catch { /* ignora */ }
-
-    // 3. Tenta Capacitor nativo
-    try {
-      await Clipboard.write({ string: text });
-      toast.success(successMsg);
-      return;
-    } catch { /* ignora */ }
-
-    toast.error('Não foi possível copiar. Selecione o texto manualmente.');
+  const copyToClipboard = (text: string, successMsg: string) => {
+    void copiar(text, successMsg);
   };
 
   return (
