@@ -15,7 +15,7 @@ import { QuestaoAcoesBar, ComentarioSheet } from '@/components/questoes/QuestaoA
 import { useGatedFeature } from '@/hooks/useGatedFeature';
 import { CartaoRespostaSheet } from './CartaoRespostaSheet';
 import { CartaoRespostaGrid } from './CartaoRespostaGrid';
-import { ProfessoraInline } from './ProfessoraInline';
+
 import { getSessaoById, saveSessao } from '@/lib/questoesSessoes';
 
 const db = supabase as any;
@@ -74,7 +74,7 @@ const ResolverPadrao = ({
   const [selecao, setSelecao] = useState<string | null>(null);
   const [respostas, setRespostas] = useState<Record<string, { escolha: string; acertou: boolean }>>({});
   const [comentarioAberto, setComentarioAberto] = useState(false);
-  const [professoraAberta, setProfessoraAberta] = useState(false);
+
   const [favoritos, setFavoritos] = useState<Set<string>>(new Set());
   const [segundos, setSegundos] = useState(0);
   const [recursosAberto, setRecursosAberto] = useState(false);
@@ -733,54 +733,24 @@ const ResolverPadrao = ({
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-col gap-5 py-1">
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => { if (gateFuncoes.blocked) { gateFuncoes.openGate(); return; } setComentarioAberto(true); }}
-                        className={cn("flex h-[56px] flex-1 items-center justify-between rounded-2xl border px-4", resp.acertou ? "bg-green-500/10 border-green-500/20 text-green-500 hover:bg-green-500/20" : "bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20")}
-                      >
-                        <div className="flex items-center gap-3"><MessageSquare className="h-5 w-5" /> <span className="font-bold">Comentário</span></div>
-                        <ChevronRight className="h-5 w-5 opacity-50" />
-                      </button>
-                      
-                      {!resp.acertou && (
-                        <button
-                          onClick={() => {
-                            if (gateFuncoes.blocked) { gateFuncoes.openGate(); return; }
-                            haptic.success?.();
-                            toast.promise(
-                              new Promise(resolve => setTimeout(resolve, 800)),
-                              {
-                                loading: 'Criando flashcard...',
-                                success: 'Flashcard salvo no seu baralho!',
-                                error: 'Erro ao criar flashcard'
-                              }
-                            );
-                          }}
-                          className="flex h-[56px] items-center gap-2 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 text-red-400 active:scale-95 transition-transform"
-                        >
-                          <Layers className="h-5 w-5" />
-                          <span className="font-bold hidden sm:inline">Flashcard</span>
-                        </button>
+                  <div className="flex flex-col gap-4 py-1">
+                    <button
+                      onClick={() => { if (gateFuncoes.blocked) { gateFuncoes.openGate(); return; } setComentarioAberto(true); }}
+                      className={cn("flex h-[60px] w-full items-center justify-between rounded-2xl border px-5 shadow-sm transition-all active:scale-[0.98]", 
+                        resp.acertou 
+                          ? "bg-green-500/10 border-green-500/20 text-green-500 hover:bg-green-500/20" 
+                          : "bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20"
                       )}
-                    </div>
-
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => {
-                          if (gateFuncoes.blocked) { gateFuncoes.openGate(); return; }
-                          setProfessoraAberta(true);
-                          setFeedbackOculto(true);
-                        }}
-                        className={cn("flex h-[56px] flex-1 items-center justify-between rounded-2xl border px-4 shadow-lg", resp.acertou ? "bg-green-600 text-white border-green-500 shadow-green-500/10 hover:bg-green-500" : "bg-blue-600 border-blue-500 text-white shadow-blue-500/10 hover:bg-blue-500")}
-                      >
-                        <div className="flex items-center gap-3"><Mic className="h-5 w-5 animate-pulse" /> <span className="font-bold">Professora</span></div>
-                        <ChevronRight className="h-5 w-5 opacity-50" />
-                      </button>
-                    </div>
+                    >
+                      <div className="flex items-center gap-3">
+                        <MessageSquare className="h-6 w-6" /> 
+                        <span className="text-[16px] font-bold">Comentário Completo</span>
+                      </div>
+                      <ChevronRight className="h-5 w-5 opacity-50" />
+                    </button>
 
                     <div className="w-full">
-                      <QuestaoAcoesBar source={atual.id} chaveRevisao={atual.id} layout="horizontal" />
+                      <QuestaoAcoesBar source={atual.id} chaveRevisao={atual.id} layout="grid" />
                     </div>
                   </div>
 
@@ -859,17 +829,7 @@ const ResolverPadrao = ({
         onClose={() => setComentarioAberto(false)}
       />
 
-      <AnimatePresence>
-        {professoraAberta && (
-          <div className="fixed inset-x-0 bottom-[110px] z-[60] pointer-events-none lg:bottom-8">
-            <div className="mx-auto w-full max-w-7xl lg:px-8">
-              <div className="pointer-events-auto w-full lg:w-[400px]">
-                <ProfessoraInline questao={atual} onClose={() => setProfessoraAberta(false)} />
-              </div>
-            </div>
-          </div>
-        )}
-      </AnimatePresence>      <CartaoRespostaSheet
+      <CartaoRespostaSheet
         aberto={gradeAberta}
         onClose={() => setGradeAberta(false)}
         questoesCount={questoes.length}

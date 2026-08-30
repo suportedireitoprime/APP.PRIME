@@ -59,7 +59,7 @@ const OPCOES_RESUMOS: SeletorOpcao[] = [
 ];
 
 /** Trilho de recursos da questão (mini-aula, flashcards, resumos, termos, pegadinhas, lei seca, revisar). */
-export function QuestaoAcoesBar({ source, chaveRevisao, layout = 'horizontal' }: { source: Fonte; chaveRevisao: string; layout?: 'horizontal' | 'vertical' }) {
+export function QuestaoAcoesBar({ source, chaveRevisao, layout = 'horizontal' }: { source: Fonte; chaveRevisao: string; layout?: 'horizontal' | 'vertical' | 'grid' }) {
   const [aba, setAba] = useState<Aba>(null);
   const [seletor, setSeletor] = useState<SeletorTipo>(null);
   const gate = useGatedFeature('questao_funcoes', 'questao_funcoes');
@@ -76,6 +76,18 @@ export function QuestaoAcoesBar({ source, chaveRevisao, layout = 'horizontal' }:
         >
           <Icon className="h-5 w-5 text-primary" strokeWidth={2} />
           <span className="text-[15px] font-semibold text-white/90">{label}</span>
+        </button>
+      );
+    }
+    if (layout === 'grid') {
+      return (
+        <button
+          type="button"
+          onClick={() => { if (gate.blocked) { gate.openGate(); return; } onClick(); }}
+          className="flex h-16 flex-col items-center justify-center gap-1.5 rounded-2xl border border-white/5 bg-black/20 px-1 text-white/60 transition-all hover:bg-black/40 hover:text-white active:scale-95"
+        >
+          <Icon className="h-5 w-5 text-primary" strokeWidth={1.5} />
+          <span className="text-[11px] font-semibold tracking-tight">{label}</span>
         </button>
       );
     }
@@ -99,6 +111,8 @@ export function QuestaoAcoesBar({ source, chaveRevisao, layout = 'horizontal' }:
       <div className={cn(
         layout === 'vertical'
           ? "flex flex-col gap-2 w-full"
+          : layout === 'grid'
+          ? "grid grid-cols-3 sm:grid-cols-4 gap-2 w-full"
           : "scrollbar-none -mx-1 flex w-full snap-x snap-mandatory items-stretch gap-1 overflow-x-auto px-1"
       )}>
         <RailBtn icon={BookOpen} label="Aula" onClick={() => setAba('aula')} />
