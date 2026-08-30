@@ -31,24 +31,29 @@ const HomeCardImpl = ({ icon: Icon, label, sublabel, color, delay = 0, onClick, 
     data-track={dataTrack}
     data-track-name={dataTrackName}
     data-track-section={dataTrackSection}
-    className={`group relative flex h-[118px] min-h-[118px] w-full min-w-0 flex-col items-start justify-between overflow-hidden p-4 rounded-2xl border border-white/10 shadow-sm active:scale-[0.97] transition text-left ${solidColor ? '' : 'bg-white/10 backdrop-blur-md'} ${className}`}
-    style={solidColor ? { backgroundColor: color } : undefined}
+    className={`group relative flex h-[118px] min-h-[118px] w-full min-w-0 flex-col items-start justify-between overflow-hidden p-4 rounded-2xl border shadow-sm active:scale-[0.97] transition text-left ${
+      solidColor 
+        ? 'bg-[#1A1D21] border-border/40 hover:bg-[#23272B]' 
+        : 'bg-white/10 backdrop-blur-md border-white/10'
+    } ${className}`}
   >
     <div className="absolute top-2.5 right-2.5">
       {badge ? (
-        <span className={`rounded-full border px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-wide ${solidColor ? 'border-white/20 bg-black/20 text-white/90' : 'border-border bg-muted text-muted-foreground'}`}>
+        <span className={`rounded-full border px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-wide ${solidColor ? 'border-border/60 bg-black/40 text-muted-foreground' : 'border-border bg-muted text-muted-foreground'}`}>
           {badge}
         </span>
       ) : (
-        <ChevronRight className={`w-4 h-4 ${solidColor ? 'text-white/70' : 'text-muted-foreground'}`} />
+        <ChevronRight className={`w-4 h-4 ${solidColor ? 'text-muted-foreground' : 'text-muted-foreground'}`} />
       )}
     </div>
     <div className="relative overflow-hidden rounded-xl">
       <Icon
         className={`relative ${iconClassName || 'w-8 h-8'}`}
         style={{
-          color: solidColor ? '#FFFFFF' : color,
-          filter: solidColor ? 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' : 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 10px rgba(0,0,0,0.55))',
+          color: color,
+          filter: solidColor 
+            ? 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.3))' 
+            : 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 10px rgba(0,0,0,0.55))',
         }}
         strokeWidth={solidColor ? 1.6 : 1.15}
       />
@@ -57,17 +62,17 @@ const HomeCardImpl = ({ icon: Icon, label, sublabel, color, delay = 0, onClick, 
     {solidColor && (
       <div className="absolute -right-3 -bottom-3 w-[84px] h-[84px] pointer-events-none">
         {/* Base (sempre visível) */}
-        <div className="absolute inset-0 opacity-[0.22]">
-          <Icon className="w-full h-full text-white" strokeWidth={1.5} />
+        <div className="absolute inset-0 opacity-[0.15]">
+          <Icon className="w-full h-full" style={{ color }} strokeWidth={1.5} />
         </div>
         {/* Brilho animado */}
-        <div className="absolute inset-0 opacity-[0.6] svg-shine">
-          <Icon className="w-full h-full text-white" strokeWidth={1.5} />
+        <div className="absolute inset-0 opacity-[0.4] svg-shine">
+          <Icon className="w-full h-full" style={{ color }} strokeWidth={1.5} />
         </div>
       </div>
     )}
     <div className="w-full mt-3 relative z-10">
-      <p className={`line-clamp-2 font-display text-[17px] font-bold leading-tight tracking-tight ${solidColor ? 'text-white' : 'text-foreground'}`}>
+      <p className={`line-clamp-2 font-display text-[17px] font-bold leading-tight tracking-tight ${solidColor ? 'text-foreground' : 'text-foreground'}`}>
         {label}
       </p>
       {!solidColor && (
