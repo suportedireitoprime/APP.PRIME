@@ -225,16 +225,28 @@ export interface LivroNormalizado {
   audioResumoUrl?: string | null;
   paginas?: number | null;
   minutosLeitura?: number | null;
+  sumarioAudio?: { titulo: string; percentage: number }[] | null;
 }
 
 export function normalizeLivro(row: any, colecao: ColecaoConfig): LivroNormalizado {
   const cur = row.curiosidades;
   let curiosidades: string[] | null = null;
-  if (Array.isArray(cur)) curiosidades = cur.filter((x) => typeof x === 'string');
-  else if (typeof cur === 'string' && cur.trim()) {
+  let sumarioAudio: { titulo: string; percentage: number }[] | null = null;
+
+  if (Array.isArray(cur)) {
+    curiosidades = cur.filter((x) => typeof x === 'string');
+  } else if (typeof cur === 'object' && cur !== null) {
+    if (Array.isArray(cur.curiosidades)) curiosidades = cur.curiosidades.filter((x: any) => typeof x === 'string');
+    if (Array.isArray(cur.sumarioAudio)) sumarioAudio = cur.sumarioAudio;
+  } else if (typeof cur === 'string' && cur.trim()) {
     try {
       const parsed = JSON.parse(cur);
-      if (Array.isArray(parsed)) curiosidades = parsed.filter((x) => typeof x === 'string');
+      if (Array.isArray(parsed)) {
+        curiosidades = parsed.filter((x) => typeof x === 'string');
+      } else if (typeof parsed === 'object' && parsed !== null) {
+        if (Array.isArray(parsed.curiosidades)) curiosidades = parsed.curiosidades.filter((x: any) => typeof x === 'string');
+        if (Array.isArray(parsed.sumarioAudio)) sumarioAudio = parsed.sumarioAudio;
+      }
     } catch { /* ignore */ }
   }
 
@@ -282,6 +294,7 @@ export function normalizeLivro(row: any, colecao: ColecaoConfig): LivroNormaliza
     anoLancamento: row.ano_lancamento ?? null,
     editora: row.editora ?? null,
     curiosidades,
+    sumarioAudio,
     analiseDetalhada,
     audioResumoUrl: row.audio_resumo_url ?? null,
     paginas: row.paginas ?? null,

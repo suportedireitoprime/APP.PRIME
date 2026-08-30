@@ -357,6 +357,7 @@ const AdminBoletins = lazy(() => import("./pages/AdminBoletins.tsx"));
 const PilulasHome = lazy(() => import("./pages/pilulas/PilulasHome.tsx"));
 const PilulasViewer = lazy(() => import("./pages/pilulas/PilulasViewer.tsx"));
 const Pilulas = lazy(() => import("./pages/Pilulas.tsx"));
+const PilulasPlayer = lazy(() => import("./pages/pilulas/PilulasPlayer.tsx"));
 
 const Privacidade = lazy(() => import("./pages/Privacidade.tsx"));
 const Termos = lazy(() => import("./pages/Termos.tsx"));
@@ -940,6 +941,7 @@ function AnimatedRoutes() {
           <Route path="/aprender/:slug" element={<ProtectedRoute><PageTransition><ArtigoEducacional /></PageTransition></ProtectedRoute>} />
           {/* Pílulas */}
           <Route path="/pilulas/classicos" element={<ProtectedRoute><PageTransition><Pilulas /></PageTransition></ProtectedRoute>} />
+          <Route path="/pilulas/:id" element={<ProtectedRoute><PageTransition><PilulasPlayer /></PageTransition></ProtectedRoute>} />
           {/* Lei Seca */}
           <Route path="/lei-seca" element={<ProtectedRoute><PageTransition><LeiSecaIndex /></PageTransition></ProtectedRoute>} />
           <Route path="/lei-seca/favoritos" element={<ProtectedRoute><PageTransition><LeiSecaIndex modo="favoritos" /></PageTransition></ProtectedRoute>} />

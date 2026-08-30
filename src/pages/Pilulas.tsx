@@ -125,7 +125,11 @@ export default function Pilulas() {
           >
             {livrosFiltrados.map((livro) => {
               const temAudio = !!livro.audioResumoUrl;
-              const isPlayingThis = tocando && livroAtual?.id === livro.id;
+              
+              const wordCount = (livro.analiseDetalhada || livro.sobre || '').split(/\s+/).length;
+              const estimatedMinutes = Math.max(1, Math.ceil(wordCount / 130));
+              const savedProgress = localStorage.getItem(`pilula_progress_${livro.id}`);
+              const progressRatio = savedProgress ? parseFloat(savedProgress) : 0;
 
               return (
                 <motion.button
@@ -141,17 +145,12 @@ export default function Pilulas() {
                       });
                       return;
                     }
-                    if (livroAtual?.id === livro.id) {
-                      togglePlay();
-                    } else {
-                      tocar(livro);
-                    }
+                    // Navega para a página dedicada do player
+                    navigate(`/pilulas/${livro.id}`);
                   }}
                   className={`group relative flex items-center gap-4 p-4 rounded-2xl border text-left overflow-hidden transition-all ${
                     temAudio
-                      ? isPlayingThis 
-                        ? 'bg-primary/10 border-primary/30 ring-1 ring-primary/20' 
-                        : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'
+                      ? 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'
                       : 'bg-white/5 border-white/5 opacity-50 cursor-not-allowed grayscale-[0.5]'
                   }`}
                 >
@@ -177,13 +176,26 @@ export default function Pilulas() {
 
                     <div className="mt-auto pt-3">
                       {temAudio ? (
-                        <div className="flex items-center gap-2">
-                          <div className={`flex items-center justify-center w-6 h-6 rounded-full transition-colors ${isPlayingThis ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/30' : 'bg-primary/15 text-primary group-hover:bg-primary/20'}`}>
-                            <Headphones className="w-3 h-3" />
+                        <div className="flex items-center justify-between gap-4 w-full">
+                          <div className="flex items-center gap-2">
+                            <div className={`flex items-center justify-center w-6 h-6 rounded-full transition-colors bg-emerald-400/15 text-emerald-400 group-hover:bg-emerald-400/20`}>
+                              <Headphones className="w-3 h-3" />
+                            </div>
+                            <span className={`text-[10px] uppercase tracking-wider font-bold text-emerald-400`}>
+                              {progressRatio > 0.95 ? 'Concluída' : progressRatio > 0 ? 'Continuar' : 'Ouvir Pílula'}
+                            </span>
                           </div>
-                          <span className={`text-[10px] uppercase tracking-wider font-bold text-primary`}>
-                            {isPlayingThis ? 'Reproduzindo' : 'Ouvir Pílula'}
-                          </span>
+                          
+                          <div className="flex items-center gap-2 shrink-0">
+                            <span className="text-[10px] font-medium text-white/40">
+                              ~{estimatedMinutes} min
+                            </span>
+                            {progressRatio > 0 && (
+                              <div className="w-12 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                                <div className="h-full bg-emerald-400 rounded-full" style={{ width: `${Math.min(100, Math.max(0, progressRatio * 100))}%` }} />
+                              </div>
+                            )}
+                          </div>
                         </div>
                       ) : (
                         <div className="flex items-center gap-1.5">

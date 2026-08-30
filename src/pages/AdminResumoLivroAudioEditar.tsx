@@ -4,7 +4,7 @@ import { PageHeader } from '@/components/vademecum/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Loader2, Headphones, Search, UploadCloud, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Loader2, Headphones, Search, UploadCloud, CheckCircle2, AlertCircle, Bot, List } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { COLECOES, type ColecaoConfig, type LivroNormalizado, normalizeLivro } from '@/lib/bibliotecaColecoes';
@@ -20,6 +20,7 @@ export default function AdminResumoLivroAudioEditar() {
   const [livros, setLivros] = useState<LivroComColecao[]>([]);
   const [busca, setBusca] = useState('');
   const [uploadingId, setUploadingId] = useState<number | string | null>(null);
+  const [generatingChaptersId, setGeneratingChaptersId] = useState<number | string | null>(null);
   const [selectedBook, setSelectedBook] = useState<LivroComColecao | null>(null);
 
   useEffect(() => {
@@ -113,20 +114,95 @@ export default function AdminResumoLivroAudioEditar() {
       const publicUrlString = publicUrl;
       setLivros((prev) =>
         prev.map((l) =>
-          l.livro.id === item.livro.id && l.colecao.table === item.colecao.table
-            ? { ...l, livro: { ...l.livro, audioResumoUrl: publicUrlString } }
-            : l
-        )
+      const novos = livros.map((l) =>
+        l.livro.id === item.livro.id && l.colecao.table === item.colecao.table
+          ? { ...l, livro: { ...l.livro, audioResumoUrl: publicUrl } }
+          : l
       );
-      
-      if (selectedBook && selectedBook.livro.id === item.livro.id && selectedBook.colecao.table === item.colecao.table) {
-        setSelectedBook((prev) => prev ? { ...prev, livro: { ...prev.livro, audioResumoUrl: publicUrlString } } : null);
+      setLivros(novos);
+      if (selectedBook && selectedBook.livro.id === item.livro.id) {
+        setSelectedBook(novos.find((l) => l.livro.id === item.livro.id) || null);
       }
+      toast.success('Áudio atualizado com sucesso!', { id: toastId });
     } catch (err: any) {
       console.error(err);
-      toast.error(err.message || 'Erro ao enviar áudio', { id: toastId });
+      toast.error('Erro ao enviar áudio.', { id: toastId });
     } finally {
       setUploadingId(null);
+    }
+  }
+
+  async function handleGenerateChapters(item: LivroComColecao) {
+    setGeneratingChaptersId(item.livro.id);
+    const toastId = toast.loading(`Gerando sumários com IA para ${item.livro.titulo}...`);
+
+    try {
+      const texto = item.livro.analiseDetalhada || item.livro.sobre;
+      if (!texto || texto.length < 50) {
+        throw new Error('Texto muito curto para gerar sumários.');
+      }
+
+      const systemPrompt = `Você é um assistente que divide textos narrados em capítulos. 
+O texto abaixo possui ${texto.length} caracteres.
+Divida o texto em 3 a 6 capítulos, dependendo do tamanho.
+Retorne ESTRITAMENTE um JSON no formato de array, onde cada objeto tem:
+- "titulo": nome do capítulo (seja conciso)
+- "percentage": um número decimal entre 0 e 1, indicando em que proporção do texto o capítulo começa (o primeiro deve ser 0).
+
+Texto:
+${texto}
+
+NÃO retorne blocos de código (como \`\`\`json), apenas o texto JSON puro para ser parseado diretamente.`;
+
+      const { data, error } = await supabase.functions.invoke('assistente-juridica', {
+        body: { mode: 'chat', prompt: systemPrompt }
+      });
+
+      if (error) throw error;
+      
+      let resText = data?.text || data?.response || data;
+      if (typeof resText === 'object') {
+        resText = JSON.stringify(resText);
+      }
+      
+      resText = resText.replace(/```json/gi, '').replace(/```/g, '').trim();
+
+      const parsed = JSON.parse(resText);
+      if (!Array.isArray(parsed)) throw new Error('A resposta da IA não é um array válido.');
+      
+      let cur = item.livro.curiosidades;
+      let curiosidadesArray = Array.isArray(cur) ? cur : [];
+      if (cur && typeof cur === 'object' && !Array.isArray(cur) && Array.isArray((cur as any).curiosidades)) {
+        curiosidadesArray = (cur as any).curiosidades;
+      }
+      
+      const curiosidadesPayload = {
+        curiosidades: curiosidadesArray,
+        sumarioAudio: parsed
+      };
+
+      const { error: updateError } = await supabase
+        .from(item.colecao.table as any)
+        .update({ curiosidades: curiosidadesPayload })
+        .eq('id', item.livro.id);
+
+      if (updateError) throw updateError;
+
+      const updatedBook = {
+        ...item,
+        livro: { ...item.livro, sumarioAudio: parsed }
+      };
+
+      const novos = livros.map((l) => (l.livro.id === item.livro.id ? updatedBook : l));
+      setLivros(novos);
+      setSelectedBook(updatedBook);
+
+      toast.success('Sumários gerados e salvos com sucesso!', { id: toastId });
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || 'Falha ao gerar sumários.', { id: toastId });
+    } finally {
+      setGeneratingChaptersId(null);
     }
   }
 
@@ -269,6 +345,22 @@ export default function AdminResumoLivroAudioEditar() {
                 )}
               </div>
 
+              {selectedBook.livro.sumarioAudio && selectedBook.livro.sumarioAudio.length > 0 && (
+                <div className="space-y-3">
+                  <h4 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                    <List className="w-4 h-4" /> Sumários de Áudio
+                  </h4>
+                  <div className="bg-card border border-border rounded-xl p-4 space-y-2">
+                    {selectedBook.livro.sumarioAudio.map((cap, i) => (
+                      <div key={i} className="flex justify-between items-center text-sm">
+                        <span className="font-medium">{cap.titulo}</span>
+                        <span className="text-muted-foreground">{(cap.percentage * 100).toFixed(0)}%</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="pt-4 space-y-3">
                 <div className="relative">
                   <input
@@ -299,6 +391,23 @@ export default function AdminResumoLivroAudioEditar() {
                 <p className="text-center text-xs text-muted-foreground">
                   Formatos suportados: MP3, M4A, WAV
                 </p>
+
+                {selectedBook.livro.audioResumoUrl && (
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="w-full text-base h-14 rounded-xl mt-4 border-indigo-500/20 text-indigo-400 hover:bg-indigo-500/10 hover:text-indigo-300"
+                    disabled={generatingChaptersId === selectedBook.livro.id}
+                    onClick={() => handleGenerateChapters(selectedBook)}
+                  >
+                    {generatingChaptersId === selectedBook.livro.id ? (
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    ) : (
+                      <Bot className="w-5 h-5 mr-2" />
+                    )}
+                    {selectedBook.livro.sumarioAudio ? 'Regerar Sumários com IA' : 'Dividir em Sumários com IA'}
+                  </Button>
+                )}
               </div>
             </div>
           )}
