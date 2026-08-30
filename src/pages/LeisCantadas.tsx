@@ -553,10 +553,10 @@ export default function LeisCantadasPage() {
                       >
                         <Heart className={`h-4 w-4 ${fav ? "fill-rose-400 text-rose-400" : "text-muted-foreground"}`} />
                       </button>
-                    </div>
+                    </motion.div>
                   );
                 })}
-              </div>
+              </motion.div>
             )}
           </section>
         );
@@ -654,10 +654,10 @@ export default function LeisCantadasPage() {
                       >
                         <Heart className={`h-4 w-4 ${fav ? "fill-rose-400 text-rose-400" : "text-muted-foreground"}`} />
                       </button>
-                    </div>
+                    </motion.div>
                   );
                 })}
-              </div>
+              </motion.div>
             )}
           </section>
         );
