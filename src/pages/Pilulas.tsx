@@ -147,11 +147,11 @@ export default function Pilulas() {
                       tocar(livro);
                     }
                   }}
-                  className={`relative flex items-center gap-4 p-4 rounded-2xl border text-left overflow-hidden transition-all ${
+                  className={`group relative flex items-center gap-4 p-4 rounded-2xl border text-left overflow-hidden transition-all ${
                     temAudio
                       ? isPlayingThis 
                         ? 'bg-primary/10 border-primary/30 ring-1 ring-primary/20' 
-                        : 'bg-white/5 border-white/10 hover:bg-white/10'
+                        : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'
                       : 'bg-white/5 border-white/5 opacity-50 cursor-not-allowed grayscale-[0.5]'
                   }`}
                 >
@@ -178,10 +178,10 @@ export default function Pilulas() {
                     <div className="mt-auto pt-3">
                       {temAudio ? (
                         <div className="flex items-center gap-2">
-                          <div className={`flex items-center justify-center w-6 h-6 rounded-full ${isPlayingThis ? 'bg-primary text-white shadow-[0_0_10px_rgba(var(--primary-rgb),0.5)]' : 'bg-white/10 text-white/70'}`}>
-                            <Headphones className="w-3 h-3 ml-0.5" />
+                          <div className={`flex items-center justify-center w-6 h-6 rounded-full transition-colors ${isPlayingThis ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/30' : 'bg-primary/15 text-primary group-hover:bg-primary/20'}`}>
+                            <Headphones className="w-3 h-3" />
                           </div>
-                          <span className={`text-[10px] uppercase tracking-wider font-bold ${isPlayingThis ? 'text-primary' : 'text-white/40'}`}>
+                          <span className={`text-[10px] uppercase tracking-wider font-bold text-primary`}>
                             {isPlayingThis ? 'Reproduzindo' : 'Ouvir Pílula'}
                           </span>
                         </div>
