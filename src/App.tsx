@@ -309,6 +309,7 @@ const AdminAtualizacao = lazy(() => import("./pages/AdminAtualizacao.tsx"));
 const AdminNativeAssets = lazy(() => import("./pages/AdminNativeAssets.tsx"));
 const AdminAprender = lazy(() => import("./pages/AdminAprender.tsx"));
 const AdminAvaliacaoLoja = lazy(() => import("./pages/AdminAvaliacaoLoja.tsx"));
+const AdminAprenderArea = lazy(() => import("./pages/AdminAprenderArea.tsx"));
 const AdminJurisprudencia = lazy(() => import("./pages/AdminJurisprudencia.tsx"));
 const TribunalSimulado = lazy(() => import("./pages/TribunalSimulado.tsx"));
 const AdminHorus = lazy(() => import('./pages/AdminHorus'));
