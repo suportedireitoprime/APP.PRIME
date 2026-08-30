@@ -9,12 +9,13 @@
 const WS_HOST = "wss://generativelanguage.googleapis.com/ws";
 
 /**
- * Endpoints ordenados por prioridade:
- * 1. v1beta BidiGenerateContent — endpoint atual recomendado (API Key via ?key=)
- * 2. v1beta BidiGenerateContent — para ephemeral tokens (via ?access_token=)
+ * Endpoints:
+ * 1. BidiGenerateContent — para API Keys (via ?key=)
+ * 2. BidiGenerateContentConstrained — para ephemeral tokens (via ?access_token=)
+ *    Docs: https://ai.google.dev/gemini-api/docs/live-api
  */
 const WS_URL_APIKEY = `${WS_HOST}/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent`;
-const WS_URL_EPHEMERAL = `${WS_HOST}/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent`;
+const WS_URL_EPHEMERAL = `${WS_HOST}/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContentConstrained`;
 
 /** Primeira instrução falada: faz o professor comentar o que está vendo. */
 const ABERTURA =
