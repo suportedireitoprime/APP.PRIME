@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, CheckCircle2, Route as RouteIcon, Search, BookOpen, Target } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { haptic } from '@/lib/nativeHaptics';
+import { Confetti } from '@/components/vademecum/Confetti';
 import { supabase } from '@/integrations/supabase/client';
 import { COLECOES, type LivroNormalizado, normalizeLivro } from '@/lib/bibliotecaColecoes';
 import PdfScrollReader from '@/components/biblioteca/PdfScrollReader';
@@ -44,6 +45,7 @@ const TimelineView = ({
 }) => {
   const { livrosLidos, marcarLido, desmarcarLido } = useTrilhasStore();
   const [tick, setTick] = useState(0);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   useEffect(() => {
     const i = setInterval(() => setTick(t => t + 1), 3000);
@@ -62,8 +64,18 @@ const TimelineView = ({
   const concluidosCount = livros.filter(isLido).length;
   const progressoPct = livros.length > 0 ? Math.round((concluidosCount / livros.length) * 100) : 0;
 
+  // Disparar confetes quando bater 100%
+  useEffect(() => {
+    if (progressoPct === 100 && livros.length > 0) {
+      setShowConfetti(true);
+      const t = setTimeout(() => setShowConfetti(false), 6000);
+      return () => clearTimeout(t);
+    }
+  }, [progressoPct, livros.length]);
+
   return (
     <div className="w-full pb-32">
+      {showConfetti && <Confetti />}
       <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border/50 px-4 py-4 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3 max-w-[65%]">
           <button onClick={onBack} className="p-2 -ml-2 rounded-full bg-secondary/50 text-muted-foreground hover:text-foreground shrink-0">
@@ -76,9 +88,11 @@ const TimelineView = ({
         </div>
         <div className="flex items-center gap-3 shrink-0">
           <div className="flex flex-col items-end">
-            <span className="text-xs font-bold text-primary">{progressoPct}%</span>
+            <span className={`text-xs font-bold transition-colors ${progressoPct === 100 ? 'text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.6)]' : 'text-primary'}`}>
+              {progressoPct === 100 ? 'CONCLUÍDA!' : `${progressoPct}%`}
+            </span>
             <div className="w-16 h-1.5 bg-secondary/60 rounded-full overflow-hidden mt-0.5">
-              <div className="h-full bg-primary transition-all duration-500 ease-out" style={{ width: `${progressoPct}%` }} />
+              <div className={`h-full transition-all duration-500 ease-out ${progressoPct === 100 ? 'bg-yellow-400 shadow-[0_0_10px_rgba(250,204,21,0.8)]' : 'bg-primary'}`} style={{ width: `${progressoPct}%` }} />
             </div>
           </div>
         </div>
