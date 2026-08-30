@@ -52,6 +52,15 @@ const toOptimized = (url: string): string => {
 };
 
 const HINTS = [
+  'Pesquise o artigo...',
+  'Pesquise a lei...',
+  'Pesquise o número da lei...',
+  'Pesquise trechos...',
+  'Pesquise normas...',
+  'Pesquise jurisprudência...',
+  'Pesquise súmulas...',
+  'Pesquise por voz...',
+];
 
 const TypingHint = () => {
   const [text, setText] = useState('');
