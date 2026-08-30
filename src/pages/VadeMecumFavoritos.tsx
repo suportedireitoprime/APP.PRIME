@@ -146,29 +146,43 @@ const VadeMecumFavoritos = () => {
             <p className="text-muted-foreground text-sm">Você ainda não favoritou nenhuma lei.</p>
           </div>
         ) : (
-          <div className="space-y-2">
+          <motion.div 
+            className="space-y-2"
+            initial="hidden"
+            animate="show"
+            variants={{
+              hidden: { opacity: 0 },
+              show: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.1 } }
+            }}
+          >
             {favoritos.map((l) => (
-              <button
+              <motion.button
                 key={l.leiId}
+                variants={{
+                  hidden: { opacity: 0, x: -10 },
+                  show: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+                }}
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={() => {
                   pushRecente(l);
                   abrirLei({ tipo: l.tipo, id: l.leiId, nome: l.nome });
                 }}
-                className="w-full flex items-center gap-3 p-4 rounded-2xl bg-card border border-border text-left hover:border-primary/50 transition-colors"
+                className="w-full flex items-center gap-3 p-4 rounded-2xl bg-card border border-border text-left hover:border-primary/50 transition-colors focus-visible:outline-none"
               >
                 <LeiIcon id={l.leiId} />
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-display font-bold text-foreground text-[15px] truncate">
+                  <h3 className="font-display font-bold text-foreground text-[15px] truncate group-hover:text-primary transition-colors">
                     {l.nome}
                   </h3>
                   <p className="font-body text-xs text-muted-foreground truncate mt-0.5">
                     {l.tipo === 'codigo' ? 'Código' : 'Lei Especial'}
                   </p>
                 </div>
-                <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
-              </button>
+                <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0 transition-transform group-hover:translate-x-0.5" />
+              </motion.button>
             ))}
-          </div>
+          </motion.div>
         )
       ) : (
         loadingArtigos ? (
@@ -182,35 +196,54 @@ const VadeMecumFavoritos = () => {
             <p className="text-muted-foreground text-sm">Você ainda não favoritou nenhum artigo.</p>
           </div>
         ) : (
-          <div className="space-y-6 pb-6">
+          <motion.div 
+            className="space-y-6 pb-6"
+            initial="hidden"
+            animate="show"
+            variants={{
+              hidden: { opacity: 0 },
+              show: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.1 } }
+            }}
+          >
             {grupos.map((g) => (
-              <div key={g.lei.id} className="space-y-3">
-                <button
+              <motion.div 
+                key={g.lei.id} 
+                className="space-y-3"
+                variants={{
+                  hidden: { opacity: 0, y: 10 },
+                  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+                }}
+              >
+                <motion.button
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => abrirLei({ tipo: g.lei.tipo, id: g.lei.id, nome: g.lei.nome })}
-                  className="w-full flex items-center gap-3 text-left px-1"
+                  className="w-full flex items-center gap-3 text-left px-1 group focus-visible:outline-none"
                 >
                   <LeiIcon id={g.lei.id} size={22} />
                   <span className="min-w-0 flex-1">
-                    <span className="block text-foreground font-semibold text-sm truncate">
+                    <span className="block text-foreground font-semibold text-sm truncate group-hover:text-primary transition-colors">
                       {g.lei.nome}
                     </span>
                     <span className="block text-muted-foreground text-[11px]">
                       {g.artigos.length} {g.artigos.length === 1 ? 'artigo favoritado' : 'artigos favoritados'}
                     </span>
                   </span>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
-                </button>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0 transition-transform group-hover:translate-x-0.5" />
+                </motion.button>
 
                 <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 overflow-x-auto no-scrollbar">
                   <div className="flex gap-2.5 pb-1">
                     {g.artigos.map((a, i) => (
                       <motion.button
                         key={`${a.tabela_codigo}-${a.numero_artigo}`}
-                        initial={{ opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: Math.min(i, 12) * 0.02 }}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: Math.min(i, 12) * 0.03, type: "spring", stiffness: 300, damping: 24 }}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                         onClick={() => abrirArtigo(g.lei, a.numero_artigo)}
-                        className="shrink-0 w-[76px] h-[76px] rounded-2xl bg-card border border-border hover:border-primary/60 transition-colors flex flex-col items-center justify-center gap-0.5"
+                        className="shrink-0 w-[76px] h-[76px] rounded-2xl bg-card border border-border hover:border-primary/60 transition-colors flex flex-col items-center justify-center gap-0.5 focus-visible:outline-none"
                         title={a.conteudo_preview ?? `Art. ${a.numero_artigo}`}
                       >
                         <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
@@ -227,9 +260,9 @@ const VadeMecumFavoritos = () => {
                     ))}
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )
       )}
     </div>

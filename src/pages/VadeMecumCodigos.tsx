@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight, Search } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
 import { leiPath } from '@/lib/legislacaoSlugs';
 import { pushRecente } from '@/lib/leisRecentes';
@@ -42,14 +43,30 @@ const VadeMecumCodigos = () => {
         />
       </div>
 
-      <div className="space-y-6">
+      <motion.div 
+        className="space-y-6"
+        initial="hidden"
+        animate="show"
+        variants={{
+          hidden: { opacity: 0 },
+          show: { opacity: 1, transition: { staggerChildren: 0.1 } }
+        }}
+      >
         {grupos.map((g) => (
-          <section key={g.id}>
+          <motion.section 
+            key={g.id}
+            variants={{
+              hidden: { opacity: 0, y: 10 },
+              show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+            }}
+          >
             <h2 className="font-display text-foreground text-[17px] font-bold mb-3">{g.label}</h2>
             <div className="space-y-2">
               {g.leis.map((l) => (
-                <button
+                <motion.button
                   key={l.id}
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => {
                     pushRecente({
                       tipo: l.tipo,
@@ -60,22 +77,22 @@ const VadeMecumCodigos = () => {
                     });
                     navigate(leiPath(l));
                   }}
-                  className="w-full flex items-center gap-3 p-4 rounded-2xl bg-card border border-border text-left hover:border-primary/50 transition-colors"
+                  className="w-full group flex items-center gap-3 p-4 rounded-2xl bg-card border border-border text-left hover:border-primary/50 transition-colors focus-visible:outline-none"
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="text-foreground font-semibold text-sm truncate">{l.nome}</p>
+                    <p className="text-foreground font-semibold text-sm truncate group-hover:text-primary transition-colors">{l.nome}</p>
                     <p className="text-muted-foreground text-xs truncate">{l.descricao}</p>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
-                </button>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0 transition-transform group-hover:translate-x-0.5" />
+                </motion.button>
               ))}
             </div>
-          </section>
+          </motion.section>
         ))}
         {grupos.length === 0 && (
           <p className="text-muted-foreground text-sm text-center py-10">Nenhum resultado.</p>
         )}
-      </div>
+      </motion.div>
     </VadeMecumSubpage>
   );
 };

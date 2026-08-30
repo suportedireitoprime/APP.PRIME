@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight, History, Calendar, Sparkles } from 'lucide-react';
+import { motion } from 'framer-motion';
 import VadeMecumSubpage from '@/components/vademecum/VadeMecumSubpage';
 import { supabase } from '@/integrations/supabase/client';
 import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
@@ -59,18 +60,32 @@ const VadeMecumRecentes = () => {
           <p className="text-muted-foreground text-sm">Nenhuma lei alterada recentemente.</p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <motion.div 
+          className="space-y-3"
+          initial="hidden"
+          animate="show"
+          variants={{
+            hidden: { opacity: 0 },
+            show: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.1 } }
+          }}
+        >
           {alteracoes.map((alt) => (
-            <button
+            <motion.button
               key={alt.id}
+              variants={{
+                hidden: { opacity: 0, x: -10 },
+                show: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+              }}
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => {
                 navigate(`/legislacao/${tipoToSlug(alt.lei.tipo)}/${leiToSlug({ id: alt.lei_id, nome: alt.lei.nome })}`);
               }}
-              className="w-full flex flex-col p-4 rounded-2xl bg-card border border-border text-left hover:border-primary/50 transition-colors"
+              className="w-full group flex flex-col p-4 rounded-2xl bg-card border border-border text-left hover:border-primary/50 transition-colors focus-visible:outline-none"
             >
               <div className="w-full flex items-center justify-between mb-2">
-                <span className="font-display font-bold text-[15px] text-foreground truncate max-w-[85%]">{alt.lei.nome}</span>
-                <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+                <span className="font-display font-bold text-[15px] text-foreground truncate max-w-[85%] group-hover:text-primary transition-colors">{alt.lei.nome}</span>
+                <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0 transition-transform group-hover:translate-x-0.5" />
               </div>
               <div className="flex items-start gap-2">
                 <Sparkles className="w-3.5 h-3.5 text-yellow-500 mt-1 shrink-0" />
@@ -82,9 +97,9 @@ const VadeMecumRecentes = () => {
                 <Calendar className="w-3.5 h-3.5" />
                 <span>Atualizado em {new Date(alt.data_alteracao || alt.criado_em).toLocaleDateString('pt-BR')}</span>
               </div>
-            </button>
+            </motion.button>
           ))}
-        </div>
+        </motion.div>
       )}
     </VadeMecumSubpage>
   );
