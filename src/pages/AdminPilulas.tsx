@@ -2,9 +2,10 @@ import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { Button } from '@/components/ui/button';
+import { compressAudioToMp3 } from '@/utils/audioCompressor';
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Loader2, Headphones, Search, UploadCloud, CheckCircle2, AlertCircle, Copy, Link } from 'lucide-react';
+import { Loader2, Headphones, Search, UploadCloud, CheckCircle2, AlertCircle, Copy, Link, Upload } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { COLECOES, type ColecaoConfig, type LivroNormalizado, normalizeLivro } from '@/lib/bibliotecaColecoes';
@@ -20,6 +21,8 @@ interface LivroComColecao {
 export default function AdminPilulas() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [compressingId, setCompressingId] = useState<string | number | null>(null);
+  const [compressionProgress, setCompressionProgress] = useState<number>(0);
   const [livros, setLivros] = useState<LivroComColecao[]>([]);
   const [busca, setBusca] = useState('');
   const [uploadingId, setUploadingId] = useState<number | string | null>(null);
@@ -74,25 +77,38 @@ export default function AdminPilulas() {
     }
 
     setUploadingId(item.livro.id);
-    const toastId = toast.loading(`Enviando áudio para ${item.livro.titulo}...`);
+    let toastId = toast.loading('Iniciando processamento do áudio...');
 
     try {
-      // 1. Upload to Supabase Storage
-      const fileExt = file.name.split('.').pop();
+      // 1. Comprime o arquivo localmente
+      toast.loading(`Comprimindo áudio (isso pode levar alguns minutos)... 0%`, { id: toastId });
+      setCompressingId(item.livro.id);
+      setCompressionProgress(0);
+
+      const compressedFile = await compressAudioToMp3(file, (progress) => {
+        setCompressionProgress(progress);
+        toast.loading(`Comprimindo áudio... ${Math.round(progress)}%`, { id: toastId });
+      });
+
+      setCompressingId(null);
+      toast.loading(`Fazendo upload do áudio comprimido...`, { id: toastId });
+
+      // 2. Upload to Supabase Storage
+      const fileExt = 'mp3';
       const fileName = `pilulas-classicos-${item.livro.id}-${Date.now()}.${fileExt}`;
-      const filePath = `resumos-livros/${fileName}`; // Mantemos a mesma pasta de resumos para reaproveitar permissões
+      const filePath = `resumos-livros/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('audios') 
-        .upload(filePath, file, { upsert: true, contentType: file.type });
+        .upload(filePath, compressedFile, { upsert: true, contentType: compressedFile.type });
 
       if (uploadError) throw uploadError;
 
-      // 2. Get Public URL
+      // 3. Get Public URL
       const { data: publicData } = supabase.storage.from('audios').getPublicUrl(filePath);
       const publicUrl = publicData.publicUrl;
 
-      // 3. Update Database
+      // 4. Update Database
       const { error: dbError } = await supabase
         .from(item.colecao.table as any)
         .update({ audio_resumo_url: publicUrl })
@@ -117,9 +133,10 @@ export default function AdminPilulas() {
       }
     } catch (err: any) {
       console.error(err);
-      toast.error(err.message || 'Erro ao enviar áudio', { id: toastId });
+      toast.error(err.message || 'Erro ao processar/enviar áudio', { id: toastId });
     } finally {
       setUploadingId(null);
+      setCompressingId(null);
     }
   }
 
@@ -149,6 +166,7 @@ export default function AdminPilulas() {
         throw new Error("Transcrição retornou vazia");
       }
 
+      const transcriptionText = data.text;
       let cur = item.livro.curiosidades;
       let curiosidadesArray = Array.isArray(cur) ? cur : [];
       let sumarioAudioArray = [];
@@ -365,30 +383,31 @@ export default function AdminPilulas() {
                 )}
               </div>
 
-              {/* Instruções da Intro */}
-              <div className="space-y-3 pt-2">
-                <h4 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-                  <Headphones className="w-4 h-4" /> Instruções de Edição (Intro)
-                </h4>
-                <div className="bg-muted/30 border border-border rounded-xl p-4 space-y-3 shadow-sm">
-                  <div className="text-sm text-foreground space-y-1.5">
-                    <p><strong>1.</strong> Toque a música abaixo até os <strong>7 segundos</strong>.</p>
-                    <p><strong>2.</strong> A partir do <strong>segundo 8</strong> a voz já entra e o volume da música começa a diminuir.</p>
-                    <p><strong>3.</strong> Aos <strong>10 segundos</strong> a música para completamente.</p>
-                  </div>
-                  <div className="pt-2">
-                    <CustomAudioPlayer src="https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/audios/intros/secret-agent-groove.mp3" title="Música de Intro" />
+              <div className="pt-2 space-y-3">
+                {/* Instruções da Intro */}
+                <div className="space-y-3 pt-2">
+                  <h4 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                    <Headphones className="w-4 h-4" /> Instruções de Edição (Intro)
+                  </h4>
+                  <div className="bg-muted/30 border border-border rounded-xl p-4 space-y-3 shadow-sm">
+                    <div className="text-sm text-foreground space-y-1.5">
+                      <p><strong>1.</strong> Toque a música abaixo até os <strong>7 segundos</strong>.</p>
+                      <p><strong>2.</strong> A partir do <strong>segundo 8</strong> a voz já entra e o volume da música começa a diminuir.</p>
+                      <p><strong>3.</strong> Aos <strong>10 segundos</strong> a música para completamente.</p>
+                    </div>
+                    <div className="pt-2">
+                      <CustomAudioPlayer src="https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/audios/intros/secret-agent-groove.mp3" title="Música de Intro" />
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="pt-2 space-y-3">
-                <div className="relative">
+                <div className="relative mt-4">
                   <input
+                    id={`audio-upload-${selectedBook.livro.id}`}
                     type="file"
                     accept="audio/*"
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed z-10"
-                    disabled={uploadingId === selectedBook.livro.id}
+                    className="hidden"
+                    disabled={uploadingId === selectedBook.livro.id || compressingId === selectedBook.livro.id}
                     onChange={(e) => {
                       if (e.target.files && e.target.files[0]) {
                         handleUploadAudio(selectedBook, e.target.files[0]);
@@ -399,14 +418,25 @@ export default function AdminPilulas() {
                   <Button
                     size="lg"
                     className="w-full text-base h-14 rounded-xl"
-                    disabled={uploadingId === selectedBook.livro.id}
+                    onClick={() => {
+                      const input = document.getElementById(`audio-upload-${selectedBook.livro.id}`);
+                      if (input) input.click();
+                    }}
+                    disabled={uploadingId === selectedBook.livro.id || compressingId === selectedBook.livro.id}
                   >
-                    {uploadingId === selectedBook.livro.id ? (
-                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    {compressingId === selectedBook.livro.id ? (
+                      `Comprimindo... ${Math.round(compressionProgress)}%`
+                    ) : uploadingId === selectedBook.livro.id ? (
+                      <>
+                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                        Enviando...
+                      </>
                     ) : (
-                      <UploadCloud className="w-5 h-5 mr-2" />
+                      <>
+                        <UploadCloud className="w-5 h-5 mr-2" />
+                        {selectedBook.livro.audioResumoUrl ? 'Substituir Pílula Atual' : 'Selecionar e Enviar Pílula'}
+                      </>
                     )}
-                    {selectedBook.livro.audioResumoUrl ? 'Substituir Pílula Atual' : 'Selecionar e Enviar Pílula'}
                   </Button>
                 </div>
                 <p className="text-center text-xs text-muted-foreground">
