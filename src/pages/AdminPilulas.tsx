@@ -23,6 +23,7 @@ export default function AdminPilulas() {
   const [loading, setLoading] = useState(true);
   const [compressingId, setCompressingId] = useState<string | number | null>(null);
   const [compressionProgress, setCompressionProgress] = useState<number>(0);
+  const [compressionSize, setCompressionSize] = useState<string>('');
   const [livros, setLivros] = useState<LivroComColecao[]>([]);
   const [busca, setBusca] = useState('');
   const [uploadingId, setUploadingId] = useState<number | string | null>(null);
@@ -84,10 +85,13 @@ export default function AdminPilulas() {
       toast.loading(`Comprimindo áudio (isso pode levar alguns minutos)... 0%`, { id: toastId });
       setCompressingId(item.livro.id);
       setCompressionProgress(0);
+      setCompressionSize('');
 
-      const compressedFile = await compressAudioToMp3(file, (progress) => {
+      const compressedFile = await compressAudioToMp3(file, (progress, sizeLog) => {
         setCompressionProgress(progress);
-        toast.loading(`Comprimindo áudio... ${Math.round(progress)}%`, { id: toastId });
+        if (sizeLog) setCompressionSize(sizeLog);
+        
+        toast.loading(`Comprimindo áudio... ${Math.round(progress)}% ${sizeLog ? `(${sizeLog})` : ''}`, { id: toastId });
       });
 
       setCompressingId(null);
@@ -425,7 +429,7 @@ export default function AdminPilulas() {
                     disabled={uploadingId === selectedBook.livro.id || compressingId === selectedBook.livro.id}
                   >
                     {compressingId === selectedBook.livro.id ? (
-                      `Comprimindo... ${Math.round(compressionProgress)}%`
+                      `Comprimindo... ${Math.round(compressionProgress)}% ${compressionSize ? `(${compressionSize})` : ''}`
                     ) : uploadingId === selectedBook.livro.id ? (
                       <>
                         <Loader2 className="w-5 h-5 mr-2 animate-spin" />
