@@ -289,6 +289,25 @@ export default function AdminPilulas() {
                 )}
               </div>
 
+              {/* Instruções da Intro */}
+              <div className="space-y-3 pt-2">
+                <h4 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                  <Headphones className="w-4 h-4" /> Instruções de Edição (Intro)
+                </h4>
+                <div className="bg-muted/30 border border-border rounded-xl p-4 space-y-3 shadow-sm">
+                  <div className="text-sm text-foreground space-y-1.5">
+                    <p><strong>1.</strong> Toque a música abaixo até os <strong>7 segundos</strong>.</p>
+                    <p><strong>2.</strong> A partir do <strong>segundo 8</strong> a voz já entra e o volume da música começa a diminuir.</p>
+                    <p><strong>3.</strong> Aos <strong>10 segundos</strong> a música para completamente.</p>
+                  </div>
+                  <div className="pt-2">
+                    <audio controls className="w-full h-10" preload="metadata" src="/secret-agent-groove.mp3">
+                      Seu navegador não suporta o player de áudio.
+                    </audio>
+                  </div>
+                </div>
+              </div>
+
               <div className="pt-2 space-y-3">
                 <div className="relative">
                   <input
