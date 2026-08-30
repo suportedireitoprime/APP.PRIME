@@ -26,13 +26,13 @@ const ESTUDOS: Item[] = [
   { id: 'audioaulas', label: 'Audioaulas', sublabel: 'Estude ouvindo, onde estiver', icon: Headphones, color: 'hsl(var(--primary))', route: '/audioaulas' },
   { id: 'resumos', label: 'Resumos', sublabel: 'Resumos jurídicos por tema', icon: NotebookPen, color: 'hsl(var(--primary))', route: '/resumos-juridicos' },
   { id: 'mapas', label: 'Mapas Mentais', sublabel: 'Mapas, infográficos e fluxogramas', icon: Brain, color: 'hsl(var(--primary))', route: '/assistente' },
-  { id: 'lei-seca', label: 'Lei Seca', sublabel: 'Treine o texto da lei por área', icon: Scale, color: '#e4e4e7', route: '/lei-seca', isPrimary: true },
   { id: 'dicionario', label: 'Dicionário', sublabel: 'Termos jurídicos explicados', icon: BookA, color: 'hsl(var(--primary))', route: '/ferramentas/dicionario' },
 ];
 
 const PRATICAR: Item[] = [
   { id: 'questoes', label: 'Questões', sublabel: 'Pratique e acompanhe o desempenho', icon: ListChecks, color: '#e4e4e7', route: '/questoes' },
   { id: 'flashcards', label: 'Flashcards', sublabel: 'Memorização ativa e repetição', icon: Layers, color: '#e4e4e7', route: '/flashcards' },
+  { id: 'lei-seca', label: 'Lei Seca', sublabel: 'Treine o texto da lei por área', icon: Scale, color: '#e4e4e7', route: '/lei-seca' },
 ];
 
 const DesktopEstudosGrid = (_props: Props) => {
