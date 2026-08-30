@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, BellRing, Scale, BookOpen, Layers, Search } from 'lucide-react';
+import { ArrowLeft, BellRing, Search, Heart, NotebookPen, Radar, History } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 import { haptic } from '@/lib/nativeHaptics';
 import brasaoImg from '@/assets/brasao-republica.webp';
 import { pickAsset, srcOf } from '@/lib/assetUrl';
@@ -168,40 +169,27 @@ const VadeMecumHero = ({ onBuscar }: Props) => {
           </p>
         </div>
 
-        {/* ── 3 Caixas de Métricas ────────────────── */}
-        <div className="relative rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 text-white shadow-xl overflow-hidden mt-1 mx-1">
-          <div className="grid grid-cols-3 divide-x divide-white/10">
-            {/* Box 1: Leis Totais */}
-            <div className="flex flex-col items-center justify-center px-1.5 py-3">
-              <div className="flex items-center gap-1 opacity-60">
-                <BookOpen className="w-3 h-3" />
-                <span className="text-[9px] font-extrabold uppercase tracking-wider">Leis Totais</span>
-              </div>
-              <span className="mt-1 font-display text-[15px] font-black leading-none text-white drop-shadow-md">
-                25.000+
-              </span>
-            </div>
-            {/* Box 2: Áreas */}
-            <div className="flex flex-col items-center justify-center px-1.5 py-3">
-              <div className="flex items-center gap-1 opacity-60">
-                <Layers className="w-3 h-3" />
-                <span className="text-[9px] font-extrabold uppercase tracking-wider">Áreas</span>
-              </div>
-              <span className="mt-1 font-display text-[15px] font-black leading-none text-white drop-shadow-md">
-                40+
-              </span>
-            </div>
-            {/* Box 3: Atualização */}
-            <div className="flex flex-col items-center justify-center px-1.5 py-3">
-              <div className="flex items-center gap-1 opacity-60">
-                <Scale className="w-3 h-3" />
-                <span className="text-[9px] font-extrabold uppercase tracking-wider">Atualização</span>
-              </div>
-              <span className="mt-1 font-display text-[15px] font-black leading-none text-emerald-400 drop-shadow-md">
-                HOJE
-              </span>
-            </div>
-          </div>
+        {/* ── 4 Botões de Ação Rápida ────────────────── */}
+        <div className="grid grid-cols-4 gap-2 mx-1 mt-1">
+          <button onClick={() => navigate('/vade-mecum/favoritos')} className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-2 text-center">
+            <Heart className="w-5 h-5 text-white/70 group-hover:text-white group-hover:scale-110 transition-all" strokeWidth={2} />
+            <span className="text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">Favoritos</span>
+          </button>
+          
+          <button onClick={() => toast({ title: 'Em breve' })} className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-2 text-center">
+            <NotebookPen className="w-5 h-5 text-white/70 group-hover:text-white group-hover:scale-110 transition-all" strokeWidth={2} />
+            <span className="text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">Anotações</span>
+          </button>
+
+          <button onClick={() => navigate('/radares')} className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-2 text-center">
+            <Radar className="w-5 h-5 text-white/70 group-hover:text-white group-hover:scale-110 transition-all" strokeWidth={2} />
+            <span className="text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">Radares</span>
+          </button>
+
+          <button onClick={() => navigate('/vade-mecum/recentes')} className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-2 text-center">
+            <History className="w-5 h-5 text-white/70 group-hover:text-white group-hover:scale-110 transition-all" strokeWidth={2} />
+            <span className="text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">Histórico</span>
+          </button>
         </div>
 
         {/* Search bar */}
