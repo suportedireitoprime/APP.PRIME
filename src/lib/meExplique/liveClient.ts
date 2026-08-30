@@ -11,10 +11,10 @@ const WS_HOST = "wss://generativelanguage.googleapis.com/ws";
 /**
  * Endpoints ordenados por prioridade:
  * 1. v1beta BidiGenerateContent — endpoint atual recomendado (API Key via ?key=)
- * 2. v1beta BidiGenerateContentConstrained — para ephemeral tokens (via ?access_token=)
+ * 2. v1beta BidiGenerateContent — para ephemeral tokens (via ?access_token=)
  */
-const WS_URL_APIKEY = `${WS_HOST}/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent`;
-const WS_URL_EPHEMERAL = `${WS_HOST}/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent`;
+const WS_URL_APIKEY = `${WS_HOST}/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent`;
+const WS_URL_EPHEMERAL = `${WS_HOST}/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent`;
 
 /** Primeira instrução falada: faz o professor comentar o que está vendo. */
 const ABERTURA =

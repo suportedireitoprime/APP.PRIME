@@ -106,6 +106,7 @@ Deno.serve(async (req) => {
     // A Google descontinuou chaves AIzaSy "Standard" em jun/2026 e agora
     // recomenda ephemeral tokens para conexões WebSocket client-side.
     let tokenEfemero: string | null = null;
+    let ultimoErro = "";
 
     for (const chave of chaves) {
       try {
@@ -128,31 +129,37 @@ Deno.serve(async (req) => {
 
         if (res.ok) {
           const body = await res.json();
-          // O campo retornado é "name" (ex: "authTokens/abc123...")
-          tokenEfemero = body.name ?? body.token ?? null;
+          // A API retorna o token no campo "token" (string diretamente utilizável)
+          // ou em "name" (formato "authTokens/abc123...")
+          tokenEfemero = body.token ?? body.name ?? null;
           if (tokenEfemero) {
             console.log("[me-explique-token] Ephemeral token gerado com sucesso.");
             break;
           }
         } else {
-          const erro = await res.text();
-          console.warn(`[me-explique-token] Falha ao gerar ephemeral token com chave ${chave.substring(0, 8)}...: ${res.status} ${erro}`);
+          ultimoErro = await res.text();
+          console.warn(`[me-explique-token] Falha ao gerar ephemeral token com chave ${chave.substring(0, 8)}...: ${res.status} ${ultimoErro}`);
         }
       } catch (e) {
-        console.warn("[me-explique-token] Erro na chamada auth_tokens:", (e as Error)?.message ?? e);
+        ultimoErro = (e as Error)?.message ?? String(e);
+        console.warn("[me-explique-token] Erro na chamada auth_tokens:", ultimoErro);
       }
     }
 
-    // Fallback: se nenhuma chave conseguiu gerar ephemeral token,
-    // devolve a chave diretamente (menos seguro, mas funciona com Auth Keys AQ...)
-    const tokenFinal = tokenEfemero ?? chaves[0].trim();
-    const isEphemeral = !!tokenEfemero;
+    // Se nenhuma chave conseguiu gerar ephemeral token, retornamos erro
+    // (não mandamos mais a key crua, pois o Google recusa "unregistered callers").
+    if (!tokenEfemero) {
+      console.error("[me-explique-token] Nenhuma chave gerou ephemeral token.", ultimoErro);
+      return json({
+        error: `Não foi possível gerar token para sessão ao vivo. Verifique se a GEMINI_API_KEY está válida. Detalhe: ${ultimoErro.substring(0, 200)}`,
+      }, 500);
+    }
 
     return json({
-      token: tokenFinal,
+      token: tokenEfemero,
       modelo: MODELO_LIVE,
       setup: setup,
-      ephemeral: isEphemeral,
+      ephemeral: true,
     });
 
   } catch (e) {
