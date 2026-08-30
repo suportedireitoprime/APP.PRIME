@@ -1,13 +1,14 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Play, Pause, Volume2, BookOpen, AlertCircle, List } from 'lucide-react';
+import { ArrowLeft, Play, Pause, BookOpen, AlertCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { COLECOES, type LivroNormalizado, normalizeLivro } from '@/lib/bibliotecaColecoes';
-import ReactMarkdown from 'react-markdown';
 import { useResumoLivroPlayer } from '@/contexts/ResumoLivroPlayerContext';
 import { clearMediaSession } from '@/lib/mediaSession';
 import { toast } from 'sonner';
+
+const INTRO_URL = 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/audios/audio-intro.mp3';
 
 export default function PilulasPlayer() {
   const { id } = useParams<{ id: string }>();
@@ -15,24 +16,17 @@ export default function PilulasPlayer() {
   const [livro, setLivro] = useState<LivroNormalizado | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const audioRef = useRef<HTMLAudioElement>(null);
+  const audioIntroRef = useRef<HTMLAudioElement>(null);
+  const audioMainRef = useRef<HTMLAudioElement>(null);
+  
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
+  
+  const [phase, setPhase] = useState<'intro' | 'main'>('intro');
+  const [hasPlayedIntro, setHasPlayedIntro] = useState(false);
 
-  const textoPuro = livro?.transcricaoAudio || livro?.analiseDetalhada || livro?.sobre || '';
-  const paragraphs = useMemo(() => {
-    const parts = textoPuro.split(/\n+/).filter(p => p.trim().length > 0);
-    let accumulated = 0;
-    const totalChars = parts.reduce((acc, p) => acc + p.length, 0);
-    
-    return parts.map(p => {
-      const start = accumulated / Math.max(1, totalChars);
-      accumulated += p.length;
-      const end = accumulated / Math.max(1, totalChars);
-      return { text: p, start, end };
-    });
-  }, [textoPuro]);
+  const activeRef = phase === 'intro' ? audioIntroRef : audioMainRef;
 
   // Parar o player global se ele estiver tocando pílulas para não conflitar
   const { fechar: fecharPlayerGlobal } = useResumoLivroPlayer();
@@ -77,39 +71,63 @@ export default function PilulasPlayer() {
     setIsPlaying(false);
     setProgress(0);
     setDuration(0);
-    if (audioRef.current && livro?.audioResumoUrl) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-      audioRef.current.load();
+    setPhase('intro');
+    setHasPlayedIntro(false);
+    
+    if (audioMainRef.current && livro?.audioResumoUrl) {
+      audioMainRef.current.pause();
+      audioMainRef.current.currentTime = 0;
+      audioMainRef.current.load();
+    }
+    if (audioIntroRef.current) {
+      audioIntroRef.current.pause();
+      audioIntroRef.current.currentTime = 0;
+      audioIntroRef.current.load();
     }
   }, [livro?.audioResumoUrl]);
 
   const togglePlay = () => {
-    if (audioRef.current) {
+    const el = activeRef.current;
+    if (el) {
       if (isPlaying) {
-        audioRef.current.pause();
+        el.pause();
+        setIsPlaying(false);
       } else {
-        audioRef.current.play().catch(() => setIsPlaying(false));
+        el.play().catch(() => setIsPlaying(false));
+        setIsPlaying(true);
       }
-      setIsPlaying(!isPlaying);
     }
   };
 
   const handleTimeUpdate = () => {
-    if (audioRef.current) {
-      const cur = audioRef.current.currentTime;
-      const dur = audioRef.current.duration;
-      setProgress(cur);
-      if (id && dur > 0) {
-        localStorage.setItem(`pilula_progress_${id}`, String(cur / dur));
+    const el = activeRef.current;
+    if (el) {
+      setProgress(el.currentTime);
+      if (phase === 'main' && id && el.duration > 0) {
+        localStorage.setItem(`pilula_progress_${id}`, String(el.currentTime / el.duration));
       }
     }
   };
 
   const handleLoadedMetadata = () => {
-    if (audioRef.current) {
-      setDuration(audioRef.current.duration);
+    const el = activeRef.current;
+    if (el) {
+      setDuration(el.duration);
     }
+  };
+
+  const handleIntroEnded = () => {
+    setPhase('main');
+    setHasPlayedIntro(true);
+    setProgress(0);
+    setDuration(0);
+    // Timeout para garantir que o react renderizou o ref do main
+    setTimeout(() => {
+       if (audioMainRef.current) {
+          audioMainRef.current.play().catch(() => setIsPlaying(false));
+          setIsPlaying(true);
+       }
+    }, 50);
   };
 
   const formatTime = (time: number) => {
@@ -161,7 +179,7 @@ export default function PilulasPlayer() {
       <div className="relative z-10 pt-[calc(1.25rem+var(--sai-top,env(safe-area-inset-top,0px)))] px-4 pb-4 shrink-0 flex items-center">
         <button
           onClick={() => {
-            clearMediaSession(audioRef.current);
+            clearMediaSession(audioMainRef.current);
             navigate(-1);
           }}
           className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md flex items-center justify-center border border-white/10 active:scale-95 transition-transform"
@@ -175,16 +193,16 @@ export default function PilulasPlayer() {
         </div>
       </div>
 
-      {/* Main Content (Artwork + Text) */}
-      <div className="relative z-10 flex-1 overflow-y-auto px-6 pb-32 no-scrollbar">
+      {/* Main Content (Artwork + Controls) */}
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pb-[calc(2rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] no-scrollbar overflow-y-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="flex flex-col items-center mt-6"
+          className="flex flex-col items-center w-full max-w-md"
         >
           {/* Capa */}
-          <div className="w-48 h-72 sm:w-64 sm:h-96 rounded-xl bg-white/5 overflow-hidden shadow-2xl mb-8 border border-white/10">
+          <div className="w-56 h-80 sm:w-72 sm:h-[400px] rounded-2xl bg-white/5 overflow-hidden shadow-2xl mb-8 border border-white/10">
             {livro.capa ? (
               <img src={livro.capa} alt={livro.titulo} className="w-full h-full object-cover" />
             ) : (
@@ -198,7 +216,7 @@ export default function PilulasPlayer() {
             {livro.titulo}
           </h1>
           {livro.autor && (
-            <p className="text-sm text-white/50 text-center mb-6">{livro.autor}</p>
+            <p className="text-base text-white/50 text-center mb-8">{livro.autor}</p>
           )}
 
           {livro.sumarioAudio && livro.sumarioAudio.length > 0 && (
@@ -215,14 +233,16 @@ export default function PilulasPlayer() {
                     <button
                       key={i}
                       onClick={() => {
-                         if (audioRef.current && duration > 0) {
-                            audioRef.current.currentTime = cap.percentage * duration;
-                            audioRef.current.play().catch(()=>setIsPlaying(false));
+                         const el = activeRef.current;
+                         // Apenas navega se já estiver tocando o áudio principal
+                         if (phase === 'main' && el && duration > 0) {
+                            el.currentTime = cap.percentage * duration;
+                            el.play().catch(()=>setIsPlaying(false));
                             setIsPlaying(true);
                          }
                       }}
                       className={`shrink-0 snap-start px-4 py-2 rounded-xl text-sm font-medium transition-colors border ${
-                        isActive 
+                        isActive && phase === 'main'
                           ? 'bg-primary/20 border-primary text-primary' 
                           : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white'
                       }`}
@@ -235,60 +255,63 @@ export default function PilulasPlayer() {
             </div>
           )}
 
-          {/* Teleprompter Text Area */}
-          <div className="w-full max-w-2xl bg-white/5 border border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-sm">
-            <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/10">
-              <div className="flex items-center gap-2">
-                <Volume2 className="w-4 h-4 text-primary" />
-                <h3 className="text-sm font-semibold tracking-wider uppercase text-white/70">
-                  Acompanhe a Narração
-                </h3>
-              </div>
-            </div>
-            
-            <div className="prose prose-invert prose-p:leading-relaxed prose-p:text-lg max-w-none space-y-6">
-              {paragraphs.length > 0 ? paragraphs.map((p, i) => {
-                const progressRatio = duration > 0 ? progress / duration : 0;
-                // Ajuste leve nos limites para considerar a transição natural da fala
-                const isActive = progressRatio >= Math.max(0, p.start - 0.02) && progressRatio <= (p.end + 0.02);
-                const isPast = progressRatio > (p.end + 0.02);
-                
-                return (
-                  <div 
-                    key={i} 
-                    className={`transition-all duration-500 ease-out ${
-                      isActive 
-                        ? 'text-white scale-[1.02] transform origin-left drop-shadow-md' 
-                        : isPast 
-                          ? 'text-white/40' 
-                          : 'text-white/20'
-                    }`}
-                  >
-                    <ReactMarkdown>{p.text}</ReactMarkdown>
-                  </div>
-                );
-              }) : "O texto desta pílula ainda não está disponível."}
-            </div>
-          </div>
-        </motion.div>
-      </div>
+          {/* Audio Tag: Intro */}
+          {!hasPlayedIntro && (
+            <audio
+              ref={audioIntroRef}
+              src={INTRO_URL}
+              onTimeUpdate={handleTimeUpdate}
+              onLoadedMetadata={handleLoadedMetadata}
+              onEnded={handleIntroEnded}
+              preload="metadata"
+            />
+          )}
 
-      {/* Player Controls (Fixed Bottom) */}
-      <div className="relative z-20 shrink-0 bg-[#0a0a0a]/90 backdrop-blur-2xl border-t border-white/10 pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-4 px-6">
-        <div className="max-w-2xl mx-auto">
-          {/* Audio Tag */}
+          {/* Audio Tag: Main */}
           <audio
-            ref={audioRef}
+            ref={audioMainRef}
             src={livro.audioResumoUrl || ""}
-            onTimeUpdate={handleTimeUpdate}
-            onLoadedMetadata={handleLoadedMetadata}
+            onTimeUpdate={phase === 'main' ? handleTimeUpdate : undefined}
+            onLoadedMetadata={phase === 'main' ? handleLoadedMetadata : undefined}
             onEnded={() => setIsPlaying(false)}
             preload="metadata"
           />
 
+          {/* Soundwave Animation */}
+          <div className="flex items-center justify-center gap-1.5 h-12 mb-8">
+            {[
+              ["20%", "60%", "30%", "80%", "20%"],
+              ["30%", "80%", "20%", "100%", "30%"],
+              ["40%", "100%", "50%", "60%", "40%"],
+              ["20%", "70%", "40%", "90%", "20%"],
+              ["50%", "30%", "100%", "50%", "50%"],
+              ["20%", "70%", "40%", "90%", "20%"],
+              ["40%", "100%", "50%", "60%", "40%"],
+              ["30%", "80%", "20%", "100%", "30%"],
+              ["20%", "60%", "30%", "80%", "20%"],
+            ].map((heights, i) => (
+              <motion.div
+                key={i}
+                className="w-1.5 bg-primary rounded-full"
+                animate={
+                  isPlaying 
+                    ? { height: heights }
+                    : { height: "15%" }
+                }
+                transition={{
+                  duration: 1.2,
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                  ease: "easeInOut",
+                  delay: i * 0.1,
+                }}
+              />
+            ))}
+          </div>
+
           {/* Progress */}
-          <div className="flex items-center gap-4 mb-6">
-            <span className="text-[11px] font-medium text-white/50 w-8 text-right">
+          <div className="flex items-center gap-4 mb-10 w-full">
+            <span className="text-[11px] font-medium text-white/50 w-10 text-right">
               {formatTime(progress)}
             </span>
             <div
@@ -296,9 +319,10 @@ export default function PilulasPlayer() {
               onClick={(e) => {
                 const rect = e.currentTarget.getBoundingClientRect();
                 const percent = (e.clientX - rect.left) / rect.width;
-                if (audioRef.current) {
-                  audioRef.current.currentTime = percent * duration;
-                  setProgress(audioRef.current.currentTime);
+                const el = activeRef.current;
+                if (el) {
+                  el.currentTime = percent * duration;
+                  setProgress(el.currentTime);
                 }
               }}
             >
@@ -307,7 +331,7 @@ export default function PilulasPlayer() {
                 style={{ width: `${(progress / (duration || 1)) * 100}%` }}
               />
             </div>
-            <span className="text-[11px] font-medium text-white/50 w-8">
+            <span className="text-[11px] font-medium text-white/50 w-10">
               {formatTime(duration)}
             </span>
           </div>
@@ -316,39 +340,41 @@ export default function PilulasPlayer() {
           <div className="flex items-center justify-center gap-8">
             <button
               onClick={() => {
-                if (audioRef.current) {
-                  audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 15);
+                const el = activeRef.current;
+                if (el) {
+                  el.currentTime = Math.max(0, el.currentTime - 15);
                 }
               }}
-              className="w-10 h-10 rounded-full flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+              className="w-12 h-12 rounded-full flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-colors"
             >
-              <span className="text-xs font-bold">-15s</span>
+              <span className="text-sm font-bold">-15s</span>
             </button>
 
             <button
               onClick={togglePlay}
               disabled={!livro.audioResumoUrl}
-              className={`w-16 h-16 flex items-center justify-center rounded-full bg-primary text-primary-foreground transition-transform hover:scale-105 active:scale-95 shadow-xl shadow-primary/20 ${!livro.audioResumoUrl ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`w-20 h-20 flex items-center justify-center rounded-full bg-primary text-primary-foreground transition-transform hover:scale-105 active:scale-95 shadow-2xl shadow-primary/30 ${!livro.audioResumoUrl ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               {isPlaying ? (
-                <Pause className="w-8 h-8 fill-current" />
+                <Pause className="w-10 h-10 fill-current" />
               ) : (
-                <Play className="w-8 h-8 fill-current ml-1" />
+                <Play className="w-10 h-10 fill-current ml-1.5" />
               )}
             </button>
 
             <button
               onClick={() => {
-                if (audioRef.current) {
-                  audioRef.current.currentTime = Math.min(duration, audioRef.current.currentTime + 15);
+                const el = activeRef.current;
+                if (el) {
+                  el.currentTime = Math.min(duration, el.currentTime + 15);
                 }
               }}
-              className="w-10 h-10 rounded-full flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+              className="w-12 h-12 rounded-full flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-colors"
             >
-              <span className="text-xs font-bold">+15s</span>
+              <span className="text-sm font-bold">+15s</span>
             </button>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
