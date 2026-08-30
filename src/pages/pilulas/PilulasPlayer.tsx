@@ -202,11 +202,11 @@ export default function PilulasPlayer() {
           className="flex flex-col items-center w-full max-w-md"
         >
           {/* Capa */}
-          <div className="w-56 sm:w-72 aspect-[2/3] rounded-2xl overflow-hidden shadow-2xl mb-8 border border-white/10 shrink-0">
+          <div className="w-56 sm:w-72 rounded-2xl overflow-hidden shadow-2xl mb-8 border border-white/10 shrink-0 bg-black/40">
             {livro.capa ? (
-              <img src={livro.capa} alt={livro.titulo} className="w-full h-full object-cover" />
+              <img src={livro.capa} alt={livro.titulo} className="w-full h-auto block" />
             ) : (
-              <div className="w-full h-full bg-white/5 flex items-center justify-center text-white/20">
+              <div className="w-full aspect-[2/3] bg-white/5 flex items-center justify-center text-white/20">
                 <BookOpen className="w-16 h-16" />
               </div>
             )}
