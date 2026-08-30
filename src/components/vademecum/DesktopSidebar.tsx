@@ -55,7 +55,6 @@ const CONTEUDO_ITEMS = [
 
 const FERRAMENTAS_ITEMS = [
   { id: 'ferramentas', label: 'Todas as Ferramentas', icon: Wrench, route: '/ferramentas', color: '#DC2626' },
-  { id: 'plano-estudos', label: 'Plano de Estudos', icon: CalendarDays, route: '/ferramentas/plano-estudos', color: '#8B5CF6' },
   { id: 'dicionario', label: 'Dicionário Jurídico', icon: BookOpenText, route: '/ferramentas/dicionario', color: '#3B82F6' },
   { id: 'gravar', label: 'Gravar aula', icon: Mic, route: '/anotacoes/audio', color: '#F43F5E' },
   { id: 'offline', label: 'Modo Offline', icon: CloudDownload, route: '/modo-offline', color: '#64748B' },

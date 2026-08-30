@@ -1,5 +1,5 @@
 import React, { useState, Suspense, lazy } from 'react';
-import { X, Book, Wand2, Cpu, ChevronRight, ArrowLeft, PlayCircle, Music, Upload, User, FileSignature } from 'lucide-react';
+import { X, Book, Wand2, Cpu, ChevronRight, ArrowLeft, PlayCircle, Music, Upload, User, FileSignature, CalendarDays } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import AnimacaoExemplo from '@/components/laboratorio/AnimacaoExemplo';
@@ -192,6 +192,25 @@ const AdminLaboratorio = () => {
                   </div>
                 </div>
                 <ChevronRight className="text-muted-foreground group-hover:text-cyan-400 transition-colors relative z-10 flex-shrink-0" size={24} />
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => navigate('/ferramentas/plano-estudos')}
+                className="group relative overflow-hidden bg-secondary/20 border border-border/50 hover:border-violet-500/50 rounded-2xl p-6 flex items-center justify-between transition-all w-full shadow-lg"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-violet-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="flex items-center gap-5 relative z-10 text-left w-full">
+                  <div className="w-14 h-14 rounded-full bg-violet-500/20 flex items-center justify-center text-violet-400 group-hover:bg-violet-500 group-hover:text-white transition-colors shrink-0">
+                    <CalendarDays size={28} />
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="text-xl font-bold text-white mb-1 group-hover:text-violet-400 transition-colors">Plano de Estudos (IA)</h2>
+                    <p className="text-sm text-muted-foreground line-clamp-2">Cronograma inteligente e gerador de plano de estudos. (Oculto para usuários finais).</p>
+                  </div>
+                </div>
+                <ChevronRight className="text-muted-foreground group-hover:text-violet-400 transition-colors relative z-10 flex-shrink-0" size={24} />
               </motion.button>
             </motion.div>
           ) : (
