@@ -10,14 +10,15 @@ import { haptic } from '@/lib/nativeHaptics';
 import FlashcardsCargoHero from '@/components/flashcards/FlashcardsCargoHero';
 import { useFlashcardsDashboard, useFlashcardsResumoAreas, FlashcardsAreaRow, FlashcardsDash } from '@/lib/flashcardsQueries';
 import FlashcardsFiltroSheet, { FlashcardsFiltro } from '@/components/flashcards/FlashcardsFiltroSheet';
+import { useFlashcardsMix } from '@/hooks/useFlashcardsMix';
 
 
 const Flashcards = () => {
   const navigate = useNavigate();
   const { data: dash, isLoading: loadingDash } = useFlashcardsDashboard();
   const { data: areasRaw } = useFlashcardsResumoAreas();
-  const [loadingMix, setLoadingMix] = useState(false);
-  
+  const { handleMixRapido, loadingMix } = useFlashcardsMix(areasRaw);
+
   const [filtroAberto, setFiltroAberto] = useState(false);
   const [diasFrequencia, setDiasFrequencia] = useState<7 | 15 | 30>(30);
   const [expandedFrequencia, setExpandedFrequencia] = useState(false);
@@ -31,56 +32,6 @@ const Flashcards = () => {
   const pct = dash && dash.total_cards ? Math.round((dash.compreendidos / dash.total_cards) * 100) : 0;
   const paraHoje = Number(dash?.a_revisar ?? 0) || Number(dash?.hoje ?? 0);
   const criticos = (dash?.temas_criticos ?? []).slice(0, 4);
-
-  const handleMixRapido = async () => {
-    if (!areasRaw || areasRaw.length === 0) return;
-    haptic.selection();
-    setLoadingMix(true);
-    try {
-      const promises = areasRaw.map(a => 
-        supabase.rpc('flashcards_temas', { _area: a.area })
-          .then(res => {
-            if (res.error) return [];
-            return (res.data || []);
-          })
-      );
-      
-      const results = await Promise.all(promises);
-      const allTemas = results.flat();
-      const MIX_KEYWORDS = [
-        'filosofia', 'filósofo', 'platão', 'aristóteles', 'sócrates', 'kant', 'hegel', 'habermas', 'rawls', 'dworkin', 'alexy',
-        'sociologia', 'sociólogo', 'foucault', 'weber', 'marx', 'durkheim',
-        'teoria geral', 'tgd', 'kelsen', 'radbruch', 'reale', 'bobbio',
-        'doutrina penal', 'penalista', 'nucci', 'capez', 'bitencourt', 'sanches', 'mirabete', 'zaffaroni', 'lopes jr', 'pacelli', 'távora',
-        'doutrina civil', 'civilista', 'tartuce', 'rosenvald', 'farias', 'gagliano', 'gonçalves', 'venosa', 'diniz', 'tepedino', 'marinoni', 'didier', 'neves', 'theodoro',
-        'doutrina constitucional', 'administrativista', 'barroso', 'mendes', 'canotilho', 'carvalho', 'meirelles', 'di pietro', 'carvalho filho', 'alexandrino', 'moraes', 'novelino',
-        'doutrina', 'autor', 'jurista', 'entendimento doutrinário', 'segundo a doutrina', 'posição majoritária',
-        'prazo', 'dias', 'horas', 'meses', 'anos', 'prescrição', 'decadência',
-        'exceção', 'salvo', 'exceto', 'regra geral', 'ressalva',
-        'classificação', 'espécies', 'tipos de', 'modalidades', 'requisitos', 'elementos'
-      ];
-
-      const temasValidos = allTemas
-        .filter(t => MIX_KEYWORDS.some(k => t.tema.toLowerCase().includes(k)))
-        .map(t => t.tema);
-
-      if (temasValidos.length === 0) {
-        toast.error('Nenhum card especial encontrado.');
-        return;
-      }
-
-      // Randomize and take up to 20 themes to keep the URL concise
-      const shuffled = temasValidos.sort(() => 0.5 - Math.random()).slice(0, 20);
-      const temasParam = encodeURIComponent(shuffled.join('|'));
-      
-      navigate(`/flashcards/estudar?temas=${temasParam}&modo=revisar&limite=50&ordem=embaralhado`);
-    } catch (err) {
-      console.error(err);
-      toast.error('Erro ao gerar mix.');
-    } finally {
-      setLoadingMix(false);
-    }
-  };
 
   return (
     <div className="min-h-dvh overflow-x-hidden bg-background pb-[calc(7rem+env(safe-area-inset-bottom,0px))] lg:pb-[calc(3rem+env(safe-area-inset-bottom,0px))]">
