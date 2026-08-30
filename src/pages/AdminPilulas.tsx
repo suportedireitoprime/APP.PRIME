@@ -79,7 +79,7 @@ export default function AdminPilulas() {
       const { data: leiData, error: leiError } = await supabase
         .from('vade_mecum_leis')
         .select('id')
-        .eq('slug', 'codigo-penal')
+        .eq('slug', 'cp')
         .single();
         
       if (leiError || !leiData) {
