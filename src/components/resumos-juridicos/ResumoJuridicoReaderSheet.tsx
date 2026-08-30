@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronDown,
   NotebookText,
@@ -520,5 +520,3 @@ export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoC
     </AnimatePresence>
   );
 }
-
-

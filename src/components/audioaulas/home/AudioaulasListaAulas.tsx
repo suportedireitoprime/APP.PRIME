@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { Play, Pause, Heart } from 'lucide-react';
 import { BotaoDownloadAudio } from './BotaoDownloadAudio';
 import { capaDaArea } from '@/lib/audioaulasHelper';
 import { type AulaAudio, audioIdOf } from '@/contexts/AudioaulasPlayerContext';
@@ -194,4 +194,3 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
     </div>
   );
 });
-

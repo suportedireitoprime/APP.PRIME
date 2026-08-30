@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 import { ArrowDown, ArrowUp, Check, ListOrdered, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Artigo, extrairIncisos, shuffle } from "./utils";
@@ -131,4 +131,3 @@ export default function OrdeneIncisos({ artigo, onResult }: Props) {
     </div>
   );
 }
-

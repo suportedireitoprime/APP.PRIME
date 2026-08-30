@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 import { CalendarDays, Film, MapPin, Sparkles, Star, UtensilsCrossed, ExternalLink, Play } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Obra } from "./ObraDetailSheet";
@@ -275,4 +275,3 @@ export default function TematicaRecomendacoesView({ obras, onAbrirObra }: Props)
     </div>
   );
 }
-

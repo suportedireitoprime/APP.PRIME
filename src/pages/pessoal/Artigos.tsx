@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { motion } from 'framer-motion';
+import { ArrowLeft, Heart, Loader2, ChevronRight } from "lucide-react";
 import { PageHeader } from "@/components/vademecum/PageHeader";
 import { motion } from "framer-motion";
 import { getLeiByTabela } from "@/data/leisCatalog";
@@ -106,4 +106,3 @@ const ArtigosPage = () => {
 };
 
 export default ArtigosPage;
-

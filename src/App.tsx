@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect } from "react";
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from "framer-motion";
 import { initAnalytics, trackPageview, setAnalyticsUserWithProfile } from "@/lib/analytics";
 import { useScreenTracking } from "@/lib/screenTracking";
 import { initNavTelemetry, markRouteChange } from "@/lib/navTelemetry";
@@ -1181,4 +1181,3 @@ const App = () => (
 );
 
 export default App;
-

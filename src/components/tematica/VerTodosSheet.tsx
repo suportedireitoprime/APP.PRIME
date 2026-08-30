@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
-import { motion, AnimatePresence } from 'framer-motion';
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Film, Search, Star, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -147,5 +147,3 @@ export default function VerTodosSheet({ open, titulo, eyebrow, obras, onAbrir, o
   if (typeof document === "undefined") return null;
   return createPortal(conteudo, document.body);
 }
-
-

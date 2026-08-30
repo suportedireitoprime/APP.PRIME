@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import {
   X, ChevronRight, Camera, Pencil, Check,
@@ -500,5 +500,3 @@ function StatCell({ icon: Icon, label, value }: { icon: any; label: string; valu
 }
 
 export default PessoalSheet;
-
-

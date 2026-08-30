@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { motion } from 'framer-motion';
+import { useNavigate } from "react-router-dom";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Heart, ChevronRight, ArrowUpRight, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
@@ -127,4 +127,3 @@ export default function LeiFavoritaArtigosSheet({ lei, onClose }: Props) {
     </Sheet>
   );
 }
-

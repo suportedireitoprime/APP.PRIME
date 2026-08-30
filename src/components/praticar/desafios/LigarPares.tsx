@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 import { Link2, Check, X, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Artigo, gerarParesLigar, shuffle, ParLigar } from "./utils";
@@ -161,4 +161,3 @@ export default function LigarPares({ artigo, onResult }: Props) {
     </div>
   );
 }
-

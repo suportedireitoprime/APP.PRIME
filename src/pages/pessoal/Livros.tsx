@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { motion } from 'framer-motion';
+import { useNavigate } from "react-router-dom";
 import { BookOpen, ChevronRight, BookMarked, CheckCircle2, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import PessoalListLayout from "./PessoalListLayout";
@@ -139,4 +139,3 @@ export default function MeusLivrosPage() {
     </PessoalListLayout>
   );
 }
-

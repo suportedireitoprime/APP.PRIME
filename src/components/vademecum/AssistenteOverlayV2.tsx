@@ -1,5 +1,5 @@
 import { Thread } from "@assistant-ui/react-ui";
-import { motion } from 'framer-motion';
+import { AssistantRuntimeProvider } from "@assistant-ui/react";
 import { useAssistenteRuntime } from "@/hooks/useAssistenteRuntime";
 import { PageHeader } from "@/components/vademecum/PageHeader";
 import { motion, AnimatePresence } from "framer-motion";
@@ -43,4 +43,3 @@ export default function AssistenteOverlayV2({ open, onClose }: { open: boolean; 
     </motion.div>
   );
 }
-

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, useRef } from "react";
-import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -445,5 +445,3 @@ export default function ResumosJuridicosTemas() {
     </div>
   );
 }
-
-

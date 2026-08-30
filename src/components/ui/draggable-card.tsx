@@ -1,6 +1,6 @@
 "use client";
 import { cn } from "@/lib/utils";
-import { motion } from 'framer-motion';
+import React, { useRef, useState, useEffect } from "react";
 import {
   motion,
   useMotionValue,
@@ -189,4 +189,3 @@ export const DraggableCardContainer = ({
     <div className={cn("[perspective:3000px]", className)}>{children}</div>
   );
 };
-

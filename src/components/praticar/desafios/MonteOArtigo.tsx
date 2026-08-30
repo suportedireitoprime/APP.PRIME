@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 import { Blocks, Check, X, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Artigo, segmentarParaMontar, shuffle } from "./utils";
@@ -148,4 +148,3 @@ export default function MonteOArtigo({ artigo, onResult }: Props) {
     </div>
   );
 }
-

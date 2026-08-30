@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { motion } from 'framer-motion';
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ChevronDown, FileText, Heart, History, Loader2, Search } from "lucide-react";
 import ResumosBottomNav from "@/components/resumos/ResumosBottomNav";
@@ -125,4 +125,3 @@ export default function ResumosJuridicosLista({ modo }: { modo: "favoritos" | "r
     </div>
   );
 }
-

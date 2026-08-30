@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 import { Capacitor } from "@capacitor/core";
 
 interface PageTransitionProps {
@@ -30,4 +30,3 @@ const PageTransition = ({ children }: PageTransitionProps) => {
 };
 
 export default PageTransition;
-
