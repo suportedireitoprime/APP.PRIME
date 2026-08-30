@@ -21,12 +21,16 @@ export default function PilulasPlayer() {
   
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [duration, setDuration] = useState(0);
+  
+  const [introDuration, setIntroDuration] = useState(0);
+  const [mainDuration, setMainDuration] = useState(0);
   
   const [phase, setPhase] = useState<'intro' | 'main'>('intro');
   const [hasPlayedIntro, setHasPlayedIntro] = useState(false);
 
   const activeRef = phase === 'intro' ? audioIntroRef : audioMainRef;
+  const introOverlap = Math.max(0, introDuration - 0.5);
+  const unifiedDuration = (introDuration > 0 && mainDuration > 0) ? (introOverlap + mainDuration) : (introDuration || mainDuration || 0);
 
   // Parar o player global se ele estiver tocando pílulas para não conflitar
   const { fechar: fecharPlayerGlobal } = useResumoLivroPlayer();
@@ -70,7 +74,8 @@ export default function PilulasPlayer() {
     // Reset state when src changes
     setIsPlaying(false);
     setProgress(0);
-    setDuration(0);
+    setIntroDuration(0);
+    setMainDuration(0);
     setPhase('intro');
     setHasPlayedIntro(false);
     
@@ -95,10 +100,25 @@ export default function PilulasPlayer() {
     if (audioMainRef.current) {
       // Manually read duration since onLoadedMetadata may have already fired
       if (audioMainRef.current.duration && !isNaN(audioMainRef.current.duration)) {
-        setDuration(audioMainRef.current.duration);
+        setMainDuration(audioMainRef.current.duration);
       }
-      audioMainRef.current.play().catch(() => setIsPlaying(false));
-      setIsPlaying(true);
+      
+      audioMainRef.current.volume = 0; // Prepare for fade-in
+      audioMainRef.current.play().then(() => {
+        setIsPlaying(true);
+        // Fade in over 1 second
+        let vol = 0;
+        const fadeInterval = setInterval(() => {
+          vol += 0.05;
+          if (vol >= 1) {
+            vol = 1;
+            clearInterval(fadeInterval);
+          }
+          if (audioMainRef.current) {
+            audioMainRef.current.volume = vol;
+          }
+        }, 50);
+      }).catch(() => setIsPlaying(false));
     }
   };
 
@@ -137,7 +157,11 @@ export default function PilulasPlayer() {
   const handleTimeUpdate = () => {
     const el = activeRef.current;
     if (el) {
-      setProgress(el.currentTime);
+      if (phase === 'intro') {
+        setProgress(el.currentTime);
+      } else {
+        setProgress(introOverlap + el.currentTime);
+      }
       
       // Logic for Intro phase: start main audio 0.5s before intro ends
       if (phase === 'intro' && !hasPlayedIntro) {
@@ -146,18 +170,46 @@ export default function PilulasPlayer() {
         }
       }
       
-      if (phase === 'main' && id && el.duration > 0) {
-        localStorage.setItem(`pilula_progress_${id}`, String(el.currentTime / el.duration));
+      if (phase === 'main' && id && mainDuration > 0) {
+        localStorage.setItem(`pilula_progress_${id}`, String(el.currentTime / mainDuration));
+      }
+    }
+  };
+
+  const handleSeek = (newUnifiedTime: number) => {
+    const target = Math.max(0, Math.min(newUnifiedTime, unifiedDuration));
+    
+    if (target < introOverlap) {
+      if (phase === 'main') {
+        audioMainRef.current?.pause();
+        setPhase('intro');
+        setHasPlayedIntro(false);
+      }
+      if (audioIntroRef.current) {
+        audioIntroRef.current.currentTime = target;
+        setProgress(target);
+        if (isPlaying) audioIntroRef.current.play().catch(() => setIsPlaying(false));
+      }
+    } else {
+      if (phase === 'intro') {
+        audioIntroRef.current?.pause();
+        setPhase('main');
+        setHasPlayedIntro(true);
+      }
+      if (audioMainRef.current) {
+        audioMainRef.current.currentTime = target - introOverlap;
+        setProgress(target);
+        if (isPlaying) {
+          audioMainRef.current.volume = 1; // remove fade if scrubbing
+          audioMainRef.current.play().catch(() => setIsPlaying(false));
+        }
       }
     }
   };
 
   const handleMainLoadedMetadata = () => {
     if (audioMainRef.current && !isNaN(audioMainRef.current.duration)) {
-      // Always keep main duration ready
-      if (phase === 'main') {
-        setDuration(audioMainRef.current.duration);
-      }
+      setMainDuration(audioMainRef.current.duration);
     }
   };
 
@@ -267,19 +319,18 @@ export default function PilulasPlayer() {
               </div>
               <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2 px-2 snap-x">
                 {livro.sumarioAudio.map((cap, i) => {
-                  const isActive = (progress / (duration || 1)) >= cap.percentage && 
-                                   (i === livro.sumarioAudio!.length - 1 || (progress / (duration || 1)) < livro.sumarioAudio![i + 1].percentage);
+                  const currentPercent = progress / (unifiedDuration || 1);
+                  const isActive = currentPercent >= cap.percentage && 
+                                   (i === livro.sumarioAudio!.length - 1 || currentPercent < livro.sumarioAudio![i + 1].percentage);
                   return (
                     <button
                       key={i}
                       onClick={() => {
-                         const el = activeRef.current;
-                         // Apenas navega se já estiver tocando o áudio principal
-                         if (phase === 'main' && el && duration > 0) {
-                            el.currentTime = cap.percentage * duration;
-                            el.play().catch(()=>setIsPlaying(false));
-                            setIsPlaying(true);
-                         }
+                         // As porcentagens do sumário são baseadas no áudio principal apenas (já que o backend as gerou assim).
+                         // Então transformamos a porcentagem de volta pro tempo do áudio principal e depois para o tempo unificado.
+                         const targetMainTime = cap.percentage * (mainDuration || 0);
+                         handleSeek(introOverlap + targetMainTime);
+                         if (!isPlaying) togglePlay();
                       }}
                       className={`shrink-0 snap-start px-4 py-2 rounded-xl text-sm font-medium transition-colors border ${
                         isActive && phase === 'main'
@@ -302,8 +353,8 @@ export default function PilulasPlayer() {
               src={INTRO_URL}
               onTimeUpdate={handleTimeUpdate}
               onLoadedMetadata={() => {
-                if (audioIntroRef.current && phase === 'intro') {
-                  setDuration(audioIntroRef.current.duration);
+                if (audioIntroRef.current) {
+                  setIntroDuration(audioIntroRef.current.duration);
                 }
               }}
               onEnded={handleIntroEnded}
@@ -362,32 +413,23 @@ export default function PilulasPlayer() {
               onClick={(e) => {
                 const rect = e.currentTarget.getBoundingClientRect();
                 const percent = (e.clientX - rect.left) / rect.width;
-                const el = activeRef.current;
-                if (el) {
-                  el.currentTime = percent * duration;
-                  setProgress(el.currentTime);
-                }
+                handleSeek(percent * unifiedDuration);
               }}
             >
               <div
                 className="absolute top-0 left-0 h-full bg-primary transition-all duration-75 ease-linear group-hover:bg-primary/90"
-                style={{ width: `${(progress / (duration || 1)) * 100}%` }}
+                style={{ width: `${(progress / (unifiedDuration || 1)) * 100}%` }}
               />
             </div>
             <span className="text-[11px] font-medium text-white/50 w-10">
-              {formatTime(duration)}
+              {formatTime(unifiedDuration)}
             </span>
           </div>
 
           {/* Controls */}
           <div className="flex items-center justify-center gap-8">
             <button
-              onClick={() => {
-                const el = activeRef.current;
-                if (el) {
-                  el.currentTime = Math.max(0, el.currentTime - 15);
-                }
-              }}
+              onClick={() => handleSeek(progress - 15)}
               className="w-12 h-12 rounded-full flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-colors"
             >
               <span className="text-sm font-bold">-15s</span>
@@ -406,12 +448,7 @@ export default function PilulasPlayer() {
             </button>
 
             <button
-              onClick={() => {
-                const el = activeRef.current;
-                if (el) {
-                  el.currentTime = Math.min(duration, el.currentTime + 15);
-                }
-              }}
+              onClick={() => handleSeek(progress + 15)}
               className="w-12 h-12 rounded-full flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-colors"
             >
               <span className="text-sm font-bold">+15s</span>
