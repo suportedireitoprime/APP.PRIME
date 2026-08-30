@@ -44,7 +44,7 @@ export async function copiar(texto: string, mensagem = 'Copiado'): Promise<boole
     }
 
     // 3. Fallback para navigator.clipboard (async)
-    if (navigator.clipboard?.writeText) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
       try {
         await navigator.clipboard.writeText(texto);
         if (mensagem) toast.success(mensagem);
@@ -55,8 +55,14 @@ export async function copiar(texto: string, mensagem = 'Copiado'): Promise<boole
     }
   }
 
-  toast.error('Não foi possível copiar (bloqueado pelo navegador)');
-  return false;
+  // 4. Último recurso absoluto (Iframe Sandboxed / Sem permissão)
+  try {
+    window.prompt('Seu navegador bloqueou a cópia automática. Copie o texto abaixo (Ctrl+C / Cmd+C):', texto);
+    return true; // O usuário copiou manualmente
+  } catch {
+    toast.error('Não foi possível copiar (bloqueado pelo navegador)');
+    return false;
+  }
 }
 
 /** Copia sem mostrar toast de sucesso (para quem já mostra o próprio feedback). */
