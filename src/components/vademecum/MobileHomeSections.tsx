@@ -426,14 +426,8 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
                 {RADAR_CATS.map((c) => {
                   const Icon = c.icon;
                   return (
-                    <motion.button
+                    <button
                       key={c.id}
-                      variants={{
-                        hidden: { opacity: 0, x: -10 },
-                        show: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
-                      }}
-                      whileHover={{ scale: 1.01 }}
-                      whileTap={{ scale: 0.98 }}
                       onClick={() => handle(c.id)}
                       data-track="home_radar_cat_click"
                       className="w-full flex items-center gap-3 px-4 py-5 min-h-[76px] rounded-2xl bg-card border border-border/60 shadow-sm transition focus-visible:outline-none"
@@ -442,7 +436,6 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
                         className="w-8 h-8 shrink-0"
                         style={{
                           color: c.color,
-                          filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))',
                         }}
                         strokeWidth={1.15}
                       />
@@ -455,7 +448,7 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
                         </p>
                       </div>
                       <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
-                    </motion.button>
+                    </button>
                   );
                 })}
               </motion.div>
@@ -688,11 +681,8 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
                     return (
                       <div className="space-y-2">
                         {filtered.map((estado, i) => (
-                          <motion.button
+                          <button
                             key={estado.uf}
-                            initial={{ opacity: 0, y: 12 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: Math.min(i * 0.02, 0.2), duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}
                             onClick={() => {
                               setCategoryOpen(null);
                               navigate(`/legislacao-estadual/${estado.uf.toLowerCase()}`);
@@ -724,7 +714,7 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
                               </p>
                             </div>
                             <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
-                          </motion.button>
+                          </button>
                         ))}
                         {filtered.length === 0 && (
                           <div className="py-8 text-center font-body text-sm text-muted-foreground">
@@ -739,11 +729,8 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
                   {filteredCategoryItems.map((lei, i) => {
                     const LawIcon = LEI_ICON_MAP[lei.id] || CategorySheetIcon;
                     return (
-                    <motion.button
+                    <button
                       key={lei.id}
-                      initial={{ opacity: 0, y: 12 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: Math.min(i * 0.025, 0.25), duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}
                       onClick={() => {
                         setCategoryOpen(null);
                         navigate(leiPath(lei));
@@ -755,7 +742,6 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
                           className="w-8 h-8 relative"
                           style={{
                             color: lei.iconColor || categoryOpen.color,
-                            filter: 'saturate(1.5) brightness(1.2) drop-shadow(0 2px 8px rgba(0,0,0,0.5))',
                           }}
                           strokeWidth={1.3}
                         />
@@ -771,7 +757,7 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
                         </p>
                       </div>
                       <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
-                    </motion.button>
+                    </button>
                   );})}
                   {filteredCategoryItems.length === 0 && (
                     <div className="py-8 text-center font-body text-sm text-muted-foreground">
