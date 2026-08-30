@@ -8,8 +8,8 @@ import { MarkdownTextPrimitive as MarkdownText } from "@assistant-ui/react-markd
 import "@assistant-ui/react-ui/styles/index.css";
 
 export default function AssistenteOverlayV2({ open, onClose }: { open: boolean; onClose: () => void }) {
-  if (!open) return null;
   const runtime = useAssistenteRuntime();
+  if (!open) return null;
 
   return (
     <motion.div

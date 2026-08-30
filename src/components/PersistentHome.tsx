@@ -38,7 +38,6 @@ const PersistentHome = () => {
   const isPublic =
     publicPaths.has(location.pathname) ||
     location.pathname.startsWith("/desktop-link/");
-  if (isPublic) return null;
 
   const [onboardingChecked, setOnboardingChecked] = useState(() => {
     if (!user) return false;
@@ -58,6 +57,8 @@ const PersistentHome = () => {
     window.addEventListener('onboarding_checked', handleCheck);
     return () => window.removeEventListener('onboarding_checked', handleCheck);
   }, [user]);
+
+  if (isPublic) return null;
 
   if (!onboardingChecked) return null;
 
