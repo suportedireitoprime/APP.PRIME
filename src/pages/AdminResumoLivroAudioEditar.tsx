@@ -2,7 +2,6 @@ import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { Button } from '@/components/ui/button';
-import { compressAudioToMp3 } from '@/utils/audioCompressor';
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Loader2, Headphones, Search, UploadCloud, CheckCircle2, AlertCircle, Bot, List } from 'lucide-react';
@@ -24,9 +23,6 @@ export default function AdminResumoLivroAudioEditar() {
   const [generatingChaptersId, setGeneratingChaptersId] = useState<number | string | null>(null);
   const [transcribingId, setTranscribingId] = useState<number | string | null>(null);
   const [selectedBook, setSelectedBook] = useState<LivroComColecao | null>(null);
-  const [compressingId, setCompressingId] = useState<string | number | null>(null);
-  const [compressionProgress, setCompressionProgress] = useState<number>(0);
-  const [compressionSize, setCompressionSize] = useState<string>('');
 
   useEffect(() => {
     carregarTudo();
@@ -87,34 +83,17 @@ export default function AdminResumoLivroAudioEditar() {
     }
 
     setUploadingId(item.livro.id);
-    let toastId = toast.loading('Iniciando processamento do áudio...');
+    const toastId = toast.loading(`Enviando áudio para ${item.livro.titulo}...`);
 
     try {
-      // 1. Comprime o arquivo localmente
-      toast.loading(`Comprimindo áudio (isso pode levar alguns minutos)... 0%`, { id: toastId });
-      setCompressingId(item.livro.id);
-      setCompressionProgress(0);
-      setCompressionSize('');
-
-      const introUrl = "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/audios/intros/secret-agent-groove.mp3";
-      const compressedFile = await compressAudioToMp3(file, introUrl, (progress, sizeLog) => {
-        setCompressionProgress(progress);
-        if (sizeLog) setCompressionSize(sizeLog);
-        
-        toast.loading(`Comprimindo áudio... ${Math.round(progress)}% ${sizeLog ? `(${sizeLog})` : ''}`, { id: toastId });
-      });
-
-      setCompressingId(null);
-      toast.loading(`Fazendo upload do áudio comprimido...`, { id: toastId });
-
-      // 2. Upload to Supabase Storage
-      const fileExt = 'mp3';
+      // 1. Upload to Supabase Storage
+      const fileExt = file.name.split('.').pop();
       const fileName = `${item.colecao.table}-${item.livro.id}-${Date.now()}.${fileExt}`;
       const filePath = `resumos-livros/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('audios') // Usando um bucket público existente
-        .upload(filePath, compressedFile, { upsert: true, contentType: compressedFile.type });
+        .upload(filePath, file, { upsert: true, contentType: file.type });
 
       if (uploadError) throw uploadError;
 
@@ -143,11 +122,11 @@ export default function AdminResumoLivroAudioEditar() {
         setSelectedBook(novos.find((l) => l.livro.id === item.livro.id) || null);
       }
       toast.success('Áudio atualizado com sucesso!', { id: toastId });
-    } catch (error: any) {
-      console.error('Erro no upload de áudio:', error);
-      toast.error(`Erro: ${error?.message || error || 'ao processar/enviar áudio'}`, { id: toastId, duration: 10000 });
+    } catch (err: any) {
+      console.error(err);
+      toast.error('Erro ao enviar áudio.', { id: toastId });
+    } finally {
       setUploadingId(null);
-      setCompressingId(null);
     }
   }
 
@@ -439,11 +418,10 @@ NÃO retorne blocos de código (como \`\`\`json), apenas o texto JSON puro para 
               <div className="pt-4 space-y-3">
                 <div className="relative">
                   <input
-                    id={`audio-upload-resumo-${selectedBook.livro.id}`}
                     type="file"
                     accept="audio/*"
-                    className="hidden"
-                    disabled={uploadingId === selectedBook.livro.id || compressingId === selectedBook.livro.id}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed z-10"
+                    disabled={uploadingId === selectedBook.livro.id}
                     onChange={(e) => {
                       if (e.target.files && e.target.files[0]) {
                         handleUploadAudio(selectedBook, e.target.files[0]);
@@ -454,25 +432,14 @@ NÃO retorne blocos de código (como \`\`\`json), apenas o texto JSON puro para 
                   <Button
                     size="lg"
                     className="w-full text-base h-14 rounded-xl"
-                    onClick={() => {
-                      const input = document.getElementById(`audio-upload-resumo-${selectedBook.livro.id}`);
-                      if (input) input.click();
-                    }}
-                    disabled={uploadingId === selectedBook.livro.id || compressingId === selectedBook.livro.id}
+                    disabled={uploadingId === selectedBook.livro.id}
                   >
-                    {compressingId === selectedBook.livro.id ? (
-                      `Comprimindo... ${Math.round(compressionProgress)}% ${compressionSize ? `(${compressionSize})` : ''}`
-                    ) : uploadingId === selectedBook.livro.id ? (
-                      <>
-                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                        Enviando...
-                      </>
+                    {uploadingId === selectedBook.livro.id ? (
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                     ) : (
-                      <>
-                        <UploadCloud className="w-5 h-5 mr-2" />
-                        {selectedBook.livro.audioResumoUrl ? 'Substituir Áudio Atual' : 'Selecionar e Enviar Áudio'}
-                      </>
+                      <UploadCloud className="w-5 h-5 mr-2" />
                     )}
+                    {selectedBook.livro.audioResumoUrl ? 'Substituir Áudio Atual' : 'Selecionar e Enviar Áudio'}
                   </Button>
                 </div>
                 <p className="text-center text-xs text-muted-foreground">
