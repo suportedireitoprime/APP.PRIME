@@ -161,4 +161,15 @@ export const DEFAULT_FEATURE_LIMITS: FeatureLimitConfig[] = [
     enabled: true,
     sort_order: 66,
   },
+  {
+    feature_key: 'pilulas',
+    label: 'Pílulas de Áudio',
+    description: 'Pílula de áudio que o usuário free pode ouvir',
+    category: 'estudo',
+    limit_value: 1,
+    period: 'lifetime',
+    scope_key: 'livro',
+    enabled: true,
+    sort_order: 38,
+  },
 ];

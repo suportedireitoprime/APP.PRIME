@@ -28,7 +28,7 @@ export type PremiumFeatureKey =
   | 'radar' | 'blog' | 'biblioteca' | 'aprender' | 'horus'
   | 'audioaula' | 'resumo' | 'resumo_download' | 'lei_seca'
   | 'questao_funcoes' | 'videoaula_funcoes'
-  | 'chat_juridico' | 'chat_web' | 'chat_anexo' | 'default';
+  | 'chat_juridico' | 'chat_web' | 'chat_anexo' | 'pilulas' | 'default';
 
 /** `pitch` = argumento de persuasão específico da área; `horusQuote` = fala do mascote Horus. */
 type FeatureInfo = {
@@ -209,11 +209,18 @@ const FEATURES: Record<PremiumFeatureKey, FeatureInfo> = {
     icon: Sparkles,
   },
   chat_anexo: {
-    title: 'Enviar Áudio, PDF e Fotos',
-    description: 'Analise documentos e áudios no Chat Jurídico.',
-    pitch: 'Suba o processo, o contrato ou a foto do edital e receba a análise pronta.',
-    horusQuote: 'Envie PDFs, petições e áudios para que eu analise tudo detalhadamente para você!',
+    title: 'Análise de Documentos com IA',
+    description: 'Envie PDFs ou imagens e deixe a IA extrair dados, responder dúvidas e analisar o documento inteiro para você.',
+    pitch: 'Leia autos processuais inteiros em segundos. A IA encontra jurisprudências e fundamentos com base no seu documento.',
+    horusQuote: 'Precisa analisar uma petição gigante ou documento longo? Me envie e eu destrincho os pontos mais importantes no Prime!',
     icon: FileText,
+  },
+  pilulas: {
+    title: 'Pílulas de Áudio Ilimitadas',
+    description: 'Acesse o acervo completo de Pílulas de Áudio dos maiores clássicos jurídicos.',
+    pitch: 'Aprenda a essência dos livros e oab em poucos minutos. Uma pílula por dia, onde você estiver.',
+    horusQuote: 'Gostou dessa pílula? Assine o Prime para destravar o acervo completo de áudios sem limites!',
+    icon: Headphones,
   },
   audioaula: {
     title: 'Audioaulas sem Limite',

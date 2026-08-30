@@ -132,9 +132,9 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
       onClose();
       
       const isIos = Capacitor.getPlatform() === 'ios';
-      const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=br.com.app.gpu2675756.gpu0e7509bfb7bde52aef412888bb17a456';
+      const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=br.com.app.gpu2675756.gpu0e7509bfb7bde52aef412888bb17a4';
+      const PLAY_MARKET_URL = 'market://details?id=br.com.app.gpu2675756.gpu0e7509bfb7bde52aef412888bb17a4';
       const APP_STORE_REVIEW_URL = 'https://apps.apple.com/us/app/direito-estudos-jur%C3%ADdicos/id6450845861?action=write-review';
-      const PLAY_MARKET_URL = 'market://details?id=br.com.app.gpu2675756.gpu0e7509bfb7bde52aef412888bb17a456';
 
       if (Capacitor.isNativePlatform()) {
         const primary = isIos ? APP_STORE_REVIEW_URL : PLAY_MARKET_URL;

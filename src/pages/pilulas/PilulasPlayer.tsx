@@ -7,6 +7,7 @@ import { COLECOES, type LivroNormalizado, normalizeLivro } from '@/lib/bibliotec
 import { useResumoLivroPlayer } from '@/contexts/ResumoLivroPlayerContext';
 import { clearMediaSession } from '@/lib/mediaSession';
 import { toast } from 'sonner';
+import { useGatedFeature } from '@/hooks/useGatedFeature';
 
 const INTRO_URL = 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/audios/audio-intro-2.mp3';
 
@@ -34,6 +35,8 @@ export default function PilulasPlayer() {
 
   // Parar o player global se ele estiver tocando pílulas para não conflitar
   const { fechar: fecharPlayerGlobal } = useResumoLivroPlayer();
+
+  const featurePilulas = useGatedFeature('pilulas', 'pilulas', { scope: id, refKey: id });
 
   useEffect(() => {
     // Ao abrir esta tela dedicada, paramos o mini player global de pílulas se estiver aberto
@@ -123,35 +126,33 @@ export default function PilulasPlayer() {
   };
 
   const togglePlay = () => {
-    if (isPlaying) {
-      // Pause whatever is active
-      activeRef.current?.pause();
-      setIsPlaying(false);
-    } else {
-      // First play ever? Try intro first
-      if (phase === 'intro' && !hasPlayedIntro) {
-        const introEl = audioIntroRef.current;
-        if (introEl) {
-          introEl.play().then(() => {
-             setIsPlaying(true);
-          }).catch((err) => {
-            console.warn('Intro falhou, pulando para main:', err);
-            skipToMain();
-          });
-          // Optimistically set playing state to make UI responsive
-          setIsPlaying(true);
-        } else {
-          skipToMain();
-        }
+    featurePilulas.run(() => {
+      if (isPlaying) {
+        // Pause whatever is active
+        activeRef.current?.pause();
+        setIsPlaying(false);
       } else {
-        // Main phase: play main audio
-        const mainEl = audioMainRef.current;
-        if (mainEl) {
-          mainEl.play().catch(() => setIsPlaying(false));
-          setIsPlaying(true);
+        // First play ever? Try intro first
+        if (phase === 'intro' && !hasPlayedIntro) {
+          const introEl = audioIntroRef.current;
+          if (introEl) {
+            introEl.play().then(() => {
+               setIsPlaying(true);
+            }).catch((err) => {
+              console.warn('Intro falhou, pulando para main:', err);
+              skipToMain();
+            });
+          }
+        } else {
+          // Main phase: play main audio
+          const mainEl = audioMainRef.current;
+          if (mainEl) {
+            mainEl.play().catch(() => setIsPlaying(false));
+            setIsPlaying(true);
+          }
         }
       }
-    }
+    });
   };
 
   const handleTimeUpdate = () => {
@@ -291,7 +292,7 @@ export default function PilulasPlayer() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="flex flex-col items-center w-full max-w-md my-auto"
+          className="flex flex-col items-center w-full max-w-md mt-4 sm:mt-12 mb-8"
         >
           {/* Capa */}
           <div className="w-56 sm:w-72 rounded-2xl overflow-hidden shadow-2xl mb-8 border border-white/10 shrink-0 bg-black/40">
@@ -456,6 +457,7 @@ export default function PilulasPlayer() {
           </div>
         </motion.div>
       </div>
+      {featurePilulas.gateNode}
     </div>
   );
 }
