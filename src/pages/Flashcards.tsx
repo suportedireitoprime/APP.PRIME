@@ -10,14 +10,12 @@ import { haptic } from '@/lib/nativeHaptics';
 import FlashcardsCargoHero from '@/components/flashcards/FlashcardsCargoHero';
 import { useFlashcardsDashboard, useFlashcardsResumoAreas, FlashcardsAreaRow, FlashcardsDash } from '@/lib/flashcardsQueries';
 import FlashcardsFiltroSheet, { FlashcardsFiltro } from '@/components/flashcards/FlashcardsFiltroSheet';
-import { useFlashcardsMix } from '@/hooks/useFlashcardsMix';
 
 
 const Flashcards = () => {
   const navigate = useNavigate();
   const { data: dash, isLoading: loadingDash } = useFlashcardsDashboard();
   const { data: areasRaw } = useFlashcardsResumoAreas();
-  const { handleMixRapido, loadingMix } = useFlashcardsMix(areasRaw);
 
   const [filtroAberto, setFiltroAberto] = useState(false);
   const [diasFrequencia, setDiasFrequencia] = useState<7 | 15 | 30>(30);
@@ -247,92 +245,7 @@ const Flashcards = () => {
             </section>
           )}
 
-          {/* ── Subcategorias ───────────────────── */}
-          <section className="space-y-3 pt-4">
-            <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] flex items-center justify-between">
-              Subcategorias Especiais
-              <button 
-                onClick={handleMixRapido}
-                disabled={loadingMix}
-                className="text-[#36AF85] hover:text-[#36AF85]/80 active:scale-95 transition-all text-[11px] font-black flex items-center gap-1.5 bg-[#36AF85]/10 px-2.5 py-1 rounded-full"
-              >
-                {loadingMix ? (
-                  <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}>
-                    <Dices className="w-4 h-4" />
-                  </motion.div>
-                ) : (
-                  <Dices className="w-4 h-4" />
-                )}
-                {loadingMix ? 'GERANDO...' : 'MIX RÁPIDO'}
-              </button>
-            </p>
-            <div className="flex flex-col gap-2">
-              <button
-                onClick={() => { haptic.selection(); navigate('/flashcards/filosofos'); }}
-                className="group flex items-center justify-between py-5 px-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-success/50 transition-colors active:scale-95"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center text-muted-foreground group-hover:scale-110 transition-transform">
-                    <Lightbulb className="h-5 w-5" strokeWidth={2} />
-                  </div>
-                  <span className="text-sm font-bold text-foreground">Filósofos</span>
-                </div>
-                <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
-              </button>
-              
-              <button
-                onClick={() => { haptic.selection(); navigate('/flashcards/juristas'); }}
-                className="group flex items-center justify-between py-5 px-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-success/50 transition-colors active:scale-95"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center text-muted-foreground group-hover:scale-110 transition-transform">
-                    <Users className="h-5 w-5" strokeWidth={2} />
-                  </div>
-                  <span className="text-sm font-bold text-foreground">Juristas</span>
-                </div>
-                <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
-              </button>
 
-              <button
-                onClick={() => { haptic.selection(); navigate('/flashcards/prazos'); }}
-                className="group flex items-center justify-between py-5 px-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-success/50 transition-colors active:scale-95"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center text-muted-foreground group-hover:scale-110 transition-transform">
-                    <Clock className="h-5 w-5" strokeWidth={2} />
-                  </div>
-                  <span className="text-sm font-bold text-foreground">Prazos</span>
-                </div>
-                <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
-              </button>
-
-              <button
-                onClick={() => { haptic.selection(); navigate('/flashcards/excecoes'); }}
-                className="group flex items-center justify-between py-5 px-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-success/50 transition-colors active:scale-95"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center text-muted-foreground group-hover:scale-110 transition-transform">
-                    <Flame className="h-5 w-5" strokeWidth={2} />
-                  </div>
-                  <span className="text-sm font-bold text-foreground">Exceções & Regras</span>
-                </div>
-                <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
-              </button>
-
-              <button
-                onClick={() => { haptic.selection(); navigate('/flashcards/classificacoes'); }}
-                className="group flex items-center justify-between py-5 px-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-success/50 transition-colors active:scale-95"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center text-muted-foreground group-hover:scale-110 transition-transform">
-                    <Layers className="h-5 w-5" strokeWidth={2} />
-                  </div>
-                  <span className="text-sm font-bold text-foreground">Classificações</span>
-                </div>
-                <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
-              </button>
-            </div>
-          </section>
         </div>
       </div>
 
