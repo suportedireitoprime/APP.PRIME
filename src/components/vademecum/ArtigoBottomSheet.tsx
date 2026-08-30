@@ -3361,8 +3361,8 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         {(activeTab ?? 'artigo') === 'artigo' && createPortal(
           <AnimatePresence>
             {activeActionMenu && (() => {
-              const funcoesItems = [
-                { icon: Scale, label: 'Jurisprudência', desc: 'Súmulas, temas e acórdãos do STF/STJ', color: '#D4AF37', onClick: () => {
+              let funcoesItems = [
+                { id: 'juris', icon: Scale, label: 'Jurisprudência', desc: 'Súmulas, temas e acórdãos do STF/STJ', color: '#D4AF37', onClick: () => {
                   setActiveActionMenu(null);
                   if (!requireOnline('Jurisprudência')) return;
                   if (!tabelaNome || !artigo?.numero) { toast.error('Artigo não identificado'); return; }
@@ -3384,6 +3384,10 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 { icon: Download, label: 'Baixar artigo', desc: 'PDF ou imagem, lei seca ou comentado', color: '#0EA5E9', onClick: () => { setActiveActionMenu(null); gateFeature('baixar', 'baixar', 'Baixar artigo', () => setShowBaixarSheet(true)); } },
                 { icon: Share2, label: 'Compartilhar', desc: 'Enviar para outro app', color: '#06B6D4', onClick: () => { setActiveActionMenu(null); gateFeature('default', 'default', 'Compartilhar', () => setShowSharePanel(p => !p)); } },
               ];
+
+              if (tabelaNome === 'LEIS_CF') {
+                funcoesItems = funcoesItems.filter(item => item.id !== 'juris');
+              }
 
               const gateGrifo = (label: string, action: () => void) =>
                 gateFeature('grifo', 'grifo', label, action);
@@ -4023,6 +4027,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
             tabelaNome={tabelaNome}
             leiNome={tabelaNome}
             artigoNumero={artigo.numero}
+            artigoTexto={[artigo.caput, ...(artigo.incisos?.map((x: any) => typeof x === 'string' ? x : x?.texto) || []), ...(artigo.paragrafos?.map((x: any) => typeof x === 'string' ? x : x?.texto) || [])].filter(Boolean).join('\n\n')}
           />
         )}
         <PremiumGate open={showPremiumGate} onClose={() => setShowPremiumGate(false)} feature={premiumGateFeature} description={premiumGateDesc} />
@@ -4082,7 +4087,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
       {/* Desktop: barras laterais com as funções (principais à esquerda) */}
       {isDesktop && artigo && (activeTab ?? 'artigo') === 'artigo' && createPortal(
         (() => {
-          type RailItem = { icon: any; label: string; color?: string; active?: boolean; onClick: (e: any) => void };
+          type RailItem = { id?: string; icon: any; label: string; color?: string; active?: boolean; onClick: (e: any) => void };
           const principais: RailItem[] = [
             { icon: Volume2, label: 'Narração', color: '#22C55E', onClick: (e) => handleNarrarButtonPress(e) },
             { icon: Feather, label: 'Grifar', color: '#DC2626', active: activeActionMenu === 'grifar', onClick: () => {
@@ -4095,9 +4100,9 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
             { icon: StickyNote, label: 'Anotações', color: '#38BDF8', onClick: () => gateFeature('anotacoes', 'anotacoes', 'Anotações', () => setShowAnotacoesSheet(true)) },
             { icon: Target, label: 'Praticar', color: '#A855F7', onClick: () => gateFeature('praticar', 'praticar', 'Praticar', () => setShowPraticarSheet(true)) },
           ];
-          const secundarias: RailItem[] = [
+          let secundarias: RailItem[] = [
             { icon: LayoutGrid, label: 'Funções', active: activeActionMenu === 'funcoes', onClick: () => setActiveActionMenu(activeActionMenu === 'funcoes' ? null : 'funcoes') },
-            { icon: Scale, label: 'Jurisprudência', color: '#D4AF37', onClick: () => {
+            { id: 'juris', icon: Scale, label: 'Jurisprudência', color: '#D4AF37', onClick: () => {
               if (!requireOnline('Jurisprudência')) return;
               if (!tabelaNome || !artigo?.numero) { toast.error('Artigo não identificado'); return; }
               gateFeature('jurisprudencia', 'jurisprudencia', 'Jurisprudência', () => {
@@ -4115,6 +4120,11 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
             { icon: Share2, label: 'Compartilhar', color: '#06B6D4', onClick: () => gateFeature('default', 'default', 'Compartilhar', () => setShowSharePanel(p => !p)) },
             { icon: Type, label: 'Fonte', onClick: () => { setShowFontControls(v => !v); setShowCommentPanel(false); } },
           ];
+
+          if (tabelaNome === 'LEIS_CF') {
+            secundarias = secundarias.filter(item => item.id !== 'juris');
+          }
+
           const anyPanelOpen = showAnotacoesSheet || showPerguntarSheet || showPraticarSheet || showQuestoesPanel
             || showJurisPanel || showVideoaulasListSheet || showVideoaulaSheet || showBaixarSheet
             || showLembretesLocal || showTermosSheet || showGrafo || showGrifoFoto;

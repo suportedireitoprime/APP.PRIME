@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Loader2, X, ArrowRight, Link2, Info, ArrowLeft } from 'lucide-react';
+import { Loader2, X, ArrowRight, ArrowLeft } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -10,75 +10,127 @@ import {
   type Node,
   type Edge,
   MarkerType,
-  type NodeMouseHandler,
+  useNodesState,
+  useEdgesState,
+  Handle,
+  Position
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { supabase } from '@/integrations/supabase/client';
 import { useGoBack } from '@/hooks/useGoBack';
+import dagre from 'dagre';
+import { toast } from 'sonner';
+import { ShieldAlert, BookOpen, Key, Zap, ListChecks, CheckCircle2, AlertTriangle, Layers } from 'lucide-react';
 
-const ART_REF_REGEX = /art(?:igo)?\.?\s*(\d+[\.\d]*(?:-[A-Z])?(?:º|°)?)/gi;
+const iconMap: Record<string, any> = {
+  central: BookOpen,
+  excecao: AlertTriangle,
+  consequencia: Zap,
+  requisito: ListChecks,
+  conceito: Key,
+  procedimento: Layers,
+  default: CheckCircle2
+};
 
-function normalizeNumero(num: string): string {
-  return num.replace(/^art\.?\s*/i, '').replace(/[º°]/g, '').trim();
-}
-
-function extractArticleRefs(text: string): string[] {
-  const refs: string[] = [];
-  let m: RegExpExecArray | null;
-  ART_REF_REGEX.lastIndex = 0;
-  while ((m = ART_REF_REGEX.exec(text)) !== null) {
-    const clean = m[1].replace(/[º°]/g, '');
-    if (!refs.includes(clean)) refs.push(clean);
-  }
-  return refs;
-}
-
-function extractSnippet(text: string, refNum: string): string {
-  const regex = new RegExp(`art(?:igo)?\\.?\\s*${refNum.replace('.', '\\.')}[º°]?`, 'i');
-  const match = regex.exec(text);
-  if (!match) return '';
-  const start = Math.max(0, match.index - 60);
-  const end = Math.min(text.length, match.index + match[0].length + 60);
-  const snippet = text.substring(start, end);
-  return (start > 0 ? '…' : '') + snippet + (end < text.length ? '…' : '');
-}
-
-function highlightRef(snippet: string, refNum: string): React.ReactNode {
-  if (!snippet) return null;
-  const regex = new RegExp(`(art(?:igo)?\\.?\\s*${refNum.replace('.', '\\.')}[º°]?)`, 'i');
-  const parts = snippet.split(regex);
-  if (parts.length === 1) return <span className="text-xs text-foreground/60 italic">{snippet}</span>;
+function CustomNode({ data }: any) {
+  const Icon = iconMap[data.type] || iconMap.default;
+  
   return (
-    <span className="text-xs text-foreground/60 italic">
-      {parts.map((p, i) =>
-        regex.test(p) ? <mark key={i} className="bg-yellow-300/60 dark:bg-yellow-500/30 text-foreground rounded px-0.5">{p}</mark> : p
-      )}
-    </span>
+    <motion.div
+      initial={{ scale: 0.8, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+      className="relative px-4 py-3 rounded-2xl border-2 flex items-center gap-3 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.12)]"
+      style={{
+        backgroundColor: data.bgColor,
+        borderColor: data.borderColor,
+        color: data.textColor,
+      }}
+    >
+      <Handle type="target" position={Position.Top} className="!w-2 !h-2 border-none opacity-0" />
+      <div className="p-1.5 rounded-full shrink-0" style={{ backgroundColor: `${data.textColor}15` }}>
+        <Icon className="w-5 h-5" />
+      </div>
+      <div className="font-bold text-sm leading-tight tracking-tight max-w-[140px] text-center">
+        {data.label}
+      </div>
+      <Handle type="source" position={Position.Bottom} className="!w-2 !h-2 border-none opacity-0" />
+    </motion.div>
   );
 }
 
-interface ConnectionInfo {
-  nodeId: string;
+const nodeTypes = { custom: CustomNode };
+
+interface AIConnectionInfo {
+  source: string;
+  target: string;
   label: string;
-  caput: string;
-  fullText: string;
-  paragrafos: string[];
-  incisos: string[];
-  outgoing: { target: string; targetLabel: string; targetCaput: string; snippet: string }[];
-  incoming: { source: string; sourceLabel: string; sourceCaput: string; snippet: string }[];
+  description: string;
 }
 
-type DetailTab = 'citado-por' | 'cita';
-
-const BANNER_KEY = 'grafo-banner-dismissed';
+function formatLeiNome(name?: string): string {
+  if (!name) return '';
+  const n = name.toUpperCase();
+  if (n.includes('CC_CODIGO_CIVIL') || n === 'LEIS_CC') return 'Código Civil';
+  if (n.includes('CF_CONSTITUICAO') || n === 'LEIS_CF') return 'Constituição Federal';
+  if (n.includes('CP_CODIGO_PENAL') || n === 'LEIS_CP') return 'Código Penal';
+  if (n.includes('CPP_CODIGO_PROCESSO_PENAL') || n === 'LEIS_CPP') return 'Código de Processo Penal';
+  if (n.includes('CLT') || n === 'LEIS_CLT') return 'CLT';
+  if (n.includes('CDC') || n === 'LEIS_CDC') return 'Código de Defesa do Consumidor';
+  if (n.includes('CPC') || n === 'LEIS_CPC') return 'Código de Processo Civil';
+  if (n.includes('CTN') || n === 'LEIS_CTN') return 'Código Tributário Nacional';
+  
+  return name
+    .replace(/^leis_/i, '')
+    .replace(/_/g, ' ')
+    .toLowerCase()
+    .replace(/\b\w/g, l => l.toUpperCase());
+}
 
 export interface GrafoArtigosProps {
   tabelaNome?: string;
   leiNome?: string;
   artigoNumero?: string;
+  artigoTexto?: string;
   onClose?: () => void;
   embedded?: boolean;
 }
+
+const dagreGraph = new dagre.graphlib.Graph();
+dagreGraph.setDefaultEdgeLabel(() => ({}));
+
+const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => {
+  const isHorizontal = direction === 'LR';
+  dagreGraph.setGraph({ 
+    rankdir: direction,
+    ranksep: 100, // Space between layers
+    nodesep: 40   // Space between nodes on the same layer
+  });
+
+  nodes.forEach((node) => {
+    dagreGraph.setNode(node.id, { width: 180, height: 60 });
+  });
+
+  edges.forEach((edge) => {
+    dagreGraph.setEdge(edge.source, edge.target);
+  });
+
+  dagre.layout(dagreGraph);
+
+  nodes.forEach((node) => {
+    const nodeWithPosition = dagreGraph.node(node.id);
+    node.targetPosition = isHorizontal ? 'left' as any : 'top' as any;
+    node.sourcePosition = isHorizontal ? 'right' as any : 'bottom' as any;
+    // We are shifting the dagre node position (anchor=center center) to the top left
+    // so it matches the React Flow node anchor point (top left).
+    node.position = {
+      x: nodeWithPosition.x - 180 / 2,
+      y: nodeWithPosition.y - 60 / 2,
+    };
+  });
+
+  return { nodes, edges };
+};
 
 const GrafoArtigos = (props: GrafoArtigosProps) => {
   const navigate = useNavigate();
@@ -87,358 +139,279 @@ const GrafoArtigos = (props: GrafoArtigosProps) => {
   const tabelaNome = props.tabelaNome ?? (location.state as any)?.tabelaNome;
   const leiNome = props.leiNome ?? (location.state as any)?.leiNome;
   const artigoNumero = props.artigoNumero ?? (location.state as any)?.artigoNumero;
+  const artigoTexto = props.artigoTexto;
   const onClose = props.onClose;
   const embedded = props.embedded ?? false;
+  
   const [loading, setLoading] = useState(true);
-  const [artigos, setArtigos] = useState<any[]>([]);
-  const [selectedConnection, setSelectedConnection] = useState<ConnectionInfo | null>(null);
-  const [detailTab, setDetailTab] = useState<DetailTab>('citado-por');
-  const [bannerDismissed, setBannerDismissed] = useState(() => localStorage.getItem(BANNER_KEY) === '1');
-
-  const dismissBanner = () => {
-    setBannerDismissed(true);
-    localStorage.setItem(BANNER_KEY, '1');
-  };
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [selectedEdgeInfo, setSelectedEdgeInfo] = useState<AIConnectionInfo | null>(null);
 
   useEffect(() => {
-    if (!tabelaNome) return;
-    (async () => {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from(tabelaNome as any)
-        .select('numero, rotulo, texto, ordem_numero')
-        .order('ordem_numero', { ascending: true });
-
-      if (error) {
-        console.error('Erro ao buscar artigos no Grafo:', error);
-      }
-
-      const parsedArtigos = (data || []).map((row: any) => ({
-        numero: row.rotulo || row.numero,
-        caput: row.texto || '',
-        texto: row.texto || '',
-        paragrafos: [],
-        incisos: []
-      }));
-      setArtigos(parsedArtigos);
+    if (!tabelaNome || !artigoNumero || !artigoTexto) {
       setLoading(false);
-    })();
-  }, [tabelaNome]);
-
-  const { nodes, edges, artMap, numToOriginal, edgeList } = useMemo(() => {
-    if (artigos.length === 0) return { nodes: [], edges: [], artMap: new Map(), numToOriginal: new Map(), edgeList: [] as { source: string; target: string }[] };
-
-    const artMap = new Map<string, any>();
-    const numToOriginal = new Map<string, string>();
-    for (const a of artigos) {
-      const norm = normalizeNumero(a.numero);
-      artMap.set(norm, a);
-      numToOriginal.set(norm, a.numero);
+      return;
     }
 
-    const focusedNorm = artigoNumero ? normalizeNumero(artigoNumero) : null;
-    const allEdges: Edge[] = [];
-    const edgeList: { source: string; target: string }[] = [];
-    const connectedNorms = new Set<string>();
+    const fetchGrafoIA = async () => {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase.functions.invoke('grafo-conexoes-gerar', {
+          body: {
+            item_key: `${tabelaNome}::${artigoNumero}`,
+            artigo_texto: artigoTexto,
+            titulo: `Art. ${artigoNumero}`,
+          },
+        });
 
-    for (const art of artigos) {
-      const srcNorm = normalizeNumero(art.numero);
-      const textoBase = [art.texto, art.caput].filter(Boolean).join('\n');
-      const refs = extractArticleRefs(textoBase);
-      for (const ref of refs) {
-        if (ref !== srcNorm && artMap.has(ref)) {
-          allEdges.push({
-            id: `${srcNorm}->${ref}`,
-            source: srcNorm,
-            target: ref,
-            markerEnd: { type: MarkerType.ArrowClosed, color: 'hsl(var(--primary))' },
-            style: { stroke: 'hsl(var(--primary))', strokeWidth: 2 },
-            animated: true,
-          });
-          edgeList.push({ source: srcNorm, target: ref });
-          connectedNorms.add(srcNorm);
-          connectedNorms.add(ref);
-        }
-      }
-    }
+        if (error) throw error;
+        if (!data || !data.grafo) throw new Error("IA não retornou um grafo válido.");
 
-    // When opened from a specific article, only show that article's direct connections
-    let relevantNorms: Set<string>;
-    if (focusedNorm) {
-      relevantNorms = new Set<string>([focusedNorm]);
-      for (const e of edgeList) {
-        if (e.source === focusedNorm) relevantNorms.add(e.target);
-        if (e.target === focusedNorm) relevantNorms.add(e.source);
-      }
-    } else {
-      relevantNorms = connectedNorms;
-    }
-    const filteredNorms = [...relevantNorms].filter(n => artMap.has(n));
-    const cols = Math.max(1, Math.min(3, Math.ceil(Math.sqrt(filteredNorms.length))));
-    const xGap = 160;
-    const yGap = 80;
+        const { nodes: aiNodes, edges: aiEdges } = data.grafo;
 
-    const allNodes: Node[] = filteredNorms.map((norm, i) => ({
-      id: norm,
-      position: { x: (i % cols) * xGap + 20, y: Math.floor(i / cols) * yGap + 20 },
-      data: { label: numToOriginal.get(norm) || `Art. ${norm}` },
-      style: {
-        background: norm === focusedNorm ? 'hsl(var(--primary))' : 'hsl(var(--card))',
-        color: norm === focusedNorm ? 'hsl(var(--primary-foreground))' : 'hsl(var(--foreground))',
-        border: norm === focusedNorm ? '2px solid hsl(var(--primary))' : '1px solid hsl(var(--border))',
-        borderRadius: '12px',
-        padding: '6px 14px',
-        fontSize: '11px',
-        fontWeight: 700,
-        cursor: 'pointer',
-      },
-    }));
+        const rfNodes: Node[] = (aiNodes || []).map((n: any) => {
+          let bgColor = 'hsl(var(--card))';
+          let textColor = 'hsl(var(--foreground))';
+          let borderColor = 'hsl(var(--border))';
 
-    const filteredEdges = focusedNorm
-      ? allEdges.filter(e => e.source === focusedNorm || e.target === focusedNorm)
-      : allEdges;
+          if (n.type === 'central') {
+            bgColor = 'hsl(var(--primary))';
+            textColor = 'hsl(var(--primary-foreground))';
+            borderColor = 'hsl(var(--primary))';
+          } else if (n.type === 'excecao') {
+            bgColor = '#FEE2E2'; // red-100
+            textColor = '#991B1B'; // red-800
+            borderColor = '#FCA5A5'; // red-300
+          } else if (n.type === 'consequencia') {
+            bgColor = '#E0E7FF'; // indigo-100
+            textColor = '#3730A3'; // indigo-800
+            borderColor = '#A5B4FC'; // indigo-300
+          } else if (n.type === 'requisito') {
+            bgColor = '#FEF3C7'; // amber-100
+            textColor = '#92400E'; // amber-800
+            borderColor = '#FCD34D'; // amber-300
+          } else if (n.type === 'procedimento') {
+            bgColor = '#F3E8FF'; // purple-100
+            textColor = '#6B21A8'; // purple-800
+            borderColor = '#D8B4FE'; // purple-300
+          } else {
+            bgColor = 'hsl(var(--secondary))';
+          }
 
-    return { nodes: allNodes, edges: filteredEdges, artMap, numToOriginal, edgeList };
-  }, [artigos, artigoNumero]);
+          return {
+            id: n.id,
+            type: 'custom',
+            data: { 
+              label: n.label,
+              type: n.type,
+              bgColor,
+              textColor,
+              borderColor
+            },
+            position: { x: 0, y: 0 }
+          };
+        });
 
-  const handleNodeClick: NodeMouseHandler = useCallback((_event, node) => {
-    const nodeId = String(node.id);
-    const art = artMap.get(nodeId);
-    if (!art) return;
-
-    const fullText = [art.caput, art.texto].filter(Boolean).join('\n');
-
-    const outgoing = edgeList
-      .filter(e => e.source === nodeId)
-      .map(e => {
-        const targetArt = artMap.get(e.target);
-        const srcText = [art.texto, art.caput].filter(Boolean).join('\n');
-        return {
-          target: e.target,
-          targetLabel: numToOriginal.get(e.target) || `Art. ${e.target}`,
-          targetCaput: targetArt?.caput || '',
-          snippet: extractSnippet(srcText, e.target),
-        };
-      });
-
-    const incoming = edgeList
-      .filter(e => e.target === nodeId)
-      .map(e => {
-        const srcArt = artMap.get(e.source);
-        const srcText = [srcArt?.texto, srcArt?.caput].filter(Boolean).join('\n');
-        return {
+        const rfEdges: Edge[] = (aiEdges || []).map((e: any, i: number) => ({
+          id: `e${i}-${e.source}-${e.target}`,
           source: e.source,
-          sourceLabel: numToOriginal.get(e.source) || `Art. ${e.source}`,
-          sourceCaput: srcArt?.caput || '',
-          snippet: extractSnippet(srcText, nodeId),
-        };
-      });
+          target: e.target,
+          label: e.label,
+          labelStyle: { fill: 'hsl(var(--foreground))', fontWeight: 600, fontSize: 10 },
+          labelBgStyle: { fill: 'hsl(var(--background))', fillOpacity: 0.8 },
+          markerEnd: { type: MarkerType.ArrowClosed, color: 'hsl(var(--primary))' },
+          style: { stroke: 'hsl(var(--primary))', strokeWidth: 2 },
+          animated: true,
+          data: { description: e.description }
+        }));
 
-    setSelectedConnection({
-      nodeId,
-      label: numToOriginal.get(nodeId) || `Art. ${nodeId}`,
-      caput: art.caput || '',
-      fullText,
-      paragrafos: art.paragrafos || [],
-      incisos: art.incisos || [],
-      outgoing,
-      incoming,
+        const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(rfNodes, rfEdges, 'TB');
+        
+        setNodes(layoutedNodes);
+        setEdges(layoutedEdges);
+      } catch (err: any) {
+        console.error("Erro ao gerar grafo IA:", err);
+        toast.error("Não foi possível gerar as conexões deste artigo com Inteligência Artificial.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGrafoIA();
+  }, [tabelaNome, artigoNumero, artigoTexto, setNodes, setEdges]);
+
+  const onEdgeClick = useCallback((event: React.MouseEvent, edge: Edge) => {
+    event.stopPropagation();
+    
+    // Find the human-readable labels from the nodes array
+    const sourceNode = nodes.find(n => n.id === edge.source);
+    const targetNode = nodes.find(n => n.id === edge.target);
+    
+    setSelectedEdgeInfo({
+      source: String(sourceNode?.data?.label || edge.source),
+      target: String(targetNode?.data?.label || edge.target),
+      label: edge.label as string,
+      description: edge.data?.description as string
     });
-    setDetailTab('citado-por');
-  }, [artMap, numToOriginal, edgeList]);
+  }, [nodes]);
+
+  const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
+    event.stopPropagation();
+    
+    // Find the incoming edge to this node (usually best for trees)
+    let edge = edges.find(e => e.target === node.id);
+    // If no incoming edge (e.g. root node), try finding an outgoing one
+    if (!edge) {
+      edge = edges.find(e => e.source === node.id);
+    }
+    
+    if (edge) {
+      const sourceNode = nodes.find(n => n.id === edge.source);
+      const targetNode = nodes.find(n => n.id === edge.target);
+      
+      setSelectedEdgeInfo({
+        source: String(sourceNode?.data?.label || edge.source),
+        target: String(targetNode?.data?.label || edge.target),
+        label: edge.label as string,
+        description: edge.data?.description as string
+      });
+    }
+  }, [edges, nodes]);
+
+  const onPaneClick = useCallback(() => {
+    setSelectedEdgeInfo(null);
+  }, []);
 
   return (
-    <div className="h-[100dvh] bg-background flex flex-col overflow-hidden">
-      {/* Header */}
-      <PageHeader
-        title="Grafo de Conexões"
-        subtitle={leiNome || 'Artigos conectados'}
-        onBack={() => (embedded && onClose ? onClose() : goBack())}
-        rightAction={nodes.length > 0 ? (
-          <span className="text-xs text-muted-foreground bg-secondary/60 px-2.5 py-1 rounded-full shrink-0">
-            {nodes.length} arts · {edges.length} conexões
-          </span>
-        ) : undefined}
-      />
-
-
-      {/* Explanatory Banner */}
-      {!bannerDismissed && !loading && nodes.length > 0 && (
-        <div className="mx-4 mt-3 p-3 rounded-xl bg-primary/10 border border-primary/20 flex gap-3 items-start shrink-0">
-          <Info className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-          <div className="flex-1 min-w-0">
-            <p className="text-xs text-foreground/80 leading-relaxed">
-              Este mapa mostra como os artigos desta lei <strong>se citam entre si</strong>. Cada ponto é um artigo e as setas mostram referências cruzadas. Toque em qualquer artigo para ver os detalhes da conexão.
-            </p>
+    <div className={`flex flex-col bg-background relative overflow-hidden ${embedded ? 'h-full' : 'min-h-screen pb-[6.5rem]'}`}>
+      {!embedded && (
+        <PageHeader 
+          title="Grafo de Conexões" 
+          subtitle={formatLeiNome(leiNome)} 
+          onBack={goBack} 
+        />
+      )}
+      {embedded && (
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border/50 shrink-0">
+          <div>
+            <h2 className="font-display font-bold text-lg text-foreground">Grafo de Conexões</h2>
+            <p className="text-xs text-muted-foreground line-clamp-1">{formatLeiNome(leiNome)} — Art. {artigoNumero}</p>
           </div>
-          <button onClick={dismissBanner} className="w-6 h-6 rounded-full bg-secondary/60 flex items-center justify-center shrink-0">
-            <X className="w-3.5 h-3.5 text-muted-foreground" />
-          </button>
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="w-10 h-10 rounded-full bg-secondary/50 flex items-center justify-center text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
         </div>
       )}
 
-      {/* Graph */}
-      <div className="flex-1 min-h-0 relative">
+      <div className="flex-1 relative">
         {loading ? (
-          <div className="flex items-center justify-center h-full">
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
             <Loader2 className="w-8 h-8 text-primary animate-spin" />
+            <p className="text-sm font-semibold text-foreground/80 animate-pulse">A IA está mapeando as conexões...</p>
           </div>
         ) : nodes.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full gap-3 px-8 text-center">
-            <Link2 className="w-10 h-10 text-muted-foreground/40" />
-            <p className="text-foreground/80 text-sm font-medium">Nenhuma conexão encontrada</p>
-            <p className="text-muted-foreground text-xs leading-relaxed">
-              Este artigo não cita outros dispositivos, ou a lei não possui referências cruzadas detectadas.
+          <div className="absolute inset-0 flex items-center justify-center p-6 text-center">
+            <p className="text-muted-foreground text-sm">
+              Não foi possível gerar o grafo ou os parâmetros estão incompletos.
             </p>
           </div>
         ) : (
           <>
             <ReactFlow
-              className="bg-background touch-none"
               nodes={nodes}
               edges={edges}
+              nodeTypes={nodeTypes}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onEdgeClick={onEdgeClick}
+              onNodeClick={onNodeClick}
+              onPaneClick={onPaneClick}
               fitView
-              fitViewOptions={{ padding: 0.3 }}
-              onNodeClick={handleNodeClick}
+              fitViewOptions={{ padding: 0.1, maxZoom: 1.2 }}
               proOptions={{ hideAttribution: true }}
-              minZoom={0.3}
+              minZoom={0.4}
               maxZoom={3}
               panOnDrag
               zoomOnPinch
+              zoomOnScroll
+              zoomOnDoubleClick
               preventScrolling
             >
               <Background gap={20} size={1} />
             </ReactFlow>
 
-            {!selectedConnection && (
-              <div className="absolute top-3 left-1/2 -translate-x-1/2 bg-card/90 backdrop-blur-sm border border-border/50 rounded-full px-4 py-1.5 pointer-events-none">
-                <p className="text-xs text-muted-foreground">Toque em um artigo para ver suas conexões</p>
+            {!selectedEdgeInfo && (
+              <div className="absolute top-3 left-1/2 -translate-x-1/2 bg-card/90 backdrop-blur-sm border border-border/50 rounded-full px-4 py-1.5 pointer-events-none shadow-sm text-center">
+                <p className="text-xs font-semibold text-primary">Toque nos nós ou setas para entender a relação</p>
               </div>
             )}
           </>
         )}
 
-        {/* Connection Detail Bottom Sheet */}
+        {/* AI Connection Detail Bottom Sheet */}
         <AnimatePresence>
-          {selectedConnection && (
-            <>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="absolute inset-0 bg-black/30 backdrop-blur-[2px] z-10"
-                onClick={() => setSelectedConnection(null)}
-              />
-              <motion.div
-                initial={{ y: '100%' }}
-                animate={{ y: 0 }}
-                exit={{ y: '100%' }}
-                transition={{ type: 'spring', damping: 28, stiffness: 320 }}
-                className="absolute bottom-0 left-0 right-0 z-20 bg-card rounded-t-[1.5rem] border-t border-border/50 shadow-[0_-8px_30px_rgba(0,0,0,0.4)] h-[80%] flex flex-col"
-              >
-                <div className="w-10 h-1 rounded-full bg-muted-foreground/20 mx-auto mt-3 mb-1" />
-
-                {/* Card Header */}
-                <div className="px-5 py-3 flex items-start justify-between gap-3 shrink-0">
-                  <div className="min-w-0">
-                    <h3 className="font-display text-base font-bold text-primary truncate">
-                      {selectedConnection.label}
-                    </h3>
-                  </div>
-                  <button
-                    onClick={() => setSelectedConnection(null)}
-                    className="w-8 h-8 rounded-full bg-secondary/60 flex items-center justify-center shrink-0"
-                  >
-                    <X className="w-4 h-4 text-muted-foreground" />
-                  </button>
+          {selectedEdgeInfo && (
+            <motion.div
+              key="edge-backdrop"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/30 backdrop-blur-[2px] z-30"
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedEdgeInfo(null);
+              }}
+              onPointerDown={(e) => e.stopPropagation()}
+            />
+          )}
+          {selectedEdgeInfo && (
+            <motion.div
+              key="edge-panel"
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 28, stiffness: 320 }}
+              className="absolute bottom-0 left-0 right-0 z-40 bg-card rounded-t-[1.5rem] border-t border-border/50 shadow-[0_-8px_30px_rgba(0,0,0,0.4)] p-6 pointer-events-auto"
+              onPointerDown={(e) => e.stopPropagation()}
+            >
+              <div className="w-10 h-1 rounded-full bg-muted-foreground/20 mx-auto mb-4 -mt-2" />
+              <div className="flex items-start justify-between gap-3 mb-4">
+                <h3 className="font-display font-bold text-lg text-primary">
+                  Detalhe da Relação
+                </h3>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedEdgeInfo(null);
+                  }}
+                  onPointerDown={(e) => e.stopPropagation()}
+                  className="w-10 h-10 rounded-full bg-secondary/80 flex items-center justify-center shrink-0 hover:bg-secondary active:scale-95 transition-all"
+                >
+                  <X className="w-4 h-4 text-muted-foreground" />
+                </button>
+              </div>
+              
+              <div className="p-4 rounded-xl bg-primary/10 border border-primary/20 flex flex-col gap-3">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-sm text-foreground bg-background px-2 py-1 rounded shadow-sm">{selectedEdgeInfo.source}</span>
+                  <ArrowRight className="w-4 h-4 text-primary shrink-0" />
+                  <span className="font-bold text-sm text-foreground bg-background px-2 py-1 rounded shadow-sm">{selectedEdgeInfo.target}</span>
                 </div>
-
-                {/* Tab Switcher */}
-                <div className="flex gap-1 px-5 pb-3 shrink-0">
-                {([
-                    { key: 'citado-por' as DetailTab, label: 'É citado por', count: selectedConnection.incoming.length },
-                    { key: 'cita' as DetailTab, label: 'Cita', count: selectedConnection.outgoing.length },
-                  ]).map(tab => (
-                    <button
-                      key={tab.key}
-                      onClick={() => setDetailTab(tab.key)}
-                      className={`flex-1 py-2 rounded-xl text-xs font-semibold transition-all ${
-                        detailTab === tab.key
-                          ? 'bg-primary text-primary-foreground shadow-sm'
-                          : 'bg-secondary/50 text-muted-foreground'
-                      }`}
-                    >
-                      {tab.label}{tab.count > 0 ? ` (${tab.count})` : ''}
-                    </button>
-                  ))}
+                
+                <div className="mt-2">
+                  <span className="text-[10px] uppercase font-bold text-primary tracking-wider">Explicação ({selectedEdgeInfo.label}):</span>
+                  <p className="text-sm font-medium text-foreground/80 mt-1 leading-relaxed">
+                    {selectedEdgeInfo.description}
+                  </p>
                 </div>
-
-                {/* Scrollable Content */}
-                <div className="flex-1 overflow-y-auto px-5 pb-6 space-y-3">
-                  {/* Tab: É citado por */}
-                  {detailTab === 'citado-por' && (
-                    selectedConnection.incoming.length > 0 ? (
-                      selectedConnection.incoming.map((conn) => (
-                        <div key={conn.source} className="p-3 rounded-xl bg-secondary/40 border border-border/50 space-y-3">
-                          <div className="flex items-center gap-2">
-                            <ArrowLeft className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                            <span className="text-sm font-bold text-foreground">{conn.sourceLabel}</span>
-                          </div>
-                          {conn.snippet && (
-                            <div className="pl-5 py-1.5 px-2 rounded-lg bg-background/60 border border-border/30">
-                              <p className="text-[10px] text-muted-foreground mb-1">Trecho da menção:</p>
-                              {highlightRef(conn.snippet, selectedConnection.nodeId)}
-                            </div>
-                          )}
-                          <div className="pl-5 py-2 px-3 rounded-lg bg-primary/5 border border-primary/10">
-                            <p className="text-[10px] font-semibold text-primary mb-1">💡 O que isso significa?</p>
-                            <p className="text-xs text-foreground/70 leading-relaxed">
-                              O <strong>{conn.sourceLabel}</strong> faz referência direta ao <strong>{selectedConnection.label}</strong>. Isso significa que o conteúdo do {conn.sourceLabel} depende ou complementa o que está disposto no {selectedConnection.label}. Para compreensão completa, ambos devem ser lidos em conjunto.
-                            </p>
-                          </div>
-                          <p className="text-xs text-foreground/60 leading-relaxed pl-5">
-                            {conn.sourceCaput || 'Sem texto disponível'}
-                          </p>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-sm text-muted-foreground text-center py-6">Nenhum artigo cita este dispositivo.</p>
-                    )
-                  )}
-
-                  {/* Tab: Cita */}
-                  {detailTab === 'cita' && (
-                    selectedConnection.outgoing.length > 0 ? (
-                      selectedConnection.outgoing.map((conn) => (
-                        <div key={conn.target} className="p-3 rounded-xl bg-primary/10 border border-primary/20 space-y-3">
-                          <div className="flex items-center gap-2">
-                            <ArrowRight className="w-3.5 h-3.5 text-primary shrink-0" />
-                            <span className="text-sm font-bold text-foreground">{conn.targetLabel}</span>
-                          </div>
-                          {conn.snippet && (
-                            <div className="pl-5 py-1.5 px-2 rounded-lg bg-background/60 border border-border/30">
-                              <p className="text-[10px] text-muted-foreground mb-1">Trecho da menção:</p>
-                              {highlightRef(conn.snippet, conn.target)}
-                            </div>
-                          )}
-                          <div className="pl-5 py-2 px-3 rounded-lg bg-primary/5 border border-primary/10">
-                            <p className="text-[10px] font-semibold text-primary mb-1">💡 O que isso significa?</p>
-                            <p className="text-xs text-foreground/70 leading-relaxed">
-                              O <strong>{selectedConnection.label}</strong> menciona o <strong>{conn.targetLabel}</strong> em seu texto. Isso indica que o conteúdo do {selectedConnection.label} se baseia, remete ou condiciona algo ao que está previsto no {conn.targetLabel}.
-                            </p>
-                          </div>
-                          <p className="text-xs text-foreground/60 leading-relaxed pl-5">
-                            {conn.targetCaput || 'Sem texto disponível'}
-                          </p>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-sm text-muted-foreground text-center py-6">Este artigo não cita outros dispositivos.</p>
-                    )
-                  )}
-                </div>
-              </motion.div>
-            </>
+              </div>
+            </motion.div>
           )}
         </AnimatePresence>
       </div>

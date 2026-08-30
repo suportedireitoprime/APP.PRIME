@@ -513,7 +513,7 @@ const ApresentacaoPlayer = () => {
         <div className="absolute inset-0 z-0 bg-black/60 pointer-events-none" />
         
         <header className="relative z-10 px-4 pb-4 pt-[calc(2.5rem+var(--sai-top))] flex gap-3">
-           <button onClick={() => goBack()} className="w-10 h-10 flex items-center justify-center"><ArrowLeft className="w-6 h-6" /></button>
+           <button onClick={() => goBack()} className="w-12 h-12 sm:w-[52px] sm:h-[52px] flex items-center justify-center"><ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} /></button>
            <div className="flex-1"><p className="font-heading font-bold text-sm truncate">{stateTitulo || 'Carregando...'}</p></div>
         </header>
 
@@ -580,7 +580,7 @@ const ApresentacaoPlayer = () => {
             </div>
 
             <div className="flex items-center gap-3">
-              <button onClick={() => goBack()} className="w-10 h-10 flex items-center justify-center active:scale-95"><ArrowLeft className="w-6 h-6" /></button>
+              <button onClick={() => goBack()} className="w-12 h-12 sm:w-[52px] sm:h-[52px] flex items-center justify-center active:scale-95"><ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} /></button>
               <div className="min-w-0 flex-1">
                 <p className="font-heading font-bold text-sm truncate">{apres.titulo}</p>
                 <p className="text-[11px] text-white/60 font-body truncate">

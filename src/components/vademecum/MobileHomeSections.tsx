@@ -43,7 +43,6 @@ import { useOutrasNormasCounts } from '@/hooks/useOutrasNormasCounts';
 const AgendaMobileTab = lazyWithRetry(() => import('./tabs/AgendaMobileTab'));
 const GraficosMobileTab = lazyWithRetry(() => import('./tabs/GraficosMobileTab'));
 import { useRef } from 'react';
-import { useInView } from 'framer-motion';
 const JurisprudenciaSheet = lazyWithRetry(() => import('./JurisprudenciaSheet'));
 const VisuaisJuridicosSheet = lazyWithRetry(() => import('@/components/visuais/VisuaisJuridicosSheet'));
 import { TIPO_SLUG } from '@/lib/visuaisJuridicos/rotas';
@@ -158,16 +157,7 @@ const normalizeSearch = (value: string) =>
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '');
 
-function LazyRender({ children, minHeight = 300 }: { children: React.ReactNode, minHeight?: number }) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "200px 0px" });
-  
-  return (
-    <div ref={ref} style={{ minHeight }}>
-      {isInView ? children : null}
-    </div>
-  );
-}
+
 
 interface Props {
   onTabChange?: (tab: Tab) => void;
@@ -587,9 +577,7 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
       {/* Aprenda sobre as Leis — carrossel infinito de posts do blog (categoria Leis) */}
       {!hideBlog && (
         <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 300px' }}>
-          <LazyRender minHeight={300}>
-            <Suspense fallback={<div className="h-64 bg-muted/20 animate-pulse rounded-xl mx-4" />}><NoticiasJuridicasCarousel /></Suspense>
-          </LazyRender>
+          <Suspense fallback={<div className="h-64 bg-muted/20 animate-pulse rounded-xl mx-4" />}><NoticiasJuridicasCarousel /></Suspense>
         </div>
       )}
 

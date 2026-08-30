@@ -8,9 +8,10 @@ interface GrafoOverlayProps {
   tabelaNome: string;
   leiNome?: string;
   artigoNumero?: string;
+  artigoTexto?: string;
 }
 
-const GrafoOverlay = ({ open, onClose, tabelaNome, leiNome, artigoNumero }: GrafoOverlayProps) => {
+const GrafoOverlay = ({ open, onClose, tabelaNome, leiNome, artigoNumero, artigoTexto }: GrafoOverlayProps) => {
   useBodyScrollLock(open);
   return (
     <AnimatePresence>
@@ -27,6 +28,7 @@ const GrafoOverlay = ({ open, onClose, tabelaNome, leiNome, artigoNumero }: Graf
             tabelaNome={tabelaNome}
             leiNome={leiNome}
             artigoNumero={artigoNumero}
+            artigoTexto={artigoTexto}
             onClose={onClose}
           />
         </motion.div>

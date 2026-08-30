@@ -126,16 +126,16 @@ const VadeMecumHero = ({ onBuscar }: Props) => {
         <button 
           onClick={() => { haptic.selection(); navigate('/'); }} 
           aria-label="Voltar"
-          className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:scale-95"
+          className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:scale-95"
         >
-          <ArrowLeft className="h-5 w-5" />
+          <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
         </button>
         <button 
           onClick={() => { haptic.selection(); navigate('/meus-lembretes'); }} 
           aria-label="Lembretes"
-          className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:scale-95"
+          className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:scale-95"
         >
-          <BellRing className="h-5 w-5" />
+          <BellRing className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
         </button>
       </div>
 

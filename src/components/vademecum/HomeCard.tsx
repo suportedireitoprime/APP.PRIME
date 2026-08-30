@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { motion } from 'framer-motion';
+
 import { ChevronRight, type LucideIcon } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
@@ -24,12 +24,7 @@ interface HomeCardProps {
  * Garante proporção, ícone, tipografia e espaçamento idênticos.
  */
 const HomeCardImpl = ({ icon: Icon, label, sublabel, color, delay = 0, onClick, className = '', iconClassName = '', badge, 'data-track': dataTrack, 'data-track-name': dataTrackName, 'data-track-section': dataTrackSection, solidColor = false }: HomeCardProps) => (
-  <motion.button
-    initial={{ opacity: 0, y: 8 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ delay, duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}
-    whileHover={{ scale: 1.015 }}
-    whileTap={{ scale: 0.95 }}
+  <button
     onClick={() => {
       haptic.selection();
       onClick();
@@ -37,10 +32,10 @@ const HomeCardImpl = ({ icon: Icon, label, sublabel, color, delay = 0, onClick, 
     data-track={dataTrack}
     data-track-name={dataTrackName}
     data-track-section={dataTrackSection}
-    className={`group relative flex h-[118px] min-h-[118px] w-full min-w-0 flex-col items-start justify-between overflow-hidden p-4 rounded-2xl border shadow-sm transition focus-visible:outline-none text-left ${
+    className={`group relative flex h-[118px] min-h-[118px] w-full min-w-0 flex-col items-start justify-between overflow-hidden p-4 rounded-2xl border shadow-sm transition-all focus-visible:outline-none text-left active:scale-[0.97] ${
       solidColor 
         ? 'bg-[#1A1D21] border-border/40 hover:bg-[#23272B]' 
-        : 'bg-white/10 backdrop-blur-md border-white/10'
+        : 'bg-[#1e2329]/80 border-white/5'
     } ${className}`}
   >
     <div className="absolute top-2.5 right-2.5">
@@ -55,13 +50,8 @@ const HomeCardImpl = ({ icon: Icon, label, sublabel, color, delay = 0, onClick, 
     <div className="relative overflow-hidden rounded-xl">
       <Icon
         className={`relative transition-transform duration-300 group-hover:scale-110 group-active:scale-95 group-active:-translate-y-1 ${iconClassName || 'w-8 h-8'}`}
-        style={{
-          color: color,
-          filter: solidColor 
-            ? 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.3))' 
-            : 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 10px rgba(0,0,0,0.55))',
-        }}
-        strokeWidth={solidColor ? 1.6 : 1.15}
+        style={{ color: color }}
+        strokeWidth={solidColor ? 1.6 : 1.25}
       />
       <span aria-hidden className="pointer-events-none absolute inset-0 icon-shine" />
     </div>
@@ -87,7 +77,7 @@ const HomeCardImpl = ({ icon: Icon, label, sublabel, color, delay = 0, onClick, 
         </p>
       )}
     </div>
-  </motion.button>
+  </button>
 );
 
 // Memoize: parent re-renders (tab switches, voice input state, sheets opening)
