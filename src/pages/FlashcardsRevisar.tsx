@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { Button } from '@/components/ui/button';
 import { RotateCcw, BookOpen, Scale, Lightbulb, CheckCircle2, ChevronRight, Layers, Sparkles, ChevronLeft, BrainCircuit } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { haptic } from '@/lib/nativeHaptics';
 import { getAreaVisual } from '@/lib/flashcardsAreaVisual';
@@ -152,15 +153,29 @@ const FlashcardsRevisar = () => {
                   </Button>
                 </div>
               ) : (
-                <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                <motion.div 
+                  className="grid grid-cols-3 gap-2 sm:gap-3"
+                  initial="hidden"
+                  animate="show"
+                  variants={{
+                    hidden: { opacity: 0 },
+                    show: { opacity: 1, transition: { staggerChildren: 0.05 } }
+                  }}
+                >
                   {areas.map((a) => {
                     const visual = getAreaVisual(a.area);
                     const shortName = a.area.replace(/^Direito\s+/i, '');
                     return (
-                      <button
+                      <motion.button
                         key={a.area}
                         onClick={() => selecionarArea(a.area)}
-                        className="group flex flex-col items-center justify-center rounded-2xl border border-border/80 bg-card p-3 text-center transition-all hover:border-primary/50 hover:shadow-md active:scale-[0.99] gap-2"
+                        variants={{
+                          hidden: { opacity: 0, scale: 0.95, y: 10 },
+                          show: { opacity: 1, scale: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+                        }}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="group flex flex-col items-center justify-center rounded-2xl border border-border/80 bg-card p-3 text-center transition-all hover:border-primary/50 hover:shadow-md focus-visible:outline-none gap-2"
                       >
                         <visual.icon className="h-6 w-6 shrink-0 transition-transform group-hover:scale-110 mb-1" strokeWidth={2.2} style={{ color: visual.color }} />
                         <p className="text-[11px] font-extrabold text-foreground group-hover:text-primary transition-colors leading-tight line-clamp-2">
@@ -169,10 +184,10 @@ const FlashcardsRevisar = () => {
                         <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-black text-primary mt-0.5">
                           {a.a_revisar}
                         </span>
-                      </button>
+                      </motion.button>
                     );
                   })}
-                </div>
+                </motion.div>
               )}
             </div>
           )}
@@ -198,12 +213,26 @@ const FlashcardsRevisar = () => {
                   <p className="text-base font-extrabold text-foreground">Nenhuma matéria pendente nesta área!</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <motion.div 
+                  className="grid grid-cols-1 md:grid-cols-2 gap-3"
+                  initial="hidden"
+                  animate="show"
+                  variants={{
+                    hidden: { opacity: 0 },
+                    show: { opacity: 1, transition: { staggerChildren: 0.05 } }
+                  }}
+                >
                   {temas.map((t) => (
-                    <button
+                    <motion.button
                       key={t.tema}
                       onClick={() => selecionarTema(t.tema)}
-                      className="group flex items-center justify-between rounded-2xl border border-border/80 bg-card p-4 text-left transition-all hover:border-primary/50 hover:shadow-md active:scale-[0.99]"
+                      variants={{
+                        hidden: { opacity: 0, scale: 0.95, y: 10 },
+                        show: { opacity: 1, scale: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+                      }}
+                      whileHover={{ scale: 1.015 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="group flex items-center justify-between rounded-2xl border border-border/80 bg-card p-4 text-left transition-all hover:border-primary/50 hover:shadow-md focus-visible:outline-none"
                     >
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-base font-extrabold text-foreground group-hover:text-primary transition-colors">
@@ -256,15 +285,29 @@ const FlashcardsRevisar = () => {
                   <p className="text-base font-extrabold text-foreground">Cards desta matéria já revisados!</p>
                 </div>
               ) : (
-                <div className="space-y-3">
+                <motion.div 
+                  className="space-y-3"
+                  initial="hidden"
+                  animate="show"
+                  variants={{
+                    hidden: { opacity: 0 },
+                    show: { opacity: 1, transition: { staggerChildren: 0.05 } }
+                  }}
+                >
                   {cards.map((c) => (
-                    <button
+                    <motion.button
                       key={c.id}
                       onClick={() => {
                         haptic.selection();
                         navigate(`/flashcards/cornell?cardId=${c.id}`);
                       }}
-                      className="group w-full rounded-2xl border border-border/80 bg-card p-5 text-left transition-all hover:border-primary/60 hover:shadow-lg active:scale-[0.99] flex flex-col justify-between gap-3"
+                      variants={{
+                        hidden: { opacity: 0, y: 15 },
+                        show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+                      }}
+                      whileHover={{ scale: 1.015 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="group w-full rounded-2xl border border-border/80 bg-card p-5 text-left transition-all hover:border-primary/60 hover:shadow-lg focus-visible:outline-none flex flex-col justify-between gap-3"
                     >
                       <div className="flex items-start justify-between gap-3 w-full">
                         <div className="min-w-0 flex-1">
@@ -295,9 +338,9 @@ const FlashcardsRevisar = () => {
                         </span>
                         <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
                       </div>
-                    </button>
+                    </motion.button>
                   ))}
-                </div>
+                </motion.div>
               )}
             </div>
           )}

@@ -4,6 +4,7 @@ import { PageHeader } from '@/components/vademecum/PageHeader';
 import { supabase } from '@/integrations/supabase/client';
 import { useFlashcardsResumoAreas } from '@/lib/flashcardsQueries';
 import { ChevronRight, Search, Sparkles, Scale, BookOpen, Clock, FileText, Gavel, Landmark, MessageSquareText } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { haptic } from '@/lib/nativeHaptics';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
@@ -183,11 +184,19 @@ export default function FlashcardsJurisprudencia() {
                 Nenhum tema encontrado para esta categoria.
               </div>
             ) : (
-              <div className="space-y-3">
+              <motion.div 
+                className="space-y-3"
+                initial="hidden"
+                animate="show"
+                variants={{
+                  hidden: { opacity: 0 },
+                  show: { opacity: 1, transition: { staggerChildren: 0.05 } }
+                }}
+              >
                 {listaFiltrada.map((tema) => {
                   const progresso = tema.total ? Math.round((tema.compreendidos / tema.total) * 100) : 0;
                   return (
-                    <button
+                    <motion.button
                       key={tema.tema}
                       onClick={() => {
                         haptic.selection();
@@ -195,7 +204,13 @@ export default function FlashcardsJurisprudencia() {
                         setPasso(1);
                         setStatusSel('');
                       }}
-                      className="group flex items-center justify-between p-4 rounded-2xl border border-border/80 bg-card text-left transition-all hover:border-[#36AF85]/50 hover:shadow-md active:scale-[0.99]"
+                      variants={{
+                        hidden: { opacity: 0, y: 15 },
+                        show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+                      }}
+                      whileHover={{ scale: 1.015 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="group flex items-center justify-between p-4 rounded-2xl border border-border/80 bg-card text-left transition-all hover:border-[#36AF85]/50 hover:shadow-md focus-visible:outline-none w-full"
                     >
                       <div className="flex flex-col min-w-0 pr-4">
                         <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground mb-1">
@@ -214,10 +229,10 @@ export default function FlashcardsJurisprudencia() {
                         </div>
                       </div>
                       <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0 group-hover:translate-x-1 transition-transform" />
-                    </button>
+                    </motion.button>
                   );
                 })}
-              </div>
+              </motion.div>
             )}
           </>
         )}

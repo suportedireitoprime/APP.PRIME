@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { ChevronRight, Search, Sparkles, X } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { getAreaVisual } from '@/lib/flashcardsAreaVisual';
 import { haptic } from '@/lib/nativeHaptics';
@@ -81,14 +82,28 @@ const FlashcardsMaterias = () => {
               Nenhuma matéria encontrada.
             </div>
           ) : (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
+            <motion.div 
+              className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4"
+              initial="hidden"
+              animate="show"
+              variants={{
+                hidden: { opacity: 0 },
+                show: { opacity: 1, transition: { staggerChildren: 0.05 } }
+              }}
+            >
               {lista.map((a) => {
                 const { icon: Icon } = getAreaVisual(a.area);
                 return (
-                  <button
+                  <motion.button
                     key={a.area}
                     onClick={() => { haptic.selection(); setAreaSheet(a.area); }}
-                    className="group flex flex-col items-center justify-center gap-3 p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#36AF85]/50 transition-colors active:scale-95 text-center"
+                    variants={{
+                      hidden: { opacity: 0, scale: 0.95, y: 10 },
+                      show: { opacity: 1, scale: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+                    }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="group flex flex-col items-center justify-center gap-3 p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#36AF85]/50 transition-colors focus-visible:outline-none text-center"
                   >
                     <div className="flex items-center justify-center text-[#36AF85] group-hover:scale-110 transition-transform">
                       <Icon className="h-8 w-8 transition-all duration-300 group-hover:drop-shadow-[0_0_12px_rgba(54,175,133,0.9)]" strokeWidth={1.5} />
@@ -98,10 +113,10 @@ const FlashcardsMaterias = () => {
                         {a.area}
                       </span>
                     </div>
-                  </button>
+                  </motion.button>
                 );
               })}
-            </div>
+            </motion.div>
           )}
         </section>
       </div>
