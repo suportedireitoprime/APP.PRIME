@@ -4,7 +4,7 @@ import { PageHeader } from '@/components/vademecum/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Loader2, Headphones, Search, UploadCloud, CheckCircle2, AlertCircle, Copy } from 'lucide-react';
+import { Loader2, Headphones, Search, UploadCloud, CheckCircle2, AlertCircle, Copy, Link } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { COLECOES, type ColecaoConfig, type LivroNormalizado, normalizeLivro } from '@/lib/bibliotecaColecoes';
@@ -240,23 +240,37 @@ export default function AdminPilulas() {
               </div>
 
               {/* Botões de Cópia */}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start rounded-xl text-xs h-10"
+                  className="w-full justify-center rounded-xl text-xs h-10 px-2"
                   onClick={() => copyToClipboard(selectedBook.livro.titulo, 'Título copiado!')}
                 >
-                  <Copy className="w-3.5 h-3.5 mr-2" /> Copiar Título
+                  <Copy className="w-3.5 h-3.5 mr-2 shrink-0" /> <span className="truncate">Copiar Título</span>
                 </Button>
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start rounded-xl text-xs h-10"
+                  className="w-full justify-center rounded-xl text-xs h-10 px-2"
+                  onClick={() => {
+                    const linkPdf = selectedBook.livro.link || selectedBook.livro.download || '';
+                    if (linkPdf) {
+                      copyToClipboard(linkPdf, 'Link do Drive/PDF copiado!');
+                    } else {
+                      toast.error('Nenhum link encontrado para esta obra.');
+                    }
+                  }}
+                >
+                  <Link className="w-3.5 h-3.5 mr-2 shrink-0" /> <span className="truncate">Copiar Link</span>
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-center rounded-xl text-xs h-10 px-2"
                   onClick={() => {
                     const promptText = `Você deve explicar o livro todo capítulo por capítulo passando a importância para o estudante de direito ler, explicando o que o autor quis dizer, qual a obra... bem detalhado explicando os conceitos. Livro: ${selectedBook.livro.titulo} - ${selectedBook.livro.autor || 'Autor Desconhecido'}`;
                     copyToClipboard(promptText, 'Prompt copiado!');
                   }}
                 >
-                  <Copy className="w-3.5 h-3.5 mr-2" /> Copiar Prompt
+                  <Copy className="w-3.5 h-3.5 mr-2 shrink-0" /> <span className="truncate">Copiar Prompt</span>
                 </Button>
               </div>
 
