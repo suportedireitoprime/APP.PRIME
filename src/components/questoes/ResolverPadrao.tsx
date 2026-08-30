@@ -90,6 +90,10 @@ const ResolverPadrao = ({
   const gateQuestoes = useGatedFeature('questoes', 'questoes');
   const gateFuncoes = useGatedFeature('questao_funcoes', 'questao_funcoes');
 
+  const atual = questoes[idx];
+  const resp = atual ? respostas[atual.id] : undefined;
+  const correta = letraGabarito(atual?.gabarito_oficial);
+
   // Flush da fila offline ao montar e quando a rede voltar
   useEffect(() => {
     flushRespostaQueue();
@@ -244,10 +248,6 @@ const ResolverPadrao = ({
     }
     return Math.abs(hash) % 71 + 15;
   }, [idx, questoes]);
-
-  const atual = questoes[idx];
-  const resp = atual ? respostas[atual.id] : undefined;
-  const correta = letraGabarito(atual?.gabarito_oficial);
 
   useEffect(() => {
     setSelecao(resp?.escolha ?? null);
