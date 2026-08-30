@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Bell, Loader2, Clock } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { supabase } from '@/integrations/supabase/client';
@@ -181,9 +182,23 @@ const Lembretes = () => {
         }
       />
 
-      <div className="p-4 max-w-lg mx-auto space-y-4 lg:max-w-2xl lg:py-8">
+      <motion.div 
+        className="p-4 max-w-lg mx-auto space-y-4 lg:max-w-2xl lg:py-8"
+        initial="hidden"
+        animate="show"
+        variants={{
+          hidden: { opacity: 0 },
+          show: { opacity: 1, transition: { staggerChildren: 0.1 } }
+        }}
+      >
         {/* Ativo */}
-        <div className="rounded-2xl bg-card border border-border p-4 flex items-center justify-between">
+        <motion.div 
+          variants={{
+            hidden: { opacity: 0, y: 15 },
+            show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+          }}
+          className="rounded-2xl bg-card border border-border p-4 flex items-center justify-between"
+        >
           <div>
             <p className="font-body font-bold text-sm text-foreground">Ativar lembretes</p>
             <p className="font-body text-xs text-muted-foreground">Notificação recorrente pra te lembrar de estudar.</p>
@@ -199,10 +214,16 @@ const Lembretes = () => {
               }`}
             />
           </button>
-        </div>
+        </motion.div>
 
         {/* Horário */}
-        <div className="rounded-2xl bg-card border border-border p-4">
+        <motion.div 
+          variants={{
+            hidden: { opacity: 0, y: 15 },
+            show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+          }}
+          className="rounded-2xl bg-card border border-border p-4"
+        >
           <div className="flex items-center gap-2 mb-2">
             <Clock className="w-4 h-4 text-primary" />
             <p className="font-body font-bold text-sm text-foreground">Horário</p>
@@ -214,42 +235,56 @@ const Lembretes = () => {
             disabled={!ativo}
             className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground font-mono text-lg disabled:opacity-50"
           />
-        </div>
+        </motion.div>
 
         {/* Dias */}
-        <div className="rounded-2xl bg-card border border-border p-4">
+        <motion.div 
+          variants={{
+            hidden: { opacity: 0, y: 15 },
+            show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+          }}
+          className="rounded-2xl bg-card border border-border p-4"
+        >
           <p className="font-body font-bold text-sm text-foreground mb-3">Dias da semana</p>
           <div className="flex gap-1.5 justify-between">
             {DIAS.map((d) => {
               const active = dias.includes(d.id);
               return (
-                <button
+                <motion.button
                   key={d.id}
+                  whileTap={{ scale: 0.9 }}
                   disabled={!ativo}
                   onClick={() => toggleDia(d.id)}
-                  className={`flex-1 aspect-square rounded-lg font-body font-bold text-sm transition-all disabled:opacity-40 ${
+                  className={`flex-1 aspect-square rounded-lg font-body font-bold text-sm transition-all focus-visible:outline-none disabled:opacity-40 ${
                     active
                       ? 'bg-primary text-primary-foreground shadow'
                       : 'bg-secondary text-muted-foreground'
                   }`}
                 >
                   {d.label}
-                </button>
+                </motion.button>
               );
             })}
           </div>
-        </div>
+        </motion.div>
 
         {/* Tipo de mensagem */}
-        <div className="rounded-2xl bg-card border border-border p-4">
+        <motion.div 
+          variants={{
+            hidden: { opacity: 0, y: 15 },
+            show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+          }}
+          className="rounded-2xl bg-card border border-border p-4"
+        >
           <p className="font-body font-bold text-sm text-foreground mb-3">Estilo da mensagem</p>
           <div className="flex flex-col gap-2">
             {(['geral', 'oab', 'concurso'] as const).map((t) => (
-              <button
+              <motion.button
                 key={t}
+                whileTap={{ scale: 0.98 }}
                 disabled={!ativo}
                 onClick={() => setMensagemTipo(t)}
-                className={`px-4 py-2.5 rounded-lg font-body text-sm text-left transition-all disabled:opacity-40 ${
+                className={`px-4 py-2.5 rounded-lg font-body text-sm text-left transition-all focus-visible:outline-none disabled:opacity-40 ${
                   mensagemTipo === t
                     ? 'bg-primary/15 border border-primary text-foreground'
                     : 'bg-secondary border border-transparent text-muted-foreground'
@@ -258,25 +293,31 @@ const Lembretes = () => {
                 {t === 'geral' && 'Geral — motivacional'}
                 {t === 'oab' && 'Foco OAB'}
                 {t === 'concurso' && 'Foco Concurso'}
-              </button>
+              </motion.button>
             ))}
           </div>
-        </div>
+        </motion.div>
 
-        <button
+        <motion.button
+          variants={{
+            hidden: { opacity: 0, scale: 0.95 },
+            show: { opacity: 1, scale: 1, transition: { type: "spring", stiffness: 300, damping: 24 } }
+          }}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.97 }}
           onClick={salvar}
           disabled={saving}
-          className="w-full py-3.5 rounded-xl bg-primary text-primary-foreground font-body font-semibold text-sm shadow-lg hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
+          className="w-full py-3.5 rounded-xl bg-primary text-primary-foreground font-body font-semibold text-sm shadow-lg transition-opacity focus-visible:outline-none disabled:opacity-50 flex items-center justify-center gap-2"
         >
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Salvar'}
-        </button>
+        </motion.button>
 
         {!Capacitor.isNativePlatform() && (
           <p className="text-xs text-muted-foreground text-center italic px-4">
             Lembretes locais só funcionam no app instalado (Android/iOS).
           </p>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 };
