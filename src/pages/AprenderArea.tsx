@@ -26,6 +26,7 @@ import {
   useGerarAulaDemanda,
 } from '@/hooks/useGerarAulaDemanda';
 import { Sparkles, Lock } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useTrackArea } from "@/hooks/useTrackArea";
 
 
@@ -278,7 +279,15 @@ const AprenderArea = () => {
                     Nenhum tema publicado ainda nesta área.
                   </div>
                 ) : (
-                  <ul className="space-y-3 px-0 pb-6">
+                  <motion.ul 
+                    className="space-y-3 px-0 pb-6"
+                    initial="hidden"
+                    animate="show"
+                    variants={{
+                      hidden: { opacity: 0 },
+                      show: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.1 } }
+                    }}
+                  >
                     {modulosVisiveis.map((m, i) => {
                       const list = aulas.filter((a) => a.modulo_id === m.id);
                       const total = list.length;
@@ -288,7 +297,7 @@ const AprenderArea = () => {
                       );
                       const pct = total ? somaPct / total : 0;
                       return (
-                        <li key={m.id}>
+                        <motion.li key={m.id}>
                           <TemaRow
                             numero={i + 1}
                             titulo={m.titulo}
@@ -297,10 +306,10 @@ const AprenderArea = () => {
                             pct={pct}
                             onClick={() => setTemaAberto({ modulo: m, numero: i + 1 })}
                           />
-                        </li>
+                        </motion.li>
                       );
                     })}
-                  </ul>
+                  </motion.ul>
                 )}
               </>
             )}

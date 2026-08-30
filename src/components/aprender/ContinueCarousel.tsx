@@ -1,4 +1,5 @@
 import { Play } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { getAreaCover } from '@/lib/areasDireitoCovers';
 import { prefetchAprenderAula } from '@/lib/aprenderAulaPrefetch';
 import type { AprenderHomeAula } from '@/lib/aprenderHomeSnapshot';
@@ -14,14 +15,20 @@ function AulaCard({ aula, onOpen, wide }: { aula: AprenderHomeAula; onOpen: (id:
   const prefetch = () => prefetchAprenderAula(aula.aulaId);
 
   return (
-    <button
+    <motion.button
+      variants={{
+        hidden: { opacity: 0, scale: 0.95 },
+        show: { opacity: 1, scale: 1, transition: { type: "spring", stiffness: 300, damping: 24 } }
+      }}
+      whileHover={{ scale: wide ? 1.01 : 1.02 }}
+      whileTap={{ scale: 0.98 }}
       onClick={() => onOpen(aula.aulaId)}
       onPointerEnter={prefetch}
       onFocus={prefetch}
       onTouchStart={prefetch}
       className={[
         'group relative overflow-hidden rounded-2xl border border-border bg-card text-left transition-all min-h-[135px] w-full',
-        'hover:border-primary/50 hover:shadow-xl active:scale-[0.995]',
+        'hover:border-primary/50 hover:shadow-xl focus-visible:outline-none',
       ].join(' ')}
     >
       {cover?.cover && (
@@ -75,7 +82,7 @@ function AulaCard({ aula, onOpen, wide }: { aula: AprenderHomeAula; onOpen: (id:
           )}
         </div>
       </div>
-    </button>
+    </motion.button>
   );
 }
 
@@ -103,15 +110,25 @@ const ContinueCarousel = ({ aulas, onOpen }: Props) => {
       </div>
 
       {single ? (
-        <AulaCard aula={aulas[0]} onOpen={onOpen} wide={true} />
+        <motion.div initial="hidden" animate="show">
+          <AulaCard aula={aulas[0]} onOpen={onOpen} wide={true} />
+        </motion.div>
       ) : (
-        <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none gap-3 pb-2 -mx-3 px-3 sm:mx-0 sm:px-0">
+        <motion.div 
+          className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none gap-3 pb-2 -mx-3 px-3 sm:mx-0 sm:px-0"
+          initial="hidden"
+          animate="show"
+          variants={{
+            hidden: { opacity: 0 },
+            show: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.1 } }
+          }}
+        >
           {aulas.map((a) => (
             <div key={a.aulaId} className="w-[82%] sm:w-[310px] shrink-0 snap-start">
               <AulaCard aula={a} onOpen={onOpen} wide={false} />
             </div>
           ))}
-        </div>
+        </motion.div>
       )}
     </section>
   );

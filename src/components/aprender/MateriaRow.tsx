@@ -1,4 +1,5 @@
 import { BookOpen, ChevronRight, type LucideIcon } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { getAreaCover } from '@/lib/areasDireitoCovers';
 import type { AprenderHomeArea } from '@/lib/aprenderHomeSnapshot';
 import { shortenAreaName } from '@/lib/areaNameShortener';
@@ -17,12 +18,18 @@ const MateriaRow = ({ area, icon, onOpen, onPrefetch }: Props) => {
   const displayName = shortenAreaName(area.nome);
 
   return (
-    <button
+    <motion.button
+      variants={{
+        hidden: { opacity: 0, x: -10 },
+        show: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+      }}
+      whileHover={{ scale: 1.01 }}
+      whileTap={{ scale: 0.98 }}
       onClick={onOpen}
       onPointerEnter={onPrefetch}
       onFocus={onPrefetch}
       onTouchStart={onPrefetch}
-      className="group flex w-full items-center gap-3 rounded-2xl border border-border bg-card p-3.5 text-left transition-all hover:border-primary/40 hover:shadow-md active:scale-[0.995] sm:p-4"
+      className="group flex w-full items-center gap-3 rounded-2xl border border-border bg-card p-3.5 text-left transition-all hover:border-primary/40 hover:shadow-md focus-visible:outline-none sm:p-4"
     >
       {icon ? (
         <div className="relative flex h-12 w-12 shrink-0 items-center justify-center sm:h-14 sm:w-14">
@@ -88,7 +95,7 @@ const MateriaRow = ({ area, icon, onOpen, onPrefetch }: Props) => {
       </div>
 
       <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-    </button>
+    </motion.button>
   );
 };
 

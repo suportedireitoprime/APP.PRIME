@@ -1,4 +1,5 @@
 import { ChevronRight, BookOpen } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 type Props = {
   numero: number;
@@ -11,9 +12,15 @@ type Props = {
 
 const TemaRow = ({ numero, titulo, totalAulas, emPreparo, pct, onClick }: Props) => {
   return (
-    <button
+    <motion.button
+      variants={{
+        hidden: { opacity: 0, x: -10 },
+        show: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+      }}
+      whileHover={{ scale: 1.01 }}
+      whileTap={{ scale: 0.98 }}
       onClick={onClick}
-      className="group flex h-[104px] w-full items-center gap-3 rounded-2xl border border-border bg-card p-3 text-left transition-colors hover:bg-accent/40 active:scale-[0.995] sm:h-[112px] sm:gap-4 sm:p-4"
+      className="group flex h-[104px] w-full items-center gap-3 rounded-2xl border border-border bg-card p-3 text-left transition-colors hover:bg-accent/40 focus-visible:outline-none sm:h-[112px] sm:gap-4 sm:p-4"
       aria-label={`Tema ${numero}: ${titulo}. ${Math.round(pct)}% concluído.`}
     >
       <div
@@ -56,7 +63,7 @@ const TemaRow = ({ numero, titulo, totalAulas, emPreparo, pct, onClick }: Props)
         </span>
         <ChevronRight className="h-5 w-5 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
       </div>
-    </button>
+    </motion.button>
   );
 };
 

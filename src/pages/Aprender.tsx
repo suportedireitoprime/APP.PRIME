@@ -6,6 +6,7 @@ import {
   HeartPulse, Users, Globe, Leaf, Trophy, Hammer, Coins, Swords, Building, Globe2, AlertTriangle,
   GraduationCap, Microscope, BookText, ClipboardList, Award, Lightbulb, Sparkles, ChevronRight, BookOpen,
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 import { isAdminEmail } from '@/lib/adminEmails';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
@@ -467,7 +468,15 @@ const Aprender = () => {
                     : 'Nenhuma matéria disponível ainda.'}
                 </div>
               ) : (
-                <div className="space-y-3">
+                <motion.div 
+                  className="space-y-3"
+                  initial="hidden"
+                  animate="show"
+                  variants={{
+                    hidden: { opacity: 0 },
+                    show: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.1 } }
+                  }}
+                >
                   {areasOrdenadas.map((area) => {
                     const icon = areaIconFor(area.slug);
                     return (
@@ -480,7 +489,7 @@ const Aprender = () => {
                       />
                     );
                   })}
-                </div>
+                </motion.div>
               )}
             </div>
           </div>
