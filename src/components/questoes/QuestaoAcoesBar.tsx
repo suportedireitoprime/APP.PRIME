@@ -16,14 +16,7 @@ import { useGatedFeature } from '@/hooks/useGatedFeature';
 import { srcOf } from '@/lib/assetUrl';
 
 type Fonte = string | QuestaoInline;
-type Aba = AcaoTipo | 'revisar' | null;
-
-const INTERVALOS = [
-  { dias: 1, label: 'Amanhã' },
-  { dias: 3, label: 'Em 3 dias' },
-  { dias: 7, label: 'Em 7 dias' },
-  { dias: 15, label: 'Em 15 dias' },
-];
+type Aba = AcaoTipo | null;
 
 const TITULOS: Record<AcaoTipo, string> = {
   aula: 'Mini-aula',
@@ -36,19 +29,6 @@ const TITULOS: Record<AcaoTipo, string> = {
   comentario: 'Comentário',
   termos: 'Termos da questão',
 };
-
-function agendarRevisao(chave: string, dias: number) {
-  if (typeof window === 'undefined') return;
-  const KEY = 'questoes:revisar';
-  let lista: Array<{ chave: string; dueAt: string; intervalo: number }> = [];
-  try { lista = JSON.parse(localStorage.getItem(KEY) ?? '[]') ?? []; } catch { /* noop */ }
-  lista = lista.filter((x) => x.chave !== chave);
-  const due = new Date();
-  due.setDate(due.getDate() + dias);
-  lista.push({ chave, dueAt: due.toISOString(), intervalo: dias });
-  localStorage.setItem(KEY, JSON.stringify(lista));
-  toast.success(`Revisão agendada para ${due.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}`);
-}
 
 type SeletorTipo = 'resumos' | 'flash' | null;
 type SeletorOpcao = { key: string; tipo: AcaoTipo; label: string; desc: string; icon: any };
@@ -121,27 +101,10 @@ export function QuestaoAcoesBar({ source, chaveRevisao, layout = 'horizontal' }:
         <RailBtn icon={BookA} label="Termos" onClick={() => setAba('termos')} />
         <RailBtn icon={AlertTriangle} label="Pegadinhas" onClick={() => setAba('pegadinhas')} />
         <RailBtn icon={Scale} label="Lei seca" onClick={() => setAba('lei')} />
-        <RailBtn icon={Clock} label="Revisar" onClick={() => setAba('revisar')} />
       </div>
 
-      {typeof document !== 'undefined' && createPortal(
+    {typeof document !== 'undefined' && createPortal(
         <AnimatePresence>
-          {aba === 'revisar' && (
-            <Overlay key="revisar" onClose={() => setAba(null)} titulo="Revisar depois" icone={Clock}>
-              <p className="mb-4 text-sm text-muted-foreground">Quando você quer revisar esta questão?</p>
-              <div className="grid grid-cols-2 gap-2">
-                {INTERVALOS.map((i) => (
-                  <button
-                    key={i.dias}
-                    onClick={() => { agendarRevisao(chaveRevisao, i.dias); setAba(null); }}
-                    className="h-12 rounded-xl border border-border bg-background text-sm font-medium transition-colors hover:border-primary/60 hover:bg-primary/5"
-                  >
-                    {i.label}
-                  </button>
-                ))}
-              </div>
-            </Overlay>
-          )}
 
           {seletor && (
             <Overlay key="seletor" onClose={() => setSeletor(null)} titulo="Tipo de resumo" icone={Sparkles}>
@@ -169,7 +132,7 @@ export function QuestaoAcoesBar({ source, chaveRevisao, layout = 'horizontal' }:
             </Overlay>
           )}
 
-          {aba && aba !== 'revisar' && (
+          {aba && (
             <Overlay key="painel" onClose={() => setAba(null)} titulo={TITULOS[aba]} icone={Sparkles} alto={aba === 'flashcards'}>
               <PainelAcao source={source} tipo={aba} />
             </Overlay>
