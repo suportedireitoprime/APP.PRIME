@@ -111,7 +111,13 @@ const writeSeen = (id: CardId, d: Date, seen: Seen) => {
 };
 
 export function AdminHojeCards() {
-  const [counts, setCounts] = useState<Record<CardId | 'trialValor', number>>({ online5m: 0, online: 0, cadastros: 0, paywall: 0, trial: 0, trialValor: 0 });
+  const [counts, setCounts] = useState<Record<CardId | 'trialValor', number>>(() => {
+    try {
+      const cached = localStorage.getItem('admin_hoje_counts_cache');
+      if (cached) return JSON.parse(cached);
+    } catch {}
+    return { online5m: 0, online: 0, cadastros: 0, paywall: 0, trial: 0, trialValor: 0 };
+  });
   const [seenCounts, setSeenCounts] = useState<Record<CardId, number>>(() => {
     const hoje = new Date();
     return {
@@ -271,6 +277,10 @@ export function AdminHojeCards() {
     setCounts(novos);
     
     if (periodo === 'hoje') {
+      try {
+        localStorage.setItem('admin_hoje_counts_cache', JSON.stringify(novos));
+      } catch {}
+
       (['online5m', 'online', 'cadastros', 'paywall', 'trial'] as CardId[]).forEach((id) => {
         if (!localStorage.getItem(seenStorageKey(id, datas[0]))) {
           writeSeen(id, datas[0], { count: novos[id], keys: [] });
