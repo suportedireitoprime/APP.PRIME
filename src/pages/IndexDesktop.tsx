@@ -142,10 +142,9 @@ const IndexDesktop = () => {
   const handleAssistenteClose = useCallback(() => setAssistenteOpen(false), []);
 
   return (
-    <div className="min-h-dvh bg-background flex flex-col">
+    <div className="h-dvh bg-background flex flex-col">
       <DesktopOnboardingOverlay />
       <DesktopTopHeader onAssistenteClick={() => setAssistenteOpen(true)} />
-      <DesktopBreadcrumb />
       <div className="flex flex-1 min-h-0">
         <DesktopSidebar activeTab={activeTab} onTabChange={setActiveTab} />
         <div className="flex-1 min-w-0 overflow-y-auto">
@@ -182,6 +181,8 @@ const IndexDesktop = () => {
                 );
               })}
             </div>
+            {/* O Breadcrumb agora fica logo ABAIXO das abas e somente no lado direito */}
+            <DesktopBreadcrumb />
           </div>
           <div className="px-8 py-6 2xl:px-14">
             <div key={activeTab} className="animate-fade-in">

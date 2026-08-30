@@ -1,7 +1,6 @@
 import { useLocation } from 'react-router-dom';
 import { useIsDesktop } from '@/hooks/use-desktop';
 import DesktopTopHeader from '@/components/vademecum/DesktopTopHeader';
-import DesktopBreadcrumb from '@/components/vademecum/DesktopBreadcrumb';
 
 // Rotas onde NÃO queremos o cabeçalho amarelo global:
 // - Index (`/`) já renderiza o próprio DesktopTopHeader
@@ -30,7 +29,6 @@ const GlobalDesktopHeader = () => {
   return (
     <div className={location.pathname.startsWith('/bibliotecas') ? 'theme-biblioteca' : ''}>
       <DesktopTopHeader />
-      <DesktopBreadcrumb />
     </div>
   );
 };

@@ -11,6 +11,7 @@ import ContinuarAssistindoCarousel from '@/components/videoaulas/ContinuarAssist
 import { prefetchCatalogo } from '@/lib/videoaulasStore';
 import { prefetchRoute, type PrefetchKey } from '@/lib/routePrefetch';
 import DesktopSidebar from '@/components/vademecum/DesktopSidebar';
+import DesktopBreadcrumb from '@/components/vademecum/DesktopBreadcrumb';
 import DesktopOnboardingOverlay from '@/components/desktop/DesktopOnboardingOverlay';
 
 const DESKTOP_TABS: Array<{ id: string; label: string; icon: any; path: string; prefetch?: PrefetchKey }> = [
@@ -91,7 +92,7 @@ export const VideoaulasDesktop = memo(function VideoaulasDesktop({
   }, [navigate]);
 
   return (
-    <div className="min-h-dvh bg-background flex flex-col">
+    <div className="h-[calc(100dvh-104px)] bg-background flex flex-col">
       <DesktopOnboardingOverlay />
       
       <div className="flex flex-1 min-h-0">
@@ -122,6 +123,8 @@ export const VideoaulasDesktop = memo(function VideoaulasDesktop({
                 );
               })}
             </div>
+            {/* O Breadcrumb agora fica logo ABAIXO das abas e somente no lado direito */}
+            <DesktopBreadcrumb />
           </div>
 
           <div className="px-8 py-6 2xl:px-14 lg:grid lg:grid-cols-12 lg:gap-8 lg:items-start">

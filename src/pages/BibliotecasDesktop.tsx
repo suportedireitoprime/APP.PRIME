@@ -63,7 +63,7 @@ const BibliotecasDesktop = () => {
   }, [navigate]);
 
   return (
-    <div className="min-h-dvh bg-background flex flex-col">
+    <div className="h-[calc(100dvh-104px)] bg-background flex flex-col">
       <DesktopOnboardingOverlay />
       
       <div className="flex flex-1 min-h-0">
@@ -94,6 +94,8 @@ const BibliotecasDesktop = () => {
                 );
               })}
             </div>
+            {/* O Breadcrumb agora fica logo ABAIXO das abas e somente no lado direito */}
+            <DesktopBreadcrumb />
           </div>
           
           <AnimatePresence mode="wait">
