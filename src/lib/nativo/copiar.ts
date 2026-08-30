@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 
 /** Fallback legado via textarea + execCommand (funciona em qualquer contexto). */
 function execCommandCopy(texto: string): boolean {
+  if (typeof document === 'undefined') return false;
   const ta = document.createElement('textarea');
   ta.value = texto;
   ta.setAttribute('readonly', '');
@@ -11,7 +12,11 @@ function execCommandCopy(texto: string): boolean {
   ta.focus();
   ta.select();
   let ok = false;
-  try { ok = document.execCommand('copy'); } catch { ok = false; }
+  try { 
+    ok = document.execCommand('copy'); 
+  } catch { 
+    ok = false; 
+  }
   ta.remove();
   return ok;
 }
@@ -31,22 +36,26 @@ export async function copiar(texto: string, mensagem = 'Copiado'): Promise<boole
     } catch (e) {
       console.error('Falha Capacitor clipboard:', e);
     }
+  } else {
+    // 2. WEB: Tenta síncrono primeiro para não perder o user gesture no iframe/webview
+    if (execCommandCopy(texto)) {
+      if (mensagem) toast.success(mensagem);
+      return true;
+    }
+
+    // 3. Fallback para navigator.clipboard (async)
+    if (navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(texto);
+        if (mensagem) toast.success(mensagem);
+        return true;
+      } catch (e) {
+        console.error('Falha navigator.clipboard:', e);
+      }
+    }
   }
 
-  // 2. navigator.clipboard (pode falhar em HTTP, WebView, Sheet/Portal)
-  try {
-    await navigator.clipboard.writeText(texto);
-    if (mensagem) toast.success(mensagem);
-    return true;
-  } catch { /* ignora e tenta fallback */ }
-
-  // 3. execCommand (síncrono, funciona em qualquer contexto)
-  if (execCommandCopy(texto)) {
-    if (mensagem) toast.success(mensagem);
-    return true;
-  }
-
-  toast.error('Não foi possível copiar');
+  toast.error('Não foi possível copiar (bloqueado pelo navegador)');
   return false;
 }
 
