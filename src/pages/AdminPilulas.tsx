@@ -163,44 +163,53 @@ export default function AdminPilulas() {
               Clássicos do Direito ({livrosFiltrados.length})
             </h2>
             <div className="grid gap-3">
-              {livrosFiltrados.map((item) => (
-                <button
-                  type="button"
-                  key={item.livro.id}
-                  onClick={() => setSelectedBook(item)}
-                  className="flex items-center gap-4 bg-card rounded-2xl p-4 border border-border shadow-sm text-left active:scale-[0.98] transition-transform w-full"
-                >
-                  {/* Capa */}
-                  <div className="w-14 h-20 rounded bg-muted overflow-hidden shrink-0">
-                    {item.livro.capa ? (
-                      <img src={item.livro.capa} alt="" className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">
-                        Sem Capa
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Info */}
-                  <div className="flex-1 min-w-0 py-1">
-                    <h3 className="font-semibold text-foreground truncate">{item.livro.titulo}</h3>
-                    {item.livro.autor && (
-                      <p className="text-sm text-muted-foreground truncate">{item.livro.autor}</p>
-                    )}
-                    <div className="flex items-center gap-2 mt-3">
-                      {item.livro.audioResumoUrl ? (
-                        <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-green-500 bg-green-500/10 px-2 py-0.5 rounded-full">
-                          <CheckCircle2 className="w-3 h-3" /> Pílula Concluída
-                        </span>
+              {livrosFiltrados.map((item) => {
+                const hasAudio = !!item.livro.audioResumoUrl;
+                return (
+                  <button
+                    type="button"
+                    key={item.livro.id}
+                    onClick={() => setSelectedBook(item)}
+                    className={`flex items-start gap-4 rounded-2xl p-4 border shadow-sm text-left active:scale-[0.98] transition-all w-full ${
+                      hasAudio 
+                        ? 'bg-green-500/5 border-green-500/30 hover:bg-green-500/10' 
+                        : 'bg-card border-border hover:border-muted-foreground/30'
+                    }`}
+                  >
+                    {/* Capa */}
+                    <div className="w-16 h-24 rounded-lg bg-muted overflow-hidden shrink-0 shadow-sm">
+                      {item.livro.capa ? (
+                        <img src={item.livro.capa} alt="" className="w-full h-full object-cover" />
                       ) : (
-                        <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded-full">
-                          <AlertCircle className="w-3 h-3" /> Sem Pílula
-                        </span>
+                        <div className="w-full h-full flex items-center justify-center text-muted-foreground text-[10px] text-center leading-tight p-1">
+                          Sem Capa
+                        </div>
                       )}
                     </div>
-                  </div>
-                </button>
-              ))}
+
+                    {/* Info */}
+                    <div className="flex-1 min-w-0 py-0.5">
+                      <h3 className="font-bold text-foreground text-sm sm:text-base leading-snug line-clamp-2 mb-1.5">
+                        {item.livro.titulo}
+                      </h3>
+                      {item.livro.autor && (
+                        <p className="text-xs sm:text-sm text-muted-foreground line-clamp-1">{item.livro.autor}</p>
+                      )}
+                      <div className="flex items-center gap-2 mt-3 flex-wrap">
+                        {hasAudio ? (
+                          <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-green-500 bg-green-500/10 px-2.5 py-1 rounded-full">
+                            <CheckCircle2 className="w-3.5 h-3.5 shrink-0" /> Pílula Concluída
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-orange-500 bg-orange-500/10 px-2.5 py-1 rounded-full">
+                            <AlertCircle className="w-3.5 h-3.5 shrink-0" /> Pendente
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}
