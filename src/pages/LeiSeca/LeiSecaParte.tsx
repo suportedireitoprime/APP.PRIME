@@ -276,7 +276,7 @@ export default function LeiSecaParte() {
         </div>
       </section>
 
-      <div className="max-w-5xl mx-auto px-4 py-6 pb-[calc(7.5rem+var(--safe-bottom))]">
+      <div className="max-w-5xl mx-auto px-4 py-6 pb-[calc(7.5rem+var(--sai-bottom))]">
         {(licoesQ.isLoading || estruturando) && (
           <div className="text-center py-12 text-muted-foreground animate-fade-in">
             <Loader2 className="h-8 w-8 mx-auto mb-3 animate-spin" style={{ color: tema.solid }} />

@@ -225,7 +225,7 @@ export default function Assinatura() {
 
 
     return (
-      <div className="min-h-dvh bg-background pb-[calc(4rem+var(--safe-bottom))]">
+      <div className="min-h-dvh bg-background pb-[calc(4rem+var(--sai-bottom))]">
         <WelcomePremiumOverlay
           open={showWelcome}
           planoLabel={planoAtual ?? 'Premium'}

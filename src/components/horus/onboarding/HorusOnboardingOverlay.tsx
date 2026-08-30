@@ -164,7 +164,7 @@ export default function HorusOnboardingOverlay({
               transition={{ type: 'spring', stiffness: 260, damping: 28 }}
               className="absolute inset-x-0 z-30 p-6"
               style={{
-                bottom: 'calc(var(--safe-bottom) + 12vh)',
+                bottom: 'calc(var(--sai-bottom) + 12vh)',
                 background:
                   'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 30%, rgba(0,0,0,0.92) 100%)',
               }}

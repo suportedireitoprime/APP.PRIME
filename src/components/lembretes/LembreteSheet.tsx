@@ -321,7 +321,7 @@ const LembreteSheet = ({ open, onClose, reminderId, livroId, livroArea, livroTit
               )}
             </div>
 
-            <div className="p-4 pb-[calc(1rem+var(--safe-bottom))] border-t border-border bg-card flex gap-2">
+            <div className="p-4 pb-[calc(1rem+var(--sai-bottom))] border-t border-border bg-card flex gap-2">
               {id && (
                 <button onClick={excluir} className="w-12 h-12 rounded-xl bg-red-500/10 text-red-400 flex items-center justify-center">
                   <Trash2 className="w-5 h-5" />

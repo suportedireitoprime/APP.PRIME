@@ -485,7 +485,7 @@ const MeuEspaco = () => {
         </div>
 
         {activeTab === 'meus' && (
-          <div className="mt-5 space-y-6 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0 pb-[calc(4rem+var(--safe-bottom))]">
+          <div className="mt-5 space-y-6 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0 pb-[calc(4rem+var(--sai-bottom))]">
             
             <div className="space-y-6">
               {/* Bio */}
@@ -703,7 +703,7 @@ const MeuEspaco = () => {
         )}
 
         {activeTab === 'metas' && (
-          <div className="mt-5 px-5 lg:px-0 pb-[calc(4rem+var(--safe-bottom))] space-y-4">
+          <div className="mt-5 px-5 lg:px-0 pb-[calc(4rem+var(--sai-bottom))] space-y-4">
             <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold px-1">Seu progresso diário</p>
             {METAS_MOCK.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">

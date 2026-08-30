@@ -209,7 +209,7 @@ export function AnotacoesAulaSheet({
         className={
           isDesktop
             ? 'fixed right-0 top-0 bottom-0 z-[10041] w-[min(40rem,95vw)] border-l border-border bg-background shadow-2xl flex flex-col pointer-events-auto'
-            : 'fixed inset-0 z-[10041] bg-background flex flex-col pointer-events-auto pb-[calc(1.25rem+var(--safe-bottom))]'
+            : 'fixed inset-0 z-[10041] bg-background flex flex-col pointer-events-auto pb-[calc(1.25rem+var(--sai-bottom))]'
         }
       >
         {/* Header */}

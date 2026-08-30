@@ -363,7 +363,7 @@ const AnotacoesSheet = ({ open, onClose, tabelaNome, artigoNumero, artigoTexto, 
         className={
           isDesktop
             ? 'fixed right-0 top-0 bottom-0 z-[10041] w-[min(30rem,92vw)] border-l border-border bg-background shadow-2xl flex flex-col pointer-events-auto'
-            : 'fixed inset-0 z-[10041] bg-background flex flex-col pointer-events-auto pb-[calc(1.25rem+var(--safe-bottom))]'
+            : 'fixed inset-0 z-[10041] bg-background flex flex-col pointer-events-auto pb-[calc(1.25rem+var(--sai-bottom))]'
         }
       >
         <header className="pt-[calc(1.25rem+var(--sai-top))] border-b border-border bg-card">

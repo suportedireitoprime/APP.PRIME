@@ -667,7 +667,7 @@ export default function VisuaisJuridicosSheet({
                 </nav>
               )}
 
-              <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-[calc(1.25rem+var(--safe-bottom))] pt-3 lg:mx-auto lg:w-full lg:max-w-[900px] lg:px-8">
+              <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-[calc(1.25rem+var(--sai-bottom))] pt-3 lg:mx-auto lg:w-full lg:max-w-[900px] lg:px-8">
                 {/* 1 — tipo */}
                 {passo === 1 && (
                   <div className="space-y-2">

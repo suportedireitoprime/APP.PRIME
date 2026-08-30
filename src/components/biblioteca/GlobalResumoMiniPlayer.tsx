@@ -21,7 +21,7 @@ export function GlobalResumoMiniPlayer() {
         className="fixed left-0 right-0 z-[80] px-3 pointer-events-none"
         style={{
           // Sobe mais acima da bottom nav (botão central elevado "Ferramentas")
-          bottom: `calc(9.5rem + var(--safe-bottom))`,
+          bottom: `calc(9.5rem + var(--sai-bottom))`,
         }}
       >
         <div className="pointer-events-auto mx-auto max-w-md rounded-full border border-white/10 bg-[#0f0f0f]/95 backdrop-blur-md shadow-2xl shadow-black/60 flex items-center gap-2 pl-1.5 pr-1.5 py-1.5 relative overflow-hidden">

@@ -279,7 +279,7 @@ const Noticias = () => {
 
 
   return (
-    <div className="min-h-screen bg-background pb-[calc(7rem+var(--safe-bottom))]">
+    <div className="min-h-screen bg-background pb-[calc(7rem+var(--sai-bottom))]">
       {/* Gradient header — same pattern as Novidades */}
       <div className="bg-gradient-to-b from-primary/30 via-primary/15 to-background pb-4">
         <PageHeader

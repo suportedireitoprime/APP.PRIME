@@ -449,7 +449,7 @@ export function SumulaVinculanteSheet({ sumula, tribunal, isFavorita = false, on
             </div>
 
             {/* Conteúdo rolável */}
-            <div className="flex-1 overflow-y-auto px-5 pb-[calc(7.5rem+var(--safe-bottom))] relative overscroll-contain">
+            <div className="flex-1 overflow-y-auto px-5 pb-[calc(7.5rem+var(--sai-bottom))] relative overscroll-contain">
               
               {/* Barra de progresso de áudio sticky no topo idêntica ao Código Penal */}
               {narracaoPlaying && (

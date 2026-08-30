@@ -326,7 +326,7 @@ export default function Radar360() {
         </ScrollArea>
       </div>
 
-      <main className="max-w-5xl mx-auto px-4 py-3 pb-[calc(7rem+var(--safe-bottom))] space-y-2.5 lg:max-w-[1500px] lg:px-12 lg:py-6 lg:grid lg:grid-cols-2 lg:gap-3 lg:space-y-0 2xl:grid-cols-3 2xl:px-16">
+      <main className="max-w-5xl mx-auto px-4 py-3 pb-[calc(7rem+var(--sai-bottom))] space-y-2.5 lg:max-w-[1500px] lg:px-12 lg:py-6 lg:grid lg:grid-cols-2 lg:gap-3 lg:space-y-0 2xl:grid-cols-3 2xl:px-16">
         {loading && (
           <div className="flex items-center justify-center py-12 lg:col-span-full">
             <Loader2 className="w-6 h-6 animate-spin text-primary" />

@@ -42,7 +42,7 @@ export default function Suporte() {
         initial={{ y: 0, opacity: 1 }}
         className="fixed bottom-0 left-0 right-0 z-50 lg:hidden md:bottom-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-auto"
       >
-        <div className="bg-[#1A1D21]/95 backdrop-blur-md border-t border-border/40 rounded-t-3xl shadow-lg shadow-black/10 pb-[calc(0.5rem+var(--safe-bottom))] md:border md:rounded-full md:shadow-2xl md:shadow-black/30 md:pb-0">
+        <div className="bg-[#1A1D21]/95 backdrop-blur-md border-t border-border/40 rounded-t-3xl shadow-lg shadow-black/10 pb-[calc(0.5rem+var(--sai-bottom))] md:border md:rounded-full md:shadow-2xl md:shadow-black/30 md:pb-0">
           <div className="grid grid-cols-5 items-end px-1 pt-3.5 pb-3.5 max-w-lg mx-auto md:gap-1 md:px-3 md:py-2">
             {tabs.map((tab) => {
               const active = activeTab === tab.id;

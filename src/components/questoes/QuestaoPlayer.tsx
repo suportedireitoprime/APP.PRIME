@@ -85,7 +85,7 @@ const QuestaoPlayer = ({ questoes, loading, contexto = 'pratica', onRegistrar, o
   }
 
   return (
-    <div className="flex flex-col gap-4 pb-[calc(7rem+var(--safe-bottom))]">
+    <div className="flex flex-col gap-4 pb-[calc(7rem+var(--sai-bottom))]">
       <div className="flex items-center justify-between px-1">
         <span className="text-[12px] font-semibold uppercase tracking-wider text-primary">
           Questão {idx + 1} / {questoes.length}

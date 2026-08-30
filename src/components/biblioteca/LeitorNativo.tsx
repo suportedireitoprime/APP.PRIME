@@ -1610,7 +1610,7 @@ const LeitorNativo = ({ livroId, livroTabela, pdfUrl, titulo, onClose, autor, an
             transition={{ type: 'tween', duration: 0.2 }}
             className="fixed z-[1310] inset-x-0 bottom-0 border-t shadow-2xl"
             style={{
-              paddingBottom: 'var(--safe-bottom)',
+              paddingBottom: 'var(--sai-bottom)',
               maxWidth:
                 typeof window !== 'undefined' && window.innerWidth >= 768
                   ? `min(720px, calc(100vw - ${(railExpanded ? 380 : 56) + 32}px))`
@@ -1914,7 +1914,7 @@ const LeitorNativo = ({ livroId, livroTabela, pdfUrl, titulo, onClose, autor, an
                   : {
                       background: tema.bg,
                       color: tema.text,
-                      paddingBottom: 'var(--safe-bottom)',
+                      paddingBottom: 'var(--sai-bottom)',
                     }
               }
             >

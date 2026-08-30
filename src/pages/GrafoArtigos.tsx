@@ -104,11 +104,23 @@ const GrafoArtigos = (props: GrafoArtigosProps) => {
     if (!tabelaNome) return;
     (async () => {
       setLoading(true);
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from(tabelaNome as any)
-        .select('numero, caput, texto, paragrafos, incisos')
+        .select('numero, rotulo, texto, ordem_numero')
         .order('ordem_numero', { ascending: true });
-      setArtigos(data || []);
+
+      if (error) {
+        console.error('Erro ao buscar artigos no Grafo:', error);
+      }
+
+      const parsedArtigos = (data || []).map((row: any) => ({
+        numero: row.rotulo || row.numero,
+        caput: row.texto || '',
+        texto: row.texto || '',
+        paragrafos: [],
+        incisos: []
+      }));
+      setArtigos(parsedArtigos);
       setLoading(false);
     })();
   }, [tabelaNome]);

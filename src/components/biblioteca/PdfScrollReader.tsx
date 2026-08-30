@@ -825,7 +825,7 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId, capaUrl }: Props) => {
           animate={{ y: 0, opacity: 1 }}
           transition={{ type: 'spring', stiffness: 260, damping: 26 }}
           className="fixed inset-x-0 bottom-0 z-[1310] border-t border-white/10 bg-neutral-950/95 backdrop-blur-xl shadow-2xl"
-          style={{ paddingBottom: 'var(--safe-bottom)' }}
+          style={{ paddingBottom: 'var(--sai-bottom)' }}
         >
           <div className="px-5 pt-3 pb-2 flex items-center gap-3 text-[11px] text-white/70">
             <span className="tabular-nums">{currentPage} / {totalPages}</span>
@@ -894,7 +894,7 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId, capaUrl }: Props) => {
               initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
               transition={{ type: 'spring', stiffness: 320, damping: 34 }}
               className="fixed inset-x-0 bottom-0 z-[1330] mx-auto w-full sm:max-w-lg bg-neutral-900 border-t sm:border border-white/10 rounded-t-3xl sm:rounded-3xl sm:bottom-6 flex flex-col max-h-[75dvh] shadow-2xl"
-              style={{ paddingBottom: 'var(--safe-bottom)' }}
+              style={{ paddingBottom: 'var(--sai-bottom)' }}
             >
               <div className="flex items-center gap-3 px-4 py-3 border-b border-white/10 shrink-0">
                 <List className="w-4 h-4 text-primary" />
@@ -972,7 +972,7 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId, capaUrl }: Props) => {
               initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
               transition={{ type: 'spring', stiffness: 320, damping: 34 }}
               className="fixed inset-x-0 bottom-0 z-[1330] mx-auto w-full sm:max-w-lg bg-neutral-900 border-t sm:border border-white/10 rounded-t-3xl sm:rounded-3xl sm:bottom-6 flex flex-col max-h-[75dvh] shadow-2xl"
-              style={{ paddingBottom: 'var(--safe-bottom)' }}
+              style={{ paddingBottom: 'var(--sai-bottom)' }}
             >
               <form
                 onSubmit={(e) => { e.preventDefault(); buscar(termo); }}

@@ -204,7 +204,7 @@ export default function LembreteLivroSheet({
           </SheetDescription>
         </SheetHeader>
 
-        <div className="flex-1 overflow-y-auto px-5 pb-[calc(1.5rem+var(--safe-bottom))] space-y-5">
+        <div className="flex-1 overflow-y-auto px-5 pb-[calc(1.5rem+var(--sai-bottom))] space-y-5">
           {/* Cabeçalho do livro */}
           <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-br from-card via-card to-primary/5 p-4">
             <div className="flex items-center gap-4">

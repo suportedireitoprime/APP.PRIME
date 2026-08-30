@@ -705,7 +705,7 @@ export default function ObraDetailSheet({ obra, open, onClose }: Props) {
                         ))
                       )}
                     </div>
-                    <div className="border-t border-border p-3 pb-[max(var(--safe-bottom),12px)] flex items-end gap-2">
+                    <div className="border-t border-border p-3 pb-[max(var(--sai-bottom),12px)] flex items-end gap-2">
                       <textarea
                         value={novoTexto}
                         onChange={(e) => setNovoTexto(e.target.value)}

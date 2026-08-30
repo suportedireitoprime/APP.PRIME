@@ -75,7 +75,7 @@ const VadeMecumBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
         transition={{ type: 'spring', damping: 25, stiffness: 220, delay: 0.15 }}
         className="fixed bottom-0 left-0 right-0 z-50  md:bottom-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-auto"
       >
-        <div className="bg-card/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-lg shadow-black/10 pb-[calc(0.5rem+var(--safe-bottom))] md:border md:rounded-full md:shadow-2xl md:shadow-black/30 md:pb-0">
+        <div className="bg-card/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-lg shadow-black/10 pb-[calc(0.5rem+var(--sai-bottom))] md:border md:rounded-full md:shadow-2xl md:shadow-black/30 md:pb-0">
           <div className="grid grid-cols-5 items-end px-1 pt-3.5 pb-3.5 max-w-lg mx-auto md:gap-1 md:px-3 md:py-2">
             {TABS.map((tab) => {
               const active = tab.match(pathname) || (tab.isMais && maisOpen);
@@ -138,7 +138,7 @@ const VadeMecumBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed bottom-0 left-0 right-0 z-[70] bg-background border-t border-border rounded-t-3xl pb-[calc(2rem+var(--safe-bottom))] pt-6 px-4  shadow-2xl"
+              className="fixed bottom-0 left-0 right-0 z-[70] bg-background border-t border-border rounded-t-3xl pb-[calc(2rem+var(--sai-bottom))] pt-6 px-4  shadow-2xl"
             >
               <div className="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-muted rounded-full" />
               <div className="flex items-center justify-between mb-6">

@@ -235,7 +235,7 @@ const ArtigoIAFullscreen = ({
           {/* Corpo */}
           <div
             ref={bodyRef}
-            className="min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain px-5 pb-[calc(6rem+var(--safe-bottom))] pt-5"
+            className="min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain px-5 pb-[calc(6rem+var(--sai-bottom))] pt-5"
             style={{ WebkitOverflowScrolling: 'touch' }}
           >
             <div className="mx-auto w-full max-w-2xl">
@@ -270,7 +270,7 @@ const ArtigoIAFullscreen = ({
 
           {/* Navegação inferior */}
           {sections.length > 1 && (
-            <footer className="shrink-0 border-t border-border bg-[#0f0f0f]/95 px-4 py-3 pb-[calc(0.75rem+var(--safe-bottom))] backdrop-blur-md">
+            <footer className="shrink-0 border-t border-border bg-[#0f0f0f]/95 px-4 py-3 pb-[calc(0.75rem+var(--sai-bottom))] backdrop-blur-md">
               <div className="mx-auto flex w-full max-w-2xl items-center justify-between gap-3">
                 <button
                   onClick={() => { haptic.light(); handleSetIndex((i) => Math.max(i - 1, 0)); }}

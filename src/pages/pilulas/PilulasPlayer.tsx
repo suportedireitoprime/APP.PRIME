@@ -287,7 +287,7 @@ export default function PilulasPlayer() {
       </div>
 
       {/* Main Content (Artwork + Controls) */}
-      <div className="relative z-10 flex-1 flex flex-col items-center px-6 pt-4 pb-[calc(2rem+var(--safe-bottom))] no-scrollbar overflow-y-auto">
+      <div className="relative z-10 flex-1 flex flex-col items-center px-6 pt-4 pb-[calc(2rem+var(--sai-bottom))] no-scrollbar overflow-y-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

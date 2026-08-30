@@ -317,7 +317,7 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
           </div>
 
           {/* Results */}
-          <div className="flex-1 overflow-y-auto px-2 pb-[calc(3.5rem+var(--safe-bottom))] relative border-t border-border/50 pt-2">
+          <div className="flex-1 overflow-y-auto px-2 pb-[calc(3.5rem+var(--sai-bottom))] relative border-t border-border/50 pt-2">
             
             {/* Conteúdo dinâmico da busca do Supabase (Videoaulas, Livros, Jurisprudência, etc) */}
             {activeTab !== 'leis' && (

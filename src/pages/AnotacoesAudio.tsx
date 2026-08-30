@@ -91,7 +91,7 @@ export default function AnotacoesAudio() {
   return (
     <div className="min-h-dvh bg-background">
       <PageHeader title={titleFor[view]} onBack={back} />
-      <div className="mx-auto max-w-2xl px-4 pt-4 pb-[calc(7rem+var(--safe-bottom))] lg:max-w-[1200px] lg:px-12 lg:pt-8">
+      <div className="mx-auto max-w-2xl px-4 pt-4 pb-[calc(7rem+var(--sai-bottom))] lg:max-w-[1200px] lg:px-12 lg:pt-8">
         <AnimatePresence mode="wait">
           <motion.div
             key={view}

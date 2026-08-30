@@ -110,7 +110,7 @@ export function ArtigoComentarioSlide({
         </div>
 
         {/* Rodapé com Safe Area Inset para Android/iOS */}
-        <div className="px-5 pt-2 pb-[calc(1.25rem+var(--safe-bottom))] border-t border-white/5">
+        <div className="px-5 pt-2 pb-[calc(1.25rem+var(--sai-bottom))] border-t border-white/5">
           <Button
             onClick={onContinuar}
             className="w-full h-12 font-bold text-base rounded-xl text-white hover:opacity-90 touch-manipulation active:scale-[0.99] transition-transform"

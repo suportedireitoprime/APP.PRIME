@@ -333,7 +333,7 @@ export default function NotificationsSheet({ open, onClose }: Props) {
         className="fixed top-0 right-0 bottom-0 z-[91] w-full max-w-md bg-background border-l border-border/50 shadow-2xl flex flex-col will-change-transform"
         style={{
           paddingTop: 'var(--sai-top)',
-          paddingBottom: 'var(--safe-bottom)',
+          paddingBottom: 'var(--sai-bottom)',
           transform: entered ? 'translate3d(0,0,0)' : 'translate3d(100%,0,0)',
           transition: 'transform 260ms cubic-bezier(0.22, 0.61, 0.36, 1)',
         }}

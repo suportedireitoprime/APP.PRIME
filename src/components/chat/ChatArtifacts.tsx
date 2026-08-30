@@ -227,7 +227,7 @@ export const QuestoesRunner = ({ questoes, onClose }: { questoes: Questao[]; onC
         </div>
 
         {/* Nav */}
-        <div className="px-5 pb-[calc(1rem+var(--safe-bottom))] pt-3 border-t border-border flex items-center gap-3">
+        <div className="px-5 pb-[calc(1rem+var(--sai-bottom))] pt-3 border-t border-border flex items-center gap-3">
           <button
             onClick={() => setI(v => Math.max(0, v - 1))}
             disabled={i === 0}
@@ -460,7 +460,7 @@ export const TermosViewer = ({ termos, onClose }: { termos: Termo[]; onClose: ()
             <X className="w-4 h-4" />
           </button>
         </div>
-        <div className="flex-1 overflow-y-auto px-5 pb-[calc(1.5rem+var(--safe-bottom))] space-y-3">
+        <div className="flex-1 overflow-y-auto px-5 pb-[calc(1.5rem+var(--sai-bottom))] space-y-3">
           {termos.map((t, i) => (
             <motion.div
               key={i}
@@ -516,7 +516,7 @@ export const ShareSheet = ({ text, onClose }: { text: string; onClose: () => voi
     >
       <motion.div
         initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
-        className="w-full bg-card rounded-t-3xl p-5 pb-[calc(2rem+var(--safe-bottom))]"
+        className="w-full bg-card rounded-t-3xl p-5 pb-[calc(2rem+var(--sai-bottom))]"
         onClick={e => e.stopPropagation()}
       >
         <div className="w-10 h-1 bg-muted rounded-full mx-auto mb-4" />

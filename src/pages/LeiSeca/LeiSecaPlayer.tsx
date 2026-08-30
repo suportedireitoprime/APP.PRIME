@@ -285,7 +285,7 @@ export default function LeiSecaPlayer() {
         </div>
       </div>
 
-      <div className="flex-1 max-w-2xl w-full mx-auto px-4 py-6 pb-[calc(6rem+var(--safe-bottom))]">
+      <div className="flex-1 max-w-2xl w-full mx-auto px-4 py-6 pb-[calc(6rem+var(--sai-bottom))]">
         {atual && (
           <ExercicioRunner
             key={indice}
@@ -298,7 +298,7 @@ export default function LeiSecaPlayer() {
       </div>
 
       {/* Footer fixo */}
-      <div className="fixed bottom-0 left-0 right-0 z-30 bg-[#160510]/85 backdrop-blur-md border-t border-white/5 pb-[calc(0.75rem+var(--safe-bottom))]">
+      <div className="fixed bottom-0 left-0 right-0 z-30 bg-[#160510]/85 backdrop-blur-md border-t border-white/5 pb-[calc(0.75rem+var(--sai-bottom))]">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="text-xs text-white/60">
             Exercício {indice + 1} de {total}
@@ -340,7 +340,7 @@ export default function LeiSecaPlayer() {
       </AlertDialog>
 
       <Sheet open={verArtigo} onOpenChange={setVerArtigo}>
-        <SheetContent side="bottom" className="h-[75vh] overflow-y-auto pb-[calc(2rem+var(--safe-bottom))]">
+        <SheetContent side="bottom" className="h-[75vh] overflow-y-auto pb-[calc(2rem+var(--sai-bottom))]">
           <SheetHeader>
             <SheetTitle>{trilhaQ.data?.nome}</SheetTitle>
           </SheetHeader>

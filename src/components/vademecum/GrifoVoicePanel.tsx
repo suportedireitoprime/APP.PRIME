@@ -227,7 +227,7 @@ const GrifoVoicePanel = forwardRef<GrifoVoicePanelHandle, Props>(function GrifoV
             exit={{ y: 40, opacity: 0 }}
             transition={{ type: 'spring', damping: 24, stiffness: 260 }}
             className="fixed left-1/2 -translate-x-1/2 z-[9995] w-[calc(100vw-1.5rem)] max-w-lg pointer-events-none"
-            style={{ bottom: 'calc(9.5rem + var(--safe-bottom))' }}
+            style={{ bottom: 'calc(9.5rem + var(--sai-bottom))' }}
           >
             <div className="pointer-events-auto rounded-2xl bg-card/95 backdrop-blur-md border border-amber-400/40 shadow-2xl shadow-amber-400/20 px-4 py-3">
               <div className="flex items-center gap-2 mb-1.5">

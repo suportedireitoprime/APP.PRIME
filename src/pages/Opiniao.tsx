@@ -220,7 +220,7 @@ export default function Opiniao() {
               </div>
 
               {/* Sticky bottom button */}
-              <div className="p-5 border-t border-border bg-background/80 backdrop-blur-lg pb-[calc(1.25rem+var(--safe-bottom))]">
+              <div className="p-5 border-t border-border bg-background/80 backdrop-blur-lg pb-[calc(1.25rem+var(--sai-bottom))]">
                 <button
                   onClick={handleSubmit}
                   disabled={sending || comentario.trim().length < 5}

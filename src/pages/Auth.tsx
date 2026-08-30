@@ -290,7 +290,7 @@ const AuthDrawer = ({ mode, setMode, onClose }: { mode: 'login' | 'signup' | 'fo
           <div className="w-12 h-1.5 rounded-full bg-white/20" />
         </div>
 
-        <div className="px-6 flex-1 pb-[calc(var(--safe-bottom)+2rem)] overflow-y-auto no-scrollbar">
+        <div className="px-6 flex-1 pb-[calc(var(--sai-bottom)+2rem)] overflow-y-auto no-scrollbar">
           
           <div className="flex items-center justify-between mb-6">
             <div>
@@ -778,7 +778,7 @@ const Auth = () => {
           </motion.div>
           
           {/* Área dos Botões Inferiores Mobile */}
-          <div className="w-full pb-[calc(var(--safe-bottom)+2rem)] flex flex-col items-center justify-center gap-4 mt-auto">
+          <div className="w-full pb-[calc(var(--sai-bottom)+2rem)] flex flex-col items-center justify-center gap-4 mt-auto">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

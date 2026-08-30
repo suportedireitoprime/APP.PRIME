@@ -280,7 +280,7 @@ const TrilhaMap = ({ concursos, onBack }: { concursos: ConcursoRow[], onBack: ()
       <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
         <DrawerPortal>
           <DrawerOverlay className="fixed inset-0 bg-black/60 z-50 backdrop-blur-sm" onClick={() => setDrawerOpen(false)} />
-          <DrawerContent className="bg-card border-t border-white/10 flex flex-col rounded-t-[32px] fixed bottom-0 left-0 right-0 z-50 pb-[calc(1.25rem+var(--safe-bottom))]">
+          <DrawerContent className="bg-card border-t border-white/10 flex flex-col rounded-t-[32px] fixed bottom-0 left-0 right-0 z-50 pb-[calc(1.25rem+var(--sai-bottom))]">
             <div className="p-6">
               <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-white/10 mb-8" />
               <h3 className="text-xl font-black mb-2">Ajustes da Missão</h3>

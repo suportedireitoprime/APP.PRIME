@@ -600,7 +600,21 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
   const [showQuestoesPanel, setShowQuestoesPanel] = useState(false);
   const [showJurisPanel, setShowJurisPanel] = useState(false);
   const [showBaixarSheet, setShowBaixarSheet] = useState(false);
-  useEffect(() => { setShowLembretesLocal(false); }, [artigo?.numero, tabelaNome]);
+  useEffect(() => {
+    setShowLembretesLocal(false);
+    setShowGrafo(false);
+    setShowQuestoesPanel(false);
+    setShowJurisPanel(false);
+    setShowBaixarSheet(false);
+    setShowAnotacoesSheet(false);
+    setShowPerguntarSheet(false);
+    setShowPraticarSheet(false);
+    setShowVideoaulasListSheet(false);
+    setShowVideoaulaSheet(false);
+    setShowTermosSheet(false);
+    setShowSharePanel(false);
+    setActiveActionMenu(null);
+  }, [artigo?.numero, tabelaNome]);
   // Desktop: pílula flutuante Narrar/Grifar quando há seleção de texto no artigo
   useEffect(() => {
     if (!isDesktop || !artigo) { setSelectionPill(null); return; }
@@ -2836,7 +2850,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
           )}
 
 
-          <TabsContent value="artigo" className="px-5 pb-[calc(9rem+var(--safe-bottom))] pt-4 relative">
+          <TabsContent value="artigo" className="px-5 pb-[calc(9rem+var(--sai-bottom))] pt-4 relative">
             {/* Barra de progresso da narração (sticky no topo) */}
             {narracaoPlaying && (
               <div className="sticky top-0 z-30 -mx-5 -mt-4 mb-3 bg-[#0f0f0f]/95 backdrop-blur-md border-b border-white/5 px-5 py-2.5">
@@ -3111,7 +3125,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
           </TabsContent>
 
 
-          <TabsContent value="explicacao" className="px-5 pb-[calc(8rem+var(--safe-bottom))] pt-4">
+          <TabsContent value="explicacao" className="px-5 pb-[calc(8rem+var(--sai-bottom))] pt-4">
             {modificationInfo ? (
               <div className="space-y-5">
                 <div className="rounded-2xl bg-violet-500/10 border border-violet-500/20 p-4">
@@ -3228,7 +3242,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
             )}
           </TabsContent>
 
-          <TabsContent value="exemplo" className="px-5 pb-[calc(8rem+var(--safe-bottom))] pt-4">
+          <TabsContent value="exemplo" className="px-5 pb-[calc(8rem+var(--sai-bottom))] pt-4">
             {!isPremium ? (
               <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-b from-amber-500/20 to-primary/20 p-2 border border-amber-500/30 flex items-center justify-center mb-3 shadow-lg shadow-primary/20">
@@ -3288,7 +3302,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
             )}
           </TabsContent>
 
-          <TabsContent value="historico" className="px-5 pb-[calc(8rem+var(--safe-bottom))] pt-4">
+          <TabsContent value="historico" className="px-5 pb-[calc(8rem+var(--sai-bottom))] pt-4">
             {(() => {
               const modRegex = /\(((?:Redação\s+dada|Incluíd[oa]|Acrescid[oa]|Revogad[oa]|Alterad[oa]|Vetad[oa]|Vigência|Regulamento|Renumerado|Transformado|Suprimido|Restabelecido|Produção de efeito)[^)]*)\)/gi;
               const found: { texto: string; ano: number }[] = [];

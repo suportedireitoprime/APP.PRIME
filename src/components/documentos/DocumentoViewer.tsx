@@ -187,7 +187,7 @@ const DocumentoViewer = ({ blob, nome, mime, onClose, onBaixar, baixando }: Prop
         )}
       </div>
 
-      <div className="flex-1 overflow-y-auto overscroll-contain bg-muted/30 px-3 pt-3 pb-[calc(4rem+var(--safe-bottom))]">
+      <div className="flex-1 overflow-y-auto overscroll-contain bg-muted/30 px-3 pt-3 pb-[calc(4rem+var(--sai-bottom))]">
         {estado.tipo === 'carregando' && (
           <div className="flex items-center justify-center gap-2 py-20 text-muted-foreground">
             <Loader2 className="h-5 w-5 animate-spin" />

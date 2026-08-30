@@ -164,7 +164,7 @@ export default function LeiSecaIndex({ modo = "todos" }: { modo?: Filtro }) {
       </div>
 
       {/* CONTEÚDO E FILTROS */}
-      <div className="max-w-5xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 py-3 pb-[calc(7rem+var(--safe-bottom))]">
+      <div className="max-w-5xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 py-3 pb-[calc(7rem+var(--sai-bottom))]">
         {/* NAVEGAÇÃO POR PILLS */}
         <div className="flex items-center gap-2 p-1 rounded-2xl bg-muted/60 border border-border/60 mb-6 overflow-x-auto">
           <FiltroPill ativo={filtro === "todos"} onClick={() => { haptic.selection(); navigate("/lei-seca"); }} icon={<BookOpen className="h-4 w-4" />} label="Matérias" />

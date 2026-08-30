@@ -97,7 +97,7 @@ export function KaraokeOverlay({ open, audio, timings, fullText, title, onClose 
           className={
             expanded
               ? 'fixed inset-0 z-[10041] flex flex-col bg-background/98 backdrop-blur-xl md:left-auto md:right-0 md:w-[min(34rem,94vw)] md:border-l md:border-border md:shadow-2xl'
-              : 'fixed left-3 right-3 bottom-[calc(var(--safe-bottom)+140px)] z-[10041] md:left-auto md:right-4 md:w-[min(30rem,94vw)] md:bottom-6 rounded-3xl bg-background/95 backdrop-blur-xl border border-border shadow-2xl overflow-hidden'
+              : 'fixed left-3 right-3 bottom-[calc(var(--sai-bottom)+140px)] z-[10041] md:left-auto md:right-4 md:w-[min(30rem,94vw)] md:bottom-6 rounded-3xl bg-background/95 backdrop-blur-xl border border-border shadow-2xl overflow-hidden'
           }
         >
           {/* Header */}

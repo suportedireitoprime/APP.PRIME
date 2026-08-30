@@ -249,7 +249,7 @@ const Flashcard3D = memo(function Flashcard3D({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 24 }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
-            className="pt-2 pb-[calc(6.5rem+var(--safe-bottom))] grid grid-cols-2 gap-3"
+            className="pt-2 pb-[calc(6.5rem+var(--sai-bottom))] grid grid-cols-2 gap-3"
           >
             <Button
               variant="outline"

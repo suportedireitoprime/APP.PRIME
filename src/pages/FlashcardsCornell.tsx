@@ -311,7 +311,7 @@ const FlashcardsCornell = () => {
           </div>
 
           {/* Botão Marcar como Revisado (Agendamento para 2 dias) */}
-          <div className="pt-2 pb-[calc(1.25rem+var(--safe-bottom))] space-y-2">
+          <div className="pt-2 pb-[calc(1.25rem+var(--sai-bottom))] space-y-2">
             <Button
               onClick={marcarRevisado}
               disabled={salvando}

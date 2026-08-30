@@ -174,7 +174,7 @@ const SheetLeis = ({ area, open, onOpenChange }: Props) => {
                 />
               </div>
 
-              <div className="absolute bottom-0 left-0 right-0 bg-background/80 p-5 pt-4 backdrop-blur-xl border-t sm:px-6 pb-[calc(1.25rem+var(--safe-bottom))]">
+              <div className="absolute bottom-0 left-0 right-0 bg-background/80 p-5 pt-4 backdrop-blur-xl border-t sm:px-6 pb-[calc(1.25rem+var(--sai-bottom))]">
                 <Button
                   onClick={estudar}
                   disabled={loading || f.titulos.length === 0 || f.status.length === 0 || f.ordem.length === 0}
@@ -250,7 +250,7 @@ const SheetLeis = ({ area, open, onOpenChange }: Props) => {
                       </div>
                     )}
                   </div>
-                  <div className="absolute bottom-0 left-0 right-0 bg-background/80 p-5 pt-4 backdrop-blur-xl border-t sm:px-6 pb-[calc(1.25rem+var(--safe-bottom))]">
+                  <div className="absolute bottom-0 left-0 right-0 bg-background/80 p-5 pt-4 backdrop-blur-xl border-t sm:px-6 pb-[calc(1.25rem+var(--sai-bottom))]">
                     <Button
                       onClick={() => setPasso('main')}
                       className="h-14 w-full rounded-2xl bg-[#217756] text-[16px] font-black tracking-wide text-white shadow-xl shadow-black/30 hover:bg-[#1A6246] active:scale-[0.99] transition-all [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]"
@@ -285,7 +285,7 @@ const SheetLeis = ({ area, open, onOpenChange }: Props) => {
                       })}
                     </div>
                   </div>
-                  <div className="absolute bottom-0 left-0 right-0 bg-background/80 p-5 pt-4 backdrop-blur-xl border-t sm:px-6 pb-[calc(1.25rem+var(--safe-bottom))]">
+                  <div className="absolute bottom-0 left-0 right-0 bg-background/80 p-5 pt-4 backdrop-blur-xl border-t sm:px-6 pb-[calc(1.25rem+var(--sai-bottom))]">
                     <Button
                       onClick={() => setPasso('main')}
                       className="h-14 w-full rounded-2xl bg-[#217756] text-[16px] font-black tracking-wide text-white shadow-xl shadow-black/30 hover:bg-[#1A6246] active:scale-[0.99] transition-all [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]"

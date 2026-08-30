@@ -55,7 +55,7 @@ export default function LeiSecaLembretes() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-[calc(7rem+var(--safe-bottom))]">
+    <div className="min-h-screen bg-background pb-[calc(7rem+var(--sai-bottom))]">
       <header className="sticky top-0 z-30 bg-background/95 backdrop-blur border-b border-border/60 pt-[calc(0.5rem+var(--sai-top))]">
         <div className="max-w-5xl mx-auto px-4 h-14 flex items-center gap-3">
           <button onClick={() => navigate("/lei-seca")} aria-label="Voltar" className="h-11 w-11 grid place-items-center rounded-full hover:bg-muted active:scale-95 transition touch-manipulation">

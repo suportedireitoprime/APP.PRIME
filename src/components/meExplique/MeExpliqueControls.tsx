@@ -18,7 +18,7 @@ export const MeExpliqueControls = memo(function MeExpliqueControls({
   onAlternarMic, onEncerrar, onIniciar
 }: Props) {
   return (
-    <footer className="relative z-10 flex items-center justify-center gap-4 px-6 pb-[calc(1.5rem+var(--safe-bottom))] pt-3">
+    <footer className="relative z-10 flex items-center justify-center gap-4 px-6 pb-[calc(1.5rem+var(--sai-bottom))] pt-3">
       {ativo ? (
         <>
           <button

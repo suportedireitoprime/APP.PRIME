@@ -291,7 +291,7 @@ const BottomNav = () => {
       </div>
     </div>
     {/* Inset de fundo do sistema do celular (preto/escuro) sem puxar a cor do menu */}
-    <div className="bg-black h-[calc(0.5rem+var(--safe-bottom))] md:hidden" />
+    <div className="bg-black h-[calc(0.5rem+var(--sai-bottom))] md:hidden" />
   </nav>
 
 

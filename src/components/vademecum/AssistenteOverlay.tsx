@@ -843,7 +843,7 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
           <div className={
             isDesktop
               ? 'relative px-6 pb-6 pt-2 bg-gradient-to-t from-background via-background to-transparent'
-              : 'relative px-4 pb-[calc(0.5rem+var(--safe-bottom))] pt-2 bg-gradient-to-t from-background via-background/90 to-transparent'
+              : 'relative px-4 pb-[calc(0.5rem+var(--sai-bottom))] pt-2 bg-gradient-to-t from-background via-background/90 to-transparent'
           }>
             <div className={`mx-auto w-full max-w-3xl rounded-[26px] bg-[#2f2f2f] shadow-lg flex flex-col p-1.5 border border-white/5`}>
               {attachment && (

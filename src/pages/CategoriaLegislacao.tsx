@@ -2221,7 +2221,7 @@ const CategoriaLegislacao = () => {
                 </div>
               )}
               {/* Content */}
-              <div className="flex-1 overflow-y-auto px-4 pt-4 pb-[calc(1rem+var(--safe-bottom))] overscroll-contain">
+              <div className="flex-1 overflow-y-auto px-4 pt-4 pb-[calc(1rem+var(--sai-bottom))] overscroll-contain">
                 {overlayContents[overlayPanel]}
               </div>
             </motion.div>

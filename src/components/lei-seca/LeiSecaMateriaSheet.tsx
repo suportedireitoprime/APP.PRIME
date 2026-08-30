@@ -59,7 +59,7 @@ export function LeiSecaMateriaSheet({ materia, trilhas, resumo, open, onOpenChan
               </div>
             </SheetHeader>
 
-            <div className="flex-1 overflow-y-auto px-4 py-4 pb-[calc(1.5rem+var(--safe-bottom))] grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="flex-1 overflow-y-auto px-4 py-4 pb-[calc(1.5rem+var(--sai-bottom))] grid grid-cols-1 md:grid-cols-2 gap-3">
               {lista?.map((t, idx) => {
                 const r = resumo?.porTrilha.get(t.slug);
                 const pct = r?.pct ?? 0;
