@@ -7,6 +7,7 @@ import { Layers, PlayCircle, Trash2, Calendar, Target, CheckCircle2 } from 'luci
 import { format, isToday, isYesterday, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useGoBack } from '@/hooks/useGoBack';
+import { motion } from 'framer-motion';
 
 export default function QuestoesHistorico() {
   const navigate = useNavigate();
@@ -61,7 +62,15 @@ export default function QuestoesHistorico() {
                 <h3 className="text-sm font-extrabold text-foreground uppercase tracking-wider">{chave}</h3>
               </div>
 
-              <div className="space-y-3">
+              <motion.div 
+                className="space-y-3"
+                initial="hidden"
+                animate="show"
+                variants={{
+                  hidden: { opacity: 0 },
+                  show: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.1 } }
+                }}
+              >
                 {itens.map((sessao) => {
                   const respondidas = Object.keys(sessao.respostas).length;
                   const total = sessao.questoes.length;
@@ -69,14 +78,20 @@ export default function QuestoesHistorico() {
                   const pct = total > 0 ? Math.round((respondidas / total) * 100) : 0;
                   
                   return (
-                    <div 
+                    <motion.div 
                       key={sessao.id}
+                      variants={{
+                        hidden: { opacity: 0, scale: 0.95 },
+                        show: { opacity: 1, scale: 1, transition: { type: "spring", stiffness: 300, damping: 24 } }
+                      }}
+                      whileHover={{ scale: 1.015 }}
+                      whileTap={{ scale: 0.98 }}
                       onClick={() => handleContinuar(sessao.id)}
-                      className="group relative flex flex-col gap-3 rounded-2xl border border-border/80 bg-card p-4 transition-all hover:border-primary/50 hover:shadow-md cursor-pointer active:scale-[0.98]"
+                      className="group relative flex flex-col gap-3 rounded-2xl border border-border/80 bg-card p-4 transition-colors hover:border-primary/50 hover:shadow-md cursor-pointer focus-visible:outline-none"
                     >
                       <div className="flex items-start justify-between">
                         <div>
-                          <p className="font-bold text-foreground text-base leading-tight pr-8">
+                          <p className="font-bold text-foreground text-base leading-tight pr-8 group-hover:text-primary transition-colors">
                             {sessao.filtroAplicado}
                           </p>
                           <p className="text-[11px] text-muted-foreground mt-1 font-semibold flex items-center gap-1.5">
@@ -84,12 +99,13 @@ export default function QuestoesHistorico() {
                             Progresso: {respondidas} de {total} ({pct}%)
                           </p>
                         </div>
-                        <button 
+                        <motion.button 
+                          whileTap={{ scale: 0.8 }}
                           onClick={(e) => handleExcluir(sessao.id, e)}
-                          className="absolute right-4 top-4 p-1.5 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded-full transition-colors"
+                          className="absolute right-4 top-4 p-1.5 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded-full transition-colors focus-visible:outline-none"
                         >
                           <Trash2 className="w-4 h-4" />
-                        </button>
+                        </motion.button>
                       </div>
 
                       {/* Barra de progresso visual */}
@@ -117,10 +133,10 @@ export default function QuestoesHistorico() {
                           )}
                         </div>
                       </div>
-                    </div>
+                    </motion.div>
                   );
                 })}
-              </div>
+              </motion.div>
             </div>
           ))
         )}

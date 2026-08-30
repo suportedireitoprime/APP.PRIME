@@ -69,26 +69,42 @@ const Questoes = () => {
               Escolha filtros personalizados e comece sua rotina de resolução.
             </p>
 
-            <button
+            <motion.button
               key={location.key}
+              whileHover={{ scale: 1.015 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => { haptic.selection(); setFiltroAberto(true); }}
-              className="btn-attention-shine group mt-4 flex h-14 sm:h-16 min-h-[56px] w-full items-center justify-center gap-3 rounded-2xl bg-hero-panel hover:brightness-110 text-white text-base sm:text-lg font-black shadow-xl shadow-black/40 transition-all active:scale-[0.99] border border-[#E11D48]/30 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]"
+              className="btn-attention-shine group mt-4 flex h-14 sm:h-16 min-h-[56px] w-full items-center justify-center gap-3 rounded-2xl bg-hero-panel hover:brightness-110 text-white text-base sm:text-lg font-black shadow-xl shadow-black/40 transition-all focus-visible:outline-none border border-[#E11D48]/30 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]"
             >
               <Filter className="h-6 w-6 text-white drop-shadow-md" strokeWidth={2.5} />
               <span className="tracking-wide text-white">Filtro Rápido</span>
               <ChevronRight className="h-6 w-6 text-white transition-transform group-hover:translate-x-1 drop-shadow-md" strokeWidth={2.5} />
-            </button>
+            </motion.button>
           </div>
 
           {/* ── 4 Cards (Cadernos, Revisão, Desempenho, Histórico) ── */}
-          <div className="grid grid-cols-4 gap-2.5">
+          <motion.div 
+            className="grid grid-cols-4 gap-2.5"
+            initial="hidden"
+            animate="show"
+            variants={{
+              hidden: { opacity: 0 },
+              show: { opacity: 1, transition: { staggerChildren: 0.05 } }
+            }}
+          >
             {ATALHOS_4.map((a) => {
               const Icon = a.icon;
               return (
-                <button
+                <motion.button
                   key={a.id}
+                  variants={{
+                    hidden: { opacity: 0, y: 10 },
+                    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+                  }}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => { haptic.selection(); navigate(a.route); }}
-                  className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-zinc-400/50 transition-all active:scale-95 gap-2 text-center"
+                  className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-zinc-400/50 transition-colors gap-2 text-center focus-visible:outline-none"
                 >
                   <div className="relative w-10 h-10 flex items-center justify-center">
                     <Icon className="w-7 h-7 sm:w-8 sm:h-8 text-zinc-400 transition-all duration-300 group-hover:text-zinc-300 group-hover:scale-110" strokeWidth={2} />
@@ -98,10 +114,10 @@ const Questoes = () => {
                     <p className="text-xs font-extrabold text-foreground leading-tight">{a.label}</p>
                     <p className="text-[10px] text-muted-foreground mt-0.5 hidden sm:block">{a.desc}</p>
                   </div>
-                </button>
+                </motion.button>
               );
             })}
-          </div>
+          </motion.div>
 
           {/* ── Seção de Áreas / Disciplinas ───────────────────── */}
           <div className="space-y-3 pt-2">
@@ -146,18 +162,32 @@ const Questoes = () => {
                 Nenhuma matéria encontrada.
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              <motion.div 
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"
+                initial="hidden"
+                animate="show"
+                variants={{
+                  hidden: { opacity: 0 },
+                  show: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.1 } }
+                }}
+              >
                 {listaAreas.map((a) => {
                   const { icon: Icon, color } = visualDaArea(a.area);
                   const totalFormatted = Number(a.total).toLocaleString('pt-BR');
                   return (
-                    <button
+                    <motion.button
                       key={a.area}
+                      variants={{
+                        hidden: { opacity: 0, scale: 0.95 },
+                        show: { opacity: 1, scale: 1, transition: { type: "spring", stiffness: 300, damping: 24 } }
+                      }}
+                      whileHover={{ scale: 1.015 }}
+                      whileTap={{ scale: 0.98 }}
                       onClick={() => {
                         haptic.selection();
                         setMateriaSheet({ aberto: true, materia: a.area });
                       }}
-                      className="group relative overflow-hidden flex w-full items-center gap-4 rounded-2xl border border-border/80 bg-card p-4 text-left transition-all hover:border-primary/50 hover:shadow-md active:scale-[0.99]"
+                      className="group relative overflow-hidden flex w-full items-center gap-4 rounded-2xl border border-border/80 bg-card p-4 text-left transition-colors hover:border-primary/50 hover:shadow-md focus-visible:outline-none"
                     >
                       <motion.div
                         initial={{ x: '-150%' }}
@@ -177,10 +207,10 @@ const Questoes = () => {
                         </p>
                       </div>
                       <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground group-hover:translate-x-0.5 transition-transform z-10" />
-                    </button>
+                    </motion.button>
                   );
                 })}
-              </div>
+              </motion.div>
             )}
           </div>
           </div>
