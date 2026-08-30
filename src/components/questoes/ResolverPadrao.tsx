@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence, type PanInfo } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
-  ChevronLeft, ChevronRight, ChevronUp, Clock, Heart, Loader2, PlayCircle, CheckCircle2, XCircle, X, RotateCw, Sparkles, AlertTriangle, ScanText, FileText, Plus, MessageSquare, Trophy, Grid2X2, Mic, Layers
+  ChevronLeft, ChevronRight, ChevronUp, Clock, Heart, Loader2, PlayCircle, CheckCircle2, XCircle, X, RotateCw, Sparkles, AlertTriangle, ScanText, FileText, Plus, MessageSquare, Trophy, Grid2X2, Mic, Layers, ArrowRight
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -689,24 +689,36 @@ const ResolverPadrao = ({
                   </button>
                 </div>
               )
-            ) : !feedbackOculto ? (
-              <motion.div
-                key="feedback"
-                initial={{ y: 40, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: 40, opacity: 0 }}
-                transition={{ type: "tween", ease: 'easeOut', duration: 0.2 }}
-                className={cn(
-                  "pointer-events-auto relative rounded-t-3xl border-t px-5 pb-safe-nav pt-7 shadow-2xl lg:rounded-2xl lg:border lg:mb-8 lg:max-w-[calc(100%-320px-2rem)]",
-                  resp.acertou ? "bg-[#0f1f14] border-green-500/30" : "bg-[#1f0a0a] border-red-500/30"
-                )}
-              >
-                <button
+            {!feedbackOculto && (resp || (idx === questoes.length - 1 && selecao)) ? (
+              <>
+                <motion.div
+                  key="feedback-overlay"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
                   onClick={() => setFeedbackOculto(true)}
-                  className={cn("absolute right-4 top-4 rounded-full p-2 transition-colors hover:bg-black/10", resp.acertou ? "text-green-500/50 hover:text-green-400" : "text-white/30 hover:text-white")}
+                  className="fixed inset-0 bg-black/60 backdrop-blur-sm pointer-events-auto"
+                  style={{ zIndex: -1 }}
+                />
+                <motion.div
+                  key="feedback"
+                  initial={{ y: 40, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: 40, opacity: 0 }}
+                  transition={{ type: "tween", ease: 'easeOut', duration: 0.2 }}
+                  className={cn(
+                    "pointer-events-auto relative rounded-t-3xl border-t px-5 pb-safe-nav pt-7 shadow-2xl lg:rounded-2xl lg:border lg:mb-8 lg:max-w-[calc(100%-320px-2rem)]",
+                    resp.acertou ? "bg-[#0f1f14] border-green-500/30" : "bg-[#1f0a0a] border-red-500/30"
+                  )}
                 >
-                  <X className="h-5 w-5" />
-                </button>
+                  <button
+                    onClick={() => setFeedbackOculto(true)}
+                    className={cn("absolute right-4 top-4 grid h-10 w-10 place-items-center rounded-full transition-colors", 
+                      resp.acertou ? "bg-green-500/20 text-green-500 hover:bg-green-500/30" : "bg-red-500/20 text-red-400 hover:bg-red-500/30"
+                    )}
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
                 <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
                   <div className="flex items-center gap-4">
                     <div className={cn("flex h-12 w-12 shrink-0 items-center justify-center rounded-full", resp.acertou ? "bg-green-500/20 text-green-500" : "bg-red-500/20 text-red-400")}>
@@ -736,17 +748,28 @@ const ResolverPadrao = ({
                   <div className="flex flex-col gap-4 py-1">
                     <button
                       onClick={() => { if (gateFuncoes.blocked) { gateFuncoes.openGate(); return; } setComentarioAberto(true); }}
-                      className={cn("flex h-[60px] w-full items-center justify-between rounded-2xl border px-5 shadow-sm transition-all active:scale-[0.98]", 
+                      className={cn("relative overflow-hidden flex h-[60px] w-full items-center justify-between rounded-2xl border px-5 shadow-sm transition-all active:scale-[0.98]", 
                         resp.acertou 
                           ? "bg-green-500/10 border-green-500/20 text-green-500 hover:bg-green-500/20" 
                           : "bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20"
                       )}
                     >
-                      <div className="flex items-center gap-3">
+                      <motion.div 
+                        className="absolute inset-0 w-[40%] bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12"
+                        animate={{ x: ["-250%", "350%"] }}
+                        transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut", repeatDelay: 1 }}
+                      />
+                      <div className="flex items-center gap-3 relative z-10">
                         <MessageSquare className="h-6 w-6" /> 
-                        <span className="text-[16px] font-bold">Comentário Completo</span>
+                        <span className="text-[16px] font-bold">Ver comentário completo</span>
                       </div>
-                      <ChevronRight className="h-5 w-5 opacity-50" />
+                      <motion.div
+                        animate={{ x: [0, 5, 0] }}
+                        transition={{ repeat: Infinity, duration: 1.2, ease: "easeInOut" }}
+                        className="relative z-10"
+                      >
+                        <ArrowRight className="h-5 w-5 opacity-80" />
+                      </motion.div>
                     </button>
 
                     <div className="w-full">
@@ -785,6 +808,7 @@ const ResolverPadrao = ({
                   </div>
                 </div>
               </motion.div>
+              </>
             ) : (
                 <motion.div
                   key="feedback-oculto"
