@@ -111,15 +111,16 @@ export default function PilulasPlayer() {
       // First play ever? Try intro first
       if (phase === 'intro' && !hasPlayedIntro) {
         const introEl = audioIntroRef.current;
-        if (introEl && introEl.readyState >= 2) {
-          // Intro is loaded, play it
-          introEl.play().catch(() => {
-            // Intro failed, skip to main
+        if (introEl) {
+          introEl.play().then(() => {
+             setIsPlaying(true);
+          }).catch((err) => {
+            console.warn('Intro falhou, pulando para main:', err);
             skipToMain();
           });
+          // Optimistically set playing state to make UI responsive
           setIsPlaying(true);
         } else {
-          // Intro not loaded or not available, skip to main
           skipToMain();
         }
       } else {
@@ -295,10 +296,16 @@ export default function PilulasPlayer() {
           )}
 
           {/* Audio Tag: Intro */}
-          {!hasPlayedIntro && (
+          {phase === 'intro' && (
             <audio
               ref={audioIntroRef}
               src={INTRO_URL}
+              onTimeUpdate={handleTimeUpdate}
+              onLoadedMetadata={() => {
+                if (audioIntroRef.current && phase === 'intro') {
+                  setDuration(audioIntroRef.current.duration);
+                }
+              }}
               onEnded={handleIntroEnded}
               onError={handleIntroError}
               preload="auto"
