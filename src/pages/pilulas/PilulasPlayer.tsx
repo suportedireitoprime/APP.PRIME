@@ -86,15 +86,46 @@ export default function PilulasPlayer() {
     }
   }, [livro?.audioResumoUrl]);
 
+  const skipToMain = () => {
+    setPhase('main');
+    setHasPlayedIntro(true);
+    if (audioMainRef.current) {
+      // Manually read duration since onLoadedMetadata may have already fired
+      if (audioMainRef.current.duration && !isNaN(audioMainRef.current.duration)) {
+        setDuration(audioMainRef.current.duration);
+      }
+      audioMainRef.current.play().catch(() => setIsPlaying(false));
+      setIsPlaying(true);
+    }
+  };
+
   const togglePlay = () => {
-    const el = activeRef.current;
-    if (el) {
-      if (isPlaying) {
-        el.pause();
-        setIsPlaying(false);
+    if (isPlaying) {
+      // Pause whatever is active
+      activeRef.current?.pause();
+      setIsPlaying(false);
+    } else {
+      // First play ever? Try intro first
+      if (phase === 'intro' && !hasPlayedIntro) {
+        const introEl = audioIntroRef.current;
+        if (introEl && introEl.readyState >= 2) {
+          // Intro is loaded, play it
+          introEl.play().catch(() => {
+            // Intro failed, skip to main
+            skipToMain();
+          });
+          setIsPlaying(true);
+        } else {
+          // Intro not loaded or not available, skip to main
+          skipToMain();
+        }
       } else {
-        el.play().catch(() => setIsPlaying(false));
-        setIsPlaying(true);
+        // Main phase: play main audio
+        const mainEl = audioMainRef.current;
+        if (mainEl) {
+          mainEl.play().catch(() => setIsPlaying(false));
+          setIsPlaying(true);
+        }
       }
     }
   };
@@ -109,25 +140,22 @@ export default function PilulasPlayer() {
     }
   };
 
-  const handleLoadedMetadata = () => {
-    const el = activeRef.current;
-    if (el) {
-      setDuration(el.duration);
+  const handleMainLoadedMetadata = () => {
+    if (audioMainRef.current && !isNaN(audioMainRef.current.duration)) {
+      // Always keep main duration ready
+      if (phase === 'main') {
+        setDuration(audioMainRef.current.duration);
+      }
     }
   };
 
   const handleIntroEnded = () => {
-    setPhase('main');
-    setHasPlayedIntro(true);
-    setProgress(0);
-    setDuration(0);
-    // Timeout para garantir que o react renderizou o ref do main
-    setTimeout(() => {
-       if (audioMainRef.current) {
-          audioMainRef.current.play().catch(() => setIsPlaying(false));
-          setIsPlaying(true);
-       }
-    }, 50);
+    skipToMain();
+  };
+
+  const handleIntroError = () => {
+    // Intro failed to load — skip directly to main audio
+    skipToMain();
   };
 
   const formatTime = (time: number) => {
@@ -260,10 +288,9 @@ export default function PilulasPlayer() {
             <audio
               ref={audioIntroRef}
               src={INTRO_URL}
-              onTimeUpdate={handleTimeUpdate}
-              onLoadedMetadata={handleLoadedMetadata}
               onEnded={handleIntroEnded}
-              preload="metadata"
+              onError={handleIntroError}
+              preload="auto"
             />
           )}
 
@@ -271,8 +298,8 @@ export default function PilulasPlayer() {
           <audio
             ref={audioMainRef}
             src={livro.audioResumoUrl || ""}
-            onTimeUpdate={phase === 'main' ? handleTimeUpdate : undefined}
-            onLoadedMetadata={phase === 'main' ? handleLoadedMetadata : undefined}
+            onTimeUpdate={handleTimeUpdate}
+            onLoadedMetadata={handleMainLoadedMetadata}
             onEnded={() => setIsPlaying(false)}
             preload="metadata"
           />
