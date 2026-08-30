@@ -194,12 +194,12 @@ export default function PilulasPlayer() {
       </div>
 
       {/* Main Content (Artwork + Controls) */}
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pb-[calc(2rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] no-scrollbar overflow-y-auto">
+      <div className="relative z-10 flex-1 flex flex-col items-center px-6 pt-4 pb-[calc(2rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] no-scrollbar overflow-y-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="flex flex-col items-center w-full max-w-md"
+          className="flex flex-col items-center w-full max-w-md my-auto"
         >
           {/* Capa */}
           <div className="w-56 sm:w-72 rounded-2xl overflow-hidden shadow-2xl mb-8 border border-white/10 shrink-0 bg-black/40">
