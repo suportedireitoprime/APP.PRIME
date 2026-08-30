@@ -178,10 +178,10 @@ export default function Pilulas() {
                       {temAudio ? (
                         <div className="flex items-center justify-between gap-4 w-full">
                           <div className="flex items-center gap-2">
-                            <div className={`flex items-center justify-center w-6 h-6 rounded-full transition-colors bg-emerald-400/15 text-emerald-400 group-hover:bg-emerald-400/20`}>
+                            <div className={`flex items-center justify-center w-6 h-6 rounded-full transition-colors bg-primary/15 text-primary group-hover:bg-primary/20`}>
                               <Headphones className="w-3 h-3" />
                             </div>
-                            <span className={`text-[10px] uppercase tracking-wider font-bold text-emerald-400`}>
+                            <span className={`text-[10px] uppercase tracking-wider font-bold text-primary`}>
                               {progressRatio > 0.95 ? 'Concluída' : progressRatio > 0 ? 'Continuar' : 'Ouvir Pílula'}
                             </span>
                           </div>
@@ -192,7 +192,7 @@ export default function Pilulas() {
                             </span>
                             {progressRatio > 0 && (
                               <div className="w-12 h-1.5 bg-white/10 rounded-full overflow-hidden">
-                                <div className="h-full bg-emerald-400 rounded-full" style={{ width: `${Math.min(100, Math.max(0, progressRatio * 100))}%` }} />
+                                <div className="h-full bg-primary rounded-full" style={{ width: `${Math.min(100, Math.max(0, progressRatio * 100))}%` }} />
                               </div>
                             )}
                           </div>

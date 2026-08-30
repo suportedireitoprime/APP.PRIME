@@ -8,7 +8,7 @@ import { useResumoLivroPlayer } from '@/contexts/ResumoLivroPlayerContext';
 import { clearMediaSession } from '@/lib/mediaSession';
 import { toast } from 'sonner';
 
-const INTRO_URL = 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/audios/audio-intro.mp3';
+const INTRO_URL = 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/audios/audio-intro-2.mp3';
 
 export default function PilulasPlayer() {
   const { id } = useParams<{ id: string }>();
@@ -87,6 +87,9 @@ export default function PilulasPlayer() {
   }, [livro?.audioResumoUrl]);
 
   const skipToMain = () => {
+    // Prevent multiple calls if already transitioning
+    if (hasPlayedIntro) return;
+    
     setPhase('main');
     setHasPlayedIntro(true);
     if (audioMainRef.current) {
@@ -134,6 +137,14 @@ export default function PilulasPlayer() {
     const el = activeRef.current;
     if (el) {
       setProgress(el.currentTime);
+      
+      // Logic for Intro phase: start main audio 0.5s before intro ends
+      if (phase === 'intro' && !hasPlayedIntro) {
+        if (el.duration > 0 && el.currentTime >= el.duration - 0.5) {
+          skipToMain();
+        }
+      }
+      
       if (phase === 'main' && id && el.duration > 0) {
         localStorage.setItem(`pilula_progress_${id}`, String(el.currentTime / el.duration));
       }
