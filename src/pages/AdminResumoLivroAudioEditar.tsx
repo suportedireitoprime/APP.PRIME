@@ -111,9 +111,6 @@ export default function AdminResumoLivroAudioEditar() {
       toast.success('Áudio de resumo atualizado com sucesso!', { id: toastId });
       
       // Update local state
-      const publicUrlString = publicUrl;
-      setLivros((prev) =>
-        prev.map((l) =>
       const novos = livros.map((l) =>
         l.livro.id === item.livro.id && l.colecao.table === item.colecao.table
           ? { ...l, livro: { ...l.livro, audioResumoUrl: publicUrl } }
