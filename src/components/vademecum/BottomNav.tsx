@@ -1,7 +1,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LayoutGrid, GraduationCap, Monitor, ChevronRight, ChevronDown, X, Search, Sparkles, MessageCircle, Bot, BookOpen, WifiOff, StickyNote, Newspaper, ScanEye, Scale, Library, Mic, FileText, FileSignature, Image as ImageIcon, Bell, Gavel, Star, Send, Video, Film, Clapperboard, Bird, Headphones, Layers, ScrollText, User, ArrowLeftRight, MicVocal, CloudDownload } from 'lucide-react';
+import { LayoutGrid, GraduationCap, Monitor, ChevronRight, ChevronDown, X, Search, Sparkles, MessageCircle, Bot, BookOpen, StickyNote, Newspaper, ScanEye, Scale, Library, Mic, FileText, FileSignature, Image as ImageIcon, Bell, Gavel, Star, Send, Video, Film, Clapperboard, Bird, Headphones, Layers, ScrollText, User, ArrowLeftRight, MicVocal, Pill, BookMarked, Microscope, Stethoscope, Podcast } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import MentorOverlay from './MentorOverlay';
 // PessoalSheet removido — Meu Espaço agora é rota dedicada (/meu-espaco).
@@ -155,7 +155,7 @@ const BottomNav = () => {
     { id: 'boletins', label: 'Boletins Jurídicos', desc: 'Vídeo diário com as normas quentes de hoje', icon: MicVocal, action: () => navigate('/boletins'), prefetch: 'boletins' },
     { id: 'noticias', label: 'Notícias', desc: 'Notícias jurídicas e atualizações', icon: Newspaper, action: () => navigate('/noticias'), prefetch: 'noticias' },
     { id: 'newsletter', label: 'Newsletter', desc: 'Receba um resumo jurídico diário no e-mail', icon: Send, action: () => navigate('/newsletter'), prefetch: 'newsletter' },
-    { id: 'modo-offline', label: 'Modo Offline', desc: 'Baixe leis para consultar sem internet', icon: WifiOff, action: () => navigate('/modo-offline'), prefetch: 'modoOffline' },
+    { id: 'pilulas', label: 'Pílulas', desc: 'Aprenda a essência dos clássicos em minutos', icon: Pill, action: () => navigate('/pilulas') },
   ];
 
   const ESTUDOS_ITENS: Array<{ id: string; label: string; desc: string; icon: any; action: () => void; prefetch?: PrefetchKey }> = [
@@ -274,20 +274,18 @@ const BottomNav = () => {
           </button>
 
 
-          {/* Slot 5: Modo Offline */}
+          {/* Slot 5: Pílulas */}
           <button
-            onPointerDown={() => prefetchRoute('modoOffline')}
-            onMouseEnter={() => prefetchRoute('modoOffline')}
-            onClick={() => { haptic.selection(); navigate('/modo-offline'); }}
+            onClick={() => { haptic.selection(); navigate('/pilulas'); }}
             data-track="bottom_nav_click"
-            data-track-destino="modo-offline"
+            data-track-destino="pilulas"
             className={`flex flex-col items-center justify-center gap-1 py-2 md:py-3 rounded-xl transition-all ${
-              path.startsWith('/modo-offline') ? 'text-white/90 bg-white/15 ring-1 ring-white/25' : 'text-white/90 hover:bg-white/10'
+              path.startsWith('/pilulas') ? 'text-white/90 bg-white/15 ring-1 ring-white/25' : 'text-white/90 hover:bg-white/10'
             }`}
-            aria-label="Offline"
+            aria-label="Pílulas"
           >
-            <CloudDownload className={`w-8 h-8 md:w-7 md:h-7 transition-transform text-white/90 drop-shadow-md ${path.startsWith('/modo-offline') ? 'scale-110' : ''}`} strokeWidth={1.2} />
-            <span className="font-body text-[12px] md:text-[11px] font-medium leading-tight text-center text-white/90 drop-shadow-sm">Offline</span>
+            <Pill className={`w-8 h-8 md:w-7 md:h-7 transition-transform text-white/90 drop-shadow-md ${path.startsWith('/pilulas') ? 'scale-110' : ''}`} strokeWidth={1.2} />
+            <span className="font-body text-[12px] md:text-[11px] font-medium leading-tight text-center text-white/90 drop-shadow-sm">Pílulas</span>
           </button>
         </div>
       </div>

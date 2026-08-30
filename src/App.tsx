@@ -96,6 +96,8 @@ const QuestoesHistorico = lazy(() => import('@/pages/QuestoesHistorico'));
 const AdminFuncoes = lazy(() => import("./pages/AdminFuncoes.tsx"));
 const AdminPush = lazy(() => import("./pages/AdminPush.tsx"));
 const AdminPushSection = lazy(() => import("./pages/AdminPushSection.tsx"));
+const AdminLaboratorio = lazy(() => import("./pages/AdminLaboratorio.tsx"));
+const AdminPilulas = lazy(() => import("./pages/AdminPilulas.tsx"));
 const AdminResumoLivroAudioEditar = lazy(() => import("./pages/AdminResumoLivroAudioEditar.tsx"));
 const AdminErrosQuestoes = lazy(() => import("./pages/AdminErrosQuestoes.tsx"));
 const AdminVadeMecumHistorico = lazy(() => import('./pages/AdminVadeMecumHistorico.tsx'));
@@ -306,8 +308,6 @@ const AdminMonitorApis = lazy(() => import("./pages/AdminMonitorApis.tsx"));
 const AdminAtualizacao = lazy(() => import("./pages/AdminAtualizacao.tsx"));
 const AdminNativeAssets = lazy(() => import("./pages/AdminNativeAssets.tsx"));
 const AdminAprender = lazy(() => import("./pages/AdminAprender.tsx"));
-const AdminLaboratorio = lazy(() => import("./pages/AdminLaboratorio.tsx"));
-const AdminAprenderArea = lazy(() => import("./pages/AdminAprenderArea.tsx"));
 const AdminAvaliacaoLoja = lazy(() => import("./pages/AdminAvaliacaoLoja.tsx"));
 const AdminJurisprudencia = lazy(() => import("./pages/AdminJurisprudencia.tsx"));
 const TribunalSimulado = lazy(() => import("./pages/TribunalSimulado.tsx"));
@@ -355,6 +355,7 @@ const BoletinsJuridicos = lazy(routePrefetch.boletins);
 const AdminBoletins = lazy(() => import("./pages/AdminBoletins.tsx"));
 const PilulasHome = lazy(() => import("./pages/pilulas/PilulasHome.tsx"));
 const PilulasViewer = lazy(() => import("./pages/pilulas/PilulasViewer.tsx"));
+const Pilulas = lazy(() => import("./pages/Pilulas.tsx"));
 
 const Privacidade = lazy(() => import("./pages/Privacidade.tsx"));
 const Termos = lazy(() => import("./pages/Termos.tsx"));
@@ -971,7 +972,9 @@ function AnimatedRoutes() {
 
           <Route path="/questoes/desempenho" element={<ProtectedRoute><PageTransition><QuestoesDesempenho /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/historico" element={<ProtectedRoute><PageTransition><QuestoesHistorico /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-questoes" element={<ProtectedRoute><PageTransition><AdminQuestoes /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin/questoes" element={<ProtectedRoute><PageTransition><AdminQuestoes /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin/laboratorio" element={<ProtectedRoute><PageTransition><AdminLaboratorio /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin/pilulas" element={<ProtectedRoute><PageTransition><AdminPilulas /></PageTransition></ProtectedRoute>} />
           <Route path="/admin/resumo-livro-audio" element={<ProtectedRoute><PageTransition><AdminResumoLivroAudioEditar /></PageTransition></ProtectedRoute>} />
 
           <Route path="/admin-monitor" element={<ProtectedRoute><PageTransition><AdminMonitor /></PageTransition></ProtectedRoute>} />
