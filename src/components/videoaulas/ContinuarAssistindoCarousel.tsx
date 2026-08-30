@@ -171,6 +171,6 @@ export const ContinuarAssistindoCarousel = memo(function ContinuarAssistindoCaro
       </div>
     </motion.div>
   );
-}
+});
 
 export default ContinuarAssistindoCarousel;
