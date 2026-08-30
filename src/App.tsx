@@ -938,6 +938,8 @@ function AnimatedRoutes() {
         <Route path="/jurisprudencia/teses-stf" element={<ProtectedRoute><PageTransition><TesesSTF /></PageTransition></ProtectedRoute>} />
           <Route path="/jurisprudencia" element={<ProtectedRoute><PageTransition><Jurisprudencia /></PageTransition></ProtectedRoute>} />
           <Route path="/aprender/:slug" element={<ProtectedRoute><PageTransition><ArtigoEducacional /></PageTransition></ProtectedRoute>} />
+          {/* Pílulas */}
+          <Route path="/pilulas/classicos" element={<ProtectedRoute><PageTransition><Pilulas /></PageTransition></ProtectedRoute>} />
           {/* Lei Seca */}
           <Route path="/lei-seca" element={<ProtectedRoute><PageTransition><LeiSecaIndex /></PageTransition></ProtectedRoute>} />
           <Route path="/lei-seca/favoritos" element={<ProtectedRoute><PageTransition><LeiSecaIndex modo="favoritos" /></PageTransition></ProtectedRoute>} />
