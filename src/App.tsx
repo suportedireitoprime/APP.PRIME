@@ -1018,8 +1018,6 @@ function AnimatedRoutes() {
           <Route path="/admin-monitoramento" element={<ProtectedRoute><PageTransition><AdminMonitoramento /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-monitor-apis" element={<ProtectedRoute><PageTransition><AdminMonitorApis /></PageTransition></ProtectedRoute>} />
           <Route path="/assinatura" element={<ProtectedRoute><PageTransition><Assinatura /></PageTransition></ProtectedRoute>} />
-          <Route path="/planos" element={<Navigate to="/assinatura" replace />} />
-          <Route path="/planos/*" element={<Navigate to="/assinatura" replace />} />
           <Route path="/suporte" element={<ProtectedRoute><PageTransition><Suporte /></PageTransition></ProtectedRoute>} />
           <Route path="/opiniao" element={<ProtectedRoute><PageTransition><Opiniao /></PageTransition></ProtectedRoute>} />
           <Route path="/planos/ativos" element={<ProtectedRoute><PageTransition><PlanosAtivos /></PageTransition></ProtectedRoute>} />
@@ -1065,7 +1063,6 @@ function AnimatedRoutes() {
           <Route path="/modo-aula/aula/:id" element={<ProtectedRoute><PageTransition><ModoAulaAula /></PageTransition></ProtectedRoute>} />
           <Route path="/modo-aula/disciplina/:id" element={<ProtectedRoute><PageTransition><ModoAula /></PageTransition></ProtectedRoute>} />
           <Route path="/me-explique" element={<ProtectedRoute><MeExplique /></ProtectedRoute>} />
-          <Route path="/ferramentas/me-explique" element={<ProtectedRoute><MeExplique /></ProtectedRoute>} />
           <Route path="/ferramentas/plano-estudos" element={<ProtectedRoute><PageTransition><PlanoEstudos /></PageTransition></ProtectedRoute>} />
           <Route path="/leis-cantadas" element={<ProtectedRoute><PageTransition><LeisCantadas /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-leis-cantadas" element={<ProtectedRoute><PageTransition><AdminLeisCantadas /></PageTransition></ProtectedRoute>} />
@@ -1081,7 +1078,6 @@ function AnimatedRoutes() {
           <Route path="/desktop" element={<PageTransition><DesktopPromo /></PageTransition>} />
           <Route path="/modo-offline" element={<ProtectedRoute><PageTransition><ModoOffline /></PageTransition></ProtectedRoute>} />
           <Route path="/modo-offline/leis-e-narracoes" element={<ProtectedRoute><PageTransition><ModoOfflineLeis /></PageTransition></ProtectedRoute>} />
-          <Route path="/modo-offline/leis" element={<Navigate to="/modo-offline/leis-e-narracoes" replace />} />
           <Route path="/modo-offline/livros" element={<ProtectedRoute><PageTransition><ModoOfflineLivros /></PageTransition></ProtectedRoute>} />
           <Route path="/modo-offline/audioaulas" element={<ProtectedRoute><PageTransition><ModoOfflineAudioaulas /></PageTransition></ProtectedRoute>} />
           <Route path="/modo-offline/leis-cantadas" element={<ProtectedRoute><PageTransition><ModoOfflineLeisCantadas /></PageTransition></ProtectedRoute>} />
@@ -1105,7 +1101,6 @@ function AnimatedRoutes() {
           <Route path="/pessoal/tematicas" element={<ProtectedRoute><PageTransition><PessoalTematicas /></PageTransition></ProtectedRoute>} />
           <Route path="/meu-espaco" element={<ProtectedRoute><PageTransition><MeuEspaco /></PageTransition></ProtectedRoute>} />
           <Route path="/graficos/avaliacao" element={<ProtectedRoute><PageTransition><AvaliacaoInteligente /></PageTransition></ProtectedRoute>} />
-          <Route path="/homepage/meu-espaco" element={<ProtectedRoute><PageTransition><MeuEspaco /></PageTransition></ProtectedRoute>} />
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
 
           </Routes>
