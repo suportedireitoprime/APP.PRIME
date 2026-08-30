@@ -108,16 +108,17 @@ export default function Radares() {
               const Icon = r.icon;
               const isActive = active === key;
               return (
-                <button
+                <motion.button
                   key={key}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => setActive(key)}
-                  className={`relative z-[1] flex items-center justify-center gap-2 py-2 rounded-full text-sm font-semibold transition-colors ${
+                  className={`relative z-[1] flex items-center justify-center gap-2 py-2 rounded-full text-sm font-semibold transition-colors focus-visible:outline-none ${
                     isActive ? 'text-primary-foreground' : 'text-foreground/70'
                   }`}
                 >
                   <Icon className="w-4 h-4" strokeWidth={2} />
                   <span className="truncate">{r.label.replace('Radar ', '')}</span>
-                </button>
+                </motion.button>
               );
             })}
           </div>
@@ -185,23 +186,40 @@ export default function Radares() {
             </p>
 
             {/* Bullets */}
-            <ul className="mt-5 space-y-3">
+            <motion.ul 
+              className="mt-5 space-y-3"
+              variants={{
+                hidden: { opacity: 0 },
+                show: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.1 } }
+              }}
+              initial="hidden"
+              animate="show"
+            >
               {item.bullets.map((b) => (
-                <li key={b} className="flex items-start gap-3 p-3 rounded-xl bg-secondary/40 border border-border">
+                <motion.li 
+                  key={b} 
+                  variants={{
+                    hidden: { opacity: 0, x: -10 },
+                    show: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+                  }}
+                  className="flex items-start gap-3 p-3 rounded-xl bg-secondary/40 border border-border"
+                >
                   <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                   <span className="font-body text-sm text-foreground">{b}</span>
-                </li>
+                </motion.li>
               ))}
-            </ul>
+            </motion.ul>
 
             {/* CTA com reflexo */}
-            <button
+            <motion.button
+              whileHover={{ scale: 1.015 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => navigate(item.route)}
-              className="btn-attention-shine mt-6 w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-primary text-primary-foreground font-semibold text-base shadow-lg shadow-primary/30 hover:brightness-110 transition"
+              className="btn-attention-shine mt-6 w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-primary text-primary-foreground font-semibold text-base shadow-lg shadow-primary/30 hover:brightness-110 transition focus-visible:outline-none"
             >
               <span className="relative z-[2]">{item.cta}</span>
               <ArrowRight className="w-5 h-5 relative z-[2]" />
-            </button>
+            </motion.button>
             </div>
           </motion.div>
         </AnimatePresence>
