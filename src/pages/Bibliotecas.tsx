@@ -561,8 +561,7 @@ const Bibliotecas = () => {
           />
         )}
       </AnimatePresence>
-
-
+    </main>
   );
 };
 
