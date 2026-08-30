@@ -41,6 +41,10 @@ export async function compressAudioToMp3(
         if (sizeMatch) {
           const mb = (parseInt(sizeMatch[1], 10) / 1024).toFixed(2);
           log = mb + ' MB';
+        } else if (message.includes('out_time=')) {
+          // Extra log parsing to check if it's progressing but in a different format
+          const outTimeMatch = message.match(/out_time=(\d{2}:\d{2}:\d{2}\.\d{2})/);
+          if (outTimeMatch) log = 'Tempo: ' + outTimeMatch[1];
         }
         
         globalProgressCallback(progress, log);
@@ -53,7 +57,10 @@ export async function compressAudioToMp3(
         globalProgressCallback(progress * 100);
       }
     });
+  }
 
+  if (!ffmpeg.loaded) {
+    const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
     await ffmpeg.load({
       coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
       wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
