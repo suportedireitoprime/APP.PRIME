@@ -6,6 +6,7 @@ import FlashcardsBottomNav from '@/components/flashcards/FlashcardsBottomNav';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Plus, Play, Trash2, FolderPlus, ChevronRight, ChevronLeft, Check, Sparkles, Layers, CloudDownload } from 'lucide-react';
+import { motion } from 'framer-motion';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter,
 } from '@/components/ui/dialog';
@@ -401,11 +402,28 @@ const FlashcardsDecks = () => {
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          <motion.div 
+            className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4"
+            initial="hidden"
+            animate="show"
+            variants={{
+              hidden: { opacity: 0 },
+              show: { opacity: 1, transition: { staggerChildren: 0.05 } }
+            }}
+          >
             {decks.map((d) => {
               const cor = d.filtros?.cor || '#10b981';
               return (
-              <div key={d.id} style={{ borderColor: `${cor}40` }} className="group rounded-2xl border bg-card p-4 shadow-sm hover:shadow-md transition-all flex flex-col gap-2 relative">
+              <motion.div 
+                key={d.id} 
+                style={{ borderColor: `${cor}40` }} 
+                className="group rounded-2xl border bg-card p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col gap-2 relative"
+                variants={{
+                  hidden: { opacity: 0, scale: 0.95, y: 10 },
+                  show: { opacity: 1, scale: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+                }}
+                whileHover={{ scale: 1.02 }}
+              >
                 <div className="absolute -top-2.5 -right-2">
                   <span style={{ backgroundColor: cor }} className="inline-flex items-center justify-center text-white text-[10px] font-black h-5 px-2 rounded-full shadow-md">
                     {d.total_cards}
@@ -413,7 +431,7 @@ const FlashcardsDecks = () => {
                 </div>
                 <div className="flex justify-center mb-1">
                   <div style={{ backgroundColor: `${cor}15` }} className="w-12 h-12 rounded-xl flex items-center justify-center">
-                    <FolderPlus style={{ color: cor }} className="w-6 h-6" />
+                    <FolderPlus style={{ color: cor }} className="w-6 h-6 transition-transform group-hover:scale-110" />
                   </div>
                 </div>
                 <div className="text-center min-w-0 flex-1 flex flex-col items-center justify-center">
@@ -423,16 +441,16 @@ const FlashcardsDecks = () => {
                   )}
                 </div>
                 <div className="flex items-center gap-1.5 mt-auto pt-3 border-t border-border/60">
-                  <Button size="sm" style={{ backgroundColor: cor }} className="flex-1 h-8 text-[11px] rounded-lg font-bold gap-1.5 px-0 text-white hover:opacity-90 active:scale-95 transition-all shadow-sm" onClick={() => estudar(d)}>
+                  <motion.button whileTap={{ scale: 0.9 }} size="sm" style={{ backgroundColor: cor }} className="flex-1 flex items-center justify-center h-8 text-[11px] rounded-lg font-bold gap-1.5 px-0 text-white hover:opacity-90 shadow-sm focus-visible:outline-none" onClick={() => estudar(d)}>
                     <Play className="h-3.5 w-3.5 fill-white" /> Treinar
-                  </Button>
-                  <Button size="icon" variant="outline" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-destructive hover:border-destructive/40 shrink-0" onClick={() => excluir(d.id)}>
+                  </motion.button>
+                  <motion.button whileTap={{ scale: 0.9 }} size="icon" variant="outline" className="flex items-center justify-center h-8 w-8 rounded-lg text-muted-foreground hover:text-destructive hover:border-destructive/40 shrink-0 focus-visible:outline-none bg-background border border-border" onClick={() => excluir(d.id)}>
                     <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
+                  </motion.button>
                 </div>
-              </div>
+              </motion.div>
             )})}
-          </div>
+          </motion.div>
         </div>
       </div>
 

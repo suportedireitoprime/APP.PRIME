@@ -3,6 +3,7 @@ import { Headphones, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { capaDaArea } from '@/lib/audioaulasHelper';
 import { CapaOtimizada } from './CapaOtimizada';
+import { motion } from 'framer-motion';
 
 interface AudioaulasGridAreasProps {
   areas: [string, number][];
@@ -26,12 +27,26 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({ are
     <div className="mx-auto w-full max-w-[1400px] px-4 space-y-8 mt-4 lg:px-10 2xl:max-w-[1600px]">
       <section>
         <h2 className="text-lg sm:text-xl font-bold mb-4 text-white">Áreas do Direito</h2>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 lg:gap-5 xl:grid-cols-5">
+        <motion.div 
+          className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 lg:gap-5 xl:grid-cols-5"
+          initial="hidden"
+          animate="show"
+          variants={{
+            hidden: { opacity: 0 },
+            show: { opacity: 1, transition: { staggerChildren: 0.05 } }
+          }}
+        >
           {areas.map(([nome, total]) => (
-            <button
+            <motion.button
               key={nome}
+              variants={{
+                hidden: { opacity: 0, scale: 0.95 },
+                show: { opacity: 1, scale: 1, transition: { type: "spring", stiffness: 300, damping: 24 } }
+              }}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
               onClick={() => navigate(`/audioaulas/${encodeURIComponent(nome)}`)}
-              className="group relative aspect-square rounded-2xl overflow-hidden text-left transition-all duration-300 hover:scale-[1.03] hover:shadow-2xl hover:shadow-primary/20 border border-white/10 active:scale-95"
+              className="group relative aspect-square rounded-2xl overflow-hidden text-left transition-shadow duration-300 hover:shadow-2xl hover:shadow-primary/20 border border-white/10 focus-visible:outline-none"
             >
               <CapaOtimizada
                 src={capaDaArea(nome)}
@@ -56,9 +71,9 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({ are
                   </span>
                 </div>
               </div>
-            </button>
+            </motion.button>
           ))}
-        </div>
+        </motion.div>
       </section>
     </div>
   );

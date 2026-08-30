@@ -1,6 +1,7 @@
 import { useBibliotecaCapa } from '@/hooks/useBibliotecaAsset';
 import { useIsPdfCached } from '@/hooks/useIsPdfCached';
 import { CloudOff, CheckCircle2 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export interface LivroUnificado {
   id: string | number;
@@ -27,9 +28,11 @@ const LivroCard = ({ livro, onClick, priority }: LivroCardProps) => {
   const tempoEstimado = Math.max(12, Math.floor((livro.titulo.length + (livro.sinopse?.length || 0) * 0.1) * 0.5)) + " min";
 
   return (
-    <button
+    <motion.button
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.97 }}
       onClick={onClick}
-      className="flex-shrink-0 w-[120px] snap-start group text-left relative"
+      className="flex-shrink-0 w-[120px] snap-start group text-left relative focus-visible:outline-none"
     >
       <div className="w-[120px] h-[170px] rounded-lg overflow-hidden bg-muted border border-border shadow-sm group-hover:shadow-md transition-shadow relative">
         {isDownloaded && (
@@ -63,7 +66,7 @@ const LivroCard = ({ livro, onClick, priority }: LivroCardProps) => {
       {livro.autor && (
         <p className="text-[10px] text-muted-foreground line-clamp-1">{livro.autor}</p>
       )}
-    </button>
+    </motion.button>
   );
 };
 

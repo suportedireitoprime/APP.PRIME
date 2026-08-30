@@ -247,10 +247,12 @@ function LeituraLista({
         return (
           <motion.div
             key={`${snap.colecaoId}-${snap.id}`}
-            initial={{ opacity: 0, y: 6 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.03 }}
-            className="relative flex items-stretch gap-3 rounded-2xl border border-border/60 bg-card p-3 text-left active:scale-[0.99] transition-transform"
+            transition={{ delay: i * 0.04, duration: 0.35, type: "spring", stiffness: 300, damping: 24 }}
+            whileHover={{ scale: 1.015 }}
+            whileTap={{ scale: 0.98 }}
+            className="relative flex items-stretch gap-3 rounded-2xl border border-border/60 bg-card p-3 text-left"
           >
             {onOpenLembrete && (
               <button
@@ -357,11 +359,13 @@ function LivroLista({
         <motion.button
           key={`${l.colecaoId}-${l.id}`}
           type="button"
-          initial={{ opacity: 0, y: 6 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: i * 0.03 }}
+          transition={{ delay: i * 0.04, duration: 0.35, type: "spring", stiffness: 300, damping: 24 }}
+          whileHover={{ scale: 1.015 }}
+          whileTap={{ scale: 0.98 }}
           onClick={() => onOpen(l)}
-          className="flex items-center gap-3 rounded-xl border border-border/50 bg-card p-2.5 pr-3 text-left active:scale-[0.99] transition-transform"
+          className="flex items-center gap-3 rounded-xl border border-border/50 bg-card p-2.5 pr-3 text-left"
         >
           <div className="w-12 h-16 rounded-md overflow-hidden bg-muted shrink-0">
             {l.capa ? (

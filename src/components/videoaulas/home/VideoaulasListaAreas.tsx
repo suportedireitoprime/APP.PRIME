@@ -5,6 +5,7 @@ import { haptic } from '@/lib/nativeHaptics';
 import { areaIconFor } from '@/lib/areasDireitoIcons';
 import { simplificarNomeArea } from '@/lib/videoaulasCatalogos';
 import { prefetchCatalogo } from '@/lib/videoaulasStore';
+import { motion } from 'framer-motion';
 
 interface VideoaulasListaAreasProps {
   loading: boolean;
@@ -49,7 +50,15 @@ export const VideoaulasListaAreas = React.memo(function VideoaulasListaAreas({
         )}
       </div>
 
-      <div className="space-y-2 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0 2xl:grid-cols-3">
+      <motion.div 
+        className="space-y-2 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0 2xl:grid-cols-3"
+        initial="hidden"
+        animate="show"
+        variants={{
+          hidden: { opacity: 0 },
+          show: { opacity: 1, transition: { staggerChildren: 0.05 } }
+        }}
+      >
         {loading && !lista.length
           ? [...Array(6)].map((_, i) => (
               <div key={i} className="h-[84px] animate-pulse rounded-2xl bg-muted" />
@@ -57,14 +66,20 @@ export const VideoaulasListaAreas = React.memo(function VideoaulasListaAreas({
           : lista.map((a) => {
               const { Icon, color } = areaIconFor(a.area);
               return (
-                <button
+                <motion.button
                   key={`${a.catalogo}-${a.slug}`}
+                  variants={{
+                    hidden: { opacity: 0, y: 10 },
+                    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+                  }}
+                  whileHover={{ scale: 1.015 }}
+                  whileTap={{ scale: 0.98 }}
                   onPointerDown={() => prefetchCatalogo('areas')}
                   onClick={() => {
                     haptic.selection();
                     navigate(`/videoaulas/areas/${a.slug}`);
                   }}
-                  className="group flex w-full items-center gap-3 rounded-2xl border border-border/80 bg-card/60 p-3 text-left transition-all backdrop-blur-md hover:bg-card hover:border-primary/50 hover:shadow-lg active:scale-[0.99] sm:p-3.5"
+                  className="group flex w-full items-center gap-3 rounded-2xl border border-border/80 bg-card/60 p-3 text-left transition-colors backdrop-blur-md hover:bg-card hover:border-primary/50 hover:shadow-lg focus-visible:outline-none sm:p-3.5"
                 >
                   <div className="relative flex h-14 w-14 shrink-0 items-center justify-center sm:h-16 sm:w-16 aprender-icon-shine">
                     <Icon className="h-9 w-9 sm:h-10 sm:w-10" strokeWidth={1.9} style={{ color }} />
@@ -103,10 +118,10 @@ export const VideoaulasListaAreas = React.memo(function VideoaulasListaAreas({
                   </div>
 
                   <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-                </button>
+                </motion.button>
               );
             })}
-      </div>
+      </motion.div>
     </div>
   );
 });

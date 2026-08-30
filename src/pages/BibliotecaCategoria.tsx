@@ -13,6 +13,7 @@ import {
   type LivroNormalizado,
   type ColecaoConfig,
 } from '@/lib/bibliotecaColecoes';
+import { motion } from 'framer-motion';
 import { directImg } from '@/lib/cdnImg';
 import { getPersistedColecao, setPersistedColecao } from '@/services/offlineDb';
 import { withBundleFallback, bundle } from '@/services/offlineBundle';
@@ -92,12 +93,17 @@ function useLivrosDaColecao(colecao: ColecaoConfig | undefined) {
   });
 }
 
-function LivroCard({ livro, onClick, priority, badge }: { livro: LivroNormalizado; onClick: () => void; priority?: boolean; badge?: LivroBadgeInfo }) {
+function LivroCard({ livro, onClick, priority, badge, index = 0 }: { livro: LivroNormalizado; onClick: () => void; priority?: boolean; badge?: LivroBadgeInfo; index?: number }) {
   const capaUrl = useBibliotecaCapa(livro.capa, 300);
   const pct = badge?.progresso ? Math.round(badge.progresso * 100) : 0;
   
   return (
-    <button
+    <motion.button
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, delay: Math.min(index * 0.05, 0.4), type: "spring", stiffness: 300, damping: 24 }}
+      whileHover={{ scale: 1.015 }}
+      whileTap={{ scale: 0.98 }}
       onClick={onClick}
       aria-label={`Abrir livro ${livro.titulo}${livro.autor ? ` de ${livro.autor}` : ''}`}
       className="group flex items-stretch gap-3 p-2.5 rounded-2xl bg-card border border-border hover:border-primary/40 hover:bg-secondary/40 transition-colors text-left w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 relative overflow-hidden"
@@ -157,7 +163,7 @@ function LivroCard({ livro, onClick, priority, badge }: { livro: LivroNormalizad
           />
         )}
       </div>
-    </button>
+    </motion.button>
   );
 }
 
@@ -347,12 +353,17 @@ const BibliotecaCategoria = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                   {areas
                     .filter((a) => !query || norm(a.name).includes(norm(query)))
-                    .map((a) => {
+                    .map((a, index) => {
                       const s = styleForArea(a.name);
                       const Icon = s.icon;
                       return (
-                        <button
+                        <motion.button
                           key={a.name}
+                          initial={{ opacity: 0, y: 15 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.35, delay: Math.min(index * 0.05, 0.4) }}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
                           onClick={() => navigate(`/bibliotecas/${colecao.id}/${encodeURIComponent(a.name)}`)}
                           className="flex items-center gap-3 p-4 rounded-2xl bg-card border border-border hover:border-primary/40 hover:bg-secondary/50 transition-colors text-left group"
                         >
@@ -367,7 +378,7 @@ const BibliotecaCategoria = () => {
                               {a.count} {a.count === 1 ? 'livro' : 'livros'}
                             </p>
                           </div>
-                        </button>
+                        </motion.button>
                       );
                     })}
                 </div>
@@ -377,6 +388,7 @@ const BibliotecaCategoria = () => {
                     <LivroCard
                       key={`${colecao.id}-${l.id}`}
                       livro={l}
+                      index={i}
                       priority={i < 15}
                       badge={badges.getBadge(colecao.id, colecao.table, l.id)}
                       onClick={() => setLivroAberto(l)}
@@ -498,14 +510,19 @@ const BibliotecaCategoria = () => {
           <div className="flex flex-col gap-2">
             {areas
               .filter((a) => !query || norm(a.name).includes(norm(query)))
-              .map((a) => {
+              .map((a, index) => {
                 const s = styleForArea(a.name);
                 const Icon = s.icon;
                 return (
-                  <button
+                  <motion.button
                     key={a.name}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: Math.min(index * 0.05, 0.4) }}
+                    whileHover={{ scale: 1.015 }}
+                    whileTap={{ scale: 0.98 }}
                     onClick={() => navigate(`/bibliotecas/${colecao.id}/${encodeURIComponent(a.name)}`)}
-                    className="flex items-center gap-3 p-3.5 rounded-2xl bg-card border border-border hover:border-primary/40 transition-colors text-left w-full active:scale-[0.99]"
+                    className="flex items-center gap-3 p-3.5 rounded-2xl bg-card border border-border hover:border-primary/40 transition-colors text-left w-full relative overflow-hidden"
                   >
                     <div className="w-11 h-11 rounded-xl bg-secondary/70 flex items-center justify-center shrink-0">
                       <Icon className="w-6 h-6" style={{ color: s.color }} strokeWidth={1.6} />
@@ -519,7 +536,7 @@ const BibliotecaCategoria = () => {
                       </p>
                     </div>
                     <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
-                  </button>
+                  </motion.button>
                 );
               })}
           </div>
@@ -530,6 +547,7 @@ const BibliotecaCategoria = () => {
               <LivroCard
                 key={`${colecao.id}-${l.id}`}
                 livro={l}
+                index={i}
                 priority={i < 12}
                 badge={badges.getBadge(colecao.id, colecao.table, l.id)}
                 onClick={() => setLivroAberto(l)}

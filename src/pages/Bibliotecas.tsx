@@ -440,9 +440,11 @@ const Bibliotecas = () => {
                       type="button"
                       initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: Math.min(i * 0.03, 0.3), duration: 0.35 }}
+                      transition={{ delay: Math.min(i * 0.03, 0.3), duration: 0.35, type: "spring", stiffness: 300, damping: 24 }}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                       onClick={() => setMateriaAberta(m.name)}
-                      className="relative flex flex-col gap-2 p-4 rounded-2xl bg-card border border-border hover:border-primary/40 transition-all text-left min-h-[112px] active:scale-[0.985]"
+                      className="relative flex flex-col gap-2 p-4 rounded-2xl bg-card border border-border hover:border-primary/40 transition-colors text-left min-h-[112px]"
                     >
                       <ChevronRight className="absolute top-3 right-3 w-4 h-4 text-muted-foreground" />
                       <Icon className="w-7 h-7 shrink-0" style={{ color: s.color }} strokeWidth={1.7} />
@@ -469,9 +471,11 @@ const Bibliotecas = () => {
                   type="button"
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: Math.min(i * 0.03, 0.3), duration: 0.35 }}
+                  transition={{ delay: Math.min(i * 0.03, 0.3), duration: 0.35, type: "spring", stiffness: 300, damping: 24 }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => { track('biblioteca_colecao_opened', { colecao_id: c.id, colecao_label: c.label }); navigate(`/bibliotecas/${c.id}`); }}
-                  className="relative flex flex-col gap-2 p-4 rounded-2xl bg-card border border-border hover:border-primary/40 transition-all text-left min-h-[112px] active:scale-[0.985]"
+                  className="relative flex flex-col gap-2 p-4 rounded-2xl bg-card border border-border hover:border-primary/40 transition-colors text-left min-h-[112px]"
                 >
                   <ChevronRight className="absolute top-3 right-3 w-4 h-4 text-muted-foreground" />
                   <Icon className="w-7 h-7 shrink-0" style={{ color: s.color }} strokeWidth={1.7} />
@@ -490,12 +494,14 @@ const Bibliotecas = () => {
                 type="button"
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05, duration: 0.4 }}
+                transition={{ delay: i * 0.05, duration: 0.4, type: "spring", stiffness: 300, damping: 24 }}
+                whileHover={{ scale: 1.015, y: -2 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={() => { track('biblioteca_colecao_opened', { colecao_id: c.id, colecao_label: c.label }); navigate(`/bibliotecas/${c.id}`); }}
                 data-track="biblioteca_colecao_click"
                 data-colecao-id={c.id}
                 data-colecao-label={c.label}
-                className="group relative flex items-stretch h-[104px] overflow-hidden rounded-2xl border border-border/50 bg-card shadow-sm hover:-translate-y-0.5 transition-transform text-left w-full active:scale-[0.985]"
+                className="group relative flex items-stretch h-[104px] overflow-hidden rounded-2xl border border-border/50 bg-card shadow-sm transition-colors text-left w-full"
               >
                 <div className="relative w-[140px] shrink-0 overflow-hidden">
                   <img

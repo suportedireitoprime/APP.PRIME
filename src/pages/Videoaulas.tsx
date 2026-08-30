@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Search, Mic } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import VideoaulasBottomNav from '@/components/videoaulas/VideoaulasBottomNav';
 import VideoaulasDesempenhoSheet from '@/components/videoaulas/VideoaulasDesempenhoSheet';
@@ -65,9 +66,11 @@ const Videoaulas = () => {
               Encontre videoaulas por disciplina, assunto ou termo.
             </p>
 
-            <button 
+            <motion.button
+              whileHover={{ scale: 1.015 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => { haptic.selection(); state.setDrawerBusca(true); }}
-              className="relative w-full group text-left transition-all active:scale-[0.99]"
+              className="relative w-full group text-left transition-all focus-visible:outline-none"
             >
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
               <div className="w-full h-14 sm:h-16 bg-black/40 border border-white/10 rounded-2xl pl-12 pr-12 text-muted-foreground flex items-center group-hover:border-primary/50 transition-all text-base font-medium shadow-inner shadow-black/50">
@@ -76,7 +79,7 @@ const Videoaulas = () => {
               <div className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-white/5 rounded-full transition-colors pointer-events-none">
                 <Mic className="h-5 w-5 text-muted-foreground" />
               </div>
-            </button>
+            </motion.button>
           </div>
 
           <VideoaulasAtalhos />
