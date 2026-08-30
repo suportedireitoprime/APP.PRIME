@@ -301,7 +301,7 @@ export default function AdminPilulas() {
                     <p><strong>3.</strong> Aos <strong>10 segundos</strong> a música para completamente.</p>
                   </div>
                   <div className="pt-2">
-                    <audio controls className="w-full h-10" preload="metadata" src="/secret-agent-groove.mp3">
+                    <audio controls className="w-full h-10" preload="metadata" src="https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/audios/intros/secret-agent-groove.mp3">
                       Seu navegador não suporta o player de áudio.
                     </audio>
                   </div>
