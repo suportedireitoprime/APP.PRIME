@@ -818,7 +818,6 @@ const Auth = () => {
           </button>
         </motion.div>
 
-      </div>
 
       <AnimatePresence>
         {drawerMode && (
