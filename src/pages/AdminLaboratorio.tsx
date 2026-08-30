@@ -4,28 +4,15 @@ import { PageHeader } from '@/components/vademecum/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import AnimacaoExemplo from '@/components/laboratorio/AnimacaoExemplo';
 import AnimacaoPixi from '@/components/laboratorio/AnimacaoPixi';
-import AnimacaoThreeJs from '@/components/laboratorio/AnimacaoThreeJs';
-import DynamicSceneLoader from '@/components/laboratorio/DynamicSceneLoader';
 import AIGeneratorPanel from '@/components/laboratorio/AIGeneratorPanel';
-import Criacao3DPanel from '@/components/laboratorio/Criacao3DPanel';
 import { motion, AnimatePresence } from 'framer-motion';
 import FilosofoPresentationOverlay from '@/components/vademecum/FilosofoPresentationOverlay';
 
-const CenaArtigo1 = lazy(() => import('@/components/laboratorio/cenas/CenaArtigo1'));
-const CenaArtigo2 = lazy(() => import('@/components/laboratorio/cenas/CenaArtigo2'));
-const CenaArtigo3 = lazy(() => import('@/components/laboratorio/cenas/CenaArtigo3'));
-const CenaArtigo4 = lazy(() => import('@/components/laboratorio/cenas/CenaArtigo4'));
-const CenaArtigo4Pixi = lazy(() => import('@/components/laboratorio/cenas/CenaArtigo4Pixi'));
-const CenaArtigo37 = lazy(() => import('@/components/laboratorio/cenas/CenaArtigo37'));
-const CenaArtigo121 = lazy(() => import('@/components/laboratorio/cenas/CenaArtigo121'));
-const CenaArtigo155 = lazy(() => import('@/components/laboratorio/cenas/CenaArtigo155'));
-const CenaArtigo171 = lazy(() => import('@/components/laboratorio/cenas/CenaArtigo171'));
-const CenaArtigo312 = lazy(() => import('@/components/laboratorio/cenas/CenaArtigo312'));
 
 const AdminLaboratorio = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'cenas' | 'generator' | 'remotion' | 'criacao-3d' | null>(null);
-  const [activeEngine, setActiveEngine] = useState('threejs');
+  const [activeTab, setActiveTab] = useState<'cenas' | 'generator' | 'remotion' | null>(null);
+  const [activeEngine, setActiveEngine] = useState('pixi');
   const [activeArtigoId, setActiveArtigoId] = useState<number | null>(null);
   const [showPenalModal, setShowPenalModal] = useState(false);
   const [showPresentation, setShowPresentation] = useState(false);
@@ -35,23 +22,12 @@ const AdminLaboratorio = () => {
   const [showRemotionConfig, setShowRemotionConfig] = useState(false);
 
   const engines = [
-    { id: 'threejs', name: 'Three.js (3D)', desc: '100% Code 3D. O melhor para visualizações imersivas e cinematográficas com iluminação volumétrica nativa.' },
     { id: 'pixi', name: 'PixiJS (WebGL)', desc: 'Performance extrema em 2D com filtros nativos de GPU (Blur, Glow). Ideal para interatividade rápida.' },
     { id: 'css', name: 'CSS Puro', desc: 'Levíssimo e direto no DOM, sem bibliotecas externas. Ideal para UI e máquinas de estado simples.' },
   ];
 
   const artigosCurados = [
-    { artigo: 'Art. 1º - Princípio da Legalidade', desc: 'Não há crime sem lei anterior que o defina.', engineId: 'art1' },
-    { artigo: 'Art. 2º - Abolitio Criminis', desc: 'Ninguém pode ser punido por fato que lei posterior deixa de considerar crime.', engineId: 'art2' },
-    { artigo: 'Art. 3º - Lei Temporária', desc: 'Aplica-se ao fato praticado durante sua vigência, mesmo após revogada.', engineId: 'art3' },
-    { artigo: 'Art. 4º - Tempo do Crime (3D)', desc: 'Considera-se praticado o crime no momento da ação ou omissão.', engineId: 'art4' },
     { artigo: 'Art. 4º - Tempo do Crime (PixiJS)', desc: 'Versão leve em 2D usando PixiJS.', engineId: 'art4pixi' },
-    { artigo: 'Art. 37 - Mulheres na Prisão', desc: 'Estabelecimento próprio e respeito à condição pessoal.', engineId: 'art37' },
-    { artigo: 'Art. 121 - Homicídio', desc: 'Matar alguém.', engineId: 'art121' },
-    { artigo: 'Art. 155 - Furto', desc: 'Subtrair, para si ou para outrem, coisa alheia móvel.', engineId: 'art155' },
-    { artigo: 'Art. 157 - Roubo (Cel-Shading)', desc: 'Subtrair coisa móvel alheia, mediante grave ameaça ou violência.', engineId: 'threejs' },
-    { artigo: 'Art. 171 - Estelionato', desc: 'Obter vantagem ilícita, induzindo ou mantendo alguém em erro.', engineId: 'art171' },
-    { artigo: 'Art. 312 - Peculato', desc: 'Apropriar-se o funcionário público de dinheiro, valor ou qualquer outro bem...', engineId: 'art312' }
   ];
 
   return (
@@ -93,30 +69,12 @@ const AdminLaboratorio = () => {
                   </div>
                   <div className="flex-1">
                     <h2 className="text-xl font-bold text-white mb-1 group-hover:text-primary transition-colors">Cenários & Curadoria (Motores)</h2>
-                    <p className="text-sm text-muted-foreground line-clamp-2">Explore animações oficiais e renderizações de alta performance em 3D, WebGL e CSS Puro.</p>
+                    <p className="text-sm text-muted-foreground line-clamp-2">Explore animações oficiais e renderizações de alta performance em WebGL e CSS Puro.</p>
                   </div>
                 </div>
                 <ChevronRight className="text-muted-foreground group-hover:text-primary transition-colors relative z-10 flex-shrink-0" size={24} />
               </motion.button>
 
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => setActiveTab('criacao-3d')}
-                className="group relative overflow-hidden bg-secondary/20 border border-border/50 hover:border-pink-500/50 rounded-2xl p-6 flex items-center justify-between transition-all w-full shadow-lg"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-pink-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                <div className="flex items-center gap-5 relative z-10 text-left w-full">
-                  <div className="w-14 h-14 rounded-full bg-pink-500/20 flex items-center justify-center text-pink-400 group-hover:bg-pink-500 group-hover:text-white transition-colors shrink-0">
-                    <Wand2 size={28} />
-                  </div>
-                  <div className="flex-1">
-                    <h2 className="text-xl font-bold text-white mb-1 group-hover:text-pink-400 transition-colors">Criação 3D</h2>
-                    <p className="text-sm text-muted-foreground line-clamp-2">Gere novas cenas cinematográficas em Three.js guiadas por IA para os Artigos Penais.</p>
-                  </div>
-                </div>
-                <ChevronRight className="text-muted-foreground group-hover:text-pink-400 transition-colors relative z-10 flex-shrink-0" size={24} />
-              </motion.button>
 
               <motion.button
                 whileHover={{ scale: 1.02 }}
@@ -258,26 +216,8 @@ const AdminLaboratorio = () => {
 
                   {/* Área de Visualização */}
                   <div className="bg-[#050505] border border-border/50 rounded-2xl min-h-[500px] w-full shadow-2xl relative flex items-center justify-center overflow-hidden">
-                    {activeEngine === 'threejs' && <AnimacaoThreeJs />}
                     {activeEngine === 'pixi' && <AnimacaoPixi />}
                     {activeEngine === 'css' && <AnimacaoExemplo />}
-                    
-                    <Suspense fallback={<div className="w-full h-full flex items-center justify-center text-muted-foreground">Carregando cena curada...</div>}>
-                      {activeEngine === 'art1' && <CenaArtigo1 />}
-                      {activeEngine === 'art2' && <CenaArtigo2 />}
-                      {activeEngine === 'art3' && <CenaArtigo3 />}
-                      {activeEngine === 'art4' && <CenaArtigo4 />}
-                      {activeEngine === 'art4pixi' && <CenaArtigo4Pixi />}
-                      {activeEngine === 'art37' && <CenaArtigo37 />}
-                      {activeEngine === 'art121' && <CenaArtigo121 />}
-                      {activeEngine === 'art155' && <CenaArtigo155 />}
-                      {activeEngine === 'art171' && <CenaArtigo171 />}
-                      {activeEngine === 'art312' && <CenaArtigo312 />}
-                    </Suspense>
-
-                    {activeEngine === 'dynamic' && activeArtigoId !== null && (
-                      <DynamicSceneLoader codigo_nome="CP" artigo_numero={activeArtigoId} />
-                    )}
                     
                     <div className="absolute top-4 left-4 right-4 flex justify-between pointer-events-none opacity-40 z-10">
                       <span className="text-[10px] font-mono tracking-widest text-primary drop-shadow-md">RENDER_TARGET: {activeEngine.toUpperCase()}</span>
@@ -285,7 +225,7 @@ const AdminLaboratorio = () => {
                     </div>
                   </div>
                   
-                  {(activeEngine === 'threejs' || activeEngine === 'pixi' || activeEngine === 'css') && (
+                  {(activeEngine === 'pixi' || activeEngine === 'css') && (
                     <motion.div 
                       initial={{ opacity: 0, y: 10 }} 
                       animate={{ opacity: 1, y: 0 }}
@@ -305,16 +245,7 @@ const AdminLaboratorio = () => {
                 </div>
               )}
 
-              {activeTab === 'criacao-3d' && (
-                <Criacao3DPanel 
-                  onBack={() => setActiveTab(null)} 
-                  onPlayScene={(id) => {
-                    setActiveTab('cenas');
-                    setActiveEngine('art' + id);
-                    setActiveArtigoId(id);
-                  }}
-                />
-              )}
+
 
               {/* Tab 2: Gerador de IA */}
               {activeTab === 'generator' && (

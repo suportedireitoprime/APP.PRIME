@@ -8,7 +8,7 @@ import { prefetchNearby } from "@/lib/nearbyPrefetch";
 // IntroOverlay desativado: o app agora usa apenas o splash nativo estático.
 // import IntroOverlay from "@/components/IntroOverlay";
 import { SkipToContent } from "@/components/a11y/SkipToContent";
-import AnalyticsDebugPanel from "@/components/AnalyticsDebugPanel";
+const AnalyticsDebugPanel = lazy(() => import("@/components/AnalyticsDebugPanel"));
 import { Capacitor } from '@capacitor/core';
 
 
@@ -66,12 +66,11 @@ import { GlobalResumoMiniPlayer } from "./components/biblioteca/GlobalResumoMini
 import ResumoLivroAudioSheet from "./components/biblioteca/ResumoLivroAudioSheet.tsx";
 import { VideoaulasPlayerProvider } from "@/contexts/VideoaulasPlayerContext";
 import GlobalVideoaulaMiniPlayer from "@/components/videoaulas/GlobalVideoaulaMiniPlayer";
-import { GravacaoFlutuante } from "@/components/GravacaoFlutuante";
-import { GeofencePresenceBanner } from "@/components/GeofencePresenceBanner";
-import { ReminderInAppBanner } from "@/components/ReminderInAppBanner";
-import InAppPushPopup from "@/components/ui/InAppPushPopup";
-import HorusTakeoverNoticeDialog from "@/components/horus/HorusTakeoverNoticeDialog";
-import ForceUpdateScreen from "@/components/ForceUpdateScreen";
+const GeofencePresenceBanner = lazy(() => import("@/components/GeofencePresenceBanner"));
+const ReminderInAppBanner = lazy(() => import("@/components/ReminderInAppBanner"));
+const InAppPushPopup = lazy(() => import("@/components/ui/InAppPushPopup"));
+const HorusTakeoverNoticeDialog = lazy(() => import("@/components/horus/HorusTakeoverNoticeDialog"));
+const ForceUpdateScreen = lazy(() => import("@/components/ForceUpdateScreen"));
 import { useAppUpdateStore } from "@/lib/appUpdateStore";
 
 function ForceUpdateWrapper() {
@@ -280,11 +279,11 @@ const GeradorPost = lazy(() => import("./pages/GeradorPost.tsx"));
 const Blog = lazy(routePrefetch.blog);
 const Newsletter = lazy(() => import("./pages/Newsletter.tsx"));
 const DesktopLinkConfirm = lazy(() => import("./pages/DesktopLinkConfirm.tsx"));
-// Biblioteca — eager para abrir sem Suspense fallback
-import Bibliotecas from "./pages/Bibliotecas.tsx";
-import BibliotecaCategoria from "./pages/BibliotecaCategoria.tsx";
-import BibliotecaOffline from "./pages/BibliotecaOffline.tsx";
-import BibliotecaTrilhas from "./pages/BibliotecaTrilhas.tsx";
+// Biblioteca — lazy para não inflar o bundle de boot
+const Bibliotecas = lazy(() => import("./pages/Bibliotecas.tsx"));
+const BibliotecaCategoria = lazy(() => import("./pages/BibliotecaCategoria.tsx"));
+const BibliotecaOffline = lazy(() => import("./pages/BibliotecaOffline.tsx"));
+const BibliotecaTrilhas = lazy(() => import("./pages/BibliotecaTrilhas.tsx"));
 
 const CompressaoImagens = lazy(() => import("./pages/CompressaoImagens.tsx"));
 const AdminFuncoesAssinantes = lazy(() => import("./pages/AdminFuncoesAssinantes.tsx"));
@@ -338,9 +337,9 @@ const AdminBibliotecaLeis = lazy(() => import("./pages/AdminBibliotecaLeis.tsx")
 const AdminBibliotecaLeisEstaduais = lazy(() => import("./pages/AdminBibliotecaLeisEstaduais.tsx"));
 const AdminBibliotecaLeisGeral = lazy(() => import("./pages/AdminBibliotecaLeisGeral.tsx"));
 const AdminBuscadorLeis = lazy(() => import("./pages/AdminBuscadorLeis.tsx"));
-import NovidadesRadarOverlay from "./components/NovidadesRadarOverlay";
-import GlobalDesktopHeader from "./components/layout/GlobalDesktopHeader";
-import DesktopFileDropOverlay from "./components/desktop/DesktopFileDropOverlay";
+const NovidadesRadarOverlay = lazy(() => import("./components/NovidadesRadarOverlay"));
+const GlobalDesktopHeader = lazy(() => import("./components/layout/GlobalDesktopHeader"));
+const DesktopFileDropOverlay = lazy(() => import("./components/desktop/DesktopFileDropOverlay"));
 const ModoOffline = lazy(() => import("./pages/ModoOffline.tsx"));
 const ModoOfflineLeis = lazy(() => import("./pages/ModoOfflineLeis.tsx"));
 const ModoOfflineLivros = lazy(() => import("./pages/ModoOfflineLivros.tsx"));
@@ -1117,7 +1116,7 @@ function AnimatedRoutes() {
 }
 
 // Importação do AppBootSplash
-import { CustomSplashScreen } from "@/components/CustomSplashScreen";
+const CustomSplashScreen = lazy(() => import("@/components/CustomSplashScreen").then(m => ({ default: m.CustomSplashScreen })));
 
 function AppBootSplash() {
   const [show, setShow] = useState(true);

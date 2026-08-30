@@ -31,7 +31,7 @@ class ErrorBoundary extends Component<{children: React.ReactNode}, {hasError: bo
 }
 
 // Lazy load the 3D scene to prevent top-level runtime errors or heavy bundle issues
-const DynamicSceneLoader = lazy(() => import('./DynamicSceneLoader'));
+// 3D scene removed per user request
 
 export default function AIGeneratorPanel() {
   const [status, setStatus] = useState<'idle' | 'dispatching' | 'actions_working' | 'done'>('idle');
@@ -302,16 +302,10 @@ export default function AIGeneratorPanel() {
               </div>
               
               <ErrorBoundary>
-                <Suspense fallback={
-                  <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 gap-4">
-                    <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
-                    <span>Carregando Cena 3D...</span>
-                  </div>
-                }>
-                  {previewArtigo && (
-                    <DynamicSceneLoader codigo_nome="CP_CODIGO_PENAL" artigo_numero={parseInt(previewArtigo.numero.replace(/\D/g, '')) || 1} />
-                  )}
-                </Suspense>
+                <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 gap-4">
+                  <span className="text-xl font-medium text-slate-300">Visualização 3D Desativada</span>
+                  <span className="text-sm">O módulo de renderização 3D foi removido do aplicativo.</span>
+                </div>
               </ErrorBoundary>
             </div>
 
@@ -521,16 +515,9 @@ export default function AIGeneratorPanel() {
                   <X size={20} />
                 </button>
                 <ErrorBoundary>
-                  <Suspense fallback={
-                    <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 gap-4">
-                      <Loader2 className="w-10 h-10 animate-spin text-emerald-500" />
-                      <span>Carregando Engine 3D...</span>
-                    </div>
-                  }>
-                    {previewArtigo && (
-                      <DynamicSceneLoader codigo_nome="CP_CODIGO_PENAL" artigo_numero={parseInt(previewArtigo.numero.replace(/\D/g, ''))} />
-                    )}
-                  </Suspense>
+                  <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 gap-4">
+                    <span className="text-xl font-medium text-slate-300">Visualização 3D Desativada</span>
+                  </div>
                 </ErrorBoundary>
               </div>
             </motion.div>
