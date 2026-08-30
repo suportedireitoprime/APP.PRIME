@@ -27,6 +27,17 @@ import { Crown } from 'lucide-react';
 import horusOwlBundled from '@/assets/horus/horus-owl.webp';
 import horusOwlAsset from '@/assets/horus/horus-owl.png.asset.json';
 import { pickAsset, srcOf } from '@/lib/assetUrl';
+import { motion } from 'framer-motion';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.05 } }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+};
 
 const horusOwl = pickAsset(horusOwlBundled, srcOf(horusOwlAsset));
 
@@ -586,7 +597,12 @@ export default function JurisprudenciaArtigo({ slugLeiProp, numeroArtigoProp, em
                             {totalTrib} {totalTrib === 1 ? 'item' : 'itens'}
                           </span>
                         </div>
-                        <ul className="space-y-2">
+                        <motion.ul 
+                          variants={containerVariants}
+                          initial="hidden"
+                          animate="show"
+                          className="space-y-2"
+                        >
                           {items.map((cat) => {
                             const preview = cat.itens
                               .map((i) => (i.titulo || '').trim())
@@ -594,10 +610,12 @@ export default function JurisprudenciaArtigo({ slugLeiProp, numeroArtigoProp, em
                               .slice(0, 4)
                               .join(' · ');
                             return (
-                              <li key={cat.codigo}>
-                                <button
+                              <motion.li variants={itemVariants} key={cat.codigo}>
+                                <motion.button
+                                  whileHover={{ scale: 1.015 }}
+                                  whileTap={{ scale: 0.98 }}
                                   onClick={() => setCatAberta(cat)}
-                                  className="w-full text-left rounded-2xl border border-border/60 bg-card hover:bg-card/80 hover:border-border transition-all p-3.5 flex items-center gap-3 active:scale-[0.99]"
+                                  className="w-full text-left rounded-2xl border border-border/60 bg-card hover:bg-card/80 hover:border-border transition-all p-3.5 flex items-center gap-3 focus-visible:outline-none"
                                 >
                                   <div className="flex-1 min-w-0">
                                     <div className="font-body text-[15px] font-semibold text-foreground leading-snug line-clamp-1">
@@ -613,11 +631,11 @@ export default function JurisprudenciaArtigo({ slugLeiProp, numeroArtigoProp, em
                                     {cat.itens.length}
                                   </span>
                                   <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
-                                </button>
-                              </li>
+                                </motion.button>
+                              </motion.li>
                             );
                           })}
-                        </ul>
+                        </motion.ul>
                       </section>
                     );
                   })}

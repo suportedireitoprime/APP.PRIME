@@ -134,6 +134,16 @@ const CATEGORIAS = [
   },
 ] as const;
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.05 } }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+};
+
 const Jurisprudencia = () => {
   useTrackArea("jurisprudencia_aberta");
   const navigate = useNavigate();
@@ -328,7 +338,12 @@ const Jurisprudencia = () => {
 
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 py-6 space-y-6 lg:max-w-[1500px] lg:px-12 lg:py-10 lg:space-y-10 2xl:px-16">
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+        className="max-w-2xl mx-auto px-4 py-6 space-y-6 lg:max-w-[1500px] lg:px-12 lg:py-10 lg:space-y-10 2xl:px-16"
+      >
         {/* Acesso Rápido */}
         <style>{`
           @keyframes icon-shine-mask {
@@ -338,40 +353,40 @@ const Jurisprudencia = () => {
         `}</style>
         <div className="grid grid-cols-4 gap-2 sm:gap-3 w-full">
           {/* Favoritos */}
-          <button onClick={() => navigate('/vade-mecum/favoritos')} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl bg-[#1A1D21] border border-border/40 hover:bg-[#23272B] transition-colors w-full group" data-track="quick_access_favoritos">
+          <motion.button variants={itemVariants} whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.98 }} onClick={() => navigate('/vade-mecum/favoritos')} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl bg-[#1A1D21] border border-border/40 hover:bg-[#23272B] transition-colors w-full group" data-track="quick_access_favoritos">
             <div className="relative w-5 h-5 shrink-0">
               <Heart className="w-5 h-5 absolute inset-0" style={{ color: 'hsl(348,78%,38%)', filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))' }} strokeWidth={1.15} />
               <Heart className="w-5 h-5 absolute inset-0 text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ WebkitMaskImage: 'linear-gradient(-60deg, transparent 30%, white 50%, transparent 70%)', WebkitMaskSize: '250% 100%', WebkitMaskRepeat: 'no-repeat', animation: 'icon-shine-mask 1.5s infinite linear' }} strokeWidth={1.5} />
             </div>
             <span className="text-[10px] sm:text-[11px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">Favoritos</span>
-          </button>
+          </motion.button>
           
           {/* Anotações */}
-          <button onClick={() => toast({ title: 'Em breve', description: 'Suas anotações estarão aqui em breve.' })} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl bg-[#1A1D21] border border-border/40 hover:bg-[#23272B] transition-colors w-full group" data-track="quick_access_anotacoes">
+          <motion.button variants={itemVariants} whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.98 }} onClick={() => toast({ title: 'Em breve', description: 'Suas anotações estarão aqui em breve.' })} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl bg-[#1A1D21] border border-border/40 hover:bg-[#23272B] transition-colors w-full group" data-track="quick_access_anotacoes">
             <div className="relative w-5 h-5 shrink-0">
               <NotebookPen className="w-5 h-5 absolute inset-0" style={{ color: 'hsl(348,78%,38%)', filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))' }} strokeWidth={1.15} />
               <NotebookPen className="w-5 h-5 absolute inset-0 text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ WebkitMaskImage: 'linear-gradient(-60deg, transparent 30%, white 50%, transparent 70%)', WebkitMaskSize: '250% 100%', WebkitMaskRepeat: 'no-repeat', animation: 'icon-shine-mask 1.5s infinite linear' }} strokeWidth={1.5} />
             </div>
             <span className="text-[10px] sm:text-[11px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">Anotações</span>
-          </button>
+          </motion.button>
 
           {/* Radares */}
-          <button onClick={() => navigate('/radares')} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl bg-[#1A1D21] border border-border/40 hover:bg-[#23272B] transition-colors w-full group" data-track="quick_access_radares">
+          <motion.button variants={itemVariants} whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.98 }} onClick={() => navigate('/radares')} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl bg-[#1A1D21] border border-border/40 hover:bg-[#23272B] transition-colors w-full group" data-track="quick_access_radares">
             <div className="relative w-5 h-5 shrink-0">
               <Radar className="w-5 h-5 absolute inset-0" style={{ color: 'hsl(348,78%,38%)', filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))' }} strokeWidth={1.15} />
               <Radar className="w-5 h-5 absolute inset-0 text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ WebkitMaskImage: 'linear-gradient(-60deg, transparent 30%, white 50%, transparent 70%)', WebkitMaskSize: '250% 100%', WebkitMaskRepeat: 'no-repeat', animation: 'icon-shine-mask 1.5s infinite linear' }} strokeWidth={1.5} />
             </div>
             <span className="text-[10px] sm:text-[11px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">Radares</span>
-          </button>
+          </motion.button>
 
           {/* Histórico */}
-          <button onClick={() => navigate('/vade-mecum/recentes')} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl bg-[#1A1D21] border border-border/40 hover:bg-[#23272B] transition-colors w-full group" data-track="quick_access_historico">
+          <motion.button variants={itemVariants} whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.98 }} onClick={() => navigate('/vade-mecum/recentes')} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl bg-[#1A1D21] border border-border/40 hover:bg-[#23272B] transition-colors w-full group" data-track="quick_access_historico">
             <div className="relative w-5 h-5 shrink-0">
               <History className="w-5 h-5 absolute inset-0" style={{ color: 'hsl(348,78%,38%)', filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))' }} strokeWidth={1.15} />
               <History className="w-5 h-5 absolute inset-0 text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ WebkitMaskImage: 'linear-gradient(-60deg, transparent 30%, white 50%, transparent 70%)', WebkitMaskSize: '250% 100%', WebkitMaskRepeat: 'no-repeat', animation: 'icon-shine-mask 1.5s infinite linear' }} strokeWidth={1.5} />
             </div>
             <span className="text-[10px] sm:text-[11px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">Histórico</span>
-          </button>
+          </motion.button>
         </div>
 
         {(() => {
@@ -384,7 +399,10 @@ const Jurisprudencia = () => {
           const renderListCard = (op: typeof CATEGORIAS[number]) => {
             const Icon = op.icon;
             return (
-              <button
+              <motion.button
+                variants={itemVariants}
+                whileHover={{ scale: 1.015 }}
+                whileTap={{ scale: 0.98 }}
                 key={op.id}
                 onClick={() => {
                   prefetchTarget(op.id);
@@ -415,7 +433,7 @@ const Jurisprudencia = () => {
                 <div className="w-10 h-10 mr-3 self-center rounded-full bg-muted/60 border border-border/60 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                   <ChevronRight className="w-5 h-5" />
                 </div>
-              </button>
+              </motion.button>
             );
           };
 
@@ -447,19 +465,19 @@ const Jurisprudencia = () => {
           return (
             <>
               <section className={listClass}>
-                <p className={tituloClass}>Súmulas</p>
+                <motion.p variants={itemVariants} className={tituloClass}>Súmulas</motion.p>
                 {sumulas.map(renderListCard)}
               </section>
               <section className={gridClass}>
-                <p className={tituloClass}>Jurisprudências prontas</p>
+                <motion.p variants={itemVariants} className={tituloClass}>Jurisprudências prontas</motion.p>
                 {prontas.map(renderGridCard)}
               </section>
               <section className={gridClass}>
-                <p className={tituloClass}>Informativos</p>
+                <motion.p variants={itemVariants} className={tituloClass}>Informativos</motion.p>
                 {informativos.map(renderGridCard)}
               </section>
               <section className={gridClass}>
-                <p className={tituloClass}>Jurisprudência em Teses</p>
+                <motion.p variants={itemVariants} className={tituloClass}>Jurisprudência em Teses</motion.p>
                 {teses.map(renderGridCard)}
               </section>
             </>
@@ -467,7 +485,7 @@ const Jurisprudencia = () => {
         })()}
 
 
-        <div className="mt-3 rounded-2xl border border-border/60 bg-background/40 p-4">
+        <motion.div variants={itemVariants} className="mt-3 rounded-2xl border border-border/60 bg-background/40 p-4">
           <p className="font-display text-[16px] font-bold text-foreground leading-snug">
             O que são súmulas?
           </p>
@@ -476,8 +494,8 @@ const Jurisprudencia = () => {
             <strong className="text-foreground/90">Vinculantes</strong> obrigam todo o Judiciário
             e a Administração Pública.
           </p>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 };
