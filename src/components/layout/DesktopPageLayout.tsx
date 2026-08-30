@@ -2,8 +2,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Scale, BookOpen, Gavel, Library, MessageSquare, BookOpenText } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import DesktopHeroBanner from '@/components/vademecum/DesktopHeroBanner';
-import DesktopTopHeader from '@/components/vademecum/DesktopTopHeader';
-import DesktopBreadcrumb from '@/components/vademecum/DesktopBreadcrumb';
+
 import { useIsDesktop } from '@/hooks/use-desktop';
 import { prefetchRoute, type PrefetchKey } from '@/lib/routePrefetch';
 

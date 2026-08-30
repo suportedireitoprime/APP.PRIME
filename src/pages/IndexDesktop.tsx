@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, Suspense, useCallback } from 'react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate } from 'react-router-dom';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { Scale, BookOpen, Gavel, Timer, BookOpenText, ScanEye, Sparkles, GraduationCap, Library, Wrench, MessageSquare, Newspaper, FileSignature, User as UserFn } from 'lucide-react';
+import { Scale, Gavel, BookOpenText, GraduationCap, Library, MessageSquare } from 'lucide-react';
 import heroImageAsset from '@/assets/hero-vademecum.webp';
 const heroImage = heroImageAsset;
 import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
@@ -23,9 +23,8 @@ import AtualizacaoTab from '@/components/vademecum/AtualizacaoTab';
 import DesktopEstudosGrid from '@/components/desktop/DesktopEstudosGrid';
 import HomeNoticiasCarousel from '@/components/vademecum/HomeNoticiasCarousel';
 
-import { LEIS_CATALOG } from '@/data/leisCatalog';
-import { leiPath, tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
-import { useHideSplashScreen } from '@/hooks/useHideSplashScreen';
+import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
+
 // Overlays only mount when opened — lazy so they don't inflate the initial
 // desktop chunk.
 const SearchOverlay = lazyWithRetry(() => import('@/components/vademecum/SearchOverlay'));
@@ -77,15 +76,32 @@ const IndexDesktop = () => {
     const ric: (cb: () => void) => number = (window as any).requestIdleCallback
       ? (cb) => (window as any).requestIdleCallback(cb, { timeout: 2000 })
       : (cb) => window.setTimeout(cb, 500);
+      
     const id = ric(() => {
+      // 1. Prefetch Overlays
       import('@/components/vademecum/SearchOverlay').catch(() => {});
       import('@/components/vademecum/AssistenteOverlayV2').catch(() => {});
+
+      // 2. Preload Images
+      [primeLogo, ...Object.values(HERO_CONFIG).map(c => c.image)].forEach(src => {
+        const img = new Image();
+        img.src = src;
+      });
+      
+      // 3. Prefetch Data
+      prefetchAllArtigos(4);
+      prefetchResenha();
+      prefetchNoticias();
+      
+      // 4. Warm up Biblioteca
+      window.setTimeout(() => warmBiblioteca(queryClient), 600);
     });
+    
     return () => {
       const cic = (window as any).cancelIdleCallback;
       if (cic) cic(id); else window.clearTimeout(id);
     };
-  }, []);
+  }, [queryClient]);
 
   useEffect(() => {
     const hints = ['Buscar lei...', 'Ler artigo...', 'Consultar código...', 'Pesquisar jurisprudência...'];
@@ -93,6 +109,7 @@ const IndexDesktop = () => {
     let charIndex = 0;
     let direction = 1;
     let pauseCounter = 0;
+    
     const interval = setInterval(() => {
       if (pauseCounter > 0) { pauseCounter--; return; }
       const current = hints[hintIndex];
@@ -106,29 +123,8 @@ const IndexDesktop = () => {
         if (charIndex === 0) { direction = 1; hintIndex = (hintIndex + 1) % hints.length; pauseCounter = 5; }
       }
     }, 80);
+    
     return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    const ric: (cb: () => void) => number = (window as any).requestIdleCallback
-      ? (cb) => (window as any).requestIdleCallback(cb, { timeout: 1500 })
-      : (cb) => window.setTimeout(cb, 300);
-    const id = ric(() => {
-      [primeLogo, ...Object.values(HERO_CONFIG).map(c => c.image)].forEach(src => {
-        const img = new Image();
-        img.src = src;
-      });
-      prefetchAllArtigos(4);
-      prefetchResenha();
-      prefetchNoticias();
-      // Biblioteca já aquecida ao entrar no desktop (prioridade mais baixa).
-      window.setTimeout(() => warmBiblioteca(queryClient), 600);
-
-    });
-    return () => {
-      const cic = (window as any).cancelIdleCallback;
-      if (cic) cic(id); else window.clearTimeout(id);
-    };
   }, []);
 
   const handleSearchSelectLei = useCallback((lei: { tipo: string; leiId: string; nome: string; descricao: string; tabela_nome: string; artigoNumero?: string }) => {
@@ -157,7 +153,7 @@ const IndexDesktop = () => {
                   <button
                     key={tab.id}
                     onClick={() => {
-                      const routes: Record<string, string> = {
+                      const ROUTES: Record<string, string> = {
                         noticias: '/noticias',
                         ferramentas: '/ferramentas',
                         biblioteca: '/bibliotecas',
@@ -165,7 +161,10 @@ const IndexDesktop = () => {
                         chat: '/assistente-horus',
                         vademecum: '/vade-mecum',
                       };
-                      if (routes[tab.id]) { navigate(routes[tab.id]); return; }
+                      if (ROUTES[tab.id]) {
+                        navigate(ROUTES[tab.id]);
+                        return;
+                      }
                       setActiveTab(tab.id as Tab);
                     }}
                     className={`relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-body font-medium transition-colors ${
