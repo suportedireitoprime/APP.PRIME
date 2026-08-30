@@ -134,10 +134,20 @@ export default function AdminPilulas() {
         body: { fileUrl: item.livro.audioResumoUrl, language: 'pt' }
       });
 
-      if (error) throw error;
-      
-      const transcriptionText = data?.text || data;
-      if (!transcriptionText) throw new Error("Transcrição retornou vazia");
+      if (error) {
+        let msg = error.message;
+        try {
+          if (error.context && typeof error.context.json === 'function') {
+            const ctx = await error.context.json();
+            if (ctx.error) msg = ctx.error;
+          }
+        } catch (_) {}
+        throw new Error(msg);
+      }
+
+      if (!data?.text) {
+        throw new Error("Transcrição retornou vazia");
+      }
 
       let cur = item.livro.curiosidades;
       let curiosidadesArray = Array.isArray(cur) ? cur : [];

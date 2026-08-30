@@ -1,67 +1,122 @@
-// Edge Function: transcreve Ã¡udio via Gemini API (openai/gpt-4o-mini-transcribe).
-// Aceita base64+mime OU um caminho no bucket privado `aulas-audio`.
-//
-// POST { audioBase64?, mimeType?, filePath?, language? } â†’ { text: string }
-
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
-import { encodeBase64 } from "https://deno.land/std@0.224.0/encoding/base64.ts";
-import { transcribeAudio } from "../_shared/horusMedia.ts";
+import { geminiFetch } from "../_shared/geminiFetch.ts";
+import { logAiCall } from "../_shared/ai-log.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+const MODEL = "models/gemini-1.5-flash";
+const PRIMARY = Deno.env.get("GEMINI_API_KEY") ?? "";
+const RESERVA = Deno.env.get("GEMINI_API_KEY_RESERVA") ?? "";
+const API_KEY = PRIMARY || RESERVA;
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
+  let success = false;
+  let errMsg = "";
+  let inputUnits = 0;
+  let outputUnits = 0;
+  const startedAt = Date.now();
+
   try {
-    const { audioBase64, mimeType, filePath, bucketName, fileUrl } = await req.json();
+    const { fileUrl } = await req.json();
 
-    let base64: string = audioBase64 || "";
-    let mime = mimeType || "audio/ogg";
-
-    if (fileUrl) {
-      // Baixa diretamente da URL pÃºblica/assinada
-      const response = await fetch(fileUrl);
-      if (!response.ok) {
-        return new Response(JSON.stringify({ error: `Falha ao baixar Ã¡udio da URL: ${response.statusText}` }), {
-          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      const buffer = await response.arrayBuffer();
-      base64 = encodeBase64(buffer);
-      mime = response.headers.get("content-type") || mime;
-    } else if (filePath) {
-      const supabase = createClient(
-        Deno.env.get("SUPABASE_URL")!,
-        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-      );
-      const bucket = bucketName || "aulas-audio";
-      const { data, error } = await supabase.storage.from(bucket).download(filePath);
-      if (error || !data) {
-        return new Response(JSON.stringify({ error: `Falha ao baixar arquivo do bucket ${bucket}: ` + (error?.message ?? String(error)) }), {
-          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      const buffer = await data.arrayBuffer();
-      base64 = encodeBase64(buffer);
-      mime = data.type || mime;
-    } else if (!audioBase64) {
-      return new Response(JSON.stringify({ error: "audioBase64, filePath ou fileUrl obrigatÃ³rio" }), {
+    if (!fileUrl) {
+      return new Response(JSON.stringify({ error: "fileUrl obrigatório" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const text = await transcribeAudio(base64, mime);
+    // 1. Download the file stream from Supabase Storage or external URL
+    const response = await fetch(fileUrl);
+    if (!response.ok) {
+      return new Response(JSON.stringify({ error: "Falha ao baixar áudio da URL: " + response.statusText }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const mime = response.headers.get("content-type") || "audio/mp3";
+    const blob = await response.blob();
+    const size = blob.size;
 
-    return new Response(JSON.stringify({ text: text ?? "" }), {
+    // 2. Upload to Gemini File API
+    const uploadUrl = "https://generativelanguage.googleapis.com/upload/v1beta/files?uploadType=media&key=" + API_KEY;
+    const uploadRes = await fetch(uploadUrl, {
+      method: "POST",
+      headers: {
+        "X-Goog-Upload-Command": "upload, finalize",
+        "X-Goog-Upload-Header-Content-Length": String(size),
+        "X-Goog-Upload-Header-Content-Type": mime,
+        "Content-Type": mime
+      },
+      body: blob
+    });
+
+    if (!uploadRes.ok) {
+      const errText = await uploadRes.text();
+      return new Response(JSON.stringify({ error: "Falha ao fazer upload para Gemini: " + errText }), {
+        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const fileInfo = await uploadRes.json();
+    const fileUri = fileInfo.file.uri;
+
+    // 3. Request Transcription
+    const body = {
+      contents: [
+        {
+          parts: [
+            { fileData: { fileUri: fileUri, mimeType: mime } },
+            { text: "Transcreva este áudio com precisão, preservando jargões jurídicos. Não invente palavras. Retorne apenas a transcrição." }
+          ]
+        }
+      ]
+    };
+
+    const genUrl = "https://generativelanguage.googleapis.com/v1beta/" + MODEL + ":generateContent?key=" + API_KEY;
+    const genRes = await fetch(genUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+
+    if (!genRes.ok) {
+      const errText = await genRes.text();
+      errMsg = "Gemini Error: " + errText;
+      return new Response(JSON.stringify({ error: errMsg }), {
+        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const genData = await genRes.json();
+    inputUnits = Number(genData?.usageMetadata?.promptTokenCount ?? 0);
+    outputUnits = Number(genData?.usageMetadata?.candidatesTokenCount ?? 0);
+    const text = genData?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
+    success = true;
+
+    return new Response(JSON.stringify({ text }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e: any) {
-    return new Response(JSON.stringify({ error: String(e?.message ?? e) }), {
+    errMsg = String(e?.message ?? e);
+    return new Response(JSON.stringify({ error: errMsg }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
+  } finally {
+    // try {
+    //   await logAiCall({
+    //     functionName: "transcrever-audio",
+    //     kind: "transcription",
+    //     model: MODEL,
+    //     triggerType: "manual",
+    //     inputUnits, outputUnits,
+    //     durationMs: Date.now() - startedAt,
+    //     success, error: errMsg,
+    //   });
+    // } catch (e) {}
   }
 });
