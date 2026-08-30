@@ -269,11 +269,9 @@ const SumulasTribunal = ({ tribunal }: Props) => {
             {filtered.map((sumula, i) => {
               const isFav = favoritas.includes(sumula.id);
               return (
-              <motion.div
+              <button
                 key={sumula.id}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: Math.min(i * 0.01, 0.5) }}
+                style={{ contentVisibility: 'auto', containIntrinsicSize: '0 92px' }}
                 onClick={() => { pushRecente(sumula.id); setOpen(sumula); }}
                 className="group w-full flex text-left items-stretch bg-[#14171A] hover:bg-[#1A1E22] border border-border/40 rounded-2xl transition-all cursor-pointer overflow-hidden min-h-[92px]"
               >
@@ -321,7 +319,7 @@ const SumulasTribunal = ({ tribunal }: Props) => {
                   </button>
                   <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary shrink-0 transition-colors" />
                 </div>
-              </motion.div>
+              </button>
               );
             })}
             {filtered.length === 0 && !loading && (

@@ -43,7 +43,7 @@ function TeseCard({ item, accent }: { item: TeseItemRow; accent: string }) {
   };
 
   return (
-    <div className="rounded-xl border border-border bg-secondary/40 p-3">
+    <div style={{ contentVisibility: 'auto', containIntrinsicSize: '0 100px' }} className="rounded-xl border border-border bg-secondary/40 p-3">
       <div className="flex items-start gap-2">
         <span className={`shrink-0 mt-0.5 text-[11px] font-display font-bold ${accent}`}>
           {String(item.numero).padStart(2, '0')}

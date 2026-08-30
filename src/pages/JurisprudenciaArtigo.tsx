@@ -689,7 +689,7 @@ export default function JurisprudenciaArtigo({ slugLeiProp, numeroArtigoProp, em
                       (item.teses && item.teses.length > 1 ? item.teses[1] : '') ||
                       '';
                     return (
-                      <div key={key} className="rounded-2xl border border-border/60 bg-card p-4 sm:p-5">
+                      <div key={key} style={{ contentVisibility: 'auto', containIntrinsicSize: '0 160px' }} className="rounded-2xl border border-border/60 bg-card p-4 sm:p-5">
                         <div className="flex items-start justify-between gap-3 mb-2">
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2 flex-wrap mb-1.5">
