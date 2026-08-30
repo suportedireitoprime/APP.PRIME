@@ -202,11 +202,11 @@ export default function PilulasPlayer() {
           className="flex flex-col items-center w-full max-w-md"
         >
           {/* Capa */}
-          <div className="w-56 h-80 sm:w-72 sm:h-[400px] rounded-2xl bg-white/5 overflow-hidden shadow-2xl mb-8 border border-white/10">
+          <div className="w-56 sm:w-72 rounded-2xl overflow-hidden shadow-2xl mb-8 border border-white/10 shrink-0">
             {livro.capa ? (
-              <img src={livro.capa} alt={livro.titulo} className="w-full h-full object-cover" />
+              <img src={livro.capa} alt={livro.titulo} className="w-full h-auto object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-white/20">
+              <div className="w-full h-80 sm:h-[400px] bg-white/5 flex items-center justify-center text-white/20">
                 <BookOpen className="w-16 h-16" />
               </div>
             )}
@@ -278,17 +278,19 @@ export default function PilulasPlayer() {
           />
 
           {/* Soundwave Animation */}
-          <div className="flex items-center justify-center gap-1.5 h-12 mb-8">
+          <div className="flex items-center justify-center gap-1 h-12 mb-8">
             {[
-              ["20%", "60%", "30%", "80%", "20%"],
-              ["30%", "80%", "20%", "100%", "30%"],
-              ["40%", "100%", "50%", "60%", "40%"],
-              ["20%", "70%", "40%", "90%", "20%"],
-              ["50%", "30%", "100%", "50%", "50%"],
-              ["20%", "70%", "40%", "90%", "20%"],
-              ["40%", "100%", "50%", "60%", "40%"],
-              ["30%", "80%", "20%", "100%", "30%"],
-              ["20%", "60%", "30%", "80%", "20%"],
+              ["20%", "80%", "40%", "90%", "20%"],
+              ["40%", "100%", "30%", "70%", "40%"],
+              ["60%", "30%", "100%", "50%", "60%"],
+              ["30%", "90%", "20%", "100%", "30%"],
+              ["80%", "20%", "90%", "40%", "80%"],
+              ["40%", "100%", "30%", "70%", "40%"],
+              ["100%", "40%", "80%", "30%", "100%"],
+              ["20%", "80%", "40%", "90%", "20%"],
+              ["60%", "30%", "100%", "50%", "60%"],
+              ["30%", "90%", "20%", "100%", "30%"],
+              ["50%", "20%", "80%", "30%", "50%"],
             ].map((heights, i) => (
               <motion.div
                 key={i}
@@ -299,11 +301,11 @@ export default function PilulasPlayer() {
                     : { height: "15%" }
                 }
                 transition={{
-                  duration: 1.2,
+                  duration: 0.5 + (i % 3) * 0.1, // Randomize duration slightly to make it look less uniform
                   repeat: Infinity,
-                  repeatType: "reverse",
+                  repeatType: "mirror",
                   ease: "easeInOut",
-                  delay: i * 0.1,
+                  delay: i * 0.05,
                 }}
               />
             ))}
