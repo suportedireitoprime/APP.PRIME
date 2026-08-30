@@ -4,12 +4,11 @@ import { PageHeader } from '@/components/vademecum/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Loader2, Headphones, Search, UploadCloud, CheckCircle2, AlertCircle, Copy, Link } from 'lucide-react';
+import { Loader2, Headphones, Search, UploadCloud, CheckCircle2, AlertCircle, Copy, Link, ChevronRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { COLECOES, type ColecaoConfig, type LivroNormalizado, normalizeLivro } from '@/lib/bibliotecaColecoes';
 import { copiar } from '@/lib/nativo/copiar';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 import { CustomAudioPlayer } from '@/components/vademecum/CustomAudioPlayer';
 
@@ -28,8 +27,11 @@ type SelectedItemType =
   | { type: 'livro'; data: LivroComColecao }
   | { type: 'artigo'; data: ArtigoCP };
 
+type ScreenState = 'menu' | 'classicos' | 'rapidas' | 'cp';
+
 export default function AdminPilulas() {
   const navigate = useNavigate();
+  const [activeScreen, setActiveScreen] = useState<ScreenState>('menu');
   const [loading, setLoading] = useState(true);
   const [loadingCP, setLoadingCP] = useState(true);
   const [livros, setLivros] = useState<LivroComColecao[]>([]);
@@ -235,150 +237,194 @@ export default function AdminPilulas() {
     void copiar(text, successMsg);
   };
 
+  let title = "Admin Pílulas";
+  let subtitle = "Gerencie os áudios (Pílulas) da coleção Clássicos do Direito";
+  let onBack = () => navigate(-1);
+
+  if (activeScreen === 'classicos') {
+    title = "Clássicos do Direito";
+    subtitle = `Gerencie as pílulas dos Clássicos (${livrosFiltrados.length})`;
+    onBack = () => setActiveScreen('menu');
+  } else if (activeScreen === 'rapidas') {
+    title = "Pílulas Rápidas";
+    subtitle = "Gerencie pílulas de leitura rápida";
+    onBack = () => setActiveScreen('menu');
+  } else if (activeScreen === 'cp') {
+    title = "Código Penal";
+    subtitle = `Gerencie as pílulas do CP (${artigosCP.length})`;
+    onBack = () => setActiveScreen('rapidas');
+  }
+
   return (
     <div className="min-h-screen bg-background pb-28">
       <PageHeader
-        title="Admin Pílulas"
-        subtitle="Gerencie os áudios (Pílulas) da coleção Clássicos do Direito"
-        onBack={() => navigate(-1)}
+        title={title}
+        subtitle={subtitle}
+        onBack={onBack}
       />
 
       <div className="px-4 pt-6 max-w-4xl mx-auto space-y-6">
-        {/* Busca */}
-        <div className="relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-          <Input
-            value={busca}
-            onChange={(e) => setBusca(e.target.value)}
-            placeholder="Buscar por título ou autor..."
-            className="pl-11 h-12 rounded-xl border-border bg-card shadow-sm text-base"
-          />
-        </div>
-
-        {/* Accordion Categorias */}
-        {loading || loadingCP ? (
-          <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
-            <Loader2 className="w-8 h-8 animate-spin mb-4" />
-            <p>Carregando pílulas...</p>
+        
+        {/* Busca Global (sempre visível nas listas) */}
+        {(activeScreen === 'menu' || activeScreen === 'classicos' || activeScreen === 'cp') && (
+          <div className="relative">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <Input
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              placeholder="Buscar por título ou número..."
+              className="pl-11 h-12 rounded-xl border-border bg-card shadow-sm text-base"
+            />
           </div>
-        ) : (
-          <Accordion type="single" collapsible defaultValue="classicos" className="space-y-4">
-            {/* Clássicos do Direito */}
-            <AccordionItem value="classicos" className="border-none bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
-              <AccordionTrigger className="px-5 py-4 hover:no-underline font-bold text-lg uppercase tracking-wider text-muted-foreground bg-muted/20">
-                Clássicos do Direito ({livrosFiltrados.length})
-              </AccordionTrigger>
-              <AccordionContent className="p-4 bg-background">
-                {livrosFiltrados.length === 0 ? (
-                  <div className="text-center text-muted-foreground py-6 border border-dashed rounded-xl">
-                    Nenhum clássico encontrado.
-                  </div>
-                ) : (
-                  <div className="grid gap-3">
-                    {livrosFiltrados.map((item) => {
-                      const hasAudio = !!item.livro.audioResumoUrl;
-                      return (
-                        <button
-                          type="button"
-                          key={item.livro.id}
-                          onClick={() => setSelectedItem({ type: 'livro', data: item })}
-                          className={`flex items-start gap-4 rounded-2xl p-4 border shadow-sm text-left active:scale-[0.98] transition-all w-full ${
-                            hasAudio 
-                              ? 'bg-success/5 border-success/30 hover:bg-success/10' 
-                              : 'bg-card border-border hover:border-muted-foreground/30'
-                          }`}
-                        >
-                          <div className="w-16 h-24 rounded-lg bg-muted overflow-hidden shrink-0 shadow-sm">
-                            {item.livro.capa ? (
-                              <img src={item.livro.capa} alt="" className="w-full h-full object-cover" />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center text-muted-foreground text-[10px] text-center leading-tight p-1">
-                                Sem Capa
-                              </div>
-                            )}
-                          </div>
-                          <div className="flex-1 min-w-0 py-0.5">
-                            <h3 className="font-bold text-foreground text-sm sm:text-base leading-snug line-clamp-2 mb-1.5">
-                              {item.livro.titulo}
-                            </h3>
-                            {item.livro.autor && (
-                              <p className="text-xs sm:text-sm text-muted-foreground line-clamp-1">{item.livro.autor}</p>
-                            )}
-                            <div className="flex items-center gap-2 mt-3 flex-wrap">
-                              {hasAudio ? (
-                                <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-success bg-success/10 px-2.5 py-1 rounded-full">
-                                  <CheckCircle2 className="w-3.5 h-3.5 shrink-0" /> Pílula Concluída
-                                </span>
-                              ) : (
-                                <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-orange-500 bg-orange-500/10 px-2.5 py-1 rounded-full">
-                                  <AlertCircle className="w-3.5 h-3.5 shrink-0" /> Pendente
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-              </AccordionContent>
-            </AccordionItem>
-
-            {/* Pílulas Rápidas */}
-            <AccordionItem value="pilulas-rapidas" className="border-none bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
-              <AccordionTrigger className="px-5 py-4 hover:no-underline font-bold text-lg uppercase tracking-wider text-muted-foreground bg-muted/20">
-                Pílulas Rápidas
-              </AccordionTrigger>
-              <AccordionContent className="p-4 bg-background space-y-4">
-                
-                <Accordion type="single" collapsible className="space-y-2">
-                  <AccordionItem value="cp" className="border-none bg-muted/30 rounded-xl overflow-hidden">
-                    <AccordionTrigger className="px-4 py-3 hover:no-underline font-semibold text-base text-foreground">
-                      Código Penal ({artigosCP.length})
-                    </AccordionTrigger>
-                    <AccordionContent className="p-3 bg-background border-t border-border">
-                      {artigosFiltrados.length === 0 ? (
-                        <div className="text-center text-muted-foreground py-6">
-                          Nenhum artigo encontrado.
-                        </div>
-                      ) : (
-                        <div className="grid gap-2 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-                          {artigosFiltrados.map((artigo) => {
-                            const hasAudio = !!artigo.audio_pilula_url;
-                            return (
-                              <button
-                                type="button"
-                                key={artigo.id}
-                                onClick={() => setSelectedItem({ type: 'artigo', data: artigo })}
-                                className={`flex items-center justify-between rounded-xl p-4 border shadow-sm text-left active:scale-[0.98] transition-all w-full ${
-                                  hasAudio 
-                                    ? 'bg-success/5 border-success/30 hover:bg-success/10' 
-                                    : 'bg-card border-border hover:border-muted-foreground/30'
-                                }`}
-                              >
-                                <span className="font-bold text-base">{artigo.numero}</span>
-                                {hasAudio ? (
-                                  <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-success bg-success/10 px-2.5 py-1 rounded-full">
-                                    <CheckCircle2 className="w-3.5 h-3.5 shrink-0" /> Concluída
-                                  </span>
-                                ) : (
-                                  <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-orange-500 bg-orange-500/10 px-2.5 py-1 rounded-full">
-                                    <AlertCircle className="w-3.5 h-3.5 shrink-0" /> Pendente
-                                  </span>
-                                )}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
-
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
         )}
+
+        {/* Menu Principal */}
+        {activeScreen === 'menu' && (
+          <div className="space-y-4">
+            <button
+              onClick={() => setActiveScreen('classicos')}
+              className="w-full flex items-center justify-between px-5 py-4 bg-card rounded-2xl shadow-sm border border-border hover:bg-muted/30 transition-colors active:scale-[0.98]"
+            >
+              <span className="font-bold text-lg uppercase tracking-wider text-muted-foreground">
+                Clássicos do Direito ({livrosFiltrados.length})
+              </span>
+              <ChevronRight className="w-5 h-5 text-muted-foreground" />
+            </button>
+            <button
+              onClick={() => setActiveScreen('rapidas')}
+              className="w-full flex items-center justify-between px-5 py-4 bg-card rounded-2xl shadow-sm border border-border hover:bg-muted/30 transition-colors active:scale-[0.98]"
+            >
+              <span className="font-bold text-lg uppercase tracking-wider text-muted-foreground">
+                Pílulas Rápidas
+              </span>
+              <ChevronRight className="w-5 h-5 text-muted-foreground" />
+            </button>
+          </div>
+        )}
+
+        {/* Tela Pílulas Rápidas (Sub-menu) */}
+        {activeScreen === 'rapidas' && (
+          <div className="space-y-4">
+            <button
+              onClick={() => setActiveScreen('cp')}
+              className="w-full flex items-center justify-between px-5 py-4 bg-card rounded-2xl shadow-sm border border-border hover:bg-muted/30 transition-colors active:scale-[0.98]"
+            >
+              <span className="font-bold text-lg uppercase tracking-wider text-foreground">
+                Código Penal ({artigosCP.length})
+              </span>
+              <ChevronRight className="w-5 h-5 text-muted-foreground" />
+            </button>
+          </div>
+        )}
+
+        {/* Tela Clássicos do Direito (Listagem) */}
+        {activeScreen === 'classicos' && (
+          <div className="space-y-4">
+            {loading ? (
+              <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
+                <Loader2 className="w-8 h-8 animate-spin mb-4" />
+                <p>Carregando clássicos...</p>
+              </div>
+            ) : livrosFiltrados.length === 0 ? (
+              <div className="text-center text-muted-foreground py-10 border border-dashed rounded-xl bg-card">
+                Nenhum clássico encontrado.
+              </div>
+            ) : (
+              <div className="grid gap-3">
+                {livrosFiltrados.map((item) => {
+                  const hasAudio = !!item.livro.audioResumoUrl;
+                  return (
+                    <button
+                      type="button"
+                      key={item.livro.id}
+                      onClick={() => setSelectedItem({ type: 'livro', data: item })}
+                      className={`flex items-start gap-4 rounded-2xl p-4 border shadow-sm text-left active:scale-[0.98] transition-all w-full ${
+                        hasAudio 
+                          ? 'bg-success/5 border-success/30 hover:bg-success/10' 
+                          : 'bg-card border-border hover:border-muted-foreground/30'
+                      }`}
+                    >
+                      <div className="w-16 h-24 rounded-lg bg-muted overflow-hidden shrink-0 shadow-sm">
+                        {item.livro.capa ? (
+                          <img src={item.livro.capa} alt="" className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-muted-foreground text-[10px] text-center leading-tight p-1">
+                            Sem Capa
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0 py-0.5">
+                        <h3 className="font-bold text-foreground text-sm sm:text-base leading-snug line-clamp-2 mb-1.5">
+                          {item.livro.titulo}
+                        </h3>
+                        {item.livro.autor && (
+                          <p className="text-xs sm:text-sm text-muted-foreground line-clamp-1">{item.livro.autor}</p>
+                        )}
+                        <div className="flex items-center gap-2 mt-3 flex-wrap">
+                          {hasAudio ? (
+                            <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-success bg-success/10 px-2.5 py-1 rounded-full">
+                              <CheckCircle2 className="w-3.5 h-3.5 shrink-0" /> Pílula Concluída
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-orange-500 bg-orange-500/10 px-2.5 py-1 rounded-full">
+                              <AlertCircle className="w-3.5 h-3.5 shrink-0" /> Pendente
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Tela Código Penal (Listagem) */}
+        {activeScreen === 'cp' && (
+          <div className="space-y-4">
+            {loadingCP ? (
+              <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
+                <Loader2 className="w-8 h-8 animate-spin mb-4" />
+                <p>Carregando Código Penal...</p>
+              </div>
+            ) : artigosFiltrados.length === 0 ? (
+              <div className="text-center text-muted-foreground py-10 border border-dashed rounded-xl bg-card">
+                Nenhum artigo encontrado.
+              </div>
+            ) : (
+              <div className="grid gap-2">
+                {artigosFiltrados.map((artigo) => {
+                  const hasAudio = !!artigo.audio_pilula_url;
+                  return (
+                    <button
+                      type="button"
+                      key={artigo.id}
+                      onClick={() => setSelectedItem({ type: 'artigo', data: artigo })}
+                      className={`flex items-center justify-between rounded-xl p-4 border shadow-sm text-left active:scale-[0.98] transition-all w-full ${
+                        hasAudio 
+                          ? 'bg-success/5 border-success/30 hover:bg-success/10' 
+                          : 'bg-card border-border hover:border-muted-foreground/30'
+                      }`}
+                    >
+                      <span className="font-bold text-base">{artigo.numero}</span>
+                      {hasAudio ? (
+                        <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-success bg-success/10 px-2.5 py-1 rounded-full">
+                          <CheckCircle2 className="w-3.5 h-3.5 shrink-0" /> Concluída
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-orange-500 bg-orange-500/10 px-2.5 py-1 rounded-full">
+                          <AlertCircle className="w-3.5 h-3.5 shrink-0" /> Pendente
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
       </div>
 
       {/* Sheet de Upload */}
