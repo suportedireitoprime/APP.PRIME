@@ -172,7 +172,7 @@ export default function AdminPilulas() {
                     onClick={() => setSelectedBook(item)}
                     className={`flex items-start gap-4 rounded-2xl p-4 border shadow-sm text-left active:scale-[0.98] transition-all w-full ${
                       hasAudio 
-                        ? 'bg-green-500/5 border-green-500/30 hover:bg-green-500/10' 
+                        ? 'bg-success/5 border-success/30 hover:bg-success/10' 
                         : 'bg-card border-border hover:border-muted-foreground/30'
                     }`}
                   >
@@ -197,7 +197,7 @@ export default function AdminPilulas() {
                       )}
                       <div className="flex items-center gap-2 mt-3 flex-wrap">
                         {hasAudio ? (
-                          <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-green-500 bg-green-500/10 px-2.5 py-1 rounded-full">
+                          <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-success bg-success/10 px-2.5 py-1 rounded-full">
                             <CheckCircle2 className="w-3.5 h-3.5 shrink-0" /> Pílula Concluída
                           </span>
                         ) : (
