@@ -10,6 +10,8 @@ import { toast } from 'sonner';
 import { COLECOES, type ColecaoConfig, type LivroNormalizado, normalizeLivro } from '@/lib/bibliotecaColecoes';
 import { copiar } from '@/lib/nativo/copiar';
 
+import { CustomAudioPlayer } from '@/components/vademecum/CustomAudioPlayer';
+
 interface LivroComColecao {
   colecao: ColecaoConfig;
   livro: LivroNormalizado;
@@ -97,7 +99,7 @@ export default function AdminPilulas() {
 
       if (dbError) throw dbError;
 
-      toast.success('Pílula (áudio) atualizada com sucesso!', { id: toastId });
+      toast.success('Pílula enviada e salva com sucesso!', { id: toastId });
       
       // Update local state
       const publicUrlString = publicUrl;
@@ -188,7 +190,7 @@ export default function AdminPilulas() {
                     <div className="flex items-center gap-2 mt-3">
                       {item.livro.audioResumoUrl ? (
                         <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-green-500 bg-green-500/10 px-2 py-0.5 rounded-full">
-                          <CheckCircle2 className="w-3 h-3" /> Pílula Disponível
+                          <CheckCircle2 className="w-3 h-3" /> Pílula Concluída
                         </span>
                       ) : (
                         <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded-full">
@@ -274,12 +276,12 @@ export default function AdminPilulas() {
               <div className="space-y-3">
                 <h4 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">Status Atual</h4>
                 {selectedBook.livro.audioResumoUrl ? (
-                  <div className="bg-green-500/10 text-green-500 border border-green-500/20 rounded-xl p-4 flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5" />
-                    <div className="min-w-0">
-                      <p className="font-semibold">Pílula disponível</p>
-                      <p className="text-xs opacity-90 truncate mt-1">{selectedBook.livro.audioResumoUrl}</p>
+                  <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-4 space-y-3">
+                    <div className="flex items-center gap-3 text-green-500">
+                      <CheckCircle2 className="w-5 h-5 shrink-0" />
+                      <p className="font-bold">Pílula Concluída (OK!)</p>
                     </div>
+                    <CustomAudioPlayer src={selectedBook.livro.audioResumoUrl} title="Ouvir Pílula" />
                   </div>
                 ) : (
                   <div className="bg-orange-500/10 text-orange-500 border border-orange-500/20 rounded-xl p-4 flex items-center gap-3">
@@ -301,9 +303,7 @@ export default function AdminPilulas() {
                     <p><strong>3.</strong> Aos <strong>10 segundos</strong> a música para completamente.</p>
                   </div>
                   <div className="pt-2">
-                    <audio controls className="w-full h-10" preload="metadata" src="https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/audios/intros/secret-agent-groove.mp3">
-                      Seu navegador não suporta o player de áudio.
-                    </audio>
+                    <CustomAudioPlayer src="https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/audios/intros/secret-agent-groove.mp3" title="Música de Intro" />
                   </div>
                 </div>
               </div>
