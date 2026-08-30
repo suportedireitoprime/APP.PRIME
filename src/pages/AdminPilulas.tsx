@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { COLECOES, type ColecaoConfig, type LivroNormalizado, normalizeLivro } from '@/lib/bibliotecaColecoes';
 import { copiar } from '@/lib/nativo/copiar';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 import { CustomAudioPlayer } from '@/components/vademecum/CustomAudioPlayer';
 
@@ -17,17 +18,31 @@ interface LivroComColecao {
   livro: LivroNormalizado;
 }
 
+interface ArtigoCP {
+  id: string;
+  numero: string;
+  audio_pilula_url: string | null;
+}
+
+type SelectedItemType = 
+  | { type: 'livro'; data: LivroComColecao }
+  | { type: 'artigo'; data: ArtigoCP };
+
 export default function AdminPilulas() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [loadingCP, setLoadingCP] = useState(true);
   const [livros, setLivros] = useState<LivroComColecao[]>([]);
+  const [artigosCP, setArtigosCP] = useState<ArtigoCP[]>([]);
+  
   const [busca, setBusca] = useState('');
   const [uploadingId, setUploadingId] = useState<number | string | null>(null);
   const [transcribingId, setTranscribingId] = useState<number | string | null>(null);
-  const [selectedBook, setSelectedBook] = useState<LivroComColecao | null>(null);
+  const [selectedItem, setSelectedItem] = useState<SelectedItemType | null>(null);
 
   useEffect(() => {
     carregarTudo();
+    carregarCP();
   }, []);
 
   async function carregarTudo() {
@@ -55,6 +70,26 @@ export default function AdminPilulas() {
     }
   }
 
+  async function carregarCP() {
+    setLoadingCP(true);
+    try {
+      const { data, error } = await supabase
+        .from('CP_CODIGO_PENAL')
+        .select('id, numero, audio_pilula_url')
+        .order('ordem_numero', { ascending: true });
+        
+      if (error) {
+        console.error('Erro ao carregar Código Penal:', error);
+        return;
+      }
+      setArtigosCP(data as any[]);
+    } catch (err) {
+      toast.error('Erro ao carregar artigos do Código Penal');
+    } finally {
+      setLoadingCP(false);
+    }
+  }
+
   const livrosFiltrados = useMemo(() => {
     const q = busca.toLowerCase();
     if (!q) return livros;
@@ -67,19 +102,29 @@ export default function AdminPilulas() {
     });
   }, [livros, busca]);
 
-  async function handleUploadAudio(item: LivroComColecao, file: File) {
+  const artigosFiltrados = useMemo(() => {
+    const q = busca.toLowerCase();
+    if (!q) return artigosCP;
+    return artigosCP.filter(a => a.numero.toLowerCase().includes(q));
+  }, [artigosCP, busca]);
+
+  async function handleUploadAudio(item: SelectedItemType, file: File) {
     if (!file.type.startsWith('audio/')) {
       toast.error('Por favor, selecione um arquivo de áudio válido.');
       return;
     }
 
-    setUploadingId(item.livro.id);
-    const toastId = toast.loading(`Enviando áudio para ${item.livro.titulo}...`);
+    const itemId = item.type === 'livro' ? item.data.livro.id : item.data.id;
+    const itemTitulo = item.type === 'livro' ? item.data.livro.titulo : item.data.numero;
+
+    setUploadingId(itemId);
+    const toastId = toast.loading(`Enviando áudio para ${itemTitulo}...`);
 
     try {
-      // 1. Upload to Supabase Storage
       const fileExt = file.name.split('.').pop();
-      const rawFileName = `resumos-livros/pilulas-classicos-${item.livro.id}-${Date.now()}.${fileExt}`;
+      const rawFileName = item.type === 'livro'
+        ? `resumos-livros/pilulas-classicos-${itemId}-${Date.now()}.${fileExt}`
+        : `resumos-livros/pilulas-cp-${itemId}-${Date.now()}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from('audios') 
@@ -87,27 +132,33 @@ export default function AdminPilulas() {
 
       if (uploadError) throw uploadError;
 
-      // 2. Get Public URL
       const { data: publicData } = supabase.storage.from('audios').getPublicUrl(rawFileName);
       const rawUrl = publicData.publicUrl;
 
-      // 3. Update DB directly
-      const { error: dbError } = await supabase
-        .from(item.colecao.table)
-        .update({ audio_resumo_url: rawUrl })
-        .eq('id', item.livro.id);
+      if (item.type === 'livro') {
+        const { error: dbError } = await supabase
+          .from(item.data.colecao.table)
+          .update({ audio_resumo_url: rawUrl })
+          .eq('id', itemId);
+        if (dbError) throw dbError;
 
-      if (dbError) throw dbError;
+        setLivros((prev: any) => prev.map((p: any) => 
+          p.livro.id === itemId ? { ...p, livro: { ...p.livro, audioResumoUrl: rawUrl } } : p
+        ));
+      } else {
+        const { error: dbError } = await supabase
+          .from('CP_CODIGO_PENAL')
+          .update({ audio_pilula_url: rawUrl })
+          .eq('id', itemId);
+        if (dbError) throw dbError;
+
+        setArtigosCP((prev) => prev.map(a => 
+          a.id === itemId ? { ...a, audio_pilula_url: rawUrl } : a
+        ));
+      }
 
       toast.success('Áudio enviado com sucesso!', { id: toastId, duration: 4000 });
       
-      // 4. Update local state
-      setLivros((prev: any) => prev.map((p: any) => {
-        if (p.livro.id === item.livro.id) {
-          return { ...p, livro: { ...p.livro, audioResumoUrl: rawUrl } };
-        }
-        return p;
-      }));
     } catch (err: any) {
       console.error(err);
       toast.error(err.message || 'Erro ao enviar áudio', { id: toastId });
@@ -169,7 +220,7 @@ export default function AdminPilulas() {
       };
 
       setLivros((prev) => prev.map((l) => (l.livro.id === item.livro.id ? updatedBook : l)));
-      setSelectedBook(updatedBook);
+      setSelectedItem({ type: 'livro', data: updatedBook });
 
       toast.success('Pílula transcrita e salva com sucesso!', { id: toastId });
     } catch (err: any) {
@@ -204,151 +255,226 @@ export default function AdminPilulas() {
           />
         </div>
 
-        {/* Lista */}
-        {loading ? (
+        {/* Accordion Categorias */}
+        {loading || loadingCP ? (
           <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
             <Loader2 className="w-8 h-8 animate-spin mb-4" />
-            <p>Carregando clássicos do direito...</p>
-          </div>
-        ) : livrosFiltrados.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-muted-foreground bg-card rounded-2xl border border-dashed border-border">
-            <Search className="w-10 h-10 mb-4 opacity-50" />
-            <p>Nenhum livro encontrado.</p>
+            <p>Carregando pílulas...</p>
           </div>
         ) : (
-          <div className="space-y-4">
-            <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider pl-1 border-b border-border pb-2">
-              Clássicos do Direito ({livrosFiltrados.length})
-            </h2>
-            <div className="grid gap-3">
-              {livrosFiltrados.map((item) => {
-                const hasAudio = !!item.livro.audioResumoUrl;
-                return (
-                  <button
-                    type="button"
-                    key={item.livro.id}
-                    onClick={() => setSelectedBook(item)}
-                    className={`flex items-start gap-4 rounded-2xl p-4 border shadow-sm text-left active:scale-[0.98] transition-all w-full ${
-                      hasAudio 
-                        ? 'bg-success/5 border-success/30 hover:bg-success/10' 
-                        : 'bg-card border-border hover:border-muted-foreground/30'
-                    }`}
-                  >
-                    {/* Capa */}
-                    <div className="w-16 h-24 rounded-lg bg-muted overflow-hidden shrink-0 shadow-sm">
-                      {item.livro.capa ? (
-                        <img src={item.livro.capa} alt="" className="w-full h-full object-cover" />
+          <Accordion type="single" collapsible defaultValue="classicos" className="space-y-4">
+            {/* Clássicos do Direito */}
+            <AccordionItem value="classicos" className="border-none bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
+              <AccordionTrigger className="px-5 py-4 hover:no-underline font-bold text-lg uppercase tracking-wider text-muted-foreground bg-muted/20">
+                Clássicos do Direito ({livrosFiltrados.length})
+              </AccordionTrigger>
+              <AccordionContent className="p-4 bg-background">
+                {livrosFiltrados.length === 0 ? (
+                  <div className="text-center text-muted-foreground py-6 border border-dashed rounded-xl">
+                    Nenhum clássico encontrado.
+                  </div>
+                ) : (
+                  <div className="grid gap-3">
+                    {livrosFiltrados.map((item) => {
+                      const hasAudio = !!item.livro.audioResumoUrl;
+                      return (
+                        <button
+                          type="button"
+                          key={item.livro.id}
+                          onClick={() => setSelectedItem({ type: 'livro', data: item })}
+                          className={`flex items-start gap-4 rounded-2xl p-4 border shadow-sm text-left active:scale-[0.98] transition-all w-full ${
+                            hasAudio 
+                              ? 'bg-success/5 border-success/30 hover:bg-success/10' 
+                              : 'bg-card border-border hover:border-muted-foreground/30'
+                          }`}
+                        >
+                          <div className="w-16 h-24 rounded-lg bg-muted overflow-hidden shrink-0 shadow-sm">
+                            {item.livro.capa ? (
+                              <img src={item.livro.capa} alt="" className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-muted-foreground text-[10px] text-center leading-tight p-1">
+                                Sem Capa
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0 py-0.5">
+                            <h3 className="font-bold text-foreground text-sm sm:text-base leading-snug line-clamp-2 mb-1.5">
+                              {item.livro.titulo}
+                            </h3>
+                            {item.livro.autor && (
+                              <p className="text-xs sm:text-sm text-muted-foreground line-clamp-1">{item.livro.autor}</p>
+                            )}
+                            <div className="flex items-center gap-2 mt-3 flex-wrap">
+                              {hasAudio ? (
+                                <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-success bg-success/10 px-2.5 py-1 rounded-full">
+                                  <CheckCircle2 className="w-3.5 h-3.5 shrink-0" /> Pílula Concluída
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-orange-500 bg-orange-500/10 px-2.5 py-1 rounded-full">
+                                  <AlertCircle className="w-3.5 h-3.5 shrink-0" /> Pendente
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </AccordionContent>
+            </AccordionItem>
+
+            {/* Pílulas Rápidas */}
+            <AccordionItem value="pilulas-rapidas" className="border-none bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
+              <AccordionTrigger className="px-5 py-4 hover:no-underline font-bold text-lg uppercase tracking-wider text-muted-foreground bg-muted/20">
+                Pílulas Rápidas
+              </AccordionTrigger>
+              <AccordionContent className="p-4 bg-background space-y-4">
+                
+                <Accordion type="single" collapsible className="space-y-2">
+                  <AccordionItem value="cp" className="border-none bg-muted/30 rounded-xl overflow-hidden">
+                    <AccordionTrigger className="px-4 py-3 hover:no-underline font-semibold text-base text-foreground">
+                      Código Penal ({artigosCP.length})
+                    </AccordionTrigger>
+                    <AccordionContent className="p-3 bg-background border-t border-border">
+                      {artigosFiltrados.length === 0 ? (
+                        <div className="text-center text-muted-foreground py-6">
+                          Nenhum artigo encontrado.
+                        </div>
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-muted-foreground text-[10px] text-center leading-tight p-1">
-                          Sem Capa
+                        <div className="grid gap-2 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                          {artigosFiltrados.map((artigo) => {
+                            const hasAudio = !!artigo.audio_pilula_url;
+                            return (
+                              <button
+                                type="button"
+                                key={artigo.id}
+                                onClick={() => setSelectedItem({ type: 'artigo', data: artigo })}
+                                className={`flex items-center justify-between rounded-xl p-4 border shadow-sm text-left active:scale-[0.98] transition-all w-full ${
+                                  hasAudio 
+                                    ? 'bg-success/5 border-success/30 hover:bg-success/10' 
+                                    : 'bg-card border-border hover:border-muted-foreground/30'
+                                }`}
+                              >
+                                <span className="font-bold text-base">{artigo.numero}</span>
+                                {hasAudio ? (
+                                  <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-success bg-success/10 px-2.5 py-1 rounded-full">
+                                    <CheckCircle2 className="w-3.5 h-3.5 shrink-0" /> Concluída
+                                  </span>
+                                ) : (
+                                  <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-orange-500 bg-orange-500/10 px-2.5 py-1 rounded-full">
+                                    <AlertCircle className="w-3.5 h-3.5 shrink-0" /> Pendente
+                                  </span>
+                                )}
+                              </button>
+                            );
+                          })}
                         </div>
                       )}
-                    </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
 
-                    {/* Info */}
-                    <div className="flex-1 min-w-0 py-0.5">
-                      <h3 className="font-bold text-foreground text-sm sm:text-base leading-snug line-clamp-2 mb-1.5">
-                        {item.livro.titulo}
-                      </h3>
-                      {item.livro.autor && (
-                        <p className="text-xs sm:text-sm text-muted-foreground line-clamp-1">{item.livro.autor}</p>
-                      )}
-                      <div className="flex items-center gap-2 mt-3 flex-wrap">
-                        {hasAudio ? (
-                          <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-success bg-success/10 px-2.5 py-1 rounded-full">
-                            <CheckCircle2 className="w-3.5 h-3.5 shrink-0" /> Pílula Concluída
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-orange-500 bg-orange-500/10 px-2.5 py-1 rounded-full">
-                            <AlertCircle className="w-3.5 h-3.5 shrink-0" /> Pendente
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         )}
       </div>
 
       {/* Sheet de Upload */}
-      <Sheet open={!!selectedBook} onOpenChange={(open) => !open && setSelectedBook(null)}>
+      <Sheet open={!!selectedItem} onOpenChange={(open) => !open && setSelectedItem(null)}>
         <SheetContent side="bottom" className="rounded-t-[32px] p-6 max-h-[95vh] overflow-y-auto">
-          {selectedBook && (
+          {selectedItem && (
             <div className="space-y-6 pt-2 pb-6 max-w-lg mx-auto">
               <SheetHeader className="text-left space-y-0">
                 <SheetTitle className="text-2xl font-bold">Pílula em Áudio</SheetTitle>
                 <p className="text-muted-foreground text-sm">
-                  Gerencie o áudio da pílula para este clássico.
+                  {selectedItem.type === 'livro' 
+                    ? 'Gerencie o áudio da pílula para este clássico.' 
+                    : 'Gerencie o áudio da pílula para este artigo.'}
                 </p>
               </SheetHeader>
 
-              <div className="flex gap-5 bg-muted/30 p-4 rounded-2xl border border-border">
-                <div className="w-20 h-28 rounded-lg bg-muted overflow-hidden shrink-0 shadow-sm">
-                  {selectedBook.livro.capa ? (
-                    <img src={selectedBook.livro.capa} alt="" className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs text-center p-2 leading-tight">
-                      Sem Capa
-                    </div>
-                  )}
+              {/* Informações Visuais (Livro vs Artigo) */}
+              {selectedItem.type === 'livro' ? (
+                <div className="flex gap-5 bg-muted/30 p-4 rounded-2xl border border-border">
+                  <div className="w-20 h-28 rounded-lg bg-muted overflow-hidden shrink-0 shadow-sm">
+                    {selectedItem.data.livro.capa ? (
+                      <img src={selectedItem.data.livro.capa} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs text-center p-2 leading-tight">
+                        Sem Capa
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 py-1 flex flex-col justify-center min-w-0">
+                    <h3 className="font-bold text-foreground text-lg leading-tight line-clamp-2">
+                      {selectedItem.data.livro.titulo}
+                    </h3>
+                    {selectedItem.data.livro.autor && (
+                      <p className="text-muted-foreground mt-1 text-sm truncate">{selectedItem.data.livro.autor}</p>
+                    )}
+                  </div>
                 </div>
-                <div className="flex-1 py-1 flex flex-col justify-center min-w-0">
-                  <h3 className="font-bold text-foreground text-lg leading-tight line-clamp-2">
-                    {selectedBook.livro.titulo}
+              ) : (
+                <div className="bg-muted/30 p-5 rounded-2xl border border-border text-center">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary mb-3">
+                    <Headphones className="w-6 h-6" />
+                  </div>
+                  <h3 className="font-bold text-foreground text-2xl leading-tight">
+                    {selectedItem.data.numero}
                   </h3>
-                  {selectedBook.livro.autor && (
-                    <p className="text-muted-foreground mt-1 text-sm truncate">{selectedBook.livro.autor}</p>
-                  )}
+                  <p className="text-muted-foreground mt-1 text-sm font-semibold">Código Penal</p>
                 </div>
-              </div>
+              )}
 
-              {/* Botões de Cópia */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-center rounded-xl text-xs h-10 px-2"
-                  onClick={() => copyToClipboard(selectedBook.livro.titulo, 'Título copiado!')}
-                >
-                  <Copy className="w-3.5 h-3.5 mr-2 shrink-0" /> <span className="truncate">Copiar Título</span>
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-center rounded-xl text-xs h-10 px-2"
-                  onClick={() => {
-                    const linkPdf = selectedBook.livro.link || selectedBook.livro.download || '';
-                    if (linkPdf) {
-                      copyToClipboard(linkPdf, 'Link do Drive/PDF copiado!');
-                    } else {
-                      toast.error('Nenhum link encontrado para esta obra.');
-                    }
-                  }}
-                >
-                  <Link className="w-3.5 h-3.5 mr-2 shrink-0" /> <span className="truncate">Copiar Link</span>
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-center rounded-xl text-xs h-10 px-2"
-                  onClick={() => {
-                    const promptText = `Você deve explicar o livro todo capítulo por capítulo passando a importância para o estudante de direito ler, explicando o que o autor quis dizer, qual a obra... bem detalhado explicando os conceitos. Livro: ${selectedBook.livro.titulo} - ${selectedBook.livro.autor || 'Autor Desconhecido'}`;
-                    copyToClipboard(promptText, 'Prompt copiado!');
-                  }}
-                >
-                  <Copy className="w-3.5 h-3.5 mr-2 shrink-0" /> <span className="truncate">Copiar Prompt</span>
-                </Button>
-              </div>
+              {/* Botões de Ação para Livros */}
+              {selectedItem.type === 'livro' && (
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-center rounded-xl text-xs h-10 px-2"
+                    onClick={() => copyToClipboard(selectedItem.data.livro.titulo, 'Título copiado!')}
+                  >
+                    <Copy className="w-3.5 h-3.5 mr-2 shrink-0" /> <span className="truncate">Copiar Título</span>
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-center rounded-xl text-xs h-10 px-2"
+                    onClick={() => {
+                      const linkPdf = selectedItem.data.livro.link || selectedItem.data.livro.download || '';
+                      if (linkPdf) {
+                        copyToClipboard(linkPdf, 'Link do Drive/PDF copiado!');
+                      } else {
+                        toast.error('Nenhum link encontrado para esta obra.');
+                      }
+                    }}
+                  >
+                    <Link className="w-3.5 h-3.5 mr-2 shrink-0" /> <span className="truncate">Copiar Link</span>
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-center rounded-xl text-xs h-10 px-2"
+                    onClick={() => {
+                      const promptText = `Você deve explicar o livro todo capítulo por capítulo passando a importância para o estudante de direito ler, explicando o que o autor quis dizer, qual a obra... bem detalhado explicando os conceitos. Livro: ${selectedItem.data.livro.titulo} - ${selectedItem.data.livro.autor || 'Autor Desconhecido'}`;
+                      copyToClipboard(promptText, 'Prompt copiado!');
+                    }}
+                  >
+                    <Copy className="w-3.5 h-3.5 mr-2 shrink-0" /> <span className="truncate">Copiar Prompt</span>
+                  </Button>
+                </div>
+              )}
 
+              {/* Status do Áudio */}
               <div className="space-y-3">
                 <h4 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">Status Atual</h4>
-                {selectedBook.livro.audioResumoUrl ? (
+                {(selectedItem.type === 'livro' ? selectedItem.data.livro.audioResumoUrl : selectedItem.data.audio_pilula_url) ? (
                   <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-4 space-y-3">
                     <div className="flex items-center gap-3 text-green-500">
                       <CheckCircle2 className="w-5 h-5 shrink-0" />
                       <p className="font-bold">Pílula Concluída (OK!)</p>
                     </div>
-                    <CustomAudioPlayer src={selectedBook.livro.audioResumoUrl} title="Ouvir Pílula" />
+                    <CustomAudioPlayer src={(selectedItem.type === 'livro' ? selectedItem.data.livro.audioResumoUrl : selectedItem.data.audio_pilula_url) as string} title="Ouvir Pílula" />
                   </div>
                 ) : (
                   <div className="bg-orange-500/10 text-orange-500 border border-orange-500/20 rounded-xl p-4 flex items-center gap-3">
@@ -375,16 +501,17 @@ export default function AdminPilulas() {
                 </div>
               </div>
 
+              {/* Upload Section */}
               <div className="pt-2 space-y-3">
                 <div className="relative">
                   <input
                     type="file"
                     accept="audio/*"
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed z-10"
-                    disabled={uploadingId === selectedBook.livro.id}
+                    disabled={uploadingId === (selectedItem.type === 'livro' ? selectedItem.data.livro.id : selectedItem.data.id)}
                     onChange={(e) => {
                       if (e.target.files && e.target.files[0]) {
-                        handleUploadAudio(selectedBook, e.target.files[0]);
+                        handleUploadAudio(selectedItem, e.target.files[0]);
                         e.target.value = ''; // Reset
                       }
                     }}
@@ -392,34 +519,37 @@ export default function AdminPilulas() {
                   <Button
                     size="lg"
                     className="w-full text-base h-14 rounded-xl"
-                    disabled={uploadingId === selectedBook.livro.id}
+                    disabled={uploadingId === (selectedItem.type === 'livro' ? selectedItem.data.livro.id : selectedItem.data.id)}
                   >
-                    {uploadingId === selectedBook.livro.id ? (
+                    {uploadingId === (selectedItem.type === 'livro' ? selectedItem.data.livro.id : selectedItem.data.id) ? (
                       <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                     ) : (
                       <UploadCloud className="w-5 h-5 mr-2" />
                     )}
-                    {selectedBook.livro.audioResumoUrl ? 'Substituir Pílula Atual' : 'Selecionar e Enviar Pílula'}
+                    {(selectedItem.type === 'livro' ? selectedItem.data.livro.audioResumoUrl : selectedItem.data.audio_pilula_url) 
+                      ? 'Substituir Pílula Atual' 
+                      : 'Selecionar e Enviar Pílula'}
                   </Button>
                 </div>
                 <p className="text-center text-xs text-muted-foreground">
                   Formatos suportados: MP3, M4A, WAV
                 </p>
 
-                {selectedBook.livro.audioResumoUrl && (
+                {/* Transcrição de Áudio apenas para Livros (por enquanto) */}
+                {selectedItem.type === 'livro' && selectedItem.data.livro.audioResumoUrl && (
                   <Button
                     variant="outline"
                     size="lg"
                     className="w-full text-base h-14 rounded-xl mt-4 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300"
-                    disabled={transcribingId === selectedBook.livro.id}
-                    onClick={() => handleTranscribeAudio(selectedBook)}
+                    disabled={transcribingId === selectedItem.data.livro.id}
+                    onClick={() => handleTranscribeAudio(selectedItem.data)}
                   >
-                    {transcribingId === selectedBook.livro.id ? (
+                    {transcribingId === selectedItem.data.livro.id ? (
                       <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                     ) : (
                       <Headphones className="w-5 h-5 mr-2" />
                     )}
-                    {selectedBook.livro.transcricaoAudio ? 'Regerar Transcrição com IA' : 'Transcrever Pílula com IA'}
+                    {selectedItem.data.livro.transcricaoAudio ? 'Regerar Transcrição com IA' : 'Transcrever Pílula com IA'}
                   </Button>
                 )}
               </div>
