@@ -655,34 +655,31 @@ const Auth = () => {
       <div className="absolute inset-0 w-full h-full">
         {isDesktop ? (
           <>
-            <div className="absolute inset-0 flex w-full h-full">
-              <div className="w-1/2 h-full relative">
-                <img
-                  src={authJudgeScene}
-                  alt="Tribunal de Justiça"
-                  loading="eager"
-                  decoding="sync"
-                  fetchPriority="high"
-                  className="w-full h-full object-cover object-center pointer-events-none select-none opacity-80"
-                />
-                <div className="absolute inset-y-0 right-0 w-48 bg-gradient-to-l from-[#0d0f12] to-transparent z-10" />
-              </div>
-              <div className="w-1/2 h-full relative">
-                <img
-                  src={themisAuthYellow}
-                  alt="Themis e a advocacia"
-                  loading="eager"
-                  decoding="sync"
-                  fetchPriority="high"
-                  className="w-full h-full object-cover object-center pointer-events-none select-none opacity-80"
-                />
-                <div className="absolute inset-y-0 left-0 w-48 bg-gradient-to-r from-[#0d0f12] to-transparent z-10" />
-              </div>
+            <div className="absolute inset-0 w-full h-full pointer-events-none bg-[#0d0f12]">
+              <img
+                src={authJudgeScene}
+                alt="Tribunal de Justiça"
+                loading="eager"
+                decoding="sync"
+                fetchPriority="high"
+                className="absolute inset-y-0 left-0 w-[55%] h-full object-cover object-center"
+                style={{ WebkitMaskImage: 'linear-gradient(to right, black 70%, transparent 100%)', maskImage: 'linear-gradient(to right, black 70%, transparent 100%)' }}
+              />
+              <img
+                src={themisAuthYellow}
+                alt="Themis e a advocacia"
+                loading="eager"
+                decoding="sync"
+                fetchPriority="high"
+                className="absolute inset-y-0 right-0 w-[55%] h-full object-cover object-center"
+                style={{ WebkitMaskImage: 'linear-gradient(to left, black 70%, transparent 100%)', maskImage: 'linear-gradient(to left, black 70%, transparent 100%)' }}
+              />
             </div>
             
-            {/* Overlay escuro em tudo para manter o texto legível e o clima dark */}
-            <div className="absolute inset-0 bg-black/40 z-20" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f12] via-transparent to-transparent h-1/2 mt-auto z-20" />
+            {/* Gradientes nas bordas esquerda e direita para leitura dos textos, deixando o centro 100% claro */}
+            <div className="absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-[#0d0f12]/95 via-[#0d0f12]/60 to-transparent z-10 pointer-events-none" />
+            <div className="absolute inset-y-0 right-0 w-1/2 bg-gradient-to-l from-[#0d0f12]/95 via-[#0d0f12]/60 to-transparent z-10 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f12] via-transparent to-transparent h-1/4 mt-auto z-10 pointer-events-none" />
           </>
         ) : (
           <>
@@ -711,73 +708,100 @@ const Auth = () => {
         <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 text-white" strokeWidth={2.4} />
       </button>
 
-      {/* Conteúdo Topo */}
-      <div className="relative z-10 w-full pt-[calc(var(--sai-top,env(safe-area-inset-top,0px))+4rem)] px-6 text-center flex-1">
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="flex flex-col items-center gap-4"
-        >
-          {/* Logo transparente e reflexo, fonte tipografia idêntica ao app */}
-          <div className="flex flex-col items-center justify-center gap-4">
+      {isDesktop ? (
+        <div className="relative z-20 w-full h-full flex items-center justify-between px-10 xl:px-24 flex-1">
+          {/* Lado Esquerdo: Marca e Persuasão */}
+          <motion.div 
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="flex flex-col items-start text-left max-w-lg"
+          >
             <img
               src="/logo-prime.png"
               alt="Logo Direito Prime"
-              className="w-24 h-24 xl:w-32 xl:h-32 object-contain drop-shadow-2xl relative z-10"
+              className="w-24 h-24 xl:w-32 xl:h-32 object-contain drop-shadow-2xl mb-6"
             />
             
-            <div className="flex flex-col items-center justify-center gap-1 mt-1 w-full">
-              <h1 className="font-serif italic font-bold text-[28px] xl:text-[32px] text-white tracking-tight leading-none drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)] whitespace-nowrap">
-                Estudos Jurídicos
-              </h1>
-              <span className="font-sans font-medium text-white/90 text-[10px] xl:text-xs tracking-[0.3em] uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)] whitespace-nowrap">
-                Uso Profissional
-              </span>
-            </div>
-          </div>
-          
-          {/* Subtítulo eficiente e focado na dor, sem ser caixa alta */}
-          <p className="font-body text-white/95 text-base leading-snug font-medium max-w-[300px] drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] mt-2 bg-black/30 backdrop-blur-sm px-4 py-3 rounded-2xl border border-white/10">
-            Todo o conhecimento jurídico que você precisa reunido em <span className="text-primary font-bold drop-shadow-md">uma única plataforma.</span>
-          </p>
-        </motion.div>
-      </div>
+            <h1 className="font-serif italic font-bold text-5xl xl:text-6xl text-white tracking-tight leading-none drop-shadow-2xl whitespace-nowrap">
+              Estudos Jurídicos
+            </h1>
+            <span className="font-sans font-bold text-primary text-sm xl:text-base tracking-[0.2em] uppercase drop-shadow-lg mt-3">
+              Estudo Profissional
+            </span>
+            
+            <p className="font-body text-white/95 text-lg xl:text-xl leading-relaxed mt-6 drop-shadow-xl bg-black/20 backdrop-blur-sm p-5 rounded-2xl border border-white/10">
+              Todo o conhecimento jurídico que você precisa reunido em <span className="text-primary font-bold">uma única plataforma.</span>
+            </p>
+          </motion.div>
 
-      {/* Área dos Botões Inferiores / QR Code */}
-      <div className="relative z-10 w-full px-5 pb-[calc(var(--sai-bottom,env(safe-area-inset-bottom,0px))+2rem)] flex flex-col items-center justify-center gap-4">
-        
-        {isDesktop ? (
+          {/* Lado Direito: QR Code */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-            className="w-full max-w-md mx-auto"
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2, duration: 0.6, ease: "easeOut" }}
+            className="w-[450px] shrink-0 flex flex-col items-center justify-center p-8 bg-black/30 backdrop-blur-md rounded-3xl border border-white/10 shadow-2xl"
           >
             <DesktopQrLogin />
           </motion.div>
-        ) : (
+        </div>
+      ) : (
+        <div className="relative z-10 w-full pt-[calc(var(--sai-top,env(safe-area-inset-top,0px))+4rem)] px-6 text-center flex-1 flex flex-col items-center">
           <motion.div 
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-            className="flex flex-col gap-3 w-full"
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="flex flex-col items-center gap-4"
           >
-            <button
-              onClick={() => setDrawerMode('login')}
-              className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-body font-bold text-[17px] shadow-[0_8px_32px_rgba(225,29,72,0.6)] active:scale-[0.98] transition-transform overflow-hidden relative shine-effect"
-            >
-              <span className="relative z-10">Acessar conta</span>
-            </button>
+            {/* Logo transparente e reflexo, fonte tipografia idêntica ao app */}
+            <div className="flex flex-col items-center justify-center gap-4">
+              <img
+                src="/logo-prime.png"
+                alt="Logo Direito Prime"
+                className="w-24 h-24 xl:w-32 xl:h-32 object-contain drop-shadow-2xl relative z-10"
+              />
+              
+              <div className="flex flex-col items-center justify-center gap-1 mt-1 w-full">
+                <h1 className="font-serif italic font-bold text-[28px] text-white tracking-tight leading-none drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)] whitespace-nowrap">
+                  Estudos Jurídicos
+                </h1>
+                <span className="font-sans font-medium text-white/90 text-[10px] tracking-[0.3em] uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)] whitespace-nowrap">
+                  Estudo Profissional
+                </span>
+              </div>
+            </div>
             
-            <button
-              onClick={() => setDrawerMode('signup')}
-              className="w-full py-4 bg-black/40 backdrop-blur-lg border-2 border-white/20 text-white rounded-2xl font-body font-bold text-[17px] active:scale-[0.98] transition-all hover:bg-black/60 shadow-xl"
-            >
-              Criar uma conta
-            </button>
+            {/* Subtítulo eficiente e focado na dor, sem ser caixa alta */}
+            <p className="font-body text-white/95 text-base leading-snug font-medium max-w-[300px] drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] mt-2 bg-black/30 backdrop-blur-sm px-4 py-3 rounded-2xl border border-white/10">
+              Todo o conhecimento jurídico que você precisa reunido em <span className="text-primary font-bold drop-shadow-md">uma única plataforma.</span>
+            </p>
           </motion.div>
-        )}
+          
+          {/* Área dos Botões Inferiores Mobile */}
+          <div className="w-full pb-[calc(var(--sai-bottom,env(safe-area-inset-bottom,0px))+2rem)] flex flex-col items-center justify-center gap-4 mt-auto">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+              className="flex flex-col gap-3 w-full"
+            >
+              <button
+                onClick={() => setDrawerMode('login')}
+                className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-body font-bold text-[17px] shadow-[0_8px_32px_rgba(225,29,72,0.6)] active:scale-[0.98] transition-transform overflow-hidden relative shine-effect"
+              >
+                <span className="relative z-10">Acessar conta</span>
+              </button>
+              
+              <button
+                onClick={() => setDrawerMode('signup')}
+                className="w-full py-4 bg-black/40 backdrop-blur-lg border-2 border-white/20 text-white rounded-2xl font-body font-bold text-[17px] active:scale-[0.98] transition-all hover:bg-black/60 shadow-xl"
+              >
+                Criar uma conta
+              </button>
+            </motion.div>
+          </div>
+        </div>
+      )}
 
         <motion.div 
           initial={{ opacity: 0 }}
