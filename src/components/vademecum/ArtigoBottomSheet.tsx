@@ -3482,7 +3482,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
 
         {/* Bottom nav bar — only visible on "artigo" tab; fixed as a flex item below the scrollable area */}
         {(activeTab ?? 'artigo') === 'artigo' && !isDesktop && (
-        <div className="shrink-0 relative z-[55] bg-card/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-lg shadow-black/10 pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))]">
+        <div className="shrink-0 relative z-[55] bg-card/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-lg shadow-black/10 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
           <div className="relative grid grid-cols-5 items-end px-2 py-1 max-w-lg mx-auto">
             {(highlightMode || voiceGrifoActive) ? (
               <button
