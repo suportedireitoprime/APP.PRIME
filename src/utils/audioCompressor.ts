@@ -16,7 +16,7 @@ export async function compressAudioToMp3(
     const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
     
     ffmpeg.on('log', ({ message }) => {
-      // Tenta extrair a duração total do arquivo (ex: Duration: 00:03:45.12)
+      // Tenta extrair a duraÃ§Ã£o total do arquivo (ex: Duration: 00:03:45.12)
       const durationMatch = message.match(/Duration: (\d{2}):(\d{2}):(\d{2}\.\d{2})/);
       if (durationMatch) {
         const hours = parseInt(durationMatch[1], 10);
@@ -47,15 +47,15 @@ export async function compressAudioToMp3(
     });
 
     ffmpeg.on('progress', ({ progress }) => {
-      // O evento de progresso nativo às vezes falha com áudios, mas tentamos usá-lo como fallback
+      // O evento de progresso nativo Ã s vezes falha com Ã¡udios, mas tentamos usÃ¡-lo como fallback
       if (globalProgressCallback && progress > 0 && progress <= 1) {
         globalProgressCallback(progress * 100);
       }
     });
 
     await ffmpeg.load({
-      coreURL: await toBlobURL(\${baseURL}/ffmpeg-core.js\, 'text/javascript'),
-      wasmURL: await toBlobURL(\${baseURL}/ffmpeg-core.wasm\, 'application/wasm'),
+      coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
+      wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
     });
   }
 
