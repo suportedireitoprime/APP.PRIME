@@ -209,6 +209,45 @@
 
   <body style="background-color: #0D0D0D; color: #FFFFFF; margin: 0; min-height: 100vh;">
     <div id="root"></div>
+
+    <!-- Mobile Web → App Store redirect (roda ANTES do React) -->
+    <script>
+    (function() {
+      // Não redireciona dentro do Capacitor WebView (app nativo já instalado)
+      if (window.Capacitor || navigator.userAgent.indexOf('Capacitor') !== -1) return;
+
+      // Paths que NÃO devem redirecionar (admin, SmartLink, auth, desktop)
+      var path = location.pathname.toLowerCase();
+      var skipPaths = ['/admin', '/ir/', '/auth', '/login', '/desktop', '/termos', '/privacidade', '/callback', '/smart'];
+      for (var i = 0; i < skipPaths.length; i++) {
+        if (path.indexOf(skipPaths[i]) === 0) return;
+      }
+
+      // Checa se já foi dispensado nesta sessão
+      try {
+        if (sessionStorage.getItem('dp_skip_store')) return;
+      } catch(e) {}
+
+      var ua = navigator.userAgent || '';
+      var isAndroid = /android/i.test(ua);
+      var isIOS = /iphone|ipad|ipod/i.test(ua);
+
+      if (!isAndroid && !isIOS) return; // Desktop/tablet grande → deixa usar a web
+
+      var PLAY_STORE = 'https://play.google.com/store/apps/details?id=br.com.direito.app';
+      var APP_STORE  = 'https://apps.apple.com/br/app/vacatio/id6793608690';
+
+      // Mostra um interstitial rápido ao invés de redirect forçado
+      // para não atrapalhar bots/crawlers
+      if (/bot|crawl|spider|google|bing|facebook|twitter/i.test(ua)) return;
+
+      var storeUrl = isAndroid ? PLAY_STORE : APP_STORE;
+
+      // Redireciona automaticamente
+      location.replace(storeUrl);
+    })();
+    </script>
+
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
