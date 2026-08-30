@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronRight, type LucideIcon } from 'lucide-react';
+import { haptic } from '@/lib/nativeHaptics';
 
 interface HomeCardProps {
   icon: LucideIcon;
@@ -27,7 +28,10 @@ const HomeCardImpl = ({ icon: Icon, label, sublabel, color, delay = 0, onClick, 
     initial={{ opacity: 0, y: 8 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay, duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}
-    onClick={onClick}
+    onClick={() => {
+      haptic.selection();
+      onClick();
+    }}
     data-track={dataTrack}
     data-track-name={dataTrackName}
     data-track-section={dataTrackSection}
@@ -43,12 +47,12 @@ const HomeCardImpl = ({ icon: Icon, label, sublabel, color, delay = 0, onClick, 
           {badge}
         </span>
       ) : (
-        <ChevronRight className={`w-4 h-4 ${solidColor ? 'text-muted-foreground' : 'text-muted-foreground'}`} />
+        <ChevronRight className={`w-4 h-4 transition-transform duration-300 group-hover:translate-x-1 ${solidColor ? 'text-muted-foreground' : 'text-muted-foreground'}`} />
       )}
     </div>
     <div className="relative overflow-hidden rounded-xl">
       <Icon
-        className={`relative ${iconClassName || 'w-8 h-8'}`}
+        className={`relative transition-transform duration-300 group-hover:scale-110 group-active:scale-95 group-active:-translate-y-1 ${iconClassName || 'w-8 h-8'}`}
         style={{
           color: color,
           filter: solidColor 
@@ -60,7 +64,7 @@ const HomeCardImpl = ({ icon: Icon, label, sublabel, color, delay = 0, onClick, 
       <span aria-hidden className="pointer-events-none absolute inset-0 icon-shine" />
     </div>
     {solidColor && (
-      <div className="absolute -right-3 -bottom-3 w-[84px] h-[84px] pointer-events-none">
+      <div className="absolute -right-3 -bottom-3 w-[84px] h-[84px] pointer-events-none transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6 group-active:scale-95">
         {/* Base (sempre visível) */}
         <div className="absolute inset-0 opacity-[0.15]">
           <Icon className="w-full h-full" style={{ color }} strokeWidth={1.5} />
