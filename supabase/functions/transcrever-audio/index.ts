@@ -17,7 +17,7 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { audioBase64, mimeType, filePath } = await req.json();
+    const { audioBase64, mimeType, filePath, bucketName } = await req.json();
 
     let base64: string = audioBase64 || "";
     let mime = mimeType || "audio/ogg";
@@ -27,9 +27,10 @@ Deno.serve(async (req) => {
         Deno.env.get("SUPABASE_URL")!,
         Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
       );
-      const { data, error } = await supabase.storage.from("aulas-audio").download(filePath);
+      const bucket = bucketName || "aulas-audio";
+      const { data, error } = await supabase.storage.from(bucket).download(filePath);
       if (error || !data) {
-        return new Response(JSON.stringify({ error: "Falha ao baixar arquivo: " + (error?.message ?? "?") }), {
+        return new Response(JSON.stringify({ error: `Falha ao baixar arquivo do bucket ${bucket}: ` + (error?.message ?? "?") }), {
           status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }

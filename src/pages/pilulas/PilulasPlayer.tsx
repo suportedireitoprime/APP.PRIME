@@ -20,7 +20,7 @@ export default function PilulasPlayer() {
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
 
-  const textoPuro = livro?.analiseDetalhada || livro?.sobre || '';
+  const textoPuro = livro?.transcricaoAudio || livro?.analiseDetalhada || livro?.sobre || '';
   const paragraphs = useMemo(() => {
     const parts = textoPuro.split(/\n+/).filter(p => p.trim().length > 0);
     let accumulated = 0;

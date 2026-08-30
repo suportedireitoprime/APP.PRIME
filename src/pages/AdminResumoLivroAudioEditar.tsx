@@ -21,6 +21,7 @@ export default function AdminResumoLivroAudioEditar() {
   const [busca, setBusca] = useState('');
   const [uploadingId, setUploadingId] = useState<number | string | null>(null);
   const [generatingChaptersId, setGeneratingChaptersId] = useState<number | string | null>(null);
+  const [transcribingId, setTranscribingId] = useState<number | string | null>(null);
   const [selectedBook, setSelectedBook] = useState<LivroComColecao | null>(null);
 
   useEffect(() => {
@@ -200,6 +201,67 @@ NÃO retorne blocos de código (como \`\`\`json), apenas o texto JSON puro para 
       toast.error(err.message || 'Falha ao gerar sumários.', { id: toastId });
     } finally {
       setGeneratingChaptersId(null);
+    }
+  }
+
+  async function handleTranscribeAudio(item: LivroComColecao) {
+    if (!item.livro.audioResumoUrl) return;
+
+    setTranscribingId(item.livro.id);
+    const toastId = toast.loading(`Transcrevendo áudio de ${item.livro.titulo}... (Isso pode levar alguns minutos)`);
+
+    try {
+      // O path é algo como "resumos-livros/nome.mp3". Extraindo do URL:
+      const pathParts = item.livro.audioResumoUrl.split('/audios/');
+      if (pathParts.length < 2) throw new Error("URL do áudio inválida");
+      const filePath = pathParts[1].split('?')[0]; // tira a query string se houver
+
+      const { data, error } = await supabase.functions.invoke('transcrever-audio', {
+        body: { filePath, bucketName: 'audios', language: 'pt' }
+      });
+
+      if (error) throw error;
+      
+      const transcriptionText = data?.text || data;
+      if (!transcriptionText) throw new Error("Transcrição retornou vazia");
+
+      // Atualiza banco
+      let cur = item.livro.curiosidades;
+      let curiosidadesArray = Array.isArray(cur) ? cur : [];
+      let sumarioAudioArray = [];
+      if (cur && typeof cur === 'object' && !Array.isArray(cur)) {
+        if (Array.isArray((cur as any).curiosidades)) curiosidadesArray = (cur as any).curiosidades;
+        if (Array.isArray((cur as any).sumarioAudio)) sumarioAudioArray = (cur as any).sumarioAudio;
+      }
+      
+      const curiosidadesPayload = {
+        curiosidades: curiosidadesArray,
+        sumarioAudio: sumarioAudioArray,
+        transcricaoAudio: transcriptionText
+      };
+
+      const { error: updateError } = await supabase
+        .from(item.colecao.table as any)
+        .update({ curiosidades: curiosidadesPayload })
+        .eq('id', item.livro.id);
+
+      if (updateError) throw updateError;
+
+      const updatedBook = {
+        ...item,
+        livro: { ...item.livro, transcricaoAudio: transcriptionText }
+      };
+
+      const novos = livros.map((l) => (l.livro.id === item.livro.id ? updatedBook : l));
+      setLivros(novos);
+      setSelectedBook(updatedBook);
+
+      toast.success('Áudio transcrito e salvo com sucesso!', { id: toastId });
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || 'Falha ao transcrever áudio.', { id: toastId });
+    } finally {
+      setTranscribingId(null);
     }
   }
 
@@ -390,20 +452,36 @@ NÃO retorne blocos de código (como \`\`\`json), apenas o texto JSON puro para 
                 </p>
 
                 {selectedBook.livro.audioResumoUrl && (
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="w-full text-base h-14 rounded-xl mt-4 border-indigo-500/20 text-indigo-400 hover:bg-indigo-500/10 hover:text-indigo-300"
-                    disabled={generatingChaptersId === selectedBook.livro.id}
-                    onClick={() => handleGenerateChapters(selectedBook)}
-                  >
-                    {generatingChaptersId === selectedBook.livro.id ? (
-                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                    ) : (
-                      <Bot className="w-5 h-5 mr-2" />
-                    )}
-                    {selectedBook.livro.sumarioAudio ? 'Regerar Sumários com IA' : 'Dividir em Sumários com IA'}
-                  </Button>
+                  <>
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="w-full text-base h-14 rounded-xl mt-4 border-indigo-500/20 text-indigo-400 hover:bg-indigo-500/10 hover:text-indigo-300"
+                      disabled={generatingChaptersId === selectedBook.livro.id}
+                      onClick={() => handleGenerateChapters(selectedBook)}
+                    >
+                      {generatingChaptersId === selectedBook.livro.id ? (
+                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                      ) : (
+                        <Bot className="w-5 h-5 mr-2" />
+                      )}
+                      {selectedBook.livro.sumarioAudio ? 'Regerar Sumários com IA' : 'Dividir em Sumários com IA'}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="w-full text-base h-14 rounded-xl mt-2 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300"
+                      disabled={transcribingId === selectedBook.livro.id}
+                      onClick={() => handleTranscribeAudio(selectedBook)}
+                    >
+                      {transcribingId === selectedBook.livro.id ? (
+                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                      ) : (
+                        <Headphones className="w-5 h-5 mr-2" />
+                      )}
+                      {selectedBook.livro.transcricaoAudio ? 'Regerar Transcrição com IA' : 'Transcrever Áudio com IA'}
+                    </Button>
+                  </>
                 )}
               </div>
             </div>
