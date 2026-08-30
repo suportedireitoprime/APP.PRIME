@@ -89,8 +89,9 @@ export default function AdminPilulas() {
       
       const { data, error } = await supabase
         .from('vade_mecum_artigos')
-        .select('id, numero, narracao_url')
+        .select('id, numero, audio_pilula_url')
         .eq('lei_id', leiData.id)
+        .ilike('texto', 'Art.%') // Filtra apenas artigos (exclui Parte, Título, Livro)
         .order('ordem', { ascending: true });
         
       if (error) {
@@ -98,13 +99,7 @@ export default function AdminPilulas() {
         return;
       }
       
-      // Mapear narracao_url para audio_pilula_url para manter compatibilidade com o resto do código
-      const artigosFormatados = (data || []).map(art => ({
-        ...art,
-        audio_pilula_url: art.narracao_url
-      }));
-      
-      setArtigosCP(artigosFormatados as any[]);
+      setArtigosCP(data as any[]);
     } catch (err) {
       toast.error('Erro ao carregar artigos do Código Penal');
     } finally {
@@ -170,7 +165,7 @@ export default function AdminPilulas() {
       } else {
         const { error: dbError } = await supabase
           .from('vade_mecum_artigos')
-          .update({ narracao_url: rawUrl })
+          .update({ audio_pilula_url: rawUrl })
           .eq('id', itemId);
         if (dbError) throw dbError;
 
