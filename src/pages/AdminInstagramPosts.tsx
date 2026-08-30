@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { toPng } from 'html-to-image';
 import InstagramSlide from '@/components/admin/InstagramSlide';
+import InstagramFlashcardSlide from '@/components/admin/InstagramFlashcardSlide';
 
 // Imagens padrão de filósofos
 import cicero from '@/assets/filosofos/cicero.webp';
@@ -21,15 +22,17 @@ import aristoteles from '@/assets/filosofos/aristoteles.webp';
 const FALLBACK_IMAGES = [platao, aristoteles, cicero, aquino, kant, montesquieu];
 
 type Slide = {
-  type: 'cover' | 'content';
+  type: 'cover' | 'content' | 'flashcard';
   title: string;
   content?: string;
+  practice?: string;
 };
 
 export default function AdminInstagramPosts() {
   const navigate = useNavigate();
   const [prompt, setPrompt] = useState('Princípios Penais da Anterioridade');
   const [username, setUsername] = useState('@app.prime');
+  const [mode, setMode] = useState<'carrossel' | 'flashcard'>('carrossel');
   const [loading, setLoading] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [slides, setSlides] = useState<Slide[]>([]);
@@ -47,14 +50,26 @@ export default function AdminInstagramPosts() {
     setCoverImage(FALLBACK_IMAGES[Math.floor(Math.random() * FALLBACK_IMAGES.length)]);
 
     try {
-      const systemPrompt = `Você é um copywriter especialista no mundo jurídico. Crie um carrossel para Instagram sobre o tema: "${prompt}".
+      const systemPrompt = mode === 'carrossel' 
+      ? `Você é um copywriter especialista no mundo jurídico. Crie um carrossel para Instagram sobre o tema: "${prompt}".
 Retorne estritamente um JSON no seguinte formato (um array de objetos):
 [
   { "type": "cover", "title": "TÍTULO CHAMATIVO" },
   { "type": "content", "title": "1. Título do slide", "content": "Texto explicativo..." },
   { "type": "content", "title": "Conclusão", "content": "Resumo final..." }
 ]
-Use de 4 a 6 slides no total. NÃO retorne blocos de código markdown (como \`\`\`json), apenas o texto JSON puro para que eu possa executar JSON.parse diretamente. Sem textos antes ou depois.`;
+Use de 4 a 6 slides no total. NÃO retorne blocos de código markdown (como \`\`\`json), apenas o texto JSON puro para que eu possa executar JSON.parse diretamente. Sem textos antes ou depois.`
+      : `Você é um professor de direito criando um flashcard para Instagram sobre o tema: "${prompt}".
+Retorne estritamente um JSON no seguinte formato (um array com apenas UM objeto):
+[
+  { 
+    "type": "flashcard", 
+    "title": "TÍTULO DO CONCEITO (ex: Erro de tipo)", 
+    "content": "Definição direta e fácil de entender.", 
+    "practice": "Um exemplo prático claro e rápido."
+  }
+]
+NÃO retorne blocos de código markdown (como \`\`\`json), apenas o texto JSON puro. Sem textos antes ou depois.`;
 
       const { data, error } = await supabase.functions.invoke('assistente-juridica', {
         body: { mode: 'chat', prompt: systemPrompt }
@@ -79,14 +94,24 @@ Use de 4 a 6 slides no total. NÃO retorne blocos de código markdown (como \`\`
       console.error('Erro na geração IA:', err);
       toast.error('A IA falhou. Usando conteúdo de exemplo para demonstração.');
       
-      // Mock fallback so the user can test the export even if AI fails
-      setSlides([
-        { type: 'cover', title: 'O Princípio da Anterioridade Penal' },
-        { type: 'content', title: 'O que é?', content: 'Não há crime sem lei anterior que o defina, nem pena sem prévia cominação legal. (Art. 1º do CP)' },
-        { type: 'content', title: 'Segurança Jurídica', content: 'Garante que ninguém será surpreendido com uma punição por um ato que, na época, não era considerado crime.' },
-        { type: 'content', title: 'Atenção às Medidas', content: 'Este princípio se aplica rigorosamente a infrações penais. Leis penais mais graves nunca retroagem.' },
-        { type: 'content', title: 'Salvo para beneficiar', content: 'A única exceção de retroatividade ocorre quando a nova lei beneficia o réu (Lex mitior).' },
-      ]);
+      if (mode === 'carrossel') {
+        setSlides([
+          { type: 'cover', title: 'O Princípio da Anterioridade Penal' },
+          { type: 'content', title: 'O que é?', content: 'Não há crime sem lei anterior que o defina, nem pena sem prévia cominação legal. (Art. 1º do CP)' },
+          { type: 'content', title: 'Segurança Jurídica', content: 'Garante que ninguém será surpreendido com uma punição por um ato que, na época, não era considerado crime.' },
+          { type: 'content', title: 'Atenção às Medidas', content: 'Este princípio se aplica rigorosamente a infrações penais. Leis penais mais graves nunca retroagem.' },
+          { type: 'content', title: 'Salvo para beneficiar', content: 'A única exceção de retroatividade ocorre quando a nova lei beneficia o réu (Lex mitior).' },
+        ]);
+      } else {
+        setSlides([
+          { 
+            type: 'flashcard', 
+            title: 'Erro de tipo', 
+            content: 'Falsa percepção da realidade sobre um elemento do crime. Sempre exclui o dolo; sendo evitável, ainda pode sobrar a punição por culpa, quando essa forma existir.',
+            practice: 'No fim da caçada, o homem sai levando a espingarda que julgava sua — idêntica à do vizinho. Ele não sabia que estava levando coisa alheia.'
+          }
+        ]);
+      }
     } finally {
       setLoading(false);
     }
@@ -137,15 +162,33 @@ Use de 4 a 6 slides no total. NÃO retorne blocos de código markdown (como \`\`
         <div className="bg-secondary/20 border border-border/50 rounded-3xl p-6 shadow-xl flex flex-col md:flex-row gap-6 items-end">
           <div className="flex-1 w-full space-y-4">
             <div>
-              <Label className="text-white text-base">Tema do Carrossel</Label>
+              <Label className="text-white text-base">Tema</Label>
               <Input 
                 value={prompt} 
                 onChange={e => setPrompt(e.target.value)} 
-                placeholder="Ex: Princípios Penais da Anterioridade" 
+                placeholder="Ex: Erro de Tipo (Flashcard) ou Princípios (Carrossel)" 
                 className="mt-2 h-12 text-lg bg-black/40 border-white/10 text-white placeholder:text-white/30"
               />
             </div>
-            <div>
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <Label className="text-white text-base">Tipo de Post</Label>
+                <div className="flex bg-black/40 border border-white/10 rounded-lg overflow-hidden mt-2 p-1">
+                  <button 
+                    onClick={() => setMode('carrossel')}
+                    className={`flex-1 py-2 text-sm font-semibold rounded-md transition-colors ${mode === 'carrossel' ? 'bg-indigo-600 text-white' : 'text-white/60 hover:text-white'}`}
+                  >
+                    Carrossel
+                  </button>
+                  <button 
+                    onClick={() => setMode('flashcard')}
+                    className={`flex-1 py-2 text-sm font-semibold rounded-md transition-colors ${mode === 'flashcard' ? 'bg-indigo-600 text-white' : 'text-white/60 hover:text-white'}`}
+                  >
+                    Flashcard
+                  </button>
+                </div>
+              </div>
+              <div className="flex-1">
               <Label className="text-white text-base">Assinatura no Rodapé (Opcional)</Label>
               <Input 
                 value={username} 
@@ -187,7 +230,7 @@ Use de 4 a 6 slides no total. NÃO retorne blocos de código markdown (como \`\`
                 <div key={idx} className="shrink-0 snap-center flex flex-col items-center">
                   <div className="mb-3 text-sm font-bold text-white/50 flex justify-between w-full px-1 uppercase tracking-wider">
                     <span>Slide {idx + 1}</span>
-                    <span className="text-indigo-400">{slide.type === 'cover' ? 'Capa' : 'Conteúdo'}</span>
+                    <span className="text-indigo-400">{slide.type === 'cover' ? 'Capa' : slide.type === 'flashcard' ? 'Flashcard' : 'Conteúdo'}</span>
                   </div>
                   
                   {/* Container virtual para preview. Ele exibe em ~324px mas a imagem tem 1080px. */}
@@ -201,13 +244,22 @@ Use de 4 a 6 slides no total. NÃO retorne blocos de código markdown (como \`\`
                         height: '1080px' 
                       }}
                     >
-                      <InstagramSlide 
-                        type={slide.type} 
-                        title={slide.title} 
-                        content={slide.content} 
-                        image={slide.type === 'cover' ? coverImage : undefined}
-                        username={username}
-                      />
+                      {slide.type === 'flashcard' ? (
+                        <InstagramFlashcardSlide
+                          title={slide.title}
+                          concept={slide.content || ''}
+                          practice={slide.practice || ''}
+                          username={username}
+                        />
+                      ) : (
+                        <InstagramSlide 
+                          type={slide.type as any} 
+                          title={slide.title} 
+                          content={slide.content} 
+                          image={slide.type === 'cover' ? coverImage : undefined}
+                          username={username}
+                        />
+                      )}
                     </div>
                   </div>
                 </div>
