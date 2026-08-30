@@ -300,7 +300,6 @@ const Apresentacoes = lazy(() => import("./pages/Apresentacoes.tsx"));
 const AdminApresentacaoEditar = lazy(() => import("./pages/AdminApresentacaoEditar.tsx"));
 const AdminAssinantes = lazy(() => import("./pages/AdminAssinantes.tsx"));
 const AdminFunil = lazy(() => import("./pages/AdminFunil.tsx"));
-const TestePush = lazy(() => import("./pages/TestePush.tsx"));
 const AdminMonitorUsuarios = lazy(() => import("./pages/AdminMonitorUsuarios.tsx"));
 const AdminMonitoramento = lazy(() => import("./pages/AdminMonitoramento.tsx"));
 const AdminMonitorApis = lazy(() => import("./pages/AdminMonitorApis.tsx"));
@@ -1012,7 +1011,6 @@ function AnimatedRoutes() {
           <Route path="/admin-apresentacao-editar" element={<ProtectedRoute><PageTransition><AdminApresentacaoEditar /></PageTransition></ProtectedRoute>} />
           <Route path="/apresentacao/:id" element={<ProtectedRoute><PageTransition><ApresentacaoPlayer /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-assinantes" element={<ProtectedRoute><PageTransition><AdminAssinantes /></PageTransition></ProtectedRoute>} />
-          <Route path="/teste-push" element={<ProtectedRoute><PageTransition><TestePush /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-monitor-usuarios" element={<ProtectedRoute><PageTransition><AdminMonitorUsuarios /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-monitoramento" element={<ProtectedRoute><PageTransition><AdminMonitoramento /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-monitor-apis" element={<ProtectedRoute><PageTransition><AdminMonitorApis /></PageTransition></ProtectedRoute>} />

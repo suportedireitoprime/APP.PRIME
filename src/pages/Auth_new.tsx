@@ -1,2 +1,0 @@
-// Placeholder - Auth_new
-export default function AuthNew() { return null; }
