@@ -233,6 +233,11 @@
       var isIOS = /iphone|ipad|ipod/i.test(ua);
 
       if (!isAndroid && !isIOS) return; // Desktop/tablet grande → deixa usar a web
+      
+      // Evitar redirecionamento em ambiente de desenvolvimento local / emulador
+      var hostname = location.hostname;
+      var isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.') || hostname.startsWith('10.');
+      if (isLocalhost) return;
 
       var PLAY_STORE = 'https://play.google.com/store/apps/details?id=br.com.app.gpu2675756.gpu0e7509bfb7bde52aef412888bb17a456';
       var APP_STORE  = 'https://apps.apple.com/us/app/direito-estudos-jur%C3%ADdicos/id6450845861';
