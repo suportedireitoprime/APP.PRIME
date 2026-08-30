@@ -86,45 +86,50 @@ export default function AdminResumoLivroAudioEditar() {
     const toastId = toast.loading(`Enviando áudio para ${item.livro.titulo}...`);
 
     try {
-      // 1. Upload to Supabase Storage
+      // 1. Upload to Supabase Storage (RAW folder)
       const fileExt = file.name.split('.').pop();
-      const fileName = `${item.colecao.table}-${item.livro.id}-${Date.now()}.${fileExt}`;
-      const filePath = `resumos-livros/${fileName}`;
+      const rawFileName = `raw-uploads/${item.colecao.table}-${item.livro.id}-${Date.now()}.${fileExt}`;
+      const finalFilePath = `resumos-livros/${item.colecao.table}-${item.livro.id}-${Date.now()}.mp3`;
 
       const { error: uploadError } = await supabase.storage
         .from('audios') // Usando um bucket público existente
-        .upload(filePath, file, { upsert: true, contentType: file.type });
+        .upload(rawFileName, file, { upsert: true, contentType: file.type });
 
       if (uploadError) throw uploadError;
 
-      // 2. Get Public URL
-      const { data: publicData } = supabase.storage.from('audios').getPublicUrl(filePath);
-      const publicUrl = publicData.publicUrl;
+      // 2. Get Public URL for RAW file
+      const { data: publicData } = supabase.storage.from('audios').getPublicUrl(rawFileName);
+      const rawUrl = publicData.publicUrl;
 
-      // 3. Update Database
-      const { error: dbError } = await supabase
-        .from(item.colecao.table as any)
-        .update({ audio_resumo_url: publicUrl })
-        .eq('id', item.livro.id);
+      // 3. Trigger Edge Function (No intro for regular book audios unless specified, here we'll pass none)
+      const { data: edgeData, error: edgeError } = await supabase.functions.invoke('processar-audio', {
+        body: {
+          raw_audio_url: rawUrl,
+          record_id: item.livro.id,
+          table_name: item.colecao.table,
+          bucket_name: 'audios',
+          final_file_path: finalFilePath,
+          intro_url: "none"
+        }
+      });
 
-      if (dbError) throw dbError;
-
-      toast.success('Áudio de resumo atualizado com sucesso!', { id: toastId });
-      
-      // Update local state
-      const novos = livros.map((l) =>
-        l.livro.id === item.livro.id && l.colecao.table === item.colecao.table
-          ? { ...l, livro: { ...l.livro, audioResumoUrl: publicUrl } }
-          : l
-      );
-      setLivros(novos);
-      if (selectedBook && selectedBook.livro.id === item.livro.id) {
-        setSelectedBook(novos.find((l) => l.livro.id === item.livro.id) || null);
+      if (edgeError) {
+        let msg = edgeError.message;
+        try {
+          if (edgeError.context && typeof edgeError.context.json === 'function') {
+            const ctx = await edgeError.context.json();
+            if (ctx.error) msg = ctx.error;
+          }
+        } catch (_) {}
+        throw new Error(msg || "Falha ao iniciar processamento na nuvem");
       }
-      toast.success('Áudio atualizado com sucesso!', { id: toastId });
+
+      toast.success('Áudio enviado para nuvem! A compressão deve terminar em até 1 minuto.', { id: toastId, duration: 10000 });
+      
+      // Update local state is skipped since it will update asynchronously via backend
     } catch (err: any) {
       console.error(err);
-      toast.error('Erro ao enviar áudio.', { id: toastId });
+      toast.error(err.message || 'Erro ao enviar áudio.', { id: toastId });
     } finally {
       setUploadingId(null);
     }

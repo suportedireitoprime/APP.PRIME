@@ -77,44 +77,50 @@ export default function AdminPilulas() {
     const toastId = toast.loading(`Enviando áudio para ${item.livro.titulo}...`);
 
     try {
-      // 1. Upload to Supabase Storage
+      // 1. Upload to Supabase Storage (RAW folder)
       const fileExt = file.name.split('.').pop();
-      const fileName = `pilulas-classicos-${item.livro.id}-${Date.now()}.${fileExt}`;
-      const filePath = `resumos-livros/${fileName}`; // Mantemos a mesma pasta de resumos para reaproveitar permissões
+      const rawFileName = `raw-uploads/pilulas-classicos-${item.livro.id}-${Date.now()}.${fileExt}`;
+      const finalFilePath = `resumos-livros/pilulas-classicos-${item.livro.id}-${Date.now()}.mp3`;
 
       const { error: uploadError } = await supabase.storage
         .from('audios') 
-        .upload(filePath, file, { upsert: true, contentType: file.type });
+        .upload(rawFileName, file, { upsert: true, contentType: file.type });
 
       if (uploadError) throw uploadError;
 
-      // 2. Get Public URL
-      const { data: publicData } = supabase.storage.from('audios').getPublicUrl(filePath);
-      const publicUrl = publicData.publicUrl;
+      // 2. Get Public URL for RAW file
+      const { data: publicData } = supabase.storage.from('audios').getPublicUrl(rawFileName);
+      const rawUrl = publicData.publicUrl;
 
-      // 3. Update Database
-      const { error: dbError } = await supabase
-        .from(item.colecao.table as any)
-        .update({ audio_resumo_url: publicUrl })
-        .eq('id', item.livro.id);
+      const introUrl = 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/audios/intros/secret-agent-groove.mp3';
 
-      if (dbError) throw dbError;
+      // 3. Trigger Edge Function
+      const { data: edgeData, error: edgeError } = await supabase.functions.invoke('processar-audio', {
+        body: {
+          raw_audio_url: rawUrl,
+          record_id: item.livro.id,
+          table_name: item.colecao.table,
+          bucket_name: 'audios',
+          final_file_path: finalFilePath,
+          intro_url: introUrl
+        }
+      });
 
-      toast.success('Pílula enviada e salva com sucesso!', { id: toastId });
-      
-      // Update local state
-      const publicUrlString = publicUrl;
-      setLivros((prev) =>
-        prev.map((l) =>
-          l.livro.id === item.livro.id
-            ? { ...l, livro: { ...l.livro, audioResumoUrl: publicUrlString } }
-            : l
-        )
-      );
-      
-      if (selectedBook && selectedBook.livro.id === item.livro.id) {
-        setSelectedBook((prev) => prev ? { ...prev, livro: { ...prev.livro, audioResumoUrl: publicUrlString } } : null);
+      if (edgeError) {
+        let msg = edgeError.message;
+        try {
+          if (edgeError.context && typeof edgeError.context.json === 'function') {
+            const ctx = await edgeError.context.json();
+            if (ctx.error) msg = ctx.error;
+          }
+        } catch (_) {}
+        throw new Error(msg || "Falha ao iniciar processamento na nuvem");
       }
+
+      toast.success('Áudio enviado para nuvem! A mixagem deve terminar em até 1 minuto.', { id: toastId, duration: 10000 });
+      
+      // We don't update local state with audioResumoUrl immediately because it's processing.
+      // The github action will update the row.
     } catch (err: any) {
       console.error(err);
       toast.error(err.message || 'Erro ao enviar áudio', { id: toastId });

@@ -1,0 +1,39 @@
+name: Audio Processor Worker
+
+on:
+  repository_dispatch:
+    types: [process_audio]
+
+jobs:
+  process-audio:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: pip install -r scripts/audio_processor/requirements.txt
+      
+      - name: Install FFmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: Run Audio Processor
+        env:
+          SUPABASE_URL: ${{ github.event.client_payload.supabase_url }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ github.event.client_payload.supabase_key }}
+        run: |
+          echo "Starting Audio Processing for Record ID: ${{ github.event.client_payload.record_id }}"
+          python scripts/audio_processor/process.py \
+            "${{ github.event.client_payload.raw_audio_url }}" \
+            "${{ github.event.client_payload.record_id }}" \
+            "${{ github.event.client_payload.table_name }}" \
+            "${{ github.event.client_payload.bucket_name }}" \
+            "${{ github.event.client_payload.final_file_path }}" \
+            "${{ github.event.client_payload.intro_url }}"
