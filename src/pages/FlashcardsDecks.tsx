@@ -176,7 +176,7 @@ const FlashcardsDecks = () => {
   };
 
   return (
-    <div className="min-h-dvh overflow-x-hidden bg-background pb-[calc(7rem+env(safe-area-inset-bottom,0px))] lg:pb-[calc(3rem+env(safe-area-inset-bottom,0px))]">
+    <div className="min-h-dvh overflow-x-hidden bg-background pb-[calc(7rem+var(--sai-bottom))] lg:pb-[calc(3rem+var(--sai-bottom))]">
       <div className="mx-auto w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] px-3 sm:px-6 lg:px-8">
         <PageHeader
           title="Meus Decks Customizados"

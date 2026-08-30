@@ -212,7 +212,7 @@ export default function ResumosJuridicosAreas() {
   }, [rows, q]);
 
   return (
-    <div className="min-h-dvh bg-background pb-[calc(7rem+env(safe-area-inset-bottom,0px))] lg:pb-[calc(3rem+env(safe-area-inset-bottom,0px))] overflow-x-hidden">
+    <div className="min-h-dvh bg-background pb-[calc(7rem+var(--sai-bottom))] lg:pb-[calc(3rem+var(--sai-bottom))] overflow-x-hidden">
       <PageHeader title="Resumos Jurídicos" onBack={() => navigate("/")} />
 
       <div className="mx-auto w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] px-3 sm:px-6 lg:px-8 mt-2">
@@ -421,7 +421,7 @@ export default function ResumosJuridicosAreas() {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}
-              className="fixed bottom-0 left-0 right-0 z-[71] flex h-[90dvh] flex-col rounded-t-3xl border-t border-border bg-background pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]"
+              className="fixed bottom-0 left-0 right-0 z-[71] flex h-[90dvh] flex-col rounded-t-3xl border-t border-border bg-background pb-[calc(1rem+var(--safe-bottom))]"
             >
               <div className="flex items-center justify-center pt-2 pb-1">
                 <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
@@ -610,7 +610,7 @@ export default function ResumosJuridicosAreas() {
                 </div>
               </div>
 
-              <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-2 pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
+              <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-2 pb-[calc(1rem+var(--safe-bottom))]">
                 {(filtroBusca === "todos" || filtroBusca === "areas") &&
                   filtered.map((r) => {
                     const s = styleForArea(r.area);

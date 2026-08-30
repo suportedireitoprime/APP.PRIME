@@ -65,7 +65,7 @@ const RadarBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
         className="fixed bottom-0 left-0 right-0 z-50  md:bottom-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-auto"
       >
-        <div className="bg-card/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-lg shadow-black/10 pb-[calc(0.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] md:border md:rounded-full md:shadow-2xl md:shadow-black/30 md:pb-0">
+        <div className="bg-card/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-lg shadow-black/10 pb-[calc(0.5rem+var(--safe-bottom))] md:border md:rounded-full md:shadow-2xl md:shadow-black/30 md:pb-0">
           <div className="grid grid-cols-5 items-end px-1 pt-3.5 pb-3.5 max-w-lg mx-auto md:gap-1 md:px-3 md:py-2">
             {TABS.map((tab) => {
               const active = tab.match(pathname);
@@ -126,7 +126,7 @@ const RadarBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="fixed bottom-0 left-0 right-0 z-[70] bg-card border-t border-border rounded-t-3xl pb-[calc(1.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] px-5 pt-5 shadow-2xl"
+              className="fixed bottom-0 left-0 right-0 z-[70] bg-card border-t border-border rounded-t-3xl pb-[calc(1.5rem+var(--safe-bottom))] px-5 pt-5 shadow-2xl"
             >
               <div className="flex items-center justify-between mb-5 px-1">
                 <h3 className="text-[19px] font-display font-bold text-foreground">Mais Opções</h3>

@@ -59,7 +59,7 @@ export function AulaPreviaScreen({
       {/* Header */}
       <header
         className="sticky top-0 z-10 border-b border-border/60 bg-background/95"
-        style={{ paddingTop: 'calc(var(--sai-top, env(safe-area-inset-top, 0px)) + 0.5rem)' }}
+        style={{ paddingTop: 'calc(var(--sai-top) + 0.5rem)' }}
       >
         <div className="relative mx-auto flex max-w-2xl lg:max-w-6xl items-center justify-between px-4 lg:px-10 2xl:px-16 py-3">
           <Button
@@ -234,7 +234,7 @@ export function AulaPreviaScreen({
       <div
         className="fixed inset-x-0 bottom-0 border-t border-border/60 bg-background/95 px-4 pt-3 lg:hidden"
 
-        style={{ paddingBottom: 'calc(0.875rem + var(--sai-bottom, env(safe-area-inset-bottom, 0px)))' }}
+        style={{ paddingBottom: 'calc(0.875rem + var(--sai-bottom))' }}
       >
         <div className="mx-auto flex max-w-2xl lg:max-w-3xl flex-col gap-2.5">
           {podeContinuar && (

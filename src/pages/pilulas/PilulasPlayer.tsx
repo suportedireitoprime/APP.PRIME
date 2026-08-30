@@ -269,7 +269,7 @@ export default function PilulasPlayer() {
       )}
 
       {/* Header Fixo */}
-      <div className="relative z-10 pt-[calc(1.25rem+var(--sai-top,env(safe-area-inset-top,0px)))] px-4 pb-4 shrink-0 flex items-center">
+      <div className="relative z-10 pt-[calc(1.25rem+var(--sai-top))] px-4 pb-4 shrink-0 flex items-center">
         <button
           onClick={() => {
             clearMediaSession(audioMainRef.current);
@@ -287,7 +287,7 @@ export default function PilulasPlayer() {
       </div>
 
       {/* Main Content (Artwork + Controls) */}
-      <div className="relative z-10 flex-1 flex flex-col items-center px-6 pt-4 pb-[calc(2rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] no-scrollbar overflow-y-auto">
+      <div className="relative z-10 flex-1 flex flex-col items-center px-6 pt-4 pb-[calc(2rem+var(--safe-bottom))] no-scrollbar overflow-y-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

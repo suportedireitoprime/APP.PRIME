@@ -124,7 +124,7 @@ export default function LeiArtigosSheet({ lei, area, onClose }: Props) {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}
-              className="fixed bottom-0 left-0 right-0 z-[81] flex h-[90dvh] flex-col rounded-t-3xl border-t border-border bg-background pb-[calc(0.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]"
+              className="fixed bottom-0 left-0 right-0 z-[81] flex h-[90dvh] flex-col rounded-t-3xl border-t border-border bg-background pb-[calc(0.5rem+var(--safe-bottom))]"
             >
               <div className="flex items-center justify-center pt-2 pb-1">
                 <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
@@ -242,7 +242,7 @@ export default function LeiArtigosSheet({ lei, area, onClose }: Props) {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}
-              className="fixed bottom-0 left-0 right-0 z-[91] rounded-t-3xl border-t border-border bg-background pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] px-5 pt-4"
+              className="fixed bottom-0 left-0 right-0 z-[91] rounded-t-3xl border-t border-border bg-background pb-[calc(1.25rem+var(--safe-bottom))] px-5 pt-4"
             >
               <div className="flex items-center justify-center mb-5">
                 <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />

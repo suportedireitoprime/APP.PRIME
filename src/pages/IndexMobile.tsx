@@ -114,7 +114,7 @@ const IndexMobile = () => {
   void leiPath;
 
   return (
-    <div className="min-h-dvh bg-background pb-[calc(5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] md:pb-0 md:pl-[90px] transition-all">
+    <div className="min-h-dvh bg-background pb-[calc(5rem+var(--safe-bottom))] md:pb-0 md:pl-[90px] transition-all">
       <HomeHeaderHero onSearchOpenChange={setHeroSearchOpen} />
       <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: 'easeOut' }}>
         <main ref={contentRef} className="max-w-5xl lg:max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-2">

@@ -30,7 +30,7 @@ export const MeExpliqueHeader = memo(function MeExpliqueHeader({
   onClose, onOpenConfig, onOpenTranscricao, onToggleLanterna
 }: Props) {
   return (
-    <header className="relative z-10 flex items-center gap-3 px-4 pb-2 pt-[calc(1.25rem+var(--sai-top,env(safe-area-inset-top,0px)))]">
+    <header className="relative z-10 flex items-center gap-3 px-4 pb-2 pt-[calc(1.25rem+var(--sai-top))]">
       <button
         onClick={onClose}
         aria-label="Fechar"

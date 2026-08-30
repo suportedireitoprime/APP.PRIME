@@ -22,7 +22,7 @@ export default function FlashcardsPersonalizado() {
   }, []);
 
   return (
-    <div className="min-h-dvh bg-background pb-[calc(7rem+env(safe-area-inset-bottom,0px))] lg:pb-[calc(3rem+env(safe-area-inset-bottom,0px))] overflow-x-hidden">
+    <div className="min-h-dvh bg-background pb-[calc(7rem+var(--sai-bottom))] lg:pb-[calc(3rem+var(--sai-bottom))] overflow-x-hidden">
       <div className="mx-auto w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] px-3 sm:px-6 lg:px-8">
         <PageHeader
           title="Decks Personalizados"

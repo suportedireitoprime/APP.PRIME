@@ -71,9 +71,9 @@ const VideoaulasBottomNav = () => {
     <>
       <nav
         aria-label="Navegação Videoaulas"
-        className="fixed bottom-0 left-0 right-0 z-[100] md:bottom-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-auto lg:top-[calc(var(--sai-top,env(safe-area-inset-top,0px))+1rem)] lg:bottom-auto lg:right-6 lg:left-auto lg:translate-x-0 lg:shadow-none lg:bg-transparent"
+        className="fixed bottom-0 left-0 right-0 z-[100] md:bottom-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-auto lg:top-[calc(var(--sai-top)+1rem)] lg:bottom-auto lg:right-6 lg:left-auto lg:translate-x-0 lg:shadow-none lg:bg-transparent"
       >
-        <div className="bg-card/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-lg shadow-black/10 pb-[calc(0.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] md:border md:rounded-full md:shadow-2xl md:shadow-black/30 md:pb-0 lg:bg-transparent lg:border-none lg:shadow-none">
+        <div className="bg-card/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-lg shadow-black/10 pb-[calc(0.5rem+var(--safe-bottom))] md:border md:rounded-full md:shadow-2xl md:shadow-black/30 md:pb-0 lg:bg-transparent lg:border-none lg:shadow-none">
           <div className="grid grid-cols-5 items-end px-1 pt-3.5 pb-3.5 max-w-lg mx-auto md:gap-1 md:px-3 md:py-2 lg:flex lg:items-center lg:gap-4 lg:p-0">
             {TABS.map((tab) => {
               const active = tab.id === 'mais' ? drawerOpen : tab.match(pathname);
@@ -123,7 +123,7 @@ const VideoaulasBottomNav = () => {
       <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
         <DrawerPortal>
           <DrawerOverlay className="fixed inset-0 bg-black/60 z-50" onClick={() => setDrawerOpen(false)} />
-          <DrawerContent className="bg-card flex flex-col rounded-t-[20px] fixed bottom-0 left-0 right-0 z-50 pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
+          <DrawerContent className="bg-card flex flex-col rounded-t-[20px] fixed bottom-0 left-0 right-0 z-50 pb-[calc(1.25rem+var(--safe-bottom))]">
             <div className="p-4 bg-card rounded-t-[20px] flex-1">
               <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-muted-foreground/20 mb-6" />
               <div className="max-w-md mx-auto">

@@ -65,7 +65,7 @@ export default function GlobalAudioaulasMiniPlayer() {
           style={{
             bottom: navHeight
               ? `${navHeight + 28}px`
-              : `calc(9.5rem + var(--sai-bottom,env(safe-area-inset-bottom,0px)))`,
+              : `calc(9.5rem + var(--safe-bottom))`,
           }}
         >
           <div className="pointer-events-auto mx-auto max-w-md md:w-96 rounded-full border border-white/15 bg-[#0f0f0f]/95 backdrop-blur-md shadow-2xl shadow-black/80 flex items-center gap-2 pl-1.5 pr-1.5 py-1.5 relative overflow-hidden transition-all hover:scale-[1.02]">

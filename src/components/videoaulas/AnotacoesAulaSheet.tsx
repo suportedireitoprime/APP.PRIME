@@ -209,11 +209,11 @@ export function AnotacoesAulaSheet({
         className={
           isDesktop
             ? 'fixed right-0 top-0 bottom-0 z-[10041] w-[min(40rem,95vw)] border-l border-border bg-background shadow-2xl flex flex-col pointer-events-auto'
-            : 'fixed inset-0 z-[10041] bg-background flex flex-col pointer-events-auto pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]'
+            : 'fixed inset-0 z-[10041] bg-background flex flex-col pointer-events-auto pb-[calc(1.25rem+var(--safe-bottom))]'
         }
       >
         {/* Header */}
-        <header className="pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] border-b border-border bg-card shrink-0">
+        <header className="pt-[calc(1rem+var(--sai-top))] border-b border-border bg-card shrink-0">
           <div className="h-16 px-4 flex items-center justify-between gap-3">
             <Button variant="ghost" size="icon" onClick={onClose} aria-label="Voltar">
               <ArrowLeft className="w-5 h-5" />

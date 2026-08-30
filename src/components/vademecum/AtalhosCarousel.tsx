@@ -731,7 +731,7 @@ function CategoryPickerSheet({
       <motion.div
         initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        className="fixed bottom-0 left-0 right-0 z-[90] bg-card border-t border-border rounded-t-3xl pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] h-[88vh] flex flex-col overflow-hidden"
+        className="fixed bottom-0 left-0 right-0 z-[90] bg-card border-t border-border rounded-t-3xl pb-[calc(1rem+var(--safe-bottom))] h-[88vh] flex flex-col overflow-hidden"
       >
         {/* Cabeçalho fixo 100% ofuscado */}
         <div className="sticky top-0 z-10 bg-card backdrop-blur-xl border-b border-border/40 shrink-0">

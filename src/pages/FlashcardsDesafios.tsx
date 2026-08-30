@@ -148,7 +148,7 @@ const FlashcardsDesafios = () => {
   if (selectedCat) {
     const catDesafios = categoriasMap[selectedCat] || [];
     return (
-      <div className="min-h-dvh bg-background pb-12 pt-[calc(0.5rem+var(--sai-top,env(safe-area-inset-top,0px)))]">
+      <div className="min-h-dvh bg-background pb-12 pt-[calc(0.5rem+var(--sai-top))]">
         <div className="mx-auto w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] px-3 sm:px-6 lg:px-8">
           <PageHeader title={selectedCat} onBack={() => setSelectedCat(null)} />
           <div className="mt-4 space-y-3">
@@ -162,7 +162,7 @@ const FlashcardsDesafios = () => {
   }
 
   return (
-    <div className="min-h-dvh bg-background pb-12 pt-[calc(0.5rem+var(--sai-top,env(safe-area-inset-top,0px)))]">
+    <div className="min-h-dvh bg-background pb-12 pt-[calc(0.5rem+var(--sai-top))]">
       <div className="mx-auto w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] px-3 sm:px-6 lg:px-8">
         <PageHeader title="Desafios" onBack={() => navigate('/flashcards')} />
 

@@ -213,7 +213,7 @@ export default function PesquisasProntasTema() {
             'linear-gradient(160deg, hsl(158 72% 32%) 0%, hsl(150 65% 22%) 55%, hsl(148 55% 14%) 100%)',
         }}
       >
-        <div className="relative flex items-center justify-between px-4 pt-[calc(env(safe-area-inset-top,0px)+12px)] pb-2">
+        <div className="relative flex items-center justify-between px-4 pt-[calc(var(--sai-top)+12px)] pb-2">
           <button
             onClick={() => goBack()}
             aria-label="Voltar"

@@ -114,7 +114,7 @@ const VadeMecumHero = ({ onBuscar }: Props) => {
 
   return (
     <div
-      className="relative overflow-hidden rounded-b-[36px] border-b border-white/10 shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20"
+      className="relative overflow-hidden rounded-b-[36px] border-b border-white/10 shadow-2xl shadow-black/60 pt-[var(--sai-top)] flex flex-col z-20"
       style={{
         transform: 'translateZ(0)',
         isolation: 'isolate',

@@ -363,10 +363,10 @@ const AnotacoesSheet = ({ open, onClose, tabelaNome, artigoNumero, artigoTexto, 
         className={
           isDesktop
             ? 'fixed right-0 top-0 bottom-0 z-[10041] w-[min(30rem,92vw)] border-l border-border bg-background shadow-2xl flex flex-col pointer-events-auto'
-            : 'fixed inset-0 z-[10041] bg-background flex flex-col pointer-events-auto pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]'
+            : 'fixed inset-0 z-[10041] bg-background flex flex-col pointer-events-auto pb-[calc(1.25rem+var(--safe-bottom))]'
         }
       >
-        <header className="pt-[calc(1.25rem+var(--sai-top,env(safe-area-inset-top,0px)))] border-b border-border bg-card">
+        <header className="pt-[calc(1.25rem+var(--sai-top))] border-b border-border bg-card">
           <div className="h-16 px-4 flex items-center justify-between gap-3">
             <Button variant="ghost" size="icon" onClick={onClose} aria-label="Voltar ao artigo">
               <ArrowLeft className="w-5 h-5" />

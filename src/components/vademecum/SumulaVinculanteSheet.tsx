@@ -449,7 +449,7 @@ export function SumulaVinculanteSheet({ sumula, tribunal, isFavorita = false, on
             </div>
 
             {/* Conteúdo rolável */}
-            <div className="flex-1 overflow-y-auto px-5 pb-[calc(7.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] relative overscroll-contain">
+            <div className="flex-1 overflow-y-auto px-5 pb-[calc(7.5rem+var(--safe-bottom))] relative overscroll-contain">
               
               {/* Barra de progresso de áudio sticky no topo idêntica ao Código Penal */}
               {narracaoPlaying && (
@@ -603,7 +603,7 @@ export function SumulaVinculanteSheet({ sumula, tribunal, isFavorita = false, on
           </Tabs>
 
           {/* Rodapé de Ações com 5 colunas IDÊNTICO ao Código Penal */}
-          <div className="shrink-0 relative z-[55] bg-card/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-lg shadow-black/20 pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))]">
+          <div className="shrink-0 relative z-[55] bg-card/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-lg shadow-black/20 pb-safe">
             <div className="relative grid grid-cols-5 items-end px-1 pt-3 pb-3 max-w-lg mx-auto">
               {/* 1. Funções */}
               <button
@@ -711,7 +711,7 @@ export function SumulaVinculanteSheet({ sumula, tribunal, isFavorita = false, on
                 animate={{ y: 0 }}
                 exit={{ y: '100%' }}
                 transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                className="fixed bottom-0 left-0 right-0 z-[10041] bg-card rounded-t-3xl border-t border-border pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] max-h-[85vh] overflow-y-auto mx-auto max-w-lg flex flex-col"
+                className="fixed bottom-0 left-0 right-0 z-[10041] bg-card rounded-t-3xl border-t border-border pb-safe max-h-[85vh] overflow-y-auto mx-auto max-w-lg flex flex-col"
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="pt-3 pb-2 flex justify-center">

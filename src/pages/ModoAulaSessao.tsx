@@ -182,7 +182,7 @@ export default function ModoAulaSessao() {
     <div className="min-h-screen bg-[#141414] text-white flex flex-col">
       <header
         className="flex items-center justify-between px-4 py-4"
-        style={{ paddingTop: 'calc(var(--sai-top, env(safe-area-inset-top, 0px)) + 1rem)' }}
+        style={{ paddingTop: 'calc(var(--sai-top) + 1rem)' }}
       >
         <div className="min-w-0">
           <p className="text-[12px] font-bold uppercase tracking-wide text-white/50">Modo Aula</p>
@@ -249,7 +249,7 @@ export default function ModoAulaSessao() {
 
       <footer
         className="px-4 pb-6 space-y-3"
-        style={{ paddingBottom: 'calc(var(--sai-bottom, env(safe-area-inset-bottom, 0px)) + 1.5rem)' }}
+        style={{ paddingBottom: 'calc(var(--sai-bottom) + 1.5rem)' }}
       >
         <Button
           onClick={() => void marcar()}

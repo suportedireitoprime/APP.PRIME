@@ -293,7 +293,7 @@ export default function ModoAulaAula() {
       {trechos.length > 0 && (
         <div
           className="fixed bottom-0 left-0 right-0 border-t border-border bg-card/95 backdrop-blur px-4 pt-3"
-          style={{ paddingBottom: 'calc(var(--sai-bottom, env(safe-area-inset-bottom, 0px)) + 0.75rem)' }}
+          style={{ paddingBottom: 'calc(var(--sai-bottom) + 0.75rem)' }}
         >
           <input
             type="range"

@@ -165,7 +165,7 @@ const DesktopPromo = () => {
         />
       </div>
 
-      <div className="p-4 space-y-6 max-w-lg mx-auto pb-[calc(7rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
+      <div className="p-4 space-y-6 max-w-lg mx-auto pb-[calc(7rem+var(--safe-bottom))]">
         {/* Hero */}
         <div className="relative rounded-2xl overflow-hidden border border-border">
           <img src={desktopImg} alt="Direito Prime no Desktop" className="w-full h-44 object-cover" />

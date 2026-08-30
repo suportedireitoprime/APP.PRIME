@@ -412,7 +412,7 @@ export default function ResumosJuridicosTemas() {
 
       {/* MENU DE ORDENAÇÃO FIXO NO RODAPÉ */}
       {activeTema && !loading && subtemas.length > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 z-40 bg-background/90 backdrop-blur-md border-t border-border p-3 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] flex justify-center shadow-[0_-4px_24px_rgba(0,0,0,0.5)]">
+        <div className="fixed bottom-0 left-0 right-0 z-40 bg-background/90 backdrop-blur-md border-t border-border p-3 pb-[calc(1rem+var(--sai-bottom))] flex justify-center shadow-[0_-4px_24px_rgba(0,0,0,0.5)]">
           <div className="flex w-full max-w-sm bg-secondary/80 rounded-full p-1 gap-1">
             {([
               { id: "crono", label: "Cronológica" },

@@ -568,7 +568,7 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
           <div className="flex-1 flex flex-col min-w-0 min-h-0">
           {/* ChatGPT-style Header (Mobile) */}
           {!isDesktop && (
-            <header className="flex items-center justify-between px-3 py-3 shrink-0" style={{ paddingTop: 'calc(var(--sai-top, env(safe-area-inset-top, 0px)) + 0.75rem)' }}>
+            <header className="flex items-center justify-between px-3 py-3 shrink-0" style={{ paddingTop: 'calc(var(--sai-top) + 0.75rem)' }}>
               <button
                 onClick={() => { haptic.light(); onClose(); setTimeout(newSession, 300); }}
                 aria-label="Fechar"
@@ -843,7 +843,7 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
           <div className={
             isDesktop
               ? 'relative px-6 pb-6 pt-2 bg-gradient-to-t from-background via-background to-transparent'
-              : 'relative px-4 pb-[calc(0.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-2 bg-gradient-to-t from-background via-background/90 to-transparent'
+              : 'relative px-4 pb-[calc(0.5rem+var(--safe-bottom))] pt-2 bg-gradient-to-t from-background via-background/90 to-transparent'
           }>
             <div className={`mx-auto w-full max-w-3xl rounded-[26px] bg-[#2f2f2f] shadow-lg flex flex-col p-1.5 border border-white/5`}>
               {attachment && (
@@ -908,7 +908,7 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
           {voice.listening && (
             <div
               className="fixed left-4 right-4 z-[64] pointer-events-none flex justify-center"
-              style={{ bottom: 'calc(11rem + env(safe-area-inset-bottom, 0px))' }}
+              style={{ bottom: 'calc(11rem + var(--sai-bottom))' }}
             >
               <div className="px-3 py-1.5 rounded-full bg-red-500/95 text-white text-[11px] font-body shadow-lg">
                 🎙️ Ouvindo… fale agora
@@ -930,7 +930,7 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
                   exit={{ opacity: 0, y: 12, scale: 0.9 }}
                   transition={{ type: 'spring', damping: 22, stiffness: 320 }}
                   className="fixed left-3 z-[69] bg-card border border-border rounded-2xl shadow-2xl p-2 flex flex-col gap-1 min-w-[200px]"
-                  style={{ bottom: 'calc(9.5rem + env(safe-area-inset-bottom, 0px))' }}
+                  style={{ bottom: 'calc(9.5rem + var(--sai-bottom))' }}
                 >
                   {[
                     {

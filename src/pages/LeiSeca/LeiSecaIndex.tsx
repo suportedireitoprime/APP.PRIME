@@ -72,7 +72,7 @@ export default function LeiSecaIndex({ modo = "todos" }: { modo?: Filtro }) {
 
       {/* HERO PAINEL */}
       <section
-        className="w-full text-white px-4 pt-[calc(1.25rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-6"
+        className="w-full text-white px-4 pt-[calc(1.25rem+var(--sai-top))] pb-6"
         style={{ background: "radial-gradient(120% 90% at 0% 0%, #4c1d95 0%, #2e1065 45%, #0f0a1f 100%)" }}
       >
         <div className="max-w-5xl mx-auto">
@@ -164,7 +164,7 @@ export default function LeiSecaIndex({ modo = "todos" }: { modo?: Filtro }) {
       </div>
 
       {/* CONTEÚDO E FILTROS */}
-      <div className="max-w-5xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 py-3 pb-[calc(7rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
+      <div className="max-w-5xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 py-3 pb-[calc(7rem+var(--safe-bottom))]">
         {/* NAVEGAÇÃO POR PILLS */}
         <div className="flex items-center gap-2 p-1 rounded-2xl bg-muted/60 border border-border/60 mb-6 overflow-x-auto">
           <FiltroPill ativo={filtro === "todos"} onClick={() => { haptic.selection(); navigate("/lei-seca"); }} icon={<BookOpen className="h-4 w-4" />} label="Matérias" />

@@ -182,7 +182,7 @@ const FlashcardsCornell = () => {
   const visual = getAreaVisual(card.area);
 
   return (
-    <div className="min-h-dvh bg-background pb-28 lg:pb-12 pt-[calc(0.5rem+var(--sai-top,env(safe-area-inset-top,0px)))]">
+    <div className="min-h-dvh bg-background pb-28 lg:pb-12 pt-[calc(0.5rem+var(--sai-top))]">
       <div className="mx-auto w-full max-w-2xl lg:max-w-4xl px-3 sm:px-6">
         <PageHeader
           title="Resumo Cornell (Gemini AI)"
@@ -311,7 +311,7 @@ const FlashcardsCornell = () => {
           </div>
 
           {/* Botão Marcar como Revisado (Agendamento para 2 dias) */}
-          <div className="pt-2 pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] space-y-2">
+          <div className="pt-2 pb-[calc(1.25rem+var(--safe-bottom))] space-y-2">
             <Button
               onClick={marcarRevisado}
               disabled={salvando}

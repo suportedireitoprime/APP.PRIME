@@ -110,7 +110,7 @@ const Landing = () => {
         {/* Navbar sobre o hero */}
         <nav
           className="absolute top-0 inset-x-0 z-30 px-4 lg:px-8"
-          style={{ paddingTop: 'calc(1.25rem + var(--sai-top, env(safe-area-inset-top, 0px)))' }}
+          style={{ paddingTop: 'calc(1.25rem + var(--sai-top))' }}
         >
           <div className="flex flex-row items-center justify-between gap-3 max-w-7xl mx-auto">
             <Link to="/landing" className="flex items-center gap-3 min-w-0">
@@ -302,7 +302,7 @@ const Landing = () => {
       {/* Rodapé */}
       <footer
         className="bg-background border-t border-border px-6 lg:px-12 pt-8"
-        style={{ paddingBottom: 'calc(2rem + var(--sai-bottom, env(safe-area-inset-bottom, 0px)))' }}
+        style={{ paddingBottom: 'calc(2rem + var(--sai-bottom))' }}
       >
         <div className="max-w-4xl mx-auto flex flex-col items-center gap-3 text-center">
           <img src={appLogo} alt="Direito Prime" className="w-10 h-10 object-contain" />

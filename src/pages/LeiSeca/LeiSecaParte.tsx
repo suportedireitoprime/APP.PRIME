@@ -174,7 +174,7 @@ export default function LeiSecaParte() {
           <div className="absolute inset-y-0 -left-1/3 w-1/2 bg-gradient-to-r from-transparent via-white/10 to-transparent rotate-[18deg] animate-pulse" />
         </div>
 
-        <div className="relative z-10 px-5 pt-[calc(1.25rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-5">
+        <div className="relative z-10 px-5 pt-[calc(1.25rem+var(--sai-top))] pb-5">
           <button
             onClick={() => navigate("/lei-seca", { replace: true })}
             aria-label="Voltar"
@@ -276,7 +276,7 @@ export default function LeiSecaParte() {
         </div>
       </section>
 
-      <div className="max-w-5xl mx-auto px-4 py-6 pb-[calc(7.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
+      <div className="max-w-5xl mx-auto px-4 py-6 pb-[calc(7.5rem+var(--safe-bottom))]">
         {(licoesQ.isLoading || estruturando) && (
           <div className="text-center py-12 text-muted-foreground animate-fade-in">
             <Loader2 className="h-8 w-8 mx-auto mb-3 animate-spin" style={{ color: tema.solid }} />

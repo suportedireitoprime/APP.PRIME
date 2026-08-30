@@ -512,7 +512,7 @@ const ApresentacaoPlayer = () => {
         )}
         <div className="absolute inset-0 z-0 bg-black/60 pointer-events-none" />
         
-        <header className="relative z-10 px-4 pb-4 pt-[calc(2.5rem+env(safe-area-inset-top,0px))] flex gap-3">
+        <header className="relative z-10 px-4 pb-4 pt-[calc(2.5rem+var(--sai-top))] flex gap-3">
            <button onClick={() => goBack()} className="w-10 h-10 flex items-center justify-center"><ArrowLeft className="w-6 h-6" /></button>
            <div className="flex-1"><p className="font-heading font-bold text-sm truncate">{stateTitulo || 'Carregando...'}</p></div>
         </header>
@@ -568,7 +568,7 @@ const ApresentacaoPlayer = () => {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="relative z-10 px-4 pb-4 pt-[calc(2.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] bg-gradient-to-b from-black/90 to-transparent"
+            className="relative z-10 px-4 pb-4 pt-[calc(2.5rem+var(--sai-top))] bg-gradient-to-b from-black/90 to-transparent"
           >
             {/* Barrinhas do topo estilo Stories */}
             <div className="flex gap-1 mb-4">
@@ -666,7 +666,7 @@ const ApresentacaoPlayer = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="relative z-10 px-4 pb-[calc(2.5rem+env(safe-area-inset-bottom,0px))] pt-6 bg-gradient-to-t from-black/90 to-transparent space-y-6"
+            className="relative z-10 px-4 pb-[calc(2.5rem+var(--sai-bottom))] pt-6 bg-gradient-to-t from-black/90 to-transparent space-y-6"
           >
             {/* Barra de Progresso Isolada */}
             <AudioProgressBar 
@@ -750,7 +750,7 @@ const ApresentacaoPlayer = () => {
               </div>
             ))}
           </div>
-          <div className="flex gap-2 pb-[calc(1rem+env(safe-area-inset-bottom,0px))]">
+          <div className="flex gap-2 pb-[calc(1rem+var(--sai-bottom))]">
             <input
               value={novoComentario}
               onChange={(e) => setNovoComentario(e.target.value)}
@@ -765,7 +765,7 @@ const ApresentacaoPlayer = () => {
       <Sheet open={abrirSumario} onOpenChange={setAbrirSumario}>
         <SheetContent side="bottom" className="h-[70vh] flex flex-col bg-[#111] border-t-zinc-800">
           <SheetHeader><SheetTitle className="text-white">Todos os Slides</SheetTitle></SheetHeader>
-          <div className="flex-1 overflow-y-auto space-y-3 py-3 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] grid grid-cols-2 gap-3">
+          <div className="flex-1 overflow-y-auto space-y-3 py-3 pb-[calc(1rem+var(--sai-bottom))] grid grid-cols-2 gap-3">
             {slides.map((s, i) => (
               <button 
                 key={s.slide_index} 
@@ -783,7 +783,7 @@ const ApresentacaoPlayer = () => {
       <Sheet open={abrirRoteiro} onOpenChange={setAbrirRoteiro}>
         <SheetContent side="bottom" className="h-[70vh] flex flex-col bg-[#111] border-t-zinc-800">
           <SheetHeader><SheetTitle className="text-white">Roteiro da Narração</SheetTitle></SheetHeader>
-          <div className="flex-1 overflow-y-auto p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] bg-white/5 rounded-xl text-sm leading-relaxed text-white/90 font-body">
+          <div className="flex-1 overflow-y-auto p-4 pb-[calc(1rem+var(--sai-bottom))] bg-white/5 rounded-xl text-sm leading-relaxed text-white/90 font-body">
             {slide?.roteiro || <span className="text-white/40 italic">Nenhum roteiro disponível para este slide.</span>}
           </div>
         </SheetContent>

@@ -101,7 +101,7 @@ const FlashcardsEstudo = () => {
   }, []);
 
   return (
-    <div className={`min-h-dvh overflow-x-hidden bg-background ${escolhendo ? 'pb-[calc(8rem+env(safe-area-inset-bottom,0px))]' : 'pb-[calc(2.5rem+env(safe-area-inset-bottom,0px))]'}`}>
+    <div className={`min-h-dvh overflow-x-hidden bg-background ${escolhendo ? 'pb-[calc(8rem+var(--sai-bottom))]' : 'pb-[calc(2.5rem+var(--sai-bottom))]'}`}>
       {gateFlashcards.gateNode}
       
       <div className="mx-auto w-full max-w-3xl px-3.5 sm:px-6">

@@ -48,7 +48,7 @@ const ResumosHero = ({ onBuscar, titulo = 'Resumos Jurídicos', voltarPara = '/'
 
   return (
     <div
-      className="relative overflow-hidden rounded-b-[36px] border-b border-white/10 shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))]"
+      className="relative overflow-hidden rounded-b-[36px] border-b border-white/10 shadow-2xl shadow-black/60 pt-[var(--sai-top)]"
       style={{ transform: 'translateZ(0)', isolation: 'isolate', contain: 'paint' }}
     >
       <div className="absolute inset-0 bg-hero-panel-cyan -z-10" />

@@ -267,7 +267,7 @@ const AreaTrilhaMap = ({ areaSlug, catalogoId, aulas }: { areaSlug: string, cata
       <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
         <DrawerPortal>
           <DrawerOverlay className="fixed inset-0 bg-black/60 z-50 backdrop-blur-sm" onClick={() => setDrawerOpen(false)} />
-          <DrawerContent className="bg-card border-t border-white/10 flex flex-col rounded-t-[32px] fixed bottom-0 left-0 right-0 z-50 pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
+          <DrawerContent className="bg-card border-t border-white/10 flex flex-col rounded-t-[32px] fixed bottom-0 left-0 right-0 z-50 pb-[calc(1.25rem+var(--safe-bottom))]">
             <div className="p-6">
               <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-white/10 mb-8" />
               <h3 className="text-xl font-black mb-2">Ajustes da Missão</h3>
@@ -395,7 +395,7 @@ const VideoaulasArea = () => {
   ] as const;
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px))+80px)]">
+    <div className="min-h-screen bg-[#0A0A0A] pb-[calc(1.25rem+var(--safe-bottom)+80px)]">
       <PageHeader
         title={nomeArea}
         subtitle={loading ? 'Carregando…' : `${aulas.length} aulas`}
@@ -554,7 +554,7 @@ const VideoaulasArea = () => {
       </AnimatePresence>
 
       {/* Menu de Rodapé Exclusivo da Área */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-lg shadow-black/10 pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))]">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-lg shadow-black/10 pb-safe">
         <div className="flex h-16 max-w-md mx-auto relative px-1">
           {MENU.map(({ id, label, icon: Icon }) => {
             const ativo = aba === id;

@@ -181,7 +181,7 @@ const ArtigoIAFullscreen = ({
           aria-label={isExemplo ? 'Exemplos práticos' : 'Explicação do artigo'}
         >
           {/* Cabeçalho */}
-          <header className="shrink-0 border-b border-border bg-[#0f0f0f]/95 px-4 pt-[calc(1.25rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-3 backdrop-blur-md">
+          <header className="shrink-0 border-b border-border bg-[#0f0f0f]/95 px-4 pt-[calc(1.25rem+var(--sai-top))] pb-3 backdrop-blur-md">
             <div className="mx-auto flex w-full max-w-2xl items-center gap-3">
               {isExemplo ? (
                 <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-secondary ${accent}`}>
@@ -235,7 +235,7 @@ const ArtigoIAFullscreen = ({
           {/* Corpo */}
           <div
             ref={bodyRef}
-            className="min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain px-5 pb-[calc(6rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-5"
+            className="min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain px-5 pb-[calc(6rem+var(--safe-bottom))] pt-5"
             style={{ WebkitOverflowScrolling: 'touch' }}
           >
             <div className="mx-auto w-full max-w-2xl">
@@ -270,7 +270,7 @@ const ArtigoIAFullscreen = ({
 
           {/* Navegação inferior */}
           {sections.length > 1 && (
-            <footer className="shrink-0 border-t border-border bg-[#0f0f0f]/95 px-4 py-3 pb-[calc(0.75rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] backdrop-blur-md">
+            <footer className="shrink-0 border-t border-border bg-[#0f0f0f]/95 px-4 py-3 pb-[calc(0.75rem+var(--safe-bottom))] backdrop-blur-md">
               <div className="mx-auto flex w-full max-w-2xl items-center justify-between gap-3">
                 <button
                   onClick={() => { haptic.light(); handleSetIndex((i) => Math.max(i - 1, 0)); }}

@@ -90,7 +90,7 @@ export default function PesquisasProntasLista() {
         <div className="absolute -top-16 -right-10 w-56 h-56 rounded-full bg-emerald-400/25 blur-3xl pointer-events-none" />
         <div className="absolute -bottom-20 -left-10 w-64 h-64 rounded-full bg-teal-300/15 blur-3xl pointer-events-none" />
 
-        <div className="relative flex items-center justify-between px-4 pt-[calc(env(safe-area-inset-top,0px)+12px)] pb-2">
+        <div className="relative flex items-center justify-between px-4 pt-[calc(var(--sai-top)+12px)] pb-2">
           <button
             onClick={() => goBack()}
             aria-label="Voltar"

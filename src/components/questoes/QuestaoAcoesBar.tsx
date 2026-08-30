@@ -160,7 +160,7 @@ function Overlay({
         transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
         onClick={(e) => e.stopPropagation()}
         className={cn(
-          'relative flex w-full flex-col rounded-t-3xl border border-border bg-card shadow-2xl pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] sm:max-w-lg sm:rounded-3xl sm:pb-0',
+          'relative flex w-full flex-col rounded-t-3xl border border-border bg-card shadow-2xl pb-[calc(1.25rem+var(--safe-bottom))] sm:max-w-lg sm:rounded-3xl sm:pb-0',
           alto ? 'h-[90vh]' : 'max-h-[92vh] overflow-y-auto',
         )}
       >

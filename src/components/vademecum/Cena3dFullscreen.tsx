@@ -41,7 +41,7 @@ export default function Cena3dFullscreen({ open, codigo_nome, artigo_numero, onC
         exit={{ opacity: 0, scale: 0.95 }}
         className="fixed inset-0 z-[100000] bg-black"
       >
-         <button onClick={onClose} className="absolute top-safe-mt-4 right-4 z-50 w-10 h-10 bg-black/50 text-white rounded-full flex items-center justify-center hover:bg-black/80 backdrop-blur-md border border-white/10" style={{ top: 'calc(1rem + env(safe-area-inset-top))' }}>
+         <button onClick={onClose} className="absolute top-safe-mt-4 right-4 z-50 w-10 h-10 bg-black/50 text-white rounded-full flex items-center justify-center hover:bg-black/80 backdrop-blur-md border border-white/10" style={{ top: 'calc(1rem + var(--sai-top))' }}>
             <X className="w-5 h-5" />
          </button>
          

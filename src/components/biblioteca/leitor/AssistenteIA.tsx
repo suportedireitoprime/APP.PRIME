@@ -85,9 +85,9 @@ export default function AssistenteIA({
                 ? {
                     background: tema.bg,
                     color: tema.text,
-                    right: 'max(16px, env(safe-area-inset-right, 0px))',
-                    top: 'calc(env(safe-area-inset-top, 0px) + 5.25rem)',
-                    bottom: 'calc(env(safe-area-inset-bottom, 0px) + 1.5rem)',
+                    right: 'max(16px, var(--sai-right))',
+                    top: 'calc(var(--sai-top) + 5.25rem)',
+                    bottom: 'calc(var(--sai-bottom) + 1.5rem)',
                     width: 'min(440px, calc(100vw - 32px))',
                     border: `1px solid ${tema.border}`,
                   }

@@ -282,7 +282,7 @@ const AuthDrawer = ({ mode, setMode, onClose }: { mode: 'login' | 'signup' | 'fo
         <div 
           className={`w-full pb-2 flex justify-center shrink-0 cursor-grab active:cursor-grabbing transition-all ${
             showEmailForm || googleLoading || appleLoading 
-              ? 'pt-[calc(var(--sai-top,env(safe-area-inset-top,0px))+1.5rem)]' 
+              ? 'pt-[calc(var(--sai-top)+1.5rem)]' 
               : 'pt-4'
           }`} 
           onClick={onClose}
@@ -290,7 +290,7 @@ const AuthDrawer = ({ mode, setMode, onClose }: { mode: 'login' | 'signup' | 'fo
           <div className="w-12 h-1.5 rounded-full bg-white/20" />
         </div>
 
-        <div className="px-6 flex-1 pb-[calc(var(--sai-bottom,env(safe-area-inset-bottom,0px))+2rem)] overflow-y-auto no-scrollbar">
+        <div className="px-6 flex-1 pb-[calc(var(--safe-bottom)+2rem)] overflow-y-auto no-scrollbar">
           
           <div className="flex items-center justify-between mb-6">
             <div>
@@ -703,7 +703,7 @@ const Auth = () => {
       <button
         onClick={() => navigate('/landing')}
         aria-label="Voltar"
-        className="absolute top-[calc(var(--sai-top,env(safe-area-inset-top,0px))+1.25rem)] left-[calc(var(--sai-left,env(safe-area-inset-left,0px))+1rem)] z-20 w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-black/60 transition active:scale-95 touch-manipulation"
+        className="absolute top-[calc(var(--sai-top)+1.25rem)] left-[calc(var(--sai-left)+1rem)] z-20 w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-black/60 transition active:scale-95 touch-manipulation"
       >
         <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 text-white" strokeWidth={2.4} />
       </button>
@@ -746,7 +746,7 @@ const Auth = () => {
           </motion.div>
         </div>
       ) : (
-        <div className="relative z-10 w-full pt-[calc(var(--sai-top,env(safe-area-inset-top,0px))+4rem)] px-6 text-center flex-1 flex flex-col items-center">
+        <div className="relative z-10 w-full pt-[calc(var(--sai-top)+4rem)] px-6 text-center flex-1 flex flex-col items-center">
           <motion.div 
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -778,7 +778,7 @@ const Auth = () => {
           </motion.div>
           
           {/* Área dos Botões Inferiores Mobile */}
-          <div className="w-full pb-[calc(var(--sai-bottom,env(safe-area-inset-bottom,0px))+2rem)] flex flex-col items-center justify-center gap-4 mt-auto">
+          <div className="w-full pb-[calc(var(--safe-bottom)+2rem)] flex flex-col items-center justify-center gap-4 mt-auto">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

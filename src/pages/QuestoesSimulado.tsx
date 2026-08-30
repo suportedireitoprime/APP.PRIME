@@ -93,7 +93,7 @@ const QuestoesSimulado = () => {
   const mmss = `${String(Math.floor(segundos / 60)).padStart(2, '0')}:${String(segundos % 60).padStart(2, '0')}`;
 
   return (
-    <div className="theme-questoes min-h-screen bg-background pb-[calc(8.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
+    <div className="theme-questoes min-h-screen bg-background pb-[calc(8.5rem+var(--safe-bottom))]">
       <PageHeader
         title="Simulado"
         subtitle={rodando ? mmss : 'Escolha o cargo'}

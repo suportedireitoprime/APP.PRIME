@@ -23,7 +23,7 @@ export default function InAppPushPopup() {
   return (
     <AnimatePresence>
       {currentPush && (
-        <div className="fixed inset-x-0 top-0 z-[9999] p-4 pointer-events-none flex justify-center pt-[calc(3rem+var(--sai-top,env(safe-area-inset-top,0px)))]">
+        <div className="fixed inset-x-0 top-0 z-[9999] p-4 pointer-events-none flex justify-center pt-[calc(3rem+var(--sai-top))]">
           <motion.div
             initial={{ y: -100, opacity: 0, scale: 0.95 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}

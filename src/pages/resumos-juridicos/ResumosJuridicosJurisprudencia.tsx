@@ -11,7 +11,7 @@ export default function ResumosJuridicosJurisprudencia() {
   return (
     <div className="min-h-[100dvh] bg-[#0D0D0D] text-white flex flex-col">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-white/10 pt-[env(safe-area-inset-top)]">
+      <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-white/10 pt-[var(--sai-top)]">
         <div className="flex items-center h-16 px-4 gap-3">
           <button
             onClick={() => navigate(-1)}

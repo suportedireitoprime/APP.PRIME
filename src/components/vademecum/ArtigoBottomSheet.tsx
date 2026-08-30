@@ -2836,7 +2836,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
           )}
 
 
-          <TabsContent value="artigo" className="px-5 pb-[calc(9rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-4 relative">
+          <TabsContent value="artigo" className="px-5 pb-[calc(9rem+var(--safe-bottom))] pt-4 relative">
             {/* Barra de progresso da narração (sticky no topo) */}
             {narracaoPlaying && (
               <div className="sticky top-0 z-30 -mx-5 -mt-4 mb-3 bg-[#0f0f0f]/95 backdrop-blur-md border-b border-white/5 px-5 py-2.5">
@@ -3111,7 +3111,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
           </TabsContent>
 
 
-          <TabsContent value="explicacao" className="px-5 pb-[calc(8rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-4">
+          <TabsContent value="explicacao" className="px-5 pb-[calc(8rem+var(--safe-bottom))] pt-4">
             {modificationInfo ? (
               <div className="space-y-5">
                 <div className="rounded-2xl bg-violet-500/10 border border-violet-500/20 p-4">
@@ -3228,7 +3228,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
             )}
           </TabsContent>
 
-          <TabsContent value="exemplo" className="px-5 pb-[calc(8rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-4">
+          <TabsContent value="exemplo" className="px-5 pb-[calc(8rem+var(--safe-bottom))] pt-4">
             {!isPremium ? (
               <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-b from-amber-500/20 to-primary/20 p-2 border border-amber-500/30 flex items-center justify-center mb-3 shadow-lg shadow-primary/20">
@@ -3288,7 +3288,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
             )}
           </TabsContent>
 
-          <TabsContent value="historico" className="px-5 pb-[calc(8rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-4">
+          <TabsContent value="historico" className="px-5 pb-[calc(8rem+var(--safe-bottom))] pt-4">
             {(() => {
               const modRegex = /\(((?:Redação\s+dada|Incluíd[oa]|Acrescid[oa]|Revogad[oa]|Alterad[oa]|Vetad[oa]|Vigência|Regulamento|Renumerado|Transformado|Suprimido|Restabelecido|Produção de efeito)[^)]*)\)/gi;
               const found: { texto: string; ano: number }[] = [];
@@ -3402,7 +3402,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                     data-artigo-menu=""
                     style={{ pointerEvents: 'auto' }}
                     transition={{ type: 'spring', damping: 26, stiffness: 260 }}
-                    className="fixed bottom-0 left-0 right-0 z-[10006] bg-card border-t border-border rounded-t-3xl shadow-2xl flex flex-col pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] min-h-[74vh] max-h-[92vh] mx-auto max-w-lg md:left-1/2 md:right-auto md:-translate-x-1/2 md:bottom-6 md:top-auto md:w-[92vw] md:max-w-2xl md:rounded-3xl md:border md:border-border md:shadow-2xl md:min-h-0"
+                    className="fixed bottom-0 left-0 right-0 z-[10006] bg-card border-t border-border rounded-t-3xl shadow-2xl flex flex-col pb-safe min-h-[74vh] max-h-[92vh] mx-auto max-w-lg md:left-1/2 md:right-auto md:-translate-x-1/2 md:bottom-6 md:top-auto md:w-[92vw] md:max-w-2xl md:rounded-3xl md:border md:border-border md:shadow-2xl md:min-h-0"
                   >
                     <div className="pt-3 pb-2 flex justify-center">
                       <span className="w-10 h-1 rounded-full bg-border" />
@@ -3482,7 +3482,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
 
         {/* Bottom nav bar — only visible on "artigo" tab; fixed as a flex item below the scrollable area */}
         {(activeTab ?? 'artigo') === 'artigo' && !isDesktop && (
-        <div className="shrink-0 relative z-[55] bg-card/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-lg shadow-black/10 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+        <div className="shrink-0 relative z-[55] bg-card/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-lg shadow-black/10 pb-[max(0.5rem,var(--sai-bottom))]">
           <div className="relative grid grid-cols-5 items-end px-2 py-1 max-w-lg mx-auto">
             {(highlightMode || voiceGrifoActive) ? (
               <button
@@ -3683,7 +3683,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 document.body
               )}
               {createPortal(
-                <div className="fixed top-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] left-0 right-0 z-[10001] flex justify-center pointer-events-none">
+                <div className="fixed top-[calc(0.75rem+var(--sai-top))] left-0 right-0 z-[10001] flex justify-center pointer-events-none">
                   <motion.button
                     initial={{ opacity: 0, y: -20, scale: 0.9 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -3811,7 +3811,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 animate={{ y: 0 }}
                 exit={{ y: '100%' }}
                 transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                className="fixed bottom-0 left-0 right-0 z-[10041] bg-card rounded-t-3xl border-t border-border pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] h-[85vh] max-h-[85vh] overflow-y-auto mx-auto max-w-lg flex flex-col md:left-auto md:right-0 md:top-0 md:bottom-0 md:h-full md:max-h-none md:w-[min(30rem,92vw)] md:max-w-none md:rounded-none md:rounded-l-3xl md:border-l md:border-t-0 md:shadow-2xl md:mx-0"
+                className="fixed bottom-0 left-0 right-0 z-[10041] bg-card rounded-t-3xl border-t border-border pb-safe h-[85vh] max-h-[85vh] overflow-y-auto mx-auto max-w-lg flex flex-col md:left-auto md:right-0 md:top-0 md:bottom-0 md:h-full md:max-h-none md:w-[min(30rem,92vw)] md:max-w-none md:rounded-none md:rounded-l-3xl md:border-l md:border-t-0 md:shadow-2xl md:mx-0"
               >
                 <div className="pt-3 pb-2 flex justify-center">
                   <span className="w-10 h-1 rounded-full bg-border" />

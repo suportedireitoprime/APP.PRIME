@@ -196,7 +196,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
         >
           <PageHeader title="Menu" onBack={onClose} />
 
-          <div className="flex-1 overflow-y-auto px-4 pb-[calc(2rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-3">
+          <div className="flex-1 overflow-y-auto px-4 pb-[calc(2rem+var(--safe-bottom))] pt-3">
 
 
 

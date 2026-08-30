@@ -376,7 +376,7 @@ const ForcaPage = () => {
     ];
 
     return (
-      <div className="flex flex-col gap-2 md:gap-3 max-w-[500px] mx-auto pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
+      <div className="flex flex-col gap-2 md:gap-3 max-w-[500px] mx-auto pb-[calc(1.25rem+var(--safe-bottom))]">
         {rows.map((row, i) => (
           <div key={i} className="flex justify-center gap-1.5 md:gap-2">
             {row.map(char => {

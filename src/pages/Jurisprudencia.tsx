@@ -223,10 +223,10 @@ const Jurisprudencia = () => {
   };
 
   return (
-    <div className="w-full min-h-dvh bg-background pb-[calc(env(safe-area-inset-bottom,0px)+5rem)] lg:pb-12">
+    <div className="w-full min-h-dvh bg-background pb-[calc(var(--sai-bottom)+5rem)] lg:pb-12">
       {/* Painel verde (mirror do painel amarelo do início) */}
       <div
-        className="bg-hero-panel relative overflow-hidden rounded-b-[36px] border-b border-white/10 shadow-2xl shadow-black/60 pt-[calc(var(--sai-top,env(safe-area-inset-top,0px))+0.5rem)]"
+        className="bg-hero-panel relative overflow-hidden rounded-b-[36px] border-b border-white/10 shadow-2xl shadow-black/60 pt-[calc(var(--sai-top)+0.5rem)]"
 
         style={{
           background:

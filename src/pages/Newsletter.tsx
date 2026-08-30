@@ -130,7 +130,7 @@ const Newsletter = () => {
   }
 
   const content = (
-    <div className="max-w-xl mx-auto px-4 sm:px-6 py-6 pb-[calc(7rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] lg:px-0 space-y-6">
+    <div className="max-w-xl mx-auto px-4 sm:px-6 py-6 pb-[calc(7rem+var(--safe-bottom))] lg:px-0 space-y-6">
       {/* Toggle ativo */}
       <div className="flex items-center justify-between p-4 rounded-xl bg-card border border-border">
         <div className="flex items-center gap-3">

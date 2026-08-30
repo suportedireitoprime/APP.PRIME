@@ -58,7 +58,7 @@ export default function FlashcardsCargoBottomNav({ activeTab, onChangeTab }: Fla
             </div>
           </div>
         </div>
-        <div className="bg-black h-[calc(0.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]" />
+        <div className="bg-black h-[calc(0.5rem+var(--safe-bottom))]" />
       </nav>
     </>
   );

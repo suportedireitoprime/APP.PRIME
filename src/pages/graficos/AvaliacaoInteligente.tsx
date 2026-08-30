@@ -98,7 +98,7 @@ export default function AvaliacaoInteligente() {
   return (
     <div className="flex flex-col h-[100dvh] bg-background text-foreground overflow-hidden">
       {/* Header */}
-      <header className="flex items-center justify-between px-4 py-4 border-b border-border/40 bg-card/50 backdrop-blur-md sticky top-0 z-10 pt-[max(env(safe-area-inset-top),16px)]">
+      <header className="flex items-center justify-between px-4 py-4 border-b border-border/40 bg-card/50 backdrop-blur-md sticky top-0 z-10 pt-[max(var(--sai-top),16px)]">
         <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-full hover:bg-white/5 transition-colors">
           <ChevronLeft className="w-6 h-6 text-foreground" />
         </button>

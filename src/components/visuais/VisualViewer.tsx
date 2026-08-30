@@ -64,7 +64,7 @@ export default function VisualViewer({ registro, onClose }: Props) {
 
   return (
     <div className="fixed inset-0 z-[70] flex flex-col bg-background">
-      <header className="flex items-center gap-2 border-b border-border px-3 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] sm:px-5 sm:py-4">
+      <header className="flex items-center gap-2 border-b border-border px-3 py-3 pt-[max(0.75rem,var(--sai-top))] sm:px-5 sm:py-4">
         <button
           onClick={onClose}
           aria-label="Fechar"
@@ -89,7 +89,7 @@ export default function VisualViewer({ registro, onClose }: Props) {
       </div>
 
 
-      <footer className="flex items-center gap-2 border-t border-border px-3 py-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))]">
+      <footer className="flex items-center gap-2 border-t border-border px-3 py-2.5 pb-[max(0.625rem,var(--sai-bottom))]">
         <div className="flex items-center gap-1 rounded-full border border-border px-1">
           <button className="px-3 py-1.5 text-lg leading-none" aria-label="Diminuir zoom" onClick={() => setZoom((z) => Math.max(1, +(z - 0.25).toFixed(2)))}>
             −

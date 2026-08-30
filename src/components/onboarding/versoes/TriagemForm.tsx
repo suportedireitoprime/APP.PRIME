@@ -121,7 +121,7 @@ export default function TriagemVersaoC({ open, onFinished, previewMode }: Props)
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="relative z-20 flex items-center justify-between px-4 pt-4"
-          style={{ paddingTop: 'calc(var(--sai-top, env(safe-area-inset-top,0px)) + 28px)' }}
+          style={{ paddingTop: 'calc(var(--sai-top) + 28px)' }}
         >
           <button
             onClick={toggleMute}
@@ -156,7 +156,7 @@ export default function TriagemVersaoC({ open, onFinished, previewMode }: Props)
       <div
         className="relative flex-1 min-h-0 flex items-stretch justify-center px-3 pt-6 sm:pt-8"
         style={{
-          paddingBottom: 'calc(var(--sai-bottom, env(safe-area-inset-bottom,0px)) + 36px)',
+          paddingBottom: 'calc(var(--sai-bottom) + 36px)',
         }}
       >
         <AnimatePresence mode="wait">
@@ -249,7 +249,7 @@ function AberturaCinematografica({
       {/* Controles do topo (mute + fechar no preview) */}
       <div 
         className="absolute top-4 right-4 z-30 flex items-center gap-2"
-        style={{ top: 'calc(var(--sai-top, env(safe-area-inset-top,0px)) + 12px)' }}
+        style={{ top: 'calc(var(--sai-top) + 12px)' }}
       >
         <button
           onClick={toggleMute}
@@ -447,7 +447,7 @@ function CardContent({
   return (
     <div
       className="relative z-10 flex-1 min-h-0 flex flex-col px-6 pt-4 overflow-hidden"
-      style={{ paddingBottom: 'calc(var(--sai-bottom, env(safe-area-inset-bottom,0px)) + 24px)' }}
+      style={{ paddingBottom: 'calc(var(--sai-bottom) + 24px)' }}
     >
       {step === 'intro1' && (
         <>

@@ -232,7 +232,7 @@ export default function QuestoesSimuladoCargoConfig() {
   const totalDisciplinasQuestoes = disciplinas.reduce((acc, d) => acc + Number(d.total || 0), 0);
 
   return (
-    <div className="theme-questoes min-h-screen bg-background pb-36 pt-[calc(0.5rem+var(--sai-top,env(safe-area-inset-top,0px)))]">
+    <div className="theme-questoes min-h-screen bg-background pb-36 pt-[calc(0.5rem+var(--sai-top))]">
       <PageHeader
         title={`Simulado ${cleanNome}`}
         subtitle={rodando ? mmss : 'Personalize sua prova'}

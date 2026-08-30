@@ -28,7 +28,7 @@ const TribunalSimulado = () => {
       <div className="absolute inset-0 z-[1] bg-[radial-gradient(circle_at_50%_20%,rgba(255,244,214,0.16),transparent_35%),linear-gradient(180deg,rgba(8,6,5,0.16)_0%,rgba(8,6,5,0.05)_43%,rgba(8,6,5,0.88)_100%)]" />
 
       <div className="pointer-events-none relative z-10 flex h-full flex-col">
-        <header className="pointer-events-auto px-4 pt-[calc(0.75rem+env(safe-area-inset-top,0px))] sm:px-6">
+        <header className="pointer-events-auto px-4 pt-[calc(0.75rem+var(--sai-top))] sm:px-6">
           <div className="mx-auto flex max-w-6xl items-start gap-3">
             <button
               onClick={() => navigate('/laboratorio')}
@@ -68,7 +68,7 @@ const TribunalSimulado = () => {
           )}
 
           {!game.verdict && (
-            <div className="pointer-events-auto absolute inset-x-0 bottom-0 flex justify-center px-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:px-6 sm:pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))]">
+            <div className="pointer-events-auto absolute inset-x-0 bottom-0 flex justify-center px-4 pb-[calc(1rem+var(--sai-bottom))] sm:px-6 sm:pb-[calc(1.25rem+var(--sai-bottom))]">
               <DialoguePanel
                 dialogue={game.dialogue}
                 onNext={game.advanceDialogue}

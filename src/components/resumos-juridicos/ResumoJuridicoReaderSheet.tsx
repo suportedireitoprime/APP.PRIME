@@ -300,10 +300,10 @@ export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoC
                 <div
                   className="flex items-center gap-3 py-3.5 shrink-0"
                   style={{
-                    paddingTop: 'calc(var(--sai-top, env(safe-area-inset-top, 0px)) + 0.875rem)',
-                    paddingLeft: 'calc(1rem + var(--sai-left, env(safe-area-inset-left, 0px)))',
-                    paddingRight: 'calc(1rem + var(--sai-right, env(safe-area-inset-right, 0px)))',
-                    minHeight: 'calc(5rem + var(--sai-top, env(safe-area-inset-top, 0px)))',
+                    paddingTop: 'calc(var(--sai-top) + 0.875rem)',
+                    paddingLeft: 'calc(1rem + var(--sai-left))',
+                    paddingRight: 'calc(1rem + var(--sai-right))',
+                    minHeight: 'calc(5rem + var(--sai-top))',
                   }}
                 >
                   <button

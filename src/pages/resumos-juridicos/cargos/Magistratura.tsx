@@ -6,7 +6,7 @@ import ResumosBottomNav from '@/components/resumos/ResumosBottomNav';
 export default function Magistratura() {
   const navigate = useNavigate();
   return (
-    <div className="min-h-dvh bg-background pb-[calc(7rem+env(safe-area-inset-bottom,0px))]">
+    <div className="min-h-dvh bg-background pb-[calc(7rem+var(--sai-bottom))]">
       <PageHeader title="Magistratura" onBack={() => navigate(-1)} />
       <div className="flex flex-col items-center justify-center pt-32 px-6 text-center">
         <div className="w-20 h-20 bg-secondary/50 rounded-full flex items-center justify-center mb-6">

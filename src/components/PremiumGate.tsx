@@ -5,7 +5,7 @@ import {
   Crown, X, Volume2, Sparkles, BookOpen, MessageCircle, Scale, PlayCircle,
   Network, Bell, Download, StickyNote, Highlighter, FileText, Layers,
   HelpCircle, Map, Radar, Newspaper, Library, GraduationCap, Bot, ChevronLeft,
-  Gavel, Check, ShieldCheck, NotebookPen, Heart, Play, Pause,
+  Gavel, Check, ShieldCheck, NotebookPen, Heart, Play, Pause, Headphones,
   type LucideIcon,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -679,7 +679,7 @@ const PremiumGate = ({
                   })}
                 </div>
 
-                <div className="shrink-0 border-t border-border px-5 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] bg-card max-w-md mx-auto w-full">
+                <div className="shrink-0 border-t border-border px-5 pt-3 pb-[max(1rem,var(--sai-bottom))] bg-card max-w-md mx-auto w-full">
                   <button
                     onClick={goToCheckout}
                     className="w-full py-3.5 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary-light transition-all active:scale-[0.98] shadow-lg shadow-primary/20 flex items-center justify-center gap-2"

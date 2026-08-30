@@ -195,7 +195,7 @@ const AreaTemasSheet = ({ area, open, onOpenChange }: Props) => {
 
         </div>
 
-        <div className="border-t border-border bg-background px-4 pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-3 sm:px-6">
+        <div className="border-t border-border bg-background px-4 pb-[calc(1rem+var(--safe-bottom))] pt-3 sm:px-6">
           <Button onClick={estudar} className="h-14 w-full rounded-2xl text-[15px] font-bold bg-success hover:bg-success text-white shadow-lg shadow-success/20 active:scale-[0.98]">
             Praticar {sel.length ? `${sel.length} matéria${sel.length > 1 ? 's' : ''}` : 'tudo'} ·{' '}
             {totalSel.toLocaleString('pt-BR')} cards

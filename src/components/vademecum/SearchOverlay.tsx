@@ -250,7 +250,7 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
           className="fixed z-50 inset-0 bg-background flex flex-col lg:top-[10%] lg:bottom-auto lg:h-[80vh] lg:max-w-[800px] lg:mx-auto lg:rounded-2xl lg:shadow-2xl"
         >
           {/* Header estilizado seguindo o padrão da tela de Resumos */}
-          <div className="bg-hero-panel px-4 pb-4 pt-[calc(0.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] shrink-0 shadow-md">
+          <div className="bg-hero-panel px-4 pb-4 pt-[calc(0.5rem+var(--sai-top))] shrink-0 shadow-md">
             <div className="flex items-center justify-center pb-2">
               <div className="w-10 h-1 rounded-full bg-white/30" />
             </div>
@@ -317,7 +317,7 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
           </div>
 
           {/* Results */}
-          <div className="flex-1 overflow-y-auto px-2 pb-[calc(3.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] relative border-t border-border/50 pt-2">
+          <div className="flex-1 overflow-y-auto px-2 pb-[calc(3.5rem+var(--safe-bottom))] relative border-t border-border/50 pt-2">
             
             {/* Conteúdo dinâmico da busca do Supabase (Videoaulas, Livros, Jurisprudência, etc) */}
             {activeTab !== 'leis' && (

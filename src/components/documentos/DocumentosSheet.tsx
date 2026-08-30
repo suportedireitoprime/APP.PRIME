@@ -170,7 +170,7 @@ const DocumentosSheet = ({ categoria, open, onClose }: Props) => {
         className="fixed inset-0 z-[80] flex flex-col bg-background"
       >
         {/* Cabeçalho */}
-        <div className="flex items-center gap-3 border-b border-border/60 px-3 pt-[calc(1.25rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-3">
+        <div className="flex items-center gap-3 border-b border-border/60 px-3 pt-[calc(1.25rem+var(--sai-top))] pb-3">
           <button
             onClick={voltar}
             aria-label="Voltar"
@@ -209,7 +209,7 @@ const DocumentosSheet = ({ categoria, open, onClose }: Props) => {
         </div>
 
         {/* Lista */}
-        <div className="flex-1 overflow-y-auto px-4 pb-[calc(5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-3">
+        <div className="flex-1 overflow-y-auto px-4 pb-[calc(5rem+var(--safe-bottom))] pt-3">
           {isLoading ? (
             <div className="flex items-center justify-center gap-2 py-16 text-muted-foreground">
               <Loader2 className="h-5 w-5 animate-spin" />
@@ -318,7 +318,7 @@ const DocumentosSheet = ({ categoria, open, onClose }: Props) => {
                 animate={{ y: 0, opacity: 1, scale: 1 }}
                 exit={{ y: 30, opacity: 0, scale: 0.97 }}
                 transition={{ type: 'spring', damping: 26, stiffness: 300 }}
-                className="absolute inset-x-3 bottom-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] z-[91] rounded-3xl border border-border/60 bg-card p-4 shadow-2xl sm:left-1/2 sm:right-auto sm:w-[420px] sm:-translate-x-1/2"
+                className="absolute inset-x-3 bottom-[calc(1rem+var(--safe-bottom))] z-[91] rounded-3xl border border-border/60 bg-card p-4 shadow-2xl sm:left-1/2 sm:right-auto sm:w-[420px] sm:-translate-x-1/2"
               >
                 <div className="flex items-start gap-3">
                   <div

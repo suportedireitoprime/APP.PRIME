@@ -22,7 +22,7 @@ const AprenderQuestoes = () => {
       mobileHeader={mobileHeader}
       wide
     >
-      <div className="w-full 2xl:max-w-[1600px] mx-auto px-4 py-6 pb-[calc(7rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] sm:px-6">
+      <div className="w-full 2xl:max-w-[1600px] mx-auto px-4 py-6 pb-[calc(7rem+var(--safe-bottom))] sm:px-6">
         <p className="mb-4 text-sm text-muted-foreground">
           Escolha uma área para praticar as questões comentadas das aulas.
         </p>

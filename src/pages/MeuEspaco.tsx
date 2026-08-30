@@ -383,13 +383,13 @@ const MeuEspaco = () => {
         <button
           onClick={handleBack}
           aria-label="Voltar"
-          className="absolute top-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] left-3 w-12 h-12 rounded-full bg-black/55 backdrop-blur flex items-center justify-center text-white active:scale-95 transition"
+          className="absolute top-[calc(0.75rem+var(--sai-top))] left-3 w-12 h-12 rounded-full bg-black/55 backdrop-blur flex items-center justify-center text-white active:scale-95 transition"
         >
           <ChevronLeft className="w-6 h-6" />
         </button>
         <button
           onClick={() => setCoverPickerOpen(true)}
-          className="absolute top-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] right-3 h-12 px-4 rounded-full bg-black/55 backdrop-blur flex items-center gap-2 text-white text-sm font-medium active:scale-95 transition"
+          className="absolute top-[calc(0.75rem+var(--sai-top))] right-3 h-12 px-4 rounded-full bg-black/55 backdrop-blur flex items-center gap-2 text-white text-sm font-medium active:scale-95 transition"
         >
           <Camera className="w-4 h-4" />
           Trocar capa
@@ -485,7 +485,7 @@ const MeuEspaco = () => {
         </div>
 
         {activeTab === 'meus' && (
-          <div className="mt-5 space-y-6 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0 pb-[calc(4rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
+          <div className="mt-5 space-y-6 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0 pb-[calc(4rem+var(--safe-bottom))]">
             
             <div className="space-y-6">
               {/* Bio */}
@@ -703,7 +703,7 @@ const MeuEspaco = () => {
         )}
 
         {activeTab === 'metas' && (
-          <div className="mt-5 px-5 lg:px-0 pb-[calc(4rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] space-y-4">
+          <div className="mt-5 px-5 lg:px-0 pb-[calc(4rem+var(--safe-bottom))] space-y-4">
             <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold px-1">Seu progresso diário</p>
             {METAS_MOCK.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
@@ -767,7 +767,7 @@ const MeuEspaco = () => {
             <motion.div
               initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
               transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
-              className="fixed bottom-0 left-0 right-0 z-[100] bg-card rounded-t-3xl border-t border-border p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))]"
+              className="fixed bottom-0 left-0 right-0 z-[100] bg-card rounded-t-3xl border-t border-border p-5 pb-[calc(1.25rem+var(--sai-bottom))]"
             >
               <div className="w-12 h-1.5 rounded-full bg-muted-foreground/30 mx-auto mb-4" />
               <h3 className="font-display text-lg font-bold text-foreground mb-3">Escolha uma capa</h3>

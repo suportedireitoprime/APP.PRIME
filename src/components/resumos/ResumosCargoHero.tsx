@@ -54,7 +54,7 @@ const ResumosCargoHero = ({ pct = 0, total = 0, hoje = 0, meta = 100, disponivei
         <div className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-[#033c52] via-[#033c52]/60 to-transparent" />
       </div>
 
-      <div className="relative p-4 sm:p-5 pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))]">
+      <div className="relative p-4 sm:p-5 pt-[calc(1rem+var(--sai-top))]">
         <div className="flex items-start gap-3">
           <div className="relative shrink-0" style={{ width: size, height: size }}>
             <svg width={size} height={size} className="-rotate-90">

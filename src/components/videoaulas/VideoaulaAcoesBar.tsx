@@ -137,7 +137,7 @@ export default function VideoaulaAcoesBar({ input, gridLayout, extras, hideQuest
           {extras}
         </div>
       ) : (
-        <div className="relative z-10 bg-card/95 backdrop-blur shadow-[0_-8px_30px_rgba(0,0,0,0.6),0_-2px_10px_rgba(0,0,0,0.4)] w-full pb-[calc(1.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] rounded-t-2xl border-t border-border">
+        <div className="relative z-10 bg-card/95 backdrop-blur shadow-[0_-8px_30px_rgba(0,0,0,0.6),0_-2px_10px_rgba(0,0,0,0.4)] w-full pb-[calc(1.5rem+var(--safe-bottom))] rounded-t-2xl border-t border-border">
           <div className="max-w-2xl mx-auto px-2 py-2">
             <div className="grid grid-cols-5 items-stretch">
               <button
@@ -192,7 +192,7 @@ export default function VideoaulaAcoesBar({ input, gridLayout, extras, hideQuest
           <Drawer open={maisOpen} onOpenChange={setMaisOpen}>
             <DrawerPortal>
               <DrawerOverlay className="fixed inset-0 bg-black/60 z-[60] backdrop-blur-sm" />
-              <DrawerContent className="bg-card border-t border-border flex flex-col rounded-t-[32px] fixed bottom-0 left-0 right-0 z-[70] pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] outline-none">
+              <DrawerContent className="bg-card border-t border-border flex flex-col rounded-t-[32px] fixed bottom-0 left-0 right-0 z-[70] pb-[calc(1.25rem+var(--safe-bottom))] outline-none">
                 <div className="p-6 space-y-4">
                   <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-border mb-4" />
                   <h3 className="text-xl font-display font-bold mb-4 text-foreground">Mais Opções</h3>
@@ -282,7 +282,7 @@ function SeletorOverlay<T extends string>({
         exit={{ x: '100%' }}
         transition={{ type: 'spring', damping: 30, stiffness: 340 }}
         onClick={(e) => e.stopPropagation()}
-        className="fixed inset-0 sm:left-auto sm:right-0 sm:w-[min(30rem,92vw)] z-[81] flex flex-col bg-background shadow-2xl pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))]"
+        className="fixed inset-0 sm:left-auto sm:right-0 sm:w-[min(30rem,92vw)] z-[81] flex flex-col bg-background shadow-2xl pb-[calc(1.25rem+var(--safe-bottom))] pt-[calc(1rem+var(--sai-top))]"
       >
         <div className="sticky top-0 z-10 flex items-center gap-3 px-4 py-4 bg-card/95 backdrop-blur border-b border-border shrink-0">
           <button onClick={onClose} className="h-10 w-10 shrink-0 grid place-items-center rounded-full bg-black/60 hover:bg-black/80 text-white transition-colors">
@@ -348,7 +348,7 @@ function PainelOverlay({ input, tipo, onClose }: { input: AulaCtxInput | null; t
         transition={{ type: 'spring', damping: 30, stiffness: 340 }}
         onClick={(e) => e.stopPropagation()}
         className={cn(
-          "fixed inset-0 sm:left-auto sm:right-0 sm:w-[min(40rem,92vw)] z-[81] flex flex-col bg-card shadow-2xl pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))]",
+          "fixed inset-0 sm:left-auto sm:right-0 sm:w-[min(40rem,92vw)] z-[81] flex flex-col bg-card shadow-2xl pb-[calc(1.25rem+var(--safe-bottom))] pt-[calc(1rem+var(--sai-top))]",
           (tipo === "questoes" || tipo === "flashcards") && "sm:w-[min(50rem,92vw)]"
         )}
       >
@@ -790,7 +790,7 @@ function QuestaoItem({ q, index, total }: { q: QuestaoIA; index: number; total: 
       </div>
 
       {!mostrarGabarito && resposta && (
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background via-background/90 to-transparent z-20 pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pointer-events-none">
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background via-background/90 to-transparent z-20 pb-[calc(1rem+var(--safe-bottom))] pointer-events-none">
           <div className="w-full sm:max-w-lg mx-auto pointer-events-auto">
             <button
               onClick={() => {
@@ -876,7 +876,7 @@ function QuestaoItem({ q, index, total }: { q: QuestaoIA; index: number; total: 
       )}
 
       {mostrarGabarito && index < total && !drawerOpen && (
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background via-background/90 to-transparent z-10 pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pointer-events-none animate-in fade-in slide-in-from-bottom-4 duration-300">
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background via-background/90 to-transparent z-10 pb-[calc(1rem+var(--safe-bottom))] pointer-events-none animate-in fade-in slide-in-from-bottom-4 duration-300">
           <div className="w-full sm:max-w-lg mx-auto pointer-events-auto flex flex-col gap-2">
             <button
               onClick={() => setDrawerOpen(true)}

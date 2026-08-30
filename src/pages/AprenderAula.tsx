@@ -609,14 +609,14 @@ const AprenderAula = () => {
         <header
           className="sticky top-0 z-20 border-b border-white/5 bg-background/95 backdrop-blur-md"
           style={{
-            paddingTop: 'calc(var(--sai-top, env(safe-area-inset-top, 0px)) + 0.5rem)',
+            paddingTop: 'calc(var(--sai-top) + 0.5rem)',
           }}
         >
           <div
             className="mx-auto flex items-center justify-between py-3 max-w-3xl lg:max-w-[74ch] xl:max-w-[80ch]"
             style={{
-              paddingLeft: 'calc(1rem + var(--sai-left, env(safe-area-inset-left, 0px)))',
-              paddingRight: 'calc(1rem + var(--sai-right, env(safe-area-inset-right, 0px)))',
+              paddingLeft: 'calc(1rem + var(--sai-left))',
+              paddingRight: 'calc(1rem + var(--sai-right))',
             }}
           >
             <button
@@ -658,14 +658,14 @@ const AprenderAula = () => {
         <header
           className="sticky top-0 z-20 border-b border-white/5 bg-background/95 backdrop-blur-md"
           style={{
-            paddingTop: 'calc(var(--sai-top, env(safe-area-inset-top, 0px)) + 0.5rem)',
+            paddingTop: 'calc(var(--sai-top) + 0.5rem)',
           }}
         >
           <div
             className="mx-auto flex flex-col md:flex-row md:items-center gap-3 py-3 md:py-4 lg:max-w-none lg:px-10 2xl:px-16"
             style={{
-              paddingLeft: 'calc(1rem + var(--sai-left, env(safe-area-inset-left, 0px)))',
-              paddingRight: 'calc(1rem + var(--sai-right, env(safe-area-inset-right, 0px)))',
+              paddingLeft: 'calc(1rem + var(--sai-left))',
+              paddingRight: 'calc(1rem + var(--sai-right))',
             }}
           >
             <div className="flex items-start gap-4">
@@ -691,8 +691,8 @@ const AprenderAula = () => {
             <div
               className="mx-auto flex max-w-3xl items-center lg:max-w-none lg:px-10 2xl:px-16"
               style={{
-                paddingLeft: 'calc(0.75rem + var(--sai-left, env(safe-area-inset-left, 0px)))',
-                paddingRight: 'calc(0.75rem + var(--sai-right, env(safe-area-inset-right, 0px)))',
+                paddingLeft: 'calc(0.75rem + var(--sai-left))',
+                paddingRight: 'calc(0.75rem + var(--sai-right))',
               }}
             >
               {blocos.map((b, i) => {
@@ -764,7 +764,7 @@ const AprenderAula = () => {
         <div className={`mx-auto w-full max-w-3xl px-5 md:px-8 lg:mx-0 lg:max-w-[74ch] xl:max-w-[80ch] lg:px-12 2xl:px-16 flex flex-col ${
           isExercicioDedicado
             ? 'pt-6 md:pt-10 pb-32 min-h-[calc(100dvh-130px)] justify-center'
-            : 'pt-6 md:pt-8 pb-[calc(10rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] lg:pt-10 lg:pb-32'
+            : 'pt-6 md:pt-8 pb-[calc(10rem+var(--safe-bottom))] lg:pt-10 lg:pb-32'
         }`}>
           <AnimatePresence mode="popLayout" initial={false}>
             {atual && (
@@ -806,7 +806,7 @@ const AprenderAula = () => {
 
       {/* Navegação de Rodapé Estilo eBook (Oculto em telas dedicadas de exercício para foco imersivo) */}
       {!isExercicioDedicado && (
-        <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/5 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 px-4 py-3 pb-[calc(0.75rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] flex items-center justify-between">
+        <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/5 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 px-4 py-3 pb-[calc(0.75rem+var(--safe-bottom))] flex items-center justify-between">
           <div className="flex items-center gap-2">
             <button
               onClick={() => setSumarioOpen(true)}
@@ -832,7 +832,7 @@ const AprenderAula = () => {
           </div>
           
           {/* Counter Centralizado */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none pb-[calc(var(--sai-bottom,env(safe-area-inset-bottom,0px))/2)]">
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none pb-[calc(var(--safe-bottom)/2)]">
             <span className="text-[13px] font-semibold tabular-nums text-neutral-400 tracking-wide">
               {idx + 1} <span className="text-neutral-600 font-medium">/ {total}</span>
             </span>
@@ -888,7 +888,7 @@ const AprenderAula = () => {
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-              className="relative z-10 w-full max-h-[85vh] rounded-t-[2.5rem] border-t border-white/10 bg-[#121418] p-6 sm:p-8 pb-[calc(2rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] shadow-2xl flex flex-col"
+              className="relative z-10 w-full max-h-[85vh] rounded-t-[2.5rem] border-t border-white/10 bg-[#121418] p-6 sm:p-8 pb-[calc(2rem+var(--safe-bottom))] shadow-2xl flex flex-col"
             >
               {/* Grab handle */}
               <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-white/20" />
@@ -1463,7 +1463,7 @@ function BlocoView({
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 80, opacity: 0 }}
               transition={{ type: 'spring', damping: 28, stiffness: 350 }}
-              className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/[0.08] bg-background/90 backdrop-blur-xl px-4 py-3.5 pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] shadow-2xl"
+              className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/[0.08] bg-background/90 backdrop-blur-xl px-4 py-3.5 pb-[calc(1rem+var(--safe-bottom))] shadow-2xl"
             >
               <div className="mx-auto max-w-3xl lg:max-w-[74ch] xl:max-w-[80ch] flex items-center justify-between gap-4">
                 <div className="hidden sm:flex items-center gap-2 text-xs font-medium text-muted-foreground">

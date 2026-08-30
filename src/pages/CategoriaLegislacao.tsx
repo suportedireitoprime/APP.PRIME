@@ -2123,7 +2123,7 @@ const CategoriaLegislacao = () => {
         style={{ willChange: 'transform, opacity', pointerEvents: showFooter ? 'auto' : 'none' }}
         className="fixed bottom-0 left-0 right-0 z-[58] lg:hidden"
       >
-        <div className="bg-secondary/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-[0_-12px_40px_-8px_rgba(0,0,0,0.45)] pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))]">
+        <div className="bg-secondary/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-[0_-12px_40px_-8px_rgba(0,0,0,0.45)] pb-safe">
           <div className="grid grid-cols-5 items-end px-1 pt-3.5 pb-3.5 max-w-lg mx-auto">
             {[
               { key: 'novidades' as const, icon: History, label: 'Histórico' },
@@ -2221,7 +2221,7 @@ const CategoriaLegislacao = () => {
                 </div>
               )}
               {/* Content */}
-              <div className="flex-1 overflow-y-auto px-4 pt-4 pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] overscroll-contain">
+              <div className="flex-1 overflow-y-auto px-4 pt-4 pb-[calc(1rem+var(--safe-bottom))] overscroll-contain">
                 {overlayContents[overlayPanel]}
               </div>
             </motion.div>
@@ -2240,7 +2240,7 @@ const CategoriaLegislacao = () => {
           const planaltoUrl = (selectedLei as any)?.url_planalto;
           return (
             <div
-              className="relative overflow-hidden w-full pt-[var(--sai-top,env(safe-area-inset-top,0px))]"
+              className="relative overflow-hidden w-full pt-[var(--sai-top)]"
               style={{
                 aspectRatio: isDesktop ? '21 / 7' : '16 / 10',
                 ...(isDesktop ? { maxHeight: 300, minHeight: 200 } : null),
@@ -2276,7 +2276,7 @@ const CategoriaLegislacao = () => {
                 type="button"
                 onClick={goBack}
                 aria-label="Voltar"
-                className="absolute left-4 top-[calc(var(--sai-top,env(safe-area-inset-top,0px))+12px)] z-20 w-12 h-12 rounded-full flex items-center justify-center bg-white/10 backdrop-blur-xl border border-white/25 shadow-[0_8px_24px_rgba(0,0,0,0.35)] active:scale-95 transition touch-manipulation select-none"
+                className="absolute left-4 top-[calc(var(--sai-top)+12px)] z-20 w-12 h-12 rounded-full flex items-center justify-center bg-white/10 backdrop-blur-xl border border-white/25 shadow-[0_8px_24px_rgba(0,0,0,0.35)] active:scale-95 transition touch-manipulation select-none"
               >
                 <ArrowLeft className="w-6 h-6 text-white drop-shadow" />
               </button>
@@ -2300,7 +2300,7 @@ const CategoriaLegislacao = () => {
                       setLeiFavToggle((n) => n + 1);
                     }}
                     aria-label={fav ? 'Remover dos favoritos' : 'Favoritar lei'}
-                    className={`absolute right-4 top-[calc(var(--sai-top,env(safe-area-inset-top,0px))+12px)] z-20 w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-xl border shadow-[0_8px_24px_rgba(0,0,0,0.35)] active:scale-95 transition touch-manipulation select-none ${fav ? 'bg-rose-500/25 border-rose-300/50' : 'bg-white/10 border-white/25'}`}
+                    className={`absolute right-4 top-[calc(var(--sai-top)+12px)] z-20 w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-xl border shadow-[0_8px_24px_rgba(0,0,0,0.35)] active:scale-95 transition touch-manipulation select-none ${fav ? 'bg-rose-500/25 border-rose-300/50' : 'bg-white/10 border-white/25'}`}
                   >
                     <Heart className={`w-6 h-6 drop-shadow ${fav ? 'text-rose-400 fill-rose-400' : 'text-white'}`} />
                   </button>
@@ -2531,7 +2531,7 @@ const CategoriaLegislacao = () => {
                 transition={{ duration: 0.18 }}
                 onClick={goBack}
                 aria-label="Voltar"
-                className="fixed left-4 top-[calc(var(--sai-top,env(safe-area-inset-top,0px))+12px)] z-40 w-11 h-11 rounded-full flex items-center justify-center bg-white/10 backdrop-blur-xl border border-white/25 shadow-[0_8px_24px_rgba(0,0,0,0.35)] active:scale-95 transition touch-manipulation select-none"
+                className="fixed left-4 top-[calc(var(--sai-top)+12px)] z-40 w-11 h-11 rounded-full flex items-center justify-center bg-white/10 backdrop-blur-xl border border-white/25 shadow-[0_8px_24px_rgba(0,0,0,0.35)] active:scale-95 transition touch-manipulation select-none"
               >
                 <ArrowLeft className="w-5 h-5 text-white" />
               </motion.button>

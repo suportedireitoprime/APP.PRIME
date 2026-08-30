@@ -162,7 +162,7 @@ const SumulasTribunal = ({ tribunal }: Props) => {
   return (
     <div className="min-h-dvh bg-background pb-20 lg:pb-0">
       <div
-        className={`bg-hero-panel relative overflow-hidden rounded-b-[36px] border-b border-white/10 shadow-2xl shadow-black/60 pt-[calc(var(--sai-top,env(safe-area-inset-top,0px))+0.5rem)]`}
+        className={`bg-hero-panel relative overflow-hidden rounded-b-[36px] border-b border-white/10 shadow-2xl shadow-black/60 pt-[calc(var(--sai-top)+0.5rem)]`}
         style={{
           background: `linear-gradient(150deg, ${
             tribunal === 'STF_VINCULANTE' ? 'hsl(348 78% 28%), hsl(348 78% 18%)' :
@@ -352,7 +352,7 @@ const SumulasTribunal = ({ tribunal }: Props) => {
         transition={{ duration: 0.26, ease: [0.22, 0.61, 0.36, 1] }}
         className="fixed bottom-0 left-0 right-0 z-[58] lg:hidden"
       >
-        <div className="bg-secondary/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-[0_-12px_40px_-8px_rgba(0,0,0,0.45)] pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))]">
+        <div className="bg-secondary/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-[0_-12px_40px_-8px_rgba(0,0,0,0.45)] pb-safe">
           <div className="grid grid-cols-5 items-end px-1 pt-3.5 pb-3.5 max-w-lg mx-auto">
             {[
               { key: 'todas', icon: History, label: 'Histórico' },

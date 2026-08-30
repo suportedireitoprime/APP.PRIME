@@ -39,7 +39,7 @@ export default function VideoaulasDesempenhoSheet({ open, onClose, horasTotais }
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-        className="fixed bottom-0 left-0 right-0 z-[10001] bg-card rounded-t-[20px] pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] md:left-auto md:right-0 md:top-0 md:bottom-0 md:h-full md:w-[min(30rem,92vw)] md:rounded-none md:rounded-l-3xl shadow-2xl overflow-hidden"
+        className="fixed bottom-0 left-0 right-0 z-[10001] bg-card rounded-t-[20px] pb-safe md:left-auto md:right-0 md:top-0 md:bottom-0 md:h-full md:w-[min(30rem,92vw)] md:rounded-none md:rounded-l-3xl shadow-2xl overflow-hidden"
       >
         <div className="absolute top-4 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-muted-foreground/20 rounded-full md:hidden" />
         

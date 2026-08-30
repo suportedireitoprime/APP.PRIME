@@ -175,7 +175,7 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, 
   if (youtubeUrl) {
     const videoId = youtubeUrl.replace(/.*(?:youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/, '$1');
     return (
-      <div className="fixed inset-0 z-50 bg-black flex flex-col pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
+      <div className="fixed inset-0 z-50 bg-black flex flex-col pt-[var(--sai-top)] pb-[var(--sai-bottom)]">
         <div className="relative z-10 flex items-center justify-end p-4 pt-6">
           <button
             onClick={onClose}
@@ -305,7 +305,7 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, 
   })();
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black overflow-hidden flex flex-col pt-[var(--sai-top,env(safe-area-inset-top,0px))] pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))]">
+    <div className="fixed inset-0 z-[100] bg-black overflow-hidden flex flex-col pt-[var(--sai-top)] pb-safe">
       {/* Top bar */}
       <div className="relative z-20 flex items-center gap-3 p-4 bg-black/60 backdrop-blur border-b border-white/10">
         <div className="flex-1 flex gap-1">

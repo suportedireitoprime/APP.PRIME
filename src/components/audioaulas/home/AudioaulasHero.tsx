@@ -21,7 +21,7 @@ export const AudioaulasHero = React.memo(function AudioaulasHero({
   const capaImg = areaAtual ? capaDaArea(areaAtual) : CAPA_HUB;
 
   return (
-    <div className="relative px-4 pt-[calc(2rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-6 overflow-hidden sm:px-6 lg:px-10 lg:pt-[calc(3rem+var(--sai-top,env(safe-area-inset-top,0px)))] lg:pb-10">
+    <div className="relative px-4 pt-[calc(2rem+var(--sai-top))] pb-6 overflow-hidden sm:px-6 lg:px-10 lg:pt-[calc(3rem+var(--sai-top))] lg:pb-10">
       <div className="absolute inset-0 -z-10">
         <img
           src={capaImg}

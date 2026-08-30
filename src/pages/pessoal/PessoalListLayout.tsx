@@ -28,7 +28,7 @@ export default function PessoalListLayout({
   const navigate = useNavigate();
   const goBack = useGoBack('/meu-espaco');
   return (
-    <div className="min-h-dvh bg-background text-foreground pb-[calc(6rem+env(safe-area-inset-bottom,0px))]">
+    <div className="min-h-dvh bg-background text-foreground pb-[calc(6rem+var(--sai-bottom))]">
       <PageHeader
         title={title}
         subtitle={typeof count === "number" ? `${count} ${count === 1 ? "item" : "itens"}` : undefined}

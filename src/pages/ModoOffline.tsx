@@ -90,7 +90,7 @@ export default function ModoOffline() {
       className="relative overflow-hidden rounded-b-[28px] px-4 pb-5"
       style={{
         background: 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.85) 100%)',
-        paddingTop: 'calc(var(--sai-top, env(safe-area-inset-top, 0px)) + 0.75rem)',
+        paddingTop: 'calc(var(--sai-top) + 0.75rem)',
         boxShadow: '0 12px 28px -14px hsl(var(--primary) / 0.6)',
       }}
     >

@@ -188,7 +188,7 @@ export default function Pilulas() {
   return (
     <div className="min-h-screen bg-[#0D0D0D] text-white pb-32">
       {/* Header Fixo */}
-      <div className="sticky top-0 z-50 bg-[#0D0D0D]/90 backdrop-blur-xl border-b border-white/5 pt-[calc(1.25rem+var(--sai-top,env(safe-area-inset-top,0px)))] px-4 pb-4">
+      <div className="sticky top-0 z-50 bg-[#0D0D0D]/90 backdrop-blur-xl border-b border-white/5 pt-[calc(1.25rem+var(--sai-top))] px-4 pb-4">
         <div className="flex items-center gap-4 mb-4">
           <button
             onClick={() => navigate(-1)}

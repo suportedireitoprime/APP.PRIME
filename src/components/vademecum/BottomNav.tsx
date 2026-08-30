@@ -291,7 +291,7 @@ const BottomNav = () => {
       </div>
     </div>
     {/* Inset de fundo do sistema do celular (preto/escuro) sem puxar a cor do menu */}
-    <div className="bg-black h-[calc(0.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] md:hidden" />
+    <div className="bg-black h-[calc(0.5rem+var(--safe-bottom))] md:hidden" />
   </nav>
 
 
@@ -318,7 +318,7 @@ const BottomNav = () => {
             exit={{ y: '100%' }}
             transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
             style={{ willChange: 'transform', transform: 'translateZ(0)' }}
-            className="fixed bottom-0 left-0 right-0 z-[80] bg-card border-t border-border rounded-t-2xl pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] "
+            className="fixed bottom-0 left-0 right-0 z-[80] bg-card border-t border-border rounded-t-2xl pb-safe "
           >
             <div className="flex items-center justify-center pt-2 pb-1">
               <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
@@ -387,7 +387,7 @@ const BottomNav = () => {
             exit={{ y: '100%' }}
             transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
             style={{ willChange: 'transform', transform: 'translateZ(0)' }}
-            className="fixed inset-0 z-[80] bg-card  flex flex-col h-[100dvh] pt-[var(--sai-top,env(safe-area-inset-top,0px))] pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))]"
+            className="fixed inset-0 z-[80] bg-card  flex flex-col h-[100dvh] pt-[var(--sai-top)] pb-safe"
           >
 
             <div className="flex items-center justify-between px-5 pb-4 shrink-0">
@@ -468,7 +468,7 @@ const BottomNav = () => {
             exit={{ y: '100%' }}
             transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
             style={{ willChange: 'transform', transform: 'translateZ(0)' }}
-            className="fixed bottom-0 left-0 right-0 z-[80] h-[92vh] bg-card border-t border-border rounded-t-3xl pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))]  flex flex-col md:max-w-3xl md:mx-auto md:max-h-[88vh] md:h-auto md:min-h-[70vh] md:rounded-3xl md:mb-6 md:border"
+            className="fixed bottom-0 left-0 right-0 z-[80] h-[92vh] bg-card border-t border-border rounded-t-3xl pb-safe  flex flex-col md:max-w-3xl md:mx-auto md:max-h-[88vh] md:h-auto md:min-h-[70vh] md:rounded-3xl md:mb-6 md:border"
           >
             <div className="flex items-center justify-center pt-3 pb-2 shrink-0">
               <div className="w-12 h-1.5 rounded-full bg-muted-foreground/30" />

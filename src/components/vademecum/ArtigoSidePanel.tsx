@@ -44,7 +44,7 @@ const ArtigoSidePanel = ({ open, onClose, title, subtitle, children, widthClass 
             className={
               isDesktop
                 ? `fixed right-0 top-0 bottom-0 z-[10041] ${widthClass} flex flex-col border-l border-border bg-card shadow-2xl`
-                : 'fixed bottom-0 left-0 right-0 z-[10041] mx-auto flex max-h-[92vh] max-w-lg flex-col rounded-t-3xl border-t border-border bg-card pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] shadow-2xl'
+                : 'fixed bottom-0 left-0 right-0 z-[10041] mx-auto flex max-h-[92vh] max-w-lg flex-col rounded-t-3xl border-t border-border bg-card pb-safe shadow-2xl'
             }
           >
             {!isDesktop && (

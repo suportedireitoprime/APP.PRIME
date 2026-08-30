@@ -45,7 +45,7 @@ export default function FlashcardsHistorico() {
   }, [sessoes]);
 
   return (
-    <div className="theme-questoes min-h-dvh overflow-x-hidden bg-background pb-[calc(1rem+env(safe-area-inset-bottom,0px))]">
+    <div className="theme-questoes min-h-dvh overflow-x-hidden bg-background pb-[calc(1rem+var(--sai-bottom))]">
       <PageHeader title="Histórico de Sessões" onBack={() => navigate('/flashcards')} />
 
       <div className="mx-auto w-full max-w-3xl px-4 py-6 space-y-8">

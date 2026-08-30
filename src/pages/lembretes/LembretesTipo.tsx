@@ -76,7 +76,7 @@ export default function LembretesTipo({ tipo }: Props) {
         onClick={() => setCriar(true)}
         aria-label="Novo lembrete"
         className="fixed right-5 z-40 h-14 w-14 rounded-full bg-primary text-primary-foreground shadow-xl shadow-primary/30 grid place-items-center active:scale-95 transition"
-        style={{ bottom: 'calc(6.25rem + var(--sai-bottom, env(safe-area-inset-bottom, 0px)))' }}
+        style={{ bottom: 'calc(6.25rem + var(--sai-bottom))' }}
       >
         <Plus className="h-7 w-7" />
       </button>

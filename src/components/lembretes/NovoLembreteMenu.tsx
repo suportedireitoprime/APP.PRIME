@@ -53,7 +53,7 @@ export default function NovoLembreteMenu({ open, onClose, onHorario, onLocal }: 
               <X className="w-5 h-5 text-muted-foreground" />
             </button>
 
-            <div className="px-4 pt-2 pb-[calc(1.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
+            <div className="px-4 pt-2 pb-[calc(1.5rem+var(--safe-bottom))]">
               <h2 className="font-display text-foreground text-lg font-semibold text-center mb-1">
                 Novo lembrete
               </h2>

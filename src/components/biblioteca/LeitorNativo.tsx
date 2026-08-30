@@ -1053,11 +1053,11 @@ const LeitorNativo = ({ livroId, livroTabela, pdfUrl, titulo, onClose, autor, an
         style={{
           paddingTop: isDesktop
             ? '0.5rem'
-            : 'calc(var(--sai-top, env(safe-area-inset-top, 0px)) + 0.875rem)',
+            : 'calc(var(--sai-top) + 0.875rem)',
 
           minHeight: isDesktop
             ? '3.5rem'
-            : 'calc(5rem + var(--sai-top, env(safe-area-inset-top, 0px)))',
+            : 'calc(5rem + var(--sai-top))',
 
           display: focoOn ? 'none' : undefined,
           paddingLeft:
@@ -1610,7 +1610,7 @@ const LeitorNativo = ({ livroId, livroTabela, pdfUrl, titulo, onClose, autor, an
             transition={{ type: 'tween', duration: 0.2 }}
             className="fixed z-[1310] inset-x-0 bottom-0 border-t shadow-2xl"
             style={{
-              paddingBottom: 'var(--sai-bottom,env(safe-area-inset-bottom,0px))',
+              paddingBottom: 'var(--safe-bottom)',
               maxWidth:
                 typeof window !== 'undefined' && window.innerWidth >= 768
                   ? `min(720px, calc(100vw - ${(railExpanded ? 380 : 56) + 32}px))`
@@ -1719,8 +1719,8 @@ const LeitorNativo = ({ livroId, livroTabela, pdfUrl, titulo, onClose, autor, an
             <div
               className="fixed inset-0 z-[1321] flex items-center justify-center px-4 pointer-events-none"
               style={{
-                paddingTop: 'calc(env(safe-area-inset-top,0px))',
-                paddingBottom: 'calc(env(safe-area-inset-bottom,0px))',
+                paddingTop: 'calc(var(--sai-top))',
+                paddingBottom: 'calc(var(--sai-bottom))',
               }}
             >
               <motion.div
@@ -1840,7 +1840,7 @@ const LeitorNativo = ({ livroId, livroTabela, pdfUrl, titulo, onClose, autor, an
               exit={{ x: '100%' }}
               transition={{ type: 'spring', stiffness: 320, damping: 34 }}
               className="fixed top-0 right-0 bottom-0 w-[90%] max-w-sm z-[1323] md:hidden shadow-2xl flex flex-col"
-              style={{ background: tema.bg, color: tema.text, paddingTop: 'var(--sai-top,env(safe-area-inset-top,0px))' }}
+              style={{ background: tema.bg, color: tema.text, paddingTop: 'var(--sai-top)' }}
             >
               <div className="px-4 h-14 flex items-center gap-3 border-b border-current/10 shrink-0">
                 <p className="text-sm font-semibold flex-1">Sumário</p>
@@ -1905,16 +1905,16 @@ const LeitorNativo = ({ livroId, livroTabela, pdfUrl, titulo, onClose, autor, an
                   ? {
                       background: tema.bg,
                       color: tema.text,
-                      right: 'max(16px, env(safe-area-inset-right, 0px))',
-                      top: 'calc(env(safe-area-inset-top, 0px) + 5.25rem)',
-                      bottom: 'calc(env(safe-area-inset-bottom, 0px) + 1.5rem)',
+                      right: 'max(16px, var(--sai-right))',
+                      top: 'calc(var(--sai-top) + 5.25rem)',
+                      bottom: 'calc(var(--sai-bottom) + 1.5rem)',
                       width: 'min(400px, calc(100vw - 32px))',
                       border: `1px solid ${tema.border}`,
                     }
                   : {
                       background: tema.bg,
                       color: tema.text,
-                      paddingBottom: 'var(--sai-bottom,env(safe-area-inset-bottom,0px))',
+                      paddingBottom: 'var(--safe-bottom)',
                     }
               }
             >

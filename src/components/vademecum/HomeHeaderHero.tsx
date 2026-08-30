@@ -168,7 +168,7 @@ const HomeHeaderHero = ({ onSearchOpenChange }: { onSearchOpenChange?: (open: bo
     <>
       {/* Unified yellow shell — hero cover as full background; gray profile card floats inset with side margins */}
       <div
-        className="relative overflow-hidden rounded-b-[36px] border-b border-white/10 shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))]"
+        className="relative overflow-hidden rounded-b-[36px] border-b border-white/10 shadow-2xl shadow-black/60 pt-[var(--sai-top)]"
         style={{
           // Força layer de composição próprio no Android WebView. Sem isso, ao
           // sair/voltar da viewport o WebView descarta o raster do conteúdo
@@ -255,7 +255,7 @@ const HomeHeaderHero = ({ onSearchOpenChange }: { onSearchOpenChange?: (open: bo
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent" />
 
         {/* Floating gray profile card — inset with lateral margins */}
-        <header className="relative px-3 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] md:px-6 md:pt-[calc(1.5rem+var(--sai-top,0px))] lg:px-8 lg:pt-8 flex items-center gap-2 md:gap-4">
+        <header className="relative px-3 pt-[calc(0.75rem+var(--sai-top))] md:px-6 md:pt-[calc(1.5rem+var(--sai-top,0px))] lg:px-8 lg:pt-8 flex items-center gap-2 md:gap-4">
           <div className="flex items-center gap-3 md:gap-4 min-w-0 flex-1 pr-3 pl-1">
             <div className="w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-full overflow-hidden border-2 border-white bg-black/40 flex items-center justify-center shrink-0 shadow-lg shadow-black/50">
               {avatarUrl ? (
