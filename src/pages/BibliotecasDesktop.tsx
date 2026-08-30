@@ -76,12 +76,13 @@ const BibliotecasDesktop = () => {
                 const Icon = tab.icon;
                 const isActive = 'biblioteca' === tab.id;
                 return (
-                  <button
+                  <motion.button
                     key={tab.id}
+                    whileTap={{ scale: 0.95 }}
                     onClick={() => navigate(tab.path)}
                     onMouseEnter={() => { if (tab.prefetch) prefetchRoute(tab.prefetch); }}
                     onFocus={() => { if (tab.prefetch) prefetchRoute(tab.prefetch); }}
-                    className={`relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-body font-medium transition-colors ${
+                    className={`relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-body font-medium transition-colors focus-visible:outline-none ${
                       isActive
                         ? 'text-primary bg-primary/10'
                         : 'text-foreground/60 hover:text-foreground hover:bg-secondary/60'
@@ -89,8 +90,8 @@ const BibliotecasDesktop = () => {
                   >
                     <Icon className="w-4 h-4" />
                     <span>{tab.label}</span>
-                    {isActive && <div className="absolute bottom-0 left-3 right-3 h-0.5 bg-primary rounded-full" />}
-                  </button>
+                    {isActive && <motion.div layoutId="desktop-biblioteca-tab" className="absolute bottom-0 left-3 right-3 h-0.5 bg-primary rounded-full" />}
+                  </motion.button>
                 );
               })}
             </div>
@@ -146,7 +147,15 @@ const BibliotecasDesktop = () => {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4">
+                <motion.div 
+                  className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4"
+                  variants={{
+                    hidden: { opacity: 0 },
+                    show: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.1 } }
+                  }}
+                  initial="hidden"
+                  animate="show"
+                >
                   {colecoesVisiveis.map((c) => (
                     <ColecaoCard 
                       key={c.id} 
@@ -154,7 +163,7 @@ const BibliotecasDesktop = () => {
                       onClick={() => navigate(`/bibliotecas/${c.id}`)} 
                     />
                   ))}
-                </div>
+                </motion.div>
               </section>
 
             </motion.div>
@@ -188,9 +197,15 @@ const BibliotecasDesktop = () => {
 
 const ColecaoCard = memo(({ c, onClick }: { c: any; onClick: () => void }) => {
   return (
-    <button
+    <motion.button
+      variants={{
+        hidden: { opacity: 0, y: 15 },
+        show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+      }}
+      whileHover={{ scale: 1.015, y: -2 }}
+      whileTap={{ scale: 0.98 }}
       onClick={onClick}
-      className="group flex flex-col text-left rounded-2xl bg-card border border-border overflow-hidden hover:border-primary/40 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 relative min-h-[140px] will-change-transform"
+      className="group flex flex-col text-left rounded-2xl bg-card border border-border overflow-hidden hover:border-primary/40 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 relative min-h-[140px] will-change-transform focus-visible:outline-none"
     >
       <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -z-10 group-hover:scale-125 transition-transform duration-500 will-change-transform" />
       
@@ -216,11 +231,11 @@ const ColecaoCard = memo(({ c, onClick }: { c: any; onClick: () => void }) => {
           </h3>
         </div>
       </div>
-      <div className="px-5 py-3 border-t border-border/50 bg-secondary/30 flex items-center justify-between">
+      <div className="px-5 py-3 border-t border-border/50 bg-secondary/30 flex items-center justify-between w-full">
         <span className="text-xs text-muted-foreground font-medium">Ver coleção</span>
         <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors group-hover:translate-x-1 will-change-transform" />
       </div>
-    </button>
+    </motion.button>
   );
 });
 
