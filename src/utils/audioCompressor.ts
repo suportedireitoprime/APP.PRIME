@@ -7,6 +7,7 @@ let currentDuration = 0;
 
 export async function compressAudioToMp3(
   file: File,
+  introUrl?: string,
   onProgress?: (progress: number, log?: string) => void
 ): Promise<File> {
   globalProgressCallback = onProgress || null;
@@ -64,11 +65,35 @@ export async function compressAudioToMp3(
   const outputName = 'output.mp3';
 
   await ffmpeg.writeFile(inputName, await fetchFile(file));
+
+  if (introUrl) {
+    try {
+      const res = await fetch(introUrl);
+      const arrayBuffer = await res.arrayBuffer();
+      await ffmpeg.writeFile('intro.mp3', new Uint8Array(arrayBuffer));
+    } catch (err) {
+      console.warn("Falha ao baixar intro, vai continuar sem intro", err);
+    }
+  }
   
   // Um pequeno delay para garantir que a UI do React renderize os estados de "Comprimindo 0%"
   await new Promise(resolve => setTimeout(resolve, 50));
 
-  await ffmpeg.exec(['-i', inputName, '-c:a', 'libmp3lame', '-b:a', '64k', '-ac', '1', outputName]);
+  const args = [];
+  
+  if (introUrl) {
+    args.push('-i', 'intro.mp3'); // [0:a]
+    args.push('-i', inputName);   // [1:a]
+    args.push('-filter_complex', `[0:a]aformat=sample_rates=44100:channel_layouts=stereo,atrim=0:10,afade=t=out:st=8:d=2[intro];[1:a]aformat=sample_rates=44100:channel_layouts=stereo,adelay=8000|8000[voice];[intro][voice]amix=inputs=2:duration=longest:normalize=0,aformat=channel_layouts=mono[out]`);
+    args.push('-map', '[out]');
+  } else {
+    args.push('-i', inputName);
+    args.push('-ac', '1');
+  }
+
+  args.push('-c:a', 'libmp3lame', '-b:a', '64k', outputName);
+
+  await ffmpeg.exec(args);
 
   const data = await ffmpeg.readFile(outputName);
   

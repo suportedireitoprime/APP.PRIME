@@ -96,7 +96,8 @@ export default function AdminResumoLivroAudioEditar() {
       setCompressionProgress(0);
       setCompressionSize('');
 
-      const compressedFile = await compressAudioToMp3(file, (progress, sizeLog) => {
+      const introUrl = "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/audios/intros/secret-agent-groove.mp3";
+      const compressedFile = await compressAudioToMp3(file, introUrl, (progress, sizeLog) => {
         setCompressionProgress(progress);
         if (sizeLog) setCompressionSize(sizeLog);
         
