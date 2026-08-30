@@ -24,6 +24,7 @@ import BibliotecaBottomNav from '@/components/biblioteca/BibliotecaBottomNav';
 import { getAreaCover } from '@/lib/areasDireitoCovers';
 import { styleForArea } from '@/lib/bibliotecaIcons';
 import { useLivroBadges, type LivroBadgeInfo } from '@/hooks/useLivroBadges';
+import { getRecentes, subscribeTracking, type LivroSnapshot } from '@/lib/bibliotecaTracking';
 import { useTrackArea } from "@/hooks/useTrackArea";
 import { useIsDesktop } from '@/hooks/use-desktop';
 import DesktopSidebar from '@/components/vademecum/DesktopSidebar';
@@ -94,14 +95,14 @@ function useLivrosDaColecao(colecao: ColecaoConfig | undefined) {
 function LivroCard({ livro, onClick, priority, badge }: { livro: LivroNormalizado; onClick: () => void; priority?: boolean; badge?: LivroBadgeInfo }) {
   const capaUrl = useBibliotecaCapa(livro.capa, 300);
   const pct = badge?.progresso ? Math.round(badge.progresso * 100) : 0;
-  const showProgress = !!badge?.progresso && !!badge?.totalPaginas;
+  
   return (
     <button
       onClick={onClick}
       aria-label={`Abrir livro ${livro.titulo}${livro.autor ? ` de ${livro.autor}` : ''}`}
-      className="group flex items-stretch gap-3.5 p-3 rounded-2xl bg-card/60 border border-border/60 hover:border-primary/40 hover:bg-secondary/60 transition-colors text-left w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+      className="group flex items-stretch gap-3 p-2.5 rounded-2xl bg-card border border-border hover:border-primary/40 hover:bg-secondary/40 transition-colors text-left w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 relative overflow-hidden"
     >
-      <div className="w-[92px] h-[124px] sm:w-[100px] sm:h-[136px] shrink-0 rounded-lg overflow-hidden bg-muted border border-border shadow-sm">
+      <div className="w-[72px] h-[100px] shrink-0 rounded-lg overflow-hidden bg-muted shadow-sm">
         {capaUrl ? (
           <img
             src={capaUrl}
@@ -113,65 +114,47 @@ function LivroCard({ livro, onClick, priority, badge }: { livro: LivroNormalizad
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/5 p-1.5">
-            <span className="text-[10px] text-center text-muted-foreground font-medium leading-tight line-clamp-5">
+            <span className="text-[9px] text-center text-muted-foreground font-medium leading-tight line-clamp-4">
               {livro.titulo}
             </span>
           </div>
         )}
       </div>
-      <div className="flex-1 min-w-0 flex flex-col justify-center py-1">
-        <p className="text-lg sm:text-xl font-normal text-foreground line-clamp-2 sm:line-clamp-3 leading-snug group-hover:text-primary transition-colors break-words">
+      <div className="flex-1 min-w-0 flex flex-col justify-center py-0.5">
+        <p className="text-[14px] sm:text-[15px] font-bold text-foreground line-clamp-2 leading-tight group-hover:text-primary transition-colors break-words">
           {livro.titulo}
         </p>
         {livro.autor && (
-          <p className="mt-1 text-xs text-muted-foreground line-clamp-1">
+          <p className="mt-1 text-[11px] text-muted-foreground line-clamp-1">
             {livro.autor}
           </p>
         )}
-        {livro.area && (
-          <span className="mt-2 self-start text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/10 text-primary font-semibold">
-            {livro.area}
-          </span>
-        )}
+        
+        <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
+          {livro.area && (
+            <span className="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-primary/10 text-primary font-bold">
+              {livro.area}
+            </span>
+          )}
+          {badge?.favorito && (
+            <span
+              title="Favorito"
+              className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-amber-500/15 text-amber-500"
+            >
+              <Bookmark className="w-2.5 h-2.5 fill-current" />
+              Favorito
+            </span>
+          )}
+        </div>
+      </div>
 
-        {(badge?.favorito || showProgress) && (
-          <div className="mt-2 flex flex-col gap-1.5">
-            <div className="flex items-center gap-1.5 flex-wrap">
-              {badge?.favorito && (
-                <span
-                  title="Favorito"
-                  className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-500 border border-amber-500/30"
-                >
-                  <Bookmark className="w-3 h-3 fill-current" />
-                  Favorito
-                </span>
-              )}
-              {showProgress && (
-                <span
-                  title="Progresso na leitura nativa"
-                  className="text-[10px] font-semibold text-primary"
-                >
-                  {pct}% lido
-                </span>
-              )}
-            </div>
-            {showProgress && (
-              <div
-                className="h-1 w-full max-w-[180px] rounded-full bg-muted overflow-hidden"
-                aria-label={`Progresso ${pct}% na leitura nativa`}
-              >
-                <div
-                  className="h-full bg-primary transition-all"
-                  style={{ width: `${pct}%` }}
-                />
-              </div>
-            )}
-            {showProgress && (
-              <p className="text-[9px] text-muted-foreground/80 leading-tight">
-                * conta apenas via leitura nativa
-              </p>
-            )}
-          </div>
+      {/* Progress Bar na base do card */}
+      <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-border/40">
+        {pct > 0 && (
+          <div 
+            className="h-full bg-primary transition-all duration-500" 
+            style={{ width: `${pct}%` }} 
+          />
         )}
       </div>
     </button>
@@ -189,6 +172,10 @@ const BibliotecaCategoria = () => {
   useEffect(() => {
     if (colecao?.adminOnly && !isAdmin) navigate('/bibliotecas', { replace: true });
   }, [colecao, isAdmin, navigate]);
+
+  const [recentes, setRecentes] = useState<LivroSnapshot[]>(() => getRecentes());
+  useEffect(() => subscribeTracking(() => setRecentes(getRecentes())), []);
+  const ultimoLivro = recentes.length > 0 ? recentes[0] : null;
 
   // SEO & Título dinâmico por Coleção / Área
   useEffect(() => {
@@ -273,32 +260,59 @@ const BibliotecaCategoria = () => {
             </div>
 
             <div className="px-8 py-6 2xl:px-14">
-              {/* Search */}
-              <div className="flex items-center gap-2 mb-6 max-w-2xl">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
-                  <Input
-                    value={voice.listening && voice.partial ? voice.partial : query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder={mostrarAreas ? 'Buscar área ou livro…' : 'Buscar livro…'}
-                    className="pl-11 pr-3 h-12 text-sm rounded-xl bg-card border border-border/60"
-                  />
+              {/* Top row: Search + Última Leitura */}
+              <div className="flex items-center justify-between gap-6 mb-6">
+                {/* Search */}
+                <div className="flex items-center gap-2 max-w-2xl flex-1">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
+                    <Input
+                      value={voice.listening && voice.partial ? voice.partial : query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      placeholder={mostrarAreas ? 'Buscar área ou livro…' : 'Buscar livro…'}
+                      className="pl-11 pr-3 h-12 text-sm rounded-xl bg-card border border-border/60"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={voice.toggle}
+                    aria-label={voice.listening ? 'Parar gravação' : 'Buscar por voz'}
+                    className={`relative overflow-hidden shrink-0 w-12 h-12 rounded-xl flex items-center justify-center shadow-sm transition ${
+                      voice.listening
+                        ? 'bg-red-500 text-white animate-pulse shadow-red-500/40'
+                        : 'bg-primary text-primary-foreground hover:bg-primary/90'
+                    }`}
+                  >
+                    {voice.listening && <span className="absolute inset-0 rounded-full bg-red-500/30 animate-ping" />}
+                    {voice.listening
+                      ? <MicOff className="w-5 h-5 relative z-[2]" strokeWidth={2} />
+                      : <Mic className="w-5 h-5 relative z-[2]" strokeWidth={2} />}
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  onClick={voice.toggle}
-                  aria-label={voice.listening ? 'Parar gravação' : 'Buscar por voz'}
-                  className={`relative overflow-hidden shrink-0 w-12 h-12 rounded-xl flex items-center justify-center shadow-sm transition ${
-                    voice.listening
-                      ? 'bg-red-500 text-white animate-pulse shadow-red-500/40'
-                      : 'bg-primary text-primary-foreground hover:bg-primary/90'
-                  }`}
-                >
-                  {voice.listening && <span className="absolute inset-0 rounded-full bg-red-500/30 animate-ping" />}
-                  {voice.listening
-                    ? <MicOff className="w-5 h-5 relative z-[2]" strokeWidth={2} />
-                    : <Mic className="w-5 h-5 relative z-[2]" strokeWidth={2} />}
-                </button>
+
+                {/* Última Leitura */}
+                {ultimoLivro && (
+                  <button
+                    onClick={() => setLivroAberto(ultimoLivro as any)}
+                    className="group flex items-center gap-3 p-1.5 pr-4 rounded-xl border border-border bg-card hover:border-primary/40 hover:bg-secondary/40 transition-all shadow-sm text-left shrink-0"
+                  >
+                    <div className="w-10 h-12 rounded bg-muted overflow-hidden shrink-0">
+                      {ultimoLivro.capa ? (
+                        <img src={directImg(ultimoLivro.capa, 100)} alt={ultimoLivro.titulo} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-primary/10" />
+                      )}
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-[9px] uppercase tracking-wider font-bold text-primary mb-0.5">
+                        Última leitura
+                      </span>
+                      <span className="text-sm font-semibold text-foreground truncate max-w-[160px] group-hover:text-primary transition-colors">
+                        {ultimoLivro.titulo}
+                      </span>
+                    </div>
+                  </button>
+                )}
               </div>
 
               {/* Título da seção do acervo */}
