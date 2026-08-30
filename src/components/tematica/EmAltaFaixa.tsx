@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Flame, Star, Film } from "lucide-react";
+import { motion } from 'framer-motion';
 import type { Obra } from "@/components/tematica/ObraDetailSheet";
 import { cn } from "@/lib/utils";
 
@@ -86,3 +86,4 @@ export default function EmAltaFaixa({ obras, onAbrir }: Props) {
     </section>
   );
 }
+

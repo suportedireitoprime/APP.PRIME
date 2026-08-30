@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Music, ListMusic, Heart, Search, ThumbsUp } from "lucide-react";
+import { motion } from 'framer-motion';
 import { haptic } from "@/lib/nativeHaptics";
 
 export type LeisCantadasTab = "musicas" | "playlist" | "favoritos" | "buscar" | "curtidas";
@@ -69,3 +69,4 @@ const LeisCantadasBottomNav = ({
 };
 
 export default LeisCantadasBottomNav;
+

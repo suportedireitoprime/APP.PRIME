@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { motion } from 'framer-motion';
 import { StickyNote, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import PessoalListLayout from "./PessoalListLayout";
@@ -123,3 +123,4 @@ export default function AnotacoesPage() {
     </PessoalListLayout>
   );
 }
+

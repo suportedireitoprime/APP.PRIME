@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { motion } from 'framer-motion';
 import { ChevronLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -118,3 +118,4 @@ export function AppHeader({
 }
 
 export default AppHeader;
+

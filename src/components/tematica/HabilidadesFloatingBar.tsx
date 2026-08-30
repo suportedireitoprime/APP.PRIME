@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createPortal } from "react-dom";
+import { motion, AnimatePresence } from 'framer-motion';
 import { motion, AnimatePresence } from "framer-motion";
 import { SlidersHorizontal, ChevronUp, X, Sparkles } from "lucide-react";
 import { HABILIDADES, HABILIDADES_MAP, type HabilidadeId } from "@/lib/tematicaHabilidades";
@@ -163,3 +163,5 @@ export default function HabilidadesFloatingBar({ ativa, onChange, contagens = {}
     </>
   );
 }
+
+

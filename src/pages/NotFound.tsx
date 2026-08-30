@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { motion } from 'framer-motion';
 import { motion } from "framer-motion";
 import { ArrowLeft, Home } from "lucide-react";
 import { useGoBack } from '@/hooks/useGoBack';
@@ -66,3 +66,4 @@ const NotFound = () => {
 };
 
 export default NotFound;
+

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import { motion } from 'framer-motion';
 import {
   ArrowLeft,
   Check,
@@ -347,3 +347,4 @@ export default function TematicaMaratonaView({ obras, onAbrirObra }: Props) {
     </div>
   );
 }
+

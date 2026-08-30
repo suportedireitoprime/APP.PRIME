@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { motion } from 'framer-motion';
 import { Music, Play, Pause, SkipBack, SkipForward, Loader2, ChevronDown, Mic2, FileText, ThumbsUp, ThumbsDown, Share2, Flame, Heart, Lock, Scale, BookOpen, Landmark, Briefcase, Headphones, ArrowUpDown, Eye, EyeOff, ExternalLink, Download, Minus, Plus, Search, ListMusic, ListPlus, X, Check, ArrowLeft, ChevronRight } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";

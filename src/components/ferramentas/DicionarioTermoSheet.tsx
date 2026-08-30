@@ -1,5 +1,5 @@
 import { useMemo, useEffect } from "react";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { motion } from 'framer-motion';
 import { motion } from "framer-motion";
 import { Copy, Share2, BookOpenText, Scale, Sparkles, Flame, Heart } from "lucide-react";
 import { toast } from "sonner";
@@ -211,3 +211,4 @@ function Section({
     </div>
   );
 }
+

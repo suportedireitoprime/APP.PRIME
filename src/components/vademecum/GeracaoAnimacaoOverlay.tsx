@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { createPortal } from "react-dom";
+import { motion, AnimatePresence } from 'framer-motion';
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, ArrowLeft } from "lucide-react";
 import danceCatAsset from "@/assets/dance-cat.svg.asset.json";
@@ -318,3 +318,5 @@ export const GeracaoAnimacaoOverlay = ({
 };
 
 export default GeracaoAnimacaoOverlay;
+
+

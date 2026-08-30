@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from "react-router-dom";
 import {
   ChevronLeft, ChevronRight, Camera, Pencil, Check,
@@ -811,3 +811,5 @@ function StatCell({
 }
 
 export default MeuEspaco;
+
+

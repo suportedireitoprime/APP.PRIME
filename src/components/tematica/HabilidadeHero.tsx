@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { X } from "lucide-react";
+import { motion } from 'framer-motion';
 import type { Habilidade } from "@/lib/tematicaHabilidades";
 
 interface Props {
@@ -54,3 +54,4 @@ export default function HabilidadeHero({ habilidade, total, onLimpar }: Props) {
     </motion.div>
   );
 }
+

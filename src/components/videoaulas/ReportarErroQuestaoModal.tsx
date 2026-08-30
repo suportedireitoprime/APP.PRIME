@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from 'framer-motion';
 import { X, AlertTriangle, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -121,3 +121,4 @@ export function ReportarErroQuestaoModal({ isOpen, onClose, questao }: Props) {
     </div>
   );
 }
+

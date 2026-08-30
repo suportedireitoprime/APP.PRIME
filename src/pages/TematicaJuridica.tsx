@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { motion } from 'framer-motion';
 import { motion } from "framer-motion";
 import { Film, Search, Star, Trophy, Heart, ListVideo, CalendarHeart, Sparkles } from "lucide-react";
 import { PageHeader } from "@/components/vademecum/PageHeader";
@@ -488,3 +488,4 @@ export default function TematicaJuridica() {
     </DesktopPageLayout>
   );
 }
+

@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import {
+import { motion, AnimatePresence } from 'framer-motion';
   ChevronDown,
   Star,
   ExternalLink,
@@ -906,3 +906,5 @@ function providerDeepLink(id: number, nome: string, titulo: string): string | nu
   if (key.includes("looke")) return `https://www.looke.com.br/busca?q=${q}`;
   return null;
 }
+
+

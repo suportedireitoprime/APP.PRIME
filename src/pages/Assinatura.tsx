@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { useNavigate, useSearchParams, Navigate } from "react-router-dom";
+import { motion } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 import { motion } from "framer-motion";
 import { Capacitor } from '@capacitor/core';
@@ -588,3 +588,4 @@ export default function Assinatura() {
 
   return null;
 }
+

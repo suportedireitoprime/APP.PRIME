@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Send, AlertCircle } from "lucide-react";
+import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -112,3 +112,4 @@ export default function SuportePublico() {
     </div>
   );
 }
+

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from 'framer-motion';
 import { Flame, Sparkles, Target, Star, ChevronRight } from "lucide-react";
 import MonteOArtigo from "./desafios/MonteOArtigo";
 import CacaPegadinha from "./desafios/CacaPegadinha";
@@ -319,3 +319,5 @@ function rotuloModo(m?: Modo): string {
     default: return "Sessão";
   }
 }
+
+

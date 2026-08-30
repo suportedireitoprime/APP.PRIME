@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { motion } from 'framer-motion';
 import { ArrowLeft, Plus, BellRing, Trash2, Loader2, Bell, BellOff } from "lucide-react";
 import { PageHeader } from "@/components/vademecum/PageHeader";
 import { motion } from "framer-motion";
@@ -148,3 +148,4 @@ const AvisosPage = () => {
 };
 
 export default AvisosPage;
+

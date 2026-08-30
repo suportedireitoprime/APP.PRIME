@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from "react-router-dom";
 import { X, Send, Mic, MicOff, ChevronRight, Newspaper, BookOpen, Paperclip, FileText, Image as ImageIcon, Camera, ArrowLeft, History, Plus, MessageSquare, Trash2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
@@ -711,3 +711,5 @@ const MentorOverlay = ({ open, onClose }: MentorOverlayProps) => {
 };
 
 export default MentorOverlay;
+
+

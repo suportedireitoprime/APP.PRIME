@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { Play, Pause, ArrowRight, X } from "lucide-react";
+import { motion, AnimatePresence } from 'framer-motion';
 import { AnimatePresence, motion } from "framer-motion";
 import { useLeisCantadasPlayer } from "@/contexts/LeisCantadasPlayerContext";
 import { haptic } from "@/lib/nativeHaptics";
@@ -136,3 +136,4 @@ export default function GlobalLeisCantadasMiniPlayer() {
     </AnimatePresence>
   );
 }
+

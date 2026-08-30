@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Search, Loader2, Sparkles, FileText, BookOpen, Columns, Lightbulb, X } from "lucide-react";
 import { fetchArtigosPaginado } from "@/services/legislacaoService";
 import { supabase } from "@/integrations/supabase/client";
@@ -312,3 +312,5 @@ export default function LeiArtigosSheet({ lei, area, onClose }: Props) {
     </>
   );
 }
+
+
