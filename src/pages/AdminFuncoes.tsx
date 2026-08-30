@@ -42,8 +42,6 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   '/admin-funcoes-assinantes': () => import('./AdminFuncoesAssinantes'),
   '/admin-assinantes': () => import('./AdminAssinantes'),
   '/admin-boletins': () => import('./AdminBoletins'),
-  '/admin-modelos': () => import('./AdminModelos'),
-  '/admin-desktop': () => import('./AdminDesktop'),
   '/admin-erros-questoes': () => import('./AdminErrosQuestoes'),
   '/admin-jurisprudencia': () => import('./AdminJurisprudencia'),
   '/admin-concorrentes': () => import('./AdminConcorrentes'),
@@ -372,24 +370,6 @@ const CATEGORIES: Category[] = [
       { id: 'admin-funcoes-assinantes', label: 'Funções Assinantes', icon: Crown, desc: 'Limite de uso free por função (blog, narração, biblioteca, IA…)', route: '/admin-funcoes-assinantes' },
     ],
   },
-  {
-    id: 'ia-modelos',
-    title: 'Modelos de IA',
-    desc: 'Modelos Gemini usados no app',
-    icon: Brain,
-    items: [
-      { id: 'admin-modelos', label: 'Modelos de Geração', icon: Brain, desc: 'Texto, imagem e áudio — cataloga funções e limites', route: '/admin-modelos' },
-    ],
-  },
-  {
-    id: 'distribuicao',
-    title: 'Distribuição',
-    desc: 'Apps instaláveis (Android, Desktop)',
-    icon: Monitor,
-    items: [
-      { id: 'admin-desktop', label: 'App para computador', icon: Monitor, desc: 'Gerar .exe / .dmg / .AppImage via GitHub Actions', route: '/admin-desktop' },
-    ],
-  },
 
   {
     id: 'configuracoes',
@@ -400,15 +380,7 @@ const CATEGORIES: Category[] = [
       { id: 'paleta-cores', label: 'Paleta de Cores', icon: Palette, desc: 'Configurações visuais', route: '/configuracoes' },
     ],
   },
-  {
-    id: 'depuracao',
-    title: 'Depuração',
-    desc: 'Ferramentas de teste e diagnóstico',
-    icon: Bug,
-    items: [
-      { id: 'crashlytics-test', label: 'Disparar crash de teste', icon: Bug, desc: 'Envia crash pro Firebase Crashlytics (só native)' },
-    ],
-  },
+
   {
     id: 'laboratorio',
     title: 'Laboratório',
@@ -443,16 +415,7 @@ const AdminFuncoes = () => {
       window.open(`https://github.com/${repo}`, '_blank');
       return;
     }
-    if (item.id === 'crashlytics-test') {
-      try {
-        const m = await import('@/lib/nativeCrashlytics');
-        toast.info('Disparando crash em 2s… reabra o app para enviar o relatório.');
-        setTimeout(() => { void m.forceNativeCrash().catch((e) => toast.error(String(e?.message || e))); }, 2000);
-      } catch (e: any) {
-        toast.error(String(e?.message || e));
-      }
-      return;
-    }
+
     if (item.route) {
       try { await prefetch(item.route); } catch {}
       setOpenCat(null);

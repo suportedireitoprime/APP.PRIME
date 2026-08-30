@@ -61,7 +61,7 @@ export default function AdminErrosQuestoes() {
       <div className="max-w-6xl mx-auto space-y-8">
         <div className="flex items-center justify-between">
           <div>
-            <Link to="/admin-desktop" className="inline-flex items-center text-sm text-zinc-400 hover:text-white transition-colors mb-4">
+            <Link to="/" className="inline-flex items-center text-sm text-zinc-400 hover:text-white transition-colors mb-4">
               <ArrowLeft className="h-4 w-4 mr-2" /> Voltar ao Painel
             </Link>
             <h1 className="text-3xl font-bold">Erros em Questões</h1>

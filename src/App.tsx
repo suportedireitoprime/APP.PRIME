@@ -355,8 +355,6 @@ const AdminHandoffIA = lazy(() => import("./pages/AdminHandoffIA.tsx"));
 const AdminTransferenciaApp = lazy(() => import("./pages/AdminTransferenciaApp.tsx"));
 const BoletinsJuridicos = lazy(routePrefetch.boletins);
 const AdminBoletins = lazy(() => import("./pages/AdminBoletins.tsx"));
-const AdminModelos = lazy(() => import("./pages/AdminModelos.tsx"));
-const AdminDesktop = lazy(() => import("./pages/AdminDesktop.tsx"));
 const PilulasHome = lazy(() => import("./pages/pilulas/PilulasHome.tsx"));
 const PilulasViewer = lazy(() => import("./pages/pilulas/PilulasViewer.tsx"));
 
@@ -1034,10 +1032,8 @@ function AnimatedRoutes() {
           <Route path="/admin-horus-template" element={<ProtectedRoute><PageTransition><AdminHorusTemplate /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-triagem" element={<ProtectedRoute><PageTransition><AdminTriagem /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-boletins" element={<ProtectedRoute><PageTransition><AdminBoletins /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-desktop" element={<ProtectedRoute><PageTransition><AdminDesktop /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-erros-questoes" element={<ProtectedRoute><PageTransition><AdminErrosQuestoes /></PageTransition></ProtectedRoute>} />
 
-          <Route path="/admin-modelos" element={<ProtectedRoute><PageTransition><AdminModelos /></PageTransition></ProtectedRoute>} />
           <Route path="/boletins" element={<ProtectedRoute><PageTransition><BoletinsJuridicos /></PageTransition></ProtectedRoute>} />
           <Route path="/boletins/:id" element={<ProtectedRoute><PageTransition><BoletinsJuridicos /></PageTransition></ProtectedRoute>} />
           <Route path="/boletins-noticias" element={<ProtectedRoute><PageTransition><BoletinsJuridicos tipo="noticias" /></PageTransition></ProtectedRoute>} />
