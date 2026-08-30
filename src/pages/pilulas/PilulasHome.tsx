@@ -2,7 +2,6 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { haptic } from '@/lib/nativeHaptics';
-import { BookMarked } from 'lucide-react';
 
 export default function PilulasHome() {
   const navigate = useNavigate();
@@ -22,7 +21,7 @@ export default function PilulasHome() {
 
       <div className="px-4 pt-6 space-y-6">
         <div>
-          <h2 className="text-[22px] font-black text-white tracking-tight">Escolha um Tema</h2>
+          <h2 className="text-[22px] font-black text-white uppercase tracking-normal">Escolha um Tema</h2>
           <p className="mt-1 text-[14px] text-zinc-400">
             Aprenda conceitos jurídicos de forma rápida ouvindo a essência das obras.
           </p>
@@ -37,11 +36,8 @@ export default function PilulasHome() {
             className="group relative flex flex-col items-start text-left overflow-hidden rounded-2xl bg-zinc-900 border border-zinc-800/80 active:scale-[0.98] transition-all h-[220px]"
           >
             {/* Background Image with Overlay */}
-            <div className="absolute inset-0 z-0 bg-gradient-to-br from-zinc-800 to-zinc-900">
-               {/* Abstract geometric shapes or icon for background */}
-               <div className="absolute right-[-20%] bottom-[-20%] text-zinc-800 opacity-30 rotate-12">
-                 <BookMarked size={200} strokeWidth={1} />
-               </div>
+            <div className="absolute inset-0 z-0">
+               <img src="/pilulas/classicos.jpg" alt="Clássicos do Direito" className="w-full h-full object-cover opacity-60 transition-transform duration-700 group-hover:scale-105" loading="lazy" />
               <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/80 to-transparent" />
             </div>
 
