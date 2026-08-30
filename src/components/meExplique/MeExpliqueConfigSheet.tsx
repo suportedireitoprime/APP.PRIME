@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, memo } from 'react';
 import { motion } from 'framer-motion';
 import { X, Mic2, User, FileText, CheckCircle2 } from 'lucide-react';
 import { haptic } from '@/lib/nativo';
@@ -29,7 +29,7 @@ interface Props {
   onSave: (config: MeExpliqueConfig) => void;
 }
 
-const MeExpliqueConfigSheet = ({ open, onClose, configAtual, onSave }: Props) => {
+const MeExpliqueConfigSheet = memo(function MeExpliqueConfigSheet({ open, onClose, configAtual, onSave }: Props) {
   const [config, setConfig] = useState<MeExpliqueConfig>(configAtual);
 
   useEffect(() => {
@@ -38,13 +38,13 @@ const MeExpliqueConfigSheet = ({ open, onClose, configAtual, onSave }: Props) =>
     }
   }, [open, configAtual]);
 
-  if (!open) return null;
-
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
     void haptic.selection();
     onSave(config);
     onClose();
-  };
+  }, [config, onSave, onClose]);
+
+  if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-[70] flex flex-col justify-end bg-black/60 backdrop-blur-sm">
@@ -148,6 +148,6 @@ const MeExpliqueConfigSheet = ({ open, onClose, configAtual, onSave }: Props) =>
       </motion.div>
     </div>
   );
-};
+});
 
 export default MeExpliqueConfigSheet;

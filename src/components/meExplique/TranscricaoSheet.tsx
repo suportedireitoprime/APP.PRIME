@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useCallback, memo } from 'react';
 import { Download, FileText, Copy, X, Loader2 } from 'lucide-react';
 import { baixarBlob, copiarTexto, haptic } from '@/lib/nativo';
 import { toast } from 'sonner';
@@ -22,14 +22,12 @@ function montarTexto(falas: FalaSalva[]) {
   return `ME EXPLIQUE — Direito Prime\nExplicação registrada em ${data}\n\n${corpo}\n`;
 }
 
-const TranscricaoSheet = ({ open, onClose, falas }: Props) => {
+const TranscricaoSheet = memo(function TranscricaoSheet({ open, onClose, falas }: Props) {
   const [gerando, setGerando] = useState<'pdf' | 'txt' | null>(null);
   const texto = useMemo(() => montarTexto(falas), [falas]);
   const nomeBase = `me-explique-${new Date().toISOString().slice(0, 10)}`;
 
-  if (!open) return null;
-
-  const baixarTxt = async () => {
+  const baixarTxt = useCallback(async () => {
     setGerando('txt');
     try {
       void haptic.light();
@@ -39,9 +37,9 @@ const TranscricaoSheet = ({ open, onClose, falas }: Props) => {
     } finally {
       setGerando(null);
     }
-  };
+  }, [texto, nomeBase]);
 
-  const baixarPdf = async () => {
+  const baixarPdf = useCallback(async () => {
     setGerando('pdf');
     try {
       void haptic.light();
@@ -98,7 +96,9 @@ const TranscricaoSheet = ({ open, onClose, falas }: Props) => {
     } finally {
       setGerando(null);
     }
-  };
+  }, [falas, nomeBase]);
+
+  if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-[60] flex flex-col justify-end bg-black/60 backdrop-blur-sm">
@@ -172,6 +172,6 @@ const TranscricaoSheet = ({ open, onClose, falas }: Props) => {
       </div>
     </div>
   );
-};
+});
 
 export default TranscricaoSheet;
