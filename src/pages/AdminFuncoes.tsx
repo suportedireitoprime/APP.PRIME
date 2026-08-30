@@ -44,7 +44,6 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   '/admin-boletins': () => import('./AdminBoletins'),
   '/admin-erros-questoes': () => import('./AdminErrosQuestoes'),
   '/admin-jurisprudencia': () => import('./AdminJurisprudencia'),
-  '/admin-concorrentes': () => import('./AdminConcorrentes'),
   '/admin-radares-leis': () => import('./AdminRadaresLeis'),
   '/admin/locais': () => import('./AdminLocais'),
   '/admin-biblioteca-leis': () => import('./AdminBibliotecaLeis'),
@@ -331,15 +330,6 @@ const CATEGORIES: Category[] = [
       { id: 'admin-radares-leis', label: 'Radar de Leis (Editar)', icon: Rss, desc: 'Cron 10h e 20h, histórico das raspagens, reenvio de push', route: '/admin-radares-leis' },
       { id: 'admin-biblioteca-leis', label: 'Biblioteca de Leis', icon: BookOpen, desc: 'Auditoria, verificação de atualização e sugestões do Radar', route: '/admin-biblioteca-leis' },
       { id: 'admin-buscador-leis', label: 'Buscador de Leis', icon: Search, desc: 'IA busca na web leis faltantes e sugere para adicionar à Biblioteca', route: '/admin-buscador-leis' },
-    ],
-  },
-  {
-    id: 'concorrentes-analise',
-    title: 'Concorrentes',
-    desc: 'Extrai reviews do Google Play e analisa dores/pedidos com IA',
-    icon: Target,
-    items: [
-      { id: 'admin-concorrentes', label: 'Concorrentes', icon: Target, desc: 'Cadastro de apps, extração de reviews (Browserless) e análise IA', route: '/admin-concorrentes' },
     ],
   },
   {
