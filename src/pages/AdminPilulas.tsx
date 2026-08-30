@@ -23,6 +23,7 @@ export default function AdminPilulas() {
   const [livros, setLivros] = useState<LivroComColecao[]>([]);
   const [busca, setBusca] = useState('');
   const [uploadingId, setUploadingId] = useState<number | string | null>(null);
+  const [transcribingId, setTranscribingId] = useState<number | string | null>(null);
   const [selectedBook, setSelectedBook] = useState<LivroComColecao | null>(null);
 
   useEffect(() => {
@@ -119,6 +120,64 @@ export default function AdminPilulas() {
       toast.error(err.message || 'Erro ao enviar áudio', { id: toastId });
     } finally {
       setUploadingId(null);
+    }
+  }
+
+  async function handleTranscribeAudio(item: LivroComColecao) {
+    if (!item.livro.audioResumoUrl) return;
+
+    setTranscribingId(item.livro.id);
+    const toastId = toast.loading(`Transcrevendo pílula de ${item.livro.titulo}... (Isso pode levar alguns minutos)`);
+
+    try {
+      const pathParts = item.livro.audioResumoUrl.split('/audios/');
+      if (pathParts.length < 2) throw new Error("URL do áudio inválida");
+      const filePath = pathParts[1].split('?')[0];
+
+      const { data, error } = await supabase.functions.invoke('transcrever-audio', {
+        body: { filePath, bucketName: 'audios', language: 'pt' }
+      });
+
+      if (error) throw error;
+      
+      const transcriptionText = data?.text || data;
+      if (!transcriptionText) throw new Error("Transcrição retornou vazia");
+
+      let cur = item.livro.curiosidades;
+      let curiosidadesArray = Array.isArray(cur) ? cur : [];
+      let sumarioAudioArray = [];
+      if (cur && typeof cur === 'object' && !Array.isArray(cur)) {
+        if (Array.isArray((cur as any).curiosidades)) curiosidadesArray = (cur as any).curiosidades;
+        if (Array.isArray((cur as any).sumarioAudio)) sumarioAudioArray = (cur as any).sumarioAudio;
+      }
+      
+      const curiosidadesPayload = {
+        curiosidades: curiosidadesArray,
+        sumarioAudio: sumarioAudioArray,
+        transcricaoAudio: transcriptionText
+      };
+
+      const { error: updateError } = await supabase
+        .from(item.colecao.table as any)
+        .update({ curiosidades: curiosidadesPayload })
+        .eq('id', item.livro.id);
+
+      if (updateError) throw updateError;
+
+      const updatedBook = {
+        ...item,
+        livro: { ...item.livro, transcricaoAudio: transcriptionText }
+      };
+
+      setLivros((prev) => prev.map((l) => (l.livro.id === item.livro.id ? updatedBook : l)));
+      setSelectedBook(updatedBook);
+
+      toast.success('Pílula transcrita e salva com sucesso!', { id: toastId });
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || 'Falha ao transcrever pílula.', { id: toastId });
+    } finally {
+      setTranscribingId(null);
     }
   }
 
@@ -347,6 +406,23 @@ export default function AdminPilulas() {
                 <p className="text-center text-xs text-muted-foreground">
                   Formatos suportados: MP3, M4A, WAV
                 </p>
+
+                {selectedBook.livro.audioResumoUrl && (
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="w-full text-base h-14 rounded-xl mt-4 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300"
+                    disabled={transcribingId === selectedBook.livro.id}
+                    onClick={() => handleTranscribeAudio(selectedBook)}
+                  >
+                    {transcribingId === selectedBook.livro.id ? (
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    ) : (
+                      <Headphones className="w-5 h-5 mr-2" />
+                    )}
+                    {selectedBook.livro.transcricaoAudio ? 'Regerar Transcrição com IA' : 'Transcrever Pílula com IA'}
+                  </Button>
+                )}
               </div>
             </div>
           )}
