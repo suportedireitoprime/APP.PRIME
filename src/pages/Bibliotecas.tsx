@@ -319,6 +319,10 @@ const Bibliotecas = () => {
                   id: c.id
                 };
               })}
+              bend={1.5}
+              textColor="#ffffff"
+              scrollEase={0.02}
+              borderRadius={0.05}
               onItemClick={(item) => {
                 console.log("Clicou na coleção:", item.text);
               }}

@@ -203,8 +203,7 @@ class Title {
     this.mesh.scale.set(textWidth, textHeight, 1);
     
     if (this.positionType === 'outside') {
-      // Put text ABOVE the cover (+ instead of -)
-      this.mesh.position.y = this.plane.scale.y * 0.5 + textHeight * 0.5 + 0.05;
+      this.mesh.position.y = -this.plane.scale.y * 0.5 - textHeight * 0.5 - 0.05;
       this.mesh.position.z = 0;
     } else {
       this.mesh.position.y = -this.plane.scale.y * 0.5 + textHeight * 0.5 + 0.1;
@@ -448,7 +447,7 @@ class Media {
         this.plane.program.uniforms.uViewportSizes.value = [this.viewport.width, this.viewport.height];
       }
     }
-    this.scale = (this.screen.height / 1500) * 1.5;
+    this.scale = this.screen.height / 1500;
     this.plane.scale.y = (this.viewport.height * (900 * this.scale)) / this.screen.height;
     this.plane.scale.x = (this.viewport.width * (700 * this.scale)) / this.screen.width;
     this.plane.program.uniforms.uPlaneSizes.value = [this.plane.scale.x, this.plane.scale.y];
