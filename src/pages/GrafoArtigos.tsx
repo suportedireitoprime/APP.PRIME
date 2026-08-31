@@ -67,13 +67,12 @@ function CustomNode({ data }: any) {
     >
       <Handle type="target" position={Position.Top} className="!w-2 !h-2 border-none opacity-0" />
       <div 
-        className="p-2 rounded-xl shrink-0 flex items-center justify-center shadow-sm" 
+        className="shrink-0 flex items-center justify-center" 
         style={{ 
-          backgroundColor: isCentral ? 'rgba(255,255,255,0.2)' : `${data.textColor}15`,
           color: isCentral ? '#fff' : data.textColor
         }}
       >
-        <Icon className="w-5 h-5" />
+        <Icon className="w-6 h-6" />
       </div>
       <div className={`font-bold text-sm leading-tight tracking-tight max-w-[150px] text-center ${isCentral ? 'text-white' : ''}`}>
         {data.label}
@@ -226,8 +225,8 @@ const GrafoArtigos = (props: GrafoArtigosProps) => {
           source: e.source,
           target: e.target,
           label: e.label,
-          labelStyle: { fill: 'hsl(var(--foreground))', fontWeight: 600, fontSize: 10 },
-          labelBgStyle: { fill: 'hsl(var(--background))', fillOpacity: 0.8 },
+          labelStyle: { fill: 'hsl(var(--foreground))', fontWeight: 600, fontSize: 12 },
+          labelBgStyle: { fill: 'hsl(var(--background))', fillOpacity: 0.95 },
           markerEnd: { type: MarkerType.ArrowClosed, color: 'hsl(var(--primary))' },
           style: { stroke: 'hsl(var(--primary))', strokeWidth: 2 },
           animated: true,
@@ -445,8 +444,8 @@ const GrafoArtigos = (props: GrafoArtigosProps) => {
             </ReactFlow>
 
             {!selectedEdgeInfo && (
-              <div className="absolute top-3 left-1/2 -translate-x-1/2 bg-card/90 backdrop-blur-sm border border-border/50 rounded-full px-4 py-1.5 pointer-events-none shadow-sm text-center">
-                <p className="text-xs font-semibold text-primary">Toque nos nós ou setas para entender a relação</p>
+              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-card/95 backdrop-blur-md border border-border/50 rounded-full px-5 py-2 pointer-events-none shadow-lg text-center z-10">
+                <p className="text-[13px] font-semibold text-primary">Toque nos nós ou setas para entender a relação</p>
               </div>
             )}
           </>
@@ -495,16 +494,16 @@ const GrafoArtigos = (props: GrafoArtigosProps) => {
                 </button>
               </div>
               
-              <div className="p-4 rounded-xl bg-primary/10 border border-primary/20 flex flex-col gap-3">
-                <div className="flex items-center gap-2">
-                  <span className="font-bold text-sm text-foreground bg-background px-2 py-1 rounded shadow-sm">{selectedEdgeInfo.source}</span>
-                  <ArrowRight className="w-4 h-4 text-primary shrink-0" />
-                  <span className="font-bold text-sm text-foreground bg-background px-2 py-1 rounded shadow-sm">{selectedEdgeInfo.target}</span>
+              <div className="p-5 rounded-2xl bg-gradient-to-br from-red-500 to-red-600 border border-red-400/30 flex flex-col gap-4 shadow-xl">
+                <div className="flex items-center gap-3">
+                  <span className="font-bold text-[13px] text-red-950 bg-white/95 px-3 py-1.5 rounded-lg shadow-sm">{selectedEdgeInfo.source}</span>
+                  <ArrowRight className="w-4 h-4 text-white/90 shrink-0" />
+                  <span className="font-bold text-[13px] text-red-950 bg-white/95 px-3 py-1.5 rounded-lg shadow-sm">{selectedEdgeInfo.target}</span>
                 </div>
                 
-                <div className="mt-2">
-                  <span className="text-[10px] uppercase font-bold text-primary tracking-wider">Explicação ({selectedEdgeInfo.label}):</span>
-                  <p className="text-sm font-medium text-foreground/80 mt-1 leading-relaxed">
+                <div className="mt-1">
+                  <span className="text-[11px] uppercase font-extrabold text-red-100 tracking-widest opacity-90">Explicação ({selectedEdgeInfo.label})</span>
+                  <p className="text-[15px] font-medium text-white mt-1.5 leading-relaxed">
                     {selectedEdgeInfo.description}
                   </p>
                 </div>
