@@ -13,6 +13,9 @@ import {
 } from './triagemShared';
 import { useTriagemAudio } from './useTriagemAudio';
 import WaveReveal from '@/components/animata/text/wave-reveal';
+import SplitText from '@/components/animata/text/split-text';
+import SoftBlurIn from '@/components/animata/text/soft-blur-in';
+import ShortSlideDown from '@/components/animata/text/short-slide-down';
 
 type Props = {
   open: boolean;
@@ -359,25 +362,27 @@ function AberturaCinematografica({
               className="text-[11px] font-black tracking-[0.5em] mb-4 flex justify-center"
               style={{ color: GOLD }}
             >
-              <WaveReveal text="BEM-VINDO(A)" mode="letter" direction="up" />
+              <ShortSlideDown text="BEM-VINDO(A)" holdMs={999999} />
             </motion.div>
-            <motion.h1
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.25 }}
-              className="text-5xl sm:text-6xl font-black text-[#F3E7D6] leading-[0.9] flex justify-center flex-wrap gap-x-3"
-              style={{ fontFamily: SERIF }}
+              className="flex justify-center"
             >
-              <WaveReveal text="Vamos" mode="letter" direction="up" delay={200} />
-              <span className="italic"><WaveReveal text="te conhecer." mode="letter" direction="up" delay={450} /></span>
-            </motion.h1>
+              <SplitText 
+                text="Vamos te conhecer." 
+                className="text-5xl sm:text-6xl font-black text-[#F3E7D6] leading-[0.9] normal-case tracking-tight" 
+                style={{ fontFamily: SERIF }}
+              />
+            </motion.div>
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
-              className="mt-6 text-[#F3E7D6]/70 text-lg leading-relaxed max-w-sm mx-auto"
+              className="mt-6 text-[#F3E7D6]/70 text-lg leading-relaxed max-w-sm mx-auto text-center"
             >
-              <WaveReveal text="Cinco toques rápidos pra ajustar o app ao seu jeito de estudar." mode="letter" direction="up" delay={800} />
+              <SoftBlurIn text="Cinco toques rápidos pra ajustar o app ao seu jeito de estudar." holdMs={999999} />
             </motion.div>
             <motion.button
               initial={{ opacity: 0, y: 20 }}
