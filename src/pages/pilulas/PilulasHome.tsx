@@ -71,47 +71,8 @@ export default function PilulasHome() {
         />
 
       <div className="px-4 pt-6 space-y-6">
-        <div>
-          <h2 className="text-[22px] font-black text-white uppercase tracking-widest">Escolha um Tema</h2>
-          <p className="mt-1 text-[14px] text-zinc-400 truncate">
-            Aprenda conceitos jurídicos complexos em minutos. Ouça pílulas de conhecimento extraídas da essência das principais obras e legislações.
-          </p>
-        </div>
-
-        {/* Clássicos do Direito */}
-        <motion.button
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          onClick={handleSelectClassicos}
-          className="w-full group relative flex flex-col items-start text-left overflow-hidden rounded-2xl bg-zinc-900 border border-zinc-800/80 active:scale-[0.98] transition-all h-[220px]"
-        >
-          {/* Background Image with Overlay */}
-          <div className="absolute inset-0 z-0">
-            <img src="/pilulas/classicos_cover.jpg" alt="Clássicos do Direito" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
-            <div className="absolute inset-x-0 bottom-0 h-3/5 bg-gradient-to-t from-zinc-950 via-zinc-950/60 to-transparent" />
-          </div>
-
-          {/* Content */}
-          <div className="relative z-10 flex flex-col justify-end h-full p-5 w-full">
-            <div className="flex justify-between items-end w-full">
-              <div>
-                <h3 className="text-[20px] font-black text-white leading-tight drop-shadow-md">
-                  Clássicos do Direito
-                </h3>
-                <p className="mt-2 text-[13px] text-zinc-300 line-clamp-2 drop-shadow">
-                  As obras fundamentais do pensamento jurídico mundial.
-                </p>
-              </div>
-              <div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center flex-shrink-0 mb-1 border border-white/20">
-                <ArrowRight className="w-4 h-4 text-white" strokeWidth={2.5} />
-              </div>
-            </div>
-          </div>
-        </motion.button>
-
         {/* Divider with Text */}
-        <div className="flex items-center w-full mt-10 mb-6">
+        <div className="flex items-center w-full mb-6">
           <div className="flex-1 h-[1px] bg-white/10" />
           <span className="mx-4 text-xs font-semibold tracking-widest text-zinc-400 uppercase">Pílulas Rápidas</span>
           <div className="flex-1 h-[1px] bg-white/10" />
@@ -155,6 +116,53 @@ export default function PilulasHome() {
             />
           </div>
         </div>
+
+        {/* Divider with Text for Bottom Section */}
+        <div className="flex items-center w-full mt-10 mb-6">
+          <div className="flex-1 h-[1px] bg-white/10" />
+          <span className="mx-4 text-xs font-semibold tracking-widest text-zinc-400 uppercase">Pílulas de Análise</span>
+          <div className="flex-1 h-[1px] bg-white/10" />
+        </div>
+
+        <div>
+          <h2 className="text-[22px] font-black text-white uppercase tracking-widest">Escolha um Tema</h2>
+          <p className="mt-1 text-[14px] text-zinc-400 truncate">
+            Aprenda conceitos jurídicos complexos em minutos. Ouça pílulas de conhecimento extraídas da essência das principais obras e legislações.
+          </p>
+        </div>
+
+        {/* Clássicos do Direito */}
+        <motion.button
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          onClick={handleSelectClassicos}
+          className="w-full group relative flex flex-col items-start text-left overflow-hidden rounded-2xl bg-zinc-900 border border-zinc-800/80 active:scale-[0.98] transition-all h-[220px]"
+        >
+          {/* Background Image with Overlay */}
+          <div className="absolute inset-0 z-0">
+            <img src="/pilulas/classicos_cover.jpg" alt="Clássicos do Direito" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+            <div className="absolute inset-x-0 bottom-0 h-3/5 bg-gradient-to-t from-zinc-950 via-zinc-950/60 to-transparent" />
+          </div>
+
+          {/* Content */}
+          <div className="relative z-10 flex flex-col justify-end h-full p-5 w-full">
+            <div className="flex justify-between items-end w-full">
+              <div>
+                <h3 className="text-[20px] font-black text-white leading-tight drop-shadow-md">
+                  Clássicos do Direito
+                </h3>
+                <p className="mt-2 text-[13px] text-zinc-300 line-clamp-2 drop-shadow">
+                  As obras fundamentais do pensamento jurídico mundial.
+                </p>
+              </div>
+              <div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center flex-shrink-0 mb-1 border border-white/20">
+                <ArrowRight className="w-4 h-4 text-white" strokeWidth={2.5} />
+              </div>
+            </div>
+          </div>
+        </motion.button>
+
       </div>
       </div>
     </div>
