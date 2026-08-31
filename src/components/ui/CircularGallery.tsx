@@ -528,10 +528,22 @@ class App {
     this.scroll.position = this.scroll.current;
     this.start = e.touches ? e.touches[0].clientX : e.clientX;
     this.clickStart = { x: this.start, y: e.touches ? e.touches[0].clientY : e.clientY };
+    this.lastTouchTime = performance.now();
+    this.lastTouchX = this.start;
+    this.velocity = 0;
   }
   onTouchMove(e) {
     if (!this.isDown) return;
     const x = e.touches ? e.touches[0].clientX : e.clientX;
+    const now = performance.now();
+    const dt = now - (this.lastTouchTime || now);
+    
+    if (dt > 0) {
+      this.velocity = (x - this.lastTouchX) / dt;
+    }
+    this.lastTouchTime = now;
+    this.lastTouchX = x;
+
     // Multiplier matches WebGL units to screen pixels for 1:1 tracking
     const multiplier = (this.viewport.width / this.screen.width) * 2.5;
     const distance = (this.start - x) * multiplier;
@@ -539,6 +551,14 @@ class App {
   }
   onTouchUp(e) {
     this.isDown = false;
+    
+    // Add inertia if flicking
+    if (Math.abs(this.velocity) > 0.3) {
+       const multiplier = (this.viewport.width / this.screen.width) * 2.5;
+       const inertia = -this.velocity * multiplier * 200; // momentum factor
+       this.scroll.target += inertia;
+    }
+    
     this.onCheck();
     
     if (this.clickStart && e && this.onItemClick) {
