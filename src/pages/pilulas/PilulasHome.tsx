@@ -19,6 +19,16 @@ export default function PilulasHome() {
     navigate('/pilulas/cp');
   };
 
+  const handleSelectCF = () => {
+    haptic.selection();
+    navigate('/pilulas/cf');
+  };
+
+  const handleSelectCC = () => {
+    haptic.selection();
+    navigate('/pilulas/cc');
+  };
+
   return (
     <div className="min-h-dvh bg-zinc-950 pb-20">
       <PageHeader
@@ -86,6 +96,60 @@ export default function PilulasHome() {
               </h3>
               <p className="mt-2 text-[13px] text-zinc-300 line-clamp-2 drop-shadow">
                 Entenda os artigos essenciais do CP.
+              </p>
+            </div>
+          </motion.button>
+
+          <motion.button
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            onClick={handleSelectCF}
+            className="group relative flex flex-col items-start text-left overflow-hidden rounded-2xl bg-zinc-900 border border-zinc-800/80 active:scale-[0.98] transition-all h-[220px]"
+          >
+            {/* Background Image with Overlay */}
+            <div className="absolute inset-0 z-0">
+               <img src="https://images.unsplash.com/photo-1505664159851-14ce0f5af3ce?q=80&w=600&auto=format&fit=crop" alt="Constituição Federal" className="w-full h-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+              <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
+            </div>
+
+            {/* Content */}
+            <div className="relative z-10 flex flex-col justify-end h-full p-5 w-full">
+              <span className="inline-block px-2.5 py-1 mb-3 rounded-full bg-blue-500/20 text-blue-400 text-[11px] font-black uppercase tracking-widest border border-blue-500/30 self-start">
+                Magna Carta
+              </span>
+              <h3 className="text-[20px] font-black text-white leading-tight drop-shadow-md">
+                Constituição Federal
+              </h3>
+              <p className="mt-2 text-[13px] text-zinc-300 line-clamp-2 drop-shadow">
+                Aprenda a base do nosso Estado de Direito.
+              </p>
+            </div>
+          </motion.button>
+
+          <motion.button
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            onClick={handleSelectCC}
+            className="group relative flex flex-col items-start text-left overflow-hidden rounded-2xl bg-zinc-900 border border-zinc-800/80 active:scale-[0.98] transition-all h-[220px]"
+          >
+            {/* Background Image with Overlay */}
+            <div className="absolute inset-0 z-0">
+               <img src="/pilulas/cc_square.png" alt="Código Civil" className="w-full h-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+              <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
+            </div>
+
+            {/* Content */}
+            <div className="relative z-10 flex flex-col justify-end h-full p-5 w-full">
+              <span className="inline-block px-2.5 py-1 mb-3 rounded-full bg-amber-500/20 text-amber-400 text-[11px] font-black uppercase tracking-widest border border-amber-500/30 self-start">
+                Lei Seca
+              </span>
+              <h3 className="text-[20px] font-black text-white leading-tight drop-shadow-md">
+                Código Civil
+              </h3>
+              <p className="mt-2 text-[13px] text-zinc-300 line-clamp-2 drop-shadow">
+                Entenda os direitos e deveres civis.
               </p>
             </div>
           </motion.button>

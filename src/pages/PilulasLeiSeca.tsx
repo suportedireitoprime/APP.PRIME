@@ -16,11 +16,13 @@ function formatTime(timeInSeconds: number) {
 function PilulaItem({ 
   artigo, 
   itemVariants, 
-  navigate 
+  navigate,
+  config
 }: { 
   artigo: any, 
   itemVariants: any, 
-  navigate: (path: string) => void 
+  navigate: (path: string) => void,
+  config: any
 }) {
   const [duration, setDuration] = useState<number | null>(null);
   const temAudio = !!artigo.audio_pilula_url;
@@ -47,7 +49,7 @@ function PilulaItem({
           });
           return;
         }
-        navigate(`/pilulas/${artigo.id}?type=cp`);
+        navigate(`/pilulas/${artigo.id}?type=${config.slug}`);
       }}
       className={`group relative flex items-center gap-4 p-4 rounded-2xl border text-left overflow-hidden transition-all ${
         temAudio
@@ -66,8 +68,8 @@ function PilulaItem({
       {/* Capa */}
       <div className="w-16 h-24 rounded-lg bg-white/5 shrink-0 overflow-hidden shadow-md">
         <img 
-          src={directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg')} 
-          alt="Código Penal" 
+          src={config.cover} 
+          alt={config.title} 
           className="w-full h-full object-cover" 
           loading="lazy" 
           onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=600&auto=format&fit=crop' }} 
@@ -79,16 +81,16 @@ function PilulaItem({
         <h3 className={`font-semibold text-base leading-tight truncate ${temAudio ? 'text-white' : 'text-white/60'}`}>
           Artigo {artigo.numero}
         </h3>
-        <p className="text-xs text-white/50 mt-1 truncate">Código Penal</p>
+        <p className="text-xs text-white/50 mt-1 truncate">{config.title}</p>
 
         <div className="mt-auto pt-3">
           {temAudio ? (
             <div className="flex items-center justify-between gap-4 w-full">
               <div className="flex items-center gap-2">
-                <div className={`flex items-center justify-center w-6 h-6 rounded-full transition-colors bg-red-500/15 text-red-400 group-hover:bg-red-500/20`}>
+                <div className={`flex items-center justify-center w-6 h-6 rounded-full transition-colors ${config.colorClasses} group-hover:bg-white/10`}>
                   <Headphones className="w-3 h-3" />
                 </div>
-                <span className={`text-[10px] uppercase tracking-wider font-bold text-red-400`}>
+                <span className={`text-[10px] uppercase tracking-wider font-bold ${config.textColorClass}`}>
                   {progressRatio > 0.95 ? 'Concluída' : progressRatio > 0 ? 'Continuar' : 'Ouvir Pílula'}
                 </span>
               </div>
@@ -99,7 +101,7 @@ function PilulaItem({
                 </span>
                 {progressRatio > 0 && (
                   <div className="w-16 h-1 bg-white/10 rounded-full overflow-hidden">
-                    <div className="h-full bg-red-500 rounded-full" style={{ width: `${Math.min(100, Math.max(0, progressRatio * 100))}%` }} />
+                    <div className={`h-full ${config.progressColorClass} rounded-full`} style={{ width: `${Math.min(100, Math.max(0, progressRatio * 100))}%` }} />
                   </div>
                 )}
               </div>
@@ -117,23 +119,62 @@ function PilulaItem({
   );
 }
 
-export default function PilulasCP() {
+const CONFIG_MAP = {
+  cp: {
+    slug: 'cp',
+    title: 'Código Penal',
+    subtitle: 'Ouça a explicação dos artigos',
+    cover: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg'),
+    colorClasses: 'bg-red-500/15 text-red-400',
+    textColorClass: 'text-red-400',
+    progressColorClass: 'bg-red-500',
+    iconColor: 'text-red-500',
+    inputFocusClass: 'focus:border-red-500/50'
+  },
+  cf: {
+    slug: 'cf',
+    title: 'Constituição Federal',
+    subtitle: 'Aprenda a base do Estado',
+    cover: 'https://images.unsplash.com/photo-1505664159851-14ce0f5af3ce?q=80&w=600&auto=format&fit=crop',
+    colorClasses: 'bg-blue-500/15 text-blue-400',
+    textColorClass: 'text-blue-400',
+    progressColorClass: 'bg-blue-500',
+    iconColor: 'text-blue-500',
+    inputFocusClass: 'focus:border-blue-500/50'
+  },
+  cc: {
+    slug: 'cc',
+    title: 'Código Civil',
+    subtitle: 'Entenda os direitos civis',
+    cover: '/pilulas/cc_portrait.png',
+    colorClasses: 'bg-amber-500/15 text-amber-400',
+    textColorClass: 'text-amber-400',
+    progressColorClass: 'bg-amber-500',
+    iconColor: 'text-amber-500',
+    inputFocusClass: 'focus:border-amber-500/50'
+  }
+};
+
+export default function PilulasLeiSeca({ slug }: { slug: 'cp' | 'cf' | 'cc' }) {
   const navigate = useNavigate();
   const [artigos, setArtigos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [busca, setBusca] = useState('');
 
+  const config = CONFIG_MAP[slug];
+
   useEffect(() => {
-    async function fetchCP() {
+    async function fetchLei() {
       try {
+        setLoading(true);
         const { data: leiData, error: leiError } = await supabase
           .from('vade_mecum_leis')
           .select('id')
-          .eq('slug', 'cp')
+          .eq('slug', slug)
           .single();
           
         if (leiError || !leiData) {
-          console.error('Erro ao buscar ID do CP:', leiError);
+          console.error(`Erro ao buscar ID do ${slug}:`, leiError);
           return;
         }
         
@@ -147,14 +188,14 @@ export default function PilulasCP() {
         if (error) throw error;
         setArtigos(data || []);
       } catch (error) {
-        console.error('Erro ao buscar artigos do CP:', error);
-        toast.error('Erro ao carregar as pílulas do Código Penal.');
+        console.error(`Erro ao buscar artigos do ${slug}:`, error);
+        toast.error(`Erro ao carregar as pílulas do ${config.title}.`);
       } finally {
         setLoading(false);
       }
     }
-    fetchCP();
-  }, []);
+    fetchLei();
+  }, [slug]);
 
   const artigosFiltrados = busca
     ? artigos.filter(
@@ -188,10 +229,10 @@ export default function PilulasCP() {
           </button>
           <div>
             <h1 className="text-xl font-bold flex items-center gap-2">
-              <Pill className="w-5 h-5 text-red-500" />
-              Código Penal
+              <Pill className={`w-5 h-5 ${config.iconColor}`} />
+              {config.title}
             </h1>
-            <p className="text-xs text-white/50">Ouça a explicação dos artigos</p>
+            <p className="text-xs text-white/50">{config.subtitle}</p>
           </div>
         </div>
 
@@ -202,7 +243,7 @@ export default function PilulasCP() {
             placeholder="Buscar por artigo..."
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
-            className="w-full h-11 bg-white/5 border border-white/10 rounded-2xl pl-11 pr-4 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-red-500/50 transition-colors"
+            className={`w-full h-11 bg-white/5 border border-white/10 rounded-2xl pl-11 pr-4 text-sm text-white placeholder:text-white/40 focus:outline-none transition-colors ${config.inputFocusClass}`}
           />
         </div>
       </div>
@@ -211,7 +252,7 @@ export default function PilulasCP() {
       <div className="px-4 py-6">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 text-white/40 space-y-4">
-            <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-red-500 animate-spin" />
+            <div className={`w-8 h-8 rounded-full border-2 border-white/20 border-t-current ${config.iconColor} animate-spin`} />
             <p className="text-sm">Carregando artigos...</p>
           </div>
         ) : artigosFiltrados.length === 0 ? (
@@ -231,7 +272,8 @@ export default function PilulasCP() {
                 key={artigo.id} 
                 artigo={artigo} 
                 itemVariants={itemVariants} 
-                navigate={navigate} 
+                navigate={navigate}
+                config={config}
               />
             ))}
           </motion.div>
