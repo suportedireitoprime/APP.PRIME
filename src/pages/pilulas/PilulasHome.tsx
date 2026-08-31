@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { directImg } from '@/lib/cdnImg';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { haptic } from '@/lib/nativeHaptics';
+import ShapeGrid from '@/components/ui/ShapeGrid';
 
 export default function PilulasHome() {
   const navigate = useNavigate();
@@ -30,12 +31,25 @@ export default function PilulasHome() {
   };
 
   return (
-    <div className="min-h-dvh bg-zinc-950 pb-20">
-      <PageHeader
-        title="Pílulas Jurídicas"
-        onBack={() => navigate('/')}
-        rightAction={<div className="w-8" />}
-      />
+    <div className="min-h-dvh bg-zinc-950 pb-20 relative overflow-hidden">
+      <div className="absolute inset-0 z-0">
+        <ShapeGrid 
+          speed={0.5} 
+          squareSize={40}
+          direction='diagonal'
+          borderColor='rgba(255, 255, 255, 0.05)'
+          hoverFillColor='rgba(255, 255, 255, 0.1)'
+          shape='square'
+          hoverTrailAmount={5}
+        />
+      </div>
+
+      <div className="relative z-10">
+        <PageHeader
+          title="Pílulas Jurídicas"
+          onBack={() => navigate('/')}
+          rightAction={<div className="w-8" />}
+        />
 
       <div className="px-4 pt-6 space-y-6">
         <div>
@@ -146,6 +160,7 @@ export default function PilulasHome() {
             </motion.button>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );
