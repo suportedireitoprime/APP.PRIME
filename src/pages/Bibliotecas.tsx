@@ -294,7 +294,17 @@ const Bibliotecas = () => {
               </p>
             </div>
           </div>
-          <CircularGallery collections={COLECOES} />
+          <CircularGallery 
+            items={COLECOES.map(c => ({
+              image: c.cover,
+              text: c.label,
+              id: c.id
+            }))}
+            onItemClick={(item) => {
+              // Lógica de clique para abrir a coleção pode ser adicionada aqui.
+              console.log("Clicou na coleção:", item.text);
+            }}
+          />
         </div>
       </div>
 
