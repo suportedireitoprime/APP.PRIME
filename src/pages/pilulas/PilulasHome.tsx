@@ -45,8 +45,8 @@ export default function PilulasHome() {
           >
             {/* Background Image with Overlay */}
             <div className="absolute inset-0 z-0">
-               <img src="/pilulas/classicos.jpg" alt="Clássicos do Direito" className="w-full h-full object-cover opacity-60 transition-transform duration-700 group-hover:scale-105" loading="lazy" />
-              <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/80 to-transparent" />
+               <img src="/pilulas/classicos.jpg" alt="Clássicos do Direito" className="w-full h-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+              <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
             </div>
 
             {/* Content */}
@@ -72,8 +72,8 @@ export default function PilulasHome() {
           >
             {/* Background Image with Overlay */}
             <div className="absolute inset-0 z-0">
-               <img src={directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp.webp')} alt="Código Penal" className="w-full h-full object-cover opacity-60 transition-transform duration-700 group-hover:scale-105" loading="lazy" onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=600&auto=format&fit=crop' }} />
-              <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/80 to-transparent" />
+               <img src={directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp.webp')} alt="Código Penal" className="w-full h-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-105" loading="lazy" onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=600&auto=format&fit=crop' }} />
+              <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
             </div>
 
             {/* Content */}
