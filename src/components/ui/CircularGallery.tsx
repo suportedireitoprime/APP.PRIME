@@ -481,6 +481,7 @@ class App {
     });
   }
   onTouchDown(e) {
+    if (this.container && !this.container.contains(e.target)) return;
     this.isDown = true;
     this.scroll.position = this.scroll.current;
     this.start = e.touches ? e.touches[0].clientX : e.clientX;
@@ -530,6 +531,7 @@ class App {
           }
         }
       }
+      this.clickStart = null;
     }
   }
   onWheel(e) {

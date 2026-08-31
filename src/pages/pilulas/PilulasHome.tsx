@@ -121,7 +121,7 @@ export default function PilulasHome() {
         <div className="space-y-4">
           <div className="flex items-start justify-between px-1 mb-4 gap-4">
             <div className="flex-1">
-              <h2 className="text-[22px] font-black text-white uppercase tracking-normal mb-1">Pílulas de Códigos</h2>
+              <h2 className="text-[22px] font-black text-white uppercase tracking-widest mb-1">Pílulas de Códigos</h2>
               <p className="text-[13px] text-zinc-400 leading-relaxed">
                 Áudios curtos e diretos sobre os artigos mais cobrados e essenciais da lei seca.
               </p>

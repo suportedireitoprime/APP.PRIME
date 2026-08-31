@@ -66,6 +66,7 @@
 - **Pílulas Expansíveis:** Manter leitura limpa com pílulas expansíveis ("Em português claro", "Ver exemplo").
 - **Alto Contraste (WCAG AAA):** Substituir preto absoluto por grafite/zinc profundo (`bg-[#0d0f12]` / `bg-zinc-950`), ícones em branco puro (`text-white`) e cards elevados (`backdrop-blur-md`).
 - **Gamificação Viva:** Header com XP/Streak em tempo real e animações de vitória ao concluir etapas.
+- **Tipografia e Espaçamento:** Em títulos de seções importantes (ex: "PÍLULAS DE CÓDIGOS", "CLÁSSICOS DO DIREITO"), utilizar SEMPRE um espaçamento de letras maior (ex: `tracking-widest` no Tailwind) para garantir a legibilidade. Nunca deixar as letras justapostas em títulos uppercase.
 
 ## Eficiência de Tokens & Desempenho (Padrão Lovable & Antigravity)
 - **Busca Direcionada (Progressive Disclosure):** Use `grep_search` e `view_file` com intervalos de linhas delimitados para inspecionar código. Nunca leia arquivos inteiros desnecessariamente.
