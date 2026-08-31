@@ -24,21 +24,29 @@ interface ArtigoCP {
   audio_pilula_url: string | null;
   audio_transcricao?: string | null;
   audio_grafo?: any;
+  lei_slug?: string;
+  lei_nome?: string;
 }
 
 type SelectedItemType = 
   | { type: 'livro'; data: LivroComColecao }
   | { type: 'artigo'; data: ArtigoCP };
 
-type ScreenState = 'menu' | 'classicos' | 'rapidas' | 'cp';
+type ScreenState = 'menu' | 'classicos' | 'rapidas' | 'cp' | 'cf' | 'cc';
 
 export default function AdminPilulas() {
   const navigate = useNavigate();
   const [activeScreen, setActiveScreen] = useState<ScreenState>('menu');
   const [loading, setLoading] = useState(true);
+  
   const [loadingCP, setLoadingCP] = useState(true);
-  const [livros, setLivros] = useState<LivroComColecao[]>([]);
   const [artigosCP, setArtigosCP] = useState<ArtigoCP[]>([]);
+  
+  const [loadingCF, setLoadingCF] = useState(true);
+  const [artigosCF, setArtigosCF] = useState<ArtigoCP[]>([]);
+  
+  const [loadingCC, setLoadingCC] = useState(true);
+  const [artigosCC, setArtigosCC] = useState<ArtigoCP[]>([]);
   
   const [busca, setBusca] = useState('');
   const [uploadingId, setUploadingId] = useState<number | string | null>(null);
@@ -46,9 +54,13 @@ export default function AdminPilulas() {
   const [selectedItem, setSelectedItem] = useState<SelectedItemType | null>(null);
   const [grafoPreviewOpen, setGrafoPreviewOpen] = useState(false);
 
+  const [livros, setLivros] = useState<LivroComColecao[]>([]);
+  
   useEffect(() => {
     carregarTudo();
-    carregarCP();
+    carregarLei('cp');
+    carregarLei('cf');
+    carregarLei('cc');
   }, []);
 
   async function carregarTudo() {
@@ -76,18 +88,20 @@ export default function AdminPilulas() {
     }
   }
 
-  async function carregarCP() {
-    setLoadingCP(true);
+  async function carregarLei(slug: 'cp' | 'cf' | 'cc') {
+    const setLoad = slug === 'cp' ? setLoadingCP : slug === 'cf' ? setLoadingCF : setLoadingCC;
+    const setData = slug === 'cp' ? setArtigosCP : slug === 'cf' ? setArtigosCF : setArtigosCC;
+    
+    setLoad(true);
     try {
-      // 1. Obter o ID do Código Penal
       const { data: leiData, error: leiError } = await supabase
         .from('vade_mecum_leis')
         .select('id')
-        .eq('slug', 'cp')
+        .eq('slug', slug)
         .single();
         
       if (leiError || !leiData) {
-        console.error('Erro ao buscar ID do CP:', leiError);
+        console.error(`Erro ao buscar ID do ${slug}:`, leiError);
         return;
       }
       
@@ -95,19 +109,22 @@ export default function AdminPilulas() {
         .from('vade_mecum_artigos')
         .select('id, numero, audio_pilula_url, audio_transcricao, audio_grafo')
         .eq('lei_id', leiData.id)
-        .ilike('texto', '%Art.%') // Filtra apenas artigos (exclui Parte, Título, Livro)
+        .ilike('texto', '%Art.%') 
         .order('ordem', { ascending: true });
         
       if (error) {
-        console.error('Erro ao carregar artigos do Código Penal:', error);
+        console.error(`Erro ao carregar artigos do ${slug}:`, error);
         return;
       }
       
-      setArtigosCP(data as any[]);
+      const nomeMap = { cp: 'Código Penal', cf: 'Constituição Federal', cc: 'Código Civil' };
+      const artigosComLei = (data || []).map(a => ({ ...a, lei_slug: slug, lei_nome: nomeMap[slug] }));
+      
+      setData(artigosComLei as any[]);
     } catch (err) {
-      toast.error('Erro ao carregar artigos do Código Penal');
+      toast.error(`Erro ao carregar artigos de ${slug}`);
     } finally {
-      setLoadingCP(false);
+      setLoad(false);
     }
   }
 
@@ -125,9 +142,14 @@ export default function AdminPilulas() {
 
   const artigosFiltrados = useMemo(() => {
     const q = busca.toLowerCase();
-    if (!q) return artigosCP;
-    return artigosCP.filter(a => a.numero.toLowerCase().includes(q));
-  }, [artigosCP, busca]);
+    let lista: ArtigoCP[] = [];
+    if (activeScreen === 'cp') lista = artigosCP;
+    if (activeScreen === 'cf') lista = artigosCF;
+    if (activeScreen === 'cc') lista = artigosCC;
+    
+    if (!q) return lista;
+    return lista.filter(a => a.numero.toLowerCase().includes(q));
+  }, [artigosCP, artigosCF, artigosCC, busca, activeScreen]);
 
   async function handleUploadAudio(item: SelectedItemType, file: File) {
     if (!file.type.startsWith('audio/')) {
@@ -143,9 +165,11 @@ export default function AdminPilulas() {
 
     try {
       const fileExt = file.name.split('.').pop();
-      const rawFileName = item.type === 'livro'
-        ? `resumos-livros/pilulas-classicos-${itemId}-${Date.now()}.${fileExt}`
-        : `resumos-livros/pilulas-cp-${itemId}-${Date.now()}.${fileExt}`;
+      let rawFileName = `resumos-livros/pilulas-classicos-${itemId}-${Date.now()}.${fileExt}`;
+      if (item.type === 'artigo') {
+        const slug = item.data.lei_slug || 'cp';
+        rawFileName = `resumos-livros/pilulas-${slug}-${itemId}-${Date.now()}.${fileExt}`;
+      }
 
       const { error: uploadError } = await supabase.storage
         .from('audios') 
@@ -187,9 +211,11 @@ export default function AdminPilulas() {
           audio_pilula_url: rawUrl 
         };
 
-        setArtigosCP((prev) => prev.map(a => 
-          a.id === itemId ? updatedArtigoCP : a
-        ));
+        const slug = item.data.lei_slug;
+        if (slug === 'cp') setArtigosCP((prev) => prev.map(a => a.id === itemId ? updatedArtigoCP : a));
+        if (slug === 'cf') setArtigosCF((prev) => prev.map(a => a.id === itemId ? updatedArtigoCP : a));
+        if (slug === 'cc') setArtigosCC((prev) => prev.map(a => a.id === itemId ? updatedArtigoCP : a));
+
         updatedItemForTranscription = { type: 'artigo', data: updatedArtigoCP };
         setSelectedItem((prev) => (prev && prev.type === 'artigo' && prev.data.id === itemId) ? updatedItemForTranscription : prev);
       }
@@ -303,7 +329,11 @@ export default function AdminPilulas() {
           audio_grafo: grafoData?.grafo || null
         };
         
-        setArtigosCP((prev) => prev.map((a) => (a.id === itemId ? updatedArtigo : a)));
+        const slug = item.data.lei_slug;
+        if (slug === 'cp') setArtigosCP((prev) => prev.map((a) => (a.id === itemId ? updatedArtigo : a)));
+        if (slug === 'cf') setArtigosCF((prev) => prev.map((a) => (a.id === itemId ? updatedArtigo : a)));
+        if (slug === 'cc') setArtigosCC((prev) => prev.map((a) => (a.id === itemId ? updatedArtigo : a)));
+        
         setSelectedItem((prev) => (prev && prev.type === 'artigo' && prev.data.id === itemId) ? { type: 'artigo', data: updatedArtigo } : prev);
 
         toast.success('Pílula transcrita e grafo gerado com sucesso!', { id: toastId });
@@ -332,9 +362,10 @@ export default function AdminPilulas() {
     title = "Pílulas Rápidas";
     subtitle = "Gerencie pílulas de leitura rápida";
     onBack = () => setActiveScreen('menu');
-  } else if (activeScreen === 'cp') {
-    title = "Código Penal";
-    subtitle = `Gerencie as pílulas do CP (${artigosCP.length})`;
+  } else if (['cp', 'cf', 'cc'].includes(activeScreen)) {
+    const nomeMap = { cp: 'Código Penal', cf: 'Constituição Federal', cc: 'Código Civil' };
+    title = nomeMap[activeScreen as 'cp'|'cf'|'cc'];
+    subtitle = `Gerencie as pílulas de ${title} (${artigosFiltrados.length})`;
     onBack = () => setActiveScreen('rapidas');
   }
 
@@ -349,7 +380,7 @@ export default function AdminPilulas() {
       <div className="px-4 pt-6 max-w-4xl mx-auto space-y-6">
         
         {/* Busca Global (sempre visível nas listas) */}
-        {(activeScreen === 'menu' || activeScreen === 'classicos' || activeScreen === 'cp') && (
+        {(activeScreen === 'menu' || activeScreen === 'classicos' || ['cp', 'cf', 'cc'].includes(activeScreen)) && (
           <div className="relative">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
             <Input
@@ -394,6 +425,24 @@ export default function AdminPilulas() {
             >
               <span className="font-bold text-lg uppercase tracking-wider text-foreground">
                 Código Penal ({artigosCP.length})
+              </span>
+              <ChevronRight className="w-5 h-5 text-muted-foreground" />
+            </button>
+            <button
+              onClick={() => setActiveScreen('cf')}
+              className="w-full flex items-center justify-between px-5 py-4 bg-card rounded-2xl shadow-sm border border-border hover:bg-muted/30 transition-colors active:scale-[0.98]"
+            >
+              <span className="font-bold text-lg uppercase tracking-wider text-foreground">
+                Constituição Federal ({artigosCF.length})
+              </span>
+              <ChevronRight className="w-5 h-5 text-muted-foreground" />
+            </button>
+            <button
+              onClick={() => setActiveScreen('cc')}
+              className="w-full flex items-center justify-between px-5 py-4 bg-card rounded-2xl shadow-sm border border-border hover:bg-muted/30 transition-colors active:scale-[0.98]"
+            >
+              <span className="font-bold text-lg uppercase tracking-wider text-foreground">
+                Código Civil ({artigosCC.length})
               </span>
               <ChevronRight className="w-5 h-5 text-muted-foreground" />
             </button>
@@ -463,13 +512,13 @@ export default function AdminPilulas() {
           </div>
         )}
 
-        {/* Tela Código Penal (Listagem) */}
-        {activeScreen === 'cp' && (
+        {/* Tela Artigos (Listagem) */}
+        {['cp', 'cf', 'cc'].includes(activeScreen) && (
           <div className="space-y-4">
-            {loadingCP ? (
+            {(activeScreen === 'cp' ? loadingCP : activeScreen === 'cf' ? loadingCF : loadingCC) ? (
               <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
                 <Loader2 className="w-8 h-8 animate-spin mb-4" />
-                <p>Carregando Código Penal...</p>
+                <p>Carregando {title}...</p>
               </div>
             ) : artigosFiltrados.length === 0 ? (
               <div className="flex flex-col items-center justify-center p-12 text-center border border-white/5 rounded-2xl bg-white/[0.02]">
@@ -553,7 +602,7 @@ export default function AdminPilulas() {
                   <h3 className="font-bold text-foreground text-2xl leading-tight">
                     {selectedItem.data.numero}
                   </h3>
-                  <p className="text-muted-foreground mt-1 text-sm font-semibold">Código Penal</p>
+                  <p className="text-muted-foreground mt-1 text-sm font-semibold">{selectedItem.data.lei_nome || 'Código Penal'}</p>
                 </div>
               )}
 
@@ -757,7 +806,7 @@ export default function AdminPilulas() {
           onClose={() => setGrafoPreviewOpen(false)}
           tabelaNome="vade_mecum_artigos"
           artigoNumero={selectedItem.data.numero}
-          leiNome="Código Penal"
+          leiNome={selectedItem.data.lei_nome || "Código Penal"}
           preloadedGraphData={selectedItem.data.audio_grafo}
         />
       )}
