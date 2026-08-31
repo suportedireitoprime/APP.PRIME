@@ -14,6 +14,7 @@ import { startLeituraNativaPrefetch } from '@/services/leituraNativaPrefetch';
 import { scheduleWarmBiblioteca } from '@/services/bibliotecaWarmup';
 import { styleForArea, styleForPerformance } from '@/lib/bibliotecaIcons';
 import { directImg } from '@/lib/cdnImg';
+import { useBibliotecaCapa } from '@/hooks/useBibliotecaAsset';
 import { withBundleFallback, bundle } from '@/services/offlineBundle';
 import { getPersistedColecao, setPersistedColecao } from '@/services/offlineDb';
 import BibliotecaAtalhosBar from '@/components/biblioteca/BibliotecaAtalhosBar';
@@ -35,6 +36,7 @@ const BibliotecasDesktop = lazyWithRetry(() => import('./BibliotecasDesktop'));
 
 const VirtualLivroItem = memo(function VirtualLivroItem({ virtualRow, livro: l, onClick }: { virtualRow: VirtualItem, livro: LivroNormalizado, onClick: () => void }) {
   const isDownloaded = useIsPdfCached(l.download);
+  const capaUrl = useBibliotecaCapa(l.capa, 200);
   return (
     <div
       style={{
@@ -58,8 +60,8 @@ const VirtualLivroItem = memo(function VirtualLivroItem({ virtualRow, livro: l, 
               <CheckCircle2 className="w-3 h-3 text-green-400" />
             </div>
           )}
-          {l.capa && (
-            <img src={directImg(l.capa, 200)} alt="" loading="lazy" className="w-full h-full object-cover" />
+          {capaUrl && (
+            <img src={capaUrl} alt="" loading="lazy" className="w-full h-full object-cover" />
           )}
         </div>
         <div className="min-w-0 flex-1">

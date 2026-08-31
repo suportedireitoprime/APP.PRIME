@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import { useBibliotecaCapa } from '@/hooks/useBibliotecaAsset';
 import { directImg } from '@/lib/cdnImg';
 import {
   getFavoritos,
@@ -257,87 +258,9 @@ function LeituraLista({
   return (
     <div className="flex flex-col gap-3 pt-1">
       {itens.map(({ snap, index, total, percent, readTimeMs, etaMs }, i) => {
-        const pageLabel = total ? `Pág. ${index + 1} de ${total}` : `Pág. ${index + 1}`;
         const hasReminder = !!ativos?.has(String(snap.id));
         return (
-          <motion.div
-            key={`${snap.colecaoId}-${snap.id}`}
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.04, duration: 0.35, type: "spring", stiffness: 300, damping: 24 }}
-            whileHover={{ scale: 1.015 }}
-            whileTap={{ scale: 0.98 }}
-            className="relative flex items-stretch gap-3 rounded-2xl border border-border/60 bg-card p-3 text-left"
-          >
-            {onOpenLembrete && (
-              <button
-                type="button"
-                onClick={(e) => { e.stopPropagation(); onOpenLembrete(snap); }}
-                aria-label="Configurar lembrete"
-                className={`absolute top-2 right-2 z-10 w-8 h-8 rounded-full flex items-center justify-center border transition-colors ${
-                  hasReminder
-                    ? 'bg-primary text-primary-foreground border-primary'
-                    : 'bg-background/80 text-muted-foreground border-border/60 hover:text-primary'
-                }`}
-              >
-                <Bell className={`w-4 h-4 ${hasReminder ? 'fill-current' : ''}`} />
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={() => onOpen(snap)}
-              className="absolute inset-0 rounded-2xl z-0"
-              aria-label={`Abrir ${snap.titulo}`}
-            />
-            <div className="relative pointer-events-none flex items-stretch gap-3 flex-1 min-w-0">
-            <div className="w-[84px] sm:w-[96px] h-[120px] sm:h-[136px] rounded-lg overflow-hidden bg-muted shrink-0">
-              {snap.capa ? (
-                <img src={directImg(snap.capa, 320)} alt="" className="w-full h-full object-cover" loading="lazy" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <BookOpen className="w-5 h-5 text-muted-foreground" />
-                </div>
-              )}
-            </div>
-            <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
-              <div className="min-w-0">
-                <p className="text-[10px] uppercase tracking-wider font-bold text-primary/90">Continuar</p>
-                <p className="text-[15px] sm:text-base font-semibold text-foreground line-clamp-2 leading-snug mt-0.5">
-                  {snap.titulo}
-                </p>
-                {snap.autor && (
-                  <p className="text-[11.5px] text-muted-foreground mt-0.5 truncate">{snap.autor}</p>
-                )}
-              </div>
-
-              <div className="mt-2 space-y-1.5">
-                <div className="flex items-center justify-between text-[11px] text-muted-foreground">
-                  <span>{pageLabel}</span>
-                  {percent > 0 && <span className="text-primary font-semibold">{percent}%</span>}
-                </div>
-                <div className="h-1.5 rounded-full bg-secondary/60 overflow-hidden">
-                  <div
-                    className="h-full bg-primary transition-all"
-                    style={{ width: `${Math.max(2, percent)}%` }}
-                  />
-                </div>
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
-                  <span className="inline-flex items-center gap-1">
-                    <Clock className="w-3 h-3" /> {formatDuration(readTimeMs)} lidos
-                  </span>
-                  {etaMs != null && (
-                    <span className="inline-flex items-center gap-1">
-                      ⏱ ~{formatDuration(etaMs)} restantes
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-            <span className="self-center w-9 h-9 rounded-full bg-primary/15 text-primary flex items-center justify-center shrink-0 relative pointer-events-none">
-              <Play className="w-4 h-4 fill-current" />
-            </span>
-            </div>
-          </motion.div>
+          <LeituraRow key={`${snap.colecaoId}-${snap.id}`} snap={snap} index={index} total={total} percent={percent} readTimeMs={readTimeMs} etaMs={etaMs} hasReminder={hasReminder} onOpen={onOpen} onOpenLembrete={onOpenLembrete} delay={i * 0.04} />
         );
       })}
     </div>
@@ -371,41 +294,48 @@ function LivroLista({
   return (
     <div className="flex flex-col gap-2 pt-1">
       {itens.map((l, i) => (
-        <motion.button
-          key={`${l.colecaoId}-${l.id}`}
-          type="button"
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: i * 0.04, duration: 0.35, type: "spring", stiffness: 300, damping: 24 }}
-          whileHover={{ scale: 1.015 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={() => onOpen(l)}
-          className="flex items-center gap-3 rounded-xl border border-border/50 bg-card p-2.5 pr-3 text-left"
-        >
-          <div className="w-12 h-16 rounded-md overflow-hidden bg-muted shrink-0">
-            {l.capa ? (
-              <img src={directImg(l.capa, 200)} alt="" className="w-full h-full object-cover" loading="lazy" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <BookOpen className="w-4 h-4 text-muted-foreground" />
-              </div>
-            )}
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-foreground line-clamp-2 leading-tight">
-              {l.titulo}
-            </p>
-            {l.autor && <p className="text-[11px] text-muted-foreground mt-0.5 truncate">{l.autor}</p>}
-            {l.area && (
-              <span className="inline-block mt-1 text-[9px] uppercase tracking-wider text-primary/90 font-bold">
-                {l.area}
-              </span>
-            )}
-          </div>
-          <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
-        </motion.button>
+        <LivroRow key={`${l.colecaoId}-${l.id}`} l={l} delay={i * 0.04} onOpen={onOpen} />
       ))}
     </div>
+  );
+}
+
+
+function LivroRow({ l, delay, onOpen }: any) {
+  const capaUrl = useBibliotecaCapa(l.capa, 200);
+  return (
+    <motion.button
+      type="button"
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: delay, duration: 0.35, type: "spring", stiffness: 300, damping: 24 }}
+      whileHover={{ scale: 1.015 }}
+      whileTap={{ scale: 0.98 }}
+      onClick={() => onOpen(l)}
+      className="flex items-center gap-3 rounded-xl border border-border/50 bg-card p-2.5 pr-3 text-left"
+    >
+      <div className="w-12 h-16 rounded-md overflow-hidden bg-muted shrink-0">
+        {capaUrl ? (
+          <img src={capaUrl} alt="" className="w-full h-full object-cover" loading="lazy" />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <BookOpen className="w-4 h-4 text-muted-foreground" />
+          </div>
+        )}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-semibold text-foreground line-clamp-2 leading-tight">
+          {l.titulo}
+        </p>
+        {l.autor && <p className="text-[11px] text-muted-foreground mt-0.5 truncate">{l.autor}</p>}
+        {l.area && (
+          <span className="inline-block mt-1 text-[9px] uppercase tracking-wider text-primary/90 font-bold">
+            {l.area}
+          </span>
+        )}
+      </div>
+      <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+    </motion.button>
   );
 }
 
@@ -570,12 +500,13 @@ function OfflineRow({
   onOpen: () => void;
   onAction: () => void;
 }) {
+  const capaUrl = useBibliotecaCapa(livro.capa, 240);
   return (
     <div className="flex items-center gap-3 rounded-xl border border-border/50 bg-card p-3 pr-2.5">
       <button onClick={onOpen} className="flex items-center gap-3 flex-1 min-w-0 text-left">
         <div className="w-14 h-20 rounded-md overflow-hidden bg-muted shrink-0">
-          {livro.capa ? (
-            <img src={directImg(livro.capa, 240)} alt="" className="w-full h-full object-cover" loading="lazy" />
+          {capaUrl ? (
+            <img src={capaUrl} alt="" className="w-full h-full object-cover" loading="lazy" />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
               <BookOpen className="w-5 h-5 text-muted-foreground" />
