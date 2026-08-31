@@ -11,6 +11,11 @@ export default function PilulasHome() {
     navigate('/pilulas/classicos');
   };
 
+  const handleSelectCP = () => {
+    haptic.selection();
+    navigate('/pilulas/cp');
+  };
+
   return (
     <div className="min-h-dvh bg-zinc-950 pb-20">
       <PageHeader
@@ -51,6 +56,33 @@ export default function PilulasHome() {
               </h3>
               <p className="mt-2 text-[13px] text-zinc-300 line-clamp-2 drop-shadow">
                 As obras fundamentais do pensamento jurídico mundial.
+              </p>
+            </div>
+          </motion.button>
+
+          <motion.button
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            onClick={handleSelectCP}
+            className="group relative flex flex-col items-start text-left overflow-hidden rounded-2xl bg-zinc-900 border border-zinc-800/80 active:scale-[0.98] transition-all h-[220px]"
+          >
+            {/* Background Image with Overlay */}
+            <div className="absolute inset-0 z-0">
+               <img src="/vademecum/capas/cp.webp" alt="Código Penal" className="w-full h-full object-cover opacity-60 transition-transform duration-700 group-hover:scale-105" loading="lazy" onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=600&auto=format&fit=crop' }} />
+              <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/80 to-transparent" />
+            </div>
+
+            {/* Content */}
+            <div className="relative z-10 flex flex-col justify-end h-full p-5 w-full">
+              <span className="inline-block px-2.5 py-1 mb-3 rounded-full bg-red-500/20 text-red-400 text-[11px] font-black uppercase tracking-widest border border-red-500/30 self-start">
+                Lei Seca
+              </span>
+              <h3 className="text-[20px] font-black text-white leading-tight drop-shadow-md">
+                Código Penal
+              </h3>
+              <p className="mt-2 text-[13px] text-zinc-300 line-clamp-2 drop-shadow">
+                Entenda os artigos essenciais do CP.
               </p>
             </div>
           </motion.button>

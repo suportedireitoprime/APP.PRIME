@@ -47,6 +47,35 @@ export default function PilulasPlayer() {
     async function fetchPilula() {
       if (!id) return;
       try {
+        const searchParams = new URLSearchParams(window.location.search);
+        const type = searchParams.get('type');
+
+        if (type === 'cp') {
+           const { data, error } = await supabase
+            .from('vade_mecum_artigos')
+            .select('id, numero, texto, audio_pilula_url')
+            .eq('id', id)
+            .single();
+            
+           if (error) throw error;
+           
+           const normalizado = {
+              id: data.id,
+              titulo: `Artigo ${data.numero}`,
+              autor: 'Código Penal',
+              capa: '/vademecum/capas/cp.webp',
+              audioResumoUrl: data.audio_pilula_url,
+              analiseDetalhada: data.texto,
+              sobre: data.texto
+           } as any;
+           
+           setLivro(normalizado);
+           if (!normalizado.audioResumoUrl) {
+              toast.error('O áudio desta pílula ainda não está disponível.');
+           }
+           return;
+        }
+
         const classicosCol = COLECOES.find((c) => c.id === 'classicos');
         if (!classicosCol) return;
 
