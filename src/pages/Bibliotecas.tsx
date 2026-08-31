@@ -315,7 +315,9 @@ const Bibliotecas = () => {
                 const count = counts[c.id];
                 return {
                   image: c.cover,
-                  text: count ? `${c.label}\\n${count} livros` : c.label,
+                  text: c.label,
+                  badgeText: count ? `${count} livros` : undefined,
+                  showPlayButton: false,
                   id: c.id
                 };
               })}
@@ -324,7 +326,7 @@ const Bibliotecas = () => {
               scrollEase={0.02}
               borderRadius={0.05}
               onItemClick={(item) => {
-                console.log("Clicou na coleção:", item.text);
+                navigate(`/bibliotecas/${item.id}`);
               }}
             />
           </div>

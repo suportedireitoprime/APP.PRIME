@@ -205,6 +205,9 @@ class Title {
     if (this.positionType === 'outside') {
       this.mesh.position.y = -this.plane.scale.y * 0.5 - textHeight * 0.5 - 0.05;
       this.mesh.position.z = 0;
+    } else if (this.positionType === 'inside-top') {
+      this.mesh.position.y = this.plane.scale.y * 0.5 - textHeight * 0.5 - 0.1;
+      this.mesh.position.z = 0.01;
     } else {
       this.mesh.position.y = -this.plane.scale.y * 0.5 + textHeight * 0.5 + 0.1;
       this.mesh.position.z = 0.01;
@@ -230,7 +233,9 @@ class Media {
     bend,
     textColor,
     borderRadius = 0,
-    font
+    font,
+    badgeText,
+    showPlayButton = true
   }) {
     this.extra = 0;
     this.geometry = geometry;
@@ -248,6 +253,8 @@ class Media {
     this.textColor = textColor;
     this.borderRadius = borderRadius;
     this.font = font;
+    this.badgeText = badgeText;
+    this.showPlayButton = showPlayButton;
     this.createShader();
     this.createMesh();
     this.createTitle();
@@ -332,37 +339,39 @@ class Media {
       if (ctx) {
         ctx.drawImage(img, 0, 0);
 
-        // Draw Play Button overlay
-        const centerX = canvas.width / 2;
-        const centerY = canvas.height / 2;
-        const radius = canvas.width * 0.12;
+        if (this.showPlayButton) {
+          // Draw Play Button overlay
+          const centerX = canvas.width / 2;
+          const centerY = canvas.height / 2;
+          const radius = canvas.width * 0.12;
 
-        ctx.save();
-        // Glassmorphism-like background
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-        ctx.fill();
-        
-        // Border
-        ctx.lineWidth = Math.max(2, radius * 0.05);
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
-        ctx.stroke();
+          ctx.save();
+          // Glassmorphism-like background
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+          ctx.fill();
+          
+          // Border
+          ctx.lineWidth = Math.max(2, radius * 0.05);
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+          ctx.stroke();
 
-        // Play Triangle
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-        ctx.beginPath();
-        const playW = radius * 0.7;
-        const playH = radius * 0.8;
-        const offsetX = centerX - playW * 0.3 + (radius * 0.05);
-        const offsetY = centerY - playH * 0.5;
-        
-        ctx.moveTo(offsetX, offsetY);
-        ctx.lineTo(offsetX + playW, centerY);
-        ctx.lineTo(offsetX, offsetY + playH);
-        ctx.closePath();
-        ctx.fill();
-        ctx.restore();
+          // Play Triangle
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+          ctx.beginPath();
+          const playW = radius * 0.7;
+          const playH = radius * 0.8;
+          const offsetX = centerX - playW * 0.3 + (radius * 0.05);
+          const offsetY = centerY - playH * 0.5;
+          
+          ctx.moveTo(offsetX, offsetY);
+          ctx.lineTo(offsetX + playW, centerY);
+          ctx.lineTo(offsetX, offsetY + playH);
+          ctx.closePath();
+          ctx.fill();
+          ctx.restore();
+        }
       }
 
       texture.image = canvas;
@@ -395,6 +404,17 @@ class Media {
         textColor: '#ffffff',
         font: 'bold 20px Figtree',
         position: 'inside'
+      });
+    }
+    if (this.badgeText) {
+      this.badgeTitle = new Title({
+        gl: this.gl,
+        plane: this.plane,
+        renderer: this.renderer,
+        text: this.badgeText,
+        textColor: '#ffffff',
+        font: 'bold 22px Figtree',
+        position: 'inside-top'
       });
     }
   }
@@ -766,10 +786,15 @@ const CircularGallery = forwardRef(({
     resolveFont(font, fontUrl).then(resolvedFont => {
       if (!isMounted || !containerRef.current) return;
       app = new App(containerRef.current, {
-        items,
-        bend,
-        textColor,
-        borderRadius,
+            items: items.map(item => ({
+              ...item,
+              fullName: item.fullName,
+              badgeText: item.badgeText,
+              showPlayButton: item.showPlayButton !== undefined ? item.showPlayButton : true,
+            })),
+            bend,
+            textColor,
+            borderRadius,
         font: resolvedFont,
         scrollSpeed,
         scrollEase,

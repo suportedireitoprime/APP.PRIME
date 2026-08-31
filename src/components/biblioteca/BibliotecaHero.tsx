@@ -141,7 +141,7 @@ const BibliotecaHero = ({ children }: Props) => {
             animate={{ opacity: 0.92, x: 0, scale: 1 }}
             exit={{ opacity: 0, x: -20, scale: 0.98 }}
             transition={{ duration: 0.6, ease: 'easeOut' }}
-            className="absolute -right-2 top-6 h-[85%] w-auto object-contain object-top opacity-90 drop-shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
+            className="absolute -right-2 -top-2 h-[100%] w-auto object-contain object-top opacity-90 drop-shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
           />
         </AnimatePresence>
       </div>
