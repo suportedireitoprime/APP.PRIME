@@ -610,7 +610,7 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
               items={pillsItems}
               bend={1.5}
               textColor="#ffffff"
-              scrollEase={0.02}
+              scrollEase={0.15}
               borderRadius={0.05}
               onItemClick={(item) => {
                 import('@/lib/nativeHaptics').then((m) => m.haptic.selection());

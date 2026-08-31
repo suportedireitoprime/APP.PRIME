@@ -323,7 +323,7 @@ const Bibliotecas = () => {
               })}
               bend={1.5}
               textColor="#ffffff"
-              scrollEase={0.02}
+              scrollEase={0.15}
               borderRadius={0.05}
               onItemClick={(item) => {
                 navigate(`/bibliotecas/${item.id}`);

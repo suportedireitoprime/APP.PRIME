@@ -614,9 +614,9 @@ class App {
     this.isDown = false;
     
     // Add inertia if flicking
-    if (Math.abs(this.velocity) > 0.3) {
+    if (Math.abs(this.velocity) > 0.5) {
        const multiplier = (this.viewport.width / this.screen.width) * 2.5;
-       const inertia = -this.velocity * multiplier * 200; // momentum factor
+       const inertia = -this.velocity * multiplier * 120; // momentum factor
        this.scroll.target += inertia;
     }
     
