@@ -285,6 +285,39 @@ type FeatureSceneProps = {
   mock: React.ReactNode; // visual mock on the right/top
 };
 
+const RemotionWaveReveal: React.FC<{ text: string; baseDelay: number }> = ({ text, baseDelay }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  
+  return (
+    <span style={{ display: 'inline-block' }}>
+      {text.split('').map((char, i) => {
+        // Delay de ~1 frame por letra para o efeito de onda rápida
+        const charDelay = baseDelay + (i * 0.8);
+        const s = spring({
+          frame: frame - charDelay,
+          fps,
+          config: { damping: 15, stiffness: 150 },
+        });
+        
+        return (
+          <span
+            key={i}
+            style={{
+              display: 'inline-block',
+              transform: `translateY(${interpolate(s, [0, 1], [20, 0])}px)`,
+              opacity: s,
+              whiteSpace: char === ' ' ? 'pre' : 'normal',
+            }}
+          >
+            {char}
+          </span>
+        );
+      })}
+    </span>
+  );
+};
+
 const FeatureScene: React.FC<FeatureSceneProps> = ({
   step,
   title,
@@ -351,12 +384,10 @@ const FeatureScene: React.FC<FeatureSceneProps> = ({
             lineHeight: 1.35,
             margin: 0,
             fontWeight: 500,
-            transform: `translateY(${interpolate(descS, [0, 1], [24, 0])}px)`,
-            opacity: descS,
             maxWidth: 900,
           }}
         >
-          {description}
+          <RemotionWaveReveal text={description} baseDelay={24} />
         </p>
 
         <div
@@ -1418,10 +1449,10 @@ export const AppIntroVideo: React.FC<AppIntroProps> = ({
             step="01 / 04"
             title="Biblioteca"
             titleAccent="Inteligente"
-            description="Todos os Vade Mecums, leis e c�digos atualizados diariamente. Leia de forma fluida e encontre o que precisa em segundos."
+            description="Todos os Vade Mecums, leis e códigos atualizados diariamente. Leia de forma fluida e encontre o que precisa em segundos."
             bullets={[
-              'Atualiza��o di�ria garantida',
-              'Busca sem�ntica avan�ada',
+              'Atualização diária garantida',
+              'Busca semântica avançada',
               'Leitura adaptativa para telas de qualquer tamanho',
             ]}
             mock={<DocMock />}
@@ -1436,12 +1467,12 @@ export const AppIntroVideo: React.FC<AppIntroProps> = ({
           <FeatureScene
             step="02 / 04"
             title="Flashcards e"
-            titleAccent="Quest�es"
-            description="Memorize a lei seca com repeti��o espa�ada. Crie cards com um clique a partir de qualquer artigo."
+            titleAccent="Questões"
+            description="Memorize a lei seca com repetição espaçada. Crie cards com um clique a partir de qualquer artigo."
             bullets={[
-              'Algoritmo de repeti��o espa�ada',
-              'Mais de 50.000 quest�es comentadas',
-              'Cria��o de cards com 1 clique',
+              'Algoritmo de repetição espaçada',
+              'Mais de 50.000 questões comentadas',
+              'Criação de cards com 1 clique',
             ]}
             mock={<OCRMock />}
           />
@@ -1456,10 +1487,10 @@ export const AppIntroVideo: React.FC<AppIntroProps> = ({
             step="03 / 04"
             title="Radar"
             titleAccent="de Leis"
-            description="Nunca mais estude material desatualizado. O Radar te avisa sempre que uma lei ou s�mula importante mudar."
+            description="Nunca mais estude material desatualizado. O Radar te avisa sempre que uma lei ou súmula importante mudar."
             bullets={[
               'Avisos em tempo real',
-              'Resumos das altera��es',
+              'Resumos das alterações',
               'Monitoramento do STF e STJ',
             ]}
             mock={<RadarMock />}
@@ -1473,12 +1504,12 @@ export const AppIntroVideo: React.FC<AppIntroProps> = ({
         <TransitionSeries.Sequence durationInFrames={SEQ.featHorus}>
           <FeatureScene
             step="04 / 04"
-            title="H�rus"
+            title="Hórus"
             titleAccent="Assistente AI"
-            description="D�vidas complexas? O H�rus responde, explica e exemplifica, direto no app ou no seu WhatsApp."
+            description="Dúvidas complexas? O Hórus responde, explica e exemplifica, direto no app ou no seu WhatsApp."
             bullets={[
-              'Dispon�vel 24 horas por dia',
-              'Entende �udios e imagens',
+              'Disponível 24 horas por dia',
+              'Entende áudios e imagens',
               'Integrado ao seu WhatsApp',
             ]}
             mock={<WhatsMock />}
