@@ -5,7 +5,6 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Capacitor } from '@capacitor/core';
 import { useVirtualizer, type VirtualItem } from '@tanstack/react-virtual';
-import { PageHeader } from '@/components/vademecum/PageHeader';
 import { COLECOES, findColecao, normalizeLivro, type LivroNormalizado } from '@/lib/bibliotecaColecoes';
 import { useVisibleColecoes } from '@/hooks/useVisibleColecoes';
 import { supabase } from '@/integrations/supabase/client';
@@ -19,9 +18,9 @@ import { withBundleFallback, bundle } from '@/services/offlineBundle';
 import { getPersistedColecao, setPersistedColecao } from '@/services/offlineDb';
 import BibliotecaAtalhosBar from '@/components/biblioteca/BibliotecaAtalhosBar';
 import BibliotecaSearchBar from '@/components/biblioteca/BibliotecaSearchBar';
-import BibliotecaBottomNav from '@/components/biblioteca/BibliotecaBottomNav';
+import BibliotecaHero from '@/components/biblioteca/BibliotecaHero';
+import ShapeGrid from '@/components/ui/ShapeGrid';
 import LivroDetailSheet from '@/components/biblioteca/LivroDetailSheet';
-import FilosofosPanel from '@/components/biblioteca/FilosofosPanel';
 import RecomendacoesCarousel from '@/components/biblioteca/RecomendacoesCarousel';
 import ContinuarLeituraCarousel from '@/components/biblioteca/ContinuarLeituraCarousel';
 import PdfScrollReader from '@/components/biblioteca/PdfScrollReader';
@@ -242,29 +241,30 @@ const Bibliotecas = () => {
   }
 
   return (
-    <main className="min-h-dvh bg-background pb-[calc(96px+var(--sai-bottom,0px))]">
-      <PageHeader
-        title="Biblioteca"
-        onBack={() => navigate('/')}
-        rightAction={
-          <button
-            onClick={() => navigate('/biblioteca-offline')}
-            aria-label="Armazenamento Offline"
-            className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full flex items-center justify-center bg-muted active:scale-95 transition-transform"
-          >
-            <HardDrive className="w-5 h-5 text-primary" />
-          </button>
-        }
-      />
+    <main className="min-h-dvh bg-zinc-950 pb-20 relative overflow-hidden">
+      {/* Fundo ShapeGrid (igual Pílulas) */}
+      <div className="absolute inset-0 z-0">
+        <ShapeGrid
+          speed={0.5}
+          squareSize={40}
+          direction='diagonal'
+          borderColor='rgba(255, 255, 255, 0.05)'
+          hoverFillColor='rgba(255, 255, 255, 0.1)'
+          shape='square'
+          hoverTrailAmount={5}
+        />
+      </div>
+
+      <div className="relative z-10">
+      {/* Hero marrom com Sócrates + busca */}
+      <BibliotecaHero>
+        <div className="[&>div]:!px-0 [&>div]:!mb-0">
+          <BibliotecaSearchBar onAbrirLivro={(l) => setLivroAberto(l)} />
+        </div>
+      </BibliotecaHero>
 
       <div className="max-w-3xl mx-auto w-full">
-        {/* Painel marrom flush com o header, com a busca dentro */}
-        <FilosofosPanel>
-          <div className="[&>div]:!px-0 [&>div]:!mb-0">
-            <BibliotecaSearchBar onAbrirLivro={(l) => setLivroAberto(l)} />
-          </div>
-        </FilosofosPanel>
-        {/* Painéis hospedados pelo rodapé (Leitura, Favoritos, Recentes, Personalizado) */}
+        {/* Painéis hospedados pelos botões do hero (Leitura, Favoritos, Personalizado) */}
         <BibliotecaAtalhosBar 
           onAbrirLivro={(l) => setLivroAberto(l)} 
           onAbrirCustomPdf={(titulo, url) => {
@@ -466,7 +466,7 @@ const Bibliotecas = () => {
 
       </div>
 
-      <BibliotecaBottomNav />
+
 
       {/* Matéria: abre de baixo para cima até 90% (mesmo padrão dos Resumos) */}
       <AnimatePresence>
@@ -563,6 +563,7 @@ const Bibliotecas = () => {
           />
         )}
       </AnimatePresence>
+      </div>
     </main>
   );
 };
