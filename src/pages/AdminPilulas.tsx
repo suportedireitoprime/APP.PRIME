@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,7 @@ import { copiar } from '@/lib/nativo/copiar';
 
 import { CustomAudioPlayer } from '@/components/vademecum/CustomAudioPlayer';
 import GrafoOverlay from '@/components/vademecum/GrafoOverlay';
+import { useWindowVirtualizer } from '@tanstack/react-virtual';
 
 interface LivroComColecao {
   colecao: ColecaoConfig;
@@ -55,6 +56,7 @@ export default function AdminPilulas() {
   const [grafoPreviewOpen, setGrafoPreviewOpen] = useState(false);
 
   const [livros, setLivros] = useState<LivroComColecao[]>([]);
+  const listRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
     carregarTudo();
@@ -150,6 +152,13 @@ export default function AdminPilulas() {
     if (!q) return lista;
     return lista.filter(a => a.numero.toLowerCase().includes(q));
   }, [artigosCP, artigosCF, artigosCC, busca, activeScreen]);
+
+  const virtualizer = useWindowVirtualizer({
+    count: artigosFiltrados.length,
+    estimateSize: () => 74, // Approximate height of each row in px (button + gap)
+    scrollMargin: listRef.current?.offsetTop ?? 0,
+    overscan: 10,
+  });
 
   async function handleUploadAudio(item: SelectedItemType, file: File) {
     if (!file.type.startsWith('audio/')) {
@@ -525,31 +534,52 @@ export default function AdminPilulas() {
                 <p className="text-zinc-500 mb-2">Nenhum artigo encontrado.</p>
               </div>
             ) : (
-              <div className="grid gap-2">
-                {artigosFiltrados.map((artigo) => {
+              <div 
+                ref={listRef} 
+                style={{ 
+                  height: `${virtualizer.getTotalSize()}px`, 
+                  width: '100%', 
+                  position: 'relative' 
+                }}
+              >
+                {virtualizer.getVirtualItems().map((virtualItem) => {
+                  const artigo = artigosFiltrados[virtualItem.index];
                   const hasAudio = !!artigo.audio_pilula_url;
                   return (
-                    <button
-                      type="button"
-                      key={artigo.id}
-                      onClick={() => setSelectedItem({ type: 'artigo', data: artigo })}
-                      className={`flex items-center justify-between rounded-xl p-4 border shadow-sm text-left active:scale-[0.98] transition-all w-full ${
-                        hasAudio 
-                          ? 'bg-success/5 border-success/30 hover:bg-success/10' 
-                          : 'bg-card border-border hover:border-muted-foreground/30'
-                      }`}
+                    <div
+                      key={virtualItem.key}
+                      data-index={virtualItem.index}
+                      ref={virtualizer.measureElement}
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        transform: `translateY(${virtualItem.start}px)`,
+                        paddingBottom: '8px',
+                      }}
                     >
-                      <span className="font-bold text-base">{artigo.numero}</span>
-                      {hasAudio ? (
-                        <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-success bg-success/10 px-2.5 py-1 rounded-full">
-                          <CheckCircle2 className="w-3.5 h-3.5 shrink-0" /> Concluída
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-orange-500 bg-orange-500/10 px-2.5 py-1 rounded-full">
-                          <AlertCircle className="w-3.5 h-3.5 shrink-0" /> Pendente
-                        </span>
-                      )}
-                    </button>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedItem({ type: 'artigo', data: artigo })}
+                        className={`flex items-center justify-between rounded-xl p-4 border shadow-sm text-left active:scale-[0.98] transition-all w-full h-full ${
+                          hasAudio 
+                            ? 'bg-success/5 border-success/30 hover:bg-success/10' 
+                            : 'bg-card border-border hover:border-muted-foreground/30'
+                        }`}
+                      >
+                        <span className="font-bold text-base">{artigo.numero}</span>
+                        {hasAudio ? (
+                          <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-success bg-success/10 px-2.5 py-1 rounded-full">
+                            <CheckCircle2 className="w-3.5 h-3.5 shrink-0" /> Concluída
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-orange-500 bg-orange-500/10 px-2.5 py-1 rounded-full">
+                            <AlertCircle className="w-3.5 h-3.5 shrink-0" /> Pendente
+                          </span>
+                        )}
+                      </button>
+                    </div>
                   );
                 })}
               </div>
