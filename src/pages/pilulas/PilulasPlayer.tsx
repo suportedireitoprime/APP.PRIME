@@ -5,11 +5,15 @@ import { ArrowLeft, Play, Pause, BookOpen, AlertCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { COLECOES, type LivroNormalizado, normalizeLivro } from '@/lib/bibliotecaColecoes';
 import { useResumoLivroPlayer } from '@/contexts/ResumoLivroPlayerContext';
+import { directImg } from '@/lib/cdnImg';
+import Threads from '@/components/ui/Threads';
+import GrafoOverlay from '@/components/vademecum/GrafoOverlay';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Network } from 'lucide-react';
+import { get, set } from 'idb-keyval';
 import { clearMediaSession } from '@/lib/mediaSession';
 import { toast } from 'sonner';
 import { useGatedFeature } from '@/hooks/useGatedFeature';
-import { directImg } from '@/lib/cdnImg';
-import Threads from '@/components/ui/Threads';
 
 const INTRO_URL = 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/audios/audio-intro-2.mp3';
 
@@ -30,6 +34,9 @@ export default function PilulasPlayer() {
   
   const [phase, setPhase] = useState<'intro' | 'main'>('intro');
   const [hasPlayedIntro, setHasPlayedIntro] = useState(false);
+  
+  const [isGraphOpen, setIsGraphOpen] = useState(false);
+  const [isTextOpen, setIsTextOpen] = useState(false);
 
   const activeRef = phase === 'intro' ? audioIntroRef : audioMainRef;
   const introOverlap = Math.max(0, introDuration - 0.5);
@@ -49,13 +56,22 @@ export default function PilulasPlayer() {
     async function fetchPilula() {
       if (!id) return;
       try {
+        const cacheKey = `pilula_data_v2_${id}`;
+        const cached = await get(cacheKey);
+        if (cached) {
+          setLivro(cached);
+          setLoading(false);
+          // Opcionalmente podemos continuar rodando em background para atualizar o cache,
+          // mas para áudios do CP, manter o offline fast-first é ideal.
+        }
+
         const searchParams = new URLSearchParams(window.location.search);
         const type = searchParams.get('type');
 
         if (type === 'cp') {
            const { data, error } = await supabase
             .from('vade_mecum_artigos')
-            .select('id, numero, texto, audio_pilula_url')
+            .select('id, numero, texto, audio_pilula_url, audio_transcricao, audio_grafo')
             .eq('id', id)
             .single();
             
@@ -68,11 +84,19 @@ export default function PilulasPlayer() {
               capa: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_square.jpg'),
               audioResumoUrl: data.audio_pilula_url,
               analiseDetalhada: data.texto,
-              sobre: data.texto
+              sobre: data.texto,
+              numero: data.numero,
+              audio_grafo: data.audio_grafo,
+              transcricaoAudio: data.audio_transcricao,
+              isCP: true
            } as any;
            
-           setLivro(normalizado);
-           if (!normalizado.audioResumoUrl) {
+           if (normalizado.audioResumoUrl) {
+             await set(`pilula_data_v2_${id}`, normalizado);
+           }
+           
+           if (!cached) setLivro(normalizado);
+           if (!normalizado.audioResumoUrl && !cached) {
               toast.error('O áudio desta pílula ainda não está disponível.');
            }
            return;
@@ -90,9 +114,13 @@ export default function PilulasPlayer() {
         if (error) throw error;
 
         const normalizado = normalizeLivro(data, classicosCol);
-        setLivro(normalizado);
+        if (normalizado.audioResumoUrl) {
+          await set(`pilula_data_v2_${id}`, normalizado);
+        }
+        
+        if (!cached) setLivro(normalizado);
 
-        if (!normalizado.audioResumoUrl) {
+        if (!normalizado.audioResumoUrl && !cached) {
            toast.error('O áudio desta pílula ainda não está disponível.');
         }
       } catch (error) {
@@ -355,6 +383,28 @@ export default function PilulasPlayer() {
           {livro.autor && (
             <p className="text-base text-white/50 text-center mb-8">{livro.autor}</p>
           )}
+          
+          {/* Ações Extras para CP (Grafo e Lei Seca) */}
+          {livro.isCP && (
+            <div className="flex flex-wrap items-center justify-center gap-3 w-full max-w-sm mb-8">
+              {livro.audio_grafo && (
+                <button
+                  onClick={() => setIsGraphOpen(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/10 rounded-full transition-colors backdrop-blur-sm text-sm font-semibold"
+                >
+                  <Network className="w-4 h-4 text-primary" />
+                  Grafo de Conexões
+                </button>
+              )}
+              <button
+                onClick={() => setIsTextOpen(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/10 rounded-full transition-colors backdrop-blur-sm text-sm font-semibold"
+              >
+                <BookOpen className="w-4 h-4 text-primary" />
+                Lei Seca
+              </button>
+            </div>
+          )}
 
           {livro.sumarioAudio && livro.sumarioAudio.length > 0 && (
             <div className="w-full max-w-2xl mb-8">
@@ -502,6 +552,42 @@ export default function PilulasPlayer() {
         </motion.div>
       </div>
       {featurePilulas.gateNode}
+      
+      {/* Grafo Overlay */}
+      {livro?.isCP && (
+        <GrafoOverlay 
+          open={isGraphOpen} 
+          onClose={() => setIsGraphOpen(false)} 
+          tabelaNome="vade_mecum_artigos"
+          leiNome="Código Penal"
+          artigoNumero={livro.numero}
+          artigoTexto={livro.sobre}
+          preloadedGraphData={livro.audio_grafo}
+        />
+      )}
+
+      {/* Sheet Lei Seca */}
+      <Sheet open={isTextOpen} onOpenChange={setIsTextOpen}>
+        <SheetContent side="bottom" className="rounded-t-[32px] p-6 max-h-[85vh] overflow-y-auto bg-card border-t border-white/10">
+          <div className="max-w-xl mx-auto space-y-6 pt-2 pb-6">
+            <SheetHeader className="text-left space-y-1">
+              <SheetTitle className="text-2xl font-bold text-foreground">
+                {livro?.titulo}
+              </SheetTitle>
+              <p className="text-muted-foreground font-medium">{livro?.autor}</p>
+            </SheetHeader>
+            <div className="pt-4">
+              <div className="prose prose-sm prose-invert w-full max-w-none prose-p:leading-relaxed text-foreground/90">
+                {livro?.sobre?.split('\n').map((paragrafo: string, index: number) => (
+                  <p key={index} className="mb-4 text-lg">
+                    {paragrafo}
+                  </p>
+                ))}
+              </div>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

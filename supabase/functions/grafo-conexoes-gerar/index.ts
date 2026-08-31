@@ -115,7 +115,8 @@ REGRAS:
     {
       "id": "node_central", // ID único (use camelCase curto)
       "label": "TÍTULO CURTO", // O rótulo que aparecerá na bolha (ex: "Art. 482 CLT", "Justa Causa")
-      "type": "central" // Pode ser: "central", "conceito", "consequencia", "excecao", "lei_relacionada", "requisito", "procedimento"
+      "type": "central", // Pode ser: "central", "conceito", "consequencia", "excecao", "lei_relacionada", "requisito", "procedimento"
+      "icon": "BookOpen" // Escolha OBRIGATORIAMENTE um destes nomes exatos de ícones (Lucide): Scale, ShieldAlert, BookOpen, Key, Zap, ListChecks, CheckCircle2, AlertTriangle, Layers, Briefcase, FileText, Gavel, Users, User, Banknote, MapPin, Search, Crosshair, ArrowRightCircle, Target, ShieldCheck, Flame, Scale3d, Hand, Eye, Clock, Calendar, Lock, Globe, Car, Building, Home, Plane, Activity, Flag
     }
   ],
   "edges": [
@@ -123,14 +124,14 @@ REGRAS:
       "source": "id_do_no_origem",
       "target": "id_do_no_destino",
       "label": "Rótulo curto da seta (ex: 'gera', 'exceto', 'depende de', 'define')",
-      "description": "Explicação rica, completa e detalhada (2 a 3 frases) sobre a relação, aprofundando o conceito."
+      "description": "Explicação rica, completa e detalhada (2 a 3 frases) sobre a relação, aprofundando o conceito, ESTRITAMENTE baseada na transcrição."
     }
   ]
 }
 
-3. O "node_central" DEVE ser o próprio artigo em questão e só deve haver 1 node do tipo "central".
-4. SEJA ENXUTO E DIRETO: Crie no máximo 4 a 7 nós para mapear apenas a essência do artigo. Não crie nós desnecessários. Mantenha a estrutura visual limpa.
-5. Os 'labels' dos nodes devem ser muito curtos (máx 2-3 palavras). Toda a complexidade e detalhamento jurídico DEVE ficar na 'description' das setas, que será exibida quando o usuário clicar para ler.
+3. O "node_central" DEVE ser o próprio artigo em questão e só deve haver 1 node do tipo "central" (Use o icon BookOpen, Gavel ou Scale).
+4. SEJA ENXUTO E DIRETO: Crie no máximo 4 a 7 nós para mapear apenas a essência do artigo, baseando-se EXCLUSIVAMENTE na transcrição gerada.
+5. Os 'labels' dos nodes devem ser muito curtos (máx 2-3 palavras). Escolha o 'icon' que melhor represente visualmente a palavra. Toda a complexidade jurídica DEVE ficar na 'description' das setas.
     `.trim();
 
     let conteudo = null;

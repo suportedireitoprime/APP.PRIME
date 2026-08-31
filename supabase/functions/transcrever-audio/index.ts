@@ -1,4 +1,4 @@
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
+Ôªøimport "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
 import { geminiFetch } from "../_shared/geminiFetch.ts";
 import { logAiCall } from "../_shared/ai-log.ts";
@@ -8,7 +8,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const MODEL = "models/gemini-1.5-flash";
+const MODEL = "gemini-3.1-flash-lite";
 const PRIMARY = Deno.env.get("GEMINI_API_KEY") ?? "";
 const RESERVA = Deno.env.get("GEMINI_API_KEY_RESERVA") ?? "";
 const API_KEY = PRIMARY || RESERVA;
@@ -26,7 +26,7 @@ Deno.serve(async (req) => {
     const { fileUrl } = await req.json();
 
     if (!fileUrl) {
-      return new Response(JSON.stringify({ error: "fileUrl obrigatÛrio" }), {
+      return new Response(JSON.stringify({ error: "fileUrl obrigat√≥rio" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -34,7 +34,7 @@ Deno.serve(async (req) => {
     // 1. Download the file stream from Supabase Storage or external URL
     const response = await fetch(fileUrl);
     if (!response.ok) {
-      return new Response(JSON.stringify({ error: "Falha ao baixar ·udio da URL: " + response.statusText }), {
+      return new Response(JSON.stringify({ error: "Falha ao baixar √°udio da URL: " + response.statusText }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -71,13 +71,13 @@ Deno.serve(async (req) => {
         {
           parts: [
             { fileData: { fileUri: fileUri, mimeType: mime } },
-            { text: "Transcreva este ·udio com precis„o, preservando jargıes jurÌdicos. N„o invente palavras. Retorne apenas a transcriÁ„o." }
+            { text: "Transcreva este √°udio com precis√£o, preservando jarg√µes jur√≠dicos. N√£o invente palavras. Retorne apenas a transcri√ß√£o." }
           ]
         }
       ]
     };
 
-    const genUrl = "https://generativelanguage.googleapis.com/v1beta/" + MODEL + ":generateContent?key=" + API_KEY;
+    const genUrl = "https://generativelanguage.googleapis.com/v1beta/models/" + MODEL + ":generateContent?key=" + API_KEY;
     const genRes = await fetch(genUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

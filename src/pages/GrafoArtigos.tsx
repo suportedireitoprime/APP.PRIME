@@ -20,7 +20,19 @@ import { supabase } from '@/integrations/supabase/client';
 import { useGoBack } from '@/hooks/useGoBack';
 import dagre from 'dagre';
 import { toast } from 'sonner';
-import { ShieldAlert, BookOpen, Key, Zap, ListChecks, CheckCircle2, AlertTriangle, Layers } from 'lucide-react';
+import { 
+  ShieldAlert, BookOpen, Key, Zap, ListChecks, CheckCircle2, AlertTriangle, Layers,
+  Briefcase, FileText, Gavel, Users, User, Banknote, MapPin, Search, Crosshair, 
+  ArrowRightCircle, Target, ShieldCheck, Flame, Scale3d, Hand, Eye, Clock, Calendar, 
+  Lock, Globe, Car, Building, Home, Plane, Activity, Flag, Scale
+} from 'lucide-react';
+
+const availableIcons: Record<string, any> = {
+  Scale, ShieldAlert, BookOpen, Key, Zap, ListChecks, CheckCircle2, AlertTriangle, Layers,
+  Briefcase, FileText, Gavel, Users, User, Banknote, MapPin, Search, Crosshair, 
+  ArrowRightCircle, Target, ShieldCheck, Flame, Scale3d, Hand, Eye, Clock, Calendar, 
+  Lock, Globe, Car, Building, Home, Plane, Activity, Flag
+};
 
 const iconMap: Record<string, any> = {
   central: BookOpen,
@@ -33,25 +45,37 @@ const iconMap: Record<string, any> = {
 };
 
 function CustomNode({ data }: any) {
-  const Icon = iconMap[data.type] || iconMap.default;
+  // Use dynamically provided icon from LLM, or fallback to type mapping, or default
+  const Icon = data.iconName ? (availableIcons[data.iconName] || iconMap.default) : (iconMap[data.type] || iconMap.default);
+  
+  const isCentral = data.type === 'central';
   
   return (
     <motion.div
       initial={{ scale: 0.8, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-      className="relative px-4 py-3 rounded-2xl border-2 flex items-center gap-3 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.12)]"
+      className={`relative px-5 py-3.5 rounded-2xl border flex items-center gap-3 backdrop-blur-xl shadow-xl transition-all duration-300 ${isCentral ? 'ring-4 ring-primary/20' : 'hover:scale-105'}`}
       style={{
-        backgroundColor: data.bgColor,
-        borderColor: data.borderColor,
-        color: data.textColor,
+        backgroundColor: isCentral ? data.bgColor : 'hsl(var(--card))',
+        borderColor: isCentral ? data.borderColor : 'hsl(var(--border) / 0.5)',
+        color: isCentral ? data.textColor : 'hsl(var(--foreground))',
+        backgroundImage: isCentral 
+          ? `linear-gradient(135deg, ${data.bgColor}, ${data.borderColor})`
+          : `linear-gradient(135deg, hsl(var(--card)), hsl(var(--muted) / 0.3))`
       }}
     >
       <Handle type="target" position={Position.Top} className="!w-2 !h-2 border-none opacity-0" />
-      <div className="p-1.5 rounded-full shrink-0" style={{ backgroundColor: `${data.textColor}15` }}>
+      <div 
+        className="p-2 rounded-xl shrink-0 flex items-center justify-center shadow-sm" 
+        style={{ 
+          backgroundColor: isCentral ? 'rgba(255,255,255,0.2)' : `${data.textColor}15`,
+          color: isCentral ? '#fff' : data.textColor
+        }}
+      >
         <Icon className="w-5 h-5" />
       </div>
-      <div className="font-bold text-sm leading-tight tracking-tight max-w-[140px] text-center">
+      <div className={`font-bold text-sm leading-tight tracking-tight max-w-[150px] text-center ${isCentral ? 'text-white' : ''}`}>
         {data.label}
       </div>
       <Handle type="source" position={Position.Bottom} className="!w-2 !h-2 border-none opacity-0" />
@@ -94,6 +118,7 @@ export interface GrafoArtigosProps {
   artigoTexto?: string;
   onClose?: () => void;
   embedded?: boolean;
+  preloadedGraphData?: any;
 }
 
 const dagreGraph = new dagre.graphlib.Graph();
@@ -142,6 +167,7 @@ const GrafoArtigos = (props: GrafoArtigosProps) => {
   const artigoTexto = props.artigoTexto;
   const onClose = props.onClose;
   const embedded = props.embedded ?? false;
+  const preloadedGraphData = props.preloadedGraphData;
   
   const [loading, setLoading] = useState(true);
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
@@ -149,28 +175,10 @@ const GrafoArtigos = (props: GrafoArtigosProps) => {
   const [selectedEdgeInfo, setSelectedEdgeInfo] = useState<AIConnectionInfo | null>(null);
 
   useEffect(() => {
-    if (!tabelaNome || !artigoNumero || !artigoTexto) {
+    if (preloadedGraphData) {
       setLoading(false);
-      return;
-    }
-
-    const fetchGrafoIA = async () => {
-      setLoading(true);
       try {
-        const { data, error } = await supabase.functions.invoke('grafo-conexoes-gerar', {
-          body: {
-            item_key: `${tabelaNome}::${artigoNumero}`,
-            artigo_texto: artigoTexto,
-            titulo: `Art. ${artigoNumero}`,
-          },
-        });
-
-        if (error) throw error;
-        if (!data || !data.grafo) throw new Error("IA não retornou um grafo válido.");
-
-        const { nodes: aiNodes, edges: aiEdges } = data.grafo;
-
-        const rfNodes: Node[] = (aiNodes || []).map((n: any) => {
+        const rfNodes: Node[] = (preloadedGraphData.nodes || []).map((n: any) => {
           let bgColor = 'hsl(var(--card))';
           let textColor = 'hsl(var(--foreground))';
           let borderColor = 'hsl(var(--border))';
@@ -213,6 +221,96 @@ const GrafoArtigos = (props: GrafoArtigosProps) => {
           };
         });
 
+        const rfEdges: Edge[] = (preloadedGraphData.edges || []).map((e: any, i: number) => ({
+          id: `e${i}-${e.source}-${e.target}`,
+          source: e.source,
+          target: e.target,
+          label: e.label,
+          labelStyle: { fill: 'hsl(var(--foreground))', fontWeight: 600, fontSize: 10 },
+          labelBgStyle: { fill: 'hsl(var(--background))', fillOpacity: 0.8 },
+          markerEnd: { type: MarkerType.ArrowClosed, color: 'hsl(var(--primary))' },
+          style: { stroke: 'hsl(var(--primary))', strokeWidth: 2 },
+          animated: true,
+          data: { description: e.description }
+        }));
+
+        const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(rfNodes, rfEdges, 'TB');
+        
+        setNodes(layoutedNodes);
+        setEdges(layoutedEdges);
+      } catch (err: any) {
+        console.error("Erro ao montar grafo pré-carregado:", err);
+        toast.error("Não foi possível montar as conexões deste artigo.");
+      }
+      return;
+    }
+
+    if (!tabelaNome || !artigoNumero || !artigoTexto) {
+      setLoading(false);
+      return;
+    }
+
+    const fetchGrafoIA = async () => {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase.functions.invoke('grafo-conexoes-gerar', {
+          body: {
+            item_key: `${tabelaNome}::${artigoNumero}`,
+            artigo_texto: artigoTexto,
+            titulo: `Art. ${artigoNumero}`,
+          },
+        });
+
+        if (error) throw error;
+        if (!data || !data.grafo) throw new Error("IA não retornou um grafo válido.");
+
+        const { nodes: aiNodes, edges: aiEdges } = data.grafo;
+
+        const rfNodes: Node[] = (aiNodes || []).map((n: any) => {
+          let bgColor = 'hsl(var(--card))';
+          let textColor = 'hsl(var(--foreground))';
+          let borderColor = 'hsl(var(--border))';
+
+          if (n.type === 'central') {
+            bgColor = 'hsl(var(--primary))';
+            textColor = 'hsl(var(--primary-foreground))';
+            borderColor = 'hsl(var(--primary) / 0.8)';
+          } else if (n.type === 'excecao') {
+            bgColor = '#FEE2E2'; 
+            textColor = '#ef4444'; // red-500
+            borderColor = '#FCA5A5'; 
+          } else if (n.type === 'consequencia') {
+            bgColor = '#E0E7FF'; 
+            textColor = '#6366f1'; // indigo-500
+            borderColor = '#A5B4FC'; 
+          } else if (n.type === 'requisito') {
+            bgColor = '#FEF3C7'; 
+            textColor = '#f59e0b'; // amber-500
+            borderColor = '#FCD34D'; 
+          } else if (n.type === 'procedimento') {
+            bgColor = '#F3E8FF'; 
+            textColor = '#a855f7'; // purple-500
+            borderColor = '#D8B4FE'; 
+          } else {
+            bgColor = 'hsl(var(--secondary))';
+            textColor = 'hsl(var(--muted-foreground))';
+          }
+
+          return {
+            id: n.id,
+            type: 'custom',
+            data: { 
+              label: n.label,
+              type: n.type,
+              iconName: n.icon,
+              bgColor,
+              textColor,
+              borderColor
+            },
+            position: { x: 0, y: 0 }
+          };
+        });
+
         const rfEdges: Edge[] = (aiEdges || []).map((e: any, i: number) => ({
           id: `e${i}-${e.source}-${e.target}`,
           source: e.source,
@@ -239,7 +337,7 @@ const GrafoArtigos = (props: GrafoArtigosProps) => {
     };
 
     fetchGrafoIA();
-  }, [tabelaNome, artigoNumero, artigoTexto, setNodes, setEdges]);
+  }, [tabelaNome, artigoNumero, artigoTexto, setNodes, setEdges, preloadedGraphData]);
 
   const onEdgeClick = useCallback((event: React.MouseEvent, edge: Edge) => {
     event.stopPropagation();

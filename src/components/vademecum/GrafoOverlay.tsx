@@ -9,9 +9,10 @@ interface GrafoOverlayProps {
   leiNome?: string;
   artigoNumero?: string;
   artigoTexto?: string;
+  preloadedGraphData?: any;
 }
 
-const GrafoOverlay = ({ open, onClose, tabelaNome, leiNome, artigoNumero, artigoTexto }: GrafoOverlayProps) => {
+const GrafoOverlay = ({ open, onClose, tabelaNome, leiNome, artigoNumero, artigoTexto, preloadedGraphData }: GrafoOverlayProps) => {
   useBodyScrollLock(open);
   return (
     <AnimatePresence>
@@ -21,7 +22,7 @@ const GrafoOverlay = ({ open, onClose, tabelaNome, leiNome, artigoNumero, artigo
           animate={{ x: 0 }}
           exit={{ x: '100%' }}
           transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-          className="fixed inset-0 z-[10041] bg-background md:left-auto md:right-0 md:w-[min(46rem,96vw)] md:border-l md:border-border md:shadow-2xl"
+          className="fixed inset-0 z-[10041] bg-background md:left-auto md:right-0 md:w-[min(46rem,96vw)] md:border-l md:border-border md:shadow-2xl pointer-events-auto"
         >
           <GrafoArtigos
             embedded
@@ -30,6 +31,7 @@ const GrafoOverlay = ({ open, onClose, tabelaNome, leiNome, artigoNumero, artigo
             artigoNumero={artigoNumero}
             artigoTexto={artigoTexto}
             onClose={onClose}
+            preloadedGraphData={preloadedGraphData}
           />
         </motion.div>
       )}

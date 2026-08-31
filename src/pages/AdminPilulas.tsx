@@ -4,13 +4,14 @@ import { PageHeader } from '@/components/vademecum/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Loader2, Headphones, Search, UploadCloud, CheckCircle2, AlertCircle, Copy, Link, ChevronRight } from 'lucide-react';
+import { Loader2, Headphones, Search, UploadCloud, CheckCircle2, AlertCircle, Copy, Link, ChevronRight, AlignLeft, Network } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { COLECOES, type ColecaoConfig, type LivroNormalizado, normalizeLivro } from '@/lib/bibliotecaColecoes';
 import { copiar } from '@/lib/nativo/copiar';
 
 import { CustomAudioPlayer } from '@/components/vademecum/CustomAudioPlayer';
+import GrafoOverlay from '@/components/vademecum/GrafoOverlay';
 
 interface LivroComColecao {
   colecao: ColecaoConfig;
@@ -21,6 +22,8 @@ interface ArtigoCP {
   id: string;
   numero: string;
   audio_pilula_url: string | null;
+  audio_transcricao?: string | null;
+  audio_grafo?: any;
 }
 
 type SelectedItemType = 
@@ -41,6 +44,7 @@ export default function AdminPilulas() {
   const [uploadingId, setUploadingId] = useState<number | string | null>(null);
   const [transcribingId, setTranscribingId] = useState<number | string | null>(null);
   const [selectedItem, setSelectedItem] = useState<SelectedItemType | null>(null);
+  const [grafoPreviewOpen, setGrafoPreviewOpen] = useState(false);
 
   useEffect(() => {
     carregarTudo();
@@ -89,9 +93,9 @@ export default function AdminPilulas() {
       
       const { data, error } = await supabase
         .from('vade_mecum_artigos')
-        .select('id, numero, audio_pilula_url')
+        .select('id, numero, audio_pilula_url, audio_transcricao, audio_grafo')
         .eq('lei_id', leiData.id)
-        .ilike('texto', 'Art.%') // Filtra apenas artigos (exclui Parte, Título, Livro)
+        .ilike('texto', '%Art.%') // Filtra apenas artigos (exclui Parte, Título, Livro)
         .order('ordem', { ascending: true });
         
       if (error) {
@@ -152,6 +156,8 @@ export default function AdminPilulas() {
       const { data: publicData } = supabase.storage.from('audios').getPublicUrl(rawFileName);
       const rawUrl = publicData.publicUrl;
 
+      let updatedItemForTranscription: SelectedItemType;
+
       if (item.type === 'livro') {
         const { error: dbError } = await supabase
           .from(item.data.colecao.table)
@@ -159,9 +165,16 @@ export default function AdminPilulas() {
           .eq('id', itemId);
         if (dbError) throw dbError;
 
+        const updatedLivroComColecao = { 
+          ...item.data, 
+          livro: { ...item.data.livro, audioResumoUrl: rawUrl } 
+        };
+
         setLivros((prev: any) => prev.map((p: any) => 
-          p.livro.id === itemId ? { ...p, livro: { ...p.livro, audioResumoUrl: rawUrl } } : p
+          p.livro.id === itemId ? updatedLivroComColecao : p
         ));
+        updatedItemForTranscription = { type: 'livro', data: updatedLivroComColecao };
+        setSelectedItem((prev) => (prev && prev.type === 'livro' && prev.data.livro.id === itemId) ? updatedItemForTranscription : prev);
       } else {
         const { error: dbError } = await supabase
           .from('vade_mecum_artigos')
@@ -169,12 +182,22 @@ export default function AdminPilulas() {
           .eq('id', itemId);
         if (dbError) throw dbError;
 
+        const updatedArtigoCP = { 
+          ...item.data, 
+          audio_pilula_url: rawUrl 
+        };
+
         setArtigosCP((prev) => prev.map(a => 
-          a.id === itemId ? { ...a, audio_pilula_url: rawUrl } : a
+          a.id === itemId ? updatedArtigoCP : a
         ));
+        updatedItemForTranscription = { type: 'artigo', data: updatedArtigoCP };
+        setSelectedItem((prev) => (prev && prev.type === 'artigo' && prev.data.id === itemId) ? updatedItemForTranscription : prev);
       }
 
       toast.success('Áudio enviado com sucesso!', { id: toastId, duration: 4000 });
+      
+      // Auto-start transcription in background
+      handleTranscribeAudio(updatedItemForTranscription).catch(console.error);
       
     } catch (err: any) {
       console.error(err);
@@ -184,62 +207,107 @@ export default function AdminPilulas() {
     }
   }
 
-  async function handleTranscribeAudio(item: LivroComColecao) {
-    if (!item.livro.audioResumoUrl) return;
+  async function handleTranscribeAudio(item: SelectedItemType) {
+    const isLivro = item.type === 'livro';
+    const itemId = isLivro ? item.data.livro.id : item.data.id;
+    const itemTitulo = isLivro ? item.data.livro.titulo : item.data.numero;
+    const audioUrl = isLivro ? item.data.livro.audioResumoUrl : item.data.audio_pilula_url;
 
-    setTranscribingId(item.livro.id);
-    const toastId = toast.loading(`Transcrevendo pílula de ${item.livro.titulo}... (Isso pode levar alguns minutos)`);
+    if (!audioUrl) return;
+
+    setTranscribingId(itemId);
+    const toastId = toast.loading(`Transcrevendo pílula de ${itemTitulo}... (Isso pode levar alguns minutos)`);
 
     try {
-      const { data, error } = await supabase.functions.invoke('transcrever-audio', {
-        body: { fileUrl: item.livro.audioResumoUrl, language: 'pt' }
+      // 1. Obter a Transcrição via Whisper/Gemini
+      const { data: transcData, error: transcError } = await supabase.functions.invoke('transcrever-audio', {
+        body: { fileUrl: audioUrl, language: 'pt' }
       });
 
-      if (error) {
-        let msg = error.message;
+      if (transcError) {
+        let msg = transcError.message;
         try {
-          if (error.context && typeof error.context.json === 'function') {
-            const ctx = await error.context.json();
+          if (transcError.context && typeof transcError.context.json === 'function') {
+            const ctx = await transcError.context.json();
             if (ctx.error) msg = ctx.error;
           }
         } catch (_) {}
         throw new Error(msg);
       }
 
-      if (!data?.text) {
+      if (!transcData?.text) {
         throw new Error("Transcrição retornou vazia");
       }
+      const transcriptionText = transcData.text;
 
-      let cur = item.livro.curiosidades;
-      let curiosidadesArray = Array.isArray(cur) ? cur : [];
-      let sumarioAudioArray = [];
-      if (cur && typeof cur === 'object' && !Array.isArray(cur)) {
-        if (Array.isArray((cur as any).curiosidades)) curiosidadesArray = (cur as any).curiosidades;
-        if (Array.isArray((cur as any).sumarioAudio)) sumarioAudioArray = (cur as any).sumarioAudio;
+      // Se for livro, apenas salva a transcrição
+      if (isLivro) {
+        let cur = item.data.livro.curiosidades;
+        let curiosidadesArray = Array.isArray(cur) ? cur : [];
+        let sumarioAudioArray = [];
+        if (cur && typeof cur === 'object' && !Array.isArray(cur)) {
+          if (Array.isArray((cur as any).curiosidades)) curiosidadesArray = (cur as any).curiosidades;
+          if (Array.isArray((cur as any).sumarioAudio)) sumarioAudioArray = (cur as any).sumarioAudio;
+        }
+        
+        const curiosidadesPayload = {
+          curiosidades: curiosidadesArray,
+          sumarioAudio: sumarioAudioArray,
+          transcricaoAudio: transcriptionText
+        };
+
+        const { error: updateError } = await supabase
+          .from(item.data.colecao.table as any)
+          .update({ curiosidades: curiosidadesPayload })
+          .eq('id', itemId);
+
+        if (updateError) throw updateError;
+
+        const updatedBook = {
+          ...item.data,
+          livro: { ...item.data.livro, transcricaoAudio: transcriptionText }
+        };
+
+        setLivros((prev) => prev.map((l) => (l.livro.id === itemId ? updatedBook : l)));
+        setSelectedItem((prev) => (prev && prev.type === 'livro' && prev.data.livro.id === itemId) ? { type: 'livro', data: updatedBook } : prev);
+
+        toast.success('Pílula transcrita e salva com sucesso!', { id: toastId });
+      } else {
+        // 2. Se for artigo, gerar Grafo com base na transcrição
+        toast.loading(`Gerando grafo de conexões para o artigo...`, { id: toastId });
+        
+        const { data: grafoData, error: grafoError } = await supabase.functions.invoke('grafo-conexoes-gerar', {
+          body: {
+            item_key: `vade_mecum_artigos::${item.data.numero}`,
+            artigo_texto: transcriptionText,
+            titulo: item.data.numero,
+          },
+        });
+
+        if (grafoError) throw grafoError;
+        
+        // 3. Salvar no banco
+        const { error: dbUpdateError } = await supabase
+          .from('vade_mecum_artigos')
+          .update({
+            audio_transcricao: transcriptionText,
+            audio_grafo: grafoData?.grafo || null
+          })
+          .eq('id', itemId);
+          
+        if (dbUpdateError) throw dbUpdateError;
+
+        const updatedArtigo = {
+          ...item.data,
+          audio_transcricao: transcriptionText,
+          audio_grafo: grafoData?.grafo || null
+        };
+        
+        setArtigosCP((prev) => prev.map((a) => (a.id === itemId ? updatedArtigo : a)));
+        setSelectedItem((prev) => (prev && prev.type === 'artigo' && prev.data.id === itemId) ? { type: 'artigo', data: updatedArtigo } : prev);
+
+        toast.success('Pílula transcrita e grafo gerado com sucesso!', { id: toastId });
       }
-      
-      const curiosidadesPayload = {
-        curiosidades: curiosidadesArray,
-        sumarioAudio: sumarioAudioArray,
-        transcricaoAudio: transcriptionText
-      };
-
-      const { error: updateError } = await supabase
-        .from(item.colecao.table as any)
-        .update({ curiosidades: curiosidadesPayload })
-        .eq('id', item.livro.id);
-
-      if (updateError) throw updateError;
-
-      const updatedBook = {
-        ...item,
-        livro: { ...item.livro, transcricaoAudio: transcriptionText }
-      };
-
-      setLivros((prev) => prev.map((l) => (l.livro.id === item.livro.id ? updatedBook : l)));
-      setSelectedItem({ type: 'livro', data: updatedBook });
-
-      toast.success('Pílula transcrita e salva com sucesso!', { id: toastId });
     } catch (err: any) {
       console.error(err);
       toast.error(err.message || 'Falha ao transcrever pílula.', { id: toastId });
@@ -404,8 +472,8 @@ export default function AdminPilulas() {
                 <p>Carregando Código Penal...</p>
               </div>
             ) : artigosFiltrados.length === 0 ? (
-              <div className="text-center text-muted-foreground py-10 border border-dashed rounded-xl bg-card">
-                Nenhum artigo encontrado.
+              <div className="flex flex-col items-center justify-center p-12 text-center border border-white/5 rounded-2xl bg-white/[0.02]">
+                <p className="text-zinc-500 mb-2">Nenhum artigo encontrado.</p>
               </div>
             ) : (
               <div className="grid gap-2">
@@ -527,20 +595,22 @@ export default function AdminPilulas() {
               )}
 
               {/* Status do Áudio */}
-              <div className="space-y-3">
-                <h4 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">Status Atual</h4>
+              <div className="space-y-2">
+                <h4 className="font-semibold text-[13px] uppercase tracking-wider text-muted-foreground">Status Atual</h4>
                 {(selectedItem.type === 'livro' ? selectedItem.data.livro.audioResumoUrl : selectedItem.data.audio_pilula_url) ? (
-                  <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-4 space-y-3">
-                    <div className="flex items-center gap-3 text-green-500">
-                      <CheckCircle2 className="w-5 h-5 shrink-0" />
-                      <p className="font-bold">Pílula Concluída (OK!)</p>
+                  <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-3 flex flex-col sm:flex-row items-center gap-3">
+                    <div className="flex items-center gap-2 text-green-500 shrink-0 mb-2 sm:mb-0">
+                      <CheckCircle2 className="w-5 h-5" />
+                      <p className="font-bold text-sm">Pílula Concluída (OK!)</p>
                     </div>
-                    <CustomAudioPlayer src={(selectedItem.type === 'livro' ? selectedItem.data.livro.audioResumoUrl : selectedItem.data.audio_pilula_url) as string} title="Ouvir Pílula" />
+                    <div className="w-full flex-1">
+                      <CustomAudioPlayer src={(selectedItem.type === 'livro' ? selectedItem.data.livro.audioResumoUrl : selectedItem.data.audio_pilula_url) as string} title="Ouvir Pílula" />
+                    </div>
                   </div>
                 ) : (
-                  <div className="bg-orange-500/10 text-orange-500 border border-orange-500/20 rounded-xl p-4 flex items-center gap-3">
+                  <div className="bg-orange-500/10 text-orange-500 border border-orange-500/20 rounded-xl p-3 flex items-center gap-3">
                     <AlertCircle className="w-5 h-5 shrink-0" />
-                    <p className="font-semibold">Nenhuma pílula enviada ainda</p>
+                    <p className="font-semibold text-sm">Nenhuma pílula enviada ainda</p>
                   </div>
                 )}
               </div>
@@ -603,7 +673,7 @@ export default function AdminPilulas() {
                     size="lg"
                     className="w-full text-base h-14 rounded-xl mt-4 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300"
                     disabled={transcribingId === selectedItem.data.livro.id}
-                    onClick={() => handleTranscribeAudio(selectedItem.data)}
+                    onClick={() => handleTranscribeAudio(selectedItem)}
                   >
                     {transcribingId === selectedItem.data.livro.id ? (
                       <Loader2 className="w-5 h-5 mr-2 animate-spin" />
@@ -613,11 +683,84 @@ export default function AdminPilulas() {
                     {selectedItem.data.livro.transcricaoAudio ? 'Regerar Transcrição com IA' : 'Transcrever Pílula com IA'}
                   </Button>
                 )}
+
+                {/* Transcrição e Grafo para Artigos do CP */}
+                {selectedItem.type === 'artigo' && selectedItem.data.audio_pilula_url && (
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="w-full text-base h-14 rounded-xl mt-4 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300"
+                    disabled={transcribingId === selectedItem.data.id}
+                    onClick={() => handleTranscribeAudio(selectedItem)}
+                  >
+                    {transcribingId === selectedItem.data.id ? (
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    ) : (
+                      <Headphones className="w-5 h-5 mr-2" />
+                    )}
+                    {selectedItem.data.audio_grafo ? 'Regerar Transcrição e Grafo' : 'Transcrever Pílula e Gerar Grafo'}
+                  </Button>
+                )}
+                
+                {/* Visualização de Transcrição e Grafo */}
+                {selectedItem.type === 'artigo' && selectedItem.data.audio_transcricao && (
+                  <div className="pt-6 space-y-4">
+                    <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
+                      <AlignLeft className="w-4 h-4 text-emerald-500" /> Transcrição Gerada
+                    </h4>
+                    <div className="p-4 bg-muted/30 border border-border rounded-xl text-sm text-muted-foreground whitespace-pre-wrap max-h-48 overflow-y-auto custom-scrollbar">
+                      {selectedItem.data.audio_transcricao}
+                    </div>
+                    
+                    {selectedItem.data.audio_grafo && (
+                      <>
+                        <div className="flex items-center justify-between mt-4">
+                          <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
+                            <Network className="w-4 h-4 text-emerald-500" /> Grafo de Conexões
+                          </h4>
+                          <Button 
+                            size="sm" 
+                            variant="secondary"
+                            onClick={() => setGrafoPreviewOpen(true)}
+                          >
+                            Ver Grafo Interativo
+                          </Button>
+                        </div>
+                        <div className="p-4 bg-muted/30 border border-border rounded-xl text-xs text-muted-foreground font-mono whitespace-pre-wrap max-h-48 overflow-y-auto overflow-x-auto custom-scrollbar">
+                          {JSON.stringify(selectedItem.data.audio_grafo, null, 2)}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
+
+                {selectedItem.type === 'livro' && selectedItem.data.livro.transcricaoAudio && (
+                  <div className="pt-6 space-y-4">
+                    <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
+                      <AlignLeft className="w-4 h-4 text-emerald-500" /> Transcrição Gerada
+                    </h4>
+                    <div className="p-4 bg-muted/30 border border-border rounded-xl text-sm text-muted-foreground whitespace-pre-wrap max-h-48 overflow-y-auto custom-scrollbar">
+                      {selectedItem.data.livro.transcricaoAudio}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
         </SheetContent>
       </Sheet>
+
+      {/* Visualizador de Grafo Modal */}
+      {selectedItem?.type === 'artigo' && (
+        <GrafoOverlay
+          open={grafoPreviewOpen}
+          onClose={() => setGrafoPreviewOpen(false)}
+          tabelaNome="vade_mecum_artigos"
+          artigoNumero={selectedItem.data.numero}
+          leiNome="Código Penal"
+          preloadedGraphData={selectedItem.data.audio_grafo}
+        />
+      )}
     </div>
   );
 }
