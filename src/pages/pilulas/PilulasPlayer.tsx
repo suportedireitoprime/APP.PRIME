@@ -9,6 +9,7 @@ import { clearMediaSession } from '@/lib/mediaSession';
 import { toast } from 'sonner';
 import { useGatedFeature } from '@/hooks/useGatedFeature';
 import { directImg } from '@/lib/cdnImg';
+import Threads from '@/components/ui/Threads';
 
 const INTRO_URL = 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/audios/audio-intro-2.mp3';
 
@@ -297,6 +298,19 @@ export default function PilulasPlayer() {
           <div className="absolute inset-0 bg-gradient-to-b from-[#0D0D0D]/50 via-[#0D0D0D]/80 to-[#0D0D0D]" />
         </div>
       )}
+
+      {/* Threads Animation */}
+      <div 
+         className={`absolute inset-0 z-0 transition-opacity duration-1000 ${isPlaying ? 'opacity-40' : 'opacity-0'}`} 
+         style={{ pointerEvents: 'none' }}
+      >
+        <Threads 
+           amplitude={1.2}
+           distance={0}
+           enableMouseInteraction={false}
+           color={[0.8, 0.6, 0.2]} // golden-ish primary color
+        />
+      </div>
 
       {/* Header Fixo */}
       <div className="relative z-10 pt-[calc(1.25rem+var(--sai-top))] px-4 pb-4 shrink-0 flex items-center">

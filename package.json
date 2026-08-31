@@ -155,6 +155,7 @@
     "mammoth": "^1.12.0",
     "next-themes": "^0.3.0",
     "node-forge": "^1.4.0",
+    "ogl": "^1.0.11",
     "page-flip": "^2.0.7",
     "pdfjs-dist": "^6.1.200",
     "phaser": "^4.2.1",
