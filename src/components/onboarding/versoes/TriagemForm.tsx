@@ -1,7 +1,8 @@
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowRight, Check, ChevronRight, Volume2, VolumeX, X } from 'lucide-react';
+import { ArrowRight, Check, ChevronRight, Volume2, VolumeX, X, AlertTriangle } from 'lucide-react';
+import React, { Component, ErrorInfo, ReactNode } from 'react';
 import {
   DORES,
   FILOSOFOS,
@@ -16,6 +17,43 @@ import WaveReveal from '@/components/animata/text/wave-reveal';
 import SplitText from '@/components/animata/text/split-text';
 import SoftBlurIn from '@/components/animata/text/soft-blur-in';
 import ShortSlideDown from '@/components/animata/text/short-slide-down';
+
+class FormErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; error: Error | null; errorInfo: ErrorInfo | null }> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: null, errorInfo: null };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    this.setState({ errorInfo });
+    console.error("ErrorBoundary caught an error", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="p-6 bg-red-950/90 text-white rounded-lg border border-red-500 max-w-2xl mx-auto my-10 overflow-auto z-50 relative">
+          <h2 className="text-2xl font-bold flex items-center gap-2 text-red-400 mb-4">
+            <AlertTriangle className="w-8 h-8" />
+            CRASH REPORT (ISCA)
+          </h2>
+          <div className="font-mono text-sm whitespace-pre-wrap break-all bg-black/50 p-4 rounded mb-4 text-red-200">
+            <strong>Error:</strong> {this.state.error?.toString()}
+          </div>
+          <div className="font-mono text-xs whitespace-pre-wrap break-all bg-black/50 p-4 rounded text-gray-300">
+            <strong>Stack Trace:</strong>
+            {'\n'}{this.state.errorInfo?.componentStack}
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 type Props = {
   open: boolean;
@@ -348,6 +386,7 @@ function AberturaCinematografica({
       {/* Título fase 2 — amarelo com CTA */}
       <AnimatePresence>
         {phase === 2 && (
+          <FormErrorBoundary>
           <motion.div
             key="p2"
             initial={{ opacity: 0, y: 16 }}
@@ -373,7 +412,6 @@ function AberturaCinematografica({
               <SplitText 
                 text="Vamos te conhecer." 
                 className="text-5xl sm:text-6xl font-black text-[#F3E7D6] leading-[0.9] normal-case tracking-tight" 
-                style={{ fontFamily: SERIF }}
               />
             </motion.div>
             <motion.div
@@ -395,6 +433,7 @@ function AberturaCinematografica({
               Começar <ArrowRight className="w-5 h-5" />
             </motion.button>
           </motion.div>
+          </FormErrorBoundary>
         )}
       </AnimatePresence>
     </motion.div>
