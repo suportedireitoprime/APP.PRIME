@@ -310,7 +310,8 @@ const Bibliotecas = () => {
             </div>
           </div>
           <div style={{ height: '350px', position: 'relative' }} className="-mx-4">
-             {
+             <CircularGallery
+              items={CATEGORIES.map(c => {
                 const count = counts[c.id];
                 return {
                   image: c.cover,
