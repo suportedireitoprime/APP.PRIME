@@ -59,10 +59,10 @@ const BibliotecaHero = ({ children }: Props) => {
   const atual = FILOSOFOS[idx];
 
   const ACTIONS = [
-    { id: 'leitura' as const, label: 'Leitura', icon: BookMarked, color: 'text-indigo-400 group-hover:text-indigo-300' },
-    { id: 'trilhas' as const, label: 'Trilhas', icon: RouteIcon, color: 'text-emerald-400 group-hover:text-emerald-300' },
-    { id: 'favoritos' as const, label: 'Favoritos', icon: Heart, color: 'text-rose-400 group-hover:text-rose-300' },
-    { id: 'personalizado' as const, label: 'Meus PDFs', icon: FileUp, color: 'text-amber-400 group-hover:text-amber-300' },
+    { id: 'leitura' as const, label: 'Leitura', icon: BookMarked, color: '#818cf8' },
+    { id: 'trilhas' as const, label: 'Trilhas', icon: RouteIcon, color: '#34d399' },
+    { id: 'favoritos' as const, label: 'Favoritos', icon: Heart, color: '#fb7185' },
+    { id: 'personalizado' as const, label: 'Meus PDFs', icon: FileUp, color: '#fbbf24' },
   ];
 
   const handleAction = (id: typeof ACTIONS[number]['id']) => {
@@ -76,10 +76,8 @@ const BibliotecaHero = ({ children }: Props) => {
 
   return (
     <div
-      className="relative overflow-hidden rounded-b-[36px] border-b border-amber-900/50 shadow-2xl shadow-black/60 pt-[var(--sai-top)] flex flex-col z-20"
+      className="relative overflow-hidden rounded-b-[36px] border-b border-amber-900/50 shadow-2xl shadow-black/60 pt-[var(--sai-top)] flex flex-col z-20 bg-hero-panel-brown"
       style={{
-        background:
-          'linear-gradient(135deg, hsl(18 30% 14%) 0%, hsl(22 32% 20%) 50%, hsl(16 28% 12%) 100%)',
         transform: 'translateZ(0)',
         isolation: 'isolate',
         contain: 'paint',
@@ -148,7 +146,7 @@ const BibliotecaHero = ({ children }: Props) => {
         </AnimatePresence>
       </div>
 
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[hsl(16,28%,12%)] via-[hsl(16,28%,12%)]/70 to-transparent" />
+      {/* Gradient removed as background is now handled by bg-hero-panel-brown */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
 
       <div className="px-4 pb-2 pt-2 flex items-center justify-between relative z-30">
@@ -233,7 +231,7 @@ const BibliotecaHero = ({ children }: Props) => {
                 onClick={() => handleAction(a.id)}
                 className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-2 text-center"
               >
-                <Icon className={`w-5 h-5 ${a.color} group-hover:scale-110 transition-all`} strokeWidth={2} />
+                <Icon className="w-5 h-5 group-hover:scale-110 transition-all" style={{ color: a.color }} strokeWidth={2} />
                 <span className="text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">{a.label}</span>
               </button>
             );
