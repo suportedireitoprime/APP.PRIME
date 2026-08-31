@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Search, Pill, Headphones, BookOpen, AlertCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { useResumoLivroPlayer } from '@/contexts/ResumoLivroPlayerContext';
 import { toast } from 'sonner';
 
 function formatTime(timeInSeconds: number) {
@@ -14,20 +13,20 @@ function formatTime(timeInSeconds: number) {
 }
 
 function PilulaItem({ 
-  livro, 
+  artigo, 
   itemVariants, 
   navigate 
 }: { 
-  livro: LivroNormalizado, 
+  artigo: any, 
   itemVariants: any, 
   navigate: (path: string) => void 
 }) {
   const [duration, setDuration] = useState<number | null>(null);
-  const temAudio = !!livro.audioResumoUrl;
+  const temAudio = !!artigo.audio_pilula_url;
   
-  const wordCount = (livro.analiseDetalhada || livro.sobre || '').split(/\s+/).length;
+  const wordCount = (artigo.texto || '').split(/\s+/).length;
   const estimatedMinutes = Math.max(1, Math.ceil(wordCount / 130));
-  const savedProgress = localStorage.getItem(`pilula_progress_${livro.id}`);
+  const savedProgress = localStorage.getItem(`pilula_progress_${artigo.id}`);
   const progressRatio = savedProgress ? parseFloat(savedProgress) : 0;
   
   const displayTime = duration 
@@ -42,12 +41,12 @@ function PilulaItem({
       onClick={() => {
         if (!temAudio) {
           toast('Pílula em produção', {
-            description: 'O áudio para este clássico estará disponível em breve.',
+            description: 'O áudio para este artigo estará disponível em breve.',
             icon: <AlertCircle className="w-4 h-4 text-orange-500" />
           });
           return;
         }
-        navigate(`/pilulas/${livro.id}`);
+        navigate(`/pilulas/${artigo.id}?type=cp`);
       }}
       className={`group relative flex items-center gap-4 p-4 rounded-2xl border text-left overflow-hidden transition-all ${
         temAudio
@@ -57,7 +56,7 @@ function PilulaItem({
     >
       {temAudio && (
         <audio 
-          src={livro.audioResumoUrl} 
+          src={artigo.audio_pilula_url} 
           preload="metadata" 
           onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)} 
           className="hidden" 
@@ -65,32 +64,24 @@ function PilulaItem({
       )}
       {/* Capa */}
       <div className="w-16 h-24 rounded-lg bg-white/5 shrink-0 overflow-hidden shadow-md">
-        {livro.capa ? (
-          <img src={livro.capa} alt={livro.titulo} className="w-full h-full object-cover" loading="lazy" />
-        ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center text-white/30 text-[10px] uppercase text-center p-1">
-            Sem<br/>Capa
-          </div>
-        )}
+        <img src="/vademecum/capas/cp.webp" alt="Código Penal" className="w-full h-full object-cover" loading="lazy" onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=600&auto=format&fit=crop' }} />
       </div>
 
       {/* Detalhes */}
       <div className="flex-1 min-w-0 flex flex-col justify-center h-full py-1">
         <h3 className={`font-semibold text-base leading-tight truncate ${temAudio ? 'text-white' : 'text-white/60'}`}>
-          {livro.titulo}
+          Artigo {artigo.numero}
         </h3>
-        {livro.autor && (
-          <p className="text-xs text-white/50 mt-1 truncate">{livro.autor}</p>
-        )}
+        <p className="text-xs text-white/50 mt-1 truncate">Código Penal</p>
 
         <div className="mt-auto pt-3">
           {temAudio ? (
             <div className="flex items-center justify-between gap-4 w-full">
               <div className="flex items-center gap-2">
-                <div className={`flex items-center justify-center w-6 h-6 rounded-full transition-colors bg-primary/15 text-primary group-hover:bg-primary/20`}>
+                <div className={`flex items-center justify-center w-6 h-6 rounded-full transition-colors bg-red-500/15 text-red-400 group-hover:bg-red-500/20`}>
                   <Headphones className="w-3 h-3" />
                 </div>
-                <span className={`text-[10px] uppercase tracking-wider font-bold text-primary`}>
+                <span className={`text-[10px] uppercase tracking-wider font-bold text-red-400`}>
                   {progressRatio > 0.95 ? 'Concluída' : progressRatio > 0 ? 'Continuar' : 'Ouvir Pílula'}
                 </span>
               </div>
@@ -101,7 +92,7 @@ function PilulaItem({
                 </span>
                 {progressRatio > 0 && (
                   <div className="w-16 h-1 bg-white/10 rounded-full overflow-hidden">
-                    <div className="h-full bg-primary rounded-full" style={{ width: `${Math.min(100, Math.max(0, progressRatio * 100))}%` }} />
+                    <div className="h-full bg-red-500 rounded-full" style={{ width: `${Math.min(100, Math.max(0, progressRatio * 100))}%` }} />
                   </div>
                 )}
               </div>
@@ -119,75 +110,68 @@ function PilulaItem({
   );
 }
 
-export default function Pilulas() {
+export default function PilulasCP() {
   const navigate = useNavigate();
-  const [livros, setLivros] = useState<LivroNormalizado[]>([]);
+  const [artigos, setArtigos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [busca, setBusca] = useState('');
-  const { tocar, livroAtual, tocando, togglePlay } = useResumoLivroPlayer();
 
   useEffect(() => {
-    async function fetchClassicos() {
+    async function fetchCP() {
       try {
-        const classicosCol = COLECOES.find((c) => c.id === 'classicos');
-        if (!classicosCol) return;
-
+        const { data: leiData, error: leiError } = await supabase
+          .from('vade_mecum_leis')
+          .select('id')
+          .eq('slug', 'cp')
+          .single();
+          
+        if (leiError || !leiData) {
+          console.error('Erro ao buscar ID do CP:', leiError);
+          return;
+        }
+        
         const { data, error } = await supabase
-          .from(classicosCol.table as any)
-          .select(classicosCol.select)
-          .order('id');
+          .from('vade_mecum_artigos')
+          .select('id, numero, texto, audio_pilula_url, ordem')
+          .eq('lei_id', leiData.id)
+          .ilike('texto', 'Art.%')
+          .order('ordem', { ascending: true });
 
         if (error) throw error;
-
-        const normalizados = (data || []).map((row) => normalizeLivro(row, classicosCol));
-        setLivros(normalizados);
+        setArtigos(data || []);
       } catch (error) {
-        console.error('Erro ao buscar pílulas:', error);
-        toast.error('Erro ao carregar as pílulas de áudio.');
+        console.error('Erro ao buscar artigos do CP:', error);
+        toast.error('Erro ao carregar as pílulas do Código Penal.');
       } finally {
         setLoading(false);
       }
     }
-    fetchClassicos();
+    fetchCP();
   }, []);
 
-  const livrosFiltrados = busca
-    ? livros.filter(
-        (l) =>
-          l.titulo.toLowerCase().includes(busca.toLowerCase()) ||
-          (l.autor && l.autor.toLowerCase().includes(busca.toLowerCase()))
+  const artigosFiltrados = busca
+    ? artigos.filter(
+        (a) =>
+          a.numero.toLowerCase().includes(busca.toLowerCase()) ||
+          (a.texto && a.texto.toLowerCase().includes(busca.toLowerCase()))
       )
-    : livros;
+    : artigos;
 
   // Animações
   const containerVariants = {
     hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.05,
-      },
-    },
+    show: { opacity: 1, transition: { staggerChildren: 0.05 } },
   };
 
   const itemVariants = {
     hidden: { opacity: 0, y: 15, scale: 0.98 },
-    show: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        type: 'spring',
-        stiffness: 300,
-        damping: 24,
-      },
-    },
+    show: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', stiffness: 300, damping: 24 } },
   };
 
   return (
-    <div className="min-h-screen bg-[#0D0D0D] text-white pb-32">
+    <div className="min-h-dvh bg-zinc-950 text-white pb-32">
       {/* Header Fixo */}
-      <div className="sticky top-0 z-50 bg-[#0D0D0D]/90 backdrop-blur-xl border-b border-white/5 pt-[calc(1.25rem+var(--sai-top))] px-4 pb-4">
+      <div className="sticky top-0 z-50 bg-zinc-950/90 backdrop-blur-xl border-b border-white/5 pt-[calc(1.25rem+var(--sai-top,env(safe-area-inset-top,0px)))] px-4 pb-4">
         <div className="flex items-center gap-4 mb-4">
           <button
             onClick={() => navigate(-1)}
@@ -197,10 +181,10 @@ export default function Pilulas() {
           </button>
           <div>
             <h1 className="text-xl font-bold flex items-center gap-2">
-              <Pill className="w-5 h-5 text-primary" />
-              Pílulas de Áudio
+              <Pill className="w-5 h-5 text-red-500" />
+              Código Penal
             </h1>
-            <p className="text-xs text-white/50">Aprenda a essência dos clássicos em minutos</p>
+            <p className="text-xs text-white/50">Ouça a explicação dos artigos</p>
           </div>
         </div>
 
@@ -208,22 +192,22 @@ export default function Pilulas() {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
           <input
             type="text"
-            placeholder="Buscar clássicos..."
+            placeholder="Buscar por artigo..."
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
-            className="w-full h-11 bg-white/5 border border-white/10 rounded-2xl pl-11 pr-4 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-primary/50 transition-colors"
+            className="w-full h-11 bg-white/5 border border-white/10 rounded-2xl pl-11 pr-4 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-red-500/50 transition-colors"
           />
         </div>
       </div>
 
-      {/* Lista de Livros */}
+      {/* Lista de Artigos */}
       <div className="px-4 py-6">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 text-white/40 space-y-4">
-            <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-primary animate-spin" />
-            <p className="text-sm">Carregando acervo...</p>
+            <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-red-500 animate-spin" />
+            <p className="text-sm">Carregando artigos...</p>
           </div>
-        ) : livrosFiltrados.length === 0 ? (
+        ) : artigosFiltrados.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-white/40">
             <BookOpen className="w-12 h-12 opacity-20 mb-4" />
             <p>Nenhuma pílula encontrada.</p>
@@ -235,16 +219,14 @@ export default function Pilulas() {
             animate="show"
             className="grid gap-3"
           >
-            {livrosFiltrados.map((livro) => {
-              return (
-                <PilulaItem 
-                  key={livro.id} 
-                  livro={livro} 
-                  itemVariants={itemVariants} 
-                  navigate={navigate} 
-                />
-              );
-            })}
+            {artigosFiltrados.map((artigo) => (
+              <PilulaItem 
+                key={artigo.id} 
+                artigo={artigo} 
+                itemVariants={itemVariants} 
+                navigate={navigate} 
+              />
+            ))}
           </motion.div>
         )}
       </div>
