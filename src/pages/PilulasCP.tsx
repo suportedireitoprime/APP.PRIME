@@ -66,7 +66,7 @@ function PilulaItem({
       {/* Capa */}
       <div className="w-16 h-24 rounded-lg bg-white/5 shrink-0 overflow-hidden shadow-md">
         <img 
-          src={directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp.webp')} 
+          src={directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos.png')} 
           alt="Código Penal" 
           className="w-full h-full object-cover" 
           loading="lazy" 
