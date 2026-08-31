@@ -10,13 +10,13 @@ const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const supabase = createClient(url, key);
 
 async function run() {
-  const inputPath = 'C:/Users/ext_wpereira/.gemini/antigravity-ide/brain/bc17a713-8221-454f-8448-3f6c01779129/.user_uploaded/media_1788155643426.jpg';
+  const inputPath = 'C:/Users/ext_wpereira/.gemini/antigravity-ide/brain/bc17a713-8221-454f-8448-3f6c01779129/.user_uploaded/media_1788156814870.jpg';
   
   console.log('Reading image...');
   const buffer = fs.readFileSync(inputPath);
   
   console.log('Uploading to Supabase...');
-  const { data, error } = await supabase.storage.from('biblioteca-obras').upload('capas_fixas/cp_artigos_v2.jpg', buffer, {
+  const { data, error } = await supabase.storage.from('biblioteca-obras').upload('capas_fixas/cp_artigos_square.jpg', buffer, {
     contentType: 'image/jpeg',
     upsert: true
   });
