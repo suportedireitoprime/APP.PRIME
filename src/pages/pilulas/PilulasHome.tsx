@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useRef, useState } from 'react';
+import { useRef, useState, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Search, PlayCircle, Pill, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -19,22 +19,22 @@ export default function PilulasHome() {
     navigate('/pilulas/classicos');
   };
 
-  const fastPillsItems = [
+  const fastPillsItems = useMemo(() => [
     { image: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg'), text: 'CP', fullName: 'Código Penal' },
     { image: '/pilulas/cf_portrait.jpg', text: 'CF88', fullName: 'Constituição Federal' },
     { image: '/pilulas/cc_portrait.png', text: 'CC', fullName: 'Código Civil' },
     { image: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=600&auto=format&fit=crop', text: 'CPP', fullName: 'Cód. Proc. Penal' },
     { image: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=600&auto=format&fit=crop', text: 'CLT', fullName: 'Leis Trabalhistas' },
-  ];
+  ], []);
 
-  const handleItemClick = (item: any) => {
+  const handleItemClick = useCallback((item: any) => {
     haptic.selection();
     if (item.text === 'CP') navigate('/pilulas/cp');
     if (item.text === 'CF88') navigate('/pilulas/cf');
     if (item.text === 'CC') navigate('/pilulas/cc');
     if (item.text === 'CPP') navigate('/pilulas/cpp');
     if (item.text === 'CLT') navigate('/pilulas/clt');
-  };
+  }, [navigate]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value.toUpperCase();
