@@ -12,6 +12,7 @@ import {
   type TriagemResult,
 } from './triagemShared';
 import { useTriagemAudio } from './useTriagemAudio';
+import WaveReveal from '@/components/animata/text/wave-reveal';
 
 type Props = {
   open: boolean;
@@ -457,9 +458,13 @@ function CardContent({
           >
             O Direito <span className="italic">evoluiu</span>.
           </motion.h2>
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.4 }} className="text-base opacity-80 mb-6 leading-relaxed">
-            A forma como você estuda e consome conteúdo jurídico também precisa evoluir. Chega de materiais espalhados e desatualizados.
-          </motion.p>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.4 }} className="text-base opacity-80 mb-6 leading-relaxed">
+            <WaveReveal 
+              text="A forma como você estuda e consome conteúdo jurídico também precisa evoluir. Chega de materiais espalhados e desatualizados." 
+              direction="up" 
+              mode="letter" 
+            />
+          </motion.div>
           <div className="flex-1" />
           <ContinueBtn disabled={false} onClick={() => advance({})} />
         </>
@@ -473,9 +478,13 @@ function CardContent({
           >
             Seu novo <br /><span className="italic">ecossistema</span>.
           </motion.h2>
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.4 }} className="text-base opacity-80 mb-6 leading-relaxed">
-            O Direito Prime foi construído para se adaptar à sua rotina. Vamos configurar sua experiência em poucos passos.
-          </motion.p>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.4 }} className="text-base opacity-80 mb-6 leading-relaxed">
+            <WaveReveal 
+              text="O Direito Prime foi construído para se adaptar à sua rotina. Vamos configurar sua experiência em poucos passos." 
+              direction="up" 
+              mode="letter" 
+            />
+          </motion.div>
           <div className="flex-1" />
           <ContinueBtn disabled={false} onClick={() => advance({})} />
         </>

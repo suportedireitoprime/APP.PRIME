@@ -27,15 +27,15 @@
  * no iOS). */
 html {
   background-color: hsl(var(--background));
-  
+
   /* Bloqueia o "esticar a tela" nos topos e rodapés (rubber-banding) */
   overscroll-behavior-y: none;
-  
+
   /* Desativa a seleção de texto nativa (copiar/colar) que pinta a tela */
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   user-select: none;
-  
+
   /* Remove o retângulo de destaque vermelho/cinza padrão ao tocar em itens clicáveis */
   -webkit-tap-highlight-color: transparent;
 }
@@ -158,9 +158,6 @@ body {
 /* Tablet: a navegação agora é uma barra inferior flutuante (BottomNav),
  * portanto o body ocupa a largura total sem reservar espaço lateral. */
 
-
-
-
 @layer base {
   :root {
     /* Direito Prime — Cinza Escuro + Vermelho + Cinza Neutro */
@@ -187,13 +184,11 @@ body {
     --aprender-accent: 348 80% 50%;
     --aprender-accent-foreground: 0 0% 100%;
 
-
     /* Superfícies cinza do módulo Flashcards (cinza neutro, igual à home) */
     --flash-bg: 0 0% 10%;
     --flash-surface: 0 0% 16%;
     --flash-surface-2: 0 0% 22%;
     --flash-border: 0 0% 25%;
-
 
     --secondary: 0 0% 18%;              /* #2E2E2E */
     --secondary-foreground: 0 0% 98%;
@@ -210,7 +205,6 @@ body {
     /* Estado "ao vivo / funcionando" */
     --success: 145 64% 38%;
     --success-foreground: 0 0% 100%;
-
 
     --border: 0 0% 20%;                 /* #333333 */
     --input: 0 0% 15%;
@@ -233,7 +227,6 @@ body {
     --copper-dark: 350 70% 22%;
     --signature: 348 80% 50%;
     --gold-accent: 348 80% 50%;
-
 
     /* Cores reais para ícones de ferramentas (não afetadas pelo mono mapping) */
     --tool-cyan: 180 80% 45%;
@@ -264,6 +257,9 @@ body {
       hsl(0 0% 5%) 14px 28px
     );
 
+  }
+  .theme {
+    --ease-minor-spring: cubic-bezier(0.18, 0.89, 0.82, 1.04);
   }
 }
 
@@ -369,7 +365,7 @@ body {
     --primary-light: 348 80% 60%;
     --ring: 348 80% 50%;
   }
-  
+
   /* Escopo de tema do módulo Aprender — Vermelho Vivo, Luminous & Deep Dark */
   .theme-aprender {
     --background: 0 0% 4%;
@@ -378,7 +374,7 @@ body {
     --secondary: 0 0% 12%;
     --muted: 0 0% 10%;
     --border: 0 0% 14%;
-    
+
     --primary: 350 89% 60%;
     --primary-foreground: 0 0% 100%;
     --primary-light: 350 95% 70%;
@@ -388,7 +384,6 @@ body {
   .bg-tab-active {
     background: linear-gradient(180deg, hsl(350 85% 45%) 0%, hsl(350 88% 55%) 50%, hsl(350 89% 60%) 100%);
   }
-
 
   @keyframes vade-mecum-shine {
     0% { transform: translateX(-120%) skewX(-18deg); opacity: 0; }
@@ -405,9 +400,6 @@ body {
     animation: vade-mecum-shine 3.4s ease-in-out infinite;
     pointer-events: none;
   }
-
-
-
 
   .hazard-tape {
     background: var(--stripe-tape);
@@ -528,7 +520,6 @@ body {
   100% { background-position: -100% 0; }
 }
 
-
 @keyframes letter-slide {
   0%   { opacity: 0; transform: translateY(28px); }
   100% { opacity: 1; transform: translateY(0); }
@@ -628,10 +619,6 @@ body {
 .hero-legal-icon.float-a { animation: hero-legal-float-a 6s ease-in-out infinite; }
 .hero-legal-icon.float-b { animation: hero-legal-float-b 7s ease-in-out infinite; }
 .hero-legal-icon.float-c { animation: hero-legal-float-c 8s ease-in-out infinite; }
-
-
-
-
 
 .news-cover-shine {
   position: relative;
@@ -896,7 +883,6 @@ body {
   mix-blend-mode: screen;
 }
 
-
 @media (min-width: 1024px) {
   .desktop-scrollbar {
     scrollbar-width: thin;
@@ -1122,7 +1108,6 @@ html.light .bg-\[\#212121\]\/95 { background-color: hsl(var(--card) / 0.95) !imp
   animation: card-shine-vm 2.6s ease-in-out 0.4s 1;
 }
 
-
 /* === Vade Mecum: cascata de artigos + content-visibility === */
 /* content-visibility: auto pula render de itens off-screen (virtualização nativa do browser). */
 .article-cascade-item {
@@ -1181,7 +1166,6 @@ html.light .bg-\[\#212121\]\/95 { background-color: hsl(var(--card) / 0.95) !imp
 @media (prefers-reduced-motion: reduce) {
   .animate-\[planos-shine_3\.2s_ease-in-out_infinite\] { animation: none !important; }
 }
-
 
 /* Page transition — CSS animation (substitui framer-motion do PageTransition). */
 @keyframes page-in {
@@ -1465,7 +1449,6 @@ html.light .bg-\[\#212121\]\/95 { background-color: hsl(var(--card) / 0.95) !imp
   .lp-sheen::after { animation: none; opacity: 0; }
 }
 
-
 /* Zoom suave (ken burns) na cena de fundo da landing */
 @keyframes lpHeroZoom {
   from { transform: scale(1); }
@@ -1547,3 +1530,33 @@ html.light .bg-\[\#212121\]\/95 { background-color: hsl(var(--card) / 0.95) !imp
   .icon-shine-mask { animation: none; opacity: 0; }
 }
 
+@theme inline {
+  @keyframes reveal-up {
+  0% {
+    opacity: 0;
+    transform: translateY(80%);
+    }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    }
+  }
+  @keyframes reveal-down {
+  0% {
+    opacity: 0;
+    transform: translateY(-80%);
+    }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    }
+  }
+  @keyframes content-blur {
+  0% {
+    filter: blur(0.3rem);
+    }
+  100% {
+    filter: blur(0);
+    }
+  }
+}

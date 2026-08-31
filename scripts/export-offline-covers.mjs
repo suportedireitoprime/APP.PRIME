@@ -8,6 +8,8 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 
+const abortController = typeof AbortController !== 'undefined' ? AbortController : require('abort-controller');
+
 // Carrega .env local se existir (dev)
 try {
   if (existsSync('.env')) {
@@ -52,13 +54,18 @@ const proxied = (url, w) => `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=$
 async function downloadCover(url, index) {
   if (!url) return;
   const name = safeName(url);
-  if (index[url]) return; // already downloaded
+  if (index[url]) {
+    if (existsSync(path.join(OUT, name))) return; // Already on disk
+  }
   
-  // We download the optimized 500px version
   const fetchUrl = url.startsWith('http') ? proxied(url, 500) : url;
   
   try {
-    const res = await fetch(fetchUrl);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000); // 4s timeout
+    const res = await fetch(fetchUrl, { signal: controller.signal });
+    clearTimeout(timeoutId);
+    
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const buffer = await res.arrayBuffer();
     await writeFile(path.join(OUT, name), Buffer.from(buffer));
@@ -80,7 +87,14 @@ const TARGETS = [
 ];
 
 async function main() {
-  const index = {};
+  let index = {};
+  const manifestPath = path.join(OUT, 'manifest.json');
+  if (existsSync(manifestPath)) {
+    try {
+      index = JSON.parse(readFileSync(manifestPath, 'utf8'));
+    } catch {}
+  }
+  
   let count = 0;
   
   for (const t of TARGETS) {
@@ -95,23 +109,32 @@ async function main() {
       }
       if (!data || data.length === 0) break;
       
+      let promises = [];
       for (const row of data) {
-        if (row[t.capa]) {
-          await downloadCover(row[t.capa], index);
-          count++;
-        }
-        if (row[t.capa_hor]) {
-          await downloadCover(row[t.capa_hor], index);
-          count++;
+        if (row[t.capa]) promises.push(downloadCover(row[t.capa], index));
+        if (row[t.capa_hor]) promises.push(downloadCover(row[t.capa_hor], index));
+        
+        if (promises.length >= 20) {
+          await Promise.all(promises);
+          count += promises.length;
+          promises = [];
         }
       }
+      if (promises.length > 0) {
+        await Promise.all(promises);
+        count += promises.length;
+      }
+      
+      // Save manifest periodically
+      await writeFile(manifestPath, JSON.stringify(index, null, 2));
+      
       if (data.length < step) break;
       from += step;
     }
   }
 
-  await writeFile(path.join(OUT, 'manifest.json'), JSON.stringify(index, null, 2));
-  console.log(`[offline-covers] Concluído! ${Object.keys(index).length} capas baixadas.`);
+  await writeFile(manifestPath, JSON.stringify(index, null, 2));
+  console.log(`[offline-covers] Concluído! ${Object.keys(index).length} capas no índice.`);
 }
 
 main().catch(console.error);
