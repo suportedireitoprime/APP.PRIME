@@ -235,7 +235,8 @@ class Media {
     borderRadius = 0,
     font,
     badgeText,
-    showPlayButton = true
+    showPlayButton = true,
+    progress
   }) {
     this.extra = 0;
     this.geometry = geometry;
@@ -255,6 +256,7 @@ class Media {
     this.font = font;
     this.badgeText = badgeText;
     this.showPlayButton = showPlayButton;
+    this.progress = progress;
     this.createShader();
     this.createMesh();
     this.createTitle();
@@ -371,6 +373,17 @@ class Media {
           ctx.closePath();
           ctx.fill();
           ctx.restore();
+        }
+
+        if (this.progress !== undefined) {
+          const barHeight = Math.max(4, canvas.height * 0.015);
+          const y = canvas.height - barHeight;
+          
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+          ctx.fillRect(0, y, canvas.width, barHeight);
+          
+          ctx.fillStyle = 'rgba(52, 211, 153, 0.9)'; // Emerald 400
+          ctx.fillRect(0, y, canvas.width * this.progress, barHeight);
         }
       }
 

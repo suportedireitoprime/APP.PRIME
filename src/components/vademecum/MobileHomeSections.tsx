@@ -36,6 +36,7 @@ const VoiceCaptureOverlay = lazyWithRetry(() => import('./VoiceCaptureOverlay'))
 const HomeNoticiasCarousel = lazyWithRetry(() => import('./HomeNoticiasCarousel'));
 const AprendaSobreLeis = lazyWithRetry(() => import('./AprendaSobreLeis'));
 const NoticiasJuridicasCarousel = lazyWithRetry(() => import('./NoticiasJuridicasCarousel'));
+import CircularGallery from '@/components/ui/CircularGallery';
 import HomeCard from './HomeCard';
 import ContinueLendoCard from './ContinueLendoCard';
 import { toast } from '@/hooks/use-toast';
@@ -132,6 +133,13 @@ const EMALTA_CATS: EmAltaCat[] = [
   { id: 'ea-apresentacao', label: 'Apresentação',  sublabel: 'Aulas narradas em slides',       icon: Presentation, color: 'hsl(var(--primary))', route: '/apresentacoes' },
 ];
 
+const FAST_PILLS_ITEMS = [
+  { id: 'cp', image: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg', text: 'CP', fullName: 'Código Penal' },
+  { id: 'cf', image: '/pilulas/cf_portrait.jpg', text: 'CF88', fullName: 'Constituição Federal' },
+  { id: 'cc', image: '/pilulas/cc_portrait.png', text: 'CC', fullName: 'Código Civil' },
+  { id: 'cpp', image: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=600&auto=format&fit=crop', text: 'CPP', fullName: 'Cód. Proc. Penal' },
+  { id: 'clt', image: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=600&auto=format&fit=crop', text: 'CLT', fullName: 'Leis Trabalhistas' },
+];
 
 type Tab = 'agenda' | 'estudos' | 'faculdade' | 'documentos' | 'categorias' | 'emalta' | 'areas';
 
@@ -195,6 +203,15 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
     setCategorySearch(text);
   }, []);
   const voiceSearch = useVoiceInput(handleVoiceSearch);
+
+  const pillsItems = useMemo(() => {
+    return shuffle(FAST_PILLS_ITEMS).map(item => ({
+      ...item,
+      // Fake progress for now until there's a global user stats context
+      progress: Math.random() * 0.7 + 0.1,
+      showPlayButton: true
+    }));
+  }, []);
 
   useEffect(() => { onTabChange?.(tab); }, [tab, onTabChange]);
 
@@ -567,10 +584,31 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
 
 
 
-      {/* Aprenda sobre as Leis — carrossel infinito de posts do blog (categoria Leis) */}
+      {/* Pílulas em Carrossel 3D */}
       {!hideBlog && (
-        <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 300px' }}>
-          <Suspense fallback={<div className="h-64 bg-muted/20 animate-pulse rounded-xl mx-4" />}><NoticiasJuridicasCarousel /></Suspense>
+        <div className="pt-8">
+          <div className="mb-4">
+            <h3 className="font-display text-foreground text-[18px] font-bold flex items-center gap-2">
+              <span className="w-1 h-5 rounded-full bg-[#10B981]" />
+              Pílulas de Códigos
+            </h3>
+            <p className="font-body text-sm text-muted-foreground mt-1 ml-3">
+              Áudios curtos sobre os artigos mais cobrados
+            </p>
+          </div>
+          <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen h-[350px]">
+            <CircularGallery 
+              items={pillsItems}
+              bend={1.5}
+              textColor="#ffffff"
+              scrollEase={0.02}
+              borderRadius={0.05}
+              onItemClick={(item) => {
+                import('@/lib/nativeHaptics').then((m) => m.haptic.selection());
+                navigate(`/pilulas/${item.id}`);
+              }}
+            />
+          </div>
         </div>
       )}
 
