@@ -1,5 +1,6 @@
 import { Camera, Mesh, Plane, Program, Renderer, Texture, Transform, Raycast, Vec2 } from 'ogl';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { Play } from 'lucide-react';
 
 import './CircularGallery.css';
 
@@ -133,7 +134,7 @@ function createTextTexture(gl, text, font = 'bold 30px monospace', color = 'blac
 }
 
 class Title {
-  constructor({ gl, plane, renderer, text, textColor = '#545050', font = '30px sans-serif' }) {
+  constructor({ gl, plane, renderer, text, textColor = '#545050', font = '30px sans-serif', position = 'outside' }) {
     autoBind(this);
     this.gl = gl;
     this.plane = plane;
@@ -141,6 +142,7 @@ class Title {
     this.text = text;
     this.textColor = textColor;
     this.font = font;
+    this.positionType = position;
     this.createMesh();
   }
   createMesh() {
@@ -176,7 +178,15 @@ class Title {
     const textHeight = this.plane.scale.y * 0.15;
     const textWidth = textHeight * aspect;
     this.mesh.scale.set(textWidth, textHeight, 1);
-    this.mesh.position.y = -this.plane.scale.y * 0.5 - textHeight * 0.5 - 0.05;
+    
+    if (this.positionType === 'outside') {
+      this.mesh.position.y = -this.plane.scale.y * 0.5 - textHeight * 0.5 - 0.05;
+      this.mesh.position.z = 0;
+    } else {
+      this.mesh.position.y = -this.plane.scale.y * 0.5 + textHeight * 0.5 + 0.1;
+      this.mesh.position.z = 0.01;
+    }
+    
     this.mesh.setParent(this.plane);
   }
 }
@@ -192,6 +202,7 @@ class Media {
     scene,
     screen,
     text,
+    fullName,
     viewport,
     bend,
     textColor,
@@ -208,6 +219,7 @@ class Media {
     this.scene = scene;
     this.screen = screen;
     this.text = text;
+    this.fullName = fullName;
     this.viewport = viewport;
     this.bend = bend;
     this.textColor = textColor;
@@ -306,8 +318,20 @@ class Media {
       renderer: this.renderer,
       text: this.text,
       textColor: this.textColor,
-      font: this.font
+      font: this.font,
+      position: 'outside'
     });
+    if (this.fullName) {
+      this.innerTitle = new Title({
+        gl: this.gl,
+        plane: this.plane,
+        renderer: this.renderer,
+        text: this.fullName,
+        textColor: '#ffffff',
+        font: 'bold 20px Figtree',
+        position: 'inside'
+      });
+    }
   }
   update(scroll, direction) {
     this.plane.position.x = this.x - scroll.current - this.extra;
@@ -380,7 +404,8 @@ class App {
       font = 'bold 30px Figtree',
       scrollSpeed = 2,
       scrollEase = 0.05,
-      onItemClick
+      onItemClick,
+      onActiveIndexChange
     } = {}
   ) {
     document.documentElement.classList.remove('no-js');
@@ -389,6 +414,7 @@ class App {
     this.scroll = { ease: scrollEase, current: 0, target: 0, last: 0 };
     this.onCheckDebounce = debounce(this.onCheck, 200);
     this.onItemClick = onItemClick;
+    this.onActiveIndexChange = onActiveIndexChange;
     this.createRenderer();
     this.createCamera();
     this.createScene();
@@ -445,6 +471,7 @@ class App {
         scene: this.scene,
         screen: this.screen,
         text: data.text,
+        fullName: data.fullName,
         viewport: this.viewport,
         bend,
         textColor,
@@ -560,6 +587,23 @@ class App {
   update() {
     this.scroll.current = lerp(this.scroll.current, this.scroll.target, this.scroll.ease);
     const direction = this.scroll.current > this.scroll.last ? 'right' : 'left';
+    
+    const speed = Math.abs(this.scroll.current - this.scroll.last);
+    const isScrolling = speed > 0.1;
+    
+    if (this.medias && this.medias[0]) {
+      const width = this.medias[0].width;
+      const itemIndex = Math.round(Math.abs(this.scroll.current) / width) % this.originalLength;
+      
+      if (this.onActiveIndexChange) {
+         if (this.lastActiveIndex !== itemIndex || this.lastIsScrolling !== isScrolling) {
+            this.lastActiveIndex = itemIndex;
+            this.lastIsScrolling = isScrolling;
+            this.onActiveIndexChange(itemIndex, isScrolling);
+         }
+      }
+    }
+
     if (this.medias) {
       this.medias.forEach(media => media.update(this.scroll, direction));
     }
@@ -620,6 +664,9 @@ export default function CircularGallery({
   onItemClick
 }) {
   const containerRef = useRef(null);
+  const [activeItem, setActiveItem] = useState(0);
+  const [isScrolling, setIsScrolling] = useState(false);
+
   useEffect(() => {
     if (!containerRef.current) return;
     let app;
@@ -634,7 +681,11 @@ export default function CircularGallery({
         font: resolvedFont,
         scrollSpeed,
         scrollEase,
-        onItemClick
+        onItemClick,
+        onActiveIndexChange: (index, scrolling) => {
+          setActiveItem(index);
+          setIsScrolling(scrolling);
+        }
       });
     });
 
@@ -643,13 +694,25 @@ export default function CircularGallery({
       if (app) app.destroy();
     };
   }, [items, bend, textColor, borderRadius, font, fontUrl, scrollSpeed, scrollEase, onItemClick]);
+  
   return (
-    <div
-      className="circular-gallery"
-      ref={containerRef}
-      tabIndex={0}
-      role="region"
-      aria-label="Circular image gallery. Use left and right arrow keys to navigate."
-    />
+    <div className="circular-gallery-wrapper relative w-full h-full">
+      <div
+        className="circular-gallery w-full h-full"
+        ref={containerRef}
+        tabIndex={0}
+        role="region"
+        aria-label="Circular image gallery. Use left and right arrow keys to navigate."
+      />
+      {/* Play Button Overlay on Centered Item */}
+      <div className={`absolute top-[45%] left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none transition-opacity duration-300 ${isScrolling ? 'opacity-0' : 'opacity-100 z-10'}`}>
+        <div 
+           className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 text-white shadow-xl pointer-events-auto cursor-pointer active:scale-95 transition-transform"
+           onClick={() => onItemClick && onItemClick(items[activeItem], activeItem)}
+        >
+          <Play className="w-8 h-8 ml-1" fill="currentColor" />
+        </div>
+      </div>
+    </div>
   );
 }

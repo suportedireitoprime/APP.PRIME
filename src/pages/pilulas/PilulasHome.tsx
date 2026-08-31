@@ -17,18 +17,18 @@ export default function PilulasHome() {
   };
 
   const fastPillsItems = [
-    { image: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg'), text: 'Código Penal' },
-    { image: '/pilulas/cf_portrait.jpg', text: 'Const. Federal' },
-    { image: '/pilulas/cc_portrait.png', text: 'Código Civil' },
-    { image: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=600&auto=format&fit=crop', text: 'CPP' },
-    { image: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=600&auto=format&fit=crop', text: 'CLT' },
+    { image: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg'), text: 'CP', fullName: 'Código Penal' },
+    { image: '/pilulas/cf_portrait.jpg', text: 'CF88', fullName: 'Constituição Federal' },
+    { image: '/pilulas/cc_portrait.png', text: 'CC', fullName: 'Código Civil' },
+    { image: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=600&auto=format&fit=crop', text: 'CPP', fullName: 'Cód. Proc. Penal' },
+    { image: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=600&auto=format&fit=crop', text: 'CLT', fullName: 'Leis Trabalhistas' },
   ];
 
   const handleItemClick = (item: any) => {
     haptic.selection();
-    if (item.text === 'Código Penal') navigate('/pilulas/cp');
-    if (item.text === 'Const. Federal') navigate('/pilulas/cf');
-    if (item.text === 'Código Civil') navigate('/pilulas/cc');
+    if (item.text === 'CP') navigate('/pilulas/cp');
+    if (item.text === 'CF88') navigate('/pilulas/cf');
+    if (item.text === 'CC') navigate('/pilulas/cc');
     if (item.text === 'CPP') navigate('/pilulas/cpp');
     if (item.text === 'CLT') navigate('/pilulas/clt');
   };
