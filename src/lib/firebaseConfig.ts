@@ -3,14 +3,13 @@
 // regras do projeto + VAPID + auth do servidor (service account no edge).
 
 export const firebaseWebConfig = {
-  apiKey: "AIzaSyD0RZQxyxvFByXiRp0wtQySms_VQ6aeFUk",
-  authDomain: "vactio-vade-mecum.firebaseapp.com",
-  projectId: "vactio-vade-mecum",
-  storageBucket: "vactio-vade-mecum.firebasestorage.app",
-  messagingSenderId: "833040915353",
-  appId: "1:833040915353:web:2b66d20dfd752da0099108",
-  measurementId: "G-86C6ZMZLQM",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
-export const firebaseVapidKey =
-  "BL4wQPGaLwQIHk8DU_-dgZMUDHgXFe0GtopVvjS3aFUQxFCMLP69NIEBodLE0cfMAYagXOe6esT6E_T1R-Jw_MU";
+export const firebaseVapidKey = import.meta.env.VITE_FIREBASE_VAPID_KEY;

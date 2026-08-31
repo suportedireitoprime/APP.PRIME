@@ -54,3 +54,9 @@ public/offline-covers
 
 bot-audioaulas/credentials.json
 docs/*.zip
+
+# Sensibles
+.env*
+!*.example
+ios-config/GoogleService-Info.plist
+android-config/google-services.json
