@@ -356,28 +356,29 @@ function AberturaCinematografica({
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15 }}
-              className="text-[11px] font-black tracking-[0.5em] mb-4"
+              className="text-[11px] font-black tracking-[0.5em] mb-4 flex justify-center"
               style={{ color: GOLD }}
             >
-              BEM-VINDO(A)
+              <WaveReveal text="BEM-VINDO(A)" mode="letter" direction="up" />
             </motion.div>
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.25 }}
-              className="text-5xl sm:text-6xl font-black text-[#F3E7D6] leading-[0.9]"
+              className="text-5xl sm:text-6xl font-black text-[#F3E7D6] leading-[0.9] flex justify-center flex-wrap gap-x-3"
               style={{ fontFamily: SERIF }}
             >
-              Vamos <span className="italic">te conhecer</span>.
+              <WaveReveal text="Vamos" mode="letter" direction="up" delay={200} />
+              <span className="italic"><WaveReveal text="te conhecer." mode="letter" direction="up" delay={450} /></span>
             </motion.h1>
-            <motion.p
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
               className="mt-6 text-[#F3E7D6]/70 text-lg leading-relaxed max-w-sm mx-auto"
             >
-              Cinco toques rápidos pra ajustar o app ao seu jeito de estudar.
-            </motion.p>
+              <WaveReveal text="Cinco toques rápidos pra ajustar o app ao seu jeito de estudar." mode="letter" direction="up" delay={800} />
+            </motion.div>
             <motion.button
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -454,9 +455,10 @@ function CardContent({
         <>
           <motion.h2 
             initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.4 }}
-            className="text-3xl sm:text-4xl font-black leading-[1.05] mt-2 mb-6" style={{ fontFamily: SERIF }}
+            className="text-3xl sm:text-4xl font-black leading-[1.05] mt-2 mb-6 flex flex-wrap gap-x-2" style={{ fontFamily: SERIF }}
           >
-            O Direito <span className="italic">evoluiu</span>.
+            <WaveReveal text="O Direito" mode="letter" direction="up" />
+            <span className="italic"><WaveReveal text="evoluiu." mode="letter" direction="up" delay={400} /></span>
           </motion.h2>
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.4 }} className="text-base opacity-80 mb-6 leading-relaxed">
             <WaveReveal 
@@ -474,9 +476,10 @@ function CardContent({
         <>
           <motion.h2 
             initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.4 }}
-            className="text-3xl sm:text-4xl font-black leading-[1.05] mt-2 mb-6" style={{ fontFamily: SERIF }}
+            className="text-3xl sm:text-4xl font-black leading-[1.05] mt-2 mb-6 flex flex-col" style={{ fontFamily: SERIF }}
           >
-            Seu novo <br /><span className="italic">ecossistema</span>.
+            <WaveReveal text="Seu novo" mode="letter" direction="up" />
+            <span className="italic"><WaveReveal text="ecossistema." mode="letter" direction="up" delay={300} /></span>
           </motion.h2>
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.4 }} className="text-base opacity-80 mb-6 leading-relaxed">
             <WaveReveal 
@@ -494,9 +497,10 @@ function CardContent({
         <>
           <motion.h2 
             initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.4 }}
-            className="text-3xl sm:text-4xl font-black leading-[1.05] mt-2 mb-6" style={{ fontFamily: SERIF }}
+            className="text-3xl sm:text-4xl font-black leading-[1.05] mt-2 mb-6 flex flex-wrap gap-x-2" style={{ fontFamily: SERIF }}
           >
-            Onde você está <span className="italic">na sua jornada</span>?
+            <WaveReveal text="Onde você está" mode="letter" direction="up" />
+            <span className="italic"><WaveReveal text="na sua jornada?" mode="letter" direction="up" delay={500} /></span>
           </motion.h2>
           <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain touch-pan-y [-webkit-overflow-scrolling:touch] flex flex-col justify-start pb-4">
             <div className="relative pl-3 border-l-2 border-white/10 space-y-5 ml-2 mt-2">
@@ -534,13 +538,15 @@ function CardContent({
         <>
           <motion.h2 
             initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.4 }}
-            className="text-3xl sm:text-4xl font-black leading-[1.05] mt-2 mb-1" style={{ fontFamily: SERIF }}
+            className="text-3xl sm:text-4xl font-black leading-[1.05] mt-2 mb-1 flex flex-wrap gap-x-2" style={{ fontFamily: SERIF }}
           >
-            O que é <span className="italic">prioridade</span> pra você hoje?
+            <WaveReveal text="O que é" mode="letter" direction="up" />
+            <span className="italic"><WaveReveal text="prioridade" mode="letter" direction="up" delay={300} /></span>
+            <WaveReveal text="pra você hoje?" mode="letter" direction="up" delay={600} />
           </motion.h2>
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.4 }} className="text-sm opacity-70 mb-3">
-            Marque as funções que mais te interessam
-          </motion.p>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.4 }} className="text-sm opacity-70 mb-3">
+            <WaveReveal text="Marque as funções que mais te interessam" mode="letter" direction="up" delay={1000} />
+          </motion.div>
           <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain touch-pan-y [-webkit-overflow-scrolling:touch] space-y-2 pb-2 -mx-1 px-1">
             {INTERESSES.map((it) => {
               const Icon = it.icon;
@@ -582,13 +588,15 @@ function CardContent({
         <>
           <motion.h2 
             initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.4 }}
-            className="text-3xl sm:text-4xl font-black leading-[1.05] mt-2 mb-1" style={{ fontFamily: SERIF }}
+            className="text-3xl sm:text-4xl font-black leading-[1.05] mt-2 mb-1 flex flex-wrap gap-x-2" style={{ fontFamily: SERIF }}
           >
-            O que mais <span className="italic">trava</span> seus estudos hoje?
+            <WaveReveal text="O que mais" mode="letter" direction="up" />
+            <span className="italic"><WaveReveal text="trava" mode="letter" direction="up" delay={400} /></span>
+            <WaveReveal text="seus estudos hoje?" mode="letter" direction="up" delay={600} />
           </motion.h2>
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.4 }} className="text-sm opacity-70 mb-3">
-            Marque o que trava seus estudos na lei
-          </motion.p>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.4 }} className="text-sm opacity-70 mb-3">
+            <WaveReveal text="Marque o que trava seus estudos na lei" mode="letter" direction="up" delay={1000} />
+          </motion.div>
           <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain touch-pan-y [-webkit-overflow-scrolling:touch] space-y-2 pb-2 -mx-1 px-1">
             {DORES.map((d) => {
               const Icon = d.icon;
@@ -630,13 +638,16 @@ function CardContent({
         <>
           <motion.h2 
             initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.4 }}
-            className="text-3xl sm:text-4xl font-black leading-[1.05] mt-2 mb-1" style={{ fontFamily: SERIF }}
+            className="text-3xl sm:text-4xl font-black leading-[1.05] mt-2 mb-1 flex flex-wrap gap-x-2" style={{ fontFamily: SERIF }}
           >
-            Sua jornada <span className="italic">começa aqui</span>{nome1 ? <>, {nome1}</> : ''}.
+            <WaveReveal text="Sua jornada" mode="letter" direction="up" />
+            <span className="italic"><WaveReveal text="começa aqui" mode="letter" direction="up" delay={400} /></span>
+            {nome1 && <WaveReveal text={`, ${nome1}.`} mode="letter" direction="up" delay={700} />}
+            {!nome1 && <WaveReveal text="." mode="letter" direction="up" delay={700} />}
           </motion.h2>
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.4 }} className="text-base opacity-80 mb-6 leading-relaxed">
-            O seu novo jeito de estudar Direito está quase pronto. Como você quer ser chamado?
-          </motion.p>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.4 }} className="text-base opacity-80 mb-6 leading-relaxed">
+            <WaveReveal text="O seu novo jeito de estudar Direito está quase pronto. Como você quer ser chamado?" mode="letter" direction="up" delay={900} />
+          </motion.div>
           <input
             autoFocus
             value={data.nome}
@@ -655,13 +666,14 @@ function CardContent({
         <>
           <motion.h2 
             initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.4 }}
-            className="text-3xl sm:text-4xl font-black leading-[1.05] mt-2 mb-1" style={{ fontFamily: SERIF }}
+            className="text-3xl sm:text-4xl font-black leading-[1.05] mt-2 mb-1 flex flex-wrap gap-x-2" style={{ fontFamily: SERIF }}
           >
-            Acelere com o <span className="italic">Hórus</span>.
+            <WaveReveal text="Acelere com o" mode="letter" direction="up" />
+            <span className="italic"><WaveReveal text="Hórus." mode="letter" direction="up" delay={500} /></span>
           </motion.h2>
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.4 }} className="text-base opacity-80 mb-6 leading-relaxed">
-            Coloque seu WhatsApp para liberar a nossa Inteligência Artificial direto no seu bolso, além de alertas rápidos de novas leis (opcional).
-          </motion.p>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.4 }} className="text-base opacity-80 mb-6 leading-relaxed">
+            <WaveReveal text="Coloque seu WhatsApp para liberar a nossa Inteligência Artificial direto no seu bolso, além de alertas rápidos de novas leis (opcional)." mode="letter" direction="up" delay={800} />
+          </motion.div>
           <input
             value={data.whatsapp || ''}
             onChange={(e) =>
