@@ -1,9 +1,45 @@
 import { createRoot } from "react-dom/client";
+import React, { Component, ErrorInfo, ReactNode } from "react";
 import App from "./App.tsx";
 import "./index.css";
 import { setNativeStatusBar } from "./lib/nativeStatusBar";
 import { initCrashlytics, installGlobalErrorHandlers } from "./lib/nativeCrashlytics";
 import { Capacitor } from "@capacitor/core";
+
+class GlobalErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; error: Error | null; errorInfo: ErrorInfo | null }> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: null, errorInfo: null };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    this.setState({ errorInfo });
+    console.error("GlobalErrorBoundary caught an error", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ padding: 20, backgroundColor: '#450a0a', color: 'white', minHeight: '100vh', width: '100vw', zIndex: 999999, position: 'absolute', top: 0, left: 0, overflow: 'auto', boxSizing: 'border-box' }}>
+          <h2 style={{ fontSize: 24, fontWeight: 'bold', color: '#f87171', marginBottom: 16 }}>CRASH REPORT (ISCA GLOBAL)</h2>
+          <div style={{ backgroundColor: 'rgba(0,0,0,0.5)', padding: 16, borderRadius: 8, marginBottom: 16, fontFamily: 'monospace', fontSize: 14, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
+            <strong>Error:</strong> {this.state.error?.toString()}
+          </div>
+          <div style={{ backgroundColor: 'rgba(0,0,0,0.5)', padding: 16, borderRadius: 8, fontFamily: 'monospace', fontSize: 12, whiteSpace: 'pre-wrap', wordBreak: 'break-all', color: '#d1d5db' }}>
+            <strong>Stack Trace:</strong>{'\n'}
+            {this.state.errorInfo?.componentStack}
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 
 if (Capacitor.isNativePlatform()) {
   document.documentElement.classList.add('capacitor-native');
@@ -42,9 +78,11 @@ preloadImage(horusOwlUrl);
 // NOTE: Deve rodar antes do createRoot para não perder o evento.
 import('./lib/nativePush').then((m) => m.bootstrapNativePush()).catch(() => {});
 
-
-createRoot(document.getElementById("root")!).render(<App />);
-
+createRoot(document.getElementById("root")!).render(
+  <GlobalErrorBoundary>
+    <App />
+  </GlobalErrorBoundary>
+);
 // Sinaliza prontidão ao splash screen — pode sair antes do timeout de 1.2s.
 requestAnimationFrame(() => {
   requestAnimationFrame(() => {
