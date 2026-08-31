@@ -276,11 +276,11 @@ const Bibliotecas = () => {
 
 
         <div className="mt-8">
-          <ContinuarLeituraCarousel onAbrirLivro={(l) => setLivroAberto(l)} />
+          <RecomendacoesCarousel onAbrirLivro={(l) => setLivroAberto(l)} />
         </div>
 
         <div className="mt-8">
-          <RecomendacoesCarousel onAbrirLivro={(l) => setLivroAberto(l)} />
+          <ContinuarLeituraCarousel onAbrirLivro={(l) => setLivroAberto(l)} />
         </div>
 
         <div className="px-4 pt-6 mb-4">

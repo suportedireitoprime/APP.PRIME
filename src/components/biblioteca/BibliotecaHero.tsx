@@ -130,8 +130,8 @@ const BibliotecaHero = ({ children }: Props) => {
         </g>
       </svg>
 
-      {/* Silhueta do filósofo rotativo no fundo */}
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-[52%] select-none overflow-hidden">
+      {/* Silhueta do filósofo rotativo — alinhada com texto */}
+      <div className="pointer-events-none absolute top-[var(--sai-top)] bottom-0 right-0 w-[48%] select-none overflow-hidden">
         <AnimatePresence initial={false} mode="wait">
           <motion.img
             key={atual.nome}
@@ -144,7 +144,7 @@ const BibliotecaHero = ({ children }: Props) => {
             animate={{ opacity: 0.92, x: 0, scale: 1 }}
             exit={{ opacity: 0, x: -20, scale: 0.98 }}
             transition={{ duration: 0.6, ease: 'easeOut' }}
-            className="absolute -right-4 bottom-0 h-[110%] w-auto object-contain object-bottom opacity-90 drop-shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
+            className="absolute -right-2 top-6 h-[85%] w-auto object-contain object-top opacity-90 drop-shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
           />
         </AnimatePresence>
       </div>
@@ -228,24 +228,6 @@ const BibliotecaHero = ({ children }: Props) => {
           </div>
         </div>
 
-        {/* Brand central — Sócrates + Título */}
-        <div className="flex flex-col items-center text-center gap-1.5 mt-2">
-          <div className="relative h-20 flex items-center justify-center">
-            <img
-              src={socratesImg}
-              alt="Sócrates"
-              loading="eager"
-              decoding="sync"
-              className="w-auto h-full object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)] rounded-full"
-            />
-          </div>
-          <h1 className="font-serif italic text-white text-[24px] leading-[1.05] font-semibold tracking-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)]">
-            Biblioteca
-          </h1>
-          <p className="font-body text-amber-200/85 text-[12.5px] font-medium tracking-wide uppercase drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)]">
-            Acervo Jurídico
-          </p>
-        </div>
 
         {/* 4 Botões de Ação Rápida */}
         <div className="grid grid-cols-4 gap-2 mx-1 mt-1">
