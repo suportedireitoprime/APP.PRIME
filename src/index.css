@@ -266,16 +266,21 @@ body {
 @layer base {
   * {
     @apply border-border;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
   }
 
+  /* ───── Oculta scrollbar nativa em TODOS os contextos (Web + WebView Android/iOS) ───── */
   *::-webkit-scrollbar,
+  *::-webkit-scrollbar-thumb,
+  *::-webkit-scrollbar-track,
+  *::-webkit-scrollbar-corner,
   html::-webkit-scrollbar,
   body::-webkit-scrollbar {
     display: none !important;
     width: 0 !important;
     height: 0 !important;
+    background: transparent !important;
   }
 
   body {
@@ -283,6 +288,28 @@ body {
     font-family: 'Barlow', system-ui, sans-serif;
     font-weight: 400;
     -webkit-font-smoothing: antialiased;
+    /* Oculta o scroll indicator nativo da WebView Android/iOS */
+    -webkit-overflow-scrolling: touch;
+    overflow: hidden;
+  }
+
+  html {
+    overflow: hidden;
+  }
+
+  #root {
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 100dvh;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+
+  #root::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
   }
 
   h1, h2, h3, h4, h5, h6 {
