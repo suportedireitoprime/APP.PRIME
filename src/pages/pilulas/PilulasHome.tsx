@@ -1,3 +1,4 @@
+import CircularGallery from '@/components/ui/CircularGallery';
 import { useNavigate } from 'react-router-dom';
 import { useRef, useState, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';

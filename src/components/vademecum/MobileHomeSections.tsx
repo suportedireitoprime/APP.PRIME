@@ -1,3 +1,4 @@
+import CircularGallery from '@/components/ui/CircularGallery';
 import { useState, useEffect, useCallback, useMemo, memo, Suspense, startTransition } from 'react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { createPortal } from 'react-dom';

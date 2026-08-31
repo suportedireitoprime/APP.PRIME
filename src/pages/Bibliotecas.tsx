@@ -1,3 +1,4 @@
+import CircularGallery from '@/components/ui/CircularGallery';
 import { Suspense, useEffect, useMemo, useState, useRef, memo, useCallback } from 'react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
