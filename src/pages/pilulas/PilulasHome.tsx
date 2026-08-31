@@ -69,15 +69,12 @@ export default function PilulasHome() {
         >
           {/* Background Image with Overlay */}
           <div className="absolute inset-0 z-0">
-             <img src="/pilulas/classicos_cover.jpg" alt="Clássicos do Direito" className="w-full h-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-105" loading="lazy" />
-            <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
+            <img src="/pilulas/classicos_cover.jpg" alt="Clássicos do Direito" className="w-full h-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+            <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-zinc-950 via-zinc-950/80 to-transparent" />
           </div>
 
           {/* Content */}
           <div className="relative z-10 flex flex-col justify-end h-full p-5 w-full">
-            <span className="inline-block px-2.5 py-1 mb-3 rounded-full bg-[#36AF85]/20 text-[#36AF85] text-[11px] font-black uppercase tracking-widest border border-[#36AF85]/30 self-start">
-              Clássicos
-            </span>
             <h3 className="text-[20px] font-black text-white leading-tight drop-shadow-md">
               Clássicos do Direito
             </h3>
