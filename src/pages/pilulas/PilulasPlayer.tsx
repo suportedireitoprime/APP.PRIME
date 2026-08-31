@@ -8,6 +8,7 @@ import { useResumoLivroPlayer } from '@/contexts/ResumoLivroPlayerContext';
 import { clearMediaSession } from '@/lib/mediaSession';
 import { toast } from 'sonner';
 import { useGatedFeature } from '@/hooks/useGatedFeature';
+import { directImg } from '@/lib/cdnImg';
 
 const INTRO_URL = 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/audios/audio-intro-2.mp3';
 
@@ -63,7 +64,7 @@ export default function PilulasPlayer() {
               id: data.id,
               titulo: `Artigo ${data.numero}`,
               autor: 'Código Penal',
-              capa: '/vademecum/capas/cp.webp',
+              capa: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp.webp'),
               audioResumoUrl: data.audio_pilula_url,
               analiseDetalhada: data.texto,
               sobre: data.texto

@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Search, Pill, Headphones, BookOpen, AlertCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { directImg } from '@/lib/cdnImg';
 
 function formatTime(timeInSeconds: number) {
   if (!timeInSeconds || isNaN(timeInSeconds)) return '0:00';
@@ -64,7 +65,13 @@ function PilulaItem({
       )}
       {/* Capa */}
       <div className="w-16 h-24 rounded-lg bg-white/5 shrink-0 overflow-hidden shadow-md">
-        <img src="/vademecum/capas/cp.webp" alt="Código Penal" className="w-full h-full object-cover" loading="lazy" onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=600&auto=format&fit=crop' }} />
+        <img 
+          src={directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp.webp')} 
+          alt="Código Penal" 
+          className="w-full h-full object-cover" 
+          loading="lazy" 
+          onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=600&auto=format&fit=crop' }} 
+        />
       </div>
 
       {/* Detalhes */}

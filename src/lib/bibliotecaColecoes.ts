@@ -1,29 +1,16 @@
-import {pickAsset, srcOf } from '@/lib/assetUrl';
-import capaAreasAsset from '@/assets/biblioteca/capa-areas.webp.asset.json';
-import capaAreasBundled from '@/assets/biblioteca/capa-areas.webp';
-import capaClassicosAsset from '@/assets/biblioteca/capa-classicos.webp.asset.json';
-import capaClassicosBundled from '@/assets/biblioteca/capa-classicos.webp';
-import capaOabAsset from '@/assets/biblioteca/capa-oab.webp.asset.json';
-import capaOabBundled from '@/assets/biblioteca/capa-oab.webp';
-import capaForaAsset from '@/assets/biblioteca/capa-fora-da-toga.webp.asset.json';
-import capaForaBundled from '@/assets/biblioteca/capa-fora-da-toga.webp';
-import capaPortuguesAsset from '@/assets/biblioteca/capa-portugues.webp.asset.json';
-import capaPortuguesBundled from '@/assets/biblioteca/capa-portugues.webp';
-import capaPesquisaAsset from '@/assets/biblioteca/capa-pesquisa.webp.asset.json';
-import capaPesquisaBundled from '@/assets/biblioteca/capa-pesquisa.webp';
-import capaLiderancaAsset from '@/assets/biblioteca/capa-lideranca.webp.asset.json';
-import capaLiderancaBundled from '@/assets/biblioteca/capa-lideranca.webp';
-import capaOratoriaAsset from '@/assets/biblioteca/capa-oratoria.jpg.asset.json';
-import capaOratoriaBundled from '@/assets/biblioteca/capa-oratoria.jpg';
+import { directImg } from '@/lib/cdnImg';
 
-const capaAreas = pickAsset(capaAreasBundled, srcOf(capaAreasAsset));
-const capaClassicos = pickAsset(capaClassicosBundled, srcOf(capaClassicosAsset));
-const capaOab = pickAsset(capaOabBundled, srcOf(capaOabAsset));
-const capaFora = pickAsset(capaForaBundled, srcOf(capaForaAsset));
-const capaPortugues = pickAsset(capaPortuguesBundled, srcOf(capaPortuguesAsset));
-const capaPesquisa = pickAsset(capaPesquisaBundled, srcOf(capaPesquisaAsset));
-const capaLideranca = pickAsset(capaLiderancaBundled, srcOf(capaLiderancaAsset));
-const capaOratoria = pickAsset(capaOratoriaBundled, srcOf(capaOratoriaAsset));
+const SUPABASE_STORAGE_URL = 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas';
+const getCapaFixa = (filename: string) => directImg(`${SUPABASE_STORAGE_URL}/${filename}`);
+
+const capaAreas = getCapaFixa('capa-areas.webp');
+const capaClassicos = getCapaFixa('capa-classicos.webp');
+const capaOab = getCapaFixa('capa-oab.webp');
+const capaFora = getCapaFixa('capa-fora-da-toga.webp');
+const capaPortugues = getCapaFixa('capa-portugues.webp');
+const capaPesquisa = getCapaFixa('capa-pesquisa.webp');
+const capaLideranca = getCapaFixa('capa-lideranca.webp');
+const capaOratoria = getCapaFixa('capa-oratoria.jpg');
 
 export type ColecaoModo = 'livros' | 'categorias';
 
