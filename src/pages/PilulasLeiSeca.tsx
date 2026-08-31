@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Search, Pill, Headphones, BookOpen, AlertCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { directImg } from '@/lib/cdnImg';
 
@@ -125,11 +126,11 @@ const CONFIG_MAP = {
     title: 'Código Penal',
     subtitle: 'Ouça a explicação dos artigos',
     cover: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg'),
-    colorClasses: 'bg-red-500/15 text-red-400',
-    textColorClass: 'text-red-400',
-    progressColorClass: 'bg-red-500',
-    iconColor: 'text-red-500',
-    inputFocusClass: 'focus:border-red-500/50'
+    colorClasses: 'bg-[#FF3B30]/15 text-[#FF3B30]',
+    textColorClass: 'text-[#FF3B30]',
+    progressColorClass: 'bg-[#FF3B30]',
+    iconColor: 'text-[#FF3B30]',
+    inputFocusClass: 'focus:border-[#FF3B30]/50'
   },
   cf: {
     slug: 'cf',
@@ -157,45 +158,36 @@ const CONFIG_MAP = {
 
 export default function PilulasLeiSeca({ slug }: { slug: 'cp' | 'cf' | 'cc' }) {
   const navigate = useNavigate();
-  const [artigos, setArtigos] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [busca, setBusca] = useState('');
 
   const config = CONFIG_MAP[slug];
 
-  useEffect(() => {
-    async function fetchLei() {
-      try {
-        setLoading(true);
-        const { data: leiData, error: leiError } = await supabase
-          .from('vade_mecum_leis')
-          .select('id')
-          .eq('slug', slug)
-          .single();
-          
-        if (leiError || !leiData) {
-          console.error(`Erro ao buscar ID do ${slug}:`, leiError);
-          return;
-        }
+  const { data: artigos = [], isLoading: loading } = useQuery({
+    queryKey: ['pilulas', 'lei', slug],
+    queryFn: async () => {
+      const { data: leiData, error: leiError } = await supabase
+        .from('vade_mecum_leis')
+        .select('id')
+        .eq('slug', slug)
+        .single();
         
-        const { data, error } = await supabase
-          .from('vade_mecum_artigos')
-          .select('id, numero, texto, audio_pilula_url, ordem')
-          .eq('lei_id', leiData.id)
-          .ilike('texto', 'Art.%')
-          .order('ordem', { ascending: true });
-
-        if (error) throw error;
-        setArtigos(data || []);
-      } catch (error) {
-        console.error(`Erro ao buscar artigos do ${slug}:`, error);
-        toast.error(`Erro ao carregar as pílulas do ${config.title}.`);
-      } finally {
-        setLoading(false);
+      if (leiError || !leiData) {
+        throw new Error(`Erro ao buscar ID do ${slug}`);
       }
-    }
-    fetchLei();
-  }, [slug]);
+      
+      const { data, error } = await supabase
+        .from('vade_mecum_artigos')
+        .select('id, numero, texto, audio_pilula_url, ordem')
+        .eq('lei_id', leiData.id)
+        .ilike('texto', 'Art.%')
+        .order('ordem', { ascending: true });
+
+      if (error) throw error;
+      return data || [];
+    },
+    staleTime: 1000 * 60 * 60, // 1 hour
+    gcTime: 1000 * 60 * 60 * 24 // 24 hours
+  });
 
   const artigosFiltrados = busca
     ? artigos.filter(
