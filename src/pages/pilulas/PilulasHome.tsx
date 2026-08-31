@@ -72,8 +72,8 @@ export default function PilulasHome() {
 
       <div className="px-4 pt-6 space-y-6">
         <div>
-          <h2 className="text-[22px] font-black text-white uppercase tracking-normal">Escolha um Tema</h2>
-          <p className="mt-1 text-[14px] text-zinc-400">
+          <h2 className="text-[22px] font-black text-white uppercase tracking-widest">Escolha um Tema</h2>
+          <p className="mt-1 text-[14px] text-zinc-400 truncate">
             Aprenda conceitos jurídicos complexos em minutos. Ouça pílulas de conhecimento extraídas da essência das principais obras e legislações.
           </p>
         </div>
@@ -120,9 +120,9 @@ export default function PilulasHome() {
         {/* Pílulas de Códigos */}
         <div className="space-y-4">
           <div className="flex items-start justify-between px-1 mb-4 gap-4">
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <h2 className="text-[22px] font-black text-white uppercase tracking-widest mb-1">Pílulas de Códigos</h2>
-              <p className="text-[13px] text-zinc-400 leading-relaxed">
+              <p className="text-[13px] text-zinc-400 truncate">
                 Áudios curtos e diretos sobre os artigos mais cobrados e essenciais da lei seca.
               </p>
             </div>

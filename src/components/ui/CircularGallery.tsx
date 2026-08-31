@@ -300,7 +300,49 @@ class Media {
     img.crossOrigin = 'anonymous';
     img.src = this.image;
     img.onload = () => {
-      texture.image = img;
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext('2d');
+      
+      // Draw the original image
+      if (ctx) {
+        ctx.drawImage(img, 0, 0);
+
+        // Draw Play Button overlay
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const radius = canvas.width * 0.12;
+
+        ctx.save();
+        // Glassmorphism-like background
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Border
+        ctx.lineWidth = Math.max(2, radius * 0.05);
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.stroke();
+
+        // Play Triangle
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        ctx.beginPath();
+        const playW = radius * 0.7;
+        const playH = radius * 0.8;
+        const offsetX = centerX - playW * 0.3 + (radius * 0.05);
+        const offsetY = centerY - playH * 0.5;
+        
+        ctx.moveTo(offsetX, offsetY);
+        ctx.lineTo(offsetX + playW, centerY);
+        ctx.lineTo(offsetX, offsetY + playH);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      }
+
+      texture.image = canvas;
       this.program.uniforms.uImageSizes.value = [img.naturalWidth, img.naturalHeight];
     };
   }
@@ -491,7 +533,7 @@ class App {
     if (!this.isDown) return;
     const x = e.touches ? e.touches[0].clientX : e.clientX;
     // Multiplier matches WebGL units to screen pixels for 1:1 tracking
-    const multiplier = this.viewport.width / this.screen.width;
+    const multiplier = (this.viewport.width / this.screen.width) * 2.5;
     const distance = (this.start - x) * multiplier;
     this.scroll.target = this.scroll.position + distance;
   }
@@ -747,15 +789,6 @@ const CircularGallery = forwardRef(({
         role="region"
         aria-label="Circular image gallery. Use left and right arrow keys to navigate."
       />
-      {/* Play Button Overlay on Centered Item */}
-      <div className={`absolute top-[45%] left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none transition-opacity duration-300 ${isScrolling ? 'opacity-0' : 'opacity-100 z-10'}`}>
-        <div 
-           className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 text-white shadow-xl pointer-events-auto cursor-pointer active:scale-95 transition-transform"
-           onClick={() => onItemClick && onItemClick(items[activeItem], activeItem)}
-        >
-          <Play className="w-8 h-8 ml-1" fill="currentColor" />
-        </div>
-      </div>
     </div>
   );
 });
