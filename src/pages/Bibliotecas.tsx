@@ -292,14 +292,6 @@ const Bibliotecas = () => {
               <p className="text-[13px] text-zinc-400 truncate">
                 Explore as coleções completas por área, autor e temática jurídica.
               </p>
-                    ease: 'easeInOut',
-                    times: [0, 0.15, 0.85, 1],
-                  }}
-                />
-              </motion.button>
-            ))}
-          </div>
-        )}
 
 
       </div>

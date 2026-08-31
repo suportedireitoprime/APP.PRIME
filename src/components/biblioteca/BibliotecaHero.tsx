@@ -59,10 +59,10 @@ const BibliotecaHero = ({ children }: Props) => {
   const atual = FILOSOFOS[idx];
 
   const ACTIONS = [
-    { id: 'leitura' as const, label: 'Leitura', icon: BookMarked },
-    { id: 'trilhas' as const, label: 'Trilhas', icon: RouteIcon },
-    { id: 'favoritos' as const, label: 'Favoritos', icon: Heart },
-    { id: 'personalizado' as const, label: 'Meus PDFs', icon: FileUp },
+    { id: 'leitura' as const, label: 'Leitura', icon: BookMarked, color: 'text-indigo-400 group-hover:text-indigo-300' },
+    { id: 'trilhas' as const, label: 'Trilhas', icon: RouteIcon, color: 'text-emerald-400 group-hover:text-emerald-300' },
+    { id: 'favoritos' as const, label: 'Favoritos', icon: Heart, color: 'text-rose-400 group-hover:text-rose-300' },
+    { id: 'personalizado' as const, label: 'Meus PDFs', icon: FileUp, color: 'text-amber-400 group-hover:text-amber-300' },
   ];
 
   const handleAction = (id: typeof ACTIONS[number]['id']) => {
@@ -130,7 +130,6 @@ const BibliotecaHero = ({ children }: Props) => {
         </g>
       </svg>
 
-      {/* Silhueta do filósofo rotativo — alinhada com texto */}
       <div className="pointer-events-none absolute top-[var(--sai-top)] bottom-0 right-0 w-[48%] select-none overflow-hidden">
         <AnimatePresence initial={false} mode="wait">
           <motion.img
@@ -149,11 +148,9 @@ const BibliotecaHero = ({ children }: Props) => {
         </AnimatePresence>
       </div>
 
-      {/* Gradiente legibilidade */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[hsl(16,28%,12%)] via-[hsl(16,28%,12%)]/70 to-transparent" />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
 
-      {/* Header — Voltar + Offline */}
       <div className="px-4 pb-2 pt-2 flex items-center justify-between relative z-30">
         <button
           onClick={() => { haptic.selection(); navigate('/'); }}
@@ -171,10 +168,8 @@ const BibliotecaHero = ({ children }: Props) => {
         </button>
       </div>
 
-      {/* Conteúdo */}
       <div className="relative px-4 pt-1 pb-5 flex flex-col gap-4">
         <div className="max-w-[58%] xs:max-w-[62%] flex flex-col">
-          {/* Frase do filósofo */}
           <p className="text-[10px] uppercase tracking-[0.28em] text-amber-300/90 font-bold">
             Pensadores do Direito
           </p>
@@ -213,7 +208,6 @@ const BibliotecaHero = ({ children }: Props) => {
             </AnimatePresence>
           </div>
 
-          {/* Indicadores */}
           <div className="mt-3 flex items-center gap-1.5">
             {FILOSOFOS.map((_, i) => (
               <button
@@ -228,8 +222,8 @@ const BibliotecaHero = ({ children }: Props) => {
           </div>
         </div>
 
+        {children && <div className="relative mt-2">{children}</div>}
 
-        {/* 4 Botões de Ação Rápida */}
         <div className="grid grid-cols-4 gap-2 mx-1 mt-1">
           {ACTIONS.map((a) => {
             const Icon = a.icon;
@@ -239,15 +233,12 @@ const BibliotecaHero = ({ children }: Props) => {
                 onClick={() => handleAction(a.id)}
                 className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:scale-95 gap-2 text-center"
               >
-                <Icon className="w-5 h-5 text-white/70 group-hover:text-white group-hover:scale-110 transition-all" strokeWidth={2} />
+                <Icon className={`w-5 h-5 ${a.color} group-hover:scale-110 transition-all`} strokeWidth={2} />
                 <span className="text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">{a.label}</span>
               </button>
             );
           })}
         </div>
-
-        {/* Slot para busca ou conteúdo extra */}
-        {children && <div className="relative mt-2">{children}</div>}
       </div>
     </div>
   );
