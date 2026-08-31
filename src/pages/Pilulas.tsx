@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Search, Pill, Headphones, BookOpen, AlertCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
 import { COLECOES, type ColecaoConfig, type LivroNormalizado, normalizeLivro } from '@/lib/bibliotecaColecoes';
 import { useResumoLivroPlayer } from '@/contexts/ResumoLivroPlayerContext';
 import { toast } from 'sonner';
@@ -122,35 +123,26 @@ function PilulaItem({
 
 export default function Pilulas() {
   const navigate = useNavigate();
-  const [livros, setLivros] = useState<LivroNormalizado[]>([]);
-  const [loading, setLoading] = useState(true);
   const [busca, setBusca] = useState('');
   const { tocar, livroAtual, tocando, togglePlay } = useResumoLivroPlayer();
 
-  useEffect(() => {
-    async function fetchClassicos() {
-      try {
-        const classicosCol = COLECOES.find((c) => c.id === 'classicos');
-        if (!classicosCol) return;
+  const { data: livros = [], isLoading: loading } = useQuery({
+    queryKey: ['pilulas', 'classicos'],
+    queryFn: async () => {
+      const classicosCol = COLECOES.find((c) => c.id === 'classicos');
+      if (!classicosCol) return [];
 
-        const { data, error } = await supabase
-          .from(classicosCol.table as any)
-          .select(classicosCol.select)
-          .order('id');
+      const { data, error } = await supabase
+        .from(classicosCol.table as any)
+        .select(classicosCol.select)
+        .order('id');
 
-        if (error) throw error;
-
-        const normalizados = (data || []).map((row) => normalizeLivro(row, classicosCol));
-        setLivros(normalizados);
-      } catch (error) {
-        console.error('Erro ao buscar pílulas:', error);
-        toast.error('Erro ao carregar as pílulas de áudio.');
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchClassicos();
-  }, []);
+      if (error) throw error;
+      return (data || []).map((row) => normalizeLivro(row, classicosCol));
+    },
+    staleTime: 1000 * 60 * 60, // 1 hour
+    gcTime: 1000 * 60 * 60 * 24 // 24 hours
+  });
 
   const livrosFiltrados = busca
     ? livros.filter(
