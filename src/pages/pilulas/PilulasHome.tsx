@@ -55,7 +55,7 @@ export default function PilulasHome() {
         <div>
           <h2 className="text-[22px] font-black text-white uppercase tracking-normal">Escolha um Tema</h2>
           <p className="mt-1 text-[14px] text-zinc-400">
-            Aprenda conceitos jurídicos de forma rápida ouvindo a essência das obras.
+            Aprenda conceitos jurídicos complexos em minutos. Ouça pílulas de conhecimento extraídas da essência das principais obras e legislações.
           </p>
         </div>
 
@@ -69,26 +69,36 @@ export default function PilulasHome() {
         >
           {/* Background Image with Overlay */}
           <div className="absolute inset-0 z-0">
-            <img src="/pilulas/classicos_cover.jpg" alt="Clássicos do Direito" className="w-full h-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-105" loading="lazy" />
-            <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-zinc-950 via-zinc-950/80 to-transparent" />
+            <img src="/pilulas/classicos_cover.jpg" alt="Clássicos do Direito" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+            <div className="absolute inset-x-0 bottom-0 h-3/5 bg-gradient-to-t from-zinc-950 via-zinc-950/60 to-transparent" />
           </div>
 
           {/* Content */}
           <div className="relative z-10 flex flex-col justify-end h-full p-5 w-full">
-            <h3 className="text-[20px] font-black text-white leading-tight drop-shadow-md">
-              Clássicos do Direito
-            </h3>
-            <p className="mt-2 text-[13px] text-zinc-300 line-clamp-2 drop-shadow">
-              As obras fundamentais do pensamento jurídico mundial.
-            </p>
+            <div className="flex justify-between items-end w-full">
+              <div>
+                <h3 className="text-[20px] font-black text-white leading-tight drop-shadow-md">
+                  Clássicos do Direito
+                </h3>
+                <p className="mt-2 text-[13px] text-zinc-300 line-clamp-2 drop-shadow">
+                  As obras fundamentais do pensamento jurídico mundial.
+                </p>
+              </div>
+              <div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center flex-shrink-0 mb-1 border border-white/20">
+                <ArrowRight className="w-4 h-4 text-white" strokeWidth={2.5} />
+              </div>
+            </div>
           </div>
         </motion.button>
 
         {/* Pílulas Rápidas */}
         <div className="mt-8 space-y-4">
-          <div className="flex items-center gap-2 px-1">
-            <div className="w-1 h-4 bg-white/20 rounded-full" />
-            <h2 className="text-lg font-bold text-white leading-none">Pílulas Rápidas</h2>
+          <div className="px-1 mb-4">
+            <div className="flex items-center gap-2 mb-1">
+              <div className="w-1 h-4 bg-white/20 rounded-full" />
+              <h2 className="text-lg font-bold text-white leading-none">Pílulas Rápidas</h2>
+            </div>
+            <p className="text-[13px] text-zinc-400 pl-3 leading-relaxed">Áudios curtos e diretos sobre os artigos mais cobrados e essenciais da lei seca.</p>
           </div>
 
           <div className="grid grid-cols-3 gap-3">
@@ -99,7 +109,7 @@ export default function PilulasHome() {
               onClick={handleSelectCP}
               className="group flex flex-col text-left active:scale-[0.98] transition-transform"
             >
-              <div className="w-full aspect-[2/3] rounded-xl overflow-hidden bg-zinc-900 border border-white/5 mb-2 shadow-sm">
+              <div className="w-full aspect-[2/3] rounded-xl overflow-hidden bg-zinc-900 border border-white/5 mb-2 shadow-sm relative">
                 <img 
                   src={directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg')} 
                   alt="Código Penal" 
@@ -107,6 +117,9 @@ export default function PilulasHome() {
                   loading="lazy" 
                   onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=600&auto=format&fit=crop' }} 
                 />
+                <div className="absolute bottom-2 right-2 w-6 h-6 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/10 group-hover:bg-white/10 transition-colors">
+                  <ArrowRight className="w-3 h-3 text-white" strokeWidth={2.5} />
+                </div>
               </div>
               <div>
                 <h3 className="text-[13px] font-bold text-white leading-tight line-clamp-1">Código Penal</h3>
@@ -121,13 +134,16 @@ export default function PilulasHome() {
               onClick={handleSelectCF}
               className="group flex flex-col text-left active:scale-[0.98] transition-transform"
             >
-              <div className="w-full aspect-[2/3] rounded-xl overflow-hidden bg-zinc-900 border border-white/5 mb-2 shadow-sm">
+              <div className="w-full aspect-[2/3] rounded-xl overflow-hidden bg-zinc-900 border border-white/5 mb-2 shadow-sm relative">
                 <img 
                   src="/pilulas/cf_portrait.jpg" 
                   alt="Constituição Federal" 
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
                   loading="lazy" 
                 />
+                <div className="absolute bottom-2 right-2 w-6 h-6 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/10 group-hover:bg-white/10 transition-colors">
+                  <ArrowRight className="w-3 h-3 text-white" strokeWidth={2.5} />
+                </div>
               </div>
               <div>
                 <h3 className="text-[13px] font-bold text-white leading-tight line-clamp-1">Const. Federal</h3>
@@ -142,13 +158,16 @@ export default function PilulasHome() {
               onClick={handleSelectCC}
               className="group flex flex-col text-left active:scale-[0.98] transition-transform"
             >
-              <div className="w-full aspect-[2/3] rounded-xl overflow-hidden bg-zinc-900 border border-white/5 mb-2 shadow-sm">
+              <div className="w-full aspect-[2/3] rounded-xl overflow-hidden bg-zinc-900 border border-white/5 mb-2 shadow-sm relative">
                 <img 
                   src="/pilulas/cc_portrait.png" 
                   alt="Código Civil" 
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
                   loading="lazy" 
                 />
+                <div className="absolute bottom-2 right-2 w-6 h-6 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/10 group-hover:bg-white/10 transition-colors">
+                  <ArrowRight className="w-3 h-3 text-white" strokeWidth={2.5} />
+                </div>
               </div>
               <div>
                 <h3 className="text-[13px] font-bold text-white leading-tight line-clamp-1">Código Civil</h3>
