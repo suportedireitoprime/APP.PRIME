@@ -7,7 +7,7 @@ import { directImg } from '@/lib/cdnImg';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { haptic } from '@/lib/nativeHaptics';
 import ShapeGrid from '@/components/ui/ShapeGrid';
-import CircularGallery from '@/components/ui/CircularGallery';
+
 
 export default function PilulasHome() {
   const navigate = useNavigate();
@@ -105,15 +105,7 @@ export default function PilulasHome() {
           </div>
 
           <div style={{ height: '350px', position: 'relative' }} className="-mx-4">
-            <CircularGallery
-              ref={galleryRef}
-              items={fastPillsItems}
-              bend={1.5}
-              textColor="#ffffff"
-              borderRadius={0.05}
-              scrollEase={0.02}
-              onItemClick={handleItemClick}
-            />
+            
           </div>
         </div>
 

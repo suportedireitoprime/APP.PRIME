@@ -36,7 +36,7 @@ const VoiceCaptureOverlay = lazyWithRetry(() => import('./VoiceCaptureOverlay'))
 const HomeNoticiasCarousel = lazyWithRetry(() => import('./HomeNoticiasCarousel'));
 const AprendaSobreLeis = lazyWithRetry(() => import('./AprendaSobreLeis'));
 const NoticiasJuridicasCarousel = lazyWithRetry(() => import('./NoticiasJuridicasCarousel'));
-import CircularGallery from '@/components/ui/CircularGallery';
+
 import HomeCard from './HomeCard';
 import ContinueLendoCard from './ContinueLendoCard';
 import { toast } from '@/hooks/use-toast';
@@ -606,7 +606,7 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
             </p>
           </div>
           <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen h-[350px]">
-            <CircularGallery 
+             <CircularGallery
               items={pillsItems}
               bend={1.5}
               textColor="#ffffff"

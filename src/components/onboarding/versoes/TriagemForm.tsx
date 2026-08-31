@@ -203,14 +203,15 @@ export default function TriagemVersaoC({ open, onFinished, previewMode }: Props)
       >
         <AnimatePresence mode="wait">
           {step === 'abertura' ? (
-            <AberturaCinematografica 
-              key="abertura" 
-              onDone={() => advance({})} 
-              muted={muted} 
-              toggleMute={toggleMute} 
-              previewMode={previewMode}
-              onClose={() => onFinished(data)}
-            />
+            <motion.div key="abertura" exit={{ opacity: 0 }} transition={{ duration: 0.5 }} className="absolute inset-0">
+              <AberturaCinematografica 
+                onDone={() => advance({})} 
+                muted={muted} 
+                toggleMute={toggleMute} 
+                previewMode={previewMode}
+                onClose={() => onFinished(data)}
+              />
+            </motion.div>
           ) : (
             <motion.div
               key={step}
@@ -282,7 +283,6 @@ function AberturaCinematografica({
     <motion.div
       key="abertura-root"
       initial={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
       className="absolute inset-0 flex items-center justify-center overflow-hidden"
       style={{
         background: 'radial-gradient(ellipse at 50% 40%, #4A2A18 0%, #2A1810 55%, #150A05 100%)',

@@ -256,3 +256,11 @@
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
+<script>
+window.addEventListener('error', (e) => {
+  document.body.innerHTML += '<div style=\"color: red; padding: 20px; font-size: 20px; z-index: 999999; position: absolute; background: white;\">ERROR: ' + e.message + '</div>';
+});
+window.addEventListener('unhandledrejection', (e) => {
+  document.body.innerHTML += '<div style=\"color: red; padding: 20px; font-size: 20px; z-index: 999999; position: absolute; background: white;\">PROMISE REJECTION: ' + e.reason + '</div>';
+});
+</script>

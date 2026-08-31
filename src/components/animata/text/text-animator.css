@@ -3,11 +3,11 @@
 }
 
 .text-animation-title {
-  @apply m-0 pointer-events-none transform-3d [grid-area:title];
+  @apply m-0 pointer-events-none [transform-style:preserve-3d] [grid-area:title];
 }
 
 .text-animation-unit {
-  @apply inline-block whitespace-pre backface-hidden origin-[50%_55%] [will-change:transform,opacity,filter];
+  @apply inline-block whitespace-pre [backface-visibility:hidden] origin-[50%_55%] [will-change:transform,opacity,filter];
 }
 
 .text-animation-unit.line {
@@ -23,7 +23,7 @@
 }
 
 .text-animation-kinetic-word {
-  @apply absolute top-1/2 left-1/2 whitespace-nowrap backface-hidden [will-change:transform,opacity,filter];
+  @apply absolute top-1/2 left-1/2 whitespace-nowrap [backface-visibility:hidden] [will-change:transform,opacity,filter];
 }
 
 .text-animation-fallback {

@@ -20,7 +20,7 @@ import BibliotecaAtalhosBar from '@/components/biblioteca/BibliotecaAtalhosBar';
 import BibliotecaSearchBar from '@/components/biblioteca/BibliotecaSearchBar';
 import BibliotecaHero from '@/components/biblioteca/BibliotecaHero';
 import ShapeGrid from '@/components/ui/ShapeGrid';
-import CircularGallery from '@/components/ui/CircularGallery';
+
 import LivroDetailSheet from '@/components/biblioteca/LivroDetailSheet';
 import RecomendacoesCarousel from '@/components/biblioteca/RecomendacoesCarousel';
 import ContinuarLeituraCarousel from '@/components/biblioteca/ContinuarLeituraCarousel';
@@ -310,8 +310,7 @@ const Bibliotecas = () => {
             </div>
           </div>
           <div style={{ height: '350px', position: 'relative' }} className="-mx-4">
-            <CircularGallery 
-              items={COLECOES.map(c => {
+             {
                 const count = counts[c.id];
                 return {
                   image: c.cover,

@@ -6,7 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { COLECOES, type LivroNormalizado, normalizeLivro } from '@/lib/bibliotecaColecoes';
 import { useResumoLivroPlayer } from '@/contexts/ResumoLivroPlayerContext';
 import { directImg } from '@/lib/cdnImg';
-import Threads from '@/components/ui/Threads';
+
 import GrafoOverlay from '@/components/vademecum/GrafoOverlay';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Network } from 'lucide-react';
@@ -332,12 +332,7 @@ export default function PilulasPlayer() {
          className={`absolute inset-0 z-0 transition-opacity duration-1000 ${isPlaying ? 'opacity-40' : 'opacity-0'}`} 
          style={{ pointerEvents: 'none' }}
       >
-        <Threads 
-           amplitude={1.2}
-           distance={0}
-           enableMouseInteraction={false}
-           color={[0.8, 0.6, 0.2]} // golden-ish primary color
-        />
+        
       </div>
 
       {/* Header Fixo */}

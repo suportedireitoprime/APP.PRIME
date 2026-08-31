@@ -3,7 +3,7 @@ import { X, Book, Wand2, Cpu, ChevronRight, ArrowLeft, PlayCircle, Music, Upload
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import AnimacaoExemplo from '@/components/laboratorio/AnimacaoExemplo';
-import AnimacaoPixi from '@/components/laboratorio/AnimacaoPixi';
+
 import AIGeneratorPanel from '@/components/laboratorio/AIGeneratorPanel';
 import { motion, AnimatePresence } from 'framer-motion';
 import FilosofoPresentationOverlay from '@/components/vademecum/FilosofoPresentationOverlay';
@@ -216,7 +216,7 @@ const AdminLaboratorio = () => {
 
                   {/* Área de Visualização */}
                   <div className="bg-[#050505] border border-border/50 rounded-2xl min-h-[500px] w-full shadow-2xl relative flex items-center justify-center overflow-hidden">
-                    {activeEngine === 'pixi' && <AnimacaoPixi />}
+                    {activeEngine === 'pixi' && }
                     {activeEngine === 'css' && <AnimacaoExemplo />}
                     
                     <div className="absolute top-4 left-4 right-4 flex justify-between pointer-events-none opacity-40 z-10">
