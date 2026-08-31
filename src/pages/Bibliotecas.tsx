@@ -292,8 +292,10 @@ const Bibliotecas = () => {
               <p className="text-[13px] text-zinc-400 truncate">
                 Explore as coleções completas por área, autor e temática jurídica.
               </p>
-
-
+            </div>
+          </div>
+          <CircularGallery collections={COLECOES} />
+        </div>
       </div>
 
 
