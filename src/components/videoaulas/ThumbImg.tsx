@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import CoverAnimatedOverlay from './CoverAnimatedOverlay';
+import { directImg } from '@/lib/cdnImg';
 
 type Props = {
   src?: string | null;
@@ -32,10 +33,12 @@ const ThumbImg = ({
     );
   }
 
+  const cdnUrl = directImg(src, 320);
+
   return (
     <>
       <img
-        src={src}
+        src={cdnUrl}
         alt={alt}
         width={320}
         height={180}

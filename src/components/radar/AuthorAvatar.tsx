@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { User } from 'lucide-react';
 import { fetchProposicaoAutores } from '@/services/radarService';
+import { avatarImg } from '@/lib/cdnImg';
 
 interface AuthorAvatarProps {
   proposicaoId: string | null;
@@ -55,7 +56,7 @@ export function AuthorAvatar({ proposicaoId }: AuthorAvatarProps) {
       ) : photoUrl ? (
         <div className="w-14 h-14 rounded-full bg-muted overflow-hidden border border-border shrink-0">
           <img 
-            src={photoUrl} 
+            src={avatarImg(photoUrl, 96)} 
             alt={authorName || 'Autor'} 
             className="w-full h-full object-cover"
             loading="lazy"

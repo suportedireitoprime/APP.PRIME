@@ -62,6 +62,15 @@ export const directImg = (url: string, w = 400) => otimizar(url, w);
 /** Imagem de notícias/cards */
 export const newsImg = (url: string, w = 640) => otimizar(url, w);
 
+/** Avatar de usuário (crop circular via proxy, mesmo para supabase URL) */
+export const avatarImg = (url: string, size = 128) => {
+  if (!url) return '';
+  const resolved = resolve(url);
+  if (shouldBypassProxy()) return resolved;
+  // Para avatares, sempre queremos usar o proxy wsrv.nl no frontend web para forçar o mask circular e diminuir o peso
+  return `https://wsrv.nl/?url=${encodeURIComponent(resolved)}&w=${size}&h=${size}&fit=cover&mask=circle&output=webp`;
+};
+
 export function prefetchImage(url: string | null | undefined) {
   if (!url) return;
   const img = new Image();

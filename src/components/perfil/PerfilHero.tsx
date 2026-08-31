@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { avatarImg } from '@/lib/cdnImg';
 
 type Provider = 'google' | 'apple' | 'email' | string;
 
@@ -55,7 +56,7 @@ export function PerfilHero({
       <div className="relative">
         <div className="w-24 h-24 rounded-full bg-primary/20 flex items-center justify-center overflow-hidden ring-2 ring-primary/40 shadow-lg shadow-primary/20">
           {avatarUrl ? (
-            <img src={avatarUrl} alt={displayName} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+            <img src={avatarImg(avatarUrl, 128)} alt={displayName} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
           ) : iniciais ? (
             <span className="font-display text-2xl font-bold text-primary">{iniciais}</span>
           ) : (
