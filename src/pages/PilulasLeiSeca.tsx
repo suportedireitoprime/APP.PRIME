@@ -135,7 +135,7 @@ const CONFIG_MAP = {
     slug: 'cf',
     title: 'Constituição Federal',
     subtitle: 'Aprenda a base do Estado',
-    cover: 'https://images.unsplash.com/photo-1505664159851-14ce0f5af3ce?q=80&w=600&auto=format&fit=crop',
+    cover: '/pilulas/cf_portrait.jpg',
     colorClasses: 'bg-blue-500/15 text-blue-400',
     textColorClass: 'text-blue-400',
     progressColorClass: 'bg-blue-500',

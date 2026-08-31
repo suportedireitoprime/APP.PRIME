@@ -109,7 +109,7 @@ export default function PilulasHome() {
           >
             {/* Background Image with Overlay */}
             <div className="absolute inset-0 z-0">
-               <img src="https://images.unsplash.com/photo-1505664159851-14ce0f5af3ce?q=80&w=600&auto=format&fit=crop" alt="Constituição Federal" className="w-full h-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+               <img src="/pilulas/cf_square.jpg" alt="Constituição Federal" className="w-full h-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-105" loading="lazy" />
               <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
             </div>
 
