@@ -114,20 +114,43 @@ function getFontSize(font) {
 }
 
 function createTextTexture(gl, text, font = 'bold 30px monospace', color = 'black') {
+  const lines = text.split('\\n');
   const canvas = document.createElement('canvas');
   const context = canvas.getContext('2d');
   context.font = font;
-  const metrics = context.measureText(text);
-  const textWidth = Math.ceil(metrics.width);
-  const textHeight = Math.ceil(getFontSize(font) * 1.2);
-  canvas.width = textWidth + 20;
-  canvas.height = textHeight + 20;
-  context.font = font;
-  context.fillStyle = color;
+  
+  let maxWidth = 0;
+  lines.forEach((line, i) => {
+    if (i > 0) context.font = font.replace(/bold \d+px/, '18px').replace(/\d+px/, '18px');
+    const w = context.measureText(line).width;
+    if (w > maxWidth) maxWidth = w;
+    context.font = font;
+  });
+  
+  const textWidth = Math.ceil(maxWidth);
+  const fontSize = getFontSize(font);
+  const lineHeight = Math.ceil(fontSize * 1.2);
+  const textHeight = lineHeight * lines.length;
+  
+  canvas.width = textWidth + 40;
+  canvas.height = textHeight + 40;
+  
   context.textBaseline = 'middle';
   context.textAlign = 'center';
   context.clearRect(0, 0, canvas.width, canvas.height);
-  context.fillText(text, canvas.width / 2, canvas.height / 2);
+  
+  lines.forEach((line, i) => {
+    if (i > 0) {
+      context.font = font.replace(/bold \d+px/, '18px').replace(/\d+px/, '18px');
+      context.fillStyle = 'rgba(255, 255, 255, 0.6)';
+    } else {
+      context.font = font;
+      context.fillStyle = color;
+    }
+    const y = (canvas.height / 2) - ((lines.length - 1) * lineHeight / 2) + (i * lineHeight);
+    context.fillText(line, canvas.width / 2, y);
+  });
+  
   const texture = new Texture(gl, { generateMipmaps: false });
   texture.image = canvas;
   return { texture, width: canvas.width, height: canvas.height };
@@ -180,7 +203,8 @@ class Title {
     this.mesh.scale.set(textWidth, textHeight, 1);
     
     if (this.positionType === 'outside') {
-      this.mesh.position.y = -this.plane.scale.y * 0.5 - textHeight * 0.5 - 0.05;
+      // Put text ABOVE the cover (+ instead of -)
+      this.mesh.position.y = this.plane.scale.y * 0.5 + textHeight * 0.5 + 0.05;
       this.mesh.position.z = 0;
     } else {
       this.mesh.position.y = -this.plane.scale.y * 0.5 + textHeight * 0.5 + 0.1;
@@ -424,7 +448,7 @@ class Media {
         this.plane.program.uniforms.uViewportSizes.value = [this.viewport.width, this.viewport.height];
       }
     }
-    this.scale = this.screen.height / 1500;
+    this.scale = (this.screen.height / 1500) * 1.5;
     this.plane.scale.y = (this.viewport.height * (900 * this.scale)) / this.screen.height;
     this.plane.scale.x = (this.viewport.width * (700 * this.scale)) / this.screen.width;
     this.plane.program.uniforms.uPlaneSizes.value = [this.plane.scale.x, this.plane.scale.y];

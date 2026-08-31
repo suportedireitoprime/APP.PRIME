@@ -99,6 +99,21 @@ const Bibliotecas = () => {
   const [customPdfUrl, setCustomPdfUrl] = useState<string | null>(null);
   const [customPdfTitle, setCustomPdfTitle] = useState<string>('');
   
+  const [counts, setCounts] = useState<Record<string, number>>({});
+  useEffect(() => {
+    const fetchCounts = async () => {
+      const newCounts = { ...counts };
+      await Promise.all(COLECOES.map(async (c) => {
+        if (!newCounts[c.id]) {
+          const { count } = await supabase.from(c.table).select('id', { count: 'exact', head: true });
+          newCounts[c.id] = count || 0;
+        }
+      }));
+      setCounts(newCounts);
+    };
+    fetchCounts();
+  }, []);
+  
   const location = useLocation();
 
   useEffect(() => {
@@ -294,17 +309,21 @@ const Bibliotecas = () => {
               </p>
             </div>
           </div>
-          <CircularGallery 
-            items={COLECOES.map(c => ({
-              image: c.cover,
-              text: c.label,
-              id: c.id
-            }))}
-            onItemClick={(item) => {
-              // Lógica de clique para abrir a coleção pode ser adicionada aqui.
-              console.log("Clicou na coleção:", item.text);
-            }}
-          />
+          <div style={{ height: '350px', position: 'relative' }} className="-mx-4">
+            <CircularGallery 
+              items={COLECOES.map(c => {
+                const count = counts[c.id];
+                return {
+                  image: c.cover,
+                  text: count ? `${c.label}\\n${count} livros` : c.label,
+                  id: c.id
+                };
+              })}
+              onItemClick={(item) => {
+                console.log("Clicou na coleção:", item.text);
+              }}
+            />
+          </div>
         </div>
       </div>
 
