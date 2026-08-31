@@ -489,7 +489,9 @@ class App {
   onTouchMove(e) {
     if (!this.isDown) return;
     const x = e.touches ? e.touches[0].clientX : e.clientX;
-    const distance = (this.start - x) * (this.scrollSpeed * 0.025);
+    // Multiplier matches WebGL units to screen pixels for 1:1 tracking
+    const multiplier = this.viewport.width / this.screen.width;
+    const distance = (this.start - x) * multiplier;
     this.scroll.target = this.scroll.position + distance;
   }
   onTouchUp(e) {
