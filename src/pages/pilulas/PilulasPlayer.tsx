@@ -319,9 +319,9 @@ export default function PilulasPlayer() {
             clearMediaSession(audioMainRef.current);
             navigate(-1);
           }}
-          className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md flex items-center justify-center border border-white/10 active:scale-95 transition-transform"
+          className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/5 backdrop-blur-md flex items-center justify-center border border-white/10 active:scale-95 transition-transform"
         >
-          <ArrowLeft className="w-5 h-5 text-white/70" />
+          <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 text-white/70" strokeWidth={2.4} />
         </button>
         <div className="flex-1 text-center pr-10">
           <span className="text-[10px] font-bold tracking-widest text-primary uppercase">

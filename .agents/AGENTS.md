@@ -34,6 +34,7 @@
 ### 2. 📱 Capacitor & Mobile Native Bug Hunter (`capacitor-native-audit` / `mobile-native-bug-hunter`)
 - **Proteção Web:** Encapsular chamadas nativas em `Capacitor.isNativePlatform()`.
 - **Dimensões de Toque (HIG & Material 3):** Botões com área mínima clicável de **48x48dp (Android) / 44x44pt (iOS)** (`min-h-[48px]`).
+- **Padrão Botão de Voltar:** TODO botão de voltar construído do zero ou em modais DEVE usar o tamanho padrão premium: `w-12 h-12 sm:w-[52px] sm:h-[52px]` e ícone `ArrowLeft` `w-6 h-6 sm:w-7 sm:h-7` com `strokeWidth={2.4}`.
 - **Feedback Tátil:** Disparar `haptic.selection()` ou `haptic.impact()` em ações interativas.
 - **Zero Scroll Horizontal:** Envelopar contêineres com `w-full max-w-full overflow-x-hidden`.
 

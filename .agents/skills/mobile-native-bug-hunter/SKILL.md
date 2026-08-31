@@ -19,6 +19,7 @@ Esta skill executa uma auditoria completa de código nativo mobile, plugins Capa
   - Android (Material 3): Mínimo **48x48dp** (48px).
   - iOS (HIG): Mínimo **44x44pt** (44px).
 - **Espaçamento Tátil:** Espaço mínimo de 8px entre botões adjacentes para evitar toques acidentais.
+- **Padrão Botão de Voltar:** Todo botão de "Voltar" em cabeçalhos (PageHeader) ou modais DEVE usar o padrão premium e maior: `className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full flex items-center justify-center ..."` com ícone `ArrowLeft` `w-6 h-6 sm:w-7 sm:h-7` e `strokeWidth={2.4}`. Nunca faça menor que isso.
 
 ### 3. Tipografia & Legibilidade Ergonomica
 - **Tamanho Mínimo de Fonte:** Texto principal nunca menor que `14px` (`text-sm`) e rótulos/badges nunca menores que `11px`.

@@ -192,9 +192,9 @@ export default function Pilulas() {
         <div className="flex items-center gap-4 mb-4">
           <button
             onClick={() => navigate(-1)}
-            className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center border border-white/10 active:scale-95 transition-transform"
+            className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/5 flex items-center justify-center border border-white/10 active:scale-95 transition-transform"
           >
-            <ArrowLeft className="w-5 h-5 text-white/70" />
+            <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 text-white/70" strokeWidth={2.4} />
           </button>
           <div>
             <h1 className="text-xl font-bold flex items-center gap-2">
