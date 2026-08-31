@@ -104,10 +104,10 @@ export default function PilulasHome() {
             <p className="text-[13px] text-zinc-400 pl-3 leading-relaxed">Áudios curtos e diretos sobre os artigos mais cobrados e essenciais da lei seca.</p>
           </div>
 
-          <div style={{ height: '350px', position: 'relative' }}>
+          <div style={{ height: '350px', position: 'relative' }} className="-mx-4">
             <CircularGallery
               items={fastPillsItems}
-              bend={3}
+              bend={1.5}
               textColor="#ffffff"
               borderRadius={0.05}
               scrollEase={0.02}
