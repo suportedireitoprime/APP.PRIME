@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
+import { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, BookOpen, Clock, PlayCircle, Pill, Zap } from 'lucide-react';
+import { ArrowRight, Search, PlayCircle, Pill, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { directImg } from '@/lib/cdnImg';
 import { PageHeader } from '@/components/vademecum/PageHeader';
@@ -10,6 +11,8 @@ import CircularGallery from '@/components/ui/CircularGallery';
 
 export default function PilulasHome() {
   const navigate = useNavigate();
+  const galleryRef = useRef<any>(null);
+  const [searchCode, setSearchCode] = useState('');
 
   const handleSelectClassicos = () => {
     haptic.selection();
@@ -31,6 +34,19 @@ export default function PilulasHome() {
     if (item.text === 'CC') navigate('/pilulas/cc');
     if (item.text === 'CPP') navigate('/pilulas/cpp');
     if (item.text === 'CLT') navigate('/pilulas/clt');
+  };
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const term = e.target.value.toUpperCase();
+    setSearchCode(term);
+    
+    // Auto-scroll when match is found
+    if (term.length >= 2) {
+      const index = fastPillsItems.findIndex(item => item.text.startsWith(term));
+      if (index !== -1 && galleryRef.current) {
+        galleryRef.current.scrollToIndex(index);
+      }
+    }
   };
 
   return (
@@ -94,18 +110,42 @@ export default function PilulasHome() {
           </div>
         </motion.button>
 
-        {/* Pílulas Rápidas */}
-        <div className="mt-8 space-y-4">
-          <div className="px-1 mb-4">
-            <div className="flex items-center gap-2 mb-1">
-              <div className="w-1 h-4 bg-white/20 rounded-full" />
-              <h2 className="text-lg font-bold text-white leading-none">Pílulas Rápidas</h2>
+        {/* Divider with Text */}
+        <div className="flex items-center w-full mt-10 mb-6">
+          <div className="flex-1 h-[1px] bg-white/10" />
+          <span className="mx-4 text-xs font-semibold tracking-widest text-zinc-400 uppercase">Pílulas Rápidas</span>
+          <div className="flex-1 h-[1px] bg-white/10" />
+        </div>
+
+        {/* Pílulas de Códigos */}
+        <div className="space-y-4">
+          <div className="flex items-start justify-between px-1 mb-4 gap-4">
+            <div className="flex-1">
+              <h2 className="text-[22px] font-black text-white uppercase tracking-normal mb-1">Pílulas de Códigos</h2>
+              <p className="text-[13px] text-zinc-400 leading-relaxed">
+                Áudios curtos e diretos sobre os artigos mais cobrados e essenciais da lei seca.
+              </p>
             </div>
-            <p className="text-[13px] text-zinc-400 pl-3 leading-relaxed">Áudios curtos e diretos sobre os artigos mais cobrados e essenciais da lei seca.</p>
+            
+            {/* Search Bar */}
+            <div className="relative w-24 flex-shrink-0 mt-1">
+              <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+                <Search className="h-3 w-3 text-zinc-400" />
+              </div>
+              <input
+                type="text"
+                value={searchCode}
+                onChange={handleSearch}
+                placeholder="Ex: CC"
+                maxLength={4}
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg py-2 pl-7 pr-2 text-[11px] text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/20 transition-all uppercase"
+              />
+            </div>
           </div>
 
           <div style={{ height: '350px', position: 'relative' }} className="-mx-4">
             <CircularGallery
+              ref={galleryRef}
               items={fastPillsItems}
               bend={1.5}
               textColor="#ffffff"

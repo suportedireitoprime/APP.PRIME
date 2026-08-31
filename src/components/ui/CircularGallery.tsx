@@ -654,7 +654,9 @@ class App {
   }
 }
 
-export default function CircularGallery({
+import { forwardRef, useImperativeHandle } from 'react';
+
+const CircularGallery = forwardRef(({
   items,
   bend = 3,
   textColor = '#ffffff',
@@ -664,8 +666,9 @@ export default function CircularGallery({
   scrollSpeed = 2,
   scrollEase = 0.05,
   onItemClick
-}) {
+}, ref) => {
   const containerRef = useRef(null);
+  const [appInstance, setAppInstance] = useState(null);
   const [activeItem, setActiveItem] = useState(0);
   const [isScrolling, setIsScrolling] = useState(false);
 
@@ -689,6 +692,7 @@ export default function CircularGallery({
           setIsScrolling(scrolling);
         }
       });
+      setAppInstance(app);
     });
 
     return () => {
@@ -697,6 +701,41 @@ export default function CircularGallery({
     };
   }, [items, bend, textColor, borderRadius, font, fontUrl, scrollSpeed, scrollEase, onItemClick]);
   
+  useImperativeHandle(ref, () => ({
+    scrollToIndex: (index) => {
+      if (appInstance && appInstance.medias && appInstance.medias.length > 0) {
+        const itemWidth = appInstance.medias[0].width;
+        // Move target scroll exactly to the index * itemWidth
+        // Because of infinite scroll, we find the closest occurrence of this index
+        // Current index is (Math.abs(scroll.current) / width)
+        const currentPos = Math.abs(appInstance.scroll.current);
+        const currentCycle = Math.floor(currentPos / (itemWidth * appInstance.originalLength));
+        
+        // Target in the current cycle
+        let target1 = (currentCycle * appInstance.originalLength + index) * itemWidth;
+        // Target in the next cycle
+        let target2 = ((currentCycle + 1) * appInstance.originalLength + index) * itemWidth;
+        // Target in the prev cycle
+        let target3 = ((currentCycle - 1) * appInstance.originalLength + index) * itemWidth;
+        
+        // Find the closest target to current position
+        const targets = [target1, target2, target3];
+        let closestTarget = targets[0];
+        let minDiff = Math.abs(targets[0] - currentPos);
+        for(let i = 1; i < targets.length; i++) {
+            let diff = Math.abs(targets[i] - currentPos);
+            if(diff < minDiff) {
+                minDiff = diff;
+                closestTarget = targets[i];
+            }
+        }
+        
+        // Preserve direction of scroll if it was negative (though usually we scroll positively in Math.abs)
+        appInstance.scroll.target = appInstance.scroll.current < 0 ? -closestTarget : closestTarget;
+      }
+    }
+  }), [appInstance]);
+
   return (
     <div className="circular-gallery-wrapper relative w-full h-full">
       <div
@@ -717,4 +756,6 @@ export default function CircularGallery({
       </div>
     </div>
   );
-}
+});
+
+export default CircularGallery;
