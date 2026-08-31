@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, HardDrive, BookMarked, Heart, Route as RouteIcon, FileUp } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { abrirAtalhoBiblioteca } from './BibliotecaBottomNav';
-import socratesImg from '@/assets/filosofos/socrates.png';
+import socratesImg from '@/assets/filosofos/socrates.jpg';
 
 interface Props {
   onBuscar?: () => void;
