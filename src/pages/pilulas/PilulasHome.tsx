@@ -55,7 +55,7 @@ export default function PilulasHome() {
         >
           {/* Background Image with Overlay */}
           <div className="absolute inset-0 z-0">
-             <img src="/pilulas/classicos.jpg" alt="Clássicos do Direito" className="w-full h-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+             <img src="/pilulas/classicos_cover.jpg" alt="Clássicos do Direito" className="w-full h-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-105" loading="lazy" />
             <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
           </div>
 
