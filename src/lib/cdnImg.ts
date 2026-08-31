@@ -44,6 +44,11 @@ const otimizar = (url: string, w: number) => {
   if (!url) return '';
   const resolved = resolve(url);
   if (shouldBypassProxy()) return resolved;
+  
+  // Se a imagem já vem do nosso storage Supabase, 
+  // ela já foi comprimida na extração e o proxy só causa lentidão
+  if (resolved.includes('.supabase.co/storage/')) return resolved;
+  
   if (!/^https?:\/\//i.test(resolved)) return resolved;
   return proxied(resolved, w);
 };
