@@ -314,12 +314,28 @@ export function AdminHojeCards() {
     try {
       const datas = getDatasPeriodo(periodo);
       const listPromises = datas.map(d => supabase.rpc('admin_lista_dia' as any, { _tipo: id, _dia: isoDate(d) }));
-      const results = await Promise.all(listPromises);
+      
+      let extraPromises: Promise<any>[] = [];
+      if (id === 'paywall') {
+        extraPromises = datas.map(d => supabase.rpc('admin_lista_dia' as any, { _tipo: 'trial', _dia: isoDate(d) }));
+      }
+
+      const [results, extraResults] = await Promise.all([
+        Promise.all(listPromises),
+        Promise.all(extraPromises)
+      ]);
       
       let allLists: any[] = [];
       results.forEach(({ data }) => {
         allLists = allLists.concat((data as any[]) || []);
       });
+      
+      if (id === 'paywall') {
+        extraResults.forEach(({ data }) => {
+          const trials = ((data as any[]) || []).map(r => ({ ...r, subtitle: 'Abriu planos (Iniciou teste)' }));
+          allLists = allLists.concat(trials);
+        });
+      }
 
       // Deduplicate by key (since same user could be online on multiple days)
       const uniqueMap = new Map();
