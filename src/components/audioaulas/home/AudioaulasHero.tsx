@@ -22,18 +22,8 @@ export const AudioaulasHero = React.memo(function AudioaulasHero({
   const capaImg = areaAtual ? capaDaArea(areaAtual) : CAPA_HUB;
 
   return (
-    <div className="relative px-4 pt-[calc(2rem+var(--sai-top))] pb-6 overflow-hidden sm:px-6 lg:px-10 lg:pt-[calc(3rem+var(--sai-top))] lg:pb-10">
-      <div className="absolute inset-0 -z-10">
-        <img
-          src={capaImg}
-          alt=""
-          aria-hidden
-          className="w-full h-full object-cover opacity-35 scale-110 blur-sm"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/20 via-background/80 to-background" />
-      </div>
-
-      <div className="mx-auto w-full max-w-[1400px] 2xl:max-w-[1600px]">
+    <div className="relative px-4 pt-[calc(2rem+var(--sai-top))] pb-6 overflow-visible sm:px-6 lg:px-10 lg:pt-[calc(3rem+var(--sai-top))] lg:pb-10">
+      <div className="mx-auto w-full max-w-[1400px] 2xl:max-w-[1600px] relative z-10">
         <button
           onClick={() => (areaAtual ? navigate('/audioaulas') : navigate('/'))}
           aria-label="Voltar"
