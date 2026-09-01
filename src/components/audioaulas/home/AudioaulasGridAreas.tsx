@@ -87,6 +87,7 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({ are
                   </span>
                 </div>
               </div>
+            </motion.button>
             );
           })}
         </motion.div>
