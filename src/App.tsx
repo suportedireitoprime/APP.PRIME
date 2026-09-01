@@ -794,7 +794,6 @@ function AnimatedRoutes() {
       <DesktopFileDropOverlay />
       <PersistentHome />
       <Suspense fallback={<LazyFallback />}>
-        <AnimatePresence mode="wait">
           <Routes location={location} key={getRouteKey(location.pathname)}>
           <Route path="/auth" element={<Auth />} />
           <Route path="/landing" element={<Landing />} />
@@ -1108,7 +1107,6 @@ function AnimatedRoutes() {
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
 
           </Routes>
-        </AnimatePresence>
       </Suspense>
     </div>
   );
@@ -1119,11 +1117,9 @@ const CustomSplashScreen = lazy(() => import("@/components/CustomSplashScreen").
 
 function AppBootSplash() {
   const [show, setShow] = useState(true);
-  return (
-    <AnimatePresence>
-      {show && <CustomSplashScreen onComplete={() => setShow(false)} />}
-    </AnimatePresence>
-  );
+  
+  if (!show) return null;
+  return <CustomSplashScreen onComplete={() => setShow(false)} />;
 }
 
 const App = () => (
