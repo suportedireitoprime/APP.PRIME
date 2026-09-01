@@ -50,11 +50,11 @@ ALTER TABLE public.noticias_comentarios ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "coment leitura publica" ON public.noticias_comentarios
   FOR SELECT USING (true);
 CREATE POLICY "coment inserir logado" ON public.noticias_comentarios
-  FOR INSERT WITH CHECK (auth.uid() = user_id);
+  FOR INSERT WITH CHECK ((select auth.uid()) = user_id);
 CREATE POLICY "coment editar dono" ON public.noticias_comentarios
-  FOR UPDATE USING (auth.uid() = user_id);
+  FOR UPDATE USING ((select auth.uid()) = user_id);
 CREATE POLICY "coment apagar dono" ON public.noticias_comentarios
-  FOR DELETE USING (auth.uid() = user_id);
+  FOR DELETE USING ((select auth.uid()) = user_id);
 
 CREATE TRIGGER trg_noticias_comentarios_updated
   BEFORE UPDATE ON public.noticias_comentarios

@@ -15,7 +15,7 @@ AS $$
          )::text
   FROM auth.users u
   WHERE u.id = ANY(_ids)
-    AND public.is_admin_user(auth.uid());
+    AND public.is_admin_user((select auth.uid()));
 $$;
 
 REVOKE ALL ON FUNCTION public.admin_user_auth_providers(uuid[]) FROM public;

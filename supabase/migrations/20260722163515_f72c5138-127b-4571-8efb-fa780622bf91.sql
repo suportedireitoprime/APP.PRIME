@@ -20,5 +20,5 @@ ALTER TABLE public.store_setup_progress ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users manage their own store setup progress"
   ON public.store_setup_progress
   FOR ALL
-  USING (auth.uid() = user_id)
-  WITH CHECK (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id)
+  WITH CHECK ((select auth.uid()) = user_id);

@@ -30,7 +30,7 @@ BEGIN
     WHERE p.schemaname='public'
       AND p.cmd IN ('SELECT','ALL')
       AND (p.roles::text[] && ARRAY['public','anon'])
-      AND coalesce(p.qual,'true') NOT ILIKE '%auth.uid()%'
+      AND coalesce(p.qual,'true') NOT ILIKE '%(select auth.uid())%'
   LOOP
     EXECUTE format('GRANT SELECT ON public.%I TO anon', t.tn);
   END LOOP;

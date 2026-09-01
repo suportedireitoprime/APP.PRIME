@@ -4,7 +4,7 @@ CREATE OR REPLACE FUNCTION public.admin_metricas_dia(_dia date)
  STABLE SECURITY DEFINER
  SET search_path TO 'public'
 AS $function$
-  SELECT CASE WHEN public.is_admin_user(auth.uid()) THEN jsonb_build_object(
+  SELECT CASE WHEN public.is_admin_user((select auth.uid())) THEN jsonb_build_object(
     'online', (SELECT COUNT(DISTINCT user_id) FROM public.user_activity_log
       WHERE last_seen_at >= (_dia::timestamp AT TIME ZONE 'America/Sao_Paulo')
         AND last_seen_at < ((_dia + 1)::timestamp AT TIME ZONE 'America/Sao_Paulo')
@@ -36,7 +36,7 @@ DECLARE
   res jsonb;
   hoje timestamptz := date_trunc('day', now() AT TIME ZONE 'America/Sao_Paulo');
 BEGIN
-  IF NOT public.is_admin_user(auth.uid()) THEN
+  IF NOT public.is_admin_user((select auth.uid())) THEN
     RETURN jsonb_build_object('error', 'forbidden');
   END IF;
 
@@ -125,7 +125,7 @@ AS $function$
       FROM public.user_activity_log a
       LEFT JOIN public.profiles p ON p.id = a.user_id
       LEFT JOIN auth.users u ON u.id = a.user_id
-      WHERE _tipo = 'online' AND public.is_admin_user(auth.uid())
+      WHERE _tipo = 'online' AND public.is_admin_user((select auth.uid()))
         AND a.last_seen_at >= (_dia::timestamp AT TIME ZONE 'America/Sao_Paulo')
         AND a.last_seen_at < ((_dia + 1)::timestamp AT TIME ZONE 'America/Sao_Paulo')
       ORDER BY a.user_id, a.last_seen_at DESC
@@ -138,7 +138,7 @@ AS $function$
       (p.is_premium = true OR EXISTS(SELECT 1 FROM public.asaas_subscriptions s WHERE s.user_id = p.id AND s.status = 'ACTIVE') OR EXISTS(SELECT 1 FROM public.legacy_subscribers ls WHERE ls.claimed_user_id = p.id AND ls.status = 'active'))::boolean AS is_premium
     FROM public.profiles p
     LEFT JOIN auth.users u ON u.id = p.id
-    WHERE _tipo = 'cadastros' AND public.is_admin_user(auth.uid())
+    WHERE _tipo = 'cadastros' AND public.is_admin_user((select auth.uid()))
       AND p.created_at >= (_dia::timestamp AT TIME ZONE 'America/Sao_Paulo')
       AND p.created_at < ((_dia + 1)::timestamp AT TIME ZONE 'America/Sao_Paulo')
     UNION ALL
@@ -152,7 +152,7 @@ AS $function$
     FROM public.play_subscriptions s
     LEFT JOIN public.profiles p ON p.id = s.user_id
     LEFT JOIN auth.users u ON u.id = s.user_id
-    WHERE _tipo = 'trial' AND public.is_admin_user(auth.uid())
+    WHERE _tipo = 'trial' AND public.is_admin_user((select auth.uid()))
       AND s.created_at >= (_dia::timestamp AT TIME ZONE 'America/Sao_Paulo')
       AND s.created_at < ((_dia + 1)::timestamp AT TIME ZONE 'America/Sao_Paulo')
     UNION ALL
@@ -168,7 +168,7 @@ AS $function$
       FROM public.app_events e
       LEFT JOIN public.profiles p ON p.id = e.user_id
       LEFT JOIN auth.users u ON u.id = e.user_id
-      WHERE _tipo = 'paywall' AND public.is_admin_user(auth.uid())
+      WHERE _tipo = 'paywall' AND public.is_admin_user((select auth.uid()))
         AND e.event_name = 'assinatura_aberta'
         AND e.created_at >= (_dia::timestamp AT TIME ZONE 'America/Sao_Paulo')
         AND e.created_at < ((_dia + 1)::timestamp AT TIME ZONE 'America/Sao_Paulo')

@@ -31,7 +31,7 @@ AS $$
   LEFT JOIN auth.users            u ON u.id = e.user_id
   WHERE e.event_type = 'opened'
     AND e.created_at >= (now() AT TIME ZONE 'America/Sao_Paulo' - INTERVAL '7 days') AT TIME ZONE 'America/Sao_Paulo'
-    AND public.is_admin_user(auth.uid())
+    AND public.is_admin_user((select auth.uid()))
   ORDER BY e.created_at DESC;
 $$;
 

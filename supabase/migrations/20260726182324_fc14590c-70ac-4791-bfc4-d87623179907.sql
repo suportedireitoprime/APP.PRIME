@@ -21,7 +21,7 @@ AS $$
   SELECT s.pais, s.uf, s.cidade, s.timezone, s.locale, s.platform, s.created_at
   FROM public.user_sessions s
   WHERE s.user_id = _user_id
-    AND public.is_admin_user(auth.uid())
+    AND public.is_admin_user((select auth.uid()))
   ORDER BY s.created_at DESC
   LIMIT 20;
 $$;

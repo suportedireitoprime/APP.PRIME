@@ -17,16 +17,16 @@ CREATE TABLE public.biblioteca_livros (
 ALTER TABLE public.biblioteca_livros ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users read own books" ON public.biblioteca_livros
-  FOR SELECT TO authenticated USING (user_id = auth.uid());
+  FOR SELECT TO authenticated USING (user_id = (select auth.uid()));
 
 CREATE POLICY "Users insert own books" ON public.biblioteca_livros
-  FOR INSERT TO authenticated WITH CHECK (user_id = auth.uid());
+  FOR INSERT TO authenticated WITH CHECK (user_id = (select auth.uid()));
 
 CREATE POLICY "Users update own books" ON public.biblioteca_livros
-  FOR UPDATE TO authenticated USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
+  FOR UPDATE TO authenticated USING (user_id = (select auth.uid())) WITH CHECK (user_id = (select auth.uid()));
 
 CREATE POLICY "Users delete own books" ON public.biblioteca_livros
-  FOR DELETE TO authenticated USING (user_id = auth.uid());
+  FOR DELETE TO authenticated USING (user_id = (select auth.uid()));
 
 -- Tabela biblioteca_imagens
 CREATE TABLE public.biblioteca_imagens (
@@ -42,7 +42,7 @@ ALTER TABLE public.biblioteca_imagens ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users read own book images" ON public.biblioteca_imagens
   FOR SELECT TO authenticated
-  USING (EXISTS (SELECT 1 FROM public.biblioteca_livros WHERE id = livro_id AND user_id = auth.uid()));
+  USING (EXISTS (SELECT 1 FROM public.biblioteca_livros WHERE id = livro_id AND user_id = (select auth.uid())));
 
 CREATE POLICY "Service insert images" ON public.biblioteca_imagens
   FOR INSERT TO service_role WITH CHECK (true);
@@ -55,11 +55,11 @@ INSERT INTO storage.buckets (id, name, public) VALUES ('biblioteca', 'biblioteca
 
 CREATE POLICY "Auth users upload to biblioteca" ON storage.objects
   FOR INSERT TO authenticated
-  WITH CHECK (bucket_id = 'biblioteca' AND (storage.foldername(name))[1] = auth.uid()::text);
+  WITH CHECK (bucket_id = 'biblioteca' AND (storage.foldername(name))[1] = (select auth.uid())::text);
 
 CREATE POLICY "Auth users read own biblioteca files" ON storage.objects
   FOR SELECT TO authenticated
-  USING (bucket_id = 'biblioteca' AND (storage.foldername(name))[1] = auth.uid()::text);
+  USING (bucket_id = 'biblioteca' AND (storage.foldername(name))[1] = (select auth.uid())::text);
 
 CREATE POLICY "Public read biblioteca" ON storage.objects
   FOR SELECT TO public
@@ -67,4 +67,4 @@ CREATE POLICY "Public read biblioteca" ON storage.objects
 
 CREATE POLICY "Auth users delete own biblioteca files" ON storage.objects
   FOR DELETE TO authenticated
-  USING (bucket_id = 'biblioteca' AND (storage.foldername(name))[1] = auth.uid()::text);
+  USING (bucket_id = 'biblioteca' AND (storage.foldername(name))[1] = (select auth.uid())::text);

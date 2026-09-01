@@ -12,7 +12,7 @@ LANGUAGE sql
 STABLE SECURITY DEFINER
 SET search_path = public
 AS $$
-  SELECT CASE WHEN NOT public.is_admin_user(auth.uid()) THEN NULL ELSE jsonb_build_object(
+  SELECT CASE WHEN NOT public.is_admin_user((select auth.uid())) THEN NULL ELSE jsonb_build_object(
     'nome', (SELECT p.display_name FROM public.profiles p WHERE p.id = _user_id),
     'email', (SELECT u.email::text FROM auth.users u WHERE u.id = _user_id),
     'telefone', (

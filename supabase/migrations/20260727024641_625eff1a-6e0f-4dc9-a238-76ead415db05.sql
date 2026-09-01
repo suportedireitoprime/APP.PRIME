@@ -21,7 +21,7 @@ ALTER TABLE public.horus_canais ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Admins podem ver canais do Horus" ON public.horus_canais;
 CREATE POLICY "Admins podem ver canais do Horus"
 ON public.horus_canais FOR SELECT TO authenticated
-USING (public.is_admin_user(auth.uid()));
+USING (public.is_admin_user((select auth.uid())));
 
 CREATE OR REPLACE FUNCTION public.horus_canais_touch()
 RETURNS trigger LANGUAGE plpgsql SET search_path = public AS $$

@@ -9,7 +9,7 @@ DECLARE
   res jsonb;
   hoje timestamptz := date_trunc('day', now());
 BEGIN
-  IF NOT public.is_admin_user(auth.uid()) THEN
+  IF NOT public.is_admin_user((select auth.uid())) THEN
     RETURN jsonb_build_object('error', 'forbidden');
   END IF;
 

@@ -100,7 +100,7 @@ GRANT ALL ON public.artigos_favoritos TO service_role;
 ALTER TABLE public.artigos_favoritos ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Usuário gerencia seus favoritos"
   ON public.artigos_favoritos FOR ALL
-  USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 CREATE INDEX idx_artigos_favoritos_user ON public.artigos_favoritos(user_id);
 CREATE INDEX idx_artigos_favoritos_codigo ON public.artigos_favoritos(user_id, tabela_codigo);
 
@@ -123,7 +123,7 @@ GRANT ALL ON public.artigos_grifos TO service_role;
 ALTER TABLE public.artigos_grifos ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Usuário gerencia seus grifos"
   ON public.artigos_grifos FOR ALL
-  USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 CREATE INDEX idx_artigos_grifos_user ON public.artigos_grifos(user_id);
 CREATE INDEX idx_artigos_grifos_codigo ON public.artigos_grifos(user_id, tabela_codigo);
 CREATE TRIGGER trg_artigos_grifos_updated
@@ -149,7 +149,7 @@ GRANT ALL ON public.artigos_anotacoes TO service_role;
 ALTER TABLE public.artigos_anotacoes ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Usuário gerencia suas anotações"
   ON public.artigos_anotacoes FOR ALL
-  USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 CREATE INDEX idx_artigos_anotacoes_user ON public.artigos_anotacoes(user_id);
 CREATE INDEX idx_artigos_anotacoes_artigo ON public.artigos_anotacoes(tabela_codigo, numero_artigo);
 CREATE TRIGGER trg_artigos_anotacoes_updated
@@ -172,10 +172,10 @@ GRANT ALL ON public.artigos_visualizacoes TO service_role;
 ALTER TABLE public.artigos_visualizacoes ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Usuário vê suas visualizações"
   ON public.artigos_visualizacoes FOR SELECT
-  USING (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id);
 CREATE POLICY "Usuário registra suas visualizações"
   ON public.artigos_visualizacoes FOR INSERT
-  WITH CHECK (auth.uid() = user_id);
+  WITH CHECK ((select auth.uid()) = user_id);
 CREATE INDEX idx_artigos_visualizacoes_tabela ON public.artigos_visualizacoes(tabela_codigo);
 CREATE INDEX idx_artigos_visualizacoes_numero ON public.artigos_visualizacoes(numero_artigo);
 CREATE INDEX idx_artigos_visualizacoes_tabela_numero ON public.artigos_visualizacoes(tabela_codigo, numero_artigo);

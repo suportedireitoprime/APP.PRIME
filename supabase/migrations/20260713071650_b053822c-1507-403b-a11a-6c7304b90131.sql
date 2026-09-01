@@ -26,7 +26,7 @@ CREATE POLICY "Users read own subscriptions"
   ON public.user_subscriptions
   FOR SELECT
   TO authenticated
-  USING (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id);
 
 CREATE TRIGGER trg_user_subscriptions_updated_at
   BEFORE UPDATE ON public.user_subscriptions

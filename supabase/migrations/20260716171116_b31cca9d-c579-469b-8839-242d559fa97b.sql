@@ -38,8 +38,8 @@ CREATE POLICY "auth read feature_limits" ON public.feature_limits
 
 CREATE POLICY "admin manages feature_limits" ON public.feature_limits
   FOR ALL TO authenticated
-  USING (public.is_admin_user(auth.uid()))
-  WITH CHECK (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())))
+  WITH CHECK (public.is_admin_user((select auth.uid())));
 
 CREATE TRIGGER feature_limits_updated_at
 BEFORE UPDATE ON public.feature_limits
@@ -65,11 +65,11 @@ ALTER TABLE public.feature_usage ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "users read own usage" ON public.feature_usage
   FOR SELECT TO authenticated
-  USING (auth.uid() = user_id OR public.is_admin_user(auth.uid()));
+  USING ((select auth.uid()) = user_id OR public.is_admin_user((select auth.uid())));
 
 CREATE POLICY "users insert own usage" ON public.feature_usage
   FOR INSERT TO authenticated
-  WITH CHECK (auth.uid() = user_id);
+  WITH CHECK ((select auth.uid()) = user_id);
 
 -- 4) Seed
 INSERT INTO public.feature_limits (feature_key, label, description, category, limit_value, period, scope_key, sort_order) VALUES

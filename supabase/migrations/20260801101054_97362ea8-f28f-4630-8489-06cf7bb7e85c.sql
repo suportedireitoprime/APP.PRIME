@@ -51,7 +51,7 @@ STABLE SECURITY DEFINER
 SET search_path TO 'public'
 AS $function$
 DECLARE
-  _uid UUID := auth.uid();
+  _uid UUID := (select auth.uid());
 BEGIN
   RETURN QUERY
   WITH hoje AS (

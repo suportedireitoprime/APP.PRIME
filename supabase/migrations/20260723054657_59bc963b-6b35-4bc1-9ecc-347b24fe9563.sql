@@ -43,14 +43,14 @@ CREATE POLICY "admins gerenciam sumario sugerido"
   USING (
     EXISTS (
       SELECT 1 FROM auth.users u
-      WHERE u.id = auth.uid()
+      WHERE u.id = (select auth.uid())
         AND lower(u.email) IN ('wn7corporation@gmail.com','suporte.vacatio@gmail.com')
     )
   )
   WITH CHECK (
     EXISTS (
       SELECT 1 FROM auth.users u
-      WHERE u.id = auth.uid()
+      WHERE u.id = (select auth.uid())
         AND lower(u.email) IN ('wn7corporation@gmail.com','suporte.vacatio@gmail.com')
     )
   );

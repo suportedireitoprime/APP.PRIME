@@ -19,7 +19,7 @@ CREATE POLICY "admins gerenciam sumario sugerido"
   TO authenticated
   USING (EXISTS (
     SELECT 1 FROM auth.users u
-    WHERE u.id = auth.uid()
+    WHERE u.id = (select auth.uid())
       AND lower(u.email) = ANY (ARRAY[
         'wn7corporation@gmail.com',
         'suporte.vacatio@gmail.com',
@@ -28,7 +28,7 @@ CREATE POLICY "admins gerenciam sumario sugerido"
   ))
   WITH CHECK (EXISTS (
     SELECT 1 FROM auth.users u
-    WHERE u.id = auth.uid()
+    WHERE u.id = (select auth.uid())
       AND lower(u.email) = ANY (ARRAY[
         'wn7corporation@gmail.com',
         'suporte.vacatio@gmail.com',

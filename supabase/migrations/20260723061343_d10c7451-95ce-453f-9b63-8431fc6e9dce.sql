@@ -15,7 +15,7 @@ GRANT SELECT ON public.jurisprudencia_leis_map TO authenticated;
 GRANT ALL ON public.jurisprudencia_leis_map TO service_role;
 ALTER TABLE public.jurisprudencia_leis_map ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public read jurisprudencia_leis_map" ON public.jurisprudencia_leis_map FOR SELECT USING (true);
-CREATE POLICY "Admins manage jurisprudencia_leis_map" ON public.jurisprudencia_leis_map FOR ALL USING (public.is_admin_user(auth.uid())) WITH CHECK (public.is_admin_user(auth.uid()));
+CREATE POLICY "Admins manage jurisprudencia_leis_map" ON public.jurisprudencia_leis_map FOR ALL USING (public.is_admin_user((select auth.uid()))) WITH CHECK (public.is_admin_user((select auth.uid())));
 CREATE TRIGGER trg_jurisprudencia_leis_map_updated_at BEFORE UPDATE ON public.jurisprudencia_leis_map FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 -- 2) Cache por artigo
@@ -59,7 +59,7 @@ CREATE INDEX jurisprudencia_favoritos_user_idx ON public.jurisprudencia_favorito
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.jurisprudencia_favoritos TO authenticated;
 GRANT ALL ON public.jurisprudencia_favoritos TO service_role;
 ALTER TABLE public.jurisprudencia_favoritos ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users manage own jurisprudencia favoritos" ON public.jurisprudencia_favoritos FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users manage own jurisprudencia favoritos" ON public.jurisprudencia_favoritos FOR ALL USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 
 -- 4) Seed inicial das principais leis (IDs do Corpus927 confirmados)
 -- CP=20 já confirmado ao vivo; demais serão validados pelo admin (podem ser corrigidos depois).

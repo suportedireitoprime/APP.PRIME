@@ -24,7 +24,7 @@ GRANT ALL ON public.horus_poderes TO service_role;
 ALTER TABLE public.horus_poderes ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Everyone can read poderes" ON public.horus_poderes FOR SELECT USING (true);
 CREATE POLICY "Admins manage poderes" ON public.horus_poderes FOR ALL
-  USING (public.is_admin_user(auth.uid())) WITH CHECK (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid()))) WITH CHECK (public.is_admin_user((select auth.uid())));
 CREATE TRIGGER update_horus_poderes_updated_at BEFORE UPDATE ON public.horus_poderes
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
@@ -44,7 +44,7 @@ GRANT SELECT ON public.horus_poderes_calls TO authenticated;
 GRANT ALL ON public.horus_poderes_calls TO service_role;
 ALTER TABLE public.horus_poderes_calls ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Admins read poderes calls" ON public.horus_poderes_calls FOR SELECT
-  USING (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())));
 CREATE INDEX idx_poderes_calls_slug_time ON public.horus_poderes_calls (poder_slug, created_at DESC);
 
 -- Table 3: long-term memory (Mem0-style via pgvector)
@@ -61,7 +61,7 @@ GRANT SELECT ON public.horus_memoria TO authenticated;
 GRANT ALL ON public.horus_memoria TO service_role;
 ALTER TABLE public.horus_memoria ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Admins read memoria" ON public.horus_memoria FOR SELECT
-  USING (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())));
 CREATE INDEX idx_memoria_user ON public.horus_memoria (user_phone, created_at DESC);
 CREATE INDEX idx_memoria_embedding ON public.horus_memoria USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100);
 

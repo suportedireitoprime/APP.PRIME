@@ -14,8 +14,8 @@ GRANT SELECT, INSERT, DELETE ON public.locais_checkins TO authenticated;
 GRANT ALL ON public.locais_checkins TO service_role;
 ALTER TABLE public.locais_checkins ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "checkins_select_all_authenticated" ON public.locais_checkins FOR SELECT TO authenticated USING (true);
-CREATE POLICY "checkins_insert_self" ON public.locais_checkins FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "checkins_delete_self" ON public.locais_checkins FOR DELETE TO authenticated USING (auth.uid() = user_id);
+CREATE POLICY "checkins_insert_self" ON public.locais_checkins FOR INSERT TO authenticated WITH CHECK ((select auth.uid()) = user_id);
+CREATE POLICY "checkins_delete_self" ON public.locais_checkins FOR DELETE TO authenticated USING ((select auth.uid()) = user_id);
 
 -- Avaliações
 CREATE TABLE public.locais_avaliacoes (
@@ -36,10 +36,10 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON public.locais_avaliacoes TO authenticate
 GRANT SELECT ON public.locais_avaliacoes TO anon;
 GRANT ALL ON public.locais_avaliacoes TO service_role;
 ALTER TABLE public.locais_avaliacoes ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "aval_select_public" ON public.locais_avaliacoes FOR SELECT USING (aprovado = true OR auth.uid() = user_id);
-CREATE POLICY "aval_insert_self" ON public.locais_avaliacoes FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "aval_update_self" ON public.locais_avaliacoes FOR UPDATE TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "aval_delete_self" ON public.locais_avaliacoes FOR DELETE TO authenticated USING (auth.uid() = user_id);
+CREATE POLICY "aval_select_public" ON public.locais_avaliacoes FOR SELECT USING (aprovado = true OR (select auth.uid()) = user_id);
+CREATE POLICY "aval_insert_self" ON public.locais_avaliacoes FOR INSERT TO authenticated WITH CHECK ((select auth.uid()) = user_id);
+CREATE POLICY "aval_update_self" ON public.locais_avaliacoes FOR UPDATE TO authenticated USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
+CREATE POLICY "aval_delete_self" ON public.locais_avaliacoes FOR DELETE TO authenticated USING ((select auth.uid()) = user_id);
 CREATE TRIGGER trg_locais_aval_updated BEFORE UPDATE ON public.locais_avaliacoes FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 -- Fotos de usuário
@@ -56,9 +56,9 @@ GRANT SELECT, INSERT, DELETE ON public.locais_fotos_usuario TO authenticated;
 GRANT SELECT ON public.locais_fotos_usuario TO anon;
 GRANT ALL ON public.locais_fotos_usuario TO service_role;
 ALTER TABLE public.locais_fotos_usuario ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "fotos_select_public" ON public.locais_fotos_usuario FOR SELECT USING (aprovada = true OR auth.uid() = user_id);
-CREATE POLICY "fotos_insert_self" ON public.locais_fotos_usuario FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "fotos_delete_self" ON public.locais_fotos_usuario FOR DELETE TO authenticated USING (auth.uid() = user_id);
+CREATE POLICY "fotos_select_public" ON public.locais_fotos_usuario FOR SELECT USING (aprovada = true OR (select auth.uid()) = user_id);
+CREATE POLICY "fotos_insert_self" ON public.locais_fotos_usuario FOR INSERT TO authenticated WITH CHECK ((select auth.uid()) = user_id);
+CREATE POLICY "fotos_delete_self" ON public.locais_fotos_usuario FOR DELETE TO authenticated USING ((select auth.uid()) = user_id);
 
 -- Selos
 CREATE TABLE public.locais_selos (
@@ -72,7 +72,7 @@ CREATE TABLE public.locais_selos (
 GRANT SELECT, INSERT ON public.locais_selos TO authenticated;
 GRANT ALL ON public.locais_selos TO service_role;
 ALTER TABLE public.locais_selos ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "selos_select_self" ON public.locais_selos FOR SELECT TO authenticated USING (auth.uid() = user_id);
+CREATE POLICY "selos_select_self" ON public.locais_selos FOR SELECT TO authenticated USING ((select auth.uid()) = user_id);
 CREATE POLICY "selos_insert_service" ON public.locais_selos FOR INSERT TO service_role WITH CHECK (true);
 
 -- Trilhas
@@ -107,7 +107,7 @@ CREATE TABLE public.locais_trilhas_progresso (
 GRANT SELECT, INSERT, UPDATE ON public.locais_trilhas_progresso TO authenticated;
 GRANT ALL ON public.locais_trilhas_progresso TO service_role;
 ALTER TABLE public.locais_trilhas_progresso ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "trilhas_prog_self" ON public.locais_trilhas_progresso FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "trilhas_prog_self" ON public.locais_trilhas_progresso FOR ALL TO authenticated USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 CREATE TRIGGER trg_trilhas_prog_updated BEFORE UPDATE ON public.locais_trilhas_progresso FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 -- Favoritos server-side (sincronizar com localStorage)
@@ -120,15 +120,15 @@ CREATE TABLE public.locais_favoritos (
 GRANT SELECT, INSERT, DELETE ON public.locais_favoritos TO authenticated;
 GRANT ALL ON public.locais_favoritos TO service_role;
 ALTER TABLE public.locais_favoritos ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "fav_self" ON public.locais_favoritos FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "fav_self" ON public.locais_favoritos FOR ALL TO authenticated USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 
 -- Storage policies para bucket locais-fotos-user
 CREATE POLICY "user_fotos_read" ON storage.objects FOR SELECT
   USING (bucket_id = 'locais-fotos-user');
 CREATE POLICY "user_fotos_insert_own" ON storage.objects FOR INSERT TO authenticated
-  WITH CHECK (bucket_id = 'locais-fotos-user' AND (storage.foldername(name))[1] = auth.uid()::text);
+  WITH CHECK (bucket_id = 'locais-fotos-user' AND (storage.foldername(name))[1] = (select auth.uid())::text);
 CREATE POLICY "user_fotos_delete_own" ON storage.objects FOR DELETE TO authenticated
-  USING (bucket_id = 'locais-fotos-user' AND (storage.foldername(name))[1] = auth.uid()::text);
+  USING (bucket_id = 'locais-fotos-user' AND (storage.foldername(name))[1] = (select auth.uid())::text);
 
 -- Função agregadora de estatísticas do local
 CREATE OR REPLACE FUNCTION public.local_estatisticas(_local_id uuid)

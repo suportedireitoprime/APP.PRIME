@@ -127,7 +127,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON public.questoes_respostas TO authenticat
 GRANT ALL ON public.questoes_respostas TO service_role;
 ALTER TABLE public.questoes_respostas ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Respostas do proprio usuario" ON public.questoes_respostas FOR ALL TO authenticated
-  USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 
 -- ============ FAVORITOS ============
 CREATE TABLE public.questoes_favoritos (
@@ -141,7 +141,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON public.questoes_favoritos TO authenticat
 GRANT ALL ON public.questoes_favoritos TO service_role;
 ALTER TABLE public.questoes_favoritos ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Favoritos do proprio usuario" ON public.questoes_favoritos FOR ALL TO authenticated
-  USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 
 -- ============ SIMULADOS ============
 CREATE TABLE public.questoes_simulados (
@@ -163,7 +163,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON public.questoes_simulados TO authenticat
 GRANT ALL ON public.questoes_simulados TO service_role;
 ALTER TABLE public.questoes_simulados ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Simulados do proprio usuario" ON public.questoes_simulados FOR ALL TO authenticated
-  USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 
 CREATE TABLE public.questoes_simulado_itens (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -179,8 +179,8 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON public.questoes_simulado_itens TO authen
 GRANT ALL ON public.questoes_simulado_itens TO service_role;
 ALTER TABLE public.questoes_simulado_itens ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Itens do proprio simulado" ON public.questoes_simulado_itens FOR ALL TO authenticated
-  USING (EXISTS (SELECT 1 FROM public.questoes_simulados s WHERE s.id = simulado_id AND s.user_id = auth.uid()))
-  WITH CHECK (EXISTS (SELECT 1 FROM public.questoes_simulados s WHERE s.id = simulado_id AND s.user_id = auth.uid()));
+  USING (EXISTS (SELECT 1 FROM public.questoes_simulados s WHERE s.id = simulado_id AND s.user_id = (select auth.uid())))
+  WITH CHECK (EXISTS (SELECT 1 FROM public.questoes_simulados s WHERE s.id = simulado_id AND s.user_id = (select auth.uid())));
 
 -- ============ TRILHAS ============
 CREATE TABLE public.questoes_trilhas (
@@ -222,7 +222,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON public.questoes_trilha_progresso TO auth
 GRANT ALL ON public.questoes_trilha_progresso TO service_role;
 ALTER TABLE public.questoes_trilha_progresso ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Progresso do proprio usuario" ON public.questoes_trilha_progresso FOR ALL TO authenticated
-  USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 
 -- ============ TRIGGER updated_at ============
 CREATE OR REPLACE FUNCTION public.questoes_touch_updated_at()

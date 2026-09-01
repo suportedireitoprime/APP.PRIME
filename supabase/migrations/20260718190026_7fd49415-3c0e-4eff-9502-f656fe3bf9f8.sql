@@ -15,20 +15,20 @@ DROP POLICY IF EXISTS "Users can read own notification state" ON public.notifica
 CREATE POLICY "Users can read own notification state"
   ON public.notification_read_state FOR SELECT
   TO authenticated
-  USING (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id);
 
 DROP POLICY IF EXISTS "Users can insert own notification state" ON public.notification_read_state;
 CREATE POLICY "Users can insert own notification state"
   ON public.notification_read_state FOR INSERT
   TO authenticated
-  WITH CHECK (auth.uid() = user_id);
+  WITH CHECK ((select auth.uid()) = user_id);
 
 DROP POLICY IF EXISTS "Users can update own notification state" ON public.notification_read_state;
 CREATE POLICY "Users can update own notification state"
   ON public.notification_read_state FOR UPDATE
   TO authenticated
-  USING (auth.uid() = user_id)
-  WITH CHECK (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id)
+  WITH CHECK ((select auth.uid()) = user_id);
 
 DROP TRIGGER IF EXISTS notification_read_state_set_updated_at ON public.notification_read_state;
 CREATE TRIGGER notification_read_state_set_updated_at

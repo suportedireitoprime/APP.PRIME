@@ -4,7 +4,7 @@ CREATE OR REPLACE FUNCTION public.admin_metricas_dia(_dia date)
  STABLE SECURITY DEFINER
  SET search_path TO 'public'
 AS $function$
-  SELECT CASE WHEN public.is_admin_user(auth.uid()) THEN jsonb_build_object(
+  SELECT CASE WHEN public.is_admin_user((select auth.uid())) THEN jsonb_build_object(
     'online', (SELECT COUNT(DISTINCT user_id) FROM public.user_activity_log
       WHERE last_seen_at >= (_dia::timestamp AT TIME ZONE 'America/Sao_Paulo')
         AND last_seen_at < ((_dia + 1)::timestamp AT TIME ZONE 'America/Sao_Paulo')
@@ -31,7 +31,7 @@ DECLARE
   res jsonb;
   hoje timestamptz := date_trunc('day', now() AT TIME ZONE 'America/Sao_Paulo');
 BEGIN
-  IF NOT public.is_admin_user(auth.uid()) THEN
+  IF NOT public.is_admin_user((select auth.uid())) THEN
     RETURN jsonb_build_object('error', 'forbidden');
   END IF;
 

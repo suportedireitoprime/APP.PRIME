@@ -16,8 +16,8 @@ ALTER TABLE public.narracao_vozes_config ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Admins gerenciam vozes da narracao"
   ON public.narracao_vozes_config FOR ALL
   TO authenticated
-  USING (public.is_admin_user(auth.uid()))
-  WITH CHECK (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())))
+  WITH CHECK (public.is_admin_user((select auth.uid())));
 
 CREATE UNIQUE INDEX narracao_vozes_config_padrao_unico
   ON public.narracao_vozes_config ((padrao)) WHERE padrao;

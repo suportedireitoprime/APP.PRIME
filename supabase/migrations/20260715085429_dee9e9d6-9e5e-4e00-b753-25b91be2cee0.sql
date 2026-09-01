@@ -14,8 +14,8 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON public.reels_comentarios TO authenticate
 GRANT ALL ON public.reels_comentarios TO service_role;
 ALTER TABLE public.reels_comentarios ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "reels_com_read_all" ON public.reels_comentarios FOR SELECT USING (true);
-CREATE POLICY "reels_com_insert_own" ON public.reels_comentarios FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "reels_com_delete_own" ON public.reels_comentarios FOR DELETE TO authenticated USING (auth.uid() = user_id);
+CREATE POLICY "reels_com_insert_own" ON public.reels_comentarios FOR INSERT TO authenticated WITH CHECK ((select auth.uid()) = user_id);
+CREATE POLICY "reels_com_delete_own" ON public.reels_comentarios FOR DELETE TO authenticated USING ((select auth.uid()) = user_id);
 
 CREATE TABLE public.reels_curtidas (
   video_id TEXT NOT NULL,
@@ -28,8 +28,8 @@ GRANT SELECT, INSERT, DELETE ON public.reels_curtidas TO authenticated;
 GRANT ALL ON public.reels_curtidas TO service_role;
 ALTER TABLE public.reels_curtidas ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "reels_cur_read_all" ON public.reels_curtidas FOR SELECT USING (true);
-CREATE POLICY "reels_cur_ins_own" ON public.reels_curtidas FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "reels_cur_del_own" ON public.reels_curtidas FOR DELETE TO authenticated USING (auth.uid() = user_id);
+CREATE POLICY "reels_cur_ins_own" ON public.reels_curtidas FOR INSERT TO authenticated WITH CHECK ((select auth.uid()) = user_id);
+CREATE POLICY "reels_cur_del_own" ON public.reels_curtidas FOR DELETE TO authenticated USING ((select auth.uid()) = user_id);
 
 CREATE TABLE public.reels_analises (
   video_id TEXT NOT NULL PRIMARY KEY,

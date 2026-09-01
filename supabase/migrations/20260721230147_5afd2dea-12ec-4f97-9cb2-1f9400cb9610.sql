@@ -17,5 +17,5 @@ CREATE POLICY "Users manage their own activity state"
   ON public.user_activity_state
   FOR ALL
   TO authenticated
-  USING (auth.uid() = user_id)
-  WITH CHECK (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id)
+  WITH CHECK ((select auth.uid()) = user_id);

@@ -17,7 +17,7 @@ ALTER TABLE public.questoes_lembretes ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users manage own questoes reminders"
 ON public.questoes_lembretes FOR ALL TO authenticated
-USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 
 CREATE TRIGGER update_questoes_lembretes_updated_at
 BEFORE UPDATE ON public.questoes_lembretes

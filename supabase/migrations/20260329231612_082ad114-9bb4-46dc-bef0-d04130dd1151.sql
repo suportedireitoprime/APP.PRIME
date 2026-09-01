@@ -33,8 +33,8 @@ CREATE TABLE study_sessions (
   created_at timestamptz DEFAULT now()
 );
 ALTER TABLE study_sessions ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users read own sessions" ON study_sessions FOR SELECT TO authenticated USING (auth.uid() = user_id);
-CREATE POLICY "Users insert own sessions" ON study_sessions FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users read own sessions" ON study_sessions FOR SELECT TO authenticated USING ((select auth.uid()) = user_id);
+CREATE POLICY "Users insert own sessions" ON study_sessions FOR INSERT TO authenticated WITH CHECK ((select auth.uid()) = user_id);
 
 CREATE TABLE study_answers (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -45,5 +45,5 @@ CREATE TABLE study_answers (
   created_at timestamptz DEFAULT now()
 );
 ALTER TABLE study_answers ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users read own answers" ON study_answers FOR SELECT TO authenticated USING (EXISTS (SELECT 1 FROM study_sessions WHERE study_sessions.id = study_answers.session_id AND study_sessions.user_id = auth.uid()));
-CREATE POLICY "Users insert own answers" ON study_answers FOR INSERT TO authenticated WITH CHECK (EXISTS (SELECT 1 FROM study_sessions WHERE study_sessions.id = study_answers.session_id AND study_sessions.user_id = auth.uid()));
+CREATE POLICY "Users read own answers" ON study_answers FOR SELECT TO authenticated USING (EXISTS (SELECT 1 FROM study_sessions WHERE study_sessions.id = study_answers.session_id AND study_sessions.user_id = (select auth.uid())));
+CREATE POLICY "Users insert own answers" ON study_answers FOR INSERT TO authenticated WITH CHECK (EXISTS (SELECT 1 FROM study_sessions WHERE study_sessions.id = study_answers.session_id AND study_sessions.user_id = (select auth.uid())));

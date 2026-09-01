@@ -7,10 +7,10 @@ AS $function$
 DECLARE
   t record;
 BEGIN
-  IF NOT public.is_admin_user(auth.uid()) THEN
+  IF NOT public.is_admin_user((select auth.uid())) THEN
     RETURN jsonb_build_object('error', 'forbidden');
   END IF;
-  IF _user_id IS NULL OR _user_id = auth.uid() THEN
+  IF _user_id IS NULL OR _user_id = (select auth.uid()) THEN
     RETURN jsonb_build_object('error', 'self_action_blocked');
   END IF;
 

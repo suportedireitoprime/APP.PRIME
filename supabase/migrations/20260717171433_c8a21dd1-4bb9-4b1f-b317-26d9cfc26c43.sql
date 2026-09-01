@@ -35,8 +35,8 @@ DROP POLICY IF EXISTS "admins manage push automations" ON public.push_automation
 CREATE POLICY "admins manage push automations"
 ON public.push_automations FOR ALL
 TO authenticated
-USING (public.is_admin_user(auth.uid()))
-WITH CHECK (public.is_admin_user(auth.uid()));
+USING (public.is_admin_user((select auth.uid())))
+WITH CHECK (public.is_admin_user((select auth.uid())));
 
 DROP TRIGGER IF EXISTS trg_push_automations_updated_at ON public.push_automations;
 CREATE TRIGGER trg_push_automations_updated_at

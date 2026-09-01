@@ -13,7 +13,7 @@ ALTER TABLE public.forca_artigos_cache ENABLE ROW LEVEL SECURITY;
 -- Permitir leitura para todos (autenticados)
 CREATE POLICY "Permitir leitura de cache para usuários autenticados" 
     ON public.forca_artigos_cache FOR SELECT 
-    USING (auth.role() = 'authenticated');
+    USING ((select auth.role()) = 'authenticated');
 
 -- Bloquear inserção/atualização direta do frontend (apenas Edge Functions via Service Role poderão inserir)
 -- Nenhuma política de INSERT/UPDATE criada, logo o default deny cuidará de bloquear.

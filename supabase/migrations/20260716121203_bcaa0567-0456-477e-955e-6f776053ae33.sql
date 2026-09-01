@@ -48,7 +48,7 @@ ALTER TABLE public.biblioteca_leitura_progresso ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Usuário gerencia próprio progresso"
   ON public.biblioteca_leitura_progresso
-  FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  FOR ALL USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 
 CREATE TRIGGER update_biblioteca_leitura_progresso_updated_at
   BEFORE UPDATE ON public.biblioteca_leitura_progresso

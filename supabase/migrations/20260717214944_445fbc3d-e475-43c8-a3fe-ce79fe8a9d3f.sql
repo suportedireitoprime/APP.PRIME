@@ -33,13 +33,13 @@ ALTER TABLE public.horus_user_stats ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view own stats"
   ON public.horus_user_stats FOR SELECT
   TO authenticated
-  USING (auth.uid() = user_id OR public.is_admin_user(auth.uid()));
+  USING ((select auth.uid()) = user_id OR public.is_admin_user((select auth.uid())));
 
 CREATE POLICY "Admins can manage all stats"
   ON public.horus_user_stats FOR ALL
   TO authenticated
-  USING (public.is_admin_user(auth.uid()))
-  WITH CHECK (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())))
+  WITH CHECK (public.is_admin_user((select auth.uid())));
 
 CREATE INDEX horus_user_stats_telefone_idx ON public.horus_user_stats(telefone);
 CREATE INDEX horus_user_stats_user_id_idx ON public.horus_user_stats(user_id);
@@ -69,7 +69,7 @@ ALTER TABLE public.horus_intent_logs ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Admins can view intent logs"
   ON public.horus_intent_logs FOR SELECT
   TO authenticated
-  USING (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())));
 
 CREATE INDEX horus_intent_logs_telefone_idx ON public.horus_intent_logs(telefone, created_at DESC);
 CREATE INDEX horus_intent_logs_intent_idx ON public.horus_intent_logs(intent);
@@ -96,7 +96,7 @@ ALTER TABLE public.horus_proactive_log ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Admins can view proactive log"
   ON public.horus_proactive_log FOR SELECT
   TO authenticated
-  USING (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())));
 
 CREATE INDEX horus_proactive_log_telefone_idx ON public.horus_proactive_log(telefone, enviada_em DESC);
 CREATE INDEX horus_proactive_log_motivo_idx ON public.horus_proactive_log(motivo);
@@ -124,8 +124,8 @@ ALTER TABLE public.horus_config ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Admins manage horus_config"
   ON public.horus_config FOR ALL
   TO authenticated
-  USING (public.is_admin_user(auth.uid()))
-  WITH CHECK (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())))
+  WITH CHECK (public.is_admin_user((select auth.uid())));
 
 INSERT INTO public.horus_config (chave, valor) VALUES
   ('proativos_pausados', 'false'::jsonb),

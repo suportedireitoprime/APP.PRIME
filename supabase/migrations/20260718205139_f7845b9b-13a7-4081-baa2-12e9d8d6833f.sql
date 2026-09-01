@@ -18,13 +18,13 @@ CREATE POLICY "Anyone can read hero motifs config"
 CREATE POLICY "Admins can insert hero motifs config"
   ON public.hero_motifs_config FOR INSERT
   TO authenticated
-  WITH CHECK (public.is_admin_user(auth.uid()));
+  WITH CHECK (public.is_admin_user((select auth.uid())));
 
 CREATE POLICY "Admins can update hero motifs config"
   ON public.hero_motifs_config FOR UPDATE
   TO authenticated
-  USING (public.is_admin_user(auth.uid()))
-  WITH CHECK (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())))
+  WITH CHECK (public.is_admin_user((select auth.uid())));
 
 INSERT INTO public.hero_motifs_config (id, slots_count, interval_ms)
 VALUES (1, 12, 3000)

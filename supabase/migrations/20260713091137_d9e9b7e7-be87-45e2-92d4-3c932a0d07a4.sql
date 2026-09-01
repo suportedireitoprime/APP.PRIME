@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS public.user_preferences (
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.user_preferences TO authenticated;
 GRANT ALL ON public.user_preferences TO service_role;
 ALTER TABLE public.user_preferences ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users manage own prefs" ON public.user_preferences FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users manage own prefs" ON public.user_preferences FOR ALL USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 
 -- premium_usage
 CREATE TABLE IF NOT EXISTS public.premium_usage (
@@ -25,7 +25,7 @@ CREATE INDEX IF NOT EXISTS idx_premium_usage_user_feature ON public.premium_usag
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.premium_usage TO authenticated;
 GRANT ALL ON public.premium_usage TO service_role;
 ALTER TABLE public.premium_usage ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users own usage" ON public.premium_usage FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users own usage" ON public.premium_usage FOR ALL USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 
 -- user_activity_log
 CREATE TABLE IF NOT EXISTS public.user_activity_log (
@@ -41,7 +41,7 @@ CREATE INDEX IF NOT EXISTS idx_activity_last_seen ON public.user_activity_log(la
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.user_activity_log TO authenticated;
 GRANT ALL ON public.user_activity_log TO service_role;
 ALTER TABLE public.user_activity_log ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users upsert own activity" ON public.user_activity_log FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users upsert own activity" ON public.user_activity_log FOR ALL USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 CREATE POLICY "Authenticated read activity" ON public.user_activity_log FOR SELECT TO authenticated USING (true);
 
 -- study_sessions
@@ -59,7 +59,7 @@ CREATE INDEX IF NOT EXISTS idx_study_sessions_user ON public.study_sessions(user
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.study_sessions TO authenticated;
 GRANT ALL ON public.study_sessions TO service_role;
 ALTER TABLE public.study_sessions ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users own sessions" ON public.study_sessions FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users own sessions" ON public.study_sessions FOR ALL USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 
 -- mensagens_suporte
 CREATE TABLE IF NOT EXISTS public.mensagens_suporte (
@@ -74,8 +74,8 @@ CREATE TABLE IF NOT EXISTS public.mensagens_suporte (
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.mensagens_suporte TO authenticated;
 GRANT ALL ON public.mensagens_suporte TO service_role;
 ALTER TABLE public.mensagens_suporte ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users insert own message" ON public.mensagens_suporte FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Users read own message" ON public.mensagens_suporte FOR SELECT TO authenticated USING (auth.uid() = user_id);
+CREATE POLICY "Users insert own message" ON public.mensagens_suporte FOR INSERT TO authenticated WITH CHECK ((select auth.uid()) = user_id);
+CREATE POLICY "Users read own message" ON public.mensagens_suporte FOR SELECT TO authenticated USING ((select auth.uid()) = user_id);
 
 -- kanban_proposicoes
 CREATE TABLE IF NOT EXISTS public.kanban_proposicoes (

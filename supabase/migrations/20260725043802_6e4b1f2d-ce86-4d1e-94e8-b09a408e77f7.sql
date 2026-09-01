@@ -23,7 +23,7 @@ ALTER TABLE public.artigo_ai_cache ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "AI cache readable by authenticated" ON public.artigo_ai_cache
   FOR SELECT TO authenticated USING (true);
 CREATE POLICY "AI cache insert by authenticated" ON public.artigo_ai_cache
-  FOR INSERT TO authenticated WITH CHECK (created_by IS NULL OR created_by = auth.uid());
+  FOR INSERT TO authenticated WITH CHECK (created_by IS NULL OR created_by = (select auth.uid()));
 CREATE POLICY "AI cache update by authenticated" ON public.artigo_ai_cache
   FOR UPDATE TO authenticated USING (true) WITH CHECK (true);
 CREATE TRIGGER trg_artigo_ai_cache_updated_at
@@ -51,13 +51,13 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON public.location_reminders TO authenticat
 GRANT ALL ON public.location_reminders TO service_role;
 ALTER TABLE public.location_reminders ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "loc reminders select own" ON public.location_reminders
-  FOR SELECT TO authenticated USING (user_id = auth.uid());
+  FOR SELECT TO authenticated USING (user_id = (select auth.uid()));
 CREATE POLICY "loc reminders insert own" ON public.location_reminders
-  FOR INSERT TO authenticated WITH CHECK (user_id = auth.uid());
+  FOR INSERT TO authenticated WITH CHECK (user_id = (select auth.uid()));
 CREATE POLICY "loc reminders update own" ON public.location_reminders
-  FOR UPDATE TO authenticated USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
+  FOR UPDATE TO authenticated USING (user_id = (select auth.uid())) WITH CHECK (user_id = (select auth.uid()));
 CREATE POLICY "loc reminders delete own" ON public.location_reminders
-  FOR DELETE TO authenticated USING (user_id = auth.uid());
+  FOR DELETE TO authenticated USING (user_id = (select auth.uid()));
 CREATE INDEX idx_location_reminders_user_artigo ON public.location_reminders(user_id, artigo_ref);
 CREATE TRIGGER trg_location_reminders_updated_at
   BEFORE UPDATE ON public.location_reminders
@@ -82,13 +82,13 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON public.article_time_reminders TO authent
 GRANT ALL ON public.article_time_reminders TO service_role;
 ALTER TABLE public.article_time_reminders ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "time reminders select own" ON public.article_time_reminders
-  FOR SELECT TO authenticated USING (user_id = auth.uid());
+  FOR SELECT TO authenticated USING (user_id = (select auth.uid()));
 CREATE POLICY "time reminders insert own" ON public.article_time_reminders
-  FOR INSERT TO authenticated WITH CHECK (user_id = auth.uid());
+  FOR INSERT TO authenticated WITH CHECK (user_id = (select auth.uid()));
 CREATE POLICY "time reminders update own" ON public.article_time_reminders
-  FOR UPDATE TO authenticated USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
+  FOR UPDATE TO authenticated USING (user_id = (select auth.uid())) WITH CHECK (user_id = (select auth.uid()));
 CREATE POLICY "time reminders delete own" ON public.article_time_reminders
-  FOR DELETE TO authenticated USING (user_id = auth.uid());
+  FOR DELETE TO authenticated USING (user_id = (select auth.uid()));
 CREATE INDEX idx_time_reminders_user_artigo ON public.article_time_reminders(user_id, artigo_ref);
 CREATE TRIGGER trg_article_time_reminders_updated_at
   BEFORE UPDATE ON public.article_time_reminders
@@ -105,13 +105,13 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON public.user_preferences TO authenticated
 GRANT ALL ON public.user_preferences TO service_role;
 ALTER TABLE public.user_preferences ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "user prefs select own" ON public.user_preferences
-  FOR SELECT TO authenticated USING (user_id = auth.uid());
+  FOR SELECT TO authenticated USING (user_id = (select auth.uid()));
 CREATE POLICY "user prefs insert own" ON public.user_preferences
-  FOR INSERT TO authenticated WITH CHECK (user_id = auth.uid());
+  FOR INSERT TO authenticated WITH CHECK (user_id = (select auth.uid()));
 CREATE POLICY "user prefs update own" ON public.user_preferences
-  FOR UPDATE TO authenticated USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
+  FOR UPDATE TO authenticated USING (user_id = (select auth.uid())) WITH CHECK (user_id = (select auth.uid()));
 CREATE POLICY "user prefs delete own" ON public.user_preferences
-  FOR DELETE TO authenticated USING (user_id = auth.uid());
+  FOR DELETE TO authenticated USING (user_id = (select auth.uid()));
 CREATE TRIGGER trg_user_preferences_updated_at
   BEFORE UPDATE ON public.user_preferences
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();

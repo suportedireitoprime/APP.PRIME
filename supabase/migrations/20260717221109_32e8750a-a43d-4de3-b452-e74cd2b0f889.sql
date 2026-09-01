@@ -28,9 +28,9 @@ GRANT SELECT ON public.boletins_juridicos TO anon, authenticated;
 GRANT ALL ON public.boletins_juridicos TO service_role;
 ALTER TABLE public.boletins_juridicos ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Boletins prontos são públicos" ON public.boletins_juridicos
-  FOR SELECT USING (status = 'pronto' OR public.is_admin_user(auth.uid()));
+  FOR SELECT USING (status = 'pronto' OR public.is_admin_user((select auth.uid())));
 CREATE POLICY "Admins gerenciam boletins" ON public.boletins_juridicos
-  FOR ALL USING (public.is_admin_user(auth.uid())) WITH CHECK (public.is_admin_user(auth.uid()));
+  FOR ALL USING (public.is_admin_user((select auth.uid()))) WITH CHECK (public.is_admin_user((select auth.uid())));
 
 CREATE TRIGGER trg_boletins_updated_at BEFORE UPDATE ON public.boletins_juridicos
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
@@ -51,7 +51,7 @@ GRANT ALL ON public.boletim_tipo_imagens TO service_role;
 ALTER TABLE public.boletim_tipo_imagens ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Tipo imagens públicas" ON public.boletim_tipo_imagens FOR SELECT USING (true);
 CREATE POLICY "Admins gerenciam tipo imagens" ON public.boletim_tipo_imagens
-  FOR ALL USING (public.is_admin_user(auth.uid())) WITH CHECK (public.is_admin_user(auth.uid()));
+  FOR ALL USING (public.is_admin_user((select auth.uid()))) WITH CHECK (public.is_admin_user((select auth.uid())));
 
 CREATE TRIGGER trg_boletim_tipo_imagens_updated_at BEFORE UPDATE ON public.boletim_tipo_imagens
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
@@ -73,9 +73,9 @@ GRANT SELECT ON public.boletim_config TO authenticated;
 GRANT ALL ON public.boletim_config TO service_role;
 ALTER TABLE public.boletim_config ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Config visível a autenticados" ON public.boletim_config
-  FOR SELECT USING (auth.role() = 'authenticated');
+  FOR SELECT USING ((select auth.role()) = 'authenticated');
 CREATE POLICY "Admins editam config" ON public.boletim_config
-  FOR ALL USING (public.is_admin_user(auth.uid())) WITH CHECK (public.is_admin_user(auth.uid()));
+  FOR ALL USING (public.is_admin_user((select auth.uid()))) WITH CHECK (public.is_admin_user((select auth.uid())));
 
 INSERT INTO public.boletim_config (id) VALUES (1) ON CONFLICT DO NOTHING;
 

@@ -23,8 +23,8 @@ CREATE POLICY "Users manage own location reminders"
   ON public.location_reminders
   FOR ALL
   TO authenticated
-  USING (auth.uid() = user_id)
-  WITH CHECK (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id)
+  WITH CHECK ((select auth.uid()) = user_id);
 
 CREATE INDEX idx_location_reminders_user ON public.location_reminders(user_id) WHERE active = true;
 
@@ -65,8 +65,8 @@ CREATE POLICY "Users manage own audio recordings"
   ON public.audio_recordings
   FOR ALL
   TO authenticated
-  USING (auth.uid() = user_id)
-  WITH CHECK (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id)
+  WITH CHECK ((select auth.uid()) = user_id);
 
 CREATE TRIGGER trg_audio_recordings_updated
   BEFORE UPDATE ON public.audio_recordings

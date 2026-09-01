@@ -15,5 +15,5 @@ GRANT ALL ON public.apple_csr_storage TO service_role;
 ALTER TABLE public.apple_csr_storage ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users manage own apple csr"
 ON public.apple_csr_storage FOR ALL
-USING (auth.uid() = user_id)
-WITH CHECK (auth.uid() = user_id);
+USING ((select auth.uid()) = user_id)
+WITH CHECK ((select auth.uid()) = user_id);

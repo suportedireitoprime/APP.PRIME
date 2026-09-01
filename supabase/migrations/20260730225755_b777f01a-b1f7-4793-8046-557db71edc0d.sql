@@ -76,7 +76,7 @@ ALTER TABLE public.flashcards_progresso ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Usuario gerencia seu proprio progresso"
 ON public.flashcards_progresso FOR ALL TO authenticated
-USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 
 CREATE INDEX idx_fc_prog_user_status ON public.flashcards_progresso (user_id, status);
 CREATE INDEX idx_fc_prog_user_area ON public.flashcards_progresso (user_id, area);
@@ -101,7 +101,7 @@ ALTER TABLE public.flashcards_decks ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Usuario gerencia seus proprios decks"
 ON public.flashcards_decks FOR ALL TO authenticated
-USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 
 
 CREATE TABLE public.flashcards_deck_itens (
@@ -120,8 +120,8 @@ ALTER TABLE public.flashcards_deck_itens ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Usuario gerencia itens dos seus decks"
 ON public.flashcards_deck_itens FOR ALL TO authenticated
-USING (EXISTS (SELECT 1 FROM public.flashcards_decks d WHERE d.id = deck_id AND d.user_id = auth.uid()))
-WITH CHECK (EXISTS (SELECT 1 FROM public.flashcards_decks d WHERE d.id = deck_id AND d.user_id = auth.uid()));
+USING (EXISTS (SELECT 1 FROM public.flashcards_decks d WHERE d.id = deck_id AND d.user_id = (select auth.uid())))
+WITH CHECK (EXISTS (SELECT 1 FROM public.flashcards_decks d WHERE d.id = deck_id AND d.user_id = (select auth.uid())));
 
 CREATE INDEX idx_fc_deck_itens_deck ON public.flashcards_deck_itens (deck_id);
 
@@ -154,7 +154,7 @@ LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
            COUNT(*) FILTER (WHERE pr.status = 'compreendido') AS compreendidos,
            COUNT(*) FILTER (WHERE pr.status = 'revisar') AS a_revisar
     FROM public.flashcards_progresso pr
-    WHERE pr.user_id = auth.uid()
+    WHERE pr.user_id = (select auth.uid())
     GROUP BY pr.area
   ) p ON p.area = a.area
   ORDER BY a.ordem, a.area;
@@ -171,7 +171,7 @@ BEGIN
   FOR d IN
     SELECT DISTINCT (ultima_resposta_em AT TIME ZONE 'America/Sao_Paulo')::date AS dia
     FROM public.flashcards_progresso
-    WHERE user_id = auth.uid()
+    WHERE user_id = (select auth.uid())
     ORDER BY dia DESC
   LOOP
     IF d = cursor_day THEN
@@ -192,11 +192,11 @@ RETURNS jsonb
 LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
   SELECT jsonb_build_object(
     'total_cards', (SELECT COUNT(*) FROM public.flashcards_cards),
-    'estudados', (SELECT COUNT(*) FROM public.flashcards_progresso WHERE user_id = auth.uid()),
-    'compreendidos', (SELECT COUNT(*) FROM public.flashcards_progresso WHERE user_id = auth.uid() AND status = 'compreendido'),
-    'a_revisar', (SELECT COUNT(*) FROM public.flashcards_progresso WHERE user_id = auth.uid() AND status = 'revisar'),
+    'estudados', (SELECT COUNT(*) FROM public.flashcards_progresso WHERE user_id = (select auth.uid())),
+    'compreendidos', (SELECT COUNT(*) FROM public.flashcards_progresso WHERE user_id = (select auth.uid()) AND status = 'compreendido'),
+    'a_revisar', (SELECT COUNT(*) FROM public.flashcards_progresso WHERE user_id = (select auth.uid()) AND status = 'revisar'),
     'hoje', (SELECT COUNT(*) FROM public.flashcards_progresso
-             WHERE user_id = auth.uid()
+             WHERE user_id = (select auth.uid())
                AND ultima_resposta_em >= date_trunc('day', now() AT TIME ZONE 'America/Sao_Paulo') AT TIME ZONE 'America/Sao_Paulo'),
     'streak', public.flashcards_streak(),
     'atividade_30d', COALESCE((
@@ -204,7 +204,7 @@ LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
       FROM (
         SELECT (ultima_resposta_em AT TIME ZONE 'America/Sao_Paulo')::date AS dia, COUNT(*) AS total
         FROM public.flashcards_progresso
-        WHERE user_id = auth.uid() AND ultima_resposta_em > now() - interval '30 days'
+        WHERE user_id = (select auth.uid()) AND ultima_resposta_em > now() - interval '30 days'
         GROUP BY 1
       ) t
     ), '[]'::jsonb),
@@ -213,7 +213,7 @@ LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
       FROM (
         SELECT area, COALESCE(tema, 'Geral') AS tema, COUNT(*) AS total
         FROM public.flashcards_progresso
-        WHERE user_id = auth.uid() AND status = 'revisar'
+        WHERE user_id = (select auth.uid()) AND status = 'revisar'
         GROUP BY 1, 2
         ORDER BY total DESC
         LIMIT 10

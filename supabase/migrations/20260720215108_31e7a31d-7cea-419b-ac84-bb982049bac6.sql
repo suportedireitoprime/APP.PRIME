@@ -23,33 +23,33 @@ ALTER TABLE public.app_feedback ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users insert own feedback"
   ON public.app_feedback FOR INSERT TO authenticated
-  WITH CHECK (auth.uid() = user_id);
+  WITH CHECK ((select auth.uid()) = user_id);
 
 CREATE POLICY "Users read own feedback"
   ON public.app_feedback FOR SELECT TO authenticated
-  USING (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id);
 
 CREATE POLICY "Admins read all feedback"
   ON public.app_feedback FOR SELECT TO authenticated
-  USING (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())));
 
 -- storage.objects policies for feedback-photos bucket
 CREATE POLICY "Users upload their feedback photos"
   ON storage.objects FOR INSERT TO authenticated
   WITH CHECK (
     bucket_id = 'feedback-photos'
-    AND (storage.foldername(name))[1] = auth.uid()::text
+    AND (storage.foldername(name))[1] = (select auth.uid())::text
   );
 
 CREATE POLICY "Users read their feedback photos"
   ON storage.objects FOR SELECT TO authenticated
   USING (
     bucket_id = 'feedback-photos'
-    AND (storage.foldername(name))[1] = auth.uid()::text
+    AND (storage.foldername(name))[1] = (select auth.uid())::text
   );
 
 CREATE POLICY "Admins read all feedback photos"
   ON storage.objects FOR SELECT TO authenticated
   USING (
-    bucket_id = 'feedback-photos' AND public.is_admin_user(auth.uid())
+    bucket_id = 'feedback-photos' AND public.is_admin_user((select auth.uid()))
   );

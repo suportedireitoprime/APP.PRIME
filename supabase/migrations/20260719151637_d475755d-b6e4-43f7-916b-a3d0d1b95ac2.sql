@@ -31,23 +31,23 @@ ALTER TABLE public.vade_mecum_leis_estaduais_catalog ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Admins can read estadual catalog"
   ON public.vade_mecum_leis_estaduais_catalog FOR SELECT
   TO authenticated
-  USING (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())));
 
 CREATE POLICY "Admins can insert estadual catalog"
   ON public.vade_mecum_leis_estaduais_catalog FOR INSERT
   TO authenticated
-  WITH CHECK (public.is_admin_user(auth.uid()));
+  WITH CHECK (public.is_admin_user((select auth.uid())));
 
 CREATE POLICY "Admins can update estadual catalog"
   ON public.vade_mecum_leis_estaduais_catalog FOR UPDATE
   TO authenticated
-  USING (public.is_admin_user(auth.uid()))
-  WITH CHECK (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())))
+  WITH CHECK (public.is_admin_user((select auth.uid())));
 
 CREATE POLICY "Admins can delete estadual catalog"
   ON public.vade_mecum_leis_estaduais_catalog FOR DELETE
   TO authenticated
-  USING (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())));
 
 CREATE TRIGGER trg_estadual_catalog_updated_at
   BEFORE UPDATE ON public.vade_mecum_leis_estaduais_catalog

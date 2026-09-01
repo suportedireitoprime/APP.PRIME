@@ -35,13 +35,13 @@ ALTER TABLE public.vade_mecum_lei_snapshots ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Admins podem ler snapshots"
   ON public.vade_mecum_lei_snapshots FOR SELECT
   TO authenticated
-  USING (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())));
 
 CREATE POLICY "Admins podem gerenciar snapshots"
   ON public.vade_mecum_lei_snapshots FOR ALL
   TO authenticated
-  USING (public.is_admin_user(auth.uid()))
-  WITH CHECK (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())))
+  WITH CHECK (public.is_admin_user((select auth.uid())));
 
 CREATE TRIGGER trg_vade_mecum_lei_snapshots_updated_at
   BEFORE UPDATE ON public.vade_mecum_lei_snapshots
@@ -78,13 +78,13 @@ ALTER TABLE public.radar_impactos_leis ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Admins podem ler impactos"
   ON public.radar_impactos_leis FOR SELECT
   TO authenticated
-  USING (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())));
 
 CREATE POLICY "Admins podem gerenciar impactos"
   ON public.radar_impactos_leis FOR ALL
   TO authenticated
-  USING (public.is_admin_user(auth.uid()))
-  WITH CHECK (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())))
+  WITH CHECK (public.is_admin_user((select auth.uid())));
 
 CREATE TRIGGER trg_radar_impactos_leis_updated_at
   BEFORE UPDATE ON public.radar_impactos_leis

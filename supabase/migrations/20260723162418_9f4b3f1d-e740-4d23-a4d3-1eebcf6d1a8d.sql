@@ -21,7 +21,7 @@ ALTER TABLE public.chat_feedback ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "users insert own feedback" ON public.chat_feedback
   FOR INSERT TO authenticated
-  WITH CHECK (auth.uid() = user_id OR user_id IS NULL);
+  WITH CHECK ((select auth.uid()) = user_id OR user_id IS NULL);
 
 CREATE POLICY "anon insert feedback" ON public.chat_feedback
   FOR INSERT TO anon
@@ -29,7 +29,7 @@ CREATE POLICY "anon insert feedback" ON public.chat_feedback
 
 CREATE POLICY "users read own feedback" ON public.chat_feedback
   FOR SELECT TO authenticated
-  USING (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id);
 
 CREATE INDEX chat_feedback_created_idx ON public.chat_feedback (created_at DESC);
 CREATE INDEX chat_feedback_tipo_idx ON public.chat_feedback (tipo);

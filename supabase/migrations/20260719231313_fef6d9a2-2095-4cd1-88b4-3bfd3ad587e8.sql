@@ -40,17 +40,17 @@ ALTER TABLE public.biblioteca_leitura_jobs ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Admins veem jobs de leitura"
   ON public.biblioteca_leitura_jobs
   FOR SELECT TO authenticated
-  USING (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())));
 
 CREATE POLICY "Admins criam jobs de leitura"
   ON public.biblioteca_leitura_jobs
   FOR INSERT TO authenticated
-  WITH CHECK (public.is_admin_user(auth.uid()));
+  WITH CHECK (public.is_admin_user((select auth.uid())));
 
 CREATE POLICY "Admins atualizam jobs de leitura"
   ON public.biblioteca_leitura_jobs
   FOR UPDATE TO authenticated
-  USING (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())));
 
 CREATE TRIGGER update_biblioteca_leitura_jobs_updated_at
   BEFORE UPDATE ON public.biblioteca_leitura_jobs

@@ -23,7 +23,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON public.leis_cantadas TO authenticated;
 GRANT ALL ON public.leis_cantadas TO service_role;
 ALTER TABLE public.leis_cantadas ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Leis cantadas visiveis para todos" ON public.leis_cantadas FOR SELECT USING (true);
-CREATE POLICY "Admins gerenciam leis cantadas" ON public.leis_cantadas FOR ALL TO authenticated USING (public.is_admin_user(auth.uid())) WITH CHECK (public.is_admin_user(auth.uid()));
+CREATE POLICY "Admins gerenciam leis cantadas" ON public.leis_cantadas FOR ALL TO authenticated USING (public.is_admin_user((select auth.uid()))) WITH CHECK (public.is_admin_user((select auth.uid())));
 CREATE INDEX idx_leis_cantadas_slug ON public.leis_cantadas(slug);
 CREATE INDEX idx_leis_cantadas_artigo ON public.leis_cantadas(artigo_id);
 
@@ -48,7 +48,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON public.resumos_cantados TO authenticated
 GRANT ALL ON public.resumos_cantados TO service_role;
 ALTER TABLE public.resumos_cantados ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Resumos cantados visiveis para todos" ON public.resumos_cantados FOR SELECT USING (true);
-CREATE POLICY "Admins gerenciam resumos cantados" ON public.resumos_cantados FOR ALL TO authenticated USING (public.is_admin_user(auth.uid())) WITH CHECK (public.is_admin_user(auth.uid()));
+CREATE POLICY "Admins gerenciam resumos cantados" ON public.resumos_cantados FOR ALL TO authenticated USING (public.is_admin_user((select auth.uid()))) WITH CHECK (public.is_admin_user((select auth.uid())));
 
 CREATE TABLE public.leis_cantadas_favoritos (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -61,7 +61,7 @@ CREATE TABLE public.leis_cantadas_favoritos (
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.leis_cantadas_favoritos TO authenticated;
 GRANT ALL ON public.leis_cantadas_favoritos TO service_role;
 ALTER TABLE public.leis_cantadas_favoritos ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Usuario gerencia seus favoritos cantados" ON public.leis_cantadas_favoritos FOR ALL TO authenticated USING (auth.uid() = created_by) WITH CHECK (auth.uid() = created_by);
+CREATE POLICY "Usuario gerencia seus favoritos cantados" ON public.leis_cantadas_favoritos FOR ALL TO authenticated USING ((select auth.uid()) = created_by) WITH CHECK ((select auth.uid()) = created_by);
 
 CREATE TABLE public.leis_cantadas_reacoes (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -75,7 +75,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON public.leis_cantadas_reacoes TO authenti
 GRANT ALL ON public.leis_cantadas_reacoes TO service_role;
 ALTER TABLE public.leis_cantadas_reacoes ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Reacoes cantadas visiveis para autenticados" ON public.leis_cantadas_reacoes FOR SELECT TO authenticated USING (true);
-CREATE POLICY "Usuario gerencia suas reacoes cantadas" ON public.leis_cantadas_reacoes FOR ALL TO authenticated USING (auth.uid() = created_by) WITH CHECK (auth.uid() = created_by);
+CREATE POLICY "Usuario gerencia suas reacoes cantadas" ON public.leis_cantadas_reacoes FOR ALL TO authenticated USING ((select auth.uid()) = created_by) WITH CHECK ((select auth.uid()) = created_by);
 
 CREATE TABLE public.leis_cantadas_stats (
   lei_cantada_id UUID NOT NULL PRIMARY KEY REFERENCES public.leis_cantadas(id) ON DELETE CASCADE,
@@ -127,7 +127,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON public.audioaulas_acervo TO authenticate
 GRANT ALL ON public.audioaulas_acervo TO service_role;
 ALTER TABLE public.audioaulas_acervo ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Audioaulas visiveis para todos" ON public.audioaulas_acervo FOR SELECT USING (true);
-CREATE POLICY "Admins gerenciam audioaulas acervo" ON public.audioaulas_acervo FOR ALL TO authenticated USING (public.is_admin_user(auth.uid())) WITH CHECK (public.is_admin_user(auth.uid()));
+CREATE POLICY "Admins gerenciam audioaulas acervo" ON public.audioaulas_acervo FOR ALL TO authenticated USING (public.is_admin_user((select auth.uid()))) WITH CHECK (public.is_admin_user((select auth.uid())));
 CREATE INDEX idx_audioaulas_acervo_area ON public.audioaulas_acervo(area);
 
 CREATE TABLE public.audioaulas_stats (

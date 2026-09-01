@@ -101,7 +101,7 @@ GRANT ALL ON public.aprender_progresso_aula TO service_role;
 ALTER TABLE public.aprender_progresso_aula ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Aluno gerencia próprio progresso de aula"
   ON public.aprender_progresso_aula FOR ALL TO authenticated
-  USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 CREATE INDEX aprender_progresso_aula_user_idx ON public.aprender_progresso_aula(user_id);
 
 -- ==== PROGRESSO DE BLOCO ============================================
@@ -121,7 +121,7 @@ GRANT ALL ON public.aprender_progresso_bloco TO service_role;
 ALTER TABLE public.aprender_progresso_bloco ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Aluno gerencia próprio progresso de bloco"
   ON public.aprender_progresso_bloco FOR ALL TO authenticated
-  USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 CREATE INDEX aprender_progresso_bloco_user_idx ON public.aprender_progresso_bloco(user_id);
 
 -- ==== DOMÍNIO POR ÁREA ==============================================
@@ -138,7 +138,7 @@ GRANT ALL ON public.aprender_dominio_area TO service_role;
 ALTER TABLE public.aprender_dominio_area ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Aluno vê próprio domínio"
   ON public.aprender_dominio_area FOR ALL TO authenticated
-  USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 
 -- ==== Triggers updated_at ==========================================
 CREATE TRIGGER aprender_areas_updated BEFORE UPDATE ON public.aprender_areas

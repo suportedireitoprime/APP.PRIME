@@ -48,17 +48,17 @@ ALTER TABLE public.audioaulas_itens ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Cursos publicados visiveis"
   ON public.audioaulas_cursos FOR SELECT
-  USING (publicado = true OR public.is_admin_user(auth.uid()));
+  USING (publicado = true OR public.is_admin_user((select auth.uid())));
 
 CREATE POLICY "Admins gerenciam cursos"
   ON public.audioaulas_cursos FOR ALL
-  USING (public.is_admin_user(auth.uid()))
-  WITH CHECK (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())))
+  WITH CHECK (public.is_admin_user((select auth.uid())));
 
 CREATE POLICY "Aulas publicadas visiveis"
   ON public.audioaulas_itens FOR SELECT
   USING (
-    public.is_admin_user(auth.uid())
+    public.is_admin_user((select auth.uid()))
     OR (publicado = true AND EXISTS (
       SELECT 1 FROM public.audioaulas_cursos c
       WHERE c.id = curso_id AND c.publicado = true
@@ -67,8 +67,8 @@ CREATE POLICY "Aulas publicadas visiveis"
 
 CREATE POLICY "Admins gerenciam aulas"
   ON public.audioaulas_itens FOR ALL
-  USING (public.is_admin_user(auth.uid()))
-  WITH CHECK (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())))
+  WITH CHECK (public.is_admin_user((select auth.uid())));
 
 CREATE TRIGGER trg_audioaulas_cursos_updated
   BEFORE UPDATE ON public.audioaulas_cursos

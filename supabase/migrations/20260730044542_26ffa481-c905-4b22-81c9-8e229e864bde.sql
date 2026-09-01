@@ -5,4 +5,4 @@ CREATE POLICY "admin reads device tokens"
   ON public.device_tokens
   FOR SELECT
   TO authenticated
-  USING ((auth.jwt() ->> 'email') = 'wn7corporation@gmail.com');
+  USING (((select auth.jwt()) ->> 'email') = 'wn7corporation@gmail.com');

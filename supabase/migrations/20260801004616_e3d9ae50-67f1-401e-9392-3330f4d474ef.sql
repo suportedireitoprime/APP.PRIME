@@ -121,7 +121,7 @@ GRANT ALL ON public.videoaulas_progresso TO service_role;
 ALTER TABLE public.videoaulas_progresso ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Usuário gerencia próprio progresso de videoaula"
   ON public.videoaulas_progresso FOR ALL TO authenticated
-  USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 CREATE INDEX idx_va_prog_user ON public.videoaulas_progresso (user_id, updated_at DESC);
 
 CREATE TABLE public.videoaulas_favoritos (
@@ -141,7 +141,7 @@ GRANT ALL ON public.videoaulas_favoritos TO service_role;
 ALTER TABLE public.videoaulas_favoritos ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Usuário gerencia próprios favoritos de videoaula"
   ON public.videoaulas_favoritos FOR ALL TO authenticated
-  USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 CREATE INDEX idx_va_fav_user ON public.videoaulas_favoritos (user_id, created_at DESC);
 
 -- ============ TRIGGERS updated_at ============

@@ -21,17 +21,17 @@ ALTER TABLE public.trial_reminders ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "user reads own trial reminders"
   ON public.trial_reminders FOR SELECT
   TO authenticated
-  USING (user_id = auth.uid());
+  USING (user_id = (select auth.uid()));
 
 CREATE POLICY "user inserts own trial reminders"
   ON public.trial_reminders FOR INSERT
   TO authenticated
-  WITH CHECK (user_id = auth.uid());
+  WITH CHECK (user_id = (select auth.uid()));
 
 CREATE POLICY "user updates own trial reminders"
   ON public.trial_reminders FOR UPDATE
   TO authenticated
-  USING (user_id = auth.uid());
+  USING (user_id = (select auth.uid()));
 
 CREATE INDEX IF NOT EXISTS trial_reminders_due_idx
   ON public.trial_reminders (reminder_at)

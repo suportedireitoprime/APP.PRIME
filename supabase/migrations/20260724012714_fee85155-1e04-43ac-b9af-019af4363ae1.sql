@@ -12,7 +12,7 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 DECLARE
-  v_uid uuid := auth.uid();
+  v_uid uuid := (select auth.uid());
 BEGIN
   IF v_uid IS NULL THEN
     RETURN;

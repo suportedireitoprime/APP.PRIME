@@ -30,4 +30,4 @@ ALTER TABLE public.desktop_sessions ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "own_desktop_sessions_select"
   ON public.desktop_sessions FOR SELECT
   TO authenticated
-  USING (user_id = auth.uid());
+  USING (user_id = (select auth.uid()));

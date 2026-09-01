@@ -24,8 +24,8 @@ alter table public.horus_funcoes enable row level security;
 create policy "Admins gerenciam funcoes do Horus"
 on public.horus_funcoes for all
 to authenticated
-using (public.is_admin_user(auth.uid()))
-with check (public.is_admin_user(auth.uid()));
+using (public.is_admin_user((select auth.uid())))
+with check (public.is_admin_user((select auth.uid())));
 
 create trigger trg_horus_funcoes_updated_at
 before update on public.horus_funcoes
@@ -56,8 +56,8 @@ alter table public.horus_campaigns enable row level security;
 create policy "Admins gerenciam campanhas do Horus"
 on public.horus_campaigns for all
 to authenticated
-using (public.is_admin_user(auth.uid()))
-with check (public.is_admin_user(auth.uid()));
+using (public.is_admin_user((select auth.uid())))
+with check (public.is_admin_user((select auth.uid())));
 
 create trigger trg_horus_campaigns_updated_at
 before update on public.horus_campaigns
@@ -85,8 +85,8 @@ alter table public.horus_campaign_targets enable row level security;
 create policy "Admins gerenciam destinatarios de campanhas"
 on public.horus_campaign_targets for all
 to authenticated
-using (public.is_admin_user(auth.uid()))
-with check (public.is_admin_user(auth.uid()));
+using (public.is_admin_user((select auth.uid())))
+with check (public.is_admin_user((select auth.uid())));
 
 -- 5. Enriquecer outbound log
 alter table public.horus_outbound_log add column if not exists campaign_id uuid references public.horus_campaigns(id) on delete set null;

@@ -23,13 +23,13 @@ GRANT ALL ON public.article_time_reminders TO service_role;
 ALTER TABLE public.article_time_reminders ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "own reminders read" ON public.article_time_reminders
-  FOR SELECT TO authenticated USING (auth.uid() = user_id);
+  FOR SELECT TO authenticated USING ((select auth.uid()) = user_id);
 CREATE POLICY "own reminders insert" ON public.article_time_reminders
-  FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+  FOR INSERT TO authenticated WITH CHECK ((select auth.uid()) = user_id);
 CREATE POLICY "own reminders update" ON public.article_time_reminders
-  FOR UPDATE TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  FOR UPDATE TO authenticated USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 CREATE POLICY "own reminders delete" ON public.article_time_reminders
-  FOR DELETE TO authenticated USING (auth.uid() = user_id);
+  FOR DELETE TO authenticated USING ((select auth.uid()) = user_id);
 
 CREATE INDEX article_time_reminders_user_artigo_idx
   ON public.article_time_reminders (user_id, artigo_ref);

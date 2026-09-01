@@ -7,8 +7,8 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
   SELECT lower(coalesce(
-    (auth.jwt() ->> 'email'),
-    (SELECT email FROM auth.users WHERE id = auth.uid())
+    ((select auth.jwt()) ->> 'email'),
+    (SELECT email FROM auth.users WHERE id = (select auth.uid()))
   )) = ANY (ARRAY[
     'wn7corporation@gmail.com',
     'suporte.vacatio@gmail.com',

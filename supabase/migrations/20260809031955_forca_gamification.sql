@@ -19,18 +19,18 @@ ALTER TABLE public.forca_progresso ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view their own progress" 
     ON public.forca_progresso 
     FOR SELECT 
-    USING (auth.uid() = user_id);
+    USING ((select auth.uid()) = user_id);
 
 CREATE POLICY "Users can insert their own progress" 
     ON public.forca_progresso 
     FOR INSERT 
-    WITH CHECK (auth.uid() = user_id);
+    WITH CHECK ((select auth.uid()) = user_id);
 
 CREATE POLICY "Users can update their own progress" 
     ON public.forca_progresso 
     FOR UPDATE 
-    USING (auth.uid() = user_id) 
-    WITH CHECK (auth.uid() = user_id);
+    USING ((select auth.uid()) = user_id) 
+    WITH CHECK ((select auth.uid()) = user_id);
 
 -- Create a secure RPC function to safely increment XP and update stats atomically
 CREATE OR REPLACE FUNCTION public.increment_forca_stats(

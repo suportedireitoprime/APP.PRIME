@@ -29,13 +29,13 @@ GRANT ALL ON public.reading_reminders TO service_role;
 ALTER TABLE public.reading_reminders ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "own reminders select" ON public.reading_reminders
-  FOR SELECT TO authenticated USING (auth.uid() = user_id);
+  FOR SELECT TO authenticated USING ((select auth.uid()) = user_id);
 CREATE POLICY "own reminders insert" ON public.reading_reminders
-  FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+  FOR INSERT TO authenticated WITH CHECK ((select auth.uid()) = user_id);
 CREATE POLICY "own reminders update" ON public.reading_reminders
-  FOR UPDATE TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  FOR UPDATE TO authenticated USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 CREATE POLICY "own reminders delete" ON public.reading_reminders
-  FOR DELETE TO authenticated USING (auth.uid() = user_id);
+  FOR DELETE TO authenticated USING ((select auth.uid()) = user_id);
 
 CREATE INDEX IF NOT EXISTS reading_reminders_user_idx ON public.reading_reminders(user_id);
 CREATE INDEX IF NOT EXISTS reading_reminders_next_idx ON public.reading_reminders(enabled, next_fire_at);
@@ -67,13 +67,13 @@ GRANT ALL ON public.push_subscriptions TO service_role;
 ALTER TABLE public.push_subscriptions ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "own push subs select" ON public.push_subscriptions
-  FOR SELECT TO authenticated USING (auth.uid() = user_id);
+  FOR SELECT TO authenticated USING ((select auth.uid()) = user_id);
 CREATE POLICY "own push subs insert" ON public.push_subscriptions
-  FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+  FOR INSERT TO authenticated WITH CHECK ((select auth.uid()) = user_id);
 CREATE POLICY "own push subs update" ON public.push_subscriptions
-  FOR UPDATE TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  FOR UPDATE TO authenticated USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 CREATE POLICY "own push subs delete" ON public.push_subscriptions
-  FOR DELETE TO authenticated USING (auth.uid() = user_id);
+  FOR DELETE TO authenticated USING ((select auth.uid()) = user_id);
 
 CREATE INDEX IF NOT EXISTS push_subscriptions_user_idx ON public.push_subscriptions(user_id, enabled);
 

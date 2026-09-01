@@ -28,7 +28,7 @@ ALTER TABLE public.radar_leis_runs ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "admin le radar_leis_runs" ON public.radar_leis_runs;
 CREATE POLICY "admin le radar_leis_runs" ON public.radar_leis_runs
   FOR SELECT TO authenticated
-  USING (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())));
 
 -- 3) Reagenda cron do Radar de Leis (10h e 20h America/Sao_Paulo -> 13/23 UTC)
 DO $$

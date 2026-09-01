@@ -63,7 +63,7 @@ create or replace function public.questoes_filtrar(
   select q.*
   from public.questoes q
   left join public.questoes_respostas r
-    on r.questao_id = q.id and r.user_id = auth.uid()
+    on r.questao_id = q.id and r.user_id = (select auth.uid())
   where q.ativo is true
     and (_segmentos is null or array_length(_segmentos,1) is null or public.questoes_segmento(q.cargo, q.nivel) = any(_segmentos))
     and (_disciplinas is null or array_length(_disciplinas,1) is null or q.disciplina = any(_disciplinas))

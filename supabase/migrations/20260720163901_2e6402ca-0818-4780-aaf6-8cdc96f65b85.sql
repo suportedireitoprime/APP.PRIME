@@ -25,7 +25,7 @@ CREATE POLICY "Admins can read events" ON public.app_events
   USING (
     EXISTS (
       SELECT 1 FROM auth.users u
-      WHERE u.id = auth.uid()
+      WHERE u.id = (select auth.uid())
         AND lower(u.email) IN ('wn7corporation@gmail.com','suporte.vacatio@gmail.com')
     )
   );

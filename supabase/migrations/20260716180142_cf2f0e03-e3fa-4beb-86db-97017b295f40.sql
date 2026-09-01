@@ -30,7 +30,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON public.videoaula_reacoes TO authenticate
 GRANT ALL ON public.videoaula_reacoes TO service_role;
 ALTER TABLE public.videoaula_reacoes ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "read all reacoes" ON public.videoaula_reacoes FOR SELECT TO authenticated USING (true);
-CREATE POLICY "manage own reacoes" ON public.videoaula_reacoes FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "manage own reacoes" ON public.videoaula_reacoes FOR ALL TO authenticated USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 
 CREATE TABLE IF NOT EXISTS public.videoaula_comentarios (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -46,9 +46,9 @@ GRANT INSERT, UPDATE, DELETE ON public.videoaula_comentarios TO authenticated;
 GRANT ALL ON public.videoaula_comentarios TO service_role;
 ALTER TABLE public.videoaula_comentarios ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "public read comentarios" ON public.videoaula_comentarios FOR SELECT TO anon, authenticated USING (true);
-CREATE POLICY "auth insert comentarios" ON public.videoaula_comentarios FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "own delete comentarios" ON public.videoaula_comentarios FOR DELETE TO authenticated USING (auth.uid() = user_id);
-CREATE POLICY "own update comentarios" ON public.videoaula_comentarios FOR UPDATE TO authenticated USING (auth.uid() = user_id);
+CREATE POLICY "auth insert comentarios" ON public.videoaula_comentarios FOR INSERT TO authenticated WITH CHECK ((select auth.uid()) = user_id);
+CREATE POLICY "own delete comentarios" ON public.videoaula_comentarios FOR DELETE TO authenticated USING ((select auth.uid()) = user_id);
+CREATE POLICY "own update comentarios" ON public.videoaula_comentarios FOR UPDATE TO authenticated USING ((select auth.uid()) = user_id);
 
 CREATE OR REPLACE FUNCTION public.set_videoaula_reacao(_video_id text, _tipo text)
 RETURNS jsonb
@@ -57,7 +57,7 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 DECLARE
-  uid uuid := auth.uid();
+  uid uuid := (select auth.uid());
   existing text;
   novo_tipo text;
   likes int;

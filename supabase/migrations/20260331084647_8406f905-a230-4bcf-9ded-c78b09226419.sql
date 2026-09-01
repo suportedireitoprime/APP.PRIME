@@ -88,20 +88,20 @@ DROP POLICY IF EXISTS "Anyone can update anotacoes" ON anotacoes_artigo;
 -- Public read for suggested annotations, user-specific for personal ones
 CREATE POLICY "read_own_or_suggested_anotacoes" ON anotacoes_artigo
   FOR SELECT TO anon, authenticated
-  USING (sugerida = true OR user_id = auth.uid());
+  USING (sugerida = true OR user_id = (select auth.uid()));
 
 CREATE POLICY "insert_own_anotacoes" ON anotacoes_artigo
   FOR INSERT TO authenticated
-  WITH CHECK (user_id = auth.uid());
+  WITH CHECK (user_id = (select auth.uid()));
 
 CREATE POLICY "update_own_anotacoes" ON anotacoes_artigo
   FOR UPDATE TO authenticated
-  USING (user_id = auth.uid())
-  WITH CHECK (user_id = auth.uid());
+  USING (user_id = (select auth.uid()))
+  WITH CHECK (user_id = (select auth.uid()));
 
 CREATE POLICY "delete_own_anotacoes" ON anotacoes_artigo
   FOR DELETE TO authenticated
-  USING (user_id = auth.uid());
+  USING (user_id = (select auth.uid()));
 
 -- Also secure remaining law tables
 DROP POLICY IF EXISTS "Deleção CAGUA" ON "CAGUA_CODIGO_AGUAS";

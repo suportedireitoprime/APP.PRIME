@@ -21,7 +21,7 @@ ALTER TABLE public.admin_alertas ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Admins podem ver alertas" ON public.admin_alertas;
 CREATE POLICY "Admins podem ver alertas" ON public.admin_alertas
   FOR SELECT TO authenticated
-  USING (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())));
 
 DROP TRIGGER IF EXISTS trg_admin_alertas_updated_at ON public.admin_alertas;
 CREATE TRIGGER trg_admin_alertas_updated_at

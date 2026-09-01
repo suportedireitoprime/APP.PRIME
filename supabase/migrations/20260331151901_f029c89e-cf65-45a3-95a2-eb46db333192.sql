@@ -21,13 +21,13 @@ CREATE POLICY "authenticated_read_simulados" ON public.simulados
   FOR SELECT TO authenticated USING (true);
 
 CREATE POLICY "owner_insert_simulados" ON public.simulados
-  FOR INSERT TO authenticated WITH CHECK (user_id = auth.uid());
+  FOR INSERT TO authenticated WITH CHECK (user_id = (select auth.uid()));
 
 CREATE POLICY "owner_delete_simulados" ON public.simulados
-  FOR DELETE TO authenticated USING (user_id = auth.uid());
+  FOR DELETE TO authenticated USING (user_id = (select auth.uid()));
 
 CREATE POLICY "owner_update_simulados" ON public.simulados
-  FOR UPDATE TO authenticated USING (user_id = auth.uid());
+  FOR UPDATE TO authenticated USING (user_id = (select auth.uid()));
 
 CREATE POLICY "service_all_simulados" ON public.simulados
   FOR ALL TO service_role USING (true) WITH CHECK (true);

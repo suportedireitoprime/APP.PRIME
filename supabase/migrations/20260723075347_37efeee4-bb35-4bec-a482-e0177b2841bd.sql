@@ -29,8 +29,8 @@ CREATE POLICY "Users manage own peticoes"
   ON public.peticoes_iniciais
   FOR ALL
   TO authenticated
-  USING (auth.uid() = user_id)
-  WITH CHECK (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id)
+  WITH CHECK ((select auth.uid()) = user_id);
 
 CREATE INDEX peticoes_iniciais_user_updated_idx
   ON public.peticoes_iniciais (user_id, updated_at DESC);

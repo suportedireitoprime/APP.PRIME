@@ -34,8 +34,8 @@ CREATE POLICY "Locais são públicos para leitura"
 
 CREATE POLICY "Admins gerenciam locais"
   ON public.locais_juridicos FOR ALL
-  USING (public.is_admin_user(auth.uid()))
-  WITH CHECK (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())))
+  WITH CHECK (public.is_admin_user((select auth.uid())));
 
 CREATE INDEX IF NOT EXISTS locais_categoria_uf_idx
   ON public.locais_juridicos (categoria, uf);
@@ -75,8 +75,8 @@ CREATE POLICY "Seed público leitura"
 
 CREATE POLICY "Admins gerenciam seed"
   ON public.locais_categorias_seed FOR ALL
-  USING (public.is_admin_user(auth.uid()))
-  WITH CHECK (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())))
+  WITH CHECK (public.is_admin_user((select auth.uid())));
 
 CREATE TRIGGER locais_categorias_seed_updated_at
   BEFORE UPDATE ON public.locais_categorias_seed

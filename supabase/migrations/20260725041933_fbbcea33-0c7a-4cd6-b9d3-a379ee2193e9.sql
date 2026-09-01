@@ -23,16 +23,16 @@ ALTER TABLE public.artigos_anotacoes ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users select own annotations"
   ON public.artigos_anotacoes FOR SELECT TO authenticated
-  USING (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id);
 CREATE POLICY "Users insert own annotations"
   ON public.artigos_anotacoes FOR INSERT TO authenticated
-  WITH CHECK (auth.uid() = user_id);
+  WITH CHECK ((select auth.uid()) = user_id);
 CREATE POLICY "Users update own annotations"
   ON public.artigos_anotacoes FOR UPDATE TO authenticated
-  USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 CREATE POLICY "Users delete own annotations"
   ON public.artigos_anotacoes FOR DELETE TO authenticated
-  USING (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id);
 
 -- ============ artigos_grifos ============
 CREATE TABLE public.artigos_grifos (
@@ -54,16 +54,16 @@ ALTER TABLE public.artigos_grifos ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users select own highlights"
   ON public.artigos_grifos FOR SELECT TO authenticated
-  USING (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id);
 CREATE POLICY "Users insert own highlights"
   ON public.artigos_grifos FOR INSERT TO authenticated
-  WITH CHECK (auth.uid() = user_id);
+  WITH CHECK ((select auth.uid()) = user_id);
 CREATE POLICY "Users update own highlights"
   ON public.artigos_grifos FOR UPDATE TO authenticated
-  USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 CREATE POLICY "Users delete own highlights"
   ON public.artigos_grifos FOR DELETE TO authenticated
-  USING (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id);
 
 -- ============ updated_at trigger ============
 CREATE OR REPLACE FUNCTION public.update_updated_at_column()

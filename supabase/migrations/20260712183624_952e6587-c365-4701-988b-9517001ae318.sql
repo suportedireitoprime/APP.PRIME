@@ -32,8 +32,8 @@ ALTER TABLE public.push_campaigns ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "admin manages push campaigns" ON public.push_campaigns;
 CREATE POLICY "admin manages push campaigns" ON public.push_campaigns
   FOR ALL TO authenticated
-  USING ((auth.jwt() ->> 'email') = 'wn7corporation@gmail.com')
-  WITH CHECK ((auth.jwt() ->> 'email') = 'wn7corporation@gmail.com');
+  USING (((select auth.jwt()) ->> 'email') = 'wn7corporation@gmail.com')
+  WITH CHECK (((select auth.jwt()) ->> 'email') = 'wn7corporation@gmail.com');
 
 DROP TRIGGER IF EXISTS push_campaigns_updated_at ON public.push_campaigns;
 CREATE TRIGGER push_campaigns_updated_at
@@ -60,7 +60,7 @@ ALTER TABLE public.push_events ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "admin reads push events" ON public.push_events;
 CREATE POLICY "admin reads push events" ON public.push_events
   FOR SELECT TO authenticated
-  USING ((auth.jwt() ->> 'email') = 'wn7corporation@gmail.com');
+  USING (((select auth.jwt()) ->> 'email') = 'wn7corporation@gmail.com');
 
 -- 4) device_tokens index
 CREATE INDEX IF NOT EXISTS device_tokens_platform_user ON public.device_tokens (platform, user_id);

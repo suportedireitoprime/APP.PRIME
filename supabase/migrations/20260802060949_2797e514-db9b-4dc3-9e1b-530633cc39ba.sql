@@ -17,8 +17,8 @@ CREATE POLICY "Usuário gerencia suas maratonas"
 ON public.tematica_maratonas
 FOR ALL
 TO authenticated
-USING (auth.uid() = user_id)
-WITH CHECK (auth.uid() = user_id);
+USING ((select auth.uid()) = user_id)
+WITH CHECK ((select auth.uid()) = user_id);
 
 CREATE INDEX tematica_maratonas_user_idx ON public.tematica_maratonas (user_id, updated_at DESC);
 

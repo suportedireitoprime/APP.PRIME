@@ -19,7 +19,7 @@ ALTER TABLE public.questoes_cadernos ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "cadernos_owner_all" ON public.questoes_cadernos
   FOR ALL TO authenticated
-  USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 
 CREATE INDEX idx_questoes_cadernos_user ON public.questoes_cadernos(user_id, created_at DESC);
 
@@ -70,7 +70,7 @@ ALTER TABLE public.questoes_desafios_progresso ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "desafios_prog_owner_all" ON public.questoes_desafios_progresso
   FOR ALL TO authenticated
-  USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 
 -- triggers updated_at
 CREATE OR REPLACE FUNCTION public.questoes_touch_updated_at()
@@ -93,7 +93,7 @@ RETURNS TABLE(
 )
 LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path = public AS $$
 DECLARE
-  _uid UUID := auth.uid();
+  _uid UUID := (select auth.uid());
   _hoje INTEGER;
 BEGIN
   SELECT COUNT(*)::int INTO _hoje

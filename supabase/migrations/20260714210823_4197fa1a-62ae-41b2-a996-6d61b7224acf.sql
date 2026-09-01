@@ -18,7 +18,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON public.agenda_eventos TO authenticated;
 GRANT ALL ON public.agenda_eventos TO service_role;
 ALTER TABLE public.agenda_eventos ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "own agenda_eventos" ON public.agenda_eventos FOR ALL TO authenticated
-  USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 CREATE TRIGGER trg_agenda_eventos_updated BEFORE UPDATE ON public.agenda_eventos
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
@@ -40,7 +40,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON public.kanban_cards TO authenticated;
 GRANT ALL ON public.kanban_cards TO service_role;
 ALTER TABLE public.kanban_cards ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "own kanban_cards" ON public.kanban_cards FOR ALL TO authenticated
-  USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 CREATE TRIGGER trg_kanban_cards_updated BEFORE UPDATE ON public.kanban_cards
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
@@ -62,6 +62,6 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON public.avisos TO authenticated;
 GRANT ALL ON public.avisos TO service_role;
 ALTER TABLE public.avisos ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "own avisos" ON public.avisos FOR ALL TO authenticated
-  USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 CREATE TRIGGER trg_avisos_updated BEFORE UPDATE ON public.avisos
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();

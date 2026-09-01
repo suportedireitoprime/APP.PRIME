@@ -13,7 +13,7 @@ GRANT ALL ON public.device_tokens TO service_role;
 ALTER TABLE public.device_tokens ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "users_manage_own_tokens" ON public.device_tokens
-  FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  FOR ALL USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 
 CREATE INDEX device_tokens_user_id_idx ON public.device_tokens(user_id);
 

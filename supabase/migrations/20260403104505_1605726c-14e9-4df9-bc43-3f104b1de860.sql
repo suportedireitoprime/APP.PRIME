@@ -18,19 +18,19 @@ ALTER TABLE public.newsletter_subscriptions ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users can view own subscription"
   ON public.newsletter_subscriptions FOR SELECT
-  USING (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id);
 
 CREATE POLICY "Users can create own subscription"
   ON public.newsletter_subscriptions FOR INSERT
-  WITH CHECK (auth.uid() = user_id);
+  WITH CHECK ((select auth.uid()) = user_id);
 
 CREATE POLICY "Users can update own subscription"
   ON public.newsletter_subscriptions FOR UPDATE
-  USING (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id);
 
 CREATE POLICY "Users can delete own subscription"
   ON public.newsletter_subscriptions FOR DELETE
-  USING (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id);
 
 -- Service role policy for the edge function
 CREATE POLICY "Service role full access"

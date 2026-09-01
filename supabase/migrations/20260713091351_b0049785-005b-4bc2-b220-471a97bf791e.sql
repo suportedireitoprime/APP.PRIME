@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS public.biblioteca_favoritos (
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.biblioteca_favoritos TO authenticated;
 GRANT ALL ON public.biblioteca_favoritos TO service_role;
 ALTER TABLE public.biblioteca_favoritos ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Own favs" ON public.biblioteca_favoritos FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Own favs" ON public.biblioteca_favoritos FOR ALL USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 
 -- biblioteca_livros
 CREATE TABLE IF NOT EXISTS public.biblioteca_livros (

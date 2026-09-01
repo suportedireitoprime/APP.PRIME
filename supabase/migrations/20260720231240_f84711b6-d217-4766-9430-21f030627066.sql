@@ -26,7 +26,7 @@ CREATE POLICY "Qualquer um pode registrar métrica"
 CREATE POLICY "Usuário vê seus próprios eventos"
   ON public.tematica_metricas FOR SELECT
   TO authenticated
-  USING (user_id = auth.uid());
+  USING (user_id = (select auth.uid()));
 
 -- RPC: engajamento agregado por obra (últimos N dias)
 CREATE OR REPLACE FUNCTION public.tematica_ranking_engajamento(periodo_dias INT DEFAULT 7)

@@ -13,11 +13,11 @@ GRANT ALL ON public.user_last_location TO service_role;
 ALTER TABLE public.user_last_location ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "own_last_location_select" ON public.user_last_location
-  FOR SELECT TO authenticated USING (auth.uid() = user_id);
+  FOR SELECT TO authenticated USING ((select auth.uid()) = user_id);
 CREATE POLICY "own_last_location_insert" ON public.user_last_location
-  FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+  FOR INSERT TO authenticated WITH CHECK ((select auth.uid()) = user_id);
 CREATE POLICY "own_last_location_update" ON public.user_last_location
-  FOR UPDATE TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  FOR UPDATE TO authenticated USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 
 CREATE INDEX IF NOT EXISTS idx_user_last_location_updated ON public.user_last_location (updated_at DESC);
 
@@ -37,7 +37,7 @@ GRANT ALL ON public.location_reminder_events TO service_role;
 ALTER TABLE public.location_reminder_events ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "own_location_events_select" ON public.location_reminder_events
-  FOR SELECT TO authenticated USING (auth.uid() = user_id);
+  FOR SELECT TO authenticated USING ((select auth.uid()) = user_id);
 
 CREATE INDEX IF NOT EXISTS idx_location_reminder_events_user ON public.location_reminder_events (user_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_location_reminders_active ON public.location_reminders (active) WHERE active;

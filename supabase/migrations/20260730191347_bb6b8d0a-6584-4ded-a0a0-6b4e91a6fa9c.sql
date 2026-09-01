@@ -14,7 +14,7 @@ ALTER TABLE public.app_transfer_profiles ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Owners manage their transfer profiles"
 ON public.app_transfer_profiles FOR ALL TO authenticated
-USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 
 CREATE TRIGGER update_app_transfer_profiles_updated_at
 BEFORE UPDATE ON public.app_transfer_profiles

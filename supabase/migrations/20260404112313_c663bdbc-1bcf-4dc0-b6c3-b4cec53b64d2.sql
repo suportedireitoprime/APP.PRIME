@@ -12,12 +12,12 @@ ALTER TABLE public.biblioteca_favoritos ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users can view own favorites"
   ON public.biblioteca_favoritos FOR SELECT
-  USING (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id);
 
 CREATE POLICY "Users can insert own favorites"
   ON public.biblioteca_favoritos FOR INSERT
-  WITH CHECK (auth.uid() = user_id);
+  WITH CHECK ((select auth.uid()) = user_id);
 
 CREATE POLICY "Users can delete own favorites"
   ON public.biblioteca_favoritos FOR DELETE
-  USING (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id);

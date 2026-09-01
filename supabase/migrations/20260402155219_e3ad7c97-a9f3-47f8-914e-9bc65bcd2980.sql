@@ -14,10 +14,10 @@ CREATE POLICY "Users can insert their own support messages"
 ON public.mensagens_suporte
 FOR INSERT
 TO authenticated
-WITH CHECK (auth.uid() = user_id);
+WITH CHECK ((select auth.uid()) = user_id);
 
 CREATE POLICY "Users can view their own support messages"
 ON public.mensagens_suporte
 FOR SELECT
 TO authenticated
-USING (auth.uid() = user_id);
+USING ((select auth.uid()) = user_id);

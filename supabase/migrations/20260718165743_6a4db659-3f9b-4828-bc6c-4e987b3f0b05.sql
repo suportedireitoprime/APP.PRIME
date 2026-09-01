@@ -28,8 +28,8 @@ GRANT SELECT, INSERT, DELETE ON public.blog_post_likes TO authenticated;
 GRANT ALL ON public.blog_post_likes TO service_role;
 ALTER TABLE public.blog_post_likes ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "likes_select_any" ON public.blog_post_likes FOR SELECT USING (true);
-CREATE POLICY "likes_insert_own" ON public.blog_post_likes FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "likes_delete_own" ON public.blog_post_likes FOR DELETE TO authenticated USING (auth.uid() = user_id);
+CREATE POLICY "likes_insert_own" ON public.blog_post_likes FOR INSERT TO authenticated WITH CHECK ((select auth.uid()) = user_id);
+CREATE POLICY "likes_delete_own" ON public.blog_post_likes FOR DELETE TO authenticated USING ((select auth.uid()) = user_id);
 
 -- RPC de ranking (views + 3*likes) na janela _dias
 CREATE OR REPLACE FUNCTION public.blog_posts_trending(_limit int DEFAULT 50, _dias int DEFAULT 14)

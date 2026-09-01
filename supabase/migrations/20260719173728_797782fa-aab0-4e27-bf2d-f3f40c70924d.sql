@@ -26,7 +26,7 @@ GRANT ALL ON public.vade_mecum_portal_snapshots TO service_role;
 ALTER TABLE public.vade_mecum_portal_snapshots ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "admin_read_snapshots" ON public.vade_mecum_portal_snapshots
-  FOR SELECT TO authenticated USING (public.is_admin_user(auth.uid()));
+  FOR SELECT TO authenticated USING (public.is_admin_user((select auth.uid())));
 
 CREATE INDEX IF NOT EXISTS idx_portal_snapshots_uf_data
   ON public.vade_mecum_portal_snapshots(uf, verificado_at DESC);
@@ -55,7 +55,7 @@ GRANT ALL ON public.vade_mecum_bulk_runs TO service_role;
 ALTER TABLE public.vade_mecum_bulk_runs ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "admin_read_bulk_runs" ON public.vade_mecum_bulk_runs
-  FOR SELECT TO authenticated USING (public.is_admin_user(auth.uid()));
+  FOR SELECT TO authenticated USING (public.is_admin_user((select auth.uid())));
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_bulk_runs_uf_active
   ON public.vade_mecum_bulk_runs(uf) WHERE status IN ('running','paused');

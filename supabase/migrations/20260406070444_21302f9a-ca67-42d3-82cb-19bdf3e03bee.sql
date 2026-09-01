@@ -15,15 +15,15 @@ ALTER TABLE public.assinaturas ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users can view own subscriptions"
   ON public.assinaturas FOR SELECT
-  USING (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id);
 
 CREATE POLICY "Users can create own subscriptions"
   ON public.assinaturas FOR INSERT
-  WITH CHECK (auth.uid() = user_id);
+  WITH CHECK ((select auth.uid()) = user_id);
 
 CREATE POLICY "Users can update own subscriptions"
   ON public.assinaturas FOR UPDATE
-  USING (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id);
 
 CREATE TRIGGER update_assinaturas_updated_at
   BEFORE UPDATE ON public.assinaturas

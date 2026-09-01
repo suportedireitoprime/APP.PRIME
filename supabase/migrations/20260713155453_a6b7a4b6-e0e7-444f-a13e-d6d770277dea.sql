@@ -16,7 +16,7 @@ GRANT ALL ON public.user_reminders TO service_role;
 ALTER TABLE public.user_reminders ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users manage own reminders" ON public.user_reminders
-  FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  FOR ALL USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 
 CREATE TRIGGER update_user_reminders_updated_at
   BEFORE UPDATE ON public.user_reminders

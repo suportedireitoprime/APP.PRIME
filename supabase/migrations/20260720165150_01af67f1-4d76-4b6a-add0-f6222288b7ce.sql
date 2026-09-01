@@ -21,12 +21,12 @@ ALTER TABLE public.user_sessions ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users insert their own sessions"
   ON public.user_sessions FOR INSERT TO authenticated
-  WITH CHECK (auth.uid() = user_id);
+  WITH CHECK ((select auth.uid()) = user_id);
 
 CREATE POLICY "Users read their own sessions"
   ON public.user_sessions FOR SELECT TO authenticated
-  USING (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id);
 
 CREATE POLICY "Admins read all sessions"
   ON public.user_sessions FOR SELECT TO authenticated
-  USING (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())));

@@ -19,7 +19,7 @@ ALTER TABLE public.horus_phone_transfers ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Admins podem ler transferências"
   ON public.horus_phone_transfers FOR SELECT
   TO authenticated
-  USING (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())));
 
 -- Função de transferência atômica
 CREATE OR REPLACE FUNCTION public.horus_transferir_numero(_new_user_id uuid, _phone text)

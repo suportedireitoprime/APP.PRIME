@@ -13,7 +13,7 @@ CREATE POLICY "Users can view replies to their messages" ON public.mensagens_sup
     FOR SELECT USING (
         EXISTS (
             SELECT 1 FROM public.mensagens_suporte ms 
-            WHERE ms.id = mensagens_suporte_respostas.mensagem_id AND ms.user_id = auth.uid()
+            WHERE ms.id = mensagens_suporte_respostas.mensagem_id AND ms.user_id = (select auth.uid())
         )
     );
 
@@ -23,7 +23,7 @@ CREATE POLICY "Users can insert replies to their messages" ON public.mensagens_s
         sender_type = 'user' AND 
         EXISTS (
             SELECT 1 FROM public.mensagens_suporte ms 
-            WHERE ms.id = mensagens_suporte_respostas.mensagem_id AND ms.user_id = auth.uid()
+            WHERE ms.id = mensagens_suporte_respostas.mensagem_id AND ms.user_id = (select auth.uid())
         )
     );
 
@@ -31,6 +31,6 @@ CREATE POLICY "Users can insert replies to their messages" ON public.mensagens_s
 CREATE POLICY "Admins have full access to respostas" ON public.mensagens_suporte_respostas
     FOR ALL USING (
         EXISTS (
-            SELECT 1 FROM public.perfis WHERE id = auth.uid() AND role = 'admin'
+            SELECT 1 FROM public.perfis WHERE id = (select auth.uid()) AND role = 'admin'
         )
     );

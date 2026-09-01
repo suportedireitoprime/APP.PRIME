@@ -14,14 +14,14 @@ GRANT SELECT ON public.reminder_dispatch_log TO authenticated;
 GRANT ALL ON public.reminder_dispatch_log TO service_role;
 ALTER TABLE public.reminder_dispatch_log ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Admins leem log" ON public.reminder_dispatch_log FOR SELECT TO authenticated
-USING (public.is_admin_user(auth.uid()));
+USING (public.is_admin_user((select auth.uid())));
 
 CREATE INDEX idx_rdl_created ON public.reminder_dispatch_log(created_at DESC);
 CREATE INDEX idx_rdl_canal ON public.reminder_dispatch_log(canal);
 
 CREATE OR REPLACE FUNCTION public.admin_lembretes_biblioteca_stats(_dias int DEFAULT 7)
 RETURNS jsonb LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
-  WITH _guard AS (SELECT public.is_admin_user(auth.uid()) AS ok),
+  WITH _guard AS (SELECT public.is_admin_user((select auth.uid())) AS ok),
   base AS (
     SELECT * FROM public.reading_reminders
     WHERE (SELECT ok FROM _guard)
@@ -79,7 +79,7 @@ LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
     COUNT(*)::bigint AS total,
     COUNT(DISTINCT r.user_id)::bigint AS usuarios
   FROM public.reading_reminders r
-  WHERE public.is_admin_user(auth.uid())
+  WHERE public.is_admin_user((select auth.uid()))
     AND r.livro_id IS NOT NULL
   GROUP BY r.livro_id
   ORDER BY total DESC
@@ -98,7 +98,7 @@ LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
   FROM public.reading_reminders r
   LEFT JOIN public.profiles p ON p.id = r.user_id
   LEFT JOIN auth.users u ON u.id = r.user_id
-  WHERE public.is_admin_user(auth.uid())
+  WHERE public.is_admin_user((select auth.uid()))
   GROUP BY r.user_id, p.display_name, u.email
   ORDER BY total DESC
   LIMIT greatest(_limit, 1);
@@ -120,7 +120,7 @@ LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
   FROM public.reminder_dispatch_log d
   LEFT JOIN public.profiles p ON p.id = d.user_id
   LEFT JOIN auth.users u ON u.id = d.user_id
-  WHERE public.is_admin_user(auth.uid())
+  WHERE public.is_admin_user((select auth.uid()))
   ORDER BY d.created_at DESC
   LIMIT greatest(_limit, 1);
 $$;

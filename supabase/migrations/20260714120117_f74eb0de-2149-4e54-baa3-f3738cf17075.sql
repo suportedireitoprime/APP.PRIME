@@ -42,7 +42,7 @@ CREATE POLICY "Usuários leem apenas suas próprias assinaturas"
   ON public.play_subscriptions
   FOR SELECT
   TO authenticated
-  USING (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id);
 
 -- (sem policy de INSERT/UPDATE/DELETE: só service_role pode escrever)
 

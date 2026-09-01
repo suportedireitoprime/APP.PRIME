@@ -26,13 +26,13 @@ ALTER TABLE public.horus_phone_takeover_notices ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "takeover_notices_select_own"
   ON public.horus_phone_takeover_notices
   FOR SELECT TO authenticated
-  USING (user_id = auth.uid());
+  USING (user_id = (select auth.uid()));
 
 CREATE POLICY "takeover_notices_ack_own"
   ON public.horus_phone_takeover_notices
   FOR UPDATE TO authenticated
-  USING (user_id = auth.uid())
-  WITH CHECK (user_id = auth.uid());
+  USING (user_id = (select auth.uid()))
+  WITH CHECK (user_id = (select auth.uid()));
 
 -- Realtime
 ALTER TABLE public.horus_phone_takeover_notices REPLICA IDENTITY FULL;

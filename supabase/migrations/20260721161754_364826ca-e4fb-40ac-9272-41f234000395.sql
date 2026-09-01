@@ -33,11 +33,11 @@ ALTER TABLE public.user_reminder_preferences ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "own prefs read" ON public.user_reminder_preferences;
 CREATE POLICY "own prefs read" ON public.user_reminder_preferences
-  FOR SELECT TO authenticated USING (auth.uid() = user_id);
+  FOR SELECT TO authenticated USING ((select auth.uid()) = user_id);
 
 DROP POLICY IF EXISTS "own prefs write" ON public.user_reminder_preferences;
 CREATE POLICY "own prefs write" ON public.user_reminder_preferences
-  FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  FOR ALL TO authenticated USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 
 CREATE TRIGGER trg_user_reminder_prefs_updated
   BEFORE UPDATE ON public.user_reminder_preferences

@@ -30,12 +30,12 @@ CREATE POLICY "self can insert own journey" ON public.push_open_journey
 DROP POLICY IF EXISTS "self reads own journey" ON public.push_open_journey;
 CREATE POLICY "self reads own journey" ON public.push_open_journey
   FOR SELECT TO authenticated
-  USING (user_id = auth.uid());
+  USING (user_id = (select auth.uid()));
 
 DROP POLICY IF EXISTS "admin reads all journey" ON public.push_open_journey;
 CREATE POLICY "admin reads all journey" ON public.push_open_journey
   FOR SELECT TO authenticated
-  USING (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())));
 
 -- RPC admin para listar aberturas de hoje com nome e email juntos
 CREATE OR REPLACE FUNCTION public.admin_list_opens_today()
@@ -72,7 +72,7 @@ AS $$
   WHERE e.event_type = 'opened'
     AND e.created_at >= date_trunc('day', now() AT TIME ZONE 'America/Sao_Paulo')
       AT TIME ZONE 'America/Sao_Paulo'
-    AND public.is_admin_user(auth.uid())
+    AND public.is_admin_user((select auth.uid()))
   ORDER BY e.created_at DESC;
 $$;
 
@@ -99,7 +99,7 @@ AS $$
   SELECT j.step, j.route, j.title, j.at
   FROM public.push_open_journey j
   WHERE j.campaign_id = _campaign_id
-    AND public.is_admin_user(auth.uid())
+    AND public.is_admin_user((select auth.uid()))
     AND (
       (_user_id IS NOT NULL AND j.user_id = _user_id)
       OR (_user_id IS NULL AND _install_id IS NOT NULL AND j.install_id = _install_id)

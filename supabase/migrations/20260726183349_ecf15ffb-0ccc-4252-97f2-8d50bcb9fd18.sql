@@ -7,7 +7,7 @@ AS $function$
 DECLARE
   ids uuid[];
 BEGIN
-  IF NOT public.is_admin_user(auth.uid()) THEN
+  IF NOT public.is_admin_user((select auth.uid())) THEN
     RETURN;
   END IF;
 

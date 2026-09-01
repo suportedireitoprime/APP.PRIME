@@ -22,7 +22,7 @@ GRANT SELECT ON public.apple_subscriptions TO authenticated;
 GRANT ALL ON public.apple_subscriptions TO service_role;
 ALTER TABLE public.apple_subscriptions ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Usuarios leem suas apple subs" ON public.apple_subscriptions;
-CREATE POLICY "Usuarios leem suas apple subs" ON public.apple_subscriptions FOR SELECT TO authenticated USING (auth.uid() = user_id);
+CREATE POLICY "Usuarios leem suas apple subs" ON public.apple_subscriptions FOR SELECT TO authenticated USING ((select auth.uid()) = user_id);
 CREATE INDEX IF NOT EXISTS idx_apple_subscriptions_user_id ON public.apple_subscriptions(user_id);
 CREATE INDEX IF NOT EXISTS idx_apple_subscriptions_status ON public.apple_subscriptions(status);
 CREATE INDEX IF NOT EXISTS idx_apple_subscriptions_expires_at ON public.apple_subscriptions(expires_at);

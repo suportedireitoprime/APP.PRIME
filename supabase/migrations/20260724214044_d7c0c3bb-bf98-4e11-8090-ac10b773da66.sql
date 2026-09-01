@@ -37,16 +37,16 @@ grant all on public.praticar_progresso_artigo to service_role;
 alter table public.praticar_progresso_artigo enable row level security;
 create policy "usuario le seu progresso praticar"
   on public.praticar_progresso_artigo
-  for select using (auth.uid() = user_id);
+  for select using ((select auth.uid()) = user_id);
 create policy "usuario insere seu progresso praticar"
   on public.praticar_progresso_artigo
-  for insert with check (auth.uid() = user_id);
+  for insert with check ((select auth.uid()) = user_id);
 create policy "usuario atualiza seu progresso praticar"
   on public.praticar_progresso_artigo
-  for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
+  for update using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
 create policy "usuario apaga seu progresso praticar"
   on public.praticar_progresso_artigo
-  for delete using (auth.uid() = user_id);
+  for delete using ((select auth.uid()) = user_id);
 create trigger trg_praticar_progresso_artigo_updated_at
   before update on public.praticar_progresso_artigo
   for each row execute function public.update_updated_at_column();

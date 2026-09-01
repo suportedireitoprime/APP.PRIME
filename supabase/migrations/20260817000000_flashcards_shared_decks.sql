@@ -15,8 +15,8 @@ CREATE POLICY "Shared decks are viewable by everyone" ON public.shared_decks
 
 -- Authenticated users can insert their own decks
 CREATE POLICY "Users can share their decks" ON public.shared_decks
-    FOR INSERT WITH CHECK (auth.uid() = user_id);
+    FOR INSERT WITH CHECK ((select auth.uid()) = user_id);
 
 -- Only owners can delete their shared decks
 CREATE POLICY "Users can delete their shared decks" ON public.shared_decks
-    FOR DELETE USING (auth.uid() = user_id);
+    FOR DELETE USING ((select auth.uid()) = user_id);

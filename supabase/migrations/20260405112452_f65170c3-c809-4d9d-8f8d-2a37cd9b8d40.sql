@@ -19,9 +19,9 @@ CREATE POLICY "Anyone authenticated can read activity" ON user_activity_log
 
 CREATE POLICY "Users can upsert own activity" ON user_activity_log
   FOR INSERT TO authenticated
-  WITH CHECK (auth.uid() = user_id);
+  WITH CHECK ((select auth.uid()) = user_id);
 
 CREATE POLICY "Users can update own activity" ON user_activity_log
   FOR UPDATE TO authenticated
-  USING (auth.uid() = user_id)
-  WITH CHECK (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id)
+  WITH CHECK ((select auth.uid()) = user_id);

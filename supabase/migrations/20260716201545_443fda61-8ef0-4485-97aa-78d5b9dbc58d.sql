@@ -23,23 +23,23 @@ ALTER TABLE public.home_curiosidades ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "curiosidades leitura publica ativa"
   ON public.home_curiosidades FOR SELECT
   TO anon, authenticated
-  USING (ativo = true OR public.is_admin_user(auth.uid()));
+  USING (ativo = true OR public.is_admin_user((select auth.uid())));
 
 CREATE POLICY "curiosidades admin insert"
   ON public.home_curiosidades FOR INSERT
   TO authenticated
-  WITH CHECK (public.is_admin_user(auth.uid()));
+  WITH CHECK (public.is_admin_user((select auth.uid())));
 
 CREATE POLICY "curiosidades admin update"
   ON public.home_curiosidades FOR UPDATE
   TO authenticated
-  USING (public.is_admin_user(auth.uid()))
-  WITH CHECK (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())))
+  WITH CHECK (public.is_admin_user((select auth.uid())));
 
 CREATE POLICY "curiosidades admin delete"
   ON public.home_curiosidades FOR DELETE
   TO authenticated
-  USING (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())));
 
 CREATE INDEX home_curiosidades_ativo_ordem_idx
   ON public.home_curiosidades (ativo, ordem);
@@ -52,5 +52,5 @@ CREATE TRIGGER update_home_curiosidades_updated_at
 CREATE POLICY "curiosidades bucket admin all"
   ON storage.objects FOR ALL
   TO authenticated
-  USING (bucket_id = 'home-curiosidades' AND public.is_admin_user(auth.uid()))
-  WITH CHECK (bucket_id = 'home-curiosidades' AND public.is_admin_user(auth.uid()));
+  USING (bucket_id = 'home-curiosidades' AND public.is_admin_user((select auth.uid())))
+  WITH CHECK (bucket_id = 'home-curiosidades' AND public.is_admin_user((select auth.uid())));

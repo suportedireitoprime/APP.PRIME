@@ -11,7 +11,7 @@ AS $$
   FROM auth.users u
   LEFT JOIN public.profiles p ON p.id = u.id
   WHERE u.id = ANY(_user_ids)
-    AND public.is_admin_user(auth.uid());
+    AND public.is_admin_user((select auth.uid()));
 $$;
 
 GRANT EXECUTE ON FUNCTION public.admin_ai_usage_actors(uuid[]) TO authenticated;

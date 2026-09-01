@@ -14,4 +14,4 @@ CREATE POLICY "Admins podem ler cache GCP"
 ON public.gcp_monitor_cache
 FOR SELECT
 TO authenticated
-USING (public.is_admin_user(auth.uid()));
+USING (public.is_admin_user((select auth.uid())));

@@ -21,8 +21,8 @@ ALTER TABLE public.user_sync_items ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users manage their own sync items"
 ON public.user_sync_items FOR ALL
 TO authenticated
-USING (auth.uid() = user_id)
-WITH CHECK (auth.uid() = user_id);
+USING ((select auth.uid()) = user_id)
+WITH CHECK ((select auth.uid()) = user_id);
 
 CREATE OR REPLACE FUNCTION public.update_updated_at_column()
 RETURNS TRIGGER AS $$

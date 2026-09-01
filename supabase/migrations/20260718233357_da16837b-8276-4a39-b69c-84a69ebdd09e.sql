@@ -17,8 +17,8 @@ GRANT ALL ON public.concorrentes TO service_role;
 ALTER TABLE public.concorrentes ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "admins gerenciam concorrentes"
   ON public.concorrentes FOR ALL
-  USING (public.is_admin_user(auth.uid()))
-  WITH CHECK (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())))
+  WITH CHECK (public.is_admin_user((select auth.uid())));
 CREATE TRIGGER trg_concorrentes_updated_at
   BEFORE UPDATE ON public.concorrentes
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
@@ -44,8 +44,8 @@ GRANT ALL ON public.concorrente_reviews TO service_role;
 ALTER TABLE public.concorrente_reviews ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "admins gerenciam concorrente_reviews"
   ON public.concorrente_reviews FOR ALL
-  USING (public.is_admin_user(auth.uid()))
-  WITH CHECK (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())))
+  WITH CHECK (public.is_admin_user((select auth.uid())));
 
 CREATE TABLE public.concorrente_analises (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -61,5 +61,5 @@ GRANT ALL ON public.concorrente_analises TO service_role;
 ALTER TABLE public.concorrente_analises ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "admins gerenciam concorrente_analises"
   ON public.concorrente_analises FOR ALL
-  USING (public.is_admin_user(auth.uid()))
-  WITH CHECK (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())))
+  WITH CHECK (public.is_admin_user((select auth.uid())));

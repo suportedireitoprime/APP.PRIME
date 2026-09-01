@@ -12,16 +12,16 @@ ALTER TABLE public.forca_artigos_progresso ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Usuários podem ver seu próprio progresso de artigos"
 ON public.forca_artigos_progresso FOR SELECT
-USING (auth.uid() = user_id);
+USING ((select auth.uid()) = user_id);
 
 CREATE POLICY "Usuários podem inserir seu próprio progresso de artigos"
 ON public.forca_artigos_progresso FOR INSERT
-WITH CHECK (auth.uid() = user_id);
+WITH CHECK ((select auth.uid()) = user_id);
 
 CREATE POLICY "Usuários podem atualizar seu próprio progresso de artigos"
 ON public.forca_artigos_progresso FOR UPDATE
-USING (auth.uid() = user_id)
-WITH CHECK (auth.uid() = user_id);
+USING ((select auth.uid()) = user_id)
+WITH CHECK ((select auth.uid()) = user_id);
 
 -- Função para atualizar estrelas (mantém a maior estrela)
 CREATE OR REPLACE FUNCTION upsert_forca_article_stars(

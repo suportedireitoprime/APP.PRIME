@@ -16,7 +16,7 @@ GRANT SELECT ON public.dicionario_juridico TO anon, authenticated;
 GRANT ALL ON public.dicionario_juridico TO service_role;
 ALTER TABLE public.dicionario_juridico ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Dicionário: leitura pública" ON public.dicionario_juridico FOR SELECT USING (true);
-CREATE POLICY "Dicionário: admin gerencia" ON public.dicionario_juridico FOR ALL USING (public.is_admin_user(auth.uid())) WITH CHECK (public.is_admin_user(auth.uid()));
+CREATE POLICY "Dicionário: admin gerencia" ON public.dicionario_juridico FOR ALL USING (public.is_admin_user((select auth.uid()))) WITH CHECK (public.is_admin_user((select auth.uid())));
 CREATE TRIGGER trg_dicionario_updated_at BEFORE UPDATE ON public.dicionario_juridico FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 -- ============================================================
@@ -44,7 +44,7 @@ GRANT SELECT ON public.informativos_stf TO anon, authenticated;
 GRANT ALL ON public.informativos_stf TO service_role;
 ALTER TABLE public.informativos_stf ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Informativos STF: leitura pública" ON public.informativos_stf FOR SELECT USING (true);
-CREATE POLICY "Informativos STF: admin gerencia" ON public.informativos_stf FOR ALL USING (public.is_admin_user(auth.uid())) WITH CHECK (public.is_admin_user(auth.uid()));
+CREATE POLICY "Informativos STF: admin gerencia" ON public.informativos_stf FOR ALL USING (public.is_admin_user((select auth.uid()))) WITH CHECK (public.is_admin_user((select auth.uid())));
 CREATE TRIGGER trg_inf_stf_updated_at BEFORE UPDATE ON public.informativos_stf FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 -- ============================================================
@@ -72,7 +72,7 @@ GRANT SELECT ON public.informativos_stj TO anon, authenticated;
 GRANT ALL ON public.informativos_stj TO service_role;
 ALTER TABLE public.informativos_stj ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Informativos STJ: leitura pública" ON public.informativos_stj FOR SELECT USING (true);
-CREATE POLICY "Informativos STJ: admin gerencia" ON public.informativos_stj FOR ALL USING (public.is_admin_user(auth.uid())) WITH CHECK (public.is_admin_user(auth.uid()));
+CREATE POLICY "Informativos STJ: admin gerencia" ON public.informativos_stj FOR ALL USING (public.is_admin_user((select auth.uid()))) WITH CHECK (public.is_admin_user((select auth.uid())));
 CREATE TRIGGER trg_inf_stj_updated_at BEFORE UPDATE ON public.informativos_stj FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 -- ============================================================
@@ -97,7 +97,7 @@ GRANT SELECT ON public.jurisprudencia_prontas TO anon, authenticated;
 GRANT ALL ON public.jurisprudencia_prontas TO service_role;
 ALTER TABLE public.jurisprudencia_prontas ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Juris prontas: leitura pública" ON public.jurisprudencia_prontas FOR SELECT USING (true);
-CREATE POLICY "Juris prontas: admin gerencia" ON public.jurisprudencia_prontas FOR ALL USING (public.is_admin_user(auth.uid())) WITH CHECK (public.is_admin_user(auth.uid()));
+CREATE POLICY "Juris prontas: admin gerencia" ON public.jurisprudencia_prontas FOR ALL USING (public.is_admin_user((select auth.uid()))) WITH CHECK (public.is_admin_user((select auth.uid())));
 CREATE TRIGGER trg_jp_updated_at BEFORE UPDATE ON public.jurisprudencia_prontas FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 -- ============================================================
@@ -128,7 +128,7 @@ GRANT SELECT ON public.jurisprudencia_prontas_resultados TO anon, authenticated;
 GRANT ALL ON public.jurisprudencia_prontas_resultados TO service_role;
 ALTER TABLE public.jurisprudencia_prontas_resultados ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Juris resultados: leitura pública" ON public.jurisprudencia_prontas_resultados FOR SELECT USING (true);
-CREATE POLICY "Juris resultados: admin gerencia" ON public.jurisprudencia_prontas_resultados FOR ALL USING (public.is_admin_user(auth.uid())) WITH CHECK (public.is_admin_user(auth.uid()));
+CREATE POLICY "Juris resultados: admin gerencia" ON public.jurisprudencia_prontas_resultados FOR ALL USING (public.is_admin_user((select auth.uid()))) WITH CHECK (public.is_admin_user((select auth.uid())));
 
 -- ============================================================
 -- 6) TESES - EDIÇÕES
@@ -149,7 +149,7 @@ GRANT SELECT ON public.jurisprudencia_teses_edicoes TO anon, authenticated;
 GRANT ALL ON public.jurisprudencia_teses_edicoes TO service_role;
 ALTER TABLE public.jurisprudencia_teses_edicoes ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Teses edições: leitura pública" ON public.jurisprudencia_teses_edicoes FOR SELECT USING (true);
-CREATE POLICY "Teses edições: admin gerencia" ON public.jurisprudencia_teses_edicoes FOR ALL USING (public.is_admin_user(auth.uid())) WITH CHECK (public.is_admin_user(auth.uid()));
+CREATE POLICY "Teses edições: admin gerencia" ON public.jurisprudencia_teses_edicoes FOR ALL USING (public.is_admin_user((select auth.uid()))) WITH CHECK (public.is_admin_user((select auth.uid())));
 CREATE TRIGGER trg_teses_ed_updated_at BEFORE UPDATE ON public.jurisprudencia_teses_edicoes FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 -- ============================================================
@@ -171,7 +171,7 @@ GRANT SELECT ON public.jurisprudencia_teses_itens TO anon, authenticated;
 GRANT ALL ON public.jurisprudencia_teses_itens TO service_role;
 ALTER TABLE public.jurisprudencia_teses_itens ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Teses itens: leitura pública" ON public.jurisprudencia_teses_itens FOR SELECT USING (true);
-CREATE POLICY "Teses itens: admin gerencia" ON public.jurisprudencia_teses_itens FOR ALL USING (public.is_admin_user(auth.uid())) WITH CHECK (public.is_admin_user(auth.uid()));
+CREATE POLICY "Teses itens: admin gerencia" ON public.jurisprudencia_teses_itens FOR ALL USING (public.is_admin_user((select auth.uid()))) WITH CHECK (public.is_admin_user((select auth.uid())));
 CREATE TRIGGER trg_teses_it_updated_at BEFORE UPDATE ON public.jurisprudencia_teses_itens FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 -- ============================================================
@@ -193,7 +193,7 @@ GRANT SELECT ON public.sumulas_stf TO anon, authenticated;
 GRANT ALL ON public.sumulas_stf TO service_role;
 ALTER TABLE public.sumulas_stf ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Súmulas STF: leitura pública" ON public.sumulas_stf FOR SELECT USING (true);
-CREATE POLICY "Súmulas STF: admin gerencia" ON public.sumulas_stf FOR ALL USING (public.is_admin_user(auth.uid())) WITH CHECK (public.is_admin_user(auth.uid()));
+CREATE POLICY "Súmulas STF: admin gerencia" ON public.sumulas_stf FOR ALL USING (public.is_admin_user((select auth.uid()))) WITH CHECK (public.is_admin_user((select auth.uid())));
 CREATE TRIGGER trg_sum_stf_updated_at BEFORE UPDATE ON public.sumulas_stf FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 -- ============================================================
@@ -213,7 +213,7 @@ GRANT SELECT ON public.sumulas_stj TO anon, authenticated;
 GRANT ALL ON public.sumulas_stj TO service_role;
 ALTER TABLE public.sumulas_stj ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Súmulas STJ: leitura pública" ON public.sumulas_stj FOR SELECT USING (true);
-CREATE POLICY "Súmulas STJ: admin gerencia" ON public.sumulas_stj FOR ALL USING (public.is_admin_user(auth.uid())) WITH CHECK (public.is_admin_user(auth.uid()));
+CREATE POLICY "Súmulas STJ: admin gerencia" ON public.sumulas_stj FOR ALL USING (public.is_admin_user((select auth.uid()))) WITH CHECK (public.is_admin_user((select auth.uid())));
 CREATE TRIGGER trg_sum_stj_updated_at BEFORE UPDATE ON public.sumulas_stj FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 -- ============================================================
@@ -233,7 +233,7 @@ GRANT SELECT ON public.sumulas_vinculantes TO anon, authenticated;
 GRANT ALL ON public.sumulas_vinculantes TO service_role;
 ALTER TABLE public.sumulas_vinculantes ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Súmulas Vinculantes: leitura pública" ON public.sumulas_vinculantes FOR SELECT USING (true);
-CREATE POLICY "Súmulas Vinculantes: admin gerencia" ON public.sumulas_vinculantes FOR ALL USING (public.is_admin_user(auth.uid())) WITH CHECK (public.is_admin_user(auth.uid()));
+CREATE POLICY "Súmulas Vinculantes: admin gerencia" ON public.sumulas_vinculantes FOR ALL USING (public.is_admin_user((select auth.uid()))) WITH CHECK (public.is_admin_user((select auth.uid())));
 CREATE TRIGGER trg_sum_vinc_updated_at BEFORE UPDATE ON public.sumulas_vinculantes FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 -- ============================================================
@@ -250,4 +250,4 @@ CREATE INDEX idx_sum_fav_user ON public.sumulas_favoritos(user_id);
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.sumulas_favoritos TO authenticated;
 GRANT ALL ON public.sumulas_favoritos TO service_role;
 ALTER TABLE public.sumulas_favoritos ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Súmulas favoritos: dono gerencia" ON public.sumulas_favoritos FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Súmulas favoritos: dono gerencia" ON public.sumulas_favoritos FOR ALL USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);

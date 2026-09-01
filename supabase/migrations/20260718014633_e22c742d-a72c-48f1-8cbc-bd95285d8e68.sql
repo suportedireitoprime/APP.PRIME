@@ -12,8 +12,8 @@ GRANT SELECT ON public.boletim_likes TO anon;
 GRANT ALL ON public.boletim_likes TO service_role;
 ALTER TABLE public.boletim_likes ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Likes visíveis a todos" ON public.boletim_likes FOR SELECT USING (true);
-CREATE POLICY "Usuário curte" ON public.boletim_likes FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Usuário descurte" ON public.boletim_likes FOR DELETE TO authenticated USING (auth.uid() = user_id);
+CREATE POLICY "Usuário curte" ON public.boletim_likes FOR INSERT TO authenticated WITH CHECK ((select auth.uid()) = user_id);
+CREATE POLICY "Usuário descurte" ON public.boletim_likes FOR DELETE TO authenticated USING ((select auth.uid()) = user_id);
 
 CREATE TABLE public.boletim_comentarios (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -29,8 +29,8 @@ GRANT SELECT ON public.boletim_comentarios TO anon;
 GRANT ALL ON public.boletim_comentarios TO service_role;
 ALTER TABLE public.boletim_comentarios ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Comentários visíveis a todos" ON public.boletim_comentarios FOR SELECT USING (true);
-CREATE POLICY "Usuário comenta" ON public.boletim_comentarios FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Usuário apaga próprio comentário" ON public.boletim_comentarios FOR DELETE TO authenticated USING (auth.uid() = user_id);
+CREATE POLICY "Usuário comenta" ON public.boletim_comentarios FOR INSERT TO authenticated WITH CHECK ((select auth.uid()) = user_id);
+CREATE POLICY "Usuário apaga próprio comentário" ON public.boletim_comentarios FOR DELETE TO authenticated USING ((select auth.uid()) = user_id);
 
 CREATE INDEX idx_boletim_likes_scene ON public.boletim_likes(boletim_id, scene_index);
 CREATE INDEX idx_boletim_comentarios_scene ON public.boletim_comentarios(boletim_id, scene_index);

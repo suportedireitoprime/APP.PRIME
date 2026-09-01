@@ -16,5 +16,5 @@ GRANT ALL ON public.blog_post_comments TO service_role;
 ALTER TABLE public.blog_post_comments ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "comments_select_any" ON public.blog_post_comments FOR SELECT USING (true);
-CREATE POLICY "comments_insert_own" ON public.blog_post_comments FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "comments_delete_own" ON public.blog_post_comments FOR DELETE TO authenticated USING (auth.uid() = user_id);
+CREATE POLICY "comments_insert_own" ON public.blog_post_comments FOR INSERT TO authenticated WITH CHECK ((select auth.uid()) = user_id);
+CREATE POLICY "comments_delete_own" ON public.blog_post_comments FOR DELETE TO authenticated USING ((select auth.uid()) = user_id);

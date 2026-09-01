@@ -17,7 +17,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON public.horus_whatsapp_users TO authentic
 GRANT ALL ON public.horus_whatsapp_users TO service_role;
 ALTER TABLE public.horus_whatsapp_users ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "own row" ON public.horus_whatsapp_users FOR ALL
-  USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 CREATE TRIGGER trg_horus_users_updated BEFORE UPDATE ON public.horus_whatsapp_users
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
@@ -55,7 +55,7 @@ GRANT SELECT ON public.horus_conversations TO authenticated;
 GRANT ALL ON public.horus_conversations TO service_role;
 ALTER TABLE public.horus_conversations ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "own convos" ON public.horus_conversations FOR SELECT
-  USING (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id);
 
 -- horus_outbound_log
 CREATE TABLE public.horus_outbound_log (
@@ -75,4 +75,4 @@ GRANT SELECT ON public.horus_outbound_log TO authenticated;
 GRANT ALL ON public.horus_outbound_log TO service_role;
 ALTER TABLE public.horus_outbound_log ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "own outbound" ON public.horus_outbound_log FOR SELECT
-  USING (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id);

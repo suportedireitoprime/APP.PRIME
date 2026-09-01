@@ -20,5 +20,5 @@ ALTER TABLE public.aprender_tema_respostas ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users manage their own tema responses"
   ON public.aprender_tema_respostas
   FOR ALL
-  USING (auth.uid() = user_id)
-  WITH CHECK (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id)
+  WITH CHECK ((select auth.uid()) = user_id);

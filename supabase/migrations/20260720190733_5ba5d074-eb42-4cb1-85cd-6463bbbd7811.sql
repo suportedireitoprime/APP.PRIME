@@ -22,12 +22,12 @@ ALTER TABLE public.biblioteca_pdf_telemetry ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "own insert pdf telemetry"
   ON public.biblioteca_pdf_telemetry FOR INSERT
   TO authenticated
-  WITH CHECK (auth.uid() = user_id OR user_id IS NULL);
+  WITH CHECK ((select auth.uid()) = user_id OR user_id IS NULL);
 
 CREATE POLICY "own select pdf telemetry"
   ON public.biblioteca_pdf_telemetry FOR SELECT
   TO authenticated
-  USING (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id);
 
 CREATE INDEX idx_pdf_telemetry_url ON public.biblioteca_pdf_telemetry(url);
 CREATE INDEX idx_pdf_telemetry_event ON public.biblioteca_pdf_telemetry(event);

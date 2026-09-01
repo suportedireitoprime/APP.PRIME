@@ -60,10 +60,10 @@ CREATE TABLE public.lei_seca_progresso (
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.lei_seca_progresso TO authenticated;
 GRANT ALL ON public.lei_seca_progresso TO service_role;
 ALTER TABLE public.lei_seca_progresso ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "lei_seca_progresso_select_own" ON public.lei_seca_progresso FOR SELECT TO authenticated USING (auth.uid() = user_id);
-CREATE POLICY "lei_seca_progresso_insert_own" ON public.lei_seca_progresso FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "lei_seca_progresso_update_own" ON public.lei_seca_progresso FOR UPDATE TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "lei_seca_progresso_delete_own" ON public.lei_seca_progresso FOR DELETE TO authenticated USING (auth.uid() = user_id);
+CREATE POLICY "lei_seca_progresso_select_own" ON public.lei_seca_progresso FOR SELECT TO authenticated USING ((select auth.uid()) = user_id);
+CREATE POLICY "lei_seca_progresso_insert_own" ON public.lei_seca_progresso FOR INSERT TO authenticated WITH CHECK ((select auth.uid()) = user_id);
+CREATE POLICY "lei_seca_progresso_update_own" ON public.lei_seca_progresso FOR UPDATE TO authenticated USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
+CREATE POLICY "lei_seca_progresso_delete_own" ON public.lei_seca_progresso FOR DELETE TO authenticated USING ((select auth.uid()) = user_id);
 CREATE INDEX lei_seca_progresso_user_idx ON public.lei_seca_progresso (user_id, licao_id);
 
 CREATE TABLE public.lei_seca_jobs (
@@ -92,10 +92,10 @@ CREATE TABLE public.lei_seca_lembretes (
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.lei_seca_lembretes TO authenticated;
 GRANT ALL ON public.lei_seca_lembretes TO service_role;
 ALTER TABLE public.lei_seca_lembretes ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "lei_seca_lembretes_select_own" ON public.lei_seca_lembretes FOR SELECT TO authenticated USING (auth.uid() = user_id);
-CREATE POLICY "lei_seca_lembretes_insert_own" ON public.lei_seca_lembretes FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "lei_seca_lembretes_update_own" ON public.lei_seca_lembretes FOR UPDATE TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "lei_seca_lembretes_delete_own" ON public.lei_seca_lembretes FOR DELETE TO authenticated USING (auth.uid() = user_id);
+CREATE POLICY "lei_seca_lembretes_select_own" ON public.lei_seca_lembretes FOR SELECT TO authenticated USING ((select auth.uid()) = user_id);
+CREATE POLICY "lei_seca_lembretes_insert_own" ON public.lei_seca_lembretes FOR INSERT TO authenticated WITH CHECK ((select auth.uid()) = user_id);
+CREATE POLICY "lei_seca_lembretes_update_own" ON public.lei_seca_lembretes FOR UPDATE TO authenticated USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
+CREATE POLICY "lei_seca_lembretes_delete_own" ON public.lei_seca_lembretes FOR DELETE TO authenticated USING ((select auth.uid()) = user_id);
 
 CREATE OR REPLACE FUNCTION public.lei_seca_touch_updated()
 RETURNS trigger LANGUAGE plpgsql SET search_path = public AS $$

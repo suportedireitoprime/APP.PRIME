@@ -21,8 +21,8 @@ ALTER TABLE public.narracao_vozes_preview ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "admins gerenciam previews de voz"
   ON public.narracao_vozes_preview FOR ALL TO authenticated
-  USING (public.is_admin_user(auth.uid()))
-  WITH CHECK (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())))
+  WITH CHECK (public.is_admin_user((select auth.uid())));
 
 CREATE TABLE public.narracao_livro_paginas (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -60,8 +60,8 @@ CREATE POLICY "todos leem narracoes de livro"
 
 CREATE POLICY "admins gerenciam narracoes de livro"
   ON public.narracao_livro_paginas FOR ALL TO authenticated
-  USING (public.is_admin_user(auth.uid()))
-  WITH CHECK (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())))
+  WITH CHECK (public.is_admin_user((select auth.uid())));
 
 CREATE OR REPLACE FUNCTION public.narracao_set_updated_at()
 RETURNS trigger

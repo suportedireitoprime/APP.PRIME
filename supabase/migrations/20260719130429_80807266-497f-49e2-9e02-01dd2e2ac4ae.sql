@@ -28,4 +28,4 @@ ALTER TABLE public.ai_usage_log ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Admins can read ai usage log"
   ON public.ai_usage_log FOR SELECT
   TO authenticated
-  USING (public.is_admin_user(auth.uid()));
+  USING (public.is_admin_user((select auth.uid())));

@@ -16,11 +16,11 @@ LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
          c.artigo_numero, p.status
   FROM public.flashcards_cards c
   LEFT JOIN public.flashcards_progresso p
-    ON p.card_id = c.id AND p.user_id = auth.uid()
+    ON p.card_id = c.id AND p.user_id = (select auth.uid())
   WHERE (_deck_id IS NULL OR c.id IN (
           SELECT di.card_id FROM public.flashcards_deck_itens di
           JOIN public.flashcards_decks d ON d.id = di.deck_id
-          WHERE di.deck_id = _deck_id AND d.user_id = auth.uid()))
+          WHERE di.deck_id = _deck_id AND d.user_id = (select auth.uid())))
     AND (_areas IS NULL OR array_length(_areas,1) IS NULL OR c.area = ANY(_areas))
     AND (_temas IS NULL OR array_length(_temas,1) IS NULL OR c.tema = ANY(_temas))
     AND (
@@ -44,7 +44,7 @@ LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
          COUNT(*) FILTER (WHERE p.status = 'revisar')::bigint
   FROM public.flashcards_cards c
   LEFT JOIN public.flashcards_progresso p
-    ON p.card_id = c.id AND p.user_id = auth.uid()
+    ON p.card_id = c.id AND p.user_id = (select auth.uid())
   WHERE c.area = _area
   GROUP BY 1
   ORDER BY 2 DESC;

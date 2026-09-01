@@ -13,11 +13,11 @@ ALTER TABLE public.tematica_comentarios ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Comentários visíveis a autenticados"
   ON public.tematica_comentarios FOR SELECT TO authenticated USING (true);
 CREATE POLICY "Usuário cria seus comentários"
-  ON public.tematica_comentarios FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+  ON public.tematica_comentarios FOR INSERT TO authenticated WITH CHECK ((select auth.uid()) = user_id);
 CREATE POLICY "Usuário edita seus comentários"
-  ON public.tematica_comentarios FOR UPDATE TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  ON public.tematica_comentarios FOR UPDATE TO authenticated USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 CREATE POLICY "Usuário apaga seus comentários"
-  ON public.tematica_comentarios FOR DELETE TO authenticated USING (auth.uid() = user_id);
+  ON public.tematica_comentarios FOR DELETE TO authenticated USING ((select auth.uid()) = user_id);
 CREATE INDEX tematica_comentarios_obra_idx ON public.tematica_comentarios(obra_id, created_at DESC);
 
 CREATE TABLE public.tematica_favoritos (
@@ -31,7 +31,7 @@ GRANT ALL ON public.tematica_favoritos TO service_role;
 ALTER TABLE public.tematica_favoritos ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Usuário gerencia seus favoritos"
   ON public.tematica_favoritos FOR ALL TO authenticated
-  USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
 
 CREATE TABLE public.tematica_watchlist (
   user_id uuid NOT NULL,
@@ -44,4 +44,4 @@ GRANT ALL ON public.tematica_watchlist TO service_role;
 ALTER TABLE public.tematica_watchlist ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Usuário gerencia sua watchlist"
   ON public.tematica_watchlist FOR ALL TO authenticated
-  USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
