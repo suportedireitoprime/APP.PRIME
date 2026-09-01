@@ -726,7 +726,7 @@ const AdminAssinantes = () => {
               </section>
             )}
 
-            }
+
 
             {/* Métricas locais */}
             <section className="space-y-2">
@@ -985,7 +985,7 @@ const AdminAssinantes = () => {
             })}
           </div>
         </div>
-        )}
+
       </div>
 
       {/* Modal Details */}
