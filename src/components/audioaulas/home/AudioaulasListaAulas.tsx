@@ -4,6 +4,7 @@ import { BotaoDownloadAudio } from './BotaoDownloadAudio';
 import { capaDaArea } from '@/lib/audioaulasHelper';
 import { type AulaAudio, audioIdOf } from '@/contexts/AudioaulasPlayerContext';
 import { CapaOtimizada } from './CapaOtimizada';
+import { motion } from 'framer-motion';
 
 interface LinhaAulaProps {
   a: AulaAudio;
