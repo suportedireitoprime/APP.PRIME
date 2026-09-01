@@ -126,8 +126,9 @@ export function useAudioaulas(areaAtual: string | null) {
 
       const filaAtual = areaAtual ? daArea : aba === 'aulas' ? aulas : listaAba;
       await tocar(a, filaAtual);
+      setAberto(true);
     },
-    [gateDia, gateMes, areaAtual, daArea, aba, aulas, listaAba, tocar],
+    [gateDia, gateMes, areaAtual, daArea, aba, aulas, listaAba, tocar, setAberto],
   );
 
   return {

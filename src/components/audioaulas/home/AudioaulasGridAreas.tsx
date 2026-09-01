@@ -41,7 +41,9 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({ are
             show: { opacity: 1, transition: { staggerChildren: 0.05 } }
           }}
         >
-          {areas.map(([nome, total], i) => (
+          {areas.map(([nome, total], i) => {
+            const nomeFormatado = nome.replace(/^Direitos?\s+(do\s+)?/i, '').trim();
+            return (
             <motion.button
               key={nome}
               variants={{
@@ -74,19 +76,19 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({ are
                   <Headphones className="h-5 w-5" />
                 </span>
                 <div className="flex items-end justify-between gap-2">
-                  <div className="min-w-0">
-                    <p className="font-bold leading-tight text-white text-sm sm:text-base truncate">
-                      {nome}
+                  <div className="min-w-0 pr-1">
+                    <p className="font-bold leading-tight text-white text-sm sm:text-base line-clamp-2">
+                      {nomeFormatado}
                     </p>
-                    <p className="text-[11px] text-zinc-300">{total} aula(s)</p>
+                    <p className="text-[11px] text-zinc-300 mt-0.5">{total} aula(s)</p>
                   </div>
                   <span className="shrink-0 h-8 w-8 grid place-items-center rounded-full bg-white/20 text-white backdrop-blur group-hover:bg-primary group-hover:text-primary-foreground transition">
                     <ChevronRight className="h-5 w-5" />
                   </span>
                 </div>
               </div>
-            </motion.button>
-          ))}
+            );
+          })}
         </motion.div>
       </section>
     </div>
