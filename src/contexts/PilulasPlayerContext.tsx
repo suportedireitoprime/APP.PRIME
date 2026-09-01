@@ -101,13 +101,16 @@ export const PilulasPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
     if (livro?.id === l.id && (phase === 'main' || hasPlayedIntro)) {
       return;
     }
-    setLivro(l);
-    setIsPlaying(false);
-    setProgress(0);
-    setIntroDuration(0);
-    setMainDuration(0);
-    setPhase('intro');
-    setHasPlayedIntro(false);
+    
+    React.startTransition(() => {
+      setLivro(l);
+      setIsPlaying(false);
+      setProgress(0);
+      setIntroDuration(0);
+      setMainDuration(0);
+      setPhase('intro');
+      setHasPlayedIntro(false);
+    });
 
     if (audioMainRef.current) {
       audioMainRef.current.pause();
