@@ -9,7 +9,6 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import YouTube from 'react-youtube';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function SessoesSTF() {
@@ -107,17 +106,13 @@ export default function SessoesSTF() {
               {/* YouTube Player */}
               {session.youtube_video_id && (
                 <div className="w-full aspect-video bg-black relative">
-                  <YouTube 
-                    videoId={session.youtube_video_id} 
-                    opts={{ 
-                      width: '100%', 
-                      height: '100%',
-                      playerVars: {
-                        autoplay: session.status === 'live' ? 1 : 0
-                      }
-                    }} 
+                  <iframe
                     className="absolute inset-0 w-full h-full"
-                  />
+                    src={`https://www.youtube.com/embed/${session.youtube_video_id}?autoplay=${session.status === 'live' ? 1 : 0}`}
+                    title="YouTube video player"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  ></iframe>
                 </div>
               )}
 
