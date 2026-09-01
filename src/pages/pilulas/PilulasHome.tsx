@@ -23,8 +23,8 @@ export default function PilulasHome() {
     { image: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg'), text: 'CP', fullName: 'Código Penal' },
     { image: '/pilulas/cf_portrait.jpg', text: 'CF88', fullName: 'Constituição Federal' },
     { image: '/pilulas/cc_portrait.png', text: 'CC', fullName: 'Código Civil' },
-    { image: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=600&auto=format&fit=crop', text: 'CPP', fullName: 'Cód. Proc. Penal' },
-    { image: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=600&auto=format&fit=crop', text: 'CLT', fullName: 'Leis Trabalhistas' },
+    { image: '/pilulas/cpp_portrait.jpg', text: 'CPP', fullName: 'Cód. Proc. Penal' },
+    { image: '/pilulas/clt_portrait.jpg', text: 'CLT', fullName: 'Leis Trabalhistas' },
   ], []);
 
   const handleItemClick = useCallback((item: any) => {
