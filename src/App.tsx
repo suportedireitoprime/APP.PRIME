@@ -62,6 +62,7 @@ import GlobalLeisCantadasMiniPlayer from "@/components/leis-cantadas/GlobalLeisC
 import { AudioaulasPlayerProvider } from "@/contexts/AudioaulasPlayerContext";
 import GlobalAudioaulasMiniPlayer from "@/components/audioaulas/GlobalAudioaulasMiniPlayer";
 import { ResumoLivroPlayerProvider } from "./contexts/ResumoLivroPlayerContext.tsx";
+import { PilulasPlayerProvider } from "@/contexts/PilulasPlayerContext";
 import { GlobalResumoMiniPlayer } from "./components/biblioteca/GlobalResumoMiniPlayer.tsx";
 import ResumoLivroAudioSheet from "./components/biblioteca/ResumoLivroAudioSheet.tsx";
 import { VideoaulasPlayerProvider } from "@/contexts/VideoaulasPlayerContext";
@@ -1162,12 +1163,14 @@ const App = () => (
               <RecordingProvider>
                 <LeisCantadasPlayerProvider>
                   <AudioaulasPlayerProvider>
-                    <VideoaulasPlayerProvider>
-                      <ResumoLivroPlayerProvider>
-                        <AnimatedRoutes />
-                        <LazyMediaPlayers />
-                      </ResumoLivroPlayerProvider>
-                    </VideoaulasPlayerProvider>
+                    <PilulasPlayerProvider>
+                      <VideoaulasPlayerProvider>
+                        <ResumoLivroPlayerProvider>
+                          <AnimatedRoutes />
+                          <LazyMediaPlayers />
+                        </ResumoLivroPlayerProvider>
+                      </VideoaulasPlayerProvider>
+                    </PilulasPlayerProvider>
                   </AudioaulasPlayerProvider>
                 </LeisCantadasPlayerProvider>
               </RecordingProvider>

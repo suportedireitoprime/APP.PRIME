@@ -390,7 +390,7 @@ const GrafoArtigos = (props: GrafoArtigosProps) => {
         />
       )}
       {embedded && (
-        <div className="flex items-center justify-between px-5 py-4 border-b border-border/50 shrink-0">
+        <div className="flex items-center justify-between px-5 pt-[calc(var(--sai-top,env(safe-area-inset-top,0px))+1rem)] pb-4 border-b border-border/50 shrink-0">
           <div>
             <h2 className="font-display font-bold text-lg text-foreground">Grafo de Conexões</h2>
             <p className="text-xs text-muted-foreground line-clamp-1">{formatLeiNome(leiNome)} — Art. {artigoNumero}</p>
@@ -444,7 +444,7 @@ const GrafoArtigos = (props: GrafoArtigosProps) => {
             </ReactFlow>
 
             {!selectedEdgeInfo && (
-              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-card/95 backdrop-blur-md border border-border/50 rounded-full px-5 py-2 pointer-events-none shadow-lg text-center z-10">
+              <div className="absolute bottom-[calc(var(--sai-bottom,env(safe-area-inset-bottom,0px))+2rem)] left-1/2 -translate-x-1/2 bg-card/95 backdrop-blur-md border border-border/50 rounded-full px-5 py-2 pointer-events-none shadow-lg text-center z-10">
                 <p className="text-[13px] font-semibold text-primary">Toque nos nós ou setas para entender a relação</p>
               </div>
             )}
@@ -474,7 +474,7 @@ const GrafoArtigos = (props: GrafoArtigosProps) => {
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 28, stiffness: 320 }}
-              className="absolute bottom-0 left-0 right-0 z-40 bg-card rounded-t-[1.5rem] border-t border-border/50 shadow-[0_-8px_30px_rgba(0,0,0,0.4)] p-6 pointer-events-auto"
+              className="absolute bottom-0 left-0 right-0 z-40 bg-card rounded-t-[1.5rem] border-t border-border/50 shadow-[0_-8px_30px_rgba(0,0,0,0.4)] p-6 pb-[calc(var(--sai-bottom,env(safe-area-inset-bottom,0px))+1.5rem)] pointer-events-auto"
               onPointerDown={(e) => e.stopPropagation()}
             >
               <div className="w-10 h-1 rounded-full bg-muted-foreground/20 mx-auto mb-4 -mt-2" />

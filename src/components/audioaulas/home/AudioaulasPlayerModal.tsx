@@ -77,7 +77,7 @@ export const AudioaulasPlayerModal = React.memo(function AudioaulasPlayerModal({
         </div>
 
         {/* Header do Player */}
-        <div className="flex items-center justify-between px-4 pt-4 pb-2 shrink-0">
+        <div className="flex items-center justify-between px-4 pt-[calc(var(--sai-top,env(safe-area-inset-top,0px))+1rem)] pb-2 shrink-0">
           <button
             onClick={() => setAberto(false)}
             aria-label="Minimizar player"
@@ -93,7 +93,7 @@ export const AudioaulasPlayerModal = React.memo(function AudioaulasPlayerModal({
         </div>
 
         {/* Conteúdo Principal do Player */}
-        <div className="mx-auto w-full max-w-xl flex-1 min-h-0 flex flex-col justify-center px-6 pb-12">
+        <div className="mx-auto w-full max-w-xl flex-1 min-h-0 flex flex-col justify-center px-6 pb-[calc(var(--sai-bottom,env(safe-area-inset-bottom,0px))+3rem)] lg:pb-12">
           <div className="relative flex items-center justify-center my-auto">
             <span className="h-52 w-52 sm:h-64 sm:w-64 rounded-3xl overflow-hidden shadow-2xl shadow-black/80 border border-white/10">
               <CapaOtimizada src={capaDaArea(atual.area || '')} alt="" animacaoEntrada />

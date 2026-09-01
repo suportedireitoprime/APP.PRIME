@@ -3,6 +3,7 @@ import { lazyWithRetry } from "@/utils/lazyWithRetry";
 
 import { useVideoaulasPlayer } from '@/contexts/VideoaulasPlayerContext';
 import { useAudioaulasPlayer } from '@/contexts/AudioaulasPlayerContext';
+import { usePilulasPlayer } from '@/contexts/PilulasPlayerContext';
 import { useLeisCantadasPlayer } from '@/contexts/LeisCantadasPlayerContext';
 import { useResumoLivroPlayer } from '@/contexts/ResumoLivroPlayerContext';
 import { useRecording } from '@/contexts/RecordingContext';
@@ -10,6 +11,7 @@ import { useNarracaoFlutuante } from '@/stores/useNarracaoFlutuante';
 
 const GlobalVideoaulaMiniPlayer = lazyWithRetry(() => import("@/components/videoaulas/GlobalVideoaulaMiniPlayer"));
 const GlobalAudioaulasMiniPlayer = lazyWithRetry(() => import("@/components/audioaulas/GlobalAudioaulasMiniPlayer"));
+const GlobalPilulasMiniPlayer = lazyWithRetry(() => import("@/components/pilulas/GlobalPilulasMiniPlayer"));
 const GlobalLeisCantadasMiniPlayer = lazyWithRetry(() => import("@/components/leis-cantadas/GlobalLeisCantadasMiniPlayer"));
 const GlobalResumoMiniPlayer = lazyWithRetry(() => import("@/components/biblioteca/GlobalResumoMiniPlayer").then(m => ({ default: m.GlobalResumoMiniPlayer })));
 const ResumoLivroAudioSheet = lazyWithRetry(() => import("@/components/biblioteca/ResumoLivroAudioSheet"));
@@ -26,6 +28,12 @@ const AudioaulasWrapper = () => {
   const { atualId } = useAudioaulasPlayer();
   if (!atualId) return null;
   return <Suspense fallback={null}><GlobalAudioaulasMiniPlayer /></Suspense>;
+};
+
+const PilulasWrapper = () => {
+  const { livro } = usePilulasPlayer();
+  if (!livro) return null;
+  return <Suspense fallback={null}><GlobalPilulasMiniPlayer /></Suspense>;
 };
 
 const LeisCantadasWrapper = () => {
@@ -69,6 +77,7 @@ export function LazyMediaPlayers() {
       <NarracaoWrapper />
       <GravacaoWrapper />
       <LeisCantadasWrapper />
+      <PilulasWrapper />
       <AudioaulasWrapper />
       <VideoaulaWrapper />
       <ResumoWrapper />

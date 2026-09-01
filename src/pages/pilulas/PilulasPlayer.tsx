@@ -1,128 +1,119 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Play, Pause, BookOpen, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Play, Pause, BookOpen, AlertCircle, List } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { COLECOES, type LivroNormalizado, normalizeLivro } from '@/lib/bibliotecaColecoes';
 import { useResumoLivroPlayer } from '@/contexts/ResumoLivroPlayerContext';
+import { usePilulasPlayer } from '@/contexts/PilulasPlayerContext';
 import { directImg } from '@/lib/cdnImg';
 import Threads from '@/components/ui/Threads';
 import GrafoOverlay from '@/components/vademecum/GrafoOverlay';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Network } from 'lucide-react';
 import { get, set } from 'idb-keyval';
-import { clearMediaSession } from '@/lib/mediaSession';
 import { toast } from 'sonner';
 import { useGatedFeature } from '@/hooks/useGatedFeature';
-
-const INTRO_URL = 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/audios/audio-intro-2.mp3';
 
 export default function PilulasPlayer() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [livro, setLivro] = useState<LivroNormalizado | null>(null);
   const [loading, setLoading] = useState(true);
-  const autoPlayAttempted = useRef(false);
 
-  const audioIntroRef = useRef<HTMLAudioElement>(null);
-  const audioMainRef = useRef<HTMLAudioElement>(null);
-  
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
-  
-  const [introDuration, setIntroDuration] = useState(0);
-  const [mainDuration, setMainDuration] = useState(0);
-  
-  const [phase, setPhase] = useState<'intro' | 'main'>('intro');
-  const [hasPlayedIntro, setHasPlayedIntro] = useState(false);
-  
+  const { 
+    livro: globalLivro, 
+    tocar, 
+    isPlaying, 
+    togglePlay, 
+    progress, 
+    unifiedDuration, 
+    introOverlap, 
+    mainDuration, 
+    handleSeek,
+    phase 
+  } = usePilulasPlayer();
+
+  const [livroVisual, setLivroVisual] = useState<LivroNormalizado | null>(globalLivro);
+
   const [isGraphOpen, setIsGraphOpen] = useState(false);
   const [isTextOpen, setIsTextOpen] = useState(false);
 
-  const activeRef = phase === 'intro' ? audioIntroRef : audioMainRef;
-  const introOverlap = Math.max(0, introDuration - 0.5);
-  const unifiedDuration = (introDuration > 0 && mainDuration > 0) ? (introOverlap + mainDuration) : (introDuration || mainDuration || 0);
-
-  // Parar o player global se ele estiver tocando pílulas para não conflitar
+  // Parar o player global de resumo livro se ele estiver tocando
   const { fechar: fecharPlayerGlobal } = useResumoLivroPlayer();
-
   const featurePilulas = useGatedFeature('pilulas', 'pilulas', { scope: id, refKey: id });
 
   useEffect(() => {
-    // Ao abrir esta tela dedicada, paramos o mini player global de pílulas se estiver aberto
     fecharPlayerGlobal();
   }, [fecharPlayerGlobal]);
 
   useEffect(() => {
     async function fetchPilula() {
       if (!id) return;
+      
+      // Se a pílula global já for a que queremos, só atualizamos a visual e não fazemos fetch.
+      // Wait, we always want to fetch or use cache if it's the first time visiting this page directly.
       try {
         const cacheKey = `pilula_data_v2_${id}`;
         const cached = await get(cacheKey);
-        if (cached) {
-          setLivro(cached);
-          setLoading(false);
-          // Opcionalmente podemos continuar rodando em background para atualizar o cache,
-          // mas para áudios do CP, manter o offline fast-first é ideal.
-        }
-
-        const searchParams = new URLSearchParams(window.location.search);
-        const type = searchParams.get('type');
-
-        if (type === 'cp') {
-           const { data, error } = await supabase
-            .from('vade_mecum_artigos')
-            .select('id, numero, texto, audio_pilula_url, audio_transcricao, audio_grafo')
-            .eq('id', id)
-            .single();
-            
-           if (error) throw error;
-           
-           const normalizado = {
-              id: data.id,
-              titulo: `Artigo ${data.numero}`,
-              autor: 'Código Penal',
-              capa: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_square.jpg'),
-              audioResumoUrl: data.audio_pilula_url,
-              analiseDetalhada: data.texto,
-              sobre: data.texto,
-              numero: data.numero,
-              audio_grafo: data.audio_grafo,
-              transcricaoAudio: data.audio_transcricao,
-              isCP: true
-           } as any;
-           
-           if (normalizado.audioResumoUrl) {
-             await set(`pilula_data_v2_${id}`, normalizado);
-           }
-           
-           if (!cached) setLivro(normalizado);
-           if (!normalizado.audioResumoUrl && !cached) {
-              toast.error('O áudio desta pílula ainda não está disponível.');
-           }
-           return;
-        }
-
-        const classicosCol = COLECOES.find((c) => c.id === 'classicos');
-        if (!classicosCol) return;
-
-        const { data, error } = await supabase
-          .from(classicosCol.table as any)
-          .select(classicosCol.select)
-          .eq('id', id)
-          .single();
-
-        if (error) throw error;
-
-        const normalizado = normalizeLivro(data, classicosCol);
-        if (normalizado.audioResumoUrl) {
-          await set(`pilula_data_v2_${id}`, normalizado);
-        }
         
-        if (!cached) setLivro(normalizado);
+        let normalizado: LivroNormalizado | null = cached || null;
 
-        if (!normalizado.audioResumoUrl && !cached) {
-           toast.error('O áudio desta pílula ainda não está disponível.');
+        if (!normalizado) {
+          const searchParams = new URLSearchParams(window.location.search);
+          const type = searchParams.get('type');
+
+          if (type === 'cp') {
+             const { data, error } = await supabase
+              .from('vade_mecum_artigos')
+              .select('id, numero, texto, audio_pilula_url, audio_transcricao, audio_grafo')
+              .eq('id', id)
+              .single();
+              
+             if (error) throw error;
+             
+             normalizado = {
+                id: data.id,
+                titulo: `Artigo ${data.numero}`,
+                autor: 'Código Penal',
+                capa: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_square.jpg'),
+                audioResumoUrl: data.audio_pilula_url,
+                analiseDetalhada: data.texto,
+                sobre: data.texto,
+                numero: data.numero,
+                audio_grafo: data.audio_grafo,
+                transcricaoAudio: data.audio_transcricao,
+                isCP: true
+             } as any;
+          } else {
+            const classicosCol = COLECOES.find((c) => c.id === 'classicos');
+            if (classicosCol) {
+              const { data, error } = await supabase
+                .from(classicosCol.table as any)
+                .select(classicosCol.select)
+                .eq('id', id)
+                .single();
+
+              if (!error && data) {
+                normalizado = normalizeLivro(data, classicosCol);
+              }
+            }
+          }
+        }
+
+        if (normalizado) {
+          if (normalizado.audioResumoUrl) {
+            await set(cacheKey, normalizado);
+          }
+          setLivroVisual(normalizado);
+          
+          if (!normalizado.audioResumoUrl) {
+             toast.error('O áudio desta pílula ainda não está disponível.');
+          } else {
+             // Inicia a reprodução no contexto global
+             if (globalLivro?.id !== normalizado.id) {
+               tocar(normalizado);
+             }
+          }
         }
       } catch (error) {
         console.error('Erro ao buscar pílula:', error);
@@ -132,175 +123,6 @@ export default function PilulasPlayer() {
     }
     fetchPilula();
   }, [id]);
-
-  useEffect(() => {
-    // Reset state when src changes
-    setIsPlaying(false);
-    setProgress(0);
-    setIntroDuration(0);
-    setMainDuration(0);
-    setPhase('intro');
-    setHasPlayedIntro(false);
-    autoPlayAttempted.current = false;
-    
-    if (audioMainRef.current && livro?.audioResumoUrl) {
-      audioMainRef.current.pause();
-      audioMainRef.current.currentTime = 0;
-      audioMainRef.current.load();
-    }
-    if (audioIntroRef.current) {
-      audioIntroRef.current.pause();
-      audioIntroRef.current.currentTime = 0;
-      audioIntroRef.current.load();
-    }
-  }, [livro?.audioResumoUrl]);
-
-  // Auto-play effect
-  useEffect(() => {
-    if (!loading && livro?.audioResumoUrl && !autoPlayAttempted.current) {
-      autoPlayAttempted.current = true;
-      const timer = setTimeout(() => {
-        const introEl = audioIntroRef.current;
-        if (introEl && !isPlaying) {
-          introEl.play().then(() => {
-            setIsPlaying(true);
-          }).catch((err) => {
-            console.warn('Autoplay bloqueado pelo navegador:', err);
-          });
-        }
-      }, 500);
-      return () => clearTimeout(timer);
-    }
-  }, [loading, livro, isPlaying]);
-
-  const skipToMain = () => {
-    // Prevent multiple calls if already transitioning
-    if (hasPlayedIntro) return;
-    
-    setPhase('main');
-    setHasPlayedIntro(true);
-    if (audioMainRef.current) {
-      // Manually read duration since onLoadedMetadata may have already fired
-      if (audioMainRef.current.duration && !isNaN(audioMainRef.current.duration)) {
-        setMainDuration(audioMainRef.current.duration);
-      }
-      
-      audioMainRef.current.volume = 0; // Prepare for fade-in
-      audioMainRef.current.play().then(() => {
-        setIsPlaying(true);
-        // Fade in over 1 second
-        let vol = 0;
-        const fadeInterval = setInterval(() => {
-          vol += 0.05;
-          if (vol >= 1) {
-            vol = 1;
-            clearInterval(fadeInterval);
-          }
-          if (audioMainRef.current) {
-            audioMainRef.current.volume = vol;
-          }
-        }, 50);
-      }).catch(() => setIsPlaying(false));
-    }
-  };
-
-  const togglePlay = () => {
-    featurePilulas.run(() => {
-      if (isPlaying) {
-        // Pause whatever is active
-        activeRef.current?.pause();
-        setIsPlaying(false);
-      } else {
-        // First play ever? Try intro first
-        if (phase === 'intro' && !hasPlayedIntro) {
-          const introEl = audioIntroRef.current;
-          if (introEl) {
-            introEl.play().then(() => {
-               setIsPlaying(true);
-            }).catch((err) => {
-              console.warn('Intro falhou, pulando para main:', err);
-              skipToMain();
-            });
-          }
-        } else {
-          // Main phase: play main audio
-          const mainEl = audioMainRef.current;
-          if (mainEl) {
-            mainEl.play().catch(() => setIsPlaying(false));
-            setIsPlaying(true);
-          }
-        }
-      }
-    });
-  };
-
-  const handleTimeUpdate = () => {
-    const el = activeRef.current;
-    if (el) {
-      if (phase === 'intro') {
-        setProgress(el.currentTime);
-      } else {
-        setProgress(introOverlap + el.currentTime);
-      }
-      
-      // Logic for Intro phase: start main audio 0.5s before intro ends
-      if (phase === 'intro' && !hasPlayedIntro) {
-        if (el.duration > 0 && el.currentTime >= el.duration - 0.5) {
-          skipToMain();
-        }
-      }
-      
-      if (phase === 'main' && id && mainDuration > 0) {
-        localStorage.setItem(`pilula_progress_${id}`, String(el.currentTime / mainDuration));
-      }
-    }
-  };
-
-  const handleSeek = (newUnifiedTime: number) => {
-    const target = Math.max(0, Math.min(newUnifiedTime, unifiedDuration));
-    
-    if (target < introOverlap) {
-      if (phase === 'main') {
-        audioMainRef.current?.pause();
-        setPhase('intro');
-        setHasPlayedIntro(false);
-      }
-      if (audioIntroRef.current) {
-        audioIntroRef.current.currentTime = target;
-        setProgress(target);
-        if (isPlaying) audioIntroRef.current.play().catch(() => setIsPlaying(false));
-      }
-    } else {
-      if (phase === 'intro') {
-        audioIntroRef.current?.pause();
-        setPhase('main');
-        setHasPlayedIntro(true);
-      }
-      if (audioMainRef.current) {
-        audioMainRef.current.currentTime = target - introOverlap;
-        setProgress(target);
-        if (isPlaying) {
-          audioMainRef.current.volume = 1; // remove fade if scrubbing
-          audioMainRef.current.play().catch(() => setIsPlaying(false));
-        }
-      }
-    }
-  };
-
-  const handleMainLoadedMetadata = () => {
-    if (audioMainRef.current && !isNaN(audioMainRef.current.duration)) {
-      setMainDuration(audioMainRef.current.duration);
-    }
-  };
-
-  const handleIntroEnded = () => {
-    skipToMain();
-  };
-
-  const handleIntroError = () => {
-    // Intro failed to load — skip directly to main audio
-    skipToMain();
-  };
 
   const formatTime = (time: number) => {
     if (!time || isNaN(time)) return '0:00';
@@ -316,6 +138,8 @@ export default function PilulasPlayer() {
       </div>
     );
   }
+
+  const livro = livroVisual || globalLivro;
 
   if (!livro) {
     return (
@@ -333,6 +157,11 @@ export default function PilulasPlayer() {
     );
   }
 
+  // Verifica se o livro no contexto global é o mesmo desta tela para sincronizar os controles.
+  // Se for diferente (ex: usuário abriu uma pílula X, mas o player tá tocando Y), usamos isPlaying false visualmente,
+  // mas o certo é que ao entrar nesta página ele dará play na pílula X (por conta do useEffect fetchPilula).
+  const isThisPlaying = globalLivro?.id === livro.id && isPlaying;
+
   return (
     <div className="fixed inset-0 bg-[#0D0D0D] text-white overflow-hidden flex flex-col">
       {/* Background Blur */}
@@ -349,7 +178,7 @@ export default function PilulasPlayer() {
 
       {/* Threads Animation */}
       <div 
-         className={`absolute inset-0 z-0 transition-opacity duration-1000 ${isPlaying ? 'opacity-40' : 'opacity-0'}`} 
+         className={`absolute inset-0 z-0 transition-opacity duration-1000 ${isThisPlaying ? 'opacity-40' : 'opacity-0'}`} 
          style={{ pointerEvents: 'none' }}
       >
         <Threads 
@@ -364,7 +193,6 @@ export default function PilulasPlayer() {
       <div className="relative z-10 pt-[calc(1.25rem+var(--sai-top))] px-4 pb-4 shrink-0 flex items-center">
         <button
           onClick={() => {
-            clearMediaSession(audioMainRef.current);
             navigate(-1);
           }}
           className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/5 backdrop-blur-md flex items-center justify-center border border-white/10 active:scale-95 transition-transform"
@@ -441,11 +269,9 @@ export default function PilulasPlayer() {
                     <button
                       key={i}
                       onClick={() => {
-                         // As porcentagens do sumário são baseadas no áudio principal apenas (já que o backend as gerou assim).
-                         // Então transformamos a porcentagem de volta pro tempo do áudio principal e depois para o tempo unificado.
                          const targetMainTime = cap.percentage * (mainDuration || 0);
                          handleSeek(introOverlap + targetMainTime);
-                         if (!isPlaying) togglePlay();
+                         if (!isThisPlaying) togglePlay();
                       }}
                       className={`shrink-0 snap-start px-4 py-2 rounded-xl text-sm font-medium transition-colors border ${
                         isActive && phase === 'main'
@@ -460,33 +286,6 @@ export default function PilulasPlayer() {
               </div>
             </div>
           )}
-
-          {/* Audio Tag: Intro */}
-          {phase === 'intro' && (
-            <audio
-              ref={audioIntroRef}
-              src={INTRO_URL}
-              onTimeUpdate={handleTimeUpdate}
-              onLoadedMetadata={() => {
-                if (audioIntroRef.current) {
-                  setIntroDuration(audioIntroRef.current.duration);
-                }
-              }}
-              onEnded={handleIntroEnded}
-              onError={handleIntroError}
-              preload="auto"
-            />
-          )}
-
-          {/* Audio Tag: Main */}
-          <audio
-            ref={audioMainRef}
-            src={livro.audioResumoUrl || ""}
-            onTimeUpdate={handleTimeUpdate}
-            onLoadedMetadata={handleMainLoadedMetadata}
-            onEnded={() => setIsPlaying(false)}
-            preload="metadata"
-          />
 
           {/* Soundwave Animation */}
           <div className="flex items-center justify-center gap-1 h-12 mb-8">
@@ -506,13 +305,13 @@ export default function PilulasPlayer() {
               <motion.div
                 key={i}
                 className="w-1.5 bg-primary rounded-full"
-                animate={{ height: isPlaying ? wave.anim : wave.paused }}
+                animate={{ height: isThisPlaying ? wave.anim : wave.paused }}
                 transition={{
-                  duration: isPlaying ? 0.5 + (i % 3) * 0.1 : 0.3,
-                  repeat: isPlaying ? Infinity : 0,
+                  duration: isThisPlaying ? 0.5 + (i % 3) * 0.1 : 0.3,
+                  repeat: isThisPlaying ? Infinity : 0,
                   repeatType: "mirror",
                   ease: "easeInOut",
-                  delay: isPlaying ? i * 0.05 : 0,
+                  delay: isThisPlaying ? i * 0.05 : 0,
                 }}
               />
             ))}
@@ -551,11 +350,17 @@ export default function PilulasPlayer() {
             </button>
 
             <button
-              onClick={togglePlay}
+              onClick={() => {
+                if (globalLivro?.id !== livro.id) {
+                  tocar(livro);
+                } else {
+                  togglePlay();
+                }
+              }}
               disabled={!livro.audioResumoUrl}
               className={`w-20 h-20 flex items-center justify-center rounded-full bg-primary text-primary-foreground transition-transform hover:scale-105 active:scale-95 shadow-2xl shadow-primary/30 ${!livro.audioResumoUrl ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              {isPlaying ? (
+              {isThisPlaying ? (
                 <Pause className="w-10 h-10 fill-current" />
               ) : (
                 <Play className="w-10 h-10 fill-current ml-1.5" />
@@ -588,7 +393,7 @@ export default function PilulasPlayer() {
 
       {/* Sheet Lei Seca */}
       <Sheet open={isTextOpen} onOpenChange={setIsTextOpen}>
-        <SheetContent side="bottom" className="rounded-t-[32px] p-6 max-h-[85vh] overflow-y-auto bg-card border-t border-white/10">
+        <SheetContent side="bottom" className="rounded-t-[32px] p-6 max-h-[85vh] overflow-y-auto bg-card border-t border-white/10 pb-[calc(var(--sai-bottom,env(safe-area-inset-bottom,0px))+1.5rem)]">
           <div className="max-w-xl mx-auto space-y-6 pt-2 pb-6">
             <SheetHeader className="text-left space-y-1">
               <SheetTitle className="text-2xl font-bold text-foreground">
