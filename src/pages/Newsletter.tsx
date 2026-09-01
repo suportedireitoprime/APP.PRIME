@@ -8,7 +8,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
 import { toast } from 'sonner';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
-import { useGoBack } from '@/hooks/useGoBack';
+
 
 interface Preferencias {
   noticias: boolean;
@@ -30,7 +30,7 @@ const DEFAULT_PREFS: Preferencias = {
 
 const Newsletter = () => {
   const navigate = useNavigate();
-  const goBack = useGoBack();
+
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -109,7 +109,7 @@ const Newsletter = () => {
     <PageHeader
       title="Newsletter Diário"
       subtitle="Receba um resumo jurídico no seu e-mail todo dia"
-      onBack={() => goBack()}
+      onBack={() => navigate('/ferramentas')}
       leading={
         <div className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center">
           <Mail className="w-5 h-5 text-primary" />
