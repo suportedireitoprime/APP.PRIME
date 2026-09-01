@@ -14,6 +14,7 @@ const camaraHero = camaraHeroAsset;
 import senadoHeroAsset from '@/assets/radar/senado-hero.webp';
 const senadoHero = senadoHeroAsset;
 import BottomNav from '@/components/vademecum/BottomNav';
+import ShapeGrid from '@/components/ui/ShapeGrid';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
 import { leiPath, tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
 // Heavy overlays are only rendered when opened — lazy-load their chunks so
@@ -114,31 +115,44 @@ const IndexMobile = () => {
   void leiPath;
 
   return (
-    <div className="min-h-dvh bg-background pb-[calc(5rem+var(--sai-bottom))] md:pb-0 md:pl-[90px] transition-all">
-      <HomeHeaderHero onSearchOpenChange={setHeroSearchOpen} />
-      <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: 'easeOut' }}>
-        <main ref={contentRef} className="max-w-5xl lg:max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-2">
-          <img src={primeLogo} alt="" aria-hidden="true" loading="eager" decoding="sync" fetchPriority="high" className="absolute w-0 h-0 opacity-0 pointer-events-none" />
-          <FeatureDiscoveryCard />
-          <MobileHomeSections onTabChange={setHomeTab} onNewsOpenChange={setNewsOpen} />
-        </main>
-        {homeTab === 'estudos' && !personalizarOpen && !searchOpen && !heroSearchOpen && !newsOpen && !bottomNavHidden && <BottomNav />}
-      </motion.div>
-      <Suspense fallback={null}>
-        {menuOpen && (
-          <SideMenu
-            open={menuOpen}
-            onClose={handleMenuClose}
-            onNavigate={handleMenuNavigate}
-          />
-        )}
-        {searchOpen && (
-          <SearchOverlay open={searchOpen} onClose={handleSearchClose} onSelectLei={handleSearchSelectLei} />
-        )}
-        {assistenteOpen && (
-          <AssistenteOverlay open={assistenteOpen} onClose={handleAssistenteClose} />
-        )}
-      </Suspense>
+    <div className="min-h-dvh bg-zinc-950 pb-[calc(5rem+var(--sai-bottom))] md:pb-0 md:pl-[90px] transition-all relative overflow-hidden">
+      <div className="absolute inset-0 z-0 opacity-60">
+        <ShapeGrid 
+          speed={0.5} 
+          squareSize={40}
+          direction='diagonal'
+          borderColor='rgba(255, 255, 255, 0.05)'
+          hoverFillColor='rgba(255, 255, 255, 0.1)'
+          shape='square'
+          hoverTrailAmount={5}
+        />
+      </div>
+      <div className="relative z-10">
+        <HomeHeaderHero onSearchOpenChange={setHeroSearchOpen} />
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: 'easeOut' }}>
+          <main ref={contentRef} className="max-w-5xl lg:max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-2">
+            <img src={primeLogo} alt="" aria-hidden="true" loading="eager" decoding="sync" fetchPriority="high" className="absolute w-0 h-0 opacity-0 pointer-events-none" />
+            <FeatureDiscoveryCard />
+            <MobileHomeSections onTabChange={setHomeTab} onNewsOpenChange={setNewsOpen} />
+          </main>
+          {homeTab === 'estudos' && !personalizarOpen && !searchOpen && !heroSearchOpen && !newsOpen && !bottomNavHidden && <BottomNav />}
+        </motion.div>
+        <Suspense fallback={null}>
+          {menuOpen && (
+            <SideMenu
+              open={menuOpen}
+              onClose={handleMenuClose}
+              onNavigate={handleMenuNavigate}
+            />
+          )}
+          {searchOpen && (
+            <SearchOverlay open={searchOpen} onClose={handleSearchClose} onSelectLei={handleSearchSelectLei} />
+          )}
+          {assistenteOpen && (
+            <AssistenteOverlay open={assistenteOpen} onClose={handleAssistenteClose} />
+          )}
+        </Suspense>
+      </div>
     </div>
   );
 };
