@@ -129,7 +129,7 @@ export default function HorusTrialEndedDialog() {
 
               <button
                 onClick={acknowledge}
-                className="w-full h-12 rounded-full bg-zinc-800 hover:bg-zinc-700 text-white font-bold font-display active:scale-[0.98] transition-transform"
+                className="w-full h-12 rounded-full bg-red-600 hover:bg-red-700 text-white font-bold font-display active:scale-[0.98] transition-transform"
               >
                 Entendi, continuar
               </button>
