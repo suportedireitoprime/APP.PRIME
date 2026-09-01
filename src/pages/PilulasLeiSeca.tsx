@@ -243,9 +243,20 @@ export default function PilulasLeiSeca({ slug }: { slug: 'cp' | 'cf' | 'cc' }) {
       {/* Lista de Artigos */}
       <div className="px-4 py-6">
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-20 text-white/40 space-y-4">
-            <div className={`w-8 h-8 rounded-full border-2 border-white/20 border-t-current ${config.iconColor} animate-spin`} />
-            <p className="text-sm">Carregando artigos...</p>
+          <div className="grid gap-3">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="flex items-center gap-4 p-4 rounded-2xl border border-white/5 bg-white/5 animate-pulse">
+                <div className="w-16 h-24 rounded-lg bg-white/10 shrink-0"></div>
+                <div className="flex-1 space-y-3">
+                  <div className="h-4 bg-white/10 rounded w-1/3"></div>
+                  <div className="h-3 bg-white/10 rounded w-2/3"></div>
+                  <div className="pt-3 flex items-center justify-between">
+                    <div className="h-6 w-24 bg-white/10 rounded-full"></div>
+                    <div className="h-8 w-8 bg-white/10 rounded-full"></div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         ) : artigosFiltrados.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-white/40">

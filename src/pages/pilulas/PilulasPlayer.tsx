@@ -22,6 +22,7 @@ export default function PilulasPlayer() {
   const navigate = useNavigate();
   const [livro, setLivro] = useState<LivroNormalizado | null>(null);
   const [loading, setLoading] = useState(true);
+  const autoPlayAttempted = useRef(false);
 
   const audioIntroRef = useRef<HTMLAudioElement>(null);
   const audioMainRef = useRef<HTMLAudioElement>(null);
@@ -140,6 +141,7 @@ export default function PilulasPlayer() {
     setMainDuration(0);
     setPhase('intro');
     setHasPlayedIntro(false);
+    autoPlayAttempted.current = false;
     
     if (audioMainRef.current && livro?.audioResumoUrl) {
       audioMainRef.current.pause();
@@ -152,6 +154,24 @@ export default function PilulasPlayer() {
       audioIntroRef.current.load();
     }
   }, [livro?.audioResumoUrl]);
+
+  // Auto-play effect
+  useEffect(() => {
+    if (!loading && livro?.audioResumoUrl && !autoPlayAttempted.current) {
+      autoPlayAttempted.current = true;
+      const timer = setTimeout(() => {
+        const introEl = audioIntroRef.current;
+        if (introEl && !isPlaying) {
+          introEl.play().then(() => {
+            setIsPlaying(true);
+          }).catch((err) => {
+            console.warn('Autoplay bloqueado pelo navegador:', err);
+          });
+        }
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [loading, livro, isPlaying]);
 
   const skipToMain = () => {
     // Prevent multiple calls if already transitioning
