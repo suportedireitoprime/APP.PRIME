@@ -385,7 +385,7 @@ export default function Assinatura() {
                 {playLoading ? (
                   <span className="flex items-center gap-2"><Loader2 className="w-5 h-5 animate-spin" /> Processando…</span>
                 ) : (
-                  <span>Assinar agora</span>
+                  <span>Testar 3 dias grátis</span>
                 )}
               </Button>
 

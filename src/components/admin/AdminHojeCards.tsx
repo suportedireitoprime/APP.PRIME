@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { UserDossieSheet } from './UserDossieSheet';
 import { rotaParaFuncao } from '@/lib/rotaFuncoes';
 
-type CardId = 'online5m' | 'online' | 'cadastros' | 'paywall' | 'trial';
+type CardId = 'online5m' | 'online' | 'cadastros' | 'paywall' | 'viu_planos' | 'trial';
 type PeriodoId = 'hoje' | 'ontem' | '7d' | '30d';
 
 interface Row {
@@ -116,7 +116,7 @@ export function AdminHojeCards() {
       const cached = localStorage.getItem('admin_hoje_counts_cache');
       if (cached) return JSON.parse(cached);
     } catch {}
-    return { online5m: 0, online: 0, cadastros: 0, paywall: 0, trial: 0, trialValor: 0 };
+    return { online5m: 0, online: 0, cadastros: 0, paywall: 0, viu_planos: 0, trial: 0, trialValor: 0 };
   });
   const [seenCounts, setSeenCounts] = useState<Record<CardId, number>>(() => {
     const hoje = new Date();
@@ -125,6 +125,7 @@ export function AdminHojeCards() {
       online: readSeen('online', hoje).count,
       cadastros: readSeen('cadastros', hoje).count,
       paywall: readSeen('paywall', hoje).count,
+      viu_planos: readSeen('viu_planos', hoje).count,
       trial: readSeen('trial', hoje).count,
     };
   });
@@ -214,6 +215,7 @@ export function AdminHojeCards() {
     
     let totalCadastros = 0;
     let totalPaywall = 0;
+    let totalViuPlanos = 0;
     let totalTrial = 0;
     let totalTrialValor = 0;
 
@@ -223,6 +225,26 @@ export function AdminHojeCards() {
       totalPaywall += m.paywall || 0;
       totalTrial += m.trial || 0;
     });
+
+    try {
+      const minDate = datas[datas.length - 1];
+      const maxDate = new Date(datas[0]);
+      maxDate.setDate(maxDate.getDate() + 1);
+      
+      const { data: vpEvents } = await supabase
+        .from('app_events')
+        .select('user_id, id')
+        .eq('event_name', 'trial_click')
+        .gte('created_at', minDate.toISOString())
+        .lt('created_at', maxDate.toISOString());
+        
+      if (vpEvents) {
+        const uniqueVp = new Set(vpEvents.map((e: any) => e.user_id || e.id));
+        totalViuPlanos = uniqueVp.size;
+      }
+    } catch (err) {
+      console.error(err);
+    }
 
     const allTrialUsers = new Set<string>();
     trialResults.forEach(({ data }) => {
@@ -257,8 +279,9 @@ export function AdminHojeCards() {
       }
     }
 
-    // Ensure paywall is at least equal to trial, since they must have viewed plans to start a trial
-    totalPaywall = Math.max(totalPaywall, totalTrial);
+    totalViuPlanos = Math.max(totalViuPlanos, totalTrial);
+    // Ensure paywall (Tela de Assinatura) is at least equal to viu_planos
+    totalPaywall = Math.max(totalPaywall, totalViuPlanos);
 
     // online and online5m only make sense for 'hoje' conceptually, but we sum them if it's multiple days? 
     // Actually, distinct users online over 7 days is hard to calculate without a distinct query.
@@ -271,6 +294,7 @@ export function AdminHojeCards() {
       online: countOnline, 
       cadastros: totalCadastros, 
       paywall: totalPaywall,
+      viu_planos: totalViuPlanos,
       trial: totalTrial,
       trialValor: totalTrialValor
     };
@@ -281,14 +305,14 @@ export function AdminHojeCards() {
         localStorage.setItem('admin_hoje_counts_cache', JSON.stringify(novos));
       } catch {}
 
-      (['online5m', 'online', 'cadastros', 'paywall', 'trial'] as CardId[]).forEach((id) => {
+      (['online5m', 'online', 'cadastros', 'paywall', 'viu_planos', 'trial'] as CardId[]).forEach((id) => {
         if (!localStorage.getItem(seenStorageKey(id, datas[0]))) {
           writeSeen(id, datas[0], { count: novos[id], keys: [] });
           setSeenCounts((c) => ({ ...c, [id]: novos[id] }));
         }
       });
     } else {
-      setSeenCounts({ online5m: 0, online: 0, cadastros: 0, paywall: 0, trial: 0 });
+      setSeenCounts({ online5m: 0, online: 0, cadastros: 0, paywall: 0, viu_planos: 0, trial: 0 });
     }
   }, [periodo, getDatasPeriodo]);
 
@@ -313,28 +337,108 @@ export function AdminHojeCards() {
     
     try {
       const datas = getDatasPeriodo(periodo);
-      const listPromises = datas.map(d => supabase.rpc('admin_lista_dia' as any, { _tipo: id, _dia: isoDate(d) }));
-      
-      let extraPromises: Promise<any>[] = [];
-      if (id === 'paywall') {
-        extraPromises = datas.map(d => supabase.rpc('admin_lista_dia' as any, { _tipo: 'trial', _dia: isoDate(d) }));
-      }
-
-      const [results, extraResults] = await Promise.all([
-        Promise.all(listPromises),
-        Promise.all(extraPromises)
-      ]);
       
       let allLists: any[] = [];
-      results.forEach(({ data }) => {
-        allLists = allLists.concat((data as any[]) || []);
-      });
+      let listPromises: Promise<any>[] = [];
       
-      if (id === 'paywall') {
-        extraResults.forEach(({ data }) => {
-          const trials = ((data as any[]) || []).map(r => ({ ...r, subtitle: 'Abriu planos (Iniciou teste)' }));
+      if (id === 'viu_planos') {
+        const minDate = datas[datas.length - 1];
+        const maxDate = new Date(datas[0]);
+        maxDate.setDate(maxDate.getDate() + 1);
+        
+        const { data: vpEvents } = await supabase
+          .from('app_events')
+          .select(`
+            id, user_id, created_at, email,
+            profiles:user_id ( display_name, is_premium ),
+            users:user_id ( email, raw_user_meta_data )
+          `)
+          .eq('event_name', 'trial_click')
+          .gte('created_at', minDate.toISOString())
+          .lt('created_at', maxDate.toISOString())
+          .order('created_at', { ascending: false })
+          .limit(500);
+
+        if (vpEvents) {
+          allLists = vpEvents.map((e: any) => {
+            const uemail = e.users?.email || e.email || 'Visitante';
+            return {
+              key: e.id,
+              user_id: e.user_id,
+              title: e.profiles?.display_name || uemail.split('@')[0],
+              email: uemail,
+              subtitle: 'Clicou no plano',
+              at: e.created_at,
+              acessos: null,
+              avatar_url: e.users?.raw_user_meta_data?.avatar_url || e.users?.raw_user_meta_data?.picture,
+              is_premium: e.profiles?.is_premium || false,
+            };
+          });
+        }
+        
+        const trialPromises = datas.map(d => supabase.rpc('admin_lista_dia' as any, { _tipo: 'trial', _dia: isoDate(d) }));
+        const trialResults = await Promise.all(trialPromises);
+        trialResults.forEach(({ data }) => {
+          const trials = ((data as any[]) || []).map(r => ({ ...r, subtitle: 'Clicou no plano (Iniciou teste)' }));
           allLists = allLists.concat(trials);
         });
+      } else {
+        listPromises = datas.map(d => supabase.rpc('admin_lista_dia' as any, { _tipo: id, _dia: isoDate(d) }));
+        let extraPromises: Promise<any>[] = [];
+        
+        if (id === 'paywall') {
+          // "Tela de assinaturas" also implicitly includes anyone who clicked a plan (viu_planos/trial)
+          // But we will just pull the raw app_events for trial_click plus the trial list to make sure the counts reflect Math.max
+          extraPromises = datas.map(d => supabase.rpc('admin_lista_dia' as any, { _tipo: 'trial', _dia: isoDate(d) }));
+          const minDate = datas[datas.length - 1];
+          const maxDate = new Date(datas[0]);
+          maxDate.setDate(maxDate.getDate() + 1);
+          
+          const { data: vpEvents } = await supabase
+            .from('app_events')
+            .select(`
+              id, user_id, created_at, email,
+              profiles:user_id ( display_name, is_premium ),
+              users:user_id ( email, raw_user_meta_data )
+            `)
+            .eq('event_name', 'trial_click')
+            .gte('created_at', minDate.toISOString())
+            .lt('created_at', maxDate.toISOString());
+            
+          if (vpEvents) {
+            const vpMapped = vpEvents.map((e: any) => {
+              const uemail = e.users?.email || e.email || 'Visitante';
+              return {
+                key: e.id,
+                user_id: e.user_id,
+                title: e.profiles?.display_name || uemail.split('@')[0],
+                email: uemail,
+                subtitle: 'Abriu planos (Clicou)',
+                at: e.created_at,
+                acessos: null,
+                avatar_url: e.users?.raw_user_meta_data?.avatar_url || e.users?.raw_user_meta_data?.picture,
+                is_premium: e.profiles?.is_premium || false,
+              };
+            });
+            allLists = allLists.concat(vpMapped);
+          }
+        }
+
+        const [results, extraResults] = await Promise.all([
+          Promise.all(listPromises),
+          Promise.all(extraPromises)
+        ]);
+        
+        results.forEach(({ data }) => {
+          allLists = allLists.concat((data as any[]) || []);
+        });
+        
+        if (id === 'paywall') {
+          extraResults.forEach(({ data }) => {
+            const trials = ((data as any[]) || []).map(r => ({ ...r, subtitle: 'Abriu planos (Iniciou teste)' }));
+            allLists = allLists.concat(trials);
+          });
+        }
       }
 
       // Deduplicate by key (since same user could be online on multiple days)
@@ -461,7 +565,7 @@ export function AdminHojeCards() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const card = params.get('card');
-    if (card === 'cadastros' || card === 'trial' || card === 'online' || card === 'online5m' || card === 'paywall') {
+    if (card === 'cadastros' || card === 'trial' || card === 'online' || card === 'online5m' || card === 'paywall' || card === 'viu_planos') {
       openCard(card as CardId);
       params.delete('card');
       const qs = params.toString();
@@ -489,7 +593,8 @@ export function AdminHojeCards() {
     { id: 'online5m', label: 'Online 5 min', icon: Zap },
     { id: 'online', label: 'Online hoje', icon: Radio },
     { id: 'cadastros', label: 'Cadastrados', icon: UserPlus },
-    { id: 'paywall', label: 'Viu planos', icon: Sparkles },
+    { id: 'paywall', label: 'Tela de Assinaturas', icon: Sparkles },
+    { id: 'viu_planos', label: 'Viu planos', icon: Check },
     { id: 'trial', label: 'Iniciou teste', icon: DollarSign },
   ];
 
@@ -497,7 +602,8 @@ export function AdminHojeCards() {
     online5m: 'Online (Últimos 5 min)',
     online: 'Online',
     cadastros: 'Cadastrados',
-    paywall: 'Visualizaram Planos',
+    paywall: 'Entraram em Assinaturas',
+    viu_planos: 'Clicaram nos Planos',
     trial: 'Iniciaram assinatura teste',
   };
 
@@ -530,7 +636,7 @@ export function AdminHojeCards() {
         </select>
       </div>
 
-      <div className="grid grid-cols-5 gap-2 mb-3">
+      <div className="grid grid-cols-6 gap-2 mb-3">
         {CARDS.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
