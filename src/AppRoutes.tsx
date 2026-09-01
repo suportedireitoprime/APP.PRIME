@@ -383,50 +383,7 @@ const AnotacoesAudio = lazy(() => import("./pages/AnotacoesAudio.tsx"));
 const AssistenteApp = lazy(() => import("./pages/AssistenteApp.tsx"));
 const AssistenteHorus = lazy(() => import("./pages/AssistenteHorus.tsx"));
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 5 * 60 * 1000,
-      gcTime: 24 * 60 * 60 * 1000, // 24h para persistência
-      retry: 2,
-      refetchOnWindowFocus: false,
-      networkMode: 'offlineFirst',
-    },
-    mutations: {
-      networkMode: 'offlineFirst',
-    },
-  },
-});
 
-const queryPersister = typeof window !== 'undefined'
-  ? createAsyncStoragePersister({
-      storage: {
-        getItem: async (key) => {
-          if (Capacitor.isNativePlatform()) {
-            const { localDb } = await import('@/services/localDb');
-            if (localDb.available) return localDb.getKv(key);
-          }
-          return idbGet(key).then((v) => (v == null ? null : v as string));
-        },
-        setItem: async (key, value) => {
-          if (Capacitor.isNativePlatform()) {
-            const { localDb } = await import('@/services/localDb');
-            if (localDb.available) return localDb.setKv(key, value);
-          }
-          return idbSet(key, value).then(() => undefined);
-        },
-        removeItem: async (key) => {
-          if (Capacitor.isNativePlatform()) {
-            const { localDb } = await import('@/services/localDb');
-            if (localDb.available) return localDb.delKv(key);
-          }
-          return idbDel(key).then(() => undefined);
-        },
-      },
-      key: 'rq-cache-v1',
-      throttleTime: 1500,
-    })
-  : undefined;
 
 const preloadImage = new Image();
 preloadImage.src = brasaoImg;
@@ -701,6 +658,7 @@ function AnimatedRoutes() {
   const location = useLocation();
   const { user } = useAuth();
   const { data: profile } = useProfileSummary();
+  const qc = useQueryClient();
 
   // Screen tracking unificado (page_view + screen_view + scroll + screen_exit).
   useScreenTracking();
@@ -730,7 +688,7 @@ function AnimatedRoutes() {
       import('@/lib/bibliotecaTracking'),
       import('@/lib/resumosLocal'),
       import('@/hooks/useDicionarioPrefs'),
-      import('@/lib/flashcardsQueries').then((m) => m.prefetchFlashcardsDashboard(queryClient)),
+      import('@/lib/flashcardsQueries').then((m) => m.prefetchFlashcardsDashboard(qc)),
       // import('@/hooks/useQuestoes').then((m) => m.prefetchQuestoesCache()),
     ]).then(() => import('@/lib/userSync').then((m) => m.pullAllUserSync(true)));
 

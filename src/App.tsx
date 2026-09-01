@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { initAnalytics, trackPageview, setAnalyticsUserWithProfile } from "@/lib/analytics";
 import { useScreenTracking } from "@/lib/screenTracking";
@@ -74,6 +74,51 @@ const HorusTakeoverNoticeDialog = lazy(() => import("@/components/horus/HorusTak
 const ForceUpdateScreen = lazy(() => import("@/components/ForceUpdateScreen"));
 import { useAppUpdateStore } from "@/lib/appUpdateStore";
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000,
+      gcTime: 24 * 60 * 60 * 1000, // 24h para persistência
+      retry: 2,
+      refetchOnWindowFocus: false,
+      networkMode: 'offlineFirst',
+    },
+    mutations: {
+      networkMode: 'offlineFirst',
+    },
+  },
+});
+
+const queryPersister = typeof window !== 'undefined'
+  ? createAsyncStoragePersister({
+      storage: {
+        getItem: async (key) => {
+          if (Capacitor.isNativePlatform()) {
+            const { localDb } = await import('@/services/localDb');
+            if (localDb.available) return localDb.getKv(key);
+          }
+          return idbGet(key).then((v) => (v == null ? null : v as string));
+        },
+        setItem: async (key, value) => {
+          if (Capacitor.isNativePlatform()) {
+            const { localDb } = await import('@/services/localDb');
+            if (localDb.available) return localDb.setKv(key, value);
+          }
+          return idbSet(key, value).then(() => undefined);
+        },
+        removeItem: async (key) => {
+          if (Capacitor.isNativePlatform()) {
+            const { localDb } = await import('@/services/localDb');
+            if (localDb.available) return localDb.delKv(key);
+          }
+          return idbDel(key).then(() => undefined);
+        },
+      },
+      key: 'rq-cache-v1',
+      throttleTime: 1500,
+    })
+  : undefined;
+
 function ForceUpdateWrapper() {
   const isUpdateRequired = useAppUpdateStore((s) => s.isUpdateRequired);
   return (
@@ -104,6 +149,16 @@ function AppBootSplash() {
   return <CustomSplashScreen onComplete={() => setShow(false)} />;
 }
 
+const LazyMediaPlayers = () => (
+  <>
+    <GlobalLeisCantadasMiniPlayer />
+    <GlobalAudioaulasMiniPlayer />
+    <GlobalResumoMiniPlayer />
+    <ResumoLivroAudioSheet />
+    <GlobalVideoaulaMiniPlayer />
+  </>
+);
+
 const App = () => (
   <ErrorBoundary>
     <PersistQueryClientProvider
@@ -123,22 +178,28 @@ const App = () => (
       <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <AuthProvider>
           <ThemeProvider>
-            <AppBootSplash />
+            <Suspense fallback={null}>
+              <AppBootSplash />
+            </Suspense>
             <TooltipProvider>
               <SkipToContent />
               <Sonner />
 
               <Analytics />
               <SpeedInsights />
-              <AnalyticsDebugPanel />
+              <Suspense fallback={null}>
+                <AnalyticsDebugPanel />
+              </Suspense>
 
               <OfflineStatusBadge />
               <OfflineWatcher />
               
-              <GeofencePresenceBanner />
-              <ReminderInAppBanner />
-              <InAppPushPopup />
-              <HorusTakeoverNoticeDialog />
+              <Suspense fallback={null}>
+                <GeofencePresenceBanner />
+                <ReminderInAppBanner />
+                <InAppPushPopup />
+                <HorusTakeoverNoticeDialog />
+              </Suspense>
               <ForceUpdateWrapper />
               {/* <IntroOverlay /> — desativado por preferência (splash estático) */}
               <RecordingProvider>
@@ -147,7 +208,9 @@ const App = () => (
                     <PilulasPlayerProvider>
                       <VideoaulasPlayerProvider>
                         <ResumoLivroPlayerProvider>
-                          <AnimatedRoutes />
+                          <Suspense fallback={<div className="min-h-screen bg-zinc-950" />}>
+                            <AnimatedRoutes />
+                          </Suspense>
                           <LazyMediaPlayers />
                         </ResumoLivroPlayerProvider>
                       </VideoaulasPlayerProvider>
