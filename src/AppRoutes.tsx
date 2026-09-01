@@ -153,6 +153,7 @@ const PeticaoInicial = lazy(() => import("./pages/PeticaoInicial.tsx"));
 const PeticaoInicialEditor = lazy(() => import("./pages/PeticaoInicialEditor.tsx"));
 const PlanoEstudos = lazy(() => import("./pages/ferramentas/PlanoEstudos.tsx"));
 const STFDashboard = lazy(() => import("./pages/ferramentas/STFDashboard.tsx"));
+const STFBiografias = lazy(() => import("./pages/ferramentas/STFBiografias.tsx"));
 const SessoesSTF = lazy(() => import("./pages/ferramentas/SessoesSTF.tsx"));
 const SessaoSTFDetalhes = lazy(() => import("./pages/ferramentas/SessaoSTFDetalhes.tsx"));
 const LocaisJuridicos = lazy(() => import("./pages/LocaisJuridicos.tsx"));
@@ -815,6 +816,7 @@ function AnimatedRoutes() {
           <Route path="/ferramentas/locais" element={<ProtectedRoute><PageTransition><LocaisJuridicos /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/dicionario" element={<ProtectedRoute><PageTransition><DicionarioJuridicoPage /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/stf" element={<ProtectedRoute><PageTransition><STFDashboard /></PageTransition></ProtectedRoute>} />
+          <Route path="/ferramentas/stf/biografias" element={<ProtectedRoute><PageTransition><STFBiografias /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/stf/sessoes" element={<ProtectedRoute><PageTransition><SessoesSTF /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/stf/:id" element={<ProtectedRoute><PageTransition><SessaoSTFDetalhes /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/peticao-inicial" element={<ProtectedRoute><PageTransition><PeticaoInicial /></PageTransition></ProtectedRoute>} />
