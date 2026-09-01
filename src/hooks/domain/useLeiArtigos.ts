@@ -6,7 +6,7 @@ import {
   fetchArtigosPaginado,
   loadPersistedArtigos,
   fetchArtigosInstant
-} from '@/lib/legislacaoBackend';
+} from '@/services/legislacaoService';
 
 export function useLeiArtigos(selectedLeiId: string | null, selectedTabelaNome: string | null) {
   const [artigos, setArtigos] = useState<ArtigoLei[]>([]);
