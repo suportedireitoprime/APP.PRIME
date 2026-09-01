@@ -4,6 +4,7 @@ import { Loader2 } from 'lucide-react';
 import AudioaulasBottomNav from '@/components/audioaulas/AudioaulasBottomNav';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import { useIsDesktop } from '@/hooks/use-desktop';
+import ShapeGrid from '@/components/ui/ShapeGrid';
 
 import { useAudioaulas } from '@/hooks/useAudioaulas';
 import { AudioaulasHero } from '@/components/audioaulas/home/AudioaulasHero';
@@ -22,8 +23,21 @@ const Audioaulas = () => {
   const state = useAudioaulas(areaAtual);
 
   const content = (
-    <div className={`w-full bg-gradient-to-b from-zinc-950 via-background to-background text-foreground relative ${isDesktop ? 'rounded-2xl pb-12 min-h-[700px] border border-white/5 overflow-hidden' : 'min-h-screen pb-40'}`}>
-      {state.gateNodes}
+    <div className={`w-full bg-zinc-950 text-foreground relative ${isDesktop ? 'rounded-2xl pb-12 min-h-[700px] border border-white/5 overflow-hidden' : 'min-h-screen pb-40'}`}>
+      <div className="absolute inset-0 z-0 opacity-60">
+        <ShapeGrid 
+          speed={0.5} 
+          squareSize={40}
+          direction='diagonal'
+          borderColor='rgba(255, 255, 255, 0.05)'
+          hoverFillColor='rgba(255, 255, 255, 0.1)'
+          shape='square'
+          hoverTrailAmount={5}
+        />
+      </div>
+
+      <div className="relative z-10">
+        {state.gateNodes}
 
       <AudioaulasHero 
         areaAtual={areaAtual}
@@ -108,6 +122,7 @@ const Audioaulas = () => {
           if (t === 'buscar') window.setTimeout(() => buscaRef.current?.focus(), 150);
         }}
       />
+      </div>
     </div>
   );
 

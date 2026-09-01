@@ -36,15 +36,24 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({ are
             show: { opacity: 1, transition: { staggerChildren: 0.05 } }
           }}
         >
-          {areas.map(([nome, total]) => (
+          {areas.map(([nome, total], i) => (
             <motion.button
               key={nome}
               variants={{
-                hidden: { opacity: 0, scale: 0.95 },
-                show: { opacity: 1, scale: 1, transition: { type: "spring", stiffness: 300, damping: 24 } }
+                hidden: { opacity: 0, scale: 0.95, y: 0 },
+                show: { opacity: 1, scale: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
               }}
-              whileHover={{ scale: 1.03 }}
+              whileHover={{ scale: 1.03, y: -5 }}
               whileTap={{ scale: 0.97 }}
+              animate={{
+                y: [0, -8, 0],
+                transition: {
+                  duration: 4 + (i % 3), // Variar a duração para não ficarem sincronizados
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: i * 0.2
+                }
+              }}
               onClick={() => navigate(`/audioaulas/${encodeURIComponent(nome)}`)}
               className="group relative aspect-square rounded-2xl overflow-hidden text-left transition-shadow duration-300 hover:shadow-2xl hover:shadow-primary/20 border border-white/10 focus-visible:outline-none"
             >
