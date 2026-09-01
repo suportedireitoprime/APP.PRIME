@@ -155,6 +155,7 @@ const AdminAssinantes = () => {
   const [modalDetails, setModalDetails] = useState<'mrr' | 'gross' | null>(null);
   const [funnelStage, setFunnelStage] = useState<'assinatura_aberta' | 'trial_click' | 'start_trial' | 'purchase' | null>(null);
   const [funnelPlatform, setFunnelPlatform] = useState<'asaas' | 'play' | 'apple'>('asaas');
+  const [funnelDays, setFunnelDays] = useState<number>(7);
 
   const funnelMetrics = useMemo(() => {
     if (!data?.funnel) return null;
@@ -176,9 +177,10 @@ const AdminAssinantes = () => {
     };
   }, [data, funnelPlatform]);
 
-  const load = async (syncPlay = false) => {
+  const load = async (syncPlay = false, customDays?: number) => {
     setLoading(true); setError(null);
-    const { data: res, error: err } = await supabase.functions.invoke('play-billing', { body: { fn: 'reporting', sync: syncPlay, funnelDays: 7 } });
+    const d = customDays !== undefined ? customDays : funnelDays;
+    const { data: res, error: err } = await supabase.functions.invoke('play-billing', { body: { fn: 'reporting', sync: syncPlay, funnelDays: d } });
     if (err) {
       setError(err.message ?? 'Erro ao carregar dados locais');
     } else {
@@ -548,55 +550,79 @@ const AdminAssinantes = () => {
             {/* Funil de Assinatura */}
             {funnelMetrics && (
               <section className="bg-card rounded-2xl border border-border p-2.5 md:p-4 relative overflow-hidden">
-                <div className="flex items-center gap-2 mb-3 justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="p-2 bg-blue-500/10 rounded-xl">
-                      <Filter className="w-5 h-5 text-blue-500" />
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="p-2 bg-blue-500/10 rounded-xl">
+                        <Filter className="w-5 h-5 text-blue-500" />
+                      </div>
+                      <div>
+                        <h2 className="font-black text-base leading-tight">Funil de Conversão</h2>
+                        <select 
+                          value={funnelDays} 
+                          onChange={(e) => {
+                            const val = Number(e.target.value);
+                            setFunnelDays(val);
+                            load(false, val);
+                          }}
+                          className="text-[10px] font-medium text-muted-foreground bg-transparent border-none outline-none p-0 focus:ring-0 cursor-pointer hover:text-foreground mt-0.5"
+                        >
+                          <option value={1}>Últimas 24h</option>
+                          <option value={7}>Últimos 7 dias</option>
+                          <option value={30}>Último mês</option>
+                        </select>
+                      </div>
                     </div>
-                    <div>
-                      <h2 className="font-black text-base">Funil de Conversão</h2>
-                      <p className="text-[10px] text-muted-foreground">Últimos 7 dias</p>
-                    </div>
+                    
+                    {/* Botão ver completo no mobile fica aqui do lado do titulo */}
+                    <button 
+                      onClick={() => navigate('/admin/funil')}
+                      className="sm:hidden text-[10px] font-semibold px-2.5 py-1 rounded-full bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 transition-colors border border-blue-500/20 ml-2"
+                    >
+                      Ver completo
+                    </button>
                   </div>
                   
-                  <button 
-                    onClick={() => navigate('/admin/funil')}
-                    className="absolute top-2.5 md:p-4 right-5 text-xs font-semibold px-3 py-1.5 rounded-full bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 transition-colors border border-blue-500/20"
-                  >
-                    Ver completo
-                  </button>
-                  
-                  {/* Toggle Plataforma do Funil */}
-                  <div className="flex items-center bg-muted/50 rounded-full p-0.5 border border-border/50">
-                    <button
-                      onClick={() => setFunnelPlatform('asaas')}
-                      className={`text-[10px] px-2.5 py-1 rounded-full font-medium transition-colors ${
-                        funnelPlatform === 'asaas' 
-                          ? 'bg-blue-500 text-white shadow-sm' 
-                          : 'text-muted-foreground hover:text-foreground'
-                      }`}
+                  <div className="flex items-center gap-2 self-start sm:self-auto w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0 hide-scrollbar">
+                    {/* Toggle Plataforma do Funil */}
+                    <div className="flex items-center bg-muted/50 rounded-full p-0.5 border border-border/50 shrink-0">
+                      <button
+                        onClick={() => setFunnelPlatform('asaas')}
+                        className={`text-[10px] px-2.5 py-1 rounded-full font-medium transition-colors ${
+                          funnelPlatform === 'asaas' 
+                            ? 'bg-blue-500 text-white shadow-sm' 
+                            : 'text-muted-foreground hover:text-foreground'
+                        }`}
+                      >
+                        Asaas
+                      </button>
+                      <button
+                        onClick={() => setFunnelPlatform('play')}
+                        className={`text-[10px] px-2.5 py-1 rounded-full font-medium transition-colors ${
+                          funnelPlatform === 'play' 
+                            ? 'bg-[#3DDC84] text-white shadow-sm' 
+                            : 'text-muted-foreground hover:text-foreground'
+                        }`}
+                      >
+                        Play
+                      </button>
+                      <button
+                        onClick={() => setFunnelPlatform('apple')}
+                        className={`text-[10px] px-2.5 py-1 rounded-full font-medium transition-colors ${
+                          funnelPlatform === 'apple' 
+                            ? 'bg-zinc-700 text-white shadow-sm' 
+                            : 'text-muted-foreground hover:text-foreground'
+                        }`}
+                      >
+                        Apple
+                      </button>
+                    </div>
+                    
+                    <button 
+                      onClick={() => navigate('/admin/funil')}
+                      className="hidden sm:block text-xs font-semibold px-3 py-1.5 rounded-full bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 transition-colors border border-blue-500/20 shrink-0"
                     >
-                      Asaas
-                    </button>
-                    <button
-                      onClick={() => setFunnelPlatform('play')}
-                      className={`text-[10px] px-2.5 py-1 rounded-full font-medium transition-colors ${
-                        funnelPlatform === 'play' 
-                          ? 'bg-[#3DDC84] text-white shadow-sm' 
-                          : 'text-muted-foreground hover:text-foreground'
-                      }`}
-                    >
-                      Play
-                    </button>
-                    <button
-                      onClick={() => setFunnelPlatform('apple')}
-                      className={`text-[10px] px-2.5 py-1 rounded-full font-medium transition-colors ${
-                        funnelPlatform === 'apple' 
-                          ? 'bg-zinc-700 text-white shadow-sm' 
-                          : 'text-muted-foreground hover:text-foreground'
-                      }`}
-                    >
-                      Apple
+                      Ver completo
                     </button>
                   </div>
                 </div>

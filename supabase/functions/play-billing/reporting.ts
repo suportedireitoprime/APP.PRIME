@@ -332,9 +332,10 @@ export const handler = (async (req) => {
 
     // ?sync=true (ou body { sync: true }) → consulta cada compra no Google Play antes de agregar
     let wantSync = true;
+    let reqBody: any = {};
     try {
-      const body = await req.json().catch(() => ({}));
-      if (body && typeof body.sync === 'boolean') wantSync = body.sync;
+      reqBody = await req.json().catch(() => ({}));
+      if (reqBody && typeof reqBody.sync === 'boolean') wantSync = reqBody.sync;
     } catch { /* ignore */ }
 
     let sync: SyncResult | { error: string } | null = null;
@@ -364,13 +365,13 @@ export const handler = (async (req) => {
     const legacy = (legacyData ?? []).filter((r: any) => !r.tipo?.toLowerCase().includes('vade_mecum'));
 
     // Funnel events filtering
-    const { funnelDays } = await req.json().catch(() => ({})) || {};
+    const funnelDays = reqBody.funnelDays;
     let funnelQuery = admin
       .from('app_events')
       .select('event_name, email, created_at, user_id, metadata')
       .in('event_name', ['assinatura_aberta', 'trial_click', 'start_trial', 'purchase']);
       
-    if (funnelDays) {
+    if (funnelDays !== undefined) {
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - parseInt(funnelDays, 10));
       funnelQuery = funnelQuery.gte('created_at', startDate.toISOString());
