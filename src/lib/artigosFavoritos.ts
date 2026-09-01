@@ -181,17 +181,17 @@ export async function syncLocalToRemote() {
     if (!user) return;
     const local = readLocal();
     if (local.length === 0) return;
-    for (const f of local) {
-      await supabase.from('artigos_favoritos').upsert(
-        {
-          user_id: user.id,
-          tabela_codigo: f.tabela_codigo,
-          numero_artigo: f.numero_artigo,
-          conteudo_preview: f.conteudo_preview ?? null,
-          artigo_id: makeArtigoId(f.tabela_codigo, f.numero_artigo),
-        },
-        { onConflict: 'user_id,tabela_codigo,numero_artigo', ignoreDuplicates: true },
-      );
-    }
+    // Batch upsert: envia todos de uma vez em vez de N requests individuais
+    const rows = local.map((f) => ({
+      user_id: user.id,
+      tabela_codigo: f.tabela_codigo,
+      numero_artigo: f.numero_artigo,
+      conteudo_preview: f.conteudo_preview ?? null,
+      artigo_id: makeArtigoId(f.tabela_codigo, f.numero_artigo),
+    }));
+    await supabase.from('artigos_favoritos').upsert(rows, {
+      onConflict: 'user_id,tabela_codigo,numero_artigo',
+      ignoreDuplicates: true,
+    });
   } catch { /* silent */ }
 }

@@ -57,8 +57,10 @@ const ForcaPage = () => {
   // Fetch Laws on Mount
   useEffect(() => {
     const fetchLaws = async () => {
-      const { data: cf } = await supabase.from('vade_mecum_leis').select('id, nome, nome_curto, slug').eq('slug', 'cf');
-      const { data: codigos } = await supabase.from('vade_mecum_leis').select('id, nome, nome_curto, slug').eq('categoria', 'codigo').order('nome');
+      const [{ data: cf }, { data: codigos }] = await Promise.all([
+        supabase.from('vade_mecum_leis').select('id, nome, nome_curto, slug').eq('slug', 'cf'),
+        supabase.from('vade_mecum_leis').select('id, nome, nome_curto, slug').eq('categoria', 'codigo').order('nome'),
+      ]);
       
       const combined = [...(cf || []), ...(codigos || [])];
       // deduplicate if CF is already in codigos

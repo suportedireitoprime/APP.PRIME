@@ -1103,8 +1103,10 @@ function DailyReportSheet({ type, date, onClose }: { type: "enviadas"|"abertas"|
 
       const userIds = Array.from(new Set(list.filter(x => x.user_id).map(x => x.user_id)));
       if (userIds.length > 0) {
-        const { data: profs } = await supabase.from("profiles").select("id, display_name").in("id", userIds);
-        const { data: acts } = await supabase.from("user_activity_log").select("user_id, email, display_name").in("user_id", userIds);
+        const [{ data: profs }, { data: acts }] = await Promise.all([
+          supabase.from("profiles").select("id, display_name").in("id", userIds),
+          supabase.from("user_activity_log").select("user_id, email, display_name").in("user_id", userIds),
+        ]);
         
         const pMap = new Map(profs?.map(p => [p.id, p.display_name]) ?? []);
         const actMap = new Map(acts?.map(a => [a.user_id, a]) ?? []);

@@ -39,12 +39,12 @@ export function useLembretes() {
     }
     const uid = user.id;
     const [est, loc, lei, que, ls, av] = await Promise.all([
-      supabase.from('user_reminders').select('*').eq('user_id', uid),
-      supabase.from('location_reminders').select('*').eq('user_id', uid),
-      supabase.from('reading_reminders').select('*').eq('user_id', uid),
-      supabase.from('questoes_lembretes').select('*').eq('user_id', uid),
-      supabase.from('lei_seca_lembretes').select('*').eq('user_id', uid).maybeSingle(),
-      supabase.from('avisos').select('*').eq('user_id', uid).order('avisar_em', { ascending: true }),
+      supabase.from('user_reminders').select('id, dias, horario, ativo').eq('user_id', uid),
+      supabase.from('location_reminders').select('id, label, address, radius_m, active').eq('user_id', uid),
+      supabase.from('reading_reminders').select('id, title, livro_titulo, days_of_week, time_of_day, enabled').eq('user_id', uid),
+      supabase.from('questoes_lembretes').select('id, meta_questoes, dias, horario, ativo').eq('user_id', uid),
+      supabase.from('lei_seca_lembretes').select('diario_ativo, diario_hora, retomada_ativa, ultima_trilha').eq('user_id', uid).maybeSingle(),
+      supabase.from('avisos').select('id, titulo, mensagem, avisar_em, recorrencia, ativo').eq('user_id', uid).order('avisar_em', { ascending: true }),
     ]);
 
     const out: LembreteItem[] = [];

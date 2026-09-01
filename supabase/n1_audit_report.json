@@ -1,0 +1,2419 @@
+[
+  {
+    "file": "src/components/admin/AprenderPorLivroTab.tsx",
+    "line": 85,
+    "type": "HIGH_QUERY_COUNT",
+    "severity": "WARNING",
+    "count": 8,
+    "queryLines": [
+      85,
+      90,
+      104,
+      110,
+      117,
+      132,
+      224,
+      240
+    ]
+  },
+  {
+    "file": "src/components/admin/horus/HorusEstatisticasTab.tsx",
+    "line": 69,
+    "type": "HIGH_QUERY_COUNT",
+    "severity": "WARNING",
+    "count": 6,
+    "queryLines": [
+      69,
+      143,
+      174,
+      218,
+      228,
+      232
+    ]
+  },
+  {
+    "file": "src/components/admin/horus/HorusFuncoesTab.tsx",
+    "line": 39,
+    "type": "HIGH_QUERY_COUNT",
+    "severity": "WARNING",
+    "count": 5,
+    "queryLines": [
+      39,
+      55,
+      56,
+      64,
+      69
+    ]
+  },
+  {
+    "file": "src/components/admin/horus/HorusFuncoesTab.tsx",
+    "line": 55,
+    "type": "SEQUENTIAL_QUERIES",
+    "severity": "WARNING",
+    "snippet": "? await supabase.from('horus_funcoes').update(payload).eq('id', editing.id) → : await supabase.from('horus_funcoes').insert(payload);"
+  },
+  {
+    "file": "src/components/admin/PushCronogramaTab.tsx",
+    "line": 1106,
+    "type": "SEQUENTIAL_QUERIES",
+    "severity": "WARNING",
+    "snippet": "const { data: profs } = await supabase.from(\"profiles\").select(\"id, display_name → const { data: acts } = await supabase.from(\"user_activity_log\").select(\"user_id,"
+  },
+  {
+    "file": "src/components/admin/UserDossieSheet.tsx",
+    "line": 102,
+    "type": "HIGH_QUERY_COUNT",
+    "severity": "WARNING",
+    "count": 11,
+    "queryLines": [
+      102,
+      103,
+      107,
+      111,
+      113,
+      115,
+      116,
+      117,
+      118,
+      121
+    ]
+  },
+  {
+    "file": "src/components/lembretes/LembreteSheet.tsx",
+    "line": 69,
+    "type": "HIGH_QUERY_COUNT",
+    "severity": "WARNING",
+    "count": 4,
+    "queryLines": [
+      69,
+      140,
+      143,
+      175
+    ]
+  },
+  {
+    "file": "src/components/planos/CancelarAssinaturaSheet.tsx",
+    "line": 63,
+    "type": "HIGH_QUERY_COUNT",
+    "severity": "WARNING",
+    "count": 5,
+    "queryLines": [
+      63,
+      64,
+      65,
+      66,
+      67
+    ]
+  },
+  {
+    "file": "src/components/tematica/ObraDetailSheet.tsx",
+    "line": 119,
+    "type": "HIGH_QUERY_COUNT",
+    "severity": "WARNING",
+    "count": 9,
+    "queryLines": [
+      119,
+      120,
+      183,
+      187,
+      196,
+      200,
+      208,
+      271,
+      288
+    ]
+  },
+  {
+    "file": "src/components/vademecum/AnotacoesSheet.tsx",
+    "line": 196,
+    "type": "HIGH_QUERY_COUNT",
+    "severity": "WARNING",
+    "count": 6,
+    "queryLines": [
+      196,
+      232,
+      237,
+      298,
+      301,
+      334
+    ]
+  },
+  {
+    "file": "src/components/vademecum/ArtigoBottomSheet.tsx",
+    "line": 723,
+    "type": "HIGH_QUERY_COUNT",
+    "severity": "WARNING",
+    "count": 9,
+    "queryLines": [
+      723,
+      755,
+      1479,
+      1590,
+      1631,
+      1720,
+      1751,
+      2079,
+      2141
+    ]
+  },
+  {
+    "file": "src/components/vademecum/BlogPostSheet.tsx",
+    "line": 89,
+    "type": "HIGH_QUERY_COUNT",
+    "severity": "WARNING",
+    "count": 4,
+    "queryLines": [
+      89,
+      99,
+      114,
+      118
+    ]
+  },
+  {
+    "file": "src/components/vademecum/LembretesArtigoSheet.tsx",
+    "line": 299,
+    "type": "HIGH_QUERY_COUNT",
+    "severity": "WARNING",
+    "count": 8,
+    "queryLines": [
+      299,
+      305,
+      330,
+      336,
+      367,
+      373,
+      380,
+      387
+    ]
+  },
+  {
+    "file": "src/components/vademecum/PessoalSheet.tsx",
+    "line": 120,
+    "type": "HIGH_QUERY_COUNT",
+    "severity": "WARNING",
+    "count": 10,
+    "queryLines": [
+      120,
+      121,
+      122,
+      123,
+      124,
+      125,
+      126,
+      233,
+      268,
+      276
+    ]
+  },
+  {
+    "file": "src/components/vademecum/VideoaulaSheet.tsx",
+    "line": 402,
+    "type": "HIGH_QUERY_COUNT",
+    "severity": "WARNING",
+    "count": 4,
+    "queryLines": [
+      402,
+      404,
+      454,
+      466
+    ]
+  },
+  {
+    "file": "src/hooks/domain/useAprenderAula.ts",
+    "line": 63,
+    "type": "HIGH_QUERY_COUNT",
+    "severity": "WARNING",
+    "count": 4,
+    "queryLines": [
+      63,
+      64,
+      154,
+      172
+    ]
+  },
+  {
+    "file": "src/hooks/useLembretes.ts",
+    "line": 42,
+    "type": "HIGH_QUERY_COUNT",
+    "severity": "WARNING",
+    "count": 9,
+    "queryLines": [
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      172,
+      174,
+      186
+    ]
+  },
+  {
+    "file": "src/hooks/useLocalSocial.ts",
+    "line": 49,
+    "type": "HIGH_QUERY_COUNT",
+    "severity": "WARNING",
+    "count": 4,
+    "queryLines": [
+      49,
+      52,
+      67,
+      84
+    ]
+  },
+  {
+    "file": "src/hooks/usePremiumUsage.ts",
+    "line": 20,
+    "type": "HIGH_QUERY_COUNT",
+    "severity": "WARNING",
+    "count": 5,
+    "queryLines": [
+      20,
+      52,
+      95,
+      125,
+      135
+    ]
+  },
+  {
+    "file": "src/hooks/useSubscription.ts",
+    "line": 102,
+    "type": "HIGH_QUERY_COUNT",
+    "severity": "WARNING",
+    "count": 4,
+    "queryLines": [
+      102,
+      103,
+      104,
+      105
+    ]
+  },
+  {
+    "file": "src/pages/AdminAprender.tsx",
+    "line": 35,
+    "type": "HIGH_QUERY_COUNT",
+    "severity": "WARNING",
+    "count": 6,
+    "queryLines": [
+      35,
+      38,
+      43,
+      49,
+      55,
+      58
+    ]
+  },
+  {
+    "file": "src/pages/AdminAudioaulas.tsx",
+    "line": 109,
+    "type": "HIGH_QUERY_COUNT",
+    "severity": "WARNING",
+    "count": 5,
+    "queryLines": [
+      109,
+      110,
+      111,
+      184,
+      192
+    ]
+  },
+  {
+    "file": "src/pages/AdminBibliotecaLeis.tsx",
+    "line": 88,
+    "type": "HIGH_QUERY_COUNT",
+    "severity": "WARNING",
+    "count": 8,
+    "queryLines": [
+      88,
+      89,
+      90,
+      240,
+      252,
+      255,
+      274,
+      285
+    ]
+  },
+  {
+    "file": "src/pages/AdminBlogEdicao.tsx",
+    "line": 130,
+    "type": "HIGH_QUERY_COUNT",
+    "severity": "WARNING",
+    "count": 10,
+    "queryLines": [
+      130,
+      131,
+      152,
+      327,
+      346,
+      349,
+      366,
+      368,
+      378,
+      1235
+    ]
+  },
+  {
+    "file": "src/pages/AdminConteudoFila.tsx",
+    "line": 51,
+    "type": "HIGH_QUERY_COUNT",
+    "severity": "WARNING",
+    "count": 4,
+    "queryLines": [
+      51,
+      52,
+      79,
+      95
+    ]
+  },
+  {
+    "file": "src/pages/AdminJurisprudencia.tsx",
+    "line": 43,
+    "type": "HIGH_QUERY_COUNT",
+    "severity": "WARNING",
+    "count": 6,
+    "queryLines": [
+      43,
+      44,
+      45,
+      101,
+      102,
+      112
+    ]
+  },
+  {
+    "file": "src/pages/AdminLeisCantadas.tsx",
+    "line": 42,
+    "type": "HIGH_QUERY_COUNT",
+    "severity": "WARNING",
+    "count": 5,
+    "queryLines": [
+      42,
+      43,
+      66,
+      70,
+      82
+    ]
+  },
+  {
+    "file": "src/pages/AdminPesquisasProntas.tsx",
+    "line": 21,
+    "type": "HIGH_QUERY_COUNT",
+    "severity": "WARNING",
+    "count": 4,
+    "queryLines": [
+      21,
+      22,
+      23,
+      24
+    ]
+  },
+  {
+    "file": "src/pages/AdminPushSection.tsx",
+    "line": 171,
+    "type": "HIGH_QUERY_COUNT",
+    "severity": "WARNING",
+    "count": 6,
+    "queryLines": [
+      171,
+      222,
+      224,
+      325,
+      345,
+      350
+    ]
+  },
+  {
+    "file": "src/pages/AdminTransferenciaApp.tsx",
+    "line": 72,
+    "type": "SEQUENTIAL_QUERIES",
+    "severity": "WARNING",
+    "snippet": "? await supabase.from('app_transfer_profiles').update(payload).eq('id', profileI → : await supabase.from('app_transfer_profiles').insert(payload).select('id').mayb"
+  },
+  {
+    "file": "src/pages/AnotacoesAudio.tsx",
+    "line": 452,
+    "type": "HIGH_QUERY_COUNT",
+    "severity": "WARNING",
+    "count": 11,
+    "queryLines": [
+      452,
+      455,
+      471,
+      477,
+      606,
+      629,
+      652,
+      654,
+      674,
+      704
+    ]
+  },
+  {
+    "file": "src/pages/ApresentacaoPlayer.tsx",
+    "line": 230,
+    "type": "HIGH_QUERY_COUNT",
+    "severity": "WARNING",
+    "count": 11,
+    "queryLines": [
+      230,
+      231,
+      232,
+      233,
+      244,
+      245,
+      466,
+      468,
+      478,
+      480
+    ]
+  },
+  {
+    "file": "src/pages/gamificacao/Forca.tsx",
+    "line": 60,
+    "type": "SEQUENTIAL_QUERIES",
+    "severity": "WARNING",
+    "snippet": "const { data: cf } = await supabase.from('vade_mecum_leis').select('id, nome, no → const { data: codigos } = await supabase.from('vade_mecum_leis').select('id, nom"
+  },
+  {
+    "file": "src/pages/pessoal/Avisos.tsx",
+    "line": 35,
+    "type": "HIGH_QUERY_COUNT",
+    "severity": "WARNING",
+    "count": 4,
+    "queryLines": [
+      35,
+      46,
+      61,
+      67
+    ]
+  },
+  {
+    "file": "src/pages/PraticarSessao.tsx",
+    "line": 33,
+    "type": "SEQUENTIAL_QUERIES",
+    "severity": "WARNING",
+    "snippet": "let lei = (await supabase.from(\"vade_mecum_leis\").select(\"id, nome\").eq(\"slug\",  → if (!lei) lei = (await supabase.from(\"vade_mecum_leis\").select(\"id, nome\").eq(\"i"
+  },
+  {
+    "file": "src/pages/QuestoesLembretes.tsx",
+    "line": 155,
+    "type": "HIGH_QUERY_COUNT",
+    "severity": "WARNING",
+    "count": 6,
+    "queryLines": [
+      155,
+      226,
+      227,
+      298,
+      321,
+      327
+    ]
+  },
+  {
+    "file": "src/pages/QuestoesLembretes.tsx",
+    "line": 226,
+    "type": "SEQUENTIAL_QUERIES",
+    "severity": "WARNING",
+    "snippet": "? await supabase.from('questoes_lembretes').update(payload).eq('id', horarioId). → : await supabase.from('questoes_lembretes').insert(payload).select().maybeSingle"
+  },
+  {
+    "file": "src/services/meuEspacoFeed.ts",
+    "line": 29,
+    "type": "HIGH_QUERY_COUNT",
+    "severity": "WARNING",
+    "count": 7,
+    "queryLines": [
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35
+    ]
+  },
+  {
+    "file": "src/services/radarService.ts",
+    "line": 27,
+    "type": "HIGH_QUERY_COUNT",
+    "severity": "WARNING",
+    "count": 4,
+    "queryLines": [
+      27,
+      85,
+      128,
+      255
+    ]
+  },
+  {
+    "file": "src/services/syncQueue.ts",
+    "line": 46,
+    "type": "HIGH_QUERY_COUNT",
+    "severity": "WARNING",
+    "count": 4,
+    "queryLines": [
+      46,
+      50,
+      54,
+      56
+    ]
+  },
+  {
+    "file": "src/components/admin/AdminHojeCards.tsx",
+    "line": 264,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 2,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/components/admin/AprenderPorLivroTab.tsx",
+    "line": 85,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 8,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/components/admin/horus/HorusConversasTab.tsx",
+    "line": 35,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 3,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/components/admin/horus/HorusEstatisticasTab.tsx",
+    "line": 69,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 6,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/components/admin/horus/HorusEstatisticasTab.tsx",
+    "line": 69,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "horus_user_stats",
+    "snippet": "let query = supabase.from('horus_user_stats').select('*').order('updated_at', { ascending: false }).limit(50);"
+  },
+  {
+    "file": "src/components/admin/horus/HorusEstatisticasTab.tsx",
+    "line": 143,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "horus_intent_logs",
+    "snippet": "const { data } = await supabase.from('horus_intent_logs').select('*').order('created_at', { ascending: false }).limit(10"
+  },
+  {
+    "file": "src/components/admin/horus/HorusEstatisticasTab.tsx",
+    "line": 174,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "horus_proactive_log",
+    "snippet": "const { data } = await supabase.from('horus_proactive_log').select('*').order('enviada_em', { ascending: false }).limit("
+  },
+  {
+    "file": "src/components/admin/horus/HorusFuncoesTab.tsx",
+    "line": 39,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 5,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/components/admin/horus/HorusFuncoesTab.tsx",
+    "line": 39,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "horus_funcoes",
+    "snippet": "const { data, error } = await supabase.from('horus_funcoes').select('*').order('prioridade', { ascending: true }).order("
+  },
+  {
+    "file": "src/components/admin/horus/HorusMarketingTab.tsx",
+    "line": 122,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 3,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/components/admin/horus/HorusMarketingTab.tsx",
+    "line": 122,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "horus_campaigns",
+    "snippet": "const { data } = await supabase.from('horus_campaigns').select('*').order('created_at', { ascending: false });"
+  },
+  {
+    "file": "src/components/admin/horus/HorusNotificacoesTab.tsx",
+    "line": 50,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 2,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/components/admin/horus/HorusNotificacoesTab.tsx",
+    "line": 77,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "horus_outbound_log",
+    "snippet": "let q = supabase.from('horus_outbound_log').select('*').order('created_at', { ascending: false }).limit(200);"
+  },
+  {
+    "file": "src/components/admin/horus/HorusPoderesTab.tsx",
+    "line": 35,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/components/admin/PushAutomacoesTab.tsx",
+    "line": 45,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select(\"*\")"
+  },
+  {
+    "file": "src/components/admin/PushCronogramaTab.tsx",
+    "line": 1106,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 2,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/components/admin/UserDossieSheet.tsx",
+    "line": 102,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 11,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/components/admin/UserDossieSheet.tsx",
+    "line": 102,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": "supabase.from('profiles' as any).select('*').eq('id', userId).maybeSingle(),"
+  },
+  {
+    "file": "src/components/admin/WizardLeisSecas.tsx",
+    "line": 45,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/components/boletim/BoletimPlayer.tsx",
+    "line": 139,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 3,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/components/lembretes/LembreteSheet.tsx",
+    "line": 69,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 4,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/components/lembretes/LembreteSheet.tsx",
+    "line": 69,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "reading_reminders",
+    "snippet": "const { data } = await supabase.from('reading_reminders').select('*').eq('id', id).maybeSingle();"
+  },
+  {
+    "file": "src/components/lembretes/NovoLembreteSheet.tsx",
+    "line": 73,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/components/planos/CancelarAssinaturaSheet.tsx",
+    "line": 63,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 5,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/components/resumos-juridicos/LeiArtigosSheet.tsx",
+    "line": 73,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/components/suporte/ConversasTab.tsx",
+    "line": 36,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/components/suporte/ConversasTab.tsx",
+    "line": 122,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/components/tematica/ObraDetailSheet.tsx",
+    "line": 119,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 9,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/components/vademecum/AnotacoesSheet.tsx",
+    "line": 196,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 6,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/components/vademecum/ArtigoBottomSheet.tsx",
+    "line": 723,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 9,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/components/vademecum/BlogPostSheet.tsx",
+    "line": 89,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 4,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/components/vademecum/FeatureDiscoveryCard.tsx",
+    "line": 63,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 2,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/components/vademecum/LembretesArtigoSheet.tsx",
+    "line": 299,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 8,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/components/vademecum/NotificationsSheet.tsx",
+    "line": 129,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 3,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/components/vademecum/PessoalSheet.tsx",
+    "line": 120,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 10,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/components/vademecum/VideoaulaSheet.tsx",
+    "line": 402,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 4,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/components/vademecum/VideoaulaSheet.tsx",
+    "line": 263,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/hooks/domain/useAprenderAula.ts",
+    "line": 63,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 4,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/hooks/domain/useLeitorData.ts",
+    "line": 135,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/hooks/domain/useLeiUserTags.ts",
+    "line": 29,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 2,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/hooks/domain/usePeticaoInicial.ts",
+    "line": 21,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/hooks/useFeatureLimit.ts",
+    "line": 29,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 3,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/hooks/useFeatureLimit.ts",
+    "line": 29,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": "const { data } = await supabase.from('feature_limits' as any).select('*');"
+  },
+  {
+    "file": "src/hooks/useFlashcardsDesafios.ts",
+    "line": 84,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/hooks/useForcaProgresso.ts",
+    "line": 30,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/hooks/useHeroHomeImages.ts",
+    "line": 34,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/hooks/useHomeCuriosidades.ts",
+    "line": 34,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/hooks/useLembretes.ts",
+    "line": 42,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 9,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/hooks/useLembretes.ts",
+    "line": 42,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "user_reminders",
+    "snippet": "supabase.from('user_reminders').select('*').eq('user_id', uid),"
+  },
+  {
+    "file": "src/hooks/useLembretes.ts",
+    "line": 43,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "location_reminders",
+    "snippet": "supabase.from('location_reminders').select('*').eq('user_id', uid),"
+  },
+  {
+    "file": "src/hooks/useLembretes.ts",
+    "line": 44,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "reading_reminders",
+    "snippet": "supabase.from('reading_reminders').select('*').eq('user_id', uid),"
+  },
+  {
+    "file": "src/hooks/useLembretes.ts",
+    "line": 45,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "questoes_lembretes",
+    "snippet": "supabase.from('questoes_lembretes').select('*').eq('user_id', uid),"
+  },
+  {
+    "file": "src/hooks/useLembretes.ts",
+    "line": 46,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "lei_seca_lembretes",
+    "snippet": "supabase.from('lei_seca_lembretes').select('*').eq('user_id', uid).maybeSingle(),"
+  },
+  {
+    "file": "src/hooks/useLembretes.ts",
+    "line": 47,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "avisos",
+    "snippet": "supabase.from('avisos').select('*').eq('user_id', uid).order('avisar_em', { ascending: true }),"
+  },
+  {
+    "file": "src/hooks/useLembretes.ts",
+    "line": 174,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "avisos",
+    "snippet": "const { data } = await supabase.from('avisos').select('*').eq('id', item.raw).maybeSingle();"
+  },
+  {
+    "file": "src/hooks/useLocalSocial.ts",
+    "line": 49,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 4,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/hooks/usePremiumUsage.ts",
+    "line": 20,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 5,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/hooks/useQuestoes.ts",
+    "line": 50,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "questoes_cargos",
+    "snippet": "db.from('questoes_cargos').select('*').eq('ativo', true).order('ordem')"
+  },
+  {
+    "file": "src/hooks/useQuestoesExtras.ts",
+    "line": 31,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/hooks/useQuestoesExtras.ts",
+    "line": 127,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/hooks/useSubscription.ts",
+    "line": 102,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 4,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/hooks/useVideoaulaView.ts",
+    "line": 45,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 2,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/lib/flashcardsOfflineManager.ts",
+    "line": 95,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/lib/leisCantadasApi.ts",
+    "line": 43,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "leis_cantadas_stats",
+    "snippet": "const { data, error } = await supabase.from(\"leis_cantadas_stats\").select(\"*\");"
+  },
+  {
+    "file": "src/lib/leisCantadasApi.ts",
+    "line": 75,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select(\"*\")"
+  },
+  {
+    "file": "src/lib/leisCantadasApi.ts",
+    "line": 125,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select(\"*\")"
+  },
+  {
+    "file": "src/lib/leisCantadasApi.ts",
+    "line": 149,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select(\"*\")"
+  },
+  {
+    "file": "src/lib/leiSeca.ts",
+    "line": 57,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select(\"*\")"
+  },
+  {
+    "file": "src/lib/leiSeca.ts",
+    "line": 70,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select(\"*\")"
+  },
+  {
+    "file": "src/lib/leiSeca.ts",
+    "line": 80,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select(\"*\")"
+  },
+  {
+    "file": "src/lib/leiSeca.ts",
+    "line": 91,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select(\"*\")"
+  },
+  {
+    "file": "src/lib/leituraProgressSync.ts",
+    "line": 35,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/lib/modoAula/api.ts",
+    "line": 49,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/lib/modoAula/api.ts",
+    "line": 64,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/lib/modoAula/api.ts",
+    "line": 78,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "aulas",
+    "snippet": "let q = db.from('aulas').select('*').order('created_at', { ascending: false });"
+  },
+  {
+    "file": "src/lib/modoAula/api.ts",
+    "line": 110,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/lib/modoAula/api.ts",
+    "line": 117,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "aulas",
+    "snippet": "const { data, error } = await db.from('aulas').select('*').eq('id', id).maybeSingle();"
+  },
+  {
+    "file": "src/lib/modoAula/api.ts",
+    "line": 138,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "aula_midias",
+    "snippet": "let q = db.from('aula_midias').select('*').eq('aula_id', aulaId).order('ordem');"
+  },
+  {
+    "file": "src/lib/modoAula/api.ts",
+    "line": 169,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/lib/modoAula/api.ts",
+    "line": 201,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/lib/modoAula/api.ts",
+    "line": 241,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/lib/modoAula/api.ts",
+    "line": 258,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/lib/modoAula/api.ts",
+    "line": 274,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/lib/tematicaMaratonasStore.ts",
+    "line": 58,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/lib/tematicaMaratonasStore.ts",
+    "line": 82,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/lib/tematicaStore.ts",
+    "line": 72,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/lib/videoaulasStore.ts",
+    "line": 308,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/pages/AdminAppleCsr.tsx",
+    "line": 114,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 3,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/pages/AdminAprender.tsx",
+    "line": 35,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 6,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/pages/AdminAudioaulas.tsx",
+    "line": 109,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 5,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/pages/AdminAvaliacaoLoja.tsx",
+    "line": 34,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/pages/AdminBibliotecaLeis.tsx",
+    "line": 88,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 8,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/pages/AdminBibliotecaLeis.tsx",
+    "line": 89,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": "supabase.from('vade_mecum_lei_snapshots' as any).select('*'),"
+  },
+  {
+    "file": "src/pages/AdminBibliotecaLeisEstaduais.tsx",
+    "line": 374,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/pages/AdminBibliotecaLeisEstaduais.tsx",
+    "line": 381,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/pages/AdminBibliotecaLeisGeral.tsx",
+    "line": 94,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 3,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/pages/AdminBlogEdicao.tsx",
+    "line": 130,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 10,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/pages/AdminBlogEdicao.tsx",
+    "line": 130,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "blog_edicao_temas",
+    "snippet": "supabase.from('blog_edicao_temas').select('*').order('ordem', { ascending: true }),"
+  },
+  {
+    "file": "src/pages/AdminBlogEdicao.tsx",
+    "line": 131,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "blog_edicao_config",
+    "snippet": "supabase.from('blog_edicao_config').select('*').limit(1).single(),"
+  },
+  {
+    "file": "src/pages/AdminBlogEdicao.tsx",
+    "line": 152,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "blog_edicao_posts",
+    "snippet": "const { data } = await supabase.from('blog_edicao_posts').select('*').order('created_at', { ascending: false });"
+  },
+  {
+    "file": "src/pages/AdminBoletins.tsx",
+    "line": 40,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 3,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/pages/AdminBoletins.tsx",
+    "line": 40,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "boletim_config",
+    "snippet": "supabase.from('boletim_config').select('*').eq('id', 1).maybeSingle(),"
+  },
+  {
+    "file": "src/pages/AdminBoletins.tsx",
+    "line": 41,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "boletins_juridicos",
+    "snippet": "supabase.from('boletins_juridicos').select('*').order('created_at', { ascending: false }).limit(40),"
+  },
+  {
+    "file": "src/pages/AdminConteudoFila.tsx",
+    "line": 51,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 4,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/pages/AdminConteudoFila.tsx",
+    "line": 51,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": "supabase.from('conteudo_fila' as any).select('*').order('criado_em', { ascending: true }),"
+  },
+  {
+    "file": "src/pages/AdminDesignImagens.tsx",
+    "line": 85,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 3,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/pages/AdminDesignImagens.tsx",
+    "line": 56,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/pages/AdminErrosQuestoes.tsx",
+    "line": 32,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select(\"*\")"
+  },
+  {
+    "file": "src/pages/AdminFlashcardsEditar.tsx",
+    "line": 74,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 2,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/pages/AdminFlashcardsEditar.tsx",
+    "line": 92,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/pages/AdminFuncoesAssinantes.tsx",
+    "line": 40,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 2,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/pages/AdminFuncoesAssinantes.tsx",
+    "line": 40,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": "const { data } = await supabase.from('feature_limits' as any).select('*').order('sort_order');"
+  },
+  {
+    "file": "src/pages/AdminHeroHome.tsx",
+    "line": 40,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/pages/AdminHomeCuriosidades.tsx",
+    "line": 38,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/pages/AdminJurisprudencia.tsx",
+    "line": 43,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 6,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/pages/AdminJurisprudencia.tsx",
+    "line": 44,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "jurisprudencia_leis_map",
+    "snippet": "fetchAllRows<MapRow>(() => supabase.from('jurisprudencia_leis_map').select('*') as any),"
+  },
+  {
+    "file": "src/pages/AdminLeisCantadas.tsx",
+    "line": 42,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 5,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/pages/AdminMonitor.tsx",
+    "line": 109,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/pages/AdminMonitorUsuarios.tsx",
+    "line": 350,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 2,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/pages/AdminMonitorUsuarios.tsx",
+    "line": 323,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/pages/AdminMonitorUsuarios.tsx",
+    "line": 328,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/pages/AdminMonitorUsuarios.tsx",
+    "line": 333,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/pages/AdminMonitorUsuarios.tsx",
+    "line": 338,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/pages/AdminOverlayFrases.tsx",
+    "line": 91,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 2,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/pages/AdminOverlayFrases.tsx",
+    "line": 78,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select(\"*\")"
+  },
+  {
+    "file": "src/pages/AdminPesquisasProntas.tsx",
+    "line": 21,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 4,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/pages/AdminPilulas.tsx",
+    "line": 74,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 2,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/pages/AdminPushSection.tsx",
+    "line": 171,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 6,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/pages/AdminPushSection.tsx",
+    "line": 185,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select(\"*\")"
+  },
+  {
+    "file": "src/pages/AdminQuestoes.tsx",
+    "line": 36,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "questoes_sync_log",
+    "snippet": "db.from('questoes_sync_log').select('*').order('created_at', { ascending: false }).limit(10),"
+  },
+  {
+    "file": "src/pages/AdminRadaresLeis.tsx",
+    "line": 40,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/pages/AdminResumoLivroAudioEditar.tsx",
+    "line": 36,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 2,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/pages/AdminSuporte.tsx",
+    "line": 202,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 3,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/pages/AdminSuporte.tsx",
+    "line": 40,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/pages/AdminSuporte.tsx",
+    "line": 59,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/pages/AdminSuporte.tsx",
+    "line": 155,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/pages/AdminTransferenciaApp.tsx",
+    "line": 72,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 2,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/pages/AdminVadeMecum.tsx",
+    "line": 30,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/pages/AnotacoesAudio.tsx",
+    "line": 452,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 11,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/pages/AnotacoesAudio.tsx",
+    "line": 607,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*').eq('user_id', user.id).order('created_at', { ascending: false });"
+  },
+  {
+    "file": "src/pages/AprenderDesempenho.tsx",
+    "line": 26,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 2,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/pages/ApresentacaoPlayer.tsx",
+    "line": 230,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 11,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/pages/BibliotecaEditar.tsx",
+    "line": 92,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 3,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/pages/BibliotecaEditar.tsx",
+    "line": 51,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".from(t as any).select('*').order('id', { ascending: true }).limit(2000);"
+  },
+  {
+    "file": "src/pages/BibliotecaEditar.tsx",
+    "line": 117,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".from(tabela as any).select('*').eq('id', selectedId).maybeSingle();"
+  },
+  {
+    "file": "src/pages/BibliotecaEditar.tsx",
+    "line": 203,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": "const { data: fresh } = await supabase.from(tabela as any).select('*').eq('id', selectedId).maybeSingle();"
+  },
+  {
+    "file": "src/pages/BibliotecaEditar.tsx",
+    "line": 217,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": "const { data: fresh } = await supabase.from(tabela as any).select('*').eq('id', selectedId).maybeSingle();"
+  },
+  {
+    "file": "src/pages/EstadoDetalhe.tsx",
+    "line": 45,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/pages/FlashcardsCargos.tsx",
+    "line": 68,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/pages/FlashcardsCargosDetalhes.tsx",
+    "line": 289,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/pages/FlashcardsCornell.tsx",
+    "line": 60,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/pages/FlashcardsDecks.tsx",
+    "line": 133,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 2,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/pages/gamificacao/Forca.tsx",
+    "line": 60,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 3,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/pages/JurisprudenciaArtigo.tsx",
+    "line": 322,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 2,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/pages/Lembretes.tsx",
+    "line": 55,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/pages/LembretesLocal.tsx",
+    "line": 111,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 3,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/pages/LembretesLocal.tsx",
+    "line": 61,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/pages/MeusLembretes.tsx",
+    "line": 40,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/pages/Newsletter.tsx",
+    "line": 51,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/pages/Noticias.tsx",
+    "line": 131,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/pages/pessoal/Avisos.tsx",
+    "line": 35,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 4,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/pages/pessoal/Avisos.tsx",
+    "line": 35,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "avisos",
+    "snippet": "const { data } = await supabase.from(\"avisos\").select(\"*\").order(\"avisar_em\", { ascending: true });"
+  },
+  {
+    "file": "src/pages/pessoal/Livros.tsx",
+    "line": 28,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 2,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/pages/pilulas/PilulasViewer.tsx",
+    "line": 42,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/pages/PraticarSessao.tsx",
+    "line": 33,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 2,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/pages/PreferenciasLembretes.tsx",
+    "line": 55,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 3,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/pages/PreferenciasLembretes.tsx",
+    "line": 55,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": "supabase.from('user_reminder_preferences' as any).select('*').eq('user_id', user.id).maybeSingle(),"
+  },
+  {
+    "file": "src/pages/PreferenciasLembretes.tsx",
+    "line": 56,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": "supabase.from('reminder_dispatch_log' as any).select('*').eq('user_id', user.id).order('created_at', { ascending: false "
+  },
+  {
+    "file": "src/pages/QuestoesLembretes.tsx",
+    "line": 155,
+    "type": "NO_CACHE_LAYER",
+    "severity": "INFO",
+    "count": 6,
+    "note": "Uses useEffect + supabase directly without React Query cache"
+  },
+  {
+    "file": "src/pages/QuestoesLembretes.tsx",
+    "line": 155,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "questoes_lembretes",
+    "snippet": "supabase.from('questoes_lembretes').select('*').eq('user_id', user.id).maybeSingle(),"
+  },
+  {
+    "file": "src/pages/QuestoesSimuladoCargoConfig.tsx",
+    "line": 126,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "questoes_simulados",
+    "snippet": "const query = db.from('questoes_simulados').select('*').eq('user_id', user.id);"
+  },
+  {
+    "file": "src/services/informativosService.ts",
+    "line": 46,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/services/pesquisasProntasService.ts",
+    "line": 24,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/services/pesquisasProntasService.ts",
+    "line": 55,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/services/radarService.ts",
+    "line": 129,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/services/radarService.ts",
+    "line": 256,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": ".select('*')"
+  },
+  {
+    "file": "src/services/syncManager.ts",
+    "line": 10,
+    "type": "SELECT_STAR",
+    "severity": "INFO",
+    "table": "unknown",
+    "snippet": "let q = supabase.from(tableName).select('*').range(from, from + step - 1);"
+  },
+  {
+    "file": "src/components/admin/AdminHojeCards.tsx",
+    "line": 529,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 516,
+    "snippet": "const { data: sessions } = await supabase.from('user_sessions')"
+  },
+  {
+    "file": "src/components/admin/AdminHojeCards.tsx",
+    "line": 529,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 518,
+    "snippet": "const { data: sessions } = await supabase.from('user_sessions')"
+  },
+  {
+    "file": "src/components/admin/AdminHojeCards.tsx",
+    "line": 529,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 523,
+    "snippet": "const { data: sessions } = await supabase.from('user_sessions')"
+  },
+  {
+    "file": "src/components/admin/AdminHojeCards.tsx",
+    "line": 529,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 526,
+    "snippet": "const { data: sessions } = await supabase.from('user_sessions')"
+  },
+  {
+    "file": "src/components/admin/AprenderPorLivroTab.tsx",
+    "line": 132,
+    "type": "QUERY_IN_LOOP",
+    "severity": "CRITICAL",
+    "loopLine": 126,
+    "snippet": "supabase.from('aprender_sumario_sugerido')"
+  },
+  {
+    "file": "src/components/admin/AprenderPorLivroTab.tsx",
+    "line": 104,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 94,
+    "snippet": "supabase.from('biblioteca_leitura_nativa')"
+  },
+  {
+    "file": "src/components/admin/AprenderPorLivroTab.tsx",
+    "line": 104,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 100,
+    "snippet": "supabase.from('biblioteca_leitura_nativa')"
+  },
+  {
+    "file": "src/components/admin/AprenderPorLivroTab.tsx",
+    "line": 132,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 124,
+    "snippet": "supabase.from('aprender_sumario_sugerido')"
+  },
+  {
+    "file": "src/components/admin/AprenderPorLivroTab.tsx",
+    "line": 132,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 129,
+    "snippet": "supabase.from('aprender_sumario_sugerido')"
+  },
+  {
+    "file": "src/components/admin/AprenderPorLivroTab.tsx",
+    "line": 240,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 237,
+    "snippet": "supabase.from('aprender_blocos')"
+  },
+  {
+    "file": "src/components/admin/horus/HorusConversasTab.tsx",
+    "line": 35,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 34,
+    "snippet": "const { data: counts } = await supabase.from('horus_conversations').select('phone_e164, created_at, content').in('phone_"
+  },
+  {
+    "file": "src/components/admin/horus/HorusConversasTab.tsx",
+    "line": 49,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 41,
+    "snippet": "const { data } = await supabase.from('horus_conversations').select('id, role, content, created_at, duration_ms, tokens_i"
+  },
+  {
+    "file": "src/components/admin/horus/HorusFuncoesTab.tsx",
+    "line": 55,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 52,
+    "snippet": "? await supabase.from('horus_funcoes').update(payload).eq('id', editing.id)"
+  },
+  {
+    "file": "src/components/admin/horus/HorusNotificacoesTab.tsx",
+    "line": 50,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 49,
+    "snippet": "const { error } = await supabase.from('push_automations').update({ enabled: v }).eq('id', a.id);"
+  },
+  {
+    "file": "src/components/biblioteca/BibliotecaBuscaOverlay.tsx",
+    "line": 98,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 90,
+    "snippet": "let q: any = supabase.from(colecao.table as any).select(colecao.select);"
+  },
+  {
+    "file": "src/components/perfil/AtuacaoCard.tsx",
+    "line": 29,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 25,
+    "snippet": "await supabase.from('profiles').update({ perfil_tipos: next, perfil_contexto: contexto }).eq('id', userId);"
+  },
+  {
+    "file": "src/components/perfil/PerfilHero.tsx",
+    "line": 45,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 38,
+    "snippet": "await supabase.from('profiles').update({ display_name: newName.trim() }).eq('id', userId);"
+  },
+  {
+    "file": "src/components/vademecum/ArtigoBottomSheet.tsx",
+    "line": 723,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 709,
+    "snippet": "await supabase.from('artigos_grifos').upsert("
+  },
+  {
+    "file": "src/components/vademecum/ArtigoBottomSheet.tsx",
+    "line": 755,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 743,
+    "snippet": "const { error: notesInsertError } = await supabase.from('artigos_anotacoes').insert(notasRows);"
+  },
+  {
+    "file": "src/components/vademecum/ArtigoBottomSheet.tsx",
+    "line": 755,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 746,
+    "snippet": "const { error: notesInsertError } = await supabase.from('artigos_anotacoes').insert(notasRows);"
+  },
+  {
+    "file": "src/components/vademecum/ArtigoBottomSheet.tsx",
+    "line": 1479,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 1465,
+    "snippet": "const { error: highlightsError } = await supabase.from('artigos_grifos').upsert({"
+  },
+  {
+    "file": "src/components/vademecum/ArtigoBottomSheet.tsx",
+    "line": 1751,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 1739,
+    "snippet": "const { error: notesInsertError } = await supabase.from('artigos_anotacoes').insert(notasRows);"
+  },
+  {
+    "file": "src/components/vademecum/ArtigoBottomSheet.tsx",
+    "line": 1751,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 1742,
+    "snippet": "const { error: notesInsertError } = await supabase.from('artigos_anotacoes').insert(notasRows);"
+  },
+  {
+    "file": "src/components/vademecum/PessoalSheet.tsx",
+    "line": 120,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 108,
+    "snippet": "supabase.from('profiles').select('display_name,nome_preferido,is_premium,bio,capa_id,interacoes_total,segundos_em_tela,a"
+  },
+  {
+    "file": "src/components/vademecum/PessoalSheet.tsx",
+    "line": 233,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 222,
+    "snippet": "const { data } = await supabase.from('profiles').select('interacoes_total,segundos_em_tela').eq('id', userId).maybeSingl"
+  },
+  {
+    "file": "src/hooks/useLembretes.ts",
+    "line": 172,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 171,
+    "snippet": "await supabase.from('avisos').update({ ativo: novo }).eq('id', item.raw);"
+  },
+  {
+    "file": "src/hooks/usePremiumUsage.ts",
+    "line": 52,
+    "type": "QUERY_IN_LOOP",
+    "severity": "CRITICAL",
+    "loopLine": 46,
+    "snippet": "const { data } = await supabase.from('feature_usage' as any)"
+  },
+  {
+    "file": "src/lib/aprenderAreaLoader.ts",
+    "line": 96,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 89,
+    "snippet": "supabase.from('aprender_blocos').select('aula_id').in('aula_id', ids),"
+  },
+  {
+    "file": "src/lib/artigosFavoritos.ts",
+    "line": 185,
+    "type": "QUERY_IN_LOOP",
+    "severity": "CRITICAL",
+    "loopLine": 184,
+    "snippet": "await supabase.from('artigos_favoritos').upsert("
+  },
+  {
+    "file": "src/lib/nativeGeofence.ts",
+    "line": 379,
+    "type": "QUERY_IN_LOOP",
+    "severity": "CRITICAL",
+    "loopLine": 374,
+    "snippet": "await supabase.from('location_reminders')"
+  },
+  {
+    "file": "src/lib/tematicaMaratonasStore.ts",
+    "line": 101,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 99,
+    "snippet": "const { error } = await supabase.from('tematica_maratonas').update(payload).eq('id', id);"
+  },
+  {
+    "file": "src/pages/AdminAppleCsr.tsx",
+    "line": 199,
+    "type": "QUERY_IN_LOOP",
+    "severity": "CRITICAL",
+    "loopLine": 186,
+    "snippet": "const { error: upErr } = await supabase.from('apple_csr_storage')"
+  },
+  {
+    "file": "src/pages/AdminAppleCsr.tsx",
+    "line": 227,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 221,
+    "snippet": "const { error: upErr } = await supabase.from('apple_csr_storage')"
+  },
+  {
+    "file": "src/pages/AdminAudioaulas.tsx",
+    "line": 192,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 186,
+    "snippet": "const { error } = await supabase.from('audioaulas_cursos').update({ publicado: novo }).eq('id', curso.id);"
+  },
+  {
+    "file": "src/pages/AdminBlogEdicao.tsx",
+    "line": 152,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 141,
+    "snippet": "const { data } = await supabase.from('blog_edicao_posts').select('*').order('created_at', { ascending: false });"
+  },
+  {
+    "file": "src/pages/AdminFuncoesAssinantes.tsx",
+    "line": 68,
+    "type": "QUERY_IN_LOOP",
+    "severity": "CRITICAL",
+    "loopLine": 58,
+    "snippet": "const { error } = await supabase.from('feature_limits' as any).update({"
+  },
+  {
+    "file": "src/pages/AdminHeroHome.tsx",
+    "line": 97,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 84,
+    "snippet": "(supabase as any).from('hero_home_images').update({ ordem: img.ordem }).eq('id', img.id),"
+  },
+  {
+    "file": "src/pages/AdminHeroHome.tsx",
+    "line": 97,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 92,
+    "snippet": "(supabase as any).from('hero_home_images').update({ ordem: img.ordem }).eq('id', img.id),"
+  },
+  {
+    "file": "src/pages/AdminHeroHome.tsx",
+    "line": 97,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 96,
+    "snippet": "(supabase as any).from('hero_home_images').update({ ordem: img.ordem }).eq('id', img.id),"
+  },
+  {
+    "file": "src/pages/AdminLeituraNativa.tsx",
+    "line": 167,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 159,
+    "snippet": "const { error } = await supabase.from('biblioteca_leitura_jobs' as any).insert(rows);"
+  },
+  {
+    "file": "src/pages/AdminResumoLivroAudioEditar.tsx",
+    "line": 36,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 35,
+    "snippet": "const { data, error } = await supabase.from(col.table as any).select(col.select);"
+  },
+  {
+    "file": "src/pages/AnotacoesAudio.tsx",
+    "line": 629,
+    "type": "QUERY_IN_LOOP",
+    "severity": "CRITICAL",
+    "loopLine": 615,
+    "snippet": "const { data } = await supabase.storage.from('aulas-audio').createSignedUrl(r.file_path, 3600);"
+  },
+  {
+    "file": "src/pages/Bibliotecas.tsx",
+    "line": 108,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 106,
+    "snippet": "const { count } = await supabase.from(c.table).select('id', { count: 'exact', head: true });"
+  },
+  {
+    "file": "src/pages/BibliotecaTrilhas.tsx",
+    "line": 202,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 196,
+    "snippet": "let q = supabase.from(colecao.table as any).select(colecao.select).limit(2000);"
+  },
+  {
+    "file": "src/pages/LocaisJuridicos.tsx",
+    "line": 201,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 189,
+    "snippet": "const { data, error } = await supabase.from('locais_juridicos').select('categoria');"
+  },
+  {
+    "file": "src/pages/LocaisJuridicos.tsx",
+    "line": 201,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 190,
+    "snippet": "const { data, error } = await supabase.from('locais_juridicos').select('categoria');"
+  },
+  {
+    "file": "src/pages/pessoal/Avisos.tsx",
+    "line": 67,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 62,
+    "snippet": "await supabase.from(\"avisos\").delete().eq(\"id\", id);"
+  },
+  {
+    "file": "src/scripts/seed_exemplos_cp.ts",
+    "line": 176,
+    "type": "QUERY_IN_LOOP",
+    "severity": "CRITICAL",
+    "loopLine": 173,
+    "snippet": "const { error } = await supabase.from('artigo_ai_cache').upsert("
+  },
+  {
+    "file": "src/services/bibliotecaWarmup.ts",
+    "line": 44,
+    "type": "QUERY_IN_LOOP",
+    "severity": "CRITICAL",
+    "loopLine": 35,
+    "snippet": "let q: any = supabase.from(colecao.table as any).select(colecao.select);"
+  },
+  {
+    "file": "src/services/bibliotecaWarmup.ts",
+    "line": 44,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 38,
+    "snippet": "let q: any = supabase.from(colecao.table as any).select(colecao.select);"
+  },
+  {
+    "file": "src/services/explicacaoWorker.ts",
+    "line": 177,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 165,
+    "snippet": "await supabase.from('artigo_ai_cache').insert({"
+  },
+  {
+    "file": "src/services/explicacaoWorker.ts",
+    "line": 177,
+    "type": "QUERY_PER_RENDER_ITEM",
+    "severity": "CRITICAL",
+    "mapLine": 166,
+    "snippet": "await supabase.from('artigo_ai_cache').insert({"
+  },
+  {
+    "file": "src/services/leituraNativaPrefetch.ts",
+    "line": 222,
+    "type": "QUERY_IN_LOOP",
+    "severity": "CRITICAL",
+    "loopLine": 221,
+    "snippet": "const { data } = await supabase.from(t.tabela as any).select('id').limit(5000);"
+  },
+  {
+    "file": "src/services/syncQueue.ts",
+    "line": 50,
+    "type": "QUERY_IN_LOOP",
+    "severity": "CRITICAL",
+    "loopLine": 47,
+    "snippet": "let q = (supabase as any).from(op.table).delete();"
+  },
+  {
+    "file": "src/services/syncQueue.ts",
+    "line": 54,
+    "type": "QUERY_IN_LOOP",
+    "severity": "CRITICAL",
+    "loopLine": 51,
+    "snippet": "({ error } = await (supabase as any).from(op.table).insert(op.values));"
+  }
+]
