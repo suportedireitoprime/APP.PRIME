@@ -55,7 +55,7 @@ export default function STFDashboard() {
       title: 'Últimas Notícias',
       description: 'Decisões e acontecimentos recentes do Tribunal.',
       icon: Newspaper,
-      path: '/ferramentas/stf/blog',
+      path: '/ferramentas/stf/noticias',
       color: '#F59E0B'
     }
   ];
