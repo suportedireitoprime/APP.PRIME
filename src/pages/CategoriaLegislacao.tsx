@@ -35,6 +35,12 @@ import { track } from '@/lib/analyticsEvents';
 import { toggleArtigoFavorito, listNumerosFavoritosByTabela, ARTIGOS_FAV_EVENT } from '@/lib/artigosFavoritos';
 import { isFavorito as isLeiFavorita, toggleFavorito as toggleLeiFavorito, LEIS_FAVORITOS_EVENT } from '@/lib/leisFavoritos';
 import { useTrackArea } from "@/hooks/useTrackArea";
+import { useLeiData } from '@/hooks/domain/useLeiData';
+import { useLeiUserTags } from '@/hooks/domain/useLeiUserTags';
+import { useLeiArtigos } from '@/hooks/domain/useLeiArtigos';
+import { useLeisListas } from '@/hooks/domain/useLeisListas';
+import NovidadesPanel from '@/components/vademecum/panels/NovidadesPanel';
+import { FavPanel, PlaylistPanel, AnotacoesPanel } from '@/components/vademecum/panels/OverlayPanels';
 
 const TIPO_CONFIG: Record<string, { label: string; icon: React.ElementType; bg: string }> = {
   constituicao: { label: 'Constituição', icon: Landmark, bg: 'from-amber-500/90 to-amber-700/80' },
@@ -127,11 +133,8 @@ const CategoriaLegislacao = () => {
   const [selectedLeiNome, setSelectedLeiNome] = useState('');
   const [selectedLeiDescricao, setSelectedLeiDescricao] = useState('');
   const [selectedTabelaNome, setSelectedTabelaNome] = useState<string | null>(null);
-  const [selectedLeiEmenta, setSelectedLeiEmenta] = useState<string>('');
   const [showEmentaDialog, setShowEmentaDialog] = useState(false);
-  const [artigos, setArtigos] = useState<ArtigoLei[]>([]);
-  const [loadingArtigos, setLoadingArtigos] = useState(false);
-  const [loadedKey, setLoadedKey] = useState<string | null>(null);
+  const { artigos, setArtigos, loadingArtigos, setLoadingArtigos, loadedKey, setLoadedKey } = useLeiArtigos(selectedLeiId, selectedTabelaNome);
   const [openArtigo, setOpenArtigo] = useState<ArtigoLei | null>(null);
   const [openFromNovidades, setOpenFromNovidades] = useState(false);
   const [subcat, setSubcat] = useState('todas');
@@ -148,21 +151,6 @@ const CategoriaLegislacao = () => {
     if (!selectedLeiId) { setShowFooter(false); return; }
     const t = setTimeout(() => setShowFooter(true), 380);
     return () => clearTimeout(t);
-  }, [selectedLeiId]);
-
-  // Busca a ementa oficial (texto vermelho estilo Planalto) da lei selecionada.
-  useEffect(() => {
-    if (!selectedLeiId) { setSelectedLeiEmenta(''); return; }
-    let cancelled = false;
-    (async () => {
-      const { data } = await (supabase as any)
-        .from('vade_mecum_leis')
-        .select('ementa')
-        .eq('slug', selectedLeiId)
-        .maybeSingle();
-      if (!cancelled) setSelectedLeiEmenta((data?.ementa as string) || '');
-    })();
-    return () => { cancelled = true; };
   }, [selectedLeiId]);
 
   // Analytics: lei selecionada
@@ -183,8 +171,6 @@ const CategoriaLegislacao = () => {
   });
   const [expandedTitulo, setExpandedTitulo] = useState<string | null>(null);
   // Playlist state
-  const [playlistNarracoes, setPlaylistNarracoes] = useState<Record<string, string>>({});
-  const [loadingPlaylist, setLoadingPlaylist] = useState(false);
   const [playingUrl, setPlayingUrl] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [favoritos, setFavoritos] = useState<Set<string>>(() => {
@@ -193,66 +179,16 @@ const CategoriaLegislacao = () => {
       return saved ? new Set(JSON.parse(saved)) : new Set();
     } catch { return new Set(); }
   });
-  // Leis Ordinárias state
-  const [selectedAno, setSelectedAno] = useState<number | null>(null);
-  const [leisOrdinarias, setLeisOrdinarias] = useState<LeiOrdinaria[]>([]);
-  const [loadingLeisOrd, setLoadingLeisOrd] = useState(false);
-  const [searchLeisOrd, setSearchLeisOrd] = useState('');
-  const [openLeiOrd, setOpenLeiOrd] = useState<LeiOrdinaria | null>(null);
-  // Decretos state
-  const [selectedAnoDecreto, setSelectedAnoDecreto] = useState<number | null>(null);
-  const [decretos, setDecretos] = useState<LeiOrdinaria[]>([]);
-  const [loadingDecretos, setLoadingDecretos] = useState(false);
-  const [searchDecretos, setSearchDecretos] = useState('');
-  const [openDecreto, setOpenDecreto] = useState<LeiOrdinaria | null>(null);
-  // Súmulas state
-  const [selectedTribunal, setSelectedTribunal] = useState<string | null>(null);
-  const [sumulas, setSumulas] = useState<Sumula[]>([]);
-  const [loadingSumulas, setLoadingSumulas] = useState(false);
-  const [searchSumulas, setSearchSumulas] = useState('');
-  const [openSumula, setOpenSumula] = useState<Sumula | null>(null);
+  // Leis Ordinárias, Decretos, Súmulas states extracted to hook
+  const {
+    selectedAno, setSelectedAno, leisOrdinarias, loadingLeisOrd, searchLeisOrd, setSearchLeisOrd, openLeiOrd, setOpenLeiOrd,
+    selectedAnoDecreto, setSelectedAnoDecreto, decretos, loadingDecretos, searchDecretos, setSearchDecretos, openDecreto, setOpenDecreto,
+    selectedTribunal, setSelectedTribunal, sumulas, loadingSumulas, searchSumulas, setSearchSumulas, openSumula, setOpenSumula
+  } = useLeisListas();
   const [showGrafo, setShowGrafo] = useState(false);
-  const [dbAlteracoes, setDbAlteracoes] = useState<{ artigo_numero: string; tipo_alteracao: string; texto_anterior: string | null; texto_atual: string | null; detectado_em: string }[]>([]);
-  const [loadingDbAlteracoes, setLoadingDbAlteracoes] = useState(false);
-  const [grifadoNumeros, setGrifadoNumeros] = useState<Set<string>>(new Set());
-  const [anotadoNumeros, setAnotadoNumeros] = useState<Set<string>>(new Set());
-  const [favArtigoNumeros, setFavArtigoNumeros] = useState<Set<string>>(new Set());
-  const [leiFavToggle, setLeiFavToggle] = useState(0);
 
-  // Load user's grifos & anotacoes for the selected lei (for tag indicators)
-  useEffect(() => {
-    if (!selectedTabelaNome) { setGrifadoNumeros(new Set()); setAnotadoNumeros(new Set()); return; }
-    let cancelled = false;
-    (async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) { setGrifadoNumeros(new Set()); setAnotadoNumeros(new Set()); return; }
-        const [{ data: grifos }, { data: notas }] = await Promise.all([
-          supabase.from('artigos_grifos').select('numero_artigo').eq('tabela_codigo', selectedTabelaNome).eq('user_id', user.id),
-          supabase.from('artigos_anotacoes').select('artigo_id').eq('user_id', user.id).like('artigo_id', `${selectedTabelaNome}::%`),
-        ]);
-        if (cancelled) return;
-        setGrifadoNumeros(new Set((grifos || []).map((g: any) => String(g.numero_artigo))));
-        setAnotadoNumeros(new Set((notas || []).map((n: any) => String(n.artigo_id).split('::')[1]).filter(Boolean)));
-      } catch { /* silent */ }
-    })();
-    return () => { cancelled = true; };
-  }, [selectedTabelaNome]);
-
-  // Hidrata os favoritos (Meus Artigos) do usuário para a lei selecionada.
-  useEffect(() => {
-    if (!selectedTabelaNome) { setFavArtigoNumeros(new Set()); return; }
-    let cancelled = false;
-    const load = () => {
-      listNumerosFavoritosByTabela(selectedTabelaNome).then((nums) => {
-        if (!cancelled) setFavArtigoNumeros(new Set(nums));
-      }).catch(() => {});
-    };
-    load();
-    const onChange = () => load();
-    window.addEventListener(ARTIGOS_FAV_EVENT, onChange);
-    return () => { cancelled = true; window.removeEventListener(ARTIGOS_FAV_EVENT, onChange); };
-  }, [selectedTabelaNome]);
+  const { selectedLeiEmenta, dbAlteracoes, loadingDbAlteracoes, playlistNarracoes, loadingPlaylist, setDbAlteracoes, setLoadingDbAlteracoes, setLoadingPlaylist, setPlaylistNarracoes } = useLeiData(selectedLeiId, selectedTabelaNome, overlayPanel);
+  const { grifadoNumeros, anotadoNumeros, favArtigoNumeros, leiFavToggle, setLeiFavToggle, setGrifadoNumeros, setAnotadoNumeros, setFavArtigoNumeros } = useLeiUserTags(selectedTabelaNome);
 
   // Re-render quando o favorito da própria lei mudar.
   useEffect(() => {
@@ -265,65 +201,6 @@ const CategoriaLegislacao = () => {
     };
   }, []);
 
-
-  // Fetch DB alteracoes when novidades panel opens
-  useEffect(() => {
-    if (overlayPanel !== 'novidades' || !selectedTabelaNome) return;
-    
-    setLoadingDbAlteracoes(true);
-    fetch(
-      `${LEIS_SUPABASE_URL}/functions/v1/vademecum-scraper?tabela_nome=${encodeURIComponent(selectedTabelaNome)}`,
-      { headers: leisAuthHeaders() }
-    )
-      .then(async (res) => {
-        if (!res.ok) return [];
-        return res.json();
-      })
-      .then((data) => {
-        setDbAlteracoes(Array.isArray(data) ? data : []);
-        setLoadingDbAlteracoes(false);
-      })
-      .catch((e) => {
-        console.error('Erro ao carregar alterações legislativas:', e);
-        setDbAlteracoes([]);
-        setLoadingDbAlteracoes(false);
-      });
-  }, [overlayPanel, selectedTabelaNome]);
-
-  // Fetch narrations when playlist tab is active
-  useEffect(() => {
-    if (overlayPanel !== 'playlist' || !selectedTabelaNome) return;
-    let cancelled = false;
-    setLoadingPlaylist(true);
-    fetch(
-      `${LEIS_SUPABASE_URL}/rest/v1/narracoes_artigos?tabela_nome=eq.${encodeURIComponent(selectedTabelaNome)}&select=artigo_numero,audio_url`,
-      { headers: leisAuthHeaders() }
-    )
-      .then(async (res) => {
-        if (!res.ok) return [];
-        return res.json();
-      })
-      .then((rows) => {
-        if (cancelled) return;
-        const map: Record<string, string> = {};
-        (Array.isArray(rows) ? rows : []).forEach((row: any) => {
-          if (row?.artigo_numero && row?.audio_url) map[row.artigo_numero] = row.audio_url;
-        });
-        setPlaylistNarracoes(map);
-      })
-      .catch((e) => {
-        if (!cancelled) console.error('Erro ao carregar playlist:', e);
-      })
-      .finally(() => {
-        if (!cancelled) setLoadingPlaylist(false);
-      });
-    return () => { cancelled = true; };
-  }, [overlayPanel, selectedTabelaNome]);
-
-  // Reset playlist when law changes
-  useEffect(() => {
-    setPlaylistNarracoes({});
-  }, [selectedTabelaNome]);
 
   // Load recent articles per tabela
   useEffect(() => {
@@ -551,36 +428,6 @@ const CategoriaLegislacao = () => {
   }, [leiSlugParam, tipo, artigoNumeroParam, leis, navigate]);
 
 
-  // Fetch leis ordinárias when year selected
-  useEffect(() => {
-    if (!selectedAno) return;
-    setLoadingLeisOrd(true);
-    fetchLeisOrdinariasPorAno(selectedAno).then((data) => {
-      setLeisOrdinarias(data);
-      setLoadingLeisOrd(false);
-    });
-  }, [selectedAno]);
-
-  // Fetch decretos when year selected
-  useEffect(() => {
-    if (!selectedAnoDecreto) return;
-    setLoadingDecretos(true);
-    fetchDecretosPorAno(selectedAnoDecreto).then((data) => {
-      setDecretos(data);
-      setLoadingDecretos(false);
-    });
-  }, [selectedAnoDecreto]);
-
-  // Fetch sumulas when tribunal selected
-  useEffect(() => {
-    if (!selectedTribunal) return;
-    setLoadingSumulas(true);
-    fetchSumulas(selectedTribunal).then((data) => {
-      setSumulas(data);
-      setLoadingSumulas(false);
-    });
-  }, [selectedTribunal]);
-
   const filteredSumulas = useMemo(() => {
     if (!searchSumulas) return sumulas;
     const q = searchSumulas.toLowerCase();
@@ -623,86 +470,6 @@ const CategoriaLegislacao = () => {
       lei.descricao.toLowerCase().includes(q)
     );
   }, [leis, searchQuery, tipo, subcat]);
-
-  useEffect(() => {
-    if (!selectedLeiId || !selectedTabelaNome) return;
-    let cancelled = false;
-    const tabelaAtual = selectedTabelaNome;
-
-    // 1) Cache em memória — instant, sem spinner (bundle prime já rodou no boot).
-    const cached = getCachedArtigos(tabelaAtual);
-    if (cached && cached.length > 0) {
-      setArtigos(cached);
-      setLoadedKey(tabelaAtual);
-      setLoadingArtigos(false);
-      // Revalida em background (sem bloquear UI).
-      fetchArtigosPaginado(tabelaAtual, 0, 10000).then((fresh) => {
-        if (!cancelled && fresh.length > 0) {
-          startTransition(() => setArtigos(fresh));
-        }
-      }).catch(() => {});
-      return () => { cancelled = true; };
-    }
-
-    // 2) Corrida: bundle JSON local vs Dexie persistido — quem vier primeiro renderiza.
-    //    Ambos são "instantâneos" no Android (bundle vem do APK, Dexie da IDB local).
-    let settled = false;
-    const settle = (arts: ArtigoLei[]) => {
-      if (cancelled || settled || !arts || arts.length === 0) return;
-      settled = true;
-      setArtigos(arts);
-      setLoadedKey(tabelaAtual);
-      setLoadingArtigos(false);
-      // Revalida silenciosamente
-      fetchArtigosPaginado(tabelaAtual, 0, 10000).then((fresh) => {
-        if (!cancelled && fresh.length > 0) startTransition(() => setArtigos(fresh));
-      }).catch(() => {});
-    };
-
-    // Bundle nativo (rápido em Android — arquivo do APK).
-    import('@/services/lawsBundle').then(async ({ loadManifest, loadBundledLei, getBundleSlugForTabela }) => {
-      const manifest = await loadManifest();
-      if (!manifest || cancelled || settled) return;
-      const slug = getBundleSlugForTabela(tabelaAtual);
-      if (!slug) return;
-      const bundled = await loadBundledLei(slug);
-      if (bundled && bundled.length > 0) {
-        setCachedArtigos(tabelaAtual, bundled);
-        settle(bundled);
-      }
-    }).catch(() => {});
-
-    // Dexie (subsequent visits).
-    loadPersistedArtigos(tabelaAtual).then((persisted) => {
-      if (persisted && persisted.length > 0) settle(persisted);
-    }).catch(() => {});
-
-    // 3) Fallback com skeleton apenas se nada aparecer em 180ms.
-    const skeletonTimer = setTimeout(() => {
-      if (cancelled || settled) return;
-      setLoadingArtigos(true);
-      fetchArtigosInstant(tabelaAtual, 10)
-        .then((first) => {
-          if (cancelled) return;
-          if (first.length > 0) {
-            settle(first);
-          } else {
-            setArtigos([]);
-            setLoadedKey(tabelaAtual);
-            setLoadingArtigos(false);
-          }
-        })
-        .catch(() => {
-          if (cancelled) return;
-          setArtigos([]);
-          setLoadedKey(tabelaAtual);
-          setLoadingArtigos(false);
-        });
-    }, 280);
-
-    return () => { cancelled = true; clearTimeout(skeletonTimer); };
-  }, [selectedLeiId, selectedTabelaNome]);
-
 
   // Prefetch Radar data in background as soon as a law is selected
   useEffect(() => {
@@ -1812,293 +1579,49 @@ const CategoriaLegislacao = () => {
       </div>
     ) : null;
 
-    // ---- Overlay panel content builders ----
+    // ---- Overlay panel content (delegated to extracted components) ----
     const favContent = (
-      <div className="space-y-2 pb-8">
-        {artigos.filter(a => isArtigoFav(a)).length > 0 ? (
-          artigos.filter(a => isArtigoFav(a)).map((artigo, i) => (
-            <ArtigoCard key={artigo.id} artigo={artigo} index={i} onClick={() => { setOverlayPanel(null); setOpenArtigo(artigo); }} accentColor={leiAccent} tags={{ favorito: true, grifado: grifadoNumeros.has(artigo.numero), anotado: anotadoNumeros.has(artigo.numero) }} />
-          ))
-        ) : (
-          <div className="flex flex-col items-center py-16 gap-3">
-            <Heart className="w-10 h-10 text-muted-foreground/40" />
-            <p className="text-foreground text-sm font-medium">Você não tem nenhum artigo favoritado</p>
-            <p className="text-muted-foreground/70 text-xs text-center max-w-[240px]">Toque no coração ao abrir um artigo para favoritá-lo.</p>
-          </div>
-        )}
-      </div>
+      <FavPanel
+        artigos={artigos}
+        isArtigoFav={isArtigoFav}
+        onOpenArtigo={(artigo) => { setOverlayPanel(null); setOpenArtigo(artigo); }}
+        accentColor={leiAccent}
+        grifadoNumeros={grifadoNumeros}
+        anotadoNumeros={anotadoNumeros}
+      />
     );
 
-    const playlistContent = loadingPlaylist ? (
-      <div className="flex flex-col items-center justify-center py-16 gap-3">
-        <Loader2 className="w-8 h-8 text-primary animate-spin" />
-        <p className="text-muted-foreground text-sm">Carregando playlist...</p>
-      </div>
-    ) : (() => {
-      const narradosEntries = Object.entries(playlistNarracoes);
-      if (narradosEntries.length === 0) {
-        return (
-          <div className="flex flex-col items-center py-12 gap-2">
-            <ListMusic className="w-8 h-8 text-muted-foreground/40" />
-            <p className="text-muted-foreground text-sm">Nenhuma narração disponível.</p>
-            <p className="text-muted-foreground/60 text-xs">Gere narrações na tela de Narração de Artigos.</p>
-          </div>
-        );
-      }
-      const seenNumeros = new Set<string>();
-      const narradosArtigos = artigos.filter(a => {
-        if (!playlistNarracoes[a.numero]) return false;
-        if (seenNumeros.has(a.numero)) return false;
-        seenNumeros.add(a.numero);
-        return true;
-      });
-      return (
-        <div className="space-y-2 pb-8">
-          <p className="text-muted-foreground text-xs font-semibold uppercase tracking-wider mb-3">
-            🎧 {narradosArtigos.length} artigo{narradosArtigos.length !== 1 ? 's' : ''} narrado{narradosArtigos.length !== 1 ? 's' : ''}
-          </p>
-          {narradosArtigos.map((artigo, i) => {
-            const audioUrl = playlistNarracoes[artigo.numero];
-            const isPlaying = playingUrl === audioUrl;
-            return (
-              <motion.div
-                key={artigo.id}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.02 }}
-                className="rounded-2xl bg-card hover:bg-secondary/60 transition-all flex overflow-hidden"
-              >
-                <div className="w-1.5 bg-primary rounded-l-2xl shrink-0" />
-                <div className="flex items-center gap-3 p-3.5 flex-1 min-w-0">
-                  <button
-                    onClick={() => togglePlayAudio(audioUrl)}
-                    className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-all ${
-                      isPlaying
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-primary/15 text-primary hover:bg-primary/25'
-                    }`}
-                  >
-                    {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
-                  </button>
-                  <div
-                    className="flex-1 min-w-0 cursor-pointer"
-                    onClick={() => { setOverlayPanel(null); setOpenArtigo(artigo); }}
-                  >
-                    <h4 className="font-display text-[15px] font-bold text-primary-light">{artigo.numero}</h4>
-                    <p className="text-[13px] leading-relaxed line-clamp-2 text-foreground/80 font-body">
-                      {artigo.caput.substring(0, 120)}{artigo.caput.length > 120 ? '...' : ''}
-                    </p>
-                  </div>
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-      );
-    })();
-
-    const anotacoesContent = (
-      <div className="space-y-2 pb-8">
-        <div className="flex flex-col items-center py-12 gap-2">
-          <StickyNote className="w-8 h-8 text-muted-foreground/40" />
-          <p className="text-muted-foreground text-sm">Nenhuma anotação ainda.</p>
-          <p className="text-muted-foreground/60 text-xs">Grife um trecho e adicione um comentário para criar anotações.</p>
-        </div>
-      </div>
+    const playlistContent = (
+      <PlaylistPanel
+        artigos={artigos}
+        playlistNarracoes={playlistNarracoes}
+        loadingPlaylist={loadingPlaylist}
+        playingUrl={playingUrl}
+        togglePlayAudio={togglePlayAudio}
+        onOpenArtigo={(artigo) => { setOverlayPanel(null); setOpenArtigo(artigo); }}
+      />
     );
 
-    const novidadesContent = (() => {
-      const modRegex = /\((?:Redação\s+dada|Incluíd[oa]|Acrescid[oa]|Revogad[oa]|Alterad[oa]|Vetad[oa]|Vigência|Regulamento|Vide|Promulgação|Renumerado|Transformado|Suprimido|Restabelecido|Ressalvado|Produção de efeito)[^)]*\)/gi;
-      const yearRegex = /\b(1\d{3}|20\d{2})\b/;
-      const typeRegex = /^\((Redação\s+dada|Incluíd[oa]|Acrescid[oa]|Revogad[oa]|Alterad[oa]|Vetad[oa]|Vigência|Regulamento|Vide|Promulgação|Renumerado|Transformado|Suprimido|Restabelecido|Ressalvado|Produção de efeito)/i;
+    const anotacoesContent = <AnotacoesPanel />;
 
-      type ModItem = { artigo: ArtigoLei; tipo: string; referencia: string; ano: number; parteModificada: string; leiNome: string; linhasModificadas: number[]; fromMonitor?: boolean };
-      const items: ModItem[] = [];
-
-      for (const artigo of artigos) {
-        const lines = artigo.caput.split('\n').filter(l => l.trim());
-        const refGroups = new Map<string, { indices: number[]; tipo: string; ref: string; ano: number }>();
-        for (let li = 0; li < lines.length; li++) {
-          const lineMatches = lines[li].match(modRegex);
-          if (!lineMatches) continue;
-          const ref = lineMatches[lineMatches.length - 1];
-          const refKey = ref.replace(/^\(/, '').replace(/\)$/, '');
-          const tm = ref.match(typeRegex);
-          const ym = ref.match(yearRegex);
-          let tipo = tm ? tm[1].replace(/\s+dada/i, '') : 'Alteração';
-          if (/^redaç/i.test(tipo)) tipo = 'Alterada';
-          const ano = ym ? parseInt(ym[1]) : 0;
-          if (!refGroups.has(refKey)) {
-            refGroups.set(refKey, { indices: [], tipo, ref: refKey, ano });
-          }
-          refGroups.get(refKey)!.indices.push(li);
-        }
-        if (refGroups.size === 0) continue;
-        for (const [refKey, group] of refGroups) {
-          let parteModificada = 'Artigo inteiro';
-          if (group.indices.length < lines.length) {
-            const firstModLine = lines[group.indices[0]];
-            if (/^§\s*\d+[º°]?/i.test(firstModLine)) {
-              const pMatch = firstModLine.match(/^(§\s*\d+[º°]?)/i);
-              parteModificada = pMatch ? pMatch[1].replace(/°/g, 'º') : '§';
-            } else if (/^[IVXLC]+\s*[-–.]/i.test(firstModLine)) {
-              const iMatch = firstModLine.match(/^([IVXLC]+)/i);
-              parteModificada = iMatch ? `Inciso ${iMatch[1]}` : 'Inciso';
-            } else if (/^[a-z]\)/i.test(firstModLine)) {
-              const aMatch = firstModLine.match(/^([a-z]\))/i);
-              parteModificada = aMatch ? `Alínea ${aMatch[1]}` : 'Alínea';
-            } else if (/^Parágrafo\s+único/i.test(firstModLine)) {
-              parteModificada = 'Parágrafo único';
-            } else if (/caput/i.test(refKey)) {
-              parteModificada = 'Caput';
-            }
-            if (group.indices.length > 1) {
-              parteModificada += ` (+${group.indices.length - 1})`;
-            }
-          }
-          const leiMatch = refKey.match(/(?:Lei(?:\s+Complementar)?|Decreto(?:-Lei)?|Emenda\s+Constitucional|Medida\s+Provisória)\s+n[º°]?\s*[\d.]+(?:,\s*de\s*\d{4})?/i);
-          const leiNome = leiMatch ? leiMatch[0] : refKey;
-          items.push({ artigo, tipo: group.tipo, referencia: refKey, ano: group.ano, parteModificada, leiNome, linhasModificadas: group.indices });
-        }
-      }
-      items.sort((a, b) => b.ano - a.ano);
-
-      // Merge DB alteracoes (from monitoramento)
-      const parsedKeys = new Set(items.map(i => `${i.artigo.numero}::${i.ano}`));
-      for (const dbItem of dbAlteracoes) {
-        const d = dbItem.detectado_em ? new Date(dbItem.detectado_em) : new Date();
-        const ano = d.getFullYear() || 0;
-        const key = `${dbItem.artigo_numero}::${ano}`;
-        if (parsedKeys.has(key)) continue; // skip duplicates
-        
-        const matchingArtigo = artigos.find(a => a.numero === dbItem.artigo_numero);
-        const tipoLabel = dbItem.tipo_alteracao === 'artigo_revogado' ? 'Revogado'
-          : dbItem.tipo_alteracao === 'artigo_novo' ? 'Incluído'
-          : dbItem.tipo_alteracao === 'texto_alterado' ? 'Alterada'
-          : 'Alteração';
-          
-        const options = { day: 'numeric', month: 'long', year: 'numeric' } as const;
-        const dataFormatada = d.toLocaleDateString('pt-BR', options);
-
-        items.push({
-          artigo: matchingArtigo || { id: dbItem.artigo_numero, numero: dbItem.artigo_numero, caput: dbItem.texto_atual || dbItem.texto_anterior || '' },
-          tipo: tipoLabel,
-          referencia: `Em ${dataFormatada} (Monitoramento)`,
-          ano,
-          parteModificada: 'Artigo inteiro',
-          leiNome: 'Atualização Oficial do Planalto',
-          linhasModificadas: [],
-          fromMonitor: true,
-        });
-      }
-      items.sort((a, b) => b.ano - a.ano);
-
-      const badgeColor = (tipo: string) => {
-        const t = tipo.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        if (t.startsWith('revogad')) return 'bg-destructive/20 text-destructive';
-        if (t.startsWith('vetad')) return 'bg-destructive/20 text-destructive';
-        if (t.startsWith('suprimid')) return 'bg-destructive/20 text-destructive';
-        if (t.startsWith('incluid')) return 'bg-emerald-500/20 text-emerald-400';
-        if (t.startsWith('acrescid')) return 'bg-emerald-500/20 text-emerald-400';
-        if (t.startsWith('redacao') || t.startsWith('alterad')) return 'bg-amber-500/20 text-amber-400';
-        if (t.startsWith('renumerad')) return 'bg-sky-500/20 text-sky-400';
-        if (t.startsWith('vigencia') || t.startsWith('producao')) return 'bg-violet-500/20 text-violet-400';
-        return 'bg-muted text-muted-foreground';
-      };
-
-      if (items.length === 0) {
-        return loadingDbAlteracoes ? (
-          <div className="flex flex-col items-center py-12 gap-2">
-            <Loader2 className="w-8 h-8 text-primary animate-spin" />
-            <p className="text-muted-foreground text-sm">Carregando alterações do monitoramento...</p>
-          </div>
-        ) : (
-          <div className="flex flex-col items-center py-12 gap-2">
-            <Sparkles className="w-8 h-8 text-muted-foreground/40" />
-            <p className="text-muted-foreground text-sm">Nenhuma alteração legislativa encontrada.</p>
-          </div>
-        );
-      }
-
-      const grouped = new Map<number, ModItem[]>();
-      for (const item of items) {
-        const key = item.ano || 0;
-        if (!grouped.has(key)) grouped.set(key, []);
-        grouped.get(key)!.push(item);
-      }
-
-      return (
-        <div className="space-y-6 pb-8">
-          {[...grouped.entries()].map(([ano, group]) => (
-            <div key={ano}>
-              <div className="flex items-center gap-2 mb-3">
-                <Calendar className="w-4 h-4 text-primary" />
-                <h3 className="text-sm font-bold text-foreground">{ano > 0 ? ano : 'Sem data'}</h3>
-                <span className="text-xs text-muted-foreground">({group.length} {group.length === 1 ? 'alteração' : 'alterações'})</span>
-              </div>
-              <div className="space-y-2">
-                {group.map((item, i) => {
-                  const displayNumero = item.artigo.numero;
-                  const previewText = item.artigo.caput
-                    .replace(/\s*\((?:Redação|Incluído|Revogado|Acrescido|Alterado|Vetado|Vide|Regulamento|Vigência|Promulgação|Renumerado|Transformado|Suprimido|Restabelecido|Ressalvado|Produção de efeito)[^)]*\)/gi, '')
-                    .split('\n').filter(l => l.trim())[0] || '';
-                  return (
-                    <motion.button
-                      key={`${item.artigo.id}-${i}`}
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.02 }}
-                      onClick={() => {
-                        setOverlayPanel(null);
-                        setOpenFromNovidades(true);
-                        setOpenModInfo({
-                          tipo: item.tipo,
-                          referencia: item.referencia,
-                          leiNome: item.leiNome,
-                          parteModificada: item.parteModificada,
-                          linhasModificadas: item.linhasModificadas,
-                        });
-                        setOpenArtigo(item.artigo);
-                      }}
-                      className="w-full text-left rounded-2xl bg-card hover:bg-secondary/60 transition-all group flex overflow-hidden min-h-[82px]"
-                    >
-                      <div className="w-1.5 bg-primary rounded-l-2xl shrink-0" />
-                      <div className="flex-1 min-w-0 p-4">
-                        <div className="flex items-center gap-2 flex-wrap mb-1">
-                          <span className="font-display text-[15px] font-bold text-primary-light">{displayNumero}</span>
-                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${badgeColor(item.tipo)}`}>
-                            {item.tipo}
-                          </span>
-                          <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-violet-500/15 text-violet-400">
-                            {item.parteModificada}
-                          </span>
-                          {item.fromMonitor && (
-                            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 flex items-center gap-1">
-                              <span className="relative flex h-1.5 w-1.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" /><span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400" /></span>
-                              Monitoramento
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-[11px] text-muted-foreground mb-1 italic">{item.referencia}</p>
-                        {previewText && (
-                          <p className="text-[13px] leading-relaxed line-clamp-2 text-foreground/80">{previewText}</p>
-                        )}
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary shrink-0 mt-4 mr-3 transition-colors" />
-                    </motion.button>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
-        </div>
-      );
-    })();
+    const novidadesContent = (
+      <NovidadesPanel
+        artigos={artigos}
+        dbAlteracoes={dbAlteracoes}
+        loadingDbAlteracoes={loadingDbAlteracoes}
+        onOpenArtigo={(artigo, modInfo) => {
+          setOverlayPanel(null);
+          setOpenFromNovidades(true);
+          setOpenModInfo(modInfo);
+          setOpenArtigo(artigo);
+        }}
+      />
+    );
 
     const radarContent = (
       <RadarLegislacaoContent leiNome={selectedLeiNome} tabelaNome={selectedTabelaNome} navigate={navigate} />
     );
+
 
     const overlayLabels: Record<string, { label: string; icon: typeof Star; desc: string }> = {
       fav: { label: 'Favoritos', icon: Heart, desc: 'Aqui ficam os artigos que você marcou com o coração. Favoritar facilita o acesso rápido aos dispositivos que você mais consulta.' },
