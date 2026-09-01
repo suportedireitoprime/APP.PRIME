@@ -1,5 +1,5 @@
-import React from 'react';
-import { ChevronDown, Heart, RotateCcw, RotateCw, SkipBack, SkipForward, Play, Pause, Gauge } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ChevronDown, Heart, RotateCcw, RotateCw, SkipBack, SkipForward, Play, Pause, Gauge, X } from 'lucide-react';
 import { type AulaAudio, audioIdOf } from '@/contexts/AudioaulasPlayerContext';
 import { BotaoDownloadAudio } from './BotaoDownloadAudio';
 import { capaDaArea, fmt, VELOCIDADES } from '@/lib/audioaulasHelper';
@@ -40,6 +40,13 @@ export const AudioaulasPlayerModal = React.memo(function AudioaulasPlayerModal({
   pular,
   setVelocidade
 }: AudioaulasPlayerModalProps) {
+  const [expandirDesc, setExpandirDesc] = useState(false);
+
+  // Resetar o estado da descrição quando mudar a aula ou fechar o modal
+  useEffect(() => {
+    if (!aberto) setExpandirDesc(false);
+  }, [aberto, atual]);
+
   if (!atual) return null;
 
   return (
@@ -105,12 +112,20 @@ export const AudioaulasPlayerModal = React.memo(function AudioaulasPlayerModal({
           </div>
 
           <div className="mt-4 text-center sm:text-left">
-            <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight line-clamp-2">
+            <h2 className="text-xl sm:text-2xl font-black text-white tracking-wider line-clamp-2">
               {atual.titulo}
             </h2>
             <p className="text-sm font-medium text-primary mt-1 truncate">{atual.tema || atual.area}</p>
             {atual.descricao && (
-              <p className="text-xs text-zinc-400 mt-2 line-clamp-2">{atual.descricao}</p>
+              <div className="mt-2 flex flex-col items-center sm:items-start">
+                <p className="text-xs text-zinc-400 line-clamp-2">{atual.descricao}</p>
+                <button
+                  onClick={() => setExpandirDesc(true)}
+                  className="text-primary text-[11px] font-bold mt-1.5 hover:underline uppercase tracking-wider"
+                >
+                  Ver mais
+                </button>
+              </div>
             )}
           </div>
 
@@ -199,6 +214,27 @@ export const AudioaulasPlayerModal = React.memo(function AudioaulasPlayerModal({
             </div>
 
             <BotaoDownloadAudio aula={atual} grande />
+          </div>
+        </div>
+
+        {/* Modal/Overlay da Descrição (expande de baixo para cima) */}
+        <div 
+          className={`absolute inset-x-0 bottom-0 z-50 bg-zinc-950/95 backdrop-blur-xl border-t border-white/10 p-6 shadow-[0_-20px_50px_rgba(0,0,0,0.8)] rounded-t-3xl transition-transform duration-300 ease-out flex flex-col ${
+            expandirDesc ? 'translate-y-0' : 'translate-y-full'
+          }`}
+          style={{ maxHeight: '70%' }}
+        >
+          <div className="flex items-center justify-between mb-4 shrink-0">
+            <h3 className="text-sm font-black text-white uppercase tracking-widest">Descrição da Aula</h3>
+            <button 
+              onClick={() => setExpandirDesc(false)}
+              className="h-8 w-8 grid place-items-center rounded-full bg-white/10 text-white hover:bg-white/20 transition active:scale-95"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+          <div className="overflow-y-auto pb-6 text-sm text-zinc-300 leading-relaxed custom-scrollbar">
+            {atual.descricao}
           </div>
         </div>
       </div>
