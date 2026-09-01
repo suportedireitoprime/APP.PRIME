@@ -37,9 +37,9 @@ export const AudioaulasHero = React.memo(function AudioaulasHero({
         <button
           onClick={() => (areaAtual ? navigate('/audioaulas') : navigate('/'))}
           aria-label="Voltar"
-          className="mb-4 h-9 w-9 md:h-10 md:w-10 rounded-full bg-white/5 border border-white/10 grid place-items-center text-zinc-400 hover:text-white hover:bg-white/10 transition shrink-0 active:scale-95 z-10 relative"
+          className="mb-6 w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition shrink-0 active:scale-95 z-10 relative"
         >
-          <ArrowLeft className="h-4 w-4 md:h-5 md:w-5" />
+          <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
         </button>
 
         <div className="flex items-center gap-4 lg:gap-8">
@@ -58,10 +58,10 @@ export const AudioaulasHero = React.memo(function AudioaulasHero({
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/20 text-primary text-[11px] font-semibold uppercase tracking-widest mb-2 border border-primary/30">
               <Headphones className="h-3.5 w-3.5" /> {areaAtual ? 'Área' : 'Acervo'}
             </span>
-            <h1 className="text-2xl sm:text-4xl lg:text-6xl font-black tracking-tight leading-none text-white">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-widest uppercase leading-none text-white drop-shadow-md">
               {heroTitulo}
             </h1>
-            <p className="text-xs sm:text-sm lg:text-base text-zinc-300 mt-1.5">{heroSub}</p>
+            <p className="text-xs sm:text-sm lg:text-base text-zinc-300 mt-2.5 font-medium">{heroSub}</p>
             {!loading && (
               <p className="text-xs text-zinc-400 mt-1 font-medium">
                 {totalAulas} aula(s) disponível(is)
