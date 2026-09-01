@@ -31,15 +31,11 @@ import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
 // desktop chunk.
 const SearchOverlay = lazyWithRetry(() => import('@/components/vademecum/SearchOverlay'));
 const AssistenteOverlay = lazyWithRetry(() => import('@/components/vademecum/AssistenteOverlayV2'));
-import { prefetchAllArtigos } from '@/services/legislacaoService';
-import { prefetchResenha } from '@/services/atualizacaoService';
-import { prefetchNoticias } from '@/services/noticiasService';
 import { useQueryClient } from '@tanstack/react-query';
-import { warmBiblioteca } from '@/services/bibliotecaWarmup';
-
 import { pushRecente } from '@/lib/leisRecentes';
 import { warmCoverCache } from '@/lib/coverLoader';
 import { DESKTOP_TOOL_GROUPS } from '@/config/desktopTools';
+import { useHomeWarmup } from '@/hooks/useHomeWarmup';
 
 const HERO_CONFIG: Record<string, { image: string; title: string }> = {
   radar: { image: camaraHero, title: 'Radar Legislativo' },
@@ -74,36 +70,8 @@ const IndexDesktop = () => {
 
   useEffect(() => { warmCoverCache(); }, []);
 
-  useEffect(() => {
-    const ric: (cb: () => void) => number = (window as any).requestIdleCallback
-      ? (cb) => (window as any).requestIdleCallback(cb, { timeout: 2000 })
-      : (cb) => window.setTimeout(cb, 500);
-      
-    const id = ric(() => {
-      // 1. Prefetch Overlays
-      import('@/components/vademecum/SearchOverlay').catch(() => {});
-      import('@/components/vademecum/AssistenteOverlayV2').catch(() => {});
-
-      // 2. Preload Images
-      [primeLogo, ...Object.values(HERO_CONFIG).map(c => c.image)].forEach(src => {
-        const img = new Image();
-        img.src = src;
-      });
-      
-      // 3. Prefetch Data
-      prefetchAllArtigos(4);
-      prefetchResenha();
-      prefetchNoticias();
-      
-      // 4. Warm up Biblioteca
-      window.setTimeout(() => warmBiblioteca(queryClient), 600);
-    });
-    
-    return () => {
-      const cic = (window as any).cancelIdleCallback;
-      if (cic) cic(id); else window.clearTimeout(id);
-    };
-  }, [queryClient]);
+  // Usa o hook de warmup centralizado para a Home Desktop
+  useHomeWarmup([primeLogo, ...Object.values(HERO_CONFIG).map(c => c.image)], queryClient, true);
 
   useEffect(() => {
     const hints = ['Buscar lei...', 'Ler artigo...', 'Consultar código...', 'Pesquisar jurisprudência...'];

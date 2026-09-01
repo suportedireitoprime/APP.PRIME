@@ -25,9 +25,7 @@ const AssistenteOverlay = lazyWithRetry(() => import('@/components/vademecum/Ass
 import HomeHeaderHero from '@/components/vademecum/HomeHeaderHero';
 import FeatureDiscoveryCard from '@/components/vademecum/FeatureDiscoveryCard';
 import MobileHomeSections from '@/components/vademecum/MobileHomeSections';
-import { prefetchAllArtigos } from '@/services/legislacaoService';
-import { prefetchResenha } from '@/services/atualizacaoService';
-import { prefetchNoticias } from '@/services/noticiasService';
+import { useHomeWarmup } from '@/hooks/useHomeWarmup';
 import { pushRecente } from '@/lib/leisRecentes';
 import { warmCoverCache } from '@/lib/coverLoader';
 import { track } from '@/lib/analyticsEvents';
@@ -70,28 +68,8 @@ const IndexMobile = () => {
 
   useEffect(() => { warmCoverCache(); }, []);
 
-  useEffect(() => {
-    const ric: (cb: () => void) => number = (window as any).requestIdleCallback
-      ? (cb) => (window as any).requestIdleCallback(cb, { timeout: 1500 })
-      : (cb) => window.setTimeout(cb, 300);
-    const id = ric(() => {
-      [primeLogo, ...Object.values(HERO_CONFIG)].forEach(src => {
-        const img = new Image();
-        img.src = src;
-      });
-      prefetchResenha();
-      prefetchNoticias();
-      // Pre-warm overlays e Biblioteca para exibição instantânea (0ms)
-      import('@/components/vademecum/SearchOverlay').catch(() => {});
-      import('@/components/vademecum/SideMenu').catch(() => {});
-      import('@/components/vademecum/AssistenteOverlayV2').catch(() => {});
-      import('@/components/biblioteca/RecomendacoesCarousel').catch(() => {});
-    });
-    return () => {
-      const cic = (window as any).cancelIdleCallback;
-      if (cic) cic(id); else window.clearTimeout(id);
-    };
-  }, []);
+  // Usa o hook de warmup centralizado para a Home Mobile
+  useHomeWarmup([primeLogo, ...Object.values(HERO_CONFIG)], undefined, false);
 
   const handleSearchSelectLei = useCallback((lei: { tipo: string; leiId: string; nome: string; descricao: string; tabela_nome: string; artigoNumero?: string }) => {
     track('lei_search_selected', { tipo: lei.tipo, lei_id: lei.leiId, lei_nome: lei.nome, has_artigo: Boolean(lei.artigoNumero) });
