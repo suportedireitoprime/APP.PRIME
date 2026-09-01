@@ -472,9 +472,9 @@ const AdminAssinantes = () => {
   return (
     <div className="min-h-dvh bg-background pb-20">
       <PageHeader
-        title="Assinantes Gerais"
-        subtitle="Asaas (Legado) + Google Play Billing"
-        onBack={() => navigate('/admin-funcoes')}
+        title={viewMode === 'dashboard' ? "Assinantes Gerais" : viewMode === 'asaas' ? 'Assinantes Asaas' : viewMode === 'play' ? 'Assinantes Google Play' : 'Assinantes iPhone'}
+        subtitle={viewMode === 'dashboard' ? "Asaas (Legado) + Google Play Billing" : ''}
+        onBack={() => viewMode === 'dashboard' ? navigate('/admin-funcoes') : setViewMode('dashboard')}
         rightAction={
           <button onClick={() => load(false)} disabled={loading} aria-label="Recarregar Tela" className="w-11 h-11 rounded-full bg-muted flex items-center justify-center disabled:opacity-50">
             <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
@@ -810,15 +810,7 @@ const AdminAssinantes = () => {
         {/* LISTA FILTRADA */}
         {viewMode !== 'dashboard' && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
-            <div className="flex items-center gap-3 mb-2">
-              <button onClick={() => setViewMode('dashboard')} className="p-2 -ml-2 rounded-full hover:bg-muted transition-colors">
-                <ArrowLeft className="w-5 h-5" />
-              </button>
-              <h2 className="text-lg font-bold">
-                {viewMode === 'asaas' ? 'Assinantes Asaas' : viewMode === 'play' ? 'Assinantes Google Play' : 'Assinantes iPhone'}
-              </h2>
-            </div>
-            
+
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               <div className="relative flex-1">
               <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
@@ -860,6 +852,10 @@ const AdminAssinantes = () => {
               const status = STATUS_LABEL[r.status] ?? { label: r.status, cls: 'bg-muted text-muted-foreground' };
               const isAsaas = r.source === 'asaas';
               const asaasData = isAsaas ? parseObservacao(r.observacao ?? null) : null;
+              
+              const isPlayCancelledButActive = r.source === 'play' && r.status === 'SUBSCRIPTION_STATE_ACTIVE' && r.raw?.auto_renewing === false;
+              const statusLabel = isPlayCancelledButActive ? 'Cancelou (Ativa)' : status.label;
+              const statusCls = isPlayCancelledButActive ? 'bg-orange-500/15 text-orange-500' : (r.status === 'active' || r.status === 'SUBSCRIPTION_STATE_ACTIVE' ? 'bg-emerald-500 text-white' : status.cls);
               
               return (
                 <div key={r.id} className="flex items-center gap-3 p-3 border-b border-border last:border-0 hover:bg-muted/50 transition-colors">
@@ -919,8 +915,8 @@ const AdminAssinantes = () => {
                       )}
                     </div>
                   </div>
-                  <span className={`text-[10px] px-2.5 py-1 rounded-md font-bold uppercase tracking-widest whitespace-nowrap shadow-sm ${r.status === 'active' || r.status === 'SUBSCRIPTION_STATE_ACTIVE' ? 'bg-emerald-500 text-white' : status.cls}`}>
-                    {status.label}
+                  <span className={`text-[10px] px-2.5 py-1 rounded-md font-bold uppercase tracking-widest whitespace-nowrap shadow-sm ${statusCls}`}>
+                    {statusLabel}
                   </span>
                 </div>
               );

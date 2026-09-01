@@ -229,14 +229,16 @@ async function fetchSubscribersLocal(supabase: ReturnType<typeof createClient>) 
       .in('id', userIds);
     (profiles ?? []).forEach((p: any) => profilesMap.set(p.id, p));
 
-    // Emails via admin API — paginado
-    let page = 1;
-    while (page < 20) {
-      const { data: users, error: uErr } = await (supabase as any).auth.admin.listUsers({ page, perPage: 200 });
-      if (uErr || !users?.users?.length) break;
-      users.users.forEach((u: any) => { if (u.email) emailsMap.set(u.id, u.email); });
-      if (users.users.length < 200) break;
-      page++;
+    // Emails via admin API — específicos para os usuários da lista (mais eficiente)
+    const chunkSize = 10;
+    for (let i = 0; i < userIds.length; i += chunkSize) {
+      const chunk = userIds.slice(i, i + chunkSize);
+      await Promise.all(chunk.map(async (id) => {
+        try {
+          const { data } = await supabase.auth.admin.getUserById(id);
+          if (data?.user?.email) emailsMap.set(id, data.user.email);
+        } catch { /* ignora erros */ }
+      }));
     }
   }
 
