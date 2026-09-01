@@ -236,7 +236,16 @@ async function fetchSubscribersLocal(supabase: ReturnType<typeof createClient>) 
       await Promise.all(chunk.map(async (id) => {
         try {
           const { data } = await supabase.auth.admin.getUserById(id);
-          if (data?.user?.email) emailsMap.set(id, data.user.email);
+          if (data?.user) {
+            if (data.user.email) emailsMap.set(id, data.user.email);
+            
+            // Fallback for display_name and avatar from Auth Metadata (Google/Apple)
+            const meta = data.user.user_metadata || {};
+            const p = profilesMap.get(id) || {};
+            if (!p.display_name && meta.full_name) p.display_name = meta.full_name;
+            if (!p.avatar_url && (meta.avatar_url || meta.picture)) p.avatar_url = meta.avatar_url || meta.picture;
+            profilesMap.set(id, p);
+          }
         } catch { /* ignora erros */ }
       }));
     }

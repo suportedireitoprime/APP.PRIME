@@ -878,18 +878,35 @@ const AdminAssinantes = () => {
               if (p) valueStr = fmtBRL(p.sticker);
               if (isAsaas && asaasData && asaasData.value) valueStr = fmtBRL(asaasData.value);
 
+              let displayName = r.display_name;
+              if (!displayName && r.email) {
+                // Tenta extrair o nome do email (ex: "carolinavergilino04@..." -> "Carolina Vergilino")
+                const emailPrefix = r.email.split('@')[0];
+                displayName = emailPrefix.replace(/[0-9_.-]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()).trim();
+              }
+              if (!displayName) displayName = 'Usuário';
+
+              // Nome simplificado do plano
+              const prod = (r.product_id || '').toLowerCase();
+              let simplePlan = 'Desconhecido';
+              if (prod.includes('anual')) simplePlan = 'Anual';
+              else if (prod.includes('semestral')) simplePlan = 'Semestral';
+              else if (prod.includes('mensal')) simplePlan = 'Mensal';
+              else if (prod.includes('vitalicio')) simplePlan = 'Vitalício';
+              else if (prod) simplePlan = prod.replace(/_/g, ' ');
+
               return (
                 <div key={r.id} className="flex items-center gap-3 p-3 border-b border-border last:border-0 hover:bg-muted/50 transition-colors">
                   {r.avatar_url ? (
                     <img src={r.avatar_url} alt="" className="w-9 h-9 rounded-full object-cover bg-muted border border-border/50" onError={(e) => (e.currentTarget.style.display = 'none')} />
                   ) : (
                     <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-sm font-semibold uppercase border border-border/50 shrink-0">
-                      {(r.display_name ?? r.email ?? '?').slice(0, 1)}
+                      {displayName.slice(0, 1)}
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
-                      <span className="text-[15px] font-semibold truncate tracking-tight">{r.display_name ?? r.email ?? 'Usuário'}</span>
+                      <span className="text-[15px] font-semibold truncate tracking-tight">{displayName}</span>
                       {r.is_test && (
                         <span className="inline-flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded-md bg-purple-500 text-white font-medium">
                           <FlaskConical className="w-2.5 h-2.5" /> teste
@@ -918,8 +935,8 @@ const AdminAssinantes = () => {
                     </div>
                     <div className="text-xs text-muted-foreground truncate font-medium">{r.email ?? '—'}</div>
                     <div className="text-xs text-muted-foreground flex flex-wrap items-center gap-1 mt-1 font-medium">
-                      <span className={`font-bold ${r.product_id?.toLowerCase().includes('mensal') ? 'text-primary' : 'text-foreground'}`}>
-                        {r.product_id?.replace(/_/g, ' ') ?? '—'}
+                      <span className={`font-bold uppercase tracking-wider text-[10px] ${simplePlan === 'Mensal' ? 'text-primary' : 'text-foreground'}`}>
+                        {simplePlan}
                       </span>
                       {valueStr && (
                         <>
