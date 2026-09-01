@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Scale, PlayCircle, X } from 'lucide-react';
 
 export default function StfLiveBanner() {
-  const [liveSession, setLiveSession] = useState<any>(null);
+  const [liveSession, setLiveSession] = useState<{ id: string; title: string } | null>(null);
   const [dismissed, setDismissed] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -34,7 +34,7 @@ export default function StfLiveBanner() {
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'stf_sessions' },
-        (payload: any) => {
+        (_payload: unknown) => {
           // Re-fetch to ensure we have the correct live status
           fetchLiveSession();
         }

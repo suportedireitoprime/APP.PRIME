@@ -151,8 +151,8 @@ export default function SessoesSTF() {
               {session.agendas && session.agendas.length > 0 ? (
                 <div className="grid gap-3">
                   {session.agendas
-                    .sort((a: any, b: any) => (a.order_index || 0) - (b.order_index || 0))
-                    .map((agenda: any) => (
+                    .sort((a: { order_index?: number | null }, b: { order_index?: number | null }) => (a.order_index || 0) - (b.order_index || 0))
+                    .map((agenda: { id: string; process_number?: string | null; status?: string | null; theme?: string | null; relator?: string | null; parties?: string | null }) => (
                     <Card key={agenda.id} className="bg-card/40 border-border/40 hover:bg-card/60 transition-colors">
                       <CardContent className="p-4">
                         <div className="flex flex-col md:flex-row justify-between md:items-center gap-2 mb-2">
