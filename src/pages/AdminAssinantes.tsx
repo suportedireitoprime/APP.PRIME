@@ -262,9 +262,18 @@ const AdminAssinantes = () => {
     return list;
   }, [data, legacyData]);
 
+  const platformRows = useMemo(() => {
+    return combinedRows.filter((r) => {
+      if (viewMode === 'asaas' && r.source !== 'asaas' && r.source !== 'old') return false;
+      if (viewMode === 'play' && r.source !== 'play') return false;
+      if (viewMode === 'apple' && r.source !== 'apple') return false;
+      return true;
+    });
+  }, [combinedRows, viewMode]);
+
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
-    return combinedRows.filter((r) => {
+    return platformRows.filter((r) => {
       // Normalizar filtro de status para "Ativas" e "Canceladas" no Asaas
       let matchesStatus = true;
       if (statusFilter !== 'all') {
@@ -278,11 +287,6 @@ const AdminAssinantes = () => {
         }
       }
       if (!matchesStatus) return false;
-
-      // Filter by viewMode (Provider)
-      if (viewMode === 'asaas' && r.source !== 'asaas' && r.source !== 'old') return false;
-      if (viewMode === 'play' && r.source !== 'play') return false;
-      if (viewMode === 'apple' && r.source !== 'apple') return false;
       
       // Date filter
       if (dateFilter !== 'all') {
@@ -304,7 +308,7 @@ const AdminAssinantes = () => {
         (v ?? '').toLowerCase().includes(term),
       );
     });
-  }, [combinedRows, q, statusFilter, dateFilter]);
+  }, [platformRows, q, statusFilter, dateFilter]);
 
   const sync = data?.sync ?? null;
   const syncErrors = sync?.errors?.filter(e => e.status !== 400 && e.status !== 404 && e.status !== 410) ?? [];
@@ -313,6 +317,15 @@ const AdminAssinantes = () => {
 
   const metrics = data?.local.metrics ?? EMPTY_METRICS;
   const activeToday = metrics.ativosHoje + legacyData.filter(r => r.status === 'active' && !isAdminEmail(r.email)).length;
+  
+  const isActiveRecord = (r: CombinedRow) => {
+    if (r.is_test) return false;
+    const isPlay = r.source === 'play';
+    const isCancelled = r.status === 'SUBSCRIPTION_STATE_CANCELED' || r.status === 'inactive' || (isPlay && r.raw?.auto_renewing === false);
+    if (isCancelled) return false;
+    return r.status === 'SUBSCRIPTION_STATE_ACTIVE' || r.status === 'SUBSCRIPTION_STATE_IN_GRACE_PERIOD' || r.status === 'active';
+  };
+
   const newLast7 = metrics.novos7;
   const canceledLast7 = metrics.cancelados7;
   const renewals30 = metrics.renovacoes30;
@@ -320,16 +333,14 @@ const AdminAssinantes = () => {
 
   // Receita estimada com base nos assinantes ativos NÃO-teste e preços vigentes
   const revenue = useMemo(() => {
-    const active = combinedRows.filter(
-      (r) => !r.is_test && (r.status === 'SUBSCRIPTION_STATE_ACTIVE' || r.status === 'SUBSCRIPTION_STATE_IN_GRACE_PERIOD' || r.status === 'active'),
-    );
+    const active = platformRows.filter(isActiveRecord);
     let mrr = 0;
     let lifetimeGross = 0;
     const planAgg: Record<string, { plan: string; count: number; mrr: number; gross: number }> = {};
     const mrrUsers: any[] = [];
     const grossUsers: any[] = [];
     
-    combinedRows.filter(r => !r.is_test).forEach((r) => {
+    platformRows.filter(r => !r.is_test).forEach((r) => {
       let monthly = 0;
       let sticker = 0;
       const p = priceFor(r.product_id);
@@ -358,8 +369,7 @@ const AdminAssinantes = () => {
         grossUsers.push({ ...r, value: sticker, plan: r.product_id ?? 'desconhecido' });
       }
 
-      const isActive = r.status === 'SUBSCRIPTION_STATE_ACTIVE' || r.status === 'SUBSCRIPTION_STATE_IN_GRACE_PERIOD' || r.status === 'active';
-      if (!isActive) return;
+      if (!isActiveRecord(r)) return;
 
       mrr += monthly;
       lifetimeGross += sticker;
@@ -376,7 +386,7 @@ const AdminAssinantes = () => {
     });
 
     // Soma a receita bruta de quem foi cancelado também
-    combinedRows.filter((r) => !r.is_test).forEach((r) => {
+    platformRows.filter((r) => !r.is_test).forEach((r) => {
       const p = priceFor(r.product_id);
       if (p) lifetimeGross += 0; // já somamos no loop anterior, gross acumulado está abaixo
     });
@@ -391,16 +401,16 @@ const AdminAssinantes = () => {
       mrrUsers: mrrUsers.sort((a, b) => b.value - a.value),
       grossUsers: grossUsers.sort((a, b) => b.value - a.value),
     };
-  }, [combinedRows]);
+  }, [platformRows]);
 
   const grossAccumulated = useMemo(() => {
-    return combinedRows
+    return platformRows
       .filter((r) => !r.is_test)
       .reduce((sum, r) => sum + (priceFor(r.product_id)?.sticker ?? 0), 0);
-  }, [combinedRows]);
+  }, [platformRows]);
 
   const subsByMonth = useMemo(() => {
-    const active = combinedRows.filter(r => !r.is_test);
+    const active = platformRows.filter(r => !r.is_test);
     const agg: Record<string, number> = {};
     active.forEach(r => {
       if (!r.start_time) return;
@@ -409,10 +419,10 @@ const AdminAssinantes = () => {
       agg[m] = (agg[m] ?? 0) + 1;
     });
     return Object.entries(agg).map(([month, count]) => ({ month, count })).reverse();
-  }, [combinedRows]);
+  }, [platformRows]);
 
   const monthlyRevenueData = useMemo(() => {
-    const active = combinedRows.filter(r => !r.is_test);
+    const active = platformRows.filter(r => !r.is_test);
     const monthsMap = new Map<string, { monthId: string; label: string; date: Date; plans: Record<string, number>; total: number }>();
 
     active.forEach(r => {
@@ -446,7 +456,7 @@ const AdminAssinantes = () => {
     });
 
     return Array.from(monthsMap.values()).sort((a, b) => b.date.getTime() - a.date.getTime());
-  }, [combinedRows]);
+  }, [platformRows]);
 
   const currentMonthData = useMemo(() => {
     if (monthlyRevenueData.length === 0) return null;
@@ -703,12 +713,12 @@ const AdminAssinantes = () => {
             {/* Métricas locais */}
             <section className="space-y-2">
               <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground px-1">
-                Visão Geral (Play + Asaas)
+                Visão Geral {viewMode !== 'dashboard' && `(${viewMode === 'asaas' ? 'Asaas' : viewMode === 'play' ? 'Google Play' : 'Apple'})`}
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                <StatCard icon={Users} label="Total registradas" value={loading ? '…' : combinedRows.length} tint="text-primary" />
-                <StatCard icon={Crown} label="Premium agora" value={loading ? '…' : activeToday} tint="text-amber-500" />
-                <StatCard icon={FlaskConical} label="Testes" value={loading ? '…' : data?.local.stats.test ?? 0} tint="text-purple-500" />
+                <StatCard icon={Users} label="Total registradas" value={loading ? '…' : platformRows.length} tint="text-primary" />
+                <StatCard icon={Crown} label="Premium agora" value={loading ? '…' : revenue.paying} tint="text-amber-500" />
+                <StatCard icon={FlaskConical} label="Testes" value={loading ? '…' : platformRows.filter(r => r.is_test || (r.source === 'play' && r.status === 'SUBSCRIPTION_STATE_ACTIVE' && r.raw?.auto_renewing !== false && new Date(r.expires_at ?? 0).getTime() - new Date(r.start_time ?? 0).getTime() <= 3.1 * 24 * 60 * 60 * 1000)).length} tint="text-purple-500" />
                 <StatCard icon={TrendingUp} label="SKUs ativos" value={loading ? '…' : revenue.byPlan.length} tint="text-cyan-500" />
               </div>
               {revenue.byPlan.length > 0 && (
@@ -853,10 +863,21 @@ const AdminAssinantes = () => {
               const isAsaas = r.source === 'asaas';
               const asaasData = isAsaas ? parseObservacao(r.observacao ?? null) : null;
               
-              const isPlayCancelledButActive = r.source === 'play' && r.status === 'SUBSCRIPTION_STATE_ACTIVE' && r.raw?.auto_renewing === false;
-              const statusLabel = isPlayCancelledButActive ? 'Cancelou (Ativa)' : status.label;
-              const statusCls = isPlayCancelledButActive ? 'bg-orange-500/15 text-orange-500' : (r.status === 'active' || r.status === 'SUBSCRIPTION_STATE_ACTIVE' ? 'bg-emerald-500 text-white' : status.cls);
+              const isPlay = r.source === 'play';
+              const isCancelled = r.status === 'SUBSCRIPTION_STATE_CANCELED' || r.status === 'inactive' || (isPlay && r.raw?.auto_renewing === false);
               
+              const startMs = r.start_time ? new Date(r.start_time).getTime() : 0;
+              const expMs = r.expires_at ? new Date(r.expires_at).getTime() : 0;
+              const isTrial = isPlay && r.status === 'SUBSCRIPTION_STATE_ACTIVE' && !isCancelled && (expMs - startMs > 0 && expMs - startMs <= 3.1 * 24 * 60 * 60 * 1000);
+              
+              const statusLabel = isCancelled ? 'Cancelado' : isTrial ? 'Testando' : status.label;
+              const statusCls = isCancelled ? 'bg-destructive/20 text-destructive' : isTrial ? 'bg-purple-500/20 text-purple-400' : (r.status === 'active' || r.status === 'SUBSCRIPTION_STATE_ACTIVE' ? 'bg-emerald-500 text-white' : status.cls);
+              
+              let valueStr = '';
+              const p = priceFor(r.product_id);
+              if (p) valueStr = fmtBRL(p.sticker);
+              if (isAsaas && asaasData && asaasData.value) valueStr = fmtBRL(asaasData.value);
+
               return (
                 <div key={r.id} className="flex items-center gap-3 p-3 border-b border-border last:border-0 hover:bg-muted/50 transition-colors">
                   {r.avatar_url ? (
@@ -900,6 +921,12 @@ const AdminAssinantes = () => {
                       <span className={`font-bold ${r.product_id?.toLowerCase().includes('mensal') ? 'text-primary' : 'text-foreground'}`}>
                         {r.product_id?.replace(/_/g, ' ') ?? '—'}
                       </span>
+                      {valueStr && (
+                        <>
+                          <span>·</span>
+                          <span className="font-bold text-foreground/90">{valueStr}</span>
+                        </>
+                      )}
                       <span>·</span>
                       <span>início {fmtDateTime(r.start_time)}</span>
                       <span>·</span>
