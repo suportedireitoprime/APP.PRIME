@@ -718,7 +718,7 @@ const AdminAssinantes = () => {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                 <StatCard icon={Users} label="Total registradas" value={loading ? '…' : platformRows.length} tint="text-primary" />
                 <StatCard icon={Crown} label="Premium agora" value={loading ? '…' : revenue.paying} tint="text-amber-500" />
-                <StatCard icon={FlaskConical} label="Testes" value={loading ? '…' : platformRows.filter(r => r.is_test || (r.source === 'play' && r.status === 'SUBSCRIPTION_STATE_ACTIVE' && r.raw?.auto_renewing !== false && new Date(r.expires_at ?? 0).getTime() - new Date(r.start_time ?? 0).getTime() <= 3.1 * 24 * 60 * 60 * 1000)).length} tint="text-purple-500" />
+                <StatCard icon={FlaskConical} label="Testes" value={loading ? '…' : platformRows.filter(r => r.is_test || (r.source === 'play' && r.status === 'SUBSCRIPTION_STATE_ACTIVE' && r.raw?.auto_renewing !== false && new Date(r.expires_at ?? 0).getTime() - new Date(r.start_time ?? 0).getTime() <= 3.1 * 24 * 60 * 60 * 1000 && new Date(r.expires_at ?? 0).getTime() > Date.now())).length} tint="text-purple-500" />
                 <StatCard icon={TrendingUp} label="SKUs ativos" value={loading ? '…' : revenue.byPlan.length} tint="text-cyan-500" />
               </div>
               {revenue.byPlan.length > 0 && (
@@ -868,7 +868,7 @@ const AdminAssinantes = () => {
               
               const startMs = r.start_time ? new Date(r.start_time).getTime() : 0;
               const expMs = r.expires_at ? new Date(r.expires_at).getTime() : 0;
-              const isTrial = isPlay && r.status === 'SUBSCRIPTION_STATE_ACTIVE' && !isCancelled && (expMs - startMs > 0 && expMs - startMs <= 3.1 * 24 * 60 * 60 * 1000);
+              const isTrial = isPlay && r.status === 'SUBSCRIPTION_STATE_ACTIVE' && !isCancelled && (expMs - startMs > 0 && expMs - startMs <= 3.1 * 24 * 60 * 60 * 1000) && expMs > Date.now();
               
               const statusLabel = isCancelled ? 'Cancelado' : isTrial ? 'Testando' : status.label;
               const statusCls = isCancelled ? 'bg-destructive/20 text-destructive' : isTrial ? 'bg-purple-500/20 text-purple-400' : (r.status === 'active' || r.status === 'SUBSCRIPTION_STATE_ACTIVE' ? 'bg-emerald-500 text-white' : status.cls);
