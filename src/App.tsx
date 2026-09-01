@@ -73,6 +73,7 @@ const InAppPushPopup = lazy(() => import("@/components/ui/InAppPushPopup"));
 const HorusTakeoverNoticeDialog = lazy(() => import("@/components/horus/HorusTakeoverNoticeDialog"));
 const HorusTrialEndedDialog = lazy(() => import("@/components/horus/HorusTrialEndedDialog"));
 const ForceUpdateScreen = lazy(() => import("@/components/ForceUpdateScreen"));
+const StfLiveBanner = lazy(() => import("@/components/ferramentas/STF/StfLiveBanner"));
 import { useAppUpdateStore } from "@/lib/appUpdateStore";
 
 const queryClient = new QueryClient({
@@ -201,6 +202,7 @@ const App = () => (
                 <InAppPushPopup />
                 <HorusTakeoverNoticeDialog />
                 <HorusTrialEndedDialog />
+                <StfLiveBanner />
               </Suspense>
               <ForceUpdateWrapper />
               {/* <IntroOverlay /> — desativado por preferência (splash estático) */}

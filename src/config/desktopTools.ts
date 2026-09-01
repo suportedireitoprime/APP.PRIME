@@ -57,6 +57,7 @@ export const DESKTOP_TOOL_GROUPS: DesktopToolGroup[] = [
       { id: 'radares', label: 'Radares de Leis', desc: 'Alterações de leis e projetos monitorados', icon: Radar, route: '/radares', color: '#0EA5E9' },
       { id: 'noticias', label: 'Notícias', desc: 'Notícias jurídicas e atualizações', icon: Newspaper, route: '/noticias', color: '#EC4899' },
       { id: 'boletins', label: 'Boletins Jurídicos', desc: 'Vídeo diário com as normas quentes', icon: MicVocal, route: '/boletins', color: '#EF4444' },
+      { id: 'sessoes-stf', label: 'Sessões do STF', desc: 'Acompanhe as pautas e transmissões do Plenário', icon: Scale, route: '/ferramentas/stf', color: '#8B5CF6' },
       { id: 'newsletter', label: 'Newsletter', desc: 'Receba o resumo por e-mail', icon: Mail, route: '/newsletter', color: '#F97316' },
     ],
   },

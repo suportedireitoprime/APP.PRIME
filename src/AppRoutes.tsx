@@ -149,12 +149,13 @@ const NarracaoLei = lazy(() => import("./pages/NarracaoLei.tsx"));
 const VisualJuridico = lazy(() => import("./pages/VisualJuridico.tsx"));
 const GrafoArtigos = lazy(() => import("./pages/GrafoArtigos.tsx"));
 const Ferramentas = lazy(routePrefetch.ferramentas);
+const PeticaoInicial = lazy(() => import("./pages/ferramentas/PeticaoInicial.tsx"));
+const PeticaoInicialEditor = lazy(() => import("./pages/ferramentas/PeticaoInicialEditor.tsx"));
 const PlanoEstudos = lazy(() => import("./pages/ferramentas/PlanoEstudos.tsx"));
+const SessoesSTF = lazy(() => import("./pages/ferramentas/SessoesSTF.tsx"));
 const LocaisJuridicos = lazy(() => import("./pages/LocaisJuridicos.tsx"));
 const Documentos = lazy(() => import("./pages/Documentos.tsx"));
 const DicionarioJuridicoPage = lazy(routePrefetch.dicionario);
-const PeticaoInicial = lazy(() => import("./pages/PeticaoInicial.tsx"));
-const PeticaoInicialEditor = lazy(() => import("./pages/PeticaoInicialEditor.tsx"));
 const AdminLocais = lazy(() => import("./pages/AdminLocais.tsx"));
 const TematicaJuridica = lazy(routePrefetch.tematica);
 const Compartilhado = lazy(() => import("./pages/Compartilhado.tsx"));
@@ -813,6 +814,8 @@ function AnimatedRoutes() {
           <Route path="/ferramentas/dicionario" element={<ProtectedRoute><PageTransition><DicionarioJuridicoPage /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/peticao-inicial" element={<ProtectedRoute><PageTransition><PeticaoInicial /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/peticao-inicial/:id" element={<ProtectedRoute><PageTransition><PeticaoInicialEditor /></PageTransition></ProtectedRoute>} />
+          <Route path="/ferramentas/plano-estudos" element={<ProtectedRoute><PageTransition><PlanoEstudos /></PageTransition></ProtectedRoute>} />
+          <Route path="/ferramentas/stf" element={<ProtectedRoute><PageTransition><SessoesSTF /></PageTransition></ProtectedRoute>} />
           <Route path="/admin/locais" element={<ProtectedRoute><PageTransition><AdminLocais /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas" element={<ProtectedRoute><PageTransition><PilulasHome /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas/deck/:deckId" element={<ProtectedRoute><PageTransition><PilulasViewer /></PageTransition></ProtectedRoute>} />
