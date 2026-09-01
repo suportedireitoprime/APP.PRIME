@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { gerarPeticaoPDF } from '@/lib/pdfGenerator';
+import { gerarPeticaoPDF } from '@/lib/peticaoPdf';
 import { Juris, Peticao } from '@/types/peticao';
 
 interface StepFinalProps {
