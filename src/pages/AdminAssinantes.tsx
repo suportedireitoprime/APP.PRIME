@@ -154,7 +154,7 @@ const AdminAssinantes = () => {
   const [syncingAsaas, setSyncingAsaas] = useState(false);
   const [modalDetails, setModalDetails] = useState<'mrr' | 'gross' | null>(null);
   const [funnelStage, setFunnelStage] = useState<'assinatura_aberta' | 'trial_click' | 'start_trial' | 'purchase' | null>(null);
-  const [funnelPlatform, setFunnelPlatform] = useState<'native' | 'asaas'>('native');
+  const [funnelPlatform, setFunnelPlatform] = useState<'asaas' | 'play' | 'apple'>('asaas');
 
   const funnelMetrics = useMemo(() => {
     if (!data?.funnel) return null;
@@ -162,7 +162,10 @@ const AdminAssinantes = () => {
     const filteredEvents = data.funnel.filter((e: any) => {
       if (e.event_name === 'assinatura_aberta') return true;
       const isWeb = e.metadata?.metodo === 'web' || e.metadata?.source === 'planos_page';
-      return funnelPlatform === 'native' ? !isWeb : isWeb;
+      if (funnelPlatform === 'asaas') return isWeb;
+      if (funnelPlatform === 'play') return !isWeb && e.metadata?.platform !== 'ios';
+      if (funnelPlatform === 'apple') return !isWeb && e.metadata?.platform === 'ios';
+      return false;
     });
 
     return {
@@ -500,44 +503,167 @@ const AdminAssinantes = () => {
         )}
 
         {viewMode === 'dashboard' && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <button onClick={() => setViewMode('asaas')} className="flex items-center justify-between p-4 rounded-xl border border-blue-500/20 bg-blue-500/10 hover:bg-blue-500/20 transition-colors text-left group">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Crown className="w-5 h-5 text-blue-500" />
+          <div className="grid grid-cols-3 gap-2">
+
+            <button onClick={() => setViewMode('asaas')} className="flex items-center justify-between p-2.5 rounded-xl border border-blue-500/20 bg-blue-500/10 hover:bg-blue-500/20 transition-colors text-left group">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-full bg-blue-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Crown className="w-4 h-4 text-blue-500" />
                 </div>
                 <div>
                   <div className="font-bold text-foreground">Asaas</div>
-                  <div className="text-xs text-muted-foreground">Assinantes Legado e Vitalício</div>
+                  
                 </div>
               </div>
             </button>
             
-            <button onClick={() => setViewMode('play')} className="flex items-center justify-between p-4 rounded-xl border border-[#3DDC84]/20 bg-[#3DDC84]/10 hover:bg-[#3DDC84]/20 transition-colors text-left group">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[#3DDC84]/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <PlayCircle className="w-5 h-5 text-[#3DDC84]" />
+            <button onClick={() => setViewMode('play')} className="flex items-center justify-between p-2.5 rounded-xl border border-[#3DDC84]/20 bg-[#3DDC84]/10 hover:bg-[#3DDC84]/20 transition-colors text-left group">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-full bg-[#3DDC84]/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <PlayCircle className="w-4 h-4 text-[#3DDC84]" />
                 </div>
                 <div>
                   <div className="font-bold text-foreground">Google Play</div>
-                  <div className="text-xs text-muted-foreground">Assinaturas no Android</div>
+                  
                 </div>
               </div>
             </button>
             
-            <button onClick={() => setViewMode('apple')} className="flex items-center justify-between p-4 rounded-xl border border-zinc-500/20 bg-zinc-500/10 hover:bg-zinc-500/20 transition-colors text-left group">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-zinc-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Smartphone className="w-5 h-5 text-zinc-400" />
+            <button onClick={() => setViewMode('apple')} className="flex items-center justify-between p-2.5 rounded-xl border border-zinc-500/20 bg-zinc-500/10 hover:bg-zinc-500/20 transition-colors text-left group">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-full bg-zinc-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Smartphone className="w-4 h-4 text-zinc-400" />
                 </div>
                 <div>
-                  <div className="font-bold text-foreground">Apple iPhone</div>
-                  <div className="text-xs text-muted-foreground">Assinaturas no iOS</div>
+                  <div className="font-bold text-foreground">Apple</div>
+                  
                 </div>
               </div>
             </button>
           </div>
         )}
+        
+        {viewMode === 'dashboard' && (
+          <>
+            {/* Funil de Assinatura */}
+            {funnelMetrics && (
+              <section className="bg-card rounded-2xl border border-border p-2.5 md:p-4 relative overflow-hidden">
+                <div className="flex items-center gap-2 mb-3 justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 bg-blue-500/10 rounded-xl">
+                      <Filter className="w-5 h-5 text-blue-500" />
+                    </div>
+                    <div>
+                      <h2 className="font-black text-base">Funil de Conversão</h2>
+                      <p className="text-[10px] text-muted-foreground">Últimos 7 dias</p>
+                    </div>
+                  </div>
+                  
+                  <button 
+                    onClick={() => navigate('/admin/funil')}
+                    className="absolute top-2.5 md:p-4 right-5 text-xs font-semibold px-3 py-1.5 rounded-full bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 transition-colors border border-blue-500/20"
+                  >
+                    Ver completo
+                  </button>
+                  
+                  {/* Toggle Plataforma do Funil */}
+                  <div className="flex items-center bg-muted/50 rounded-full p-0.5 border border-border/50">
+                    <button
+                      onClick={() => setFunnelPlatform('asaas')}
+                      className={`text-[10px] px-2.5 py-1 rounded-full font-medium transition-colors ${
+                        funnelPlatform === 'asaas' 
+                          ? 'bg-blue-500 text-white shadow-sm' 
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      Asaas
+                    </button>
+                    <button
+                      onClick={() => setFunnelPlatform('play')}
+                      className={`text-[10px] px-2.5 py-1 rounded-full font-medium transition-colors ${
+                        funnelPlatform === 'play' 
+                          ? 'bg-[#3DDC84] text-white shadow-sm' 
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      Play
+                    </button>
+                    <button
+                      onClick={() => setFunnelPlatform('apple')}
+                      className={`text-[10px] px-2.5 py-1 rounded-full font-medium transition-colors ${
+                        funnelPlatform === 'apple' 
+                          ? 'bg-zinc-700 text-white shadow-sm' 
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      Apple
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="space-y-3">
+                  <div 
+                    onClick={() => setFunnelStage('assinatura_aberta')}
+                    className="relative cursor-pointer hover:bg-background/40 transition-colors rounded-xl border border-border p-2.5 flex justify-between items-center overflow-hidden"
+                  >
+                    <div className="absolute left-0 top-0 bottom-0 w-full bg-blue-500/10 pointer-events-none" />
+                    <span className="text-sm font-medium relative z-10">1. Acessaram a tela de Planos</span>
+                    <span className="font-bold text-blue-500 relative z-10">{funnelMetrics.assinatura_aberta.length}</span>
+                  </div>
+                  
+                  <div 
+                    onClick={() => setFunnelStage('trial_click')}
+                    className="relative cursor-pointer hover:bg-background/40 transition-colors rounded-xl border border-border p-2.5 flex justify-between items-center overflow-hidden ml-4"
+                  >
+                    <div 
+                      className="absolute left-0 top-0 bottom-0 bg-blue-500/20 pointer-events-none transition-all" 
+                      style={{ width: funnelMetrics.assinatura_aberta.length ? `${(funnelMetrics.trial_click.length / funnelMetrics.assinatura_aberta.length) * 100}%` : '0%' }}
+                    />
+                    <span className="text-sm font-medium relative z-10">2. Clicaram em Assinar / Ver Modal</span>
+                    <div className="flex items-center gap-2.5 relative z-10">
+                      {funnelMetrics.assinatura_aberta.length > 0 && (
+                        <span className="text-xs text-muted-foreground">{Math.min(100, Math.round((funnelMetrics.trial_click.length / funnelMetrics.assinatura_aberta.length) * 100))}%</span>
+                      )}
+                      <span className="font-bold text-blue-500">{funnelMetrics.trial_click.length}</span>
+                    </div>
+                  </div>
+                  
+                  <div 
+                    onClick={() => setFunnelStage('start_trial')}
+                    className="relative cursor-pointer hover:bg-background/40 transition-colors rounded-xl border border-border p-2.5 flex justify-between items-center overflow-hidden ml-8"
+                  >
+                    <div 
+                      className="absolute left-0 top-0 bottom-0 bg-blue-500/30 pointer-events-none transition-all" 
+                      style={{ width: funnelMetrics.trial_click.length ? `${(funnelMetrics.start_trial.length / funnelMetrics.trial_click.length) * 100}%` : '0%' }}
+                    />
+                    <span className="text-sm font-medium relative z-10">3. Iniciaram Checkout / Teste Grátis</span>
+                    <div className="flex items-center gap-2.5 relative z-10">
+                      {funnelMetrics.trial_click.length > 0 && (
+                        <span className="text-xs text-muted-foreground">{Math.min(100, Math.round((funnelMetrics.start_trial.length / funnelMetrics.trial_click.length) * 100))}%</span>
+                      )}
+                      <span className="font-bold text-blue-500">{funnelMetrics.start_trial.length}</span>
+                    </div>
+                  </div>
+
+                  <div 
+                    onClick={() => setFunnelStage('purchase')}
+                    className="relative cursor-pointer hover:bg-background/40 transition-colors rounded-xl border border-border p-2.5 flex justify-between items-center overflow-hidden ml-12"
+                  >
+                    <div 
+                      className="absolute left-0 top-0 bottom-0 bg-blue-500/40 pointer-events-none transition-all" 
+                      style={{ width: funnelMetrics.start_trial.length ? `${(funnelMetrics.purchase.length / funnelMetrics.start_trial.length) * 100}%` : '0%' }}
+                    />
+                    <span className="text-sm font-medium relative z-10">4. Pagamento Confirmado</span>
+                    <div className="flex items-center gap-2.5 relative z-10">
+                      {funnelMetrics.start_trial.length > 0 && (
+                        <span className="text-xs text-muted-foreground">{Math.min(100, Math.round((funnelMetrics.purchase.length / funnelMetrics.start_trial.length) * 100))}%</span>
+                      )}
+                      <span className="font-bold text-blue-500">{funnelMetrics.purchase.length}</span>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            )}
 
         {viewMode === 'dashboard' && (
           <>
@@ -600,115 +726,7 @@ const AdminAssinantes = () => {
               </section>
             )}
 
-            {/* Funil de Assinatura */}
-            {funnelMetrics && (
-              <section className="bg-card rounded-2xl border border-border p-5 relative overflow-hidden">
-                <div className="flex items-center gap-2 mb-6 justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="p-2 bg-blue-500/10 rounded-xl">
-                      <Filter className="w-5 h-5 text-blue-500" />
-                    </div>
-                    <div>
-                      <h2 className="font-black text-lg">Funil de Conversão (App Events)</h2>
-                      <p className="text-xs text-muted-foreground">Últimos 7 dias. Medição baseada nos cliques do usuário.</p>
-                    </div>
-                  </div>
-                  
-                  <button 
-                    onClick={() => navigate('/admin/funil')}
-                    className="absolute top-5 right-5 text-xs font-semibold px-3 py-1.5 rounded-full bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 transition-colors border border-blue-500/20"
-                  >
-                    Ver completo
-                  </button>
-                  
-                  {/* Toggle Plataforma do Funil */}
-                  <div className="flex items-center bg-muted/50 rounded-full p-1 border border-border/50">
-                    <button
-                      onClick={() => setFunnelPlatform('native')}
-                      className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
-                        funnelPlatform === 'native' 
-                          ? 'bg-blue-500 text-white shadow-sm' 
-                          : 'text-muted-foreground hover:text-foreground'
-                      }`}
-                    >
-                      Google / Apple
-                    </button>
-                    <button
-                      onClick={() => setFunnelPlatform('asaas')}
-                      className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
-                        funnelPlatform === 'asaas' 
-                          ? 'bg-blue-500 text-white shadow-sm' 
-                          : 'text-muted-foreground hover:text-foreground'
-                      }`}
-                    >
-                      Asaas (Novo)
-                    </button>
-                  </div>
-                </div>
-                
-                <div className="space-y-3">
-                  <div 
-                    onClick={() => setFunnelStage('assinatura_aberta')}
-                    className="relative cursor-pointer hover:bg-background/40 transition-colors rounded-xl border border-border p-3 flex justify-between items-center overflow-hidden"
-                  >
-                    <div className="absolute left-0 top-0 bottom-0 w-full bg-blue-500/10 pointer-events-none" />
-                    <span className="text-sm font-medium relative z-10">1. Acessaram a tela de Planos</span>
-                    <span className="font-bold text-blue-500 relative z-10">{funnelMetrics.assinatura_aberta.length}</span>
-                  </div>
-                  
-                  <div 
-                    onClick={() => setFunnelStage('trial_click')}
-                    className="relative cursor-pointer hover:bg-background/40 transition-colors rounded-xl border border-border p-3 flex justify-between items-center overflow-hidden ml-4"
-                  >
-                    <div 
-                      className="absolute left-0 top-0 bottom-0 bg-blue-500/20 pointer-events-none transition-all" 
-                      style={{ width: funnelMetrics.assinatura_aberta.length ? `${(funnelMetrics.trial_click.length / funnelMetrics.assinatura_aberta.length) * 100}%` : '0%' }}
-                    />
-                    <span className="text-sm font-medium relative z-10">2. Clicaram em Assinar / Ver Modal</span>
-                    <div className="flex items-center gap-3 relative z-10">
-                      {funnelMetrics.assinatura_aberta.length > 0 && (
-                        <span className="text-xs text-muted-foreground">{Math.min(100, Math.round((funnelMetrics.trial_click.length / funnelMetrics.assinatura_aberta.length) * 100))}%</span>
-                      )}
-                      <span className="font-bold text-blue-500">{funnelMetrics.trial_click.length}</span>
-                    </div>
-                  </div>
-                  
-                  <div 
-                    onClick={() => setFunnelStage('start_trial')}
-                    className="relative cursor-pointer hover:bg-background/40 transition-colors rounded-xl border border-border p-3 flex justify-between items-center overflow-hidden ml-8"
-                  >
-                    <div 
-                      className="absolute left-0 top-0 bottom-0 bg-blue-500/30 pointer-events-none transition-all" 
-                      style={{ width: funnelMetrics.trial_click.length ? `${(funnelMetrics.start_trial.length / funnelMetrics.trial_click.length) * 100}%` : '0%' }}
-                    />
-                    <span className="text-sm font-medium relative z-10">3. Iniciaram Checkout / Teste Grátis</span>
-                    <div className="flex items-center gap-3 relative z-10">
-                      {funnelMetrics.trial_click.length > 0 && (
-                        <span className="text-xs text-muted-foreground">{Math.min(100, Math.round((funnelMetrics.start_trial.length / funnelMetrics.trial_click.length) * 100))}%</span>
-                      )}
-                      <span className="font-bold text-blue-500">{funnelMetrics.start_trial.length}</span>
-                    </div>
-                  </div>
-
-                  <div 
-                    onClick={() => setFunnelStage('purchase')}
-                    className="relative cursor-pointer hover:bg-background/40 transition-colors rounded-xl border border-border p-3 flex justify-between items-center overflow-hidden ml-12"
-                  >
-                    <div 
-                      className="absolute left-0 top-0 bottom-0 bg-blue-500/40 pointer-events-none transition-all" 
-                      style={{ width: funnelMetrics.start_trial.length ? `${(funnelMetrics.purchase.length / funnelMetrics.start_trial.length) * 100}%` : '0%' }}
-                    />
-                    <span className="text-sm font-medium relative z-10">4. Pagamento Confirmado</span>
-                    <div className="flex items-center gap-3 relative z-10">
-                      {funnelMetrics.start_trial.length > 0 && (
-                        <span className="text-xs text-muted-foreground">{Math.min(100, Math.round((funnelMetrics.purchase.length / funnelMetrics.start_trial.length) * 100))}%</span>
-                      )}
-                      <span className="font-bold text-blue-500">{funnelMetrics.purchase.length}</span>
-                    </div>
-                  </div>
-                </div>
-              </section>
-            )}
+            }
 
             {/* Métricas locais */}
             <section className="space-y-2">
