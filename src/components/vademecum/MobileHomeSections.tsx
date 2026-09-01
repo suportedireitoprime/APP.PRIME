@@ -456,7 +456,7 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
                       key={c.id}
                       onClick={() => handle(c.id)}
                       data-track="home_radar_cat_click"
-                      className="w-full flex items-center gap-3 px-4 py-5 min-h-[76px] rounded-2xl bg-card border border-border/60 shadow-sm transition focus-visible:outline-none"
+                      className="w-full flex items-center gap-3 px-4 py-5 min-h-[76px] rounded-2xl bg-secondary border border-border/60 shadow-sm transition focus-visible:outline-none"
                     >
                       <Icon
                         className="w-8 h-8 shrink-0"

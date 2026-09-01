@@ -353,7 +353,7 @@ const Jurisprudencia = () => {
         `}</style>
         <div className="grid grid-cols-4 gap-2 sm:gap-3 w-full">
           {/* Favoritos */}
-          <motion.button variants={itemVariants} whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.98 }} onClick={() => navigate('/vade-mecum/favoritos')} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl bg-[#1A1D21] border border-border/40 hover:bg-[#23272B] transition-colors w-full group" data-track="quick_access_favoritos">
+          <motion.button variants={itemVariants} whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.98 }} onClick={() => navigate('/vade-mecum/favoritos')} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl bg-secondary border border-border/40 hover:bg-secondary/80 transition-colors w-full group" data-track="quick_access_favoritos">
             <div className="relative w-5 h-5 shrink-0">
               <Heart className="w-5 h-5 absolute inset-0" style={{ color: 'hsl(348,78%,38%)', filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))' }} strokeWidth={1.15} />
               <Heart className="w-5 h-5 absolute inset-0 text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ WebkitMaskImage: 'linear-gradient(-60deg, transparent 30%, white 50%, transparent 70%)', WebkitMaskSize: '250% 100%', WebkitMaskRepeat: 'no-repeat', animation: 'icon-shine-mask 1.5s infinite linear' }} strokeWidth={1.5} />
@@ -362,7 +362,7 @@ const Jurisprudencia = () => {
           </motion.button>
           
           {/* Anotações */}
-          <motion.button variants={itemVariants} whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.98 }} onClick={() => toast({ title: 'Em breve', description: 'Suas anotações estarão aqui em breve.' })} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl bg-[#1A1D21] border border-border/40 hover:bg-[#23272B] transition-colors w-full group" data-track="quick_access_anotacoes">
+          <motion.button variants={itemVariants} whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.98 }} onClick={() => toast({ title: 'Em breve', description: 'Suas anotações estarão aqui em breve.' })} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl bg-secondary border border-border/40 hover:bg-secondary/80 transition-colors w-full group" data-track="quick_access_anotacoes">
             <div className="relative w-5 h-5 shrink-0">
               <NotebookPen className="w-5 h-5 absolute inset-0" style={{ color: 'hsl(348,78%,38%)', filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))' }} strokeWidth={1.15} />
               <NotebookPen className="w-5 h-5 absolute inset-0 text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ WebkitMaskImage: 'linear-gradient(-60deg, transparent 30%, white 50%, transparent 70%)', WebkitMaskSize: '250% 100%', WebkitMaskRepeat: 'no-repeat', animation: 'icon-shine-mask 1.5s infinite linear' }} strokeWidth={1.5} />
@@ -371,7 +371,7 @@ const Jurisprudencia = () => {
           </motion.button>
 
           {/* Radares */}
-          <motion.button variants={itemVariants} whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.98 }} onClick={() => navigate('/radares')} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl bg-[#1A1D21] border border-border/40 hover:bg-[#23272B] transition-colors w-full group" data-track="quick_access_radares">
+          <motion.button variants={itemVariants} whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.98 }} onClick={() => navigate('/radares')} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl bg-secondary border border-border/40 hover:bg-secondary/80 transition-colors w-full group" data-track="quick_access_radares">
             <div className="relative w-5 h-5 shrink-0">
               <Radar className="w-5 h-5 absolute inset-0" style={{ color: 'hsl(348,78%,38%)', filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))' }} strokeWidth={1.15} />
               <Radar className="w-5 h-5 absolute inset-0 text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ WebkitMaskImage: 'linear-gradient(-60deg, transparent 30%, white 50%, transparent 70%)', WebkitMaskSize: '250% 100%', WebkitMaskRepeat: 'no-repeat', animation: 'icon-shine-mask 1.5s infinite linear' }} strokeWidth={1.5} />
@@ -380,7 +380,7 @@ const Jurisprudencia = () => {
           </motion.button>
 
           {/* Histórico */}
-          <motion.button variants={itemVariants} whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.98 }} onClick={() => navigate('/vade-mecum/recentes')} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl bg-[#1A1D21] border border-border/40 hover:bg-[#23272B] transition-colors w-full group" data-track="quick_access_historico">
+          <motion.button variants={itemVariants} whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.98 }} onClick={() => navigate('/vade-mecum/recentes')} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl bg-secondary border border-border/40 hover:bg-secondary/80 transition-colors w-full group" data-track="quick_access_historico">
             <div className="relative w-5 h-5 shrink-0">
               <History className="w-5 h-5 absolute inset-0" style={{ color: 'hsl(348,78%,38%)', filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))' }} strokeWidth={1.15} />
               <History className="w-5 h-5 absolute inset-0 text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ WebkitMaskImage: 'linear-gradient(-60deg, transparent 30%, white 50%, transparent 70%)', WebkitMaskSize: '250% 100%', WebkitMaskRepeat: 'no-repeat', animation: 'icon-shine-mask 1.5s infinite linear' }} strokeWidth={1.5} />
@@ -414,7 +414,7 @@ const Jurisprudencia = () => {
               >
                 <div
                   className="relative w-[84px] h-full shrink-0 overflow-hidden flex items-center justify-center"
-                  style={{ backgroundColor: '#1A1D21' }}
+                  style={{ backgroundColor: 'hsl(var(--secondary))' }}
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-black/40 pointer-events-none" />
                   <Icon className="relative w-8 h-8 drop-shadow-md" style={{ color: op.color }} strokeWidth={2} />
