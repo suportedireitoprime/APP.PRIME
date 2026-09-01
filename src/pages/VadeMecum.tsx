@@ -12,6 +12,7 @@ import { pushRecente } from '@/lib/leisRecentes';
 import { useIsDesktop } from '@/hooks/use-desktop';
 import DesktopSidebar from '@/components/vademecum/DesktopSidebar';
 import { Scale, BookOpen, Gavel, Library, MessageSquare, BookOpenText, GraduationCap } from 'lucide-react';
+import ShapeGrid from '@/components/ui/ShapeGrid';
 
 const DESKTOP_TABS: { id: string; label: string; icon: any }[] = [
   { id: 'legislacao', label: 'Legislação', icon: Scale },
@@ -107,8 +108,19 @@ const VadeMecum = () => {
 
   if (isDesktop) {
     return (
-      <div className="min-h-dvh bg-background flex flex-col theme-vademecum">
-        <div className="flex flex-1 min-h-0">
+      <div className="min-h-dvh bg-zinc-950 flex flex-col theme-vademecum relative overflow-hidden">
+        <div className="absolute inset-0 z-0 opacity-60">
+          <ShapeGrid 
+            speed={0.5} 
+            squareSize={40}
+            direction='diagonal'
+            borderColor='rgba(255, 255, 255, 0.05)'
+            hoverFillColor='rgba(255, 255, 255, 0.1)'
+            shape='square'
+            hoverTrailAmount={5}
+          />
+        </div>
+        <div className="flex flex-1 min-h-0 relative z-10">
           <DesktopSidebar 
             activeTab={'vademecum' as any} 
             onTabChange={(tab) => {
@@ -175,14 +187,27 @@ const VadeMecum = () => {
   }
 
   return (
-    <div className={`theme-vademecum min-h-dvh bg-background pb-24 ${activeTab !== 'emalta' && activeTab !== 'favoritos' ? 'pt-8' : ''}`}>
-      {renderContent()}
-      <BuscaLeisOverlay open={buscaOpen} onClose={() => setBuscaOpen(false)} onSelectLei={abrirLei} />
-      <VadeMecumBottomNav hidden={buscaOpen} />
+    <div className={`theme-vademecum min-h-dvh bg-zinc-950 pb-24 relative overflow-hidden ${activeTab !== 'emalta' && activeTab !== 'favoritos' ? 'pt-8' : ''}`}>
+      <div className="absolute inset-0 z-0 opacity-60">
+        <ShapeGrid 
+          speed={0.5} 
+          squareSize={40}
+          direction='diagonal'
+          borderColor='rgba(255, 255, 255, 0.05)'
+          hoverFillColor='rgba(255, 255, 255, 0.1)'
+          shape='square'
+          hoverTrailAmount={5}
+        />
+      </div>
+      <div className="relative z-10">
+        {renderContent()}
+        <BuscaLeisOverlay open={buscaOpen} onClose={() => setBuscaOpen(false)} onSelectLei={abrirLei} />
+        <VadeMecumBottomNav hidden={buscaOpen} />
 
-      <AnimatePresence>
-        {tutorialOpen && <VadeMecumTutorialOverlay onClose={fecharTutorial} />}
-      </AnimatePresence>
+        <AnimatePresence>
+          {tutorialOpen && <VadeMecumTutorialOverlay onClose={fecharTutorial} />}
+        </AnimatePresence>
+      </div>
     </div>
   );
 };
