@@ -222,7 +222,6 @@ export function AdminHojeCards() {
     metricasResults.forEach(({ data }) => {
       const m = (data as any) || {};
       totalCadastros += m.cadastros || 0;
-      totalPaywall += m.paywall || 0;
       totalTrial += m.trial || 0;
     });
 
@@ -231,16 +230,22 @@ export function AdminHojeCards() {
       const maxDate = new Date(datas[0]);
       maxDate.setDate(maxDate.getDate() + 1);
       
-      const { data: vpEvents } = await supabase
+      const { data: events } = await supabase
         .from('app_events')
-        .select('user_id, id')
-        .eq('event_name', 'trial_click')
+        .select('user_id, id, email, event_name')
+        .in('event_name', ['trial_click', 'assinatura_aberta'])
         .gte('created_at', minDate.toISOString())
         .lt('created_at', maxDate.toISOString());
         
-      if (vpEvents) {
-        const uniqueVp = new Set(vpEvents.map((e: any) => e.user_id || e.id));
+      if (events) {
+        const vpEvents = events.filter((e: any) => e.event_name === 'trial_click');
+        const pwEvents = events.filter((e: any) => e.event_name === 'assinatura_aberta');
+        
+        const uniqueVp = new Set(vpEvents.map((e: any) => e.email || e.user_id || 'anonymous'));
         totalViuPlanos = uniqueVp.size;
+
+        const uniquePw = new Set(pwEvents.map((e: any) => e.email || e.user_id || 'anonymous'));
+        totalPaywall = uniquePw.size;
       }
     } catch (err) {
       console.error(err);
