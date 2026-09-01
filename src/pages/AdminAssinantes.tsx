@@ -664,6 +664,8 @@ const AdminAssinantes = () => {
                 </div>
               </section>
             )}
+          </>
+        )}
 
         {viewMode === 'dashboard' && (
           <>
@@ -985,7 +987,7 @@ const AdminAssinantes = () => {
             })}
           </div>
         </div>
-
+        )}
       </div>
 
       {/* Modal Details */}
