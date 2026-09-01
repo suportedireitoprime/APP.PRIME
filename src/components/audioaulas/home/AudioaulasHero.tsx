@@ -3,6 +3,7 @@ import { ArrowLeft, Headphones } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { CAPA_HUB, capaDaArea } from '@/lib/audioaulasHelper';
 import { CapaOtimizada } from './CapaOtimizada';
+import CassetteAnimation from './CassetteAnimation';
 
 interface AudioaulasHeroProps {
   areaAtual: string | null;
@@ -42,12 +43,16 @@ export const AudioaulasHero = React.memo(function AudioaulasHero({
         </button>
 
         <div className="flex items-center gap-4 lg:gap-8">
-          <span className="relative h-24 w-24 sm:h-32 sm:w-32 lg:h-44 lg:w-44 shrink-0 rounded-2xl overflow-hidden shadow-2xl shadow-black/70 border border-white/10">
-            <CapaOtimizada
-              src={capaImg}
-              alt=""
-              animacaoEntrada
-            />
+          <span className="relative h-24 w-24 sm:h-32 sm:w-32 lg:h-44 lg:w-44 shrink-0 rounded-2xl overflow-hidden shadow-2xl shadow-black/70 border border-white/10 bg-[#1c1c1c]">
+            {!areaAtual ? (
+              <CassetteAnimation />
+            ) : (
+              <CapaOtimizada
+                src={capaImg}
+                alt=""
+                animacaoEntrada
+              />
+            )}
           </span>
           <div className="min-w-0">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/20 text-primary text-[11px] font-semibold uppercase tracking-widest mb-2 border border-primary/30">
