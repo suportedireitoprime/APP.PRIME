@@ -13,6 +13,9 @@ import { Input } from '@/components/ui/input';
 import { haptic } from '@/lib/nativeHaptics';
 import { visualDaArea } from '@/lib/questoesVisual';
 import { useQuestoesCargos, useQuestoesDesempenho, useQuestoesAreas } from '@/hooks/useQuestoes';
+import CircularGallery from '@/components/ui/CircularGallery';
+import { renderToStaticMarkup } from 'react-dom/server';
+import React, { useRef } from 'react';
 
 const ATALHOS_4 = [
   { id: 'historico', label: 'Histórico', desc: 'Sessões salvas', icon: History, route: '/questoes/historico' },
@@ -32,15 +35,47 @@ const Questoes = () => {
   const [busca, setBusca] = useState('');
   const [materiaSheet, setMateriaSheet] = useState<{ aberto: boolean; materia: string | null }>({ aberto: false, materia: null });
   const [buscaAberta, setBuscaAberta] = useState(false);
+  const galleryRef = useRef<any>(null);
 
   const pct = dados?.total ? Math.round((dados.acertos / dados.total) * 100) : 0;
   const disponiveis = cargos.reduce((s, c) => s + (c.total_questoes ?? 0), 0);
 
-  const listaAreas = useMemo(() => {
-    const q = busca.trim().toLowerCase();
-    if (!q) return areas;
-    return areas.filter((a) => a.area.toLowerCase().includes(q));
-  }, [areas, busca]);
+  const galleryItems = useMemo(() => {
+    return areas.map((a) => {
+      const { icon: Icon, color } = visualDaArea(a.area);
+      const totalFormatted = Number(a.total).toLocaleString('pt-BR');
+      
+      const svg = renderToStaticMarkup(
+        <svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
+          <rect width="296" height="296" x="2" y="2" rx="64" fill="#09090b" stroke="rgba(255,255,255,0.15)" strokeWidth="4" />
+          <g transform="translate(100, 100)">
+            <Icon size={100} color={color} strokeWidth={2} />
+          </g>
+        </svg>
+      );
+      
+      const shortName = a.area.length > 25 ? a.area.substring(0, 22) + '...' : a.area;
+
+      return {
+        image: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`,
+        text: shortName,
+        fullName: `${totalFormatted} questões`,
+        area: a.area,
+      };
+    });
+  }, [areas]);
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const term = e.target.value.toLowerCase();
+    setBusca(e.target.value);
+    
+    if (term.length >= 2) {
+      const index = areas.findIndex(a => a.area.toLowerCase().includes(term));
+      if (index !== -1 && galleryRef.current) {
+        galleryRef.current.scrollToIndex(index);
+      }
+    }
+  };
 
   return (
     <div className="theme-questoes min-h-screen bg-background">
@@ -125,7 +160,7 @@ const Questoes = () => {
               <div className="flex items-center gap-2">
                 <span className="h-4 w-1 rounded-full bg-primary" />
                 <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground">
-                  Escolher Matéria ({listaAreas.length})
+                  Escolher Matéria ({areas.length})
                 </p>
               </div>
               <button
@@ -144,7 +179,7 @@ const Questoes = () => {
             {buscaAberta && (
               <Input
                 value={busca}
-                onChange={(e) => setBusca(e.target.value)}
+                onChange={handleSearch}
                 placeholder="Buscar matéria..."
                 className="h-11 rounded-2xl border-border bg-card shadow-sm text-xs font-bold"
               />
@@ -156,61 +191,26 @@ const Questoes = () => {
                   <div key={i} className="h-20 rounded-2xl animate-pulse border border-border/60 bg-muted/40" />
                 ))}
               </div>
-            ) : listaAreas.length === 0 ? (
+            ) : areas.length === 0 ? (
               <div className="rounded-2xl border border-border bg-card p-10 text-center text-muted-foreground text-xs">
                 <Sparkles className="mx-auto mb-2 h-7 w-7 text-primary" />
                 Nenhuma matéria encontrada.
               </div>
             ) : (
-              <motion.div 
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"
-                initial="hidden"
-                animate="show"
-                variants={{
-                  hidden: { opacity: 0 },
-                  show: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.1 } }
-                }}
-              >
-                {listaAreas.map((a) => {
-                  const { icon: Icon, color } = visualDaArea(a.area);
-                  const totalFormatted = Number(a.total).toLocaleString('pt-BR');
-                  return (
-                    <motion.button
-                      key={a.area}
-                      variants={{
-                        hidden: { opacity: 0, scale: 0.95 },
-                        show: { opacity: 1, scale: 1, transition: { type: "spring", stiffness: 300, damping: 24 } }
-                      }}
-                      whileHover={{ scale: 1.015 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => {
-                        haptic.selection();
-                        setMateriaSheet({ aberto: true, materia: a.area });
-                      }}
-                      className="group relative overflow-hidden flex w-full items-center gap-4 rounded-2xl border border-border/80 bg-card p-4 text-left transition-colors hover:border-primary/50 hover:shadow-md focus-visible:outline-none"
-                    >
-                      <motion.div
-                        initial={{ x: '-150%' }}
-                        animate={{ x: '250%' }}
-                        transition={{ duration: 2.5, ease: "easeInOut", repeat: Infinity, repeatDelay: 4 }}
-                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent skew-x-12 pointer-events-none"
-                      />
-                      <div className="relative flex shrink-0 items-center justify-center">
-                        <Icon className="h-8 w-8 drop-shadow-md transition-transform group-hover:scale-110" style={{ color }} strokeWidth={2.2} />
-                      </div>
-                      <div className="min-w-0 flex-1 z-10">
-                        <p className="truncate text-[15px] font-extrabold text-foreground group-hover:text-primary transition-colors">
-                          {a.area}
-                        </p>
-                        <p className="mt-0.5 text-[13px] text-muted-foreground font-semibold">
-                          {totalFormatted} questões
-                        </p>
-                      </div>
-                      <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground group-hover:translate-x-0.5 transition-transform z-10" />
-                    </motion.button>
-                  );
-                })}
-              </motion.div>
+              <div style={{ height: '420px', position: 'relative' }} className="-mx-4 mt-6">
+                <CircularGallery
+                  ref={galleryRef}
+                  items={galleryItems}
+                  bend={1.5}
+                  textColor="#ffffff"
+                  borderRadius={0.05}
+                  scrollEase={0.02}
+                  onItemClick={(item: any) => {
+                    haptic.selection();
+                    setMateriaSheet({ aberto: true, materia: item.area });
+                  }}
+                />
+              </div>
             )}
           </div>
           </div>
