@@ -35,7 +35,7 @@ const HomeCardImpl = ({ icon: Icon, label, sublabel, color, delay = 0, onClick, 
     className={`group relative flex h-[118px] min-h-[118px] w-full min-w-0 flex-col items-start justify-between overflow-hidden p-4 rounded-2xl border shadow-sm transition-all focus-visible:outline-none text-left active:scale-[0.97] ${
       solidColor 
         ? 'bg-[#1A1D21] border-border/40 hover:bg-[#23272B]' 
-        : 'bg-[#1e2329]/80 border-white/5'
+        : 'bg-[#1A1D21] border-white/5 hover:bg-[#23272B]'
     } ${className}`}
   >
     <div className="absolute top-2.5 right-2.5">

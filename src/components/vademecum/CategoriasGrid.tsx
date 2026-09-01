@@ -25,7 +25,7 @@ interface Categoria {
 }
 
 /** Cinza padrão para as capas escuras — ícone amarelo vívido */
-const GRAY_BG = '#2a2a2a';
+const GRAY_BG = '#1A1D21';
 const GRAY_FG = '#FFD400';
 /** Amarelo padrão do app (mesmo tom da CF88 anterior) */
 const YELLOW_BG = '#FFCC00';
