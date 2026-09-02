@@ -10,6 +10,7 @@ import { haptic } from '@/lib/nativeHaptics';
 import FlashcardsCargoHero from '@/components/flashcards/FlashcardsCargoHero';
 import { useFlashcardsDashboard, useFlashcardsResumoAreas, FlashcardsAreaRow, FlashcardsDash } from '@/lib/flashcardsQueries';
 import FlashcardsFiltroSheet, { FlashcardsFiltro } from '@/components/flashcards/FlashcardsFiltroSheet';
+import ShapeGrid from '@/components/ui/ShapeGrid';
 
 
 const Flashcards = () => {
@@ -33,8 +34,22 @@ const Flashcards = () => {
 
   return (
     <div className="min-h-dvh overflow-x-hidden bg-background pb-[calc(7rem+var(--sai-bottom))] lg:pb-[calc(3rem+var(--sai-bottom))]">
-      <PageHeader title="Flashcards" onBack={() => navigate('/')} />
-      <div className="mx-auto w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] px-3 sm:px-6 lg:px-8">
+      <div className="fixed inset-0 z-0 opacity-80 mix-blend-screen pointer-events-none">
+        <ShapeGrid 
+          speed={0.5} 
+          squareSize={40}
+          direction='diagonal'
+          borderColor='rgba(255, 255, 255, 0.05)'
+          hoverFillColor='rgba(255, 255, 255, 0.1)'
+          shape='square'
+          hoverTrailAmount={5}
+        />
+      </div>
+      
+      <div className="relative z-10">
+        <PageHeader title="Flashcards" onBack={() => navigate('/')} />
+      </div>
+      <div className="relative z-10 mx-auto w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] px-3 sm:px-6 lg:px-8">
 
 
         <div className="-mx-3 sm:-mx-6 lg:-mx-8 mb-6 mt-1">
