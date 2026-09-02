@@ -179,7 +179,7 @@ export default function ResumosJuridicosTemas() {
             <p className="font-semibold text-lg">Nenhuma matéria encontrada</p>
           </div>
         ) : (
-          <div className="rounded-2xl border border-white/10 bg-black/20 backdrop-blur-md divide-y divide-white/10 overflow-hidden shadow-xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {filteredTemas.map((r) => {
               return (
                 <button
@@ -188,7 +188,7 @@ export default function ResumosJuridicosTemas() {
                     haptic.selection();
                     navigate(`/resumos-juridicos/${encodeURIComponent(decodedArea)}/${encodeURIComponent(r.tema)}`);
                   }}
-                  className="w-full flex items-center gap-4 px-4 py-4 min-h-[96px] text-left hover:bg-white/5 active:bg-white/10 transition-colors"
+                  className="w-full flex items-center gap-4 px-4 py-4 min-h-[96px] text-left hover:bg-secondary/20 active:scale-[0.98] transition-all rounded-2xl bg-card border border-border hover:border-[#ef4444]/40 shadow-sm group overflow-hidden relative"
                 >
                   <div className="w-16 h-[88px] rounded-lg bg-white/5 border border-white/10 shrink-0 overflow-hidden shadow-md">
                     <img 
@@ -224,7 +224,7 @@ export default function ResumosJuridicosTemas() {
                       );
                     })()}
                   </div>
-                  <ChevronRight className="w-5 h-5 text-zinc-500 shrink-0" />
+                  <ChevronRight className="w-5 h-5 text-muted-foreground/40 group-hover:text-primary transition-colors shrink-0" />
                 </button>
               );
             })}
