@@ -20,18 +20,13 @@ struct FlashcardsView: View {
                     Text("Categoria: \(category)")
                         .foregroundColor(.gray)
                     
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(Color(red: 0.17, green: 0.58, blue: 0.44)) // #2C9570
-                        .frame(width: 280, height: 400)
-                        .overlay(
-                            Text("Cartão 3D Nativo (Em Breve)")
-                                .foregroundColor(.white)
-                                .fontWeight(.bold)
-                        )
+                    SwipeableCardView()
                 } else {
                     Text("Gráficos e Histórico Nativos")
                         .foregroundColor(.gray)
                 }
+                
+                Spacer().frame(height: 16)
                 
                 Button(action: {
                     onClose()
@@ -49,6 +44,68 @@ struct FlashcardsView: View {
             .background(Color(red: 0.12, green: 0.12, blue: 0.12))
             .cornerRadius(24)
         }
+    }
+}
+
+struct SwipeableCardView: View {
+    @State private var offset = CGSize.zero
+    @State private var cardText = "Cartão Nativo\nArraste-me!"
+    @State private var cardColor = Color(red: 0.17, green: 0.58, blue: 0.44) // #2C9570
+    
+    let impactMed = UIImpactFeedbackGenerator(style: .medium)
+    let impactHeavy = UIImpactFeedbackGenerator(style: .heavy)
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: 16)
+            .fill(cardColor)
+            .frame(width: 280, height: 400)
+            .overlay(
+                Text(cardText)
+                    .foregroundColor(.white)
+                    .fontWeight(.bold)
+                    .multilineTextAlignment(.center)
+                    .font(.title3)
+            )
+            .offset(x: offset.width, y: offset.height)
+            .rotationEffect(.degrees(Double(offset.width / 20)))
+            .gesture(
+                DragGesture()
+                    .onChanged { gesture in
+                        offset = gesture.translation
+                        // Micro haptics
+                        if abs(Int(offset.width)) % 100 < 5 {
+                            impactMed.impactOccurred()
+                        }
+                    }
+                    .onEnded { _ in
+                        if abs(offset.width) > 150 {
+                            // Sucesso (Swipe forte)
+                            impactHeavy.impactOccurred()
+                            let isRight = offset.width > 0
+                            
+                            cardText = isRight ? "Fácil!" : "Difícil!"
+                            cardColor = isRight ? Color.green : Color.red
+                            
+                            withAnimation(.spring()) {
+                                offset.width = isRight ? 1000 : -1000
+                            }
+                            
+                            // Reset após sair da tela
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                offset = .zero
+                                cardText = "Próximo Cartão\nArraste-me!"
+                                cardColor = Color(red: 0.17, green: 0.58, blue: 0.44)
+                            }
+                            
+                        } else {
+                            // Cancela swipe
+                            withAnimation(.spring()) {
+                                offset = .zero
+                            }
+                        }
+                    }
+            )
+            .animation(.spring(), value: offset)
     }
 }
 
