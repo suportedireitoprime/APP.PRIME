@@ -37,6 +37,7 @@ class MainActivity : BridgeActivity() {
 
         // Registra os Plugins Nativos
         registerPlugin(NativeCorePlugin::class.java)
+        registerPlugin(NativeAudioPlugin::class.java)
 
         // Injeta a view customizada da Splash Nativa por cima do WebView
         setupNativeSplash()
