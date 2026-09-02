@@ -130,8 +130,9 @@ function createTextTexture(gl, text, font = 'bold 30px monospace', color = 'blac
   const lineHeight = Math.ceil(fontSize * 1.2);
   const textHeight = lineHeight * lines.length;
   
-  canvas.width = textWidth + 40;
-  canvas.height = textHeight + 40;
+  // Increased padding to prevent horizontal clipping of text edges
+  canvas.width = textWidth + 120;
+  canvas.height = textHeight + 60;
   
   context.textBaseline = 'middle';
   context.textAlign = 'center';
@@ -193,7 +194,7 @@ class Title {
     const aspect = width / height;
     let textScaleMultiplier = 0.15;
     if (this.positionType === 'outside') {
-      textScaleMultiplier = 0.26; // Aumentado a pedido do usuário (+2 pontos virtuais)
+      textScaleMultiplier = 0.28; // Aumentado a pedido do usuário (+2 pontos virtuais)
     }
     
     const textHeight = this.plane.scale.y * textScaleMultiplier;
