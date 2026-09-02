@@ -174,13 +174,14 @@ const HomeHeaderHero = ({ onSearchOpenChange }: { onSearchOpenChange?: (open: bo
           transform: 'translateZ(0)',
           isolation: 'isolate',
           contain: 'paint',
+          WebkitMaskImage: '-webkit-radial-gradient(white, black)',
+          maskImage: 'radial-gradient(white, black)'
         }}
       >
-        <div className="absolute inset-0 bg-hero-panel -z-10" />
-        
         {/* ShapeGrid Padronizado (Fundo de Pílulas) */}
-        <div className="absolute inset-0 z-[-9] opacity-40 mix-blend-overlay">
+        <div className="absolute inset-0 z-[-9] opacity-40 mix-blend-overlay overflow-hidden rounded-b-[36px]" style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}>
           <ShapeGrid 
+            className="rounded-b-[36px]"
             speed={0.5} 
             squareSize={40}
             direction='diagonal'
