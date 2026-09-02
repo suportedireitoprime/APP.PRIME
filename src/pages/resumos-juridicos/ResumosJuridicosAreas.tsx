@@ -46,20 +46,20 @@ import { haptic } from "@/lib/nativeHaptics";
 type Aba = "cargos" | "areas" | "leis" | "jurisprudencia";
 
 const JURIS_ITENS: { label: string; desc: string; rota: string; color: string }[] = [
- { label: "Súmulas Vinculantes", desc: "STF · efeito vinculante", rota: "/resumos-juridicos/jurisprudencia/sumulas-vinculantes", color: "#f87171" },
- { label: "Súmulas do STF", desc: "Enunciados do Supremo", rota: "/resumos-juridicos/jurisprudencia/sumulas-stf", color: "#60a5fa" },
- { label: "Súmulas do STJ", desc: "Enunciados do Superior", rota: "/resumos-juridicos/jurisprudencia/sumulas-stj", color: "#34d399" },
+ { label: "SÃºmulas Vinculantes", desc: "STF Â· efeito vinculante", rota: "/resumos-juridicos/jurisprudencia/sumulas-vinculantes", color: "#f87171" },
+ { label: "SÃºmulas do STF", desc: "Enunciados do Supremo", rota: "/resumos-juridicos/jurisprudencia/sumulas-stf", color: "#60a5fa" },
+ { label: "SÃºmulas do STJ", desc: "Enunciados do Superior", rota: "/resumos-juridicos/jurisprudencia/sumulas-stj", color: "#34d399" },
  { label: "Informativos do STF", desc: "Julgados recentes", rota: "/resumos-juridicos/jurisprudencia/informativos-stf", color: "#a78bfa" },
  { label: "Informativos do STJ", desc: "Julgados recentes", rota: "/resumos-juridicos/jurisprudencia/informativos-stj", color: "#22d3ee" },
- { label: "Teses do STF", desc: "Repercussão geral", rota: "/resumos-juridicos/jurisprudencia/teses-stf", color: "#fbbf24" },
- { label: "Teses do STJ", desc: "Jurisprudência em teses", rota: "/resumos-juridicos/jurisprudencia/teses-stj", color: "#fb923c" },
+ { label: "Teses do STF", desc: "RepercussÃ£o geral", rota: "/resumos-juridicos/jurisprudencia/teses-stf", color: "#fbbf24" },
+ { label: "Teses do STJ", desc: "JurisprudÃªncia em teses", rota: "/resumos-juridicos/jurisprudencia/teses-stj", color: "#fb923c" },
  { label: "Pesquisas prontas STF", desc: "Temas selecionados", rota: "/resumos-juridicos/jurisprudencia/prontas-stf", color: "#f472b6" },
  { label: "Pesquisas prontas STJ", desc: "Temas selecionados", rota: "/resumos-juridicos/jurisprudencia/prontas-stj", color: "#a3e635" },
 ];
 
 const CARGOS = [
  { id: "magistratura", nome: "Magistratura", color: "#c2274a", icon: Scale },
- { id: "ministerio-publico", nome: "Ministério Público", color: "#38bdf8", icon: Landmark },
+ { id: "ministerio-publico", nome: "MinistÃ©rio PÃºblico", color: "#38bdf8", icon: Landmark },
  { id: "carreira-policial", nome: "Carreira Policial", color: "#fbbf24", icon: Shield },
  { id: "oab", nome: "OAB", color: "#f87171", icon: Briefcase },
 ];
@@ -67,7 +67,7 @@ const CARGOS = [
 
 type AreaRow = { area: string; total: number };
 
-// Ícone e cor (hex) por área
+// Ãcone e cor (hex) por Ã¡rea
 const AREA_STYLE: Record<string, { icon: any; color: string }> = {
  administrativo: { icon: Landmark, color: "#38bdf8" },
  ambiental: { icon: Leaf, color: "#34d399" },
@@ -235,8 +235,8 @@ export default function ResumosJuridicosAreas() {
             </div>
             <div className="flex-1 w-full flex items-center justify-between">
               <div>
-                <h3 className="font-display font-black uppercase tracking-widest text-[18px] text-foreground">Mat�rias</h3>
-                <p className="text-[13px] text-muted-foreground mt-1">Navegue pelos resumos por �rea do Direito.</p>
+                <h3 className="font-display font-black uppercase tracking-widest text-[18px] text-foreground">Matérias</h3>
+                <p className="text-[13px] text-muted-foreground mt-1">Navegue pelos resumos por área do Direito.</p>
               </div>
               <ChevronRight className="w-6 h-6 text-muted-foreground/40 group-hover:text-[#38bdf8] transition-colors" />
             </div>
@@ -269,13 +269,15 @@ export default function ResumosJuridicosAreas() {
             </div>
             <div className="flex-1 w-full flex items-center justify-between">
               <div>
-                <h3 className="font-display font-black uppercase tracking-widest text-[18px] text-foreground">Jurisprud�ncia</h3>
-                <p className="text-[13px] text-muted-foreground mt-1">S�mulas, Informativos e Teses dos tribunais superiores.</p>
+                <h3 className="font-display font-black uppercase tracking-widest text-[18px] text-foreground">Jurisprudência</h3>
+                <p className="text-[13px] text-muted-foreground mt-1">Súmulas, Informativos e Teses dos tribunais superiores.</p>
               </div>
               <ChevronRight className="w-6 h-6 text-muted-foreground/40 group-hover:text-[#34d399] transition-colors" />
             </div>
           </motion.button>
         </div>
+
+ </div>
 
  {/* OVERLAY DE BUSCA PRINCIPAL */}
  <AnimatePresence>
@@ -313,14 +315,14 @@ export default function ResumosJuridicosAreas() {
  autoFocus
  value={voiceBusca.listening && voiceBusca.partial ? voiceBusca.partial : q}
  onChange={(e) => setQ(e.target.value)}
- placeholder="Buscar matéria, lei ou súmula"
+ placeholder="Buscar matÃ©ria, lei ou sÃºmula"
  className="w-full h-12 pl-11 pr-4 rounded-2xl bg-black/80 border border-white/25 text-white placeholder:text-white/50 outline-none"
  />
  </div>
  <button
  type="button"
  onClick={voiceBusca.toggle}
- aria-label={voiceBusca.listening ? "Parar gravação" : "Pesquisar por voz"}
+ aria-label={voiceBusca.listening ? "Parar gravaÃ§Ã£o" : "Pesquisar por voz"}
  className={`shrink-0 w-12 h-12 rounded-full flex items-center justify-center shadow-lg active:scale-95 transition ${
  voiceBusca.listening
  ? "bg-red-500 text-white animate-pulse shadow-red-500/40"
@@ -334,9 +336,9 @@ export default function ResumosJuridicosAreas() {
  <div className="mt-3 flex items-center gap-1 p-1 rounded-full bg-black/30 border border-white/15">
  {([
  { id: "todos", label: "Todos" },
- { id: "areas", label: "Matérias" },
+ { id: "areas", label: "MatÃ©rias" },
  { id: "leis", label: "Leis" },
- { id: "jurisprudencia", label: "Jurisprudência" },
+ { id: "jurisprudencia", label: "JurisprudÃªncia" },
  ] as const).map((f) => {
  const ativo = filtroBusca === f.id;
  return (
@@ -445,6 +447,7 @@ export default function ResumosJuridicosAreas() {
  area={leiArtigos?.area}
  onClose={() => setLeiArtigos(null)}
  />
+ </div>
  </div>
  );
 }
