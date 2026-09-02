@@ -18,7 +18,7 @@ const shouldBypassProxy = () => {
 };
 
 const proxied = (url: string, w: number) =>
-  `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${w}&q=80&output=webp`;
+  `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${w}&q=80&output=avif`;
 
 /**
  * Resolve caminhos relativos do CDN Lovable (`/__l5e/...`) ou pointers de asset
@@ -47,7 +47,18 @@ const otimizar = (url: string, w: number) => {
   
   // Se a imagem já vem do nosso storage Supabase, 
   // ela já foi comprimida na extração e o proxy só causa lentidão
-  if (resolved.includes('.supabase.co/storage/')) return resolved;
+  // Vamos tentar solicitar formato AVIF nativamente no Supabase Storage (se transform enabled)
+  if (resolved.includes('.supabase.co/storage/')) {
+    try {
+      const parsed = new URL(resolved);
+      if (!parsed.searchParams.has('format')) {
+        parsed.searchParams.set('format', 'avif');
+      }
+      return parsed.toString();
+    } catch {
+      return resolved;
+    }
+  }
   
   if (!/^https?:\/\//i.test(resolved)) return resolved;
   return proxied(resolved, w);
@@ -68,7 +79,7 @@ export const avatarImg = (url: string, size = 128) => {
   const resolved = resolve(url);
   if (shouldBypassProxy()) return resolved;
   // Para avatares, sempre queremos usar o proxy wsrv.nl no frontend web para forçar o mask circular e diminuir o peso
-  return `https://wsrv.nl/?url=${encodeURIComponent(resolved)}&w=${size}&h=${size}&fit=cover&mask=circle&output=webp`;
+  return `https://wsrv.nl/?url=${encodeURIComponent(resolved)}&w=${size}&h=${size}&fit=cover&mask=circle&output=avif`;
 };
 
 export function prefetchImage(url: string | null | undefined) {

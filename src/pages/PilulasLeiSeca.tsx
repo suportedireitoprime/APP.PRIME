@@ -18,6 +18,10 @@ function formatTime(timeInSeconds: number) {
 
 function PilulaItem({ 
   artigo, 
+  navigate,
+  config
+}: { 
+  artigo: any, 
   navigate: (path: string) => void,
   config: any
 }) {

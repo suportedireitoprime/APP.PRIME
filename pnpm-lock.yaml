@@ -150,7 +150,7 @@ importers:
         specifier: ^8.0.0
         version: 8.0.29(@capacitor/core@8.5.0)
       '@capgo/capacitor-updater':
-        specifier: ^8.0.0
+        specifier: ^8.51.12
         version: 8.51.12(@capacitor/core@8.5.0)
       '@capgo/native-audio':
         specifier: ^8.0.0
@@ -297,7 +297,7 @@ importers:
         specifier: ^5.101.2
         version: 5.101.4(@tanstack/react-query@5.101.4(react@18.3.1))(react@18.3.1)
       '@tanstack/react-virtual':
-        specifier: ^3.13.23
+        specifier: ^3.14.9
         version: 3.14.9(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@types/d3-hierarchy':
         specifier: ^3.1.7

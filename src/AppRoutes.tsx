@@ -597,6 +597,7 @@ function NativeBootstrap() {
       import("@/services/noticiasService").then((m) => m.prefetchNoticias()).catch(() => {});
       import("@/services/syncQueue").then((m) => m.startSyncQueueWorker()).catch(() => {});
       import("@/services/jurisprudenciaWarmup").then((m) => m.warmupJurisprudencia()).catch(() => {});
+      import('@capgo/capacitor-updater').then((m) => m.CapacitorUpdater.notifyAppReady()).catch(() => {});
       import("@/lib/backgroundRunner").then(async (m) => {
         try {
           await m.ensureBackgroundPermissions();

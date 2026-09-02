@@ -108,6 +108,9 @@ const config: CapacitorConfig = {
       skipNativeAuth: false,
       providers: ['google.com', 'apple.com'],
     },
+    CapacitorUpdater: {
+      autoUpdate: false,
+    },
   },
 };
 
