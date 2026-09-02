@@ -598,6 +598,14 @@ function NativeBootstrap() {
       import("@/services/syncQueue").then((m) => m.startSyncQueueWorker()).catch(() => {});
       import("@/services/jurisprudenciaWarmup").then((m) => m.warmupJurisprudencia()).catch(() => {});
       import('@capgo/capacitor-updater').then((m) => m.CapacitorUpdater.notifyAppReady()).catch(() => {});
+      
+      // Inicializa o Native Core (Kotlin/Swift) para tarefas nativas
+      import('@/lib/NativeCore').then((m) => {
+        m.NativeCore.initialize({ message: "App started from React!" })
+          .then(res => console.log("[NativeCore] Initialize success:", res))
+          .catch(err => console.warn("[NativeCore] Native bridge not available:", err));
+      }).catch(() => {});
+
       import("@/lib/backgroundRunner").then(async (m) => {
         try {
           await m.ensureBackgroundPermissions();

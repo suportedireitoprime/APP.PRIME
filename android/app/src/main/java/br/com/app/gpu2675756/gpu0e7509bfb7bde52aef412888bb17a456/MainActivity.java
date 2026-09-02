@@ -23,5 +23,8 @@ public class MainActivity extends BridgeActivity {
             webView.setVerticalScrollBarEnabled(false);
             webView.setHorizontalScrollBarEnabled(false);
         }
+
+        // Registra os Plugins Nativos Locais
+        registerPlugin(NativeCorePlugin.class);
     }
 }
