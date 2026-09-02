@@ -255,21 +255,21 @@ export default function ResumosJuridicosSubtemas() {
                           <div className="flex gap-2 p-3">
                             <button
                               onClick={() => { haptic.selection(); openReader(r, "conceitos"); }}
-                              className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3.5 rounded-xl bg-secondary/80 border border-border/50 text-foreground shadow-sm hover:border-[#ef4444]/50 transition-all active:scale-95"
+                              className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3.5 rounded-xl bg-white/5 backdrop-blur-md border border-white/10 text-foreground shadow-sm hover:border-[#ef4444]/50 transition-all active:scale-95"
                             >
                               <FileText className="w-5 h-5 text-[#ef4444]" />
                               <span className="font-bold text-[10px] uppercase tracking-wider text-[#ef4444]">Conceitos</span>
                             </button>
                             <button
                               onClick={() => { haptic.selection(); openReader(r, "cornell"); }}
-                              className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3.5 rounded-xl bg-secondary/80 border border-border/50 text-foreground shadow-sm hover:border-[#38bdf8]/50 transition-all active:scale-95"
+                              className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3.5 rounded-xl bg-white/5 backdrop-blur-md border border-white/10 text-foreground shadow-sm hover:border-[#38bdf8]/50 transition-all active:scale-95"
                             >
                               <NotebookText className="w-5 h-5 text-[#38bdf8]" />
                               <span className="font-bold text-[10px] uppercase tracking-wider text-[#38bdf8]">Cornell</span>
                             </button>
                             <button
                               onClick={() => { haptic.selection(); openReader(r, "feynman"); }}
-                              className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3.5 rounded-xl bg-secondary/80 border border-border/50 text-foreground shadow-sm hover:border-[#fbbf24]/50 transition-all active:scale-95"
+                              className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3.5 rounded-xl bg-white/5 backdrop-blur-md border border-white/10 text-foreground shadow-sm hover:border-[#fbbf24]/50 transition-all active:scale-95"
                             >
                               <BookOpen className="w-5 h-5 text-[#fbbf24]" />
                               <span className="font-bold text-[10px] uppercase tracking-wider text-[#fbbf24]">Feynman</span>
