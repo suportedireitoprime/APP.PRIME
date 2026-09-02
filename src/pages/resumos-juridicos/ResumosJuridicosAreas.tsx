@@ -215,7 +215,7 @@ export default function ResumosJuridicosAreas() {
             onClick={() => { haptic.selection(); setActiveTab("Todos"); }}
             className={`px-5 h-9 rounded-full text-[13px] font-bold whitespace-nowrap transition-colors shadow-sm ${
               activeTab === "Todos"
-                ? "bg-[#38bdf8] text-black"
+                ? "bg-hero-panel text-white shadow-md shadow-[#E11D48]/30"
                 : "bg-white/5 border border-white/10 text-white hover:bg-white/10"
             }`}
           >
@@ -230,7 +230,7 @@ export default function ResumosJuridicosAreas() {
                 onClick={() => { haptic.selection(); setActiveTab(r.area); }}
                 className={`px-4 h-9 rounded-full text-[13px] font-bold whitespace-nowrap transition-colors shadow-sm ${
                   isActive
-                    ? "bg-[#38bdf8] text-black"
+                    ? "bg-hero-panel text-white shadow-md shadow-[#E11D48]/30"
                     : "bg-white/5 border border-white/10 text-white hover:bg-white/10"
                 }`}
               >
@@ -262,9 +262,9 @@ export default function ResumosJuridicosAreas() {
                         haptic.selection();
                         navigate(`/resumos-juridicos/${encodeURIComponent(r.area)}`);
                       }}
-                      className="w-full flex items-center gap-4 px-4 py-3 min-h-[76px] text-left hover:bg-white/5 active:bg-white/10 transition-colors"
+                      className="w-full flex items-center gap-4 px-4 py-4 min-h-[96px] text-left hover:bg-white/5 active:bg-white/10 transition-colors"
                     >
-                      <div className="w-[42px] h-[58px] rounded-lg bg-white/5 border border-white/10 shrink-0 overflow-hidden shadow-md">
+                      <div className="w-16 h-[88px] rounded-lg bg-white/5 border border-white/10 shrink-0 overflow-hidden shadow-md">
                         <img 
                           src="https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg" 
                           alt="Capa" 
@@ -273,10 +273,10 @@ export default function ResumosJuridicosAreas() {
                         />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="font-body text-[16px] font-semibold text-white truncate">
+                        <div className="font-body text-[17px] font-bold text-white truncate">
                           {displayArea}
                         </div>
-                        <div className="font-body text-[12.5px] text-zinc-400 truncate mt-0.5">
+                        <div className="font-body text-[13px] text-zinc-400 truncate mt-1">
                           {r.total} {r.total === 1 ? "resumo" : "resumos"} disponíveis
                         </div>
                       </div>
@@ -301,9 +301,9 @@ export default function ResumosJuridicosAreas() {
                         haptic.selection();
                         navigate(`/resumos-juridicos/${encodeURIComponent(activeTab)}/${encodeURIComponent(tema)}`);
                       }}
-                      className="w-full flex items-center gap-4 px-4 py-3 min-h-[76px] text-left hover:bg-white/5 active:bg-white/10 transition-colors"
+                      className="w-full flex items-center gap-4 px-4 py-4 min-h-[96px] text-left hover:bg-white/5 active:bg-white/10 transition-colors"
                     >
-                      <div className="w-[42px] h-[58px] rounded-lg bg-white/5 border border-white/10 shrink-0 overflow-hidden shadow-md">
+                      <div className="w-16 h-[88px] rounded-lg bg-white/5 border border-white/10 shrink-0 overflow-hidden shadow-md">
                         <img 
                           src="https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg" 
                           alt="Capa" 
@@ -312,10 +312,10 @@ export default function ResumosJuridicosAreas() {
                         />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="font-body text-[15px] font-semibold text-white line-clamp-2 leading-snug">
+                        <div className="font-body text-[15px] font-bold text-white line-clamp-2 leading-snug">
                           {tema}
                         </div>
-                        <div className="font-body text-[12px] text-[#38bdf8] font-bold mt-1">
+                        <div className="font-body text-[12px] text-[#E11D48] font-black mt-1.5 uppercase tracking-wide">
                           LER RESUMO
                         </div>
                       </div>
