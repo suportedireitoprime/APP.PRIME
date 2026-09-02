@@ -79,6 +79,7 @@ export default function ResumosJuridicosAreas() {
   const [rows, setRows] = useState<AreaRow[]>(() => areasThemesCache || []);
   const [loading, setLoading] = useState(!areasThemesCache);
   const [q, setQ] = useState("");
+  const [activeTab, setActiveTab] = useState<string>("Todos");
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
@@ -164,11 +165,23 @@ export default function ResumosJuridicosAreas() {
     })();
   }, []);
 
-  const filtered = useMemo(() => {
+  const filteredAreas = useMemo(() => {
     if (!q) return rows;
     const t = normalize(q.trim());
     return rows.filter((r) => normalize(r.area).includes(t));
   }, [rows, q]);
+
+  const activeAreaRow = useMemo(() => {
+    if (activeTab === "Todos") return null;
+    return rows.find((r) => r.area === activeTab) || null;
+  }, [rows, activeTab]);
+
+  const filteredTemas = useMemo(() => {
+    if (!activeAreaRow) return [];
+    if (!q) return activeAreaRow.temas;
+    const t = normalize(q.trim());
+    return activeAreaRow.temas.filter((tema) => normalize(tema).includes(t));
+  }, [activeAreaRow, q]);
 
   return (
     <div className="min-h-dvh bg-[#0D0D0D] text-white overflow-x-hidden relative flex flex-col">
@@ -190,11 +203,41 @@ export default function ResumosJuridicosAreas() {
                 id="search-areas"
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
-                placeholder="Buscar matéria..."
+                placeholder={activeTab === "Todos" ? "Buscar matéria..." : `Buscar em ${activeTab.replace(/^DIREITO\s+/i, "")}...`}
                 className="w-full h-10 pl-9 pr-4 rounded-xl bg-secondary/50 border border-border/50 text-sm focus:outline-none focus:border-[#38bdf8]/50 transition-colors"
               />
             </div>
           </div>
+        </div>
+
+        <div className="px-4 pb-4 overflow-x-auto no-scrollbar flex items-center gap-2 -mt-2">
+          <button
+            onClick={() => { haptic.selection(); setActiveTab("Todos"); }}
+            className={`px-5 h-9 rounded-full text-[13px] font-bold whitespace-nowrap transition-colors shadow-sm ${
+              activeTab === "Todos"
+                ? "bg-[#38bdf8] text-black"
+                : "bg-white/5 border border-white/10 text-white hover:bg-white/10"
+            }`}
+          >
+            Todos
+          </button>
+          {rows.map((r) => {
+            const displayArea = r.area.replace(/^DIREITO\s+/i, "");
+            const isActive = activeTab === r.area;
+            return (
+              <button
+                key={r.area}
+                onClick={() => { haptic.selection(); setActiveTab(r.area); }}
+                className={`px-4 h-9 rounded-full text-[13px] font-bold whitespace-nowrap transition-colors shadow-sm ${
+                  isActive
+                    ? "bg-[#38bdf8] text-black"
+                    : "bg-white/5 border border-white/10 text-white hover:bg-white/10"
+                }`}
+              >
+                {displayArea}
+              </button>
+            );
+          })}
         </div>
 
         <div className="flex-1 overflow-y-auto px-4 pb-[calc(2rem+var(--sai-bottom))]">
@@ -202,42 +245,86 @@ export default function ResumosJuridicosAreas() {
             <div className="flex items-center justify-center py-16 text-white/50">
               <Loader2 className="w-5 h-5 animate-spin mr-2" /> Carregando matérias...
             </div>
-          ) : filtered.length === 0 ? (
-            <div className="text-center py-16 text-white/50 text-sm space-y-3">
-              <p>Nenhuma matéria encontrada para "{q}".</p>
-            </div>
+          ) : activeTab === "Todos" ? (
+            filteredAreas.length === 0 ? (
+              <div className="text-center py-16 text-white/50 text-sm space-y-3">
+                <p>Nenhuma matéria encontrada para "{q}".</p>
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-white/10 bg-black/20 backdrop-blur-md divide-y divide-white/10 overflow-hidden shadow-xl mt-1">
+                {filteredAreas.map((r, i) => {
+                  const displayArea = r.area.replace(/^DIREITO\s+/i, "");
+                  
+                  return (
+                    <button
+                      key={r.area}
+                      onClick={() => {
+                        haptic.selection();
+                        navigate(`/resumos-juridicos/${encodeURIComponent(r.area)}`);
+                      }}
+                      className="w-full flex items-center gap-4 px-4 py-3 min-h-[76px] text-left hover:bg-white/5 active:bg-white/10 transition-colors"
+                    >
+                      <div className="w-[42px] h-[58px] rounded-lg bg-white/5 border border-white/10 shrink-0 overflow-hidden shadow-md">
+                        <img 
+                          src="https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg" 
+                          alt="Capa" 
+                          className="w-full h-full object-cover" 
+                          loading="lazy" 
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-body text-[16px] font-semibold text-white truncate">
+                          {displayArea}
+                        </div>
+                        <div className="font-body text-[12.5px] text-zinc-400 truncate mt-0.5">
+                          {r.total} {r.total === 1 ? "resumo" : "resumos"} disponíveis
+                        </div>
+                      </div>
+                      <ChevronRight className="w-5 h-5 text-zinc-500 shrink-0" />
+                    </button>
+                  );
+                })}
+              </div>
+            )
           ) : (
-            <div className="rounded-2xl border border-white/10 bg-black/20 backdrop-blur-md divide-y divide-white/10 overflow-hidden shadow-xl mt-1">
-              {filtered.map((r, i) => {
-                const s = styleForArea(r.area);
-                const Icon = s.icon;
-                const displayArea = r.area.replace(/^DIREITO\s+/i, "");
-                
-                return (
-                  <button
-                    key={r.area}
-                    onClick={() => {
-                      haptic.selection();
-                      navigate(`/resumos-juridicos/${encodeURIComponent(r.area)}`);
-                    }}
-                    className="w-full flex items-center gap-4 px-4 py-4 min-h-[76px] text-left hover:bg-white/5 active:bg-white/10 transition-colors"
-                  >
-                    <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                      <Icon className="w-[26px] h-[26px]" style={{ color: s.color }} strokeWidth={1.8} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-body text-[16px] font-semibold text-white truncate">
-                        {displayArea}
+            filteredTemas.length === 0 ? (
+              <div className="text-center py-16 text-white/50 text-sm space-y-3">
+                <p>Nenhum resumo encontrado para "{q}".</p>
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-white/10 bg-black/20 backdrop-blur-md divide-y divide-white/10 overflow-hidden shadow-xl mt-1">
+                {filteredTemas.map((tema) => {
+                  return (
+                    <button
+                      key={tema}
+                      onClick={() => {
+                        haptic.selection();
+                        navigate(`/resumos-juridicos/${encodeURIComponent(activeTab)}/${encodeURIComponent(tema)}`);
+                      }}
+                      className="w-full flex items-center gap-4 px-4 py-3 min-h-[76px] text-left hover:bg-white/5 active:bg-white/10 transition-colors"
+                    >
+                      <div className="w-[42px] h-[58px] rounded-lg bg-white/5 border border-white/10 shrink-0 overflow-hidden shadow-md">
+                        <img 
+                          src="https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg" 
+                          alt="Capa" 
+                          className="w-full h-full object-cover" 
+                          loading="lazy" 
+                        />
                       </div>
-                      <div className="font-body text-[12.5px] text-zinc-400 truncate mt-0.5">
-                        {r.total} {r.total === 1 ? "resumo" : "resumos"} disponíveis
+                      <div className="flex-1 min-w-0">
+                        <div className="font-body text-[15px] font-semibold text-white line-clamp-2 leading-snug">
+                          {tema}
+                        </div>
+                        <div className="font-body text-[12px] text-[#38bdf8] font-bold mt-1">
+                          LER RESUMO
+                        </div>
                       </div>
-                    </div>
-                    <ChevronRight className="w-5 h-5 text-zinc-500 shrink-0" />
-                  </button>
-                );
-              })}
-            </div>
+                      <ChevronRight className="w-5 h-5 text-zinc-500 shrink-0" />
+                    </button>
+                  );
+                })}
+              </div>
+            )
           )}
         </div>
       </div>
