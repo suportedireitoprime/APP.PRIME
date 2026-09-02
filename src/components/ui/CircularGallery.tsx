@@ -193,7 +193,7 @@ class Title {
     const aspect = width / height;
     let textScaleMultiplier = 0.15;
     if (this.positionType === 'outside') {
-      textScaleMultiplier = 0.22; // Aumentado a pedido do usuário
+      textScaleMultiplier = 0.26; // Aumentado a pedido do usuário (+2 pontos virtuais)
     }
     
     const textHeight = this.plane.scale.y * textScaleMultiplier;
