@@ -51,7 +51,7 @@ export default function PilulasHome() {
     { image: "https://portal.stf.jus.br/util/imagem.asp?id=701", text: "Mendes", fullName: "Gilmar Mendes" },
     { image: "https://portal.stf.jus.br/util/imagem.asp?id=2741", text: "Fux", fullName: "Luiz Fux" },
     { image: "https://portal.stf.jus.br/util/imagem.asp?id=3062", text: "Marques", fullName: "Nunes Marques" },
-    { image: "https://portal.stf.jus.br/hotsites/ministros/img/barroso-avatar-2023.jpg", text: "Barroso", fullName: "Roberto Barroso" }
+    { image: "https://portal.stf.jus.br/util/imagem.asp?id=3141", text: "Barroso", fullName: "Roberto Barroso" }
   ], []);
 
   const handleItemClick = useCallback((item: any) => {
