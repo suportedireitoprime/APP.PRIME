@@ -180,7 +180,7 @@ export default function STFBiografias() {
         </div>
 
         {/* Menu de Alternância (Filtros) */}
-        <div className="flex flex-nowrap items-center gap-2 mb-8 overflow-x-auto custom-scrollbar pb-2 w-full max-w-full">
+        <div className="flex flex-nowrap items-center gap-2 mb-8 overflow-x-auto custom-scrollbar pb-2 w-full max-w-full pr-4 md:pr-0 after:content-[''] after:w-2 after:flex-shrink-0">
           {[
             { id: 'todos', label: 'Todos', count: ministros.length },
             { id: 'vigentes', label: 'Vigentes', count: ministros.filter(m => m.status === 'vigente').length },
