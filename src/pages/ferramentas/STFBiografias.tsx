@@ -485,10 +485,10 @@ export default function STFBiografias() {
                                 <div className="flex items-center gap-1.5 text-xs text-zinc-400 font-body mb-3">
                                   <Calendar className="w-3.5 h-3.5 opacity-70" />
                                   <span>
-                                    {ev.etapa.includes('INDICAÇÃO') && selectedMinistro.data_indicacao 
-                                      ? new Date(selectedMinistro.data_indicacao).toLocaleDateString('pt-BR') 
-                                      : ev.etapa.includes('APOSENTADORIA') && selectedMinistro.data_fim 
-                                        ? new Date(selectedMinistro.data_fim).toLocaleDateString('pt-BR') 
+                                    {(ev.etapa.includes('INDICAÇÃO') || ev.etapa.includes('NOMEAÇÃO') || ev.etapa.includes('POSSE')) && selectedMinistro.data_indicacao 
+                                      ? new Date(selectedMinistro.data_indicacao).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) 
+                                      : (ev.etapa.includes('APOSENTADORIA') || ev.etapa.includes('FALECIMENTO')) && selectedMinistro.data_fim 
+                                        ? new Date(selectedMinistro.data_fim).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) 
                                         : 'Data detalhada no documento original'}
                                   </span>
                                 </div>

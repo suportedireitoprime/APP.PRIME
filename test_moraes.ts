@@ -1,0 +1,1 @@
+const res = await fetch("https://portal.stf.jus.br/ostf/ministros/verMinistro.asp?periodo=STF&id=49", { headers: {"User-Agent": "Mozilla/5.0"} }); const text = await res.text(); console.log(text.includes("Alexandre de Moraes"));
