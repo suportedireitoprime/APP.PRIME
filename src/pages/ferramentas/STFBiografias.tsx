@@ -119,7 +119,7 @@ export default function STFBiografias() {
     if (activeFilter === 'todos') return true;
     if (activeFilter === 'vigentes') return m.status === 'vigente';
     if (activeFilter === 'mulheres') return m.genero === 'F';
-    if (activeFilter === 'homens') return m.genero === 'M';
+    if (activeFilter === 'homens') return m.genero !== 'F';
     return true;
   });
 
@@ -240,7 +240,7 @@ export default function STFBiografias() {
             { id: 'todos', label: 'Todos', count: ministros.length },
             { id: 'vigentes', label: 'Vigentes', count: ministros.filter(m => m.status === 'vigente').length },
             { id: 'mulheres', label: 'Mulheres', count: ministros.filter(m => m.genero === 'F').length },
-            { id: 'homens', label: 'Homens', count: ministros.filter(m => m.genero === 'M').length }
+            { id: 'homens', label: 'Homens', count: ministros.filter(m => m.genero !== 'F').length }
           ].map((tab) => (
             <button
               key={tab.id}
