@@ -56,6 +56,30 @@ const CDN_WARMUP_URLS: readonly string[] = [
   assetUrl(srcOf(themisMarbleCutoutAsset)),
 ];
 
+export const PILULAS_COVERS: readonly string[] = [
+  'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg',
+  '/pilulas/cf_portrait.jpg',
+  '/pilulas/cc_portrait.png',
+  '/pilulas/cpp_portrait.jpg',
+  '/pilulas/clt_portrait.jpg',
+  '/pilulas/ministros/moraes.jpg',
+  '/pilulas/ministros/mendonca.jpg',
+  '/pilulas/ministros/carmen.jpg',
+  '/pilulas/ministros/zanin.jpg',
+  '/pilulas/ministros/toffoli.jpg',
+  '/pilulas/ministros/fachin.jpg',
+  '/pilulas/ministros/dino.jpg',
+  '/pilulas/ministros/mendes.jpg',
+  '/pilulas/ministros/fux.jpg',
+  '/pilulas/ministros/marques.jpg',
+  '/pilulas/ministros/barroso.jpg',
+  'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_luta_pelo_direito_manual.jpg',
+  'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/sobre_a_liberdade_manual.jpg',
+  'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_arte_da_guerra_manual.jpg',
+  'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_espirito_das_leis_manual.jpg',
+  'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_mundo_assombrado_pelos_demonios_manual.jpg'
+];
+
 type IdleWindow = Window & {
   requestIdleCallback?: (
     cb: () => void,
@@ -92,11 +116,19 @@ export function prefetchImages(urls: (string | null | undefined)[]) {
  * (spare data / CPU on small devices).
  */
 export function warmCoverCache() {
-  if (isNative || typeof window === 'undefined') return;
+  if (typeof window === 'undefined') return;
   const isDesktop = window.matchMedia?.('(min-width: 1024px)').matches ?? false;
 
   whenIdle(() => {
-    Object.values(COVERS).forEach((url) => prefetchImage(url));
-    if (isDesktop) CDN_WARMUP_URLS.forEach((url) => prefetchImage(url));
+    // Preload fast covers
+    if (!isNative) {
+      Object.values(COVERS).forEach((url) => prefetchImage(url));
+    }
+    // Preload Pílulas covers regardless of platform (CDN/local images)
+    PILULAS_COVERS.forEach((url) => prefetchImage(url));
+    
+    if (isDesktop && !isNative) {
+      CDN_WARMUP_URLS.forEach((url) => prefetchImage(url));
+    }
   });
 }

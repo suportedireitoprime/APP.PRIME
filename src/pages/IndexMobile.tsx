@@ -39,6 +39,37 @@ type Tab = 'legislacao' | 'noticias' | 'ferramentas';
 const IndexMobile = () => {
   useHideSplashScreen(400); // Give React more time to paint heavy UI before dropping native splash
   const navigate = useNavigate();
+
+  // Invocação Híbrida: Se estiver rodando no Nativo puro (iOS/Android Capacitor), tenta
+  // exibir a View Swift/Compose por cima. A UI React continua montando atrás.
+  useEffect(() => {
+    let active = true;
+    if (typeof window !== 'undefined' && (window as any).Capacitor?.isNativePlatform()) {
+      import('@/plugins/NativeHomePlugin').then(({ NativeHome }) => {
+        NativeHome.showHome({
+          data: {
+            nome: 'Usuário',
+            iniciais: 'US',
+            perfilLabel: 'Estudante',
+            unreadCount: 0
+          }
+        }).catch(e => console.warn('NativeHome not bound, fallback to React', e));
+
+        if (!active) return;
+        NativeHome.addListener('onNavigate', (info) => {
+          NativeHome.hideHome();
+          navigate(info.route);
+        });
+      });
+    }
+    return () => {
+      active = false;
+      if (typeof window !== 'undefined' && (window as any).Capacitor?.isNativePlatform()) {
+        import('@/plugins/NativeHomePlugin').then(({ NativeHome }) => NativeHome.hideHome().catch(() => {}));
+      }
+    };
+  }, [navigate]);
+
   const [, setActiveTab] = useState<Tab>('legislacao');
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
