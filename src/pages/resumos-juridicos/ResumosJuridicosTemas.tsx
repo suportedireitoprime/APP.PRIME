@@ -10,6 +10,7 @@ import ShapeGrid from "@/components/ui/ShapeGrid";
 import { toast } from "@/hooks/use-toast";
 
 type Row = { tema: string; ordem_tema: number | null; total: number };
+type Ordem = "crono" | "alpha" | "fav";
 
 // ---- Cache em memória entre navegações ----
 const temasCache = new Map<string, Row[]>();
@@ -22,10 +23,15 @@ export default function ResumosJuridicosTemas() {
   const [rows, setRows] = useState<Row[]>(() => temasCache.get(decodedArea) || []);
   const [loading, setLoading] = useState(!temasCache.has(decodedArea));
   const [q, setQ] = useState("");
+  const [ordem, setOrdem] = useState<Ordem>("crono");
   const [recentes, setRecentes] = useState(() => resumosLocal.recentes());
+  const [favoritosGlobais, setFavoritosGlobais] = useState(() => resumosLocal.favoritos());
 
   useEffect(() => {
-    const onEvt = () => setRecentes(resumosLocal.recentes());
+    const onEvt = () => {
+      setRecentes(resumosLocal.recentes());
+      setFavoritosGlobais(resumosLocal.favoritos());
+    };
     window.addEventListener("resumos-local-change", onEvt);
     return () => window.removeEventListener("resumos-local-change", onEvt);
   }, []);
@@ -130,10 +136,19 @@ export default function ResumosJuridicosTemas() {
   }, [decodedArea]);
 
   const filteredTemas = useMemo(() => {
-    if (!q) return rows;
-    const t = q.toLowerCase();
-    return rows.filter(r => r.tema.toLowerCase().includes(t));
-  }, [rows, q]);
+    let result = rows;
+    if (q.trim()) {
+      const t = q.toLowerCase();
+      result = result.filter(r => r.tema.toLowerCase().includes(t));
+    }
+    
+    if (ordem === "alpha") {
+      result = [...result].sort((a, b) => a.tema.localeCompare(b.tema));
+    } else if (ordem === "fav") {
+      result = result.filter(r => favoritosGlobais.some(f => f.tema === r.tema && f.area === decodedArea));
+    }
+    return result;
+  }, [rows, q, ordem, favoritosGlobais, decodedArea]);
 
   return (
     <div className="min-h-dvh bg-[#0D0D0D] text-white pb-20 relative overflow-x-hidden flex flex-col">
@@ -150,7 +165,7 @@ export default function ResumosJuridicosTemas() {
             className="border-b-0 pb-1"
           />
           
-          <div className="max-w-5xl mx-auto px-4 mt-2">
+          <div className="max-w-5xl mx-auto px-4 mt-2 space-y-3">
           <div className="relative flex items-center group">
             <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-white/50 group-focus-within:text-primary transition-colors" />
             <Input 
@@ -165,6 +180,30 @@ export default function ResumosJuridicosTemas() {
             >
               <Mic className="w-5 h-5" />
             </button>
+          </div>
+
+          <div className="flex w-full bg-secondary/80 rounded-full p-1 gap-1">
+            {([
+              { id: "crono", label: "Cronológica" },
+              { id: "alpha", label: "Alfabética" },
+              { id: "fav", label: "Favoritos" },
+            ] as { id: Ordem; label: string }[]).map((o) => {
+              const ativo = ordem === o.id;
+              return (
+                <button
+                  key={o.id}
+                  onClick={() => {
+                    haptic.selection();
+                    setOrdem(o.id);
+                  }}
+                  className={`flex-1 py-1.5 rounded-full text-[10px] sm:text-[11px] uppercase tracking-wider font-bold transition-all ${
+                    ativo ? 'bg-[#ef4444] text-white shadow-md scale-105' : 'text-muted-foreground hover:text-foreground active:scale-95'
+                  }`}
+                >
+                  {o.label}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -213,10 +252,10 @@ export default function ResumosJuridicosTemas() {
                           {r.total > 0 && (
                             <>
                               <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
-                                <div className="h-full bg-gradient-to-r from-rose-500 to-red-500 rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
+                                <div className="h-full bg-[#ef4444] rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
                               </div>
                               {pct > 0 && (
-                                <div className="text-[11px] font-bold text-rose-500 tabular-nums">{pct}%</div>
+                                <div className="text-[11px] font-bold text-[#ef4444] tabular-nums">{pct}%</div>
                               )}
                             </>
                           )}
