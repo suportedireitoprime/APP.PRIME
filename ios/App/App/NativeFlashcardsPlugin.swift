@@ -11,10 +11,11 @@ public class NativeFlashcardsPlugin: CAPPlugin {
 
     @objc func openDashboard(_ call: CAPPluginCall) {
         let userId = call.getString("userId") ?? ""
+        let accessToken = call.getString("accessToken") ?? ""
         
         DispatchQueue.main.async {
             if let viewController = self.bridge?.viewController {
-                let flashcardsVC = FlashcardsHostingController(isStudySession: false, category: "")
+                let flashcardsVC = FlashcardsHostingController(isStudySession: false, category: "", accessToken: accessToken)
                 flashcardsVC.modalPresentationStyle = .fullScreen
                 viewController.present(flashcardsVC, animated: true, completion: nil)
             }
@@ -24,11 +25,11 @@ public class NativeFlashcardsPlugin: CAPPlugin {
     
     @objc func startStudySession(_ call: CAPPluginCall) {
         let category = call.getString("category") ?? ""
-        // Let's assume cards are passed as JSON string or array, simplified here.
+        let accessToken = call.getString("accessToken") ?? ""
         
         DispatchQueue.main.async {
             if let viewController = self.bridge?.viewController {
-                let flashcardsVC = FlashcardsHostingController(isStudySession: true, category: category)
+                let flashcardsVC = FlashcardsHostingController(isStudySession: true, category: category, accessToken: accessToken)
                 flashcardsVC.modalPresentationStyle = .fullScreen
                 viewController.present(flashcardsVC, animated: true, completion: nil)
             }

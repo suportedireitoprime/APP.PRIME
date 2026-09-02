@@ -13,9 +13,11 @@ class NativeFlashcardsPlugin : Plugin() {
     @PluginMethod
     fun openDashboard(call: PluginCall) {
         val userId = call.getString("userId") ?: ""
+        val accessToken = call.getString("accessToken") ?: ""
         
         val intent = Intent(context, FlashcardsActivity::class.java).apply {
             putExtra("userId", userId)
+            putExtra("accessToken", accessToken)
         }
         
         // Flags to open the activity correctly over the webview
@@ -28,12 +30,13 @@ class NativeFlashcardsPlugin : Plugin() {
     @PluginMethod
     fun startStudySession(call: PluginCall) {
         val category = call.getString("category") ?: ""
-        // Pass cards as JSON string
         val cardsJson = call.getArray("cards")?.toString() ?: "[]"
+        val accessToken = call.getString("accessToken") ?: ""
         
         val intent = Intent(context, FlashcardsActivity::class.java).apply {
             putExtra("category", category)
             putExtra("cards", cardsJson)
+            putExtra("accessToken", accessToken)
             putExtra("isStudySession", true)
         }
         

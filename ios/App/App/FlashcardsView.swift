@@ -3,7 +3,10 @@ import SwiftUI
 struct FlashcardsView: View {
     var isStudySession: Bool
     var category: String
+    var accessToken: String
     var onClose: () -> Void
+    
+    @State private var serverStatus = "Conectando ao Supabase Nativamente..."
     
     var body: some View {
         ZStack {
@@ -24,6 +27,13 @@ struct FlashcardsView: View {
                 } else {
                     Text("Gráficos e Histórico Nativos")
                         .foregroundColor(.gray)
+                        
+                    Spacer().frame(height: 16)
+                    
+                    Text(serverStatus)
+                        .foregroundColor(.green)
+                        .font(.footnote)
+                        .multilineTextAlignment(.center)
                 }
                 
                 Spacer().frame(height: 16)
@@ -44,6 +54,37 @@ struct FlashcardsView: View {
             .background(Color(red: 0.12, green: 0.12, blue: 0.12))
             .cornerRadius(24)
         }
+        .onAppear {
+            fetchSupabaseData()
+        }
+    }
+    
+    private func fetchSupabaseData() {
+        guard let url = URL(string: "https://dnjrgpldcwcpoywamorr.supabase.co/rest/v1/flashcards?select=id,frente&limit=1") else { return }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRuanJncGxkY3djcG95d2Ftb3JyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2ODYxMzMsImV4cCI6MjA5ODI2MjEzM30.GuZuUn1ITbjsTYi_SjL-eFSCxdxxs3rUASArbMf62O0", forHTTPHeaderField: "apikey")
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    self.serverStatus = "Erro de Rede: \(error.localizedDescription)"
+                    return
+                }
+                
+                if let httpResponse = response as? HTTPURLResponse {
+                    if httpResponse.statusCode == 200, let data = data {
+                        if let responseString = String(data: data, encoding: .utf8) {
+                            self.serverStatus = "Supabase Conectado! Dados: \(responseString)"
+                        }
+                    } else {
+                        self.serverStatus = "Erro HTTP: \(httpResponse.statusCode)"
+                    }
+                }
+            }
+        }.resume()
     }
 }
 
@@ -112,9 +153,9 @@ struct SwipeableCardView: View {
 import UIKit
 
 class FlashcardsHostingController: UIHostingController<FlashcardsView> {
-    init(isStudySession: Bool, category: String) {
+    init(isStudySession: Bool, category: String, accessToken: String) {
         var closeAction: (() -> Void)? = nil
-        let view = FlashcardsView(isStudySession: isStudySession, category: category) {
+        let view = FlashcardsView(isStudySession: isStudySession, category: category, accessToken: accessToken) {
             closeAction?()
         }
         super.init(rootView: view)

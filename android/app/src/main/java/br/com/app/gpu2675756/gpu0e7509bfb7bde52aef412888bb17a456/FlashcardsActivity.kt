@@ -18,12 +18,18 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.net.HttpURLConnection
+import java.net.URL
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import kotlin.math.abs
+import kotlin.math.roundToInt
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.launch
-import kotlin.math.abs
-import kotlin.math.roundToInt
 
 class FlashcardsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,11 +37,13 @@ class FlashcardsActivity : ComponentActivity() {
         
         val isStudySession = intent.getBooleanExtra("isStudySession", false)
         val category = intent.getStringExtra("category") ?: ""
+        val accessToken = intent.getStringExtra("accessToken") ?: ""
         
         setContent {
             FlashcardsNativeScreen(
                 isStudySession = isStudySession,
                 category = category,
+                accessToken = accessToken,
                 onClose = { finish() }
             )
         }
@@ -43,7 +51,40 @@ class FlashcardsActivity : ComponentActivity() {
 }
 
 @Composable
-fun FlashcardsNativeScreen(isStudySession: Boolean, category: String, onClose: () -> Unit) {
+fun FlashcardsNativeScreen(isStudySession: Boolean, category: String, accessToken: String, onClose: () -> Unit) {
+    var serverStatus by remember { mutableStateOf("Conectando ao Supabase Nativamente...") }
+    val coroutineScope = rememberCoroutineScope()
+    
+    LaunchedEffect(Unit) {
+        coroutineScope.launch(Dispatchers.IO) {
+            try {
+                val url = URL("https://dnjrgpldcwcpoywamorr.supabase.co/rest/v1/flashcards?select=id,frente&limit=1")
+                val connection = url.openConnection() as HttpURLConnection
+                connection.requestMethod = "GET"
+                connection.setRequestProperty("apikey", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRuanJncGxkY3djcG95d2Ftb3JyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2ODYxMzMsImV4cCI6MjA5ODI2MjEzM30.GuZuUn1ITbjsTYi_SjL-eFSCxdxxs3rUASArbMf62O0")
+                connection.setRequestProperty("Authorization", "Bearer $accessToken")
+                
+                val responseCode = connection.responseCode
+                if (responseCode == 200) {
+                    val reader = BufferedReader(InputStreamReader(connection.inputStream))
+                    val response = reader.readText()
+                    reader.close()
+                    withContext(Dispatchers.Main) {
+                        serverStatus = "Supabase Conectado! Dados: $response"
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        serverStatus = "Erro HTTP: $responseCode"
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    serverStatus = "Erro de Rede: ${e.message}"
+                }
+            }
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -83,6 +124,13 @@ fun FlashcardsNativeScreen(isStudySession: Boolean, category: String, onClose: (
                     text = "Gráficos e Histórico Nativos",
                     color = Color.Gray,
                     fontSize = 16.sp
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = serverStatus,
+                    color = Color.Green,
+                    fontSize = 12.sp,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
                 )
             }
             

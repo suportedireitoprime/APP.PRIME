@@ -28,9 +28,17 @@ const Flashcards = () => {
   // SEO & Título dinâmico
   useEffect(() => {
     document.title = 'Flashcards | Vade Mecum PRIME';
-    if (Capacitor.isNativePlatform()) {
-      NativeFlashcardsPlugin.openDashboard({ userId: 'default' });
-    }
+    const checkNative = async () => {
+      if (Capacitor.isNativePlatform()) {
+        const { data } = await supabase.auth.getSession();
+        NativeFlashcardsPlugin.openDashboard({ 
+          userId: 'default',
+          accessToken: data.session?.access_token,
+          refreshToken: data.session?.refresh_token
+        });
+      }
+    };
+    checkNative();
   }, []);
 
   const pct = dash && dash.total_cards ? Math.round((dash.compreendidos / dash.total_cards) * 100) : 0;

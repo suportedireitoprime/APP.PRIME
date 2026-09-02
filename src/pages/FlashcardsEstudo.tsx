@@ -101,9 +101,19 @@ const FlashcardsEstudo = () => {
   useEffect(() => {
     document.title = 'Sessão de Prática de Flashcards | Vade Mecum PRIME';
     resetBodyScrollLock();
-    if (Capacitor.isNativePlatform() && !escolhendo) {
-      NativeFlashcardsPlugin.startStudySession({ category: areaSheet || 'Flashcards', cards: [] });
-    }
+    
+    const checkNative = async () => {
+      if (Capacitor.isNativePlatform() && !escolhendo) {
+        const { data } = await supabase.auth.getSession();
+        NativeFlashcardsPlugin.startStudySession({ 
+          category: areaSheet || 'Flashcards', 
+          cards: [],
+          accessToken: data.session?.access_token,
+          refreshToken: data.session?.refresh_token
+        });
+      }
+    };
+    checkNative();
   }, [escolhendo, areaSheet]);
 
   return (
