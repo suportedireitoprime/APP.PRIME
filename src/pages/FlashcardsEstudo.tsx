@@ -18,6 +18,7 @@ import { useFlashcardsResumoAreas } from '@/lib/flashcardsQueries';
 import { resetBodyScrollLock } from '@/hooks/useBodyScrollLock';
 import ContagemRegressiva from '@/components/questoes/ContagemRegressiva';
 import { useFlashcardsEngine } from '@/hooks/useFlashcardsEngine';
+import ShapeGrid from '@/components/ui/ShapeGrid';
 
 function AnimatedNumber({ value }: { value: number }) {
   const numRef = useRef<HTMLSpanElement>(null);
@@ -102,9 +103,24 @@ const FlashcardsEstudo = () => {
 
   return (
     <div className={`min-h-dvh overflow-x-hidden bg-background ${escolhendo ? 'pb-[calc(8rem+var(--sai-bottom))]' : 'pb-[calc(2.5rem+var(--sai-bottom))]'}`}>
-      {gateFlashcards.gateNode}
+      {!escolhendo && (
+        <div className="fixed inset-0 z-0 opacity-80 mix-blend-screen pointer-events-none">
+          <ShapeGrid 
+            speed={0.5} 
+            squareSize={40}
+            direction='diagonal'
+            borderColor='rgba(255, 255, 255, 0.05)'
+            hoverFillColor='rgba(255, 255, 255, 0.1)'
+            shape='square'
+            hoverTrailAmount={5}
+          />
+        </div>
+      )}
+      <div className="relative z-10">
+        {gateFlashcards.gateNode}
+      </div>
       
-      <div className="mx-auto w-full max-w-3xl px-3.5 sm:px-6">
+      <div className="relative z-10 mx-auto w-full max-w-3xl px-3.5 sm:px-6">
         <PageHeader
           title={escolhendo ? 'Categorias de Flashcards' : ''}
           onBack={() => navigate('/flashcards')}
@@ -347,7 +363,7 @@ const FlashcardsEstudo = () => {
         )}
       </div>
 
-      <FlashcardsBottomNav />
+      {escolhendo && <FlashcardsBottomNav />}
 
       {/* Sheets de Categorias */}
       {areaSheet && (
