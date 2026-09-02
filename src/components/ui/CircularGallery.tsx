@@ -114,17 +114,15 @@ function getFontSize(font) {
 }
 
 function createTextTexture(gl, text, font = 'bold 30px monospace', color = 'black') {
-  const lines = text.split('\\n');
+  const lines = text.replace(/\\n/g, '\n').split('\n');
   const canvas = document.createElement('canvas');
   const context = canvas.getContext('2d');
   context.font = font;
   
   let maxWidth = 0;
-  lines.forEach((line, i) => {
-    if (i > 0) context.font = font.replace(/bold \d+px/, '18px').replace(/\d+px/, '18px');
+  lines.forEach((line) => {
     const w = context.measureText(line).width;
     if (w > maxWidth) maxWidth = w;
-    context.font = font;
   });
   
   const textWidth = Math.ceil(maxWidth);
@@ -140,13 +138,8 @@ function createTextTexture(gl, text, font = 'bold 30px monospace', color = 'blac
   context.clearRect(0, 0, canvas.width, canvas.height);
   
   lines.forEach((line, i) => {
-    if (i > 0) {
-      context.font = font.replace(/bold \d+px/, '18px').replace(/\d+px/, '18px');
-      context.fillStyle = 'rgba(255, 255, 255, 0.6)';
-    } else {
-      context.font = font;
-      context.fillStyle = color;
-    }
+    context.font = font;
+    context.fillStyle = color;
     const y = (canvas.height / 2) - ((lines.length - 1) * lineHeight / 2) + (i * lineHeight);
     context.fillText(line, canvas.width / 2, y);
   });

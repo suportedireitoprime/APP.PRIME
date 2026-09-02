@@ -54,11 +54,11 @@ export default function PilulasHome() {
   ], []);
 
   const classicosPillsItems = useMemo(() => [
-    { image: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_luta_pelo_direito_manual.jpg', text: 'A Luta pelo Direito', fullName: 'Rudolf von Ihering' },
-    { image: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/sobre_a_liberdade_manual.jpg', text: 'Sobre a Liberdade', fullName: 'John Stuart Mill' },
-    { image: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_arte_da_guerra_manual.jpg', text: 'A Arte da Guerra', fullName: 'Sun Tzu' },
-    { image: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_espirito_das_leis_manual.jpg', text: 'O Espírito das Leis', fullName: 'Montesquieu' },
-    { image: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_mundo_assombrado_pelos_demonios_manual.jpg', text: 'O Mundo Assombrado pelos Demônios', fullName: 'Carl Sagan' }
+    { image: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_luta_pelo_direito_manual.jpg', text: 'A Luta pelo\nDireito', fullName: 'Rudolf von Ihering' },
+    { image: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/sobre_a_liberdade_manual.jpg', text: 'Sobre a\nLiberdade', fullName: 'John Stuart Mill' },
+    { image: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_arte_da_guerra_manual.jpg', text: 'A Arte da\nGuerra', fullName: 'Sun Tzu' },
+    { image: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_espirito_das_leis_manual.jpg', text: 'O Espírito\ndas Leis', fullName: 'Montesquieu' },
+    { image: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_mundo_assombrado_pelos_demonios_manual.jpg', text: 'O Mundo Assombrado\npelos Demônios', fullName: 'Carl Sagan' }
   ], []);
 
   const handleItemClick = useCallback((item: any) => {
