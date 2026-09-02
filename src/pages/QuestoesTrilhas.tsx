@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, Trash2, Route as RouteIcon, Clock, Check, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
-import { v4 as uuidv4 } from 'uuid';
 import { Capacitor } from '@capacitor/core';
 import { LocalNotifications } from '@capacitor/local-notifications';
 
@@ -119,7 +118,7 @@ export default function QuestoesTrilhas() {
     haptic.success();
     const materiasStr = novasMaterias.join(', ');
     const novaTrilha: QuestoesTrilha = {
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       nome: `${novasMaterias.length === 1 ? novasMaterias[0] : novasMaterias.length + ' Matérias'} - ${novaMeta}q`,
       materia: materiasStr,
       metaDiaria: novaMeta,

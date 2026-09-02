@@ -13,6 +13,22 @@ import CircularGallery from '@/components/ui/CircularGallery';
 
 type TabType = 'Todos' | 'Pílulas Rápidas' | 'Só Pílulas' | 'Códigos' | 'Ministros';
 
+// Faz preload das imagens das pílulas para exibição imediata ao carregar a tela
+const FAST_PILLS_IMAGES = [
+  directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg'),
+  '/pilulas/cf_portrait.jpg',
+  '/pilulas/cc_portrait.png',
+  '/pilulas/cpp_portrait.jpg',
+  '/pilulas/clt_portrait.jpg'
+];
+
+if (typeof window !== 'undefined') {
+  FAST_PILLS_IMAGES.forEach(url => {
+    const img = new Image();
+    img.src = url;
+  });
+}
+
 export default function PilulasHome() {
   const navigate = useNavigate();
   const galleryRef = useRef<any>(null);
@@ -33,11 +49,11 @@ export default function PilulasHome() {
   };
 
   const fastPillsItems = useMemo(() => [
-    { image: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg'), text: 'CP', fullName: 'Código Penal' },
-    { image: '/pilulas/cf_portrait.jpg', text: 'CF88', fullName: 'Constituição Federal' },
-    { image: '/pilulas/cc_portrait.png', text: 'CC', fullName: 'Código Civil' },
-    { image: '/pilulas/cpp_portrait.jpg', text: 'CPP', fullName: 'Cód. Proc. Penal' },
-    { image: '/pilulas/clt_portrait.jpg', text: 'CLT', fullName: 'Leis Trabalhistas' },
+    { image: FAST_PILLS_IMAGES[0], text: 'CP', fullName: 'Código Penal' },
+    { image: FAST_PILLS_IMAGES[1], text: 'CF88', fullName: 'Constituição Federal' },
+    { image: FAST_PILLS_IMAGES[2], text: 'CC', fullName: 'Código Civil' },
+    { image: FAST_PILLS_IMAGES[3], text: 'CPP', fullName: 'Cód. Proc. Penal' },
+    { image: FAST_PILLS_IMAGES[4], text: 'CLT', fullName: 'Leis Trabalhistas' },
   ], []);
 
   const ministrosPillsItems = useMemo(() => [

@@ -4,6 +4,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Esconder scrollbar em todos os elementos para dar visual nativo (mobile) */
+::-webkit-scrollbar {
+  display: none;
+}
+* {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
 /* ============================================================
  * Edge-to-edge (Android 15+ / iOS notch)
  * Expõe --sai-* como alias de env(safe-area-inset-*). Componentes
