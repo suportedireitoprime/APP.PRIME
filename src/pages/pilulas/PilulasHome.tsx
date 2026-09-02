@@ -100,7 +100,7 @@ export default function PilulasHome() {
   const showRapidas = activeTab === 'Todos' || activeTab === 'Pílulas Rápidas';
   const showSoPilulas = activeTab === 'Todos' || activeTab === 'Só Pílulas';
   const showCodigos = activeTab === 'Todos' || activeTab === 'Pílulas Rápidas' || activeTab === 'Códigos';
-  const showMinistros = activeTab === 'Todos' || activeTab === 'Pílulas Rápidas' || activeTab === 'Ministros';
+  const showMinistros = activeTab === 'Todos' || activeTab === 'Só Pílulas' || activeTab === 'Ministros';
 
   return (
     <div className="min-h-dvh bg-zinc-950 pb-20 relative overflow-hidden">
@@ -199,9 +199,18 @@ export default function PilulasHome() {
           </div>
         )}
 
+        {/* Divider with Text for Bottom Section */}
+        {(showSoPilulas || showMinistros) && (
+          <div className="flex items-center w-full mt-10 mb-6">
+            <div className="flex-1 h-[1px] bg-white/10" />
+            <span className="mx-4 text-xs font-semibold tracking-widest text-zinc-400 uppercase">Pílulas de Análise</span>
+            <div className="flex-1 h-[1px] bg-white/10" />
+          </div>
+        )}
+
         {/* Pílulas dos Ministros */}
         {showMinistros && (
-          <div className="space-y-4 mt-8">
+          <div className="space-y-4 mb-8">
             <div className="flex flex-col px-1 mb-4 gap-3">
               <div className="flex-1 min-w-0">
                 <h2 className="text-[22px] font-black text-white uppercase tracking-widest mb-1">Pílulas dos Ministros do STF</h2>
@@ -247,14 +256,8 @@ export default function PilulasHome() {
           </div>
         )}
 
-        {/* Divider with Text for Bottom Section */}
         {showSoPilulas && (
           <>
-            <div className="flex items-center w-full mt-10 mb-6">
-              <div className="flex-1 h-[1px] bg-white/10" />
-              <span className="mx-4 text-xs font-semibold tracking-widest text-zinc-400 uppercase">Pílulas de Análise</span>
-              <div className="flex-1 h-[1px] bg-white/10" />
-            </div>
 
             <div>
               <h2 className="text-[22px] font-black text-white uppercase tracking-widest">Escolha um Tema</h2>
