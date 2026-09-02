@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronDown,
-  NotebookText,
   Share2,
   Heart,
   FileDown,
@@ -21,8 +20,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useGatedFeature } from "@/hooks/useGatedFeature";
 import CornellView from "./CornellView";
 import FeynmanView from "./FeynmanView";
-import FichaEditorial from "./FichaEditorial";
-import { PALETA } from "@/lib/visuaisJuridicos/layout";
 
 import {
   CornellContent,
@@ -296,7 +293,7 @@ export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoC
             className="fixed inset-0 z-[91] flex flex-col bg-[#0c0c0e] text-foreground shadow-2xl overflow-hidden lg:inset-auto lg:top-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:w-full lg:max-w-4xl lg:h-[86vh] lg:max-h-[850px] lg:rounded-3xl lg:border lg:border-white/10"
           >
             <div ref={scrollRef} className="flex-1 overflow-y-auto pb-8 relative">
-              <div className="sticky top-0 z-10 bg-card/95 backdrop-blur-md border-b border-border">
+              <div className="sticky top-0 z-10 bg-[#0c0c0e]/95 backdrop-blur-md border-b border-white/10">
                 <div
                   className="flex items-center gap-3 py-3.5 shrink-0"
                   style={{
@@ -309,7 +306,7 @@ export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoC
                   <button
                     onClick={onClose}
                     aria-label="Fechar"
-                    className="w-12 h-12 md:w-11 md:h-11 flex items-center justify-center rounded-full bg-muted shrink-0 active:scale-95 transition-transform"
+                    className="w-12 h-12 md:w-11 md:h-11 flex items-center justify-center rounded-full bg-white/5 shrink-0 active:scale-95 transition-transform"
                   >
                     <ChevronDown className="w-[22px] h-[22px]" />
                   </button>
@@ -317,14 +314,14 @@ export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoC
                     <h1 className="font-display text-[18px] md:text-[17px] font-semibold text-foreground tracking-wide truncate">
                       {resumo.tema}
                     </h1>
-                    <p className="text-xs md:text-[11px] font-body text-muted-foreground truncate mt-1">
+                    <p className="text-xs md:text-[11px] font-body text-white/50 truncate mt-1">
                       {resumo.area}
                     </p>
                   </div>
                   <button
                     onClick={toggleFav}
                     aria-label={fav ? "Remover dos favoritos" : "Favoritar"}
-                    className="w-12 h-12 md:w-11 md:h-11 flex items-center justify-center rounded-full bg-muted shrink-0 active:scale-95 transition"
+                    className="w-12 h-12 md:w-11 md:h-11 flex items-center justify-center rounded-full bg-white/5 shrink-0 active:scale-95 transition"
                   >
                     <Heart
                       className="w-[22px] h-[22px]"
@@ -334,17 +331,10 @@ export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoC
                 </div>
               </div>
 
-
-              <div className="space-y-4 px-0 pt-0 md:px-5 md:pt-5">
-                <FichaEditorial
-                  etiqueta="Resumo Jurídico"
-                  titulo={resumo.subtema || resumo.tema}
-                  subtitulo={`${resumo.area} — ${resumo.tema}`}
-                >
-                  {/* Métodos de estudo removidos - a seleção agora ocorre na Action Sheet prévia */}                  {metodo === "conceitos" && abas.length > 1 && (
+              <div className="space-y-4 px-4 pt-4 md:px-5 md:pt-5">
+                  {metodo === "conceitos" && abas.length > 1 && (
                     <div
-                      className="flex w-full mt-4 border-b"
-                      style={{ borderColor: "rgba(122,18,32,0.16)" }}
+                      className="flex w-full mt-2 border-b border-white/10"
                     >
                       {abas.map((t) => {
                         const label =
@@ -354,16 +344,15 @@ export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoC
                           <button
                             key={t}
                             onClick={() => setTab(t)}
-                            className="relative flex-1 py-2.5 text-[13px] font-body font-semibold uppercase tracking-[0.08em] text-center"
-                            style={{ color: ativo ? PALETA.wine : "hsl(var(--muted-foreground))" }}
+                            className="relative flex-1 py-3 text-[13px] font-display font-bold uppercase tracking-wider text-center"
+                            style={{ color: ativo ? "#38bdf8" : "hsl(var(--muted-foreground))" }}
                           >
                             {label}
                             {ativo && (
                               <motion.span
                                 layoutId="ficha-aba"
                                 transition={{ type: "spring", stiffness: 420, damping: 34 }}
-                                className="absolute left-3 right-3 -bottom-[1px] h-[2px] rounded-full"
-                                style={{ background: PALETA.gold }}
+                                className="absolute left-3 right-3 -bottom-[1px] h-[2px] rounded-full bg-[#38bdf8]"
                               />
                             )}
                           </button>
@@ -385,14 +374,14 @@ export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoC
                         <article
                           style={{ fontSize: `${fontScale}em` }}
                           className="
-                            prose prose-sm md:prose-base max-w-none font-body
+                            prose prose-sm md:prose-base max-w-none font-body prose-invert
                             prose-headings:font-display prose-headings:text-foreground prose-headings:mt-6 prose-headings:mb-3
                             prose-h2:text-xl prose-h3:text-lg
                             prose-p:text-foreground/90 prose-p:leading-[1.8] prose-p:my-4
-                            prose-a:text-primary prose-a:no-underline hover:prose-a:underline
+                            prose-a:text-[#38bdf8] prose-a:no-underline hover:prose-a:underline
                             prose-strong:text-foreground
-                            prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-primary/5 prose-blockquote:py-1 prose-blockquote:px-3 prose-blockquote:rounded-r prose-blockquote:not-italic
-                            prose-ul:my-4 prose-li:my-1 prose-li:marker:text-primary
+                            prose-blockquote:border-l-4 prose-blockquote:border-[#38bdf8] prose-blockquote:bg-[#38bdf8]/10 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r prose-blockquote:not-italic
+                            prose-ul:my-4 prose-li:my-1 prose-li:marker:text-[#38bdf8]
                           "
                         >
                           {content ? (
@@ -411,32 +400,30 @@ export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoC
                         </div>
                       ) : (
                         <div
-                          className="rounded-2xl border p-6 text-center space-y-3"
-                          style={{ borderColor: "rgba(122,18,32,0.18)" }}
+                          className="rounded-2xl border border-white/10 p-6 text-center space-y-4 mt-4 bg-white/5"
                         >
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-sm text-white/70 font-body">
                             {metodo === "cornell"
                               ? "O Método Cornell organiza o conteúdo em palavras-chave, perguntas de revisão e anotações."
                               : "O Método Feynman explica o conteúdo em 4 passos, com linguagem simples e analogias."}
                           </p>
                           {erroGerar && (
-                            <p className="text-sm" style={{ color: RED }}>
+                            <p className="text-sm text-red-400 font-medium">
                               {erroGerar}
                             </p>
                           )}
                           <button
                             onClick={() => gerarMetodologia(metodo)}
                             disabled={!!gerando}
-                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-white text-sm font-semibold active:scale-95 transition disabled:opacity-60"
-                            style={{ backgroundColor: PALETA.wine }}
+                            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#38bdf8] text-black font-display font-bold text-sm tracking-wide active:scale-95 transition disabled:opacity-60 shadow-lg shadow-black/20"
                           >
                             {gerando === metodo ? (
                               <>
-                                <Loader2 className="w-4 h-4 animate-spin" /> Gerando…
+                                <Loader2 className="w-4 h-4 animate-spin" /> GERANDO...
                               </>
                             ) : (
                               <>
-                                <Sparkles className="w-4 h-4" /> Gerar com IA
+                                <Sparkles className="w-4 h-4" /> GERAR COM IA
                               </>
                             )}
                           </button>
@@ -444,11 +431,8 @@ export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoC
                       )}
                     </motion.div>
                   </AnimatePresence>
-                </FichaEditorial>
-
                 <div className="h-28" />
               </div>
-
             </div>
 
             {/* Ações flutuantes */}

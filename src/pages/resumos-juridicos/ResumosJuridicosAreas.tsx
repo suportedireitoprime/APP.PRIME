@@ -33,8 +33,8 @@ import {
  MicOff,
  Scroll,
 } from "lucide-react";
-import ResumosBottomNav from "@/components/resumos/ResumosBottomNav";
-import ResumosCargoHero from "@/components/resumos/ResumosCargoHero";
+import ResumosHero from "@/components/resumos/ResumosHero";
+import ShapeGrid from "@/components/ui/ShapeGrid";
 import { AREAS_LEIS, leisDaArea, AreaLeis } from "@/lib/leisPorArea";
 import type { LeiCatalogItem } from "@/data/leisCatalog";
 import LeiArtigosSheet from "@/components/resumos-juridicos/LeiArtigosSheet";
@@ -115,7 +115,7 @@ export default function ResumosJuridicosAreas() {
  const [loading, setLoading] = useState(!areasCache);
  const [q, setQ] = useState("");
  const [buscaAberta, setBuscaAberta] = useState(false);
- const [aba, setAba] = useState<Aba>("cargos");
+ const [aba, setAba] = useState<Aba>("areas");
  const [areaLeis, setAreaLeis] = useState<AreaLeis | null>(null);
  const [leiArtigos, setLeiArtigos] = useState<{ lei: LeiCatalogItem; area: string } | null>(null);
  const [buscaLeis, setBuscaLeis] = useState("");
@@ -212,326 +212,70 @@ export default function ResumosJuridicosAreas() {
  }, [rows, q]);
 
  return (
- <div className="min-h-dvh bg-background pb-[calc(7rem+var(--sai-bottom))] lg:pb-[calc(3rem+var(--sai-bottom))] overflow-x-hidden">
- <PageHeader title="Resumos Jurídicos" onBack={() => navigate("/")} />
-
- <div className="mx-auto w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] px-3 sm:px-6 lg:px-8 mt-2">
+ <div className="min-h-dvh bg-[#0D0D0D] text-white pb-[calc(2rem+var(--sai-bottom))] overflow-x-hidden relative">
+ <div className="fixed inset-0 z-0 pointer-events-none opacity-[0.15]">
+ <ShapeGrid />
+ </div>
+ <div className="mx-auto w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] px-3 sm:px-6 lg:px-8 mt-2 relative z-10">
  
  {/* HERO SECTION */}
  <div className="-mx-3 sm:-mx-6 lg:-mx-8 mb-6 mt-1">
- <ResumosCargoHero 
- pct={0} 
- total={0} 
- hoje={0} 
- meta={100} 
- disponiveis={totalAcervo || 1200} 
- streak={0}
- />
+ <ResumosHero onBuscar={() => setBuscaAberta(true)} />
  </div>
 
- {/* BUSCA PRINCIPAL */}
- <div className="bg-card border border-border/80 p-5 rounded-3xl shadow-xl mt-2 mb-6">
- <div className="flex items-center gap-2">
- <span className="h-5 w-1 rounded-full bg-[#38bdf8]" />
- <h2 className="text-lg font-extrabold leading-tight text-foreground sm:text-xl drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] uppercase">Explorar Resumos</h2>
- </div>
- <p className="ml-3 mt-1 text-xs text-muted-foreground">
- Pesquise qualquer matéria, lei ou súmula no acervo.
- </p>
+        {/* HUB CARDS */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <motion.button
+            whileTap={{ scale: 0.98 }}
+            onClick={() => { haptic.selection(); navigate("/resumos-juridicos/materias"); }}
+            className="flex flex-col items-start gap-4 p-6 rounded-3xl bg-secondary/30 border border-border/50 hover:bg-secondary/50 transition-colors text-left group"
+          >
+            <div className="w-14 h-14 rounded-2xl bg-[#38bdf8]/10 flex items-center justify-center">
+              <BookOpen className="w-7 h-7 text-[#38bdf8]" strokeWidth={1.5} />
+            </div>
+            <div className="flex-1 w-full flex items-center justify-between">
+              <div>
+                <h3 className="font-display font-black uppercase tracking-widest text-[18px] text-foreground">Mat�rias</h3>
+                <p className="text-[13px] text-muted-foreground mt-1">Navegue pelos resumos por �rea do Direito.</p>
+              </div>
+              <ChevronRight className="w-6 h-6 text-muted-foreground/40 group-hover:text-[#38bdf8] transition-colors" />
+            </div>
+          </motion.button>
 
- <button
- onClick={() => { haptic.selection(); setBuscaAberta(true); }}
- className="group mt-4 flex h-14 sm:h-16 min-h-[56px] w-full items-center justify-start px-4 gap-3 rounded-2xl bg-[#0b3b46] border border-[#38bdf8]/30 shadow-lg shadow-black/30 transition-all active:scale-[0.99]"
- >
- <Search className="h-6 w-6 text-white shrink-0" strokeWidth={2} />
- <span className="tracking-wide text-white/70 flex-1 text-left truncate font-medium">Pesquise o resumo...</span>
- <div className="h-10 px-4 rounded-xl bg-[#38bdf8] text-black font-display text-[12px] font-bold tracking-wider flex items-center justify-center shadow-md shrink-0">
- PESQUISAR
- </div>
- </button>
- </div>
+          <motion.button
+            whileTap={{ scale: 0.98 }}
+            onClick={() => { haptic.selection(); navigate("/resumos-juridicos/leis"); }}
+            className="flex flex-col items-start gap-4 p-6 rounded-3xl bg-secondary/30 border border-border/50 hover:bg-secondary/50 transition-colors text-left group"
+          >
+            <div className="w-14 h-14 rounded-2xl bg-[#f87171]/10 flex items-center justify-center">
+              <Landmark className="w-7 h-7 text-[#f87171]" strokeWidth={1.5} />
+            </div>
+            <div className="flex-1 w-full flex items-center justify-between">
+              <div>
+                <h3 className="font-display font-black uppercase tracking-widest text-[18px] text-foreground">Leis</h3>
+                <p className="text-[13px] text-muted-foreground mt-1">Leitura estruturada das principais leis do Vade Mecum.</p>
+              </div>
+              <ChevronRight className="w-6 h-6 text-muted-foreground/40 group-hover:text-[#f87171] transition-colors" />
+            </div>
+          </motion.button>
 
- {/* MENU DE ALTERNÂNCIA (SEGMENTED CONTROL) */}
- <div className="flex w-full bg-secondary/50 rounded-2xl p-1 gap-1 mb-5">
- {([
- { id: "cargos", label: "Cargos" },
- { id: "areas", label: "Matérias" },
- { id: "leis", label: "Leis" },
- { id: "jurisprudencia", label: "Jurisprudência" },
- ] as { id: Aba; label: string }[]).map((o) => {
- const ativo = aba === o.id;
- return (
- <button
- key={o.id}
- onClick={() => { haptic.selection(); setAba(o.id); }}
- className={`flex-1 py-3 rounded-xl text-[12px] font-bold transition-all uppercase tracking-wide ${
- ativo ? 'bg-[#38bdf8] text-black shadow-md scale-[1.02]' : 'text-muted-foreground hover:text-foreground'
- }`}
- >
- {o.label}
- </button>
- );
- })}
- </div>
-
- {/* LISTA: CARGOS */}
- {aba === "cargos" && (
- <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
- {CARGOS.map((c, i) => {
- const Icon = c.icon;
- return (
- <motion.button
- key={c.id}
- initial={{ opacity: 0, y: 6 }}
- animate={{ opacity: 1, y: 0 }}
- transition={{ delay: Math.min(i * 0.02, 0.3) }}
- onClick={() => navigate(`/resumos-juridicos/cargos/${c.id}`)}
- className="flex flex-col items-center justify-center gap-3 p-5 rounded-3xl bg-card border border-border hover:border-[#38bdf8]/40 transition-all text-center hover:scale-[1.02] shadow-sm group"
- >
- <div className="w-16 h-16 rounded-2xl bg-secondary/50 flex items-center justify-center group-hover:bg-[#38bdf8]/10 transition-colors">
- <Icon className="w-8 h-8 shrink-0" style={{ color: c.color }} strokeWidth={1.7} />
- </div>
- <div className="font-display font-bold text-[14px] uppercase text-foreground leading-tight">
- {c.nome}
- </div>
- </motion.button>
- );
- })}
- </div>
- )}
-
- {/* LISTA: MATÉRIAS */}
- {aba === "areas" && (
- <div>
- {loading ? (
- <div className="flex items-center justify-center py-16 text-muted-foreground">
- <Loader2 className="w-5 h-5 animate-spin mr-2" /> Carregando áreas...
- </div>
- ) : filtered.length === 0 ? (
- <div className="text-center py-16 text-muted-foreground text-sm space-y-3">
- <p>Nenhuma área encontrada para &quot;{q}&quot;.</p>
- {!navigator.onLine && (
- <p className="text-xs text-primary max-w-sm mx-auto border border-primary/20 bg-primary/5 p-3 rounded-xl">
- Parece que você está offline e não baixou o Banco de Resumos.
- Acesse o <b>Modo Offline &gt; Banco de Dados Base</b> para baixá-los quando tiver internet.
- </p>
- )}
- </div>
- ) : (
- <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
- {filtered.map((r, i) => {
- const s = styleForArea(r.area);
- const Icon = s.icon;
- return (
- <motion.button
- key={r.area}
- initial={{ opacity: 0, y: 6 }}
- animate={{ opacity: 1, y: 0 }}
- transition={{ delay: Math.min(i * 0.02, 0.3) }}
- onClick={() => navigate(`/resumos-juridicos/${encodeURIComponent(r.area)}`)}
- className="flex items-center gap-4 p-4 rounded-2xl bg-card border border-border hover:border-[#38bdf8]/40 transition-all text-left hover:scale-[1.02] shadow-sm group"
- >
- <div className="w-12 h-12 rounded-xl bg-secondary/50 flex items-center justify-center group-hover:bg-[#38bdf8]/10 transition-colors">
- <Icon className="w-6 h-6 shrink-0" style={{ color: s.color }} strokeWidth={1.7} />
- </div>
- <div className="flex-1 min-w-0">
- <div className="font-display font-bold text-[14px] uppercase text-foreground truncate">{r.area.replace(/^DIREITO\s+/i, '')}</div>
- <div className="text-[12px] text-muted-foreground mt-0.5">
- {r.total} {r.total === 1 ? "resumo" : "resumos"}
- </div>
- </div>
- <ChevronRight className="w-5 h-5 text-muted-foreground/40 group-hover:text-[#38bdf8] transition-colors shrink-0" />
- </motion.button>
- );
- })}
- </div>
- )}
- </div>
- )}
-
- {/* LISTA: LEIS */}
- {aba === "leis" && (
- <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
- {AREAS_LEIS.map((a, i) => {
- const Icon = styleForArea(a.nome).icon;
- return (
- <motion.button
- key={a.id}
- initial={{ opacity: 0, y: 6 }}
- animate={{ opacity: 1, y: 0 }}
- transition={{ delay: Math.min(i * 0.02, 0.3) }}
- onClick={() => { setBuscaLeis(""); setAreaLeis(a); }}
- className="flex items-center gap-4 p-4 rounded-2xl bg-card border border-border hover:border-[#38bdf8]/40 transition-all text-left hover:scale-[1.02] shadow-sm group"
- >
- <div className="w-12 h-12 rounded-xl bg-secondary/50 flex items-center justify-center group-hover:bg-[#38bdf8]/10 transition-colors">
- <Icon className="w-6 h-6 shrink-0" style={{ color: a.color }} strokeWidth={1.7} />
- </div>
- <div className="flex-1 min-w-0">
- <div className="font-display font-bold text-[14px] uppercase text-foreground truncate">{a.nome.replace(/^DIREITO\s+/i, '')}</div>
- <div className="text-[12px] text-muted-foreground mt-0.5">
- {leisDaArea(a).length} {leisDaArea(a).length === 1 ? "lei" : "leis"}
- </div>
- </div>
- <ChevronRight className="w-5 h-5 text-muted-foreground/40 group-hover:text-[#38bdf8] transition-colors shrink-0" />
- </motion.button>
- );
- })}
- </div>
- )}
-
- {/* LISTA: JURISPRUDÊNCIA */}
- {aba === "jurisprudencia" && (
- <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
- {JURIS_ITENS.map((j, i) => (
- <motion.button
- key={j.rota}
- initial={{ opacity: 0, y: 6 }}
- animate={{ opacity: 1, y: 0 }}
- transition={{ delay: Math.min(i * 0.02, 0.3) }}
- onClick={() => navigate(j.rota)}
- className="flex items-center gap-4 p-4 rounded-2xl bg-card border border-border hover:border-[#38bdf8]/40 transition-all text-left hover:scale-[1.02] shadow-sm group"
- >
- <div className="w-12 h-12 rounded-xl bg-secondary/50 flex items-center justify-center group-hover:bg-[#38bdf8]/10 transition-colors">
- <Scroll className="w-6 h-6 shrink-0" style={{ color: j.color }} strokeWidth={1.7} />
- </div>
- <div className="flex-1 min-w-0">
- <div className="font-display font-bold text-[14px] uppercase text-foreground truncate">{j.label}</div>
- <div className="text-[12px] text-muted-foreground mt-0.5 truncate">{j.desc}</div>
- </div>
- <ChevronRight className="w-5 h-5 text-muted-foreground/40 group-hover:text-[#38bdf8] transition-colors shrink-0" />
- </motion.button>
- ))}
- </div>
- )}
- </div>
-
- {/* OVERLAY: LEIS DA ÁREA */}
- <AnimatePresence>
- {areaLeis && (
- <>
- <motion.div
- initial={{ opacity: 0 }}
- animate={{ opacity: 1 }}
- exit={{ opacity: 0 }}
- onClick={() => setAreaLeis(null)}
- className="fixed inset-0 z-[70] bg-black/60 "
- />
- <motion.div
- initial={{ y: "100%" }}
- animate={{ y: 0 }}
- exit={{ y: "100%" }}
- transition={{ duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}
- className="fixed bottom-0 left-0 right-0 z-[71] flex h-[90dvh] flex-col rounded-t-3xl border-t border-border bg-background pb-[calc(1rem+var(--sai-bottom))]"
- >
- <div className="flex items-center justify-center pt-2 pb-1">
- <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
- </div>
- <div className="flex items-center justify-between px-5 pb-3">
- <div className="flex min-w-0 items-center gap-3">
- <div className="w-11 h-11 rounded-2xl bg-secondary/70 flex items-center justify-center shrink-0">
- {(() => {
- const Icon = styleForArea(areaLeis.nome).icon;
- return (
- <Icon
- className="w-6 h-6"
- style={{ color: areaLeis.color, filter: "saturate(1.3) brightness(1.1)" }}
- strokeWidth={1.2}
- />
- );
- })()}
- </div>
- <div className="min-w-0">
- <h3 className="font-display text-xl text-foreground font-bold leading-none truncate uppercase">
- {areaLeis.nome.replace(/^DIREITO\s+/i, '')}
- </h3>
- <p className="text-muted-foreground text-[12px] font-body leading-tight mt-1 truncate">
- {leisDaArea(areaLeis).map((l) => l.sigla).join(", ")}
- </p>
- </div>
- </div>
- <button
- onClick={() => setAreaLeis(null)}
- aria-label="Fechar"
- className="w-9 h-9 rounded-full bg-secondary/60 flex items-center justify-center shrink-0"
- >
- <X className="w-4 h-4 text-foreground" />
- </button>
- </div>
-
- <div className="px-4 pb-3">
- <div className="flex items-center gap-2.5">
- <div className="flex-1 flex items-center gap-2 rounded-2xl border border-border/60 bg-secondary/45 px-3 h-12">
- <Search className="w-5 h-5 text-muted-foreground shrink-0" />
- <input
- value={buscaLeis}
- onChange={(e) => setBuscaLeis(e.target.value)}
- placeholder="Pesquisar nesta área"
- className="min-w-0 flex-1 bg-transparent font-body text-[14px] text-foreground placeholder:text-muted-foreground outline-none"
- />
- </div>
- <button
- type="button"
- onClick={voiceLeis.toggle}
- aria-label={voiceLeis.listening ? "Parar gravação" : "Pesquisar por voz"}
- className={`shrink-0 w-14 h-14 rounded-full flex items-center justify-center shadow-lg active:scale-[0.95] transition ${
- voiceLeis.listening
- ? "bg-red-500 text-white animate-pulse shadow-red-500/40"
- : "bg-primary text-primary-foreground shadow-primary/30"
- }`}
- >
- {voiceLeis.listening ? <MicOff className="w-6 h-6" strokeWidth={2.5} /> : <Mic className="w-6 h-6" strokeWidth={2.5} />}
- </button>
- </div>
- </div>
-
- <div className="flex-1 overflow-y-auto px-4 pb-4">
- <div className="space-y-2">
- {leisDaArea(areaLeis)
- .filter((lei) => {
- const t = buscaLeis.trim().toLowerCase();
- if (!t) return true;
- return `${lei.nome} ${lei.sigla} ${lei.descricao}`.toLowerCase().includes(t);
- })
- .map((lei, i) => {
- const LawIcon = LEI_ICON_MAP[lei.id] || styleForArea(areaLeis.nome).icon;
- return (
- <motion.button
- key={lei.id}
- initial={{ opacity: 0, y: 12 }}
- animate={{ opacity: 1, y: 0 }}
- transition={{ delay: Math.min(i * 0.025, 0.25), duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}
- onClick={() => {
- setLeiArtigos({ lei, area: areaLeis.nome });
- setAreaLeis(null);
- }}
- className="w-full flex items-center gap-4 p-4 min-h-[84px] rounded-2xl bg-secondary/40 border border-border/50 active:scale-[0.99] transition text-left"
- >
- <LawIcon
- className="w-8 h-8 shrink-0"
- style={{
- color: (lei as any).iconColor || areaLeis.color,
- filter: "saturate(1.5) brightness(1.2) drop-shadow(0 2px 8px rgba(0,0,0,0.5))",
- }}
- strokeWidth={1.3}
- />
- <div className="flex-1 min-w-0">
- <p className="font-display text-foreground text-[16px] font-bold leading-tight line-clamp-1 uppercase tracking-[0.08em]">
- {lei.nome}
- </p>
- <p className="font-body text-muted-foreground text-[12.5px] leading-snug mt-1 line-clamp-2">
- {lei.descricao}
- </p>
- </div>
- <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
- </motion.button>
- );
- })}
- </div>
- </div>
- </motion.div>
- </>
- )}
- </AnimatePresence>
+          <motion.button
+            whileTap={{ scale: 0.98 }}
+            onClick={() => { haptic.selection(); navigate("/resumos-juridicos/jurisprudencia"); }}
+            className="flex flex-col items-start gap-4 p-6 rounded-3xl bg-secondary/30 border border-border/50 hover:bg-secondary/50 transition-colors text-left group md:col-span-2 md:max-w-2xl md:mx-auto md:w-full"
+          >
+            <div className="w-14 h-14 rounded-2xl bg-[#34d399]/10 flex items-center justify-center">
+              <Scroll className="w-7 h-7 text-[#34d399]" strokeWidth={1.5} />
+            </div>
+            <div className="flex-1 w-full flex items-center justify-between">
+              <div>
+                <h3 className="font-display font-black uppercase tracking-widest text-[18px] text-foreground">Jurisprud�ncia</h3>
+                <p className="text-[13px] text-muted-foreground mt-1">S�mulas, Informativos e Teses dos tribunais superiores.</p>
+              </div>
+              <ChevronRight className="w-6 h-6 text-muted-foreground/40 group-hover:text-[#34d399] transition-colors" />
+            </div>
+          </motion.button>
+        </div>
 
  {/* OVERLAY DE BUSCA PRINCIPAL */}
  <AnimatePresence>
@@ -701,8 +445,6 @@ export default function ResumosJuridicosAreas() {
  area={leiArtigos?.area}
  onClose={() => setLeiArtigos(null)}
  />
-
- <ResumosBottomNav hidden={buscaAberta || !!leiArtigos} />
  </div>
  );
 }
