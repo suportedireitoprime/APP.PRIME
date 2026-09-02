@@ -180,7 +180,7 @@ export default function STFBiografias() {
         </div>
 
         {/* Menu de Alternância (Filtros) */}
-        <div className="flex flex-wrap items-center gap-2 mb-8">
+        <div className="flex flex-nowrap items-center gap-2 mb-8 overflow-x-auto custom-scrollbar pb-2 w-full max-w-full">
           {[
             { id: 'todos', label: 'Todos', count: ministros.length },
             { id: 'vigentes', label: 'Vigentes', count: ministros.filter(m => m.status === 'vigente').length },
@@ -193,7 +193,7 @@ export default function STFBiografias() {
                 haptic.selection();
                 setActiveFilter(tab.id as FilterType);
               }}
-              className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 border ${
+              className={`whitespace-nowrap flex-shrink-0 px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 border ${
                 activeFilter === tab.id
                   ? 'bg-purple-600 text-white border-purple-500 shadow-lg shadow-purple-900/40'
                   : 'bg-zinc-900/80 text-zinc-400 border-white/5 hover:bg-zinc-800 hover:text-white'
