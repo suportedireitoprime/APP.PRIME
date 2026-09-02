@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Search, Scale, BookOpen, Calendar, Newspaper, Library, ArrowLeft } from 'lucide-react';
+import { Search, Scale, BookOpen, Calendar, Newspaper, Library, ArrowLeft, Feather, ChevronRight } from 'lucide-react';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { haptic } from '@/lib/nativeHaptics';
 
@@ -20,7 +20,7 @@ export default function STFDashboard() {
 
   const stfFunctions = [
     { id: 'blog', label: 'Blog', icon: Newspaper, path: '/ferramentas/stf/blog' },
-    { id: 'biografias', label: 'Biografias', icon: Library, path: '/ferramentas/stf/biografias' },
+    { id: 'biografias', label: 'Biografias', icon: Feather, path: '/ferramentas/stf/biografias' },
     { id: 'agendas', label: 'Agendas', icon: Calendar, path: '/ferramentas/stf/agendas' },
     { id: 'jurisprudencia', label: 'Jurisprudência', icon: BookOpen, path: '/ferramentas/stf/jurisprudencia' },
   ];
@@ -46,7 +46,7 @@ export default function STFDashboard() {
       id: 'biografias',
       title: 'Biografias',
       description: 'História e currículo dos Ministros que passaram pelo STF.',
-      icon: Library,
+      icon: Feather,
       path: '/ferramentas/stf/biografias',
       color: '#EC4899'
     },
@@ -135,32 +135,44 @@ export default function STFDashboard() {
       </div>
 
       <div className="relative z-10 px-6 md:px-12 pb-12 mx-auto w-full max-w-[1000px]">
-        <h3 className="font-display text-xl font-bold text-white mb-6">Recursos e Serviços</h3>
-        <div className="grid grid-cols-2 gap-4">
-          {stfCards.map((card) => (
-            <motion.div
-              key={card.id}
-              whileHover={{ y: -4 }}
-              onClick={() => {
-                haptic.selection();
-                navigate(card.path);
-              }}
-              className="group cursor-pointer flex flex-col p-6 rounded-3xl bg-zinc-900/50 backdrop-blur-sm border border-white/5 hover:border-purple-500/30 hover:bg-zinc-800/80 transition-all shadow-xl"
-            >
-              <div 
-                className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4 transition-colors"
-                style={{ backgroundColor: `${card.color}15`, color: card.color }}
+        <h3 className="font-display text-xl font-bold text-white mb-6 uppercase tracking-wider">Recursos e Serviços</h3>
+        <div className="grid grid-cols-2 gap-3">
+          {stfCards.map((card, i) => {
+            const Icon = card.icon;
+            return (
+              <motion.button
+                key={card.id}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.04 }}
+                onClick={() => {
+                  haptic.selection();
+                  navigate(card.path);
+                }}
+                className="flex flex-col items-start justify-between p-4 rounded-2xl bg-zinc-900 border border-white/5 shadow-sm hover:border-purple-500/40 hover:bg-zinc-800/80 active:scale-[0.99] transition-all group text-left gap-3 relative"
               >
-                <card.icon className="w-6 h-6" />
-              </div>
-              <h4 className="font-display font-bold text-lg mb-2 text-white group-hover:text-purple-400 transition-colors">
-                {card.title}
-              </h4>
-              <p className="text-zinc-400 text-sm leading-relaxed line-clamp-2">
-                {card.description}
-              </p>
-            </motion.div>
-          ))}
+                <div className="flex justify-between items-start w-full">
+                  <Icon
+                    className="w-8 h-8"
+                    style={{
+                      color: card.color,
+                      filter: 'saturate(1.35) brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.45))',
+                    }}
+                    strokeWidth={1.15}
+                  />
+                  <ChevronRight className="w-5 h-5 text-zinc-500/40 group-hover:text-purple-400 transition-colors shrink-0" />
+                </div>
+                <div className="flex flex-col items-start w-full mt-auto gap-0.5">
+                  <span className="font-display text-[14px] font-bold leading-tight text-white line-clamp-1 w-full uppercase">
+                    {card.title}
+                  </span>
+                  <span className="text-[11px] font-medium text-zinc-400 line-clamp-1 w-full text-left">
+                    {card.description}
+                  </span>
+                </div>
+              </motion.button>
+            );
+          })}
         </div>
       </div>
     </div>
