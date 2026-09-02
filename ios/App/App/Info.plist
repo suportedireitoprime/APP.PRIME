@@ -64,6 +64,12 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>O aplicativo precisa de acesso à câmera para atualizar sua foto de perfil e anexar documentos.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>O aplicativo precisa de acesso ao microfone para pesquisas por voz.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>O aplicativo precisa de acesso à galeria para enviar imagens de perfil e anexos.</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
 </dict>

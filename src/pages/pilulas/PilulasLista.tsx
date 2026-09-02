@@ -4,8 +4,9 @@ import { Search, Headphones } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { directImg } from '@/lib/cdnImg';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ShapeGrid from '@/components/ui/ShapeGrid';
+import { prefetchImages } from '@/lib/coverLoader';
 
 export default function PilulasLista() {
   const navigate = useNavigate();
@@ -41,7 +42,13 @@ export default function PilulasLista() {
     item.fullName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const title = tipo === 'ministros' ? 'P�lulas dos Ministros do STF' : 'P�lulas de C�digos';
+  const title = tipo === 'ministros' ? 'Pílulas dos Ministros do STF' : 'Pílulas de Códigos';
+
+  useEffect(() => {
+    // Pré-carrega as imagens da lista em background (cache aquecido 0ms)
+    const urlsToPrefetch = baseItems.map(item => item.image);
+    prefetchImages(urlsToPrefetch);
+  }, [baseItems]);
 
   const handleItemClick = (item: any) => {
     haptic.selection();
@@ -103,7 +110,14 @@ export default function PilulasLista() {
             >
               {/* Left side: Image (vertical aspect ratio) */}
               <div className="w-[72px] h-[96px] rounded-xl overflow-hidden flex-shrink-0 bg-zinc-800">
-                <img src={item.image} alt={item.fullName} className="w-full h-full object-cover" loading="lazy" />
+                <img 
+                  src={item.image} 
+                  alt={item.fullName} 
+                  className="w-full h-full object-cover" 
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
+                />
               </div>
               
               {/* Right side: Content */}

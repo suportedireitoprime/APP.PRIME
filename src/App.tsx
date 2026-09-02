@@ -130,16 +130,7 @@ function ForceUpdateWrapper() {
   );
 }
 
-// Eagerly loaded (critical path)
-import Index from "./pages/Index.tsx";
-import PersistentHome from "./components/PersistentHome";
-import Auth from "./pages/Auth.tsx";
-import Landing from "./pages/Landing.tsx";
-import SmartLink from "./pages/SmartLink.tsx";
-import ResetPassword from "./pages/ResetPassword.tsx";
-import Onboarding from "./pages/Onboarding.tsx";
-
-import AnimatedRoutes from "./AppRoutes";
+const AnimatedRoutes = lazy(() => import("./AppRoutes"));
 
 // Importação do AppBootSplash
 const CustomSplashScreen = lazy(() => import("@/components/CustomSplashScreen").then(m => ({ default: m.CustomSplashScreen })));
@@ -171,8 +162,18 @@ const App = () => (
         dehydrateOptions: {
           shouldDehydrateQuery: (q) => {
             const k = q.queryKey?.[0];
-            // Persistir só dados baratos e úteis pra abertura instantânea
-            return k === 'biblioteca-colecao' || k === 'blog-posts' || k === 'noticias';
+            // Persistir dados baratos e áreas fundamentais (Modo Avião / Offline nativo)
+            const offlineKeys = [
+              'biblioteca-colecao', 
+              'blog-posts', 
+              'noticias',
+              'pilulas', 
+              'lei-seca-trilha', 
+              'lei-seca-licao', 
+              'lei-seca-artigos', 
+              'vademecum'
+            ];
+            return typeof k === 'string' && offlineKeys.includes(k);
           },
         },
       }}

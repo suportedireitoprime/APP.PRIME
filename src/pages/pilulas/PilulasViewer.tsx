@@ -4,6 +4,7 @@ import { motion, useMotionValue, useTransform, useAnimation, AnimatePresence } f
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { haptic } from '@/lib/nativeHaptics';
 import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
 import { RotateCcw, Loader2 } from 'lucide-react';
 import '@/pilulas.css';
 
@@ -22,14 +23,12 @@ export default function PilulasViewer() {
   const { deckId } = useParams(); // actually slug
   const navigate = useNavigate();
   
-  const [pilulas, setPilulas] = useState<Card[]>([]);
-  const [loading, setLoading] = useState(true);
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
 
-  useEffect(() => {
-    async function loadCards() {
-      // Find deck by slug first
+  const { data: pilulasData, isLoading: loading } = useQuery({
+    queryKey: ['pilulas', 'deck', deckId],
+    queryFn: async () => {
       const { data: deck, error: deckErr } = await supabase
         .from('pilulas_decks')
         .select('id')
@@ -44,13 +43,15 @@ export default function PilulasViewer() {
           .order('ordem', { ascending: true });
         
         if (cards && !cardsErr) {
-          setPilulas(cards);
+          return cards;
         }
       }
-      setLoading(false);
-    }
-    loadCards();
-  }, [deckId]);
+      return [];
+    },
+    staleTime: 1000 * 60 * 60, // 1h
+  });
+  
+  const pilulas = pilulasData || [];
 
   const isFinished = index >= pilulas.length && pilulas.length > 0;
 
@@ -105,7 +106,7 @@ export default function PilulasViewer() {
     return (
       <div className="min-h-dvh flex items-center justify-center bg-zinc-950 text-white flex-col gap-4">
         <p className="text-zinc-400">Deck não encontrado ou vazio.</p>
-        <button onClick={() => navigate('/pilulas')} className="text-[#36AF85] font-bold">Voltar</button>
+        <button onClick={() => navigate('/pilulas')} className="min-h-[48px] min-w-[48px] px-4 text-[#36AF85] font-bold">Voltar</button>
       </div>
     );
   }
@@ -116,8 +117,8 @@ export default function PilulasViewer() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#36AF85]/20 via-zinc-950 to-zinc-950" />
       </div>
 
-      <div className="relative z-10 pt-safe-header pb-2 px-4 flex justify-between items-center bg-transparent">
-        <PageHeader title="" onBack={() => navigate('/pilulas')} rightAction={<div className="w-8" />} className="bg-transparent border-none" />
+      <div className="relative z-10 pt-[calc(1.25rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-2 px-4 flex justify-between items-center bg-transparent">
+        <PageHeader title="" onBack={() => navigate('/pilulas')} rightAction={<div className="w-8" />} className="bg-transparent border-none min-h-[48px]" />
       </div>
 
       <div className="flex-1 relative flex items-center justify-center p-6 mb-10 overflow-hidden">
@@ -175,12 +176,20 @@ export default function PilulasViewer() {
                     initial={isFront ? { scale: 0.95, opacity: 0 } : false}
                     transition={{ type: 'spring', stiffness: 300, damping: 25 }}
                     onClick={isFront ? handleFlip : undefined}
-                    className="absolute inset-0 cursor-grab active:cursor-grabbing preserve-3d"
+                    className="absolute inset-0 cursor-grab active:cursor-grabbing preserve-3d select-none"
+                    style={{
+                      willChange: 'transform, opacity',
+                      z: 0,
+                      zIndex: pilulas.length - i,
+                      x: isFront ? x : 0,
+                      rotate: isFront ? rotate : 0,
+                    }}
                   >
                     <motion.div
                       animate={{ rotateY: (isFront && flipped) ? 180 : 0 }}
                       transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-                      className="w-full h-full relative preserve-3d shadow-2xl rounded-[2rem]"
+                      className="w-full h-full relative preserve-3d shadow-2xl rounded-[2rem] select-none"
+                      style={{ willChange: 'transform', z: 0 }}
                     >
                       {/* Frente */}
                       <div className="absolute inset-0 backface-hidden rounded-[2rem] overflow-hidden bg-zinc-900 border border-zinc-800">

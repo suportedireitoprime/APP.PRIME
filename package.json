@@ -6,9 +6,9 @@
   "main": "electron/main.cjs",
   "scripts": {
     "postinstall": "node -e \"const fs=require('fs'); fs.mkdirSync('public/assets', {recursive: true}); if(fs.existsSync('node_modules/sql.js/dist/sql-wasm.wasm')) fs.copyFileSync('node_modules/sql.js/dist/sql-wasm.wasm', 'public/assets/sql-wasm.wasm');\" && node scripts/patch-media.mjs",
-    "predev": "npm run postinstall && npx tsx scripts/generate-sitemap.ts",
+    "predev": "pnpm run postinstall && npx tsx scripts/generate-sitemap.ts",
     "dev": "vite",
-    "prebuild": "npm run postinstall && node scripts/copy-build-assets.mjs && npx tsx scripts/generate-sitemap.ts",
+    "prebuild": "pnpm run postinstall && node scripts/copy-build-assets.mjs && npx tsx scripts/generate-sitemap.ts",
     "build": "node --max-old-space-size=8192 ./node_modules/vite/bin/vite.js build",
     "build:dev": "vite build --mode development",
     "build:electron": "cross-env ELECTRON_BUILD=1 vite build",

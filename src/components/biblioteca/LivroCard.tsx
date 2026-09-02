@@ -44,14 +44,14 @@ const LivroCard = ({ livro, onClick, priority }: LivroCardProps) => {
           <span className="text-[9px] font-medium text-white/90 tracking-wide">{tempoEstimado}</span>
         </div>
         {capaUrl ? (
-          <img
-            src={capaUrl}
-            alt={livro.titulo}
-            className="w-full h-full object-cover"
-            loading={priority ? undefined : 'lazy'}
-            fetchPriority={priority ? 'high' : undefined}
-            decoding="async"
-          />
+            <img
+              src={capaUrl}
+              alt={livro.titulo}
+              className="w-full h-full object-cover"
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+            />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/5 p-2">
             <span className="text-[10px] text-center text-muted-foreground font-medium leading-tight line-clamp-4">

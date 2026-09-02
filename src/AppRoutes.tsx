@@ -84,14 +84,14 @@ function ForceUpdateWrapper() {
 }
 
 // Eagerly loaded (critical path)
-import Index from "./pages/Index.tsx";
-import PersistentHome from "./components/PersistentHome";
-import Auth from "./pages/Auth.tsx";
-import Landing from '@/pages/Landing';
-import PilulasLista from '@/pages/pilulas/PilulasLista';
-import SmartLink from "./pages/SmartLink.tsx";
-import ResetPassword from "./pages/ResetPassword.tsx";
-import Onboarding from "./pages/Onboarding.tsx";
+const Index = lazy(() => import("./pages/Index.tsx"));
+const PersistentHome = lazy(() => import("./components/PersistentHome"));
+const Auth = lazy(() => import("./pages/Auth.tsx"));
+const Landing = lazy(() => import('@/pages/Landing'));
+const PilulasLista = lazy(() => import('@/pages/pilulas/PilulasLista'));
+const SmartLink = lazy(() => import("./pages/SmartLink.tsx"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword.tsx"));
+const Onboarding = lazy(() => import("./pages/Onboarding.tsx"));
 
 const QuestoesHistorico = lazy(() => import('@/pages/QuestoesHistorico'));
 const AdminFuncoes = lazy(() => import("./pages/AdminFuncoes.tsx"));
@@ -759,7 +759,9 @@ function AnimatedRoutes() {
       {user && <NovidadesRadarOverlay />}
       <GlobalDesktopHeader />
       <DesktopFileDropOverlay />
-      <PersistentHome />
+      <Suspense fallback={null}>
+        <PersistentHome />
+      </Suspense>
       <Suspense fallback={<LazyFallback />}>
           <Routes location={location} key={getRouteKey(location.pathname)}>
           <Route path="/auth" element={<Auth />} />

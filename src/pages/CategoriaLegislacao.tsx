@@ -25,6 +25,7 @@ import type { ArtigoLei } from '@/data/mockData';
 import brasaoImgAsset from '@/assets/brasao-republica.webp';
 const brasaoImg = brasaoImgAsset;
 import { useIsDesktop } from '@/hooks/use-desktop';
+import { useIsTablet } from '@/hooks/use-tablet';
 import RadarLegislacaoContent, { prefetchRadarData } from '@/components/vademecum/RadarLegislacaoContent';
 import { getLeiColor, getLeiCover, shade } from '@/lib/leiTheme';
 import { warmCoverCache } from '@/lib/coverLoader';
@@ -85,6 +86,8 @@ const LEI_ICON_MAP: Record<string, React.ElementType> = {
 const CategoriaLegislacao = () => {
   useTrackArea("legislacao_aberta");
   const isDesktop = useIsDesktop();
+  const isTablet = useIsTablet();
+  const isMasterDetail = isDesktop || isTablet;
   const params = useParams<{ tipo: string; leiSlug?: string; artigoNumero?: string }>();
   const rawTipo = params.tipo;
   const leiSlugParam = params.leiSlug;
@@ -663,7 +666,7 @@ const CategoriaLegislacao = () => {
   }, [capituloGroups]);
 
   const visibleArtigos = useMemo(() => {
-    if (!isDesktop || !expandedTitulo) return filteredArtigos;
+    if (!isMasterDetail || !expandedTitulo) return filteredArtigos;
 
     const ids = new Set<string>();
     for (const tg of capituloGroups) {
@@ -676,12 +679,11 @@ const CategoriaLegislacao = () => {
       }
     }
     return [];
-  }, [capituloGroups, expandedTitulo, filteredArtigos, isDesktop]);
+  }, [capituloGroups, expandedTitulo, filteredArtigos, isMasterDetail]);
 
   const shouldVirtualizeArtigos = Boolean(
     selectedLeiId &&
     activeTab === 'art' &&
-    !isDesktop &&
     !searchQuery.trim() &&
     visibleArtigos.length > MOBILE_ARTIGOS_VIRTUAL_THRESHOLD
   );
@@ -1201,7 +1203,7 @@ const CategoriaLegislacao = () => {
           Capítulos ({totalCapitulos})
         </p>
         {/* "Todos" option to clear filter */}
-        {isDesktop && expandedTitulo && (
+        {isMasterDetail && expandedTitulo && (
           <button
             onClick={() => setExpandedTitulo(null)}
             className="w-full text-left px-3 py-2 rounded-lg text-xs font-body text-primary hover:bg-secondary transition-colors font-semibold"
@@ -2025,10 +2027,10 @@ const CategoriaLegislacao = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.26, ease: [0.22, 0.61, 0.36, 1], delay: 0.16 }}
           >
-            {isDesktop ? (
+            {isMasterDetail ? (
               <div className="flex gap-6">
                 {/* Chapters sidebar */}
-                <div className="w-[240px] shrink-0 sticky top-[124px] self-start max-h-[calc(100vh-9rem)] overflow-y-auto rounded-xl bg-card border border-border p-2.5">
+                <div className={`${isDesktop ? 'w-[240px]' : 'w-[260px]'} shrink-0 sticky top-[124px] self-start max-h-[calc(100vh-9rem)] overflow-y-auto rounded-xl bg-card border border-border p-2.5`}>
                   {chaptersPanel}
                 </div>
                 {/* Articles */}

@@ -328,7 +328,9 @@ class Media {
       transparent: true
     });
     const img = new Image();
-    img.crossOrigin = 'anonymous';
+    if (this.image && (this.image.startsWith('http://') || this.image.startsWith('https://'))) {
+      img.crossOrigin = 'anonymous';
+    }
     img.src = this.image;
     img.onload = () => {
       const canvas = document.createElement('canvas');

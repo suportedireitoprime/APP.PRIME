@@ -15,6 +15,7 @@ import {
 } from '@/lib/bibliotecaTracking';
 import { readLeituraProgress } from '@/lib/leituraProgress';
 import { pullLeituraProgress } from '@/lib/leituraProgressSync';
+import { prefetchImages } from '@/lib/coverLoader';
 
 interface Props {
   onAbrirLivro: (livro: LivroNormalizado) => void;
@@ -96,6 +97,11 @@ const BibliotecaAtividadeRail = ({ onAbrirLivro }: Props) => {
           legenda: s.autor ?? undefined,
         }));
 
+  useEffect(() => {
+    const urls = lista.map(item => item.snap.capa);
+    prefetchImages(urls);
+  }, [lista]);
+
   return (
     <>
     <div className="sticky top-4 rounded-3xl border border-border/50 bg-card overflow-hidden">
@@ -145,7 +151,7 @@ const BibliotecaAtividadeRail = ({ onAbrirLivro }: Props) => {
             >
               <span className="w-9 h-12 rounded-md overflow-hidden shrink-0 bg-muted border border-border/50">
                 {snap.capa ? (
-                  <img src={snap.capa} alt="" loading="lazy" className="w-full h-full object-cover" />
+                  <img src={snap.capa} alt="" loading="eager" fetchPriority="high" decoding="async" className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
                     <BookOpen className="w-4 h-4 text-muted-foreground" />

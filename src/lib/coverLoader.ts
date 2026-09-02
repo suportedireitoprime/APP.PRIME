@@ -73,10 +73,17 @@ function whenIdle(fn: () => void) {
   }
 }
 
-function prefetch(url: string) {
+export function prefetchImage(url: string | null | undefined) {
+  if (!url) return;
   const img = new Image();
   img.decoding = 'async';
   img.src = url;
+}
+
+export function prefetchImages(urls: (string | null | undefined)[]) {
+  urls.filter(Boolean).forEach((url) => {
+    prefetchImage(url);
+  });
 }
 
 /**
@@ -89,7 +96,7 @@ export function warmCoverCache() {
   const isDesktop = window.matchMedia?.('(min-width: 1024px)').matches ?? false;
 
   whenIdle(() => {
-    Object.values(COVERS).forEach(prefetch);
-    if (isDesktop) CDN_WARMUP_URLS.forEach(prefetch);
+    Object.values(COVERS).forEach((url) => prefetchImage(url));
+    if (isDesktop) CDN_WARMUP_URLS.forEach((url) => prefetchImage(url));
   });
 }

@@ -38,6 +38,9 @@ html {
   
   /* Remove o retângulo de destaque vermelho/cinza padrão ao tocar em itens clicáveis */
   -webkit-tap-highlight-color: transparent;
+
+  /* Desabilita delay de duplo toque e atraso de 300ms no iOS */
+  touch-action: manipulation;
 }
 
 /* As otimizações extremas de remoção de backdrop-blur foram removidas 

@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Search, Pill, Headphones, BookOpen, AlertCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
+import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { toast } from 'sonner';
 import { directImg } from '@/lib/cdnImg';
 import ShapeGrid from '@/components/ui/ShapeGrid';
@@ -17,12 +18,6 @@ function formatTime(timeInSeconds: number) {
 
 function PilulaItem({ 
   artigo, 
-  itemVariants, 
-  navigate,
-  config
-}: { 
-  artigo: any, 
-  itemVariants: any, 
   navigate: (path: string) => void,
   config: any
 }) {
@@ -40,7 +35,6 @@ function PilulaItem({
 
   return (
     <motion.button
-      variants={itemVariants}
       whileHover={temAudio ? { scale: 1.015 } : {}}
       whileTap={temAudio ? { scale: 0.98 } : {}}
       onClick={() => {
@@ -73,7 +67,9 @@ function PilulaItem({
           src={config.cover} 
           alt={config.title} 
           className="w-full h-full object-cover" 
-          loading="lazy" 
+          loading="eager" 
+          fetchPriority="high"
+          decoding="async"
           onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=600&auto=format&fit=crop' }} 
         />
       </div>
@@ -198,16 +194,11 @@ export default function PilulasLeiSeca({ slug }: { slug: 'cp' | 'cf' | 'cc' }) {
       )
     : artigos;
 
-  // Animações
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    show: { opacity: 1, transition: { staggerChildren: 0.05 } },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 15, scale: 0.98 },
-    show: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', stiffness: 300, damping: 24 } },
-  };
+  const artigosVirtualizer = useWindowVirtualizer({
+    count: artigosFiltrados.length,
+    estimateSize: () => 130, // Estimate for the Pill card + gap
+    overscan: 5,
+  });
 
   return (
     <div className="min-h-dvh bg-zinc-950 text-white pb-32 relative overflow-hidden">
@@ -278,22 +269,33 @@ export default function PilulasLeiSeca({ slug }: { slug: 'cp' | 'cf' | 'cc' }) {
             <p>Nenhuma pílula encontrada.</p>
           </div>
         ) : (
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="show"
-            className="grid gap-3"
+          <div
+            className="w-full relative"
+            style={{ height: `${artigosVirtualizer.getTotalSize()}px` }}
           >
-            {artigosFiltrados.map((artigo) => (
-              <PilulaItem 
-                key={artigo.id} 
-                artigo={artigo} 
-                itemVariants={itemVariants} 
-                navigate={navigate}
-                config={config}
-              />
-            ))}
-          </motion.div>
+            {artigosVirtualizer.getVirtualItems().map((virtualItem) => {
+              const artigo = artigosFiltrados[virtualItem.index];
+              return (
+                <div
+                  key={virtualItem.key}
+                  data-index={virtualItem.index}
+                  ref={artigosVirtualizer.measureElement}
+                  className="absolute top-0 left-0 w-full"
+                  style={{
+                    transform: `translateY(${virtualItem.start}px)`,
+                  }}
+                >
+                  <div className="pb-3">
+                    <PilulaItem 
+                      artigo={artigo} 
+                      navigate={navigate}
+                      config={config}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         )}
       </div>
       </div>
