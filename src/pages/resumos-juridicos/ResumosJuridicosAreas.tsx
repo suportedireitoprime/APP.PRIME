@@ -26,14 +26,10 @@ import {
   Wallet,
   Handshake,
   FileText,
-  LayoutGrid,
-  List,
 } from "lucide-react";
 import ShapeGrid from "@/components/ui/ShapeGrid";
 import ResumosHero from "@/components/resumos/ResumosHero";
-import { LazyCircularGallery } from "@/components/ui/LazyCircularGallery";
 import { haptic } from "@/lib/nativeHaptics";
-import { AnimatedDivider } from "@/components/ui/AnimatedDivider";
 
 type AreaRow = { area: string; total: number; temas: string[] };
 
@@ -83,7 +79,6 @@ export default function ResumosJuridicosAreas() {
   const [rows, setRows] = useState<AreaRow[]>(() => areasThemesCache || []);
   const [loading, setLoading] = useState(!areasThemesCache);
   const [q, setQ] = useState("");
-  const [viewMode, setViewMode] = useState<"lista" | "cards">("cards");
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
@@ -199,16 +194,6 @@ export default function ResumosJuridicosAreas() {
                 className="w-full h-10 pl-9 pr-4 rounded-xl bg-secondary/50 border border-border/50 text-sm focus:outline-none focus:border-[#38bdf8]/50 transition-colors"
               />
             </div>
-            <button
-              onClick={() => {
-                haptic.selection();
-                setViewMode(viewMode === "lista" ? "cards" : "lista");
-              }}
-              className="h-10 px-4 rounded-xl bg-secondary/50 border border-border/50 flex items-center justify-center gap-2 text-sm font-medium hover:bg-secondary/70 transition-colors shrink-0"
-            >
-              {viewMode === "lista" ? <LayoutGrid className="w-4 h-4" /> : <List className="w-4 h-4" />}
-              <span className="hidden sm:inline">{viewMode === "lista" ? "Cards" : "Lista"}</span>
-            </button>
           </div>
         </div>
 
@@ -221,88 +206,35 @@ export default function ResumosJuridicosAreas() {
             <div className="text-center py-16 text-white/50 text-sm space-y-3">
               <p>Nenhuma matéria encontrada para "{q}".</p>
             </div>
-          ) : viewMode === "lista" ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+          ) : (
+            <div className="rounded-2xl border border-white/10 bg-black/20 backdrop-blur-md divide-y divide-white/10 overflow-hidden shadow-xl mt-1">
               {filtered.map((r, i) => {
                 const s = styleForArea(r.area);
                 const Icon = s.icon;
-                return (
-                  <motion.button
-                    key={r.area}
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: Math.min(i * 0.02, 0.3) }}
-                    onClick={() => navigate(`/resumos-juridicos/${encodeURIComponent(r.area)}`)}
-                    className="flex items-center gap-4 p-5 sm:p-6 rounded-3xl bg-secondary/30 border border-white/5 hover:bg-secondary/50 hover:border-[#38bdf8]/40 transition-all text-left group"
-                  >
-                    <div className="w-14 h-14 rounded-2xl bg-[#38bdf8]/5 border border-[#38bdf8]/10 flex items-center justify-center group-hover:bg-[#38bdf8]/15 transition-colors">
-                      <Icon className="w-7 h-7 shrink-0" style={{ color: s.color }} strokeWidth={1.5} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-display font-bold text-[15px] uppercase text-white truncate">
-                        {r.area.replace(/^DIREITO\s+/i, "")}
-                      </div>
-                      <div className="text-[12px] text-white/50 mt-1">
-                        {r.total} {r.total === 1 ? "resumo" : "resumos"}
-                      </div>
-                    </div>
-                    <ChevronRight className="w-5 h-5 text-white/30 group-hover:text-[#38bdf8] transition-colors shrink-0" />
-                  </motion.button>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="flex flex-col pb-16">
-              {filtered.map((r, i) => {
                 const displayArea = r.area.replace(/^DIREITO\s+/i, "");
                 
                 return (
-                  <div key={r.area} className="space-y-2 mb-8">
-                    {i > 0 && <AnimatedDivider text={displayArea} />}
-                    
-                    <div className="flex items-start justify-between px-1 mb-4 gap-4">
-                      <div className="flex-1 min-w-0">
-                        <h2 className="text-[22px] font-black text-white uppercase tracking-widest mb-1">
-                          {displayArea}
-                        </h2>
-                        <p className="text-[13px] text-zinc-400 truncate">
-                          Matérias de {displayArea}
-                        </p>
+                  <button
+                    key={r.area}
+                    onClick={() => {
+                      haptic.selection();
+                      navigate(`/resumos-juridicos/${encodeURIComponent(r.area)}`);
+                    }}
+                    className="w-full flex items-center gap-4 px-4 py-4 min-h-[76px] text-left hover:bg-white/5 active:bg-white/10 transition-colors"
+                  >
+                    <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                      <Icon className="w-[26px] h-[26px]" style={{ color: s.color }} strokeWidth={1.8} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-body text-[16px] font-semibold text-white truncate">
+                        {displayArea}
                       </div>
-
-                      <button
-                        onClick={() => { 
-                          haptic.selection(); 
-                          navigate(`/resumos-juridicos/${encodeURIComponent(r.area)}`); 
-                        }}
-                        className="shrink-0 flex items-center justify-center h-[38px] px-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-semibold whitespace-nowrap transition-all active:scale-[0.98]"
-                      >
-                        Ver em lista
-                      </button>
+                      <div className="font-body text-[12.5px] text-zinc-400 truncate mt-0.5">
+                        {r.total} {r.total === 1 ? "resumo" : "resumos"} disponíveis
+                      </div>
                     </div>
-
-                    <div className="h-[360px] -mx-4 sm:mx-0">
-                      <LazyCircularGallery
-                        items={(r.temas || []).map((tema, idx) => ({
-                          image: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg',
-                          text: tema,
-                          fullName: r.area,
-                          position: 'inside-bottom',
-                          showPlayButton: false,
-                          badgeText: String(idx + 1),
-                          raw: { area: r.area, tema }
-                        }))}
-                        bend={1.5}
-                        textColor="#ffffff"
-                        borderRadius={0.05}
-                        scrollEase={0.08}
-                        onItemClick={(item) => {
-                          haptic.selection();
-                          navigate(`/resumos-juridicos/${encodeURIComponent(item.raw.area)}/${encodeURIComponent(item.raw.tema)}`);
-                        }}
-                      />
-                    </div>
-                  </div>
+                    <ChevronRight className="w-5 h-5 text-zinc-500 shrink-0" />
+                  </button>
                 );
               })}
             </div>
