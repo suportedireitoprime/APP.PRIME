@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft, BookOpen, User, CheckCircle2, AlertCircle, Download, Loader2, FileText, ExternalLink, Clock } from 'lucide-react';
+import { ArrowLeft, BookOpen, User, CheckCircle2, AlertCircle, Download, Loader2, FileText, ExternalLink, Clock, Search, Mic } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { haptic } from '@/lib/nativeHaptics';
 import ShapeGrid from '@/components/ui/ShapeGrid';
@@ -34,6 +34,8 @@ export default function STFBiografias() {
   const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState<FilterType>('todos');
   const [selectedMinistro, setSelectedMinistro] = useState<Ministro | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isListening, setIsListening] = useState(false);
   const [activeModalTab, setActiveModalTab] = useState<'Sobre' | 'Linha do Tempo' | 'Currículo' | 'Obras' | 'Discursos'>('Sobre');
   const [expandedTimeline, setExpandedTimeline] = useState<Record<number, boolean>>({});
   const [loadingDetails, setLoadingDetails] = useState(false);
@@ -109,6 +111,11 @@ export default function STFBiografias() {
   };
 
   const filteredMinistros = ministros.filter((m) => {
+    const matchesSearch = m.nome.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          m.nome_completo.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    if (!matchesSearch) return false;
+    
     if (activeFilter === 'todos') return true;
     if (activeFilter === 'vigentes') return m.status === 'vigente';
     if (activeFilter === 'mulheres') return m.genero === 'F';
@@ -147,6 +154,31 @@ export default function STFBiografias() {
     return `${startYear} — ${endYear}`;
   };
 
+  const handleVoiceSearch = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert('Seu navegador não suporta pesquisa por voz.');
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'pt-BR';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => setIsListening(true);
+    
+    recognition.onresult = (event: any) => {
+      const speechResult = event.results[0][0].transcript;
+      setSearchQuery(speechResult);
+    };
+
+    recognition.onerror = () => setIsListening(false);
+    recognition.onend = () => setIsListening(false);
+
+    recognition.start();
+  };
+
   return (
     <div className="min-h-dvh bg-zinc-950 pb-20 relative overflow-hidden flex flex-col">
       {/* Botão de Voltar Premium */}
@@ -177,6 +209,29 @@ export default function STFBiografias() {
           <p className="text-purple-200 text-base font-body leading-relaxed max-w-xl">
             Conheça o histórico, as indicações e a trajetória de todos os Ministros que já passaram pelo Supremo.
           </p>
+        </div>
+
+        {/* Barra de Pesquisa */}
+        <div className="relative mb-6">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <Search className="h-5 w-5 text-zinc-500" />
+          </div>
+          <input
+            type="text"
+            className="w-full bg-zinc-900/80 border border-white/10 rounded-2xl py-3.5 pl-11 pr-12 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all shadow-inner"
+            placeholder="Pesquisar ministro por nome..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <button
+            onClick={handleVoiceSearch}
+            className={`absolute inset-y-0 right-2 flex items-center justify-center w-10 h-10 my-auto rounded-xl transition-all ${
+              isListening ? 'bg-purple-500 text-white animate-pulse' : 'text-zinc-400 hover:text-white hover:bg-white/5'
+            }`}
+            title="Pesquisa por voz"
+          >
+            <Mic className="h-5 w-5" />
+          </button>
         </div>
 
         {/* Menu de Alternância (Filtros) */}
