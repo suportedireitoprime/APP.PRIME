@@ -1,4 +1,4 @@
-﻿import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import { initAnalytics, trackPageview, setAnalyticsUserWithProfile } from "@/lib/analytics";
 import { useScreenTracking } from "@/lib/screenTracking";
@@ -35,6 +35,8 @@ const Router = typeof window !== "undefined" && ((window as any).desktopApp?.isE
   : BrowserRouter;
 
 import PageTransition from "@/components/PageTransition";
+import { ScrollRestoration } from "./components/vademecum/ScrollRestoration.tsx";
+import { useMediaQuery } from "./hooks/useMediaQuery.ts";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { routePrefetch, prefetchRoute } from "@/lib/routePrefetch";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -200,15 +202,15 @@ const FlashcardsDesafios = lazy(() => import("./pages/FlashcardsDesafios.tsx"));
 const FlashcardsTrilhas = lazy(() => import("./pages/FlashcardsTrilhas.tsx"));
 const FlashcardsProgresso = lazy(() => import("./pages/FlashcardsProgresso.tsx"));
 const FlashcardsHistorico = lazy(() => import("./pages/flashcards/FlashcardsHistorico.tsx"));
-const FlashcardsMaterias = lazy(() => import("./pages/flashcards/FlashcardsMaterias.tsx"));
-const FlashcardsLeis = lazy(() => import("./pages/flashcards/FlashcardsLeis.tsx"));
-const FlashcardsJurisprudencia = lazy(() => import("./pages/flashcards/FlashcardsJurisprudencia.tsx"));
-const FlashcardsTermos = lazy(() => import("./pages/flashcards/FlashcardsTermos.tsx"));
-const FlashcardsFilosofos = lazy(() => import("./pages/flashcards/FlashcardsFilosofos.tsx"));
-const FlashcardsJuristas = lazy(() => import("./pages/flashcards/FlashcardsJuristas.tsx"));
-const FlashcardsPrazos = lazy(() => import("./pages/flashcards/FlashcardsPrazos.tsx"));
-const FlashcardsExcecoes = lazy(() => import("./pages/flashcards/FlashcardsExcecoes.tsx"));
-const FlashcardsClassificacoes = lazy(() => import("./pages/flashcards/FlashcardsClassificacoes.tsx"));
+const FlashcardsMaterias = lazy(() => import("./pages/FlashcardsMaterias.tsx"));
+const FlashcardsLeis = lazy(() => import("./pages/FlashcardsLeis.tsx"));
+const FlashcardsJurisprudencia = lazy(() => import("./pages/FlashcardsJurisprudencia.tsx"));
+const FlashcardsTermos = lazy(() => import("./pages/FlashcardsTermos.tsx"));
+const FlashcardsFilosofos = lazy(() => import("./pages/FlashcardsFilosofos.tsx"));
+const FlashcardsJuristas = lazy(() => import("./pages/FlashcardsJuristas.tsx"));
+const FlashcardsPrazos = lazy(() => import("./pages/FlashcardsPrazos.tsx"));
+const FlashcardsExcecoes = lazy(() => import("./pages/FlashcardsExcecoes.tsx"));
+const FlashcardsClassificacoes = lazy(() => import("./pages/FlashcardsClassificacoes.tsx"));
 const VideoaulasLeiSeca = lazy(() => import('./pages/VideoaulasLeiSeca'));
 const VideoaulasLeiSecaCategoria = lazy(() => import('./pages/VideoaulasLeiSecaCategoria'));
 const VideoaulasLeiSecaArtigos = lazy(() => import('./pages/VideoaulasLeiSecaArtigos'));
@@ -256,6 +258,7 @@ const QuestoesConquistas = lazy(() => import("./pages/QuestoesConquistas.tsx"));
 const QuestoesDesempenho = lazy(() => import("./pages/QuestoesDesempenho.tsx"));
 import { LazyMediaPlayers } from "./components/layout/LazyMediaPlayers.tsx";
 const ResumosJuridicosAreas = lazy(routePrefetch.resumosJuridicos);
+const ResumosJuridicosDesktop = lazy(() => import("./pages/resumos-juridicos/ResumosJuridicosDesktop.tsx"));
 const ResumosMaterias = lazy(() => import("./pages/resumos-juridicos/ResumosMaterias.tsx"));
 const ResumosLeis = lazy(() => import("./pages/resumos-juridicos/ResumosLeis.tsx"));
 const ResumosJurisprudencia = lazy(() => import("./pages/resumos-juridicos/ResumosJurisprudencia.tsx"));
@@ -278,6 +281,12 @@ function LeiSecaTrilhaRoute() {
 function LeiSecaParteRoute() {
   const { slug = "", parte = "" } = useParams();
   return <LeiSecaParte key={`${slug}/${parte}`} />;
+}
+
+function ResumosJuridicosRouteWrapper({ children }: { children: React.ReactNode }) {
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
+  if (isDesktop) return <ResumosJuridicosDesktop />;
+  return <>{children}</>;
 }
 const LeiSecaPlayer = lazy(routePrefetch.leiSecaPlayer);
 const LeiSecaLembretes = lazy(routePrefetch.leiSecaLembretes);
@@ -942,7 +951,7 @@ function AnimatedRoutes() {
           <Route path="/lei-seca/:slug/:parte/licao/:id" element={<ProtectedRoute><PageTransition><LeiSecaPlayer /></PageTransition></ProtectedRoute>} />
           <Route path="/resumos" element={<Navigate to="/resumos-juridicos" replace />} />
 
-                    <Route path="/resumos-juridicos" element={<ProtectedRoute><PageTransition><ResumosJuridicosAreas /></PageTransition></ProtectedRoute>} />
+          <Route path="/resumos-juridicos" element={<ProtectedRoute><ResumosJuridicosRouteWrapper><PageTransition><ResumosJuridicosAreas /></PageTransition></ResumosJuridicosRouteWrapper></ProtectedRoute>} />
           <Route path="/resumos-juridicos/materias" element={<ProtectedRoute><PageTransition><ResumosMaterias /></PageTransition></ProtectedRoute>} />
           <Route path="/resumos-juridicos/leis" element={<ProtectedRoute><PageTransition><ResumosLeis /></PageTransition></ProtectedRoute>} />
           <Route path="/resumos-juridicos/jurisprudencia" element={<ProtectedRoute><PageTransition><ResumosJurisprudencia /></PageTransition></ProtectedRoute>} />
@@ -953,8 +962,8 @@ function AnimatedRoutes() {
           <Route path="/resumos-juridicos/favoritos" element={<ProtectedRoute><PageTransition><ResumosJuridicosLista modo="favoritos" /></PageTransition></ProtectedRoute>} />
           <Route path="/resumos-juridicos/recentes" element={<ProtectedRoute><PageTransition><ResumosJuridicosLista modo="recentes" /></PageTransition></ProtectedRoute>} />
           <Route path="/resumos-juridicos/jurisprudencia/:categoria" element={<ProtectedRoute><PageTransition><ResumosJuridicosJurisprudencia /></PageTransition></ProtectedRoute>} />
-          <Route path="/resumos-juridicos/:area" element={<ProtectedRoute><PageTransition><ResumosJuridicosTemas /></PageTransition></ProtectedRoute>} />
-          <Route path="/resumos-juridicos/:area/:tema" element={<ProtectedRoute><PageTransition><ResumosJuridicosSubtemas /></PageTransition></ProtectedRoute>} />
+          <Route path="/resumos-juridicos/:area" element={<ProtectedRoute><ResumosJuridicosRouteWrapper><PageTransition><ResumosJuridicosTemas /></PageTransition></ResumosJuridicosRouteWrapper></ProtectedRoute>} />
+          <Route path="/resumos-juridicos/:area/:tema" element={<ProtectedRoute><ResumosJuridicosRouteWrapper><PageTransition><ResumosJuridicosSubtemas /></PageTransition></ResumosJuridicosRouteWrapper></ProtectedRoute>} />
           <Route path="/questoes" element={<ProtectedRoute><PageTransition><Questoes /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/areas" element={<ProtectedRoute><PageTransition><QuestoesAreas /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/praticar" element={<ProtectedRoute><PageTransition><QuestoesPraticar /></PageTransition></ProtectedRoute>} />

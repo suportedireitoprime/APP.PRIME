@@ -196,7 +196,7 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
     window.setTimeout(() => { userInteractingRef.current = false; }, 4000);
   };
 
-  const handleOpen = (item: FeedItem) => {
+  const handleOpen = useCallback((item: FeedItem) => {
     if (item.kind === 'noticia') setSelectedNoticia(item.data);
     else if (item.kind === 'blog') setSelectedPost(item.data);
     else if (item.kind === 'livro') {
@@ -220,7 +220,7 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
       };
       setSelectedLivro(normalized);
     }
-  };
+  }, []);
 
 
   if (items.length === 0) {
@@ -248,143 +248,43 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
       : 'notícias do mundo jurídico em tempo real';
   return (
     <div className="space-y-2.5">
-      <div className="px-5 min-h-[54px]">
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div
-            key={kind}
-            initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 4 }}
-            transition={{ duration: 0.25 }}
-          >
-            <h3 className="font-display text-foreground text-[18px] font-bold mb-1 flex items-center gap-2">
-              <span className="w-1 h-5 rounded-full bg-primary" />
-              {headerTitle}
-            </h3>
-            <p className="font-body text-muted-foreground text-[12.5px] leading-snug mb-3 ml-3 truncate">
-              {headerSubtitle}
-            </p>
-          </motion.div>
-        </AnimatePresence>
-      </div>
+  const renderedTitle = useMemo(() => (
+    <div className="px-5 h-[64px] relative">
+      <AnimatePresence mode="popLayout" initial={false}>
+        <motion.div
+          key={kind}
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 4 }}
+          transition={{ duration: 0.2 }}
+          className="absolute left-5 right-5"
+        >
+          <h3 className="font-display text-foreground text-[18px] font-bold mb-1 flex items-center gap-2">
+            <span className="w-1 h-5 rounded-full bg-primary" />
+            {headerTitle}
+          </h3>
+          <p className="font-body text-muted-foreground text-[12.5px] leading-snug mb-3 ml-3 truncate">
+            {headerSubtitle}
+          </p>
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  ), [kind, headerTitle, headerSubtitle]);
 
+  const renderedCarousel = useMemo(() => (
+    <div
+      ref={scrollerRef}
+      onPointerDown={pauseAutoplay}
+      onTouchStart={pauseAutoplay}
+      className="flex gap-3 md:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-1 px-[7.5%] md:px-[4%] lg:px-[3%] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+    >
+      {items.map((item, i) => {
+        const isActive = i === activeIndex;
 
-      <div
-        ref={scrollerRef}
-        onPointerDown={pauseAutoplay}
-        onTouchStart={pauseAutoplay}
-        className="flex gap-3 md:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-1 px-[7.5%] md:px-[4%] lg:px-[3%] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
-      >
-        {items.map((item, i) => {
-          const isActive = i === activeIndex;
-
-          // LIVRO — card dedicado bordô com capa em destaque
-          if (item.kind === 'livro') {
-            const l = item.data;
-            const meta = l.autor ? `${l.autor} · ${l.area ?? 'Clássicos'}` : (l.area ?? 'Clássico do Direito');
-            return (
-              <motion.button
-                key={item.id}
-                onClick={() => handleOpen(item)}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: Math.min(i * 0.04, 0.2) }}
-                className="snap-center shrink-0 w-[85%] md:w-[46%] lg:w-[31%] active:scale-[0.99] text-left"
-              >
-                <div
-                  className={`relative w-full h-[140px] overflow-hidden rounded-2xl transition-all duration-300 flex transform-gpu will-change-transform ${
-                    isActive ? 'opacity-100 scale-100 shadow-lg' : 'opacity-60 scale-[0.94]'
-                  }`}
-                  style={{
-                    background:
-                      'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--brand-burgundy-mid)) 60%, hsl(var(--brand-burgundy-deep)) 100%)',
-                  }}
-                >
-
-
-                  {/* SVGs jurídicos decorativos ao fundo */}
-                  <svg
-                    aria-hidden
-                    viewBox="0 0 200 200"
-                    className="pointer-events-none absolute -right-4 -bottom-6 w-[130px] h-[130px] text-white/10"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path d="M100 30 V170 M70 170 H130 M100 55 L55 95 M100 55 L145 95" strokeLinecap="round" />
-                    <path d="M35 95 Q55 135 75 95 Z" />
-                    <path d="M125 95 Q145 135 165 95 Z" />
-                  </svg>
-                  <svg
-                    aria-hidden
-                    viewBox="0 0 100 100"
-                    className="pointer-events-none absolute top-2 right-14 w-[54px] h-[54px] text-white/10"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                  >
-                    <path d="M18 78 L58 38" />
-                    <rect x="52" y="20" width="30" height="14" rx="2" transform="rotate(45 67 27)" />
-                    <path d="M10 88 H50" />
-                  </svg>
-
-                  {/* Capa com destaque */}
-                  <div className="relative h-full w-[104px] shrink-0 flex items-center justify-center px-2.5 z-[1]">
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <Library className="w-8 h-8 text-white/30" />
-                    </div>
-                    {l.imagem && (
-                      <img
-                        src={cdnImg(l.imagem, 240)}
-                        alt=""
-                        loading={i < 2 ? 'eager' : 'lazy'}
-                        fetchPriority={i < 2 ? 'high' : 'auto'}
-                        decoding="async"
-                        onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                        className="relative h-[118px] w-auto max-w-full object-contain rounded-md z-[2]"
-                        style={{
-                          boxShadow:
-                            '0 14px 26px -8px rgba(0,0,0,0.75), 0 6px 12px -4px rgba(0,0,0,0.55), 0 0 0 1px rgba(0,0,0,0.25)',
-                        }}
-                      />
-                    )}
-                  </div>
-
-                  {/* Texto à direita */}
-                  <div className="relative flex-1 min-w-0 flex flex-col justify-end px-3.5 pb-3 pt-3 z-[1]">
-                    <span className="self-start flex items-center gap-1 text-[9.5px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider text-white mb-1.5 bg-black/35 backdrop-blur-sm">
-                      <Library className="w-2.5 h-2.5" />
-                      Clássico
-                    </span>
-                    <div className="flex items-center gap-1.5 mb-1 text-[11px] text-white/85">
-                      <Clock className="w-3 h-3 shrink-0" />
-                      <span className="truncate">{meta}</span>
-                    </div>
-                    <p className="font-display text-white text-[14px] font-semibold leading-snug line-clamp-2 drop-shadow-sm">
-                      {l.livro ?? 'Clássico'}
-                    </p>
-                    <div className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-md">
-                      <ArrowUpRight className="w-3 h-3 text-white" strokeWidth={2.2} />
-                    </div>
-                  </div>
-
-                </div>
-              </motion.button>
-            );
-          }
-
-          const isB = item.kind === 'blog';
-          const c = isB ? TEMA_COLORS[(item.data as BlogPost).tema] : null;
-          const rawImg = isB
-            ? (item.data as BlogPost).imagem_url ?? ''
-            : (item.data as Noticia).imagem_url ?? '';
-          const img = isB ? cdnImg(rawImg, 640) : newsImg(rawImg, 640);
-          const title = isB ? (item.data as BlogPost).titulo : (item.data as Noticia).titulo;
-          const meta = isB
-            ? `${(item.data as BlogPost).tempo_leitura_min} min · ${(item.data as BlogPost).tema}`
-            : `${formatTime((item.data as Noticia).data_publicacao)} · Migalhas`;
-
+        // LIVRO — card dedicado bordô com capa em destaque
+        if (item.kind === 'livro') {
+          const l = item.data;
+          const meta = l.autor ? `${l.autor} · ${l.area ?? 'Clássicos'}` : (l.area ?? 'Clássico do Direito');
           return (
             <motion.button
               key={item.id}
@@ -394,62 +294,174 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
               transition={{ delay: Math.min(i * 0.04, 0.2) }}
               className="snap-center shrink-0 w-[85%] md:w-[46%] lg:w-[31%] active:scale-[0.99] text-left"
             >
-
               <div
-                className={`relative w-full h-[140px] overflow-hidden rounded-2xl transition-all duration-300 transform-gpu will-change-transform ${
+                className={`relative w-full h-[140px] overflow-hidden rounded-2xl transition-all duration-300 flex transform-gpu will-change-transform ${
                   isActive ? 'opacity-100 scale-100 shadow-lg' : 'opacity-60 scale-[0.94]'
                 }`}
-                style={isB && c ? { background: c.bg } : undefined}
+                style={{
+                  background:
+                    'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--brand-burgundy-mid)) 60%, hsl(var(--brand-burgundy-deep)) 100%)',
+                }}
               >
 
 
-                {/* Fallback Icon */}
-                <div className="absolute inset-0 flex items-center justify-center text-white/20">
-                   {isB ? <Film className="w-8 h-8" /> : <Newspaper className="w-8 h-8" />}
+                {/* SVGs jurídicos decorativos ao fundo */}
+                <svg
+                  aria-hidden
+                  viewBox="0 0 200 200"
+                  className="pointer-events-none absolute -right-4 -bottom-6 w-[130px] h-[130px] text-white/10"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M100 30 V170 M70 170 H130 M100 55 L55 95 M100 55 L145 95" strokeLinecap="round" />
+                  <path d="M35 95 Q55 135 75 95 Z" />
+                  <path d="M125 95 Q145 135 165 95 Z" />
+                </svg>
+                <svg
+                  aria-hidden
+                  viewBox="0 0 100 100"
+                  className="pointer-events-none absolute top-2 right-14 w-[54px] h-[54px] text-white/10"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                >
+                  <path d="M18 78 L58 38" />
+                  <rect x="52" y="20" width="30" height="14" rx="2" transform="rotate(45 67 27)" />
+                  <path d="M10 88 H50" />
+                </svg>
+
+                {/* Capa com destaque */}
+                <div className="relative h-full w-[104px] shrink-0 flex items-center justify-center px-2.5 z-[1]">
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Library className="w-8 h-8 text-white/30" />
+                  </div>
+                  {l.imagem && (
+                    <img
+                      src={cdnImg(l.imagem, 240)}
+                      alt=""
+                      loading={i < 2 ? 'eager' : 'lazy'}
+                      fetchPriority={i < 2 ? 'high' : 'auto'}
+                      decoding="async"
+                      onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                      className="relative h-[118px] w-auto max-w-full object-contain rounded-md z-[2]"
+                      style={{
+                        boxShadow:
+                          '0 14px 26px -8px rgba(0,0,0,0.75), 0 6px 12px -4px rgba(0,0,0,0.55), 0 0 0 1px rgba(0,0,0,0.25)',
+                      }}
+                    />
+                  )}
                 </div>
 
-                {img && (
-                  <img
-                    src={img}
-                    alt=""
-                    loading={i < 2 ? 'eager' : 'lazy'}
-                    fetchPriority={i < 2 ? 'high' : 'auto'}
-                    decoding="async"
-                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                    className={`absolute inset-0 w-full h-full object-cover ${
-                      isB ? 'object-top opacity-90' : 'brightness-110 contrast-105 saturate-110'
-                    }`}
-                  />
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
-
-                <div className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-md">
-                  <ArrowUpRight className="w-3.5 h-3.5 text-white" strokeWidth={2.2} />
-                </div>
-
-                {isB && c && (
-                  <span
-                    className="absolute top-2.5 left-2.5 text-[9.5px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider"
-                    style={{ background: c.chip, color: c.chipText }}
-                  >
-                    Blog · {(item.data as BlogPost).tema}
+                {/* Texto à direita */}
+                <div className="relative flex-1 min-w-0 flex flex-col justify-end px-3.5 pb-3 pt-3 z-[1]">
+                  <span className="self-start flex items-center gap-1 text-[9.5px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider text-white mb-1.5 bg-black/35 backdrop-blur-sm">
+                    <Library className="w-2.5 h-2.5" />
+                    Clássico
                   </span>
-                )}
-
-                <div className="absolute inset-0 flex flex-col justify-end px-4 pb-3 pt-4">
-                  <div className="flex items-center gap-2 mb-1 text-[11.5px] text-white/90">
-                    <Clock className="w-3 h-3" />
+                  <div className="flex items-center gap-1.5 mb-1 text-[11px] text-white/85">
+                    <Clock className="w-3 h-3 shrink-0" />
                     <span className="truncate">{meta}</span>
                   </div>
-                  <p className="font-display text-white text-[15px] font-normal leading-snug line-clamp-2 drop-shadow-sm">
-                    {title}
+                  <p className="font-display text-white text-[14px] font-semibold leading-snug line-clamp-2 drop-shadow-sm">
+                    {l.livro ?? 'Clássico'}
                   </p>
+                  <div className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-md">
+                    <ArrowUpRight className="w-3 h-3 text-white" strokeWidth={2.2} />
+                  </div>
                 </div>
+
               </div>
             </motion.button>
           );
-        })}
-      </div>
+        }
+
+        const isB = item.kind === 'blog';
+        const c = isB ? TEMA_COLORS[(item.data as BlogPost).tema] : null;
+        const rawImg = isB
+          ? (item.data as BlogPost).imagem_url ?? ''
+          : (item.data as Noticia).imagem_url ?? '';
+        const img = isB ? cdnImg(rawImg, 640) : newsImg(rawImg, 640);
+        const title = isB ? (item.data as BlogPost).titulo : (item.data as Noticia).titulo;
+        const meta = isB
+          ? `${(item.data as BlogPost).tempo_leitura_min} min · ${(item.data as BlogPost).tema}`
+          : `${formatTime((item.data as Noticia).data_publicacao)} · Migalhas`;
+
+        return (
+          <motion.button
+            key={item.id}
+            onClick={() => handleOpen(item)}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: Math.min(i * 0.04, 0.2) }}
+            className="snap-center shrink-0 w-[85%] md:w-[46%] lg:w-[31%] active:scale-[0.99] text-left"
+          >
+
+            <div
+              className={`relative w-full h-[140px] overflow-hidden rounded-2xl transition-all duration-300 transform-gpu will-change-transform ${
+                isActive ? 'opacity-100 scale-100 shadow-lg' : 'opacity-60 scale-[0.94]'
+              }`}
+              style={isB && c ? { background: c.bg } : undefined}
+            >
+
+
+              {/* Fallback Icon */}
+              <div className="absolute inset-0 flex items-center justify-center text-white/20">
+                 {isB ? <Film className="w-8 h-8" /> : <Newspaper className="w-8 h-8" />}
+              </div>
+
+              {img && (
+                <img
+                  src={img}
+                  alt=""
+                  loading={i < 2 ? 'eager' : 'lazy'}
+                  fetchPriority={i < 2 ? 'high' : 'auto'}
+                  decoding="async"
+                  onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                  className={`absolute inset-0 w-full h-full object-cover ${
+                    isB ? 'object-top opacity-90' : 'brightness-110 contrast-105 saturate-110'
+                  }`}
+                />
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
+
+              <div className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-md">
+                <ArrowUpRight className="w-3.5 h-3.5 text-white" strokeWidth={2.2} />
+              </div>
+
+              {isB && c && (
+                <span
+                  className="absolute top-2.5 left-2.5 text-[9.5px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider"
+                  style={{ background: c.chip, color: c.chipText }}
+                >
+                  Blog · {(item.data as BlogPost).tema}
+                </span>
+              )}
+
+              <div className="absolute inset-0 flex flex-col justify-end px-4 pb-3 pt-4">
+                <div className="flex items-center gap-2 mb-1 text-[11.5px] text-white/90">
+                  <Clock className="w-3 h-3" />
+                  <span className="truncate">{meta}</span>
+                </div>
+                <p className="font-display text-white text-[15px] font-normal leading-snug line-clamp-2 drop-shadow-sm">
+                  {title}
+                </p>
+              </div>
+            </div>
+          </motion.button>
+        );
+      })}
+    </div>
+  ), [items, activeIndex, handleOpen]);
+
+  return (
+    <div className="space-y-2.5">
+      {renderedTitle}
+      {renderedCarousel}
+
+
+
 
       {items.length > 1 && (
         <div className="flex items-center justify-center gap-1.5">
