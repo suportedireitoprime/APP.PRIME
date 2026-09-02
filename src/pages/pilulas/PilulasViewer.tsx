@@ -167,6 +167,8 @@ export default function PilulasViewer() {
                       zIndex: pilulas.length - i,
                       x: isFront ? x : 0,
                       rotate: isFront ? rotate : 0,
+                      willChange: 'transform, opacity',
+                      z: 0,
                     }}
                     animate={isFront ? controls : {
                       scale: 1 - offset * 0.05,
@@ -177,13 +179,6 @@ export default function PilulasViewer() {
                     transition={{ type: 'spring', stiffness: 300, damping: 25 }}
                     onClick={isFront ? handleFlip : undefined}
                     className="absolute inset-0 cursor-grab active:cursor-grabbing preserve-3d select-none"
-                    style={{
-                      willChange: 'transform, opacity',
-                      z: 0,
-                      zIndex: pilulas.length - i,
-                      x: isFront ? x : 0,
-                      rotate: isFront ? rotate : 0,
-                    }}
                   >
                     <motion.div
                       animate={{ rotateY: (isFront && flipped) ? 180 : 0 }}
