@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Clock, ArrowUpRight, Film, Star, Library } from 'lucide-react';
+import { Clock, ArrowUpRight, Film, Star, Library, Newspaper } from 'lucide-react';
 import { getNoticiasCache, prefetchNoticias, subscribeNoticias, type Noticia } from '@/services/noticiasService';
 import { newsImg, cdnImg } from '@/lib/cdnImg';
 import NoticiaViewerSheet from '@/components/vademecum/NoticiaViewerSheet';
@@ -401,6 +401,11 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
               >
 
 
+                {/* Fallback Icon */}
+                <div className="absolute inset-0 flex items-center justify-center text-white/20">
+                   {isB ? <Film className="w-8 h-8" /> : <Newspaper className="w-8 h-8" />}
+                </div>
+
                 {img && (
                   <img
                     src={img}
@@ -408,6 +413,7 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
                     loading={i < 2 ? 'eager' : 'lazy'}
                     fetchPriority={i < 2 ? 'high' : 'auto'}
                     decoding="async"
+                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
                     className={`absolute inset-0 w-full h-full object-cover ${
                       isB ? 'object-top opacity-90' : 'brightness-110 contrast-105 saturate-110'
                     }`}

@@ -148,18 +148,18 @@ export default function NoticiasJuridicasCarousel({ titleClassName = 'px-5' }: P
                   isActive ? 'opacity-100 scale-100 shadow-lg' : 'opacity-60 scale-[0.94]'
                 }`}
               >
-                {img ? (
+                <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
+                  <Newspaper className="w-8 h-8" />
+                </div>
+                {img && (
                   <img
                     src={img}
                     alt=""
                     loading={i < 2 ? 'eager' : 'lazy'}
                     decoding="async"
+                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
                     className="absolute inset-0 w-full h-full object-cover brightness-110 contrast-105 saturate-110"
                   />
-                ) : (
-                  <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
-                    <Newspaper className="w-8 h-8" />
-                  </div>
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
 
