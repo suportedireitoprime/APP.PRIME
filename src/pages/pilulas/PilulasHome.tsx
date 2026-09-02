@@ -156,7 +156,7 @@ export default function PilulasHome() {
                 bend={1.5}
                 textColor="#ffffff"
                 borderRadius={0.05}
-                scrollEase={0.02}
+                scrollEase={0.08}
                 onItemClick={handleItemClick}
               />
             </div>
@@ -194,7 +194,7 @@ export default function PilulasHome() {
                 bend={1.5}
                 textColor="#ffffff"
                 borderRadius={0.05}
-                scrollEase={0.02}
+                scrollEase={0.08}
                 onItemClick={handleMinistroClick}
               />
             </div>
@@ -227,7 +227,7 @@ export default function PilulasHome() {
                 bend={1.5}
                 textColor="#ffffff"
                 borderRadius={0.05}
-                scrollEase={0.02}
+                scrollEase={0.08}
                 onItemClick={handleSelectClassicos}
               />
             </div>
