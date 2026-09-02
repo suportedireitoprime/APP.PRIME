@@ -104,14 +104,7 @@ export default function PilulasHome() {
   const showCodigos = activeTab === 'Todos' || activeTab === 'Pílulas Rápidas' || activeTab === 'Códigos';
   const showMinistros = activeTab === 'Todos' || activeTab === 'Só Pílulas' || activeTab === 'Ministros';
 
-  if (Capacitor.isNativePlatform()) {
-    return (
-      <div className="min-h-screen bg-[#0D0D0D] flex flex-col items-center justify-center p-4">
-        <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-primary animate-spin mb-4" />
-        <h2 className="text-lg font-bold font-display text-white">Iniciando Ambiente Nativo...</h2>
-      </div>
-    );
-  }
+
 
   return (
     <div className="min-h-screen bg-[#0D0D0D] overflow-hidden">

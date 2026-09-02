@@ -299,14 +299,7 @@ const Noticias = () => {
   const dayList = useMemo(() => getDayList(centerDate, 5), [centerDate]);
   const availableDatesSet = useMemo(() => new Set(datasDisponiveis), [datasDisponiveis]);
 
-  if (Capacitor.isNativePlatform()) {
-    return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
-        <Loader2 className="w-8 h-8 animate-spin text-primary mb-4" />
-        <h2 className="text-lg font-bold font-display">Iniciando Ambiente Nativo...</h2>
-      </div>
-    );
-  }
+
 
   return (
     <div className="min-h-screen bg-background pb-20">

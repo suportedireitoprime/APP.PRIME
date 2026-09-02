@@ -225,14 +225,7 @@ export default function PilulasLeiSeca({ slug }: { slug: 'cp' | 'cf' | 'cc' }) {
     overscan: 5,
   });
 
-  if (Capacitor.isNativePlatform()) {
-    return (
-      <div className="min-h-screen bg-[#0D0D0D] flex flex-col items-center justify-center p-4">
-        <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-primary animate-spin mb-4" />
-        <h2 className="text-lg font-bold font-display text-white">Iniciando Ambiente Nativo...</h2>
-      </div>
-    );
-  }
+
 
   return (
     <div className="min-h-dvh bg-zinc-950 text-white pb-32 relative overflow-hidden">

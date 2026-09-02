@@ -132,8 +132,7 @@ function ForceUpdateWrapper() {
 
 const AnimatedRoutes = lazy(() => import("./AppRoutes"));
 
-// Importação do AppBootSplash
-const CustomSplashScreen = lazy(() => import("@/components/CustomSplashScreen").then(m => ({ default: m.CustomSplashScreen })));
+import { CustomSplashScreen } from "@/components/CustomSplashScreen";
 
 function AppBootSplash() {
   const [show, setShow] = useState(true);
@@ -213,7 +212,7 @@ const App = () => (
                     <PilulasPlayerProvider>
                       <VideoaulasPlayerProvider>
                         <ResumoLivroPlayerProvider>
-                          <Suspense fallback={<div className="min-h-screen bg-zinc-950" />}>
+                          <Suspense fallback={<div className="min-h-screen bg-[#0D0D0D]" />}>
                             <AnimatedRoutes />
                           </Suspense>
                           <LazyMediaPlayers />
