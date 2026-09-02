@@ -5,6 +5,7 @@ import { haptic } from '@/lib/nativeHaptics';
 import { directImg } from '@/lib/cdnImg';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
+import ShapeGrid from '@/components/ui/ShapeGrid';
 
 export default function PilulasLista() {
   const navigate = useNavigate();
@@ -56,14 +57,27 @@ export default function PilulasLista() {
   };
 
   return (
-    <div className="min-h-dvh bg-zinc-950 pb-20">
-      <PageHeader
-        title={title}
-        onBack={() => navigate(-1)}
-        rightAction={<div className="w-8" />}
-      />
-      
-      <div className="px-4 pt-6 space-y-6">
+    <div className="min-h-dvh bg-zinc-950 pb-20 relative overflow-hidden">
+      <div className="fixed inset-0 z-0">
+        <ShapeGrid 
+          speed={0.5} 
+          squareSize={40}
+          direction='diagonal'
+          borderColor='rgba(255, 255, 255, 0.05)'
+          hoverFillColor='rgba(255, 255, 255, 0.1)'
+          shape='square'
+          hoverTrailAmount={5}
+        />
+      </div>
+
+      <div className="relative z-10">
+        <PageHeader
+          title={title}
+          onBack={() => navigate(-1)}
+          rightAction={<div className="w-8" />}
+        />
+        
+        <div className="px-4 pt-6 space-y-6">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
             <Search className="h-5 w-5 text-zinc-500" />
@@ -118,8 +132,8 @@ export default function PilulasLista() {
             </div>
           )}
         </div>
+        </div>
       </div>
     </div>
   );
 }
-

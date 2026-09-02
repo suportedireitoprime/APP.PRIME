@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { directImg } from '@/lib/cdnImg';
+import ShapeGrid from '@/components/ui/ShapeGrid';
 
 function formatTime(timeInSeconds: number) {
   if (!timeInSeconds || isNaN(timeInSeconds)) return '0:00';
@@ -209,7 +210,20 @@ export default function PilulasLeiSeca({ slug }: { slug: 'cp' | 'cf' | 'cc' }) {
   };
 
   return (
-    <div className="min-h-dvh bg-zinc-950 text-white pb-32">
+    <div className="min-h-dvh bg-zinc-950 text-white pb-32 relative overflow-hidden">
+      <div className="fixed inset-0 z-0">
+        <ShapeGrid 
+          speed={0.5} 
+          squareSize={40}
+          direction='diagonal'
+          borderColor='rgba(255, 255, 255, 0.05)'
+          hoverFillColor='rgba(255, 255, 255, 0.1)'
+          shape='square'
+          hoverTrailAmount={5}
+        />
+      </div>
+
+      <div className="relative z-10">
       {/* Header Fixo */}
       <div className="sticky top-0 z-50 bg-zinc-950/90 backdrop-blur-xl border-b border-white/5 pt-[calc(1.25rem+var(--sai-top,env(safe-area-inset-top,0px)))] px-4 pb-4">
         <div className="flex items-center gap-4 mb-4">
@@ -281,6 +295,7 @@ export default function PilulasLeiSeca({ slug }: { slug: 'cp' | 'cf' | 'cc' }) {
             ))}
           </motion.div>
         )}
+      </div>
       </div>
     </div>
   );
