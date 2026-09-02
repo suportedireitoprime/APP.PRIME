@@ -132,7 +132,7 @@ export default function PilulasHome() {
         {/* Pílulas de Códigos */}
         {showCodigos && (
           <div className="space-y-4">
-            <div className="flex flex-col px-1 mb-4 gap-3">
+            <div className="flex items-start justify-between px-1 mb-4 gap-4">
               <div className="flex-1 min-w-0">
                 <h2 className="text-[22px] font-black text-white uppercase tracking-widest mb-1">Pílulas de Códigos</h2>
                 <p className="text-[13px] text-zinc-400 truncate">
@@ -140,16 +140,12 @@ export default function PilulasHome() {
                 </p>
               </div>
               
-              {/* Search Bar & List Button */}
-              <div className="flex items-center gap-2 w-full">
-                <div className="flex-1" />
-                <button
-                  onClick={() => { haptic.selection(); navigate('/pilulas/lista?tipo=codigos'); }}
-                  className="flex items-center justify-center h-[38px] px-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-semibold whitespace-nowrap transition-all active:scale-[0.98]"
-                >
-                  Ver em lista
-                </button>
-              </div>
+              <button
+                onClick={() => { haptic.selection(); navigate('/pilulas/lista?tipo=codigos'); }}
+                className="shrink-0 flex items-center justify-center h-[38px] px-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-semibold whitespace-nowrap transition-all active:scale-[0.98]"
+              >
+                Ver em lista
+              </button>
             </div>
 
             <div style={{ height: '350px', position: 'relative' }} className="-mx-4">
@@ -178,7 +174,7 @@ export default function PilulasHome() {
         {/* Pílulas dos Ministros */}
         {showMinistros && (
           <div className="space-y-4 mb-8">
-            <div className="flex flex-col px-1 mb-4 gap-3">
+            <div className="flex items-start justify-between px-1 mb-4 gap-4">
               <div className="flex-1 min-w-0">
                 <h2 className="text-[22px] font-black text-white uppercase tracking-widest mb-1">Pílulas dos Ministros do STF</h2>
                 <p className="text-[13px] text-zinc-400 truncate">
@@ -186,16 +182,12 @@ export default function PilulasHome() {
                 </p>
               </div>
 
-              {/* Search Bar & List Button */}
-              <div className="flex items-center gap-2 w-full">
-                <div className="flex-1" />
-                <button
-                  onClick={() => { haptic.selection(); navigate('/pilulas/lista?tipo=ministros'); }}
-                  className="flex items-center justify-center h-[38px] px-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-semibold whitespace-nowrap transition-all active:scale-[0.98]"
-                >
-                  Ver em lista
-                </button>
-              </div>
+              <button
+                onClick={() => { haptic.selection(); navigate('/pilulas/lista?tipo=ministros'); }}
+                className="shrink-0 flex items-center justify-center h-[38px] px-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-semibold whitespace-nowrap transition-all active:scale-[0.98]"
+              >
+                Ver em lista
+              </button>
             </div>
 
             <div style={{ height: '350px', position: 'relative' }} className="-mx-4">
@@ -220,7 +212,7 @@ export default function PilulasHome() {
               <div className="flex-1 h-[1px] bg-white/10" />
             </div>
 
-            <div className="flex flex-col px-1 mb-4 gap-3">
+            <div className="flex items-start justify-between px-1 mb-4 gap-4">
               <div className="flex-1 min-w-0">
                 <h2 className="text-[22px] font-black text-white uppercase tracking-widest mb-1">Clássicos do Direito</h2>
                 <p className="text-[13px] text-zinc-400 truncate">
@@ -228,16 +220,12 @@ export default function PilulasHome() {
                 </p>
               </div>
 
-              {/* List Button */}
-              <div className="flex items-center gap-2 w-full">
-                <div className="flex-1" />
-                <button
-                  onClick={handleSelectClassicos}
-                  className="flex items-center justify-center h-[38px] px-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-semibold whitespace-nowrap transition-all active:scale-[0.98]"
-                >
-                  Ver em lista
-                </button>
-              </div>
+              <button
+                onClick={handleSelectClassicos}
+                className="shrink-0 flex items-center justify-center h-[38px] px-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-semibold whitespace-nowrap transition-all active:scale-[0.98]"
+              >
+                Ver em lista
+              </button>
             </div>
 
             <div style={{ height: '350px', position: 'relative' }} className="-mx-4">
