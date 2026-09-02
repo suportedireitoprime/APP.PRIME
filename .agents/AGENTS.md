@@ -44,6 +44,7 @@
   - **Tablet:** Transição para grids de 2 colunas e painéis retráteis.
   - **Desktop Widescreen (`lg:`, `xl:`):** Estrutura de 2 a 3 colunas (`max-w-[1600px] mx-auto`), sidebars laterais fixas e **zero rodapé fixo no PC**.
 - **Navegação Desktop:** Suporte a atalhos de teclado (`Esc`, `Enter`, setas) e tooltips em botões de ação.
+- **Fundo Padrão (ShapeGrid):** O fundo "ShapeGrid" (grid animado) utilizado nas rotas de Pílulas deve ser adotado como o **padrão oficial para todo o aplicativo** sempre que for necessário definir um novo layout de fundo. Nunca remova-o das telas principais.
 
 ### 4. ⚡ Otimização de Imagens & Carregamento 0ms (`image-optimization`)
 - **Above-the-Fold Images:** Capas, pôsteres e banners principais DEVEM usar `loading="eager"`, `fetchPriority="high"` e `decoding="async"`.

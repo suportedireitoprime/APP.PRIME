@@ -5,6 +5,7 @@ import {pickAsset, assetUrl, srcOf } from '@/lib/assetUrl';
 import { Menu as MenuIcon, Search, Scale, BookOpen, Clock, Eye, Quote, Lightbulb, ScrollText, History, ChevronLeft, User as UserIcon, Mic, Radar, MapPin, Monitor, Library, Bell, GraduationCap, Target, CloudOff, ListChecks, Camera } from 'lucide-react';
 import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
 import { VintageClockIcon } from '@/components/icons/VintageClockIcon';
+import ShapeGrid from '@/components/ui/ShapeGrid';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfileSummary } from '@/hooks/useProfileSummary';
@@ -170,21 +171,30 @@ const HomeHeaderHero = ({ onSearchOpenChange }: { onSearchOpenChange?: (open: bo
       <div
         className="relative overflow-hidden rounded-b-[36px] border-b border-white/10 shadow-2xl shadow-black/60 pt-[var(--sai-top)]"
         style={{
-          // Força layer de composição próprio no Android WebView. Sem isso, ao
-          // sair/voltar da viewport o WebView descarta o raster do conteúdo
-          // filho (profile + logo + Vade Mecum) e só o fundo permanece
-          // até um novo repaint. transform:translateZ(0) + isolation:isolate
-          // dá stacking-context + camada GPU dedicada, evitando o bug.
           transform: 'translateZ(0)',
           isolation: 'isolate',
           contain: 'paint',
         }}
       >
         <div className="absolute inset-0 bg-hero-panel -z-10" />
+        
+        {/* ShapeGrid Padronizado (Fundo de Pílulas) */}
+        <div className="absolute inset-0 z-[-9] opacity-40 mix-blend-overlay">
+          <ShapeGrid 
+            speed={0.5} 
+            squareSize={40}
+            direction='diagonal'
+            borderColor='rgba(255, 255, 255, 0.2)'
+            hoverFillColor='rgba(255, 255, 255, 0.1)'
+            shape='square'
+            hoverTrailAmount={5}
+          />
+        </div>
+
         {/* Overlays radiais idênticos ao painel do DIREITO PRIME */}
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,180,180,0.22),transparent_60%)]" />
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.5),transparent_65%)]" />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,180,180,0.22),transparent_60%)] z-[-8]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.5),transparent_65%)] z-[-8]" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent z-[-8]" />
 
         {/* Decorative legal motifs isolados */}
         <HeroMotifs />
