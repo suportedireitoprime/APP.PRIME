@@ -255,17 +255,17 @@ export default function ResumosJuridicosSubtemas() {
                           <div className="flex gap-2 p-3">
                             <button
                               onClick={() => { haptic.selection(); openReader(r, "conceitos"); }}
-                              className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3.5 rounded-xl bg-secondary/80 border border-border/50 text-foreground shadow-sm hover:border-sky-500/50 transition-all active:scale-95"
+                              className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3.5 rounded-xl bg-secondary/80 border border-border/50 text-foreground shadow-sm hover:border-red-500/50 transition-all active:scale-95"
                             >
-                              <FileText className="w-5 h-5 text-sky-400" />
-                              <span className="font-bold text-[10px] uppercase tracking-wider text-sky-400">Conceitos</span>
+                              <FileText className="w-5 h-5 text-red-400" />
+                              <span className="font-bold text-[10px] uppercase tracking-wider text-red-400">Conceitos</span>
                             </button>
                             <button
                               onClick={() => { haptic.selection(); openReader(r, "cornell"); }}
-                              className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3.5 rounded-xl bg-secondary/80 border border-border/50 text-foreground shadow-sm hover:border-emerald-500/50 transition-all active:scale-95"
+                              className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3.5 rounded-xl bg-secondary/80 border border-border/50 text-foreground shadow-sm hover:border-sky-500/50 transition-all active:scale-95"
                             >
-                              <NotebookText className="w-5 h-5 text-emerald-400" />
-                              <span className="font-bold text-[10px] uppercase tracking-wider text-emerald-400">Cornell</span>
+                              <NotebookText className="w-5 h-5 text-sky-400" />
+                              <span className="font-bold text-[10px] uppercase tracking-wider text-sky-400">Cornell</span>
                             </button>
                             <button
                               onClick={() => { haptic.selection(); openReader(r, "feynman"); }}
