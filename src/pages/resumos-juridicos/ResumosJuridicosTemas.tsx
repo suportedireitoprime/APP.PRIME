@@ -1,447 +1,197 @@
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { motion, AnimatePresence } from "framer-motion";
-import {
- Loader2,
- Search,
- ChevronRight,
- Heart,
- FileText,
- NotebookText,
- BookOpen
-} from "lucide-react";
+import { Loader2, Search, ChevronRight } from "lucide-react";
 import { PageHeader } from "@/components/vademecum/PageHeader";
 import { Input } from "@/components/ui/input";
-import ResumoJuridicoReaderSheet, { ResumoRow } from "@/components/resumos-juridicos/ResumoJuridicoReaderSheet";
-import { resumosLocal } from "@/lib/resumosLocal";
+import { haptic } from "@/lib/nativeHaptics";
 
 type Row = { tema: string; ordem_tema: number | null; total: number };
 
 // ---- Cache em memória entre navegações ----
 const temasCache = new Map<string, Row[]>();
-const subtemasCache = new Map<string, ResumoRow[]>();
-
-/** Vermelho oficial do app */
-const RED = "#ef4444";
-
-type Ordem = "crono" | "alpha" | "fav";
-type Metodo = "conceitos" | "cornell" | "feynman";
 
 export default function ResumosJuridicosTemas() {
- const { area } = useParams<{ area: string }>();
- const decodedArea = decodeURIComponent(area || "");
- const navigate = useNavigate();
- 
- const [rows, setRows] = useState<Row[]>(() => temasCache.get(decodedArea) || []);
- const [loading, setLoading] = useState(!temasCache.has(decodedArea));
- const [q, setQ] = useState("");
+  const { area } = useParams<{ area: string }>();
+  const decodedArea = decodeURIComponent(area || "");
+  const navigate = useNavigate();
+  
+  const [rows, setRows] = useState<Row[]>(() => temasCache.get(decodedArea) || []);
+  const [loading, setLoading] = useState(!temasCache.has(decodedArea));
+  const [q, setQ] = useState("");
 
- const [activeTema, setActiveTema] = useState<string | null>(null);
- const [subtemas, setSubtemas] = useState<ResumoRow[]>([]);
- const [subLoading, setSubLoading] = useState(false);
- const [selected, setSelected] = useState<ResumoRow | null>(null);
- const [selectedMetodo, setSelectedMetodo] = useState<Metodo>("conceitos");
- const [expandedId, setExpandedId] = useState<string | null>(null);
- const [ordem, setOrdem] = useState<Ordem>("crono");
- const [favs, setFavs] = useState<string[]>(() => resumosLocal.favoritos().map((f) => f.id));
+  // 1. Carregar Temas
+  useEffect(() => {
+    let cancelled = false;
+    const cacheKey = `resumos_temas_cache:${decodedArea}`;
 
- const chipsRef = useRef<HTMLDivElement>(null);
+    if (!temasCache.has(decodedArea)) {
+      try {
+        const stored = localStorage.getItem(cacheKey);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            temasCache.set(decodedArea, parsed);
+            setRows(parsed);
+            setLoading(false);
+          }
+        }
+      } catch {}
+    } else {
+      setRows(temasCache.get(decodedArea)!);
+      setLoading(false);
+    }
 
- const refreshFavs = () => setFavs(resumosLocal.favoritos().map((f) => f.id));
+    (async () => {
+      if (!temasCache.has(decodedArea)) setLoading(true);
+      let list: Row[] = [];
 
- // 1. Carregar Temas
- useEffect(() => {
- let cancelled = false;
- const cacheKey = `resumos_temas_cache:${decodedArea}`;
+      try {
+        const { data: rpcData, error: rpcErr } = await (supabase as any).rpc("get_resumos_temas_counts", {
+          p_area: decodedArea,
+        });
+        if (!rpcErr && Array.isArray(rpcData) && rpcData.length > 0) {
+          list = rpcData.map((r: any) => ({
+            tema: r.tema,
+            ordem_tema: r.ordem_tema != null ? Number(r.ordem_tema) : null,
+            total: Number(r.total) || 0,
+          }));
+        }
+      } catch {}
 
- if (!temasCache.has(decodedArea)) {
- try {
- const stored = localStorage.getItem(cacheKey);
- if (stored) {
- const parsed = JSON.parse(stored);
- if (Array.isArray(parsed) && parsed.length > 0) {
- temasCache.set(decodedArea, parsed);
- setRows(parsed);
- if (!activeTema) setActiveTema(parsed[0]?.tema || null);
- setLoading(false);
- }
- }
- } catch {}
- } else {
- const cached = temasCache.get(decodedArea)!;
- setRows(cached);
- if (!activeTema) setActiveTema(cached[0]?.tema || null);
- setLoading(false);
- }
+      if (list.length === 0) {
+        const map = new Map<string, { ordem: number | null; total: number }>();
+        let from = 0;
+        const step = 1000;
+        let gotAny = false;
+        while (true) {
+          const { data, error } = await (supabase as any)
+            .from("resumos_juridicos")
+            .select("tema, ordem_tema")
+            .eq("area", decodedArea)
+            .range(from, from + step - 1);
+          if (error) break;
+          if (!data || data.length === 0) break;
+          gotAny = true;
+          for (const r of data as { tema: string; ordem_tema: number | null }[]) {
+            const prev = map.get(r.tema);
+            map.set(r.tema, {
+              ordem: prev?.ordem ?? r.ordem_tema,
+              total: (prev?.total || 0) + 1,
+            });
+          }
+          if (data.length < step) break;
+          from += step;
+        }
+        if (!gotAny) {
+          const { bundle } = await import("@/services/offlineBundle");
+          const rows = await bundle.resumos<{ area: string; tema: string; ordem_tema: number | null }>();
+          for (const r of rows) {
+            if (r.area !== decodedArea) continue;
+            const prev = map.get(r.tema);
+            map.set(r.tema, {
+              ordem: prev?.ordem ?? r.ordem_tema,
+              total: (prev?.total || 0) + 1,
+            });
+          }
+        }
+        list = Array.from(map.entries())
+          .map(([tema, v]) => ({ tema, ordem_tema: v.ordem, total: v.total }))
+          .sort((a, b) => {
+            if (a.ordem_tema != null && b.ordem_tema != null) return a.ordem_tema - b.ordem_tema;
+            if (a.ordem_tema != null) return -1;
+            if (b.ordem_tema != null) return 1;
+            return a.tema.localeCompare(b.tema);
+          });
+      }
 
- (async () => {
- if (!temasCache.has(decodedArea)) setLoading(true);
- let list: Row[] = [];
+      if (cancelled) return;
+      if (list.length > 0) {
+        temasCache.set(decodedArea, list);
+        setRows(list);
+        try {
+          localStorage.setItem(cacheKey, JSON.stringify(list));
+        } catch {}
+      }
+      setLoading(false);
+    })();
 
- try {
- const { data: rpcData, error: rpcErr } = await (supabase as any).rpc("get_resumos_temas_counts", {
- p_area: decodedArea,
- });
- if (!rpcErr && Array.isArray(rpcData) && rpcData.length > 0) {
- list = rpcData.map((r: any) => ({
- tema: r.tema,
- ordem_tema: r.ordem_tema != null ? Number(r.ordem_tema) : null,
- total: Number(r.total) || 0,
- }));
- }
- } catch {}
+    return () => { cancelled = true; };
+  }, [decodedArea]);
 
- if (list.length === 0) {
- const map = new Map<string, { ordem: number | null; total: number }>();
- let from = 0;
- const step = 1000;
- let gotAny = false;
- while (true) {
- const { data, error } = await (supabase as any)
- .from("resumos_juridicos")
- .select("tema, ordem_tema")
- .eq("area", decodedArea)
- .range(from, from + step - 1);
- if (error) break;
- if (!data || data.length === 0) break;
- gotAny = true;
- for (const r of data as { tema: string; ordem_tema: number | null }[]) {
- const prev = map.get(r.tema);
- map.set(r.tema, {
- ordem: prev?.ordem ?? r.ordem_tema,
- total: (prev?.total || 0) + 1,
- });
- }
- if (data.length < step) break;
- from += step;
- }
- if (!gotAny) {
- const { bundle } = await import("@/services/offlineBundle");
- const rows = await bundle.resumos<{ area: string; tema: string; ordem_tema: number | null }>();
- for (const r of rows) {
- if (r.area !== decodedArea) continue;
- const prev = map.get(r.tema);
- map.set(r.tema, {
- ordem: prev?.ordem ?? r.ordem_tema,
- total: (prev?.total || 0) + 1,
- });
- }
- }
- list = Array.from(map.entries())
- .map(([tema, v]) => ({ tema, ordem_tema: v.ordem, total: v.total }))
- .sort((a, b) => {
- if (a.ordem_tema != null && b.ordem_tema != null) return a.ordem_tema - b.ordem_tema;
- if (a.ordem_tema != null) return -1;
- if (b.ordem_tema != null) return 1;
- return a.tema.localeCompare(b.tema);
- });
- }
+  const filteredTemas = useMemo(() => {
+    if (!q) return rows;
+    const t = q.toLowerCase();
+    return rows.filter(r => r.tema.toLowerCase().includes(t));
+  }, [rows, q]);
 
- if (cancelled) return;
- if (list.length > 0) {
- temasCache.set(decodedArea, list);
- setRows(list);
- if (!activeTema) setActiveTema(list[0]?.tema || null);
- try {
- localStorage.setItem(cacheKey, JSON.stringify(list));
- } catch {}
- }
- setLoading(false);
- })();
+  return (
+    <div className="min-h-dvh bg-background pb-20">
+      <div className="sticky top-0 z-10 bg-background/95 border-b border-border shadow-sm pb-3">
+        <PageHeader
+          title={decodedArea.replace(/^DIREITO\s+(DO\s+|DA\s+|DE\s+)?/i, '')}
+          subtitle="Área"
+          onBack={() => navigate("/resumos-juridicos")}
+          className="border-b-0 pb-1"
+        />
+        
+        <div className="max-w-5xl mx-auto px-4 mt-2">
+          <div className="relative">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <Input 
+              value={q} 
+              onChange={(e) => setQ(e.target.value)} 
+              placeholder={`Pesquisar matéria de ${decodedArea.replace(/^DIREITO\s+(DO\s+|DA\s+|DE\s+)?/i, '')}...`}
+              className="pl-9 bg-secondary/50 border-transparent focus:border-primary/50" 
+            />
+          </div>
+        </div>
+      </div>
 
- return () => { cancelled = true; };
- }, [decodedArea]);
-
- // 2. Carregar Subtemas quando o Tema Ativo muda
- useEffect(() => {
- if (!activeTema) return;
- let cancelled = false;
-
- const loadSubtemas = async () => {
- setQ(""); // reseta a busca ao trocar de tema
- setOrdem("crono"); // reseta a ordenação
- setExpandedId(null); // reseta o accordion
- const key = `${decodedArea}::${activeTema}`;
- if (subtemasCache.has(key)) {
- setSubtemas(subtemasCache.get(key)!);
- setSubLoading(false);
- return;
- }
- setSubLoading(true);
- setSubtemas([]);
- const { data } = await (supabase as any)
- .from("resumos_juridicos")
- .select("id, area, tema, subtema, ordem_subtema, markdown, exemplos, termos")
- .eq("area", decodedArea)
- .eq("tema", activeTema)
- .order("ordem_subtema", { ascending: true, nullsFirst: false })
- .order("subtema", { ascending: true })
- .limit(5000);
- let list = (data || []) as ResumoRow[];
- if (list.length === 0) {
- const { bundle } = await import("@/services/offlineBundle");
- const all = await bundle.resumos<ResumoRow>();
- list = all
- .filter((r) => r.area === decodedArea && r.tema === activeTema)
- .sort((a, b) => (a.ordem_subtema ?? 9999) - (b.ordem_subtema ?? 9999));
- }
- if (cancelled) return;
- subtemasCache.set(key, list);
- setSubtemas(list);
- setSubLoading(false);
- };
-
- loadSubtemas();
- return () => { cancelled = true; };
- }, [decodedArea, activeTema]);
-
- // 3. Filtrar Subtemas (por busca, ordem e favoritos)
- const subtemasOrdenados = useMemo(() => {
- let result = subtemas;
- 
- // Busca por termo
- if (q.trim()) {
- const qLower = q.toLowerCase();
- result = result.filter(s => 
- (s.subtema || s.tema).toLowerCase().includes(qLower)
- );
- }
-
- // Ordenação e Favoritos
- if (ordem === "alpha") {
- result = [...result].sort((a, b) => (a.subtema || "").localeCompare(b.subtema || ""));
- } else if (ordem === "fav") {
- result = result.filter((s) => favs.includes(s.id));
- }
- 
- return result;
- }, [subtemas, ordem, favs, q]);
-
- // Rolar suavemente para o chip clicado
- const handleChipClick = (tema: string, index: number) => {
- setActiveTema(tema);
- if (chipsRef.current) {
- const chipElement = chipsRef.current.children[index] as HTMLElement;
- if (chipElement) {
- const containerWidth = chipsRef.current.offsetWidth;
- const scrollPos = chipElement.offsetLeft - containerWidth / 2 + chipElement.offsetWidth / 2;
- chipsRef.current.scrollTo({ left: scrollPos, behavior: 'smooth' });
- }
- }
- };
-
- const openReader = (r: ResumoRow, metodoId: Metodo) => {
- resumosLocal.registrarRecente({
- id: r.id,
- area: r.area,
- tema: r.tema,
- subtema: r.subtema,
- });
- setSelectedMetodo(metodoId);
- setSelected(r);
- };
-
- return (
- <div className="min-h-dvh bg-background pb-32">
- {/* HEADER FIXO E CHIPS (Glassmorphism) */}
- <div className="sticky top-0 z-10 bg-background/95 border-b border-border shadow-sm">
- <PageHeader
- title={decodedArea.replace(/^DIREITO\s+/i, '')}
- subtitle="Área"
- onBack={() => navigate("/resumos-juridicos")}
- className="border-b-0"
- />
-
- {/* Busca */}
- <div className="max-w-5xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 pb-3 mt-1">
- <div className="relative">
- <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
- <Input 
- value={q} 
- onChange={(e) => setQ(e.target.value)} 
- placeholder={activeTema ? `Pesquisar em ${activeTema}...` : "Pesquisar resumo..."} 
- className="pl-9 bg-secondary/50 border-transparent focus:border-primary/50" 
- />
- </div>
- </div>
-
- {/* Chips de Tema */}
- <div 
- ref={chipsRef}
- className="flex overflow-x-auto gap-2 px-4 pb-3 no-scrollbar max-w-5xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto scroll-smooth items-center"
- >
- {loading && rows.length === 0 ? (
- <div className="flex gap-2 w-full">
- {[1, 2, 3, 4].map(i => (
- <div key={i} className="h-9 w-24 bg-muted animate-pulse rounded-full shrink-0" />
- ))}
- </div>
- ) : (
- rows.map((r, i) => {
- const isActive = activeTema === r.tema;
- return (
- <button
- key={r.tema}
- onClick={() => handleChipClick(r.tema, i)}
- className={`
- flex items-center justify-center px-4 py-1.5 rounded-full text-[13px] font-semibold whitespace-nowrap transition-all select-none border shrink-0
- ${isActive 
- ? 'bg-[#ef4444] text-white border-[#ef4444] shadow-md shadow-red-900/20 scale-105 mx-1' 
- : 'bg-secondary/60 text-muted-foreground border-transparent hover:bg-secondary hover:text-foreground active:scale-95'}
- `}
- >
- {r.tema}
- {!isActive && <span className="ml-1.5 opacity-60 text-[10px] font-bold">({r.total})</span>}
- </button>
- );
- })
- )}
- </div>
- </div>
-
- {/* CONTEÚDO PRINCIPAL (Subtemas) */}
- <div className="max-w-5xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 pt-4">
- 
- {/* Lista de Cards */}
- {subLoading ? (
- <div className="flex items-center justify-center py-24 text-muted-foreground">
- <Loader2 className="w-6 h-6 animate-spin mr-2" /> Carregando resumos...
- </div>
- ) : subtemasOrdenados.length === 0 && !loading ? (
- <div className="text-center py-24 text-muted-foreground flex flex-col items-center">
- <FileText className="w-10 h-10 opacity-20 mb-3" />
- <p className="font-semibold text-lg">{ordem === "fav" ? "Nenhum favorito" : "Nenhum resumo encontrado"}</p>
- <p className="text-sm opacity-70">Tente buscar por outro termo ou trocar o tema.</p>
- </div>
- ) : (
- <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
- <AnimatePresence mode="popLayout">
- {subtemasOrdenados.map((r, i) => {
- const numero = String(
- ordem === "crono" ? i + 1 : subtemas.findIndex((s) => s.id === r.id) + 1
- ).padStart(2, "0");
- const isFav = favs.includes(r.id);
- const isExpanded = expandedId === r.id;
- 
- return (
- <motion.div
- layout
- key={r.id}
- initial={{ opacity: 0, scale: 0.95 }}
- animate={{ opacity: 1, scale: 1 }}
- exit={{ opacity: 0, scale: 0.95 }}
- transition={{ duration: 0.2 }}
- className={`flex flex-col rounded-2xl bg-card border hover:border-[#ef4444]/40 transition-all shadow-sm group relative overflow-hidden ${
- isExpanded ? 'border-[#ef4444]/40' : 'border-border'
- }`}
- >
- {/* Botão Principal (Abre o Accordion) */}
- <button
- onClick={() => setExpandedId(isExpanded ? null : r.id)}
- className="flex items-center gap-3 px-4 py-3 min-h-[84px] hover:bg-secondary/20 transition-all text-left w-full relative"
- >
- <div className={`absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-[#ef4444] to-[#7f1d1d] opacity-20 group-hover:opacity-100 transition-opacity ${isExpanded ? 'opacity-100' : ''}`} />
- 
- <span
- className="font-display font-bold text-[22px] shrink-0 w-8 tabular-nums opacity-80 group-hover:opacity-100 transition-opacity ml-1"
- style={{ color: RED }}
- >
- {numero}
- </span>
- 
- <div className="flex-1 min-w-0 pr-2">
- <h3 className="font-body font-semibold text-[15px] text-foreground leading-snug line-clamp-2">
- {r.subtema || r.tema}
- </h3>
- </div>
-
- <div className="flex flex-col items-end gap-2 shrink-0">
- {isFav ? (
- <Heart className="w-4 h-4" style={{ fill: RED, color: RED }} />
- ) : (
- <div className="w-4 h-4" />
- )}
- <ChevronRight className={`w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-transform duration-300 ${isExpanded ? 'rotate-90' : ''}`} />
- </div>
- </button>
-
- {/* Accordion de Opções */}
- <AnimatePresence>
- {isExpanded && (
- <motion.div
- initial={{ height: 0, opacity: 0 }}
- animate={{ height: "auto", opacity: 1 }}
- exit={{ height: 0, opacity: 0 }}
- className="border-t border-border/50 bg-secondary/10"
- >
- <div className="flex gap-2 p-3">
- <button
- onClick={() => openReader(r, "conceitos")}
- className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3.5 rounded-xl bg-secondary/80 border border-border/50 text-foreground shadow-sm hover:border-[#ef4444] transition-all active:scale-95"
- >
- <FileText className="w-5 h-5 text-[#ef4444]" />
- <span className="font-bold text-[10px] uppercase tracking-wider">Conceitos</span>
- </button>
- <button
- onClick={() => openReader(r, "cornell")}
- className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3.5 rounded-xl bg-secondary/80 border border-border/50 text-foreground shadow-sm hover:border-[#ef4444] transition-all active:scale-95"
- >
- <NotebookText className="w-5 h-5 text-[#ef4444]" />
- <span className="font-bold text-[10px] uppercase tracking-wider">Cornell</span>
- </button>
- <button
- onClick={() => openReader(r, "feynman")}
- className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3.5 rounded-xl bg-secondary/80 border border-border/50 text-foreground shadow-sm hover:border-[#ef4444] transition-all active:scale-95"
- >
- <BookOpen className="w-5 h-5 text-[#ef4444]" />
- <span className="font-bold text-[10px] uppercase tracking-wider">Feynman</span>
- </button>
- </div>
- </motion.div>
- )}
- </AnimatePresence>
-
- </motion.div>
- );
- })}
- </AnimatePresence>
- </div>
- )}
- </div>
-
- {/* MENU DE ORDENAÇÃO FIXO NO RODAPÉ */}
- {activeTema && !loading && subtemas.length > 0 && (
- <div className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 border-t border-border p-3 pb-[calc(1rem+var(--sai-bottom))] flex justify-center shadow-[0_-4px_24px_rgba(0,0,0,0.5)]">
- <div className="flex w-full max-w-sm bg-secondary/80 rounded-full p-1 gap-1">
- {([
- { id: "crono", label: "Cronológica" },
- { id: "alpha", label: "Alfabética" },
- { id: "fav", label: "Favoritos" },
- ] as { id: Ordem; label: string }[]).map((o) => {
- const ativo = ordem === o.id;
- return (
- <button
- key={o.id}
- onClick={() => setOrdem(o.id)}
- className={`flex-1 py-2 rounded-full text-[10px] sm:text-[11px] uppercase tracking-wider font-bold transition-all ${
- ativo ? 'bg-[#ef4444] text-white shadow-md scale-105' : 'text-muted-foreground hover:text-foreground active:scale-95'
- }`}
- >
- {o.label}
- </button>
- );
- })}
- </div>
- </div>
- )}
-
- <ResumoJuridicoReaderSheet
- resumo={selected}
- initialMetodo={selectedMetodo}
- onClose={() => setSelected(null)}
- onFavoritoChange={refreshFavs}
- />
- </div>
- );
+      <div className="max-w-5xl mx-auto px-4 pt-4">
+        {loading ? (
+          <div className="flex items-center justify-center py-24 text-muted-foreground">
+            <Loader2 className="w-6 h-6 animate-spin mr-2" /> Carregando matérias...
+          </div>
+        ) : filteredTemas.length === 0 ? (
+          <div className="text-center py-24 text-muted-foreground">
+            <p className="font-semibold text-lg">Nenhuma matéria encontrada</p>
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-white/10 bg-black/20 backdrop-blur-md divide-y divide-white/10 overflow-hidden shadow-xl">
+            {filteredTemas.map((r) => {
+              return (
+                <button
+                  key={r.tema}
+                  onClick={() => {
+                    haptic.selection();
+                    navigate(`/resumos-juridicos/${encodeURIComponent(decodedArea)}/${encodeURIComponent(r.tema)}`);
+                  }}
+                  className="w-full flex items-center gap-4 px-4 py-4 min-h-[96px] text-left hover:bg-white/5 active:bg-white/10 transition-colors"
+                >
+                  <div className="w-16 h-[88px] rounded-lg bg-white/5 border border-white/10 shrink-0 overflow-hidden shadow-md">
+                    <img 
+                      src="https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg" 
+                      alt="Capa" 
+                      className="w-full h-full object-cover" 
+                      loading="lazy" 
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-body text-[16px] font-bold text-white leading-snug line-clamp-2">
+                      {r.tema}
+                    </div>
+                    <div className="font-body text-[13px] text-zinc-400 truncate mt-1.5">
+                      {r.total} {r.total === 1 ? "resumo" : "resumos"} disponíveis
+                    </div>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-zinc-500 shrink-0" />
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }

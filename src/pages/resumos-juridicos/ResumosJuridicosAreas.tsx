@@ -79,7 +79,6 @@ export default function ResumosJuridicosAreas() {
   const [rows, setRows] = useState<AreaRow[]>(() => areasThemesCache || []);
   const [loading, setLoading] = useState(!areasThemesCache);
   const [q, setQ] = useState("");
-  const [activeTab, setActiveTab] = useState<string>("Todos");
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
@@ -171,18 +170,6 @@ export default function ResumosJuridicosAreas() {
     return rows.filter((r) => normalize(r.area).includes(t));
   }, [rows, q]);
 
-  const activeAreaRow = useMemo(() => {
-    if (activeTab === "Todos") return null;
-    return rows.find((r) => r.area === activeTab) || null;
-  }, [rows, activeTab]);
-
-  const filteredTemas = useMemo(() => {
-    if (!activeAreaRow) return [];
-    if (!q) return activeAreaRow.temas;
-    const t = normalize(q.trim());
-    return activeAreaRow.temas.filter((tema) => normalize(tema).includes(t));
-  }, [activeAreaRow, q]);
-
   return (
     <div className="min-h-dvh bg-[#0D0D0D] text-white overflow-x-hidden relative flex flex-col">
       <div className="fixed inset-0 z-0 pointer-events-none opacity-[0.15]">
@@ -192,121 +179,48 @@ export default function ResumosJuridicosAreas() {
       <div className="relative z-10 flex flex-col min-h-dvh">
         <ResumosHero q={q} setQ={setQ} />
 
-        <div className="px-4 py-3 overflow-x-auto no-scrollbar flex items-center gap-2">
-          <button
-            onClick={() => { haptic.selection(); setActiveTab("Todos"); }}
-            className={`px-5 h-9 rounded-full text-[13px] font-bold whitespace-nowrap transition-colors shadow-sm ${
-              activeTab === "Todos"
-                ? "bg-hero-panel text-white shadow-md shadow-[#E11D48]/30"
-                : "bg-white/5 border border-white/10 text-white hover:bg-white/10"
-            }`}
-          >
-            Todos
-          </button>
-          {rows.map((r) => {
-            const displayArea = r.area.replace(/^DIREITO\s+(DO\s+|DA\s+|DE\s+)?/i, "");
-            const isActive = activeTab === r.area;
-            return (
-              <button
-                key={r.area}
-                onClick={() => { haptic.selection(); setActiveTab(r.area); }}
-                className={`px-4 h-9 rounded-full text-[13px] font-bold whitespace-nowrap transition-colors shadow-sm ${
-                  isActive
-                    ? "bg-hero-panel text-white shadow-md shadow-[#E11D48]/30"
-                    : "bg-white/5 border border-white/10 text-white hover:bg-white/10"
-                }`}
-              >
-                {displayArea}
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="flex-1 overflow-y-auto px-4 pb-[calc(2rem+var(--sai-bottom))]">
+        <div className="flex-1 overflow-y-auto px-4 pb-[calc(2rem+var(--sai-bottom))] pt-4">
           {loading ? (
             <div className="flex items-center justify-center py-16 text-white/50">
               <Loader2 className="w-5 h-5 animate-spin mr-2" /> Carregando matérias...
             </div>
-          ) : activeTab === "Todos" ? (
-            filteredAreas.length === 0 ? (
-              <div className="text-center py-16 text-white/50 text-sm space-y-3">
-                <p>Nenhuma matéria encontrada para "{q}".</p>
-              </div>
-            ) : (
-              <div className="rounded-2xl border border-white/10 bg-black/20 backdrop-blur-md divide-y divide-white/10 overflow-hidden shadow-xl mt-1">
-                {filteredAreas.map((r, i) => {
-                  const displayArea = r.area.replace(/^DIREITO\s+(DO\s+|DA\s+|DE\s+)?/i, "");
-                  
-                  return (
-                    <button
-                      key={r.area}
-                      onClick={() => {
-                        haptic.selection();
-                        navigate(`/resumos-juridicos/${encodeURIComponent(r.area)}`);
-                      }}
-                      className="w-full flex items-center gap-4 px-4 py-4 min-h-[96px] text-left hover:bg-white/5 active:bg-white/10 transition-colors"
-                    >
-                      <div className="w-16 h-[88px] rounded-lg bg-white/5 border border-white/10 shrink-0 overflow-hidden shadow-md">
-                        <img 
-                          src="https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg" 
-                          alt="Capa" 
-                          className="w-full h-full object-cover" 
-                          loading="lazy" 
-                        />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="font-body text-[17px] font-bold text-white truncate">
-                          {displayArea}
-                        </div>
-                        <div className="font-body text-[13px] text-zinc-400 truncate mt-1">
-                          {r.total} {r.total === 1 ? "resumo" : "resumos"} disponíveis
-                        </div>
-                      </div>
-                      <ChevronRight className="w-5 h-5 text-zinc-500 shrink-0" />
-                    </button>
-                  );
-                })}
-              </div>
-            )
+          ) : filteredAreas.length === 0 ? (
+            <div className="text-center py-16 text-white/50 text-sm space-y-3">
+              <p>Nenhuma matéria encontrada para "{q}".</p>
+            </div>
           ) : (
-            filteredTemas.length === 0 ? (
-              <div className="text-center py-16 text-white/50 text-sm space-y-3">
-                <p>Nenhum resumo encontrado para "{q}".</p>
-              </div>
-            ) : (
-              <div className="rounded-2xl border border-white/10 bg-black/20 backdrop-blur-md divide-y divide-white/10 overflow-hidden shadow-xl mt-1">
-                {filteredTemas.map((tema) => {
-                  return (
-                    <button
-                      key={tema}
-                      onClick={() => {
-                        haptic.selection();
-                        navigate(`/resumos-juridicos/${encodeURIComponent(activeTab)}/${encodeURIComponent(tema)}`);
-                      }}
-                      className="w-full flex items-center gap-4 px-4 py-4 min-h-[96px] text-left hover:bg-white/5 active:bg-white/10 transition-colors"
+            <div className="rounded-2xl border border-white/10 bg-black/20 backdrop-blur-md divide-y divide-white/10 overflow-hidden shadow-xl">
+              {filteredAreas.map((r, i) => {
+                const displayArea = r.area.replace(/^DIREITO\s+(DO\s+|DA\s+|DE\s+)?/i, "");
+                const { icon: Icon, color } = styleForArea(r.area);
+                
+                return (
+                  <button
+                    key={r.area}
+                    onClick={() => {
+                      haptic.selection();
+                      navigate(`/resumos-juridicos/${encodeURIComponent(r.area)}`);
+                    }}
+                    className="w-full flex items-center gap-4 px-4 py-4 min-h-[76px] text-left hover:bg-white/5 active:bg-white/10 transition-colors"
+                  >
+                    <div 
+                      className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 shrink-0 flex items-center justify-center shadow-md"
                     >
-                      <div className="w-16 h-[88px] rounded-lg bg-white/5 border border-white/10 shrink-0 overflow-hidden shadow-md">
-                        <img 
-                          src="https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg" 
-                          alt="Capa" 
-                          className="w-full h-full object-cover" 
-                          loading="lazy" 
-                        />
+                      <Icon className="w-6 h-6" style={{ color }} strokeWidth={1.5} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-body text-[16px] font-bold text-white truncate">
+                        {displayArea}
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="font-body text-[15px] font-bold text-white line-clamp-2 leading-snug">
-                          {tema}
-                        </div>
-                        <div className="font-body text-[12px] text-[#E11D48] font-black mt-1.5 uppercase tracking-wide">
-                          LER RESUMO
-                        </div>
+                      <div className="font-body text-[13px] text-zinc-400 truncate mt-0.5">
+                        {r.total} {r.total === 1 ? "resumo" : "resumos"} disponíveis
                       </div>
-                      <ChevronRight className="w-5 h-5 text-zinc-500 shrink-0" />
-                    </button>
-                  );
-                })}
-              </div>
-            )
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-zinc-500 shrink-0" />
+                  </button>
+                );
+              })}
+            </div>
           )}
         </div>
       </div>
