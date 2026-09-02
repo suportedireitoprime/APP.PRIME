@@ -10,6 +10,15 @@ export function CustomSplashScreen({ onComplete }: { onComplete: () => void }) {
   const fallingLeaves = Array.from({ length: 12 }, (_, i) => i);
   const reduceMotion = useRef(false);
 
+  // Se for aplicativo nativo, ignoramos a splash web, pois a splash
+  // animada 100% nativa em Swift/Kotlin já assumiu essa responsabilidade.
+  if (typeof window !== 'undefined' && (window as any).Capacitor?.isNativePlatform()) {
+    useEffect(() => {
+      onComplete();
+    }, [onComplete]);
+    return null;
+  }
+
   useEffect(() => {
     reduceMotion.current = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 

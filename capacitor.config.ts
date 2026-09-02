@@ -48,7 +48,9 @@ const config: CapacitorConfig = {
       // Configuramos para não fechar sozinho. O hook useHideSplashScreen 
       // vai fechar o splash nativo assim que o React estiver montado,
       // prevenindo a tela preta entre o splash nativo e o CustomSplashScreen.
-      launchShowDuration: 3000,
+      // (Atualizado: Agora a animação é 100% nativa, então desabilitamos a splash
+      // padrão do Capacitor para não conflitar com a nossa View Injetada)
+      launchShowDuration: 0,
       launchFadeOutDuration: 300,
       launchAutoHide: false,
       backgroundColor: '#0D0D0D',
