@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Search, ChevronRight } from "lucide-react";
+import { Loader2, Search, ChevronRight, Mic } from "lucide-react";
 import { PageHeader } from "@/components/vademecum/PageHeader";
 import { Input } from "@/components/ui/input";
 import { haptic } from "@/lib/nativeHaptics";
 import { resumosLocal } from "@/lib/resumosLocal";
+import ShapeGrid from "@/components/ui/ShapeGrid";
+import { toast } from "@/hooks/use-toast";
 
 type Row = { tema: string; ordem_tema: number | null; total: number };
 
@@ -134,24 +136,35 @@ export default function ResumosJuridicosTemas() {
   }, [rows, q]);
 
   return (
-    <div className="min-h-dvh bg-background pb-20">
-      <div className="sticky top-0 z-10 bg-background/95 border-b border-border shadow-sm pb-3">
-        <PageHeader
-          title={decodedArea.replace(/^DIREITO\s+(DO\s+|DA\s+|DE\s+)?/i, '')}
-          subtitle="Área"
-          onBack={() => navigate("/resumos-juridicos")}
-          className="border-b-0 pb-1"
-        />
-        
-        <div className="max-w-5xl mx-auto px-4 mt-2">
-          <div className="relative">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+    <div className="min-h-dvh bg-[#0D0D0D] text-white pb-20 relative overflow-x-hidden flex flex-col">
+      <div className="fixed inset-0 z-0 pointer-events-none opacity-[0.15]">
+        <ShapeGrid />
+      </div>
+
+      <div className="relative z-10">
+        <div className="sticky top-0 z-10 bg-[#0D0D0D]/90 backdrop-blur-md border-b border-white/10 shadow-sm pb-3">
+          <PageHeader
+            title={decodedArea.replace(/^DIREITO\s+(DO\s+|DA\s+|DE\s+)?/i, '')}
+            subtitle="Área"
+            onBack={() => navigate("/resumos-juridicos")}
+            className="border-b-0 pb-1"
+          />
+          
+          <div className="max-w-5xl mx-auto px-4 mt-2">
+          <div className="relative flex items-center group">
+            <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-white/50 group-focus-within:text-primary transition-colors" />
             <Input 
               value={q} 
               onChange={(e) => setQ(e.target.value)} 
               placeholder={`Pesquisar matéria de ${decodedArea.replace(/^DIREITO\s+(DO\s+|DA\s+|DE\s+)?/i, '')}...`}
-              className="pl-9 bg-secondary/50 border-transparent focus:border-primary/50" 
+              className="pl-12 pr-12 h-14 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 focus:border-primary/50 text-[15px] font-medium text-white placeholder:text-white/40 shadow-sm transition-all" 
             />
+            <button
+              onClick={() => { haptic.selection(); toast({ title: 'Em breve: Pesquisa por Voz' }); }}
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/10 active:scale-95 transition-all text-white/70 hover:text-white"
+            >
+              <Mic className="w-5 h-5" />
+            </button>
           </div>
         </div>
       </div>
@@ -217,6 +230,7 @@ export default function ResumosJuridicosTemas() {
             })}
           </div>
         )}
+      </div>
       </div>
     </div>
   );
