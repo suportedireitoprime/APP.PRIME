@@ -125,8 +125,8 @@ export default function STFBiografias() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'vigente': return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
-      case 'aposentado': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+      case 'vigente': return 'bg-green-500/20 text-green-400 border-green-500/30';
+      case 'aposentado': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
       case 'falecido': return 'bg-zinc-500/20 text-zinc-400 border-zinc-500/30';
       default: return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
     }
