@@ -29,7 +29,7 @@ const recList = registerForSync(
     storageKey: REC_KEY,
     keyOf: (r) => r.id,
     atOf: (r) => Number(r.ts) || 0,
-    max: 60,
+    max: 500,
     notify,
   }),
 );

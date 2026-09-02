@@ -5,6 +5,7 @@ import { Loader2, Search, ChevronRight } from "lucide-react";
 import { PageHeader } from "@/components/vademecum/PageHeader";
 import { Input } from "@/components/ui/input";
 import { haptic } from "@/lib/nativeHaptics";
+import { resumosLocal } from "@/lib/resumosLocal";
 
 type Row = { tema: string; ordem_tema: number | null; total: number };
 
@@ -19,6 +20,13 @@ export default function ResumosJuridicosTemas() {
   const [rows, setRows] = useState<Row[]>(() => temasCache.get(decodedArea) || []);
   const [loading, setLoading] = useState(!temasCache.has(decodedArea));
   const [q, setQ] = useState("");
+  const [recentes, setRecentes] = useState(() => resumosLocal.recentes());
+
+  useEffect(() => {
+    const onEvt = () => setRecentes(resumosLocal.recentes());
+    window.addEventListener("resumos-local-change", onEvt);
+    return () => window.removeEventListener("resumos-local-change", onEvt);
+  }, []);
 
   // 1. Carregar Temas
   useEffect(() => {
@@ -181,9 +189,27 @@ export default function ResumosJuridicosTemas() {
                     <div className="font-body text-[16px] font-bold text-white leading-snug line-clamp-2">
                       {r.tema}
                     </div>
-                    <div className="font-body text-[13px] text-zinc-400 truncate mt-1.5">
-                      {r.total} {r.total === 1 ? "resumo" : "resumos"} disponíveis
-                    </div>
+                    {(() => {
+                      const lidosCount = recentes.filter(x => x.area === decodedArea && x.tema === r.tema).length;
+                      const pct = r.total > 0 ? Math.min(100, Math.round((lidosCount / r.total) * 100)) : 0;
+                      return (
+                        <div className="flex items-center gap-2 mt-1.5">
+                          <div className="font-body text-[13px] text-zinc-400 truncate">
+                            {r.total} resumos
+                          </div>
+                          {r.total > 0 && (
+                            <>
+                              <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                                <div className="h-full bg-gradient-to-r from-rose-500 to-red-500 rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
+                              </div>
+                              {pct > 0 && (
+                                <div className="text-[11px] font-bold text-rose-500 tabular-nums">{pct}%</div>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </div>
                   <ChevronRight className="w-5 h-5 text-zinc-500 shrink-0" />
                 </button>

@@ -156,6 +156,7 @@ export default function ResumosJuridicosSubtemas() {
                 ).padStart(2, "0");
                 const isFav = favs.includes(r.id);
                 const isExpanded = expandedId === r.id;
+                const isAnyExpanded = expandedId !== null;
                 
                 return (
                   <motion.div
@@ -165,8 +166,9 @@ export default function ResumosJuridicosSubtemas() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.2 }}
-                    className={`flex flex-col rounded-2xl bg-card border hover:border-[#ef4444]/40 transition-all shadow-sm group relative overflow-hidden ${
-                      isExpanded ? 'border-[#ef4444]/40' : 'border-border'
+                    className={`flex flex-col rounded-2xl bg-card border hover:border-[#ef4444]/40 transition-all duration-300 shadow-sm group relative overflow-hidden ${
+                      isExpanded ? 'border-[#ef4444]/40 scale-100 opacity-100 z-10' :
+                      isAnyExpanded ? 'border-border/50 scale-[0.98] opacity-30 blur-[0.5px]' : 'border-border scale-100 opacity-100'
                     }`}
                   >
                     <button
@@ -227,24 +229,24 @@ export default function ResumosJuridicosSubtemas() {
                           <div className="flex gap-2 p-3">
                             <button
                               onClick={() => { haptic.selection(); openReader(r, "conceitos"); }}
-                              className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3.5 rounded-xl bg-secondary/80 border border-border/50 text-foreground shadow-sm hover:border-[#ef4444] transition-all active:scale-95"
+                              className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3.5 rounded-xl bg-secondary/80 border border-border/50 text-foreground shadow-sm hover:border-sky-500/50 transition-all active:scale-95"
                             >
-                              <FileText className="w-5 h-5 text-[#ef4444]" />
-                              <span className="font-bold text-[10px] uppercase tracking-wider">Conceitos</span>
+                              <FileText className="w-5 h-5 text-sky-400" />
+                              <span className="font-bold text-[10px] uppercase tracking-wider text-sky-400">Conceitos</span>
                             </button>
                             <button
                               onClick={() => { haptic.selection(); openReader(r, "cornell"); }}
-                              className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3.5 rounded-xl bg-secondary/80 border border-border/50 text-foreground shadow-sm hover:border-[#ef4444] transition-all active:scale-95"
+                              className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3.5 rounded-xl bg-secondary/80 border border-border/50 text-foreground shadow-sm hover:border-emerald-500/50 transition-all active:scale-95"
                             >
-                              <NotebookText className="w-5 h-5 text-[#ef4444]" />
-                              <span className="font-bold text-[10px] uppercase tracking-wider">Cornell</span>
+                              <NotebookText className="w-5 h-5 text-emerald-400" />
+                              <span className="font-bold text-[10px] uppercase tracking-wider text-emerald-400">Cornell</span>
                             </button>
                             <button
                               onClick={() => { haptic.selection(); openReader(r, "feynman"); }}
-                              className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3.5 rounded-xl bg-secondary/80 border border-border/50 text-foreground shadow-sm hover:border-[#ef4444] transition-all active:scale-95"
+                              className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3.5 rounded-xl bg-secondary/80 border border-border/50 text-foreground shadow-sm hover:border-amber-500/50 transition-all active:scale-95"
                             >
-                              <BookOpen className="w-5 h-5 text-[#ef4444]" />
-                              <span className="font-bold text-[10px] uppercase tracking-wider">Feynman</span>
+                              <BookOpen className="w-5 h-5 text-amber-400" />
+                              <span className="font-bold text-[10px] uppercase tracking-wider text-amber-400">Feynman</span>
                             </button>
                           </div>
                         </motion.div>
