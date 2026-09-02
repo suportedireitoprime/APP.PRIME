@@ -35,18 +35,22 @@ public class NativeAudioPlugin: CAPPlugin, CAPBridgedPlugin {
     }
 
     @objc func prepare(_ call: CAPPluginCall) {
-        guard let introUrlStr = call.getString("introUrl"),
-              let mainUrlStr = call.getString("mainUrl"),
-              let introUrl = URL(string: introUrlStr),
+        let introUrlStr = call.getString("introUrl")
+        guard let mainUrlStr = call.getString("mainUrl"),
               let mainUrl = URL(string: mainUrlStr) else {
-            call.reject("Invalid URLs")
+            call.reject("Invalid Main URL")
             return
         }
 
-        let title = call.getString("title") ?? "Pílula"
+        let title = call.getString("title") ?? "Áudio"
         let author = call.getString("author") ?? "APP.PRIME"
 
-        introItem = AVPlayerItem(url: introUrl)
+        if let introUrlStr = introUrlStr, let introUrl = URL(string: introUrlStr) {
+            introItem = AVPlayerItem(url: introUrl)
+        } else {
+            introItem = nil
+        }
+        
         mainItem = AVPlayerItem(url: mainUrl)
 
         if queuePlayer == nil {
@@ -58,6 +62,8 @@ public class NativeAudioPlugin: CAPPlugin, CAPBridgedPlugin {
         if let intro = introItem, let main = mainItem {
             queuePlayer?.insert(intro, after: nil)
             queuePlayer?.insert(main, after: intro)
+        } else if let main = mainItem {
+            queuePlayer?.insert(main, after: nil)
         }
 
         setupNowPlaying(title: title, author: author)

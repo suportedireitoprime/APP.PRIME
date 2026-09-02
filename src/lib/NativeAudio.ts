@@ -6,7 +6,7 @@ export interface NativeAudioPlugin {
    * Na web, pode ser ignorado.
    */
   prepare(options: { 
-    introUrl: string; 
+    introUrl?: string; 
     mainUrl: string; 
     title: string; 
     author: string; 

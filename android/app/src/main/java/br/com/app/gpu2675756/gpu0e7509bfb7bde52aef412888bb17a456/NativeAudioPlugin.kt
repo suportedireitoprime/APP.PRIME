@@ -20,24 +20,31 @@ class NativeAudioPlugin : Plugin() {
         val introUrl = call.getString("introUrl")
         val mainUrl = call.getString("mainUrl")
 
-        if (introUrl == null || mainUrl == null) {
-            call.reject("Invalid URLs")
+        if (mainUrl == null) {
+            call.reject("Invalid Main URL")
             return
         }
 
         try {
             mediaPlayerIntro?.release()
+            mediaPlayerIntro = null
             mediaPlayerMain?.release()
+            mediaPlayerMain = null
 
-            mediaPlayerIntro = MediaPlayer().apply {
-                setAudioAttributes(
-                    AudioAttributes.Builder()
-                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                        .setUsage(AudioAttributes.USAGE_MEDIA)
-                        .build()
-                )
-                setDataSource(introUrl)
-                prepareAsync()
+            if (introUrl != null && introUrl.isNotBlank()) {
+                isIntroPlaying = true
+                mediaPlayerIntro = MediaPlayer().apply {
+                    setAudioAttributes(
+                        AudioAttributes.Builder()
+                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                            .setUsage(AudioAttributes.USAGE_MEDIA)
+                            .build()
+                    )
+                    setDataSource(introUrl)
+                    prepareAsync()
+                }
+            } else {
+                isIntroPlaying = false
             }
 
             mediaPlayerMain = MediaPlayer().apply {

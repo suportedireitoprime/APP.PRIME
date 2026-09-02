@@ -4,6 +4,10 @@ import { telaAcesa } from '@/lib/nativo/telaAcordada';
 import { fonteDeAudio } from '@/lib/nativo/audioOffline';
 import { toast } from 'sonner';
 import type { LivroNormalizado } from '@/lib/bibliotecaColecoes';
+import { Capacitor } from '@capacitor/core';
+import { NativeAudio } from '@/lib/NativeAudio';
+
+const isNative = Capacitor.isNativePlatform();
 
 interface ResumoLivroPlayerContextType {
   livroAtual: LivroNormalizado | null;
@@ -74,6 +78,17 @@ export const ResumoLivroPlayerProvider: React.FC<{ children: React.ReactNode }> 
       if (!el || !livro.audioResumoUrl) return;
 
       if (livroAtual?.id === livro.id) {
+        if (isNative) {
+          if (!tocando) {
+            NativeAudio.play();
+            setTocando(true);
+          } else {
+            NativeAudio.pause();
+            setTocando(false);
+          }
+          return;
+        }
+
         if (el.paused) {
           await el.play().catch(() => {});
           setTocando(true);
@@ -90,10 +105,21 @@ export const ResumoLivroPlayerProvider: React.FC<{ children: React.ReactNode }> 
 
       try {
         const src = await fonteDeAudio(audioIdOf(livro), livro.audioResumoUrl);
-        el.src = src;
-        el.playbackRate = velocidade;
-        await el.play();
-        setTocando(true);
+        if (isNative) {
+          await NativeAudio.prepare({
+            mainUrl: src,
+            title: `Resumo: ${livro.titulo}`,
+            author: livro.autor || livro.area || 'Direito Prime',
+            coverUrl: livro.capa || ''
+          });
+          NativeAudio.play();
+          setTocando(true);
+        } else {
+          el.src = src;
+          el.playbackRate = velocidade;
+          await el.play();
+          setTocando(true);
+        }
       } catch (err) {
         console.error('[ResumoLivroPlayer] Erro ao carregar/reproduzir áudio:', err);
         setTocando(false);
@@ -104,6 +130,16 @@ export const ResumoLivroPlayerProvider: React.FC<{ children: React.ReactNode }> 
   );
 
   const togglePlay = useCallback(() => {
+    if (isNative) {
+      if (tocando) {
+        NativeAudio.pause();
+        setTocando(false);
+      } else {
+        NativeAudio.play();
+        setTocando(true);
+      }
+      return;
+    }
     const el = audioRef.current;
     if (!el) return;
     if (el.paused) {
@@ -113,9 +149,14 @@ export const ResumoLivroPlayerProvider: React.FC<{ children: React.ReactNode }> 
       el.pause();
       setTocando(false);
     }
-  }, []);
+  }, [tocando]);
 
   const seek = useCallback((v: number) => {
+    if (isNative) {
+      NativeAudio.seek({ time: v });
+      setTempo(v);
+      return;
+    }
     const el = audioRef.current;
     if (el) {
       el.currentTime = v;
@@ -130,15 +171,19 @@ export const ResumoLivroPlayerProvider: React.FC<{ children: React.ReactNode }> 
   }, []);
 
   const fechar = useCallback(() => {
-    const el = audioRef.current;
-    if (el) {
-      el.pause();
-      el.src = '';
+    if (isNative) {
+      NativeAudio.stop();
+    } else {
+      const el = audioRef.current;
+      if (el) {
+        el.pause();
+        el.src = '';
+      }
+      clearMediaSession();
     }
     setTocando(false);
     setLivroAtual(null);
     setAberto(false);
-    clearMediaSession();
   }, []);
 
   useEffect(() => {
@@ -166,6 +211,25 @@ export const ResumoLivroPlayerProvider: React.FC<{ children: React.ReactNode }> 
       el.removeEventListener('pause', handlePause);
     };
   }, []);
+
+  // Polling for NativeAudio
+  useEffect(() => {
+    if (!isNative || !livroAtual) return;
+    const interval = setInterval(async () => {
+      try {
+        const p = await NativeAudio.getProgress();
+        setTempo(p.currentTime);
+        setDur(p.duration);
+        if (tocando !== p.isPlaying) {
+          setTocando(p.isPlaying);
+        }
+        if (p.duration > 0 && p.currentTime >= p.duration - 0.5) {
+            setTocando(false);
+        }
+      } catch (e) {}
+    }, 250);
+    return () => clearInterval(interval);
+  }, [isNative, livroAtual, tocando]);
 
   return (
     <Ctx.Provider
