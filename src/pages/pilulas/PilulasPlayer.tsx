@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, AlertCircle, List } from 'lucide-react';
 import { useResumoLivroPlayer } from '@/contexts/ResumoLivroPlayerContext';
 import { usePilulasPlayer } from '@/contexts/PilulasPlayerContext';
-import Threads from '@/components/ui/Threads';
+import ShapeGrid from '@/components/ui/ShapeGrid';
 import GrafoOverlay from '@/components/vademecum/GrafoOverlay';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { useGatedFeature } from '@/hooks/useGatedFeature';
@@ -124,16 +124,16 @@ export default function PilulasPlayer() {
         </div>
       )}
 
-      {/* Threads Animation */}
-      <div 
-         className={`absolute inset-0 z-0 transition-opacity duration-1000 ${isThisPlaying ? 'opacity-40' : 'opacity-0'}`} 
-         style={{ pointerEvents: 'none' }}
-      >
-        <Threads 
-           amplitude={1.2}
-           distance={0}
-           enableMouseInteraction={false}
-           color={[0.8, 0.6, 0.2]} // golden-ish primary color
+      {/* Background de Pílulas */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <ShapeGrid 
+          speed={0.5} 
+          squareSize={40}
+          direction='diagonal'
+          borderColor='rgba(255, 255, 255, 0.03)'
+          hoverFillColor='rgba(255, 255, 255, 0.05)'
+          shape='square'
+          hoverTrailAmount={5}
         />
       </div>
 

@@ -53,7 +53,7 @@ function PilulaItem({
         }
         navigate(`/pilulas/${livro.id}`);
       }}
-      className={`group relative flex items-center gap-4 p-4 rounded-2xl border text-left overflow-hidden transition-all ${
+      className={`w-full group relative flex items-center gap-4 p-4 rounded-2xl border text-left overflow-hidden transition-all ${
         temAudio
           ? 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'
           : 'bg-white/5 border-white/5 opacity-50 cursor-not-allowed grayscale-[0.5]'
