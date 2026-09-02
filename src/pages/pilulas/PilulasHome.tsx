@@ -17,6 +17,7 @@ export default function PilulasHome() {
   const galleryRef = useRef<any>(null);
   const ministrosGalleryRef = useRef<any>(null);
   const [searchCode, setSearchCode] = useState('');
+  const [searchMinistro, setSearchMinistro] = useState('');
   const [activeTab, setActiveTab] = useState<TabType>('Todos');
   const tabs: TabType[] = ['Todos', 'Pílulas Rápidas', 'Só Pílulas', 'Códigos', 'Ministros'];
   
@@ -81,6 +82,21 @@ export default function PilulasHome() {
     }
   };
 
+  const handleSearchMinistro = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const term = e.target.value;
+    setSearchMinistro(term);
+    
+    if (term.length >= 3) {
+      const index = ministrosPillsItems.findIndex(item => 
+        item.text.toLowerCase().includes(term.toLowerCase()) || 
+        item.fullName.toLowerCase().includes(term.toLowerCase())
+      );
+      if (index !== -1 && ministrosGalleryRef.current) {
+        ministrosGalleryRef.current.scrollToIndex(index);
+      }
+    }
+  };
+
   const showRapidas = activeTab === 'Todos' || activeTab === 'Pílulas Rápidas';
   const showSoPilulas = activeTab === 'Todos' || activeTab === 'Só Pílulas';
   const showCodigos = activeTab === 'Todos' || activeTab === 'Pílulas Rápidas' || activeTab === 'Códigos';
@@ -137,7 +153,7 @@ export default function PilulasHome() {
         {/* Pílulas de Códigos */}
         {showCodigos && (
           <div className="space-y-4">
-            <div className="flex items-start justify-between px-1 mb-4 gap-4">
+            <div className="flex flex-col px-1 mb-4 gap-3">
               <div className="flex-1 min-w-0">
                 <h2 className="text-[22px] font-black text-white uppercase tracking-widest mb-1">Pílulas de Códigos</h2>
                 <p className="text-[13px] text-zinc-400 truncate">
@@ -145,19 +161,27 @@ export default function PilulasHome() {
                 </p>
               </div>
               
-              {/* Search Bar */}
-              <div className="relative w-24 flex-shrink-0 mt-1">
-                <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
-                  <Search className="h-3 w-3 text-zinc-400" />
+              {/* Search Bar & List Button */}
+              <div className="flex items-center gap-2 w-full">
+                <div className="relative flex-1">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Search className="h-4 w-4 text-zinc-400" />
+                  </div>
+                  <input
+                    type="text"
+                    value={searchCode}
+                    onChange={handleSearch}
+                    placeholder="Ex: CC"
+                    maxLength={4}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl py-2 pl-9 pr-3 text-[13px] text-white placeholder:text-zinc-500 focus:outline-none focus:border-white/20 transition-all uppercase"
+                  />
                 </div>
-                <input
-                  type="text"
-                  value={searchCode}
-                  onChange={handleSearch}
-                  placeholder="Ex: CC"
-                  maxLength={4}
-                  className="w-full bg-zinc-900 border border-zinc-800 rounded-lg py-2 pl-7 pr-2 text-[11px] text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/20 transition-all uppercase"
-                />
+                <button
+                  onClick={() => { haptic.selection(); navigate('/pilulas/lista?tipo=codigos'); }}
+                  className="flex items-center justify-center h-[38px] px-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-semibold whitespace-nowrap transition-all active:scale-[0.98]"
+                >
+                  Ver em lista
+                </button>
               </div>
             </div>
 
@@ -178,12 +202,34 @@ export default function PilulasHome() {
         {/* Pílulas dos Ministros */}
         {showMinistros && (
           <div className="space-y-4 mt-8">
-            <div className="flex items-start justify-between px-1 mb-4 gap-4">
+            <div className="flex flex-col px-1 mb-4 gap-3">
               <div className="flex-1 min-w-0">
-                <h2 className="text-[22px] font-black text-white uppercase tracking-widest mb-1">Pílulas dos Ministros</h2>
+                <h2 className="text-[22px] font-black text-white uppercase tracking-widest mb-1">Pílulas dos Ministros do STF</h2>
                 <p className="text-[13px] text-zinc-400 truncate">
                   Principais posicionamentos e histórico dos Ministros do STF.
                 </p>
+              </div>
+
+              {/* Search Bar & List Button */}
+              <div className="flex items-center gap-2 w-full">
+                <div className="relative flex-1">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Search className="h-4 w-4 text-zinc-400" />
+                  </div>
+                  <input
+                    type="text"
+                    value={searchMinistro}
+                    onChange={handleSearchMinistro}
+                    placeholder="Buscar ministro..."
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl py-2 pl-9 pr-3 text-[13px] text-white placeholder:text-zinc-500 focus:outline-none focus:border-white/20 transition-all"
+                  />
+                </div>
+                <button
+                  onClick={() => { haptic.selection(); navigate('/pilulas/lista?tipo=ministros'); }}
+                  className="flex items-center justify-center h-[38px] px-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-semibold whitespace-nowrap transition-all active:scale-[0.98]"
+                >
+                  Ver em lista
+                </button>
               </div>
             </div>
 

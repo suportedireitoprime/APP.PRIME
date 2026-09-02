@@ -87,7 +87,8 @@ function ForceUpdateWrapper() {
 import Index from "./pages/Index.tsx";
 import PersistentHome from "./components/PersistentHome";
 import Auth from "./pages/Auth.tsx";
-import Landing from "./pages/Landing.tsx";
+import Landing from '@/pages/Landing';
+import PilulasLista from '@/pages/pilulas/PilulasLista';
 import SmartLink from "./pages/SmartLink.tsx";
 import ResetPassword from "./pages/ResetPassword.tsx";
 import Onboarding from "./pages/Onboarding.tsx";
@@ -730,6 +731,8 @@ function AnimatedRoutes() {
   // Sem usuário logado, a Home persistente não monta.
   // Renderiza a landing imediatamente na raiz para nunca deixar tela preta,
   // mesmo enquanto a autenticação ainda está resolvendo.
+
+
   const HomeGate = () => {
     if (!user) return <Landing />;
     // O PersistentHome já renderiza a Home para usuários logados.
@@ -826,6 +829,7 @@ function AnimatedRoutes() {
           <Route path="/ferramentas/plano-estudos" element={<ProtectedRoute><PageTransition><PlanoEstudos /></PageTransition></ProtectedRoute>} />
           <Route path="/admin/locais" element={<ProtectedRoute><PageTransition><AdminLocais /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas" element={<ProtectedRoute><PageTransition><PilulasHome /></PageTransition></ProtectedRoute>} />
+          <Route path="/pilulas/lista" element={<ProtectedRoute><PageTransition><PilulasLista /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas/deck/:deckId" element={<ProtectedRoute><PageTransition><PilulasViewer /></PageTransition></ProtectedRoute>} />
           <Route path="/tematica-juridica" element={<ProtectedRoute><PageTransition><TematicaJuridica /></PageTransition></ProtectedRoute>} />
           <Route path="/radar-360" element={<ProtectedRoute><PageTransition><Radar360 /></PageTransition></ProtectedRoute>} />
