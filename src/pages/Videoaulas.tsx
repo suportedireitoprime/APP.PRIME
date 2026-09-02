@@ -13,6 +13,7 @@ import { VideoaulasHero } from '@/components/videoaulas/home/VideoaulasHero';
 import { VideoaulasAtalhos } from '@/components/videoaulas/home/VideoaulasAtalhos';
 import { VideoaulasListaAreas } from '@/components/videoaulas/home/VideoaulasListaAreas';
 import { VideoaulasBuscaDrawer } from '@/components/videoaulas/home/VideoaulasBuscaDrawer';
+ import ShapeGrid from '@/components/ui/ShapeGrid';
 
 const Videoaulas = () => {
  const navigate = useNavigate();
@@ -40,7 +41,20 @@ const Videoaulas = () => {
  const horasAssistidas = Math.floor(state.data.totalConcluidas * 0.5);
 
  return (
- <div className="min-h-dvh bg-background pb-32 lg:pb-0 overflow-x-hidden w-full">
+ <div className="min-h-dvh bg-background pb-32 lg:pb-0 overflow-x-hidden w-full relative">
+ <div className="absolute inset-0 z-0 opacity-60">
+ <ShapeGrid 
+ speed={0.5} 
+ squareSize={40}
+ direction='diagonal'
+ borderColor='rgba(255, 255, 255, 0.05)'
+ hoverFillColor='rgba(255, 255, 255, 0.1)'
+ shape='square'
+ hoverTrailAmount={5}
+ />
+ </div>
+
+ <div className="relative z-10">
  <PageHeader title="Videoaulas" onBack={() => navigate('/')} />
 
  <div className="mx-auto w-full max-w-3xl pb-32 lg:max-w-[1400px] lg:px-10 lg:pt-6 2xl:max-w-[1600px]">
@@ -113,6 +127,7 @@ const Videoaulas = () => {
  onClose={() => state.setShowDesempenho(false)} 
  horasTotais={horasAssistidas} 
  />
+ </div>
  </div>
  );
 };
