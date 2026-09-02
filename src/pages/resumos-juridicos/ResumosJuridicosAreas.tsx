@@ -190,27 +190,9 @@ export default function ResumosJuridicosAreas() {
       </div>
 
       <div className="relative z-10 flex flex-col min-h-dvh">
-        <ResumosHero onBuscar={() => {
-          haptic.selection();
-          document.getElementById('search-areas')?.focus();
-        }} />
+        <ResumosHero q={q} setQ={setQ} />
 
-        <div className="px-4 py-4 space-y-4">
-          <div className="flex items-center gap-2">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <input
-                id="search-areas"
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                placeholder={activeTab === "Todos" ? "Buscar matéria..." : `Buscar em ${activeTab.replace(/^DIREITO\s+/i, "")}...`}
-                className="w-full h-10 pl-9 pr-4 rounded-xl bg-secondary/50 border border-border/50 text-sm focus:outline-none focus:border-[#38bdf8]/50 transition-colors"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="px-4 pb-4 overflow-x-auto no-scrollbar flex items-center gap-2 -mt-2">
+        <div className="px-4 py-3 overflow-x-auto no-scrollbar flex items-center gap-2">
           <button
             onClick={() => { haptic.selection(); setActiveTab("Todos"); }}
             className={`px-5 h-9 rounded-full text-[13px] font-bold whitespace-nowrap transition-colors shadow-sm ${
@@ -222,7 +204,7 @@ export default function ResumosJuridicosAreas() {
             Todos
           </button>
           {rows.map((r) => {
-            const displayArea = r.area.replace(/^DIREITO\s+/i, "");
+            const displayArea = r.area.replace(/^DIREITO\s+(DO\s+|DA\s+|DE\s+)?/i, "");
             const isActive = activeTab === r.area;
             return (
               <button
@@ -253,7 +235,7 @@ export default function ResumosJuridicosAreas() {
             ) : (
               <div className="rounded-2xl border border-white/10 bg-black/20 backdrop-blur-md divide-y divide-white/10 overflow-hidden shadow-xl mt-1">
                 {filteredAreas.map((r, i) => {
-                  const displayArea = r.area.replace(/^DIREITO\s+/i, "");
+                  const displayArea = r.area.replace(/^DIREITO\s+(DO\s+|DA\s+|DE\s+)?/i, "");
                   
                   return (
                     <button

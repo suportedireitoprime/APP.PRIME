@@ -76,10 +76,12 @@ const TypingHint = () => {
 };
 
 interface Props {
-  onBuscar: () => void;
+  onBuscar?: () => void;
+  q?: string;
+  setQ?: (val: string) => void;
 }
 
-const ResumosHero = ({ onBuscar }: Props) => {
+const ResumosHero = ({ onBuscar, q, setQ }: Props) => {
   const navigate = useNavigate();
   const { images: dbImages } = useHeroHomeImages();
 
@@ -161,20 +163,35 @@ const ResumosHero = ({ onBuscar }: Props) => {
         </div>
 
         {/* Search bar */}
-        <button
-          type="button"
-          onClick={onBuscar}
-          aria-label="Pesquisar resumos"
-          className="mt-2 relative w-full flex items-center h-16 pl-14 pr-[112px] rounded-2xl bg-black/45 backdrop-blur-md border border-primary/40 shadow-lg shadow-black/30 active:scale-[0.99] transition search-bar-shine"
-        >
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-primary shrink-0" strokeWidth={2.2} />
-          <span className="relative z-[2] font-body text-white/70 text-[15px] font-medium truncate text-left">
-            <TypingHint />
-          </span>
-          <div className="absolute right-1.5 top-1/2 -translate-y-1/2 h-12 px-5 rounded-xl bg-hero-panel text-white font-display text-[13px] font-bold tracking-wider flex items-center justify-center shadow-md shadow-black/30 active:scale-95 transition">
-            PESQUISAR
+        {setQ ? (
+          <div className="mt-2 relative w-full flex items-center h-16 pl-14 pr-[112px] rounded-2xl bg-black/45 backdrop-blur-md border border-primary/40 shadow-lg shadow-black/30 focus-within:border-primary/80 transition-colors search-bar-shine">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-primary shrink-0" strokeWidth={2.2} />
+            <input
+              value={q || ''}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Pesquise uma lei..."
+              className="w-full h-full bg-transparent text-white font-body text-[15px] font-medium outline-none placeholder:text-white/40"
+            />
+            <div className="absolute right-1.5 top-1/2 -translate-y-1/2 h-12 px-5 rounded-xl bg-hero-panel text-white font-display text-[13px] font-bold tracking-wider flex items-center justify-center shadow-md shadow-black/30">
+              PESQUISAR
+            </div>
           </div>
-        </button>
+        ) : (
+          <button
+            type="button"
+            onClick={onBuscar}
+            aria-label="Pesquisar resumos"
+            className="mt-2 relative w-full flex items-center h-16 pl-14 pr-[112px] rounded-2xl bg-black/45 backdrop-blur-md border border-primary/40 shadow-lg shadow-black/30 active:scale-[0.99] transition search-bar-shine"
+          >
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-primary shrink-0" strokeWidth={2.2} />
+            <span className="relative z-[2] font-body text-white/70 text-[15px] font-medium truncate text-left">
+              <TypingHint />
+            </span>
+            <div className="absolute right-1.5 top-1/2 -translate-y-1/2 h-12 px-5 rounded-xl bg-hero-panel text-white font-display text-[13px] font-bold tracking-wider flex items-center justify-center shadow-md shadow-black/30 active:scale-95 transition">
+              PESQUISAR
+            </div>
+          </button>
+        )}
       </div>
     </div>
   );
