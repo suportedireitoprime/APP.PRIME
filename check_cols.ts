@@ -1,0 +1,1 @@
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.0'; const supabase = createClient(Deno.env.get('VITE_SUPABASE_URL'), Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')); const { data } = await supabase.from('stf_ministros').select('*').limit(1); console.log(Object.keys(data[0]));

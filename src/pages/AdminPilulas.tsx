@@ -29,11 +29,20 @@ interface ArtigoCP {
   lei_nome?: string;
 }
 
+interface Ministro {
+  id: string;
+  nome: string;
+  nome_completo?: string;
+  foto_url?: string;
+  diversos?: any;
+}
+
 type SelectedItemType = 
   | { type: 'livro'; data: LivroComColecao }
-  | { type: 'artigo'; data: ArtigoCP };
+  | { type: 'artigo'; data: ArtigoCP }
+  | { type: 'ministro'; data: Ministro };
 
-type ScreenState = 'menu' | 'classicos' | 'rapidas' | 'cp' | 'cf' | 'cc';
+type ScreenState = 'menu' | 'classicos' | 'rapidas' | 'cp' | 'cf' | 'cc' | 'ministros';
 
 export default function AdminPilulas() {
   const navigate = useNavigate();
@@ -49,6 +58,9 @@ export default function AdminPilulas() {
   const [loadingCC, setLoadingCC] = useState(true);
   const [artigosCC, setArtigosCC] = useState<ArtigoCP[]>([]);
   
+  const [loadingMinistros, setLoadingMinistros] = useState(true);
+  const [ministros, setMinistros] = useState<Ministro[]>([]);
+  
   const [busca, setBusca] = useState('');
   const [uploadingId, setUploadingId] = useState<number | string | null>(null);
   const [transcribingId, setTranscribingId] = useState<number | string | null>(null);
@@ -63,7 +75,24 @@ export default function AdminPilulas() {
     carregarLei('cp');
     carregarLei('cf');
     carregarLei('cc');
+    carregarMinistros();
   }, []);
+
+  async function carregarMinistros() {
+    setLoadingMinistros(true);
+    try {
+      const { data, error } = await supabase
+        .from('stf_ministros')
+        .select('id, nome, nome_completo, foto_url, diversos')
+        .order('nome');
+      if (error) throw error;
+      setMinistros(data || []);
+    } catch (err) {
+      toast.error('Erro ao carregar ministros');
+    } finally {
+      setLoadingMinistros(false);
+    }
+  }
 
   async function carregarTudo() {
     setLoading(true);
@@ -142,6 +171,12 @@ export default function AdminPilulas() {
     });
   }, [livros, busca]);
 
+  const ministrosFiltrados = useMemo(() => {
+    const q = busca.toLowerCase();
+    if (!q) return ministros;
+    return ministros.filter(m => m.nome.toLowerCase().includes(q) || (m.nome_completo && m.nome_completo.toLowerCase().includes(q)));
+  }, [ministros, busca]);
+
   const artigosFiltrados = useMemo(() => {
     const q = busca.toLowerCase();
     let lista: ArtigoCP[] = [];
@@ -166,8 +201,8 @@ export default function AdminPilulas() {
       return;
     }
 
-    const itemId = item.type === 'livro' ? item.data.livro.id : item.data.id;
-    const itemTitulo = item.type === 'livro' ? item.data.livro.titulo : item.data.numero;
+    const itemId = item.type === 'livro' ? item.data.livro.id : item.type === 'artigo' ? item.data.id : item.data.id;
+    const itemTitulo = item.type === 'livro' ? item.data.livro.titulo : item.type === 'artigo' ? item.data.numero : item.data.nome;
 
     setUploadingId(itemId);
     const toastId = toast.loading(`Enviando áudio para ${itemTitulo}...`);
@@ -178,6 +213,8 @@ export default function AdminPilulas() {
       if (item.type === 'artigo') {
         const slug = item.data.lei_slug || 'cp';
         rawFileName = `resumos-livros/pilulas-${slug}-${itemId}-${Date.now()}.${fileExt}`;
+      } else if (item.type === 'ministro') {
+        rawFileName = `resumos-livros/pilulas-ministro-${itemId}-${Date.now()}.${fileExt}`;
       }
 
       const { error: uploadError } = await supabase.storage
@@ -208,7 +245,7 @@ export default function AdminPilulas() {
         ));
         updatedItemForTranscription = { type: 'livro', data: updatedLivroComColecao };
         setSelectedItem((prev) => (prev && prev.type === 'livro' && prev.data.livro.id === itemId) ? updatedItemForTranscription : prev);
-      } else {
+      } else if (item.type === 'artigo') {
         const { error: dbError } = await supabase
           .from('vade_mecum_artigos')
           .update({ audio_pilula_url: rawUrl })
@@ -227,6 +264,20 @@ export default function AdminPilulas() {
 
         updatedItemForTranscription = { type: 'artigo', data: updatedArtigoCP };
         setSelectedItem((prev) => (prev && prev.type === 'artigo' && prev.data.id === itemId) ? updatedItemForTranscription : prev);
+      } else if (item.type === 'ministro') {
+        const curDiversos = item.data.diversos || {};
+        const newDiversos = { ...curDiversos, audio_pilula_url: rawUrl };
+
+        const { error: dbError } = await supabase
+          .from('stf_ministros')
+          .update({ diversos: newDiversos })
+          .eq('id', itemId);
+        if (dbError) throw dbError;
+
+        const updatedMinistro = { ...item.data, diversos: newDiversos };
+        setMinistros((prev) => prev.map(m => m.id === itemId ? updatedMinistro : m));
+        updatedItemForTranscription = { type: 'ministro', data: updatedMinistro };
+        setSelectedItem((prev) => (prev && prev.type === 'ministro' && prev.data.id === itemId) ? updatedItemForTranscription : prev);
       }
 
       toast.success('Áudio enviado com sucesso!', { id: toastId, duration: 4000 });
@@ -244,9 +295,11 @@ export default function AdminPilulas() {
 
   async function handleTranscribeAudio(item: SelectedItemType) {
     const isLivro = item.type === 'livro';
-    const itemId = isLivro ? item.data.livro.id : item.data.id;
-    const itemTitulo = isLivro ? item.data.livro.titulo : item.data.numero;
-    const audioUrl = isLivro ? item.data.livro.audioResumoUrl : item.data.audio_pilula_url;
+    const isMinistro = item.type === 'ministro';
+    
+    const itemId = item.type === 'livro' ? item.data.livro.id : item.type === 'artigo' ? item.data.id : item.data.id;
+    const itemTitulo = item.type === 'livro' ? item.data.livro.titulo : item.type === 'artigo' ? item.data.numero : item.data.nome;
+    const audioUrl = item.type === 'livro' ? item.data.livro.audioResumoUrl : item.type === 'artigo' ? item.data.audio_pilula_url : item.data.diversos?.audio_pilula_url;
 
     if (!audioUrl) return;
 
@@ -307,7 +360,7 @@ export default function AdminPilulas() {
         setSelectedItem((prev) => (prev && prev.type === 'livro' && prev.data.livro.id === itemId) ? { type: 'livro', data: updatedBook } : prev);
 
         toast.success('Pílula transcrita e salva com sucesso!', { id: toastId });
-      } else {
+      } else if (item.type === 'artigo') {
         // 2. Se for artigo, gerar Grafo com base na transcrição
         toast.loading(`Gerando grafo de conexões para o artigo...`, { id: toastId });
         
@@ -346,6 +399,22 @@ export default function AdminPilulas() {
         setSelectedItem((prev) => (prev && prev.type === 'artigo' && prev.data.id === itemId) ? { type: 'artigo', data: updatedArtigo } : prev);
 
         toast.success('Pílula transcrita e grafo gerado com sucesso!', { id: toastId });
+      } else if (item.type === 'ministro') {
+        const curDiversos = item.data.diversos || {};
+        const newDiversos = { ...curDiversos, audio_transcricao: transcriptionText };
+
+        const { error: dbUpdateError } = await supabase
+          .from('stf_ministros')
+          .update({ diversos: newDiversos })
+          .eq('id', itemId);
+          
+        if (dbUpdateError) throw dbUpdateError;
+
+        const updatedMinistro = { ...item.data, diversos: newDiversos };
+        setMinistros((prev) => prev.map((m) => (m.id === itemId ? updatedMinistro : m)));
+        setSelectedItem((prev) => (prev && prev.type === 'ministro' && prev.data.id === itemId) ? { type: 'ministro', data: updatedMinistro } : prev);
+
+        toast.success('Pílula de ministro transcrita com sucesso!', { id: toastId });
       }
     } catch (err: any) {
       console.error(err);
@@ -376,6 +445,10 @@ export default function AdminPilulas() {
     title = nomeMap[activeScreen as 'cp'|'cf'|'cc'];
     subtitle = `Gerencie as pílulas de ${title} (${artigosFiltrados.length})`;
     onBack = () => setActiveScreen('rapidas');
+  } else if (activeScreen === 'ministros') {
+    title = "Ministros do STF";
+    subtitle = `Gerencie as pílulas dos ministros (${ministrosFiltrados.length})`;
+    onBack = () => setActiveScreen('menu');
   }
 
   return (
@@ -389,7 +462,7 @@ export default function AdminPilulas() {
       <div className="px-4 pt-6 max-w-4xl mx-auto space-y-6">
         
         {/* Busca Global (sempre visível nas listas) */}
-        {(activeScreen === 'menu' || activeScreen === 'classicos' || ['cp', 'cf', 'cc'].includes(activeScreen)) && (
+        {(activeScreen === 'menu' || activeScreen === 'classicos' || activeScreen === 'ministros' || ['cp', 'cf', 'cc'].includes(activeScreen)) && (
           <div className="relative">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
             <Input
@@ -419,6 +492,15 @@ export default function AdminPilulas() {
             >
               <span className="font-bold text-lg uppercase tracking-wider text-muted-foreground">
                 Pílulas Rápidas
+              </span>
+              <ChevronRight className="w-5 h-5 text-muted-foreground" />
+            </button>
+            <button
+              onClick={() => setActiveScreen('ministros')}
+              className="w-full flex items-center justify-between px-5 py-4 bg-card rounded-2xl shadow-sm border border-border hover:bg-muted/30 transition-colors active:scale-[0.98]"
+            >
+              <span className="font-bold text-lg uppercase tracking-wider text-muted-foreground">
+                Pílulas dos Ministros
               </span>
               <ChevronRight className="w-5 h-5 text-muted-foreground" />
             </button>
@@ -508,6 +590,69 @@ export default function AdminPilulas() {
                             </span>
                           ) : (
                             <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-orange-500 bg-orange-500/10 px-2.5 py-1 rounded-full">
+                              <AlertCircle className="w-3.5 h-3.5 shrink-0" /> Pendente
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Tela Ministros (Listagem) */}
+        {activeScreen === 'ministros' && (
+          <div className="space-y-4">
+            {loadingMinistros ? (
+              <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
+                <Loader2 className="w-8 h-8 animate-spin mb-4" />
+                <p>Carregando ministros...</p>
+              </div>
+            ) : ministrosFiltrados.length === 0 ? (
+              <div className="text-center text-muted-foreground py-10 border border-dashed rounded-xl bg-card">
+                Nenhum ministro encontrado.
+              </div>
+            ) : (
+              <div className="grid gap-3">
+                {ministrosFiltrados.map((item) => {
+                  const hasAudio = !!item.diversos?.audio_pilula_url;
+                  return (
+                    <button
+                      type="button"
+                      key={item.id}
+                      onClick={() => setSelectedItem({ type: 'ministro', data: item })}
+                      className={`flex items-center gap-4 rounded-2xl p-4 border shadow-sm text-left active:scale-[0.98] transition-all w-full ${
+                        hasAudio 
+                          ? 'bg-success/5 border-success/30 hover:bg-success/10' 
+                          : 'bg-card border-border hover:border-muted-foreground/30'
+                      }`}
+                    >
+                      <div className="w-12 h-16 rounded-lg bg-muted overflow-hidden shrink-0 shadow-sm border border-border">
+                        {item.foto_url ? (
+                          <img src={item.foto_url} alt="" className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-muted-foreground text-[10px] text-center p-1">
+                            Sem Foto
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-foreground text-sm sm:text-base leading-snug line-clamp-1">
+                          {item.nome}
+                        </h3>
+                        {item.nome_completo && (
+                          <p className="text-xs sm:text-sm text-muted-foreground line-clamp-1">{item.nome_completo}</p>
+                        )}
+                        <div className="flex items-center gap-2 mt-2">
+                          {hasAudio ? (
+                            <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-success bg-success/10 px-2.5 py-1 rounded-full">
+                              <CheckCircle2 className="w-3.5 h-3.5 shrink-0" /> Pílula Concluída
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-orange-500 bg-orange-500/10 px-2.5 py-1 rounded-full">
                               <AlertCircle className="w-3.5 h-3.5 shrink-0" /> Pendente
                             </span>
                           )}

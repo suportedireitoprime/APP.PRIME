@@ -1,7 +1,1 @@
-import "https://deno.land/std@0.192.0/dotenv/load.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
-const supabase = createClient(Deno.env.get("VITE_SUPABASE_URL"), Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"));
-async function run() {
-  const { data } = await supabase.from("stf_ministros").select("nome, dados_e_datas").ilike("nome", "%Mendon%a%");
-  console.log(JSON.stringify(data, null, 2));
-} run();
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.0'; const supabase = createClient(Deno.env.get('VITE_SUPABASE_URL'), Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')); const { data, error } = await supabase.from('stf_ministros').select('*').limit(1); console.log(data);

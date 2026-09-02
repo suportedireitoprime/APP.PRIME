@@ -13,21 +13,21 @@ export default function PilulasLista() {
   const [searchTerm, setSearchTerm] = useState('');
 
   const fastPillsItems = [
-    { image: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg'), text: 'CP', fullName: 'Código Penal' },
-    { image: '/pilulas/cf_portrait.jpg', text: 'CF88', fullName: 'Constituição Federal' },
-    { image: '/pilulas/cc_portrait.png', text: 'CC', fullName: 'Código Civil' },
-    { image: '/pilulas/cpp_portrait.jpg', text: 'CPP', fullName: 'Cód. Proc. Penal' },
+    { image: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg'), text: 'CP', fullName: 'CÃ³digo Penal' },
+    { image: '/pilulas/cf_portrait.jpg', text: 'CF88', fullName: 'ConstituiÃ§Ã£o Federal' },
+    { image: '/pilulas/cc_portrait.png', text: 'CC', fullName: 'CÃ³digo Civil' },
+    { image: '/pilulas/cpp_portrait.jpg', text: 'CPP', fullName: 'CÃ³d. Proc. Penal' },
     { image: '/pilulas/clt_portrait.jpg', text: 'CLT', fullName: 'Leis Trabalhistas' },
   ];
 
   const ministrosPillsItems = [
     { image: "https://portal.stf.jus.br/util/imagem.asp?id=2921", text: "Moraes", fullName: "Alexandre de Moraes" },
-    { image: "https://portal.stf.jus.br/util/imagem.asp?id=3102", text: "Mendonça", fullName: "André Mendonça" },
-    { image: "https://portal.stf.jus.br/util/imagem.asp?id=3041", text: "Cármen", fullName: "Cármen Lúcia" },
+    { image: "https://portal.stf.jus.br/util/imagem.asp?id=3102", text: "MendonÃ§a", fullName: "AndrÃ© MendonÃ§a" },
+    { image: "https://portal.stf.jus.br/util/imagem.asp?id=3041", text: "CÃ¡rmen", fullName: "CÃ¡rmen LÃºcia" },
     { image: "https://portal.stf.jus.br/util/imagem.asp?id=3161", text: "Zanin", fullName: "Cristiano Zanin" },
     { image: "https://portal.stf.jus.br/util/imagem.asp?id=2662", text: "Toffoli", fullName: "Dias Toffoli" },
     { image: "https://portal.stf.jus.br/util/imagem.asp?id=2901", text: "Fachin", fullName: "Edson Fachin" },
-    { image: "https://portal.stf.jus.br/util/imagem.asp?id=3181", text: "Dino", fullName: "Flávio Dino" },
+    { image: "https://portal.stf.jus.br/util/imagem.asp?id=3181", text: "Dino", fullName: "FlÃ¡vio Dino" },
     { image: "https://portal.stf.jus.br/util/imagem.asp?id=701", text: "Mendes", fullName: "Gilmar Mendes" },
     { image: "https://portal.stf.jus.br/util/imagem.asp?id=2741", text: "Fux", fullName: "Luiz Fux" },
     { image: "https://portal.stf.jus.br/util/imagem.asp?id=3062", text: "Marques", fullName: "Nunes Marques" },
@@ -40,7 +40,7 @@ export default function PilulasLista() {
     item.fullName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const title = tipo === 'ministros' ? 'Pílulas dos Ministros do STF' : 'Pílulas de Códigos';
+  const title = tipo === 'ministros' ? 'Pï¿½lulas dos Ministros do STF' : 'Pï¿½lulas de Cï¿½digos';
 
   const handleItemClick = (item: any) => {
     haptic.selection();
@@ -122,3 +122,4 @@ export default function PilulasLista() {
     </div>
   );
 }
+

@@ -1,0 +1,1 @@
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.0'; const supabase = createClient(Deno.env.get('VITE_SUPABASE_URL'), Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')); const { data, error } = await supabase.rpc('execute_sql', { sql: 'select 1' }); console.log(error || data);
