@@ -119,6 +119,7 @@ export default function NoticiaViewerSheet({ noticia, onClose }: Props) {
                     className="w-full h-full object-cover"
                     decoding="async"
                     fetchPriority="high"
+                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
                   />
                 ) : (
                   <div className="w-full h-full bg-gradient-to-br from-primary/30 to-primary/10" />

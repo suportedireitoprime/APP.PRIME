@@ -59,6 +59,11 @@ const otimizar = (url: string, w: number) => {
       return resolved;
     }
   }
+
+  // Bypass wsrv.nl for Migalhas to prevent double-proxy 403 blocks and latency
+  if (resolved.includes('migalhas.com.br')) {
+    return resolved;
+  }
   
   if (!/^https?:\/\//i.test(resolved)) return resolved;
   return proxied(resolved, w);
