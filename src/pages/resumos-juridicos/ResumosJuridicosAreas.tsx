@@ -193,12 +193,12 @@ export default function ResumosJuridicosAreas() {
       <div className="relative z-10 flex flex-col min-h-dvh">
         <ResumosHero q={q} setQ={setQ} />
 
-        <div className="px-4 pb-4 overflow-x-auto no-scrollbar flex items-center gap-2 -mt-2">
+        <div className="sticky top-0 z-40 px-4 py-4 mt-1 overflow-x-auto no-scrollbar flex items-center gap-2 bg-[#0D0D0D]/95 backdrop-blur-xl border-b border-white/5 shadow-sm">
           <button
             onClick={() => { haptic.selection(); setActiveTab("Todos"); }}
             className={`px-5 h-9 rounded-full text-[13px] font-bold whitespace-nowrap transition-colors shadow-sm ${
               activeTab === "Todos"
-                ? "bg-[#ef4444] text-white"
+                ? "bg-hero-panel text-white"
                 : "bg-white/5 border border-white/10 text-white hover:bg-white/10"
             }`}
           >
@@ -213,7 +213,7 @@ export default function ResumosJuridicosAreas() {
                 onClick={() => { haptic.selection(); setActiveTab(r.area); }}
                 className={`px-4 h-9 rounded-full text-[13px] font-bold whitespace-nowrap transition-colors shadow-sm ${
                   isActive
-                    ? "bg-[#ef4444] text-white"
+                    ? "bg-hero-panel text-white"
                     : "bg-white/5 border border-white/10 text-white hover:bg-white/10"
                 }`}
               >
