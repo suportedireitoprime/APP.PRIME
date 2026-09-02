@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { usePilulasWarmup } from './hooks/usePilulasWarmup';
 import { directImg } from '@/lib/cdnImg';
 import { PageHeader } from '@/components/vademecum/PageHeader';
+import { AnimatedDivider } from '@/components/ui/AnimatedDivider';
 import { haptic } from '@/lib/nativeHaptics';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import CircularGallery from '@/components/ui/CircularGallery';
@@ -164,11 +165,7 @@ export default function PilulasHome() {
 
         {/* Divider with Text for Bottom Section */}
         {(showSoPilulas || showMinistros) && (
-          <div className="flex items-center w-full mt-10 mb-6">
-            <div className="flex-1 h-[1px] bg-white/10" />
-            <span className="mx-4 text-xs font-semibold tracking-widest text-zinc-400 uppercase">Pílulas de Análise</span>
-            <div className="flex-1 h-[1px] bg-white/10" />
-          </div>
+          <AnimatedDivider text="Pílulas de Análise" />
         )}
 
         {/* Pílulas dos Ministros */}
@@ -206,11 +203,7 @@ export default function PilulasHome() {
 
         {showSoPilulas && (
           <div className="space-y-4 mb-8">
-            <div className="flex items-center w-full mt-10 mb-6">
-              <div className="flex-1 h-[1px] bg-white/10" />
-              <span className="mx-4 text-xs font-semibold tracking-widest text-zinc-400 uppercase">Clássicos do Direito</span>
-              <div className="flex-1 h-[1px] bg-white/10" />
-            </div>
+            <AnimatedDivider text="Clássicos do Direito" />
 
             <div className="flex items-start justify-between px-1 mb-4 gap-4">
               <div className="flex-1 min-w-0">
