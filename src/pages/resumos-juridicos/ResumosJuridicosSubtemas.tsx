@@ -176,12 +176,16 @@ export default function ResumosJuridicosSubtemas() {
                     layout
                     key={r.id}
                     initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
+                    animate={{ 
+                      opacity: isExpanded ? 1 : isAnyExpanded ? 0.3 : 1, 
+                      scale: isExpanded ? 1 : isAnyExpanded ? 0.98 : 1,
+                      filter: isExpanded ? "blur(0px)" : isAnyExpanded ? "blur(0.5px)" : "blur(0px)"
+                    }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.2 }}
-                    className={`flex flex-col rounded-2xl bg-card border hover:border-[#ef4444]/40 transition-all duration-300 shadow-sm group relative overflow-hidden ${
-                      isExpanded ? 'border-[#ef4444]/40 scale-100 opacity-100 z-10' :
-                      isAnyExpanded ? 'border-border/50 scale-[0.98] opacity-30 blur-[0.5px]' : 'border-border scale-100 opacity-100'
+                    className={`flex flex-col rounded-2xl bg-card border transition-colors duration-300 shadow-sm group relative overflow-hidden ${
+                      isExpanded ? 'border-[#ef4444]/40 z-10' :
+                      isAnyExpanded ? 'border-border/50' : 'border-border hover:border-[#ef4444]/40'
                     }`}
                   >
                     <button

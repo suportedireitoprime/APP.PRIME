@@ -160,7 +160,7 @@ export default function ResumosJuridicosTemas() {
         <div className="sticky top-0 z-10 bg-[#0D0D0D]/90 backdrop-blur-md border-b border-white/10 shadow-sm pb-3">
           <PageHeader
             title={decodedArea.replace(/^DIREITO\s+(DO\s+|DA\s+|DE\s+)?/i, '')}
-            subtitle="Área"
+            subtitle={rows.length > 0 ? `Área • ${rows.reduce((acc, row) => acc + row.total, 0)} resumos` : "Área"}
             onBack={() => navigate("/resumos-juridicos")}
             className="border-b-0 pb-1"
           />
