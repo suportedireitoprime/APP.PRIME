@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
+import { Capacitor } from '@capacitor/core';
+import { NativeFlashcardsPlugin } from '@/plugins/NativeFlashcardsPlugin';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import FlashcardsBottomNav from '@/components/flashcards/FlashcardsBottomNav';
 import AreaTemasSheet from '@/components/flashcards/AreaTemasSheet';
@@ -99,7 +101,10 @@ const FlashcardsEstudo = () => {
   useEffect(() => {
     document.title = 'Sessão de Prática de Flashcards | Vade Mecum PRIME';
     resetBodyScrollLock();
-  }, []);
+    if (Capacitor.isNativePlatform() && !escolhendo) {
+      NativeFlashcardsPlugin.startStudySession({ category: areaSheet || 'Flashcards', cards: [] });
+    }
+  }, [escolhendo, areaSheet]);
 
   return (
     <div className={`min-h-dvh overflow-x-hidden bg-background ${escolhendo ? 'pb-[calc(8rem+var(--sai-bottom))]' : 'pb-[calc(2.5rem+var(--sai-bottom))]'}`}>
