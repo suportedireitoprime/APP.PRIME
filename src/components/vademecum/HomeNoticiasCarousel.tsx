@@ -331,21 +331,23 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
 
                   {/* Capa com destaque */}
                   <div className="relative h-full w-[104px] shrink-0 flex items-center justify-center px-2.5 z-[1]">
-                    {l.imagem ? (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <Library className="w-8 h-8 text-white/30" />
+                    </div>
+                    {l.imagem && (
                       <img
                         src={cdnImg(l.imagem, 240)}
                         alt=""
                         loading={i < 2 ? 'eager' : 'lazy'}
                         fetchPriority={i < 2 ? 'high' : 'auto'}
                         decoding="async"
-                        className="h-[118px] w-auto max-w-full object-contain rounded-md"
+                        onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                        className="relative h-[118px] w-auto max-w-full object-contain rounded-md z-[2]"
                         style={{
                           boxShadow:
                             '0 14px 26px -8px rgba(0,0,0,0.75), 0 6px 12px -4px rgba(0,0,0,0.55), 0 0 0 1px rgba(0,0,0,0.25)',
                         }}
                       />
-                    ) : (
-                      <Library className="w-8 h-8 text-white/50" />
                     )}
                   </div>
 
