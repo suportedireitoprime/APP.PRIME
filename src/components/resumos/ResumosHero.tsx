@@ -89,9 +89,8 @@ const ResumosHero = ({ onBuscar }: Props) => {
 
   return (
     <div
-      className="relative overflow-hidden rounded-b-[36px] border-b border-black/20 shadow-2xl shadow-black/60 pt-[var(--sai-top)] flex flex-col z-20"
+      className="relative overflow-hidden rounded-b-[36px] border-b border-white/10 shadow-2xl shadow-black/60 pt-[var(--sai-top)] flex flex-col z-20"
       style={{
-        background: 'linear-gradient(135deg, hsl(199 89% 15%) 0%, hsl(199 89% 25%) 50%, hsl(199 89% 35%) 100%)',
         transform: 'translateZ(0)',
         isolation: 'isolate',
         contain: 'paint',
@@ -100,16 +99,17 @@ const ResumosHero = ({ onBuscar }: Props) => {
       {/* ── Cabeçalho Transparente ───────────────── */}
       <div className="px-4 pb-2 pt-2 flex items-center justify-between relative z-30">
         <button 
-          onClick={() => { haptic.selection(); navigate(-1); }} 
+          onClick={() => { haptic.selection(); navigate('/'); }} 
           aria-label="Voltar"
-          className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/20 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/40 active:scale-95"
+          className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:scale-95"
         >
           <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
         </button>
       </div>
 
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.22),transparent_60%)]" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.28),transparent_65%)]" />
+      <div className="absolute inset-0 bg-hero-panel -z-10" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,180,180,0.22),transparent_60%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.5),transparent_65%)]" />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
 
       <HeroMotifs />
@@ -140,22 +140,22 @@ const ResumosHero = ({ onBuscar }: Props) => {
         {/* ── 4 Botões de Ação Rápida ────────────────── */}
         <div className="grid grid-cols-4 gap-2 mx-1 mt-1">
           <button onClick={() => navigate('/resumos-juridicos/favoritos')} className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/20 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/40 transition-all active:scale-95 gap-2 text-center">
-            <Heart className="w-5 h-5 text-white/70 group-hover:text-white group-hover:scale-110 transition-all" strokeWidth={2} />
+            <Heart className="w-5 h-5 text-rose-400 group-hover:text-rose-300 group-hover:scale-110 transition-all" strokeWidth={2} />
             <span className="text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">Favoritos</span>
           </button>
           
           <button onClick={() => navigate('/resumos-juridicos/recentes')} className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/20 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/40 transition-all active:scale-95 gap-2 text-center">
-            <History className="w-5 h-5 text-white/70 group-hover:text-white group-hover:scale-110 transition-all" strokeWidth={2} />
+            <History className="w-5 h-5 text-sky-400 group-hover:text-sky-300 group-hover:scale-110 transition-all" strokeWidth={2} />
             <span className="text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">Recentes</span>
           </button>
 
           <button onClick={() => toast({ title: 'Em breve: Listagem Feynman' })} className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/20 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/40 transition-all active:scale-95 gap-2 text-center">
-            <Brain className="w-5 h-5 text-white/70 group-hover:text-white group-hover:scale-110 transition-all" strokeWidth={2} />
+            <Brain className="w-5 h-5 text-fuchsia-400 group-hover:text-fuchsia-300 group-hover:scale-110 transition-all" strokeWidth={2} />
             <span className="text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">Feynman</span>
           </button>
 
           <button onClick={() => toast({ title: 'Em breve: Listagem Cornell' })} className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/20 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/40 transition-all active:scale-95 gap-2 text-center">
-            <FileText className="w-5 h-5 text-white/70 group-hover:text-white group-hover:scale-110 transition-all" strokeWidth={2} />
+            <FileText className="w-5 h-5 text-emerald-400 group-hover:text-emerald-300 group-hover:scale-110 transition-all" strokeWidth={2} />
             <span className="text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">Cornell</span>
           </button>
         </div>
@@ -165,13 +165,13 @@ const ResumosHero = ({ onBuscar }: Props) => {
           type="button"
           onClick={onBuscar}
           aria-label="Pesquisar resumos"
-          className="mt-2 relative w-full flex items-center h-16 pl-14 pr-[112px] rounded-2xl bg-black/20 backdrop-blur-md border border-white/20 shadow-lg shadow-black/30 active:scale-[0.99] transition search-bar-shine"
+          className="mt-2 relative w-full flex items-center h-16 pl-14 pr-[112px] rounded-2xl bg-black/45 backdrop-blur-md border border-primary/40 shadow-lg shadow-black/30 active:scale-[0.99] transition search-bar-shine"
         >
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-[#38bdf8] shrink-0" strokeWidth={2.2} />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-primary shrink-0" strokeWidth={2.2} />
           <span className="relative z-[2] font-body text-white/70 text-[15px] font-medium truncate text-left">
             <TypingHint />
           </span>
-          <div className="absolute right-1.5 top-1/2 -translate-y-1/2 h-12 px-5 rounded-xl bg-[#38bdf8] text-black font-display text-[13px] font-bold tracking-wider flex items-center justify-center shadow-md shadow-black/30 active:scale-95 transition">
+          <div className="absolute right-1.5 top-1/2 -translate-y-1/2 h-12 px-5 rounded-xl bg-hero-panel text-white font-display text-[13px] font-bold tracking-wider flex items-center justify-center shadow-md shadow-black/30 active:scale-95 transition">
             PESQUISAR
           </div>
         </button>
