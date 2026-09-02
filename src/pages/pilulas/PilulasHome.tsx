@@ -41,17 +41,17 @@ export default function PilulasHome() {
   ], []);
 
   const ministrosPillsItems = useMemo(() => [
-    { image: "https://portal.stf.jus.br/util/imagem.asp?id=2921", text: "Moraes", fullName: "Alexandre de Moraes" },
-    { image: "https://portal.stf.jus.br/util/imagem.asp?id=3102", text: "Mendonça", fullName: "André Mendonça" },
-    { image: "https://portal.stf.jus.br/util/imagem.asp?id=3041", text: "Cármen", fullName: "Cármen Lúcia" },
-    { image: "https://portal.stf.jus.br/util/imagem.asp?id=3161", text: "Zanin", fullName: "Cristiano Zanin" },
-    { image: "https://portal.stf.jus.br/util/imagem.asp?id=2662", text: "Toffoli", fullName: "Dias Toffoli" },
-    { image: "https://portal.stf.jus.br/util/imagem.asp?id=2901", text: "Fachin", fullName: "Edson Fachin" },
-    { image: "https://portal.stf.jus.br/util/imagem.asp?id=3181", text: "Dino", fullName: "Flávio Dino" },
-    { image: "https://portal.stf.jus.br/util/imagem.asp?id=701", text: "Mendes", fullName: "Gilmar Mendes" },
-    { image: "https://portal.stf.jus.br/util/imagem.asp?id=2741", text: "Fux", fullName: "Luiz Fux" },
-    { image: "https://portal.stf.jus.br/util/imagem.asp?id=3062", text: "Marques", fullName: "Nunes Marques" },
-    { image: "https://portal.stf.jus.br/util/imagem.asp?id=3141", text: "Barroso", fullName: "Roberto Barroso" }
+    { image: "/pilulas/ministros/moraes.jpg", text: "Moraes", fullName: "Alexandre de Moraes" },
+    { image: "/pilulas/ministros/mendonca.jpg", text: "Mendonça", fullName: "André Mendonça" },
+    { image: "/pilulas/ministros/carmen.jpg", text: "Cármen", fullName: "Cármen Lúcia" },
+    { image: "/pilulas/ministros/zanin.jpg", text: "Zanin", fullName: "Cristiano Zanin" },
+    { image: "/pilulas/ministros/toffoli.jpg", text: "Toffoli", fullName: "Dias Toffoli" },
+    { image: "/pilulas/ministros/fachin.jpg", text: "Fachin", fullName: "Edson Fachin" },
+    { image: "/pilulas/ministros/dino.jpg", text: "Dino", fullName: "Flávio Dino" },
+    { image: "/pilulas/ministros/mendes.jpg", text: "Mendes", fullName: "Gilmar Mendes" },
+    { image: "/pilulas/ministros/fux.jpg", text: "Fux", fullName: "Luiz Fux" },
+    { image: "/pilulas/ministros/marques.jpg", text: "Marques", fullName: "Nunes Marques" },
+    { image: "/pilulas/ministros/barroso.jpg", text: "Barroso", fullName: "Roberto Barroso" }
   ], []);
 
   const classicosPillsItems = useMemo(() => [

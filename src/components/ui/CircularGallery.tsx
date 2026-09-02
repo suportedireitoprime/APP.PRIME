@@ -521,7 +521,19 @@ class App {
     this.update();
     this.addEventListeners();
     
-    // Raycaster for click detection
+    // Intersection Observer to pause rendering when off-screen
+    this.isVisible = true;
+    this.observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        this.isVisible = entry.isIntersecting;
+        if (this.isVisible && !this.raf) {
+          this.update();
+        }
+      });
+    }, { threshold: 0 });
+    this.observer.observe(this.container);
+    
+    // Raycast for click detection
     this.raycast = new Raycast(this.gl);
     this.mouse = new Vec2();
   }
@@ -706,6 +718,10 @@ class App {
     }
   }
   update() {
+    if (!this.isVisible) {
+      this.raf = null;
+      return;
+    }
     this.scroll.current = lerp(this.scroll.current, this.scroll.target, this.scroll.ease);
     const direction = this.scroll.current > this.scroll.last ? 'right' : 'left';
     
@@ -741,34 +757,41 @@ class App {
     this.boundOnKeyDown = this.onKeyDown.bind(this);
 
     window.addEventListener('resize', this.boundOnResize);
-    window.addEventListener('mousewheel', this.boundOnWheel, { passive: false });
-    window.addEventListener('wheel', this.boundOnWheel, { passive: false });
-    window.addEventListener('mousedown', this.boundOnTouchDown);
+    
+    // Attach start events only to container to prevent accidental scrolling from outside
+    if (this.container) {
+      this.container.addEventListener('mousewheel', this.boundOnWheel, { passive: false });
+      this.container.addEventListener('wheel', this.boundOnWheel, { passive: false });
+      this.container.addEventListener('mousedown', this.boundOnTouchDown);
+      this.container.addEventListener('touchstart', this.boundOnTouchDown, { passive: false });
+      this.container.addEventListener('keydown', this.boundOnKeyDown);
+    }
+    
+    // Attach move and end events to window to allow dragging outside
     window.addEventListener('mousemove', this.boundOnTouchMove);
     window.addEventListener('mouseup', this.boundOnTouchUp);
-    window.addEventListener('touchstart', this.boundOnTouchDown, { passive: false });
     window.addEventListener('touchmove', this.boundOnTouchMove, { passive: false });
     window.addEventListener('touchend', this.boundOnTouchUp);
-
-    this.container?.addEventListener('keydown', this.boundOnKeyDown);
   }
   destroy() {
+    if (this.observer) this.observer.disconnect();
     window.cancelAnimationFrame(this.raf);
     window.removeEventListener('resize', this.boundOnResize);
-    window.removeEventListener('mousewheel', this.boundOnWheel);
-    window.removeEventListener('wheel', this.boundOnWheel);
-    window.removeEventListener('mousedown', this.boundOnTouchDown);
     window.removeEventListener('mousemove', this.boundOnTouchMove);
     window.removeEventListener('mouseup', this.boundOnTouchUp);
-    window.removeEventListener('touchstart', this.boundOnTouchDown);
     window.removeEventListener('touchmove', this.boundOnTouchMove);
     window.removeEventListener('touchend', this.boundOnTouchUp);
-    if (this.renderer && this.renderer.gl && this.renderer.gl.canvas.parentNode) {
-      this.renderer.gl.canvas.parentNode.removeChild(this.renderer.gl.canvas);
-    }
 
     if (this.container) {
+      this.container.removeEventListener('mousewheel', this.boundOnWheel);
+      this.container.removeEventListener('wheel', this.boundOnWheel);
+      this.container.removeEventListener('mousedown', this.boundOnTouchDown);
+      this.container.removeEventListener('touchstart', this.boundOnTouchDown);
       this.container.removeEventListener('keydown', this.boundOnKeyDown);
+    }
+
+    if (this.renderer && this.renderer.gl && this.renderer.gl.canvas.parentNode) {
+      this.renderer.gl.canvas.parentNode.removeChild(this.renderer.gl.canvas);
     }
   }
 }
