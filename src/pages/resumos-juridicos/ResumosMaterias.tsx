@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import ShapeGrid from "@/components/ui/ShapeGrid";
 import { PageHeader } from "@/components/vademecum/PageHeader";
+import CircularGallery from "@/components/ui/CircularGallery";
 import { haptic } from "@/lib/nativeHaptics";
 
 type AreaRow = { area: string; total: number };
@@ -244,37 +245,23 @@ export default function ResumosMaterias() {
           ) : (
             /* MODO CARROSSEL */
             <div className="flex flex-col gap-6">
-              <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-6 pt-2 no-scrollbar px-1 -mx-4 sm:mx-0 sm:px-0">
-                {filtered.map((r, i) => {
-                  const s = styleForArea(r.area);
-                  const Icon = s.icon;
-                  return (
-                    <motion.button
-                      key={r.area}
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: Math.min(i * 0.05, 0.4) }}
-                      onClick={() => navigate(`/resumos-juridicos/${encodeURIComponent(r.area)}`)}
-                      className="snap-center shrink-0 w-[260px] flex flex-col justify-between p-6 rounded-[32px] bg-secondary/40 border border-white/5 hover:border-[#38bdf8]/30 transition-all text-left group overflow-hidden relative"
-                    >
-                      <div className="absolute -top-6 -right-6 w-32 h-32 rounded-full bg-gradient-to-br from-white/5 to-transparent blur-2xl opacity-50 pointer-events-none group-hover:opacity-100 transition-opacity" />
-                      
-                      <div className="w-16 h-16 rounded-2xl bg-[#38bdf8]/10 border border-[#38bdf8]/20 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform duration-500 ease-out">
-                        <Icon className="w-8 h-8 shrink-0" style={{ color: s.color }} strokeWidth={1.5} />
-                      </div>
-                      
-                      <div className="relative z-10">
-                        <div className="font-display font-black text-[22px] uppercase text-white leading-tight line-clamp-2 mb-2">
-                          {r.area.replace(/^DIREITO\s+/i, "")}
-                        </div>
-                        <div className="text-[13px] text-white/50 font-medium flex items-center gap-2">
-                          <div className="w-1.5 h-1.5 rounded-full bg-[#38bdf8]" />
-                          {r.total} {r.total === 1 ? "resumo" : "resumos"}
-                        </div>
-                      </div>
-                    </motion.button>
-                  );
-                })}
+              <div style={{ height: '350px', position: 'relative' }} className="-mx-4 sm:mx-0">
+                <CircularGallery
+                  items={filtered.map(r => ({
+                    image: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg', // Placeholder for now
+                    text: r.area.replace(/^DIREITO\s+/i, ""),
+                    fullName: `${r.total} resumo${r.total === 1 ? '' : 's'}`,
+                    raw: r // store raw row to navigate correctly
+                  }))}
+                  bend={1.5}
+                  textColor="#ffffff"
+                  borderRadius={0.05}
+                  scrollEase={0.08}
+                  onItemClick={(item) => {
+                    haptic.selection();
+                    navigate(`/resumos-juridicos/${encodeURIComponent(item.raw.area)}`);
+                  }}
+                />
               </div>
             </div>
           )}

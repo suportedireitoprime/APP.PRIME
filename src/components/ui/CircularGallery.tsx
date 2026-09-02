@@ -131,8 +131,8 @@ function createTextTexture(gl, text, font = 'bold 30px monospace', color = 'blac
   const textHeight = lineHeight * lines.length;
   
   // Increased padding to prevent horizontal clipping of text edges
-  canvas.width = textWidth + 120;
-  canvas.height = textHeight + 60;
+  canvas.width = Math.max(textWidth + 300, 512);
+  canvas.height = Math.max(textHeight + 100, 128);
   
   context.textBaseline = 'middle';
   context.textAlign = 'center';
@@ -194,7 +194,9 @@ class Title {
     const aspect = width / height;
     let textScaleMultiplier = 0.15;
     if (this.positionType === 'outside') {
-      textScaleMultiplier = 0.28; // Aumentado a pedido do usuário (+2 pontos virtuais)
+      textScaleMultiplier = 0.28; 
+    } else if (this.positionType === 'inside-bottom') {
+      textScaleMultiplier = 0.15;
     }
     
     const textHeight = this.plane.scale.y * textScaleMultiplier;
@@ -206,6 +208,9 @@ class Title {
       this.mesh.position.z = 0;
     } else if (this.positionType === 'inside-top') {
       this.mesh.position.y = this.plane.scale.y * 0.5 - textHeight * 0.5 - 0.1;
+      this.mesh.position.z = 0.01;
+    } else if (this.positionType === 'inside-bottom') {
+      this.mesh.position.y = -this.plane.scale.y * 0.5 + textHeight * 0.5 + 0.2;
       this.mesh.position.z = 0.01;
     } else {
       this.mesh.position.y = -this.plane.scale.y * 0.5 + textHeight * 0.5 + 0.1;
@@ -235,7 +240,8 @@ class Media {
     font,
     badgeText,
     showPlayButton = true,
-    progress
+    progress,
+    positionType = 'outside'
   }) {
     this.extra = 0;
     this.geometry = geometry;
@@ -256,6 +262,7 @@ class Media {
     this.badgeText = badgeText;
     this.showPlayButton = showPlayButton;
     this.progress = progress;
+    this.positionType = positionType;
     this.createShader();
     this.createMesh();
     this.createTitle();
@@ -342,6 +349,15 @@ class Media {
       if (ctx) {
         ctx.drawImage(img, 0, 0);
 
+        if (this.positionType === 'inside-bottom') {
+          // Draw gradient from bottom
+          const gradient = ctx.createLinearGradient(0, canvas.height, 0, canvas.height * 0.6);
+          gradient.addColorStop(0, 'rgba(0,0,0,0.9)');
+          gradient.addColorStop(1, 'rgba(0,0,0,0)');
+          ctx.fillStyle = gradient;
+          ctx.fillRect(0, canvas.height * 0.6, canvas.width, canvas.height * 0.4);
+        }
+
         if (this.showPlayButton) {
           // Draw Play Button overlay
           const centerX = canvas.width / 2;
@@ -374,6 +390,35 @@ class Media {
           ctx.closePath();
           ctx.fill();
           ctx.restore();
+        } else if (this.positionType === 'inside-bottom') {
+          // Draw right arrow indicator
+          ctx.save();
+          const arrowSize = canvas.width * 0.04;
+          const paddingRight = canvas.width * 0.08;
+          const centerY = canvas.height / 2;
+          
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+          ctx.lineWidth = Math.max(4, canvas.width * 0.008);
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+          
+          ctx.beginPath();
+          ctx.moveTo(canvas.width - paddingRight - arrowSize, centerY - arrowSize);
+          ctx.lineTo(canvas.width - paddingRight, centerY);
+          ctx.lineTo(canvas.width - paddingRight - arrowSize, centerY + arrowSize);
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        if (this.badgeText) {
+          ctx.save();
+          // Draw large transparent number on the left
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+          ctx.font = `bold ${Math.round(canvas.width * 0.15)}px sans-serif`;
+          ctx.textAlign = 'left';
+          ctx.textBaseline = 'top';
+          ctx.fillText(this.badgeText, canvas.width * 0.08, canvas.width * 0.08);
+          ctx.restore();
         }
 
         if (this.progress !== undefined) {
@@ -400,15 +445,15 @@ class Media {
     this.plane.setParent(this.scene);
   }
   createTitle() {
-    this.title = new Title({
-      gl: this.gl,
-      plane: this.plane,
-      renderer: this.renderer,
-      text: this.text,
-      textColor: this.textColor,
-      font: this.font,
-      position: 'outside'
-    });
+      this.title = new Title({
+        gl: this.gl,
+        plane: this.plane,
+        renderer: this.renderer,
+        text: this.text,
+        textColor: this.textColor,
+        font: this.font,
+        position: this.positionType
+      });
     if (this.fullName) {
       this.innerTitle = new Title({
         gl: this.gl,
@@ -482,6 +527,7 @@ class Media {
       }
     }
     this.scale = this.screen.height / 1500;
+    // Diminuído o tamanho das capas (750x550) para melhor visualização mobile
     this.plane.scale.y = (this.viewport.height * (900 * this.scale)) / this.screen.height;
     this.plane.scale.x = (this.viewport.width * (700 * this.scale)) / this.screen.width;
     this.plane.program.uniforms.uPlaneSizes.value = [this.plane.scale.x, this.plane.scale.y];
@@ -572,6 +618,10 @@ class App {
     // To allow circular infinite scrolling, we double the items
     this.mediasImages = galleryItems.concat(galleryItems);
     this.medias = this.mediasImages.map((data, index) => {
+      let position = 'outside';
+      if (data.text.startsWith('Artigo')) position = 'inside-top';
+      if (data.position) position = data.position;
+      
       return new Media({
         geometry: this.planeGeometry,
         gl: this.gl,
@@ -587,18 +637,34 @@ class App {
         bend,
         textColor,
         borderRadius,
-        font
+        font,
+        positionType: position,
+        badgeText: data.badgeText,
+        showPlayButton: data.showPlayButton !== false
       });
     });
   }
   onTouchDown(e) {
     if (this.container && !this.container.contains(e.target)) return;
+
+    // Hit test: only allow dragging/touching if started on a card
+    const startX = e.touches ? e.touches[0].clientX : e.clientX;
+    const startY = e.touches ? e.touches[0].clientY : e.clientY;
+    const rect = this.container.getBoundingClientRect();
+    this.mouse.x = 2.0 * (startX - rect.left) / this.screen.width - 1.0;
+    this.mouse.y = 2.0 * (1.0 - (startY - rect.top) / this.screen.height) - 1.0;
+    this.raycast.castMouse(this.camera, this.mouse);
+    const meshes = this.medias.map(m => m.plane);
+    const hits = this.raycast.intersectBounds(meshes);
+    
+    if (hits.length === 0) return; // Prevent drag if no card is hit
+
     this.isDown = true;
     this.scroll.position = this.scroll.current;
-    this.start = e.touches ? e.touches[0].clientX : e.clientX;
-    this.clickStart = { x: this.start, y: e.touches ? e.touches[0].clientY : e.clientY };
+    this.start = startX;
+    this.clickStart = { x: startX, y: startY };
     this.lastTouchTime = performance.now();
-    this.lastTouchX = this.start;
+    this.lastTouchX = startX;
     this.velocity = 0;
   }
   onTouchMove(e) {
