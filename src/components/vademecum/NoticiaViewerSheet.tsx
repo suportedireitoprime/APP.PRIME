@@ -223,7 +223,7 @@ export default function NoticiaViewerSheet({ noticia, onClose }: Props) {
               <div className="space-y-4 px-5 pt-1">
                 <div className="flex items-center gap-2 flex-wrap mb-1">
                   <span className="inline-flex items-center text-[10px] font-bold text-primary uppercase tracking-wide">
-                    Migalhas
+                    {noticia.fonte === 'jota' ? 'JOTA' : noticia.fonte === 'camara' ? 'CÂMARA' : noticia.fonte === 'senado' ? 'SENADO' : 'MIGALHAS'}
                   </span>
                   {noticia.categoria && (
                     <>

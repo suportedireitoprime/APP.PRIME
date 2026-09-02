@@ -5,35 +5,21 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface FolhaNews {
+interface JotaNews {
   titulo: string;
   resumo: string;
   url: string;
   data_publicacao: string;
+  imagem_url: string | null;
 }
 
-// Helper to convert Folha date formats into ISO timestamp
-// Ex: "28.ago.2026 às 10h30" or ISO format from <time> tag
-function parseFolhaDate(dateStr: string): string | null {
-  try {
-    // If it's already an ISO or valid datetime format
-    const parsed = new Date(dateStr);
-    if (!isNaN(parsed.getTime())) {
-      return parsed.toISOString();
-    }
-  } catch (e) {
-    // ignore
-  }
-  return null;
-}
-
-async function scrapeFolhaSTF(): Promise<string | null> {
+async function scrapeJotaSTF(): Promise<string | null> {
   const browserlessKey = Deno.env.get("BROWSERLESS_API_KEY");
   if (!browserlessKey) {
     throw new Error("BROWSERLESS_API_KEY is not configured.");
   }
   
-  const url = "https://www1.folha.uol.com.br/poder/stf/";
+  const url = "https://www.jota.info/tudo-sobre/stf";
   console.log(`Buscando ${url} via Browserless...`);
   
   // Try /content first
@@ -43,7 +29,7 @@ async function scrapeFolhaSTF(): Promise<string | null> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       url,
-      waitForTimeout: 10000,
+      waitForTimeout: 5000,
     }),
   });
   
@@ -58,7 +44,7 @@ async function scrapeFolhaSTF(): Promise<string | null> {
       body: JSON.stringify({
         url,
         content: true,
-        waitForTimeout: 15000,
+        waitForTimeout: 10000,
       }),
     });
     
@@ -71,51 +57,79 @@ async function scrapeFolhaSTF(): Promise<string | null> {
   }
 }
 
-function parseHTML(html: string): FolhaNews[] {
-  const newsList: FolhaNews[] = [];
-  
-  // Regex para encontrar links de notícias
-  // As notícias da Folha geralmente tem <h2 class="c-news__title"> e <p class="c-news__desc">
-  // Envelopados em links <a> ou blocos <li class="c-headline__item">
-  
-  // Regex genérica para buscar blocos que contenham href, título e resumo
-  // Procuramos <a> tags que apontem para folha.uol.com.br/poder/...
-  const anchorRegex = /<a[^>]*href="([^"]+folha\.uol\.com\.br\/[^"]+)"[^>]*>([\s\S]*?)<\/a>/gi;
-  
-  let match;
-  while ((match = anchorRegex.exec(html)) !== null) {
-    const url = match[1];
-    const innerHtml = match[2];
-    
-    // Check if it's a valid news URL (skip generic links, tags, etc)
-    if (!url.includes(".shtml")) continue;
-    
-    // Extract title (usually inside <h2> or <h3>)
-    const titleMatch = innerHtml.match(/<h[2-4][^>]*>([\s\S]*?)<\/h[2-4]>/i);
-    if (!titleMatch) continue;
-    let titulo = titleMatch[1].replace(/<[^>]+>/g, "").trim();
-    
-    // Extract summary (usually inside <p>)
-    const summaryMatch = innerHtml.match(/<p[^>]*>([\s\S]*?)<\/p>/i);
-    let resumo = summaryMatch ? summaryMatch[1].replace(/<[^>]+>/g, "").trim() : "";
-    
-    if (titulo.length > 5) {
-      // Decode HTML entities
-      titulo = titulo.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, "&");
-      resumo = resumo.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, "&");
-      
-      newsList.push({
-        titulo,
-        resumo,
-        url,
-        data_publicacao: new Date().toISOString() // Fallback to current time if we can't parse
-      });
-    }
+function parseJSON(html: string): JotaNews[] {
+  const jsonMatch = html.match(/<script id="__NEXT_DATA__" type="application\/json">([\s\S]*?)<\/script>/);
+  if (!jsonMatch) {
+    console.error("Não foi possível encontrar __NEXT_DATA__ no HTML retornado.");
+    return [];
   }
   
-  // Filter unique URLs
-  const uniqueNews = Array.from(new Map(newsList.map(item => [item.url, item])).values());
-  return uniqueNews;
+  try {
+    const data = JSON.parse(jsonMatch[1]);
+    const posts = data?.props?.pageProps?.posts || [];
+    
+    return posts.map((post: any) => ({
+      titulo: post.title,
+      resumo: post.hat || "Supremo Tribunal Federal", // Jota's 'hat' (chapéu) acts as a short category/summary
+      url: "https://www.jota.info" + post.permalink,
+      imagem_url: post.imagem || null,
+      data_publicacao: new Date().toISOString() 
+    }));
+  } catch (e) {
+    console.error("Erro ao fazer parse do JSON do Jota", e);
+    return [];
+  }
+}
+
+function htmlToMarkdown(html: string): string {
+  let out = html;
+  out = out.replace(/<(script|style|iframe|ins|noscript)[\s\S]*?<\/\1>/gi, '');
+  out = out.replace(/<!--[\s\S]*?-->/g, '');
+  out = out.replace(/<h[1-4][^>]*>([\s\S]*?)<\/h[1-4]>/gi, (_m, c) => `\n\n**${c.replace(/<[^>]+>/g, '').trim()}**\n\n`);
+  out = out.replace(/<blockquote[^>]*>([\s\S]*?)<\/blockquote>/gi, (_m, c) => `\n\n> ${c.replace(/<[^>]+>/g, '').trim()}\n\n`);
+  out = out.replace(/<img[^>]+src="([^"]+)"[^>]*>/gi, (_m, src) => `\n\n![](${src})\n\n`);
+  out = out.replace(/<a[^>]+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi, (_m, href, txt) => `[${txt.replace(/<[^>]+>/g, '').trim()}](${href})`);
+  out = out.replace(/<(strong|b)[^>]*>([\s\S]*?)<\/\1>/gi, (_m, _t, c) => `**${c.replace(/<[^>]+>/g, '').trim()}**`);
+  out = out.replace(/<(em|i)[^>]*>([\s\S]*?)<\/\1>/gi, (_m, _t, c) => `*${c.replace(/<[^>]+>/g, '').trim()}*`);
+  out = out.replace(/<br\s*\/?>/gi, '\n\n');
+  out = out.replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, (_m, c) => `\n\n${c.replace(/<[^>]+>/g, '').trim()}\n\n`);
+  out = out.replace(/<\/(div|section|article|li)>/gi, '\n\n');
+  out = out.replace(/<[^>]+>/g, '');
+  out = out.replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&quot;/g, '"');
+  return out.replace(/\n{3,}/g, '\n\n').trim();
+}
+
+async function fetchArticleFullText(url: string, browserlessKey: string): Promise<string | null> {
+  try {
+    const endpoint = `https://production-sfo.browserless.io/content?token=${browserlessKey}`;
+    const resp = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url, waitForTimeout: 3000 }),
+    });
+    if (!resp.ok) return null;
+    const html = await resp.text();
+    
+    // Tentamos extrair via __NEXT_DATA__
+    const jsonMatch = html.match(/<script id="__NEXT_DATA__" type="application\/json">([\s\S]*?)<\/script>/);
+    if (jsonMatch) {
+      const data = JSON.parse(jsonMatch[1]);
+      if (data?.props?.pageProps?.post?.content) {
+        return htmlToMarkdown(data.props.pageProps.post.content);
+      }
+    }
+    
+    // Fallback: extrair o div com o conteúdo da matéria
+    const contentMatch = html.match(/class="[^"]*jota-article-content[^"]*"[^>]*>([\s\S]*?)(?:<\/article>|<div[^>]*class="[^"]*jota-tags)/i);
+    if (contentMatch) {
+      return htmlToMarkdown(contentMatch[1]);
+    }
+    
+    return null;
+  } catch (e) {
+    console.error(`Erro ao buscar conteúdo completo de ${url}:`, e);
+    return null;
+  }
 }
 
 Deno.serve(async (req) => {
@@ -126,42 +140,73 @@ Deno.serve(async (req) => {
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, serviceKey);
 
-    const html = await scrapeFolhaSTF();
+    const html = await scrapeJotaSTF();
     if (!html) {
       throw new Error("Nenhum HTML retornado pelo Browserless.");
     }
     
-    const extractedNews = parseHTML(html);
+    let extractedNews = parseJSON(html);
     console.log(`Extraídas ${extractedNews.length} notícias únicas.`);
     
     let novosCount = 0;
     
     if (extractedNews.length > 0) {
-      // Usar a URL para evitar duplicatas (upsert ignora inserção de mesmos valores se houver política ignore)
-      // Como a tabela define 'url' como UNIQUE, fazemos um upsert
-      const { data, error } = await supabase
+      // 1. Pegar quais já existem no banco
+      const urls = extractedNews.map(n => n.url);
+      const { data: existingData } = await supabase
         .from('stf_noticias_folha')
-        .upsert(
-          extractedNews.map(news => ({
-            titulo: news.titulo,
-            resumo: news.resumo,
-            url: news.url,
-            data_publicacao: news.data_publicacao
-          })),
-          { onConflict: 'url', ignoreDuplicates: true }
-        )
-        .select('id');
+        .select('url')
+        .in('url', urls);
         
-      if (error) {
-        throw error;
+      const existingUrls = new Set((existingData || []).map(row => row.url));
+      
+      // 2. Filtrar apenas as novas
+      const newArticles = extractedNews.filter(n => !existingUrls.has(n.url));
+      console.log(`${newArticles.length} artigos são novos e serão enriquecidos.`);
+      
+      // 3. Enriquecer (buscar texto completo)
+      const browserlessKey = Deno.env.get("BROWSERLESS_API_KEY")!;
+      for (const article of newArticles) {
+        console.log(`Buscando texto completo para: ${article.titulo}`);
+        const fullMarkdown = await fetchArticleFullText(article.url, browserlessKey);
+        
+        // Corrige imagem para remover o sufixo -230x230
+        if (article.imagem_url) {
+          article.imagem_url = article.imagem_url.replace(/-\d+x\d+\.jpg$/i, '.jpg');
+        }
+        
+        if (fullMarkdown && fullMarkdown.length > 100) {
+          // Salva o Markdown completo no campo 'resumo', preservando a categoria (hat) no topo.
+          article.resumo = `CATEGORIA: ${article.resumo}\n\n${fullMarkdown}`;
+        }
       }
       
-      novosCount = data ? data.length : 0;
+      // 4. Salvar apenas os novos artigos no banco
+      if (newArticles.length > 0) {
+        const { data, error } = await supabase
+          .from('stf_noticias_folha')
+          .upsert(
+            newArticles.map(news => ({
+              titulo: news.titulo,
+              resumo: news.resumo,
+              url: news.url,
+              imagem_url: news.imagem_url,
+              data_publicacao: news.data_publicacao
+            })),
+            { onConflict: 'url', ignoreDuplicates: false }
+          )
+          .select('id');
+          
+        if (error) {
+          throw error;
+        }
+        novosCount = data ? data.length : 0;
+      }
     }
 
     return new Response(JSON.stringify({ 
       success: true, 
-      message: `${extractedNews.length} extraídas, ${novosCount} novas inseridas.` 
+      message: `${extractedNews.length} extraídas, ${novosCount} novas inseridas com texto completo do JOTA.` 
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" }
     });

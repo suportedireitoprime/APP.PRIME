@@ -2,8 +2,8 @@ const fs = require('fs');
 const dotenv = require('dotenv');
 dotenv.config();
 
-const browserlessKey = process.env.BROWSERLESS_API_KEY;
-const STF_PAUTAS_URL = 'https://portal.stf.jus.br/pautas/';
+const browserlessKey = "0c1d61b71e8e0502a8b24665bf79a99f38d950ecf49992765cbfcfe8fde3db9f";
+const STF_PAUTAS_URL = 'https://portal.stf.jus.br/ostf/ministros/ministro.asp?periodo=STF&consulta=ALFABETICA';
 
 (async () => {
   console.log('Scraping pautas via Browserless...');

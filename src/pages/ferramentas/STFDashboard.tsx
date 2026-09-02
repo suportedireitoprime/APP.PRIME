@@ -43,11 +43,11 @@ export default function STFDashboard() {
       color: '#0EA5E9'
     },
     {
-      id: 'sumulas',
-      title: 'Súmulas Vinculantes',
-      description: 'Consulte as súmulas vinculantes do STF.',
+      id: 'biografias',
+      title: 'Biografias',
+      description: 'História e currículo dos Ministros que passaram pelo STF.',
       icon: Library,
-      path: '/ferramentas/stf/sumulas',
+      path: '/ferramentas/stf/biografias',
       color: '#EC4899'
     },
     {
