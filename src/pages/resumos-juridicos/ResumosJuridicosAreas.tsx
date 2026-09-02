@@ -33,8 +33,8 @@ import {
  MicOff,
  Scroll,
 } from "lucide-react";
-import ResumosHero from "@/components/resumos/ResumosHero";
-import ShapeGrid from "@/components/ui/ShapeGrid";
+import ResumosBottomNav from "@/components/resumos/ResumosBottomNav";
+import ResumosCargoHero from "@/components/resumos/ResumosCargoHero";
 import { AREAS_LEIS, leisDaArea, AreaLeis } from "@/lib/leisPorArea";
 import type { LeiCatalogItem } from "@/data/leisCatalog";
 import LeiArtigosSheet from "@/components/resumos-juridicos/LeiArtigosSheet";
@@ -46,20 +46,20 @@ import { haptic } from "@/lib/nativeHaptics";
 type Aba = "cargos" | "areas" | "leis" | "jurisprudencia";
 
 const JURIS_ITENS: { label: string; desc: string; rota: string; color: string }[] = [
- { label: "SÃºmulas Vinculantes", desc: "STF Â· efeito vinculante", rota: "/resumos-juridicos/jurisprudencia/sumulas-vinculantes", color: "#f87171" },
- { label: "SÃºmulas do STF", desc: "Enunciados do Supremo", rota: "/resumos-juridicos/jurisprudencia/sumulas-stf", color: "#60a5fa" },
- { label: "SÃºmulas do STJ", desc: "Enunciados do Superior", rota: "/resumos-juridicos/jurisprudencia/sumulas-stj", color: "#34d399" },
+ { label: "Súmulas Vinculantes", desc: "STF · efeito vinculante", rota: "/resumos-juridicos/jurisprudencia/sumulas-vinculantes", color: "#f87171" },
+ { label: "Súmulas do STF", desc: "Enunciados do Supremo", rota: "/resumos-juridicos/jurisprudencia/sumulas-stf", color: "#60a5fa" },
+ { label: "Súmulas do STJ", desc: "Enunciados do Superior", rota: "/resumos-juridicos/jurisprudencia/sumulas-stj", color: "#34d399" },
  { label: "Informativos do STF", desc: "Julgados recentes", rota: "/resumos-juridicos/jurisprudencia/informativos-stf", color: "#a78bfa" },
  { label: "Informativos do STJ", desc: "Julgados recentes", rota: "/resumos-juridicos/jurisprudencia/informativos-stj", color: "#22d3ee" },
- { label: "Teses do STF", desc: "RepercussÃ£o geral", rota: "/resumos-juridicos/jurisprudencia/teses-stf", color: "#fbbf24" },
- { label: "Teses do STJ", desc: "JurisprudÃªncia em teses", rota: "/resumos-juridicos/jurisprudencia/teses-stj", color: "#fb923c" },
+ { label: "Teses do STF", desc: "Repercussão geral", rota: "/resumos-juridicos/jurisprudencia/teses-stf", color: "#fbbf24" },
+ { label: "Teses do STJ", desc: "Jurisprudência em teses", rota: "/resumos-juridicos/jurisprudencia/teses-stj", color: "#fb923c" },
  { label: "Pesquisas prontas STF", desc: "Temas selecionados", rota: "/resumos-juridicos/jurisprudencia/prontas-stf", color: "#f472b6" },
  { label: "Pesquisas prontas STJ", desc: "Temas selecionados", rota: "/resumos-juridicos/jurisprudencia/prontas-stj", color: "#a3e635" },
 ];
 
 const CARGOS = [
  { id: "magistratura", nome: "Magistratura", color: "#c2274a", icon: Scale },
- { id: "ministerio-publico", nome: "MinistÃ©rio PÃºblico", color: "#38bdf8", icon: Landmark },
+ { id: "ministerio-publico", nome: "Ministério Público", color: "#38bdf8", icon: Landmark },
  { id: "carreira-policial", nome: "Carreira Policial", color: "#fbbf24", icon: Shield },
  { id: "oab", nome: "OAB", color: "#f87171", icon: Briefcase },
 ];
@@ -67,7 +67,7 @@ const CARGOS = [
 
 type AreaRow = { area: string; total: number };
 
-// Ãcone e cor (hex) por Ã¡rea
+// Ícone e cor (hex) por área
 const AREA_STYLE: Record<string, { icon: any; color: string }> = {
  administrativo: { icon: Landmark, color: "#38bdf8" },
  ambiental: { icon: Leaf, color: "#34d399" },
@@ -115,7 +115,7 @@ export default function ResumosJuridicosAreas() {
  const [loading, setLoading] = useState(!areasCache);
  const [q, setQ] = useState("");
  const [buscaAberta, setBuscaAberta] = useState(false);
- const [aba, setAba] = useState<Aba>("areas");
+ const [aba, setAba] = useState<Aba>("cargos");
  const [areaLeis, setAreaLeis] = useState<AreaLeis | null>(null);
  const [leiArtigos, setLeiArtigos] = useState<{ lei: LeiCatalogItem; area: string } | null>(null);
  const [buscaLeis, setBuscaLeis] = useState("");
@@ -212,72 +212,206 @@ export default function ResumosJuridicosAreas() {
  }, [rows, q]);
 
  return (
- <div className="min-h-dvh bg-[#0D0D0D] text-white pb-[calc(2rem+var(--sai-bottom))] overflow-x-hidden relative">
- <div className="fixed inset-0 z-0 pointer-events-none opacity-[0.15]">
- <ShapeGrid />
- </div>
- <div className="mx-auto w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] px-3 sm:px-6 lg:px-8 mt-2 relative z-10">
+ <div className="min-h-dvh bg-background pb-[calc(7rem+var(--sai-bottom))] lg:pb-[calc(3rem+var(--sai-bottom))] overflow-x-hidden">
+ <PageHeader title="Resumos Jurídicos" onBack={() => navigate("/")} />
+
+ <div className="mx-auto w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] px-3 sm:px-6 lg:px-8 mt-2">
  
  {/* HERO SECTION */}
  <div className="-mx-3 sm:-mx-6 lg:-mx-8 mb-6 mt-1">
- <ResumosHero onBuscar={() => setBuscaAberta(true)} />
+ <ResumosCargoHero 
+ pct={0} 
+ total={0} 
+ hoje={0} 
+ meta={100} 
+ disponiveis={totalAcervo || 1200} 
+ streak={0}
+ />
  </div>
 
-        {/* HUB CARDS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <motion.button
-            whileTap={{ scale: 0.98 }}
-            onClick={() => { haptic.selection(); navigate("/resumos-juridicos/materias"); }}
-            className="flex flex-col items-start gap-4 p-6 rounded-3xl bg-secondary/30 border border-border/50 hover:bg-secondary/50 transition-colors text-left group"
-          >
-            <div className="w-14 h-14 rounded-2xl bg-[#38bdf8]/10 flex items-center justify-center">
-              <BookOpen className="w-7 h-7 text-[#38bdf8]" strokeWidth={1.5} />
-            </div>
-            <div className="flex-1 w-full flex items-center justify-between">
-              <div>
-                <h3 className="font-display font-black uppercase tracking-widest text-[18px] text-foreground">Matérias</h3>
-                <p className="text-[13px] text-muted-foreground mt-1">Navegue pelos resumos por área do Direito.</p>
-              </div>
-              <ChevronRight className="w-6 h-6 text-muted-foreground/40 group-hover:text-[#38bdf8] transition-colors" />
-            </div>
-          </motion.button>
-
-          <motion.button
-            whileTap={{ scale: 0.98 }}
-            onClick={() => { haptic.selection(); navigate("/resumos-juridicos/leis"); }}
-            className="flex flex-col items-start gap-4 p-6 rounded-3xl bg-secondary/30 border border-border/50 hover:bg-secondary/50 transition-colors text-left group"
-          >
-            <div className="w-14 h-14 rounded-2xl bg-[#f87171]/10 flex items-center justify-center">
-              <Landmark className="w-7 h-7 text-[#f87171]" strokeWidth={1.5} />
-            </div>
-            <div className="flex-1 w-full flex items-center justify-between">
-              <div>
-                <h3 className="font-display font-black uppercase tracking-widest text-[18px] text-foreground">Leis</h3>
-                <p className="text-[13px] text-muted-foreground mt-1">Leitura estruturada das principais leis do Vade Mecum.</p>
-              </div>
-              <ChevronRight className="w-6 h-6 text-muted-foreground/40 group-hover:text-[#f87171] transition-colors" />
-            </div>
-          </motion.button>
-
-          <motion.button
-            whileTap={{ scale: 0.98 }}
-            onClick={() => { haptic.selection(); navigate("/resumos-juridicos/jurisprudencia"); }}
-            className="flex flex-col items-start gap-4 p-6 rounded-3xl bg-secondary/30 border border-border/50 hover:bg-secondary/50 transition-colors text-left group md:col-span-2 md:max-w-2xl md:mx-auto md:w-full"
-          >
-            <div className="w-14 h-14 rounded-2xl bg-[#34d399]/10 flex items-center justify-center">
-              <Scroll className="w-7 h-7 text-[#34d399]" strokeWidth={1.5} />
-            </div>
-            <div className="flex-1 w-full flex items-center justify-between">
-              <div>
-                <h3 className="font-display font-black uppercase tracking-widest text-[18px] text-foreground">Jurisprudência</h3>
-                <p className="text-[13px] text-muted-foreground mt-1">Súmulas, Informativos e Teses dos tribunais superiores.</p>
-              </div>
-              <ChevronRight className="w-6 h-6 text-muted-foreground/40 group-hover:text-[#34d399] transition-colors" />
-            </div>
-          </motion.button>
+  {/* HUB: 3 CARDS PRINCIPAIS */}
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <motion.button
+      whileTap={{ scale: 0.98 }}
+      onClick={() => { haptic.selection(); navigate("/resumos-juridicos/materias"); }}
+      className="flex flex-col items-start gap-4 p-6 rounded-3xl bg-secondary/30 border border-border/50 hover:bg-secondary/50 transition-colors text-left group"
+    >
+      <div className="w-14 h-14 rounded-2xl bg-[#38bdf8]/10 flex items-center justify-center">
+        <BookOpen className="w-7 h-7 text-[#38bdf8]" strokeWidth={1.5} />
+      </div>
+      <div className="flex-1 w-full flex items-center justify-between">
+        <div>
+          <h3 className="font-display font-black uppercase tracking-widest text-[18px] text-foreground">Matérias</h3>
+          <p className="text-[13px] text-muted-foreground mt-1">Navegue pelos resumos por área do Direito.</p>
         </div>
+        <ChevronRight className="w-6 h-6 text-muted-foreground/40 group-hover:text-[#38bdf8] transition-colors" />
+      </div>
+    </motion.button>
+
+    <motion.button
+      whileTap={{ scale: 0.98 }}
+      onClick={() => { haptic.selection(); navigate("/resumos-juridicos/leis"); }}
+      className="flex flex-col items-start gap-4 p-6 rounded-3xl bg-secondary/30 border border-border/50 hover:bg-secondary/50 transition-colors text-left group"
+    >
+      <div className="w-14 h-14 rounded-2xl bg-[#f87171]/10 flex items-center justify-center">
+        <Landmark className="w-7 h-7 text-[#f87171]" strokeWidth={1.5} />
+      </div>
+      <div className="flex-1 w-full flex items-center justify-between">
+        <div>
+          <h3 className="font-display font-black uppercase tracking-widest text-[18px] text-foreground">Leis</h3>
+          <p className="text-[13px] text-muted-foreground mt-1">Leitura estruturada das principais leis do Vade Mecum.</p>
+        </div>
+        <ChevronRight className="w-6 h-6 text-muted-foreground/40 group-hover:text-[#f87171] transition-colors" />
+      </div>
+    </motion.button>
+
+    <motion.button
+      whileTap={{ scale: 0.98 }}
+      onClick={() => { haptic.selection(); navigate("/resumos-juridicos/jurisprudencia"); }}
+      className="flex flex-col items-start gap-4 p-6 rounded-3xl bg-secondary/30 border border-border/50 hover:bg-secondary/50 transition-colors text-left group md:col-span-2 md:max-w-2xl md:mx-auto md:w-full"
+    >
+      <div className="w-14 h-14 rounded-2xl bg-[#34d399]/10 flex items-center justify-center">
+        <Scroll className="w-7 h-7 text-[#34d399]" strokeWidth={1.5} />
+      </div>
+      <div className="flex-1 w-full flex items-center justify-between">
+        <div>
+          <h3 className="font-display font-black uppercase tracking-widest text-[18px] text-foreground">Jurisprudência</h3>
+          <p className="text-[13px] text-muted-foreground mt-1">Súmulas, Informativos e Teses dos tribunais superiores.</p>
+        </div>
+        <ChevronRight className="w-6 h-6 text-muted-foreground/40 group-hover:text-[#34d399] transition-colors" />
+      </div>
+    </motion.button>
+  </div>
 
  </div>
+
+ {/* OVERLAY: LEIS DA ÁREA */}
+ <AnimatePresence>
+ {areaLeis && (
+ <>
+ <motion.div
+ initial={{ opacity: 0 }}
+ animate={{ opacity: 1 }}
+ exit={{ opacity: 0 }}
+ onClick={() => setAreaLeis(null)}
+ className="fixed inset-0 z-[70] bg-black/60 "
+ />
+ <motion.div
+ initial={{ y: "100%" }}
+ animate={{ y: 0 }}
+ exit={{ y: "100%" }}
+ transition={{ duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}
+ className="fixed bottom-0 left-0 right-0 z-[71] flex h-[90dvh] flex-col rounded-t-3xl border-t border-border bg-background pb-[calc(1rem+var(--sai-bottom))]"
+ >
+ <div className="flex items-center justify-center pt-2 pb-1">
+ <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
+ </div>
+ <div className="flex items-center justify-between px-5 pb-3">
+ <div className="flex min-w-0 items-center gap-3">
+ <div className="w-11 h-11 rounded-2xl bg-secondary/70 flex items-center justify-center shrink-0">
+ {(() => {
+ const Icon = styleForArea(areaLeis.nome).icon;
+ return (
+ <Icon
+ className="w-6 h-6"
+ style={{ color: areaLeis.color, filter: "saturate(1.3) brightness(1.1)" }}
+ strokeWidth={1.2}
+ />
+ );
+ })()}
+ </div>
+ <div className="min-w-0">
+ <h3 className="font-display text-xl text-foreground font-bold leading-none truncate uppercase">
+ {areaLeis.nome.replace(/^DIREITO\s+/i, '')}
+ </h3>
+ <p className="text-muted-foreground text-[12px] font-body leading-tight mt-1 truncate">
+ {leisDaArea(areaLeis).map((l) => l.sigla).join(", ")}
+ </p>
+ </div>
+ </div>
+ <button
+ onClick={() => setAreaLeis(null)}
+ aria-label="Fechar"
+ className="w-9 h-9 rounded-full bg-secondary/60 flex items-center justify-center shrink-0"
+ >
+ <X className="w-4 h-4 text-foreground" />
+ </button>
+ </div>
+
+ <div className="px-4 pb-3">
+ <div className="flex items-center gap-2.5">
+ <div className="flex-1 flex items-center gap-2 rounded-2xl border border-border/60 bg-secondary/45 px-3 h-12">
+ <Search className="w-5 h-5 text-muted-foreground shrink-0" />
+ <input
+ value={buscaLeis}
+ onChange={(e) => setBuscaLeis(e.target.value)}
+ placeholder="Pesquisar nesta área"
+ className="min-w-0 flex-1 bg-transparent font-body text-[14px] text-foreground placeholder:text-muted-foreground outline-none"
+ />
+ </div>
+ <button
+ type="button"
+ onClick={voiceLeis.toggle}
+ aria-label={voiceLeis.listening ? "Parar gravação" : "Pesquisar por voz"}
+ className={`shrink-0 w-14 h-14 rounded-full flex items-center justify-center shadow-lg active:scale-[0.95] transition ${
+ voiceLeis.listening
+ ? "bg-red-500 text-white animate-pulse shadow-red-500/40"
+ : "bg-primary text-primary-foreground shadow-primary/30"
+ }`}
+ >
+ {voiceLeis.listening ? <MicOff className="w-6 h-6" strokeWidth={2.5} /> : <Mic className="w-6 h-6" strokeWidth={2.5} />}
+ </button>
+ </div>
+ </div>
+
+ <div className="flex-1 overflow-y-auto px-4 pb-4">
+ <div className="space-y-2">
+ {leisDaArea(areaLeis)
+ .filter((lei) => {
+ const t = buscaLeis.trim().toLowerCase();
+ if (!t) return true;
+ return `${lei.nome} ${lei.sigla} ${lei.descricao}`.toLowerCase().includes(t);
+ })
+ .map((lei, i) => {
+ const LawIcon = LEI_ICON_MAP[lei.id] || styleForArea(areaLeis.nome).icon;
+ return (
+ <motion.button
+ key={lei.id}
+ initial={{ opacity: 0, y: 12 }}
+ animate={{ opacity: 1, y: 0 }}
+ transition={{ delay: Math.min(i * 0.025, 0.25), duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}
+ onClick={() => {
+ setLeiArtigos({ lei, area: areaLeis.nome });
+ setAreaLeis(null);
+ }}
+ className="w-full flex items-center gap-4 p-4 min-h-[84px] rounded-2xl bg-secondary/40 border border-border/50 active:scale-[0.99] transition text-left"
+ >
+ <LawIcon
+ className="w-8 h-8 shrink-0"
+ style={{
+ color: (lei as any).iconColor || areaLeis.color,
+ filter: "saturate(1.5) brightness(1.2) drop-shadow(0 2px 8px rgba(0,0,0,0.5))",
+ }}
+ strokeWidth={1.3}
+ />
+ <div className="flex-1 min-w-0">
+ <p className="font-display text-foreground text-[16px] font-bold leading-tight line-clamp-1 uppercase tracking-[0.08em]">
+ {lei.nome}
+ </p>
+ <p className="font-body text-muted-foreground text-[12.5px] leading-snug mt-1 line-clamp-2">
+ {lei.descricao}
+ </p>
+ </div>
+ <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
+ </motion.button>
+ );
+ })}
+ </div>
+ </div>
+ </motion.div>
+ </>
+ )}
+ </AnimatePresence>
 
  {/* OVERLAY DE BUSCA PRINCIPAL */}
  <AnimatePresence>
@@ -315,14 +449,14 @@ export default function ResumosJuridicosAreas() {
  autoFocus
  value={voiceBusca.listening && voiceBusca.partial ? voiceBusca.partial : q}
  onChange={(e) => setQ(e.target.value)}
- placeholder="Buscar matÃ©ria, lei ou sÃºmula"
+ placeholder="Buscar matéria, lei ou súmula"
  className="w-full h-12 pl-11 pr-4 rounded-2xl bg-black/80 border border-white/25 text-white placeholder:text-white/50 outline-none"
  />
  </div>
  <button
  type="button"
  onClick={voiceBusca.toggle}
- aria-label={voiceBusca.listening ? "Parar gravaÃ§Ã£o" : "Pesquisar por voz"}
+ aria-label={voiceBusca.listening ? "Parar gravação" : "Pesquisar por voz"}
  className={`shrink-0 w-12 h-12 rounded-full flex items-center justify-center shadow-lg active:scale-95 transition ${
  voiceBusca.listening
  ? "bg-red-500 text-white animate-pulse shadow-red-500/40"
@@ -336,9 +470,9 @@ export default function ResumosJuridicosAreas() {
  <div className="mt-3 flex items-center gap-1 p-1 rounded-full bg-black/30 border border-white/15">
  {([
  { id: "todos", label: "Todos" },
- { id: "areas", label: "MatÃ©rias" },
+ { id: "areas", label: "Matérias" },
  { id: "leis", label: "Leis" },
- { id: "jurisprudencia", label: "JurisprudÃªncia" },
+ { id: "jurisprudencia", label: "Jurisprudência" },
  ] as const).map((f) => {
  const ativo = filtroBusca === f.id;
  return (
@@ -447,7 +581,8 @@ export default function ResumosJuridicosAreas() {
  area={leiArtigos?.area}
  onClose={() => setLeiArtigos(null)}
  />
- </div>
+
+ <ResumosBottomNav hidden={buscaAberta || !!leiArtigos} />
  </div>
  );
 }
