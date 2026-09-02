@@ -182,10 +182,10 @@ export default function STFBiografias() {
         {/* Menu de Alternância (Filtros) */}
         <div className="flex flex-wrap items-center gap-2 mb-8">
           {[
-            { id: 'todos', label: 'Todos' },
-            { id: 'vigentes', label: 'Vigentes' },
-            { id: 'mulheres', label: 'Mulheres' },
-            { id: 'homens', label: 'Homens' }
+            { id: 'todos', label: 'Todos', count: ministros.length },
+            { id: 'vigentes', label: 'Vigentes', count: ministros.filter(m => m.status === 'vigente').length },
+            { id: 'mulheres', label: 'Mulheres', count: ministros.filter(m => m.genero === 'F').length },
+            { id: 'homens', label: 'Homens', count: ministros.filter(m => m.genero === 'M').length }
           ].map((tab) => (
             <button
               key={tab.id}
@@ -199,7 +199,7 @@ export default function STFBiografias() {
                   : 'bg-zinc-900/80 text-zinc-400 border-white/5 hover:bg-zinc-800 hover:text-white'
               }`}
             >
-              {tab.label}
+              {tab.label} <span className="opacity-60 ml-1 font-normal text-xs">({tab.count})</span>
             </button>
           ))}
         </div>
