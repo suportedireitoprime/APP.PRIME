@@ -16,8 +16,6 @@ export default function PilulasHome() {
   const navigate = useNavigate();
   const galleryRef = useRef<any>(null);
   const ministrosGalleryRef = useRef<any>(null);
-  const [searchCode, setSearchCode] = useState('');
-  const [searchMinistro, setSearchMinistro] = useState('');
   const [activeTab, setActiveTab] = useState<TabType>('Todos');
   const tabs: TabType[] = ['Todos', 'Pílulas Rápidas', 'Só Pílulas', 'Códigos', 'Ministros'];
   
@@ -55,6 +53,14 @@ export default function PilulasHome() {
     { image: "https://portal.stf.jus.br/util/imagem.asp?id=3141", text: "Barroso", fullName: "Roberto Barroso" }
   ], []);
 
+  const classicosPillsItems = useMemo(() => [
+    { image: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_luta_pelo_direito_manual.jpg', text: 'A Luta pelo Direito', fullName: 'Rudolf von Ihering' },
+    { image: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/sobre_a_liberdade_manual.jpg', text: 'Sobre a Liberdade', fullName: 'John Stuart Mill' },
+    { image: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_arte_da_guerra_manual.jpg', text: 'A Arte da Guerra', fullName: 'Sun Tzu' },
+    { image: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_espirito_das_leis_manual.jpg', text: 'O Espírito das Leis', fullName: 'Montesquieu' },
+    { image: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_mundo_assombrado_pelos_demonios_manual.jpg', text: 'O Mundo Assombrado pelos Demônios', fullName: 'Carl Sagan' }
+  ], []);
+
   const handleItemClick = useCallback((item: any) => {
     haptic.selection();
     if (item.text === 'CP') navigate('/pilulas/cp');
@@ -69,33 +75,6 @@ export default function PilulasHome() {
     navigate('/ferramentas/stf/biografias'); // Temporarily route to biografias
   }, [navigate]);
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const term = e.target.value.toUpperCase();
-    setSearchCode(term);
-    
-    // Auto-scroll when match is found
-    if (term.length >= 2) {
-      const index = fastPillsItems.findIndex(item => item.text.startsWith(term));
-      if (index !== -1 && galleryRef.current) {
-        galleryRef.current.scrollToIndex(index);
-      }
-    }
-  };
-
-  const handleSearchMinistro = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const term = e.target.value;
-    setSearchMinistro(term);
-    
-    if (term.length >= 3) {
-      const index = ministrosPillsItems.findIndex(item => 
-        item.text.toLowerCase().includes(term.toLowerCase()) || 
-        item.fullName.toLowerCase().includes(term.toLowerCase())
-      );
-      if (index !== -1 && ministrosGalleryRef.current) {
-        ministrosGalleryRef.current.scrollToIndex(index);
-      }
-    }
-  };
 
   const showRapidas = activeTab === 'Todos' || activeTab === 'Pílulas Rápidas';
   const showSoPilulas = activeTab === 'Todos' || activeTab === 'Só Pílulas';
@@ -163,19 +142,7 @@ export default function PilulasHome() {
               
               {/* Search Bar & List Button */}
               <div className="flex items-center gap-2 w-full">
-                <div className="relative flex-1">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Search className="h-4 w-4 text-zinc-400" />
-                  </div>
-                  <input
-                    type="text"
-                    value={searchCode}
-                    onChange={handleSearch}
-                    placeholder="Ex: CC"
-                    maxLength={4}
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl py-2 pl-9 pr-3 text-[13px] text-white placeholder:text-zinc-500 focus:outline-none focus:border-white/20 transition-all uppercase"
-                  />
-                </div>
+                <div className="flex-1" />
                 <button
                   onClick={() => { haptic.selection(); navigate('/pilulas/lista?tipo=codigos'); }}
                   className="flex items-center justify-center h-[38px] px-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-semibold whitespace-nowrap transition-all active:scale-[0.98]"
@@ -221,18 +188,7 @@ export default function PilulasHome() {
 
               {/* Search Bar & List Button */}
               <div className="flex items-center gap-2 w-full">
-                <div className="relative flex-1">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Search className="h-4 w-4 text-zinc-400" />
-                  </div>
-                  <input
-                    type="text"
-                    value={searchMinistro}
-                    onChange={handleSearchMinistro}
-                    placeholder="Buscar ministro..."
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl py-2 pl-9 pr-3 text-[13px] text-white placeholder:text-zinc-500 focus:outline-none focus:border-white/20 transition-all"
-                  />
-                </div>
+                <div className="flex-1" />
                 <button
                   onClick={() => { haptic.selection(); navigate('/pilulas/lista?tipo=ministros'); }}
                   className="flex items-center justify-center h-[38px] px-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-semibold whitespace-nowrap transition-all active:scale-[0.98]"
@@ -257,47 +213,44 @@ export default function PilulasHome() {
         )}
 
         {showSoPilulas && (
-          <>
-
-            <div>
-              <h2 className="text-[22px] font-black text-white uppercase tracking-widest">Escolha um Tema</h2>
-              <p className="mt-1 text-[14px] text-zinc-400 truncate">
-                Aprenda conceitos jurídicos complexos em minutos. Ouça pílulas de conhecimento extraídas da essência das principais obras e legislações.
-              </p>
+          <div className="space-y-4 mb-8">
+            <div className="flex items-center w-full mt-10 mb-6">
+              <div className="flex-1 h-[1px] bg-white/10" />
+              <span className="mx-4 text-xs font-semibold tracking-widest text-zinc-400 uppercase">Clássicos do Direito</span>
+              <div className="flex-1 h-[1px] bg-white/10" />
             </div>
 
-            {/* Clássicos do Direito */}
-            <motion.button
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              onClick={handleSelectClassicos}
-              className="w-full group relative flex flex-col items-start text-left overflow-hidden rounded-2xl bg-zinc-900 border border-zinc-800/80 active:scale-[0.98] transition-all h-[220px]"
-            >
-              {/* Background Image with Overlay */}
-              <div className="absolute inset-0 z-0">
-                <img src="/pilulas/classicos_cover.jpg" alt="Clássicos do Direito" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
-                <div className="absolute inset-x-0 bottom-0 h-3/5 bg-gradient-to-t from-zinc-950 via-zinc-950/60 to-transparent" />
+            <div className="flex flex-col px-1 mb-4 gap-3">
+              <div className="flex-1 min-w-0">
+                <h2 className="text-[22px] font-black text-white uppercase tracking-widest mb-1">Clássicos do Direito</h2>
+                <p className="text-[13px] text-zinc-400 truncate">
+                  As obras fundamentais do pensamento jurídico mundial.
+                </p>
               </div>
 
-              {/* Content */}
-              <div className="relative z-10 flex flex-col justify-end h-full p-5 w-full">
-                <div className="flex justify-between items-end w-full">
-                  <div>
-                    <h3 className="text-[20px] font-black text-white leading-tight drop-shadow-md">
-                      Clássicos do Direito
-                    </h3>
-                    <p className="mt-2 text-[13px] text-zinc-300 line-clamp-2 drop-shadow">
-                      As obras fundamentais do pensamento jurídico mundial.
-                    </p>
-                  </div>
-                  <div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center flex-shrink-0 mb-1 border border-white/20">
-                    <ArrowRight className="w-4 h-4 text-white" strokeWidth={2.5} />
-                  </div>
-                </div>
+              {/* List Button */}
+              <div className="flex items-center gap-2 w-full">
+                <div className="flex-1" />
+                <button
+                  onClick={handleSelectClassicos}
+                  className="flex items-center justify-center h-[38px] px-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-semibold whitespace-nowrap transition-all active:scale-[0.98]"
+                >
+                  Ver em lista
+                </button>
               </div>
-            </motion.button>
-          </>
+            </div>
+
+            <div style={{ height: '350px', position: 'relative' }} className="-mx-4">
+              <CircularGallery
+                items={classicosPillsItems}
+                bend={1.5}
+                textColor="#ffffff"
+                borderRadius={0.05}
+                scrollEase={0.02}
+                onItemClick={handleSelectClassicos}
+              />
+            </div>
+          </div>
         )}
 
       </div>
