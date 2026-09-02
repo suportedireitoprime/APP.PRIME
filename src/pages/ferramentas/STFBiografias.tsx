@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft, BookOpen, User, CheckCircle2, AlertCircle, Download, Loader2, FileText, ExternalLink, Clock, Search, Mic } from 'lucide-react';
+import { ArrowLeft, BookOpen, User, CheckCircle2, AlertCircle, Download, Loader2, FileText, ExternalLink, Clock, Search, Mic, Calendar } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { haptic } from '@/lib/nativeHaptics';
 import ShapeGrid from '@/components/ui/ShapeGrid';
@@ -478,9 +478,20 @@ export default function STFBiografias() {
 
                               {/* Conteúdo do evento */}
                               <div className="bg-zinc-800/50 border border-white/5 rounded-xl p-4 sm:p-5 hover:border-purple-500/20 transition-colors">
-                                <h4 className="text-sm sm:text-base font-bold text-white uppercase tracking-wider leading-snug mb-3">
+                                <h4 className="text-sm sm:text-base font-sans font-semibold text-purple-100 uppercase tracking-wide leading-snug mb-1">
                                   {ev.etapa}
                                 </h4>
+
+                                <div className="flex items-center gap-1.5 text-xs text-zinc-400 font-body mb-3">
+                                  <Calendar className="w-3.5 h-3.5 opacity-70" />
+                                  <span>
+                                    {ev.etapa.includes('INDICAÇÃO') && selectedMinistro.data_indicacao 
+                                      ? new Date(selectedMinistro.data_indicacao).toLocaleDateString('pt-BR') 
+                                      : ev.etapa.includes('APOSENTADORIA') && selectedMinistro.data_fim 
+                                        ? new Date(selectedMinistro.data_fim).toLocaleDateString('pt-BR') 
+                                        : 'Data detalhada no documento original'}
+                                  </span>
+                                </div>
 
                                 <div className="flex flex-wrap gap-2">
                                   {ev.pdf_url && (
