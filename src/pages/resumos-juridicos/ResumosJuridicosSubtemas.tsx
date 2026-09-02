@@ -186,9 +186,9 @@ export default function ResumosJuridicosSubtemas() {
                       </span>
                       
                       <div className="flex-1 min-w-0 pr-2">
-                        <h3 className="font-body font-semibold text-[15px] text-foreground leading-snug line-clamp-2">
+                        <div className="font-sans font-semibold text-[15px] tracking-normal text-foreground leading-snug line-clamp-2">
                           {r.subtema || r.tema}
-                        </h3>
+                        </div>
                       </div>
 
                       <div className="flex flex-col items-end gap-2 shrink-0">
