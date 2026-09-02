@@ -40,9 +40,24 @@ class NativeFlashcardsPlugin : Plugin() {
             putExtra("isStudySession", true)
         }
         
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        context.startActivity(intent)
+        startActivityForResult(call, intent, "studySessionResult")
+    }
+
+    @com.getcapacitor.annotation.ActivityCallback
+    private fun studySessionResult(call: PluginCall?, result: androidx.activity.result.ActivityResult) {
+        if (call == null) return
         
-        call.resolve()
+        val data = result.data
+        val cardsRevisados = data?.getIntExtra("cardsRevisados", 1) ?: 1
+        val totalCards = data?.getIntExtra("totalCards", 10) ?: 10
+        
+        val retObj = JSObject()
+        retObj.put("cardsRevisados", cardsRevisados)
+        retObj.put("totalCards", totalCards)
+        
+        val finalResult = JSObject()
+        finalResult.put("result", retObj)
+        
+        call.resolve(finalResult)
     }
 }

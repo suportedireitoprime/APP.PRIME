@@ -44,7 +44,14 @@ class FlashcardsActivity : ComponentActivity() {
                 isStudySession = isStudySession,
                 category = category,
                 accessToken = accessToken,
-                onClose = { finish() }
+                onClose = { 
+                    val resultIntent = android.content.Intent().apply {
+                        putExtra("cardsRevisados", 5) // Mock de valor final
+                        putExtra("totalCards", 10)
+                    }
+                    setResult(android.app.Activity.RESULT_OK, resultIntent)
+                    finish() 
+                }
             )
         }
     }

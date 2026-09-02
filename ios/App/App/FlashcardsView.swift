@@ -4,7 +4,7 @@ struct FlashcardsView: View {
     var isStudySession: Bool
     var category: String
     var accessToken: String
-    var onClose: () -> Void
+    var onClose: (Int, Int) -> Void
     
     @State private var serverStatus = "Conectando ao Supabase Nativamente..."
     
@@ -39,7 +39,7 @@ struct FlashcardsView: View {
                 Spacer().frame(height: 16)
                 
                 Button(action: {
-                    onClose()
+                    onClose(5, 10) // mock result
                 }) {
                     Text("Voltar para o App (Web)")
                         .fontWeight(.semibold)
@@ -153,14 +153,19 @@ struct SwipeableCardView: View {
 import UIKit
 
 class FlashcardsHostingController: UIHostingController<FlashcardsView> {
-    init(isStudySession: Bool, category: String, accessToken: String) {
-        var closeAction: (() -> Void)? = nil
-        let view = FlashcardsView(isStudySession: isStudySession, category: category, accessToken: accessToken) {
-            closeAction?()
+    var onResult: ((Int, Int) -> Void)?
+    
+    init(isStudySession: Bool, category: String, accessToken: String, onResult: ((Int, Int) -> Void)? = nil) {
+        self.onResult = onResult
+        var closeAction: ((Int, Int) -> Void)? = nil
+        let view = FlashcardsView(isStudySession: isStudySession, category: category, accessToken: accessToken) { rev, tot in
+            closeAction?(rev, tot)
         }
         super.init(rootView: view)
-        closeAction = { [weak self] in
-            self?.dismiss(animated: true, completion: nil)
+        closeAction = { [weak self] (rev, tot) in
+            self?.dismiss(animated: true) {
+                self?.onResult?(rev, tot)
+            }
         }
     }
     

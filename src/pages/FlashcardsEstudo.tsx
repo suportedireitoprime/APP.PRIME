@@ -104,17 +104,50 @@ const FlashcardsEstudo = () => {
     
     const checkNative = async () => {
       if (Capacitor.isNativePlatform() && !escolhendo) {
+        if (loading) return; // Wait for cards to know the context (or let native fetch)
+        
         const { data } = await supabase.auth.getSession();
-        NativeFlashcardsPlugin.startStudySession({ 
-          category: areaSheet || 'Flashcards', 
-          cards: [],
-          accessToken: data.session?.access_token,
-          refreshToken: data.session?.refresh_token
-        });
+        try {
+          const result = await NativeFlashcardsPlugin.startStudySession({ 
+            category: areaSheet || areaParam || 'Flashcards', 
+            cards: [], // Em "Nativo Independente" o nativo deve fazer o fetch real
+            accessToken: data.session?.access_token,
+            refreshToken: data.session?.refresh_token
+          });
+
+          // Atualizar o histórico
+          const sessionKey = params.get('sessaoId') || sessaoId;
+          const titleParts = [];
+          if (areaParam || params.get('areas')) titleParts.push(areaParam || params.get('areas'));
+          if (temasParam) titleParts.push(temasParam.split('|')[0]);
+          if (params.get('deck')) titleParts.push(`Deck ${params.get('deck')}`);
+          
+          const title = titleParts.join(' • ') || 'Sessão Nativa';
+          const revisados = result?.result?.cardsRevisados || 0;
+          const total = result?.result?.totalCards || cards.length || 1; // Fallback se nativo não retornar
+
+          import('@/lib/flashcardsSessoes').then(m => {
+            m.saveFlashcardsSessao({
+              id: sessionKey,
+              dataInicio: new Date().toISOString(),
+              dataUltimoAcesso: new Date().toISOString(),
+              queryString: params.toString(),
+              filtroAplicado: title,
+              cardsRevisados: revisados,
+              totalCards: total,
+            });
+            // Volta pro histórico após terminar a sessão
+            navigate('/flashcards/historico');
+          });
+
+        } catch (e) {
+          console.error("Erro no plugin nativo:", e);
+          navigate('/flashcards');
+        }
       }
     };
     checkNative();
-  }, [escolhendo, areaSheet]);
+  }, [escolhendo, areaSheet, loading]);
 
   return (
     <div className={`min-h-dvh overflow-x-hidden bg-background ${escolhendo ? 'pb-[calc(8rem+var(--sai-bottom))]' : 'pb-[calc(2.5rem+var(--sai-bottom))]'}`}>
