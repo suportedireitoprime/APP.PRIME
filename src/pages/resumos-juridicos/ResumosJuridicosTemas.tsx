@@ -8,6 +8,7 @@ import { haptic } from "@/lib/nativeHaptics";
 import { resumosLocal } from "@/lib/resumosLocal";
 import ShapeGrid from "@/components/ui/ShapeGrid";
 import { toast } from "@/hooks/use-toast";
+import { useTypewriter } from "@/hooks/useTypewriter";
 
 type Row = { tema: string; ordem_tema: number | null; total: number };
 type Ordem = "crono" | "alpha" | "fav";
@@ -135,6 +136,14 @@ export default function ResumosJuridicosTemas() {
     return () => { cancelled = true; };
   }, [decodedArea]);
 
+  const placeholderWords = useMemo(() => {
+    const areaName = decodedArea.replace(/^DIREITO\s+(DO\s+|DA\s+|DE\s+)?/i, '');
+    if (rows.length === 0) return [`Pesquisar matéria de ${areaName}...`];
+    return rows.map(r => `Pesquisar ${r.tema.toLowerCase()}...`);
+  }, [rows, decodedArea]);
+
+  const placeholderText = useTypewriter(placeholderWords, 50, 20, 2500);
+
   const filteredTemas = useMemo(() => {
     let result = rows;
     if (q.trim()) {
@@ -167,12 +176,12 @@ export default function ResumosJuridicosTemas() {
           
           <div className="max-w-5xl mx-auto px-4 mt-2 space-y-3">
           <div className="relative flex items-center group">
-            <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-white/50 group-focus-within:text-primary transition-colors" />
+            <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-primary transition-colors" />
             <Input 
               value={q} 
               onChange={(e) => setQ(e.target.value)} 
-              placeholder={`Pesquisar matéria de ${decodedArea.replace(/^DIREITO\s+(DO\s+|DA\s+|DE\s+)?/i, '')}...`}
-              className="pl-12 pr-12 h-14 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 focus:border-primary/50 text-[15px] font-medium text-white placeholder:text-white/40 shadow-sm transition-all" 
+              placeholder={placeholderText || "Pesquisar..."}
+              className="pl-12 pr-12 h-14 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 focus:border-primary/50 text-[15px] font-medium text-white placeholder:text-zinc-400 shadow-sm transition-all" 
             />
             <button
               onClick={() => { haptic.selection(); toast({ title: 'Em breve: Pesquisa por Voz' }); }}
