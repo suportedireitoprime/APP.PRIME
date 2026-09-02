@@ -117,25 +117,31 @@ export default function STFBiografias() {
     if (!matchesSearch) return false;
     
     if (activeFilter === 'todos') return true;
-    if (activeFilter === 'vigentes') return m.status === 'vigente';
+    if (activeFilter === 'vigentes') return m.status?.toLowerCase().includes('vigente') || m.status?.toLowerCase().includes('ativo');
     if (activeFilter === 'mulheres') return m.genero === 'F';
     if (activeFilter === 'homens') return m.genero !== 'F';
     return true;
   });
 
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'vigente': return 'bg-green-500/20 text-green-400 border-green-500/30';
-      case 'aposentado': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
-      case 'falecido': return 'bg-zinc-500/20 text-zinc-400 border-zinc-500/30';
-      default: return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
+    const s = status?.toLowerCase() || '';
+    if (s.includes('vigente') || s.includes('ativo')) {
+      return 'bg-green-500/15 text-green-400 border-green-500/30';
     }
+    if (s.includes('aposentad')) {
+      return 'bg-yellow-500/15 text-yellow-400 border-yellow-500/30';
+    }
+    if (s.includes('falecid')) {
+      return 'bg-zinc-500/15 text-zinc-400 border-zinc-500/30';
+    }
+    return 'bg-purple-500/15 text-purple-400 border-purple-500/30';
   };
 
   const getStatusLabel = (status: string, genero: string) => {
-    if (status === 'vigente') return 'Vigente';
-    if (status === 'aposentado') return genero === 'F' ? 'Aposentada' : 'Aposentado';
-    if (status === 'falecido') return genero === 'F' ? 'Falecida' : 'Falecido';
+    const s = status?.toLowerCase() || '';
+    if (s.includes('vigente') || s.includes('ativo')) return 'Vigente';
+    if (s.includes('aposentad')) return genero === 'F' ? 'Aposentada' : 'Aposentado';
+    if (s.includes('falecid')) return genero === 'F' ? 'Falecida' : 'Falecido';
     return status;
   };
 
@@ -238,7 +244,7 @@ export default function STFBiografias() {
         <div className="flex flex-nowrap items-center gap-2 mb-8 overflow-x-auto custom-scrollbar pb-2 w-full max-w-full pr-4 md:pr-0 after:content-[''] after:w-2 after:flex-shrink-0">
           {[
             { id: 'todos', label: 'Todos', count: ministros.length },
-            { id: 'vigentes', label: 'Vigentes', count: ministros.filter(m => m.status === 'vigente').length },
+            { id: 'vigentes', label: 'Vigentes', count: ministros.filter(m => m.status?.toLowerCase().includes('vigente') || m.status?.toLowerCase().includes('ativo')).length },
             { id: 'mulheres', label: 'Mulheres', count: ministros.filter(m => m.genero === 'F').length },
             { id: 'homens', label: 'Homens', count: ministros.filter(m => m.genero !== 'F').length }
           ].map((tab) => (
