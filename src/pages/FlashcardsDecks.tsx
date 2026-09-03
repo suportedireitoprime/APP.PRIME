@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import { haptic } from '@/lib/nativeHaptics';
 import { syncDecksOffline, Deck, saveOfflineDecks } from '@/lib/flashcardsOfflineManager';
 import { useOnlineStatus } from '@/hooks/useOnlineStatus';
+import { StepRow, SelecaoSheet } from '@/components/flashcards/FlashcardsFiltroSheet';
 
 type TemaItem = { tema: string; area: string; count: number };
 
@@ -45,6 +46,8 @@ const FlashcardsDecks = () => {
   const online = useOnlineStatus();
   const [syncing, setSyncing] = useState(false);
 
+  const [passoAberto, setPassoAberto] = useState<'areas' | 'temas' | null>(null);
+
   const carregar = async () => {
     setSyncing(true);
     const data = await syncDecksOffline();
@@ -55,62 +58,50 @@ const FlashcardsDecks = () => {
   useEffect(() => {
     carregar();
     supabase.rpc('flashcards_resumo_areas').then(({ data }) => {
-      if (data) setAreas((data as any[]).map((a) => a.area));
+      if (data) setAreas((data as any[]).map((a) => a.area).sort((a, b) => a.localeCompare(b, 'pt-BR')));
     });
   }, []);
 
+  useEffect(() => {
+    if (selAreas.length > 0) {
+      setLoadingTemas(true);
+      supabase
+        .from('flashcards_cards')
+        .select('tema, area')
+        .in('area', selAreas)
+        .not('tema', 'is', null)
+        .then(({ data }) => {
+          if (data) {
+            const mapa = new Map<string, TemaItem>();
+            data.forEach((item) => {
+              if (item.tema) {
+                const key = `${item.area}::${item.tema}`;
+                const prev = mapa.get(key);
+                if (prev) prev.count++;
+                else mapa.set(key, { tema: item.tema, area: item.area, count: 1 });
+              }
+            });
+            setTemasDisponiveis(Array.from(mapa.values()).sort((a, b) => a.tema.localeCompare(b.tema, 'pt-BR')));
+          }
+          setLoadingTemas(false);
+        });
+    } else {
+      setTemasDisponiveis([]);
+      setSelTemas([]);
+    }
+  }, [selAreas]);
+
   const resetWizard = () => {
-    setEtapa(1);
     setSelAreas([]);
-    setTemasDisponiveis([]);
     setSelTemas([]);
     setNome('');
     setDescricao('');
-  };
-
-  const avançarParaEtapa2 = async () => {
-    if (!selAreas.length) {
-      toast.error('Escolha ao menos uma área para prosseguir');
-      return;
-    }
-    setLoadingTemas(true);
-    setEtapa(2);
-    
-    // Buscar os temas das áreas selecionadas
-    const { data } = await supabase
-      .from('flashcards_cards')
-      .select('tema, area')
-      .in('area', selAreas)
-      .not('tema', 'is', null);
-
-    if (data) {
-      const mapa = new Map<string, TemaItem>();
-      data.forEach((item) => {
-        if (item.tema) {
-          const key = `${item.area}::${item.tema}`;
-          const prev = mapa.get(key);
-          if (prev) {
-            prev.count++;
-          } else {
-            mapa.set(key, { tema: item.tema, area: item.area, count: 1 });
-          }
-        }
-      });
-      setTemasDisponiveis(Array.from(mapa.values()));
-    }
-    setLoadingTemas(false);
-  };
-
-  const avançarParaEtapa3 = () => {
-    if (!nome.trim()) {
-      setNome(`Meu Deck ${decks.length + 1}`);
-    }
-    setEtapa(3);
+    setPassoAberto(null);
   };
 
   const criar = async () => {
-    if (!nome.trim()) {
-      toast.error('Dê um nome para o seu deck');
+    if (!nome.trim() || !selAreas.length) {
+      toast.error('Preencha o nome e selecione ao menos uma área');
       return;
     }
     setSalvando(true);
@@ -130,19 +121,29 @@ const FlashcardsDecks = () => {
 
     const corEscolhida = CORES[decks.length % CORES.length].hex;
 
-    const { error } = await supabase.from('flashcards_decks').insert({
+    const novoDeck = {
       user_id: auth.user.id,
       nome: nome.trim(),
       descricao: descricao.trim() || (selTemas.length > 0 ? selTemas.join(' · ') : selAreas.join(' · ')),
       filtros: { areas: selAreas, temas: selTemas, cor: corEscolhida },
       total_cards: count ?? 0,
-    });
+    };
+
+    const { data: insertedDeck, error } = await supabase.from('flashcards_decks').insert(novoDeck).select().single();
 
     setSalvando(false);
     if (error) { toast.error('Não foi possível criar o deck'); return; }
+    
     toast.success('Deck criado com sucesso!');
     setAberto(false);
     resetWizard();
+    
+    if (insertedDeck) {
+      // Optimistic UI Update: Mostra instantaneamente antes do fetch completo
+      setDecks([insertedDeck as any, ...decks]);
+    }
+    
+    // Dispara a sincronização de cache offline em background
     carregar();
   };
 
@@ -174,6 +175,8 @@ const FlashcardsDecks = () => {
     params.set('cor', corDeck);
     navigate(`/flashcards/estudar?${params.toString()}`);
   };
+
+  const proximoPasso = !selAreas.length ? 'areas' : 'temas';
 
   return (
     <div className="min-h-dvh overflow-x-hidden bg-background pb-[calc(7rem+var(--sai-bottom))] lg:pb-[calc(3rem+var(--sai-bottom))]">
@@ -221,175 +224,98 @@ const FlashcardsDecks = () => {
         <div className="space-y-5 pt-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <Dialog open={aberto} onOpenChange={(v) => { setAberto(v); if (!v) resetWizard(); }}>
-              <DialogContent className="max-h-[85dvh] overflow-y-auto rounded-3xl border-border sm:max-w-lg">
-                <DialogHeader>
+              <DialogContent className="max-h-[85dvh] h-full overflow-hidden p-0 rounded-3xl border-border sm:max-w-lg flex flex-col">
+                <DialogHeader className="px-5 pt-5 pb-3 border-b border-border/60">
                   <DialogTitle className="flex items-center justify-between text-base font-black">
-                    <span>
-                      {etapa === 1 && 'Etapa 1 de 3: Escolha as Áreas'}
-                      {etapa === 2 && 'Etapa 2 de 3: Escolha as Matérias'}
-                      {etapa === 3 && 'Etapa 3 de 3: Nome do Deck'}
-                    </span>
-                    <span className="text-xs font-bold text-primary bg-primary/10 px-2.5 py-0.5 rounded-full">
-                      {etapa}/3
-                    </span>
+                    <span>Criar Novo Deck</span>
                   </DialogTitle>
                 </DialogHeader>
 
-                {/* ETAPA 1: Selecionar Áreas */}
-                {etapa === 1 && (
-                  <div className="space-y-4 pt-2">
-                    <p className="text-xs text-muted-foreground font-medium">
-                      Selecione uma ou mais áreas jurídicas principais para compor o seu deck:
-                    </p>
-                    <div className="flex flex-wrap gap-2 max-h-[50dvh] overflow-y-auto pr-1">
-                      {areas.map((a) => {
-                        const on = selAreas.includes(a);
-                        return (
-                          <button
-                            key={a}
-                            type="button"
-                            onClick={() => {
-                              haptic.selection();
-                              setSelAreas((s) => (on ? s.filter((x) => x !== a) : [...s, a]));
-                            }}
-                            className={`rounded-xl px-3.5 py-2 text-xs font-bold transition-all flex items-center gap-1.5 ${
-                              on
-                                ? 'bg-primary text-white shadow-md scale-105 ring-2 ring-primary/30'
-                                : 'border border-border/80 bg-card text-foreground hover:border-primary/40'
-                            }`}
-                          >
-                            {on && <Check className="h-3.5 w-3.5" />}
-                            <span>{a}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
+                <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+                  <StepRow
+                    step={1} label="Áreas"
+                    hint={selAreas.length ? `${selAreas.length} selecionada(s)` : 'Escolha as áreas'}
+                    active={proximoPasso === 'areas'} done={!!selAreas.length}
+                    badge={selAreas.length}
+                    onClick={() => setPassoAberto('areas')}
+                  />
+                  
+                  <StepRow
+                    step={2} label="Matérias (Opcional)"
+                    hint={selTemas.length ? `${selTemas.length} selecionada(s)` : (loadingTemas ? 'Carregando temas...' : 'Todas as matérias das áreas')}
+                    locked={!selAreas.length} active={proximoPasso === 'temas'} done={!!selTemas.length}
+                    badge={selTemas.length || undefined}
+                    lockedMessage="Escolha a área primeiro."
+                    onClick={() => setPassoAberto('temas')}
+                  />
 
-                {/* ETAPA 2: Selecionar Matérias/Tópicos */}
-                {etapa === 2 && (
-                  <div className="space-y-4 pt-2">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="text-xs text-muted-foreground font-medium">
-                        Escolha matérias específicas ou mantenha todas selecionadas:
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (selTemas.length === temasDisponiveis.length) {
-                            setSelTemas([]);
-                          } else {
-                            setSelTemas(temasDisponiveis.map((t) => t.tema));
-                          }
-                        }}
-                        className="text-[11px] font-black text-primary hover:underline shrink-0"
-                      >
-                        {selTemas.length === temasDisponiveis.length ? 'Desmarcar Todos' : 'Marcar Todos'}
-                      </button>
-                    </div>
-
-                    {loadingTemas ? (
-                      <div className="py-10 text-center text-xs text-muted-foreground animate-pulse">
-                        Carregando matérias das áreas escolhidas…
-                      </div>
-                    ) : temasDisponiveis.length === 0 ? (
-                      <div className="py-8 text-center text-xs text-muted-foreground">
-                        Todas as matérias das áreas selecionadas serão incluídas automaticamente.
-                      </div>
-                    ) : (
-                      <div className="flex flex-wrap gap-2 max-h-[50dvh] overflow-y-auto pr-1">
-                        {temasDisponiveis.map((t) => {
-                          const on = selTemas.includes(t.tema);
-                          return (
-                            <button
-                              key={`${t.area}::${t.tema}`}
-                              type="button"
-                              onClick={() => {
-                                haptic.selection();
-                                setSelTemas((s) => (on ? s.filter((x) => x !== t.tema) : [...s, t.tema]));
-                              }}
-                              className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition-all flex items-center gap-1.5 ${
-                                on
-                                  ? 'bg-primary/90 text-white shadow-sm font-bold'
-                                  : 'border border-border/80 bg-card text-foreground hover:border-primary/40'
-                              }`}
-                            >
-                              {on && <Check className="h-3.5 w-3.5" />}
-                              <span>{t.tema}</span>
-                              <span className="text-[10px] opacity-75 tabular-nums">({t.count})</span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* ETAPA 3: Nome do Deck & Confirmar */}
-                {etapa === 3 && (
-                  <div className="space-y-4 pt-2">
+                  <div className="pt-4 px-1 space-y-4">
                     <div>
-                      <p className="text-xs text-muted-foreground font-medium mb-1.5">
-                        Defina um nome identificador para o seu novo deck:
+                      <p className="text-[13px] text-foreground font-bold mb-1.5 flex items-center gap-1.5">
+                        <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-zinc-800 text-[10px] font-black tabular-nums text-zinc-300">3</span> Nome do Deck
                       </p>
                       <Input
-                        autoFocus
                         value={nome}
                         onChange={(e) => setNome(e.target.value)}
-                        placeholder="Ex: Combo Civil + Penal para Prova"
-                        className="rounded-2xl h-12 text-sm font-bold"
+                        placeholder="Ex: Combo Civil + Penal"
+                        className="rounded-2xl h-12 text-sm font-bold bg-zinc-900/50 border-zinc-800/80"
                       />
                     </div>
                     <div>
-                      <p className="text-xs text-muted-foreground font-medium mb-1.5">
-                        Adicione uma descrição (opcional):
+                      <p className="text-xs text-muted-foreground font-medium mb-1.5 px-1">
+                        Descrição (opcional):
                       </p>
                       <Input
                         value={descricao}
                         onChange={(e) => setDescricao(e.target.value)}
-                        placeholder="Ex: Focado nos assuntos que mais caem"
-                        className="rounded-2xl h-11 text-xs"
+                        placeholder="Ex: Focado nos assuntos da prova X"
+                        className="rounded-2xl h-11 text-xs bg-zinc-900/50 border-zinc-800/80"
                       />
                     </div>
-
-                    <div className="rounded-2xl border border-border bg-muted/40 p-4 space-y-2 mt-4">
-                      <p className="text-xs font-extrabold uppercase text-muted-foreground tracking-widest">Resumo do Deck</p>
-                      <p className="text-xs text-foreground font-bold">
-                        Áreas: <span className="text-primary">{selAreas.join(', ')}</span>
-                      </p>
-                      <p className="text-xs text-foreground font-semibold">
-                        Matérias: <span className="text-muted-foreground">{selTemas.length > 0 ? selTemas.join(', ') : 'Todas as matérias incluídas'}</span>
-                      </p>
-                    </div>
                   </div>
+                </div>
+
+                <DialogFooter className="px-4 pb-5 pt-3 border-t border-border/60">
+                  <Button onClick={criar} disabled={salvando || !selAreas.length || !nome.trim()} className="w-full h-12 rounded-2xl font-black gap-2 bg-[#36AF85] hover:bg-[#2C9570] text-white shadow-lg shadow-black/40 text-[15px] active:scale-[0.98] transition-all">
+                    {salvando ? 'Criando…' : '🚀 Salvar Deck'}
+                  </Button>
+                </DialogFooter>
+
+                {passoAberto === 'areas' && (
+                  <SelecaoSheet
+                    titulo="Selecionar Áreas"
+                    opcoes={areas}
+                    selecionado={selAreas}
+                    buscavel
+                    onFechar={() => setPassoAberto(null)}
+                    onConfirmar={(v) => { setSelAreas(v); setPassoAberto(null); }}
+                  />
                 )}
 
-                <DialogFooter className="flex items-center justify-between gap-2 pt-3 border-t border-border/60">
-                  {etapa > 1 ? (
-                    <Button variant="outline" onClick={() => setEtapa((e) => (e - 1) as any)} className="rounded-xl font-bold gap-1">
-                      <ChevronLeft className="h-4 w-4" /> Voltar
-                    </Button>
-                  ) : <div />}
-
-                  {etapa === 1 && (
-                    <Button onClick={avançarParaEtapa2} disabled={!selAreas.length} className="rounded-xl font-bold gap-1 bg-primary text-white">
-                      Próximo: Matérias <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  )}
-
-                  {etapa === 2 && (
-                    <Button onClick={avançarParaEtapa3} className="rounded-xl font-bold gap-1 bg-primary text-white">
-                      Próximo: Nome <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  )}
-
-                  {etapa === 3 && (
-                    <Button onClick={criar} disabled={salvando} className="rounded-xl font-black gap-2 bg-primary text-white shadow-md">
-                      {salvando ? 'Criando…' : '🚀 Salvar Deck'}
-                    </Button>
-                  )}
-                </DialogFooter>
+                {passoAberto === 'temas' && (
+                  <SelecaoSheet
+                    titulo="Selecionar Matérias"
+                    opcoes={temasDisponiveis.map(t => t.tema)}
+                    selecionado={selTemas}
+                    buscavel
+                    loading={loadingTemas}
+                    onFechar={() => setPassoAberto(null)}
+                    onConfirmar={(v) => { setSelTemas(v); setPassoAberto(null); }}
+                    renderOpcao={(opcao) => {
+                      const item = temasDisponiveis.find(t => t.tema === opcao);
+                      return (
+                        <div className="flex flex-col text-left">
+                          <span className="text-[14px] font-bold text-zinc-200 line-clamp-1">{opcao}</span>
+                          {item && (
+                            <span className="text-[11px] text-zinc-500">
+                              {item.area} <span className="mx-1">•</span> {item.count} cards
+                            </span>
+                          )}
+                        </div>
+                      );
+                    }}
+                  />
+                )}
               </DialogContent>
             </Dialog>
           </div>
