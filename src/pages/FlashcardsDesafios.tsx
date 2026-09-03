@@ -53,11 +53,20 @@ const FlashcardsDesafios = () => {
     if (deck.tema) {
       params.set('temas', deck.tema);
     }
-    navigate(`/flashcards/estudo?${params.toString()}`);
+    // Adiciona delay para permitir que a animação tátil/click aconteça antes de desmontar
+    setTimeout(() => {
+      navigate(`/flashcards/estudo?${params.toString()}`);
+    }, 150);
   };
 
   return (
-    <div className="min-h-dvh bg-background pb-20 pt-[calc(0.5rem+var(--sai-top))]">
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.98 }}
+      transition={{ duration: 0.3 }}
+      className="min-h-dvh bg-background pb-20 pt-[calc(0.5rem+var(--sai-top))]"
+    >
       <div className="mx-auto w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] px-3 sm:px-6 lg:px-8 space-y-6">
         <PageHeader
           title="Desafios"
@@ -295,7 +304,7 @@ const FlashcardsDesafios = () => {
           />
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
