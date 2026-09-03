@@ -1,21 +1,45 @@
 # Add project specific ProGuard rules here.
 # You can control the set of applied configuration files using the
 # proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# Capacitor core + plugin discovery (reflection)
+-keep public class * extends com.getcapacitor.Plugin
+-keep public class com.getcapacitor.** { *; }
+-keepclassmembers class * extends com.getcapacitor.Plugin {
+    @com.getcapacitor.PluginMethod public *;
+}
+-keep class com.getcapacitor.annotation.** { *; }
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
--keepattributes SourceFile,LineNumberTable
+# WebView Javascript interfaces
+-keepclassmembers class * {
+    @android.webkit.JavascriptInterface <methods>;
+}
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
+# App custom native activities, compose screens and plugins
+-keep class br.com.app.gpu2675756.gpu0e7509bfb7bde52aef412888bb17a456.** { *; }
+
+# Community & Capawesome plugins
+-keep class com.getcapacitor.community.** { *; }
+-keep class io.capawesome.** { *; }
+-keep class com.aparajita.** { *; }
+-keep class com.capgo.** { *; }
+
+# Firebase Messaging + GMS
+-keep class * extends com.google.firebase.messaging.FirebaseMessagingService { *; }
+-keep,allowobfuscation,allowshrinking class com.google.firebase.iid.** { *; }
+-keep,allowobfuscation,allowshrinking class com.google.android.gms.** { *; }
+-keep,allowobfuscation,allowshrinking class com.google.firebase.** { *; }
+
+# Symbolication attributes for Play Console / Crashlytics
+-keepattributes SourceFile,LineNumberTable,*Annotation*,Signature,InnerClasses,EnclosingMethod
 -renamesourcefileattribute SourceFile
+
+# Silence warnings from optional transitive deps
+-dontwarn androidx.**
+-dontwarn com.google.**
+-dontwarn org.slf4j.**
+-dontwarn javax.annotation.**
+-dontwarn org.conscrypt.**
+-dontwarn org.bouncycastle.**
+-dontwarn org.openjsse.**
+

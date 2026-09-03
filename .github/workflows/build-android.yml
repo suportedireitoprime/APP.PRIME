@@ -692,6 +692,63 @@ jobs:
             echo "Removed $removed precompressed files from android assets"
           fi
 
+      - name: Optimize native bitmap loading & purge unneeded audio plugins
+        run: |
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+
+          # 1. Sanitize MediaSessionPlugin to use downsampled bitmap decoding (Google Play bitmap optimization)
+          plugin_path = Path('node_modules/@capgo/capacitor-media-session/android/src/main/java/com/capgo/mediasession/MediaSessionPlugin.java')
+          if plugin_path.exists():
+              content = plugin_path.read_text(encoding='utf-8')
+              old_pattern = 'return BitmapFactory.decodeStream(inputStream);'
+              if old_pattern in content:
+                  replacement = '''java.io.ByteArrayOutputStream buffer = new java.io.ByteArrayOutputStream();
+                  byte[] data = new byte[8192];
+                  int nRead;
+                  while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
+                      buffer.write(data, 0, nRead);
+                  }
+                  byte[] imageBytes = buffer.toByteArray();
+                  if (imageBytes.length == 0) return null;
+                  BitmapFactory.Options boundsOptions = new BitmapFactory.Options();
+                  boundsOptions.inJustDecodeBounds = true;
+                  BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, boundsOptions);
+                  int maxDimension = 512;
+                  int sampleSize = 1;
+                  int width = boundsOptions.outWidth;
+                  int height = boundsOptions.outHeight;
+                  if (height > maxDimension || width > maxDimension) {
+                      int halfHeight = height / 2;
+                      int halfWidth = width / 2;
+                      while ((halfHeight / sampleSize) >= maxDimension && (halfWidth / sampleSize) >= maxDimension) {
+                          sampleSize *= 2;
+                      }
+                  }
+                  BitmapFactory.Options decodeOptions = new BitmapFactory.Options();
+                  decodeOptions.inSampleSize = sampleSize;
+                  decodeOptions.inPreferredConfig = Bitmap.Config.RGB_565;
+                  return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, decodeOptions);'''
+                  content = content.replace(old_pattern, replacement)
+                  plugin_path.write_text(content, encoding='utf-8')
+                  print('✅ MediaSessionPlugin bitmap downsampling patched')
+
+          # 2. Ensure capgo-native-audio is removed from capacitor.build.gradle and capacitor.settings.gradle
+          bld = Path('android/app/capacitor.build.gradle')
+          if bld.exists():
+              t = bld.read_text(encoding='utf-8')
+              t = re.sub(r'\s*implementation project\([\'"]:capgo-native-audio[\'"]\)\s*', '\n', t)
+              bld.write_text(t, encoding='utf-8')
+
+          set_gradle = Path('android/capacitor.settings.gradle')
+          if set_gradle.exists():
+              t = set_gradle.read_text(encoding='utf-8')
+              t = re.sub(r'include [\'"]:capgo-native-audio[\'"]\s*\nproject\([\'"]:capgo-native-audio[\'"]\)\.projectDir = [^\n]+\n', '', t)
+              set_gradle.write_text(t, encoding='utf-8')
+          print('✅ Native audio dependencies verified')
+          PY
+
       - name: Validate removed native plugins
         run: |
           set -euo pipefail
@@ -2277,9 +2334,9 @@ jobs:
               return None
 
           release_block = '''release {
-                  minifyEnabled false
+                  minifyEnabled true
                   shrinkResources false
-                  proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+                  proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
                   signingConfig signingConfigs.release
                   ndk {
                       debugSymbolLevel 'SYMBOL_TABLE'
@@ -2368,6 +2425,15 @@ jobs:
               @com.getcapacitor.PluginMethod <methods>;
           }
           -keep class * extends com.getcapacitor.Plugin { *; }
+
+          # App custom native activities, compose screens and plugins
+          -keep class br.com.app.gpu2675756.gpu0e7509bfb7bde52aef412888bb17a456.** { *; }
+
+          # Capacitor & Community plugins
+          -keep class com.capgo.** { *; }
+          -keep class io.capawesome.** { *; }
+          -keep class com.aparajita.** { *; }
+          -keep class com.getcapacitor.community.** { *; }
 
           # Firebase Messaging + GMS (Google Sign-In) — invoked via reflection.
           # allowobfuscation/allowshrinking permite R8 renomear/remover classes

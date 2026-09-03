@@ -45,16 +45,20 @@ const getCategoria = (tema: string) => {
 };
 
 const CATEGORY_ICONS: Record<string, LucideIcon> = {
-  'Códigos': Scale,
-  'Estatutos': Users,
-  'Constituição': Landmark,
-  'Súmulas e Resoluções': Gavel,
-  'Decretos': File,
-  'Leis Especiais': FileText,
+  'Direito Penal': Scale,
+  'Direito Civil': Users,
+  'Direito Constitucional': Landmark,
+  'Direito Administrativo': FileText,
+  'Direito do Trabalho': File,
+  'Direito Processual Penal': Scale,
+  'Direito Processual Civil': Scale,
+  'Direito Eleitoral': Users,
+  'Direito Tributário': FileText,
+  'Direito Empresarial': File,
 };
 
-// Custom order for the categories
-const CATEGORY_ORDER = ['Códigos', 'Estatutos', 'Leis Especiais', 'Constituição', 'Súmulas e Resoluções', 'Decretos'];
+// Custom order for the areas (can just sort alphabetically later)
+const CATEGORY_ORDER = ['Direito Constitucional', 'Direito Administrativo', 'Direito Penal', 'Direito Processual Penal', 'Direito Civil', 'Direito Processual Civil', 'Direito do Trabalho', 'Direito Processual do Trabalho', 'Direito Tributário', 'Direito Eleitoral', 'Direito Empresarial'];
 
 const STATUS_LEIS = [
   { id: 'todos', label: 'Todos os Cards' },
@@ -263,16 +267,20 @@ export default function FlashcardsLeis() {
               const total = matchingTemas.reduce((acc, t) => acc + t.total, 0);
               const compreendidos = matchingTemas.reduce((acc, t) => acc + (t.compreendidos || 0), 0);
               const a_revisar = matchingTemas.reduce((acc, t) => acc + (t.a_revisar || 0), 0);
+              const realArea = matchingTemas.length > 0 ? matchingTemas[0].area : lei.area;
               
-              return { ...lei, total, compreendidos, a_revisar };
+              return { ...lei, total, compreendidos, a_revisar, area: realArea };
             });
 
-            setTodasLeis(updatedLeis);
+            // Filter out laws that have 0 cards, so we only see laws that actually exist in flashcards
+            const updatedLeisFiltradas = updatedLeis.filter(l => l.total > 0);
+
+            setTodasLeis(updatedLeisFiltradas);
             setLoadingLeis(false);
 
             // 3. Salvar no cache para próxima visita instantânea
             try {
-              localStorage.setItem(LEIS_CACHE_KEY, JSON.stringify(updatedLeis));
+              localStorage.setItem(LEIS_CACHE_KEY, JSON.stringify(updatedLeisFiltradas));
             } catch { /* storage cheio, ignora */ }
           }
         }
@@ -289,7 +297,7 @@ export default function FlashcardsLeis() {
   const listaFiltrada = useMemo(() => {
     let list = todasLeis;
     if (categoriaSelecionada) {
-       list = list.filter(l => getCategoria(l.tema) === categoriaSelecionada);
+       list = list.filter(l => l.area === categoriaSelecionada);
     }
     if (!busca.trim()) return list;
     const q = busca.toLowerCase();
@@ -309,7 +317,7 @@ export default function FlashcardsLeis() {
   const groupedByCategoria = useMemo(() => {
     const groups: Record<string, TemaRow[]> = {};
     for (const lei of todasLeis) {
-      const cat = getCategoria(lei.tema);
+      const cat = lei.area || 'Outras Leis';
       if (!groups[cat]) groups[cat] = [];
       groups[cat].push(lei);
     }

@@ -51,7 +51,6 @@ dependencies {
     implementation project(':capgo-background-geolocation')
     implementation project(':capgo-capacitor-media-session')
     implementation project(':capgo-capacitor-updater')
-    implementation project(':capgo-native-audio')
     implementation project(':capgo-native-purchases')
     implementation project(':capacitor-widget-bridge')
 

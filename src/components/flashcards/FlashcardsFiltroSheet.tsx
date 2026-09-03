@@ -414,7 +414,7 @@ const FlashcardsFiltroSheet = ({
   const aplicar = () => {
     if (!f.disciplinas.length) {
       haptic.error();
-      toast('Escolha as matérias primeiro', { description: 'A matéria é obrigatória para aplicar filtros.' });
+      toast('Escolha a matéria primeiro', { description: 'A matéria é obrigatória para aplicar filtros.' });
       return;
     }
 
@@ -458,10 +458,10 @@ const FlashcardsFiltroSheet = ({
 
             <div ref={stepsRef} className="flex-1 space-y-2.5 overflow-y-auto px-4 pb-4 pt-2">
               <StepRow
-                step={1} label="Disciplinas"
-                hint={f.disciplinas.length ? `${f.disciplinas.length} selecionada(s)` : 'Escolha as matérias'}
+                step={1} label="Disciplina"
+                hint={f.disciplinas.length ? f.disciplinas[0] : 'Escolha a matéria'}
                 active={proximo === 'disciplinas'} done={!!f.disciplinas.length}
-                badge={f.disciplinas.length}
+                badge={f.disciplinas.length ? 1 : undefined}
                 onClick={() => setPasso('disciplinas')}
               />
               <StepRow
@@ -506,7 +506,7 @@ const FlashcardsFiltroSheet = ({
             <AnimatePresence>
               {passo === 'disciplinas' && (
                 <SelecaoSheet
-                  key="disc" titulo="Disciplinas" buscavel
+                  key="disc" titulo="Disciplina" buscavel single
                   opcoes={disciplinas}
                   selecionado={f.disciplinas}
                   onFechar={() => setPasso(null)}
