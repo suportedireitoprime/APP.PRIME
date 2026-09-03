@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Clock, ArrowUpRight, Film, Star, Library, Newspaper } from 'lucide-react';
 import { getNoticiasCache, prefetchNoticias, subscribeNoticias, type Noticia } from '@/services/noticiasService';
 import { newsImg, cdnImg } from '@/lib/cdnImg';
@@ -54,6 +54,7 @@ interface Props {
 
 export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: Props) {
   const navigate = useNavigate();
+  const location = useLocation();
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const autoplayRef = useRef<number | null>(null);
   const userInteractingRef = useRef(false);
@@ -65,59 +66,84 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
   const [selectedLivro, setSelectedLivro] = useState<LivroNormalizado | null>(null);
 
   const [feed, setFeed] = useState<FeedItem[]>([]);
+  const [dataLoaded, setDataLoaded] = useState(false);
+  const [feedMode, setFeedMode] = useState<'initial' | 'with_news'>('initial');
+  const hasNavigatedRef = useRef(false);
 
+  // Monitora a navegação para mudar o modo do feed ao voltar para a Home
+  useEffect(() => {
+    if (location.pathname !== '/') {
+      hasNavigatedRef.current = true;
+    } else if (location.pathname === '/' && hasNavigatedRef.current && feedMode === 'initial') {
+      setFeedMode('with_news');
+    }
+  }, [location.pathname, feedMode]);
+
+  // Busca os dados apenas uma vez (livros e subscrição de notícias)
   useEffect(() => {
     let mounted = true;
 
-    async function loadAll() {
-      // Noticias cacheadas ou aguarda
-      let loadedNoticias = getNoticiasCache() ?? [];
+    supabase
+      .from('biblioteca_classicos')
+      .select('id, livro, autor, area, imagem, sobre, link, download, capa_horizontal, ano_lancamento, editora, curiosidades, analise_detalhada, audio_resumo_url, paginas, minutos_leitura')
+      .not('imagem', 'is', null)
+      .limit(30)
+      .then(res => {
+        if (mounted && res.data) {
+          setLivros(res.data as unknown as Livro[]);
+          setDataLoaded(true);
+        }
+      });
 
-      // Promessas paralelas para carregamento rápido
-      const livrosP = supabase
-        .from('biblioteca_classicos')
-        .select('id, livro, autor, area, imagem, sobre, link, download, capa_horizontal, ano_lancamento, editora, curiosidades, analise_detalhada, audio_resumo_url, paginas, minutos_leitura')
-        .not('imagem', 'is', null)
-        .limit(30)
-        .then(res => (res.data as unknown as Livro[]) || []);
-
-      const [loadedLivros] = await Promise.all([livrosP]);
-
-      if (!mounted) return;
-
-      const pool: FeedItem[] = [];
-
-      const pick = (arr: any[], kind: string, count: number) => {
-        return shuffle(arr).slice(0, count).map(x => ({ kind, id: `${kind}-${x.id}-${Math.random()}`, data: x } as FeedItem));
-      };
-
-      pool.push(...pick(loadedLivros, 'livro', 2));
-      pool.push(...pick(loadedNoticias, 'noticia', 2));
-      pool.push(...pick(BLOG_POSTS, 'blog', 2));
-
-      // Preenche buracos se faltarem itens nas bases
-      if (pool.length < 8) {
-        const missing = 8 - pool.length;
-        const remainingBlogs = BLOG_POSTS.filter(b => !pool.find(p => p.kind === 'blog' && p.data.id === b.id));
-        pool.push(...pick(remainingBlogs, 'blog', missing));
+    const unsub = subscribeNoticias((data) => {
+      if (mounted) {
+        setNoticias(data.slice(0, 20));
       }
+    });
 
-      setFeed(shuffle(pool).slice(0, 8));
-      
-      // Salva no estado para uso (caso alguém precise ler os raw arrays)
-      setLivros(loadedLivros);
-      setNoticias(loadedNoticias);
-    }
-
-    loadAll();
-
-    // Mantém a subscrição de notícias atualizada no fundo, mas não altera os 8 itens fixos da sessão.
-    const unsub = subscribeNoticias((data) => setNoticias(data.slice(0, 20)));
     return () => {
       mounted = false;
       unsub();
     };
   }, []);
+
+  // Constrói o feed de itens do carrossel baseado no modo atual
+  useEffect(() => {
+    if (!dataLoaded && feedMode === 'initial') {
+      // Cria um feed temporário super rápido só com blog enquanto os livros não chegam
+      const pool: FeedItem[] = BLOG_POSTS.slice(0, 8).map(x => ({ kind: 'blog', id: `blog-${x.id}-${Math.random()}`, data: x }));
+      setFeed(shuffle(pool));
+      return;
+    }
+
+    const pool: FeedItem[] = [];
+    const pick = (arr: any[], kind: string, count: number) => {
+      return shuffle(arr).slice(0, count).map(x => ({ kind, id: `${kind}-${x.id}-${Math.random()}`, data: x } as FeedItem));
+    };
+
+    if (feedMode === 'initial') {
+      // Quando entra no app, puxa só blog e livros
+      pool.push(...pick(livros, 'livro', 4));
+      pool.push(...pick(BLOG_POSTS, 'blog', 4));
+    } else {
+      // Quando volta pra home, mostra notícias como padrão
+      // Se tiver poucas notícias, o fill compensa com os demais.
+      const maxNoticias = Math.min(noticias.length, 4);
+      pool.push(...pick(noticias, 'noticia', maxNoticias));
+      pool.push(...pick(livros, 'livro', 2));
+      pool.push(...pick(BLOG_POSTS, 'blog', Math.max(2, 8 - pool.length)));
+    }
+
+    // Preenche buracos se faltarem itens nas bases
+    if (pool.length < 8) {
+      const missing = 8 - pool.length;
+      const remainingBlogs = BLOG_POSTS.filter(b => !pool.find(p => p.kind === 'blog' && p.data.id === b.id));
+      pool.push(...pick(remainingBlogs, 'blog', missing));
+    }
+
+    setFeed(shuffle(pool).slice(0, 8));
+    setActiveIndex(0);
+  }, [feedMode, dataLoaded, livros, noticias.length]);
 
   const items = feed;
   const activeItem = items[activeIndex];

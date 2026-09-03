@@ -87,7 +87,7 @@ function ForceUpdateWrapper() {
 
 // Eagerly loaded (critical path)
 const Index = lazy(() => import("./pages/Index.tsx"));
-const PersistentHome = lazy(() => import("./components/PersistentHome"));
+const PersistentHome = lazy(() => import("./components/PersistentHome.tsx"));
 const Auth = lazy(() => import("./pages/Auth.tsx"));
 const Landing = lazy(() => import('@/pages/Landing'));
 const PilulasLista = lazy(() => import('@/pages/pilulas/PilulasLista'));
