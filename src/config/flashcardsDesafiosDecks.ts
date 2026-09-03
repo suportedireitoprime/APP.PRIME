@@ -680,3 +680,40 @@ export const TODOS_DESAFIOS_DECKS: DesafioDeckPronto[] = DESAFIOS_DECKS_CATALOGO
 export function getDecksPorArea(areaNome: string): DesafioDeckPronto[] {
   return DESAFIOS_DECKS_CATALOGO.find(a => a.area.toLowerCase() === areaNome.toLowerCase())?.decks || [];
 }
+
+/** Mapa real de quantidade de temas (desafios) por área cadastrada no Supabase */
+export const AREA_TEMAS_COUNT_MAP: Record<string, number> = {
+  'Direito Tributário': 34,
+  'Direito Penal': 46,
+  'Direito Processual Civil': 52,
+  'Direito Civil': 55,
+  'Direito Constitucional': 39,
+  'Direito Previdenciário': 16,
+  'Direito Processual do Trabalho': 11,
+  'Direito do Trabalho': 28,
+  'Direito Administrativo': 25,
+  'Direito Processual Penal': 21,
+  'Direito Empresarial': 13,
+  'Teoria e Filosofia do Direito': 11,
+  'Direito Financeiro': 12,
+  'Lei Penal Especial': 14,
+  'Direitos Humanos': 6,
+  'Direito Eleitoral': 5,
+  'Direito Urbanístico': 5,
+  'Formação Complementar': 5,
+  'Prática Profissional': 8,
+  'Políticas Públicas': 12,
+  'Direito Desportivo': 2,
+  'Filosofia do Direito': 5,
+  'Direito Concorrencial': 7,
+  'Revisão OAB': 12,
+  'Direito Internacional Público': 9,
+  'Português': 10,
+  'Direito Ambiental': 7,
+  'Pesquisa Científica': 2,
+  'Direito Internacional Privado': 1,
+};
+
+/** Total real de desafios (temas) disponíveis em todo o aplicativo */
+export const TOTAL_DESAFIOS_COUNT = 473;
+

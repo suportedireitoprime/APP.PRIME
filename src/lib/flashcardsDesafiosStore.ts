@@ -6,6 +6,8 @@ import {
   TODOS_DESAFIOS_DECKS,
   DesafioDeckPronto,
   getDecksPorArea,
+  TOTAL_DESAFIOS_COUNT,
+  AREA_TEMAS_COUNT_MAP,
 } from '@/config/flashcardsDesafiosDecks';
 
 const STORAGE_KEY = 'vade_desafios_decks_concluidos_v1';
@@ -98,9 +100,9 @@ export function useFlashcardsDesafiosStore() {
     return concluidos.includes(anterior.id);
   }, [concluidos]);
 
-  const totalDecks = TODOS_DESAFIOS_DECKS.length;
+  const totalDecks = TOTAL_DESAFIOS_COUNT;
   const totalConcluidos = useMemo(() => {
-    return TODOS_DESAFIOS_DECKS.filter(d => concluidos.includes(d.id)).length;
+    return concluidos.length;
   }, [concluidos]);
 
   const porcentagemGlobal = useMemo(() => {
@@ -110,8 +112,11 @@ export function useFlashcardsDesafiosStore() {
 
   const obterProgressoArea = useCallback((areaNome: string) => {
     const decks = getDecksPorArea(areaNome);
-    const total = decks.length;
-    const conc = decks.filter(d => concluidos.includes(d.id)).length;
+    const total = AREA_TEMAS_COUNT_MAP[areaNome] ?? (decks.length || 1);
+    const conc = concluidos.filter(id => 
+      id.toLowerCase().includes(areaNome.toLowerCase()) || 
+      decks.some(d => d.id === id)
+    ).length;
     const pct = total > 0 ? Math.min(100, Math.round((conc / total) * 100)) : 0;
     const proximo = decks.find(d => !concluidos.includes(d.id)) || null;
     return {

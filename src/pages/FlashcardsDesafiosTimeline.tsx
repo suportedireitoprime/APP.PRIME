@@ -14,15 +14,19 @@ import {
   Lock,
   Search,
   X,
+  Filter,
+  ArrowLeft,
 } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/PageHeader';
-import { DESAFIOS_DECKS_CATALOGO, DesafioDeckPronto } from '@/config/flashcardsDesafiosDecks';
+import { DESAFIOS_DECKS_CATALOGO, DesafioDeckPronto, AREA_TEMAS_COUNT_MAP } from '@/config/flashcardsDesafiosDecks';
 import { useFlashcardsDesafiosStore } from '@/lib/flashcardsDesafiosStore';
 import { DesafiosTimeline } from '@/components/flashcards/DesafiosTimeline';
 import { getAreaVisual } from '@/lib/flashcardsAreaVisual';
 import { haptic } from '@/lib/nativeHaptics';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
 
 export const FlashcardsDesafiosTimeline = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -34,18 +38,12 @@ export const FlashcardsDesafiosTimeline = () => {
     obterProgressoArea,
   } = useFlashcardsDesafiosStore();
 
-  const [menuMateriasAberto, setMenuMateriasAberto] = useState(false);
-  const [buscaMenu, setBuscaMenu] = useState('');
+  const [menuAssuntosAberto, setMenuAssuntosAberto] = useState(false);
+  const [temaAtivo, setTemaAtivo] = useState<string>('todos');
+  const [buscaAssuntos, setBuscaAssuntos] = useState('');
   const scrollTabsRef = useRef<HTMLDivElement>(null);
 
-  // Lista ordenada de matérias em ordem alfabética
-  const materiasOrdenadas = useMemo(() => {
-    return [...DESAFIOS_DECKS_CATALOGO].sort((a, b) =>
-      a.area.localeCompare(b.area, 'pt-BR')
-    );
-  }, []);
-
-  // Matéria atualmente selecionada baseada na URL :slug
+  // Identifica a área atual pela URL
   const areaAtualInfo = useMemo(() => {
     if (slug) {
       const normalizado = slug.toLowerCase();
@@ -57,26 +55,82 @@ export const FlashcardsDesafiosTimeline = () => {
     return DESAFIOS_DECKS_CATALOGO[0];
   }, [slug]);
 
+  const { color: corAreaAtual, icon: IconAreaAtual } = getAreaVisual(areaAtualInfo.area);
+
   // SEO & Título
   useEffect(() => {
     document.title = `Linha do Tempo · ${areaAtualInfo.area} | Vade Mecum PRIME`;
   }, [areaAtualInfo.area]);
 
-  // Rolar a aba ativa para o centro ao alternar
-  useEffect(() => {
-    if (scrollTabsRef.current) {
-      const activeEl = scrollTabsRef.current.querySelector('[data-active="true"]');
-      if (activeEl) {
-        activeEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  // Carrega os temas/assuntos reais do Supabase para esta matéria específica
+  const { data: temasDb, isLoading: loadingTemas } = useQuery({
+    queryKey: ['flashcards_temas_desafios_area', areaAtualInfo.area],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('flashcards_temas', { _area: areaAtualInfo.area });
+      if (error) {
+        console.warn('[FlashcardsDesafiosTimeline] Erro ao carregar temas:', error);
+        return [];
       }
+      return (data || []) as Array<{
+        tema: string;
+        total: number;
+        compreendidos: number;
+        a_revisar: number;
+      }>;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // Constrói a lista completa de decks para a matéria a partir dos temas reais do Supabase
+  const decksDaMateria: DesafioDeckPronto[] = useMemo(() => {
+    if (temasDb && temasDb.length > 0) {
+      return temasDb.map((t, idx) => {
+        let nivel: 'Iniciante' | 'Intermediário' | 'Avançado' | 'Especialista' = 'Iniciante';
+        const frac = idx / temasDb.length;
+        if (frac > 0.75) nivel = 'Especialista';
+        else if (frac > 0.5) nivel = 'Avançado';
+        else if (frac > 0.25) nivel = 'Intermediário';
+
+        return {
+          id: `${areaAtualInfo.slug}-deck-${idx + 1}`,
+          area: areaAtualInfo.area,
+          tema: t.tema,
+          titulo: t.tema,
+          subtitulo: `${t.total} flashcards inteligentes para fixação e retenção`,
+          ordem: idx + 1,
+          nivel,
+          cardsEstimados: Number(t.total) || 20,
+        };
+      });
     }
-  }, [areaAtualInfo.slug]);
+
+    // Fallback caso ainda esteja carregando ou offline
+    return areaAtualInfo.decks;
+  }, [temasDb, areaAtualInfo]);
+
+  // Filtra a lista de decks pelo tema ativo do menu de alternância
+  const decksExibidos = useMemo(() => {
+    if (temaAtivo === 'todos') {
+      return decksDaMateria;
+    }
+    return decksDaMateria.filter((d) => d.tema === temaAtivo || d.titulo === temaAtivo);
+  }, [decksDaMateria, temaAtivo]);
+
+  // Lista filtrada para o modal de busca de assuntos
+  const assuntosFiltradosModal = useMemo(() => {
+    const q = buscaAssuntos.trim().toLowerCase();
+    if (!q) return decksDaMateria;
+    return decksDaMateria.filter(
+      (d) => d.titulo.toLowerCase().includes(q) || d.subtitulo.toLowerCase().includes(q)
+    );
+  }, [decksDaMateria, buscaAssuntos]);
 
   const progressoAreaAtual = useMemo(() => {
-    return obterProgressoArea(areaAtualInfo.area);
-  }, [obterProgressoArea, areaAtualInfo.area]);
-
-  const { color: corAreaAtual, icon: IconAreaAtual } = getAreaVisual(areaAtualInfo.area);
+    const total = decksDaMateria.length;
+    const concluidos = decksDaMateria.filter((d) => isDeckConcluido(d.id)).length;
+    const porcentagem = total > 0 ? Math.min(100, Math.round((concluidos / total) * 100)) : 0;
+    return { total, concluidos, porcentagem };
+  }, [decksDaMateria, isDeckConcluido]);
 
   const handlePraticar = (deck: DesafioDeckPronto) => {
     haptic.selection();
@@ -90,28 +144,16 @@ export const FlashcardsDesafiosTimeline = () => {
     }, 150);
   };
 
-  const handleTrocarMateria = (novaAreaSlug: string) => {
+  const handleSelecionarTema = (tema: string) => {
     haptic.selection();
-    setMenuMateriasAberto(false);
-    navigate(`/flashcards/desafios/${novaAreaSlug}`, { replace: true });
+    setTemaAtivo(tema);
+    setMenuAssuntosAberto(false);
   };
 
-  // Filtragem no menu de alternância modal
-  const materiasFiltradasMenu = useMemo(() => {
-    const q = buscaMenu.trim().toLowerCase();
-    if (!q) return materiasOrdenadas;
-    return materiasOrdenadas.filter(
-      (m) =>
-        m.area.toLowerCase().includes(q) ||
-        m.descricao.toLowerCase().includes(q) ||
-        m.decks.some((d) => d.titulo.toLowerCase().includes(q) || d.tema.toLowerCase().includes(q))
-    );
-  }, [materiasOrdenadas, buscaMenu]);
-
   return (
-    <div className="min-h-dvh overflow-x-hidden bg-background pb-[calc(3rem+var(--sai-bottom,0px))]">
-      {/* Background ShapeGrid oficial */}
-      <div className="fixed inset-0 z-0 opacity-80 mix-blend-screen pointer-events-none">
+    <div className="min-h-screen bg-[#0D0D0D] text-foreground relative overflow-x-hidden pb-[calc(3rem+var(--sai-bottom,0px))]">
+      {/* Background ShapeGrid oficial idêntico ao de Pílulas */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
         <ShapeGrid
           speed={0.5}
           squareSize={40}
@@ -132,97 +174,14 @@ export const FlashcardsDesafiosTimeline = () => {
       </div>
 
       <main className="relative z-10 mx-auto w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] px-3 sm:px-6 lg:px-8 pt-2 space-y-6">
-        {/* ── 1. Barra do Menu de Alternância de Matérias ───────────────── */}
-        <section className="space-y-2.5">
-          <div className="flex items-center justify-between px-1">
-            <div className="flex items-center gap-2">
-              <span className="h-4 w-1 rounded-full" style={{ backgroundColor: corAreaAtual }} />
-              <p className="text-[11px] font-black uppercase tracking-widest text-muted-foreground">
-                Alternar Matéria ({materiasOrdenadas.length})
-              </p>
-            </div>
-
-            {/* Botão para abrir gaveta de visualização rápida com todos os assuntos */}
-            <button
-              onClick={() => {
-                haptic.selection();
-                setMenuMateriasAberto(true);
-              }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-card/80 border border-border/70 hover:border-white/20 text-xs font-bold text-foreground transition-colors active:scale-95 shadow-sm"
-            >
-              <Layers className="w-3.5 h-3.5 text-muted-foreground" />
-              <span>Ver todos os assuntos</span>
-              <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
-            </button>
-          </div>
-
-          {/* Carrossel Horizontal de Abas Rápidas (Ordem Alfabética) */}
-          <div
-            ref={scrollTabsRef}
-            className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-3 px-3 sm:mx-0 sm:px-0"
-          >
-            {materiasOrdenadas.map((cat) => {
-              const { color: cor, icon: Icon } = getAreaVisual(cat.area);
-              const isSelected = cat.slug === areaAtualInfo.slug;
-              const prog = obterProgressoArea(cat.area);
-
-              return (
-                <button
-                  key={cat.slug}
-                  data-active={isSelected}
-                  onClick={() => handleTrocarMateria(cat.slug)}
-                  className={`flex items-center gap-2.5 px-3.5 py-2 rounded-2xl border shrink-0 transition-all active:scale-95 select-none ${
-                    isSelected
-                      ? 'bg-card border-white text-foreground shadow-lg'
-                      : 'bg-card/50 border-border/60 text-muted-foreground hover:bg-card/90 hover:border-border'
-                  }`}
-                  style={
-                    isSelected
-                      ? {
-                          borderColor: cor,
-                          boxShadow: `0 4px 16px -2px ${cor}40`,
-                        }
-                      : undefined
-                  }
-                >
-                  <div
-                    className="w-6 h-6 rounded-lg flex items-center justify-center shrink-0"
-                    style={{
-                      backgroundColor: `${cor}20`,
-                      color: cor,
-                    }}
-                  >
-                    <Icon className="w-3.5 h-3.5" />
-                  </div>
-
-                  <span className="text-xs font-bold whitespace-nowrap">
-                    {cat.area}
-                  </span>
-
-                  <span
-                    className="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold tabular-nums"
-                    style={{
-                      backgroundColor: `${cor}22`,
-                      color: cor,
-                    }}
-                  >
-                    {prog.porcentagem}%
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* ── 2. Card de Destaque da Matéria Selecionada ───────────────── */}
+        {/* ── 1. Card de Destaque da Matéria Selecionada ───────────────── */}
         <section
-          className="relative overflow-hidden rounded-3xl border p-5 sm:p-6 transition-all shadow-xl backdrop-blur-md"
+          className="relative overflow-hidden rounded-3xl border p-5 sm:p-6 transition-all shadow-xl backdrop-blur-md bg-zinc-950/80"
           style={{
-            backgroundColor: `${corAreaAtual}12`,
             borderColor: `${corAreaAtual}44`,
           }}
         >
-          {/* Brilho de fundo */}
+          {/* Brilho de fundo com a cor temática da matéria */}
           <div
             className="pointer-events-none absolute -right-16 -top-16 w-56 h-56 rounded-full opacity-20 blur-3xl"
             style={{ background: corAreaAtual }}
@@ -249,26 +208,26 @@ export const FlashcardsDesafiosTimeline = () => {
                   >
                     Matéria Selecionada
                   </span>
-                  <span className="text-xs text-muted-foreground font-semibold">
-                    {areaAtualInfo.decks.length} assuntos disponíveis
+                  <span className="text-xs text-zinc-400 font-semibold">
+                    {decksDaMateria.length} assuntos disponíveis
                   </span>
                 </div>
 
-                <h1 className="font-display text-xl sm:text-2xl font-black text-foreground tracking-tight">
+                <h1 className="font-display text-xl sm:text-2xl font-black text-white tracking-tight">
                   {areaAtualInfo.area}
                 </h1>
-                <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 max-w-2xl leading-relaxed">
+                <p className="text-xs sm:text-sm text-zinc-400 mt-0.5 max-w-2xl leading-relaxed">
                   {areaAtualInfo.descricao}
                 </p>
               </div>
             </div>
 
-            {/* Progresso da Matéria */}
-            <div className="flex flex-col sm:items-end gap-1.5 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-border/40">
-              <span className="text-xs font-bold text-foreground bg-card/80 border border-border/80 px-3.5 py-1.5 rounded-full shadow-sm">
+            {/* Contador de Progresso */}
+            <div className="flex flex-col sm:items-end gap-1.5 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-white/10">
+              <span className="text-xs font-bold text-white bg-zinc-900/90 border border-white/10 px-3.5 py-1.5 rounded-full shadow-sm">
                 {progressoAreaAtual.concluidos} de {progressoAreaAtual.total} concluídos ({progressoAreaAtual.porcentagem}%)
               </span>
-              <div className="w-full sm:w-40 h-2 rounded-full bg-muted/40 overflow-hidden mt-1">
+              <div className="w-full sm:w-44 h-2 rounded-full bg-zinc-800/80 overflow-hidden mt-1">
                 <div
                   className="h-full rounded-full transition-all duration-700 ease-out"
                   style={{
@@ -281,17 +240,113 @@ export const FlashcardsDesafiosTimeline = () => {
           </div>
         </section>
 
+        {/* ── 2. Menu de Alternância de Assuntos da Matéria ─────────────── */}
+        <section className="space-y-2.5">
+          <div className="flex items-center justify-between px-1">
+            <div className="flex items-center gap-2">
+              <span className="h-4 w-1 rounded-full" style={{ backgroundColor: corAreaAtual }} />
+              <p className="text-[11px] font-black uppercase tracking-widest text-zinc-400">
+                Menu de Alternância de Assuntos ({decksDaMateria.length})
+              </p>
+            </div>
+
+            {/* Botão para abrir gaveta completa com todos os assuntos */}
+            <button
+              onClick={() => {
+                haptic.selection();
+                setMenuAssuntosAberto(true);
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-zinc-900/80 border border-white/10 hover:border-white/20 text-xs font-bold text-white transition-colors active:scale-95 shadow-sm"
+            >
+              <Layers className="w-3.5 h-3.5 text-zinc-400" />
+              <span>Ver todos ({decksDaMateria.length})</span>
+              <ChevronDown className="w-3.5 h-3.5 text-zinc-400" />
+            </button>
+          </div>
+
+          {/* Carrossel Horizontal com os Assuntos DENTRO desta Matéria */}
+          <div
+            ref={scrollTabsRef}
+            className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-3 px-3 sm:mx-0 sm:px-0"
+          >
+            {/* Opção "Todos os Assuntos" */}
+            <button
+              onClick={() => handleSelecionarTema('todos')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-2xl border shrink-0 text-xs font-bold transition-all active:scale-95 select-none ${
+                temaAtivo === 'todos'
+                  ? 'bg-white text-zinc-950 font-black shadow-lg shadow-white/10 border-white'
+                  : 'bg-zinc-900/70 text-zinc-400 border-white/10 hover:bg-zinc-800 hover:text-white'
+              }`}
+            >
+              <span>Todos os Assuntos</span>
+              <span
+                className={`px-1.5 py-0.2 rounded-full text-[10px] font-black ${
+                  temaAtivo === 'todos' ? 'bg-zinc-950/20 text-zinc-950' : 'bg-white/10 text-zinc-300'
+                }`}
+              >
+                {decksDaMateria.length}
+              </span>
+            </button>
+
+            {/* Abas individuais para cada assunto de Direito Administrativo */}
+            {decksDaMateria.map((d) => {
+              const isSelected = temaAtivo === d.tema;
+              const concluido = isDeckConcluido(d.id);
+
+              return (
+                <button
+                  key={d.id}
+                  onClick={() => handleSelecionarTema(d.tema)}
+                  className={`flex items-center gap-2 px-3.5 py-2 rounded-2xl border shrink-0 text-xs font-bold transition-all active:scale-95 select-none ${
+                    isSelected
+                      ? 'text-white shadow-lg'
+                      : 'bg-zinc-900/60 border-white/10 text-zinc-400 hover:bg-zinc-800 hover:text-white'
+                  }`}
+                  style={
+                    isSelected
+                      ? {
+                          backgroundColor: corAreaAtual,
+                          borderColor: corAreaAtual,
+                          boxShadow: `0 4px 16px -2px ${corAreaAtual}66`,
+                        }
+                      : undefined
+                  }
+                >
+                  <span className="truncate max-w-[200px]">{d.titulo}</span>
+
+                  {concluido ? (
+                    <Check className="w-3.5 h-3.5 stroke-[3] text-emerald-400 shrink-0" />
+                  ) : (
+                    <span className="text-[10px] opacity-75 shrink-0">~{d.cardsEstimados}c</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
         {/* ── 3. Linha do Tempo dos Decks / Assuntos ───────────────────── */}
         <section className="space-y-4">
           <div className="flex items-center justify-between px-1">
-            <h2 className="text-[11px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+            <h2 className="text-[11px] font-black uppercase tracking-widest text-zinc-400 flex items-center gap-2">
               <span className="w-2 h-2 rounded-full" style={{ backgroundColor: corAreaAtual }} />
-              Sequência de Assuntos em Linha do Tempo
+              {temaAtivo === 'todos'
+                ? `Sequência Completa (${decksExibidos.length} Assuntos em Linha do Tempo)`
+                : `Assunto Selecionado · ${temaAtivo}`}
             </h2>
+
+            {temaAtivo !== 'todos' && (
+              <button
+                onClick={() => setTemaAtivo('todos')}
+                className="text-xs font-bold text-emerald-400 hover:underline"
+              >
+                Exibir todos os assuntos
+              </button>
+            )}
           </div>
 
           <DesafiosTimeline
-            decks={areaAtualInfo.decks}
+            decks={decksExibidos}
             corArea={corAreaAtual}
             isDeckConcluido={isDeckConcluido}
             isDeckDesbloqueado={isDeckDesbloqueado}
@@ -300,139 +355,91 @@ export const FlashcardsDesafiosTimeline = () => {
         </section>
       </main>
 
-      {/* ── Modal / Sheet "Todas as Matérias & Assuntos" ─────────────── */}
-      <Sheet open={menuMateriasAberto} onOpenChange={setMenuMateriasAberto}>
+      {/* ── Modal / Sheet "Todos os Assuntos de [Matéria]" ────────────── */}
+      <Sheet open={menuAssuntosAberto} onOpenChange={setMenuAssuntosAberto}>
         <SheetContent
           side="bottom"
-          className="max-h-[85dvh] rounded-t-3xl border-t border-border bg-card/95 backdrop-blur-xl px-4 sm:px-6 pb-6 pt-5 overflow-y-auto"
+          className="max-h-[85dvh] rounded-t-3xl border-t border-white/10 bg-zinc-950/95 backdrop-blur-2xl px-4 sm:px-6 pb-6 pt-5 overflow-y-auto text-foreground"
         >
-          <SheetHeader className="text-left pb-4 border-b border-border/60">
+          <SheetHeader className="text-left pb-4 border-b border-white/10">
             <div className="flex items-center justify-between">
-              <SheetTitle className="font-display text-lg sm:text-xl font-extrabold text-foreground flex items-center gap-2">
-                <Layers className="w-5 h-5 text-emerald-400" />
-                Todas as Matérias & Assuntos
+              <SheetTitle className="font-display text-lg sm:text-xl font-black text-white flex items-center gap-2">
+                <Layers className="w-5 h-5" style={{ color: corAreaAtual }} />
+                Assuntos de {areaAtualInfo.area}
               </SheetTitle>
               <button
-                onClick={() => setMenuMateriasAberto(false)}
-                className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground"
+                onClick={() => setMenuAssuntosAberto(false)}
+                className="w-8 h-8 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Navegue pelos desafios estruturados em ordem alfabética com todos os seus assuntos.
+            <p className="text-xs text-zinc-400 mt-1">
+              Selecione qualquer assunto da lista abaixo para praticar ou filtrar na linha do tempo.
             </p>
 
-            {/* Campo de Busca Rápida no Menu */}
+            {/* Campo de Busca Rápida nos Assuntos */}
             <div className="relative mt-3">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
               <input
                 type="text"
-                value={buscaMenu}
-                onChange={(e) => setBuscaMenu(e.target.value)}
-                placeholder="Buscar matéria ou assunto..."
-                className="w-full h-10 pl-10 pr-4 rounded-xl bg-background border border-border/80 text-xs font-medium text-foreground focus:outline-none focus:border-emerald-500 transition-colors"
+                value={buscaAssuntos}
+                onChange={(e) => setBuscaAssuntos(e.target.value)}
+                placeholder={`Buscar assunto em ${areaAtualInfo.area}...`}
+                className="w-full h-10 pl-10 pr-4 rounded-xl bg-zinc-900 border border-white/15 text-xs font-medium text-white focus:outline-none focus:border-emerald-500 transition-colors"
               />
             </div>
           </SheetHeader>
 
-          {/* Lista de Matérias com Seus Assuntos */}
-          <div className="space-y-4 pt-4">
-            {materiasFiltradasMenu.map((cat) => {
-              const { color: cor, icon: Icon } = getAreaVisual(cat.area);
-              const prog = obterProgressoArea(cat.area);
-              const isSelected = cat.slug === areaAtualInfo.slug;
+          {/* Grade de Assuntos */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-4">
+            {assuntosFiltradosModal.map((deck) => {
+              const conc = isDeckConcluido(deck.id);
+              const isSelected = temaAtivo === deck.tema;
 
               return (
                 <div
-                  key={cat.slug}
-                  className={`rounded-2xl border transition-all p-3.5 ${
+                  key={deck.id}
+                  onClick={() => handleSelecionarTema(deck.tema)}
+                  className={`flex items-center justify-between p-3 rounded-2xl border cursor-pointer transition-all select-none ${
                     isSelected
-                      ? 'bg-card border-white/40 shadow-md ring-1 ring-white/20'
-                      : 'bg-background/60 border-border/60 hover:border-border'
+                      ? 'bg-zinc-900 border-white/40 ring-1 ring-white/20'
+                      : 'bg-zinc-900/50 border-white/10 hover:bg-zinc-900 hover:border-white/20'
                   }`}
                 >
-                  {/* Cabeçalho da Matéria no Menu */}
-                  <div
-                    onClick={() => handleTrocarMateria(cat.slug)}
-                    className="flex items-center justify-between gap-3 cursor-pointer select-none"
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div
-                        className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-                        style={{
-                          backgroundColor: `${cor}22`,
-                          color: cor,
-                        }}
-                      >
-                        <Icon className="w-4.5 h-4.5" />
-                      </div>
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2">
-                          <h3 className="text-sm font-bold text-foreground truncate">
-                            {cat.area}
-                          </h3>
-                          {isSelected && (
-                            <span
-                              className="px-1.5 py-0.2 text-[9px] font-black uppercase rounded text-white"
-                              style={{ backgroundColor: cor }}
-                            >
-                              Ativa
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-[11px] text-muted-foreground line-clamp-1">
-                          {cat.descricao}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span
-                        className="text-xs font-extrabold px-2 py-0.5 rounded-full tabular-nums"
-                        style={{
-                          backgroundColor: `${cor}20`,
-                          color: cor,
-                        }}
-                      >
-                        {prog.concluidos}/{prog.total} ({prog.porcentagem}%)
+                  <div className="min-w-0 pr-2">
+                    <div className="flex items-center gap-1.5 mb-0.5">
+                      <span className="text-[10px] font-mono font-bold text-zinc-400">
+                        #{String(deck.ordem).padStart(2, '0')}
+                      </span>
+                      <span className="text-[10px] font-semibold text-zinc-400 bg-white/5 px-2 py-0.5 rounded">
+                        {deck.nivel}
                       </span>
                     </div>
+                    <h4 className="text-xs sm:text-sm font-bold text-white truncate">
+                      {deck.titulo}
+                    </h4>
+                    <p className="text-[11px] text-zinc-400 mt-0.5">
+                      ~{deck.cardsEstimados} flashcards
+                    </p>
                   </div>
 
-                  {/* Lista Compacta de Assuntos da Matéria */}
-                  <div className="mt-3 pt-2.5 border-t border-border/40 grid grid-cols-1 sm:grid-cols-2 gap-1.5">
-                    {cat.decks.map((deck) => {
-                      const conc = isDeckConcluido(deck.id);
-                      const desbloq = isDeckDesbloqueado(deck, cat.decks);
-
-                      return (
-                        <div
-                          key={deck.id}
-                          onClick={() => handleTrocarMateria(cat.slug)}
-                          className="flex items-center justify-between p-2 rounded-xl bg-card/40 hover:bg-card border border-border/30 hover:border-border cursor-pointer transition-colors text-xs"
-                        >
-                          <div className="flex items-center gap-2 min-w-0">
-                            <span className="text-[10px] font-mono text-muted-foreground shrink-0">
-                              #{String(deck.ordem).padStart(2, '0')}
-                            </span>
-                            <span className="font-semibold text-foreground truncate">
-                              {deck.titulo}
-                            </span>
-                          </div>
-
-                          <div className="shrink-0 ml-2">
-                            {conc ? (
-                              <Check className="w-3.5 h-3.5 text-emerald-400 stroke-[3]" />
-                            ) : desbloq ? (
-                              <Play className="w-3 h-3 text-muted-foreground fill-current" />
-                            ) : (
-                              <Lock className="w-3 h-3 text-muted-foreground/40" />
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
+                  <div className="shrink-0">
+                    {conc ? (
+                      <div className="w-7 h-7 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                        <Check className="w-4 h-4 stroke-[3]" />
+                      </div>
+                    ) : (
+                      <div
+                        className="w-7 h-7 rounded-full flex items-center justify-center"
+                        style={{
+                          backgroundColor: `${corAreaAtual}20`,
+                          color: corAreaAtual,
+                        }}
+                      >
+                        <Play className="w-3.5 h-3.5 fill-current" />
+                      </div>
+                    )}
                   </div>
                 </div>
               );

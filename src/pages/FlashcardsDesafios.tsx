@@ -3,7 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Trophy, Flame, CheckCircle2, Play, Sparkles, ArrowRight, Layers, Search, X, ChevronRight } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/PageHeader';
-import { DESAFIOS_DECKS_CATALOGO, DesafioDeckPronto } from '@/config/flashcardsDesafiosDecks';
+import {
+  DESAFIOS_DECKS_CATALOGO,
+  DesafioDeckPronto,
+  AREA_TEMAS_COUNT_MAP,
+  TOTAL_DESAFIOS_COUNT,
+} from '@/config/flashcardsDesafiosDecks';
 import { useFlashcardsDesafiosStore } from '@/lib/flashcardsDesafiosStore';
 import { DesafiosHero } from '@/components/flashcards/DesafiosHero';
 import { getAreaVisual } from '@/lib/flashcardsAreaVisual';
@@ -65,9 +70,9 @@ const FlashcardsDesafios = () => {
   };
 
   return (
-    <div className="min-h-dvh overflow-x-hidden bg-background pb-[calc(3rem+var(--sai-bottom,0px))]">
-      {/* Background ShapeGrid oficial */}
-      <div className="fixed inset-0 z-0 opacity-80 mix-blend-screen pointer-events-none">
+    <div className="min-h-screen bg-[#0D0D0D] text-foreground relative overflow-x-hidden pb-[calc(3rem+var(--sai-bottom,0px))]">
+      {/* Background ShapeGrid oficial idêntico ao de Pílulas */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
         <ShapeGrid
           speed={0.5}
           squareSize={40}
@@ -92,7 +97,7 @@ const FlashcardsDesafios = () => {
         <DesafiosHero
           porcentagemGlobal={porcentagemGlobal}
           totalConcluidos={totalConcluidos}
-          totalDecks={totalDecks}
+          totalDecks={TOTAL_DESAFIOS_COUNT}
           desafioAtual={desafioAtualGlobal}
           onContinuar={handleContinuarDesafio}
         />
@@ -111,7 +116,7 @@ const FlashcardsDesafios = () => {
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-muted-foreground bg-card/60 border border-border/70 px-2.5 py-1 rounded-full shrink-0">
+              <span className="text-xs font-bold text-muted-foreground bg-zinc-900/80 border border-white/10 px-2.5 py-1 rounded-full shrink-0">
                 {materiasFiltradas.length} matérias
               </span>
 
@@ -122,7 +127,7 @@ const FlashcardsDesafios = () => {
                   if (buscaAberta) setBusca('');
                 }}
                 aria-label={buscaAberta ? 'Fechar busca' : 'Buscar matéria'}
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-card/60 border border-border/70 text-muted-foreground transition-colors hover:text-foreground"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-zinc-900/80 border border-white/10 text-muted-foreground transition-colors hover:text-foreground"
               >
                 {buscaAberta ? <X className="h-4 w-4" /> : <Search className="h-4 w-4" />}
               </button>
@@ -143,7 +148,7 @@ const FlashcardsDesafios = () => {
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
                 placeholder="Filtrar matérias por nome..."
-                className="w-full h-11 pl-10 pr-4 rounded-2xl bg-card border border-border text-sm font-medium text-foreground focus:outline-none focus:border-emerald-500 shadow-sm transition-colors"
+                className="w-full h-11 pl-10 pr-4 rounded-2xl bg-zinc-900/90 border border-white/15 text-sm font-medium text-foreground focus:outline-none focus:border-emerald-500 shadow-sm transition-colors"
                 autoFocus
               />
             </motion.div>
@@ -154,7 +159,8 @@ const FlashcardsDesafios = () => {
             {materiasFiltradas.map((cat) => {
               const { color: cor, icon: Icon } = getAreaVisual(cat.area);
               const prog = obterProgressoArea(cat.area);
-              const isCompleto = prog.total > 0 && prog.concluidos >= prog.total;
+              const totalAssuntos = AREA_TEMAS_COUNT_MAP[cat.area] ?? cat.decks.length;
+              const isCompleto = prog.concluidos > 0 && prog.concluidos >= totalAssuntos;
 
               return (
                 <motion.div
@@ -162,9 +168,9 @@ const FlashcardsDesafios = () => {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleAbrirMateria(cat.slug)}
-                  className="group relative cursor-pointer overflow-hidden rounded-3xl border border-border/80 bg-card/70 hover:bg-card hover:border-border p-5 shadow-sm hover:shadow-xl transition-all flex flex-col justify-between select-none"
+                  className="group relative cursor-pointer overflow-hidden rounded-3xl border border-white/10 bg-zinc-950/75 hover:bg-zinc-900/85 hover:border-white/20 p-5 shadow-lg backdrop-blur-md transition-all flex flex-col justify-between select-none"
                   style={{
-                    borderColor: `${cor}25`,
+                    borderColor: `${cor}30`,
                   }}
                 >
                   {/* Brilho hover sutil no canto */}
@@ -179,7 +185,7 @@ const FlashcardsDesafios = () => {
                       <div
                         className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 shadow-sm transition-transform group-hover:scale-105"
                         style={{
-                          backgroundColor: `${cor}20`,
+                          backgroundColor: `${cor}25`,
                           color: cor,
                         }}
                       >
@@ -208,26 +214,26 @@ const FlashcardsDesafios = () => {
                     </div>
 
                     {/* Título e Descrição */}
-                    <h3 className="font-display text-base sm:text-lg font-black text-foreground group-hover:text-white transition-colors leading-snug">
+                    <h3 className="font-display text-base sm:text-lg font-black text-white group-hover:text-emerald-300 transition-colors leading-snug">
                       {cat.area}
                     </h3>
-                    <p className="text-xs text-muted-foreground mt-1 line-clamp-2 leading-relaxed">
+                    <p className="text-xs text-zinc-400 mt-1 line-clamp-2 leading-relaxed">
                       {cat.descricao}
                     </p>
                   </div>
 
                   {/* Rodapé: Progresso e Ação de Abertura */}
-                  <div className="mt-5 pt-3 border-t border-border/40 space-y-2">
-                    <div className="flex items-center justify-between text-[11px] font-semibold text-muted-foreground">
-                      <span>{prog.concluidos} de {prog.total} concluídos</span>
-                      <span className="text-foreground/80 font-bold group-hover:translate-x-0.5 transition-transform flex items-center gap-0.5">
-                        Ver linha do tempo
+                  <div className="mt-5 pt-3 border-t border-white/10 space-y-2">
+                    <div className="flex items-center justify-between text-[11px] font-semibold text-zinc-400">
+                      <span>{prog.concluidos} de {totalAssuntos} assuntos</span>
+                      <span className="text-white font-bold group-hover:translate-x-0.5 transition-transform flex items-center gap-0.5">
+                        Linha do tempo
                         <ChevronRight className="w-3.5 h-3.5" />
                       </span>
                     </div>
 
                     {/* Barra de Progresso Fina */}
-                    <div className="w-full h-1.5 rounded-full bg-muted/40 overflow-hidden">
+                    <div className="w-full h-1.5 rounded-full bg-zinc-800/80 overflow-hidden">
                       <div
                         className="h-full rounded-full transition-all duration-500 ease-out"
                         style={{
@@ -243,7 +249,7 @@ const FlashcardsDesafios = () => {
           </div>
 
           {materiasFiltradas.length === 0 && (
-            <div className="rounded-3xl border border-border bg-card p-10 text-center text-muted-foreground space-y-2">
+            <div className="rounded-3xl border border-white/10 bg-zinc-950/80 p-10 text-center text-muted-foreground space-y-2">
               <Sparkles className="mx-auto h-8 w-8 text-muted-foreground/50" />
               <p className="text-sm font-bold">Nenhuma matéria encontrada com o termo pesquisado.</p>
               <button
