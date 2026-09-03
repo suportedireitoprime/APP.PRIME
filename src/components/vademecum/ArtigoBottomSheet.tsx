@@ -1903,7 +1903,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
   // Mobile: Grifo instantâneo ao passar o dedo (sem precisar ficar pressionando/segurando).
   // O usuário apenas toca e arrasta o dedo pelo texto, e o grifo se forma imediatamente.
   useEffect(() => {
-    if (!highlightMode) return;
+    if (!highlightMode || showEraseSheet) return;
     const container = containerRef.current;
     if (!container) return;
 
@@ -3912,6 +3912,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
               highlights={eraseSheetHighlights}
               onRemoveByColor={handleRemoveGrifosByColor}
               onClearAll={handleClearAllGrifos}
+              portalContainer={sheetNode}
             />
           )}
 

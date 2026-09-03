@@ -12,6 +12,7 @@ interface Props {
   highlights: Highlight[];
   onRemoveByColor: (color: string) => void;
   onClearAll: () => void;
+  portalContainer?: HTMLElement | null;
 }
 
 const NAME_BY_VALUE = Object.fromEntries(HIGHLIGHT_COLORS.map(c => [c.value, c.name]));
@@ -28,7 +29,7 @@ Object.assign(NAME_BY_VALUE, {
   'rgba(251, 146, 60, 0.55)': 'Pegadinha',
 });
 
-const GrifoEraseSheet = ({ open, onClose, highlights, onRemoveByColor, onClearAll }: Props) => {
+const GrifoEraseSheet = ({ open, onClose, highlights, onRemoveByColor, onClearAll, portalContainer }: Props) => {
   useEscapeKey(open, onClose);
 
   const grouped = useMemo(() => {
@@ -49,14 +50,23 @@ const GrifoEraseSheet = ({ open, onClose, highlights, onRemoveByColor, onClearAl
 
   return createPortal(
     <AnimatePresence>
-      <div className="fixed inset-0 z-[10050] flex items-center justify-center p-4 sm:p-6">
+      <div 
+        className="fixed inset-0 z-[10050] flex items-center justify-center p-4 sm:p-6 pointer-events-auto"
+        onPointerDown={(e) => e.stopPropagation()}
+        onTouchStart={(e) => e.stopPropagation()}
+        onTouchMove={(e) => e.stopPropagation()}
+        onTouchEnd={(e) => e.stopPropagation()}
+      >
         {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          onClick={onClose}
-          className="fixed inset-0 bg-black/75 backdrop-blur-sm z-0"
+          onClick={(e) => {
+            e.stopPropagation();
+            onClose();
+          }}
+          className="fixed inset-0 bg-black/75 backdrop-blur-sm z-0 pointer-events-auto cursor-pointer"
         />
 
         {/* Floating Centered Card */}
@@ -65,7 +75,8 @@ const GrifoEraseSheet = ({ open, onClose, highlights, onRemoveByColor, onClearAl
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.92, y: 10 }}
           transition={{ type: 'spring', damping: 25, stiffness: 280 }}
-          className="relative z-10 w-full max-w-sm bg-card border border-border/80 rounded-3xl shadow-2xl p-5 flex flex-col max-h-[85vh] overflow-hidden"
+          onClick={(e) => e.stopPropagation()}
+          className="relative z-10 w-full max-w-sm bg-card border border-border/80 rounded-3xl shadow-2xl p-5 flex flex-col max-h-[85vh] overflow-hidden pointer-events-auto cursor-default select-none touch-manipulation"
           style={{
             marginBottom: 'max(0.75rem, env(safe-area-inset-bottom, 0px))',
           }}
@@ -82,14 +93,16 @@ const GrifoEraseSheet = ({ open, onClose, highlights, onRemoveByColor, onClearAl
               </div>
             </div>
             <button
-              onClick={() => {
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
                 haptic.selection();
                 onClose();
               }}
               aria-label="Fechar"
-              className="w-8 h-8 rounded-full hover:bg-secondary flex items-center justify-center text-foreground/70 transition-colors"
+              className="w-10 h-10 rounded-full hover:bg-secondary flex items-center justify-center text-foreground/70 transition-colors cursor-pointer touch-manipulation active:scale-95"
             >
-              <X className="w-4 h-4" />
+              <X className="w-5 h-5" />
             </button>
           </div>
 
@@ -99,12 +112,14 @@ const GrifoEraseSheet = ({ open, onClose, highlights, onRemoveByColor, onClearAl
               <div className="py-6 px-4 text-center space-y-3">
                 <p className="text-sm text-foreground/60">Não há grifos registrados neste artigo.</p>
                 <button
-                  onClick={() => {
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
                     haptic.notification();
                     onClearAll();
                     onClose();
                   }}
-                  className="w-full py-2.5 rounded-xl text-xs font-semibold bg-red-500/15 text-red-400 hover:bg-red-500/25 transition-colors"
+                  className="w-full min-h-[44px] py-3 px-4 rounded-xl text-xs font-semibold bg-red-500/15 text-red-400 hover:bg-red-500/25 active:bg-red-500/35 transition-colors cursor-pointer touch-manipulation active:scale-[0.98]"
                 >
                   Limpar quaisquer marcas residuais
                 </button>
@@ -129,6 +144,7 @@ const GrifoEraseSheet = ({ open, onClose, highlights, onRemoveByColor, onClearAl
                   </div>
 
                   <button
+                    type="button"
                     onClick={(e) => {
                       e.stopPropagation();
                       haptic.notification();
@@ -137,10 +153,10 @@ const GrifoEraseSheet = ({ open, onClose, highlights, onRemoveByColor, onClearAl
                         onClose();
                       }
                     }}
-                    className="px-3 py-1.5 rounded-xl bg-red-500/15 text-red-400 hover:bg-red-500/25 text-xs font-bold flex items-center gap-1.5 transition-colors active:scale-95 shrink-0"
+                    className="min-h-[44px] px-3.5 py-2 rounded-xl bg-red-500/15 text-red-400 hover:bg-red-500/25 active:bg-red-500/35 text-xs font-bold flex items-center gap-1.5 transition-colors active:scale-95 shrink-0 cursor-pointer touch-manipulation"
                     aria-label={`Apagar grifos ${g.name}`}
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
+                    <Trash2 className="w-4 h-4" />
                     <span>Apagar</span>
                   </button>
                 </div>
@@ -152,12 +168,14 @@ const GrifoEraseSheet = ({ open, onClose, highlights, onRemoveByColor, onClearAl
           {grouped.length > 0 && (
             <div className="pt-2 border-t border-border/60">
               <button
-                onClick={() => {
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
                   haptic.notification();
                   onClearAll();
                   onClose();
                 }}
-                className="w-full py-3 rounded-2xl text-sm font-bold bg-red-500 text-white hover:bg-red-600 shadow-md shadow-red-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                className="w-full min-h-[48px] py-3 rounded-2xl text-sm font-bold bg-red-500 text-white hover:bg-red-600 active:bg-red-700 shadow-md shadow-red-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer touch-manipulation"
               >
                 <Trash2 className="w-4 h-4" />
                 <span>Apagar todos os grifos</span>
@@ -167,7 +185,7 @@ const GrifoEraseSheet = ({ open, onClose, highlights, onRemoveByColor, onClearAl
         </motion.div>
       </div>
     </AnimatePresence>,
-    document.body
+    portalContainer || document.body
   );
 };
 
