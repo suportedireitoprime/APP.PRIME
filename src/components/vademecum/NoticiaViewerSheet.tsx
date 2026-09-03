@@ -30,7 +30,13 @@ interface Props {
 }
 
 export default function NoticiaViewerSheet({ noticia, onClose }: Props) {
+  const mountedAt = useRef(0);
+  useEffect(() => {
+    if (noticia) mountedAt.current = Date.now();
+  }, [!!noticia]);
+
   const handleClose = () => {
+    if (Date.now() - mountedAt.current < 400) return;
     resetBodyScrollLock();
     onClose();
   };

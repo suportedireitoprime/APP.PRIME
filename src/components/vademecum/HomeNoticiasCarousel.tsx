@@ -286,13 +286,19 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
   ), [kind, headerTitle, headerSubtitle]);
 
   const renderedCarousel = useMemo(() => (
-    <div
-      ref={scrollerRef}
-      onPointerDown={pauseAutoplay}
-      onTouchStart={pauseAutoplay}
-      className="flex gap-3 md:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-1 px-[7.5%] md:px-[4%] lg:px-[3%] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
-    >
-      {items.map((item, i) => {
+    <AnimatePresence mode="wait" initial={false}>
+      <motion.div
+        key={feedMode}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.3 }}
+        ref={scrollerRef}
+        onPointerDown={pauseAutoplay}
+        onTouchStart={pauseAutoplay}
+        className="flex gap-3 md:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-1 px-[7.5%] md:px-[4%] lg:px-[3%] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {items.map((item, i) => {
         const isActive = i === activeIndex;
 
         // LIVRO — card dedicado bordô com capa em destaque
@@ -466,8 +472,9 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
           </motion.button>
         );
       })}
-    </div>
-  ), [items, activeIndex, handleOpen]);
+      </motion.div>
+    </AnimatePresence>
+  ), [items, activeIndex, handleOpen, feedMode]);
 
   if (items.length === 0) {
     return (

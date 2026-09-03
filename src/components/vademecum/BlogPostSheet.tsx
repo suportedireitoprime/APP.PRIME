@@ -27,7 +27,13 @@ interface Props {
 }
 
 export default function BlogPostSheet({ post, onClose, showGoTo = false, inline = false }: Props) {
+  const mountedAt = useRef(0);
+  useEffect(() => {
+    if (post) mountedAt.current = Date.now();
+  }, [!!post]);
+
   const handleClose = () => {
+    if (Date.now() - mountedAt.current < 400) return;
     resetBodyScrollLock();
     onClose();
   };
