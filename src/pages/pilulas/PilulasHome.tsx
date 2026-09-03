@@ -10,9 +10,7 @@ import { AnimatedDivider } from '@/components/ui/AnimatedDivider';
 import { haptic } from '@/lib/nativeHaptics';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import CircularGallery from '@/components/ui/CircularGallery';
-import { Capacitor } from '@capacitor/core';
-import { NativePilulasPlugin } from '@/plugins/NativePilulasPlugin';
-import { useEffect } from 'react';
+
 
 type TabType = 'Todos' | 'Pílulas Rápidas' | 'Só Pílulas' | 'Códigos' | 'Ministros';
 
@@ -25,24 +23,7 @@ export default function PilulasHome() {
   
   usePilulasWarmup();
 
-  useEffect(() => {
-    if (Capacitor.isNativePlatform()) {
-      const launch = async () => {
-        try {
-          const { data } = await supabase.auth.getSession();
-          await NativePilulasPlugin.openPilulasDashboard({
-            accessToken: data.session?.access_token,
-            refreshToken: data.session?.refresh_token
-          });
-          navigate(-1);
-        } catch (e) {
-          console.error(e);
-          navigate(-1);
-        }
-      };
-      launch();
-    }
-  }, [navigate]);
+
 
   const handleSelectClassicos = () => {
     haptic.selection();

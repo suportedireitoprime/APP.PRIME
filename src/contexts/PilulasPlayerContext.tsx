@@ -3,10 +3,8 @@ import { Capacitor } from '@capacitor/core';
 import { clearMediaSession, registrarMidia } from '@/lib/mediaSession';
 import { telaAcesa } from '@/lib/nativo/telaAcordada';
 import { type LivroNormalizado } from '@/lib/bibliotecaColecoes';
-import { NativeAudio } from '@/lib/NativeAudio';
 
 const INTRO_URL = 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/audios/audio-intro-2.mp3';
-const isNative = Capacitor.isNativePlatform();
 
 interface PilulasPlayerContextType {
   livro: LivroNormalizado | null;
@@ -127,73 +125,23 @@ export const PilulasPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     // Auto-play attempt
-    if (isNative) {
-      NativeAudio.prepare({
-        introUrl: INTRO_URL,
-        mainUrl: l.audioResumoUrl || '',
-        title: l.titulo,
-        author: l.autor || 'APP.PRIME',
-        coverUrl: l.capa || ''
-      }).then(() => {
-        NativeAudio.play();
-        setIsPlaying(true);
-      }).catch(err => console.warn('Native Play Error', err));
-    } else {
-      setTimeout(() => {
-        const introEl = audioIntroRef.current;
-        if (introEl) {
-          introEl.play().then(() => setIsPlaying(true)).catch(err => {
-            console.warn('Autoplay bloqueado', err);
-          });
-        }
-      }, 500);
-    }
-  }, [livro, phase, hasPlayedIntro]);
+    setTimeout(() => {
+      const introEl = audioIntroRef.current;
+      if (introEl) {
+        introEl.play().then(() => setIsPlaying(true)).catch(err => {
+          console.warn('Autoplay bloqueado', err);
+          skipToMain();
+        });
+      } else {
+        skipToMain();
+      }
+    }, 150);
+  }, [livro, phase, hasPlayedIntro, skipToMain]);
 
-  // Polling for NativeAudio
-  useEffect(() => {
-    if (!isNative || !livro) return;
-    
-    const interval = setInterval(async () => {
-      try {
-        const p = await NativeAudio.getProgress();
-        
-        // p.trackIndex == 0 means intro, 1 means main
-        if (p.trackIndex === 0) {
-          setPhase('intro');
-          setHasPlayedIntro(false);
-          setProgress(p.currentTime);
-          setIntroDuration(p.duration);
-        } else {
-          setPhase('main');
-          setHasPlayedIntro(true);
-          setMainDuration(p.duration);
-          setProgress(introOverlap + p.currentTime);
-          localStorage.setItem(`pilula_progress_${livro.id}`, String(p.currentTime / (p.duration || 1)));
-        }
-        
-        if (isPlaying !== p.isPlaying) {
-          setIsPlaying(p.isPlaying);
-        }
-      } catch (e) {}
-    }, 250);
 
-    return () => clearInterval(interval);
-  }, [isNative, livro, introOverlap, isPlaying]);
 
 
   const togglePlay = useCallback(() => {
-    if (isNative) {
-      if (isPlaying) {
-        NativeAudio.pause();
-        setIsPlaying(false);
-      } else {
-        NativeAudio.play();
-        setIsPlaying(true);
-      }
-      return;
-    }
-
     const activeRef = phase === 'intro' ? audioIntroRef : audioMainRef;
     if (isPlaying) {
       activeRef.current?.pause();
@@ -241,16 +189,6 @@ export const PilulasPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const handleSeek = useCallback((newUnifiedTime: number) => {
     const target = Math.max(0, Math.min(newUnifiedTime, unifiedDuration));
-    
-    if (isNative) {
-      if (target < introOverlap) {
-        NativeAudio.seek({ time: target });
-      } else {
-        NativeAudio.seek({ time: target - introOverlap });
-      }
-      setProgress(target);
-      return;
-    }
 
     if (target < introOverlap) {
       if (phase === 'main') {
@@ -281,16 +219,12 @@ export const PilulasPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [unifiedDuration, introOverlap, phase, isPlaying]);
 
   const fechar = useCallback(() => {
-    if (isNative) {
-      NativeAudio.stop();
-    } else {
-      if (audioMainRef.current) {
-        audioMainRef.current.pause();
-        clearMediaSession(audioMainRef.current);
-      }
-      if (audioIntroRef.current) {
-        audioIntroRef.current.pause();
-      }
+    if (audioMainRef.current) {
+      audioMainRef.current.pause();
+      clearMediaSession(audioMainRef.current);
+    }
+    if (audioIntroRef.current) {
+      audioIntroRef.current.pause();
     }
     setIsPlaying(false);
     setLivro(null);

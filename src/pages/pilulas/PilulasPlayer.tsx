@@ -12,9 +12,7 @@ import { PilulaArtwork } from './components/PilulaArtwork';
 import { PilulaControls } from './components/PilulaControls';
 import { PilulaExtraActions } from './components/PilulaExtraActions';
 import { motion } from 'framer-motion';
-import { Capacitor } from '@capacitor/core';
-import { NativePilulasPlugin } from '@/plugins/NativePilulasPlugin';
-import { supabase } from '@/integrations/supabase/client';
+
 
 export default function PilulasPlayer() {
   const { id } = useParams<{ id: string }>();
@@ -41,38 +39,7 @@ export default function PilulasPlayer() {
   const { fechar: fecharPlayerGlobal } = useResumoLivroPlayer();
   const featurePilulas = useGatedFeature('pilulas', 'pilulas', { scope: id, refKey: id });
 
-  useEffect(() => {
-    if (Capacitor.isNativePlatform()) {
-      const launch = async () => {
-        try {
-          const { data } = await supabase.auth.getSession();
-          await NativePilulasPlugin.openPilulasDashboard({
-            accessToken: data.session?.access_token,
-            refreshToken: data.session?.refresh_token,
-            startPilulaId: id
-          });
-          navigate(-1);
-        } catch (e) {
-          console.error(e);
-          navigate(-1);
-        }
-      };
-      launch();
-    }
-  }, [id, navigate]);
 
-  useEffect(() => {
-    fecharPlayerGlobal();
-  }, [fecharPlayerGlobal]);
-
-  if (Capacitor.isNativePlatform()) {
-    return (
-      <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center p-4">
-        <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-primary animate-spin mb-4" />
-        <h2 className="text-lg font-bold font-display text-white">Carregando Áudio...</h2>
-      </div>
-    );
-  }
 
   if (loading) {
     return (

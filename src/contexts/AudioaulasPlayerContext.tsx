@@ -4,10 +4,6 @@ import { registrarMidia, clearMediaSession } from '@/lib/mediaSession';
 import { telaAcesa } from '@/lib/nativo/telaAcordada';
 import { fonteDeAudio } from '@/lib/nativo/audioOffline';
 import { toast } from 'sonner';
-import { Capacitor } from '@capacitor/core';
-import { NativeAudio } from '@/lib/NativeAudio';
-
-const isNative = Capacitor.isNativePlatform();
 
 export interface AulaAudio {
   id: number;
@@ -172,17 +168,6 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
       }
 
       if (atualId === a.id) {
-        if (isNative) {
-          if (!tocando) {
-            NativeAudio.play();
-            setTocando(true);
-          } else {
-            NativeAudio.pause();
-            setTocando(false);
-          }
-          return;
-        }
-
         if (el?.paused) {
           await el.play().catch(() => {});
           setTocando(true);
@@ -199,23 +184,12 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
 
       try {
         const src = await fonteDeAudio(audioIdOf(a), a.url_audio);
-        if (isNative) {
-          await NativeAudio.prepare({
-            mainUrl: src,
-            title: a.titulo,
-            author: a.tema || a.area || 'Áudio-aulas',
-            coverUrl: (a as any).capa_url || (a as any).url_capa || ''
-          });
-          NativeAudio.play();
-          setTocando(true);
-        } else {
-          if (el) {
-            el.src = src;
-            el.playbackRate = velocidade;
-            await el.play();
-          }
-          setTocando(true);
+        if (el) {
+          el.src = src;
+          el.playbackRate = velocidade;
+          await el.play();
         }
+        setTocando(true);
       } catch (err) {
         console.error('[AudioaulasPlayer] Erro ao carregar/reproduzir áudio:', err);
         setTocando(false);
@@ -226,17 +200,6 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
   );
 
   const togglePlay = useCallback(() => {
-    if (isNative) {
-      if (tocando) {
-        NativeAudio.pause();
-        setTocando(false);
-      } else {
-        NativeAudio.play();
-        setTocando(true);
-      }
-      return;
-    }
-
     const el = audioRef.current;
     if (!el || !atual) return;
     if (tocando) {
@@ -264,11 +227,6 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
   pularRef.current = pular;
 
   const seek = useCallback((v: number) => {
-    if (isNative) {
-      NativeAudio.seek({ time: v });
-      setTempo(v);
-      return;
-    }
     const el = audioRef.current;
     if (el) el.currentTime = v;
     setTempo(v);
@@ -281,16 +239,12 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
   }, []);
 
   const fechar = useCallback(() => {
-    if (isNative) {
-      NativeAudio.stop();
-    } else {
-      const el = audioRef.current;
-      if (el) {
-        el.pause();
-        el.removeAttribute('src');
-        el.load();
-        clearMediaSession(el);
-      }
+    const el = audioRef.current;
+    if (el) {
+      el.pause();
+      el.removeAttribute('src');
+      el.load();
+      clearMediaSession(el);
     }
     setTocando(false);
     setAtualId(null);
@@ -323,28 +277,7 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
     audioRef,
   };
 
-  // Polling for NativeAudio
-  useEffect(() => {
-    if (!isNative || !atualId) return;
-    const interval = setInterval(async () => {
-      try {
-        const p = await NativeAudio.getProgress();
-        setTempo(p.currentTime);
-        setDur(p.duration);
-        if (tocando !== p.isPlaying) {
-          setTocando(p.isPlaying);
-        }
-        // Check for end of track manually or handle via progress
-        if (p.duration > 0 && p.currentTime >= p.duration - 0.5) {
-            setTocando(false);
-            if (atualIdx >= 0 && fila[atualIdx + 1]) {
-                void tocar(fila[atualIdx + 1]);
-            }
-        }
-      } catch (e) {}
-    }, 250);
-    return () => clearInterval(interval);
-  }, [isNative, atualId, tocando, atualIdx, fila, tocar]);
+
 
   return (
     <Ctx.Provider value={value}>

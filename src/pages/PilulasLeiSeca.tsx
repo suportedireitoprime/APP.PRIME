@@ -8,8 +8,7 @@ import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { toast } from 'sonner';
 import { directImg } from '@/lib/cdnImg';
 import ShapeGrid from '@/components/ui/ShapeGrid';
-import { Capacitor } from '@capacitor/core';
-import { NativePilulasPlugin } from '@/plugins/NativePilulasPlugin';
+
 
 function formatTime(timeInSeconds: number) {
   if (!timeInSeconds || isNaN(timeInSeconds)) return '0:00';
@@ -165,24 +164,7 @@ export default function PilulasLeiSeca({ slug }: { slug: 'cp' | 'cf' | 'cc' }) {
 
   const config = CONFIG_MAP[slug];
 
-  useEffect(() => {
-    if (Capacitor.isNativePlatform()) {
-      const launch = async () => {
-        try {
-          const { data } = await supabase.auth.getSession();
-          await NativePilulasPlugin.openPilulasDashboard({
-            accessToken: data.session?.access_token,
-            refreshToken: data.session?.refresh_token
-          });
-          navigate(-1);
-        } catch (e) {
-          console.error(e);
-          navigate(-1);
-        }
-      };
-      launch();
-    }
-  }, [navigate]);
+
 
   const { data: artigos = [], isLoading: loading } = useQuery({
     queryKey: ['pilulas', 'lei', slug],

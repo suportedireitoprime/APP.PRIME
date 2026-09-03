@@ -7,8 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { COLECOES, type ColecaoConfig, type LivroNormalizado, normalizeLivro } from '@/lib/bibliotecaColecoes';
 import { useResumoLivroPlayer } from '@/contexts/ResumoLivroPlayerContext';
 import { toast } from 'sonner';
-import { Capacitor } from '@capacitor/core';
-import { NativePilulasPlugin } from '@/plugins/NativePilulasPlugin';
+
 
 function formatTime(timeInSeconds: number) {
   if (!timeInSeconds || isNaN(timeInSeconds)) return '0:00';
@@ -128,24 +127,7 @@ export default function Pilulas() {
   const [busca, setBusca] = useState('');
   const { tocar, livroAtual, tocando, togglePlay } = useResumoLivroPlayer();
 
-  useEffect(() => {
-    if (Capacitor.isNativePlatform()) {
-      const launch = async () => {
-        try {
-          const { data } = await supabase.auth.getSession();
-          await NativePilulasPlugin.openPilulasDashboard({
-            accessToken: data.session?.access_token,
-            refreshToken: data.session?.refresh_token
-          });
-          navigate(-1);
-        } catch (e) {
-          console.error(e);
-          navigate(-1);
-        }
-      };
-      launch();
-    }
-  }, [navigate]);
+
 
   const { data: livros = [], isLoading: loading } = useQuery({
     queryKey: ['pilulas', 'classicos'],

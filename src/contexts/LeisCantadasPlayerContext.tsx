@@ -3,10 +3,7 @@ import { fetchTodasLeisCantadas, registrarPlay, type LeiCantada } from "@/lib/le
 import { registrarMidia, clearMediaSession } from "@/lib/mediaSession";
 import { telaAcesa } from "@/lib/nativo/telaAcordada";
 import { fonteDeAudio } from "@/lib/nativo/audioOffline";
-import { Capacitor } from '@capacitor/core';
-import { NativeAudio } from '@/lib/NativeAudio';
 
-const isNative = Capacitor.isNativePlatform();
 
 interface LeisCantadasPlayerContextType {
   faixas: LeiCantada[];
@@ -97,17 +94,6 @@ export const LeisCantadasPlayerProvider: React.FC<{ children: React.ReactNode }>
 
   const tocar = (f: LeiCantada) => {
     if (atualId === f.id) {
-      if (isNative) {
-        if (tocando) {
-          NativeAudio.pause();
-          setTocando(false);
-        } else {
-          NativeAudio.play();
-          setTocando(true);
-        }
-        return;
-      }
-
       if (tocando) { audioRef.current?.pause(); setTocando(false); }
       else { audioRef.current?.play().catch(() => {}); setTocando(true); }
       return;
@@ -124,32 +110,12 @@ export const LeisCantadasPlayerProvider: React.FC<{ children: React.ReactNode }>
     // Prefere a cópia offline do aparelho, se existir.
     void (async () => {
       const src = await fonteDeAudio(f.id, f.audio_url);
-      if (isNative) {
-        await NativeAudio.prepare({
-          mainUrl: src,
-          title: f.titulo || `Art. ${f.numero_artigo ?? ""}`,
-          author: f.lei_nome || "Leis Cantadas",
-          coverUrl: (f as Record<string, unknown>)?.capa_url as string | undefined || ''
-        });
-        NativeAudio.play();
-      } else {
-        if (audioRef.current) { audioRef.current.src = src; audioRef.current.play().catch(() => {}); }
-      }
+      if (audioRef.current) { audioRef.current.src = src; audioRef.current.play().catch(() => {}); }
     })();
   };
 
   const togglePlay = () => {
     if (!atual) return;
-    if (isNative) {
-      if (tocando) {
-        NativeAudio.pause();
-        setTocando(false);
-      } else {
-        NativeAudio.play();
-        setTocando(true);
-      }
-      return;
-    }
     tocar(atual);
   };
 
@@ -160,26 +126,17 @@ export const LeisCantadasPlayerProvider: React.FC<{ children: React.ReactNode }>
   };
 
   const seek = (v: number) => {
-    if (isNative) {
-      NativeAudio.seek({ time: v });
-      setTempo(v);
-      return;
-    }
     if (audioRef.current) audioRef.current.currentTime = v;
     setTempo(v);
   };
 
   const fechar = () => {
-    if (isNative) {
-      NativeAudio.stop();
-    } else {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.removeAttribute("src");
-        audioRef.current.load();
-      }
-      clearMediaSession(audioRef.current);
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.removeAttribute("src");
+      audioRef.current.load();
     }
+    clearMediaSession(audioRef.current);
     setTocando(false);
     setAtualId(null);
     setTempo(0);
@@ -189,28 +146,7 @@ export const LeisCantadasPlayerProvider: React.FC<{ children: React.ReactNode }>
 
   pularRef.current = pular;
 
-  // Polling for NativeAudio
-  useEffect(() => {
-    if (!isNative || !atualId) return;
-    const interval = setInterval(async () => {
-      try {
-        const p = await NativeAudio.getProgress();
-        setTempo(p.currentTime);
-        setDur(p.duration);
-        if (tocando !== p.isPlaying) {
-          setTocando(p.isPlaying);
-        }
-        // Check for end of track manually or handle via progress
-        if (p.duration > 0 && p.currentTime >= p.duration - 0.5) {
-            setTocando(false);
-            if (atualIdx >= 0 && faixas[atualIdx + 1]) {
-                tocar(faixas[atualIdx + 1]);
-            }
-        }
-      } catch (e) {}
-    }, 250);
-    return () => clearInterval(interval);
-  }, [isNative, atualId, tocando, atualIdx, faixas, tocar]);
+
 
   const value: LeisCantadasPlayerContextType = {
     faixas, loading, atualId, atual, atualIdx, tocando, tempo, dur,
