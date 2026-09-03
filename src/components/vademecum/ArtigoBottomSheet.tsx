@@ -881,7 +881,6 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         console.error('Erro ao verificar narração no banco principal:', e);
       }
     })();
-    })();
   }, [tabelaNome, artigo?.id, artigo?.numero]);
 
   // Formata tempo em mm:ss
