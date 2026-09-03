@@ -201,7 +201,7 @@ export async function exportarPdf(content: VisualContent, estilo: VisualEstilo, 
 export async function exportarPng(content: VisualContent, estilo: VisualEstilo, nome: string) {
   const { canvas } = await renderCanvas(content, estilo);
   const dataUrl = canvas.toDataURL('image/png');
-  await entregarArquivo(dataUrl, `${nome}.webp`, 'image/png');
+  await entregarArquivo(dataUrl, `${nome}.png`, 'image/png');
   void espelhar(content, dataUrl, 'image/png');
 }
 

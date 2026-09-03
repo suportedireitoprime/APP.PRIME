@@ -512,7 +512,7 @@ export default function ResumosJuridicosDesktop() {
                     }`}
                   >
                     <div className="w-[36px] h-[50px] rounded flex-shrink-0 overflow-hidden opacity-90">
-                      <img src="https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.webp" alt="" className="w-full h-full object-cover" />
+                      <img src="https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg" alt="" className="w-full h-full object-cover" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className={`font-semibold text-[14px] leading-snug line-clamp-2 ${isActive ? 'text-white' : 'text-zinc-300'}`}>

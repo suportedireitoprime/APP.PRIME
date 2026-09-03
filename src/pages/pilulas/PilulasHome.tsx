@@ -9,6 +9,7 @@ import { PageHeader } from '@/components/vademecum/PageHeader';
 import { AnimatedDivider } from '@/components/ui/AnimatedDivider';
 import { haptic } from '@/lib/nativeHaptics';
 import ShapeGrid from '@/components/ui/ShapeGrid';
+import CircularGallery from '@/components/ui/CircularGallery';
 import { Capacitor } from '@capacitor/core';
 import { NativePilulasPlugin } from '@/plugins/NativePilulasPlugin';
 import { useEffect } from 'react';
@@ -17,6 +18,8 @@ type TabType = 'Todos' | 'Pílulas Rápidas' | 'Só Pílulas' | 'Códigos' | 'Mi
 
 export default function PilulasHome() {
   const navigate = useNavigate();
+  const galleryRef = useRef<any>(null);
+  const ministrosGalleryRef = useRef<any>(null);
   const [activeTab, setActiveTab] = useState<TabType>('Todos');
   const tabs: TabType[] = ['Todos', 'Pílulas Rápidas', 'Só Pílulas', 'Códigos', 'Ministros'];
   
@@ -52,33 +55,33 @@ export default function PilulasHome() {
   };
 
   const fastPillsItems = useMemo(() => [
-    { image: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.webp'), text: 'CP', fullName: 'Código Penal' },
-    { image: '/pilulas/cf_portrait.webp', text: 'CF88', fullName: 'Constituição Federal' },
-    { image: '/pilulas/cc_portrait.webp', text: 'CC', fullName: 'Código Civil' },
-    { image: '/pilulas/cpp_portrait.webp', text: 'CPP', fullName: 'Cód. Proc. Penal' },
-    { image: '/pilulas/clt_portrait.webp', text: 'CLT', fullName: 'Leis Trabalhistas' },
+    { image: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg'), text: 'CP', fullName: 'Código Penal' },
+    { image: '/pilulas/cf_portrait.jpg', text: 'CF88', fullName: 'Constituição Federal' },
+    { image: '/pilulas/cc_portrait.png', text: 'CC', fullName: 'Código Civil' },
+    { image: '/pilulas/cpp_portrait.jpg', text: 'CPP', fullName: 'Cód. Proc. Penal' },
+    { image: '/pilulas/clt_portrait.jpg', text: 'CLT', fullName: 'Leis Trabalhistas' },
   ], []);
 
   const ministrosPillsItems = useMemo(() => [
-    { image: "/pilulas/ministros/moraes.webp", text: "Moraes", fullName: "Alexandre de Moraes" },
-    { image: "/pilulas/ministros/mendonca.webp", text: "Mendonça", fullName: "André Mendonça" },
-    { image: "/pilulas/ministros/carmen.webp", text: "Cármen", fullName: "Cármen Lúcia" },
-    { image: "/pilulas/ministros/zanin.webp", text: "Zanin", fullName: "Cristiano Zanin" },
-    { image: "/pilulas/ministros/toffoli.webp", text: "Toffoli", fullName: "Dias Toffoli" },
-    { image: "/pilulas/ministros/fachin.webp", text: "Fachin", fullName: "Edson Fachin" },
-    { image: "/pilulas/ministros/dino.webp", text: "Dino", fullName: "Flávio Dino" },
-    { image: "/pilulas/ministros/mendes.webp", text: "Mendes", fullName: "Gilmar Mendes" },
-    { image: "/pilulas/ministros/fux.webp", text: "Fux", fullName: "Luiz Fux" },
-    { image: "/pilulas/ministros/marques.webp", text: "Marques", fullName: "Nunes Marques" },
-    { image: "/pilulas/ministros/barroso.webp", text: "Barroso", fullName: "Roberto Barroso" }
+    { image: "/pilulas/ministros/moraes.jpg", text: "Moraes", fullName: "Alexandre de Moraes" },
+    { image: "/pilulas/ministros/mendonca.jpg", text: "Mendonça", fullName: "André Mendonça" },
+    { image: "/pilulas/ministros/carmen.jpg", text: "Cármen", fullName: "Cármen Lúcia" },
+    { image: "/pilulas/ministros/zanin.jpg", text: "Zanin", fullName: "Cristiano Zanin" },
+    { image: "/pilulas/ministros/toffoli.jpg", text: "Toffoli", fullName: "Dias Toffoli" },
+    { image: "/pilulas/ministros/fachin.jpg", text: "Fachin", fullName: "Edson Fachin" },
+    { image: "/pilulas/ministros/dino.jpg", text: "Dino", fullName: "Flávio Dino" },
+    { image: "/pilulas/ministros/mendes.jpg", text: "Mendes", fullName: "Gilmar Mendes" },
+    { image: "/pilulas/ministros/fux.jpg", text: "Fux", fullName: "Luiz Fux" },
+    { image: "/pilulas/ministros/marques.jpg", text: "Marques", fullName: "Nunes Marques" },
+    { image: "/pilulas/ministros/barroso.jpg", text: "Barroso", fullName: "Roberto Barroso" }
   ], []);
 
   const classicosPillsItems = useMemo(() => [
-    { image: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_luta_pelo_direito_manual.webp', text: 'A Luta pelo\nDireito', fullName: 'Rudolf von Ihering' },
-    { image: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/sobre_a_liberdade_manual.webp', text: 'Sobre a\nLiberdade', fullName: 'John Stuart Mill' },
-    { image: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_arte_da_guerra_manual.webp', text: 'A Arte da\nGuerra', fullName: 'Sun Tzu' },
-    { image: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_espirito_das_leis_manual.webp', text: 'O Espírito\ndas Leis', fullName: 'Montesquieu' },
-    { image: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_mundo_assombrado_pelos_demonios_manual.webp', text: 'O Mundo Assombrado\npelos Demônios', fullName: 'Carl Sagan' }
+    { image: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_luta_pelo_direito_manual.jpg', text: 'A Luta pelo\nDireito', fullName: 'Rudolf von Ihering' },
+    { image: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/sobre_a_liberdade_manual.jpg', text: 'Sobre a\nLiberdade', fullName: 'John Stuart Mill' },
+    { image: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_arte_da_guerra_manual.jpg', text: 'A Arte da\nGuerra', fullName: 'Sun Tzu' },
+    { image: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_espirito_das_leis_manual.jpg', text: 'O Espírito\ndas Leis', fullName: 'Montesquieu' },
+    { image: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_mundo_assombrado_pelos_demonios_manual.jpg', text: 'O Mundo Assombrado\npelos Demônios', fullName: 'Carl Sagan' }
   ], []);
 
   const handleItemClick = useCallback((item: any) => {
@@ -170,17 +173,16 @@ export default function PilulasHome() {
               </button>
             </div>
 
-            <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4 -mx-4 px-4 snap-x">
-              {fastPillsItems.map((item, idx) => (
-                <button key={idx} onClick={() => handleItemClick(item)} className="snap-start flex-shrink-0 w-[140px] flex flex-col gap-2 group text-left">
-                  <div className="w-full aspect-[2/3] rounded-xl overflow-hidden bg-white/5 border border-white/10 relative">
-                    <img src={item.image} alt={item.text} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-3">
-                      <span className="text-white font-bold text-lg">{item.text}</span>
-                    </div>
-                  </div>
-                </button>
-              ))}
+            <div style={{ height: '350px', position: 'relative' }} className="-mx-4">
+              <CircularGallery
+                ref={galleryRef}
+                items={fastPillsItems}
+                bend={1.5}
+                textColor="#ffffff"
+                borderRadius={0.05}
+                scrollEase={0.08}
+                onItemClick={handleItemClick}
+              />
             </div>
           </div>
         )}
@@ -209,17 +211,16 @@ export default function PilulasHome() {
               </button>
             </div>
 
-            <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4 -mx-4 px-4 snap-x">
-              {ministrosPillsItems.map((item, idx) => (
-                <button key={idx} onClick={() => handleMinistroClick(item)} className="snap-start flex-shrink-0 w-[140px] flex flex-col gap-2 group text-left">
-                  <div className="w-full aspect-[2/3] rounded-xl overflow-hidden bg-white/5 border border-white/10 relative">
-                    <img src={item.image} alt={item.text} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-3">
-                      <span className="text-white font-bold text-lg">{item.text}</span>
-                    </div>
-                  </div>
-                </button>
-              ))}
+            <div style={{ height: '350px', position: 'relative' }} className="-mx-4">
+              <CircularGallery
+                ref={ministrosGalleryRef}
+                items={ministrosPillsItems}
+                bend={1.5}
+                textColor="#ffffff"
+                borderRadius={0.05}
+                scrollEase={0.08}
+                onItemClick={handleMinistroClick}
+              />
             </div>
           </div>
         )}
@@ -244,17 +245,15 @@ export default function PilulasHome() {
               </button>
             </div>
 
-            <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4 -mx-4 px-4 snap-x">
-              {classicosPillsItems.map((item, idx) => (
-                <button key={idx} onClick={() => handleSelectClassicos()} className="snap-start flex-shrink-0 w-[140px] flex flex-col gap-2 group text-left">
-                  <div className="w-full aspect-[2/3] rounded-xl overflow-hidden bg-white/5 border border-white/10 relative">
-                    <img src={item.image} alt={item.text} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-3">
-                      <span className="text-white font-bold text-lg">{item.text}</span>
-                    </div>
-                  </div>
-                </button>
-              ))}
+            <div style={{ height: '350px', position: 'relative' }} className="-mx-4">
+              <CircularGallery
+                items={classicosPillsItems}
+                bend={1.5}
+                textColor="#ffffff"
+                borderRadius={0.05}
+                scrollEase={0.08}
+                onItemClick={handleSelectClassicos}
+              />
             </div>
           </div>
         )}

@@ -325,7 +325,7 @@ export const MapaMentalCanvas = ({ data, onClose }: { data: MapaNode; onClose: (
   const exportPng = async () => {
     try {
       const blob = await svgToPng();
-      await baixarBlob(blob, 'mapa-mental.webp', { titulo: 'Mapa mental', toastSucesso: false });
+      await baixarBlob(blob, 'mapa-mental.png', { titulo: 'Mapa mental', toastSucesso: false });
       toast.success('Imagem exportada');
     } catch (e) { toast.error('Erro ao exportar'); }
   };

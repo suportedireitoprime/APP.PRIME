@@ -2,14 +2,14 @@ import conceitosThumbAsset from '@/assets/thumbnails/conceitos-thumb.webp.asset.
 import areasThumbAsset from '@/assets/thumbnails/areas-thumb.webp.asset.json';
 import oabPrimeiraThumbAsset from '@/assets/thumbnails/oab-primeira-fase-thumb.webp.asset.json';
 import oabSegundaThumbAsset from '@/assets/thumbnails/oab-segunda-fase-thumb.webp.asset.json';
-import ambientalCapa from '@/assets/thumbnails/ambiental.webp';
-import penalCapa from '@/assets/thumbnails/penal.webp';
-import processoPenalCapa from '@/assets/thumbnails/processo-penal.webp';
-import trabalhoCapa from '@/assets/thumbnails/trabalho.webp';
-import administrativoCapa from '@/assets/thumbnails/administrativo.webp';
-import consumidorCapa from '@/assets/thumbnails/consumidor.webp';
-import civilCapa from '@/assets/thumbnails/civil.webp';
-import filosofiaCapa from '@/assets/thumbnails/filosofia.webp';
+import ambientalCapa from '@/assets/thumbnails/ambiental.jpg';
+import penalCapa from '@/assets/thumbnails/penal.jpg';
+import processoPenalCapa from '@/assets/thumbnails/processo-penal.jpg';
+import trabalhoCapa from '@/assets/thumbnails/trabalho.jpg';
+import administrativoCapa from '@/assets/thumbnails/administrativo.jpg';
+import consumidorCapa from '@/assets/thumbnails/consumidor.jpg';
+import civilCapa from '@/assets/thumbnails/civil.jpg';
+import filosofiaCapa from '@/assets/thumbnails/filosofia.jpg';
 import { srcOf } from '@/lib/assetUrl';
 
 export type CatalogoId = 'iniciante' | 'areas' | 'oab-primeira-fase' | 'oab-segunda-fase';
@@ -102,7 +102,7 @@ export function getCapaDaArea(areaNome?: string | null): string | null {
 
 /** `mq` (320x180) basta para cards de lista e baixa bem mais rápido que `hq`. */
 export function ytThumb(videoId: string, qualidade: 'mq' | 'hq' | 'sd' = 'hq'): string {
-  return `https://i.ytimg.com/vi/${videoId}/${qualidade}default.webp`;
+  return `https://i.ytimg.com/vi/${videoId}/${qualidade}default.jpg`;
 }
 
 export function formatDuracao(segundos?: number | null): string {

@@ -36,7 +36,7 @@ const VoiceCaptureOverlay = lazyWithRetry(() => import('./VoiceCaptureOverlay'))
 const HomeNoticiasCarousel = lazyWithRetry(() => import('./HomeNoticiasCarousel'));
 const AprendaSobreLeis = lazyWithRetry(() => import('./AprendaSobreLeis'));
 const NoticiasJuridicasCarousel = lazyWithRetry(() => import('./NoticiasJuridicasCarousel'));
-
+import CircularGallery from '@/components/ui/CircularGallery';
 import HomeCard from './HomeCard';
 import ContinueLendoCard from './ContinueLendoCard';
 import { toast } from '@/hooks/use-toast';
@@ -134,11 +134,11 @@ const EMALTA_CATS: EmAltaCat[] = [
 ];
 
 const FAST_PILLS_ITEMS = [
-  { id: 'cp', image: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.webp', text: 'CP', fullName: 'Código Penal' },
-  { id: 'cf', image: '/pilulas/cf_portrait.webp', text: 'CF88', fullName: 'Constituição Federal' },
-  { id: 'cc', image: '/pilulas/cc_portrait.webp', text: 'CC', fullName: 'Código Civil' },
-  { id: 'cpp', image: '/pilulas/cpp_portrait.webp', text: 'CPP', fullName: 'Cód. Proc. Penal' },
-  { id: 'clt', image: '/pilulas/clt_portrait.webp', text: 'CLT', fullName: 'Leis Trabalhistas' },
+  { id: 'cp', image: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg', text: 'CP', fullName: 'Código Penal' },
+  { id: 'cf', image: '/pilulas/cf_portrait.jpg', text: 'CF88', fullName: 'Constituição Federal' },
+  { id: 'cc', image: '/pilulas/cc_portrait.png', text: 'CC', fullName: 'Código Civil' },
+  { id: 'cpp', image: '/pilulas/cpp_portrait.jpg', text: 'CPP', fullName: 'Cód. Proc. Penal' },
+  { id: 'clt', image: '/pilulas/clt_portrait.jpg', text: 'CLT', fullName: 'Leis Trabalhistas' },
 ];
 
 const shuffle = <T,>(arr: T[]): T[] => {
@@ -605,35 +605,18 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
               Áudios curtos sobre os artigos mais cobrados
             </p>
           </div>
-          <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-6 pt-2 hide-scrollbar -mx-4 px-4">
-            {pillsItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => {
-                  import('@/lib/nativeHaptics').then((m) => m.haptic.selection());
-                  navigate(`/pilulas/${item.id}`);
-                }}
-                className="snap-start shrink-0 w-36 group relative text-left active:scale-95 transition-transform"
-              >
-                <div className="aspect-[2/3] w-full rounded-2xl overflow-hidden bg-zinc-900 border border-border/50 relative mb-3">
-                  <img src={item.image} alt={item.fullName} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
-                  {item.showPlayButton && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/10 transition-colors">
-                      <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30">
-                        <PlayCircle className="w-6 h-6 text-white" />
-                      </div>
-                    </div>
-                  )}
-                  {item.progress !== undefined && (
-                    <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-black/60">
-                      <div className="h-full bg-primary" style={{ width: `${item.progress * 100}%` }} />
-                    </div>
-                  )}
-                </div>
-                <h3 className="font-bold text-white text-sm leading-tight line-clamp-2">{item.text}</h3>
-                <p className="text-[11px] text-zinc-400 mt-1">{item.fullName}</p>
-              </button>
-            ))}
+          <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen h-[350px]">
+            <CircularGallery 
+              items={pillsItems}
+              bend={1.5}
+              textColor="#ffffff"
+              scrollEase={0.15}
+              borderRadius={0.05}
+              onItemClick={(item) => {
+                import('@/lib/nativeHaptics').then((m) => m.haptic.selection());
+                navigate(`/pilulas/${item.id}`);
+              }}
+            />
           </div>
         </div>
       )}

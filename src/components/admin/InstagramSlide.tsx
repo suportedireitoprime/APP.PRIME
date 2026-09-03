@@ -1,4 +1,4 @@
-import icon from '@/assets/logo-direitoprime-v2.webp';
+import icon from '@/assets/logo-direitoprime-v2.png';
 
 interface Props {
   type: 'cover' | 'content';

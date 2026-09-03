@@ -164,7 +164,7 @@ export function ForcaRanking({ isOpen, onClose }: ForcaRankingProps) {
                 
                 {/* Podium Base for 1st Place */}
                 <div className="w-24 h-20 mt-4 bg-gradient-to-b from-white/10 to-transparent rounded-t-lg flex justify-center pt-3 border-t border-white/20">
-                  <img src="/icon-192.webp" alt="App Logo" className="w-6 h-6 grayscale opacity-70" />
+                  <img src="/icon-192.png" alt="App Logo" className="w-6 h-6 grayscale opacity-70" />
                 </div>
               </div>
             )}

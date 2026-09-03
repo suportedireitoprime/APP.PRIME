@@ -138,7 +138,7 @@ NÃO retorne blocos de código markdown (como \`\`\`json), apenas o texto JSON p
         });
         
         const link = document.createElement('a');
-        link.download = `slide_${i + 1}_${prompt.replace(/\W+/g, '_').substring(0, 20)}.webp`;
+        link.download = `slide_${i + 1}_${prompt.replace(/\W+/g, '_').substring(0, 20)}.png`;
         link.href = dataUrl;
         link.click();
         

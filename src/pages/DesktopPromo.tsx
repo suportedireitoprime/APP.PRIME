@@ -26,7 +26,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { callDesktopLink } from '@/lib/desktopLinkApi';
 import desktopImgAsset from '@/assets/desktop-promo-laptop.webp';
 const desktopImg = desktopImgAsset;
-import primeLogoAsset from '@/assets/logo-direitoprime-v2.webp.asset.json';
+import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
 import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
 import { useGoBack } from '@/hooks/useGoBack';
 import { copiarTexto } from '@/lib/nativo/copiar';

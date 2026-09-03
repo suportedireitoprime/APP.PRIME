@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Layers, Flame } from 'lucide-react';
-import q1 from '@/assets/questoes-hero/q-1.webp';
-import q2 from '@/assets/questoes-hero/q-2.webp';
-import q3 from '@/assets/questoes-hero/q-3.webp';
+import q1 from '@/assets/questoes-hero/q-1.png';
+import q2 from '@/assets/questoes-hero/q-2.png';
+import q3 from '@/assets/questoes-hero/q-3.png';
 
 const FIGURAS = [q1, q2, q3];
 

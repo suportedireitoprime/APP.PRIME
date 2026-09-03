@@ -13,7 +13,9 @@ import { Input } from '@/components/ui/input';
 import { haptic } from '@/lib/nativeHaptics';
 import { visualDaArea } from '@/lib/questoesVisual';
 import { useQuestoesCargos, useQuestoesDesempenho, useQuestoesAreas } from '@/hooks/useQuestoes';
+import CircularGallery from '@/components/ui/CircularGallery';
 import { renderToStaticMarkup } from 'react-dom/server';
+import React, { useRef } from 'react';
 
 const ATALHOS_4 = [
   { id: 'historico', label: 'Histórico', desc: 'Sessões salvas', icon: History, route: '/questoes/historico' },
@@ -33,18 +35,46 @@ const Questoes = () => {
   const [busca, setBusca] = useState('');
   const [materiaSheet, setMateriaSheet] = useState<{ aberto: boolean; materia: string | null }>({ aberto: false, materia: null });
   const [buscaAberta, setBuscaAberta] = useState(false);
+  const galleryRef = useRef<any>(null);
 
   const pct = dados?.total ? Math.round((dados.acertos / dados.total) * 100) : 0;
   const disponiveis = cargos.reduce((s, c) => s + (c.total_questoes ?? 0), 0);
 
-  const displayedAreas = useMemo(() => {
-    if (!busca) return areas;
-    const term = busca.toLowerCase();
-    return areas.filter(a => a.area.toLowerCase().includes(term));
-  }, [areas, busca]);
+  const galleryItems = useMemo(() => {
+    return areas.map((a) => {
+      const { icon: Icon, color } = visualDaArea(a.area);
+      const totalFormatted = Number(a.total).toLocaleString('pt-BR');
+      
+      const svg = renderToStaticMarkup(
+        <svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
+          <rect width="296" height="296" x="2" y="2" rx="64" fill="#09090b" stroke="rgba(255,255,255,0.15)" strokeWidth="4" />
+          <g transform="translate(100, 100)">
+            <Icon size={100} color={color} strokeWidth={2} />
+          </g>
+        </svg>
+      );
+      
+      const shortName = a.area.length > 25 ? a.area.substring(0, 22) + '...' : a.area;
+
+      return {
+        image: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`,
+        text: shortName,
+        fullName: `${totalFormatted} questões`,
+        area: a.area,
+      };
+    });
+  }, [areas]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const term = e.target.value.toLowerCase();
     setBusca(e.target.value);
+    
+    if (term.length >= 2) {
+      const index = areas.findIndex(a => a.area.toLowerCase().includes(term));
+      if (index !== -1 && galleryRef.current) {
+        galleryRef.current.scrollToIndex(index);
+      }
+    }
   };
 
   return (
@@ -167,27 +197,19 @@ const Questoes = () => {
                 Nenhuma matéria encontrada.
               </div>
             ) : (
-              <div className="mt-6 flex overflow-x-auto snap-x snap-mandatory gap-4 pb-6 hide-scrollbar -mx-4 px-4">
-                {displayedAreas.map((a) => {
-                  const { icon: Icon, color } = visualDaArea(a.area);
-                  const totalFormatted = Number(a.total).toLocaleString('pt-BR');
-                  return (
-                    <button
-                      key={a.area}
-                      onClick={() => {
-                        haptic.selection();
-                        setMateriaSheet({ aberto: true, materia: a.area });
-                      }}
-                      className="snap-start shrink-0 w-32 group text-left active:scale-95 transition-transform"
-                    >
-                      <div className="aspect-square w-full rounded-[2rem] bg-zinc-950 border border-white/10 flex items-center justify-center mb-3 group-hover:border-white/20 transition-colors">
-                        <Icon size={48} color={color} strokeWidth={1.5} className="group-hover:scale-110 transition-transform duration-300" />
-                      </div>
-                      <h3 className="font-bold text-white text-xs leading-tight line-clamp-2">{a.area}</h3>
-                      <p className="text-[10px] text-zinc-400 mt-1">{totalFormatted} questões</p>
-                    </button>
-                  );
-                })}
+              <div style={{ height: '420px', position: 'relative' }} className="-mx-4 mt-6">
+                <CircularGallery
+                  ref={galleryRef}
+                  items={galleryItems}
+                  bend={1.5}
+                  textColor="#ffffff"
+                  borderRadius={0.05}
+                  scrollEase={0.02}
+                  onItemClick={(item: any) => {
+                    haptic.selection();
+                    setMateriaSheet({ aberto: true, materia: item.area });
+                  }}
+                />
               </div>
             )}
           </div>

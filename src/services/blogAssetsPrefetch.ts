@@ -51,7 +51,7 @@ async function downloadCover(postId: string, url: string): Promise<boolean> {
       r.readAsDataURL(blob);
     });
     await Filesystem.writeFile({
-      path: `${COVERS_DIR}/${postId}.webp`,
+      path: `${COVERS_DIR}/${postId}.png`,
       directory: Directory.Data,
       data: base64,
     });
@@ -67,11 +67,11 @@ export async function getLocalCoverUri(postId: string): Promise<string | null> {
   if (!Capacitor.isNativePlatform()) return null;
   try {
     const res = await Filesystem.getUri({
-      path: `${COVERS_DIR}/${postId}.webp`,
+      path: `${COVERS_DIR}/${postId}.png`,
       directory: Directory.Data,
     });
     // Confirma existência
-    await Filesystem.stat({ path: `${COVERS_DIR}/${postId}.webp`, directory: Directory.Data });
+    await Filesystem.stat({ path: `${COVERS_DIR}/${postId}.png`, directory: Directory.Data });
     return Capacitor.convertFileSrc(res.uri);
   } catch { return null; }
 }

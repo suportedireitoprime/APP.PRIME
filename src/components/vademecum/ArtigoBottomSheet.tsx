@@ -54,7 +54,7 @@ import { readArtigoGrifos, writeArtigoGrifos } from '@/lib/artigoGrifosSnapshot'
 import { parseAiSections, buildLineSegmentMap, type AiSection } from '@/lib/artigoSegments';
 import ArtigoIAFullscreen from './ArtigoIAFullscreen';
 import horusOwlBundled from '@/assets/horus/horus-owl.webp';
-import horusOwlAsset from '@/assets/horus/horus-owl.webp.asset.json';
+import horusOwlAsset from '@/assets/horus/horus-owl.png.asset.json';
 import { pickAsset, srcOf } from '@/lib/assetUrl';
 
 const horusOwl = pickAsset(horusOwlBundled, srcOf(horusOwlAsset));

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import FlashcardsBottomNav from '@/components/flashcards/FlashcardsBottomNav';
@@ -15,8 +15,6 @@ import { haptic } from '@/lib/nativeHaptics';
 import { syncDecksOffline, Deck, saveOfflineDecks } from '@/lib/flashcardsOfflineManager';
 import { useOnlineStatus } from '@/hooks/useOnlineStatus';
 import { StepRow, SelecaoSheet } from '@/components/flashcards/FlashcardsFiltroSheet';
-import { useMediaQuery } from '@/hooks/useMediaQuery';
-import FlashcardsEstudo from './FlashcardsEstudo';
 
 type TemaItem = { tema: string; area: string; count: number };
 
@@ -31,19 +29,8 @@ const CORES = [
 
 const FlashcardsDecks = () => {
   const navigate = useNavigate();
-  const [params, setParams] = useSearchParams();
   const [decks, setDecks] = useState<Deck[]>([]);
   const [areas, setAreas] = useState<string[]>([]);
-  
-  const isDesktop = useMediaQuery('(min-width: 1024px)');
-  const isStudying = params.has('areas') || params.has('temas') || params.has('deck');
-
-  // Redireciona para mobile se diminuir a tela com deck aberto
-  useEffect(() => {
-    if (!isDesktop && isStudying) {
-      navigate(`/flashcards/estudar?${params.toString()}`);
-    }
-  }, [isDesktop, isStudying, params, navigate]);
   
   // Estados do Wizard em 3 Etapas
   const [aberto, setAberto] = useState(false);
@@ -178,24 +165,24 @@ const FlashcardsDecks = () => {
     const temasDeck: string[] = d.filtros?.temas || [];
     const corDeck = d.filtros?.cor || '#10b981';
     
-    const nextParams = new URLSearchParams();
-    if (areasDeck.length > 0) nextParams.set('areas', areasDeck.join('|'));
-    if (temasDeck.length > 0) nextParams.set('temas', temasDeck.join('|'));
-    nextParams.set('cor', corDeck);
-    
-    if (isDesktop) {
-      setParams(nextParams);
-    } else {
-      navigate(`/flashcards/estudar?${nextParams.toString()}`);
+    const params = new URLSearchParams();
+    if (areasDeck.length > 0) {
+      params.set('areas', areasDeck.join('|'));
     }
+    if (temasDeck.length > 0) {
+      params.set('temas', temasDeck.join('|'));
+    }
+    params.set('cor', corDeck);
+    navigate(`/flashcards/estudar?${params.toString()}`);
   };
 
   const proximoPasso = !selAreas.length ? 'areas' : 'temas';
 
-  const contentList = (
-    <div className="mx-auto w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] px-3 sm:px-6 lg:px-8">
-      <PageHeader
-        title="Meus Decks Customizados"
+  return (
+    <div className="min-h-dvh overflow-x-hidden bg-background pb-[calc(7rem+var(--sai-bottom))] lg:pb-[calc(3rem+var(--sai-bottom))]">
+      <div className="mx-auto w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] px-3 sm:px-6 lg:px-8">
+        <PageHeader
+          title="Meus Decks Customizados"
           subtitle="Monte combinações personalizadas de matérias para treinar"
           onBack={() => navigate('/flashcards')}
           rightAction={
@@ -392,32 +379,7 @@ const FlashcardsDecks = () => {
           </motion.div>
         </div>
       </div>
-  );
 
-  if (isDesktop) {
-    return (
-      <div className="flex h-dvh overflow-hidden bg-background">
-        <div className="w-[360px] xl:w-[420px] flex-shrink-0 overflow-y-auto overflow-x-hidden pb-10">
-          {contentList}
-        </div>
-        <div className="flex-1 overflow-hidden relative border-l border-border/50">
-          {isStudying ? (
-            <FlashcardsEstudo embedded />
-          ) : (
-            <div className="flex h-full flex-col items-center justify-center text-muted-foreground bg-card/30">
-              <FolderPlus className="w-16 h-16 mb-4 opacity-50" />
-              <p className="text-lg font-bold">Pronto para treinar?</p>
-              <p className="text-sm">Selecione um deck na lista para iniciar sua sessão.</p>
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-dvh overflow-x-hidden bg-background pb-[calc(7rem+var(--sai-bottom))] lg:pb-[calc(3rem+var(--sai-bottom))]">
-      {contentList}
       <FlashcardsBottomNav />
     </div>
   );

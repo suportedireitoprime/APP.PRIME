@@ -6,6 +6,7 @@ import AnimacaoExemplo from '@/components/laboratorio/AnimacaoExemplo';
 import AnimacaoPixi from '@/components/laboratorio/AnimacaoPixi';
 import AIGeneratorPanel from '@/components/laboratorio/AIGeneratorPanel';
 import { motion, AnimatePresence } from 'framer-motion';
+import FilosofoPresentationOverlay from '@/components/vademecum/FilosofoPresentationOverlay';
 
 
 const AdminLaboratorio = () => {
@@ -94,7 +95,24 @@ const AdminLaboratorio = () => {
                 <ChevronRight className="text-muted-foreground group-hover:text-indigo-400 transition-colors relative z-10 flex-shrink-0" size={24} />
               </motion.button>
 
-
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setActiveTab('remotion')}
+                className="group relative overflow-hidden bg-secondary/20 border border-border/50 hover:border-orange-500/50 rounded-2xl p-6 flex items-center justify-between transition-all w-full shadow-lg"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="flex items-center gap-5 relative z-10 text-left w-full">
+                  <div className="w-14 h-14 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-400 group-hover:bg-orange-500 group-hover:text-white transition-colors shrink-0">
+                    <PlayCircle size={28} />
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="text-xl font-bold text-white mb-1 group-hover:text-orange-400 transition-colors">Documentários (TikTok)</h2>
+                    <p className="text-sm text-muted-foreground line-clamp-2">Apresentações programáticas curtas (Remotion) com áudio e resposta tátil.</p>
+                  </div>
+                </div>
+                <ChevronRight className="text-muted-foreground group-hover:text-orange-400 transition-colors relative z-10 flex-shrink-0" size={24} />
+              </motion.button>
 
               <motion.button
                 whileHover={{ scale: 1.02 }}
@@ -236,13 +254,147 @@ const AdminLaboratorio = () => {
                 </div>
               )}
 
+              {/* Tab 3: Remotion */}
+              {activeTab === 'remotion' && (
+                <div className="bg-secondary/20 border border-border/50 rounded-2xl p-4 sm:p-6 w-full shadow-xl flex flex-col gap-6">
+                  <div>
+                    <h2 className="text-2xl font-display font-semibold mb-1 text-white">Documentários Curtos (90s)</h2>
+                    <p className="text-sm text-muted-foreground">
+                      Selecione um filósofo abaixo para configurar o estilo visual e a sonorização.
+                    </p>
+                  </div>
 
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                     <button onClick={() => { setActivePersonagem('socrates'); setShowRemotionConfig(true); }} className="p-6 bg-[#1A1A1A] border border-border/50 hover:border-primary rounded-xl flex flex-col items-center gap-4 transition-all group">
+                       <h3 className="text-xl font-bold text-white group-hover:text-primary transition-colors">Sócrates</h3>
+                       <p className="text-xs text-muted-foreground text-center">O Mártir de Atenas</p>
+                     </button>
+                     <button onClick={() => { setActivePersonagem('platao'); setShowRemotionConfig(true); }} className="p-6 bg-[#1A1A1A] border border-border/50 hover:border-[#D7BD87] rounded-xl flex flex-col items-center gap-4 transition-all group">
+                       <h3 className="text-xl font-bold text-white group-hover:text-[#D7BD87] transition-colors">Platão</h3>
+                       <p className="text-xs text-muted-foreground text-center">O Arquiteto das Ideias</p>
+                     </button>
+                     <button onClick={() => { setActivePersonagem('aristoteles'); setShowRemotionConfig(true); }} className="p-6 bg-[#1A1A1A] border border-border/50 hover:border-[#B87333] rounded-xl flex flex-col items-center gap-4 transition-all group">
+                       <h3 className="text-xl font-bold text-white group-hover:text-[#B87333] transition-colors">Aristóteles</h3>
+                       <p className="text-xs text-muted-foreground text-center">O Pai da Lógica</p>
+                     </button>
+                  </div>
+                </div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
       </div>
 
+      {/* Modal Bottom Sheet de Configuração do Remotion */}
+      <AnimatePresence>
+        {showRemotionConfig && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowRemotionConfig(false)}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[150]"
+            />
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed bottom-0 left-0 right-0 max-h-[90vh] overflow-y-auto bg-[#1A1A1A] border-t border-border/50 rounded-t-3xl p-6 sm:p-8 z-[160] shadow-2xl"
+            >
+              <div className="max-w-2xl mx-auto flex flex-col gap-8">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h2 className="text-2xl font-display font-bold text-white capitalize">{activePersonagem}</h2>
+                    <p className="text-sm text-muted-foreground">Configurações do Documentário</p>
+                  </div>
+                  <button onClick={() => setShowRemotionConfig(false)} className="w-10 h-10 flex items-center justify-center rounded-full bg-secondary/50 hover:bg-secondary text-white transition-colors">
+                    <X size={20} />
+                  </button>
+                </div>
 
+                {/* Estilo Visual */}
+                <div>
+                  <h3 className="text-sm font-bold text-white mb-3 uppercase tracking-wider">1. Estilo Visual</h3>
+                  <div className="flex flex-col gap-3">
+                    {[1, 2, 3].map(v => (
+                      <button
+                        key={v}
+                        onClick={() => setActiveVersion(v)}
+                        className={`px-5 py-4 rounded-xl text-left transition-all ${
+                          activeVersion === v 
+                          ? 'bg-orange-500/20 text-orange-400 border border-orange-500/50 shadow-lg' 
+                          : 'bg-black/40 text-muted-foreground border border-border/30 hover:bg-black/60 hover:border-border/60'
+                        }`}
+                      >
+                        <span className="font-bold text-white mr-2">Versão {v}:</span> 
+                        {v === 1 && 'Dinâmica (TikTok/Shorts, Geometrias Rotativas, Rápido)'}
+                        {v === 2 && 'Cinematográfica (Netflix, Fade, Zoom Lento)'}
+                        {v === 3 && 'Minimalista (Apple, Fundo Escuro, Tipografia Pura)'}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Trilha Sonora */}
+                <div>
+                  <h3 className="text-sm font-bold text-white mb-3 uppercase tracking-wider">2. Trilha Sonora Opcional</h3>
+                  <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-border/50 hover:border-orange-500/50 hover:bg-orange-500/5 rounded-2xl cursor-pointer transition-all bg-black/40">
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      {customAudioUrl ? (
+                        <>
+                          <Music className="w-8 h-8 text-orange-400 mb-2" />
+                          <p className="text-sm font-semibold text-white">Áudio carregado na memória</p>
+                          <p className="text-xs text-muted-foreground">Pronto para tocar</p>
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="w-8 h-8 text-muted-foreground mb-2 group-hover:text-orange-400" />
+                          <p className="text-sm font-semibold text-white">Subir arquivo de áudio</p>
+                          <p className="text-xs text-muted-foreground">Formato MP3 ou WAV</p>
+                        </>
+                      )}
+                    </div>
+                    <input 
+                      type="file" 
+                      accept="audio/*" 
+                      className="hidden" 
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files[0]) {
+                          const url = URL.createObjectURL(e.target.files[0]);
+                          setCustomAudioUrl(url);
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+
+                {/* Renderizar */}
+                <button
+                  onClick={() => {
+                    setShowRemotionConfig(false);
+                    setShowPresentation(true);
+                  }}
+                  className="w-full py-4 mt-2 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 text-white font-bold rounded-xl shadow-xl flex items-center justify-center gap-3 transition-all active:scale-[0.98]"
+                >
+                  <PlayCircle size={24} />
+                  GERAR DOCUMENTÁRIO ({activeVersion === 1 ? 'Dinâmico' : activeVersion === 2 ? 'Cinematográfico' : 'Minimalista'})
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Player do Remotion em Tela Cheia */}
+      <FilosofoPresentationOverlay 
+        open={showPresentation} 
+        personagemId={activePersonagem} 
+        customAudioUrl={customAudioUrl}
+        version={activeVersion}
+        onFinished={() => setShowPresentation(false)} 
+      />
 
       {/* Modal Código Penal (Curados + Dinâmicos) */}
       <AnimatePresence>

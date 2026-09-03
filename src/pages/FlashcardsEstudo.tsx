@@ -74,7 +74,7 @@ function formatTemaBreadcrumb(raw: string): string[] {
   return result;
 }
 
-const FlashcardsEstudo = ({ embedded = false }: { embedded?: boolean }) => {
+const FlashcardsEstudo = () => {
   const navigate = useNavigate();
 
   // Engine Hook que concentra lógica
@@ -101,16 +101,8 @@ const FlashcardsEstudo = ({ embedded = false }: { embedded?: boolean }) => {
     resetBodyScrollLock();
   }, [escolhendo, areaSheet, loading]);
 
-  const handleBack = () => {
-    if (embedded) {
-      navigate('/flashcards/decks');
-    } else {
-      navigate('/flashcards');
-    }
-  };
-
   return (
-    <div className={`${embedded ? 'h-full overflow-y-auto rounded-l-3xl border-l border-border/50 bg-background/50' : 'min-h-dvh'} overflow-x-hidden bg-background ${!embedded ? (escolhendo ? 'pb-[calc(8rem+var(--sai-bottom))]' : 'pb-[calc(2.5rem+var(--sai-bottom))]') : 'pb-12'}`}>
+    <div className={`min-h-dvh overflow-x-hidden bg-background ${escolhendo ? 'pb-[calc(8rem+var(--sai-bottom))]' : 'pb-[calc(2.5rem+var(--sai-bottom))]'}`}>
       {!escolhendo && (
         <div className="fixed inset-0 z-0 opacity-80 mix-blend-screen pointer-events-none">
           <ShapeGrid 
@@ -131,7 +123,7 @@ const FlashcardsEstudo = ({ embedded = false }: { embedded?: boolean }) => {
       <div className="relative z-10 mx-auto w-full max-w-3xl px-3.5 sm:px-6">
         <PageHeader
           title={escolhendo ? 'Categorias de Flashcards' : ''}
-          onBack={handleBack}
+          onBack={() => navigate('/flashcards')}
           rightAction={
             !escolhendo && (
               <Sheet>
@@ -371,7 +363,7 @@ const FlashcardsEstudo = ({ embedded = false }: { embedded?: boolean }) => {
         )}
       </div>
 
-      {escolhendo && !embedded && <FlashcardsBottomNav />}
+      {escolhendo && <FlashcardsBottomNav />}
 
       {/* Sheets de Categorias */}
       {areaSheet && (

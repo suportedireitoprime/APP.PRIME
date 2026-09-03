@@ -80,7 +80,7 @@ const AjudaSheet = ({ open, onClose }: { open: boolean, onClose: () => void }) =
 
 
 
-import authJudgeScene from '@/assets/auth-judge-scene.webp';
+import authJudgeScene from '@/assets/auth-judge-scene.jpeg';
 import themisAuthYellow from '@/assets/themis-auth-yellow.webp';
 
 /** Traduz mensagens de erro comuns do Supabase Auth para PT-BR. */
@@ -149,7 +149,7 @@ const AuthDrawer = ({ mode, setMode, onClose }: { mode: 'login' | 'signup' | 'fo
     // Isso evita o Skeleton loader visível para redes lentas pós-registro.
     if (mode === 'signup' || mode === 'login') {
       import('@/pages/Onboarding').catch(() => {});
-
+      import('@/components/onboarding/CadastroOnboardingOverlay').catch(() => {});
       import('@/components/onboarding/NotificacoesPermissaoStep').catch(() => {});
     }
   }, [mode]);
@@ -718,7 +718,7 @@ const Auth = () => {
             className="flex flex-col items-start text-left max-w-lg"
           >
             <img
-              src="/logo-prime.webp"
+              src="/logo-prime.png"
               alt="Logo Direito Prime"
               className="w-24 h-24 xl:w-32 xl:h-32 object-contain drop-shadow-2xl mb-6"
             />
@@ -756,7 +756,7 @@ const Auth = () => {
             {/* Logo transparente e reflexo, fonte tipografia idêntica ao app */}
             <div className="flex flex-col items-center justify-center gap-4">
               <img
-                src="/logo-prime.webp"
+                src="/logo-prime.png"
                 alt="Logo Direito Prime"
                 className="w-24 h-24 xl:w-32 xl:h-32 object-contain drop-shadow-2xl relative z-10"
               />

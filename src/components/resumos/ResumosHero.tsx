@@ -8,9 +8,9 @@ import HeroCoverCarousel from '../vademecum/HeroCoverCarousel';
 import { useHeroHomeImages } from '@/hooks/useHeroHomeImages';
 import { pickAsset, srcOf } from '@/lib/assetUrl';
 
-import cover2Asset from '@/assets/covers/cover-2.webp.asset.json';
+import cover2Asset from '@/assets/covers/cover-2.png.asset.json';
 import cover2Bundled from '@/assets/covers/cover-2.webp';
-import cover3Asset from '@/assets/covers/cover-3.webp.asset.json';
+import cover3Asset from '@/assets/covers/cover-3.png.asset.json';
 import cover3Bundled from '@/assets/covers/cover-3.webp';
 
 const FALLBACK_COVERS = [

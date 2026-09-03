@@ -24,12 +24,12 @@ export type Variants = {
 
 /**
  * Gera todas as variantes a partir de uma imagem-fonte 1024×1024.
- * - icon.webp: imagem completa em fundo escuro
- * - icon-foreground.webp: logo centralizado a 66% em transparência (adaptive)
- * - icon-background.webp: cor sólida (bg)
- * - splash.webp: logo pequeno centralizado em 2732×2732 (bg escuro)
- * - splash-dark.webp: idem com bg escuro (padrão)
- * - notification-icon.webp: 96×96 monocromático branco transparente
+ * - icon.png: imagem completa em fundo escuro
+ * - icon-foreground.png: logo centralizado a 66% em transparência (adaptive)
+ * - icon-background.png: cor sólida (bg)
+ * - splash.png: logo pequeno centralizado em 2732×2732 (bg escuro)
+ * - splash-dark.png: idem com bg escuro (padrão)
+ * - notification-icon.png: 96×96 monocromático branco transparente
  */
 export async function generateVariants(source: File, bg = '#EF4444'): Promise<Variants> {
   const url = URL.createObjectURL(source);

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Layers, Flame, NotebookText } from 'lucide-react';
-import res1 from '@/assets/resumos-hero/res-1.webp.asset.json';
-import res2 from '@/assets/resumos-hero/res-2.webp.asset.json';
-import res3 from '@/assets/resumos-hero/res-3.webp.asset.json';
+import res1 from '@/assets/resumos-hero/res-1.png.asset.json';
+import res2 from '@/assets/resumos-hero/res-2.png.asset.json';
+import res3 from '@/assets/resumos-hero/res-3.png.asset.json';
 import { srcOf } from '@/lib/assetUrl';
 
 const FIGURAS = [srcOf(res1), srcOf(res2), srcOf(res3)];

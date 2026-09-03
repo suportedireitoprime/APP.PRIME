@@ -208,7 +208,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       import('@/lib/appEvents').then(({ appEvents }) => appEvents.signUp('email')).catch(() => {});
       // Aquecimento do chunk da triagem — abre imediato quando o app
       // navegar pra /onboarding.
-
+      import('@/components/onboarding/CadastroOnboardingOverlay').catch(() => {});
     }
     return { error: error as Error | null };
   }, []);

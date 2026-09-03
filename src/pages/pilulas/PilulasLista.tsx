@@ -15,11 +15,11 @@ export default function PilulasLista() {
   const [searchTerm, setSearchTerm] = useState('');
 
   const fastPillsItems = [
-    { image: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.webp'), text: 'CP', fullName: 'Código Penal' },
-    { image: '/pilulas/cf_portrait.webp', text: 'CF88', fullName: 'Constituição Federal' },
-    { image: '/pilulas/cc_portrait.webp', text: 'CC', fullName: 'Código Civil' },
-    { image: '/pilulas/cpp_portrait.webp', text: 'CPP', fullName: 'Cód. Proc. Penal' },
-    { image: '/pilulas/clt_portrait.webp', text: 'CLT', fullName: 'Leis Trabalhistas' },
+    { image: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg'), text: 'CP', fullName: 'Código Penal' },
+    { image: '/pilulas/cf_portrait.jpg', text: 'CF88', fullName: 'Constituição Federal' },
+    { image: '/pilulas/cc_portrait.png', text: 'CC', fullName: 'Código Civil' },
+    { image: '/pilulas/cpp_portrait.jpg', text: 'CPP', fullName: 'Cód. Proc. Penal' },
+    { image: '/pilulas/clt_portrait.jpg', text: 'CLT', fullName: 'Leis Trabalhistas' },
   ];
 
   const ministrosPillsItems = [

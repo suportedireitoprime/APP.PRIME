@@ -5,7 +5,7 @@ export const maquiavelData: BiografiaData = {
   categoriaId: 'filosofos',
   nome: 'Nicolau Maquiavel',
   subtitulo: 'O fundador da ciência política moderna e o arquiteto da Razão de Estado.',
-  imagemUrl: '/biografias/maquiavel-capa.webp',
+  imagemUrl: '/biografias/maquiavel-capa.jpg',
   epoca: 'Renascimento',
   ordemEpoca: 4,
   datasVida: '(1469 – 1527)',

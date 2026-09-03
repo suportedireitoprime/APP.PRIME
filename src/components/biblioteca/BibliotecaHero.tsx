@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, HardDrive, BookMarked, Heart, Route as RouteIcon, FileUp } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { abrirAtalhoBiblioteca } from './BibliotecaBottomNav';
-import socratesImg from '@/assets/filosofos/socrates.webp';
+import socratesImg from '@/assets/filosofos/socrates.jpg';
 
 // Filósofos — mesmas imagens do FilosofosPanel
 import cicero from '@/assets/filosofos/cicero.webp';

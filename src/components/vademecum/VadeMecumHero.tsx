@@ -9,23 +9,23 @@ import { useHeroHomeImages } from '@/hooks/useHeroHomeImages';
 import HeroMotifs from './HeroMotifs';
 import HeroCoverCarousel from './HeroCoverCarousel';
 
-import cover2Asset from '@/assets/covers/cover-2.webp.asset.json';
+import cover2Asset from '@/assets/covers/cover-2.png.asset.json';
 import cover2Bundled from '@/assets/covers/cover-2.webp';
-import cover3Asset from '@/assets/covers/cover-3.webp.asset.json';
+import cover3Asset from '@/assets/covers/cover-3.png.asset.json';
 import cover3Bundled from '@/assets/covers/cover-3.webp';
-import cover4Asset from '@/assets/covers/cover-4.webp.asset.json';
+import cover4Asset from '@/assets/covers/cover-4.png.asset.json';
 import cover4Bundled from '@/assets/covers/cover-4.webp';
-import cover5Asset from '@/assets/covers/cover-5.webp.asset.json';
+import cover5Asset from '@/assets/covers/cover-5.png.asset.json';
 import cover5Bundled from '@/assets/covers/cover-5.webp';
-import cover6Asset from '@/assets/covers/cover-6.webp.asset.json';
+import cover6Asset from '@/assets/covers/cover-6.png.asset.json';
 import cover6Bundled from '@/assets/covers/cover-6.webp';
-import cover7Asset from '@/assets/covers/cover-7.webp.asset.json';
+import cover7Asset from '@/assets/covers/cover-7.png.asset.json';
 import cover7Bundled from '@/assets/covers/cover-7.webp';
-import cover8Asset from '@/assets/covers/cover-8.webp.asset.json';
+import cover8Asset from '@/assets/covers/cover-8.png.asset.json';
 import cover8Bundled from '@/assets/covers/cover-8.webp';
-import cover9Asset from '@/assets/covers/cover-9.webp.asset.json';
+import cover9Asset from '@/assets/covers/cover-9.png.asset.json';
 import cover9Bundled from '@/assets/covers/cover-9.webp';
-import cover10Asset from '@/assets/covers/cover-10.webp.asset.json';
+import cover10Asset from '@/assets/covers/cover-10.png.asset.json';
 import cover10Bundled from '@/assets/covers/cover-10.webp';
 
 const FALLBACK_COVERS = [

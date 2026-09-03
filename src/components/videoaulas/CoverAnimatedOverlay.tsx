@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Scale, Sparkles } from 'lucide-react';
-import laurelLeaf from '@/assets/landing-tribunal/laurel-leaf.webp';
-import scalesImg from '@/assets/landing-tribunal/scales.webp';
+import laurelLeaf from '@/assets/landing-tribunal/laurel-leaf.png';
+import scalesImg from '@/assets/landing-tribunal/scales.png';
 
 interface Props {
   className?: string;

@@ -55,7 +55,7 @@ export async function enableWebPush(): Promise<{ token?: string; error?: string 
       if (n?.title && Notification.permission === "granted") {
         const notif = new Notification(n.title, {
           body: n.body ?? "",
-          icon: n.icon ?? "/icons/icon-192.webp",
+          icon: n.icon ?? "/icons/icon-192.png",
         });
         notif.onclick = () => {
           const url = (payload.data as any)?.url || "/";

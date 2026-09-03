@@ -248,7 +248,7 @@ export default function CompartilharFrase({
   const baixar = useCallback(async () => {
     const blob = await exportarImagem();
     if (!blob) { toast.error('Falha ao gerar imagem'); return; }
-    await baixarBlob(blob, `frase-${(livroTitulo || 'livro').toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 40)}.webp`, {
+    await baixarBlob(blob, `frase-${(livroTitulo || 'livro').toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 40)}.png`, {
       titulo: livroTitulo || 'Frase',
       toastSucesso: false,
     });
@@ -262,7 +262,7 @@ export default function CompartilharFrase({
     const ok = await compartilharComArquivo({
       titulo: livroTitulo,
       texto: shareText,
-      arquivo: { blob, nome: 'frase.webp' },
+      arquivo: { blob, nome: 'frase.png' },
     });
     if (!ok) await baixar();
   }, [exportarImagem, frase, livroTitulo, autor, baixar]);

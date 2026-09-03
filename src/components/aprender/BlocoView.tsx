@@ -67,7 +67,7 @@ export function BlocoView({
         <p className="mb-4 flex items-center gap-3 text-[10px] font-extrabold uppercase tracking-[0.2em] text-primary/80">
           <Scale className="h-3.5 w-3.5" /> Texto da Lei
         </p>
-        <div className="relative rounded-2xl border border-white/5 bg-gradient-to-br from-white/[0.04] to-transparent p-6 shadow-xl before:absolute before:inset-0 before:bg-[url('https://www.transparenttextures.com/patterns/stardust.webp')] before:opacity-10 before:mix-blend-overlay">
+        <div className="relative rounded-2xl border border-white/5 bg-gradient-to-br from-white/[0.04] to-transparent p-6 shadow-xl before:absolute before:inset-0 before:bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] before:opacity-10 before:mix-blend-overlay">
           <p className="mb-4 text-sm font-bold text-white uppercase tracking-wide">
             {lei} {numero ? <span className="text-primary font-black">— Art. {numero}</span> : ''}
           </p>

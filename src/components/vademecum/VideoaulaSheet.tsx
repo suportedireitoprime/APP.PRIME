@@ -8,7 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import ReactMarkdown from 'react-markdown';
 import { Document, Page, Text, View, StyleSheet, pdf, Font, Image as PdfImage } from '@react-pdf/renderer';
 import { toast } from 'sonner';
-import logoAsset from '@/assets/logo-direitoprime-v2.webp.asset.json';
+import logoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
 import { srcOf } from '@/lib/assetUrl';
 import { baixarBlob } from '@/lib/nativo';
 

@@ -11,7 +11,7 @@
 import { Capacitor } from '@capacitor/core';
 
 const DEFAULT_ARTIST = 'Direito Prime ⚖️';
-const PUBLIC_FALLBACK_ART = 'https://direitoprime.com.br/icon-512.webp';
+const PUBLIC_FALLBACK_ART = 'https://direitoprime.com.br/icon-512.png';
 
 type Handler = (() => void) | undefined;
 

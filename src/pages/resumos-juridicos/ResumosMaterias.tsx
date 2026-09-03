@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import ShapeGrid from "@/components/ui/ShapeGrid";
 import { PageHeader } from "@/components/vademecum/PageHeader";
+import CircularGallery from "@/components/ui/CircularGallery";
 import { haptic } from "@/lib/nativeHaptics";
 
 type AreaRow = { area: string; total: number };
@@ -244,24 +245,23 @@ export default function ResumosMaterias() {
           ) : (
             /* MODO CARROSSEL */
             <div className="flex flex-col gap-6">
-              <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4 -mx-4 px-4 snap-x">
-                {filtered.map((r, idx) => (
-                  <button 
-                    key={idx} 
-                    onClick={() => {
-                      haptic.selection();
-                      navigate(`/resumos-juridicos/${encodeURIComponent(r.area)}`);
-                    }} 
-                    className="snap-start flex-shrink-0 w-[140px] flex flex-col gap-2 group text-left"
-                  >
-                    <div className="w-full aspect-[2/3] rounded-xl overflow-hidden bg-secondary/50 border border-white/10 relative">
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-3 z-10">
-                        <span className="text-white font-bold text-lg leading-tight">{r.area.replace(/^DIREITO\s+/i, "")}</span>
-                        <span className="text-white/70 text-xs mt-1">{r.total} resumo{r.total === 1 ? '' : 's'}</span>
-                      </div>
-                    </div>
-                  </button>
-                ))}
+              <div style={{ height: '350px', position: 'relative' }} className="-mx-4 sm:mx-0">
+                <CircularGallery
+                  items={filtered.map(r => ({
+                    image: 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg', // Placeholder for now
+                    text: r.area.replace(/^DIREITO\s+/i, ""),
+                    fullName: `${r.total} resumo${r.total === 1 ? '' : 's'}`,
+                    raw: r // store raw row to navigate correctly
+                  }))}
+                  bend={1.5}
+                  textColor="#ffffff"
+                  borderRadius={0.05}
+                  scrollEase={0.08}
+                  onItemClick={(item) => {
+                    haptic.selection();
+                    navigate(`/resumos-juridicos/${encodeURIComponent(item.raw.area)}`);
+                  }}
+                />
               </div>
             </div>
           )}

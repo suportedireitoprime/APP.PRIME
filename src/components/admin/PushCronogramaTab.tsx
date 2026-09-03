@@ -28,21 +28,21 @@ export const PUSH_DEFAULT_COVERS: PushPresetCover[] = [
   {
     id: "radar_leis",
     nome: "Diário Oficial & Leis",
-    url: "/assets/push/capa-radar-leis.webp",
+    url: "/assets/push/capa-radar-leis.jpg",
     descricao: "Balança dourada, decretos e estética editorial clássica",
     tag: "Legislação & Radar",
   },
   {
     id: "estudo_horus",
     nome: "Hórus & Metas de Estudo",
-    url: "/assets/push/capa-estudo-horus.webp",
+    url: "/assets/push/capa-estudo-horus.jpg",
     descricao: "Coruja sábia, neon âmbar/roxo e hologramas de aprendizado",
     tag: "Gamificação & Foco",
   },
   {
     id: "noticias_juridicas",
     nome: "Plenário & Notícias STF",
-    url: "/assets/push/capa-noticias-juridicas.webp",
+    url: "/assets/push/capa-noticias-juridicas.jpg",
     descricao: "Tribunais superiores com dados ao vivo e transmissão jurídica",
     tag: "Notícias & Juris",
   },
@@ -78,7 +78,7 @@ const EVENTOS_FIXOS: EventoBase[] = [
     regra: "Dispara automaticamente às 07:00 caso haja ao menos 1 nova lei no Radar.",
     titulo_exemplo: "📜 [URGENTE] Novas leis publicadas no Diário Oficial hoje!",
     corpo_exemplo: "⚖️ Atos normativos de alto impacto acabam de entrar em vigor. Toque para ler o resumo.",
-    capa_default: "/assets/push/capa-radar-leis.webp",
+    capa_default: "/assets/push/capa-radar-leis.jpg",
     tags_persuasao: ["Urgência Real", "Curadoria Oficial", "Alta Prioridade"],
     gatilho_mental: "Antecipação & Primazia da Informação",
   },
@@ -91,7 +91,7 @@ const EVENTOS_FIXOS: EventoBase[] = [
     regra: "Envia o boletim diário.",
     titulo_exemplo: "📰 Boletim do Dia: O que você precisa saber hoje",
     corpo_exemplo: "☕ Leitura rápida para não ficar desatualizado na prática.",
-    capa_default: "/assets/push/capa-noticias-juridicas.webp",
+    capa_default: "/assets/push/capa-noticias-juridicas.jpg",
     tags_persuasao: ["Autoridade", "Prática Forense", "Micro-leitura"],
     gatilho_mental: "Prova Social & Conhecimento Estratégico",
   },
@@ -104,7 +104,7 @@ const EVENTOS_FIXOS: EventoBase[] = [
     regra: "Puxa um artigo aleatório do blog para manter a leitura em dia.",
     titulo_exemplo: "✍️ Leitura de Meio-Dia: Recomendação Especial para você",
     corpo_exemplo: "Aprofunde-se neste artigo selecionado para a sua pausa de descanso.",
-    capa_default: "/assets/push/capa-estudo-horus.webp",
+    capa_default: "/assets/push/capa-estudo-horus.jpg",
     tags_persuasao: ["Conteúdo Exclusivo", "Leitura de Pausa", "Atualização"],
     gatilho_mental: "Curiosidade & Recompensa Imprevisível",
   },
@@ -117,7 +117,7 @@ const EVENTOS_FIXOS: EventoBase[] = [
     regra: "Puxa uma audioaula aleatória para revisão passiva.",
     titulo_exemplo: "🎧 Coloque o fone de ouvido: Uma audioaula surpresa para sua tarde",
     corpo_exemplo: "Aproveite para revisar um conteúdo importante enquanto faz outras atividades.",
-    capa_default: "/assets/push/capa-estudo-horus.webp",
+    capa_default: "/assets/push/capa-estudo-horus.jpg",
     tags_persuasao: ["Áudio Rápido", "Multitarefa", "Revisão Passiva"],
     gatilho_mental: "Facilidade & Aproveitamento de Tempo Ocioso",
   },
@@ -130,7 +130,7 @@ const EVENTOS_FIXOS: EventoBase[] = [
     regra: "Puxa uma videoaula aleatória do acervo.",
     titulo_exemplo: "📺 Fim de Tarde de Foco: Sua videoaula recomendada de hoje",
     corpo_exemplo: "Assista agora a esta aula estratégica e garanta mais uma etapa vencida no dia.",
-    capa_default: "/assets/push/capa-estudo-horus.webp",
+    capa_default: "/assets/push/capa-estudo-horus.jpg",
     tags_persuasao: ["Estudo Ativo", "Foco", "Consistência"],
     gatilho_mental: "Conclusão de Meta & Reforço Positivo",
   },
@@ -143,7 +143,7 @@ const EVENTOS_FIXOS: EventoBase[] = [
     regra: "Resumo final das notícias mais lidas.",
     titulo_exemplo: "🌙 Fechamento: O resumo das notícias mais quentes de hoje",
     corpo_exemplo: "Confira as manchetes antes de finalizar o expediente.",
-    capa_default: "/assets/push/capa-noticias-juridicas.webp",
+    capa_default: "/assets/push/capa-noticias-juridicas.jpg",
     tags_persuasao: ["Fechamento", "Giro Final", "Notícias Relevantes"],
     gatilho_mental: "Aversão à Perda & Informação Completa",
   },
@@ -348,7 +348,7 @@ export default function PushCronogramaTab() {
         publico: "Segmentação personalizada",
         regra: c.status === "scheduled" ? "Campanha agendada manualmente" : "Disparo manual finalizado",
         titulo_exemplo: c.title, corpo_exemplo: c.body,
-        capa_default: c.image_url || "/assets/push/capa-noticias-juridicas.webp",
+        capa_default: c.image_url || "/assets/push/capa-noticias-juridicas.jpg",
         tags_persuasao: ["Campanha Manual", "Disparo Direto"],
         gatilho_mental: "Comunicação Direta",
         label: padHora(d.getHours(), d.getMinutes()),
@@ -361,7 +361,7 @@ export default function PushCronogramaTab() {
         opened_count: c.opened_count ?? 0,
         realTitle: c.title,
         realBody: c.body,
-        realImage: c.image_url || "/assets/push/capa-noticias-juridicas.webp",
+        realImage: c.image_url || "/assets/push/capa-noticias-juridicas.jpg",
         campaignId: c.id,
       });
     }
@@ -923,7 +923,7 @@ export default function PushCronogramaTab() {
                   <div className="bg-[#242424] rounded-2xl p-3.5 shadow-xl text-white space-y-2.5 border border-zinc-700/50">
                     <div className="flex items-center justify-between text-zinc-400 text-[11px]">
                       <div className="flex items-center gap-1.5 font-medium">
-                        <img src="/icons/icon-72x72.webp" alt="App" className="w-4 h-4 rounded" onError={(e) => { (e.target as HTMLImageElement).src = '/favicon.webp'; }} />
+                        <img src="/icons/icon-72x72.png" alt="App" className="w-4 h-4 rounded" onError={(e) => { (e.target as HTMLImageElement).src = '/favicon.png'; }} />
                         <span>Direito Prime</span>
                         <span>•</span>
                         <span>agora</span>
@@ -952,7 +952,7 @@ export default function PushCronogramaTab() {
                   <div className="bg-zinc-900/90 backdrop-blur-xl rounded-2xl p-3.5 shadow-xl text-white space-y-2 border border-zinc-700/40">
                     <div className="flex items-center justify-between text-zinc-400 text-[11px]">
                       <div className="flex items-center gap-1.5 font-semibold text-zinc-200">
-                        <img src="/icons/icon-72x72.webp" alt="App" className="w-4 h-4 rounded" onError={(e) => { (e.target as HTMLImageElement).src = '/favicon.webp'; }} />
+                        <img src="/icons/icon-72x72.png" alt="App" className="w-4 h-4 rounded" onError={(e) => { (e.target as HTMLImageElement).src = '/favicon.png'; }} />
                         <span>DIREITO PRIME</span>
                       </div>
                       <span className="text-[10px] text-zinc-400">agora</span>

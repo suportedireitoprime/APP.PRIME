@@ -1,8 +1,8 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Landmark, Scale, BookOpen, GraduationCap } from 'lucide-react';
-import laurel from '@/assets/landing-tribunal/laurel-leaf.webp';
-import scales from '@/assets/landing-tribunal/scales.webp';
+import laurel from '@/assets/landing-tribunal/laurel-leaf.png';
+import scales from '@/assets/landing-tribunal/scales.png';
 
 export function CustomSplashScreen({ onComplete }: { onComplete: () => void }) {
   const text = "Estudos Jurídicos";
@@ -158,7 +158,7 @@ export function CustomSplashScreen({ onComplete }: { onComplete: () => void }) {
       {/* Logo Central */}
       <div className="mb-8 relative z-10 flex flex-col items-center anim-splash-logo">
         <img
-          src="/logo-prime.webp"
+          src="/logo-prime.png"
           alt="Direito Prime"
           className="w-40 h-40 sm:w-48 sm:h-48 object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.6)]"
           decoding="async"

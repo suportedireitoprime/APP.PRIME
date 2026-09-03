@@ -5,7 +5,7 @@ export const aristotelesData: BiografiaData = {
   categoriaId: 'filosofos',
   nome: 'Aristóteles',
   subtitulo: 'O Estagirita, fundador do Liceu e sistematizador da Justiça Comutativa e Distributiva.',
-  imagemUrl: '/biografias/aristoteles-capa.webp',
+  imagemUrl: '/biografias/aristoteles-capa.jpg',
   epoca: 'Antiguidade Clássica',
   ordemEpoca: 3,
   datasVida: '(384 a.C. – 322 a.C.)',

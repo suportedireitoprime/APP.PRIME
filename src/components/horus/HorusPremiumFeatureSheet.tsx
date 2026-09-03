@@ -5,7 +5,7 @@ import { Crown, Sparkles, Check, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { haptic } from '@/lib/nativeHaptics';
 import { motion } from 'framer-motion';
-import horusOwl from '@/assets/horus/horus-owl.webp.asset.json';
+import horusOwl from '@/assets/horus/horus-owl.png.asset.json';
 import PremiumFeaturesFullSheet from './PremiumFeaturesFullSheet';
 import { srcOf } from '@/lib/assetUrl';
 

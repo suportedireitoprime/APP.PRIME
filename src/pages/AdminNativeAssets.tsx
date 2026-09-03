@@ -12,12 +12,12 @@ import { AdminGithubTabs } from '@/components/admin/AdminGithubTabs';
 import { useSharedGithubRepo } from '@/hooks/useSharedGithubRepo';
 
 type AssetKey =
-  | 'icon.webp'
-  | 'icon-foreground.webp'
-  | 'icon-background.webp'
-  | 'splash.webp'
-  | 'splash-dark.webp'
-  | 'notification-icon.webp'
+  | 'icon.png'
+  | 'icon-foreground.png'
+  | 'icon-background.png'
+  | 'splash.png'
+  | 'splash-dark.png'
+  | 'notification-icon.png'
   | 'google-services.json'
   | 'GoogleService-Info.plist';
 
@@ -31,12 +31,12 @@ type AssetSpec = {
 };
 
 const SPECS: AssetSpec[] = [
-  { key: 'icon.webp',                label: 'Ícone do app',            hint: '1024×1024 PNG opaco',              accept: 'image/png',        required: true,  isImage: true },
-  { key: 'icon-foreground.webp',     label: 'Ícone adaptativo (frente)', hint: '1024×1024 PNG transparente, logo a 66%', accept: 'image/png', isImage: true },
-  { key: 'icon-background.webp',     label: 'Ícone adaptativo (fundo)',  hint: '1024×1024 PNG cor sólida',        accept: 'image/png',        isImage: true },
-  { key: 'splash.webp',              label: 'Splash screen',           hint: '2732×2732 PNG, logo centralizado', accept: 'image/png',        required: true, isImage: true },
-  { key: 'splash-dark.webp',         label: 'Splash (dark)',           hint: '2732×2732 PNG tema escuro',        accept: 'image/png',        isImage: true },
-  { key: 'notification-icon.webp',   label: 'Ícone de notificação',    hint: '96×96 branco monocromático transparente (Android)', accept: 'image/png', required: true, isImage: true },
+  { key: 'icon.png',                label: 'Ícone do app',            hint: '1024×1024 PNG opaco',              accept: 'image/png',        required: true,  isImage: true },
+  { key: 'icon-foreground.png',     label: 'Ícone adaptativo (frente)', hint: '1024×1024 PNG transparente, logo a 66%', accept: 'image/png', isImage: true },
+  { key: 'icon-background.png',     label: 'Ícone adaptativo (fundo)',  hint: '1024×1024 PNG cor sólida',        accept: 'image/png',        isImage: true },
+  { key: 'splash.png',              label: 'Splash screen',           hint: '2732×2732 PNG, logo centralizado', accept: 'image/png',        required: true, isImage: true },
+  { key: 'splash-dark.png',         label: 'Splash (dark)',           hint: '2732×2732 PNG tema escuro',        accept: 'image/png',        isImage: true },
+  { key: 'notification-icon.png',   label: 'Ícone de notificação',    hint: '96×96 branco monocromático transparente (Android)', accept: 'image/png', required: true, isImage: true },
   { key: 'google-services.json',    label: 'google-services.json',    hint: 'Firebase Android (push notifications)', accept: 'application/json,.json', required: true },
   { key: 'GoogleService-Info.plist',label: 'GoogleService-Info.plist',hint: 'Firebase iOS (opcional)',           accept: '.plist,application/xml,text/xml' },
 ];
@@ -52,10 +52,10 @@ const callFn = async (body: Record<string, unknown>) => {
 
 const CHECKLIST_ITEMS = [
   { key: 'google-services.json', text: 'Firebase configurado (push notifications)' },
-  { key: 'icon.webp',              text: 'Ícone 1024×1024 enviado' },
-  { key: 'icon-foreground.webp',   text: 'Ícone adaptativo Android enviado' },
-  { key: 'splash.webp',            text: 'Splash screen enviado' },
-  { key: 'notification-icon.webp', text: 'Ícone de notificação (monocromático) enviado' },
+  { key: 'icon.png',              text: 'Ícone 1024×1024 enviado' },
+  { key: 'icon-foreground.png',   text: 'Ícone adaptativo Android enviado' },
+  { key: 'splash.png',            text: 'Splash screen enviado' },
+  { key: 'notification-icon.png', text: 'Ícone de notificação (monocromático) enviado' },
 ];
 
 const REFS = [
@@ -155,7 +155,7 @@ const AdminNativeAssets = () => {
         action: 'upload',
         filename: spec.key,
         contentBase64: b64,
-        contentType: file.type || (spec.key.endsWith('.webp') ? 'image/png' : 'application/json'),
+        contentType: file.type || (spec.key.endsWith('.png') ? 'image/png' : 'application/json'),
       });
       await refresh();
     } catch (e: any) {
@@ -184,12 +184,12 @@ const AdminNativeAssets = () => {
     try {
       const v = await generateVariants(file);
       const uploads: [AssetKey, Blob][] = [
-        ['icon.webp', v.icon],
-        ['icon-foreground.webp', v.iconForeground],
-        ['icon-background.webp', v.iconBackground],
-        ['splash.webp', v.splash],
-        ['splash-dark.webp', v.splashDark],
-        ['notification-icon.webp', v.notificationIcon],
+        ['icon.png', v.icon],
+        ['icon-foreground.png', v.iconForeground],
+        ['icon-background.png', v.iconBackground],
+        ['splash.png', v.splash],
+        ['splash-dark.png', v.splashDark],
+        ['notification-icon.png', v.notificationIcon],
       ];
       for (const [name, blob] of uploads) {
         setUploading(name);
@@ -479,13 +479,13 @@ const AdminNativeAssets = () => {
               </label>
               <button
                 onClick={dispatchBuild}
-                disabled={dispatchBusy || !files['icon.webp']}
+                disabled={dispatchBusy || !files['icon.png']}
                 className="mt-3 inline-flex items-center gap-2 h-10 px-4 rounded-lg bg-primary text-primary-foreground text-sm font-semibold disabled:opacity-40"
               >
                 {dispatchBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Rocket className="w-4 h-4" />}
                 Subir logo para a próxima build
               </button>
-              {!files['icon.webp'] && (
+              {!files['icon.png'] && (
                 <p className="text-[11px] text-amber-400 mt-2">
                   Envie ao menos o <b>ícone do app</b> antes de disparar a build.
                 </p>

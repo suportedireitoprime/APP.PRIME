@@ -36,7 +36,7 @@ export function usePilulaData(id: string | undefined, globalLivro: LivroNormaliz
                 id: data.id,
                 titulo: `Artigo ${data.numero}`,
                 autor: 'Código Penal',
-                capa: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_square.webp'),
+                capa: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_square.jpg'),
                 audioResumoUrl: data.audio_pilula_url,
                 analiseDetalhada: data.texto,
                 sobre: data.texto,
