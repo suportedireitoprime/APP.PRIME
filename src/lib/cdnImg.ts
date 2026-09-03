@@ -18,7 +18,7 @@ const shouldBypassProxy = () => {
 };
 
 const proxied = (url: string, w: number) =>
-  `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${w}&q=80&output=avif`;
+  `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${w}&q=80&output=webp`;
 
 /**
  * Resolve caminhos relativos do CDN Lovable (`/__l5e/...`) ou pointers de asset
@@ -64,6 +64,20 @@ const otimizar = (url: string, w: number) => {
   if (resolved.includes('migalhas.com.br')) {
     return resolved;
   }
+
+  // TMDB (Filmes e Séries da Temática Jurídica) possui CDN global próprio (Cloudflare).
+  // Ajustamos o parâmetro de resolução nativo sem necessidade de proxy externo.
+  if (resolved.includes('image.tmdb.org/t/p/')) {
+    let size = 'w500';
+    if (w <= 92) size = 'w92';
+    else if (w <= 154) size = 'w154';
+    else if (w <= 185) size = 'w185';
+    else if (w <= 342) size = 'w342';
+    else if (w <= 500) size = 'w500';
+    else if (w <= 780) size = 'w780';
+    else size = 'w1280';
+    return resolved.replace(/\/t\/p\/[^/]+\//, `/t/p/${size}/`);
+  }
   
   if (!/^https?:\/\//i.test(resolved)) return resolved;
   return proxied(resolved, w);
@@ -84,7 +98,7 @@ export const avatarImg = (url: string, size = 128) => {
   const resolved = resolve(url);
   if (shouldBypassProxy()) return resolved;
   // Para avatares, sempre queremos usar o proxy wsrv.nl no frontend web para forçar o mask circular e diminuir o peso
-  return `https://wsrv.nl/?url=${encodeURIComponent(resolved)}&w=${size}&h=${size}&fit=cover&mask=circle&output=avif`;
+  return `https://wsrv.nl/?url=${encodeURIComponent(resolved)}&w=${size}&h=${size}&fit=cover&mask=circle&output=webp`;
 };
 
 export function prefetchImage(url: string | null | undefined) {

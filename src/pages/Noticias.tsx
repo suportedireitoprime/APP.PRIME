@@ -26,8 +26,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useGoBack } from '@/hooks/useGoBack';
 import { copiarTexto } from '@/lib/nativo/copiar';
 import { compartilharNativo, podeCompartilhar } from '@/lib/nativo/compartilhar';
-import { Capacitor } from '@capacitor/core';
-import { NativeNewsPlugin } from '@/plugins/NativeNewsPlugin';
+
 
 
 
@@ -84,24 +83,7 @@ const Noticias = () => {
   const isDesktop = useIsDesktop();
   const [noticias, setNoticias] = useState<Noticia[]>(() => getNoticiasCache() ?? []);
   
-  useEffect(() => {
-    if (Capacitor.isNativePlatform()) {
-      const launch = async () => {
-        try {
-          const { data } = await supabase.auth.getSession();
-          await NativeNewsPlugin.openNewsDashboard({
-            accessToken: data.session?.access_token,
-            refreshToken: data.session?.refresh_token
-          });
-          navigate(-1);
-        } catch (e) {
-          console.error(e);
-          navigate(-1);
-        }
-      };
-      launch();
-    }
-  }, [navigate]);
+
 
   const { isRead, markRead } = useReadNoticias();
   const [loading, setLoading] = useState<boolean>(() => getNoticiasCache() === null);

@@ -151,6 +151,13 @@ const TematicaCarrossel = () => {
                     alt=""
                     loading="lazy"
                     decoding="async"
+                    onError={(e) => {
+                      if (e.currentTarget.src !== bg) {
+                        e.currentTarget.src = bg;
+                      } else {
+                        e.currentTarget.style.display = 'none';
+                      }
+                    }}
                     className="absolute inset-0 w-full h-full object-cover scale-125 blur-xl opacity-40"
                   />
                 )}
@@ -162,13 +169,20 @@ const TematicaCarrossel = () => {
                 />
 
                 {/* poster vertical à esquerda */}
-                <div className="absolute inset-y-2 left-2 w-[92px] rounded-lg overflow-hidden shadow-xl ring-1 ring-white/10">
+                <div className="absolute inset-y-2 left-2 w-[92px] rounded-lg overflow-hidden shadow-xl ring-1 ring-white/10 bg-neutral-900">
                   {poster ? (
                     <img
                       src={cdnImg(poster, 200)}
                       alt={o.titulo}
                       loading={i < 2 ? 'eager' : 'lazy'}
                       decoding="async"
+                      onError={(e) => {
+                        if (e.currentTarget.src !== poster) {
+                          e.currentTarget.src = poster;
+                        } else {
+                          e.currentTarget.style.display = 'none';
+                        }
+                      }}
                       className="w-full h-full object-cover"
                     />
                   ) : (
