@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { Loader2, MessageSquare, RefreshCw, AlertTriangle, Crown } from 'lucide-react';
+import { Loader2, MessageSquare, RefreshCw, AlertTriangle, Crown, BookOpen } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { useGoBack } from '@/hooks/useGoBack';
@@ -92,6 +92,33 @@ export default function MeExplique() {
         }}
         onToggleLanterna={engine.alternarLanterna}
       />
+
+      {/* Guia de Enquadramento: Aponte a câmera para o material (some imediatamente ao tocar em "Me explique") */}
+      <AnimatePresence>
+        {!engine.ativo && !engine.iniciando && !engine.showTutorial && (
+          <motion.div
+            initial={{ opacity: 0, y: -8, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -12, scale: 0.92 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+            className="pointer-events-none absolute inset-x-4 top-[calc(5.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] z-20 flex justify-center"
+          >
+            <div className="flex max-w-sm items-center gap-3.5 rounded-2xl border border-white/20 bg-black/70 px-4 py-3 shadow-2xl backdrop-blur-md">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-purple-600/30 text-purple-300 border border-purple-500/40 shadow-inner">
+                <BookOpen className="h-5 w-5" />
+              </div>
+              <div className="flex-1">
+                <p className="text-[13px] font-black text-white leading-tight">
+                  Aponte a câmera para o material
+                </p>
+                <p className="text-[11px] text-white/80 leading-snug mt-0.5">
+                  Livro, doutrina, lei, caderno ou peça. Em seguida, toque em <span className="font-bold text-amber-300">"Me explique"</span> abaixo.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Tutorial Flutuante no 1º Acesso */}
       <MeExpliqueTutorial 

@@ -28,22 +28,30 @@ export async function garantirPermissoesMidia(
 
   const resultado: PermissaoMidia = { camera: !precisaCamera, microfone: !precisaMicrofone };
 
-  if (precisaCamera) {
+  if (precisaCamera || precisaMicrofone) {
+    try {
+      const { NativeMeExpliquePlugin } = await import('@/plugins/NativeMeExpliquePlugin');
+      const nativo = await NativeMeExpliquePlugin.verificarPermissoes();
+      if (precisaCamera) resultado.camera = nativo.camera;
+      if (precisaMicrofone) resultado.microfone = nativo.microfone;
+    } catch (e) {
+      console.warn('[permissoesMidia] verificação nativa:', e);
+    }
+  }
+
+  if (precisaCamera && !resultado.camera) {
     try {
       const { Camera } = await import('@capacitor/camera');
       let estado = await Camera.checkPermissions();
       if (estado.camera !== 'granted') estado = await Camera.requestPermissions({ permissions: ['camera'] });
       resultado.camera = estado.camera === 'granted';
     } catch (e) {
-      console.warn('[permissoesMidia] câmera:', e);
-      // Plugin indisponível: deixamos o getUserMedia tentar.
+      console.warn('[permissoesMidia] câmera fallback:', e);
       resultado.camera = true;
     }
   }
 
-  if (precisaMicrofone) {
-    // Como o plugin de voz nativo foi removido por incompatibilidade,
-    // assumimos true para delegar o pedido à API getUserMedia nativa do navegador/WebView.
+  if (precisaMicrofone && !resultado.microfone) {
     resultado.microfone = true;
   }
 

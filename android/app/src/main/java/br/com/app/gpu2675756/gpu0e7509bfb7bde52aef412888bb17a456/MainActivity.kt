@@ -40,6 +40,7 @@ class MainActivity : BridgeActivity() {
         registerPlugin(NativeAudioPlugin::class.java)
         registerPlugin(NativeFlashcardsPlugin::class.java)
         registerPlugin(NativeVadeMecumPlugin::class.java)
+        registerPlugin(NativeMeExpliquePlugin::class.java)
 
         // Injeta a view customizada da Splash Nativa por cima do WebView
         setupNativeSplash()
