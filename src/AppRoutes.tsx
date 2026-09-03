@@ -86,8 +86,8 @@ function ForceUpdateWrapper() {
 }
 
 // Eagerly loaded (critical path)
+import PersistentHome from "./components/PersistentHome.tsx";
 const Index = lazy(() => import("./pages/Index.tsx"));
-const PersistentHome = lazy(() => import("./components/PersistentHome.tsx"));
 const Auth = lazy(() => import("./pages/Auth.tsx"));
 const Landing = lazy(() => import('@/pages/Landing'));
 const PilulasLista = lazy(() => import('@/pages/pilulas/PilulasLista'));
@@ -133,7 +133,7 @@ const MinhasVideoaulas = lazy(() => import("./pages/MinhasVideoaulas.tsx"));
 const ModoAula = lazy(() => import("./pages/ModoAula.tsx"));
 const ModoAulaSessao = lazy(() => import("./pages/ModoAulaSessao.tsx"));
 const ModoAulaAula = lazy(() => import("./pages/ModoAulaAula.tsx"));
-const MeExplique = lazy(() => import("./pages/MeExplique.tsx"));
+const MeExplique = lazy(routePrefetch.meExplique);
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 const Configuracoes = lazy(() => import("./pages/Configuracoes.tsx"));
 const RadarDeputados = lazy(() => import("./pages/RadarDeputados.tsx"));
@@ -532,18 +532,18 @@ if (typeof window !== 'undefined') {
     routePrefetch.ferramentas();
     routePrefetch.radar360();
     routePrefetch.blog();
+    routePrefetch.noticias();
+    routePrefetch.questoes();
+    import('@/pages/pilulas/PilulasLista');
     routePrefetch.leiSeca();
     routePrefetch.leiSecaTrilha();
     routePrefetch.leiSecaParte();
     routePrefetch.leiSecaPlayer();
-
-
-
   };
   if ('requestIdleCallback' in window) {
-    (window as any).requestIdleCallback(preloadChunks);
+    (window as any).requestIdleCallback(preloadChunks, { timeout: 1000 });
   } else {
-    setTimeout(preloadChunks, 1500);
+    setTimeout(preloadChunks, 400);
   }
 }
 
@@ -557,19 +557,17 @@ function EstudosRouter() {
 function LazyFallback() {
   return (
     <div
-      className="min-h-dvh bg-[#0D0D0D] p-4 pt-16 space-y-4 animate-in fade-in duration-300"
-      style={{ animationDelay: '120ms', animationFillMode: 'backwards' }}
+      className="min-h-dvh bg-[#0D0D0D] p-4 pt-16 space-y-4"
       aria-busy="true"
       aria-live="polite"
     >
-      <div className="h-8 w-48 rounded-md bg-muted/70 animate-pulse" />
-      <div className="h-4 w-64 rounded bg-muted/60 animate-pulse" />
+      <div className="h-8 w-48 rounded-md bg-white/5 animate-pulse" />
+      <div className="h-4 w-64 rounded bg-white/5 animate-pulse" />
       <div className="space-y-3 mt-6">
         {[1, 2, 3, 4, 5].map(i => (
           <div
             key={i}
-            className="h-20 rounded-xl bg-muted/60 animate-pulse"
-            style={{ animationDelay: `${i * 80}ms` }}
+            className="h-20 rounded-xl bg-white/5 animate-pulse"
           />
         ))}
       </div>
@@ -779,11 +777,9 @@ function AnimatedRoutes() {
       {user && <NovidadesRadarOverlay />}
       <GlobalDesktopHeader />
       <DesktopFileDropOverlay />
-      <Suspense fallback={null}>
-        <PersistentHome />
-      </Suspense>
+      <PersistentHome />
       <Suspense fallback={<LazyFallback />}>
-          <Routes location={location} key={getRouteKey(location.pathname)}>
+        <Routes location={location}>
           <Route path="/auth" element={<Auth />} />
           <Route path="/landing" element={<Landing />} />
 

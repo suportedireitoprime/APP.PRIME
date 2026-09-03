@@ -230,6 +230,8 @@ const BottomNav = () => {
 
           {/* Slot 3: Vade Mecum (destaque flutuante central no mobile, normal no tablet) */}
           <button
+            onPointerDown={() => prefetchRoute('vademecum')}
+            onMouseEnter={() => prefetchRoute('vademecum')}
             onClick={() => { haptic.light(); if (!path.startsWith('/vade-mecum')) navigate('/vade-mecum'); }}
             data-track="bottom_nav_click"
             data-track-destino="vade-mecum"
@@ -276,6 +278,8 @@ const BottomNav = () => {
 
           {/* Slot 5: Pílulas */}
           <button
+            onPointerDown={() => prefetchRoute('pilulas')}
+            onMouseEnter={() => prefetchRoute('pilulas')}
             onClick={() => { haptic.selection(); navigate('/pilulas'); }}
             data-track="bottom_nav_click"
             data-track-destino="pilulas"

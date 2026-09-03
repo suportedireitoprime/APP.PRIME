@@ -184,7 +184,12 @@ export function useHighlights(artigoId: string | null) {
   }, [highlights, persist]);
 
   const removeHighlightsByColor = useCallback((color: string) => {
-    const updated = highlights.filter(h => h.color !== color);
+    const extractRgb = (c: string) => {
+      const m = c.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
+      return m ? `${m[1]},${m[2]},${m[3]}` : c.toLowerCase().trim();
+    };
+    const targetRgb = extractRgb(color);
+    const updated = highlights.filter(h => extractRgb(h.color) !== targetRgb);
     setHighlights(updated);
     persist(updated);
   }, [highlights, persist]);

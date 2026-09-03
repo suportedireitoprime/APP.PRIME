@@ -16,25 +16,6 @@ const PersistentHome = () => {
   const location = useLocation();
   const { user, loading } = useAuth();
 
-  const [onboardingChecked, setOnboardingChecked] = useState(() => {
-    if (!user) return false;
-    if (typeof window === 'undefined') return false;
-    return localStorage.getItem(`onboarding_completed:${user.id}`) === '1';
-  });
-
-  useEffect(() => {
-    if (!user) return;
-    const cacheKey = `onboarding_completed:${user.id}`;
-    if (localStorage.getItem(cacheKey) === '1') {
-      setOnboardingChecked(true);
-      return;
-    }
-    
-    const handleCheck = () => setOnboardingChecked(true);
-    window.addEventListener('onboarding_checked', handleCheck);
-    return () => window.removeEventListener('onboarding_checked', handleCheck);
-  }, [user]);
-
   // Só monta depois que a auth resolveu e temos usuário — evita rodar
   // efeitos da Home no fluxo público (auth/landing/etc).
   if (loading || !user) return null;
@@ -59,8 +40,6 @@ const PersistentHome = () => {
     location.pathname.startsWith("/desktop-link/");
 
   if (isPublic) return null;
-
-  if (!onboardingChecked) return null;
 
   const visible = location.pathname === "/";
   return (

@@ -59,8 +59,9 @@ export const routePrefetch = {
   videoaulasCatalogoTrilha: () => import("@/pages/VideoaulasCatalogoTrilha.tsx"),
   videoaulasConquistas: () => import("@/pages/VideoaulasConquistas.tsx"),
   flashcards: () => import("@/pages/Flashcards.tsx"),
-
-
+  pilulas: () => import("@/pages/pilulas/PilulasLista"),
+  vademecum: () => import("@/pages/CategoriaLegislacao.tsx"),
+  meExplique: () => import("@/pages/MeExplique.tsx"),
 } as const;
 
 export type PrefetchKey = keyof typeof routePrefetch;

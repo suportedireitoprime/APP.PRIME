@@ -137,8 +137,11 @@ import { CustomSplashScreen } from "@/components/CustomSplashScreen";
 function AppBootSplash() {
   const [show, setShow] = useState(true);
   
-  if (!show) return null;
-  return <CustomSplashScreen onComplete={() => setShow(false)} />;
+  return (
+    <AnimatePresence>
+      {show && <CustomSplashScreen onComplete={() => setShow(false)} />}
+    </AnimatePresence>
+  );
 }
 
 const LazyMediaPlayers = () => (

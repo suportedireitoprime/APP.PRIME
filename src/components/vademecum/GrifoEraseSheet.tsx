@@ -1,9 +1,10 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
-import { X, Trash2, AlertTriangle } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { X, Trash2 } from 'lucide-react';
+import { useMemo } from 'react';
 import { HIGHLIGHT_COLORS, type Highlight } from '@/hooks/useHighlights';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
+import { haptic } from '@/lib/nativeHaptics';
 
 interface Props {
   open: boolean;
@@ -15,20 +16,28 @@ interface Props {
 
 const NAME_BY_VALUE = Object.fromEntries(HIGHLIGHT_COLORS.map(c => [c.value, c.name]));
 Object.assign(NAME_BY_VALUE, {
+  'rgba(250, 204, 21, 0.42)': 'Amarelo',
   'rgba(250, 204, 21, 0.55)': 'Chave',
+  'rgba(74, 222, 128, 0.42)': 'Verde',
   'rgba(34, 197, 94, 0.55)': 'Exceção',
+  'rgba(96, 165, 250, 0.42)': 'Azul',
   'rgba(59, 130, 246, 0.55)': 'Efeito',
+  'rgba(244, 114, 182, 0.42)': 'Rosa',
   'rgba(236, 72, 153, 0.55)': 'Termo',
+  'rgba(251, 146, 60, 0.42)': 'Laranja',
   'rgba(251, 146, 60, 0.55)': 'Pegadinha',
 });
 
 const GrifoEraseSheet = ({ open, onClose, highlights, onRemoveByColor, onClearAll }: Props) => {
   useEscapeKey(open, onClose);
-  const [confirm, setConfirm] = useState<null | { type: 'all' } | { type: 'color'; color: string; name: string; count: number }>(null);
 
   const grouped = useMemo(() => {
     const map = new Map<string, number>();
-    for (const h of highlights) map.set(h.color, (map.get(h.color) || 0) + 1);
+    for (const h of highlights) {
+      if (h.color) {
+        map.set(h.color, (map.get(h.color) || 0) + 1);
+      }
+    }
     return Array.from(map.entries()).map(([color, count]) => ({
       color,
       count,
@@ -40,111 +49,123 @@ const GrifoEraseSheet = ({ open, onClose, highlights, onRemoveByColor, onClearAl
 
   return createPortal(
     <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-        onClick={onClose}
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[10040]"
-      />
-      <motion.aside
-        initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
-        transition={{ type: 'spring', damping: 26, stiffness: 260 }}
-        className="fixed bottom-0 left-0 right-0 z-[10041] bg-card border-t border-border rounded-t-3xl shadow-2xl pb-safe max-h-[80vh] mx-auto max-w-lg overflow-hidden flex flex-col md:left-auto md:right-0 md:top-0 md:bottom-0 md:h-full md:max-h-none md:w-[min(30rem,92vw)] md:max-w-none md:rounded-none md:rounded-l-3xl md:border-l md:border-t-0 md:shadow-2xl md:mx-0"
-      >
-        <div className="pt-3 pb-2 flex justify-center">
-          <span className="w-10 h-1 rounded-full bg-border" />
-        </div>
-        <div className="flex items-center justify-between px-5 pb-3 border-b border-border">
-          <div className="flex items-center gap-2">
-            <Trash2 className="w-5 h-5 text-red-400" />
-            <h3 className="font-heading text-base font-semibold text-foreground">Apagar grifos</h3>
-          </div>
-          <button onClick={onClose} className="w-8 h-8 rounded-full hover:bg-secondary flex items-center justify-center text-foreground/70">
-            <X className="w-4 h-4" />
-          </button>
-        </div>
+      <div className="fixed inset-0 z-[10050] flex items-center justify-center p-4 sm:p-6">
+        {/* Backdrop */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onClose}
+          className="fixed inset-0 bg-black/75 backdrop-blur-sm z-0"
+        />
 
-        <div className="flex-1 overflow-y-auto py-2">
-          {grouped.length === 0 && (
-            <div className="py-8 px-5 text-center space-y-3">
-              <p className="text-sm text-foreground/60">Não há grifos registrados neste artigo.</p>
-              <button
-                onClick={() => { onClearAll(); onClose(); }}
-                className="px-4 py-2 rounded-xl text-xs font-semibold bg-red-500/15 text-red-400 hover:bg-red-500/25 transition-colors"
-              >
-                Limpar quaisquer marcas residuais
-              </button>
+        {/* Floating Centered Card */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.92, y: 10 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.92, y: 10 }}
+          transition={{ type: 'spring', damping: 25, stiffness: 280 }}
+          className="relative z-10 w-full max-w-sm bg-card border border-border/80 rounded-3xl shadow-2xl p-5 flex flex-col max-h-[85vh] overflow-hidden"
+          style={{
+            marginBottom: 'max(0.75rem, env(safe-area-inset-bottom, 0px))',
+          }}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between pb-3 border-b border-border/60">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-red-500/15 flex items-center justify-center shrink-0">
+                <Trash2 className="w-5 h-5 text-red-400" />
+              </div>
+              <div>
+                <h3 className="font-heading text-base font-bold text-foreground leading-tight">Apagar grifos</h3>
+                <p className="text-[11px] text-muted-foreground">Remover marcas deste artigo</p>
+              </div>
             </div>
-          )}
-          {grouped.map(g => (
             <button
-              key={g.color}
-              onClick={() => setConfirm({ type: 'color', color: g.color, name: g.name, count: g.count })}
-              className="w-full min-h-[70px] flex items-center gap-3.5 px-5 py-4 hover:bg-secondary/60 text-left transition-colors"
+              onClick={() => {
+                haptic.selection();
+                onClose();
+              }}
+              aria-label="Fechar"
+              className="w-8 h-8 rounded-full hover:bg-secondary flex items-center justify-center text-foreground/70 transition-colors"
             >
-              <span className="w-8 h-8 rounded-full border border-white/20 shrink-0" style={{ backgroundColor: g.color }} />
-              <span className="flex-1">
-                <span className="block text-[15px] font-medium text-foreground">{g.name}</span>
-                <span className="block text-[12.5px] text-foreground/60">{g.count} {g.count === 1 ? 'grifo' : 'grifos'}</span>
-              </span>
-              <Trash2 className="w-4 h-4 text-red-400/80" />
+              <X className="w-4 h-4" />
             </button>
-          ))}
+          </div>
 
+          {/* Body */}
+          <div className="flex-1 overflow-y-auto py-2 space-y-2">
+            {grouped.length === 0 ? (
+              <div className="py-6 px-4 text-center space-y-3">
+                <p className="text-sm text-foreground/60">Não há grifos registrados neste artigo.</p>
+                <button
+                  onClick={() => {
+                    haptic.notification();
+                    onClearAll();
+                    onClose();
+                  }}
+                  className="w-full py-2.5 rounded-xl text-xs font-semibold bg-red-500/15 text-red-400 hover:bg-red-500/25 transition-colors"
+                >
+                  Limpar quaisquer marcas residuais
+                </button>
+              </div>
+            ) : (
+              grouped.map((g) => (
+                <div
+                  key={g.color}
+                  className="w-full flex items-center justify-between gap-3 p-3 rounded-2xl bg-secondary/50 border border-border/40 hover:bg-secondary transition-colors"
+                >
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <span
+                      className="w-7 h-7 rounded-full border border-white/20 shrink-0 shadow-sm"
+                      style={{ backgroundColor: g.color }}
+                    />
+                    <div className="min-w-0 flex-1">
+                      <span className="block text-sm font-semibold text-foreground truncate">{g.name}</span>
+                      <span className="block text-[11px] text-muted-foreground">
+                        {g.count} {g.count === 1 ? 'grifo' : 'grifos'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      haptic.notification();
+                      onRemoveByColor(g.color);
+                      if (grouped.length <= 1) {
+                        onClose();
+                      }
+                    }}
+                    className="px-3 py-1.5 rounded-xl bg-red-500/15 text-red-400 hover:bg-red-500/25 text-xs font-bold flex items-center gap-1.5 transition-colors active:scale-95 shrink-0"
+                    aria-label={`Apagar grifos ${g.name}`}
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Apagar</span>
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* Footer with Clear All */}
           {grouped.length > 0 && (
-            <div className="mt-2 px-5 pt-3 border-t border-border">
-              <button
-                onClick={() => setConfirm({ type: 'all' })}
-                className="w-full py-3 rounded-xl text-sm font-semibold bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
-              >
-                Apagar todos os grifos
-              </button>
-            </div>
-          )}
-        </div>
-      </motion.aside>
-
-      {confirm && (
-        <>
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[10050] bg-black/70" onClick={() => setConfirm(null)} />
-          <motion.div
-            initial={{ opacity: 0, scale: 0.92, x: '-50%', y: '-50%' }}
-            animate={{ opacity: 1, scale: 1, x: '-50%', y: '-50%' }}
-            exit={{ opacity: 0, scale: 0.92, x: '-50%', y: '-50%' }}
-            className="fixed left-1/2 top-1/2 z-[10051] w-[calc(100vw-2rem)] max-w-sm bg-card border border-border rounded-2xl shadow-2xl p-5"
-          >
-
-            <div className="flex items-center gap-2 mb-3">
-              <AlertTriangle className="w-5 h-5 text-red-400" />
-              <p className="font-semibold text-foreground">Confirmar</p>
-            </div>
-            <p className="text-sm text-foreground/80 mb-5">
-              {confirm.type === 'all'
-                ? `Apagar todos os ${highlights.length} grifos deste artigo? Esta ação não pode ser desfeita.`
-                : `Apagar os ${confirm.count} grifos ${confirm.name.toLowerCase()}? Esta ação não pode ser desfeita.`}
-            </p>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setConfirm(null)}
-                className="flex-1 py-2.5 rounded-xl text-sm font-semibold bg-secondary text-foreground hover:bg-secondary/80"
-              >
-                Cancelar
-              </button>
+            <div className="pt-2 border-t border-border/60">
               <button
                 onClick={() => {
-                  if (confirm.type === 'all') onClearAll();
-                  else onRemoveByColor(confirm.color);
-                  setConfirm(null);
+                  haptic.notification();
+                  onClearAll();
                   onClose();
                 }}
-                className="flex-1 py-2.5 rounded-xl text-sm font-semibold bg-red-500 text-white hover:bg-red-600"
+                className="w-full py-3 rounded-2xl text-sm font-bold bg-red-500 text-white hover:bg-red-600 shadow-md shadow-red-500/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
               >
-                Apagar
+                <Trash2 className="w-4 h-4" />
+                <span>Apagar todos os grifos</span>
               </button>
             </div>
-          </motion.div>
-        </>
-      )}
+          )}
+        </motion.div>
+      </div>
     </AnimatePresence>,
     document.body
   );

@@ -374,7 +374,7 @@ const HomeHeaderHero = ({ onSearchOpenChange }: { onSearchOpenChange?: (open: bo
           {/* Atalhos rápidos — abaixo da barra de pesquisa */}
           <div className="grid grid-cols-4 gap-2 mt-1">
             {[
-              { label: 'Me Explique', icon: Camera,           to: '/me-explique',  color: '#F97316', badgeColor: null, badgeKey: null, prefetch: 'aprender' as PrefetchKey },
+              { label: 'Me Explique', icon: Camera,           to: '/me-explique',  color: '#F97316', badgeColor: null, badgeKey: null, prefetch: 'meExplique' as PrefetchKey },
               { label: 'Flashcards',  icon: FlashcardsIcon,   to: '/flashcards',   color: '#34D399', badgeColor: null, badgeKey: null, prefetch: 'flashcards' as PrefetchKey },
               { label: 'Questões',    icon: ListChecks,       to: '/questoes',     color: '#F87171', badgeColor: null, badgeKey: null, prefetch: 'questoes' as PrefetchKey },
               { label: 'Desktop',     icon: Monitor,          to: '/desktop',      color: '#3B82F6', badgeColor: null, badgeKey: null, prefetch: 'desktop' as PrefetchKey },

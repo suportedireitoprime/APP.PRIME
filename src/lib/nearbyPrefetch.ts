@@ -6,14 +6,14 @@ import { routePrefetch, type PrefetchKey } from './routePrefetch';
 
 // Map: current path prefix -> keys likely to be visited next.
 const NEARBY: Array<[RegExp, PrefetchKey[]]> = [
-  [/^\/$/,                    ['ferramentas', 'estudos', 'biblioteca', 'blog', 'assistenteHorus', 'aprender', 'tematica']],
-  [/^\/legislacao\//,         ['assistenteHorus', 'ferramentas']],
-  [/^\/ferramentas/,          ['estudos', 'perfil']],
-  [/^\/blog/,                 ['noticias', 'boletins']],
+  [/^\/$/,                    ['ferramentas', 'estudos', 'biblioteca', 'blog', 'noticias', 'questoes', 'flashcards', 'pilulas', 'vademecum', 'assistenteHorus', 'aprender', 'tematica']],
+  [/^\/legislacao\//,         ['assistenteHorus', 'ferramentas', 'vademecum']],
+  [/^\/ferramentas/,          ['estudos', 'perfil', 'pilulas', 'blog']],
+  [/^\/blog/,                 ['noticias', 'boletins', 'ferramentas']],
   [/^\/biblioteca/,           ['modoOffline', 'pessoal', 'bibliotecaCategoria', 'bibliotecaOffline']],
   [/^\/aprender/,             ['estudos', 'tematica']],
   [/^\/radar/,                ['radares', 'boletins']],
-  [/^\/estudos/,              ['tematica', 'resumosJuridicos']],
+  [/^\/estudos/,              ['tematica', 'resumosJuridicos', 'questoes', 'flashcards']],
   [/^\/perfil/,               ['pessoal']],
   [/^\/resumos-juridicos$/,   ['resumosJuridicosTemas', 'resumosJuridicosSubtemas', 'resumosJuridicosLista']],
   [/^\/resumos-juridicos\//,  ['resumosJuridicos', 'resumosJuridicosTemas', 'resumosJuridicosSubtemas', 'resumosJuridicosLista']],
@@ -25,11 +25,11 @@ const NEARBY: Array<[RegExp, PrefetchKey[]]> = [
   [/^\/videoaulas\//,         ['videoaulas', 'videoaulasCatalogo', 'videoaulasArea', 'videoaulaView', 'videoaulasLista']],
 ];
 
-function idle(cb: () => void, timeout = 2500) {
+function idle(cb: () => void, timeout = 1200) {
   if (typeof window === 'undefined') return;
   const ric = (window as any).requestIdleCallback as
     | ((c: () => void, o?: { timeout?: number }) => number) | undefined;
-  if (ric) ric(cb, { timeout }); else setTimeout(cb, 800);
+  if (ric) ric(cb, { timeout }); else setTimeout(cb, 300);
 }
 
 /**

@@ -855,24 +855,32 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
 
     (async () => {
       try {
+        const aliases = Array.from(new Set([
+          tabelaNome,
+          tabelaNome.toLowerCase(),
+          tabelaNome.toUpperCase(),
+          tabelaNome.replace(/^[A-Z0-9]+_/, '').toLowerCase(),
+          tabelaNome.replace(/^[A-Z0-9]+_/, '').toUpperCase(),
+        ]));
+
         const { data: rows } = await supabase
           .from('narracoes_artigos')
           .select('audio_url, word_timings')
-          .eq('tabela_nome', tabelaNome)
+          .in('tabela_nome', aliases)
           .eq('artigo_numero', artigo.numero)
           .limit(1);
 
         const row = rows?.[0];
-        const hasTimings = Array.isArray(row?.word_timings) && row.word_timings.length > 0;
-        const versaoAtual = typeof row?.audio_url === 'string' && row.audio_url.includes(`/${NARRACAO_CACHE_VERSION}/`);
-        if (row?.audio_url && versaoAtual && hasTimings) {
+        if (row?.audio_url) {
           setNarracaoUrl(row.audio_url);
-          setNarracaoWordTimings(row.word_timings as any[]);
+          if (Array.isArray(row.word_timings) && row.word_timings.length > 0) {
+            setNarracaoWordTimings(row.word_timings as any[]);
+          }
         }
-
       } catch (e) {
         console.error('Erro ao verificar narração no banco principal:', e);
       }
+    })();
     })();
   }, [tabelaNome, artigo?.id, artigo?.numero]);
 
@@ -1081,8 +1089,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
 
         const cachedUrl = rows?.[0]?.audio_url || null;
         const cachedTimings = Array.isArray(rows?.[0]?.word_timings) ? (rows![0].word_timings as any[]) : null;
-        const versaoAtual = typeof cachedUrl === 'string' && cachedUrl.includes(`/${NARRACAO_CACHE_VERSION}/`);
-        if (cachedUrl && versaoAtual && cachedTimings?.length) {
+        if (cachedUrl) {
           audio_url = cachedUrl;
           word_timings = cachedTimings;
         }
@@ -1561,8 +1568,19 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
 
   const handleRemoveGrifosByColor = useCallback((color: string) => {
     removeHighlightsByColor(color);
-    const removedMagic = magicHighlights.filter((grifo) => (MAGIC_COLORS[grifo.cor] || MAGIC_COLORS.amarelo) === color);
-    const remainingMagic = magicHighlights.filter((grifo) => (MAGIC_COLORS[grifo.cor] || MAGIC_COLORS.amarelo) !== color);
+    const extractRgb = (c: string) => {
+      const m = c.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
+      return m ? `${m[1]},${m[2]},${m[3]}` : c.toLowerCase().trim();
+    };
+    const targetRgb = extractRgb(color);
+    const removedMagic = magicHighlights.filter((grifo) => {
+      const gColor = MAGIC_COLORS[grifo.cor] || MAGIC_COLORS.amarelo;
+      return extractRgb(gColor) === targetRgb;
+    });
+    const remainingMagic = magicHighlights.filter((grifo) => {
+      const gColor = MAGIC_COLORS[grifo.cor] || MAGIC_COLORS.amarelo;
+      return extractRgb(gColor) !== targetRgb;
+    });
     if (tabelaNome && artigo?.numero) {
       writeArtigoGrifos(tabelaNome, String(artigo.numero), remainingMagic.length > 0 ? (remainingMagic as any) : []);
     }
@@ -1875,10 +1893,13 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
       if (!sel || sel.isCollapsed || !sel.toString().trim()) return;
       const anchor = sel.anchorNode;
       if (!anchor || !containerRef.current?.contains(anchor)) return;
-      addHighlight();
+      const newId = addHighlight();
       sel.removeAllRanges();
+      if (newId) {
+        openCreatePrompt(newId);
+      }
     }, 10);
-  }, [highlightMode, addHighlight, isMobile, containerRef]);
+  }, [highlightMode, addHighlight, isMobile, containerRef, openCreatePrompt]);
 
   // Mobile: Grifo instantâneo ao passar o dedo (sem precisar ficar pressionando/segurando).
   // O usuário apenas toca e arrasta o dedo pelo texto, e o grifo se forma imediatamente.
@@ -1909,8 +1930,11 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
       if (!text) return;
       const anchor = sel.anchorNode;
       if (!anchor || !container.contains(anchor)) return;
-      addHighlight();
+      const newId = addHighlight();
       sel.removeAllRanges();
+      if (newId) {
+        openCreatePrompt(newId);
+      }
     };
 
     const onTouchStart = (e: TouchEvent) => {
@@ -3079,15 +3103,15 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="fixed inset-0 z-[69] bg-black/55"
+                      className="fixed inset-0 z-[10050] bg-black/65 backdrop-blur-sm"
                       onClick={handleDismissComment}
                     />
                     <motion.div
-                      initial={{ opacity: 0, y: 16 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 16 }}
+                      initial={{ opacity: 0, scale: 0.95, y: 12 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.95, y: 12 }}
                       transition={{ duration: 0.22, ease: [0.22, 0.61, 0.36, 1] }}
-                      className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[70] w-[calc(100vw-2rem)] max-w-lg sm:max-w-xl md:max-w-2xl max-h-[90vh] overflow-y-auto bg-card border border-border rounded-2xl shadow-2xl p-5 sm:p-6"
+                      className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[10051] w-[calc(100vw-2rem)] max-w-lg sm:max-w-xl md:max-w-2xl max-h-[90vh] overflow-y-auto bg-card border border-border rounded-3xl shadow-2xl p-5 sm:p-6"
                     >
                       <div className="flex items-center gap-2.5 mb-4">
                         <span
