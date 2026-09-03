@@ -32,6 +32,9 @@ import { track } from '@/lib/analyticsEvents';
 
 import { useHideSplashScreen } from '@/hooks/useHideSplashScreen';
 
+import { useProfileSummary } from '@/hooks/useProfileSummary';
+import { useUnreadNotifCount } from '@/components/vademecum/NotificationsSheet';
+
 const HERO_CONFIG = { radar: camaraHero, legislacao: heroImage, noticias: senadoHero } as const;
 
 type Tab = 'legislacao' | 'noticias' | 'ferramentas';
@@ -39,6 +42,8 @@ type Tab = 'legislacao' | 'noticias' | 'ferramentas';
 const IndexMobile = () => {
   useHideSplashScreen(400); // Give React more time to paint heavy UI before dropping native splash
   const navigate = useNavigate();
+  const { data: profileSummary } = useProfileSummary();
+  const unreadCount = useUnreadNotifCount();
 
   // Invocação Híbrida: Se estiver rodando no Nativo puro (iOS/Android Capacitor), tenta
   // exibir a View Swift/Compose por cima. A UI React continua montando atrás.
@@ -48,17 +53,29 @@ const IndexMobile = () => {
       import('@/plugins/NativeHomePlugin').then(({ NativeHome }) => {
         NativeHome.showHome({
           data: {
-            nome: 'Usuário',
-            iniciais: 'US',
-            perfilLabel: 'Estudante',
-            unreadCount: 0
+            nome: profileSummary?.nome || 'Usuário',
+            iniciais: profileSummary?.iniciais || 'DP',
+            perfilLabel: profileSummary?.perfil_tipos?.[0] || 'Estudando pra OAB',
+            avatarUrl: profileSummary?.avatar_url || '',
+            unreadCount: unreadCount || 0,
+            livros: [
+              { id: 'livro_1', titulo: 'Como as Democracias Morrem', autor: 'Steven Levitsky', ano: 2018 },
+              { id: 'livro_2', titulo: 'O Último Dia de um Condenado', autor: 'Victor Hugo', ano: 1829 },
+              { id: 'livro_3', titulo: 'Dos Delitos e das Penas', autor: 'Cesare Beccaria', ano: 1764 },
+              { id: 'livro_4', titulo: 'O Caso dos Exploradores de Cavernas', autor: 'Lon L. Fuller', ano: 1949 },
+            ]
           }
         }).catch(e => console.warn('NativeHome not bound, fallback to React', e));
 
         if (!active) return;
         NativeHome.addListener('onNavigate', (info) => {
-          NativeHome.hideHome();
           navigate(info.route);
+        });
+        NativeHome.addListener('onSearch', () => {
+          setSearchOpen(true);
+        });
+        NativeHome.addListener('onOpenSidebar', () => {
+          setMenuOpen(true);
         });
       });
     }

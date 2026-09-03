@@ -23,6 +23,18 @@ public class NativeHomePlugin: CAPPlugin {
                     onNavigate: { [weak self] route in
                         self?.notifyListeners("onNavigate", data: ["route": route])
                         self?.dismissHome()
+                    },
+                    onSearch: { [weak self] in
+                        self?.notifyListeners("onSearch", data: [:])
+                        self?.dismissHome()
+                    },
+                    onOpenSidebar: { [weak self] in
+                        self?.notifyListeners("onOpenSidebar", data: [:])
+                        self?.dismissHome()
+                    },
+                    onOpenNotifications: { [weak self] in
+                        self?.notifyListeners("onOpenNotifications", data: [:])
+                        self?.dismissHome()
                     }
                 )
                 

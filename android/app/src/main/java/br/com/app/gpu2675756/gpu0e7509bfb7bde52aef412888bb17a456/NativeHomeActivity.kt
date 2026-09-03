@@ -10,9 +10,9 @@ class NativeHomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val nome = intent.getStringExtra("nome") ?: "Usuário"
-        val perfilLabel = intent.getStringExtra("perfilLabel") ?: "Estudante"
-        val unreadCount = intent.getIntExtra("unreadCount", 0)
+        val nome = intent.getStringExtra("nome") ?: "WESLEY"
+        val perfilLabel = intent.getStringExtra("perfilLabel") ?: "Estudando pra OAB"
+        val unreadCount = intent.getIntExtra("unreadCount", 19)
 
         setContent {
             HomeScreen(
@@ -21,6 +21,18 @@ class NativeHomeActivity : ComponentActivity() {
                 unreadCount = unreadCount,
                 onNavigate = { route ->
                     NativeHomePlugin.instance?.emitNavigate(route)
+                    finish()
+                },
+                onSearch = {
+                    NativeHomePlugin.instance?.emitSearch()
+                    finish()
+                },
+                onOpenSidebar = {
+                    NativeHomePlugin.instance?.emitOpenSidebar()
+                    finish()
+                },
+                onOpenNotifications = {
+                    NativeHomePlugin.instance?.emitOpenNotifications()
                     finish()
                 }
             )

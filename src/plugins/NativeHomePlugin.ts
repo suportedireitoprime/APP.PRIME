@@ -1,12 +1,22 @@
 import { registerPlugin } from '@capacitor/core';
 import type { PluginListenerHandle } from '@capacitor/core';
 
+export interface NativeBookItem {
+  id: string;
+  titulo: string;
+  autor?: string;
+  capaUrl?: string;
+  ano?: number;
+  subtitulo?: string;
+}
+
 export interface NativeHomeData {
   nome: string;
   iniciais: string;
   perfilLabel: string;
   avatarUrl?: string;
   unreadCount: number;
+  livros?: NativeBookItem[];
 }
 
 export interface NativeHomePlugin {
