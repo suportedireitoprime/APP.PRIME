@@ -3,10 +3,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Bell, ChevronRight } from 'lucide-react';
 import { useInAppPushStore } from '@/store/inAppPushStore';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function InAppPushPopup() {
-  const { currentPush, dismissPush } = useInAppPushStore();
+  const { user } = useAuth();
+  const { currentPush, queue, currentIndex, totalCount, dismissPush } = useInAppPushStore();
   const navigate = useNavigate();
+
+  // Só exibir avisos para usuário autenticado
+  if (!user) return null;
 
   const handleAction = () => {
     if (currentPush?.actionUrl) {
@@ -25,11 +30,12 @@ export default function InAppPushPopup() {
       {currentPush && (
         <div className="fixed inset-x-0 top-0 z-[9999] p-4 pointer-events-none flex justify-center pt-[calc(3rem+var(--sai-top))]">
           <motion.div
+            key={currentPush.title + (currentPush.id || '') + currentIndex}
             initial={{ y: -100, opacity: 0, scale: 0.95 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: -100, opacity: 0, scale: 0.95 }}
             transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-            className="w-full max-w-sm bg-[#111111]/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden pointer-events-auto"
+            className="w-full max-w-sm bg-[#111111]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden pointer-events-auto"
             // Swipe up to dismiss
             drag="y"
             dragConstraints={{ top: 0, bottom: 0 }}
@@ -43,13 +49,19 @@ export default function InAppPushPopup() {
             <div className="p-4 flex flex-col gap-3" onClick={handleAction}>
               {/* Header */}
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-white/50 text-xs font-semibold uppercase tracking-wider">
+                <div className="flex items-center gap-2 text-white/70 text-xs font-semibold uppercase tracking-wider">
                   <Bell className="w-3.5 h-3.5 text-blue-500" />
                   <span>Novo Alerta</span>
+                  {totalCount > 1 && (
+                    <span className="px-2 py-0.5 rounded-full bg-blue-500/25 border border-blue-500/30 text-blue-400 text-[10px] font-bold tracking-wider">
+                      {currentIndex} de {totalCount}
+                    </span>
+                  )}
                 </div>
                 <button 
                   onClick={(e) => { e.stopPropagation(); dismissPush(); }}
                   className="p-1 rounded-full bg-white/5 text-white/50 hover:text-white/90 hover:bg-white/10 transition"
+                  aria-label="Dispensar aviso"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -76,12 +88,14 @@ export default function InAppPushPopup() {
               </div>
             </div>
             
-            {/* Action Bar (Optional, can just rely on clicking the card) */}
+            {/* Action Bar */}
             <div 
               className="bg-blue-600/10 hover:bg-blue-600/20 transition cursor-pointer border-t border-white/5 p-3 flex justify-center items-center gap-2"
               onClick={handleAction}
             >
-              <span className="text-blue-400 text-xs font-bold uppercase tracking-widest">Entendi</span>
+              <span className="text-blue-400 text-xs font-bold uppercase tracking-widest">
+                {queue.length > 0 ? `Próximo aviso (${queue.length} restantes)` : 'Entendi'}
+              </span>
             </div>
           </motion.div>
         </div>

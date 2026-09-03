@@ -20,13 +20,8 @@ const Particle = ({ delay, x }: { delay: number; x: number }) => (
 );
 
 export default function StfLiveBanner() {
-  const [liveSession, setLiveSession] = useState<{ id: string; title: string } | null>(null);
-  const [dismissed, setDismissed] = useState(false);
-  const [firstName, setFirstName] = useState('');
-  const [showCTA, setShowCTA] = useState(false);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { user } = useAuth();
+  return null;
+}
 
   // Generate stable particle positions
   const particles = useMemo(

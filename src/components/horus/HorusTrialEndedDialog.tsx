@@ -45,6 +45,8 @@ export default function HorusTrialEndedDialog() {
   const [landed, setLanded] = useState(false);
   const { user } = useAuth();
   
+  if (!user) return null;
+  
   const firstName = user?.user_metadata?.full_name?.split(' ')[0] || user?.user_metadata?.name?.split(' ')[0];
   const greeting = firstName ? `Ei ${firstName}!` : 'Ei!';
   const speechText = `${greeting} Vi que seu período Premium acabou e você voltou para a versão gratuita. Não se preocupe, estarei aqui para te ajudar nos estudos básicos. Quando quiser liberar todo o meu poder novamente, é só assinar!`;

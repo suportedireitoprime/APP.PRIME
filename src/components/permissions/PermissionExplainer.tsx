@@ -194,13 +194,7 @@ export function PermissionExplainer({ open, kind, onAllow, onDeny }: Props) {
                       className="w-full py-3.5 rounded-xl bg-primary text-primary-foreground font-body font-bold text-base hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
                     >
                       <Bell className="w-5 h-5" />
-                      Ativar agora
-                    </button>
-                    <button
-                      onClick={onDeny}
-                      className="w-full py-3.5 rounded-xl bg-secondary text-foreground font-body font-medium text-sm hover:bg-secondary/70 transition-colors"
-                    >
-                      Deixar para depois
+                      Receber notificações
                     </button>
                   </div>
                 </motion.div>

@@ -34,11 +34,16 @@ type BannerItem = {
 export function ReminderInAppBanner() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [item, setItem] = useState<BannerItem | null>(null);
+  const [items, setItems] = useState<BannerItem[]>([]);
   const [shake, setShake] = useState(0);
 
   const mostrar = (b: BannerItem) => {
-    setItem(b);
+    setItems((prev) => {
+      if (prev.some((x) => x.id === b.id || (x.titulo === b.titulo && x.subtitulo === b.subtitulo))) {
+        return prev;
+      }
+      return [...prev, b];
+    });
     setShake((n) => n + 1);
     haptic.selection?.();
     // Se o app não está em primeiro plano, mostra o card flutuante (Android)
@@ -52,15 +57,18 @@ export function ReminderInAppBanner() {
       });
       window.setTimeout(() => { void hideReminderOverlay(b.id); }, 5 * 60_000);
     }
-    window.setTimeout(() => setItem((cur) => (cur?.id === b.id ? null : cur)), 20_000);
+  };
+
+  const dispensarAtual = () => {
+    setItems((prev) => prev.slice(1));
   };
 
   // Tremida periódica enquanto o banner estiver visível
   useEffect(() => {
-    if (!item) return;
+    if (items.length === 0) return;
     const t = window.setInterval(() => setShake((n) => n + 1), 3500);
     return () => window.clearInterval(t);
-  }, [item]);
+  }, [items.length]);
 
   // Evento local (geofence disparado no próprio device)
   useEffect(() => {
@@ -128,6 +136,7 @@ export function ReminderInAppBanner() {
     };
   }, [user]);
 
+  const item = items[0];
   if (!user || !item) return null;
 
   return (
@@ -137,7 +146,7 @@ export function ReminderInAppBanner() {
       aria-live="polite"
     >
       <motion.div
-        key={shake}
+        key={item.id + shake}
         initial={{ opacity: 1, x: 0 }}
         animate={{ x: [0, -8, 8, -6, 6, -3, 3, 0], rotate: [0, -1.2, 1.2, -0.8, 0.8, 0] }}
         transition={{ duration: 0.7, ease: 'easeInOut' }}
@@ -145,19 +154,26 @@ export function ReminderInAppBanner() {
       >
         <Bell className="h-5 w-5 shrink-0 text-primary" />
         <div className="min-w-0 flex-1 text-sm">
-          <p className="truncate font-semibold text-foreground">{item.titulo}</p>
+          <div className="flex items-center gap-2">
+            <p className="truncate font-semibold text-foreground">{item.titulo}</p>
+            {items.length > 1 && (
+              <span className="rounded-full bg-primary/30 px-2 py-0.5 text-[10px] font-bold text-primary shrink-0">
+                1 de {items.length}
+              </span>
+            )}
+          </div>
           <p className="truncate text-xs text-muted-foreground">{item.subtitulo}</p>
         </div>
         {item.route && (
           <button
-            onClick={() => { haptic.selection?.(); const r = item.route!; setItem(null); navigate(r); }}
+            onClick={() => { haptic.selection?.(); const r = item.route!; dispensarAtual(); navigate(r); }}
             className="flex min-h-[44px] items-center gap-1 rounded-full bg-primary px-4 text-[14px] font-bold text-primary-foreground active:scale-[0.98]"
           >
             Ir <ArrowRight className="h-4 w-4" />
           </button>
         )}
         <button
-          onClick={() => setItem(null)}
+          onClick={dispensarAtual}
           className="flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground hover:bg-primary/20 hover:text-foreground"
           aria-label="Dispensar aviso"
         >

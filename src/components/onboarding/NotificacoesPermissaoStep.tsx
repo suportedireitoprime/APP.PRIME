@@ -214,15 +214,7 @@ export default function NotificacoesPermissaoStep({
 
           <div className="space-y-2">
             <Button className="w-full h-14 text-base font-semibold" size="lg" onClick={ativar} disabled={loading}>
-              {loading ? 'Ativando…' : 'Quero ser avisado'}
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full text-muted-foreground"
-              onClick={() => { marcarResultado(false); onDone(false); }}
-              disabled={loading}
-            >
-              Agora não
+              {loading ? 'Ativando…' : 'Receber notificações'}
             </Button>
           </div>
         </motion.div>
