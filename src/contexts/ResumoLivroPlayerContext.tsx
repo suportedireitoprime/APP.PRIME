@@ -24,12 +24,29 @@ interface ResumoLivroPlayerContextType {
 
 export const audioIdOf = (l: LivroNormalizado) => `resumo-livro-${l.id}`;
 
+const fallbackAudioRef: React.RefObject<HTMLAudioElement> = { current: null };
+
+const fallbackResumoContext: ResumoLivroPlayerContextType = {
+  livroAtual: null,
+  tocando: false,
+  tempo: 0,
+  dur: 0,
+  velocidade: 1,
+  aberto: false,
+  setAberto: () => {},
+  tocar: async () => {},
+  togglePlay: () => {},
+  seek: () => {},
+  setVelocidade: () => {},
+  fechar: () => {},
+  audioRef: fallbackAudioRef,
+};
+
 const Ctx = createContext<ResumoLivroPlayerContextType | undefined>(undefined);
 
 export function useResumoLivroPlayer() {
   const ctx = useContext(Ctx);
-  if (!ctx) throw new Error('useResumoLivroPlayer deve ser usado dentro de ResumoLivroPlayerProvider');
-  return ctx;
+  return ctx ?? fallbackResumoContext;
 }
 
 export const ResumoLivroPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {

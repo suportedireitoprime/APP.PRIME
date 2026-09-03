@@ -180,52 +180,49 @@ const App = () => (
       <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <AuthProvider>
           <ThemeProvider>
-            <Suspense fallback={null}>
-              <AppBootSplash />
-            </Suspense>
-            <TooltipProvider>
-              <SkipToContent />
-              <Sonner />
+            <RecordingProvider>
+              <LeisCantadasPlayerProvider>
+                <AudioaulasPlayerProvider>
+                  <PilulasPlayerProvider>
+                    <VideoaulasPlayerProvider>
+                      <ResumoLivroPlayerProvider>
+                        <Suspense fallback={null}>
+                          <AppBootSplash />
+                        </Suspense>
+                        <TooltipProvider>
+                          <SkipToContent />
+                          <Sonner />
 
-              <Analytics />
-              <SpeedInsights />
-              <Suspense fallback={null}>
-                <AnalyticsDebugPanel />
-              </Suspense>
+                          <Analytics />
+                          <SpeedInsights />
+                          <Suspense fallback={null}>
+                            <AnalyticsDebugPanel />
+                          </Suspense>
 
-              <OfflineStatusBadge />
-              <OfflineWatcher />
-              
-              <Suspense fallback={null}>
-                <GeofencePresenceBanner />
-                <ReminderInAppBanner />
-                <InAppPushPopup />
-                <HorusTakeoverNoticeDialog />
-                <HorusTrialEndedDialog />
-                <StfLiveBanner />
-              </Suspense>
-              <ForceUpdateWrapper />
-              {/* <IntroOverlay /> — desativado por preferência (splash estático) */}
-              <RecordingProvider>
-                <LeisCantadasPlayerProvider>
-                  <AudioaulasPlayerProvider>
-                    <PilulasPlayerProvider>
-                      <VideoaulasPlayerProvider>
-                        <ResumoLivroPlayerProvider>
+                          <OfflineStatusBadge />
+                          <OfflineWatcher />
+                          
+                          <Suspense fallback={null}>
+                            <GeofencePresenceBanner />
+                            <ReminderInAppBanner />
+                            <InAppPushPopup />
+                            <HorusTakeoverNoticeDialog />
+                            <HorusTrialEndedDialog />
+                            <StfLiveBanner />
+                          </Suspense>
+                          <ForceUpdateWrapper />
+                          
                           <Suspense fallback={<div className="min-h-screen bg-[#0D0D0D]" />}>
                             <AnimatedRoutes />
                           </Suspense>
                           <LazyMediaPlayers />
-                        </ResumoLivroPlayerProvider>
-                      </VideoaulasPlayerProvider>
-                    </PilulasPlayerProvider>
-                  </AudioaulasPlayerProvider>
-                </LeisCantadasPlayerProvider>
-              </RecordingProvider>
-
-
-
-            </TooltipProvider>
+                        </TooltipProvider>
+                      </ResumoLivroPlayerProvider>
+                    </VideoaulasPlayerProvider>
+                  </PilulasPlayerProvider>
+                </AudioaulasPlayerProvider>
+              </LeisCantadasPlayerProvider>
+            </RecordingProvider>
           </ThemeProvider>
         </AuthProvider>
       </Router>

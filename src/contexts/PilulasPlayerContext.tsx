@@ -23,12 +23,30 @@ interface PilulasPlayerContextType {
   fechar: () => void;
 }
 
+const fallbackRef: React.RefObject<HTMLAudioElement> = { current: null };
+
+const fallbackPilulasContext: PilulasPlayerContextType = {
+  livro: null,
+  isPlaying: false,
+  progress: 0,
+  introDuration: 0,
+  mainDuration: 0,
+  phase: 'intro',
+  unifiedDuration: 0,
+  introOverlap: 0,
+  audioIntroRef: fallbackRef,
+  audioMainRef: fallbackRef,
+  tocar: () => {},
+  togglePlay: () => {},
+  handleSeek: () => {},
+  fechar: () => {}
+};
+
 const Ctx = createContext<PilulasPlayerContextType | undefined>(undefined);
 
 export function usePilulasPlayer() {
   const ctx = useContext(Ctx);
-  if (!ctx) throw new Error('usePilulasPlayer deve ser usado dentro de PilulasPlayerProvider');
-  return ctx;
+  return ctx ?? fallbackPilulasContext;
 }
 
 export const PilulasPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {

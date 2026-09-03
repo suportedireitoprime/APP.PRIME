@@ -50,12 +50,37 @@ const lerFavoritos = (): Set<string> => {
 
 export const audioIdOf = (a: AulaAudio) => `audioaula-${a.id}`;
 
+const fallbackAudioRef: React.RefObject<HTMLAudioElement> = { current: null };
+
+const fallbackAudioaulasContext: AudioaulasPlayerContextType = {
+  aulas: [],
+  loading: false,
+  atualId: null,
+  atual: null,
+  atualIdx: -1,
+  tocando: false,
+  tempo: 0,
+  dur: 0,
+  velocidade: 1,
+  aberto: false,
+  fila: [],
+  favoritos: new Set(),
+  alternarFavorito: () => {},
+  setAberto: () => {},
+  tocar: async () => {},
+  togglePlay: () => {},
+  pular: () => {},
+  seek: () => {},
+  setVelocidade: () => {},
+  fechar: () => {},
+  audioRef: fallbackAudioRef,
+};
+
 const Ctx = createContext<AudioaulasPlayerContextType | undefined>(undefined);
 
 export function useAudioaulasPlayer() {
   const ctx = useContext(Ctx);
-  if (!ctx) throw new Error('useAudioaulasPlayer deve ser usado dentro de AudioaulasPlayerProvider');
-  return ctx;
+  return ctx ?? fallbackAudioaulasContext;
 }
 
 export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {

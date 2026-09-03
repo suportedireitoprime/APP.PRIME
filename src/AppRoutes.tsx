@@ -256,7 +256,6 @@ const QuestoesCadernos = lazy(() => import("./pages/QuestoesCadernos.tsx"));
 const QuestoesConquistas = lazy(() => import("./pages/QuestoesConquistas.tsx"));
 
 const QuestoesDesempenho = lazy(() => import("./pages/QuestoesDesempenho.tsx"));
-import { LazyMediaPlayers } from "./components/layout/LazyMediaPlayers.tsx";
 const ResumosJuridicosAreas = lazy(routePrefetch.resumosJuridicos);
 const ResumosJuridicosDesktop = lazy(() => import("./pages/resumos-juridicos/ResumosJuridicosDesktop.tsx"));
 const ResumosMaterias = lazy(() => import("./pages/resumos-juridicos/ResumosMaterias.tsx"));

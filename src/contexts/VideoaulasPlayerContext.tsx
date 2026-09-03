@@ -33,13 +33,28 @@ interface VideoaulasPlayerContextType {
   setDuracaoState: (v: number) => void;
 }
 
+const fallbackVideoaulasContext: VideoaulasPlayerContextType = {
+  atual: null,
+  tocando: false,
+  tempo: 0,
+  duracao: 0,
+  miniPlayerAberto: false,
+  tocarVideo: () => {},
+  togglePlay: () => {},
+  seek: () => {},
+  fechar: () => {},
+  setMiniPlayerAberto: () => {},
+  setTocandoState: () => {},
+  setTempoState: () => {},
+  setDuracaoState: () => {},
+};
+
 const Ctx = createContext<VideoaulasPlayerContextType | undefined>(undefined);
 
 // eslint-disable-next-line react-refresh/only-export-components
 export function useVideoaulasPlayer() {
   const ctx = useContext(Ctx);
-  if (!ctx) throw new Error('useVideoaulasPlayer deve ser usado dentro de VideoaulasPlayerProvider');
-  return ctx;
+  return ctx ?? fallbackVideoaulasContext;
 }
 
 export const VideoaulasPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {

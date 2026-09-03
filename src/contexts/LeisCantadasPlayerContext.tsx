@@ -24,12 +24,32 @@ interface LeisCantadasPlayerContextType {
   audioRef: React.RefObject<HTMLAudioElement>;
 }
 
+const fallbackAudioRef: React.RefObject<HTMLAudioElement> = { current: null };
+
+const fallbackLeisCantadasContext: LeisCantadasPlayerContextType = {
+  faixas: [],
+  loading: false,
+  atualId: null,
+  atual: null,
+  atualIdx: -1,
+  tocando: false,
+  tempo: 0,
+  dur: 0,
+  aberto: false,
+  setAberto: () => {},
+  tocar: async () => {},
+  togglePlay: () => {},
+  pular: () => {},
+  seek: () => {},
+  fechar: () => {},
+  audioRef: fallbackAudioRef,
+};
+
 const Ctx = createContext<LeisCantadasPlayerContextType | undefined>(undefined);
 
 export function useLeisCantadasPlayer() {
   const ctx = useContext(Ctx);
-  if (!ctx) throw new Error("useLeisCantadasPlayer deve estar dentro de LeisCantadasPlayerProvider");
-  return ctx;
+  return ctx ?? fallbackLeisCantadasContext;
 }
 
 export const LeisCantadasPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {

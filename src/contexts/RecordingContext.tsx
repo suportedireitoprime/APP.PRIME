@@ -305,10 +305,22 @@ export function RecordingProvider({ children }: { children: ReactNode }) {
   );
 }
 
+const fallbackRecordingContext: Ctx = {
+  status: 'idle',
+  elapsedMs: 0,
+  title: '',
+  setTitle: () => {},
+  liveText: '',
+  start: async () => {},
+  pause: async () => {},
+  resume: async () => {},
+  stop: async () => null,
+  cancel: async () => {},
+};
+
 export function useRecording() {
   const ctx = useContext(RecordingContext);
-  if (!ctx) throw new Error('useRecording deve ser usado dentro de RecordingProvider');
-  return ctx;
+  return ctx ?? fallbackRecordingContext;
 }
 
 export function formatHms(ms: number) {
