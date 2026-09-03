@@ -3,14 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { PageHeader } from '@/components/vademecum/PageHeader';
-import FlashcardsBottomNav from '@/components/flashcards/FlashcardsBottomNav';
-import { Calendar, ChevronRight, Flame, Search, Sparkles, Users, X, Layers, Target, BarChart3, FolderPlus, RotateCcw, Filter, BookOpen, Scale, Gavel, Quote, Lightbulb, Clock, History, Dices } from 'lucide-react';
+import { Calendar, ChevronRight, Flame, Search, Sparkles, Users, X, Layers, Target, BarChart3, FolderPlus, RotateCcw, Filter, BookOpen, Scale, Gavel, Quote, Lightbulb, Clock, History, Dices, Route, Trophy } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { haptic } from '@/lib/nativeHaptics';
 import FlashcardsCargoHero from '@/components/flashcards/FlashcardsCargoHero';
 import { useFlashcardsDashboard, useFlashcardsResumoAreas, FlashcardsAreaRow, FlashcardsDash } from '@/lib/flashcardsQueries';
 import FlashcardsFiltroSheet, { FlashcardsFiltro } from '@/components/flashcards/FlashcardsFiltroSheet';
-import { FlashcardsSegmentoSheet } from '@/components/flashcards/FlashcardsSegmentoSheet';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 
 
@@ -19,7 +17,6 @@ const Flashcards = () => {
   const { data: dash, isLoading: loadingDash } = useFlashcardsDashboard();
   const { data: areasRaw } = useFlashcardsResumoAreas();
 
-  const [segmentoAberto, setSegmentoAberto] = useState(false);
   const [filtroAberto, setFiltroAberto] = useState(false);
   const [diasFrequencia, setDiasFrequencia] = useState<7 | 15 | 30>(30);
   const [expandedFrequencia, setExpandedFrequencia] = useState(false);
@@ -35,7 +32,7 @@ const Flashcards = () => {
   const criticos = (dash?.temas_criticos ?? []).slice(0, 4);
 
   return (
-    <div className="min-h-dvh overflow-x-hidden bg-background pb-[calc(7rem+var(--sai-bottom))] lg:pb-[calc(3rem+var(--sai-bottom))]">
+    <div className="min-h-dvh overflow-x-hidden bg-background pb-[calc(2.5rem+var(--sai-bottom,0px))]">
       <div className="fixed inset-0 z-0 opacity-80 mix-blend-screen pointer-events-none">
         <ShapeGrid 
           speed={0.5} 
@@ -79,7 +76,7 @@ const Flashcards = () => {
             <motion.button
               whileHover={{ scale: 1.015 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => { haptic.selection(); setSegmentoAberto(true); }}
+              onClick={() => { haptic.selection(); setFiltroAberto(true); }}
               className="btn-attention-shine group mt-4 flex h-14 sm:h-16 min-h-[56px] w-full items-center justify-center gap-3 rounded-2xl bg-[#2C9570] hover:bg-[#237A5C] text-white text-base sm:text-lg font-black shadow-xl shadow-[#2C9570]/35 transition-colors focus-visible:outline-none border border-[#2C9570]/30"
             >
               <Filter className="h-6 w-6 text-white" strokeWidth={2} />
@@ -96,7 +93,7 @@ const Flashcards = () => {
               Recursos
             </p>
             <motion.div 
-              className="grid grid-cols-2 lg:grid-cols-4 gap-3"
+              className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-6 gap-3"
               initial="hidden"
               animate="show"
               variants={{
@@ -137,6 +134,42 @@ const Flashcards = () => {
                 </div>
                 <div className="flex flex-col items-center">
                   <span className="text-sm font-bold text-foreground">Revisão</span>
+                </div>
+              </motion.button>
+
+              <motion.button
+                variants={{
+                  hidden: { opacity: 0, y: 10 },
+                  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+                }}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => { haptic.selection(); navigate('/flashcards/trilhas'); }}
+                className="group flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#36AF85]/50 transition-colors focus-visible:outline-none"
+              >
+                <div className="flex items-center justify-center text-[#36AF85] group-hover:scale-110 transition-transform">
+                  <Route className="h-8 w-8" strokeWidth={1.5} />
+                </div>
+                <div className="flex flex-col items-center">
+                  <span className="text-sm font-bold text-foreground">Trilhas</span>
+                </div>
+              </motion.button>
+
+              <motion.button
+                variants={{
+                  hidden: { opacity: 0, y: 10 },
+                  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+                }}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => { haptic.selection(); navigate('/flashcards/desafios'); }}
+                className="group flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#36AF85]/50 transition-colors focus-visible:outline-none"
+              >
+                <div className="flex items-center justify-center text-[#36AF85] group-hover:scale-110 transition-transform">
+                  <Trophy className="h-8 w-8" strokeWidth={1.5} />
+                </div>
+                <div className="flex flex-col items-center">
+                  <span className="text-sm font-bold text-foreground">Desafios</span>
                 </div>
               </motion.button>
 
@@ -251,24 +284,6 @@ const Flashcards = () => {
         </div>
       </div>
 
-      <FlashcardsSegmentoSheet
-        aberto={segmentoAberto}
-        onFechar={() => setSegmentoAberto(false)}
-        onSelecionar={(segmento) => {
-          setSegmentoAberto(false);
-          // Pequeno delay para a animação de fechar não bugar a abertura da próxima
-          setTimeout(() => {
-            if (segmento === 'materias') {
-              setFiltroAberto(true);
-            } else if (segmento === 'leis') {
-              navigate('/flashcards/leis');
-            } else if (segmento === 'jurisprudencia') {
-              navigate('/flashcards/jurisprudencia');
-            }
-          }, 200);
-        }}
-      />
-
       <FlashcardsFiltroSheet
         aberto={filtroAberto}
         onFechar={() => setFiltroAberto(false)}
@@ -283,8 +298,6 @@ const Flashcards = () => {
           navigate(`/flashcards/estudar?${p.toString()}`);
         }}
       />
-
-      <FlashcardsBottomNav />
     </div>
   );
 };
