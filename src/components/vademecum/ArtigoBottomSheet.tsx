@@ -1282,6 +1282,42 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
     }
   }, [voiceGrifoActive]);
 
+  // No Android nativo, transfere a abertura para a Activity 100% nativa em Kotlin/Compose
+  useEffect(() => {
+    if (!artigo?.numero) return;
+    let cancel = false;
+
+    import('@capacitor/core').then(async ({ Capacitor }) => {
+      if (cancel) return;
+      if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android') {
+        try {
+          const { NativeVadeMecumPlugin } = await import('@/plugins/NativeVadeMecumPlugin');
+          await NativeVadeMecumPlugin.openArtigo({
+            id: artigo.id,
+            numero: String(artigo.numero),
+            caput: artigo.caput || '',
+            titulo: artigo.titulo || '',
+            tabelaNome: tabelaNome || '',
+            paragrafos: artigo.paragrafos || [],
+            incisos: artigo.incisos || [],
+            highlights: highlights.map(h => ({
+              id: h.id,
+              text: h.text,
+              color: h.color,
+              startOffset: h.startOffset,
+              endOffset: h.endOffset,
+            })),
+          });
+          onClose();
+        } catch (e) {
+          console.warn('Executando leitor web de fallback:', e);
+        }
+      }
+    }).catch(() => {});
+
+    return () => { cancel = true; };
+  }, [artigo?.id, artigo?.numero, tabelaNome, onClose]);
+
 
   // Reset magic highlights when artigo changes; se a preferência "mostrar
   // grifo por padrão" estiver ligada, o snapshot local é lido de forma
