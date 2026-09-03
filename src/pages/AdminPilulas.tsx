@@ -83,7 +83,8 @@ export default function AdminPilulas() {
     try {
       const { data, error } = await supabase
         .from('stf_ministros')
-        .select('id, nome, nome_completo, foto_url, diversos')
+        .select('id, nome, nome_completo, foto_url, diversos, status')
+        .eq('status', 'vigente')
         .order('nome');
       if (error) throw error;
       setMinistros(data || []);
