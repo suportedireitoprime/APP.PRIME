@@ -223,16 +223,6 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
   }, []);
 
 
-  if (items.length === 0) {
-    return (
-      <div>
-        <div className="flex gap-3 overflow-hidden px-4">
-          <div className="shrink-0 w-full h-[140px] rounded-2xl bg-card animate-pulse" />
-        </div>
-      </div>
-    );
-  }
-
   const kind = activeItem?.kind ?? 'noticia';
   const headerTitle =
     kind === 'blog'
@@ -452,6 +442,16 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
       })}
     </div>
   ), [items, activeIndex, handleOpen]);
+
+  if (items.length === 0) {
+    return (
+      <div>
+        <div className="flex gap-3 overflow-hidden px-4">
+          <div className="shrink-0 w-full h-[140px] rounded-2xl bg-card animate-pulse" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-2.5">
