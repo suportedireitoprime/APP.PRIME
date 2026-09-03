@@ -1814,47 +1814,47 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
       if (!sel || sel.isCollapsed || !sel.toString().trim()) return;
       const anchor = sel.anchorNode;
       if (!anchor || !containerRef.current?.contains(anchor)) return;
-      const newId = addHighlight();
-      if (newId && lastCreatedHlRef.current !== newId) {
-        lastCreatedHlRef.current = newId;
-        requestAnimationFrame(() => openCreatePrompt(newId));
-      }
+      addHighlight();
+      sel.removeAllRanges();
     }, 10);
-  }, [highlightMode, addHighlight, isMobile, openCreatePrompt, containerRef]);
+  }, [highlightMode, addHighlight, isMobile, containerRef]);
 
-  // Mobile: only fire when the user has FINISHED adjusting the selection.
-  // Uses `selectionchange` with a debounce so iOS/Android drag-handles don't
-  // trigger the annotation card mid-drag (which was the "grifo não funciona
-  // no mobile" bug — the card popped up before the user finished selecting).
+  // Mobile: Grifo fluido e nativo com o dedo.
+  // Aplica o grifo diretamente ao soltar o dedo ou quando a seleção estabiliza,
+  // limpando a seleção do navegador imediatamente para evitar menus web flutuantes.
   useEffect(() => {
     if (!highlightMode || !isMobile) return;
+
+    const commitHighlight = () => {
+      const sel = window.getSelection();
+      if (!sel || sel.isCollapsed) return;
+      const text = sel.toString().trim();
+      if (!text) return;
+      const anchor = sel.anchorNode;
+      if (!anchor || !containerRef.current?.contains(anchor)) return;
+      addHighlight();
+      sel.removeAllRanges();
+    };
+
     let timer: ReturnType<typeof setTimeout> | null = null;
     let lastText = '';
 
     const scheduleCommit = () => {
       if (timer) clearTimeout(timer);
-      timer = setTimeout(commitIfStable, 650);
+      timer = setTimeout(commitIfStable, 320);
     };
 
     const commitIfStable = () => {
-        const sel = window.getSelection();
-        if (!sel || sel.isCollapsed) return;
-        const text = sel.toString().trim();
-        if (!text) return;
-      // Wait until the selection is stable across two ticks before opening
-      // the annotation card — this is what makes drag-handles feel natural.
+      const sel = window.getSelection();
+      if (!sel || sel.isCollapsed) return;
+      const text = sel.toString().trim();
+      if (!text) return;
       if (text !== lastText) {
         lastText = text;
         scheduleCommit();
         return;
       }
-        const anchor = sel.anchorNode;
-        if (!anchor || !containerRef.current?.contains(anchor)) return;
-        const newId = addHighlight();
-        if (newId && lastCreatedHlRef.current !== newId) {
-          lastCreatedHlRef.current = newId;
-          requestAnimationFrame(() => openCreatePrompt(newId));
-        }
+      commitHighlight();
       lastText = '';
     };
 
@@ -1864,12 +1864,25 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
       scheduleCommit();
     };
 
+    const onTouchEnd = () => {
+      // Assim que o usuário tira o dedo da tela, consolida o grifo imediatamente
+      setTimeout(commitHighlight, 40);
+    };
+
+    const onContextMenu = (e: Event) => {
+      e.preventDefault();
+    };
+
     document.addEventListener('selectionchange', onSelChange);
+    document.addEventListener('touchend', onTouchEnd, { passive: true });
+    document.addEventListener('contextmenu', onContextMenu);
     return () => {
       document.removeEventListener('selectionchange', onSelChange);
+      document.removeEventListener('touchend', onTouchEnd);
+      document.removeEventListener('contextmenu', onContextMenu);
       if (timer) clearTimeout(timer);
     };
-  }, [highlightMode, isMobile, addHighlight, containerRef, openCreatePrompt]);
+  }, [highlightMode, isMobile, addHighlight, containerRef]);
 
 
   const handleScrollUp = useCallback(() => {
@@ -2554,7 +2567,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
           className={
             isDesktop
               ? "theme-vademecum-accent z-[9999] flex min-h-0 flex-col gap-0 overflow-hidden overscroll-contain rounded-2xl border border-white/5 bg-[#0f0f0f] p-0 shadow-2xl [&>button:last-child]:hidden top-[5%] bottom-[5%] inset-x-0 mx-auto max-w-[860px] h-[90dvh] max-h-[90dvh]"
-              : "theme-vademecum-accent z-[9999] flex min-h-0 flex-col gap-0 overflow-hidden overscroll-contain rounded-t-3xl border-t border-white/5 bg-[#0f0f0f] p-0 [&>button:last-child]:hidden top-auto bottom-0 h-[90dvh] max-h-[90dvh]"
+              : "theme-vademecum-accent z-[9999] flex min-h-0 flex-col gap-0 overflow-hidden overscroll-contain rounded-t-3xl border-t border-white/5 bg-[#0f0f0f] p-0 !pb-0 [&>button:last-child]:hidden top-auto bottom-0 h-[90dvh] max-h-[90dvh]"
           }
           onInteractOutside={(e) => {
             const t = e.target as HTMLElement | null;
@@ -2923,14 +2936,19 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
               <div
                 ref={containerRef}
                 className={`space-y-4 font-legal text-base ${highlightMode ? 'select-text cursor-text highlight-selectable' : ''}`}
-                style={highlightMode ? {
+                style={highlightMode ? ({
                   WebkitUserSelect: 'text',
                   userSelect: 'text',
-                  WebkitTouchCallout: 'default' as any,
-                  WebkitTapHighlightColor: selectedColor,
-                  ['--hl-selection' as any]: selectedColor,
-                } : undefined}
-
+                  WebkitTouchCallout: 'none',
+                  WebkitTapHighlightColor: 'transparent',
+                  '--hl-selection': selectedColor,
+                } as React.CSSProperties) : undefined}
+                onContextMenu={(e) => {
+                  if (highlightMode) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }
+                }}
                 onMouseUp={handleTextSelection}
               >
                 {displayLines.map((line, i) => renderLine(line, i, i === 0))}
@@ -3500,7 +3518,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
 
         {/* Bottom nav bar — only visible on "artigo" tab; fixed as a flex item below the scrollable area */}
         {(activeTab ?? 'artigo') === 'artigo' && !isDesktop && (
-        <div className="shrink-0 relative z-[55] bg-card/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-lg shadow-black/10 pb-[max(0.5rem,var(--sai-bottom))]">
+        <div className="shrink-0 relative z-[55] bg-nav-panel border-t border-white/10 rounded-t-2xl shadow-[0_-8px_30px_rgba(0,0,0,0.6)] pb-[calc(0.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
           <div className="relative grid grid-cols-5 items-end px-2 py-1 max-w-lg mx-auto">
             {(highlightMode || voiceGrifoActive) ? (
               <button

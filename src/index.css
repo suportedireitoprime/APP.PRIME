@@ -1158,22 +1158,23 @@ html.light .bg-\[\#212121\]\/95 { background-color: hsl(var(--card) / 0.95) !imp
   }
 }
 
-/* === Modo grifo manual: garante seleção nativa em mobile/WebView Capacitor === */
+/* === Modo grifo manual: fluido e nativo no mobile/WebView Capacitor === */
 .highlight-selectable,
 .highlight-selectable * {
   -webkit-user-select: text !important;
   -moz-user-select: text !important;
   -ms-user-select: text !important;
   user-select: text !important;
-  -webkit-touch-callout: default !important;
-  touch-action: pan-y !important; /* permite scroll vertical + long-press pra selecionar */
+  -webkit-touch-callout: none !important; /* Desativa menu web nativo do Android: Copiar / Selecionar tudo / Compartilhar */
+  -webkit-tap-highlight-color: transparent !important; /* Remove flash/retângulo colorido nativo do toque */
+  touch-action: pan-y !important; /* permite scroll vertical + arrastar com o dedo para grifar */
 }
 .highlight-selectable ::selection {
-  background: var(--hl-selection, rgba(239,68,68, 0.45));
+  background: var(--hl-selection, rgba(250, 204, 21, 0.42));
   color: inherit;
 }
 .highlight-selectable ::-moz-selection {
-  background: var(--hl-selection, rgba(239,68,68, 0.45));
+  background: var(--hl-selection, rgba(250, 204, 21, 0.42));
   color: inherit;
 }
 
