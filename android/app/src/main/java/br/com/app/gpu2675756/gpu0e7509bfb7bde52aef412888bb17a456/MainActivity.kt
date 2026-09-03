@@ -39,6 +39,7 @@ class MainActivity : BridgeActivity() {
         registerPlugin(NativeCorePlugin::class.java)
         registerPlugin(NativeAudioPlugin::class.java)
         registerPlugin(NativeFlashcardsPlugin::class.java)
+        registerPlugin(NativeQuestoesPlugin::class.java)
         registerPlugin(NativeVadeMecumPlugin::class.java)
         registerPlugin(NativeMeExpliquePlugin::class.java)
         registerPlugin(NativeAuthPlugin::class.java)
