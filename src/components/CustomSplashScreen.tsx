@@ -22,9 +22,13 @@ export function CustomSplashScreen({ onComplete }: { onComplete: () => void }) {
 
   return (
     <motion.div
-      initial={{ opacity: 1 }}
-      exit={{ opacity: 0, transition: { duration: 0.5, ease: 'easeInOut' } }}
-      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#0D0D0D] overflow-hidden select-none"
+      initial={{ opacity: 1, scale: 1 }}
+      exit={{ 
+        opacity: 0, 
+        scale: 1.035, 
+        transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } 
+      }}
+      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#0D0D0D] overflow-hidden select-none will-change-[transform,opacity]"
       style={{ transform: 'translateZ(0)' }}
     >
       {/* Iluminação de fundo estética e estática (0ms de custo de renderização contínua na GPU) */}
