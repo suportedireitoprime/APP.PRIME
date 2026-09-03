@@ -16,16 +16,44 @@ class NativeAuthPlugin : Plugin() {
     @PluginMethod
     fun openAuth(call: PluginCall) {
         val mode = call.getString("mode") ?: "login"
-        val intent = Intent(context, AuthNativeActivity::class.java).apply {
-            putExtra("mode", mode)
+        try {
+            val act = activity ?: context as? Activity
+            if (act == null) {
+                val ret = JSObject().apply { put("success", false) }
+                call.resolve(ret)
+                return
+            }
+            val intent = Intent(act, AuthNativeActivity::class.java).apply {
+                putExtra("mode", mode)
+            }
+            startActivityForResult(call, intent, "handleAuthResult")
+        } catch (e: Exception) {
+            val ret = JSObject().apply {
+                put("success", false)
+                put("error", e.message ?: "Falha ao abrir AuthNativeActivity")
+            }
+            call.resolve(ret)
         }
-        startActivityForResult(call, intent, "handleAuthResult")
     }
 
     @PluginMethod
     fun openLanding(call: PluginCall) {
-        val intent = Intent(context, LandingNativeActivity::class.java)
-        startActivityForResult(call, intent, "handleLandingResult")
+        try {
+            val act = activity ?: context as? Activity
+            if (act == null) {
+                val ret = JSObject().apply { put("success", false) }
+                call.resolve(ret)
+                return
+            }
+            val intent = Intent(act, LandingNativeActivity::class.java)
+            startActivityForResult(call, intent, "handleLandingResult")
+        } catch (e: Exception) {
+            val ret = JSObject().apply {
+                put("success", false)
+                put("error", e.message ?: "Falha ao abrir LandingNativeActivity")
+            }
+            call.resolve(ret)
+        }
     }
 
     @ActivityCallback
@@ -43,6 +71,7 @@ class NativeAuthPlugin : Plugin() {
         } else {
             val ret = JSObject().apply {
                 put("success", false)
+                put("cancelled", true)
             }
             call.resolve(ret)
         }

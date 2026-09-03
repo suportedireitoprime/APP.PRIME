@@ -832,14 +832,36 @@ const Auth = () => {
               <button
                 onClick={() => {
                   if (Capacitor.isNativePlatform()) {
-                    import('@/plugins/NativeAuthPlugin').then(({ NativeAuth }) => {
-                      NativeAuth.openAuth({ mode: 'login' });
-                    });
+                    import('@/plugins/NativeAuthPlugin')
+                      .then(({ NativeAuth }) => NativeAuth.openAuth({ mode: 'login' }))
+                      .then((res) => {
+                        if (res?.success && res.session) {
+                          try {
+                            const sessionObj = typeof res.session === 'string' ? JSON.parse(res.session) : res.session;
+                            if (sessionObj?.access_token && sessionObj?.refresh_token) {
+                              supabase.auth.setSession({
+                                access_token: sessionObj.access_token,
+                                refresh_token: sessionObj.refresh_token,
+                              }).then(() => navigate('/', { replace: true }));
+                              return;
+                            }
+                          } catch (e) {
+                            console.warn('[Auth] Erro ao restaurar sessão nativa:', e);
+                          }
+                        }
+                        if (!res?.success && !res?.cancelled) {
+                          setDrawerMode('login');
+                        }
+                      })
+                      .catch((err) => {
+                        console.warn('[NativeAuth] Erro no plugin nativo, abrindo gaveta React:', err);
+                        setDrawerMode('login');
+                      });
                     return;
                   }
                   setDrawerMode('login');
                 }}
-                className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-body font-bold text-[17px] shadow-[0_8px_32px_rgba(225,29,72,0.6)] active:scale-[0.98] transition-transform overflow-hidden relative shine-effect"
+                className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-body font-bold text-[17px] shadow-[0_8px_32px_rgba(225,29,72,0.6)] active:scale-[0.98] transition-transform overflow-hidden relative shine-effect cursor-pointer"
               >
                 <span className="relative z-10">Acessar conta</span>
               </button>
@@ -847,14 +869,36 @@ const Auth = () => {
               <button
                 onClick={() => {
                   if (Capacitor.isNativePlatform()) {
-                    import('@/plugins/NativeAuthPlugin').then(({ NativeAuth }) => {
-                      NativeAuth.openAuth({ mode: 'signup' });
-                    });
+                    import('@/plugins/NativeAuthPlugin')
+                      .then(({ NativeAuth }) => NativeAuth.openAuth({ mode: 'signup' }))
+                      .then((res) => {
+                        if (res?.success && res.session) {
+                          try {
+                            const sessionObj = typeof res.session === 'string' ? JSON.parse(res.session) : res.session;
+                            if (sessionObj?.access_token && sessionObj?.refresh_token) {
+                              supabase.auth.setSession({
+                                access_token: sessionObj.access_token,
+                                refresh_token: sessionObj.refresh_token,
+                              }).then(() => navigate('/', { replace: true }));
+                              return;
+                            }
+                          } catch (e) {
+                            console.warn('[Auth] Erro ao restaurar sessão nativa:', e);
+                          }
+                        }
+                        if (!res?.success && !res?.cancelled) {
+                          setDrawerMode('signup');
+                        }
+                      })
+                      .catch((err) => {
+                        console.warn('[NativeAuth] Erro no plugin nativo, abrindo gaveta React:', err);
+                        setDrawerMode('signup');
+                      });
                     return;
                   }
                   setDrawerMode('signup');
                 }}
-                className="w-full py-4 bg-black/40 backdrop-blur-lg border-2 border-white/20 text-white rounded-2xl font-body font-bold text-[17px] active:scale-[0.98] transition-all hover:bg-black/60 shadow-xl"
+                className="w-full py-4 bg-black/40 backdrop-blur-lg border-2 border-white/20 text-white rounded-2xl font-body font-bold text-[17px] active:scale-[0.98] transition-all hover:bg-black/60 shadow-xl cursor-pointer"
               >
                 Criar uma conta
               </button>
