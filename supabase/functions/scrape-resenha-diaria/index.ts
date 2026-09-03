@@ -270,45 +270,16 @@ Deno.serve(async (req) => {
 
       for (const ato of semTexto) {
         try {
-          // Força https
-          const atoUrl = (ato.url as string).replace(/^http:\/\//i, "https://");
-          let rawHtml = "";
+          const urlsToTry = [
+            (ato.url as string).trim(),
+            (ato.url as string).replace(/^http:\/\//i, "https://"),
+            (ato.url as string).replace(/^https:\/\//i, "http://"),
+          ];
 
-          // Strategy 1: Browserless /unblock (resolve desafio F5 anti-bot)
-          if (browserlessKey && !rawHtml) {
+          // Strategy 1 (PRIORITÁRIA): Direct fetch com decodificação Windows-1252 nativa
+          for (const url of urlsToTry) {
             try {
-              const brUrl = `https://production-sfo.browserless.io/unblock?token=${browserlessKey}`;
-              const resp = await fetch(brUrl, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ url: atoUrl, content: true, waitForTimeout: 10000, ttl: 60000 }),
-              });
-              if (resp.ok) {
-                const json = await resp.json().catch(() => null);
-                rawHtml = json?.content || "";
-                if (rawHtml.length > 500) console.log(`[scrape-resenha-diaria] Browserless OK (${rawHtml.length} chars) for ${ato.numero_ato}`);
-                else rawHtml = "";
-              }
-            } catch (e) { console.warn(`[scrape-resenha-diaria] Browserless failed for ${ato.id}:`, e); }
-          }
-
-          // Strategy 2: Jina Reader (retorna Markdown)
-          if (!rawHtml) {
-            try {
-              const jinaUrl = `https://r.jina.ai/${atoUrl}`;
-              const resp = await fetch(jinaUrl, { headers: { "Accept": "text/html", "X-Return-Format": "html" } });
-              if (resp.ok) {
-                rawHtml = await resp.text();
-                if (rawHtml.length > 500) console.log(`[scrape-resenha-diaria] Jina OK (${rawHtml.length} chars) for ${ato.numero_ato}`);
-                else rawHtml = "";
-              }
-            } catch (e) { console.warn(`[scrape-resenha-diaria] Jina failed for ${ato.id}:`, e); }
-          }
-
-          // Strategy 3: Direct fetch
-          if (!rawHtml) {
-            try {
-              const resp = await fetch(atoUrl, {
+              const resp = await fetch(url, {
                 redirect: "follow",
                 headers: {
                   "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36",
@@ -318,15 +289,60 @@ Deno.serve(async (req) => {
               });
               if (resp.ok) {
                 const buf = new Uint8Array(await resp.arrayBuffer());
-                try { rawHtml = new TextDecoder("utf-8", { fatal: true }).decode(buf); }
-                catch { rawHtml = new TextDecoder("iso-8859-1").decode(buf); }
-                if (rawHtml.length > 500) console.log(`[scrape-resenha-diaria] Direct OK (${rawHtml.length} chars) for ${ato.numero_ato}`);
-                else rawHtml = "";
+                let decoded = new TextDecoder("windows-1252").decode(buf);
+                if (decoded.includes("\uFFFD")) {
+                  try {
+                    const utf = new TextDecoder("utf-8", { fatal: true }).decode(buf);
+                    if (!utf.includes("\uFFFD")) decoded = utf;
+                  } catch {}
+                }
+                if (decoded.length > 200 && !decoded.includes("\uFFFD")) {
+                  rawHtml = decoded;
+                  console.log(`[scrape-resenha-diaria] Direct OK (${rawHtml.length} chars) for ${ato.numero_ato}`);
+                  break;
+                }
               }
-            } catch (e) { console.warn(`[scrape-resenha-diaria] Direct failed for ${ato.id}:`, e); }
+            } catch (e) {
+              console.warn(`[scrape-resenha-diaria] Direct failed for ${ato.id}:`, e);
+            }
           }
 
-          if (!rawHtml) { console.warn(`[scrape-resenha-diaria] Nenhuma estratégia retornou conteúdo para ${ato.numero_ato}`); continue; }
+          // Strategy 2: Browserless /unblock (resolve desafio F5 anti-bot)
+          if (browserlessKey && !rawHtml) {
+            try {
+              const brUrl = `https://production-sfo.browserless.io/unblock?token=${browserlessKey}`;
+              const resp = await fetch(brUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ url: (ato.url as string).replace(/^http:\/\//i, "https://"), content: true, waitForTimeout: 10000, ttl: 60000 }),
+              });
+              if (resp.ok) {
+                const json = await resp.json().catch(() => null);
+                const content = json?.content || "";
+                if (content.length > 200 && !content.includes("\uFFFD")) {
+                  rawHtml = content;
+                  console.log(`[scrape-resenha-diaria] Browserless OK (${rawHtml.length} chars) for ${ato.numero_ato}`);
+                }
+              }
+            } catch (e) { console.warn(`[scrape-resenha-diaria] Browserless failed for ${ato.id}:`, e); }
+          }
+
+          // Strategy 3: Jina Reader (apenas se íntegro sem caracteres corrompidos)
+          if (!rawHtml) {
+            try {
+              const jinaUrl = `https://r.jina.ai/${(ato.url as string).replace(/^http:\/\//i, "https://")}`;
+              const resp = await fetch(jinaUrl, { headers: { "Accept": "text/html", "X-Return-Format": "html" } });
+              if (resp.ok) {
+                const text = await resp.text();
+                if (text.length > 200 && !text.includes("\uFFFD")) {
+                  rawHtml = text;
+                  console.log(`[scrape-resenha-diaria] Jina OK (${rawHtml.length} chars) for ${ato.numero_ato}`);
+                }
+              }
+            } catch (e) { console.warn(`[scrape-resenha-diaria] Jina failed for ${ato.id}:`, e); }
+          }
+
+          if (!rawHtml) { console.warn(`[scrape-resenha-diaria] Nenhuma estratégia retornou conteúdo íntegro para ${ato.numero_ato}`); continue; }
 
           // ── Converter HTML/Markdown → texto plano limpo ──
           let src = rawHtml;

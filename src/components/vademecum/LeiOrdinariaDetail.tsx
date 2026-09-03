@@ -35,6 +35,8 @@ function normalizeLegislativeText(text: string): string {
       .replace(/<[^>]+>/g, '')
       .replace(/\u00A0/g, ' ')
       .replace(/\r/g, '')
+      .replace(/N\s*[\uFFFD]/gi, 'Nº')
+      .replace(/Vig[\uFFFD]ncia/gi, 'Vigência')
       .trim()
   );
 }
@@ -93,14 +95,17 @@ function normalizeArticleText(text: string): string {
 export function parseTextoCompleto(texto: string): ParsedLei {
   let clean = normalizeLegislativeText(texto);
   
-  const leiTitleMatch = clean.match(/(?:LEI|DECRETO)\s*\n*\s*N[ºo°]\s*[\d.]+[^\n]*/i);
+  const leiTitleMatch = clean.match(/(?:LEI\s+COMPLEMENTAR|LEI|DECRETO|MEDIDA\s+PROVIS[ÓO]RIA)\s*\n*\s*N[ºo°\uFFFD]?\s*[\d.]+[^\n]*/i);
   let titulo = '';
   
   if (leiTitleMatch) {
     const idx = clean.indexOf(leiTitleMatch[0]);
-    titulo = leiTitleMatch[0].replace(/\s+/g, ' ').trim();
+    titulo = leiTitleMatch[0].replace(/\s+/g, ' ').replace(/N[\uFFFD]?\s*/i, 'Nº ').trim();
     clean = clean.substring(idx + leiTitleMatch[0].length);
   }
+
+  // Remove rótulo de navegação do Planalto "Vigência"
+  clean = clean.replace(/^\s*Vig[êe]ncia\s*/i, '');
 
   let ementa = '';
   let preambulo = '';
@@ -108,7 +113,7 @@ export function parseTextoCompleto(texto: string): ParsedLei {
   
   if (presidenteMatch) {
     const presIdx = clean.indexOf(presidenteMatch[0]);
-    ementa = clean.substring(0, presIdx).replace(/\s+/g, ' ').trim();
+    ementa = clean.substring(0, presIdx).replace(/\s+/g, ' ').replace(/^Vig[êe]ncia\s*/i, '').trim();
     
     const afterPresidente = clean.substring(presIdx);
     const artMatch = afterPresidente.match(/Art\.\s*\d+[ºo°]?(?:-[A-Z])?\s/i);

@@ -29,16 +29,18 @@ const UA =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
   "(KHTML, like Gecko) Chrome/126.0 Safari/537.36";
 
-/** Decode Planalto bytes — most pages are ISO-8859-1 but a few are UTF-8. */
-function decodePlanalto(buf: ArrayBuffer, contentType: string | null): string {
+/** Decode Planalto bytes — Planalto uses Windows-1252 / ISO-8859-1 for almost all normative acts. */
+function decodePlanalto(buf: ArrayBuffer): string {
   const bytes = new Uint8Array(buf);
-  const asLatin1 = new TextDecoder("iso-8859-1").decode(bytes);
-  const declared = /charset=([\w-]+)/i.exec(contentType ?? "")?.[1]?.toLowerCase()
-    ?? /<meta[^>]+charset=["']?([\w-]+)/i.exec(asLatin1.slice(0, 4096))?.[1]?.toLowerCase();
-  if (declared && /utf-?8/.test(declared)) {
-    try { return new TextDecoder("utf-8", { fatal: false }).decode(bytes); } catch { /* fall through */ }
+  const asWin1252 = new TextDecoder("windows-1252").decode(bytes);
+  if (!asWin1252.includes("\uFFFD")) {
+    return asWin1252;
   }
-  return asLatin1;
+  try {
+    const asUtf8 = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+    if (!asUtf8.includes("\uFFFD")) return asUtf8;
+  } catch {}
+  return asWin1252;
 }
 
 /** Robust HTML -> plain text conversion tuned for Planalto ccivil pages. */
@@ -93,10 +95,41 @@ function cleanJinaMarkdown(rawText: string): string {
 }
 
 async function fetchPlanaltoText(rawUrl: string): Promise<{ text: string; finalUrl: string; status: number }> {
-  // Force https so http->https redirect works reliably from Deno.
-  const url = rawUrl.replace(/^http:\/\//i, "https://");
+  const urlsToTry = [
+    rawUrl.trim(),
+    rawUrl.replace(/^http:\/\//i, "https://"),
+    rawUrl.replace(/^https:\/\//i, "http://"),
+  ];
 
-  // Strategy 1: Browserless /unblock (se chave configurada)
+  // Strategy 1 (PRIORITÁRIA): Direct fetch com decodificação Windows-1252 nativa
+  for (const url of urlsToTry) {
+    try {
+      const res = await fetch(url, {
+        redirect: "follow",
+        signal: AbortSignal.timeout(12000),
+        headers: {
+          "User-Agent": UA,
+          "Accept": "text/html,application/xhtml+xml",
+          "Accept-Language": "pt-BR,pt;q=0.9",
+        },
+      });
+      if (res.ok) {
+        const buf = await res.arrayBuffer();
+        const html = decodePlanalto(buf);
+        const text = htmlToText(html);
+        if (text.length >= 100 && !text.includes("\uFFFD")) {
+          console.log(`[popular-texto-resenha] Direct fetch OK (${text.length} chars)`);
+          return { text, finalUrl: res.url, status: res.status };
+        }
+      }
+    } catch (e) {
+      console.warn(`[popular-texto-resenha] Direct fetch failed for ${url}:`, e);
+    }
+  }
+
+  const primaryUrl = rawUrl.replace(/^http:\/\//i, "https://");
+
+  // Strategy 2: Browserless /unblock (se chave configurada)
   const browserlessKey = Deno.env.get("BROWSERLESS_API_KEY");
   if (browserlessKey) {
     try {
@@ -104,16 +137,16 @@ async function fetchPlanaltoText(rawUrl: string): Promise<{ text: string; finalU
       const resp = await fetch(brUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        signal: AbortSignal.timeout(12000),
-        body: JSON.stringify({ url, content: true, waitForTimeout: 10000, ttl: 60000 }),
+        signal: AbortSignal.timeout(15000),
+        body: JSON.stringify({ url: primaryUrl, content: true, waitForTimeout: 10000, ttl: 60000 }),
       });
       if (resp.ok) {
         const json = await resp.json().catch(() => null);
         const html = json?.content || "";
         const text = htmlToText(html);
-        if (text.length >= 200) {
+        if (text.length >= 100 && !text.includes("\uFFFD")) {
           console.log(`[popular-texto-resenha] Browserless OK (${text.length} chars)`);
-          return { text, finalUrl: url, status: 200 };
+          return { text, finalUrl: primaryUrl, status: 200 };
         }
       }
     } catch (e) {
@@ -121,9 +154,9 @@ async function fetchPlanaltoText(rawUrl: string): Promise<{ text: string; finalU
     }
   }
 
-  // Strategy 2: Jina Reader (funciona mesmo com desafio F5 do Planalto)
+  // Strategy 3: Jina Reader (apenas se o texto vier íntegro sem caracteres corrompidos)
   try {
-    const jinaUrl = `https://r.jina.ai/${url}`;
+    const jinaUrl = `https://r.jina.ai/${primaryUrl}`;
     const resp = await fetch(jinaUrl, {
       headers: { "Accept": "text/html", "X-Return-Format": "html" },
       signal: AbortSignal.timeout(12000),
@@ -131,40 +164,16 @@ async function fetchPlanaltoText(rawUrl: string): Promise<{ text: string; finalU
     if (resp.ok) {
       const rawText = await resp.text();
       const text = cleanJinaMarkdown(rawText);
-      if (text.length >= 200) {
+      if (text.length >= 100 && !text.includes("\uFFFD")) {
         console.log(`[popular-texto-resenha] Jina Reader OK (${text.length} chars)`);
-        return { text, finalUrl: url, status: 200 };
+        return { text, finalUrl: primaryUrl, status: 200 };
       }
     }
   } catch (e) {
     console.warn("[popular-texto-resenha] Jina Reader failed:", e);
   }
 
-  // Strategy 3: Direct fetch (fallback)
-  try {
-    const res = await fetch(url, {
-      redirect: "follow",
-      signal: AbortSignal.timeout(12000),
-      headers: {
-        "User-Agent": UA,
-        "Accept": "text/html,application/xhtml+xml",
-        "Accept-Language": "pt-BR,pt;q=0.9",
-      },
-    });
-    if (res.ok) {
-      const buf = await res.arrayBuffer();
-      const html = decodePlanalto(buf, res.headers.get("content-type"));
-      const text = htmlToText(html);
-      if (text.length >= 200) {
-        console.log(`[popular-texto-resenha] Direct fetch OK (${text.length} chars)`);
-        return { text, finalUrl: res.url, status: res.status };
-      }
-    }
-  } catch (e) {
-    console.warn("[popular-texto-resenha] Direct fetch failed:", e);
-  }
-
-  return { text: "", finalUrl: url, status: 500 };
+  return { text: "", finalUrl: primaryUrl, status: 500 };
 }
 
 async function gerarExplicacao(numero: string, tipo: string, texto: string): Promise<string | null> {
