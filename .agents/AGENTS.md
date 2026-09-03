@@ -1,5 +1,11 @@
 # Diretivas do Projeto & Skills Nativas Incorporadas
 
+## 📱 Regra Suprema: Código 100% Nativo no Mobile (Kotlin & Swift) vs Web/Desktop
+- **OBRIGATÓRIO:** Toda e qualquer nova função, tela, correção ou recurso que for implementado DEVE ser desenvolvido de forma **100% NATIVA em Kotlin (Jetpack Compose) para Android** e em **Swift (SwiftUI) para iOS**.
+- **Builds Mobile:** Quando for realizada a build do Android (`.apk` / `.aab`) e do iOS (`.ipa`), toda a experiência móvel deve rodar em código nativo puro, garantindo fluidez a 120fps, latência zero de toque e sem dependência de WebView nessas telas.
+- **Web & Desktop:** Manter a implementação correspondente em React/TypeScript protegida e funcional para usuários que acessarem a versão Web e Desktop no navegador.
+- **Ponte Capacitor:** A camada TypeScript atua como ponto de entrada que redireciona via plugins Capacitor (`Capacitor.isNativePlatform()`) diretamente para as Activities/Views nativas no mobile.
+
 ## Git & GitHub (Auto-Commit & Push 100% Automático)
 - **REGRA SUPREMA DE VERSIONAMENTO:** Toda vez que qualquer alteração no código for finalizada com sucesso (criação, correção, refatoração), você **JÁ DEVE ENVIAR para o GitHub AUTOMATICAMENTE**, sem esperar que o usuário peça. O objetivo é engatilhar a build (Vercel/etc) instantaneamente.
 - **Comando no PowerShell:** O PowerShell no Windows não aceita `&&`. Use ponto e vírgula (`;`) para encadear os comandos na mesma linha, exemplo:
