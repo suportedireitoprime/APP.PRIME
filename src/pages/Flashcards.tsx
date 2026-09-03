@@ -12,6 +12,13 @@ import FlashcardsFiltroSheet, { FlashcardsFiltro } from '@/components/flashcards
 import ShapeGrid from '@/components/ui/ShapeGrid';
 
 
+const ATALHOS_FLASHCARDS_4 = [
+  { id: 'historico', label: 'Histórico', desc: 'Sessões salvas', icon: History, route: '/flashcards/historico' },
+  { id: 'decks', label: 'Decks', desc: 'Seus baralhos', icon: FolderPlus, route: '/flashcards/decks' },
+  { id: 'revisar', label: 'Revisão', desc: 'Volte no que errou', icon: RotateCcw, route: '/flashcards/revisar' },
+  { id: 'desempenho', label: 'Desempenho', desc: 'Estatísticas', icon: BarChart3, route: '/flashcards/progresso' },
+];
+
 const Flashcards = () => {
   const navigate = useNavigate();
   const { data: dash, isLoading: loadingDash } = useFlashcardsDashboard();
@@ -87,128 +94,78 @@ const Flashcards = () => {
 
 
 
-          {/* ── Recursos (Antigas Categorias) ───────────────────── */}
+          {/* ── 4 Cards (Histórico, Decks, Revisão, Desempenho) ── */}
+          <motion.div 
+            className="grid grid-cols-4 gap-2.5"
+            initial="hidden"
+            animate="show"
+            variants={{
+              hidden: { opacity: 0 },
+              show: { opacity: 1, transition: { staggerChildren: 0.05 } }
+            }}
+          >
+            {ATALHOS_FLASHCARDS_4.map((a) => {
+              const Icon = a.icon;
+              return (
+                <motion.button
+                  key={a.id}
+                  variants={{
+                    hidden: { opacity: 0, y: 10 },
+                    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+                  }}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => { haptic.selection(); navigate(a.route); }}
+                  className="group flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#36AF85]/50 transition-colors gap-2 text-center focus-visible:outline-none"
+                >
+                  <div className="relative w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center">
+                    <Icon className="w-6 h-6 sm:w-7 sm:h-7 text-[#36AF85] transition-all duration-300 group-hover:scale-110" strokeWidth={1.8} />
+                  </div>
+                  <div>
+                    <p className="text-xs font-extrabold text-foreground leading-tight">{a.label}</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5 hidden sm:block">{a.desc}</p>
+                  </div>
+                </motion.button>
+              );
+            })}
+          </motion.div>
+
+          {/* ── Recursos (Trilhas e Desafios um do lado do outro) ───────────────────── */}
           <section className="space-y-3 pt-2">
             <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
               Recursos
             </p>
-            <motion.div 
-              className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-6 gap-3"
-              initial="hidden"
-              animate="show"
-              variants={{
-                hidden: { opacity: 0 },
-                show: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.1 } }
-              }}
-            >
+            <div className="grid grid-cols-2 gap-3">
               <motion.button
-                variants={{
-                  hidden: { opacity: 0, y: 10 },
-                  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
-                }}
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => { haptic.selection(); navigate('/flashcards/progresso'); }}
-                className="group flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#36AF85]/50 transition-colors focus-visible:outline-none"
-              >
-                <div className="flex items-center justify-center text-[#36AF85] group-hover:scale-110 transition-transform">
-                  <BarChart3 className="h-8 w-8" strokeWidth={1.5} />
-                </div>
-                <div className="flex flex-col items-center">
-                  <span className="text-sm font-bold text-foreground">Progresso</span>
-                </div>
-              </motion.button>
-
-              <motion.button
-                variants={{
-                  hidden: { opacity: 0, y: 10 },
-                  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
-                }}
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => { haptic.selection(); navigate('/flashcards/revisar'); }}
-                className="group flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#36AF85]/50 transition-colors focus-visible:outline-none"
-              >
-                <div className="flex items-center justify-center text-[#36AF85] group-hover:scale-110 transition-transform">
-                  <RotateCcw className="h-8 w-8" strokeWidth={1.5} />
-                </div>
-                <div className="flex flex-col items-center">
-                  <span className="text-sm font-bold text-foreground">Revisão</span>
-                </div>
-              </motion.button>
-
-              <motion.button
-                variants={{
-                  hidden: { opacity: 0, y: 10 },
-                  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
-                }}
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.96 }}
                 onClick={() => { haptic.selection(); navigate('/flashcards/trilhas'); }}
-                className="group flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#36AF85]/50 transition-colors focus-visible:outline-none"
+                className="group flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#36AF85]/50 transition-all focus-visible:outline-none text-center"
               >
                 <div className="flex items-center justify-center text-[#36AF85] group-hover:scale-110 transition-transform">
                   <Route className="h-8 w-8" strokeWidth={1.5} />
                 </div>
                 <div className="flex flex-col items-center">
                   <span className="text-sm font-bold text-foreground">Trilhas</span>
+                  <span className="text-[10px] text-muted-foreground mt-0.5 hidden sm:block">Guiadas passo a passo</span>
                 </div>
               </motion.button>
 
               <motion.button
-                variants={{
-                  hidden: { opacity: 0, y: 10 },
-                  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
-                }}
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.96 }}
                 onClick={() => { haptic.selection(); navigate('/flashcards/desafios'); }}
-                className="group flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#36AF85]/50 transition-colors focus-visible:outline-none"
+                className="group flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#36AF85]/50 transition-all focus-visible:outline-none text-center"
               >
                 <div className="flex items-center justify-center text-[#36AF85] group-hover:scale-110 transition-transform">
                   <Trophy className="h-8 w-8" strokeWidth={1.5} />
                 </div>
                 <div className="flex flex-col items-center">
                   <span className="text-sm font-bold text-foreground">Desafios</span>
+                  <span className="text-[10px] text-muted-foreground mt-0.5 hidden sm:block">Em linha do tempo</span>
                 </div>
               </motion.button>
-
-              <motion.button
-                variants={{
-                  hidden: { opacity: 0, y: 10 },
-                  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
-                }}
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => { haptic.selection(); navigate('/flashcards/decks'); }}
-                className="group flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#36AF85]/50 transition-colors focus-visible:outline-none"
-              >
-                <div className="flex items-center justify-center text-[#36AF85] group-hover:scale-110 transition-transform">
-                  <FolderPlus className="h-8 w-8" strokeWidth={1.5} />
-                </div>
-                <div className="flex flex-col items-center">
-                  <span className="text-sm font-bold text-foreground">Decks</span>
-                </div>
-              </motion.button>
-
-              <motion.button
-                variants={{
-                  hidden: { opacity: 0, y: 10 },
-                  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
-                }}
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => { haptic.selection(); navigate('/flashcards/historico'); }}
-                className="group flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#36AF85]/50 transition-colors focus-visible:outline-none"
-              >
-                <div className="flex items-center justify-center text-[#36AF85] group-hover:scale-110 transition-transform">
-                  <History className="h-8 w-8" strokeWidth={1.5} />
-                </div>
-                <div className="flex flex-col items-center">
-                  <span className="text-sm font-bold text-foreground">Histórico</span>
-                </div>
-              </motion.button>
-            </motion.div>
+            </div>
           </section>
 
           {/* ── Atividade Recente (Heatmap SRS) ───────────────────── */}
