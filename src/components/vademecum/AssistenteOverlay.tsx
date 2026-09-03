@@ -3,8 +3,8 @@ import { PageHeader } from '@/components/vademecum/PageHeader';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Send, Sparkles, Plus, Globe, History as HistoryIcon,
-  FileDown, Layers, HelpCircle, GitBranch, Paperclip, X, Check, Loader2, Zap, FileText, Image as ImageIcon,
-  BookOpen, Share2, Scale, Mic, Camera, Music, Brain, ChevronRight,
+  FileDown, Layers, HelpCircle, GitBranch, Paperclip, X, Check, Loader2, Zap, Image as ImageIcon,
+  BookOpen, Share2, Scale, Mic, Camera, Brain, ChevronRight,
 } from 'lucide-react';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
 import ReactMarkdown from 'react-markdown';
@@ -33,6 +33,8 @@ import { useFeatureLimit } from '@/hooks/useFeatureLimit';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 import { baixarBlob } from '@/lib/nativo';
 import { haptic } from '@/lib/nativeHaptics';
+import { Capacitor } from '@capacitor/core';
+import { takePhoto } from '@/lib/nativeCamera';
 
 
 type ArtifactKind = 'flashcards' | 'questoes' | 'mapa' | 'termos';
@@ -232,14 +234,51 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
     if (id === sessionId) newSession();
   };
 
+  const handleTirarFoto = async () => {
+    if (!podeUsarPremium) {
+      setGateFeature('chat_anexo');
+      return;
+    }
+
+    if (Capacitor.isNativePlatform()) {
+      try {
+        const res = await takePhoto({ source: 'camera', quality: 80 });
+        if (res.ok && res.base64) {
+          const mime = `image/${res.format || 'jpeg'}`;
+          setAttachment({
+            mime,
+            data: res.base64,
+            name: `foto-${Date.now()}.${res.format || 'jpg'}`,
+          });
+          setAttachOpen(false);
+          haptic.notification();
+          toast.success('Foto anexada com sucesso');
+          return;
+        } else if (res.reason && !/cancel/i.test(res.reason)) {
+          console.warn('[Camera] Erro na câmera nativa:', res.reason);
+        }
+      } catch (e) {
+        console.warn('[Camera] Falha ao acionar câmera nativa:', e);
+      }
+    }
+
+    // Fallback Web / Desktop
+    const el = fileInputRef.current;
+    if (el) {
+      el.setAttribute('accept', 'image/*');
+      el.setAttribute('capture', 'environment');
+      el.click();
+    }
+  };
+
   const handleFile = async (file: File) => {
     if (file.size > 8 * 1024 * 1024) { toast.error('Arquivo maior que 8MB'); return; }
     const reader = new FileReader();
     reader.onloadend = () => {
       const base64String = (reader.result as string).split(',')[1];
-      setAttachment({ mime: file.type || 'application/octet-stream', data: base64String, name: file.name });
+      setAttachment({ mime: file.type || 'image/jpeg', data: base64String, name: file.name });
       setAttachOpen(false);
-      toast.success('Documento anexado');
+      toast.success('Foto anexada com sucesso');
     };
     reader.onerror = () => toast.error('Erro ao processar arquivo');
     reader.readAsDataURL(file);
@@ -893,7 +932,7 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
                   </button>
                 )}
               </div>
-              <input ref={fileInputRef} type="file" hidden onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ''; }} />
+              <input ref={fileInputRef} type="file" accept="image/*" capture="environment" hidden onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ''; }} />
             </div>
             
             {!isDesktop && (
@@ -916,7 +955,7 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
             </div>
           )}
 
-          {/* Menu flutuante do + (Câmera, PDF, Áudio) */}
+          {/* Menu flutuante do + (Apenas Câmera / Tirar Foto) */}
           <AnimatePresence>
             {attachOpen && (
               <>
@@ -932,68 +971,20 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
                   className="fixed left-3 z-[69] bg-card border border-border rounded-2xl shadow-2xl p-2 flex flex-col gap-1 min-w-[200px]"
                   style={{ bottom: 'calc(9.5rem + var(--sai-bottom))' }}
                 >
-                  {[
-                    {
-                      key: 'camera',
-                      icon: Camera,
-                      color: 'text-sky-400',
-                      label: 'Câmera',
-                      hint: 'Tirar foto',
-                      onClick: () => {
-                        setAttachOpen(false);
-                        const el = fileInputRef.current;
-                        if (!el) return;
-                        el.setAttribute('accept', 'image/*');
-                        el.setAttribute('capture', 'environment');
-                        el.click();
-                      },
-                    },
-                    {
-                      key: 'pdf',
-                      icon: FileText,
-                      color: 'text-rose-400',
-                      label: 'PDF',
-                      hint: 'Anexar documento',
-                      onClick: () => {
-                        setAttachOpen(false);
-                        const el = fileInputRef.current;
-                        if (!el) return;
-                        el.setAttribute('accept', 'application/pdf');
-                        el.removeAttribute('capture');
-                        el.click();
-                      },
-                    },
-                    {
-                      key: 'audio',
-                      icon: Music,
-                      color: 'text-amber-400',
-                      label: 'Áudio',
-                      hint: 'Anexar áudio',
-                      onClick: () => {
-                        setAttachOpen(false);
-                        const el = fileInputRef.current;
-                        if (!el) return;
-                        el.setAttribute('accept', 'audio/*');
-                        el.removeAttribute('capture');
-                        el.click();
-                      },
-                    },
-                  ].map(opt => {
-                    const Icon = opt.icon;
-                    return (
-                      <button
-                        key={opt.key}
-                        onClick={() => { haptic.light(); opt.onClick(); }}
-                        className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-colors text-left"
-                      >
-                        <Icon className={`w-[26px] h-[26px] ${opt.color}`} strokeWidth={1.5} />
-                        <span className="flex-1">
-                          <span className="block text-[15px] font-body font-semibold text-foreground tracking-tight">{opt.label}</span>
-                          <span className="block text-[11px] text-muted-foreground/70">{opt.hint}</span>
-                        </span>
-                      </button>
-                    );
-                  })}
+                  <button
+                    onClick={() => {
+                      haptic.light();
+                      setAttachOpen(false);
+                      void handleTirarFoto();
+                    }}
+                    className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-white/5 active:bg-white/10 transition-colors text-left"
+                  >
+                    <Camera className="w-[26px] h-[26px] text-sky-400" strokeWidth={1.5} />
+                    <span className="flex-1">
+                      <span className="block text-[15px] font-body font-semibold text-foreground tracking-tight">Câmera</span>
+                      <span className="block text-[11px] text-muted-foreground/70">Tirar foto</span>
+                    </span>
+                  </button>
                 </motion.div>
               </>
             )}
