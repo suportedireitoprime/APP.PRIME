@@ -2,8 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Capacitor } from '@capacitor/core';
-import { NativeFlashcardsPlugin } from '@/plugins/NativeFlashcardsPlugin';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import FlashcardsBottomNav from '@/components/flashcards/FlashcardsBottomNav';
 import { Calendar, ChevronRight, Flame, Search, Sparkles, Users, X, Layers, Target, BarChart3, FolderPlus, RotateCcw, Filter, BookOpen, Scale, Gavel, Quote, Lightbulb, Clock, History, Dices } from 'lucide-react';
@@ -28,17 +26,6 @@ const Flashcards = () => {
   // SEO & Título dinâmico
   useEffect(() => {
     document.title = 'Flashcards | Vade Mecum PRIME';
-    const checkNative = async () => {
-      if (Capacitor.isNativePlatform()) {
-        const { data } = await supabase.auth.getSession();
-        NativeFlashcardsPlugin.openDashboard({ 
-          userId: 'default',
-          accessToken: data.session?.access_token,
-          refreshToken: data.session?.refresh_token
-        });
-      }
-    };
-    checkNative();
   }, []);
 
   const pct = dash && dash.total_cards ? Math.round((dash.compreendidos / dash.total_cards) * 100) : 0;
