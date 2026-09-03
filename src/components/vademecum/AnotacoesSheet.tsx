@@ -87,7 +87,7 @@ function notesFromHighlights(value: unknown): Anotacao[] {
   return value.flatMap((item, index) => {
     const highlight = item as SavedHighlight;
     const comment = String(highlight.comment || highlight.comentario || '').trim();
-    if (!comment || highlight.origem !== 'ia') return [];
+    if (!comment) return [];
     return [{
       id: `highlight:${highlight.id || index}`,
       anotacao: comment,

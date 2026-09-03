@@ -50,13 +50,7 @@ const GrifoEraseSheet = ({ open, onClose, highlights, onRemoveByColor, onClearAl
 
   return createPortal(
     <AnimatePresence>
-      <div 
-        className="fixed inset-0 z-[10050] flex items-center justify-center p-4 sm:p-6 pointer-events-auto"
-        onPointerDown={(e) => e.stopPropagation()}
-        onTouchStart={(e) => e.stopPropagation()}
-        onTouchMove={(e) => e.stopPropagation()}
-        onTouchEnd={(e) => e.stopPropagation()}
-      >
+      <div className="fixed inset-0 z-[10050] flex items-center justify-center p-4 sm:p-6 pointer-events-auto">
         {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
