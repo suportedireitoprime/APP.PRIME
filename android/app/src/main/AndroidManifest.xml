@@ -32,6 +32,20 @@
             android:exported="false"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode" />
 
+        <activity
+            android:name=".AuthNativeActivity"
+            android:label="Autenticação"
+            android:theme="@style/AppTheme"
+            android:exported="false"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode" />
+
+        <activity
+            android:name=".LandingNativeActivity"
+            android:label="Direito Prime"
+            android:theme="@style/AppTheme"
+            android:exported="false"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

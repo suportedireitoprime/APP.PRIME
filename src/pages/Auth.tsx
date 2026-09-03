@@ -619,6 +619,50 @@ const Auth = () => {
     }
   }, [loading, user, navigate]);
 
+  // Se for nativo (Android/iOS), aciona a tela 100% nativa (Jetpack Compose / SwiftUI)
+  useEffect(() => {
+    if (Capacitor.isNativePlatform() && !user) {
+      let handle: any;
+      import('@/plugins/NativeAuthPlugin').then(({ NativeAuth }) => {
+        NativeAuth.addListener('onAuthSuccess', async (data) => {
+          if (data?.session) {
+            try {
+              const sessionObj = typeof data.session === 'string' ? JSON.parse(data.session) : data.session;
+              if (sessionObj?.access_token && sessionObj?.refresh_token) {
+                await supabase.auth.setSession({
+                  access_token: sessionObj.access_token,
+                  refresh_token: sessionObj.refresh_token,
+                });
+              }
+            } catch (e) {
+              console.warn('[Auth] Erro ao restaurar sessão nativa:', e);
+            }
+            navigate('/', { replace: true });
+          }
+        }).then((h) => { handle = h; });
+
+        NativeAuth.openAuth({ mode: 'login' }).then(async (res) => {
+          if (res?.success && res.session) {
+            try {
+              const sessionObj = typeof res.session === 'string' ? JSON.parse(res.session) : res.session;
+              if (sessionObj?.access_token && sessionObj?.refresh_token) {
+                await supabase.auth.setSession({
+                  access_token: sessionObj.access_token,
+                  refresh_token: sessionObj.refresh_token,
+                });
+              }
+            } catch (e) {
+              console.warn('[Auth] Erro ao restaurar sessão nativa:', e);
+            }
+            navigate('/', { replace: true });
+          }
+        }).catch(() => {});
+      }).catch(() => {});
+
+      return () => { handle?.remove?.(); };
+    }
+  }, [navigate, user]);
+
   // Pré-aquece a Home/Dashboard assim que o usuário entra na tela de Auth,
   // garantindo transição instantânea e sem telas pretas após o login.
   useEffect(() => {
@@ -786,14 +830,30 @@ const Auth = () => {
               className="flex flex-col gap-3 w-full"
             >
               <button
-                onClick={() => setDrawerMode('login')}
+                onClick={() => {
+                  if (Capacitor.isNativePlatform()) {
+                    import('@/plugins/NativeAuthPlugin').then(({ NativeAuth }) => {
+                      NativeAuth.openAuth({ mode: 'login' });
+                    });
+                    return;
+                  }
+                  setDrawerMode('login');
+                }}
                 className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-body font-bold text-[17px] shadow-[0_8px_32px_rgba(225,29,72,0.6)] active:scale-[0.98] transition-transform overflow-hidden relative shine-effect"
               >
                 <span className="relative z-10">Acessar conta</span>
               </button>
               
               <button
-                onClick={() => setDrawerMode('signup')}
+                onClick={() => {
+                  if (Capacitor.isNativePlatform()) {
+                    import('@/plugins/NativeAuthPlugin').then(({ NativeAuth }) => {
+                      NativeAuth.openAuth({ mode: 'signup' });
+                    });
+                    return;
+                  }
+                  setDrawerMode('signup');
+                }}
                 className="w-full py-4 bg-black/40 backdrop-blur-lg border-2 border-white/20 text-white rounded-2xl font-body font-bold text-[17px] active:scale-[0.98] transition-all hover:bg-black/60 shadow-xl"
               >
                 Criar uma conta
