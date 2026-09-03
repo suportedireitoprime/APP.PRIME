@@ -246,8 +246,6 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
       : kind === 'livro'
       ? 'clássicos e obras do Direito'
       : 'notícias do mundo jurídico em tempo real';
-  return (
-    <div className="space-y-2.5">
   const renderedTitle = useMemo(() => (
     <div className="px-5 h-[64px] relative">
       <AnimatePresence mode="popLayout" initial={false}>
