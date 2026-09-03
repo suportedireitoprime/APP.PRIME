@@ -69,6 +69,11 @@
 - **Gamificação Viva:** Header com XP/Streak em tempo real e animações de vitória ao concluir etapas.
 - **Tipografia e Espaçamento:** Em títulos de seções importantes (ex: "PÍLULAS DE CÓDIGOS", "CLÁSSICOS DO DIREITO"), utilizar SEMPRE um espaçamento de letras maior (ex: `tracking-widest` no Tailwind) para garantir a legibilidade. Nunca deixar as letras justapostas em títulos uppercase.
 
+### 8. 📱 100% Nativas em Jetpack Compose e SwiftUI (`nativas-compose-e-swiftui`)
+- **Arquitetura 100% Nativa Dual-Stack:** Telas críticas de alta performance (como leitura de artigos do Vade Mecum e áudio) construídas em **Jetpack Compose** no Android (`ArtigoNativeActivity.kt`) e **SwiftUI** no iOS (`ArtigoView.swift`), operando a 120fps sem sobrecarga de DOM.
+- **Ponte Capacitor Reativa:** Acionamento assíncrono via `NativeVadeMecumPlugin` com serialização de grifos táteis e retorno via `onHighlightsUpdated`.
+- **Áudio Nativo com Background:** Reprodução encadeada via `MediaPlayer` (Android) e `AVPlayer` / `AVSpeechSynthesizer` (iOS).
+
 ## Eficiência de Tokens & Desempenho (Padrão Lovable & Antigravity)
 - **Busca Direcionada (Progressive Disclosure):** Use `grep_search` e `view_file` com intervalos de linhas delimitados para inspecionar código. Nunca leia arquivos inteiros desnecessariamente.
 - **Edição Cirúrgica (`replace_file_content`):** Altere apenas os blocos de código modificados. Evite reescrever arquivos completos.

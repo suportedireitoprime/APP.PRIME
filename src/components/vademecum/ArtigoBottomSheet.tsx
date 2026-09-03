@@ -1300,7 +1300,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
 
     import('@capacitor/core').then(async ({ Capacitor }) => {
       if (cancel) return;
-      if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android') {
+      if (Capacitor.isNativePlatform()) {
         try {
           const { NativeVadeMecumPlugin } = await import('@/plugins/NativeVadeMecumPlugin');
           await NativeVadeMecumPlugin.openArtigo({
