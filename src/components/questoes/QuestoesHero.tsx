@@ -3,9 +3,9 @@ import { ListChecks, ChevronRight, Trophy, Award, BarChart2, Sparkles, UserCheck
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { haptic } from '@/lib/nativeHaptics';
 import { useQuestoesAreas } from '@/hooks/useQuestoes';
-import q1 from '@/assets/questoes-hero/q-1.png';
-import q2 from '@/assets/questoes-hero/q-2.png';
-import q3 from '@/assets/questoes-hero/q-3.png';
+import q1 from '@/assets/questoes-hero/q-1.webp';
+import q2 from '@/assets/questoes-hero/q-2.webp';
+import q3 from '@/assets/questoes-hero/q-3.webp';
 
 const FIGURAS = [q1, q2, q3];
 

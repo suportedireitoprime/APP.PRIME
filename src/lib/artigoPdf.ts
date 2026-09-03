@@ -12,7 +12,7 @@ const APP_NAME = 'Direito Prime — Vade Mecum';
 const APP_URL = 'https://direitoprime.com.br';
 const STORE_APPLE = 'https://direitoprime.com.br';
 const STORE_ANDROID = 'https://direitoprime.com.br';
-const LOGO_URL = '/icon-512.png';
+const LOGO_URL = '/icon-512.webp';
 
 async function urlToDataUrl(url: string): Promise<string | null> {
   try {

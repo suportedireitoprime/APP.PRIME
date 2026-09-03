@@ -10,23 +10,23 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfileSummary } from '@/hooks/useProfileSummary';
 import { supabase } from '@/integrations/supabase/client';
-import cover2Asset from '@/assets/covers/cover-2.png.asset.json';
+import cover2Asset from '@/assets/covers/cover-2.webp.asset.json';
 import cover2Bundled from '@/assets/covers/cover-2.webp';
-import cover3Asset from '@/assets/covers/cover-3.png.asset.json';
+import cover3Asset from '@/assets/covers/cover-3.webp.asset.json';
 import cover3Bundled from '@/assets/covers/cover-3.webp';
-import cover4Asset from '@/assets/covers/cover-4.png.asset.json';
+import cover4Asset from '@/assets/covers/cover-4.webp.asset.json';
 import cover4Bundled from '@/assets/covers/cover-4.webp';
-import cover5Asset from '@/assets/covers/cover-5.png.asset.json';
+import cover5Asset from '@/assets/covers/cover-5.webp.asset.json';
 import cover5Bundled from '@/assets/covers/cover-5.webp';
-import cover6Asset from '@/assets/covers/cover-6.png.asset.json';
+import cover6Asset from '@/assets/covers/cover-6.webp.asset.json';
 import cover6Bundled from '@/assets/covers/cover-6.webp';
-import cover7Asset from '@/assets/covers/cover-7.png.asset.json';
+import cover7Asset from '@/assets/covers/cover-7.webp.asset.json';
 import cover7Bundled from '@/assets/covers/cover-7.webp';
-import cover8Asset from '@/assets/covers/cover-8.png.asset.json';
+import cover8Asset from '@/assets/covers/cover-8.webp.asset.json';
 import cover8Bundled from '@/assets/covers/cover-8.webp';
-import cover9Asset from '@/assets/covers/cover-9.png.asset.json';
+import cover9Asset from '@/assets/covers/cover-9.webp.asset.json';
 import cover9Bundled from '@/assets/covers/cover-9.webp';
-import cover10Asset from '@/assets/covers/cover-10.png.asset.json';
+import cover10Asset from '@/assets/covers/cover-10.webp.asset.json';
 import cover10Bundled from '@/assets/covers/cover-10.webp';
 import { useHeroHomeImages } from '@/hooks/useHeroHomeImages';
 import { useHomeCuriosidades } from '@/hooks/useHomeCuriosidades';
@@ -53,7 +53,7 @@ const SUBTITLES = [
   'Para Servidores',
   'Para Magistrados',
 ];
-import logoVacatioAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
+import logoVacatioAsset from '@/assets/logo-direitoprime-v2.webp.asset.json';
 import logoVacatioBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
 const logoVacatio = pickAsset(logoVacatioBundled, srcOf(logoVacatioAsset));
 import { LEIS_CATALOG } from '@/data/leisCatalog';
@@ -65,8 +65,8 @@ import NotificationsSheet, { useUnreadNotifCount } from './NotificationsSheet';
 import { pushRecente } from '@/lib/leisRecentes';
 import { useShortcutBadges } from '@/hooks/useShortcutBadges';
 import { prefetchHeroRoutesIdle, prefetchRoute, type PrefetchKey } from '@/lib/routePrefetch';
-import laurel from '@/assets/landing-tribunal/laurel-leaf.png';
-import scales from '@/assets/landing-tribunal/scales.png';
+import laurel from '@/assets/landing-tribunal/laurel-leaf.webp';
+import scales from '@/assets/landing-tribunal/scales.webp';
 import HeroMotifs from './HeroMotifs';
 import HeroCoverCarousel from './HeroCoverCarousel';
 
@@ -327,7 +327,7 @@ const HomeHeaderHero = ({ onSearchOpenChange }: { onSearchOpenChange?: (open: bo
           <div className="flex flex-col items-center text-center gap-2 pt-1">
             <div className="relative h-24 mb-2 flex items-center justify-center">
               <img
-                src="/logo-prime.png"
+                src="/logo-prime.webp"
                 alt="Direito Prime"
                 loading="eager"
                 decoding="sync"

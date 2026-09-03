@@ -8,9 +8,6 @@ import { getBiografiaById } from '@/data/biografias';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 import { useBodyScrollLock, resetBodyScrollLock } from '@/hooks/useBodyScrollLock';
 import { useIsDesktop } from '@/hooks/use-desktop';
-import VideoaulasBottomNav from '../videoaulas/VideoaulasBottomNav';
-import FilosofoPresentationOverlay from './FilosofoPresentationOverlay';
-import { DocumentarioSettingsModal } from './DocumentarioSettingsModal';
 
 interface Props {
   personagemId: string;
@@ -20,23 +17,7 @@ interface Props {
 export const BiografiaArtigoView = ({ personagemId, onBack }: Props) => {
   const bio = getBiografiaById(personagemId);
   const [activeTab, setActiveTab] = useState(bio?.tabs[0]?.id || '');
-  const [showPresentation, setShowPresentation] = useState(false);
   const isDesktop = useIsDesktop();
-  const [styleVersion, setStyleVersion] = useState<number>(() => {
-    return parseInt(localStorage.getItem('vademecum_presentation_style') || '1', 10);
-  });
-
-  const [showSettings, setShowSettings] = useState(false);
-  const [audioMode, setAudioMode] = useState<'native' | 'custom'>('native');
-  const [customAudioFile, setCustomAudioFile] = useState<File | null>(null);
-
-  const handleStyleChange = (v: number) => {
-    setStyleVersion(v);
-    localStorage.setItem('vademecum_presentation_style', v.toString());
-  };
-
-  const customAudioUrl = customAudioFile ? URL.createObjectURL(customAudioFile) : undefined;
-
   useBodyScrollLock(true);
   useEscapeKey(true, () => {
     resetBodyScrollLock();
@@ -232,55 +213,7 @@ export const BiografiaArtigoView = ({ personagemId, onBack }: Props) => {
           </div>
         </div>
 
-        {/* Floating Action Button para a Apresentação Dinâmica */}
-        {['socrates', 'platao'].includes(bio.id) && (
-          <motion.div 
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.5, type: 'spring' }}
-            className="absolute bottom-8 right-6 md:right-10 z-[60] flex flex-col items-end gap-3"
-          >
-            {/* Botão de Configurações */}
-            <button
-              onClick={() => { haptic.selection(); setShowSettings(true); }}
-              className="w-10 h-10 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white/80 flex items-center justify-center hover:bg-white/10 hover:text-white transition-all shadow-lg"
-              aria-label="Configurações do Documentário"
-            >
-              <Settings className="w-5 h-5" />
-            </button>
-
-            <button
-              onClick={() => { haptic.medium(); setShowPresentation(true); }}
-              className="w-16 h-16 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-2xl shadow-primary/50 hover:bg-primary/90 active:scale-95 transition-all group"
-              aria-label="Ver Apresentação"
-            >
-              <Play className="w-7 h-7 ml-1 fill-current group-hover:scale-110 transition-transform" />
-            </button>
-          </motion.div>
-        )}
       </motion.div>
-
-      {/* Overlay da Apresentação Remotion */}
-      <FilosofoPresentationOverlay
-        open={showPresentation}
-        onFinished={() => setShowPresentation(false)}
-        personagemId={personagemId}
-        version={styleVersion}
-        customAudioUrl={audioMode === 'custom' ? customAudioUrl : undefined}
-      />
-
-      {/* Modal de Configurações */}
-      <DocumentarioSettingsModal
-        open={showSettings}
-        onClose={() => setShowSettings(false)}
-        personagemId={personagemId}
-        styleVersion={styleVersion}
-        onStyleChange={handleStyleChange}
-        audioMode={audioMode}
-        onAudioModeChange={setAudioMode}
-        customAudioFile={customAudioFile}
-        onCustomAudioFileChange={setCustomAudioFile}
-      />
     </div>,
     document.body
   );

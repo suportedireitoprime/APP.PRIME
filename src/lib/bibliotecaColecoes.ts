@@ -10,7 +10,7 @@ const capaFora = getCapaFixa('capa-fora-da-toga.webp');
 const capaPortugues = getCapaFixa('capa-portugues.webp');
 const capaPesquisa = getCapaFixa('capa-pesquisa.webp');
 const capaLideranca = getCapaFixa('capa-lideranca.webp');
-const capaOratoria = getCapaFixa('capa-oratoria.jpg');
+const capaOratoria = getCapaFixa('capa-oratoria.webp');
 
 export type ColecaoModo = 'livros' | 'categorias';
 

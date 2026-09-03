@@ -18,7 +18,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 const EXEMPLOS_PRATICOS = [
   {
     artigo: 'Art. 1º',
-    conteudo: `![Capa](/exemplos/cp/art1.jpg)
+    conteudo: `![Capa](/exemplos/cp/art1.webp)
 
 ### A Lei e o Limite do Poder do Estado
 
@@ -34,7 +34,7 @@ A máxima latina "*Nullum crimen, nulla poena sine praevia lege*" é o escudo de
   },
   {
     artigo: 'Art. 2º',
-    conteudo: `![Capa](/exemplos/cp/art2.jpg)
+    conteudo: `![Capa](/exemplos/cp/art2.webp)
 
 ### A Abolitio Criminis e o Vento da Liberdade
 
@@ -49,7 +49,7 @@ A regra fundamental é: a lei penal NUNCA retroage para o passado, **SALVO** par
   },
   {
     artigo: 'Art. 3º',
-    conteudo: `![Capa](/exemplos/cp/art3.jpg)
+    conteudo: `![Capa](/exemplos/cp/art3.webp)
 
 ### Lei Excepcional ou Temporária: A Regra do Caos
 
@@ -66,7 +66,7 @@ A lei excepcional "revive" como um fantasma para julgar o fato praticado ao seu 
   },
   {
     artigo: 'Art. 4º',
-    conteudo: `![Capa](/exemplos/cp/art4.jpg)
+    conteudo: `![Capa](/exemplos/cp/art4.webp)
 
 ### O Tempo do Crime e a Teoria da Atividade
 

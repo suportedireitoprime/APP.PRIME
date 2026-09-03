@@ -31,7 +31,7 @@ export function createCourtSceneClass(Phaser: any) {
     }
 
     preload() {
-      this.load.image('courtBg', '/assets/images/courtroom_bg.jpg');
+      this.load.image('courtBg', '/assets/images/courtroom_bg.webp');
     }
 
     create() {

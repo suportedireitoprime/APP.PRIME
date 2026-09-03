@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import html2canvas from 'html2canvas';
-import logoImgAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
+import logoImgAsset from '@/assets/logo-direitoprime-v2.webp.asset.json';
 import logoImgBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
 const logoImg = pickAsset(logoImgBundled, srcOf(logoImgAsset));
 
@@ -432,7 +432,7 @@ const GeradorPost = () => {
     const canvas = await html2canvas(el, { scale: 1, useCORS: true, backgroundColor: null });
     canvas.toBlob((blob) => {
       if (!blob) return;
-      void baixarBlob(blob, `slide-${index + 1}.png`, { titulo: `Slide ${index + 1}` });
+      void baixarBlob(blob, `slide-${index + 1}.webp`, { titulo: `Slide ${index + 1}` });
     }, 'image/png');
   };
 

@@ -20,7 +20,7 @@ import { usePrefetchProfileSummary } from '@/hooks/useProfileSummary';
 import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
 import {pickAsset, srcOf } from '@/lib/assetUrl';
 import { prefetchRoute, type PrefetchKey } from '@/lib/routePrefetch';
-import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
+import primeLogoAsset from '@/assets/logo-direitoprime-v2.webp.asset.json';
 import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
 
 // Logo do app (web usa CDN, nativo usa bundle)

@@ -4,10 +4,10 @@ import capaPenal from '@/assets/direito-penal.webp.asset.json';
 import capaCivil from '@/assets/direito-civil.webp.asset.json';
 import capaConstituicao from '@/assets/direito-constituicao.webp.asset.json';
 import capaClt from '@/assets/direito-clt.webp.asset.json';
-import capaMedico from '@/assets/capa-direito-medico.jpg';
-import capaFilosofia from '@/assets/capa-filosofia.jpg';
-import capaLeiPenalEspecial from '@/assets/capa-lei-penal-especial.jpg';
-import capaProcessoPenal from '@/assets/capa-processo-penal.jpg';
+import capaMedico from '@/assets/capa-direito-medico.webp';
+import capaFilosofia from '@/assets/capa-filosofia.webp';
+import capaLeiPenalEspecial from '@/assets/capa-lei-penal-especial.webp';
+import capaProcessoPenal from '@/assets/capa-processo-penal.webp';
 
 export const CAPA_HUB = srcOf(capaAudioaulas);
 const CAPAS: { re: RegExp; url: string }[] = [

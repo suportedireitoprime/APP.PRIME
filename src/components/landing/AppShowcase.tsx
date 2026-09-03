@@ -4,10 +4,10 @@ import {
   GraduationCap, Layers, Headphones, MapPin, ArrowRight,
 } from 'lucide-react';
 
-import secJustica from '@/assets/landing-tribunal/sec-justica.jpg';
-import secBiblioteca from '@/assets/landing-tribunal/sec-biblioteca.jpg';
-import secBalanca from '@/assets/landing-tribunal/sec-balanca.jpg';
-import secPlenario from '@/assets/landing-tribunal/sec-plenario.jpg';
+import secJustica from '@/assets/landing-tribunal/sec-justica.webp';
+import secBiblioteca from '@/assets/landing-tribunal/sec-biblioteca.webp';
+import secBalanca from '@/assets/landing-tribunal/sec-balanca.webp';
+import secPlenario from '@/assets/landing-tribunal/sec-plenario.webp';
 
 interface Props {
   onAcessar: () => void;

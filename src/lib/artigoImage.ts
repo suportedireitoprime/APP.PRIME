@@ -5,7 +5,7 @@ import { baixarBlob } from '@/lib/nativo';
 
 const APP_NAME = 'Direito Prime — Vade Mecum';
 const APP_URL = 'direitoprime.com.br';
-const LOGO_URL = '/icon-512.png';
+const LOGO_URL = '/icon-512.webp';
 const YELLOW = '#EF4444';
 const GRAY_DARK = '#2D2D30';
 const GRAY_MID = '#5A5C62';
@@ -160,7 +160,7 @@ export async function gerarArtigoImage(data: ArtigoImageInput) {
       canvas.toBlob((b) => resolve(b), 'image/png');
     });
     if (blob) {
-      await baixarBlob(blob, `${slug(data.leiLabel)}-art-${slug(data.numero)}-${data.modo}.png`, {
+      await baixarBlob(blob, `${slug(data.leiLabel)}-art-${slug(data.numero)}-${data.modo}.webp`, {
         titulo: `${data.leiLabel} — Art. ${data.numero}`,
       });
     }

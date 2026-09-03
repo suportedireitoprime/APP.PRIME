@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Gavel, ShieldCheck, ShieldAlert, ChevronRight } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
-import horusOwlAsset from '@/assets/horus/horus-owl.png.asset.json';
+import horusOwlAsset from '@/assets/horus/horus-owl.webp.asset.json';
 import horusOwlBundled from '@/assets/horus/horus-owl.webp';
 import { pickAsset, srcOf } from '@/lib/assetUrl';
 import HorusCapabilitiesRow from '@/components/horus/HorusCapabilitiesRow';

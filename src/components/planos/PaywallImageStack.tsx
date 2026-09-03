@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import law1 from '@/assets/paywall/law_1.jpg';
-import law2 from '@/assets/paywall/law_2.jpg';
-import law3 from '@/assets/paywall/law_3.jpg';
-import law4 from '@/assets/paywall/law_4.jpg';
-import law5 from '@/assets/paywall/law_5.jpg';
-import law6 from '@/assets/paywall/law_6.jpg';
+import law1 from '@/assets/paywall/law_1.webp';
+import law2 from '@/assets/paywall/law_2.webp';
+import law3 from '@/assets/paywall/law_3.webp';
+import law4 from '@/assets/paywall/law_4.webp';
+import law5 from '@/assets/paywall/law_5.webp';
+import law6 from '@/assets/paywall/law_6.webp';
 
 const IMAGES = [law1, law2, law3, law4, law5, law6];
 

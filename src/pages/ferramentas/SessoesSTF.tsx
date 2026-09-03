@@ -118,7 +118,7 @@ export default function SessoesSTF() {
                       ) : (
                         <div className="w-full h-full relative">
                           <img 
-                            src={`https://img.youtube.com/vi/${session.youtube_video_id}/maxresdefault.jpg`} 
+                            src={`https://img.youtube.com/vi/${session.youtube_video_id}/maxresdefault.webp`} 
                             alt={session.title} 
                             className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity group-hover:scale-105 duration-700" 
                           />

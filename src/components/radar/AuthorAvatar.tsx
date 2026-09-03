@@ -32,7 +32,7 @@ export function AuthorAvatar({ proposicaoId }: AuthorAvatarProps) {
             const uri = autores[0].uri;
             const match = uri.match(/\/deputados\/(\d+)/);
             if (match && match[1]) {
-              setPhotoUrl(`https://www.camara.leg.br/internet/deputado/bandep/${match[1]}.jpg`);
+              setPhotoUrl(`https://www.camara.leg.br/internet/deputado/bandep/${match[1]}.webp`);
             }
           }
         }

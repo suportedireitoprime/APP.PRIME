@@ -15,7 +15,7 @@ import { track } from '@/lib/analyticsEvents';
 import { logAreaEvent } from '@/lib/appEvents';
 import { haptic } from '@/lib/nativeHaptics';
 import horusOwlBundled from '@/assets/horus/horus-owl.webp';
-import horusOwlAsset from '@/assets/horus/horus-owl.png.asset.json';
+import horusOwlAsset from '@/assets/horus/horus-owl.webp.asset.json';
 import { pickAsset, srcOf } from '@/lib/assetUrl';
 
 const horusOwl = pickAsset(horusOwlBundled, srcOf(horusOwlAsset));

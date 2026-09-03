@@ -5,7 +5,7 @@ import { Capacitor } from '@capacitor/core';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { checkHorusAvaliacaoEligibility, requestReviewNow } from '@/lib/inAppReview';
-import horusStarImg from '@/assets/horus/horus-star.png';
+import horusStarImg from '@/assets/horus/horus-star.webp';
 import tecladoSfx from '@/assets/teclado.mp3';
 
 const TypewriterText = ({ text, onComplete }: { text: string, onComplete?: () => void }) => {

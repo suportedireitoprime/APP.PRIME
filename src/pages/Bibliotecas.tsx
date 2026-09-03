@@ -20,7 +20,6 @@ import BibliotecaAtalhosBar from '@/components/biblioteca/BibliotecaAtalhosBar';
 import BibliotecaSearchBar from '@/components/biblioteca/BibliotecaSearchBar';
 import BibliotecaHero from '@/components/biblioteca/BibliotecaHero';
 import ShapeGrid from '@/components/ui/ShapeGrid';
-import CircularGallery from '@/components/ui/CircularGallery';
 import LivroDetailSheet from '@/components/biblioteca/LivroDetailSheet';
 import RecomendacoesCarousel from '@/components/biblioteca/RecomendacoesCarousel';
 import ContinuarLeituraCarousel from '@/components/biblioteca/ContinuarLeituraCarousel';
@@ -309,26 +308,23 @@ const Bibliotecas = () => {
               </p>
             </div>
           </div>
-          <div style={{ height: '350px', position: 'relative' }} className="-mx-4">
-            <CircularGallery 
-              items={COLECOES.map(c => {
-                const count = counts[c.id];
-                return {
-                  image: c.cover,
-                  text: c.label,
-                  badgeText: count ? `${count} livros` : undefined,
-                  showPlayButton: false,
-                  id: c.id
-                };
-              })}
-              bend={1.5}
-              textColor="#ffffff"
-              scrollEase={0.15}
-              borderRadius={0.05}
-              onItemClick={(item) => {
-                navigate(`/bibliotecas/${item.id}`);
-              }}
-            />
+          <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-6 pt-2 hide-scrollbar -mx-4 px-4">
+            {COLECOES.map((c) => {
+              const count = counts[c.id];
+              return (
+                <button
+                  key={c.id}
+                  onClick={() => navigate(`/bibliotecas/${c.id}`)}
+                  className="snap-start shrink-0 w-36 group relative text-left active:scale-95 transition-transform"
+                >
+                  <div className="aspect-[2/3] w-full rounded-2xl overflow-hidden bg-zinc-900 border border-border/50 relative mb-3">
+                    <img src={c.cover} alt={c.label} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                  </div>
+                  <h3 className="font-bold text-white text-sm leading-tight line-clamp-2">{c.label}</h3>
+                  {count !== undefined && <p className="text-[11px] text-zinc-400 mt-1">{count} livros</p>}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>

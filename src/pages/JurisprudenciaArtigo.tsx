@@ -25,7 +25,7 @@ import { useSubscription } from '@/hooks/useSubscription';
 import PremiumGate from '@/components/PremiumGate';
 import { Crown } from 'lucide-react';
 import horusOwlBundled from '@/assets/horus/horus-owl.webp';
-import horusOwlAsset from '@/assets/horus/horus-owl.png.asset.json';
+import horusOwlAsset from '@/assets/horus/horus-owl.webp.asset.json';
 import { pickAsset, srcOf } from '@/lib/assetUrl';
 import { motion } from 'framer-motion';
 

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import { Bell } from 'lucide-react';
-import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
+import primeLogoAsset from '@/assets/logo-direitoprime-v2.webp.asset.json';
 import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
 const primeLogo = pickAsset(primeLogoBundled, srcOf(primeLogoAsset));
 import { getNoticiasCache, prefetchNoticias, type Noticia } from '@/services/noticiasService';

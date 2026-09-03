@@ -15,8 +15,8 @@ import {
   Shuffle,
 } from "lucide-react";
 import { getTemaCover } from "@/lib/flashcards-tema-cover";
-import laurel from '@/assets/landing-tribunal/laurel-leaf.png';
-import scales from '@/assets/landing-tribunal/scales.png';
+import laurel from '@/assets/landing-tribunal/laurel-leaf.webp';
+import scales from '@/assets/landing-tribunal/scales.webp';
 import { haptic } from "@/lib/nativeHaptics";
 import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
 

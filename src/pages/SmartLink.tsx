@@ -99,7 +99,7 @@ export default function SmartLink() {
 
   return (
     <div className="min-h-[100dvh] flex flex-col items-center justify-center gap-6 px-6 text-center bg-background">
-      <img src="/icon-512.png" alt="Direito Prime" className="w-24 h-24 rounded-3xl shadow-xl" onError={(e) => (e.currentTarget.style.display = 'none')} />
+      <img src="/icon-512.webp" alt="Direito Prime" className="w-24 h-24 rounded-3xl shadow-xl" onError={(e) => (e.currentTarget.style.display = 'none')} />
       <div>
         <h1 className="font-display text-2xl font-black text-foreground">Abrindo no Direito Prime…</h1>
         <p className="text-sm text-muted-foreground mt-2 max-w-sm">

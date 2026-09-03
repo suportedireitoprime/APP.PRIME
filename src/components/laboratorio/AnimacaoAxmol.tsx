@@ -23,7 +23,7 @@ const AnimacaoAxmol = () => {
         <div className="w-full bg-black/50 p-3 rounded-lg text-left">
           <code className="text-xs text-green-400 font-mono">
             // Exemplo de código C++ do Axmol:<br/>
-            auto sprite = ax::Sprite::create("robber.png");<br/>
+            auto sprite = ax::Sprite::create("robber.webp");<br/>
             sprite-&gt;setPosition(ax::Vec2(100, 100));<br/>
             this-&gt;addChild(sprite);<br/>
             // Deve ser compilado para .wasm antes do uso.

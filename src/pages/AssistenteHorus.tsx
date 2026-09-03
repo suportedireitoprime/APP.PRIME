@@ -12,7 +12,6 @@ import { useSubscription } from '@/hooks/useSubscription';
 
 import HorusVerifyPhoneSheet from '@/components/horus/HorusVerifyPhoneSheet';
 import HorusEuSheet from '@/components/horus/HorusEuSheet';
-import HorusOnboardingOverlay from '@/components/horus/onboarding/HorusOnboardingOverlay';
 import { useHorusOnboarding } from '@/components/horus/onboarding/useHorusOnboarding';
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
@@ -94,11 +93,7 @@ const AssistenteHorus = () => {
 
   return (
     <div className="min-h-dvh bg-background text-foreground pb-10">
-      <HorusOnboardingOverlay
-        open={showOnboarding}
-        initialName={profileName}
-        onFinished={() => { setShowOnboarding(false); loadStatus(); }}
-      />
+
       <HorusVerifyPhoneSheet
         open={verifyOpen}
         onClose={() => { setVerifyOpen(false); setWaIntent(false); }}
