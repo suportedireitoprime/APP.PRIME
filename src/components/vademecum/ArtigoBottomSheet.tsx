@@ -3106,18 +3106,21 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                       onClick={handleDismissComment}
                     />
                     <motion.div
-                      initial={{ opacity: 0, scale: 0.95, y: 12 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.95, y: 12 }}
-                      transition={{ duration: 0.22, ease: [0.22, 0.61, 0.36, 1] }}
-                      className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[10051] w-[calc(100vw-2rem)] max-w-lg sm:max-w-xl md:max-w-2xl max-h-[90vh] overflow-y-auto bg-card border border-border rounded-3xl shadow-2xl p-5 sm:p-6"
+                      initial={{ y: '100%', opacity: 0.8 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      exit={{ y: '100%', opacity: 0 }}
+                      transition={{ type: 'spring', damping: 28, stiffness: 320 }}
+                      className="fixed inset-x-0 bottom-0 sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:bottom-auto z-[10051] w-full sm:w-[calc(100vw-2rem)] sm:max-w-lg md:max-w-2xl h-[95dvh] sm:h-auto sm:max-h-[90vh] flex flex-col bg-card border-t sm:border border-border rounded-t-[28px] sm:rounded-3xl shadow-2xl p-5 sm:p-6 overflow-hidden"
                     >
-                      <div className="flex items-center gap-2.5 mb-4">
+                      {/* Drag handle visual para mobile */}
+                      <div className="w-12 h-1.5 rounded-full bg-muted-foreground/30 mx-auto mb-3 shrink-0 sm:hidden" />
+
+                      <div className="flex items-center gap-2.5 mb-3 shrink-0">
                         <span
                           className="w-4 h-4 rounded-full border border-white/20 shrink-0"
                           style={{ backgroundColor: currentHl?.color || selectedColor }}
                         />
-                        <p className="text-foreground text-base sm:text-lg font-semibold flex-1">
+                        <p className="text-foreground text-base sm:text-lg font-bold flex-1">
                           {isView ? 'Sua anotação' : 'Nova anotação'}
                         </p>
                         {isView && (
@@ -3130,64 +3133,66 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                         )}
                       </div>
 
-                      {currentHl?.text && (
-                        <div
-                          className="text-sm italic text-foreground/80 border-l-2 pl-3 mb-4 line-clamp-4"
-                          style={{ borderColor: currentHl.color }}
-                        >
-                          "{currentHl.text}"
-                        </div>
-                      )}
-
-                      <textarea
-                        value={commentText}
-                        onChange={(e) => setCommentText(e.target.value)}
-                        placeholder="Escreva sua anotação..."
-                        className="w-full bg-secondary/60 border border-border rounded-xl px-4 py-3 text-sm sm:text-base text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-1 focus:ring-primary"
-                        rows={5}
-                      />
-
-                      <div className="mt-4">
-                        <p className="text-xs uppercase tracking-wider font-semibold text-muted-foreground mb-2">Tags</p>
-                        <div className="flex flex-wrap gap-2 mb-2.5">
-                          {commentTags.map(t => (
-                            <span key={t} className="inline-flex items-center gap-1 rounded-full bg-primary/15 text-primary text-xs font-semibold px-2.5 py-1.5">
-                              #{t}
-                              <button
-                                onClick={() => setCommentTags(prev => prev.filter(x => x !== t))}
-                                className="opacity-70 hover:opacity-100"
-                                aria-label={`Remover tag ${t}`}
-                              >×</button>
-                            </span>
-                          ))}
-                        </div>
-                        <div className="flex gap-2">
-                          <input
-                            value={tagDraft}
-                            onChange={(e) => setTagDraft(e.target.value)}
-                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); addTagFromDraft(); } }}
-                            placeholder="Adicionar tag (ex: prova, importante)"
-                            className="flex-1 bg-secondary/60 border border-border rounded-xl px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-                          />
-                          <button
-                            onClick={addTagFromDraft}
-                            className="px-4 rounded-xl text-sm font-semibold bg-secondary hover:bg-secondary/80 text-foreground"
+                      <div className="flex-1 overflow-y-auto min-h-0 space-y-4 pr-1">
+                        {currentHl?.text && (
+                          <div
+                            className="text-sm italic text-foreground/80 border-l-2 pl-3 line-clamp-4 bg-muted/20 p-2.5 rounded-r-xl"
+                            style={{ borderColor: currentHl.color }}
                           >
-                            +
-                          </button>
+                            "{currentHl.text}"
+                          </div>
+                        )}
+
+                        <textarea
+                          value={commentText}
+                          onChange={(e) => setCommentText(e.target.value)}
+                          placeholder="Escreva sua anotação..."
+                          className="w-full flex-1 min-h-[160px] sm:min-h-[120px] bg-secondary/60 border border-border rounded-2xl px-4 py-3 text-base text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-1 focus:ring-primary"
+                          rows={6}
+                        />
+
+                        <div>
+                          <p className="text-xs uppercase tracking-wider font-semibold text-muted-foreground mb-2">Tags</p>
+                          <div className="flex flex-wrap gap-2 mb-2.5">
+                            {commentTags.map(t => (
+                              <span key={t} className="inline-flex items-center gap-1 rounded-full bg-primary/15 text-primary text-xs font-semibold px-2.5 py-1.5">
+                                #{t}
+                                <button
+                                  onClick={() => setCommentTags(prev => prev.filter(x => x !== t))}
+                                  className="opacity-70 hover:opacity-100"
+                                  aria-label={`Remover tag ${t}`}
+                                >×</button>
+                              </span>
+                            ))}
+                          </div>
+                          <div className="flex gap-2">
+                            <input
+                              value={tagDraft}
+                              onChange={(e) => setTagDraft(e.target.value)}
+                              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); addTagFromDraft(); } }}
+                              placeholder="Adicionar tag (ex: prova, importante)"
+                              className="flex-1 bg-secondary/60 border border-border rounded-xl px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                            />
+                            <button
+                              onClick={addTagFromDraft}
+                              className="px-4 rounded-xl text-sm font-semibold bg-secondary hover:bg-secondary/80 text-foreground"
+                            >
+                              +
+                            </button>
+                          </div>
                         </div>
                       </div>
 
-                      <div className="flex gap-2.5 mt-5">
+                      <div className="flex gap-2.5 pt-4 mt-auto border-t border-border/50 shrink-0 pb-[calc(env(safe-area-inset-bottom,0px))]">
                         <button
                           onClick={handleDismissComment}
-                          className="flex-1 py-3 rounded-xl text-sm font-semibold text-muted-foreground bg-secondary hover:bg-secondary/80 transition-colors"
+                          className="flex-1 h-12 min-h-[48px] rounded-2xl text-sm font-bold text-muted-foreground bg-secondary hover:bg-secondary/80 transition-colors"
                         >
                           {isView ? 'Fechar' : 'Pular'}
                         </button>
                         <button
                           onClick={handleSaveComment}
-                          className="flex-1 py-3 rounded-xl text-sm font-semibold text-primary-foreground bg-primary hover:bg-primary/90 transition-colors"
+                          className="flex-1 h-12 min-h-[48px] rounded-2xl text-sm font-bold text-primary-foreground bg-primary hover:bg-primary/90 transition-colors"
                         >
                           Salvar
                         </button>

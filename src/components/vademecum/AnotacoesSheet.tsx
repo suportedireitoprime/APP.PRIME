@@ -356,17 +356,22 @@ const AnotacoesSheet = ({ open, onClose, tabelaNome, artigoNumero, artigoTexto, 
         className="fixed inset-0 z-[10040] bg-black/60 backdrop-blur-sm pointer-events-auto touch-none"
       />
       <motion.div
-        initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%', pointerEvents: 'none' }}
+        initial={isDesktop ? { x: '100%' } : { y: '100%' }}
+        animate={isDesktop ? { x: 0 } : { y: 0 }}
+        exit={isDesktop ? { x: '100%', pointerEvents: 'none' } : { y: '100%', pointerEvents: 'none' }}
         transition={{ type: 'spring', damping: 30, stiffness: 340 }}
         data-artigo-menu
         onClick={(e) => e.stopPropagation()}
         className={
           isDesktop
             ? 'fixed right-0 top-0 bottom-0 z-[10041] w-[min(30rem,92vw)] border-l border-border bg-background shadow-2xl flex flex-col pointer-events-auto'
-            : 'fixed inset-0 z-[10041] bg-background flex flex-col pointer-events-auto pb-[calc(1.25rem+var(--sai-bottom))]'
+            : 'fixed inset-x-0 bottom-0 z-[10041] bg-background h-[95dvh] max-h-[95dvh] rounded-t-[28px] border-t border-border shadow-2xl flex flex-col pointer-events-auto pb-[calc(1.25rem+var(--sai-bottom))]'
         }
       >
-        <header className="pt-[calc(1.25rem+var(--sai-top))] border-b border-border bg-card">
+        {!isDesktop && (
+          <div className="w-12 h-1.5 rounded-full bg-muted-foreground/30 mx-auto my-2.5 shrink-0" />
+        )}
+        <header className="pt-[calc(0.75rem+var(--sai-top))] sm:pt-[calc(1.25rem+var(--sai-top))] border-b border-border bg-card">
           <div className="h-16 px-4 flex items-center justify-between gap-3">
             <Button variant="ghost" size="icon" onClick={onClose} aria-label="Voltar ao artigo">
               <ArrowLeft className="w-5 h-5" />
