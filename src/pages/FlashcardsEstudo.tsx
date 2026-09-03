@@ -19,6 +19,8 @@ import { resetBodyScrollLock } from '@/hooks/useBodyScrollLock';
 import ContagemRegressiva from '@/components/questoes/ContagemRegressiva';
 import { useFlashcardsEngine } from '@/hooks/useFlashcardsEngine';
 import ShapeGrid from '@/components/ui/ShapeGrid';
+import { Capacitor } from '@capacitor/core';
+import { NativeFlashcards } from '@/plugins/NativeFlashcardsPlugin';
 
 function AnimatedNumber({ value }: { value: number }) {
   const numRef = useRef<HTMLSpanElement>(null);
@@ -100,6 +102,56 @@ const FlashcardsEstudo = () => {
     document.title = 'Sessão de Prática de Flashcards | Vade Mecum PRIME';
     resetBodyScrollLock();
   }, [escolhendo, areaSheet, loading]);
+
+  // Ponte 100% Nativa (Jetpack Compose / SwiftUI) no mobile
+  useEffect(() => {
+    if (!escolhendo && cards.length > 0 && Capacitor.isNativePlatform()) {
+      const title = areaParam || temasParam || 'Flashcards';
+      const sessionData = {
+        titulo: title,
+        cards: cards.map(c => ({
+          id: c.id,
+          pergunta: c.pergunta,
+          resposta: c.resposta,
+          area: c.area,
+          tema: c.tema,
+          subtema: c.subtema,
+          exemplo: c.exemplo,
+          base_legal: c.base_legal,
+          dica: c.dica,
+          artigo_numero: c.artigo_numero,
+        })),
+        startIndex: idx,
+      };
+
+      const subCard = NativeFlashcards.addListener('onCardAnswered', async ({ cardId, status, area, tema }) => {
+        const { data: auth } = await supabase.auth.getUser();
+        if (auth.user) {
+          await supabase.from('flashcards_progresso').upsert({
+            user_id: auth.user.id,
+            card_id: cardId,
+            area: area,
+            tema: tema,
+            status: status,
+            ultima_resposta_em: new Date().toISOString(),
+          });
+        }
+      });
+
+      const subClose = NativeFlashcards.addListener('onClose', () => {
+        navigate('/flashcards');
+      });
+
+      NativeFlashcards.openSession(sessionData).catch((err) => {
+        console.warn('[NativeFlashcards] Erro ao abrir sessão nativa, usando web:', err);
+      });
+
+      return () => {
+        subCard.then(h => h.remove()).catch(() => {});
+        subClose.then(h => h.remove()).catch(() => {});
+      };
+    }
+  }, [escolhendo, cards.length]);
 
   return (
     <div className={`min-h-dvh overflow-x-hidden bg-background ${escolhendo ? 'pb-[calc(8rem+var(--sai-bottom))]' : 'pb-[calc(2.5rem+var(--sai-bottom))]'}`}>
