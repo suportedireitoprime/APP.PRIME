@@ -481,8 +481,13 @@ function applyHighlightsToText(
         <mark
           key={`hl-${seg.id}`}
           style={{ backgroundColor: seg.color, color: 'white', borderRadius: '2px', padding: '0 1px' }}
-          className={`${highlightMode ? 'cursor-pointer' : 'cursor-default'} ${seg.hasComment ? 'underline decoration-dotted decoration-white/50' : ''}`}
-          onClick={highlightMode ? (e) => { e.stopPropagation(); onRemove(seg.id!); } : (e) => {
+          className={`${highlightMode ? 'cursor-pointer select-none' : 'cursor-default'} ${seg.hasComment ? 'underline decoration-dotted decoration-white/50' : ''}`}
+          onClick={highlightMode ? (e) => {
+            e.stopPropagation();
+            onRemove(seg.id!);
+            import('@/lib/nativeHaptics').then(({ haptic }) => haptic.light()).catch(() => {});
+            toast.success('Grifo removido', { duration: 1500 });
+          } : (e) => {
             if (onTapHighlight) {
               e.stopPropagation();
               const rect = (e.target as HTMLElement).getBoundingClientRect();
@@ -494,7 +499,7 @@ function applyHighlightsToText(
             onHoverHighlight(seg.id!, rect);
           } : undefined}
           onMouseLeave={!highlightMode && onHoverHighlight ? () => onHoverHighlight(null) : undefined}
-          title={highlightMode ? 'Clique para remover grifo' : undefined}
+          title={highlightMode ? 'Toque para apagar este grifo' : undefined}
         >
           {segText}
         </mark>
@@ -1475,6 +1480,10 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
     setMagicMode(next.length > 0);
     setMagicTooltip(null);
     setAnotacoesCount((count) => Math.max(0, count - removed.length));
+
+    // Garante que o snapshot local síncrono seja limpo ou atualizado
+    writeArtigoGrifos(tabelaNome, String(artigo.numero), next.length > 0 ? (next as any) : []);
+
     const { setLocalAiCache, deleteLocalAiCache } = await import('@/lib/aiCacheLocal');
     if (next.length > 0) setLocalAiCache(tabelaNome, artigo.numero, 'grifo_magico', JSON.stringify(next));
     else deleteLocalAiCache(tabelaNome, artigo.numero, 'grifo_magico');
@@ -1551,17 +1560,33 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
   ], [highlights, magicHighlights]);
 
   const handleRemoveGrifosByColor = useCallback((color: string) => {
-    const removedMagic = magicHighlights.filter((grifo) => (MAGIC_COLORS[grifo.cor] || MAGIC_COLORS.amarelo) === color);
     removeHighlightsByColor(color);
-    if (removedMagic.length > 0) {
-      void persistMagicRemoval(magicHighlights.filter((grifo) => !removedMagic.includes(grifo)), removedMagic);
+    const removedMagic = magicHighlights.filter((grifo) => (MAGIC_COLORS[grifo.cor] || MAGIC_COLORS.amarelo) === color);
+    const remainingMagic = magicHighlights.filter((grifo) => (MAGIC_COLORS[grifo.cor] || MAGIC_COLORS.amarelo) !== color);
+    if (tabelaNome && artigo?.numero) {
+      writeArtigoGrifos(tabelaNome, String(artigo.numero), remainingMagic.length > 0 ? (remainingMagic as any) : []);
     }
-  }, [magicHighlights, persistMagicRemoval, removeHighlightsByColor]);
+    if (removedMagic.length > 0) {
+      void persistMagicRemoval(remainingMagic, removedMagic);
+    }
+    import('@/lib/nativeHaptics').then(({ haptic }) => haptic.selection()).catch(() => {});
+    toast.success('Grifos apagados com sucesso');
+  }, [magicHighlights, persistMagicRemoval, removeHighlightsByColor, tabelaNome, artigo?.numero]);
 
   const handleClearAllGrifos = useCallback(() => {
     clearAll();
-    if (magicHighlights.length > 0) void persistMagicRemoval([], magicHighlights);
-  }, [clearAll, magicHighlights, persistMagicRemoval]);
+    if (tabelaNome && artigo?.numero) {
+      writeArtigoGrifos(tabelaNome, String(artigo.numero), []);
+    }
+    if (magicHighlights.length > 0) {
+      void persistMagicRemoval([], magicHighlights);
+    }
+    setMagicHighlights([]);
+    setMagicMode(false);
+    setMagicTooltip(null);
+    import('@/lib/nativeHaptics').then(({ haptic }) => haptic.notification()).catch(() => {});
+    toast.success('Todos os grifos foram apagados');
+  }, [clearAll, magicHighlights, persistMagicRemoval, tabelaNome, artigo?.numero]);
 
   const handleToggleMagic = useCallback(async () => {
     if (magicMode) {
@@ -1855,11 +1880,27 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
     }, 10);
   }, [highlightMode, addHighlight, isMobile, containerRef]);
 
-  // Mobile: Grifo fluido e nativo com o dedo.
-  // Aplica o grifo diretamente ao soltar o dedo ou quando a seleção estabiliza,
-  // limpando a seleção do navegador imediatamente para evitar menus web flutuantes.
+  // Mobile: Grifo instantâneo ao passar o dedo (sem precisar ficar pressionando/segurando).
+  // O usuário apenas toca e arrasta o dedo pelo texto, e o grifo se forma imediatamente.
   useEffect(() => {
-    if (!highlightMode || !isMobile) return;
+    if (!highlightMode) return;
+    const container = containerRef.current;
+    if (!container) return;
+
+    let startCaret: { node: Node; offset: number; x: number; y: number } | null = null;
+    let isDragging = false;
+
+    const getCaret = (x: number, y: number): { node: Node; offset: number } | null => {
+      if (typeof (document as any).caretRangeFromPoint === 'function') {
+        const r = (document as any).caretRangeFromPoint(x, y);
+        return r ? { node: r.startContainer, offset: r.startOffset } : null;
+      }
+      if (typeof (document as any).caretPositionFromPoint === 'function') {
+        const pos = (document as any).caretPositionFromPoint(x, y);
+        return pos ? { node: pos.offsetNode, offset: pos.offset } : null;
+      }
+      return null;
+    };
 
     const commitHighlight = () => {
       const sel = window.getSelection();
@@ -1867,58 +1908,79 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
       const text = sel.toString().trim();
       if (!text) return;
       const anchor = sel.anchorNode;
-      if (!anchor || !containerRef.current?.contains(anchor)) return;
+      if (!anchor || !container.contains(anchor)) return;
       addHighlight();
       sel.removeAllRanges();
     };
 
-    let timer: ReturnType<typeof setTimeout> | null = null;
-    let lastText = '';
-
-    const scheduleCommit = () => {
-      if (timer) clearTimeout(timer);
-      timer = setTimeout(commitIfStable, 320);
-    };
-
-    const commitIfStable = () => {
-      const sel = window.getSelection();
-      if (!sel || sel.isCollapsed) return;
-      const text = sel.toString().trim();
-      if (!text) return;
-      if (text !== lastText) {
-        lastText = text;
-        scheduleCommit();
-        return;
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return;
+      const touch = e.touches[0];
+      const caret = getCaret(touch.clientX, touch.clientY);
+      if (caret && container.contains(caret.node)) {
+        startCaret = { node: caret.node, offset: caret.offset, x: touch.clientX, y: touch.clientY };
+        isDragging = false;
+      } else {
+        startCaret = null;
       }
-      commitHighlight();
-      lastText = '';
     };
 
-    const onSelChange = () => {
-      const sel = window.getSelection();
-      if (!sel || sel.isCollapsed) { lastText = ''; return; }
-      scheduleCommit();
+    const onTouchMove = (e: TouchEvent) => {
+      if (!startCaret || e.touches.length !== 1) return;
+      const touch = e.touches[0];
+      const dist = Math.hypot(touch.clientX - startCaret.x, touch.clientY - startCaret.y);
+
+      // Quando o dedo se move mais de 6px, ativa imediatamente o arrasto de grifo
+      if (dist > 6) {
+        isDragging = true;
+        if (e.cancelable) e.preventDefault();
+
+        const currentCaret = getCaret(touch.clientX, touch.clientY);
+        if (currentCaret && container.contains(currentCaret.node)) {
+          try {
+            const liveRange = document.createRange();
+            const comp = startCaret.node.compareDocumentPosition(currentCaret.node);
+            if (comp & Node.DOCUMENT_POSITION_FOLLOWING || (startCaret.node === currentCaret.node && startCaret.offset <= currentCaret.offset)) {
+              liveRange.setStart(startCaret.node, startCaret.offset);
+              liveRange.setEnd(currentCaret.node, currentCaret.offset);
+            } else {
+              liveRange.setStart(currentCaret.node, currentCaret.offset);
+              liveRange.setEnd(startCaret.node, startCaret.offset);
+            }
+            const sel = window.getSelection();
+            if (sel) {
+              sel.removeAllRanges();
+              sel.addRange(liveRange);
+            }
+          } catch {}
+        }
+      }
     };
 
     const onTouchEnd = () => {
-      // Assim que o usuário tira o dedo da tela, consolida o grifo imediatamente
-      setTimeout(commitHighlight, 40);
+      if (isDragging) {
+        isDragging = false;
+        commitHighlight();
+      }
+      startCaret = null;
     };
 
     const onContextMenu = (e: Event) => {
       e.preventDefault();
     };
 
-    document.addEventListener('selectionchange', onSelChange);
-    document.addEventListener('touchend', onTouchEnd, { passive: true });
-    document.addEventListener('contextmenu', onContextMenu);
+    container.addEventListener('touchstart', onTouchStart, { passive: true });
+    container.addEventListener('touchmove', onTouchMove, { passive: false });
+    container.addEventListener('touchend', onTouchEnd, { passive: true });
+    container.addEventListener('contextmenu', onContextMenu);
+
     return () => {
-      document.removeEventListener('selectionchange', onSelChange);
-      document.removeEventListener('touchend', onTouchEnd);
-      document.removeEventListener('contextmenu', onContextMenu);
-      if (timer) clearTimeout(timer);
+      container.removeEventListener('touchstart', onTouchStart);
+      container.removeEventListener('touchmove', onTouchMove);
+      container.removeEventListener('touchend', onTouchEnd);
+      container.removeEventListener('contextmenu', onContextMenu);
     };
-  }, [highlightMode, isMobile, addHighlight, containerRef]);
+  }, [highlightMode, addHighlight, containerRef]);
 
 
   const handleScrollUp = useCallback(() => {
@@ -2417,8 +2479,18 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 style={{ backgroundColor: MAGIC_COLORS[m.grifo.cor] || MAGIC_COLORS.amarelo, color: 'white', borderRadius: '3px', padding: '1px 3px', cursor: 'pointer' }}
                 onClick={(e) => {
                   e.stopPropagation();
-                  const rect = (e.target as HTMLElement).getBoundingClientRect();
-                  setMagicTooltip(prev => prev?.grifo.trechoExato === m.grifo.trechoExato ? null : { grifo: m.grifo, rect });
+                  if (highlightMode) {
+                    const next = magicHighlights.filter(g => g.trechoExato !== m.grifo.trechoExato);
+                    void persistMagicRemoval(next, [m.grifo]);
+                    if (tabelaNome && artigo?.numero) {
+                      writeArtigoGrifos(tabelaNome, String(artigo.numero), next.length > 0 ? (next as any) : []);
+                    }
+                    import('@/lib/nativeHaptics').then(({ haptic }) => haptic.light()).catch(() => {});
+                    toast.success('Grifo removido', { duration: 1500 });
+                  } else {
+                    const rect = (e.target as HTMLElement).getBoundingClientRect();
+                    setMagicTooltip(prev => prev?.grifo.trechoExato === m.grifo.trechoExato ? null : { grifo: m.grifo, rect });
+                  }
                 }}
               >
                 {text.slice(clampStart, clampEnd)}
@@ -3170,6 +3242,25 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                     </p>
                     <div className="text-[clamp(0.9375rem,3.9vw,1.0625rem)] text-muted-foreground italic leading-[1.5] border-t border-border/40 pt-3">
                       "{magicTooltip.grifo.trechoExato}"
+                    </div>
+                    <div className="mt-4 pt-3 border-t border-border/40 flex justify-end">
+                      <button
+                        onClick={() => {
+                          const target = magicTooltip.grifo;
+                          const next = magicHighlights.filter(g => g.trechoExato !== target.trechoExato);
+                          void persistMagicRemoval(next, [target]);
+                          if (tabelaNome && artigo?.numero) {
+                            writeArtigoGrifos(tabelaNome, String(artigo.numero), next.length > 0 ? (next as any) : []);
+                          }
+                          setMagicTooltip(null);
+                          import('@/lib/nativeHaptics').then(({ haptic }) => haptic.notification()).catch(() => {});
+                          toast.success('Grifo apagado');
+                        }}
+                        className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-red-500/15 text-red-400 hover:bg-red-500/25 transition-colors"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>Apagar este grifo</span>
+                      </button>
                     </div>
                   </motion.div>
                 </>

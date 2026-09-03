@@ -65,7 +65,15 @@ const GrifoEraseSheet = ({ open, onClose, highlights, onRemoveByColor, onClearAl
 
         <div className="flex-1 overflow-y-auto py-2">
           {grouped.length === 0 && (
-            <p className="text-center text-sm text-foreground/60 py-8 px-4">Não há grifos neste artigo.</p>
+            <div className="py-8 px-5 text-center space-y-3">
+              <p className="text-sm text-foreground/60">Não há grifos registrados neste artigo.</p>
+              <button
+                onClick={() => { onClearAll(); onClose(); }}
+                className="px-4 py-2 rounded-xl text-xs font-semibold bg-red-500/15 text-red-400 hover:bg-red-500/25 transition-colors"
+              >
+                Limpar quaisquer marcas residuais
+              </button>
+            </div>
           )}
           {grouped.map(g => (
             <button

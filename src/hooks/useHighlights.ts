@@ -83,20 +83,50 @@ export function useHighlights(artigoId: string | null) {
       }
       node = node.parentElement;
     }
+    if (!lineEl) {
+      node = range.endContainer;
+      while (node) {
+        if (node instanceof HTMLElement && node.dataset.lineIndex !== undefined) {
+          lineEl = node;
+          break;
+        }
+        node = node.parentElement;
+      }
+    }
     if (!lineEl) { sel.removeAllRanges(); return null; }
 
     const lineIndex = parseInt(lineEl.dataset.lineIndex!, 10);
-    
     const fullText = lineEl.textContent || '';
-    const preRange = document.createRange();
-    preRange.selectNodeContents(lineEl);
-    preRange.setEnd(range.startContainer, range.startOffset);
-    const startOffset = preRange.toString().length;
-    const endOffset = startOffset + text.length;
 
-    if (startOffset >= endOffset || endOffset > fullText.length) {
-      sel.removeAllRanges();
-      return null;
+    let startOffset = 0;
+    let endOffset = 0;
+
+    try {
+      const preRangeStart = document.createRange();
+      preRangeStart.selectNodeContents(lineEl);
+      preRangeStart.setEnd(range.startContainer, range.startOffset);
+      const o1 = preRangeStart.toString().length;
+
+      const preRangeEnd = document.createRange();
+      preRangeEnd.selectNodeContents(lineEl);
+      preRangeEnd.setEnd(range.endContainer, range.endOffset);
+      const o2 = preRangeEnd.toString().length;
+
+      startOffset = Math.min(o1, o2);
+      endOffset = Math.max(o1, o2);
+    } catch {
+      const idx = fullText.indexOf(text);
+      if (idx !== -1) {
+        startOffset = idx;
+        endOffset = idx + text.length;
+      } else {
+        startOffset = 0;
+        endOffset = text.length;
+      }
+    }
+
+    if (startOffset >= endOffset) {
+      endOffset = startOffset + text.length;
     }
 
     const id = `${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
@@ -180,7 +210,12 @@ export function useHighlights(artigoId: string | null) {
   const clearAll = useCallback(() => {
     setHighlights([]);
     persist([]);
-  }, [persist]);
+    if (artigoId) {
+      try {
+        localStorage.removeItem(storageKey(artigoId));
+      } catch {}
+    }
+  }, [persist, artigoId]);
 
   const toggleMode = useCallback(() => {
     setHighlightMode(prev => !prev);
