@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Clock, ArrowUpRight, Film, Star, Library, Newspaper } from 'lucide-react';
 import { getNoticiasCache, prefetchNoticias, subscribeNoticias, type Noticia } from '@/services/noticiasService';
-import { newsImg, cdnImg } from '@/lib/cdnImg';
+import { newsImg, cdnImg, prefetchImages } from '@/lib/cdnImg';
 import NoticiaViewerSheet from '@/components/vademecum/NoticiaViewerSheet';
 import BlogPostSheet from '@/components/vademecum/BlogPostSheet';
 import LivroDetailSheet from '@/components/biblioteca/LivroDetailSheet';
@@ -141,8 +141,17 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
       pool.push(...pick(remainingBlogs, 'blog', missing));
     }
 
-    setFeed(shuffle(pool).slice(0, 8));
+    const selectedFeed = shuffle(pool).slice(0, 8);
+    setFeed(selectedFeed);
     setActiveIndex(0);
+
+    // Prefetch all covers/images for the active feed to ensure 0ms load
+    prefetchImages(selectedFeed.map(item => {
+      if (item.kind === 'livro') return cdnImg(item.data.imagem, 240);
+      if (item.kind === 'blog') return cdnImg((item.data as BlogPost).imagem_url ?? '', 640);
+      if (item.kind === 'noticia') return newsImg((item.data as Noticia).imagem_url ?? '', 640);
+      return null;
+    }));
   }, [feedMode, dataLoaded, livros, noticias.length]);
 
   const items = feed;
@@ -361,8 +370,8 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
                     <img
                       src={cdnImg(l.imagem, 240)}
                       alt=""
-                      loading={i < 2 ? 'eager' : 'lazy'}
-                      fetchPriority={i < 2 ? 'high' : 'auto'}
+                      loading="eager"
+                      fetchPriority="high"
                       decoding="async"
                       onError={(e) => { e.currentTarget.style.display = 'none'; }}
                       className="relative h-[118px] w-auto max-w-full object-contain rounded-md z-[2]"
@@ -435,8 +444,8 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
                 <img
                   src={img}
                   alt=""
-                  loading={i < 2 ? 'eager' : 'lazy'}
-                  fetchPriority={i < 2 ? 'high' : 'auto'}
+                  loading="eager"
+                  fetchPriority="high"
                   decoding="async"
                   onError={(e) => { e.currentTarget.style.display = 'none'; }}
                   className={`absolute inset-0 w-full h-full object-cover ${

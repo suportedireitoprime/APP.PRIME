@@ -240,6 +240,13 @@ const MobileHomeSections = ({ onTabChange, onNewsOpenChange, hideBlog = false, h
     return () => clearTimeout(t);
   }, []);
 
+  useEffect(() => {
+    // Pré-carrega as imagens do CircularGallery (Pílulas)
+    import('@/lib/cdnImg').then(({ prefetchImages }) => {
+      prefetchImages(FAST_PILLS_ITEMS.map(item => item.image));
+    });
+  }, []);
+
   const { counts: radarCounts } = useOutrasNormasCounts();
 
   const handle = useCallback((id: string) => {
