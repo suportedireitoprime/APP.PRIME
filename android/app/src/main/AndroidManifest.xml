@@ -81,6 +81,13 @@
             android:exported="false"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode" />
 
+        <activity
+            android:name=".Radar360Activity"
+            android:label="Radar 360"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:exported="false"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode" />
+
 
         <provider
             android:name="androidx.core.content.FileProvider"

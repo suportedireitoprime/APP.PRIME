@@ -13,6 +13,9 @@ import { PageHeader } from '@/components/vademecum/PageHeader';
 import type { LeiOrdinaria } from '@/services/legislacaoService';
 import brasaoImgAsset from '@/assets/brasao-republica.webp';
 import { useGoBack } from '@/hooks/useGoBack';
+import { Capacitor } from '@capacitor/core';
+import { supabase } from '@/integrations/supabase/client';
+import { NativeRadar360Plugin } from '@/plugins/NativeRadar360Plugin';
 const brasaoImg = brasaoImgAsset;
 
 const TIPO_COLORS: Record<string, { badge: string; border: string; card: string }> = {
@@ -83,6 +86,20 @@ export default function Radar360() {
     else { prefetchResenha().then(() => { const d = getResenhaCache(); if (d) setItems(d); setLoading(false); }); }
     try { localStorage.setItem('radar_leis_last_seen', new Date().toISOString()); } catch { /* ignore */ }
   }, []);
+
+  useEffect(() => {
+    if (Capacitor.isNativePlatform() && !loading && items.length > 0) {
+      const abrirNativo = async () => {
+        const { data } = await supabase.auth.getSession();
+        await NativeRadar360Plugin.openRadar360({
+          accessToken: data.session?.access_token || '',
+          itemsJson: JSON.stringify(items),
+        });
+        goBack(); // Volta no React para não ficar na pilha
+      };
+      abrirNativo();
+    }
+  }, [loading, items, goBack]);
 
   const availableDates = useMemo(() => {
     const set = new Set<string>();
@@ -216,6 +233,15 @@ export default function Radar360() {
     return (
       <div className="min-h-dvh bg-background">
         <LeiOrdinariaDetail lei={detailItem} onBack={() => setDetailItem(null)} />
+      </div>
+    );
+  }
+
+  // Se for nativo, já despachou a Intent no useEffect. Evitamos renderizar a interface React pesada.
+  if (Capacitor.isNativePlatform()) {
+    return (
+      <div className="min-h-dvh bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }
