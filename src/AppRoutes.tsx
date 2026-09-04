@@ -35,7 +35,6 @@ const Router = typeof window !== "undefined" && ((window as any).desktopApp?.isE
   : BrowserRouter;
 
 import PageTransition from "@/components/PageTransition";
-import { ScrollRestoration } from "./components/vademecum/ScrollRestoration.tsx";
 import { useMediaQuery } from "./hooks/useMediaQuery.ts";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { routePrefetch, prefetchRoute } from "@/lib/routePrefetch";
@@ -591,30 +590,19 @@ function EstudosRouter() {
 }
 
 function LazyFallback() {
-  const [showSkeleton, setShowSkeleton] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setShowSkeleton(true), 120);
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (!showSkeleton) {
-    return <div className="min-h-dvh bg-transparent" aria-busy="true" />;
-  }
-
   return (
     <div
-      className="min-h-dvh bg-[#0D0D0D] p-4 pt-16 space-y-4 animate-in fade-in duration-200"
+      className="min-h-dvh bg-[#0D0D0D] p-4 pt-16 space-y-4"
       aria-busy="true"
       aria-live="polite"
     >
-      <div className="h-8 w-48 rounded-md bg-white/5 animate-pulse" />
-      <div className="h-4 w-64 rounded bg-white/5 animate-pulse" />
+      <div className="h-8 w-48 rounded-md bg-white/[0.04]" />
+      <div className="h-4 w-64 rounded bg-white/[0.04]" />
       <div className="space-y-3 mt-6">
         {[1, 2, 3, 4, 5].map(i => (
           <div
             key={i}
-            className="h-20 rounded-xl bg-white/5 animate-pulse"
+            className="h-20 rounded-xl bg-white/[0.03]"
           />
         ))}
       </div>

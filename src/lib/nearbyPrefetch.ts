@@ -6,7 +6,7 @@ import { routePrefetch, type PrefetchKey } from './routePrefetch';
 
 // Map: current path prefix -> keys likely to be visited next.
 const NEARBY: Array<[RegExp, PrefetchKey[]]> = [
-  [/^\/$/,                    ['ferramentas', 'estudos', 'biblioteca', 'blog', 'noticias', 'questoes', 'flashcards', 'pilulas', 'vademecum', 'assistenteHorus', 'aprender', 'tematica']],
+  [/^\/$/,                    ['ferramentas', 'estudos', 'biblioteca', 'blog', 'noticias', 'questoes', 'flashcards', 'pilulas', 'vademecum', 'assistenteHorus', 'aprender', 'tematica', 'resumosJuridicos', 'resumosJuridicosTemas', 'audioaulas', 'videoaulas', 'videoaulasCatalogo', 'perfil', 'leiSeca', 'meExplique']],
   [/^\/legislacao\//,         ['assistenteHorus', 'ferramentas', 'vademecum']],
   [/^\/ferramentas/,          ['estudos', 'perfil', 'pilulas', 'blog']],
   [/^\/blog/,                 ['noticias', 'boletins', 'ferramentas']],
@@ -25,11 +25,11 @@ const NEARBY: Array<[RegExp, PrefetchKey[]]> = [
   [/^\/videoaulas\//,         ['videoaulas', 'videoaulasCatalogo', 'videoaulasArea', 'videoaulaView', 'videoaulasLista']],
 ];
 
-function idle(cb: () => void, timeout = 1200) {
+function idle(cb: () => void, timeout = 600) {
   if (typeof window === 'undefined') return;
   const ric = (window as any).requestIdleCallback as
     | ((c: () => void, o?: { timeout?: number }) => number) | undefined;
-  if (ric) ric(cb, { timeout }); else setTimeout(cb, 300);
+  if (ric) ric(cb, { timeout }); else setTimeout(cb, 100);
 }
 
 /**

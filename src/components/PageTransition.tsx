@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { motion } from "framer-motion";
+import { Capacitor } from "@capacitor/core";
 
 interface PageTransitionProps {
   children: ReactNode;
@@ -7,9 +8,10 @@ interface PageTransitionProps {
 }
 
 const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isNative = typeof window !== 'undefined' && Capacitor.isNativePlatform();
 
 const PageTransition = ({ children, className }: PageTransitionProps) => {
-  if (prefersReducedMotion) {
+  if (prefersReducedMotion || isNative) {
     return (
       <div
         className={className}
@@ -25,18 +27,17 @@ const PageTransition = ({ children, className }: PageTransitionProps) => {
 
   return (
     <motion.div
-      initial={{ opacity: 0.9, y: 5 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0.95 }}
+      initial={{ opacity: 0.98 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 1 }}
       transition={{
-        duration: 0.18,
-        ease: [0.16, 1, 0.3, 1], // Curva Apple fluida (120fps)
+        duration: 0.12,
+        ease: "easeOut",
       }}
       className={className}
       style={{
         width: "100%",
         minHeight: "100dvh",
-        willChange: "transform, opacity",
       }}
     >
       {children}
