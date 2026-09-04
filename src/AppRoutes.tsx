@@ -323,6 +323,7 @@ function ResumosJuridicosRouteWrapper({ children }: { children: React.ReactNode 
   return <>{children}</>;
 }
 import FlashcardsRouteWrapper from "@/components/flashcards/FlashcardsRouteWrapper";
+import VideoaulasRouteWrapper from "@/components/videoaulas/VideoaulasRouteWrapper";
 const LeiSecaPlayer = lazy(routePrefetch.leiSecaPlayer);
 const LeiSecaLembretes = lazy(routePrefetch.leiSecaLembretes);
 
@@ -941,7 +942,7 @@ function AnimatedRoutes() {
           <Route path="/flashcards/excecoes" element={<Suspense fallback={<div className="min-h-dvh bg-background" />}><FlashcardsExcecoes /></Suspense>} />
           <Route path="/flashcards/classificacoes" element={<Suspense fallback={<div className="min-h-dvh bg-background" />}><FlashcardsClassificacoes /></Suspense>} />
           <Route path="/videoaulas" element={<Navigate to="/videoaulas/painel" replace />} />
-          <Route path="/videoaulas/painel" element={<ProtectedRoute><PageTransition><Videoaulas /></PageTransition></ProtectedRoute>} />
+          <Route path="/videoaulas/painel" element={<ProtectedRoute><VideoaulasRouteWrapper><PageTransition><Videoaulas /></PageTransition></VideoaulasRouteWrapper></ProtectedRoute>} />
           <Route path="/videoaulas/favoritos" element={<ProtectedRoute><PageTransition><VideoaulasLista modo="favoritos" /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/recentes" element={<ProtectedRoute><PageTransition><VideoaulasLista modo="recentes" /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/trilhas" element={<ProtectedRoute><PageTransition><VideoaulasTrilhas /></PageTransition></ProtectedRoute>} />
