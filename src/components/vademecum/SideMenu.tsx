@@ -2,13 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import {
   Info, LogOut, ChevronRight,
-  User, LifeBuoy, Lock, Star, Gem, MessageSquareHeart,
+  User, LifeBuoy, Lock, Gem, MessageSquareHeart,
   Pencil, Sparkles, Bell as BellIcon, Crown, CheckSquare,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfileSummary } from '@/hooks/useProfileSummary';
 import { useSubscription } from '@/hooks/useSubscription';
-import { useAppUsageTime } from '@/hooks/useAppUsageTime';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { isAdminEmail } from '@/lib/adminEmails';
@@ -62,7 +61,6 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
   const navigate = useNavigate();
   const { signOut, user } = useAuth();
   const { isPremium } = useSubscription();
-  const { formattedToday, pctToday } = useAppUsageTime();
   useBodyScrollLock(open);
 
   useEffect(() => {
@@ -111,7 +109,6 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
     { id: 'meu-espaco', label: 'Meu Espaço', icon: User },
     { id: 'planos',  label: isPremium ? 'Minha assinatura' : 'Planos',  icon: Gem },
     { id: 'lembretes', label: 'Meus lembretes', icon: BellIcon },
-    { id: 'avaliar', label: 'Avaliar o app', icon: Star },
   ];
 
   const handleItemClick = async (id: string) => {
@@ -124,28 +121,6 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
       setTimeout(() => {
         signOut().catch(() => {});
       }, 50);
-      return;
-    }
-
-    // Avaliar o app abre a loja nativa diretamente (conforme pedido)
-    if (id === 'avaliar') {
-      onClose();
-      
-      const isIos = Capacitor.getPlatform() === 'ios';
-      const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=br.com.app.gpu2675756.gpu0e7509bfb7bde52aef412888bb17a4';
-      const PLAY_MARKET_URL = 'market://details?id=br.com.app.gpu2675756.gpu0e7509bfb7bde52aef412888bb17a4';
-      const APP_STORE_REVIEW_URL = 'https://apps.apple.com/us/app/direito-estudos-jur%C3%ADdicos/id6450845861?action=write-review';
-
-      if (Capacitor.isNativePlatform()) {
-        const primary = isIos ? APP_STORE_REVIEW_URL : PLAY_MARKET_URL;
-        import('@capacitor/app-launcher').then(({ AppLauncher }) => {
-          AppLauncher.openUrl({ url: primary }).catch(() => {
-            window.open(isIos ? APP_STORE_REVIEW_URL : PLAY_STORE_URL, '_blank');
-          });
-        });
-      } else {
-        window.open(PLAY_STORE_URL, '_blank');
-      }
       return;
     }
 
@@ -229,8 +204,8 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
                     <div className="flex items-center gap-2 flex-wrap">
                       <h2 className="font-display text-base font-bold text-foreground leading-tight truncate">{displayName}</h2>
                       {isPremium ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-500/20 border border-yellow-500/40 text-[10px] font-body font-bold uppercase tracking-wider text-yellow-500">
-                          <Crown className="w-3 h-3" /> Premium
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-[#F59E0B]/40 bg-[#F59E0B]/10 text-[10px] font-body font-bold uppercase tracking-wider text-[#FBBF24] shadow-sm shadow-[#F59E0B]/10">
+                          <Crown className="w-3.5 h-3.5 text-[#F59E0B]" strokeWidth={2.4} /> Premium
                         </span>
                       ) : (
                         <span className="px-2 py-0.5 rounded-full bg-muted border border-border text-[10px] font-body font-bold uppercase tracking-wider text-muted-foreground">
@@ -250,22 +225,6 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
                       Atualizar
                     </button>
                   )}
-                </div>
-
-                {/* Study time bar */}
-                <div className="mt-4">
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-xs font-body text-muted-foreground">Tempo de estudo hoje</span>
-                    <span className="text-xs font-body font-semibold text-foreground">{formattedToday}</span>
-                  </div>
-                  <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${pctToday}%` }}
-                      transition={{ duration: 0.6, ease: 'easeOut' }}
-                      className="h-full bg-primary rounded-full"
-                    />
-                  </div>
                 </div>
               </div>
 
