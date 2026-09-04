@@ -283,8 +283,31 @@ function LeiSecaParteRoute() {
   return <LeiSecaParte key={`${slug}/${parte}`} />;
 }
 
+import { Capacitor } from "@capacitor/core";
+import { ResumosNativePlugin } from "./plugins/ResumosNativePlugin";
+
 function ResumosJuridicosRouteWrapper({ children }: { children: React.ReactNode }) {
   const isDesktop = useMediaQuery("(min-width: 1024px)");
+  const { area, tema } = useParams();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (Capacitor.isNativePlatform()) {
+      if (tema && area) {
+        ResumosNativePlugin.openReader({ area, tema });
+      } else if (area) {
+        ResumosNativePlugin.openResumos({ initialArea: area });
+      } else {
+        ResumosNativePlugin.openResumos();
+      }
+      navigate(-1); // Voltar na web para não ficar na tela branca
+    }
+  }, [area, tema, navigate]);
+
+  if (Capacitor.isNativePlatform()) {
+    return <div className="min-h-dvh bg-[#0D0D0D]" />; // Placeholder enquanto abre o nativo
+  }
+
   if (isDesktop) return <ResumosJuridicosDesktop />;
   return <>{children}</>;
 }
