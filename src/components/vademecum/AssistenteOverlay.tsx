@@ -298,14 +298,11 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
     const text = input.trim();
     if ((!text && !attachment) || loading) return;
     
-    // Bloqueio fixo para não assinantes (conforme solicitado pelo usuário)
-    if (!podeUsarPremium) {
+    if (!chatLimit.canUse) {
       setGateFeature('chat_juridico');
       return;
     }
-    
-    if (!chatLimit.canUse) { setGateFeature('chat_juridico'); return; }
-    chatLimit.register();
+    void chatLimit.register();
 
     track('chat_juridico_mensagem_enviada', {
       has_attachment: !!attachment,
@@ -326,34 +323,84 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
     setAttachment(null);
     setLoading(true);
     const startTime = Date.now();
+    const asMsgId = crypto.randomUUID();
+
     try {
       const { data: sessionData } = await supabase.auth.getSession();
       const token = sessionData.session?.access_token;
       
-      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/assistente-juridica`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-        },
-        body: JSON.stringify({
-          messages: newMessages.map(m => ({
-            role: m.role, content: m.content,
-            ...(m.attachment ? { attachment: { mime: m.attachment.mime, data: m.attachment.data } } : {}),
-          })),
-          webSearch,
-          stream: true,
-        })
-      });
+      const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "https://dnjrgpldcwcpoywamorr.supabase.co";
+      const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRuanJncGxkY3djcG95d2Ftb3JyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2ODYxMzMsImV4cCI6MjA5ODI2MjEzM30.GuZuUn1ITbjsTYi_SjL-eFSCxdxxs3rUASArbMf62O0";
 
-      if (!res.ok) throw new Error('Falha ao conectar');
-      
-      const asMsgId = crypto.randomUUID();
+      const endpoint = `${SUPABASE_URL.replace(/\/+$/, '')}/functions/v1/assistente-juridica`;
+      const payloadMessages = newMessages.map(m => ({
+        role: m.role, content: m.content,
+        ...(m.attachment ? { attachment: { mime: m.attachment.mime, data: m.attachment.data } } : {}),
+      }));
+
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${token || SUPABASE_ANON_KEY}`,
+      };
+
+      let res: Response | null = null;
+      let streamOk = false;
+
+      try {
+        res = await fetch(endpoint, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            messages: payloadMessages,
+            webSearch,
+            stream: true,
+          })
+        });
+        if (res.ok) {
+          streamOk = true;
+        }
+      } catch (streamErr) {
+        console.warn('[Chat] Fetch stream error, will fallback to invoke:', streamErr);
+      }
+
       const elapsed = Math.round((Date.now() - startTime) / 1000);
+
+      if (!streamOk || !res || !res.ok) {
+        // Robust fallback: Supabase SDK invoke
+        const { data, error: invokeErr } = await supabase.functions.invoke('assistente-juridica', {
+          body: {
+            messages: payloadMessages,
+            webSearch,
+            stream: false,
+          },
+        });
+
+        if (invokeErr || !data) {
+          throw invokeErr || new Error('Falha ao conectar');
+        }
+
+        const webSources: ChatSource[] = Array.isArray(data?.sources) ? data.sources : [];
+        const startN = (webSources.length ? Math.max(...webSources.map((s: any) => s.n)) : 0) + 1;
+        const rawReply: string = data?.reply || 'Não consegui gerar uma resposta agora. Tente reformular.';
+        const { text: enrichedReply, sources: statuteSources } = extractStatuteSources(rawReply, startN);
+        const asMsg: Message = {
+          id: asMsgId, role: 'assistant',
+          content: enrichedReply,
+          createdAt: Date.now(),
+          sources: [...webSources, ...statuteSources],
+          webSearch,
+          thoughtTime: Math.max(1, elapsed),
+        };
+        setMessages(prev => [...prev, asMsg]);
+        setRevealed(r => ({ ...r, [asMsg.id]: 0 }));
+        return;
+      }
+      
       const contentType = res.headers.get('Content-Type') || '';
       
       if (!contentType.includes('text/event-stream') || !res.body) {
-        // Fallback for JSON
+        // Fallback for JSON response
         const data = await res.json();
         const webSources: ChatSource[] = Array.isArray(data?.sources) ? data.sources : [];
         const startN = (webSources.length ? Math.max(...webSources.map((s) => s.n)) : 0) + 1;
@@ -424,7 +471,29 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
       setMessages(prev => prev.map(m => m.id === asMsgId ? { ...m, content: enrichedReply, sources: [...webSources, ...statuteSources] } : m));
 
     } catch (err) {
-      console.error(err);
+      console.error('[Chat] Erro ao processar:', err);
+      // Fallback final caso o stream tenha falhado no meio
+      try {
+        const { data: fallbackData } = await supabase.functions.invoke('assistente-juridica', {
+          body: {
+            messages: newMessages.map(m => ({ role: m.role, content: m.content })),
+            webSearch: false,
+          },
+        });
+        if (fallbackData?.reply) {
+          const { text: enrichedReply } = extractStatuteSources(fallbackData.reply, 1);
+          setMessages(prev => {
+            const hasTemp = prev.some(m => m.id === asMsgId);
+            if (hasTemp) {
+              return prev.map(m => m.id === asMsgId ? { ...m, content: enrichedReply } : m);
+            }
+            return [...prev, { id: asMsgId, role: 'assistant', content: enrichedReply, createdAt: Date.now() }];
+          });
+          return;
+        }
+      } catch (fallbackErr) {
+        console.error('[Chat] Fallback secundario falhou:', fallbackErr);
+      }
       setMessages(prev => [...prev, { id: crypto.randomUUID(), role: 'assistant', content: '⚠️ Erro ao processar. Tente novamente.', createdAt: Date.now() }]);
     } finally {
       setLoading(false);
