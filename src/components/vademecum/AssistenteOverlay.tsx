@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 import { pdf, Document, Page, Text as PdfText, StyleSheet } from '@react-pdf/renderer';
 import { track } from '@/lib/analyticsEvents';
 
+import ShapeGrid from '@/components/ui/ShapeGrid';
 import { SphereCloud } from './SphereCloud';
 import {
   FlipFlashcards, QuestoesRunner, MapaMentalCanvas, TermosViewer, ShareSheet,
@@ -551,17 +552,32 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
           className={
             isDesktop
-              ? 'fixed inset-0 z-[60] bg-background flex flex-row'
-              : 'fixed inset-0 z-[60] flex flex-col'
+              ? 'fixed inset-0 z-[60] bg-[#07080b] flex flex-row'
+              : 'fixed inset-0 z-[60] bg-[#07080b] flex flex-col'
           }
         >
-          {/* Immersive Background (Mobile Only) */}
-          {!isDesktop && (
-            <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10 bg-[#08090a]">
-              <div className="absolute top-[-20%] left-[-10%] w-[140%] h-[60%] bg-accent/15 blur-[120px] rounded-full mix-blend-screen" />
-              <div className="absolute bottom-[-10%] right-[-10%] w-[120%] h-[50%] bg-primary/10 blur-[100px] rounded-full mix-blend-screen" />
+          {/* Fundo com Aspecto de Profundo, Elegante e Imersivo com ShapeGrid Oficial */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10 bg-[#07080b]">
+            {/* ShapeGrid com profundidade geométrica sutil */}
+            <div className="absolute inset-0 opacity-40 mix-blend-screen">
+              <ShapeGrid
+                speed={0.4}
+                squareSize={42}
+                direction="diagonal"
+                borderColor="rgba(255, 255, 255, 0.04)"
+                hoverFillColor="rgba(255, 255, 255, 0.08)"
+                shape="square"
+                hoverTrailAmount={4}
+              />
             </div>
-          )}
+
+            {/* Halos volumétricos de luz e profundidade atmosférica */}
+            <div className="absolute top-[-25%] left-[-15%] w-[130%] h-[60%] bg-[radial-gradient(ellipse_at_top,rgba(190,140,75,0.15),transparent_65%)] blur-[95px] mix-blend-screen" />
+            <div className="absolute bottom-[-20%] right-[-10%] w-[120%] h-[55%] bg-[radial-gradient(ellipse_at_bottom,rgba(140,30,45,0.14),transparent_70%)] blur-[100px] mix-blend-screen" />
+            
+            {/* Vinheta profunda circular para criar perspectiva tridimensional */}
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_40%,transparent_25%,rgba(4,5,7,0.88)_100%)]" />
+          </div>
 
           {/* Desktop sidebar (ChatGPT-style) */}
           {isDesktop && (
@@ -645,19 +661,19 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
 
           {/* Main column */}
           <div className="flex-1 flex flex-col min-w-0 min-h-0">
-          {/* ChatGPT-style Header (Mobile) */}
+          {/* Mobile header (ChatGPT-style minimalist) */}
           {!isDesktop && (
-            <header className="flex items-center justify-between px-3 py-3 shrink-0" style={{ paddingTop: 'calc(var(--sai-top) + 0.75rem)' }}>
+            <header className="flex items-center justify-between px-3.5 py-2.5 shrink-0 bg-zinc-950/40 backdrop-blur-xl border-b border-white/5" style={{ paddingTop: 'calc(var(--sai-top,env(safe-area-inset-top,0px)) + 0.5rem)' }}>
               <button
                 onClick={() => { haptic.light(); onClose(); setTimeout(newSession, 300); }}
                 aria-label="Fechar"
-                className="w-10 h-10 rounded-full flex items-center justify-center bg-secondary/80 hover:bg-secondary active:scale-95 transition-all shadow-sm z-10 border border-white/5"
+                className="w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-zinc-900/80 hover:bg-zinc-800 active:scale-90 transition-all shadow-md z-10 border border-white/10"
               >
-                <X className="w-5 h-5 text-foreground" />
+                <X className="w-5 h-5 sm:w-6 sm:h-6 text-foreground" strokeWidth={2.2} />
               </button>
 
               <div className="flex flex-col items-center z-10">
-                <span className="text-[14px] font-semibold text-foreground tracking-tight">Chat Jurídico</span>
+                <span className="text-[14px] sm:text-[15px] font-semibold text-foreground tracking-wide">Chat Jurídico</span>
                 <button
                   onClick={() => { 
                     haptic.selection(); 
@@ -667,13 +683,12 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
                       toggleWebSearch(); 
                     }
                   }}
-                  className="flex items-center gap-1.5 mt-0.5 px-3 py-1 rounded-full transition-colors active:scale-95 bg-secondary/50 hover:bg-secondary/80 border border-white/5"
+                  className="flex items-center gap-1.5 mt-0.5 px-3 py-1 rounded-full transition-all active:scale-95 bg-zinc-900/80 hover:bg-zinc-800 border border-white/10 shadow-sm"
                 >
                   <Globe className={`w-3.5 h-3.5 ${webSearch && podeUsarPremium ? 'text-accent' : 'text-muted-foreground'}`} />
                   <span className={`text-[9px] font-bold uppercase tracking-widest ${webSearch && podeUsarPremium ? 'text-accent' : 'text-muted-foreground'}`}>
                     Internet
                   </span>
-                  {/* Chavinha Toggle */}
                   <div className={`relative w-7 h-4 rounded-full flex items-center transition-colors shadow-inner ${webSearch && podeUsarPremium ? 'bg-accent' : 'bg-muted'}`}>
                     <div className={`w-3 h-3 rounded-full bg-white transition-transform shadow-sm ${webSearch && podeUsarPremium ? 'translate-x-[14px]' : 'translate-x-[2px]'}`} />
                   </div>
@@ -683,13 +698,12 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
               <button
                 onClick={() => { haptic.selection(); setHistoryOpen(true); }}
                 aria-label="Histórico"
-                className="w-10 h-10 rounded-full flex items-center justify-center bg-secondary/80 hover:bg-secondary active:scale-95 transition-all shadow-sm z-10 border border-white/5"
+                className="w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-zinc-900/80 hover:bg-zinc-800 active:scale-90 transition-all shadow-md z-10 border border-white/10"
               >
-                <HistoryIcon className="w-5 h-5 text-foreground" />
+                <HistoryIcon className="w-5 h-5 sm:w-6 sm:h-6 text-foreground" strokeWidth={2} />
               </button>
             </header>
           )}
-
 
 
           {/* Messages */}
@@ -906,25 +920,25 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
           {/* Input area (ChatGPT Pill Style) */}
           <div className={
             isDesktop
-              ? 'relative px-6 pb-6 pt-2 bg-gradient-to-t from-background via-background to-transparent'
-              : 'relative px-4 pb-[calc(0.5rem+var(--sai-bottom))] pt-2 bg-gradient-to-t from-background via-background/90 to-transparent'
+              ? 'relative px-6 pb-6 pt-3 bg-gradient-to-t from-[#07080b] via-[#07080b]/95 to-transparent'
+              : 'relative px-3.5 pb-[calc(0.75rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-3 bg-gradient-to-t from-[#07080b] via-[#07080b]/95 to-transparent'
           }>
-            <div className={`mx-auto w-full max-w-3xl rounded-[26px] bg-[#2f2f2f] shadow-lg flex flex-col p-1.5 border border-white/5`}>
+            <div className="mx-auto w-full max-w-3xl rounded-[28px] bg-zinc-900/90 sm:bg-zinc-900/80 backdrop-blur-2xl border border-white/10 shadow-[0_12px_36px_rgba(0,0,0,0.65)] flex flex-col p-2 transition-all focus-within:border-accent/40 focus-within:ring-1 focus-within:ring-accent/25">
               {attachment && (
-                <div className="mb-1 flex items-center gap-2 px-3 py-1.5 mx-1.5 mt-1.5 rounded-xl bg-white/5 border border-white/5">
-                  <Paperclip className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-xs font-body text-foreground truncate flex-1">{attachment.name}</span>
-                  <button onClick={() => setAttachment(null)} className="p-1"><X className="w-3.5 h-3.5 text-muted-foreground" /></button>
+                <div className="mb-2 flex items-center gap-2 px-3.5 py-2 mx-1 rounded-2xl bg-white/10 border border-white/10">
+                  <Paperclip className="w-4 h-4 text-accent shrink-0" />
+                  <span className="text-xs font-body text-foreground truncate flex-1 font-medium">{attachment.name}</span>
+                  <button onClick={() => setAttachment(null)} className="p-1 rounded-full hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors"><X className="w-4 h-4" /></button>
                 </div>
               )}
               
-              <div className="flex items-end gap-1 relative">
+              <div className="flex items-end gap-1.5 relative">
                 <button
                   onClick={() => { haptic.selection(); abrirAnexos(); }}
                   aria-label="Anexar"
-                  className="w-10 h-10 mb-0.5 ml-0.5 rounded-full flex items-center justify-center shrink-0 text-muted-foreground hover:bg-white/5 transition-colors active:scale-95"
+                  className="w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center shrink-0 text-muted-foreground hover:text-foreground hover:bg-white/10 transition-all active:scale-90 touch-manipulation cursor-pointer"
                 >
-                  <Plus className="w-[22px] h-[22px]" />
+                  <Plus className="w-6 h-6" strokeWidth={2.2} />
                 </button>
 
                 <textarea
@@ -934,26 +948,32 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
                   onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
                   rows={1}
                   placeholder={voice.listening ? 'Ouvindo…' : 'Mensagem...'}
-                  className="flex-1 min-h-[44px] max-h-32 bg-transparent px-1 py-3 text-[16px] font-body text-foreground placeholder:text-muted-foreground focus:outline-none resize-none leading-relaxed"
+                  className="flex-1 min-h-[48px] max-h-36 bg-transparent px-2 py-3 text-[16px] font-body text-foreground placeholder:text-muted-foreground/70 focus:outline-none resize-none leading-relaxed"
                 />
 
                 {(input.trim() || attachment) ? (
                   <button
                     onClick={() => { haptic.light(); sendMessage(); }}
                     disabled={loading}
-                    className="w-[34px] h-[34px] mb-1.5 mr-1.5 rounded-full bg-white flex items-center justify-center disabled:opacity-40 shrink-0 transition-opacity active:scale-95"
+                    aria-label="Enviar mensagem"
+                    className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white hover:bg-zinc-100 text-zinc-950 flex items-center justify-center shrink-0 shadow-[0_4px_18px_rgba(255,255,255,0.35)] transition-all active:scale-90 disabled:opacity-50 touch-manipulation cursor-pointer"
                   >
-                    <Send className="w-4 h-4 text-black mr-0.5" />
+                    {loading ? (
+                      <Loader2 className="w-5 h-5 animate-spin text-zinc-900" />
+                    ) : (
+                      <Send className="w-5 h-5 text-zinc-950 ml-0.5" strokeWidth={2.4} />
+                    )}
                   </button>
                 ) : (
                   <button
                     onClick={() => { haptic.selection(); toggleMic(); }}
-                    className={`relative w-10 h-10 mb-0.5 mr-0.5 rounded-full flex items-center justify-center shrink-0 transition-colors active:scale-95 ${
-                      voice.listening ? 'bg-red-500/20 text-red-500' : 'text-muted-foreground hover:bg-white/5'
+                    aria-label="Gravar áudio"
+                    className={`relative w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center shrink-0 transition-all active:scale-90 touch-manipulation cursor-pointer ${
+                      voice.listening ? 'bg-red-500 text-white shadow-[0_0_16px_rgba(239,68,68,0.5)]' : 'text-muted-foreground hover:text-foreground hover:bg-white/10'
                     }`}
                   >
-                    <Mic className="w-5 h-5" />
-                    {voice.listening && <span className="absolute inset-1.5 rounded-full ring-2 ring-red-500/40 animate-ping" />}
+                    <Mic className="w-5 h-5" strokeWidth={2.2} />
+                    {voice.listening && <span className="absolute inset-1 rounded-full ring-2 ring-red-400 animate-ping" />}
                   </button>
                 )}
               </div>
@@ -962,7 +982,7 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
             
             {!isDesktop && (
               <div className="text-center mt-2.5 px-4">
-                <p className="text-[10px] text-muted-foreground/50 font-body tracking-wide">
+                <p className="text-[10px] text-muted-foreground/60 font-body tracking-wider">
                   O Chat Jurídico pode cometer erros. Considere verificar as fontes.
                 </p>
               </div>
