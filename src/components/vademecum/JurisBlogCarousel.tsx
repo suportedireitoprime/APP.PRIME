@@ -102,7 +102,7 @@ export default function JurisBlogCarousel() {
             >
               <div
                 className={`relative w-full h-[170px] overflow-hidden rounded-2xl transition-all duration-300 ${
-                  isActive ? 'opacity-100 scale-100 shadow-lg' : 'opacity-60 scale-[0.94]'
+                  isActive ? 'opacity-100 scale-100 shadow-lg' : 'opacity-85 scale-[0.98]'
                 }`}
                 style={c ? { background: c.bg } : undefined}
               >
@@ -113,10 +113,10 @@ export default function JurisBlogCarousel() {
                     aria-hidden
                     loading={i < 2 ? 'eager' : 'lazy'}
                     decoding="async"
-                    className="absolute inset-0 w-full h-full object-cover object-top opacity-90"
+                    className="absolute inset-0 w-full h-full object-cover object-top brightness-105"
                   />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 h-[65%] bg-gradient-to-t from-black/90 via-black/45 via-60% to-transparent pointer-events-none" />
 
                 <div className="absolute top-2.5 right-2.5 w-9 h-9 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-md">
                   <ArrowUpRight className="w-4 h-4 text-white" strokeWidth={2.2} />

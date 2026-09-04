@@ -325,7 +325,7 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
             >
               <div
                 className={`relative w-full h-[140px] overflow-hidden rounded-2xl transition-all duration-300 flex transform-gpu will-change-transform ${
-                  isActive ? 'opacity-100 scale-100 shadow-lg' : 'opacity-60 scale-[0.94]'
+                  isActive ? 'opacity-100 scale-100 shadow-lg' : 'opacity-85 scale-[0.98]'
                 }`}
                 style={{
                   background:
@@ -429,7 +429,7 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
 
             <div
               className={`relative w-full h-[140px] overflow-hidden rounded-2xl transition-all duration-300 transform-gpu will-change-transform ${
-                isActive ? 'opacity-100 scale-100 shadow-lg' : 'opacity-60 scale-[0.94]'
+                isActive ? 'opacity-100 scale-100 shadow-lg' : 'opacity-85 scale-[0.98]'
               }`}
               style={isB && c ? { background: c.bg } : undefined}
             >
@@ -449,11 +449,11 @@ export default function HomeNoticiasCarousel({ onOpenChange, autoplay = true }: 
                   decoding="async"
                   onError={(e) => { e.currentTarget.style.display = 'none'; }}
                   className={`absolute inset-0 w-full h-full object-cover ${
-                    isB ? 'object-top opacity-90' : 'brightness-110 contrast-105 saturate-110'
+                    isB ? 'object-top' : 'brightness-105 contrast-[1.02]'
                   }`}
                 />
               )}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 h-[65%] bg-gradient-to-t from-black/90 via-black/45 via-60% to-transparent pointer-events-none" />
 
               <div className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-md">
                 <ArrowUpRight className="w-3.5 h-3.5 text-white" strokeWidth={2.2} />
