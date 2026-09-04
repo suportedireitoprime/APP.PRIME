@@ -249,7 +249,7 @@ export default function ResumosJuridicosAreas() {
                     >
                       <div className="w-16 h-[88px] rounded-lg bg-white/5 border border-white/10 shrink-0 overflow-hidden shadow-md">
                         <img 
-                          src="/capa-amarela.png" 
+                          src="https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg" 
                           alt="Capa" 
                           className="w-full h-full object-cover" 
                           loading="lazy" 
@@ -288,7 +288,7 @@ export default function ResumosJuridicosAreas() {
                     >
                       <div className="w-16 h-[88px] rounded-lg bg-white/5 border border-white/10 shrink-0 overflow-hidden shadow-md">
                         <img 
-                          src="/capa-amarela.png" 
+                          src="https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg" 
                           alt="Capa" 
                           className="w-full h-full object-cover" 
                           loading="lazy" 
