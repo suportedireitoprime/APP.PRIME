@@ -329,6 +329,37 @@ export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoC
                     />
                   </button>
                 </div>
+
+                {/* ── Seletor Superior de Metodologia: Conceitos (Vermelho) | Cornell (Azul) | Feynman (Amarelo) ── */}
+                <div className="px-4 py-2 bg-black/40 border-t border-white/5 flex items-center justify-center gap-2">
+                  {([
+                    { id: "conceitos", label: "Conceitos", color: "#ef4444", bgActive: "bg-[#ef4444]/20 border-[#ef4444]/60 text-white", dot: "bg-[#ef4444]" },
+                    { id: "cornell", label: "Cornell", color: "#38bdf8", bgActive: "bg-[#38bdf8]/20 border-[#38bdf8]/60 text-white", dot: "bg-[#38bdf8]" },
+                    { id: "feynman", label: "Feynman", color: "#fbbf24", bgActive: "bg-[#fbbf24]/20 border-[#fbbf24]/60 text-white", dot: "bg-[#fbbf24]" },
+                  ] as const).map((m) => {
+                    const isAtivo = metodo === m.id;
+                    return (
+                      <button
+                        key={m.id}
+                        type="button"
+                        onClick={() => setMetodo(m.id as Metodo)}
+                        className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl border text-[11px] sm:text-xs font-bold uppercase tracking-wider transition-all active:scale-95 ${
+                          isAtivo
+                            ? `${m.bgActive} shadow-lg shadow-black/40`
+                            : "bg-white/[0.02] border-white/10 text-white/50 hover:text-white/90 hover:bg-white/[0.06]"
+                        }`}
+                      >
+                        <span
+                          className={`w-2 h-2 rounded-full ${m.dot} shrink-0 transition-transform ${
+                            isAtivo ? "scale-125 shadow-[0_0_8px_currentColor]" : "opacity-40"
+                          }`}
+                          style={{ color: m.color }}
+                        />
+                        <span>{m.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
               <div className="space-y-4 px-4 pt-4 md:px-5 md:pt-5">
@@ -345,14 +376,14 @@ export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoC
                             key={t}
                             onClick={() => setTab(t)}
                             className="relative flex-1 py-3 text-[13px] font-display font-bold uppercase tracking-wider text-center"
-                            style={{ color: ativo ? "#38bdf8" : "hsl(var(--muted-foreground))" }}
+                            style={{ color: ativo ? RED : "hsl(var(--muted-foreground))" }}
                           >
                             {label}
                             {ativo && (
                               <motion.span
                                 layoutId="ficha-aba"
                                 transition={{ type: "spring", stiffness: 420, damping: 34 }}
-                                className="absolute left-3 right-3 -bottom-[1px] h-[2px] rounded-full bg-[#38bdf8]"
+                                className="absolute left-3 right-3 -bottom-[1px] h-[2px] rounded-full bg-[#ef4444]"
                               />
                             )}
                           </button>
@@ -377,11 +408,11 @@ export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoC
                             prose prose-sm md:prose-base max-w-none font-body prose-invert
                             prose-headings:font-display prose-headings:text-foreground prose-headings:mt-6 prose-headings:mb-3
                             prose-h2:text-xl prose-h3:text-lg
-                            prose-p:text-foreground/90 prose-p:leading-[1.8] prose-p:my-4
-                            prose-a:text-[#38bdf8] prose-a:no-underline hover:prose-a:underline
+                            prose-p:text-foreground/90 prose-p:leading-[1.8] prose-p:my-4 prose-p:text-[15px] sm:prose-p:text-base
+                            prose-a:text-[#ef4444] prose-a:no-underline hover:prose-a:underline
                             prose-strong:text-foreground
-                            prose-blockquote:border-l-4 prose-blockquote:border-[#38bdf8] prose-blockquote:bg-[#38bdf8]/10 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r prose-blockquote:not-italic
-                            prose-ul:my-4 prose-li:my-1 prose-li:marker:text-[#38bdf8]
+                            prose-blockquote:border-l-4 prose-blockquote:border-[#ef4444] prose-blockquote:bg-[#ef4444]/10 prose-blockquote:py-2.5 prose-blockquote:px-4 prose-blockquote:rounded-r-xl prose-blockquote:not-italic
+                            prose-ul:my-4 prose-li:my-1.5 prose-li:marker:text-[#ef4444] prose-li:text-[15px] sm:prose-li:text-base
                           "
                         >
                           {content ? (
@@ -402,10 +433,10 @@ export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoC
                         <div
                           className="rounded-2xl border border-white/10 p-6 text-center space-y-4 mt-4 bg-white/5"
                         >
-                          <p className="text-sm text-white/70 font-body">
+                          <p className="text-[14.5px] sm:text-[15px] text-white/80 font-body leading-relaxed max-w-md mx-auto">
                             {metodo === "cornell"
-                              ? "O Método Cornell organiza o conteúdo em palavras-chave, perguntas de revisão e anotações."
-                              : "O Método Feynman explica o conteúdo em 4 passos, com linguagem simples e analogias."}
+                              ? "O Método Cornell organiza o conteúdo em palavras-chave, perguntas de revisão e anotações para fixação ativa."
+                              : "O Método Feynman explica o conteúdo em 4 passos, com linguagem simples e analogias para eliminar lacunas."}
                           </p>
                           {erroGerar && (
                             <p className="text-sm text-red-400 font-medium">
@@ -415,7 +446,11 @@ export default function ResumoJuridicoReaderSheet({ resumo, onClose, onFavoritoC
                           <button
                             onClick={() => gerarMetodologia(metodo)}
                             disabled={!!gerando}
-                            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#38bdf8] text-black font-display font-bold text-sm tracking-wide active:scale-95 transition disabled:opacity-60 shadow-lg shadow-black/20"
+                            className={`inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-display font-bold text-sm tracking-wide active:scale-95 transition disabled:opacity-60 shadow-xl ${
+                              metodo === "cornell"
+                                ? "bg-[#38bdf8] text-zinc-950 hover:bg-[#38bdf8]/90"
+                                : "bg-[#fbbf24] text-zinc-950 hover:bg-[#fbbf24]/90"
+                            }`}
                           >
                             {gerando === metodo ? (
                               <>

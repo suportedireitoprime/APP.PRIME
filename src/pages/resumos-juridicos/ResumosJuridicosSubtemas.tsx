@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, FileText, Heart, Loader2, Search, ChevronRight, NotebookText, BookOpen, Mic } from "lucide-react";
+import { ArrowLeft, FileText, Heart, Loader2, Search, ChevronRight, NotebookText, BookOpen, Mic, X, Brain } from "lucide-react";
 import { PageHeader } from "@/components/vademecum/PageHeader";
 import { Input } from "@/components/ui/input";
 import ResumoJuridicoReaderSheet, { ResumoRow } from "@/components/resumos-juridicos/ResumoJuridicoReaderSheet";
@@ -29,7 +29,7 @@ export default function ResumosJuridicosSubtemas() {
   
   const [selected, setSelected] = useState<ResumoRow | null>(null);
   const [selectedMetodo, setSelectedMetodo] = useState<Metodo>("conceitos");
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [modalResumo, setModalResumo] = useState<ResumoRow | null>(null);
   
   const [ordem, setOrdem] = useState<Ordem>("crono");
   const [favs, setFavs] = useState<string[]>(() => resumosLocal.favoritos().map((f) => f.id));
@@ -177,34 +177,26 @@ export default function ResumosJuridicosSubtemas() {
                   ordem === "crono" ? i + 1 : rows.findIndex((s) => s.id === r.id) + 1
                 ).padStart(2, "0");
                 const isFav = favs.includes(r.id);
-                const isExpanded = expandedId === r.id;
-                const isAnyExpanded = expandedId !== null;
                 
                 return (
                   <motion.div
                     layout
                     key={r.id}
                     initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ 
-                      opacity: isExpanded ? 1 : isAnyExpanded ? 0.3 : 1, 
-                      scale: isExpanded ? 1 : isAnyExpanded ? 0.98 : 1,
-                      filter: isExpanded ? "blur(0px)" : isAnyExpanded ? "blur(0.5px)" : "blur(0px)"
-                    }}
+                    animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.2 }}
-                    className={`flex flex-col rounded-2xl bg-card border transition-colors duration-300 shadow-sm group relative overflow-hidden ${
-                      isExpanded ? 'border-[#ef4444]/40 z-10' :
-                      isAnyExpanded ? 'border-border/50' : 'border-border hover:border-[#ef4444]/40'
-                    }`}
+                    className="flex flex-col rounded-2xl bg-card border border-border hover:border-[#ef4444]/40 transition-colors duration-300 shadow-sm group relative overflow-hidden"
                   >
                     <button
+                      type="button"
                       onClick={() => {
                         haptic.selection();
-                        setExpandedId(isExpanded ? null : r.id);
+                        setModalResumo(r);
                       }}
-                      className="flex items-center gap-3 px-4 py-3 min-h-[84px] hover:bg-secondary/20 transition-all text-left w-full relative"
+                      className="flex items-center gap-3 px-4 py-3 min-h-[84px] hover:bg-secondary/20 transition-all text-left w-full relative group"
                     >
-                      <div className={`absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-[#ef4444] to-[#7f1d1d] opacity-20 group-hover:opacity-100 transition-opacity ${isExpanded ? 'opacity-100' : ''}`} />
+                      <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-[#ef4444] to-[#7f1d1d] opacity-20 group-hover:opacity-100 transition-opacity" />
                       
                       <span
                         className="font-display font-bold text-[22px] shrink-0 w-8 tabular-nums opacity-80 group-hover:opacity-100 transition-opacity ml-1"
@@ -240,45 +232,9 @@ export default function ResumosJuridicosSubtemas() {
                             <Heart className="w-5 h-5 text-muted-foreground/50" />
                           )}
                         </div>
-                        <ChevronRight className={`w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-transform duration-300 ${isExpanded ? 'rotate-90' : ''}`} />
+                        <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-transform duration-300 group-hover:translate-x-0.5" />
                       </div>
                     </button>
-
-                    <AnimatePresence>
-                      {isExpanded && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          className="border-t border-border/50 bg-secondary/10"
-                        >
-                          <div className="flex gap-2 p-3">
-                            <button
-                              onClick={() => { haptic.selection(); openReader(r, "conceitos"); }}
-                              className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3.5 rounded-xl bg-white/5 backdrop-blur-md border border-white/10 text-foreground shadow-sm hover:border-[#ef4444]/50 transition-all active:scale-95"
-                            >
-                              <FileText className="w-5 h-5 text-[#ef4444]" />
-                              <span className="font-bold text-[10px] uppercase tracking-wider text-[#ef4444]">Conceitos</span>
-                            </button>
-                            <button
-                              onClick={() => { haptic.selection(); openReader(r, "cornell"); }}
-                              className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3.5 rounded-xl bg-white/5 backdrop-blur-md border border-white/10 text-foreground shadow-sm hover:border-[#38bdf8]/50 transition-all active:scale-95"
-                            >
-                              <NotebookText className="w-5 h-5 text-[#38bdf8]" />
-                              <span className="font-bold text-[10px] uppercase tracking-wider text-[#38bdf8]">Cornell</span>
-                            </button>
-                            <button
-                              onClick={() => { haptic.selection(); openReader(r, "feynman"); }}
-                              className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3.5 rounded-xl bg-white/5 backdrop-blur-md border border-white/10 text-foreground shadow-sm hover:border-[#fbbf24]/50 transition-all active:scale-95"
-                            >
-                              <BookOpen className="w-5 h-5 text-[#fbbf24]" />
-                              <span className="font-bold text-[10px] uppercase tracking-wider text-[#fbbf24]">Feynman</span>
-                            </button>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-
                   </motion.div>
                 );
               })}
@@ -286,6 +242,149 @@ export default function ResumosJuridicosSubtemas() {
           </div>
         )}
       </div>
+
+      {/* ── Card Flutuante Centralizado: Escolha de Método (Abre da Direita para a Esquerda) ── */}
+      <AnimatePresence>
+        {modalResumo && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop com Blur */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setModalResumo(null)}
+              className="fixed inset-0 bg-black/80 backdrop-blur-md"
+            />
+
+            {/* Card Flutuante Centralizado */}
+            <motion.div
+              initial={{ x: 80, opacity: 0, scale: 0.95 }}
+              animate={{ x: 0, opacity: 1, scale: 1 }}
+              exit={{ x: 80, opacity: 0, scale: 0.95 }}
+              transition={{ type: "spring", damping: 28, stiffness: 320 }}
+              className="relative z-10 w-full max-w-lg rounded-3xl bg-[#121215] border border-white/15 p-5 sm:p-6 overflow-hidden flex flex-col gap-4 text-left shadow-[0_25px_60px_rgba(0,0,0,0.9)]"
+            >
+              {/* Brilhos decorativos */}
+              <div className="pointer-events-none absolute -top-16 -right-16 w-44 h-44 bg-[#ef4444]/10 rounded-full blur-3xl" />
+              <div className="pointer-events-none absolute -bottom-16 -left-16 w-44 h-44 bg-[#38bdf8]/10 rounded-full blur-3xl" />
+
+              {/* Cabeçalho */}
+              <div className="flex items-start justify-between gap-3 relative z-10 border-b border-white/10 pb-3.5">
+                <div className="space-y-1 min-w-0 pr-2">
+                  <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-[#ef4444]">
+                    {modalResumo.area}
+                  </span>
+                  <h2 className="font-display text-lg sm:text-xl font-black text-white leading-tight line-clamp-2">
+                    {modalResumo.subtema || modalResumo.tema}
+                  </h2>
+                  <p className="text-xs sm:text-[13px] text-white/50 font-medium">
+                    Escolha o método de estudo ideal para você:
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setModalResumo(null)}
+                  className="w-9 h-9 shrink-0 rounded-full bg-white/10 hover:bg-white/20 active:scale-90 flex items-center justify-center text-white/70 hover:text-white transition-all"
+                  aria-label="Fechar"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* 3 Métodos com Cores Oficiais e Descrições */}
+              <div className="flex flex-col gap-3 relative z-10">
+                {/* 1. Conceitos (Vermelho) */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    haptic.selection();
+                    const r = modalResumo;
+                    setModalResumo(null);
+                    openReader(r, "conceitos");
+                  }}
+                  className="group relative flex items-start gap-3.5 p-3.5 sm:p-4 rounded-2xl border border-white/10 hover:border-[#ef4444]/60 bg-white/[0.03] hover:bg-[#ef4444]/10 transition-all active:scale-[0.98] text-left cursor-pointer"
+                >
+                  <div className="w-11 h-11 rounded-xl bg-[#ef4444]/15 border border-[#ef4444]/30 flex items-center justify-center text-[#ef4444] shrink-0 group-hover:scale-105 group-hover:bg-[#ef4444] group-hover:text-white transition-all shadow-md">
+                    <FileText className="w-5 h-5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-sm sm:text-[15px] font-black uppercase tracking-wider text-white group-hover:text-[#ef4444] transition-colors">
+                        Conceitos
+                      </span>
+                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#ef4444]/20 text-[#ef4444] border border-[#ef4444]/30">
+                        Tradicional
+                      </span>
+                    </div>
+                    <p className="text-[12.5px] sm:text-[13px] text-zinc-300 leading-relaxed mt-1">
+                      Visão aprofundada e completa da matéria, com fundamentação jurídica, exemplos práticos e termos-chave.
+                    </p>
+                  </div>
+                </button>
+
+                {/* 2. Método Cornell (Azul) */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    haptic.selection();
+                    const r = modalResumo;
+                    setModalResumo(null);
+                    openReader(r, "cornell");
+                  }}
+                  className="group relative flex items-start gap-3.5 p-3.5 sm:p-4 rounded-2xl border border-white/10 hover:border-[#38bdf8]/60 bg-white/[0.03] hover:bg-[#38bdf8]/10 transition-all active:scale-[0.98] text-left cursor-pointer"
+                >
+                  <div className="w-11 h-11 rounded-xl bg-[#38bdf8]/15 border border-[#38bdf8]/30 flex items-center justify-center text-[#38bdf8] shrink-0 group-hover:scale-105 group-hover:bg-[#38bdf8] group-hover:text-zinc-950 transition-all shadow-md">
+                    <NotebookText className="w-5 h-5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-sm sm:text-[15px] font-black uppercase tracking-wider text-white group-hover:text-[#38bdf8] transition-colors">
+                        Método Cornell
+                      </span>
+                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#38bdf8]/20 text-[#38bdf8] border border-[#38bdf8]/30">
+                        Fixação Ativa
+                      </span>
+                    </div>
+                    <p className="text-[12.5px] sm:text-[13px] text-zinc-300 leading-relaxed mt-1">
+                      Organização em tópicos, palavras-chave e perguntas de revisão para autoavaliação e retenção acelerada.
+                    </p>
+                  </div>
+                </button>
+
+                {/* 3. Método Feynman (Amarelo) */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    haptic.selection();
+                    const r = modalResumo;
+                    setModalResumo(null);
+                    openReader(r, "feynman");
+                  }}
+                  className="group relative flex items-start gap-3.5 p-3.5 sm:p-4 rounded-2xl border border-white/10 hover:border-[#fbbf24]/60 bg-white/[0.03] hover:bg-[#fbbf24]/10 transition-all active:scale-[0.98] text-left cursor-pointer"
+                >
+                  <div className="w-11 h-11 rounded-xl bg-[#fbbf24]/15 border border-[#fbbf24]/30 flex items-center justify-center text-[#fbbf24] shrink-0 group-hover:scale-105 group-hover:bg-[#fbbf24] group-hover:text-zinc-950 transition-all shadow-md">
+                    <Brain className="w-5 h-5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-sm sm:text-[15px] font-black uppercase tracking-wider text-white group-hover:text-[#fbbf24] transition-colors">
+                        Método Feynman
+                      </span>
+                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#fbbf24]/20 text-[#fbbf24] border border-[#fbbf24]/30">
+                        Simplificação
+                      </span>
+                    </div>
+                    <p className="text-[12.5px] sm:text-[13px] text-zinc-300 leading-relaxed mt-1">
+                      Explicação em 4 passos com linguagem simples do dia a dia e analogias para eliminar lacunas de entendimento.
+                    </p>
+                  </div>
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       <ResumoJuridicoReaderSheet
         resumo={selected}

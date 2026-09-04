@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Search, Heart, History, Brain, FileText, NotebookText } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
+import { ArrowLeft, Search, NotebookText, ChevronRight } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import HeroMotifs from '../vademecum/HeroMotifs';
 import HeroCoverCarousel from '../vademecum/HeroCoverCarousel';
@@ -79,9 +78,19 @@ interface Props {
   onBuscar?: () => void;
   q?: string;
   setQ?: (val: string) => void;
+  totalResumos?: number;
+  totalAreas?: number;
+  totalTemas?: number;
 }
 
-const ResumosHero = ({ onBuscar, q, setQ }: Props) => {
+const ResumosHero = ({
+  onBuscar,
+  q,
+  setQ,
+  totalResumos = 4359,
+  totalAreas = 29,
+  totalTemas = 527,
+}: Props) => {
   const navigate = useNavigate();
   const { images: dbImages } = useHeroHomeImages();
 
@@ -139,27 +148,49 @@ const ResumosHero = ({ onBuscar, q, setQ }: Props) => {
           </p>
         </div>
 
-        {/* ── 4 Botões de Ação Rápida ────────────────── */}
-        <div className="grid grid-cols-4 gap-2 mx-1 mt-1">
-          <button onClick={() => navigate('/resumos-juridicos/favoritos')} className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/20 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/40 transition-all active:scale-95 gap-2 text-center">
-            <Heart className="w-5 h-5 text-rose-400 group-hover:text-rose-300 group-hover:scale-110 transition-all" strokeWidth={2} />
-            <span className="text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">Favoritos</span>
-          </button>
-          
-          <button onClick={() => navigate('/resumos-juridicos/recentes')} className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/20 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/40 transition-all active:scale-95 gap-2 text-center">
-            <History className="w-5 h-5 text-sky-400 group-hover:text-sky-300 group-hover:scale-110 transition-all" strokeWidth={2} />
-            <span className="text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">Recentes</span>
-          </button>
+        {/* ── Painel de Estatísticas (Total Resumos, Áreas, Temas) ────────────────── */}
+        <div className="relative mt-1 rounded-2xl bg-black/85 text-white shadow-xl ring-1 ring-black/20 overflow-hidden">
+          <div className="grid grid-cols-3 divide-x divide-white/10">
+            {/* Box 1: Total Resumos */}
+            <div className="flex flex-col items-center justify-center px-1.5 py-2.5 transition-colors hover:bg-white/5 active:scale-95 group select-none">
+              <div className="flex items-center gap-0.5">
+                <span className="text-[8.5px] sm:text-[9px] font-extrabold uppercase tracking-wider text-white/60 group-hover:text-white transition-colors">
+                  Total Resumos
+                </span>
+                <ChevronRight className="w-2.5 h-2.5 text-white/40 group-hover:text-white group-hover:translate-x-0.5 transition-transform" />
+              </div>
+              <span className="mt-0.5 font-display text-base font-black leading-none text-white [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]">
+                {totalResumos.toLocaleString('pt-BR')}
+              </span>
+            </div>
 
-          <button onClick={() => toast({ title: 'Em breve: Listagem Feynman' })} className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/20 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/40 transition-all active:scale-95 gap-2 text-center">
-            <Brain className="w-5 h-5 text-fuchsia-400 group-hover:text-fuchsia-300 group-hover:scale-110 transition-all" strokeWidth={2} />
-            <span className="text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">Feynman</span>
-          </button>
+            {/* Box 2: Total Áreas */}
+            <div className="flex flex-col items-center justify-center px-1.5 py-2.5 transition-colors hover:bg-white/5 active:scale-95 group select-none">
+              <div className="flex items-center gap-0.5">
+                <span className="text-[8.5px] sm:text-[9px] font-extrabold uppercase tracking-wider text-white/60 group-hover:text-white transition-colors">
+                  Total Áreas
+                </span>
+                <ChevronRight className="w-2.5 h-2.5 text-white/40 group-hover:text-white group-hover:translate-x-0.5 transition-transform" />
+              </div>
+              <span className="mt-0.5 font-display text-base font-black leading-none text-white [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]">
+                {totalAreas.toLocaleString('pt-BR')}
+              </span>
+            </div>
 
-          <button onClick={() => toast({ title: 'Em breve: Listagem Cornell' })} className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/20 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/40 transition-all active:scale-95 gap-2 text-center">
-            <FileText className="w-5 h-5 text-emerald-400 group-hover:text-emerald-300 group-hover:scale-110 transition-all" strokeWidth={2} />
-            <span className="text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">Cornell</span>
-          </button>
+            {/* Box 3: Total Temas */}
+            <div className="flex flex-col items-center justify-center px-1.5 py-2.5 transition-colors hover:bg-white/5 active:scale-95 group select-none">
+              <div className="flex items-center gap-0.5">
+                <span className="text-[8.5px] sm:text-[9px] font-extrabold uppercase tracking-wider text-white/60 group-hover:text-white transition-colors">
+                  Total Temas
+                </span>
+                <ChevronRight className="w-2.5 h-2.5 text-white/40 group-hover:text-white group-hover:translate-x-0.5 transition-transform" />
+              </div>
+              <span className="mt-0.5 font-display text-base font-black leading-none text-white [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]">
+                {totalTemas.toLocaleString('pt-BR')}
+              </span>
+            </div>
+          </div>
+          <NotebookText className="pointer-events-none absolute bottom-1.5 left-2 h-7 w-7 text-white/10" />
         </div>
 
         {/* Search bar */}

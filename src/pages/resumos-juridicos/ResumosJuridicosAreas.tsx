@@ -184,6 +184,20 @@ export default function ResumosJuridicosAreas() {
     return activeAreaRow.temas.filter((tema) => normalize(tema).includes(t));
   }, [activeAreaRow, q]);
 
+  const totalCalculatedResumos = useMemo(() => {
+    const sum = rows.reduce((acc, r) => acc + (r.total || 0), 0);
+    return sum > 0 ? sum : 4359;
+  }, [rows]);
+
+  const totalCalculatedAreas = useMemo(() => {
+    return rows.length > 0 ? rows.length : 29;
+  }, [rows]);
+
+  const totalCalculatedTemas = useMemo(() => {
+    const sum = rows.reduce((acc, r) => acc + (r.temas ? r.temas.length : 0), 0);
+    return sum > 0 ? sum : 527;
+  }, [rows]);
+
   return (
     <div className="min-h-dvh bg-[#0D0D0D] text-white overflow-x-hidden relative flex flex-col">
       <div className="fixed inset-0 z-0 pointer-events-none opacity-[0.15]">
@@ -191,7 +205,13 @@ export default function ResumosJuridicosAreas() {
       </div>
 
       <div className="relative z-10 flex flex-col min-h-dvh">
-        <ResumosHero q={q} setQ={setQ} />
+        <ResumosHero
+          q={q}
+          setQ={setQ}
+          totalResumos={totalCalculatedResumos}
+          totalAreas={totalCalculatedAreas}
+          totalTemas={totalCalculatedTemas}
+        />
 
         <div className="sticky top-0 z-40 px-4 py-4 mt-1 overflow-x-auto no-scrollbar flex items-center gap-2 bg-[#0D0D0D]/95 backdrop-blur-xl border-b border-white/5 shadow-sm">
           <button

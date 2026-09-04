@@ -161,8 +161,8 @@ const IndexMobile = () => {
             <FeatureDiscoveryCard />
             <MobileHomeSections onTabChange={setHomeTab} onNewsOpenChange={setNewsOpen} />
           </main>
-          {homeTab === 'estudos' && !personalizarOpen && !searchOpen && !heroSearchOpen && !newsOpen && !bottomNavHidden && <BottomNav />}
         </motion.div>
+        {!bottomNavHidden && <BottomNav />}
         <Suspense fallback={null}>
           {menuOpen && (
             <SideMenu

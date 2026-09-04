@@ -5,7 +5,7 @@ import { ChevronLeft, Target, Calendar, CheckCircle2, Route as RouteIcon, FileTe
 import { PageHeader } from '@/components/vademecum/PageHeader';
 import { haptic } from '@/lib/nativeHaptics';
 import { supabase } from '@/integrations/supabase/client';
-import FlashcardsBottomNav from '@/components/flashcards/FlashcardsBottomNav';
+import { toast } from 'sonner';
 import { useFlashcardsTrilhasStore, type FlashcardTrilhaAtiva } from '@/lib/flashcardsTrilhasStore';
 
 // --- SETUP 1: ESCOLHER ÁREA ---
@@ -335,6 +335,7 @@ const TrilhaMapaEstudo = ({ trilha, onBack }: { trilha: FlashcardTrilhaAtiva, on
 };
 
 export default function FlashcardsTrilhas() {
+  const navigate = useNavigate();
   const [step, setStep] = useState<'home' | 'area' | 'tema' | 'detalhes' | 'mapa'>('home');
   const [trilhaAtivaTemp, setTrilhaAtivaTemp] = useState<Partial<FlashcardTrilhaAtiva>>({});
   const [trilhaSelecionada, setTrilhaSelecionada] = useState<string | null>(null);
@@ -362,8 +363,12 @@ export default function FlashcardsTrilhas() {
     <div className="min-h-screen bg-background">
       <AnimatePresence mode="wait">
         {step === 'home' && (
-          <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, scale: 0.98 }} className="w-full flex flex-col pb-32">
-            <PageHeader title="Trilhas de Estudo" subtitle="Rotas guiadas de Flashcards" />
+          <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, scale: 0.98 }} className="w-full flex flex-col pb-12">
+            <PageHeader
+              title="Trilhas de Estudo"
+              subtitle="Rotas guiadas de Flashcards"
+              onBack={() => { haptic.selection(); navigate('/flashcards'); }}
+            />
             <div className="px-4 mt-6">
               <button 
                 onClick={() => { haptic.selection(); setStep('area'); setTrilhaAtivaTemp({}); }}
@@ -470,7 +475,56 @@ export default function FlashcardsTrilhas() {
         )}
       </AnimatePresence>
 
-      {(step === 'home' || step === 'mapa') && <FlashcardsBottomNav />}
+      {/* ── Modal de Confirmação para Apagar Trilha ── */}
+      <AnimatePresence>
+        {trilhaParaDeletar && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setTrilhaParaDeletar(null)}
+              className="fixed inset-0 bg-black/80 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 12 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 12 }}
+              transition={{ type: "spring", damping: 26, stiffness: 340 }}
+              className="relative z-10 w-full max-w-sm rounded-3xl bg-[#141417] border border-white/10 p-6 shadow-2xl text-center flex flex-col items-center select-none"
+            >
+              <div className="w-14 h-14 rounded-2xl bg-destructive/15 border border-destructive/30 flex items-center justify-center text-destructive mb-4 shadow-lg shadow-destructive/10">
+                <Trash2 className="w-7 h-7" />
+              </div>
+              <h3 className="text-lg font-black text-white font-display">Apagar Trilha?</h3>
+              <p className="text-[13px] text-zinc-300 mt-2 leading-relaxed">
+                Tem certeza de que deseja apagar a trilha <strong className="text-white font-bold">"{trilhasAtivas[trilhaParaDeletar]?.nome || trilhasAtivas[trilhaParaDeletar]?.area}"</strong>? Todo o progresso acumulado nesta trilha será removido.
+              </p>
+              <div className="flex gap-3 w-full mt-6">
+                <button
+                  type="button"
+                  onClick={() => setTrilhaParaDeletar(null)}
+                  className="flex-1 py-3.5 rounded-2xl bg-white/10 hover:bg-white/15 text-white font-bold text-sm transition-all active:scale-95 border border-white/5"
+                >
+                  Não, Cancelar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    haptic.medium();
+                    limparTrilha(trilhaParaDeletar);
+                    setTrilhaParaDeletar(null);
+                    toast.success("Trilha apagada com sucesso!");
+                  }}
+                  className="flex-1 py-3.5 rounded-2xl bg-destructive hover:bg-destructive/90 text-white font-bold text-sm transition-all active:scale-95 shadow-lg shadow-destructive/25"
+                >
+                  Sim, Apagar
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
