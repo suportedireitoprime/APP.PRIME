@@ -3,10 +3,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   RotateCcw, BarChart3, ChevronRight, ListChecks, NotebookPen, 
-  Search, X, Sparkles, Filter, History
+  Search, X, Sparkles, Filter, History, Timer, Flame
 } from 'lucide-react';
 import QuestoesHero from '@/components/questoes/QuestoesHero';
-import QuestoesBottomNav from '@/components/questoes/QuestoesBottomNav';
 import QuestoesFiltroSheet from '@/components/questoes/QuestoesFiltroSheet';
 import { QuestoesMateriaSheet } from '@/components/questoes/QuestoesMateriaSheet';
 import { Input } from '@/components/ui/input';
@@ -79,7 +78,7 @@ const Questoes = () => {
 
   return (
     <div className="theme-questoes min-h-screen bg-background">
-      <div className="mx-auto w-full max-w-3xl lg:max-w-7xl 2xl:max-w-[1600px] px-0 lg:px-8 pb-32">
+      <div className="mx-auto w-full max-w-3xl lg:max-w-7xl 2xl:max-w-[1600px] px-0 lg:px-8 pb-12">
         <div className="space-y-6">
           {/* ── Banner de Desempenho ───────────────── */}
           <div className="w-full">
@@ -213,11 +212,50 @@ const Questoes = () => {
               </div>
             )}
           </div>
+
+          {/* ── Recursos (Simulado e Desafios) ───────────────────── */}
+          <section className="space-y-3 pt-2">
+            <div className="flex items-center gap-2">
+              <span className="h-4 w-1 rounded-full bg-primary" />
+              <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+                Recursos
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.96 }}
+                onClick={() => { haptic.selection(); navigate('/questoes/simulado'); }}
+                className="group flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-primary/50 transition-all focus-visible:outline-none text-center"
+              >
+                <div className="flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                  <Timer className="h-8 w-8" strokeWidth={1.5} />
+                </div>
+                <div className="flex flex-col items-center">
+                  <span className="text-sm font-bold text-foreground">Simulado</span>
+                  <span className="text-[10px] text-muted-foreground mt-0.5 hidden sm:block">Prova com cronômetro</span>
+                </div>
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.96 }}
+                onClick={() => { haptic.selection(); navigate('/questoes/desafios'); }}
+                className="group flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-primary/50 transition-all focus-visible:outline-none text-center"
+              >
+                <div className="flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                  <Flame className="h-8 w-8" strokeWidth={1.5} />
+                </div>
+                <div className="flex flex-col items-center">
+                  <span className="text-sm font-bold text-foreground">Desafios</span>
+                  <span className="text-[10px] text-muted-foreground mt-0.5 hidden sm:block">Metas e conquistas</span>
+                </div>
+              </motion.button>
+            </div>
+          </section>
           </div>
         </div>
       </div>
-
-      <QuestoesBottomNav />
 
       {/* Filtro completo */}
       <QuestoesFiltroSheet
