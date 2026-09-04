@@ -1,6 +1,23 @@
 import UIKit
 import Capacitor
 
+class MainViewController: CAPBridgeViewController {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        disableScrollIndicators()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        disableScrollIndicators()
+    }
+
+    private func disableScrollIndicators() {
+        webView?.scrollView.showsVerticalScrollIndicator = false
+        webView?.scrollView.showsHorizontalScrollIndicator = false
+    }
+}
+
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
 
@@ -8,7 +25,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = scene as? UIWindowScene else { return }
 
         window = UIWindow(windowScene: windowScene)
-        window?.rootViewController = CAPBridgeViewController()
+        window?.rootViewController = MainViewController()
         window?.makeKeyAndVisible()
         
         setupNativeSplash()

@@ -28,12 +28,8 @@ class MainActivity : BridgeActivity() {
         EdgeToEdge.enable(this)
         super.onCreate(savedInstanceState)
 
-        // Desabilita as barras de rolagem nativas do WebView
-        val webView: WebView? = bridge.webView
-        if (webView != null) {
-            webView.isVerticalScrollBarEnabled = false
-            webView.isHorizontalScrollBarEnabled = false
-        }
+        // Desabilita as barras de rolagem nativas do WebView na raiz
+        disableWebviewScrollbars()
 
         // Registra os Plugins Nativos
         registerPlugin(NativeCorePlugin::class.java)
@@ -105,5 +101,26 @@ class MainActivity : BridgeActivity() {
             })
             fadeOut.start()
         }, 2500)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        disableWebviewScrollbars()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        disableWebviewScrollbars()
+    }
+
+    private fun disableWebviewScrollbars() {
+        bridge?.webView?.apply {
+            isVerticalScrollBarEnabled = false
+            isHorizontalScrollBarEnabled = false
+            overScrollMode = View.OVER_SCROLL_NEVER
+            scrollBarStyle = View.SCROLLBARS_INSIDE_OVERLAY
+            isVerticalFadingEdgeEnabled = false
+            isHorizontalFadingEdgeEnabled = false
+        }
     }
 }

@@ -4,13 +4,69 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Esconder scrollbar em todos os elementos para dar visual nativo (mobile) */
-::-webkit-scrollbar {
-  display: none;
+/* ==========================================================================
+   OCULTAR BARRA DE ROLAGEM NA RAIZ (Mobile Native & Web)
+   Remove totalmente a barra de rolagem branca/translúcida no Android WebView,
+   iOS WKWebView e Web, preservando o scroll fluido por toque e mouse.
+   ========================================================================== */
+*,
+*::before,
+*::after,
+html,
+body,
+#root {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
 }
-* {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+
+::-webkit-scrollbar,
+*::-webkit-scrollbar,
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+#root::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  max-width: 0 !important;
+  max-height: 0 !important;
+  background: transparent !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  -webkit-appearance: none !important;
+}
+
+::-webkit-scrollbar-thumb,
+*::-webkit-scrollbar-thumb,
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb,
+#root::-webkit-scrollbar-thumb {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  -webkit-appearance: none !important;
+}
+
+::-webkit-scrollbar-track,
+*::-webkit-scrollbar-track,
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track,
+#root::-webkit-scrollbar-track {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  -webkit-appearance: none !important;
+}
+
+::-webkit-scrollbar-corner,
+*::-webkit-scrollbar-corner {
+  display: none !important;
+  background: transparent !important;
 }
 
 /* ============================================================
@@ -282,18 +338,27 @@ body {
 @layer base {
   * {
     @apply border-border;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
   }
 
   *::-webkit-scrollbar,
+  *::-webkit-scrollbar-thumb,
+  *::-webkit-scrollbar-track,
   html::-webkit-scrollbar,
+  html::-webkit-scrollbar-thumb,
   body::-webkit-scrollbar,
-  ::-webkit-scrollbar {
+  body::-webkit-scrollbar-thumb,
+  ::-webkit-scrollbar,
+  ::-webkit-scrollbar-thumb {
     display: none !important;
     width: 0 !important;
     height: 0 !important;
+    max-width: 0 !important;
+    max-height: 0 !important;
     background: transparent !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
     -webkit-appearance: none !important;
   }
   

@@ -65,7 +65,6 @@ import NotificationsSheet, { useUnreadNotifCount } from './NotificationsSheet';
 import { pushRecente } from '@/lib/leisRecentes';
 import { useShortcutBadges } from '@/hooks/useShortcutBadges';
 import { prefetchHeroRoutesIdle, prefetchRoute, type PrefetchKey } from '@/lib/routePrefetch';
-import laurel from '@/assets/landing-tribunal/laurel-leaf.png';
 import scales from '@/assets/landing-tribunal/scales.png';
 import HeroMotifs from './HeroMotifs';
 import HeroCoverCarousel from './HeroCoverCarousel';
@@ -110,7 +109,6 @@ const HomeHeaderHero = ({ onSearchOpenChange }: { onSearchOpenChange?: (open: bo
   useEffect(() => {
     reduceMotion.current = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   }, []);
-  const fallingLeaves = Array.from({ length: 8 }, (_, i) => i);
 
   // Prefetch dos 4 chunks das rotas dos atalhos em idle (Radares, Boletim, Blog, Biblioteca)
   useEffect(() => { prefetchHeroRoutesIdle(); }, []);
@@ -201,37 +199,8 @@ const HomeHeaderHero = ({ onSearchOpenChange }: { onSearchOpenChange?: (open: bo
 
         {/* Decorative legal motifs isolados */}
         <HeroMotifs />
-
-        {/* Folhas de louro caindo (teto do painel) */}
+        {/* Balanças flutuantes de forma elegante */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden z-[2]">
-          {fallingLeaves.map((i) => (
-            <img
-              key={`leaf-${i}`}
-              src={laurel}
-              alt=""
-              aria-hidden="true"
-              className="absolute -top-10 lp-fall"
-              style={{
-                left: `${(i * 12 + 5) % 100}%`,
-                width: `${12 + (i % 4) * 6}px`,
-                animationDuration: `${10 + (i % 4) * 3}s`,
-                animationDelay: `${i * 1.5}s`,
-                opacity: 0.65,
-                filter: 'drop-shadow(0 3px 6px rgba(0,0,0,0.5))',
-              }}
-            />
-          ))}
-        </div>
-
-        {/* Balanças e louros flutuantes de forma elegante */}
-        <div className="pointer-events-none absolute inset-0 overflow-hidden z-[2]">
-          <img
-            src={laurel}
-            alt=""
-            aria-hidden="true"
-            className="absolute left-[5%] top-[12%] w-8 md:w-12 lp-float"
-            style={{ opacity: 0.6, animationDuration: '6s' }}
-          />
           <img
             src={scales}
             alt=""

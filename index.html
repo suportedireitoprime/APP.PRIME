@@ -105,7 +105,47 @@
     }
     </script>
 
-    <style>#lovable-badge { display: none !important; }</style>
+    <style>
+      #lovable-badge { display: none !important; }
+      /* Desativar barra de rolagem na raiz (WebView nativo Android/iOS e Web) */
+      *, *::before, *::after, html, body, #root {
+        scrollbar-width: none !important;
+        -ms-overflow-style: none !important;
+      }
+      ::-webkit-scrollbar, *::-webkit-scrollbar, html::-webkit-scrollbar, body::-webkit-scrollbar, #root::-webkit-scrollbar {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+        max-width: 0 !important;
+        max-height: 0 !important;
+        background: transparent !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        -webkit-appearance: none !important;
+      }
+      ::-webkit-scrollbar-thumb, *::-webkit-scrollbar-thumb, html::-webkit-scrollbar-thumb, body::-webkit-scrollbar-thumb, #root::-webkit-scrollbar-thumb {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+        background: transparent !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        -webkit-appearance: none !important;
+      }
+      ::-webkit-scrollbar-track, *::-webkit-scrollbar-track, html::-webkit-scrollbar-track, body::-webkit-scrollbar-track, #root::-webkit-scrollbar-track {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+        background: transparent !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        -webkit-appearance: none !important;
+      }
+      ::-webkit-scrollbar-corner, *::-webkit-scrollbar-corner {
+        display: none !important;
+        background: transparent !important;
+      }
+    </style>
 
     <!-- IDs de mídia paga. O carregamento dos scripts acontece só após o
          consentimento do usuário (LGPD) — ver src/lib/analytics.ts. -->
