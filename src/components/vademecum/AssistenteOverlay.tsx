@@ -854,12 +854,48 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
                               initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
                               className="mt-3 pt-3 border-t border-border/60 flex flex-wrap items-center gap-1.5"
                             >
-                              <ActionBtn icon={FileDown} label="PDF" onClick={() => exportPdf(msg)} />
-                              <ActionBtn icon={Layers} label="Flashcards" onClick={() => generateFromMsg(msg, 'flashcards')} />
-                              <ActionBtn icon={HelpCircle} label="Questões" onClick={() => generateFromMsg(msg, 'questoes')} />
-                              <ActionBtn icon={GitBranch} label="Mapa" onClick={() => generateFromMsg(msg, 'mapa')} />
-                              <ActionBtn icon={BookOpen} label="Termos" onClick={() => generateFromMsg(msg, 'termos')} />
-                              <ActionBtn icon={Share2} label="Enviar" onClick={() => openShare(msg)} />
+                              <ActionBtn
+                                icon={FileDown}
+                                label="PDF"
+                                colorClass="text-rose-500 group-hover:text-rose-400"
+                                hoverClass="hover:border-rose-500/40 hover:bg-rose-500/10"
+                                onClick={() => exportPdf(msg)}
+                              />
+                              <ActionBtn
+                                icon={Layers}
+                                label="Flashcards"
+                                colorClass="text-emerald-400 group-hover:text-emerald-300"
+                                hoverClass="hover:border-emerald-500/40 hover:bg-emerald-500/10"
+                                onClick={() => generateFromMsg(msg, 'flashcards')}
+                              />
+                              <ActionBtn
+                                icon={HelpCircle}
+                                label="Questões"
+                                colorClass="text-amber-400 group-hover:text-amber-300"
+                                hoverClass="hover:border-amber-500/40 hover:bg-amber-500/10"
+                                onClick={() => generateFromMsg(msg, 'questoes')}
+                              />
+                              <ActionBtn
+                                icon={GitBranch}
+                                label="Mapa"
+                                colorClass="text-purple-400 group-hover:text-purple-300"
+                                hoverClass="hover:border-purple-500/40 hover:bg-purple-500/10"
+                                onClick={() => generateFromMsg(msg, 'mapa')}
+                              />
+                              <ActionBtn
+                                icon={BookOpen}
+                                label="Termos"
+                                colorClass="text-sky-400 group-hover:text-sky-300"
+                                hoverClass="hover:border-sky-500/40 hover:bg-sky-500/10"
+                                onClick={() => generateFromMsg(msg, 'termos')}
+                              />
+                              <ActionBtn
+                                icon={Share2}
+                                label="Enviar"
+                                colorClass="text-pink-400 group-hover:text-pink-300"
+                                hoverClass="hover:border-pink-500/40 hover:bg-pink-500/10"
+                                onClick={() => openShare(msg)}
+                              />
                               <span className="ml-auto">
                                 <ChatFeedback
                                   messageId={msg.id}
@@ -1115,11 +1151,19 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
                                       : a.kind === 'questoes' ? 'Questões'
                                       : a.kind === 'mapa' ? 'Mapa'
                                       : 'Termos';
+                                    const colorClass = a.kind === 'flashcards' ? 'text-emerald-400'
+                                      : a.kind === 'questoes' ? 'text-amber-400'
+                                      : a.kind === 'mapa' ? 'text-purple-400'
+                                      : 'text-sky-400';
+                                    const borderClass = a.kind === 'flashcards' ? 'border-emerald-500/30 bg-emerald-500/10 hover:border-emerald-500/50'
+                                      : a.kind === 'questoes' ? 'border-amber-500/30 bg-amber-500/10 hover:border-amber-500/50'
+                                      : a.kind === 'mapa' ? 'border-purple-500/30 bg-purple-500/10 hover:border-purple-500/50'
+                                      : 'border-sky-500/30 bg-sky-500/10 hover:border-sky-500/50';
                                     return (
                                       <button key={a.id}
                                         onClick={() => { openSession(s); setTimeout(() => setActiveArtifact(a), 60); }}
-                                        className="flex items-center gap-1 px-2 py-1 rounded-full bg-accent/15 border border-accent/30 text-[10px] font-body text-foreground">
-                                        <Icon className="w-3 h-3 text-accent" /> {lbl}
+                                        className={`flex items-center gap-1 px-2 py-1 rounded-full ${borderClass} border text-[10px] font-body text-foreground transition-colors`}>
+                                        <Icon className={`w-3 h-3 ${colorClass}`} /> {lbl}
                                       </button>
                                     );
                                   })}
@@ -1197,10 +1241,28 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
   );
 };
 
-const ActionBtn = ({ icon: Icon, label, onClick }: { icon: any; label: string; onClick: () => void }) => (
-  <button onClick={onClick}
-    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary hover:bg-accent/20 border border-border text-xs font-body text-foreground transition-colors">
-    <Icon className="w-3.5 h-3.5 text-accent" /> {label}
+const ActionBtn = ({
+  icon: Icon,
+  label,
+  onClick,
+  colorClass = 'text-accent',
+  hoverClass = 'hover:border-white/20 hover:bg-white/5',
+}: {
+  icon: any;
+  label: string;
+  onClick: () => void;
+  colorClass?: string;
+  hoverClass?: string;
+}) => (
+  <button
+    onClick={() => {
+      haptic.light();
+      onClick();
+    }}
+    className={`group flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-zinc-900/90 ${hoverClass} border border-white/10 text-xs font-body text-zinc-200 hover:text-white transition-all active:scale-95 touch-manipulation shadow-sm`}
+  >
+    <Icon className={`w-3.5 h-3.5 ${colorClass} transition-transform group-hover:scale-110 shrink-0`} strokeWidth={2.2} />
+    <span className="font-medium text-[12px]">{label}</span>
   </button>
 );
 
