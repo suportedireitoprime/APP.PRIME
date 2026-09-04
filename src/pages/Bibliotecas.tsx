@@ -123,6 +123,41 @@ const Bibliotecas = () => {
       navigate(location.pathname, { replace: true, state: {} });
     }
   }, [location, navigate]);
+
+  // Ponte 100% Nativa (Jetpack Compose / SwiftUI) no mobile
+  useEffect(() => {
+    if (Capacitor.isNativePlatform()) {
+      let isMounted = true;
+      let closeHandler: { remove: () => void } | null = null;
+
+      (async () => {
+        try {
+          const { NativeBiblioteca } = await import('@/plugins/NativeBibliotecaPlugin');
+          const { data: auth } = await supabase.auth.getSession();
+          const token = auth.session?.access_token || '';
+
+          if (!isMounted) return;
+
+          closeHandler = await NativeBiblioteca.addListener('onClose', () => {
+            navigate(-1);
+          });
+
+          await NativeBiblioteca.openBiblioteca({
+            aba: abaUrl || 'acervos',
+            materia: materiaUrl || '',
+            accessToken: token,
+          });
+        } catch (e) {
+          console.warn('Fallback para interface web da biblioteca:', e);
+        }
+      })();
+
+      return () => {
+        isMounted = false;
+        closeHandler?.remove();
+      };
+    }
+  }, [abaUrl, materiaUrl, navigate]);
   
   const aba: AbaBiblioteca = abaUrl && ['performance', 'acervos', 'materias'].includes(abaUrl) ? abaUrl : 'acervos';
   const materiaAberta = materiaUrl || null;

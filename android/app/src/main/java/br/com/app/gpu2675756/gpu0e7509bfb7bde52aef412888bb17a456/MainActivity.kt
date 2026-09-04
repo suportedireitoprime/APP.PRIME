@@ -39,6 +39,7 @@ class MainActivity : BridgeActivity() {
         registerPlugin(NativeVadeMecumPlugin::class.java)
         registerPlugin(NativeMeExpliquePlugin::class.java)
         registerPlugin(NativeAuthPlugin::class.java)
+        registerPlugin(NativeBibliotecaPlugin::class.java)
 
         // Injeta a view customizada da Splash Nativa por cima do WebView
         setupNativeSplash()

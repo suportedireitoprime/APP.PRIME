@@ -60,6 +60,13 @@
             android:exported="false"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode" />
 
+        <activity
+            android:name=".BibliotecaNativeActivity"
+            android:label="Biblioteca"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:exported="false"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
