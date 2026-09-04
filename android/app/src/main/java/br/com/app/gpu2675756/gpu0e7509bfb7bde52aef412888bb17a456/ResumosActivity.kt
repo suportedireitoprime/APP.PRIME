@@ -15,11 +15,12 @@ class ResumosActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         activeActivity = this
 
-        val initialArea = intent.getStringExtra("initialArea")
-        val area = intent.getStringExtra("area")
-        val tema = intent.getStringExtra("tema")
-        val payload = intent.getStringExtra("payload")
+        val initialArea = intent.getStringExtra("initialArea") ?: intent.getStringExtra("area")
+        val initialTema = intent.getStringExtra("initialTema") ?: intent.getStringExtra("tema")
         val isReader = intent.getBooleanExtra("isReader", false)
+        val payload = ResumosNativePlugin.currentPayloadJson.takeIf { it.isNotBlank() && it != "[]" }
+            ?: intent.getStringExtra("payload")
+            ?: "[]"
 
         setContent {
             ResumosScreen(

@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { initAnalytics, trackPageview, setAnalyticsUserWithProfile } from "@/lib/analytics";
 import { useScreenTracking } from "@/lib/screenTracking";
@@ -283,8 +283,8 @@ function LeiSecaParteRoute() {
   return <LeiSecaParte key={`${slug}/${parte}`} />;
 }
 
-import { Capacitor } from "@capacitor/core";
 import { ResumosNativePlugin } from "./plugins/ResumosNativePlugin";
+import { getResumosCatalog } from "./services/resumosCatalog";
 
 function ResumosJuridicosRouteWrapper({ children }: { children: React.ReactNode }) {
   const isDesktop = useMediaQuery("(min-width: 1024px)");
@@ -293,14 +293,29 @@ function ResumosJuridicosRouteWrapper({ children }: { children: React.ReactNode 
 
   useEffect(() => {
     if (Capacitor.isNativePlatform()) {
-      if (tema && area) {
-        ResumosNativePlugin.openReader({ area, tema });
-      } else if (area) {
-        ResumosNativePlugin.openResumos({ initialArea: area });
-      } else {
-        ResumosNativePlugin.openResumos();
-      }
-      navigate(-1); // Voltar na web para não ficar na tela branca
+      void (async () => {
+        const catalog = await getResumosCatalog();
+        const decodedArea = area ? decodeURIComponent(area) : undefined;
+        const decodedTema = tema ? decodeURIComponent(tema) : undefined;
+
+        if (decodedTema && decodedArea) {
+          await ResumosNativePlugin.openReader({
+            area: decodedArea,
+            tema: decodedTema,
+            payload: catalog,
+          });
+        } else if (decodedArea) {
+          await ResumosNativePlugin.openResumos({
+            initialArea: decodedArea,
+            payload: catalog,
+          });
+        } else {
+          await ResumosNativePlugin.openResumos({
+            payload: catalog,
+          });
+        }
+        navigate(-1); // Voltar na web para não ficar na tela branca
+      })();
     }
   }, [area, tema, navigate]);
 
@@ -579,9 +594,20 @@ function EstudosRouter() {
 }
 
 function LazyFallback() {
+  const [showSkeleton, setShowSkeleton] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowSkeleton(true), 120);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!showSkeleton) {
+    return <div className="min-h-dvh bg-transparent" aria-busy="true" />;
+  }
+
   return (
     <div
-      className="min-h-dvh bg-[#0D0D0D] p-4 pt-16 space-y-4"
+      className="min-h-dvh bg-[#0D0D0D] p-4 pt-16 space-y-4 animate-in fade-in duration-200"
       aria-busy="true"
       aria-live="polite"
     >
@@ -755,10 +781,12 @@ function AnimatedRoutes() {
     if (ric) ric(carregarChunks, { timeout: 3000 }); else setTimeout(carregarChunks, 1200);
   }, [user]);
 
-  // Sempre voltar ao topo ao navegar (voltar, avanÃ§ar, clique).
+  // Sempre voltar ao topo ao navegar (voltar, avançar, clique) suavemente sem layout thrashing.
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      });
     }
   }, [location.pathname, location.search]);
 

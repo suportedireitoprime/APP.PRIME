@@ -1,16 +1,12 @@
 import { useLocation } from "react-router-dom";
 import Index from "@/pages/Index";
 import { useAuth } from "@/hooks/useAuth";
-import { useEffect, useState } from "react";
 
 /**
- * Mantém a Home montada em memória o tempo todo, apenas alternando
- * display none/block conforme a rota atual. Ao voltar de uma lei (POP),
- * o browser só precisa reexibir o DOM já pintado — sem remount do
- * `MobileHomeSections`/`IndexDesktop`, sem re-fetch, sem re-hidratação.
- *
- * Precisa ficar FORA de <Routes> porque o `<Routes key={pathname}>` do App
- * remonta todo o subárvore a cada navegação.
+ * Mantém a Home montada em memória o tempo todo.
+ * Não utiliza `display: none` para preservar os backing stores da GPU (composite layers)
+ * e evitar o 'piscar preto' ao retornar ao início do aplicativo.
+ * A transição é suave (opacity + subtle scale) a 120fps.
  */
 const PersistentHome = () => {
   const location = useLocation();
@@ -42,9 +38,23 @@ const PersistentHome = () => {
   if (isPublic) return null;
 
   const visible = location.pathname === "/";
+
   return (
     <div
-      style={{ display: visible ? "block" : "none" }}
+      className="persistent-home-root"
+      style={{
+        width: "100%",
+        opacity: visible ? 1 : 0,
+        pointerEvents: visible ? "auto" : "none",
+        visibility: visible ? "visible" : "hidden",
+        position: visible ? "relative" : "absolute",
+        top: 0,
+        left: 0,
+        zIndex: visible ? 1 : 0,
+        transform: visible ? "scale(1)" : "scale(0.985)",
+        transition: "opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1)",
+        willChange: "opacity, transform",
+      }}
       aria-hidden={!visible}
     >
       <Index />

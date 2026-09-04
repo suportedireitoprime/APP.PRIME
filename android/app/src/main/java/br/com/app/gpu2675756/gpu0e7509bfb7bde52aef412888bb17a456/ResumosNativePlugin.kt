@@ -10,14 +10,33 @@ import com.getcapacitor.annotation.CapacitorPlugin
 @CapacitorPlugin(name = "ResumosNativePlugin")
 class ResumosNativePlugin : Plugin() {
 
+    companion object {
+        var instance: ResumosNativePlugin? = null
+        var currentPayloadJson: String = "[]"
+    }
+
+    override fun load() {
+        super.load()
+        instance = this
+    }
+
     @PluginMethod
     fun openResumos(call: PluginCall) {
         val initialArea = call.getString("initialArea")
-        val payload = call.getString("payload")
+        val initialTema = call.getString("initialTema")
+        val payloadRaw = call.getArray("payload")?.toString()
+            ?: call.getObject("payload")?.toString()
+            ?: call.getString("payload")
+            ?: call.data.opt("payload")?.toString()
+            ?: "[]"
+
+        currentPayloadJson = payloadRaw
 
         val intent = Intent(context, ResumosActivity::class.java).apply {
             putExtra("initialArea", initialArea)
-            putExtra("payload", payload)
+            putExtra("initialTema", initialTema)
+            putExtra("isReader", false)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }
         
         context.startActivity(intent)
@@ -31,13 +50,19 @@ class ResumosNativePlugin : Plugin() {
     fun openReader(call: PluginCall) {
         val area = call.getString("area")
         val tema = call.getString("tema")
-        val payload = call.getString("payload")
+        val payloadRaw = call.getArray("payload")?.toString()
+            ?: call.getObject("payload")?.toString()
+            ?: call.getString("payload")
+            ?: call.data.opt("payload")?.toString()
+            ?: "[]"
+
+        currentPayloadJson = payloadRaw
 
         val intent = Intent(context, ResumosActivity::class.java).apply {
             putExtra("area", area)
             putExtra("tema", tema)
-            putExtra("payload", payload)
             putExtra("isReader", true)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }
         
         context.startActivity(intent)
