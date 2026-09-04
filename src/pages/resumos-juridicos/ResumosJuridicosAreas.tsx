@@ -234,7 +234,7 @@ export default function ResumosJuridicosAreas() {
                 <p>Nenhuma matéria encontrada para "{q}".</p>
               </div>
             ) : (
-              <div className="rounded-2xl border border-white/10 bg-black/20 backdrop-blur-md divide-y divide-white/10 overflow-hidden shadow-xl mt-1">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {filteredAreas.map((r, i) => {
                   const displayArea = r.area.replace(/^DIREITO\s+(DO\s+|DA\s+|DE\s+)?/i, "");
                   
@@ -245,25 +245,25 @@ export default function ResumosJuridicosAreas() {
                         haptic.selection();
                         navigate(`/resumos-juridicos/${encodeURIComponent(r.area)}`);
                       }}
-                      className="w-full flex items-center gap-4 px-4 py-3 min-h-[76px] text-left hover:bg-white/5 active:bg-white/10 transition-colors"
+                      className="w-full flex items-center gap-4 px-4 py-4 min-h-[96px] text-left hover:bg-secondary/20 active:scale-[0.98] transition-all rounded-2xl bg-card border border-border hover:border-[#ef4444]/40 shadow-sm group overflow-hidden relative"
                     >
-                      <div className="w-[42px] h-[58px] rounded-lg bg-white/5 border border-white/10 shrink-0 overflow-hidden shadow-md">
+                      <div className="w-16 h-[88px] rounded-lg bg-white/5 border border-white/10 shrink-0 overflow-hidden shadow-md">
                         <img 
-                          src="https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg" 
+                          src="/capa-amarela.png" 
                           alt="Capa" 
                           className="w-full h-full object-cover" 
                           loading="lazy" 
                         />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="font-body text-[16px] font-bold text-white truncate">
+                        <div className="font-body text-[16px] font-bold text-white line-clamp-2 leading-snug">
                           {displayArea}
                         </div>
-                        <div className="font-body text-[13px] text-zinc-400 truncate mt-0.5">
+                        <div className="font-body text-[13px] text-zinc-400 truncate mt-1.5">
                           {r.total} {r.total === 1 ? "resumo" : "resumos"} disponíveis
                         </div>
                       </div>
-                      <ChevronRight className="w-5 h-5 text-zinc-500 shrink-0" />
+                      <ChevronRight className="w-5 h-5 text-muted-foreground/40 group-hover:text-primary transition-colors shrink-0" />
                     </button>
                   );
                 })}
@@ -275,7 +275,7 @@ export default function ResumosJuridicosAreas() {
                 <p>Nenhum resumo encontrado para "{q}".</p>
               </div>
             ) : (
-              <div className="rounded-2xl border border-white/10 bg-black/20 backdrop-blur-md divide-y divide-white/10 overflow-hidden shadow-xl mt-1">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {filteredTemas.map((tema) => {
                   return (
                     <button
@@ -284,11 +284,11 @@ export default function ResumosJuridicosAreas() {
                         haptic.selection();
                         navigate(`/resumos-juridicos/${encodeURIComponent(activeTab)}/${encodeURIComponent(tema)}`);
                       }}
-                      className="w-full flex items-center gap-4 px-4 py-3 min-h-[76px] text-left hover:bg-white/5 active:bg-white/10 transition-colors"
+                      className="w-full flex items-center gap-4 px-4 py-4 min-h-[96px] text-left hover:bg-secondary/20 active:scale-[0.98] transition-all rounded-2xl bg-card border border-border hover:border-[#ef4444]/40 shadow-sm group overflow-hidden relative"
                     >
-                      <div className="w-[42px] h-[58px] rounded-lg bg-white/5 border border-white/10 shrink-0 overflow-hidden shadow-md">
+                      <div className="w-16 h-[88px] rounded-lg bg-white/5 border border-white/10 shrink-0 overflow-hidden shadow-md">
                         <img 
-                          src="https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.jpg" 
+                          src="/capa-amarela.png" 
                           alt="Capa" 
                           className="w-full h-full object-cover" 
                           loading="lazy" 
@@ -298,11 +298,11 @@ export default function ResumosJuridicosAreas() {
                         <div className="font-body text-[15px] font-bold text-white line-clamp-2 leading-snug">
                           {tema}
                         </div>
-                        <div className="font-body text-[12px] text-[#ef4444] font-bold mt-1">
+                        <div className="font-body text-[12px] text-[#ef4444] font-bold mt-1.5">
                           LER RESUMO
                         </div>
                       </div>
-                      <ChevronRight className="w-5 h-5 text-zinc-500 shrink-0" />
+                      <ChevronRight className="w-5 h-5 text-muted-foreground/40 group-hover:text-primary transition-colors shrink-0" />
                     </button>
                   );
                 })}
