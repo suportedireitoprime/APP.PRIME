@@ -322,6 +322,7 @@ function ResumosJuridicosRouteWrapper({ children }: { children: React.ReactNode 
   if (isDesktop) return <ResumosJuridicosDesktop />;
   return <>{children}</>;
 }
+import FlashcardsRouteWrapper from "@/components/flashcards/FlashcardsRouteWrapper";
 const LeiSecaPlayer = lazy(routePrefetch.leiSecaPlayer);
 const LeiSecaLembretes = lazy(routePrefetch.leiSecaLembretes);
 
@@ -916,7 +917,7 @@ function AnimatedRoutes() {
           <Route path="/aprender/flashcards" element={<ProtectedRoute><PageTransition><AprenderFlashcards /></PageTransition></ProtectedRoute>} />
           <Route path="/aprender/desempenho" element={<ProtectedRoute><PageTransition><AprenderDesempenho /></PageTransition></ProtectedRoute>} />
           <Route path="/aprender/aula/:aulaId" element={<ProtectedRoute><AprenderAula /></ProtectedRoute>} />
-          <Route path="/flashcards" element={<ProtectedRoute><PageTransition><Flashcards /></PageTransition></ProtectedRoute>} />
+          <Route path="/flashcards" element={<ProtectedRoute><FlashcardsRouteWrapper><PageTransition><Flashcards /></PageTransition></FlashcardsRouteWrapper></ProtectedRoute>} />
           <Route path="/flashcards/estudar" element={<ProtectedRoute><PageTransition><FlashcardsEstudo /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/trilhas" element={<ProtectedRoute><PageTransition><FlashcardsTrilhas /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/cargos" element={<ProtectedRoute><PageTransition><FlashcardsCargos /></PageTransition></ProtectedRoute>} />

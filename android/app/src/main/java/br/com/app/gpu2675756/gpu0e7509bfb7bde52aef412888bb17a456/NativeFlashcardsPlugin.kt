@@ -23,6 +23,18 @@ class NativeFlashcardsPlugin : Plugin() {
     }
 
     @PluginMethod
+    fun openHub(call: PluginCall) {
+        val intent = Intent(context, FlashcardsNativeActivity::class.java).apply {
+            putExtra("mode", "hub")
+            putExtra("titulo", "Flashcards")
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+
+        context.startActivity(intent)
+        call.resolve(JSObject().apply { put("success", true) })
+    }
+
+    @PluginMethod
     fun openSession(call: PluginCall) {
         val titulo = call.getString("titulo") ?: "Flashcards"
         val cardsArray = call.getArray("cards")?.toString() ?: "[]"
@@ -33,6 +45,7 @@ class NativeFlashcardsPlugin : Plugin() {
         currentStartIndex = startIndex
 
         val intent = Intent(context, FlashcardsNativeActivity::class.java).apply {
+            putExtra("mode", "session")
             putExtra("titulo", titulo)
             putExtra("startIndex", startIndex)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK

@@ -21,6 +21,7 @@ export interface NativeFlashcardsSessionData {
 }
 
 export interface NativeFlashcardsPlugin {
+  openHub(options?: { payload?: unknown }): Promise<{ success: boolean }>;
   openSession(options: NativeFlashcardsSessionData): Promise<{ success: boolean }>;
   closeSession(): Promise<{ success: boolean }>;
 

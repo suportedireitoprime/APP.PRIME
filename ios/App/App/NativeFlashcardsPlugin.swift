@@ -4,7 +4,46 @@ import SwiftUI
 @objc(NativeFlashcardsPlugin)
 public class NativeFlashcardsPlugin: CAPPlugin {
     
-    private var hostingController: UIHostingController<FlashcardsView>?
+    private var sessionHostingController: UIHostingController<FlashcardsView>?
+    private var hubHostingController: UIHostingController<FlashcardsHubView>?
+
+    @objc func openHub(_ call: CAPPluginCall) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self, let rootVC = self.bridge?.viewController else {
+                call.reject("Unable to find root view controller")
+                return
+            }
+
+            let hubView = FlashcardsHubView(
+                onClose: { [weak self] in
+                    self?.dismissHub()
+                    self?.notifyListeners("onClose", data: [:])
+                },
+                onCardAnswered: { [weak self] cardId, status, area, tema in
+                    self?.notifyListeners("onCardAnswered", data: [
+                        "cardId": cardId,
+                        "status": status,
+                        "area": area,
+                        "tema": tema
+                    ])
+                },
+                onSessionCompleted: { [weak self] total, compreendidos, revisar in
+                    self?.notifyListeners("onSessionCompleted", data: [
+                        "total": total,
+                        "compreendidos": compreendidos,
+                        "revisar": revisar
+                    ])
+                }
+            )
+
+            let hostingVC = UIHostingController(rootView: hubView)
+            hostingVC.modalPresentationStyle = .fullScreen
+            self.hubHostingController = hostingVC
+            rootVC.present(hostingVC, animated: true) {
+                call.resolve(["success": true])
+            }
+        }
+    }
 
     @objc func openSession(_ call: CAPPluginCall) {
         let titulo = call.getString("titulo") ?? "Flashcards"
@@ -62,7 +101,7 @@ public class NativeFlashcardsPlugin: CAPPlugin {
 
             let hostingVC = UIHostingController(rootView: flashcardsView)
             hostingVC.modalPresentationStyle = .fullScreen
-            self.hostingController = hostingVC
+            self.sessionHostingController = hostingVC
             rootVC.present(hostingVC, animated: true) {
                 call.resolve(["success": true])
             }
@@ -72,12 +111,18 @@ public class NativeFlashcardsPlugin: CAPPlugin {
     @objc func closeSession(_ call: CAPPluginCall) {
         DispatchQueue.main.async { [weak self] in
             self?.dismissSession()
+            self?.dismissHub()
             call.resolve(["success": true])
         }
     }
 
     private func dismissSession() {
-        hostingController?.dismiss(animated: true, completion: nil)
-        hostingController = nil
+        sessionHostingController?.dismiss(animated: true, completion: nil)
+        sessionHostingController = nil
+    }
+
+    private func dismissHub() {
+        hubHostingController?.dismiss(animated: true, completion: nil)
+        hubHostingController = nil
     }
 }

@@ -41,22 +41,47 @@ class FlashcardsNativeActivity : ComponentActivity() {
             )
         }
 
+        val mode = intent.getStringExtra("mode") ?: if (cardsList.isNotEmpty()) "session" else "hub"
+
         setContent {
-            FlashcardsScreen(
-                titulo = titulo,
-                initialCards = cardsList,
-                startIndex = startIndex,
-                onCardAnswered = { cardId, status, area, tema ->
-                    NativeFlashcardsPlugin.instance?.emitCardAnswered(cardId, status, area, tema)
-                },
-                onSessionCompleted = { total, compreendidos, revisar ->
-                    NativeFlashcardsPlugin.instance?.emitSessionCompleted(total, compreendidos, revisar)
-                },
-                onClose = {
-                    NativeFlashcardsPlugin.instance?.emitClose()
-                    finish()
-                }
-            )
+            var currentMode by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(mode) }
+            var activeTitulo by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(titulo) }
+            var activeCards by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(cardsList) }
+
+            if (currentMode == "session" && activeCards.isNotEmpty()) {
+                FlashcardsScreen(
+                    titulo = activeTitulo,
+                    initialCards = activeCards,
+                    startIndex = startIndex,
+                    onCardAnswered = { cardId, status, area, tema ->
+                        NativeFlashcardsPlugin.instance?.emitCardAnswered(cardId, status, area, tema)
+                    },
+                    onSessionCompleted = { total, compreendidos, revisar ->
+                        NativeFlashcardsPlugin.instance?.emitSessionCompleted(total, compreendidos, revisar)
+                    },
+                    onClose = {
+                        if (mode == "hub") {
+                            // Voltar para o Hub se o usuário entrou pelo Hub
+                            currentMode = "hub"
+                        } else {
+                            NativeFlashcardsPlugin.instance?.emitClose()
+                            finish()
+                        }
+                    }
+                )
+            } else {
+                br.com.app.gpu2675756.gpu0e7509bfb7bde52aef412888bb17a456.ui.FlashcardsHubScreen(
+                    onStartSession = { sessaoTitulo, cards ->
+                        activeTitulo = sessaoTitulo
+                        activeCards = cards
+                        currentMode = "session"
+                    },
+                    onBack = {
+                        NativeFlashcardsPlugin.instance?.emitClose()
+                        finish()
+                    }
+                )
+            }
         }
     }
 
