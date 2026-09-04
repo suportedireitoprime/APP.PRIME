@@ -104,7 +104,6 @@ const AdminPilulas = lazy(() => import("./pages/AdminPilulas.tsx"));
 const AdminResumoLivroAudioEditar = lazy(() => import("./pages/AdminResumoLivroAudioEditar.tsx"));
 const AdminErrosQuestoes = lazy(() => import("./pages/AdminErrosQuestoes.tsx"));
 const AdminVadeMecumHistorico = lazy(() => import('./pages/AdminVadeMecumHistorico.tsx'));
-import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 // Lazy loaded
