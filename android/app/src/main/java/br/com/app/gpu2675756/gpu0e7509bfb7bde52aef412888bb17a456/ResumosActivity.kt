@@ -24,8 +24,8 @@ class ResumosActivity : ComponentActivity() {
 
         setContent {
             ResumosScreen(
-                initialArea = initialArea ?: area,
-                initialTema = tema,
+                initialArea = initialArea,
+                initialTema = initialTema,
                 payload = payload,
                 isReader = isReader,
                 onBack = { finish() }

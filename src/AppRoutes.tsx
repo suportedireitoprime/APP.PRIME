@@ -288,39 +288,37 @@ import { getResumosCatalog } from "./services/resumosCatalog";
 function ResumosJuridicosRouteWrapper({ children }: { children: React.ReactNode }) {
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const { area, tema } = useParams();
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (Capacitor.isNativePlatform()) {
       void (async () => {
-        const catalog = await getResumosCatalog();
-        const decodedArea = area ? decodeURIComponent(area) : undefined;
-        const decodedTema = tema ? decodeURIComponent(tema) : undefined;
+        try {
+          const catalog = await getResumosCatalog();
+          const decodedArea = area ? decodeURIComponent(area) : undefined;
+          const decodedTema = tema ? decodeURIComponent(tema) : undefined;
 
-        if (decodedTema && decodedArea) {
-          await ResumosNativePlugin.openReader({
-            area: decodedArea,
-            tema: decodedTema,
-            payload: catalog,
-          });
-        } else if (decodedArea) {
-          await ResumosNativePlugin.openResumos({
-            initialArea: decodedArea,
-            payload: catalog,
-          });
-        } else {
-          await ResumosNativePlugin.openResumos({
-            payload: catalog,
-          });
+          if (decodedTema && decodedArea) {
+            await ResumosNativePlugin.openReader({
+              area: decodedArea,
+              tema: decodedTema,
+              payload: catalog,
+            });
+          } else if (decodedArea) {
+            await ResumosNativePlugin.openResumos({
+              initialArea: decodedArea,
+              payload: catalog,
+            });
+          } else {
+            await ResumosNativePlugin.openResumos({
+              payload: catalog,
+            });
+          }
+        } catch (e) {
+          console.warn("ResumosNativePlugin fallback to React:", e);
         }
-        navigate(-1); // Voltar na web para não ficar na tela branca
       })();
     }
-  }, [area, tema, navigate]);
-
-  if (Capacitor.isNativePlatform()) {
-    return <div className="min-h-dvh bg-[#0D0D0D]" />; // Placeholder enquanto abre o nativo
-  }
+  }, [area, tema]);
 
   if (isDesktop) return <ResumosJuridicosDesktop />;
   return <>{children}</>;
