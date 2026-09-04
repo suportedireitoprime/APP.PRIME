@@ -213,7 +213,13 @@ const BuscaLeisOverlay = ({ open, onClose, onSelectLei }: Props) => {
                   autoFocus
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Nome, sigla ou número da lei..."
+                  placeholder={
+                    modo === 'artigos' 
+                      ? 'Número do artigo...' 
+                      : modo === 'leis' 
+                        ? 'Nome, sigla ou número da lei...' 
+                        : 'Pesquise na jurisprudência...'
+                  }
                   className="w-full h-14 pl-12 pr-12 rounded-2xl bg-muted/60 border border-border font-body text-[15px] text-foreground placeholder:text-muted-foreground outline-none focus:border-primary transition"
                 />
                 {query && (
@@ -266,11 +272,11 @@ const BuscaLeisOverlay = ({ open, onClose, onSelectLei }: Props) => {
                 ))}
 
               {modo === 'artigos' && (
-                <ConteudoBusca query={debouncedQuery} onNavigate={onClose} buscaIA={buscaIA} />
+                <ConteudoBusca query={debouncedQuery} onNavigate={onClose} buscaIA={buscaIA} esconderSugestoes />
               )}
 
               {modo === 'jurisprudencia' && (
-                <ConteudoBusca query={debouncedQuery} onNavigate={onClose} grupo="jurisprudencia" />
+                <ConteudoBusca query={debouncedQuery} onNavigate={onClose} grupo="jurisprudencia" esconderSugestoes />
               )}
             </div>
           </motion.div>

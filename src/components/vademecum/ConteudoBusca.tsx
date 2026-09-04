@@ -14,8 +14,8 @@ const SUGESTOES_CONTEUDO = ['princípios', 'dolo', 'boa-fé', 'devido processo l
 const SUGESTOES_JURIS = ['dano moral', 'prescrição', 'usucapião', 'alimentos', 'improbidade', 'tráfico', 'execução fiscal'];
 
 export default function ConteudoBusca({
-  query, onNavigate, grupo = 'conteudo', categoria = 'tudo', buscaIA = false
-}: { query: string; onNavigate?: () => void; grupo?: ConteudoGrupo, categoria?: CategoriaKey, buscaIA?: boolean }) {
+  query, onNavigate, grupo = 'conteudo', categoria = 'tudo', buscaIA = false, esconderSugestoes = false
+}: { query: string; onNavigate?: () => void; grupo?: ConteudoGrupo, categoria?: CategoriaKey, buscaIA?: boolean, esconderSugestoes?: boolean }) {
   const { resultados: brutos, loading } = useBuscaConteudo(query, grupo, buscaIA);
 
   // Pré-aquece as sugestões em background sem impactar a UI
@@ -65,7 +65,7 @@ export default function ConteudoBusca({
 
   return (
     <div className="space-y-3 pt-2">
-      {!termoCurto && sugestoes.length > 0 && (
+      {!termoCurto && sugestoes.length > 0 && !esconderSugestoes && (
         <SugestoesAprendidas
           sugestoes={sugestoes}
           onClick={(s) => {
@@ -87,7 +87,7 @@ export default function ConteudoBusca({
         <BuscaChecklist query={query} loading={loading} resultCount={filtrados.length} />
       )}
 
-      {termoCurto && (
+      {termoCurto && !esconderSugestoes && (
         <div className="px-4 py-8 space-y-4">
           <div className="text-center space-y-2">
 
