@@ -11,7 +11,7 @@ const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia(
 const isNative = typeof window !== 'undefined' && Capacitor.isNativePlatform();
 
 const PageTransition = ({ children, className }: PageTransitionProps) => {
-  if (prefersReducedMotion || isNative) {
+  if (prefersReducedMotion) {
     return (
       <div
         className={className}
@@ -27,17 +27,18 @@ const PageTransition = ({ children, className }: PageTransitionProps) => {
 
   return (
     <motion.div
-      initial={{ opacity: 0.98 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 1 }}
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -6 }}
       transition={{
-        duration: 0.12,
-        ease: "easeOut",
+        duration: 0.22,
+        ease: [0.16, 1, 0.3, 1],
       }}
       className={className}
       style={{
         width: "100%",
         minHeight: "100dvh",
+        willChange: "transform, opacity",
       }}
     >
       {children}

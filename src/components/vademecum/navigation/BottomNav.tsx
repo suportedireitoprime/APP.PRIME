@@ -198,38 +198,43 @@ const BottomNav = () => {
         <div className="max-w-2xl mx-auto px-2 py-2 md:py-8 md:h-full md:flex md:flex-col md:justify-center md:gap-6">
         <div className="grid grid-cols-5 md:grid-cols-1 items-stretch md:gap-6">
           {/* Slot 1: Blog */}
-          <button
+          <motion.button
+            whileTap={{ scale: 0.90 }}
+            transition={{ type: "spring", stiffness: 450, damping: 25 }}
             onPointerDown={() => prefetchRoute('blog')}
             onMouseEnter={() => prefetchRoute('blog')}
             onClick={() => { haptic.light(); navigate('/blog'); }}
             data-track="bottom_nav_click"
             data-track-destino="blog"
-            className={`flex flex-col items-center justify-center gap-1 py-2 md:py-3 rounded-xl transition-all relative ${
-              path.startsWith('/blog') ? 'text-white/90 bg-white/15 ring-1 ring-white/25' : 'text-white/90 hover:bg-white/10'
+            className={`flex flex-col items-center justify-center gap-1 py-2 md:py-3 rounded-xl transition-colors relative ${
+              path.startsWith('/blog') ? 'text-white/90 bg-white/15 ring-1 ring-white/25 shadow-sm' : 'text-white/80 hover:bg-white/10'
             }`}
             aria-label="Blog"
           >
             <ScrollText className={`w-8 h-8 md:w-7 md:h-7 transition-transform text-white/90 drop-shadow-md ${path.startsWith('/blog') ? 'scale-110' : ''}`} strokeWidth={1.2} />
             <span className="font-body text-[12px] md:text-[11px] font-medium leading-tight text-center text-white/90 drop-shadow-sm">Blog</span>
-          </button>
-
+          </motion.button>
 
           {/* Slot 2: Chat Jurídico */}
-          <button
+          <motion.button
+            whileTap={{ scale: 0.90 }}
+            transition={{ type: "spring", stiffness: 450, damping: 25 }}
             onClick={() => { haptic.selection(); setChatOpen(true); }}
             data-track="bottom_nav_click"
             data-track-destino="chat"
-            className={`flex flex-col items-center justify-center gap-1 py-2 md:py-3 rounded-xl transition-all ${
-              chatOpen ? 'text-white/90 bg-white/15 ring-1 ring-white/25' : 'text-white/90 hover:bg-white/10'
+            className={`flex flex-col items-center justify-center gap-1 py-2 md:py-3 rounded-xl transition-colors ${
+              chatOpen ? 'text-white/90 bg-white/15 ring-1 ring-white/25 shadow-sm' : 'text-white/80 hover:bg-white/10'
             }`}
             aria-label="Chat Jurídico"
           >
             <MessageCircle className={`w-8 h-8 md:w-7 md:h-7 transition-transform text-white/90 drop-shadow-md ${chatOpen ? 'scale-110' : ''}`} strokeWidth={1.2} />
             <span className="font-body text-[12px] md:text-[11px] font-medium leading-tight text-center text-white/90 drop-shadow-sm">Chat</span>
-          </button>
+          </motion.button>
 
           {/* Slot 3: Vade Mecum (destaque flutuante central no mobile, normal no tablet) */}
-          <button
+          <motion.button
+            whileTap={{ scale: 0.92 }}
+            transition={{ type: "spring", stiffness: 450, damping: 25 }}
             onPointerDown={() => prefetchRoute('vademecum')}
             onMouseEnter={() => prefetchRoute('vademecum')}
             onClick={() => { haptic.light(); if (!path.startsWith('/vade-mecum')) navigate('/vade-mecum'); }}
@@ -239,7 +244,7 @@ const BottomNav = () => {
             aria-label="Vade Mecum"
           >
             <span
-              className={`absolute -top-9 left-1/2 -translate-x-1/2 w-[72px] h-[72px] md:relative md:top-0 md:left-0 md:translate-x-0 md:w-auto md:h-auto md:bg-transparent md:shadow-none rounded-full flex items-center justify-center overflow-hidden bg-hero-panel shadow-[0_10px_26px_rgba(0,0,0,0.6)] transition-transform active:scale-95 ${
+              className={`absolute -top-9 left-1/2 -translate-x-1/2 w-[72px] h-[72px] md:relative md:top-0 md:left-0 md:translate-x-0 md:w-auto md:h-auto md:bg-transparent md:shadow-none rounded-full flex items-center justify-center overflow-hidden bg-hero-panel shadow-[0_10px_26px_rgba(0,0,0,0.6)] transition-transform ${
                 path.startsWith('/vade-mecum') ? 'scale-110 md:bg-white/15 md:ring-1 md:ring-white/25' : ''
               }`}
             >
@@ -253,11 +258,12 @@ const BottomNav = () => {
             {/* Spacer invisível ocupando o mesmo espaço do ícone dos outros slots no mobile */}
             <span aria-hidden className="w-8 h-8 md:hidden" />
             <span className="font-body text-[12px] md:text-[11px] font-medium leading-tight text-center text-white md:text-white/90 drop-shadow-sm">Vade Mecum</span>
-          </button>
-
+          </motion.button>
 
           {/* Slot 4: Ferramentas */}
-          <button
+          <motion.button
+            whileTap={{ scale: 0.90 }}
+            transition={{ type: "spring", stiffness: 450, damping: 25 }}
             onPointerDown={() => prefetchRoute('ferramentas')}
             onMouseEnter={() => prefetchRoute('ferramentas')}
             onClick={() => {
@@ -266,31 +272,32 @@ const BottomNav = () => {
             }}
             data-track="bottom_nav_click"
             data-track-destino="ferramentas"
-            className={`flex flex-col items-center justify-center gap-1 py-2 md:py-3 rounded-xl transition-all ${
-              location.pathname.startsWith('/ferramentas') ? 'text-white/90 bg-white/15 ring-1 ring-white/25' : 'text-white/90 hover:bg-white/10'
+            className={`flex flex-col items-center justify-center gap-1 py-2 md:py-3 rounded-xl transition-colors ${
+              location.pathname.startsWith('/ferramentas') ? 'text-white/90 bg-white/15 ring-1 ring-white/25 shadow-sm' : 'text-white/80 hover:bg-white/10'
             }`}
             aria-label="Ferramentas"
           >
             <Gavel className={`w-8 h-8 md:w-7 md:h-7 transition-transform text-white/90 drop-shadow-md ${location.pathname.startsWith('/ferramentas') ? 'scale-110' : ''}`} strokeWidth={1.2} />
             <span className="font-body text-[12px] md:text-[11px] font-medium leading-tight text-center text-white/90 drop-shadow-sm">Ferramentas</span>
-          </button>
-
+          </motion.button>
 
           {/* Slot 5: Pílulas */}
-          <button
+          <motion.button
+            whileTap={{ scale: 0.90 }}
+            transition={{ type: "spring", stiffness: 450, damping: 25 }}
             onPointerDown={() => prefetchRoute('pilulas')}
             onMouseEnter={() => prefetchRoute('pilulas')}
             onClick={() => { haptic.selection(); navigate('/pilulas'); }}
             data-track="bottom_nav_click"
             data-track-destino="pilulas"
-            className={`flex flex-col items-center justify-center gap-1 py-2 md:py-3 rounded-xl transition-all ${
-              path.startsWith('/pilulas') ? 'text-white/90 bg-white/15 ring-1 ring-white/25' : 'text-white/90 hover:bg-white/10'
+            className={`flex flex-col items-center justify-center gap-1 py-2 md:py-3 rounded-xl transition-colors ${
+              path.startsWith('/pilulas') ? 'text-white/90 bg-white/15 ring-1 ring-white/25 shadow-sm' : 'text-white/80 hover:bg-white/10'
             }`}
             aria-label="Pílulas"
           >
             <Pill className={`w-8 h-8 md:w-7 md:h-7 transition-transform text-white/90 drop-shadow-md ${path.startsWith('/pilulas') ? 'scale-110' : ''}`} strokeWidth={1.2} />
             <span className="font-body text-[12px] md:text-[11px] font-medium leading-tight text-center text-white/90 drop-shadow-sm">Pílulas</span>
-          </button>
+          </motion.button>
         </div>
       </div>
     </div>

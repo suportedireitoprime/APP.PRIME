@@ -47,7 +47,8 @@ const MateriaRow = ({ area, icon, onOpen, onPrefetch }: Props) => {
                 alt=""
                 aria-hidden="true"
                 className="absolute inset-0 h-full w-full object-cover"
-                loading="lazy"
+                loading="eager"
+                fetchPriority="high"
                 decoding="async"
               />
               <div
