@@ -71,7 +71,6 @@ const GeofencePresenceBanner = lazy(() => import("@/components/GeofencePresenceB
 const ReminderInAppBanner = lazy(() => import("@/components/ReminderInAppBanner"));
 const InAppPushPopup = lazy(() => import("@/components/ui/InAppPushPopup"));
 const HorusTakeoverNoticeDialog = lazy(() => import("@/components/horus/HorusTakeoverNoticeDialog"));
-const HorusTrialEndedDialog = lazy(() => import("@/components/horus/HorusTrialEndedDialog"));
 const ForceUpdateScreen = lazy(() => import("@/components/ForceUpdateScreen"));
 import { useAppUpdateStore } from "@/lib/appUpdateStore";
 
@@ -209,7 +208,6 @@ const App = () => (
                             <ReminderInAppBanner />
                             <InAppPushPopup />
                             <HorusTakeoverNoticeDialog />
-                            <HorusTrialEndedDialog />
                           </Suspense>
                           <ForceUpdateWrapper />
                           

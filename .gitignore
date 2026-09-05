@@ -60,3 +60,18 @@ docs/*.zip
 !*.example
 ios-config/GoogleService-Info.plist
 android-config/google-services.json
+
+# Dumps, diffs and temporary debug files
+*.diff
+*.tmp
+*.bak
+vite.config.ts.timestamp*
+all_usestates.txt
+build-check.txt
+build-log.txt
+deleted_files.txt
+eslint_output.txt
+job_*_log.txt
+job_log*.txt
+usestate_usage.txt
+missing_books.txt
