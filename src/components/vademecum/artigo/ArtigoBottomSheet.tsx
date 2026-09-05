@@ -50,7 +50,7 @@ import { useSubscription } from '@/hooks/useSubscription';
 import PremiumGate, { type PremiumFeatureKey } from '@/components/PremiumGate';
 import { toast } from 'sonner';
 import { requireOnline } from '@/lib/offlineFeatures';
-import { readArtigoGrifos, writeArtigoGrifos } from '@/lib/artigoGrifosSnapshot';
+import { useArtigoGrifoMagico } from './useArtigoGrifoMagico';
 import { parseAiSections, buildLineSegmentMap, type AiSection } from '@/lib/artigoSegments';
 import ArtigoIAFullscreen from '@/components/vademecum/artigo/ArtigoIAFullscreen';
 import horusOwlBundled from '@/assets/horus/horus-owl.webp';
@@ -83,9 +83,7 @@ import {
   type ArtigoBottomSheetProps,
   type MagicGrifo,
   MAGIC_COLORS,
-  MAGIC_LABELS,
   NARRACAO_CACHE_VERSION,
-  GRIFO_IA_DEFAULT_KEY,
 } from './artigoConstants';
 export type { ModificationInfo } from './artigoConstants';
 
@@ -264,99 +262,12 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
   };
 
 
-  // â”€â”€â”€ Grifo MÃ¡gico state â”€â”€â”€ (MagicGrifo type imported from artigoConstants)
-  const [magicMode, setMagicMode] = useState(false);
   const [showGrifoFoto, setShowGrifoFoto] = useState(false);
-  const [magicHighlights, setMagicHighlights] = useState<MagicGrifo[]>([]);
-  const [magicLoading, setMagicLoading] = useState(false);
-  const [magicTooltip, setMagicTooltip] = useState<{ grifo: MagicGrifo; rect: DOMRect } | null>(null);
-  const [grifoIaDefaultOn, setGrifoIaDefaultOn] = useState<boolean>(() => {
-    try {
-      const v = typeof localStorage !== 'undefined' ? localStorage.getItem(GRIFO_IA_DEFAULT_KEY) : null;
-      return v == null ? true : v === '1';
-    } catch { return true; }
-  });
-  const setGrifoIaDefault = useCallback((on: boolean) => {
-    setGrifoIaDefaultOn(on);
-    try { localStorage.setItem(GRIFO_IA_DEFAULT_KEY, on ? '1' : '0'); } catch { /* ignore */ }
-  }, []);
-  // Contador de anotaÃ§Ãµes persistidas para o badge do rodapÃ©.
+  // Contador de anotações persistidas para o badge do rodapé.
   const [anotacoesCount, setAnotacoesCount] = useState<number>(0);
-  // Bump manual para forÃ§ar releitura da contagem depois de gravar anotaÃ§Ãµes
-  // (o efeito abaixo roda antes das inserÃ§Ãµes do grifo mÃ¡gico terminarem).
+  // Bump manual para forçar releitura da contagem depois de gravar anotações
+  // (o efeito abaixo roda antes das inserções do grifo mágico terminarem).
   const [anotacoesRefreshTick, setAnotacoesRefreshTick] = useState(0);
-
-  // Persiste grifos IA em `artigos_grifos` (1 linha/artigo) e cria uma
-  // anotaÃ§Ã£o por grifo em `artigos_anotacoes`, com dedupe por texto.
-  // Chamado tanto quando o usuÃ¡rio clica em "Grifo mÃ¡gico" quanto quando
-  // os grifos sÃ£o reidratados do cache ao abrir o artigo.
-  const persistMagicHighlights = useCallback(async (grifos: MagicGrifo[]) => {
-    if (!artigo?.numero || !tabelaNome || !grifos?.length) return;
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
-      const artigoId = `${tabelaNome}::${artigo.numero}`;
-      const buildComment = (g: MagicGrifo) =>
-        `${MAGIC_LABELS[g.cor] || 'Grifo IA'}: ${g.explicacao || ''}`.trim();
-
-      // artigos_grifos: substitui o snapshot com o array atual de N grifos.
-      const highlightsPayload = grifos.map((g, i) => ({
-        id: `ia_${g.cor}_${i}`,
-        text: g.trechoExato,
-        trechoExato: g.trechoExato,
-        color: MAGIC_COLORS[g.cor] || MAGIC_COLORS.amarelo,
-        cor: MAGIC_COLORS[g.cor] || MAGIC_COLORS.amarelo,
-        corNome: g.cor,
-        categoria: MAGIC_LABELS[g.cor] || 'Grifo IA',
-        comment: buildComment(g),
-        explicacao: g.explicacao,
-        hierarquia: g.hierarquia,
-        origem: 'ia',
-        createdAt: Date.now() + i,
-      }));
-      await supabase.from('artigos_grifos').upsert(
-        {
-          user_id: user.id,
-          tabela_codigo: tabelaNome,
-          numero_artigo: artigo.numero,
-          artigo_id: artigoId,
-          highlights: highlightsPayload,
-          updated_at: new Date().toISOString(),
-        },
-        { onConflict: 'user_id,tabela_codigo,numero_artigo' },
-      );
-
-      // artigos_anotacoes: N linhas com dedupe por texto exato.
-      const { data: existing } = await supabase
-        .from('artigos_anotacoes')
-        .select('anotacao')
-        .eq('user_id', user.id)
-        .eq('tabela_codigo', tabelaNome)
-        .eq('numero_artigo', artigo.numero);
-      const existingSet = new Set(
-        (existing || []).map((n: any) => String(n.anotacao || '').trim()),
-      );
-      const notasRows = grifos
-        .map((g) => ({
-          user_id: user.id,
-          tabela_codigo: tabelaNome,
-          numero_artigo: artigo.numero,
-          artigo_id: artigoId,
-          anotacao: buildComment(g),
-        }))
-        .filter((row) => row.anotacao && !existingSet.has(row.anotacao));
-      if (notasRows.length > 0) {
-        const { error: notesInsertError } = await supabase.from('artigos_anotacoes').insert(notasRows);
-        if (notesInsertError && notesInsertError.code !== '23505') throw notesInsertError;
-      }
-      invalidateCache(anotacoesKey(tabelaNome, artigo.numero, user.id));
-      setAnotacoesRefreshTick((t) => t + 1);
-    } catch (err) {
-      console.warn('persistMagicHighlights falhou', err);
-      setAnotacoesRefreshTick((t) => t + 1);
-    }
-  }, [artigo?.numero, tabelaNome]);
 
   // Realtime Presence: show how many users are reading this article
   const [onlineCount, setOnlineCount] = useState(0);
@@ -376,7 +287,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
       });
     return () => { supabase.removeChannel(channel); };
   }, [tabelaNome, artigo?.numero]);
-  // â”€â”€â”€ Narration engine (extracted to useArtigoNarracao) â”€â”€â”€
+  // ─── Narration engine (extracted to useArtigoNarracao) ───
   const {
     narracaoUrl,
     narracaoWordTimings,
@@ -439,6 +350,34 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
     clearAll,
     getLineHighlights,
   } = useHighlights(artigo?.id || null);
+
+  const {
+    magicMode,
+    setMagicMode,
+    magicHighlights,
+    setMagicHighlights,
+    magicLoading,
+    magicTooltip,
+    setMagicTooltip,
+    grifoIaDefaultOn,
+    setGrifoIaDefault,
+    eraseSheetHighlights,
+    persistMagicRemoval,
+    persistMagicHighlights,
+    handleRemoveGrifosByColor,
+    handleClearAllGrifos,
+    handleToggleMagic,
+    handleRemoveSingleMagicHighlight,
+  } = useArtigoGrifoMagico({
+    artigo,
+    tabelaNome,
+    highlights,
+    removeHighlightsByColor,
+    clearAll,
+    onAnotacoesCountChange: setAnotacoesCount,
+    onAnotacoesRefresh: () => setAnotacoesRefreshTick((t) => t + 1),
+  });
+
   const [showEraseSheet, setShowEraseSheet] = useState(false);
   const [showVoiceSheet, setShowVoiceSheet] = useState(false);
   const [voiceGrifoActive, setVoiceGrifoActive] = useState(false);
@@ -490,108 +429,11 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
     return () => { cancel = true; };
   }, [artigo?.id, artigo?.numero, tabelaNome, onClose]);
 
-
-  // Reset magic highlights when artigo changes; se a preferÃªncia "mostrar
-  // grifo por padrÃ£o" estiver ligada, o snapshot local Ã© lido de forma
-  // SÃNCRONA (sem esperar rede) para o artigo jÃ¡ abrir grifado. A revalidaÃ§Ã£o
-  // no servidor acontece em paralelo, atrÃ¡s.
   useEffect(() => {
-    setMagicTooltip(null);
     setFocusedSegment(null);
     setIaFull(null);
-    if (!artigo || !tabelaNome || !grifoIaDefaultOn) {
-      setMagicHighlights([]);
-      setMagicMode(false);
-      return;
-    }
+  }, [artigo?.id]);
 
-    // 1) Pintura imediata a partir do espelho local.
-    const snap = readArtigoGrifos(tabelaNome, artigo.numero);
-    if (snap && snap.length) {
-      setMagicHighlights(snap as MagicGrifo[]);
-      setMagicMode(true);
-    } else {
-      setMagicHighlights([]);
-      setMagicMode(false);
-    }
-
-    let cancelled = false;
-    const parseGrifos = (raw: string | null): MagicGrifo[] | null => {
-      if (!raw) return null;
-      try {
-        let cleaned = raw.replace(/^```json\s*/i, '').replace(/\s*```$/i, '').trim();
-        const m = cleaned.match(/\[[\s\S]*\]/);
-        if (m) cleaned = m[0];
-        const parsed = JSON.parse(cleaned);
-        return Array.isArray(parsed) && parsed.length > 0 && parsed[0]?.trechoExato
-          ? (parsed as MagicGrifo[])
-          : null;
-      } catch {
-        return null;
-      }
-    };
-
-    (async () => {
-      try {
-        const { getLocalAiCache, setLocalAiCache } = await import('@/lib/aiCacheLocal');
-        const offline = typeof navigator !== 'undefined' && navigator.onLine === false;
-
-        let cachedRaw: string | null = null;
-
-        if (!offline) {
-          // 2) As duas consultas saem JUNTAS (antes eram uma depois da outra).
-          const [savedRes, cacheRes] = await Promise.all([
-            supabase
-              .from('artigos_grifos')
-              .select('highlights')
-              .eq('tabela_codigo', tabelaNome)
-              .eq('numero_artigo', artigo.numero)
-              .maybeSingle(),
-            supabase
-              .from('artigo_ai_cache')
-              .select('conteudo')
-              .eq('tabela_codigo', tabelaNome)
-              .eq('numero_artigo', artigo.numero)
-              .eq('tipo', 'grifo_magico')
-              .maybeSingle(),
-          ]);
-
-          const saved = savedRes.data;
-          if (saved && Array.isArray(saved.highlights)) {
-            const savedMagic = saved.highlights
-              .filter((item: any) => item?.origem === 'ia')
-              .map((item: any) => ({
-                trechoExato: item.trechoExato || item.text,
-                cor: item.corNome || Object.keys(MAGIC_COLORS).find((key) => MAGIC_COLORS[key] === item.color || MAGIC_COLORS[key] === item.cor) || 'amarelo',
-                explicacao: item.explicacao || String(item.comment || '').replace(/^[^:]+:\s*/, ''),
-                hierarquia: item.hierarquia || '',
-              }));
-            if (savedMagic.length) {
-              cachedRaw = JSON.stringify(savedMagic);
-              setLocalAiCache(tabelaNome, artigo.numero, 'grifo_magico', cachedRaw);
-            }
-          }
-          if (!cachedRaw) cachedRaw = (cacheRes.data?.conteudo as string) || null;
-        }
-
-        if (!cachedRaw) cachedRaw = getLocalAiCache(tabelaNome, artigo.numero, 'grifo_magico');
-        if (cancelled) return;
-
-        const parsed = parseGrifos(cachedRaw);
-        if (!parsed) return;
-
-        // SÃ³ re-renderiza se realmente mudou em relaÃ§Ã£o ao snapshot jÃ¡ pintado.
-        const mudou = JSON.stringify(parsed) !== JSON.stringify(snap ?? []);
-        writeArtigoGrifos(tabelaNome, artigo.numero, parsed as any);
-        if (mudou) {
-          setMagicHighlights(parsed);
-          setMagicMode(true);
-        }
-        persistMagicHighlights(parsed);
-      } catch { /* ignore */ }
-    })();
-    return () => { cancelled = true; };
-  }, [artigo?.id, tabelaNome, grifoIaDefaultOn]);
 
 
   // Carrega a mesma contagem Ãºnica exibida na tela de anotaÃ§Ãµes. As explicaÃ§Ãµes
@@ -641,407 +483,6 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
     return () => { cancelled = true; };
   }, [artigo?.id, tabelaNome, showAnotacoesSheet, magicHighlights.length, anotacoesRefreshTick]);
 
-  const persistMagicRemoval = useCallback(async (next: MagicGrifo[], removed: MagicGrifo[]) => {
-    if (!artigo?.numero || !tabelaNome) return;
-    setMagicHighlights(next);
-    setMagicMode(next.length > 0);
-    setMagicTooltip(null);
-    setAnotacoesCount((count) => Math.max(0, count - removed.length));
-
-    // Garante que o snapshot local sÃ­ncrono seja limpo ou atualizado
-    writeArtigoGrifos(tabelaNome, String(artigo.numero), next.length > 0 ? (next as any) : []);
-
-    const { setLocalAiCache, deleteLocalAiCache } = await import('@/lib/aiCacheLocal');
-    if (next.length > 0) setLocalAiCache(tabelaNome, artigo.numero, 'grifo_magico', JSON.stringify(next));
-    else deleteLocalAiCache(tabelaNome, artigo.numero, 'grifo_magico');
-
-    const artigoId = `${tabelaNome}::${artigo.numero}`;
-    try {
-      const { db } = await import('@/services/offlineDb');
-      const localRows = await db.highlights.where('artigoId').equals(artigoId).toArray();
-      const removedTexts = new Set(removed.map((item) => item.trechoExato));
-      const ids = localRows.filter((row) => {
-        try {
-          const data = JSON.parse(row.data);
-          return data?.origem === 'ia' && removedTexts.has(data.text);
-        } catch { return false; }
-      }).map((row) => row.id);
-      if (ids.length > 0) await db.highlights.bulkDelete(ids);
-    } catch (error) {
-      console.warn('NÃ£o foi possÃ­vel limpar o espelho local dos grifos', error);
-    }
-
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user || (typeof navigator !== 'undefined' && navigator.onLine === false)) return;
-      const payload = next.map((g, i) => ({
-        id: `ia_${g.cor}_${i}`,
-        text: g.trechoExato,
-        trechoExato: g.trechoExato,
-        color: MAGIC_COLORS[g.cor] || MAGIC_COLORS.amarelo,
-        cor: MAGIC_COLORS[g.cor] || MAGIC_COLORS.amarelo,
-        corNome: g.cor,
-        categoria: MAGIC_LABELS[g.cor] || 'Grifo IA',
-        comment: `${MAGIC_LABELS[g.cor] || 'Grifo IA'}: ${g.explicacao || ''}`.trim(),
-        explicacao: g.explicacao,
-        hierarquia: g.hierarquia,
-        origem: 'ia',
-        createdAt: Date.now() + i,
-      }));
-      const { error: highlightsError } = await supabase.from('artigos_grifos').upsert({
-        user_id: user.id,
-        tabela_codigo: tabelaNome,
-        numero_artigo: artigo.numero,
-        artigo_id: artigoId,
-        highlights: payload,
-        updated_at: new Date().toISOString(),
-      }, { onConflict: 'user_id,tabela_codigo,numero_artigo' });
-      if (highlightsError) throw highlightsError;
-      const removedComments = removed.map((g) => `${MAGIC_LABELS[g.cor] || 'Grifo IA'}: ${g.explicacao || ''}`.trim());
-      if (removedComments.length > 0) {
-        const { error: notesError } = await supabase
-          .from('artigos_anotacoes')
-          .delete()
-          .eq('user_id', user.id)
-          .eq('tabela_codigo', tabelaNome)
-          .eq('numero_artigo', artigo.numero)
-          .in('anotacao', removedComments);
-        if (notesError) throw notesError;
-      }
-    } catch (error) {
-      console.error('Erro ao sincronizar exclusÃ£o de grifos:', error);
-      toast.error('Os grifos foram apagados neste aparelho, mas a sincronizaÃ§Ã£o falhou');
-    }
-  }, [artigo?.numero, tabelaNome]);
-
-  const eraseSheetHighlights = useMemo(() => [
-    ...highlights,
-    ...magicHighlights.map((grifo, index) => ({
-      id: `magic_${index}`,
-      lineIndex: -1,
-      startOffset: 0,
-      endOffset: grifo.trechoExato.length,
-      text: grifo.trechoExato,
-      color: MAGIC_COLORS[grifo.cor] || MAGIC_COLORS.amarelo,
-    })),
-  ], [highlights, magicHighlights]);
-
-  const handleRemoveGrifosByColor = useCallback((color: string) => {
-    removeHighlightsByColor(color);
-    const extractRgb = (c: string) => {
-      const m = c.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
-      return m ? `${m[1]},${m[2]},${m[3]}` : c.toLowerCase().trim();
-    };
-    const targetRgb = extractRgb(color);
-    const removedMagic = magicHighlights.filter((grifo) => {
-      const gColor = MAGIC_COLORS[grifo.cor] || MAGIC_COLORS.amarelo;
-      return extractRgb(gColor) === targetRgb;
-    });
-    const remainingMagic = magicHighlights.filter((grifo) => {
-      const gColor = MAGIC_COLORS[grifo.cor] || MAGIC_COLORS.amarelo;
-      return extractRgb(gColor) !== targetRgb;
-    });
-
-    // Atualiza imediatamente o estado de magicHighlights para refletir no modal e na tela
-    setMagicHighlights(remainingMagic);
-    if (remainingMagic.length === 0) {
-      setMagicMode(false);
-      setMagicTooltip(null);
-    }
-
-    if (tabelaNome && artigo?.numero) {
-      writeArtigoGrifos(tabelaNome, String(artigo.numero), remainingMagic.length > 0 ? (remainingMagic as any) : []);
-      import('@/lib/aiCacheLocal').then(({ setLocalAiCache, deleteLocalAiCache }) => {
-        if (remainingMagic.length > 0) {
-          setLocalAiCache(tabelaNome, artigo.numero, 'grifo_magico', JSON.stringify(remainingMagic));
-        } else {
-          deleteLocalAiCache(tabelaNome, artigo.numero, 'grifo_magico');
-        }
-      }).catch(() => {});
-    }
-    if (removedMagic.length > 0) {
-      void persistMagicRemoval(remainingMagic, removedMagic);
-    }
-    import('@/lib/nativeHaptics').then(({ haptic }) => haptic.selection()).catch(() => {});
-    toast.success('Grifos apagados com sucesso');
-  }, [magicHighlights, persistMagicRemoval, removeHighlightsByColor, tabelaNome, artigo?.numero]);
-
-  const handleClearAllGrifos = useCallback(() => {
-    clearAll();
-    if (tabelaNome && artigo?.numero) {
-      writeArtigoGrifos(tabelaNome, String(artigo.numero), []);
-      import('@/lib/aiCacheLocal').then(({ deleteLocalAiCache }) => {
-        deleteLocalAiCache(tabelaNome, artigo.numero, 'grifo_magico');
-      }).catch(() => {});
-      supabase.from('artigo_ai_cache')
-        .delete()
-        .eq('tabela_codigo', tabelaNome)
-        .eq('numero_artigo', artigo.numero)
-        .eq('tipo', 'grifo_magico')
-        .then(() => {});
-    }
-    if (magicHighlights.length > 0) {
-      void persistMagicRemoval([], magicHighlights);
-    }
-    setMagicHighlights([]);
-    setMagicMode(false);
-    setMagicTooltip(null);
-    import('@/lib/nativeHaptics').then(({ haptic }) => haptic.notification()).catch(() => {});
-    toast.success('Todos os grifos foram apagados');
-  }, [clearAll, magicHighlights, persistMagicRemoval, tabelaNome, artigo?.numero]);
-
-  const handleToggleMagic = useCallback(async () => {
-    if (magicMode) {
-      setMagicMode(false);
-      setMagicTooltip(null);
-      return;
-    }
-    if (magicHighlights.length > 0) {
-      setMagicMode(true);
-      // Garante que anotaÃ§Ãµes existam mesmo quando os grifos vieram do cache.
-      persistMagicHighlights(magicHighlights);
-      return;
-    }
-    if (!artigo || !tabelaNome) return;
-
-    setMagicLoading(true);
-    try {
-      // Helper to parse and validate grifos JSON
-      const parseGrifos = (raw: string): MagicGrifo[] | null => {
-        try {
-          let cleaned = raw.replace(/^```json\s*/i, '').replace(/\s*```$/i, '').trim();
-          const arrMatch = cleaned.match(/\[[\s\S]*\]/);
-          if (arrMatch) cleaned = arrMatch[0];
-          let parsed: unknown;
-          try {
-            parsed = JSON.parse(cleaned);
-          } catch {
-            cleaned = cleaned.replace(/,\s*([}\]])/g, '$1').replace(/'/g, '"');
-            parsed = JSON.parse(cleaned);
-          }
-          if (Array.isArray(parsed) && parsed.length > 0 && parsed[0]?.trechoExato) {
-            return parsed as MagicGrifo[];
-          }
-          return null;
-        } catch {
-          return null;
-        }
-      };
-
-      // Local mirror first (funciona offline), depois Supabase
-      const { getLocalAiCache, setLocalAiCache, deleteLocalAiCache } = await import('@/lib/aiCacheLocal');
-      let cachedRaw: string | null = getLocalAiCache(tabelaNome, artigo.numero, 'grifo_magico');
-      if (!cachedRaw && (typeof navigator === 'undefined' || navigator.onLine !== false)) {
-        const { data: cached } = await supabase
-          .from('artigo_ai_cache')
-          .select('conteudo')
-          .eq('tabela_codigo', tabelaNome)
-          .eq('numero_artigo', artigo.numero)
-          .eq('tipo', 'grifo_magico')
-          .maybeSingle();
-        cachedRaw = (cached?.conteudo as string) || null;
-        if (cachedRaw) setLocalAiCache(tabelaNome, artigo.numero, 'grifo_magico', cachedRaw);
-      }
-
-      let grifos: MagicGrifo[] | null = null;
-
-      if (cachedRaw) {
-        grifos = parseGrifos(cachedRaw);
-        // If cached data is corrupt, delete it and re-fetch
-        if (!grifos) {
-          deleteLocalAiCache(tabelaNome, artigo.numero, 'grifo_magico');
-          await supabase.from('artigo_ai_cache')
-            .delete()
-            .eq('tabela_codigo', tabelaNome)
-            .eq('numero_artigo', artigo.numero)
-            .eq('tipo', 'grifo_magico');
-        }
-      }
-
-      if (!grifos) {
-        // Build full article text
-        const fullParts: string[] = [artigo.caput || ''];
-        if (artigo.incisos?.length) {
-          fullParts.push(...artigo.incisos.map((x: any) => typeof x === 'string' ? x : x?.texto).filter(Boolean));
-        }
-        if (artigo.paragrafos?.length) {
-          fullParts.push(...artigo.paragrafos.map((x: any) => typeof x === 'string' ? x : x?.texto).filter(Boolean));
-        }
-        const fullText = fullParts.join('\n\n');
-
-        // Try up to 2 times
-        for (let attempt = 0; attempt < 2; attempt++) {
-          const { data, error } = await supabase.functions.invoke('assistente-juridica', {
-            body: {
-              mode: 'grifo_magico',
-              artigoTexto: fullText,
-              artigoNumero: artigo.numero,
-              leiNome: tabelaNome,
-            },
-          });
-          if (error) { console.error('Grifo mÃ¡gico invoke error:', error); continue; }
-          const rawReply = data?.reply ?? data?.response ?? data?.text ?? data?.content ?? '';
-          const rawStr = typeof rawReply === 'string' ? rawReply : JSON.stringify(rawReply);
-          grifos = parseGrifos(rawStr);
-          if (grifos) break;
-          console.warn(`Grifo mÃ¡gico: parse failed attempt ${attempt + 1}, retrying...`);
-        }
-
-        if (grifos) {
-          const payload = JSON.stringify(grifos);
-          setLocalAiCache(tabelaNome, artigo.numero, 'grifo_magico', payload);
-          // Save valid data to cache
-          await supabase.from('artigo_ai_cache').upsert({
-            tabela_codigo: tabelaNome,
-            numero_artigo: artigo.numero,
-            tipo: 'grifo_magico',
-            conteudo: payload,
-          }, { onConflict: 'tabela_codigo,numero_artigo,tipo' });
-        }
-      }
-
-      if (grifos && grifos.length > 0) {
-        setMagicHighlights(grifos);
-        setMagicMode(true);
-        // Persiste os N grifos IA:
-        // 1) Mirror local (Dexie) para leitura offline instantÃ¢nea.
-        // 2) `artigos_grifos` no Supabase (1 linha por artigo com N highlights no JSON)
-        //    â†’ alimenta o badge "grifado" na lista e a pÃ¡gina "Meus grifos".
-        // 3) `artigos_anotacoes` no Supabase (N linhas, uma por grifo, com a
-        //    explicaÃ§Ã£o da IA) â†’ alimenta o badge "anotado" e "Minhas anotaÃ§Ãµes".
-        try {
-          const { db } = await import('@/services/offlineDb');
-          const artigoId = `${tabelaNome}::${artigo.numero}`;
-          const existing = await db.highlights.where('artigoId').equals(artigoId).toArray();
-          const existingKeys = new Set<string>();
-          for (const h of existing) {
-            try {
-              const d = JSON.parse(h.data);
-              if (d?.origem === 'ia' && d?.text) existingKeys.add(`${d.text}::${d.cor || d.color}`);
-            } catch { /* ignore */ }
-          }
-          const LABELS: Record<string, string> = {
-            amarelo: 'Chave',
-            verde: 'ExceÃ§Ã£o',
-            azul: 'Efeito',
-            rosa: 'Termo',
-            laranja: 'Pegadinha',
-          };
-          const now = Date.now();
-          const buildComment = (g: MagicGrifo) =>
-            `${LABELS[g.cor] || 'Grifo IA'}: ${g.explicacao || ''}`.trim();
-          const toInsert = grifos
-            .map((g, i) => {
-              const color = MAGIC_COLORS[g.cor] || MAGIC_COLORS.amarelo;
-              return {
-                id: `magic_${artigoId}_${g.cor}_${i}_${now}`,
-                artigoId,
-                data: JSON.stringify({
-                  text: g.trechoExato,
-                  color,
-                  cor: color,
-                  comment: buildComment(g),
-                  comentario: buildComment(g),
-                  categoria: LABELS[g.cor] || 'Grifo IA',
-                  hierarquia: g.hierarquia,
-                  origem: 'ia',
-                  createdAt: now + i,
-                }),
-              };
-            })
-            .filter((item) => {
-              try {
-                const d = JSON.parse(item.data);
-                return !existingKeys.has(`${d.text}::${d.cor}`);
-              } catch {
-                return true;
-              }
-            });
-          if (toInsert.length > 0) await db.highlights.bulkPut(toInsert);
-
-          // Sincronia com Supabase (best-effort â€” se offline ou sem sessÃ£o, o
-          // mirror local acima jÃ¡ garante a UX).
-          try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user && (typeof navigator === 'undefined' || navigator.onLine !== false)) {
-              const highlightsPayload = grifos.map((g, i) => ({
-                id: `ia_${g.cor}_${i}`,
-                text: g.trechoExato,
-                trechoExato: g.trechoExato,
-                color: MAGIC_COLORS[g.cor] || MAGIC_COLORS.amarelo,
-                cor: MAGIC_COLORS[g.cor] || MAGIC_COLORS.amarelo,
-                corNome: g.cor,
-                categoria: LABELS[g.cor] || 'Grifo IA',
-                comment: buildComment(g),
-                explicacao: g.explicacao,
-                hierarquia: g.hierarquia,
-                origem: 'ia',
-                createdAt: now + i,
-              }));
-
-              // 1 linha por artigo com N highlights no array
-              await supabase.from('artigos_grifos').upsert(
-                {
-                  user_id: user.id,
-                  tabela_codigo: tabelaNome,
-                  numero_artigo: artigo.numero,
-                  artigo_id: artigoId,
-                  highlights: highlightsPayload,
-                  updated_at: new Date().toISOString(),
-                },
-                { onConflict: 'user_id,tabela_codigo,numero_artigo' },
-              );
-
-              // N linhas em anotaÃ§Ãµes â€” uma por grifo â€” com dedupe por texto.
-              const { data: existingNotas } = await supabase
-                .from('artigos_anotacoes')
-                .select('anotacao')
-                .eq('user_id', user.id)
-                .eq('artigo_id', artigoId);
-              const existingNotasSet = new Set(
-                (existingNotas || []).map((n: any) => String(n.anotacao || '').trim()),
-              );
-              const notasRows = grifos
-                .map((g) => ({
-                  user_id: user.id,
-                  tabela_codigo: tabelaNome,
-                  numero_artigo: artigo.numero,
-                  artigo_id: artigoId,
-                  anotacao: buildComment(g),
-                }))
-                .filter((row) => row.anotacao && !existingNotasSet.has(row.anotacao));
-              if (notasRows.length > 0) {
-                const { error: notesInsertError } = await supabase.from('artigos_anotacoes').insert(notasRows);
-                if (notesInsertError && notesInsertError.code !== '23505') throw notesInsertError;
-              }
-              // SÃ³ agora as linhas existem no banco: invalida o cache do sheet de
-              // anotaÃ§Ãµes (senÃ£o ele abre com o snapshot antigo, zerado) e recarrega a contagem.
-              invalidateCache(anotacoesKey(tabelaNome, artigo.numero, user.id));
-              setAnotacoesRefreshTick((t) => t + 1);
-            }
-          } catch (syncErr) {
-            console.warn('grifo mÃ¡gico: sync supabase falhou', syncErr);
-            setAnotacoesRefreshTick((t) => t + 1);
-          }
-
-          toast.success(
-            grifos.length === 1
-              ? '1 grifo salvo com anotaÃ§Ã£o'
-              : `${grifos.length} grifos salvos com anotaÃ§Ãµes`,
-            { position: 'top-center' },
-          );
-        } catch (err) {
-          console.warn('grifo mÃ¡gico: falha ao salvar em anotaÃ§Ãµes', err);
-        }
-      } else {
-        console.warn('Grifo mÃ¡gico: no valid highlights generated');
-      }
-    } catch (e) {
-      console.error('Grifo mÃ¡gico error:', e);
-    } finally {
-      setMagicLoading(false);
-    }
-  }, [magicMode, magicHighlights, artigo, tabelaNome]);
 
   const handleCopy = async () => {
     if (!artigo) return;
@@ -1753,13 +1194,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 onClick={(e) => {
                   e.stopPropagation();
                   if (highlightMode) {
-                    const next = magicHighlights.filter(g => g.trechoExato !== m.grifo.trechoExato);
-                    void persistMagicRemoval(next, [m.grifo]);
-                    if (tabelaNome && artigo?.numero) {
-                      writeArtigoGrifos(tabelaNome, String(artigo.numero), next.length > 0 ? (next as any) : []);
-                    }
-                    import('@/lib/nativeHaptics').then(({ haptic }) => haptic.light()).catch(() => {});
-                    toast.success('Grifo removido', { duration: 1500 });
+                    handleRemoveSingleMagicHighlight(m.grifo);
                   } else {
                     const rect = (e.target as HTMLElement).getBoundingClientRect();
                     setMagicTooltip(prev => prev?.grifo.trechoExato === m.grifo.trechoExato ? null : { grifo: m.grifo, rect });
@@ -2537,15 +1972,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                     <div className="mt-4 pt-3 border-t border-border/40 flex justify-end">
                       <button
                         onClick={() => {
-                          const target = magicTooltip.grifo;
-                          const next = magicHighlights.filter(g => g.trechoExato !== target.trechoExato);
-                          void persistMagicRemoval(next, [target]);
-                          if (tabelaNome && artigo?.numero) {
-                            writeArtigoGrifos(tabelaNome, String(artigo.numero), next.length > 0 ? (next as any) : []);
-                          }
-                          setMagicTooltip(null);
-                          import('@/lib/nativeHaptics').then(({ haptic }) => haptic.notification()).catch(() => {});
-                          toast.success('Grifo apagado');
+                          handleRemoveSingleMagicHighlight(magicTooltip.grifo);
                         }}
                         className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-red-500/15 text-red-400 hover:bg-red-500/25 transition-colors"
                       >
