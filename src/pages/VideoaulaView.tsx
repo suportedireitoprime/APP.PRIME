@@ -17,28 +17,8 @@ import { useVideoaulaView } from '@/hooks/useVideoaulaView';
 import { VideoaulaSidebarDesktop } from '@/components/videoaulas/view/VideoaulaSidebarDesktop';
 import { VideoaulaPanoramaIA } from '@/components/videoaulas/view/VideoaulaPanoramaIA';
 import { VideoaulaControlesAcao } from '@/components/videoaulas/view/VideoaulaControlesAcao';
-
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-
-function formatTempo(s: number) {
-  if (!s || !isFinite(s)) return '0:00';
-  const t = Math.floor(s);
-  const h = Math.floor(t / 3600);
-  const m = Math.floor((t % 3600) / 60);
-  const sec = t % 60;
-  return h > 0
-    ? `${h}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`
-    : `${m}:${String(sec).padStart(2, '0')}`;
-}
+import { VideoaulaPlayerHeader } from '@/components/videoaulas/view/VideoaulaPlayerHeader';
+import { VideoaulaResumeDialog } from '@/components/videoaulas/view/VideoaulaResumeDialog';
 
 const VideoaulaView = () => {
   const { catalogo: catalogoId, area: areaSlug, videoId } = useParams();
@@ -198,26 +178,12 @@ const VideoaulaView = () => {
         {/* Coluna Principal: Player de Vídeo e Recursos */}
         <div className="lg:col-span-8 xl:col-span-9 space-y-6">
           <div className="space-y-4">
-            <div 
-              id="videoaula-placeholder"
-              className="relative w-[calc(100%+1rem)] sm:w-[calc(100%+2rem)] lg:w-full -mx-2 sm:-mx-4 lg:mx-0 bg-transparent aspect-video lg:rounded-2xl lg:overflow-hidden"
-            >
-              <div className="absolute inset-0 bg-black/10 animate-pulse pointer-events-none" />
-            </div>
-
-            <div className="px-3 lg:px-0 space-y-2">
-              <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-primary transition-[width] duration-500"
-                  style={{ width: `${pctAtual}%` }}
-                />
-              </div>
-              <div className="flex items-center justify-between text-[12px] text-muted-foreground tabular-nums">
-                <span>{formatTempo(tempo)}</span>
-                <span>{displayDuracao > 0 ? formatTempo(displayDuracao) : '--:--'}</span>
-              </div>
-              <h1 className="text-[17px] sm:text-xl lg:text-2xl font-bold leading-snug text-foreground">{tituloLimpo}</h1>
-            </div>
+            <VideoaulaPlayerHeader
+              tempo={tempo}
+              displayDuracao={displayDuracao}
+              pctAtual={pctAtual}
+              tituloLimpo={tituloLimpo}
+            />
 
             <div className="px-3 lg:px-0 py-2 mt-4 space-y-2">
               <p className="text-[11px] sm:text-[12px] uppercase tracking-wider text-muted-foreground font-bold pl-1">
@@ -278,39 +244,23 @@ const VideoaulaView = () => {
         </div>
       </div>
 
-      <AlertDialog open={state.showResumePrompt.show} onOpenChange={handleAlertClose}>
-        <AlertDialogContent className="w-11/12 max-w-md rounded-2xl">
-          <AlertDialogHeader>
-            <AlertDialogTitle>Continuar assistindo?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Você já começou esta aula. Deseja continuar de {formatTempo(state.showResumePrompt.tempo)} ou recomeçar do zero?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="flex-col gap-2 sm:flex-row">
-            <AlertDialogCancel 
-              onClick={() => {
-                state.setInicio(0);
-                seek(0);
-                setTocandoState(true);
-                state.setShowResumePrompt({ show: false, tempo: 0 });
-              }}
-              className="mt-0"
-            >
-              Começar do zero
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                state.setInicio(state.showResumePrompt.tempo);
-                seek(state.showResumePrompt.tempo);
-                setTocandoState(true);
-                state.setShowResumePrompt({ show: false, tempo: 0 });
-              }}
-            >
-              Continuar de onde parei
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <VideoaulaResumeDialog
+        open={state.showResumePrompt.show}
+        tempo={state.showResumePrompt.tempo}
+        onOpenChange={handleAlertClose}
+        onRestart={() => {
+          state.setInicio(0);
+          seek(0);
+          setTocandoState(true);
+          state.setShowResumePrompt({ show: false, tempo: 0 });
+        }}
+        onResume={() => {
+          state.setInicio(state.showResumePrompt.tempo);
+          seek(state.showResumePrompt.tempo);
+          setTocandoState(true);
+          state.setShowResumePrompt({ show: false, tempo: 0 });
+        }}
+      />
 
       {/* Footer Fixo de Ações APENAS para Telas Mobile */}
       <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden pointer-events-none">
