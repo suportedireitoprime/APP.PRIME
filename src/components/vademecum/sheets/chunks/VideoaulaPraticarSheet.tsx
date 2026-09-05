@@ -1,4 +1,4 @@
-﻿import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, X as XIcon, ChevronLeft, ChevronRight, Check, Brain, Layers, RotateCcw } from 'lucide-react';
 
 export interface Questao { pergunta: string; alternativas: string[]; correta: number; comentario: string; }
@@ -140,8 +140,8 @@ export const VideoaulaPraticarSheet = ({ open, onClose, mode, setMode, openMode,
                         )}
                         {answered && (
                           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-4">
-                            <p className={"text-[12px] font-semibold mb-2 "}>
-                              {selectedAlt === currentQ.correta ? '✓ Correto!' : ✗ Resposta correta: }
+                            <p className={`text-[12px] font-semibold mb-2 ${selectedAlt === currentQ.correta ? 'text-emerald-500' : 'text-red-500'}`}>
+                              {selectedAlt === currentQ.correta ? '✓ Correto!' : `✗ Resposta correta: ${currentQ.alternativas[currentQ.correta] ?? ''}`}
                             </p>
                             {currentQ.comentario && (
                               <div className="rounded-lg bg-muted/50 border border-border p-3">
