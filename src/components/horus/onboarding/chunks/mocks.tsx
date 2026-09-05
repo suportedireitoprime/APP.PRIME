@@ -1,0 +1,491 @@
+﻿import React from 'react';
+import { useCurrentFrame, useVideoConfig, interpolate, spring } from 'remotion';
+import { YELLOW, CREAM, INK, bodyFont, displayFont } from './shared';
+
+/* ---------- Mocks (visual props for feature scenes) ---------- */
+
+export const PhoneFrame: React.FC<{ children: React.ReactNode; height?: number }> = ({
+  children,
+  height = 560,
+}) => (
+  <div
+    style={{
+      width: 380,
+      height,
+      borderRadius: 44,
+      background: '#111',
+      border: '6px solid #222',
+      boxShadow:
+        '0 40px 80px rgba(0,0,0,0.6), 0 0 0 2px rgba(239,68,68,0.25)',
+      overflow: 'hidden',
+      position: 'relative',
+    }}
+  >
+    <div
+      style={{
+        position: 'absolute',
+        top: 10,
+        left: '50%',
+        transform: 'translateX(-50%)',
+        width: 110,
+        height: 22,
+        borderRadius: 999,
+        background: '#000',
+        zIndex: 2,
+      }}
+    />
+    {children}
+  </div>
+);
+
+export const WhatsMock: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const bubbles = [
+    { me: true, text: 'Oi Horus! O que Ã© usucapiÃ£o?', at: 20 },
+    {
+      me: false,
+      text: 'UsucapiÃ£o Ã© quando alguÃ©m vira dono de um imÃ³vel pelo uso prolongado. Quer que eu explique com um exemplo?',
+      at: 40,
+    },
+    { me: true, text: 'Sim, por favor ðŸ™', at: 65 },
+  ];
+  return (
+    <PhoneFrame height={520}>
+      <div
+        style={{
+          background: '#0b141a',
+          height: '100%',
+          padding: '48px 14px 14px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 10,
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            padding: '8px 6px',
+            borderBottom: '1px solid rgba(255,255,255,0.08)',
+            marginBottom: 6,
+          }}
+        >
+          <div
+            style={{
+              width: 34,
+              height: 34,
+              borderRadius: '50%',
+              background: YELLOW,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontWeight: 900,
+              color: INK,
+              fontSize: 16,
+              fontFamily: bodyFont,
+            }}
+          >
+            H
+          </div>
+          <div>
+            <div
+              style={{
+                color: '#fff',
+                fontSize: 15,
+                fontWeight: 700,
+                fontFamily: bodyFont,
+              }}
+            >
+              Horus
+            </div>
+            <div
+              style={{
+                color: '#25D366',
+                fontSize: 11,
+                fontFamily: bodyFont,
+              }}
+            >
+              online
+            </div>
+          </div>
+        </div>
+        {bubbles.map((b, i) => {
+          const s = spring({
+            frame: frame - b.at,
+            fps,
+            config: { damping: 20, stiffness: 200 },
+          });
+          return (
+            <div
+              key={i}
+              style={{
+                alignSelf: b.me ? 'flex-end' : 'flex-start',
+                maxWidth: '82%',
+                background: b.me ? '#005c4b' : '#202c33',
+                color: '#fff',
+                padding: '9px 12px',
+                borderRadius: 10,
+                fontSize: 14,
+                fontFamily: bodyFont,
+                lineHeight: 1.35,
+                transform: `translateY(${interpolate(s, [0, 1], [12, 0])}px)`,
+                opacity: s,
+              }}
+            >
+              {b.text}
+            </div>
+          );
+        })}
+      </div>
+    </PhoneFrame>
+  );
+};
+
+export const DocMock: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const scan = interpolate(frame % 90, [0, 90], [0, 100]);
+  return (
+    <div
+      style={{
+        display: 'flex',
+        gap: 20,
+        alignItems: 'center',
+      }}
+    >
+      <div
+        style={{
+          width: 220,
+          height: 300,
+          background: CREAM,
+          borderRadius: 8,
+          boxShadow:
+            '0 30px 60px rgba(0,0,0,0.5), 0 0 0 2px rgba(239,68,68,0.25)',
+          padding: 20,
+          position: 'relative',
+          overflow: 'hidden',
+          transform: 'rotate(-5deg)',
+        }}
+      >
+        {Array.from({ length: 12 }).map((_, i) => (
+          <div
+            key={i}
+            style={{
+              height: 6,
+              background: '#333',
+              opacity: 0.6,
+              borderRadius: 2,
+              marginBottom: 10,
+              width: `${60 + ((i * 13) % 40)}%`,
+            }}
+          />
+        ))}
+        <div
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: `${scan}%`,
+            height: 4,
+            background: YELLOW,
+            boxShadow: `0 0 20px ${YELLOW}, 0 -80px 60px rgba(239,68,68,0.35)`,
+          }}
+        />
+      </div>
+      <div
+        style={{
+          fontSize: 60,
+          color: YELLOW,
+          fontFamily: displayFont,
+          fontWeight: 900,
+        }}
+      >
+        â†’
+      </div>
+      <div
+        style={{
+          width: 230,
+          padding: 16,
+          borderRadius: 16,
+          background: 'rgba(239,68,68,0.14)',
+          border: '2px solid rgba(239,68,68,0.4)',
+          color: CREAM,
+          fontFamily: bodyFont,
+        }}
+      >
+        <div
+          style={{
+            fontSize: 12,
+            color: YELLOW,
+            fontWeight: 700,
+            letterSpacing: '0.2em',
+            marginBottom: 8,
+            textTransform: 'uppercase',
+          }}
+        >
+          Resumo
+        </div>
+        {['Objeto do contrato', 'Prazo: 24 meses', 'Multa rescisÃ³ria: 20%', 'Foro: Comarca da Capital'].map(
+          (t, i) => {
+            const s = spring({
+              frame: frame - 25 - i * 10,
+              fps,
+              config: { damping: 20, stiffness: 180 },
+            });
+            return (
+              <div
+                key={i}
+                style={{
+                  fontSize: 14,
+                  marginBottom: 6,
+                  opacity: s,
+                  transform: `translateX(${interpolate(s, [0, 1], [10, 0])}px)`,
+                }}
+              >
+                â€¢ {t}
+              </div>
+            );
+          },
+        )}
+      </div>
+    </div>
+  );
+};
+
+export const OCRMock: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const scan = interpolate(frame % 60, [0, 60], [0, 100]);
+  return (
+    <div
+      style={{
+        width: 380,
+        height: 260,
+        borderRadius: 24,
+        background: '#1a1a1a',
+        border: '2px solid rgba(239,68,68,0.4)',
+        position: 'relative',
+        overflow: 'hidden',
+        padding: 18,
+        fontFamily: bodyFont,
+      }}
+    >
+      <div
+        style={{
+          fontSize: 13,
+          color: YELLOW,
+          letterSpacing: '0.2em',
+          textTransform: 'uppercase',
+          fontWeight: 700,
+          marginBottom: 10,
+        }}
+      >
+        Foto do caderno
+      </div>
+      <div
+        style={{
+          background: 'rgba(255,255,255,0.06)',
+          borderRadius: 12,
+          padding: 12,
+          color: '#ddd',
+          fontSize: 15,
+          lineHeight: 1.5,
+          fontStyle: 'italic',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        "Art. 5Âº Todos sÃ£o iguais perante a leiâ€¦"
+        <div
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: `${scan}%`,
+            height: 2,
+            background: YELLOW,
+            boxShadow: `0 0 14px ${YELLOW}`,
+          }}
+        />
+      </div>
+      <div style={{ marginTop: 14, display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div
+          style={{
+            padding: '6px 12px',
+            borderRadius: 999,
+            background: YELLOW,
+            color: INK,
+            fontSize: 12,
+            fontWeight: 800,
+          }}
+        >
+          {spring({ frame: frame - 20, fps, config: { damping: 20 } }) > 0.5
+            ? 'Reconhecido âœ“'
+            : 'Lendoâ€¦'}
+        </div>
+        <div style={{ color: '#888', fontSize: 12 }}>
+          CF/88 Â· Art. 5Âº Â· Direitos Fundamentais
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export const AudioMock: React.FC = () => {
+  const frame = useCurrentFrame();
+  return (
+    <div
+      style={{
+        width: 380,
+        padding: 20,
+        borderRadius: 24,
+        background: '#1a1a1a',
+        border: '2px solid rgba(239,68,68,0.4)',
+        fontFamily: bodyFont,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 14,
+      }}
+    >
+      <div
+        style={{
+          fontSize: 13,
+          color: YELLOW,
+          letterSpacing: '0.2em',
+          textTransform: 'uppercase',
+          fontWeight: 700,
+        }}
+      >
+        VocÃª enviou um Ã¡udio
+      </div>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 4,
+          height: 60,
+        }}
+      >
+        {Array.from({ length: 40 }).map((_, i) => {
+          const h = 20 + Math.abs(Math.sin(i * 0.5 + frame / 4)) * 40;
+          const active = i < ((frame / 2) % 40);
+          return (
+            <div
+              key={i}
+              style={{
+                flex: 1,
+                height: h,
+                background: active ? YELLOW : 'rgba(255,255,255,0.15)',
+                borderRadius: 2,
+              }}
+            />
+          );
+        })}
+      </div>
+      <div
+        style={{
+          color: CREAM,
+          fontSize: 16,
+          lineHeight: 1.35,
+        }}
+      >
+        "Explica pra mim o que Ã© <b style={{ color: YELLOW }}>habeas corpus</b> em um minuto"
+      </div>
+      <div
+        style={{
+          fontSize: 12,
+          color: '#888',
+        }}
+      >
+        Respondo em Ã¡udio tambÃ©m ðŸŽ§
+      </div>
+    </div>
+  );
+};
+
+export const RadarMock: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const pulse = ((frame % 60) / 60) * 100;
+  const items = [
+    { t: 'Nova Lei sancionada', d: 'PL 2.338/23 Â· IA no setor pÃºblico' },
+    { t: 'STF publica sÃºmula', d: 'SÃºmula Vinculante 59' },
+    { t: 'Portaria MJ', d: 'Regulamenta atendimento em delegacias' },
+  ];
+  return (
+    <div
+      style={{
+        width: 400,
+        padding: 20,
+        borderRadius: 24,
+        background: '#1a1a1a',
+        border: '2px solid rgba(239,68,68,0.4)',
+        fontFamily: bodyFont,
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
+      <div
+        style={{
+          position: 'absolute',
+          top: 20,
+          right: 20,
+          width: 12,
+          height: 12,
+          borderRadius: '50%',
+          background: YELLOW,
+          boxShadow: `0 0 0 ${pulse * 0.3}px rgba(239,68,68,${
+            0.3 - pulse * 0.003
+          })`,
+        }}
+      />
+      <div
+        style={{
+          fontSize: 13,
+          color: YELLOW,
+          letterSpacing: '0.2em',
+          textTransform: 'uppercase',
+          fontWeight: 700,
+          marginBottom: 14,
+        }}
+      >
+        Radar de leis
+      </div>
+      {items.map((it, i) => {
+        const s = spring({
+          frame: frame - 20 - i * 12,
+          fps,
+          config: { damping: 20, stiffness: 180 },
+        });
+        return (
+          <div
+            key={i}
+            style={{
+              padding: '10px 0',
+              borderTop: i === 0 ? 'none' : '1px solid rgba(255,255,255,0.08)',
+              transform: `translateY(${interpolate(s, [0, 1], [16, 0])}px)`,
+              opacity: s,
+            }}
+          >
+            <div
+              style={{
+                color: CREAM,
+                fontSize: 16,
+                fontWeight: 700,
+              }}
+            >
+              {it.t}
+            </div>
+            <div style={{ color: '#999', fontSize: 13, marginTop: 2 }}>
+              {it.d}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+
