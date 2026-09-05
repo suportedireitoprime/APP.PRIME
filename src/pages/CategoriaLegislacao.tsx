@@ -127,6 +127,7 @@ const CategoriaLegislacao = () => {
         if (artigoNumeroParam) setPendingArtigoNumero(artigoNumeroParam);
         return;
       }
+    }
     if (!leiSlugParam) {
       if (tipo !== 'lei-ordinaria' && tipo !== 'decreto' && tipo !== 'sumula' && tipo !== 'constituicao') {
         navigate('/vade-mecum', { replace: true });
