@@ -19,7 +19,7 @@ import { startAppMetrics } from '@/lib/appMetrics';
 import { usePrefetchProfileSummary } from '@/hooks/useProfileSummary';
 import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
 import {pickAsset, srcOf } from '@/lib/assetUrl';
-import { prefetchRoute, type PrefetchKey } from '@/lib/routePrefetch';
+import { prefetchRoute, prefetchMainTabsIdle, type PrefetchKey } from '@/lib/routePrefetch';
 import primeLogoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
 import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
 
@@ -104,17 +104,10 @@ const BottomNav = () => {
     setSideMenuOpen(false);
   }, [path]);
 
-  // Pré-carrega o chunk do Vade Mecum assim que o app fica ocioso, para que
-  // o toque no botão central abra instantaneamente (sem download no clique).
+  // Pré-carrega os chunks das abas principais do BottomNav assim que o app fica ocioso
+  // para que o toque em qualquer aba abra instantaneamente (0ms de latência de rede).
   useEffect(() => {
-    const load = () => { import('@/pages/VadeMecum.tsx'); };
-    const w = window as unknown as { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number };
-    if (typeof w.requestIdleCallback === 'function') {
-      const id = w.requestIdleCallback(load, { timeout: 2500 });
-      return () => (window as unknown as { cancelIdleCallback?: (i: number) => void }).cancelIdleCallback?.(id);
-    }
-    const t = window.setTimeout(load, 1500);
-    return () => window.clearTimeout(t);
+    prefetchMainTabsIdle();
   }, []);
 
   const keyboardHeight = useKeyboardHeight();

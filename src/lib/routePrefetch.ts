@@ -59,31 +59,71 @@ export const routePrefetch = {
   videoaulasCatalogoTrilha: () => import("@/pages/VideoaulasCatalogoTrilha.tsx"),
   videoaulasConquistas: () => import("@/pages/VideoaulasConquistas.tsx"),
   flashcards: () => import("@/pages/Flashcards.tsx"),
-  pilulas: () => import("@/pages/pilulas/PilulasLista"),
+  pilulas: () => import("@/pages/pilulas/PilulasHome"),
+  pilulasLista: () => import("@/pages/pilulas/PilulasLista"),
   vademecum: () => import("@/pages/CategoriaLegislacao.tsx"),
   meExplique: () => import("@/pages/MeExplique.tsx"),
 } as const;
 
 export type PrefetchKey = keyof typeof routePrefetch;
 
+const MAIN_TAB_KEYS: PrefetchKey[] = [
+  'vademecum',
+  'pilulas',
+  'ferramentas',
+  'blog',
+  'aprender',
+  'meuEspaco',
+];
+
+let mainTabsScheduled = false;
 let idleScheduled = false;
 
-/** Prefetches all main navigation chunks after the browser is idle. */
-export function prefetchHeroRoutesIdle(): void {
-  if (idleScheduled || typeof window === "undefined") return;
-  idleScheduled = true;
+/** Pre-aquecimento imediato das 6 abas e rotas principais do BottomNav em idle. */
+export function prefetchMainTabsIdle(): void {
+  if (mainTabsScheduled || typeof window === "undefined") return;
+  mainTabsScheduled = true;
+
   const run = () => {
-    // Dispara todas em paralelo — o browser dedupe e o bundler
-    // já entrega em chunks separados, então cada uma carrega rapidamente.
-    for (const key of Object.keys(routePrefetch) as PrefetchKey[]) {
+    MAIN_TAB_KEYS.forEach((key) => {
       try { routePrefetch[key](); } catch { /* noop */ }
-    }
+    });
   };
+
   const ric = (window as any).requestIdleCallback as
     | ((cb: () => void, opts?: { timeout?: number }) => number)
     | undefined;
-  if (ric) ric(run, { timeout: 2500 });
-  else setTimeout(run, 800);
+
+  if (ric) ric(run, { timeout: 1200 });
+  else setTimeout(run, 350);
+}
+
+/** Prefetches all navigation chunks in staggered batches after the browser is idle. */
+export function prefetchHeroRoutesIdle(): void {
+  if (idleScheduled || typeof window === "undefined") return;
+  idleScheduled = true;
+
+  // Primeiro pré-aquece as abas mais acessadas
+  prefetchMainTabsIdle();
+
+  const run = () => {
+    const allKeys = Object.keys(routePrefetch) as PrefetchKey[];
+    const remaining = allKeys.filter((k) => !MAIN_TAB_KEYS.includes(k));
+
+    // Pré-carrega o restante de forma cadenciada para não afogar a CPU/rede
+    remaining.forEach((key, index) => {
+      setTimeout(() => {
+        try { routePrefetch[key](); } catch { /* noop */ }
+      }, index * 40);
+    });
+  };
+
+  const ric = (window as any).requestIdleCallback as
+    | ((cb: () => void, opts?: { timeout?: number }) => number)
+    | undefined;
+
+  if (ric) ric(run, { timeout: 3000 });
+  else setTimeout(run, 1500);
 }
 
 /** Fires a single route prefetch (safe to call repeatedly — dedup by browser). */
