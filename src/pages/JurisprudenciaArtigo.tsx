@@ -3,117 +3,48 @@ import { LEIS_SUPABASE_URL } from "@/lib/legislacaoBackend";
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
-import { ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { Copy, ExternalLink, FileText, Heart, Loader2, RefreshCw, Scale, Search, Mic, MicOff, Download, Brain } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
+import { Loader2, RefreshCw, Crown } from 'lucide-react';
 import GeracaoAnimacaoOverlay from '@/components/vademecum/overlays/GeracaoAnimacaoOverlay';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetClose } from '@/components/ui/sheet';
-import { X } from 'lucide-react';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
-import { gerarJurisprudenciaPDF } from '@/lib/jurisPdf';
 import { useGoBack } from '@/hooks/useGoBack';
 import {
   readJurisCache,
   writeJurisCache,
   type JurisCategoriaCache,
 } from '@/lib/jurisprudenciaCache';
-import { copiarTexto } from '@/lib/nativo/copiar';
 import { useSubscription } from '@/hooks/useSubscription';
 import PremiumGate from '@/components/PremiumGate';
-import { Crown } from 'lucide-react';
-import horusOwlBundled from '@/assets/horus/horus-owl.webp';
-import horusOwlAsset from '@/assets/horus/horus-owl.png.asset.json';
-import { pickAsset, srcOf } from '@/lib/assetUrl';
-import { motion } from 'framer-motion';
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.05 } }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 15 },
-  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
-};
-
-const horusOwl = pickAsset(horusOwlBundled, srcOf(horusOwlAsset));
-
-interface JurisItem {
-  id: number | string;
-  titulo?: string;
-  numero_processo?: string;
-  conteudo?: string;
-  teses?: string[];
-  tese?: string;
-  ementa?: string;
-  descricao?: string;
-  situacao?: string | null;
-  data_publicacao?: string | null;
-  url_origem?: string;
-}
-interface JurisCategoria {
-  codigo: string;
-  label: string;
-  tribunal: string;
-  itens: JurisItem[];
-}
-
-function tribunalClasses(tribunal: string, active = false) {
-  if (tribunal === 'STF') {
-    return active
-      ? 'bg-blue-600 text-white border-blue-600'
-      : 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800';
-  }
-  if (tribunal === 'STJ') {
-    return active
-      ? 'bg-emerald-600 text-white border-emerald-600'
-      : 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800';
-  }
-  return active
-    ? 'bg-primary text-primary-foreground border-primary'
-    : 'bg-muted text-muted-foreground border-border';
-}
-
-function prettyLeiName(raw: string): string {
-  if (!raw) return '';
-  // Se já veio um nome amigável (com espaços/acentos e sem underscores), mantém.
-  if (!/_/.test(raw) && /[a-zàáâãéêíóôõúç]/.test(raw)) return raw;
-  const tokens = raw.split('_').filter(Boolean);
-  if (tokens.length === 0) return raw;
-  const isSigla = (t: string) => /^[A-Z0-9]{2,6}$/.test(t);
-  const titleCase = (t: string) =>
-    t.toLowerCase().replace(/(^|\s|-)([a-zà-ÿ])/g, (_, p, c) => p + c.toUpperCase());
-  const stop = new Set(['de', 'da', 'do', 'das', 'dos', 'e']);
-  const words = tokens.map((t, i) => {
-    if (isSigla(t) && i === 0) return t; // sigla no início
-    const lower = t.toLowerCase();
-    if (stop.has(lower)) return lower;
-    return titleCase(t);
-  });
-  if (isSigla(words[0]) && words.length > 1) {
-    return `${words[0]} — ${words.slice(1).join(' ')}`;
-  }
-  return words.join(' ');
-}
+import {
+  JurisItem,
+  JurisCategoria,
+  JurisprudenciaArtigoProps,
+  OVERLAY_STEPS,
+  prettyLeiName,
+  horusOwl,
+  JurisUnsupportedCard,
+  JurisFiltrosBar,
+  JurisCategoriaList,
+  JurisCategoriaSheet,
+  JurisDetalheSheet,
+} from '@/components/vademecum/jurisprudencia/chunks';
 
 const SB_URL = LEIS_SUPABASE_URL;
 
-interface JurisprudenciaArtigoProps {
-  slugLeiProp?: string;
-  numeroArtigoProp?: string;
-  embedded?: boolean;
-  onBack?: () => void;
-}
-
-export default function JurisprudenciaArtigo({ slugLeiProp, numeroArtigoProp, embedded, onBack }: JurisprudenciaArtigoProps = {}) {
+export default function JurisprudenciaArtigo({
+  slugLeiProp,
+  numeroArtigoProp,
+  embedded,
+  onBack,
+}: JurisprudenciaArtigoProps = {}) {
   const navigate = useNavigate();
   const goBack = useGoBack();
   const params = useParams<{ slugLei: string; numeroArtigo: string }>();
   const slugLei = slugLeiProp ?? params.slugLei;
   const numeroArtigo = numeroArtigoProp ?? params.numeroArtigo;
+
   const handleBack = () => {
     if (onBack) {
       onBack();
@@ -125,6 +56,7 @@ export default function JurisprudenciaArtigo({ slugLeiProp, numeroArtigoProp, em
       navigate('/');
     }
   };
+
   const { isPremium, loading: loadingSubscription } = useSubscription();
   const [showPremiumGate, setShowPremiumGate] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -146,13 +78,6 @@ export default function JurisprudenciaArtigo({ slugLeiProp, numeroArtigoProp, em
   const voice = useVoiceInput((text) => setBusca((prev) => (prev ? prev + ' ' : '') + text));
   const [revalidating, setRevalidating] = useState(false);
 
-  const OVERLAY_STEPS = [
-    'Procurando lei no Corpus927',
-    'Vinculando automaticamente',
-    'Buscando jurisprudência',
-    'Pronto',
-  ];
-
   const numeroLabel = useMemo(() => {
     if (!numeroArtigo) return '';
     const raw = decodeURIComponent(numeroArtigo);
@@ -166,6 +91,7 @@ export default function JurisprudenciaArtigo({ slugLeiProp, numeroArtigoProp, em
       .select('slug, nome, numero_lei, ano_lei')
       .eq('slug', slugLei)
       .maybeSingle();
+
     const resp = await fetch(`${SB_URL}/functions/v1/corpus927-descobrir`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -184,8 +110,6 @@ export default function JurisprudenciaArtigo({ slugLeiProp, numeroArtigoProp, em
   };
 
   const buscarJurisprudencia = async (corpus_lei_id: number, force: boolean) => {
-    // Sentinel: lei não indexada pelo Corpus927 (ex.: Constituição). Não chama a API,
-    // apenas monta categorias com links de busca direta em STF e STJ.
     if (corpus_lei_id === -1) {
       setCategorias([]);
       setTotalItens(0);
@@ -212,7 +136,6 @@ export default function JurisprudenciaArtigo({ slugLeiProp, numeroArtigoProp, em
     const numeroDec = decodeURIComponent(numeroArtigo);
     const cache = !force ? readJurisCache(slugLei, numeroDec) : null;
     if (cache) {
-      // Hidrata instantaneamente e revalida em background
       if (cache.leiInfo) setLeiInfo(cache.leiInfo);
       setCategorias(cache.categorias);
       setTotalItens(cache.totalItens);
@@ -237,7 +160,6 @@ export default function JurisprudenciaArtigo({ slugLeiProp, numeroArtigoProp, em
       let { data: mapa, error: errMapa } = await mapaPromise;
       if (errMapa) throw errMapa;
 
-      // Auto-descoberta se não mapeada ou inativa — só mostra overlay se não há cache
       if (!mapa || !mapa.ativo) {
         usouDescoberta = true;
         if (!cache) {
@@ -271,9 +193,7 @@ export default function JurisprudenciaArtigo({ slugLeiProp, numeroArtigoProp, em
       const { data: fav } = await favPromise;
       setFavoritos(new Set((fav || []).map((f: any) => String(f.corpus_item_id))));
 
-      // Persiste no cache local
       try {
-        // Snapshot state values we just set
         setCategorias((cs) => {
           setTotalItens((t) => {
             writeJurisCache(slugLei, numeroDec, {
@@ -295,11 +215,14 @@ export default function JurisprudenciaArtigo({ slugLeiProp, numeroArtigoProp, em
     } catch (e: any) {
       if (!cache) {
         setError(String(e?.message || e));
-        setCategorias([]); setTotalItens(0);
+        setCategorias([]);
+        setTotalItens(0);
       }
       setDescobrindo(false);
     } finally {
-      setLoading(false); setRefreshing(false); setRevalidating(false);
+      setLoading(false);
+      setRefreshing(false);
+      setRevalidating(false);
     }
   };
 
@@ -316,11 +239,18 @@ export default function JurisprudenciaArtigo({ slugLeiProp, numeroArtigoProp, em
   const toggleFav = async (cat: JurisCategoria, item: JurisItem) => {
     const { data: userData } = await supabase.auth.getUser();
     const uid = userData?.user?.id;
-    if (!uid) { toast.error('Faça login para favoritar'); return; }
+    if (!uid) {
+      toast.error('Faça login para favoritar');
+      return;
+    }
     const key = String(item.id);
     if (favoritos.has(key)) {
       await supabase.from('jurisprudencia_favoritos').delete().eq('user_id', uid).eq('corpus_item_id', Number(item.id));
-      setFavoritos((s) => { const n = new Set(s); n.delete(key); return n; });
+      setFavoritos((s) => {
+        const n = new Set(s);
+        n.delete(key);
+        return n;
+      });
     } else {
       await supabase.from('jurisprudencia_favoritos').insert({
         user_id: uid,
@@ -368,13 +298,6 @@ export default function JurisprudenciaArtigo({ slugLeiProp, numeroArtigoProp, em
   const isUnsupported = leiInfo?.corpus_lei_id === -1;
   const artigoNumero = numeroArtigo ? decodeURIComponent(numeroArtigo) : '';
   const leiNomeBusca = leiInfo?.nome_exibicao || slugLei || '';
-  const buildBuscaExterna = (base: 'stf' | 'stj') => {
-    const q = `"art. ${artigoNumero}" ${leiNomeBusca}`.trim();
-    if (base === 'stf') {
-      return `https://jurisprudencia.stf.jus.br/pages/search?base=acordaos&sinonimo=true&plural=true&page=1&pageSize=10&queryString=${encodeURIComponent(q)}&sort=_score&sortBy=desc`;
-    }
-    return `https://scon.stj.jus.br/SCON/pesquisar.jsp?b=ACOR&livre=${encodeURIComponent(q)}`;
-  };
 
   return (
     <div className={embedded ? 'h-full bg-background flex flex-col' : 'min-h-screen bg-background flex flex-col'}>
@@ -384,7 +307,10 @@ export default function JurisprudenciaArtigo({ slugLeiProp, numeroArtigoProp, em
         steps={OVERLAY_STEPS}
         stepIdx={stepIdx}
         estTotalSec={12}
-        onCancel={() => { setDescobrindo(false); handleBack(); }}
+        onCancel={() => {
+          setDescobrindo(false);
+          handleBack();
+        }}
       />
       <PageHeader
         title="Jurisprudência"
@@ -397,9 +323,13 @@ export default function JurisprudenciaArtigo({ slugLeiProp, numeroArtigoProp, em
         }
       />
 
-      <div className={embedded
-        ? 'flex-1 w-full overflow-y-auto px-4 pb-10 pt-4'
-        : 'flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 pb-24 pt-4 lg:max-w-[1400px] lg:px-12 lg:pb-12 lg:pt-6 2xl:px-16'}>
+      <div
+        className={
+          embedded
+            ? 'flex-1 w-full overflow-y-auto px-4 pb-10 pt-4'
+            : 'flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 pb-24 pt-4 lg:max-w-[1400px] lg:px-12 lg:pb-12 lg:pt-6 2xl:px-16'
+        }
+      >
         {!loadingSubscription && !isPremium ? (
           <div className="flex flex-col items-center justify-center py-16 px-6 text-center max-w-md mx-auto">
             <div className="w-20 h-20 rounded-2xl bg-gradient-to-b from-amber-500/20 to-primary/20 p-2 border border-amber-500/30 flex items-center justify-center mb-4 shadow-xl shadow-primary/25">
@@ -429,574 +359,57 @@ export default function JurisprudenciaArtigo({ slugLeiProp, numeroArtigoProp, em
             {error}
           </div>
         ) : isUnsupported ? (
-          <div className="space-y-4">
-            <div className="rounded-2xl border border-border/60 bg-card p-5">
-              <div className="flex items-center gap-2 mb-2">
-                <Scale className="w-5 h-5 text-primary" />
-                <span className="font-semibold text-foreground">
-                  {leiInfo?.nome_exibicao} — {numeroLabel}
-                </span>
-              </div>
-              <p className="text-sm text-muted-foreground mb-4">
-                A jurisprudência da Constituição Federal (e de algumas leis) não é indexada pelo
-                Corpus927. Consulte diretamente os portais oficiais do STF e STJ para este artigo:
-              </p>
-              <div className="grid sm:grid-cols-2 gap-3">
-                <a
-                  href={buildBuscaExterna('stf')}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`flex items-center justify-between gap-3 rounded-xl border p-4 transition-colors ${tribunalClasses('STF')} hover:opacity-90`}
-                >
-                  <div>
-                    <div className="font-bold text-base">STF</div>
-                    <div className="text-xs opacity-80">Buscar acórdãos sobre este artigo</div>
-                  </div>
-                  <ExternalLink className="w-5 h-5" />
-                </a>
-                <a
-                  href={buildBuscaExterna('stj')}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`flex items-center justify-between gap-3 rounded-xl border p-4 transition-colors ${tribunalClasses('STJ')} hover:opacity-90`}
-                >
-                  <div>
-                    <div className="font-bold text-base">STJ</div>
-                    <div className="text-xs opacity-80">Buscar acórdãos sobre este artigo</div>
-                  </div>
-                  <ExternalLink className="w-5 h-5" />
-                </a>
-              </div>
-            </div>
-          </div>
+          <JurisUnsupportedCard
+            nomeExibicao={leiInfo?.nome_exibicao}
+            numeroLabel={numeroLabel}
+            artigoNumero={artigoNumero}
+            leiNomeBusca={leiNomeBusca}
+          />
         ) : (
           <>
-            {/* Resumo */}
-            <div className="flex items-center justify-between gap-3 mb-3">
-              <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                <Scale className="w-4 h-4 text-primary" />
-                <span>
-                  <strong className="text-foreground font-semibold">{totalItens}</strong>{' '}
-                  {totalItens === 1 ? 'resultado' : 'resultados'}
-                </span>
-                {revalidating && (
-                  <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground/80">
-                    <Loader2 className="w-3 h-3 animate-spin" /> atualizando
-                  </span>
-                )}
-              </div>
-              <div className="text-xs text-muted-foreground inline-flex items-center gap-1">
-                <Heart className="w-3.5 h-3.5" /> {favoritos.size}
-              </div>
-            </div>
+            <JurisFiltrosBar
+              totalItens={totalItens}
+              revalidating={revalidating}
+              favoritosCount={favoritos.size}
+              tribunaisDisponiveis={tribunaisDisponiveis}
+              tab={tab}
+              setTab={setTab}
+              tribunalFiltro={tribunalFiltro}
+              setTribunalFiltro={setTribunalFiltro}
+              busca={busca}
+              setBusca={setBusca}
+              voice={voice}
+            />
 
-            {/* Segmented control único: Todos · STF · STJ · ♥ */}
-            {(tribunaisDisponiveis.length > 0 || favoritos.size > 0) && (
-              <div className="mb-3 flex items-center gap-1.5 p-1 rounded-full bg-muted/60 border border-border/60 overflow-x-auto no-scrollbar">
-                {(() => {
-                  const isFavActive = tab === 'favoritos';
-                  const isTodos = !isFavActive && tribunalFiltro === 'todos';
-                  const setSeg = (kind: 'todos' | 'trib' | 'fav', trib?: string) => {
-                    if (kind === 'fav') { setTab('favoritos'); return; }
-                    setTab('todos');
-                    setTribunalFiltro(kind === 'todos' ? 'todos' : trib!);
-                  };
-                  const base = 'h-9 px-3.5 rounded-full text-[13px] font-medium whitespace-nowrap transition-colors flex items-center gap-1.5';
-                  return (
-                    <>
-                      <button
-                        onClick={() => setSeg('todos')}
-                        className={`${base} ${isTodos ? 'bg-hero-yellow text-black shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
-                      >
-                        Todos <span className="opacity-70">· {totalItens}</span>
-                      </button>
-                      {tribunaisDisponiveis.map(({ tribunal, count }) => {
-                        const active = !isFavActive && tribunalFiltro === tribunal;
-                        return (
-                          <button
-                            key={tribunal}
-                            onClick={() => setSeg('trib', tribunal)}
-                            className={`${base} ${active ? tribunalClasses(tribunal, true) + ' shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
-                          >
-                            {tribunal} <span className="opacity-70">· {count}</span>
-                          </button>
-                        );
-                      })}
-                      <button
-                        onClick={() => setSeg('fav')}
-                        className={`${base} ${isFavActive ? 'bg-hero-yellow text-black shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
-                        aria-label="Favoritos"
-                      >
-                        <Heart className={`w-3.5 h-3.5 ${isFavActive ? 'fill-current' : ''}`} />
-                        {favoritos.size}
-                      </button>
-                    </>
-                  );
-                })()}
-              </div>
-            )}
-
-            {/* Search compacta */}
-            <div className="flex items-center gap-2 mb-4">
-              <div className="flex-1 relative">
-                <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-                <input
-                  value={voice.listening && voice.partial ? voice.partial : busca}
-                  onChange={(e) => setBusca(e.target.value)}
-                  placeholder="Buscar por ementa, processo…"
-                  className="w-full h-11 pl-10 pr-3 rounded-full bg-muted/60 border border-border/60 text-sm outline-none focus:ring-2 focus:ring-[hsl(0_72%_52%)]/50 focus:border-transparent placeholder:text-muted-foreground/70"
-                  aria-label="Buscar jurisprudência"
-                />
-              </div>
-              <button
-                type="button"
-                onClick={voice.toggle}
-                aria-label={voice.listening ? 'Parar gravação' : 'Buscar por voz'}
-                className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 transition-all ${
-                  voice.listening
-                    ? 'bg-red-500 text-white animate-pulse'
-                    : 'bg-hero-yellow text-black'
-                }`}
-              >
-                {voice.listening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-              </button>
-            </div>
-
-            {/* Lista agrupada por tribunal */}
-            {categoriasVisiveis.length === 0 ? (
-              <div className="text-center py-16">
-                <Scale className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
-                <p className="text-sm text-muted-foreground">
-                  {tab === 'favoritos' ? 'Nenhum favorito ainda.' : 'Nenhuma jurisprudência encontrada para este artigo.'}
-                </p>
-              </div>
-            ) : (() => {
-              const grupos = new Map<string, typeof categoriasVisiveis>();
-              categoriasVisiveis.forEach((c) => {
-                const arr = grupos.get(c.tribunal) || [];
-                arr.push(c);
-                grupos.set(c.tribunal, arr);
-              });
-              const ordem = ['STF', 'STJ'];
-              const chaves = Array.from(grupos.keys()).sort(
-                (a, b) => (ordem.indexOf(a) + 999) % 999 - (ordem.indexOf(b) + 999) % 999
-              );
-              return (
-                <div className="space-y-5">
-                  {chaves.map((trib) => {
-                    const items = grupos.get(trib)!;
-                    const totalTrib = items.reduce((acc, c) => acc + c.itens.length, 0);
-                    return (
-                      <section key={trib}>
-                        <div className="flex items-center gap-2 mb-2 px-1">
-                          <span className={`inline-flex items-center h-5 px-2 rounded-md border text-[10px] font-bold tracking-wider ${tribunalClasses(trib)}`}>
-                            {trib}
-                          </span>
-                          <div className="h-px flex-1 bg-border/50" />
-                          <span className="text-[11px] text-muted-foreground font-medium">
-                            {totalTrib} {totalTrib === 1 ? 'item' : 'itens'}
-                          </span>
-                        </div>
-                        <motion.ul 
-                          variants={containerVariants}
-                          initial="hidden"
-                          animate="show"
-                          className="space-y-2"
-                        >
-                          {items.map((cat) => {
-                            const preview = cat.itens
-                              .map((i) => (i.titulo || '').trim())
-                              .filter(Boolean)
-                              .slice(0, 4)
-                              .join(' · ');
-                            return (
-                              <motion.li variants={itemVariants} key={cat.codigo}>
-                                <motion.button
-                                  whileHover={{ scale: 1.015 }}
-                                  whileTap={{ scale: 0.98 }}
-                                  onClick={() => setCatAberta(cat)}
-                                  className="w-full text-left rounded-2xl border border-border/60 bg-card hover:bg-card/80 hover:border-border transition-all p-3.5 flex items-center gap-3 focus-visible:outline-none"
-                                >
-                                  <div className="flex-1 min-w-0">
-                                    <div className="font-body text-[15px] font-semibold text-foreground leading-snug line-clamp-1">
-                                      {cat.label}
-                                    </div>
-                                    {preview && (
-                                      <div className="text-[12px] text-muted-foreground line-clamp-1 mt-0.5">
-                                        {preview}
-                                      </div>
-                                    )}
-                                  </div>
-                                  <span className="inline-flex items-center justify-center h-6 min-w-[24px] px-1.5 rounded-full bg-hero-yellow text-[11px] font-bold text-black shrink-0">
-                                    {cat.itens.length}
-                                  </span>
-                                  <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
-                                </motion.button>
-                              </motion.li>
-                            );
-                          })}
-                        </motion.ul>
-                      </section>
-                    );
-                  })}
-                </div>
-              );
-            })()}
+            <JurisCategoriaList
+              categoriasVisiveis={categoriasVisiveis}
+              tab={tab}
+              onSelectCategoria={(cat) => setCatAberta(cat)}
+            />
           </>
         )}
       </div>
 
       {/* Sheet: itens de uma categoria */}
-      <Sheet open={!!catAberta} onOpenChange={(o) => !o && setCatAberta(null)}>
-        <SheetContent
-          side="bottom"
-          className="h-[90dvh] p-0 rounded-t-3xl flex flex-col overflow-hidden [&>button.absolute]:hidden"
-        >
-          {catAberta && (
-            <>
-              <SheetHeader className="px-5 sm:px-6 pt-4 pb-4 border-b border-border/60 text-left">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className={`inline-flex items-center h-6 px-2 rounded-md border text-xs font-semibold ${tribunalClasses(catAberta.tribunal)}`}>
-                        {catAberta.tribunal}
-                      </span>
-                      <Badge variant="secondary" className="text-xs font-medium h-6 px-2">
-                        {catAberta.itens.length} {catAberta.itens.length === 1 ? 'item' : 'itens'}
-                      </Badge>
-                    </div>
-                    <SheetTitle className="text-xl sm:text-2xl font-heading mt-3 leading-tight tracking-tight">
-                      {catAberta.label}
-                    </SheetTitle>
-                  </div>
-                  <SheetClose
-                    aria-label="Fechar"
-                    className="shrink-0 w-11 h-11 rounded-full flex items-center justify-center bg-muted hover:bg-muted/70 text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary/40"
-                  >
-                    <X className="w-5 h-5" />
-                  </SheetClose>
-                </div>
-              </SheetHeader>
-              <div className="flex-1 overflow-y-auto">
-                <div className="max-w-2xl mx-auto px-4 sm:px-6 py-4 space-y-3 lg:max-w-[1200px] lg:px-10">
-                  {catAberta.itens.map((item) => {
-                    const key = String(item.id);
-                    const isFav = favoritos.has(key);
-                    const tese = item.tese || (item.teses && item.teses[0]) || '';
-                    const ementa = item.ementa || item.conteudo || '';
-                    const descricao =
-                      item.descricao ||
-                      (item.teses && item.teses.length > 1 ? item.teses[1] : '') ||
-                      '';
-                    return (
-                      <div key={key} style={{ contentVisibility: 'auto', containIntrinsicSize: '0 160px' }} className="rounded-2xl border border-border/60 bg-card p-4 sm:p-5">
-                        <div className="flex items-start justify-between gap-3 mb-2">
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-2 flex-wrap mb-1.5">
-                              {item.titulo && (
-                                <div className="font-heading text-base sm:text-lg font-semibold text-foreground leading-snug">
-                                  {item.titulo}
-                                </div>
-                              )}
-                              {item.situacao && (
-                                <span className="inline-flex items-center h-6 px-2.5 rounded-full text-[11px] font-semibold uppercase tracking-wide bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
-                                  {item.situacao}
-                                </span>
-                              )}
-                            </div>
-                            {item.numero_processo && (
-                              <div className="text-xs sm:text-sm text-muted-foreground font-mono">
-                                {item.numero_processo}
-                              </div>
-                            )}
-                          </div>
-                          <button
-                            onClick={() => toggleFav(catAberta, item)}
-                            className={`shrink-0 w-11 h-11 flex items-center justify-center rounded-full ${isFav ? 'text-red-500 bg-red-500/10' : 'text-muted-foreground hover:text-red-500 hover:bg-muted'}`}
-                            aria-label={isFav ? 'Remover favorito' : 'Favoritar'}
-                          >
-                            <Heart className="w-5 h-5" fill={isFav ? 'currentColor' : 'none'} />
-                          </button>
-                        </div>
-                        {descricao && (
-                          <p className="text-sm sm:text-[15px] text-foreground/85 leading-relaxed mb-3">
-                            {descricao}
-                          </p>
-                        )}
-                        <div className="grid grid-cols-3 gap-2">
-                          {tese && (
-                            <Button
-                              size="sm"
-                              className="h-11 gap-1.5 px-2 w-full rounded-full text-xs sm:text-sm font-medium bg-hero-yellow hover:opacity-90"
-                              onClick={() => setDetalhe({ item, cat: catAberta, mode: 'tese' })}
-                            >
-                              <Scale className="w-4 h-4 shrink-0" /> <span className="truncate">Ver tese</span>
-                            </Button>
-                          )}
-                          {ementa && (
-                            <Button
-                              size="sm"
-                              variant="secondary"
-                              className="h-11 gap-1.5 px-2 w-full rounded-full text-xs sm:text-sm font-medium"
-                              onClick={() => setDetalhe({ item, cat: catAberta, mode: 'ementa' })}
-                            >
-                              <FileText className="w-4 h-4 shrink-0" /> <span className="truncate">Ver ementa</span>
-                            </Button>
-                          )}
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="h-11 gap-1.5 px-2 w-full rounded-full text-xs sm:text-sm font-medium border border-border/60"
-                            onClick={() => {
-                              const txt = [
-                                item.titulo,
-                                item.situacao,
-                                item.numero_processo,
-                                descricao,
-                                tese && `TESE:\n${tese}`,
-                                ementa && `EMENTA:\n${ementa}`,
-                              ].filter(Boolean).join('\n\n');
-                              copiarTexto(txt);
-                              toast.success('Copiado');
-                            }}
-                          >
-                            <Copy className="w-4 h-4 shrink-0" /> <span className="truncate">Copiar</span>
-                          </Button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </>
-          )}
-        </SheetContent>
-      </Sheet>
+      <JurisCategoriaSheet
+        catAberta={catAberta}
+        onClose={() => setCatAberta(null)}
+        favoritos={favoritos}
+        onToggleFav={toggleFav}
+        onOpenDetalhe={(item, cat, mode) => setDetalhe({ item, cat, mode })}
+      />
 
-      <Sheet open={!!detalhe} onOpenChange={(o) => { if (!o) { setDetalhe(null); setExplicacao(null); setExplicandoLoading(false); } }}>
-        <SheetContent
-          side="bottom"
-          className="h-[90dvh] p-0 rounded-t-3xl flex flex-col overflow-hidden [&>button.absolute]:hidden"
-        >
-          {(() => {
-            if (!detalhe) return null;
-            const norm = (s: string) => s.replace(/\s+/g, ' ').trim();
-            const mode = detalhe.mode || 'ambos';
-            const teseStr =
-              detalhe.item.tese ||
-              (detalhe.item.teses && detalhe.item.teses[0]) ||
-              '';
-            const ementaStr = detalhe.item.ementa || detalhe.item.conteudo || '';
-            const descricao =
-              detalhe.item.descricao ||
-              (detalhe.item.teses && detalhe.item.teses.length > 1 ? detalhe.item.teses[1] : '') ||
-              '';
-            const showTese = (mode === 'tese' || mode === 'ambos') && !!teseStr;
-            const showEmenta =
-              (mode === 'ementa' || mode === 'ambos') &&
-              !!ementaStr &&
-              norm(ementaStr).toLowerCase() !== norm(teseStr).toLowerCase();
-            const sheetLabel =
-              mode === 'tese' ? 'Tese' : mode === 'ementa' ? 'Ementa' : 'Inteiro teor';
-
-            return (
-              <>
-                <SheetHeader className="px-5 sm:px-6 pt-4 pb-4 border-b border-border/60 text-left">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className={`inline-flex items-center h-6 px-2 rounded-md border text-xs font-semibold ${tribunalClasses(detalhe.cat.tribunal)}`}>
-                          {detalhe.cat.tribunal}
-                        </span>
-                        <Badge variant="secondary" className="text-xs font-medium h-6 px-2">{detalhe.cat.label}</Badge>
-                        {detalhe.item.situacao && (
-                          <span className="inline-flex items-center h-6 px-2.5 rounded-full text-[11px] font-semibold uppercase tracking-wide bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
-                            {detalhe.item.situacao}
-                          </span>
-                        )}
-                      </div>
-                      <SheetTitle className="text-xl sm:text-2xl font-heading mt-3 leading-tight tracking-tight">
-                        {detalhe.item.titulo ? `${detalhe.item.titulo} — ${sheetLabel}` : sheetLabel}
-                      </SheetTitle>
-                      {descricao && (
-                        <p className="text-sm sm:text-[15px] text-foreground/80 leading-relaxed mt-2">
-                          {descricao}
-                        </p>
-                      )}
-                      {detalhe.item.numero_processo && (
-                        <div className="text-xs sm:text-sm text-muted-foreground mt-1.5 font-mono">
-                          {detalhe.item.numero_processo}
-                        </div>
-                      )}
-                    </div>
-                    <SheetClose
-                      aria-label="Fechar"
-                      className="shrink-0 w-11 h-11 rounded-full flex items-center justify-center bg-muted hover:bg-muted/70 text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary/40"
-                    >
-                      <X className="w-5 h-5" />
-                    </SheetClose>
-                  </div>
-                </SheetHeader>
-
-                <div className="flex-1 overflow-y-auto">
-                  <div className="max-w-2xl mx-auto px-5 py-6 space-y-6 lg:max-w-3xl lg:px-10">
-                    {showTese && (
-                      <section className="space-y-3">
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-heading text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-                            Tese
-                          </h3>
-                          <div className="h-px flex-1 bg-border/60" />
-                        </div>
-                        <div className="rounded-xl border border-border/60 bg-card/50 p-4">
-                          <p className="text-[15px] leading-[1.65] text-foreground/90 whitespace-pre-line">
-                            {teseStr}
-                          </p>
-                        </div>
-                      </section>
-                    )}
-
-                    {showEmenta && (
-                      <section className="space-y-3">
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-heading text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-                            Ementa
-                          </h3>
-                          <div className="h-px flex-1 bg-border/60" />
-                        </div>
-                        <p className="text-[15px] leading-[1.65] text-foreground/90 whitespace-pre-line">
-                          {ementaStr}
-                        </p>
-                      </section>
-                    )}
-
-                    {!showTese && !showEmenta && (
-                      <div className="text-sm text-muted-foreground text-center py-12">
-                        Sem conteúdo detalhado disponível.
-                      </div>
-                    )}
-
-                    {(explicandoLoading || explicacao) && (
-                      <section className="space-y-3">
-                        <div className="flex items-center gap-2">
-                          <Brain className="w-4 h-4 text-amber-500" />
-                          <h3 className="font-heading text-[11px] font-semibold uppercase tracking-[0.08em] text-amber-600 dark:text-amber-400">
-                            Explicação da IA
-                          </h3>
-                          <div className="h-px flex-1 bg-amber-500/30" />
-                        </div>
-                        <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4">
-                          {explicandoLoading && !explicacao ? (
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground py-2">
-                              <Loader2 className="w-4 h-4 animate-spin" /> A IA está preparando a explicação…
-                            </div>
-                          ) : (
-                            <div className="prose prose-sm dark:prose-invert max-w-none prose-headings:font-heading prose-headings:text-foreground prose-p:text-foreground/90 prose-li:text-foreground/90">
-                              <ReactMarkdown>{explicacao || ''}</ReactMarkdown>
-                            </div>
-                          )}
-                        </div>
-                      </section>
-                    )}
-                  </div>
-                </div>
-
-                <div className="border-t border-border/60 p-3 flex flex-wrap gap-2 bg-background/95 backdrop-blur">
-                  {detalhe.item.url_origem && (
-                    <a href={detalhe.item.url_origem} target="_blank" rel="noreferrer" className="flex-1 min-w-[120px]">
-                      <Button variant="outline" className="w-full h-11 gap-1.5">
-                        <ExternalLink className="w-4 h-4" /> Abrir no site
-                      </Button>
-                    </a>
-                  )}
-                  <Button
-                    variant="outline"
-                    className="flex-1 min-w-[120px] h-11 gap-1.5"
-                    onClick={async () => {
-                      try {
-                        toast.loading('Gerando PDF...', { id: 'juris-pdf' });
-                        await gerarJurisprudenciaPDF({
-                          tribunal: detalhe.cat.tribunal,
-                          categoria: detalhe.cat.label,
-                          situacao: detalhe.item.situacao,
-                          titulo: detalhe.item.titulo || sheetLabel,
-                          descricao,
-                          numeroProcesso: detalhe.item.numero_processo,
-                          tese: showTese ? teseStr : undefined,
-                          ementa: showEmenta ? ementaStr : undefined,
-                          urlOrigem: detalhe.item.url_origem,
-                          leiLabel: leiInfo ? `${prettyLeiName(leiInfo.nome_exibicao)} — ${numeroLabel}` : undefined,
-                          modo: mode,
-                        });
-                        toast.success('PDF baixado', { id: 'juris-pdf' });
-                      } catch (e) {
-                        console.error(e);
-                        toast.error('Falha ao gerar PDF', { id: 'juris-pdf' });
-                      }
-                    }}
-                  >
-                    <Download className="w-4 h-4" /> Baixar PDF
-                  </Button>
-                  <Button
-                    className="flex-1 min-w-[120px] h-11 gap-1.5 bg-amber-400 hover:bg-amber-500 text-amber-950 border-amber-500"
-                    disabled={explicandoLoading}
-                    onClick={async () => {
-                      try {
-                        setExplicandoLoading(true);
-                        setExplicacao(null);
-                        const { data, error } = await supabase.functions.invoke('jurisprudencia-explicar', {
-                          body: {
-                            titulo: detalhe.item.titulo,
-                            categoria: detalhe.cat.label,
-                            tribunal: detalhe.cat.tribunal,
-                            numero_processo: detalhe.item.numero_processo,
-                            situacao: detalhe.item.situacao,
-                            tese: showTese ? teseStr : undefined,
-                            ementa: showEmenta ? ementaStr : undefined,
-                            descricao,
-                            lei: leiInfo ? prettyLeiName(leiInfo.nome_exibicao) : undefined,
-                            artigo: numeroLabel,
-                          },
-                        });
-                        if (error) throw error;
-                        if ((data as any)?.error) throw new Error((data as any).error);
-                        setExplicacao((data as any)?.explicacao || 'Sem explicação disponível.');
-                      } catch (e: any) {
-                        console.error(e);
-                        toast.error(e?.message || 'Falha ao gerar explicação');
-                        setExplicacao(null);
-                      } finally {
-                        setExplicandoLoading(false);
-                      }
-                    }}
-                  >
-                    {explicandoLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Brain className="w-4 h-4" />}
-                    Explicar
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    className="flex-1 min-w-[120px] h-11 gap-1.5"
-                    onClick={() => {
-                      const txt = [
-                        detalhe.item.titulo,
-                        detalhe.item.situacao,
-                        detalhe.item.numero_processo,
-                        descricao,
-                        showTese && teseStr ? `TESE:\n${teseStr}` : '',
-                        showEmenta && ementaStr ? `EMENTA:\n${ementaStr}` : '',
-                      ].filter(Boolean).join('\n\n');
-                      copiarTexto(txt);
-                      toast.success('Copiado');
-                    }}
-                  >
-                    <Copy className="w-4 h-4" /> Copiar tudo
-                  </Button>
-                </div>
-              </>
-            );
-          })()}
-        </SheetContent>
-      </Sheet>
+      {/* Sheet: detalhe e IA */}
+      <JurisDetalheSheet
+        detalhe={detalhe}
+        onClose={() => setDetalhe(null)}
+        leiInfo={leiInfo}
+        numeroLabel={numeroLabel}
+        explicacao={explicacao}
+        setExplicacao={setExplicacao}
+        explicandoLoading={explicandoLoading}
+        setExplicandoLoading={setExplicandoLoading}
+      />
     </div>
   );
 }
