@@ -2,7 +2,8 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
-import { CATEGORIA_INFO, type VisualCategoria } from '@/lib/visuaisJuridicos/types';
+import { type VisualCategoria } from '@/lib/visuaisJuridicos/types';
+import { CATEGORIA_INFO } from '@/lib/visuaisJuridicos/catalogo';
 import { CATEGORIAS, CATEGORIA_ICON, CATEGORIA_COR } from './visuaisConstants';
 
 interface VisuaisPassoCategoriasProps {
