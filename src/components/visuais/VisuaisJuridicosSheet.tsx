@@ -1,9 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import {
-  ChevronRight, ChevronLeft, Clock, GitBranch, Layers, Loader2, Mic, Network, Search, Sparkles, Star, X, Brain,
-  BookOpen, Scale, Gavel,
-} from 'lucide-react';
+import { ChevronRight, ChevronLeft, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useSubscription } from '@/hooks/useSubscription';
@@ -20,7 +17,6 @@ import { fetchArtigosLei, getCachedArtigos } from '@/services/legislacaoService'
 import type { ArtigoLei } from '@/data/mockData';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
-import { iconeDoItem } from '@/lib/visuaisJuridicos/icones';
 import {
   fetchAreasResumos,
   fetchTemasResumos,
@@ -30,146 +26,18 @@ import {
   type SubtemaResumo,
 } from '@/lib/visuaisJuridicos/materias';
 import { listarFavoritos, listarRecentes, registrarRecente, toggleFavorito } from '@/lib/visuaisJuridicos/prefs';
-import { useDictation } from '@/hooks/useDictation';
 import { haptic } from '@/lib/nativeHaptics';
+import {
+  norm,
+  isArtigoReal,
+  type Filtro,
+  VisuaisPassoTipos,
+  VisuaisPassoCategorias,
+  VisuaisPassoItens,
+  VisuaisPassoDetalhes,
+} from './chunks';
 
-
-
-
-const TIPO_ICON: Record<VisualTipo, typeof Brain> = {
-  mapa_mental: Brain,
-  infografico: Layers,
-  fluxograma: GitBranch,
-  diagrama: Network,
-};
-
-const TIPO_COR: Record<VisualTipo, string> = {
-  mapa_mental: '#ef3a5d',
-  infografico: '#f59e0b',
-  fluxograma: '#22c55e',
-  diagrama: '#8b5cf6',
-};
-
-const CATEGORIA_ICON: Record<VisualCategoria, typeof Brain> = {
-  materias: BookOpen,
-  leis: Scale,
-  jurisprudencia: Gavel,
-};
-
-const CATEGORIA_COR: Record<VisualCategoria, string> = {
-  materias: '#38bdf8',
-  leis: '#e01f47',
-  jurisprudencia: '#a78bfa',
-};
-
-const ITEM_CORES = ['#e01f47', '#38bdf8', '#f59e0b', '#22c55e', '#a78bfa', '#ec4899', '#14b8a6', '#f97316'];
-
-const TIPOS: VisualTipo[] = ['mapa_mental', 'infografico', 'fluxograma', 'diagrama'];
-const CATEGORIAS: VisualCategoria[] = ['materias', 'leis', 'jurisprudencia'];
-
-const norm = (v: string) => v.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-
-type Filtro = 'todos' | 'favoritos' | 'recentes';
-const FILTROS: { id: Filtro; label: string; Icone: typeof Layers }[] = [
-  { id: 'todos', label: 'Todos', Icone: Layers },
-  { id: 'favoritos', label: 'Favoritos', Icone: Star },
-  { id: 'recentes', label: 'Recentes', Icone: Clock },
-];
-
-/** Cabeçalhos estruturais (PARTE GERAL, TÍTULO, CAPÍTULO…) não são artigos. */
-const RE_ESTRUTURA = /^(parte|livro|t[ií]tulo|cap[ií]tulo|se[çc][ãa]o|subse[çc][ãa]o|disposi)/i;
-function isArtigoReal(a: ArtigoLei) {
-  const num = String(a.numero ?? '').trim();
-  if (!num) return false;
-  if (RE_ESTRUTURA.test(num)) return false;
-  return /\d/.test(num);
-}
-
-/** Barra de pesquisa igual à do buscador do app (input alto + microfone redondo). */
-function BarraBusca({
-  valor,
-  onChange,
-  placeholder,
-}: {
-  valor: string;
-  onChange: (v: string) => void;
-  placeholder: string;
-}) {
-  const { state, start, stop } = useDictation((chunk) => onChange(`${valor} ${chunk}`.trim().slice(0, 60)));
-  const ouvindo = state === 'recording';
-  return (
-    <div className="flex items-center gap-3">
-      <div className="relative flex-1">
-        <Search className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-        <input
-          value={valor}
-          onChange={(e) => onChange(e.target.value.slice(0, 60))}
-          placeholder={placeholder}
-          className="h-14 w-full rounded-xl border-none bg-muted pl-11 pr-10 font-body text-base text-foreground placeholder:text-muted-foreground outline-none"
-        />
-        {!!valor && (
-          <button
-            onClick={() => onChange('')}
-            aria-label="Limpar busca"
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        )}
-      </div>
-      <button
-        onClick={() => (ouvindo ? stop() : start())}
-        aria-label={ouvindo ? 'Parar ditado' : 'Pesquisar por voz'}
-        className={`btn-attention-shine flex h-14 w-14 shrink-0 items-center justify-center rounded-full shadow-lg transition-all ${
-          ouvindo ? 'bg-red-500 text-white animate-pulse shadow-red-500/40' : 'bg-primary text-primary-foreground shadow-primary/30'
-        }`}
-      >
-        <Mic className="w-6 h-6 relative z-[2]" />
-      </button>
-    </div>
-  );
-}
-
-/** Abas Todos / Favoritos / Recentes — mesmo padrão do buscador do app. */
-function AbasFiltro({ valor, onChange }: { valor: Filtro; onChange: (f: Filtro) => void }) {
-  return (
-    <div className="flex gap-2">
-      {FILTROS.map(({ id, label, Icone }) => (
-        <button
-          key={id}
-          onClick={() => { haptic.selection(); onChange(id); }}
-          className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-semibold transition-all ${
-            valor === id ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
-          }`}
-        >
-          <Icone className={`w-5 h-5 ${id === 'favoritos' && valor === id ? 'fill-current' : ''}`} />
-          <span className="whitespace-nowrap">{label}</span>
-        </button>
-      ))}
-    </div>
-  );
-}
-
-
-/** Estrela de favorito posicionada no canto da linha. */
-function EstrelaFavorito({ ativo, onToggle }: { ativo: boolean; onToggle: () => void }) {
-  return (
-    <button
-      onClick={(e) => {
-        e.stopPropagation();
-        haptic.light();
-        onToggle();
-      }}
-      aria-label={ativo ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
-      className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full"
-    >
-      <Star className={`w-4 h-4 ${ativo ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground/60'}`} />
-    </button>
-  );
-}
-
-
-interface Props {
+export interface VisuaisJuridicosSheetProps {
   open: boolean;
   onClose: () => void;
   /** Quando definido, o componente abre direto neste formato, em tela cheia (rota própria). */
@@ -196,7 +64,7 @@ export default function VisuaisJuridicosSheet({
   modo = 'sheet',
   onEscolherTipo,
   onRotaChange,
-}: Props) {
+}: VisuaisJuridicosSheetProps) {
   const emPagina = modo === 'page';
   useBodyScrollLock(open && !emPagina);
   const { user } = useAuth();
@@ -242,7 +110,7 @@ export default function VisuaisJuridicosSheet({
     if (hit && hit.key !== item?.key) {
       setItem(hit);
     }
-  }, [categoria, itemSlugInicial, areas]);
+  }, [categoria, itemSlugInicial, areas, item?.key]);
 
   // Sincroniza o tema a partir da URL se temaSlugInicial for fornecido
   useEffect(() => {
@@ -251,7 +119,8 @@ export default function VisuaisJuridicosSheet({
     if (hit && hit.tema !== tema?.tema) {
       setTema(hit);
     }
-  }, [temaSlugInicial, temas]);
+  }, [temaSlugInicial, temas, tema?.tema]);
+
   const [subtemas, setSubtemas] = useState<SubtemaResumo[]>([]);
   const [carregandoSubtemas, setCarregandoSubtemas] = useState(false);
 
@@ -320,9 +189,6 @@ export default function VisuaisJuridicosSheet({
   onRotaRef.current = onRotaChange;
   useEffect(() => {
     if (!open || !onRotaRef.current) return;
-    // Ao abrir uma URL profunda, aguarde o catálogo assíncrono restaurar o
-    // item/tema antes de espelhar o estado. Sem esta guarda, o primeiro efeito
-    // removia o slug da URL e devolvia o usuário imediatamente para a lista.
     if (itemSlugInicial && !item) return;
     if (temaSlugInicial && !tema) return;
     const segs: string[] = [];
@@ -332,7 +198,6 @@ export default function VisuaisJuridicosSheet({
     if (tema) segs.push(slugTema(tema.tema));
     onRotaRef.current(segs);
   }, [open, tipo, categoria, item, tema, itemSlugInicial, temaSlugInicial]);
-
 
   useEffect(() => {
     if (!open) reset();
@@ -345,8 +210,11 @@ export default function VisuaisJuridicosSheet({
     const aplicar = (rows: VisualRecord[]) => {
       if (cancelado) return;
       const map: Record<string, VisualRecord> = {};
-      rows.filter((r) => r.tipo === tipo && r.categoria === categoria)
-        .forEach((r) => { map[r.item_key] = r; });
+      rows
+        .filter((r) => r.tipo === tipo && r.categoria === categoria)
+        .forEach((r) => {
+          map[r.item_key] = r;
+        });
       setProntos(map);
       setCarregando(false);
     };
@@ -357,9 +225,10 @@ export default function VisuaisJuridicosSheet({
       setCarregando(true);
       prefetchVisuais().then(aplicar).catch(() => !cancelado && setCarregando(false));
     }
-    return () => { cancelado = true; };
+    return () => {
+      cancelado = true;
+    };
   }, [open, tipo, categoria]);
-
 
   const chaveDe = useCallback((base: CatalogoItem, sub?: string, kind: 'artigo' | 'tema' = 'artigo') => {
     const a = (sub || '').trim().replace(/^art\.?\s*/i, '');
@@ -375,34 +244,64 @@ export default function VisuaisJuridicosSheet({
     let cancelado = false;
     setCarregandoMaterias(true);
     fetchAreasResumos()
-      .then((rows) => { if (!cancelado) setAreas(rows); })
-      .catch(() => { if (!cancelado) setAreas([]); })
-      .finally(() => { if (!cancelado) setCarregandoMaterias(false); });
-    return () => { cancelado = true; };
+      .then((rows) => {
+        if (!cancelado) setAreas(rows);
+      })
+      .catch(() => {
+        if (!cancelado) setAreas([]);
+      })
+      .finally(() => {
+        if (!cancelado) setCarregandoMaterias(false);
+      });
+    return () => {
+      cancelado = true;
+    };
   }, [open, categoria]);
 
   // Tópicos da matéria escolhida.
   useEffect(() => {
-    if (categoria !== 'materias' || !item) { setTemas([]); return; }
+    if (categoria !== 'materias' || !item) {
+      setTemas([]);
+      return;
+    }
     let cancelado = false;
     setCarregandoTemas(true);
     fetchTemasResumos(item.label)
-      .then((rows) => { if (!cancelado) setTemas(rows); })
-      .catch(() => { if (!cancelado) setTemas([]); })
-      .finally(() => { if (!cancelado) setCarregandoTemas(false); });
-    return () => { cancelado = true; };
+      .then((rows) => {
+        if (!cancelado) setTemas(rows);
+      })
+      .catch(() => {
+        if (!cancelado) setTemas([]);
+      })
+      .finally(() => {
+        if (!cancelado) setCarregandoTemas(false);
+      });
+    return () => {
+      cancelado = true;
+    };
   }, [categoria, item]);
 
   // Subtemas do tópico escolhido.
   useEffect(() => {
-    if (categoria !== 'materias' || !item || !tema) { setSubtemas([]); return; }
+    if (categoria !== 'materias' || !item || !tema) {
+      setSubtemas([]);
+      return;
+    }
     let cancelado = false;
     setCarregandoSubtemas(true);
     fetchSubtemasResumos(item.label, tema.tema)
-      .then((rows) => { if (!cancelado) setSubtemas(rows); })
-      .catch(() => { if (!cancelado) setSubtemas([]); })
-      .finally(() => { if (!cancelado) setCarregandoSubtemas(false); });
-    return () => { cancelado = true; };
+      .then((rows) => {
+        if (!cancelado) setSubtemas(rows);
+      })
+      .catch(() => {
+        if (!cancelado) setSubtemas([]);
+      })
+      .finally(() => {
+        if (!cancelado) setCarregandoSubtemas(false);
+      });
+    return () => {
+      cancelado = true;
+    };
   }, [categoria, item, tema]);
 
   const temasFiltrados = useMemo(() => {
@@ -417,23 +316,36 @@ export default function VisuaisJuridicosSheet({
     return aplicarFiltro(base, (s) => chaveDe(item!, `${tema?.tema ?? ''} ${s.subtema}`, 'tema'));
   }, [subtemas, buscaArtigo, aplicarFiltro, chaveDe, item, tema]);
 
-
   // Carrega os artigos da lei escolhida — reaproveita a tabela do Vade Mecum.
   useEffect(() => {
-    if (categoria !== 'leis' || !item?.tabela) { setArtigos([]); return; }
+    if (categoria !== 'leis' || !item?.tabela) {
+      setArtigos([]);
+      return;
+    }
     let cancelado = false;
     const cache = getCachedArtigos(item.tabela);
-    if (cache?.length) { setArtigos(cache); setCarregandoArtigos(false); return; }
+    if (cache?.length) {
+      setArtigos(cache);
+      setCarregandoArtigos(false);
+      return;
+    }
     setCarregandoArtigos(true);
     fetchArtigosLei(item.leiId || item.key, item.tabela)
-      .then((rows) => { if (!cancelado) setArtigos(rows || []); })
-      .catch(() => { if (!cancelado) setArtigos([]); })
-      .finally(() => { if (!cancelado) setCarregandoArtigos(false); });
-    return () => { cancelado = true; };
+      .then((rows) => {
+        if (!cancelado) setArtigos(rows || []);
+      })
+      .catch(() => {
+        if (!cancelado) setArtigos([]);
+      })
+      .finally(() => {
+        if (!cancelado) setCarregandoArtigos(false);
+      });
+    return () => {
+      cancelado = true;
+    };
   }, [categoria, item]);
 
   const artigosFiltrados = useMemo(() => {
-    // Só artigos de verdade — sem "Parte Geral", "Título", "Capítulo" etc.
     const reais = artigos.filter(isArtigoReal);
     const q = norm(buscaArtigo.trim());
     const base = q ? reais.filter((a) => norm(`art ${a.numero} ${a.caput}`).includes(q)) : reais;
@@ -447,21 +359,24 @@ export default function VisuaisJuridicosSheet({
     const filtrados = q ? todos.filter((i) => norm(`${i.label} ${i.sub ?? ''}`).includes(q)) : todos;
     const porAba = aplicarFiltro(filtrados, (i) => i.key);
     if (filtro === 'recentes') return porAba;
-    // Já gerados aparecem primeiro.
     return [...porAba].sort((a, b) => Number(Boolean(prontos[b.key])) - Number(Boolean(prontos[a.key])));
   }, [categoria, areas, busca, prontos, aplicarFiltro, filtro]);
-
-
-  const registroAtual = itemKey ? prontos[itemKey] : undefined;
 
   const gerar = async (alvo?: CatalogoItem, sub?: string, kind: 'artigo' | 'tema' = 'artigo', temaPai?: string) => {
     const base = alvo || item;
     if (!tipo || !categoria || !base) return;
-    if (!podeGerar) { setGateOpen(true); return; }
+    if (!podeGerar) {
+      setGateOpen(true);
+      return;
+    }
     const valor = (sub ?? (alvo ? '' : artigo)).trim();
     const chave = chaveDe(base, temaPai ? `${temaPai} ${valor}` : valor, kind);
     const pronto = prontos[chave];
-    if (pronto) { marcarRecente(chave); setAberto(pronto); return; }
+    if (pronto) {
+      marcarRecente(chave);
+      setAberto(pronto);
+      return;
+    }
 
     setGerando(true);
     setGerandoKey(chave);
@@ -482,13 +397,15 @@ export default function VisuaisJuridicosSheet({
         body: { tipo, categoria, item_key: chave, item_label: rotulo, contexto },
       });
       if (error) {
-        let errorDetails = (error as Record<string, unknown>).message as string || '';
+        let errorDetails = ((error as Record<string, unknown>).message as string) || '';
         const errObj = error as unknown as Record<string, unknown>;
         if (errObj?.context && typeof (errObj.context as Record<string, unknown>)?.json === 'function') {
           try {
             const body = await (errObj.context as { json: () => Promise<Record<string, unknown>> }).json();
             if (typeof body?.error === 'string') errorDetails = body.error;
-          } catch { /* ignora */ }
+          } catch {
+            /* ignora */
+          }
         }
         throw new Error(errorDetails || 'Falha ao chamar a IA');
       }
@@ -498,7 +415,6 @@ export default function VisuaisJuridicosSheet({
       setProntos((p) => ({ ...p, [registro.item_key]: registro }));
       marcarRecente(registro.item_key);
       setAberto(registro);
-
     } catch (e: unknown) {
       console.error('[VisuaisJuridicosSheet] Erro ao gerar visual:', e);
       const msg = String((e as { message?: string })?.message || '');
@@ -532,7 +448,6 @@ export default function VisuaisJuridicosSheet({
     }
   };
 
-
   const getTitle = () => {
     if (passo === 1 || !tipo) return 'Visuais jurídicos';
     if (passo === 2 || !categoria) return TIPO_INFO[tipo]?.label ?? 'Visuais jurídicos';
@@ -553,22 +468,40 @@ export default function VisuaisJuridicosSheet({
 
   const trilha = useMemo(() => {
     const c: Array<{ label: string; onClick?: () => void }> = [
-      { label: 'Visuais', onClick: () => { setTema(null); setItem(null); setCategoria(null); setTipo(null); } },
+      {
+        label: 'Visuais',
+        onClick: () => {
+          setTema(null);
+          setItem(null);
+          setCategoria(null);
+          setTipo(null);
+        },
+      },
     ];
     if (tipo) {
       c.push({
         label: TIPO_INFO[tipo]?.label ?? 'Visual',
-        onClick: () => { setTema(null); setItem(null); setCategoria(null); },
+        onClick: () => {
+          setTema(null);
+          setItem(null);
+          setCategoria(null);
+        },
       });
     }
     if (categoria) {
       c.push({
         label: CATEGORIA_INFO[categoria]?.label ?? 'Categoria',
-        onClick: () => { setTema(null); setItem(null); },
+        onClick: () => {
+          setTema(null);
+          setItem(null);
+        },
       });
     }
     if (item) {
-      c.push({ label: item.label, onClick: () => setTema(null) });
+      c.push({
+        label: item.label,
+        onClick: () => setTema(null),
+      });
     }
     if (tema) c.push({ label: tema.tema });
     const last = c[c.length - 1];
@@ -603,13 +536,8 @@ export default function VisuaisJuridicosSheet({
                     }`
               }
             >
-
               {emPagina ? (
-                <PageHeader
-                  title={getTitle()}
-                  subtitle={getSubtitle()}
-                  onBack={onClose}
-                />
+                <PageHeader title={getTitle()} subtitle={getSubtitle()} onBack={onClose} />
               ) : (
                 <>
                   <div className="flex items-center justify-center pt-2 pb-1">
@@ -618,7 +546,10 @@ export default function VisuaisJuridicosSheet({
                   <div className="flex items-center justify-between gap-3 px-5 pb-3">
                     {passo > 1 && (
                       <button
-                        onClick={() => { haptic.light(); voltar(); }}
+                        onClick={() => {
+                          haptic.light();
+                          voltar();
+                        }}
                         aria-label="Voltar"
                         className="w-11 h-11 shrink-0 rounded-full bg-secondary/70 flex items-center justify-center active:scale-95 transition-transform"
                       >
@@ -634,7 +565,10 @@ export default function VisuaisJuridicosSheet({
                       </p>
                     </div>
                     <button
-                      onClick={() => { haptic.light(); onClose(); }}
+                      onClick={() => {
+                        haptic.light();
+                        onClose();
+                      }}
                       aria-label="Fechar"
                       className="w-11 h-11 shrink-0 rounded-full bg-secondary/70 flex items-center justify-center active:scale-95 transition-transform"
                     >
@@ -653,10 +587,7 @@ export default function VisuaisJuridicosSheet({
                     <span key={`${c.label}-${i}`} className="flex items-center gap-1 shrink-0">
                       {i > 0 && <ChevronRight className="h-3 w-3 opacity-50" />}
                       {c.onClick ? (
-                        <button
-                          onClick={c.onClick}
-                          className="hover:text-foreground active:scale-95 transition"
-                        >
+                        <button onClick={c.onClick} className="hover:text-foreground active:scale-95 transition">
                           {c.label}
                         </button>
                       ) : (
@@ -670,505 +601,74 @@ export default function VisuaisJuridicosSheet({
               <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-[calc(1.25rem+var(--sai-bottom))] pt-3 lg:mx-auto lg:w-full lg:max-w-[900px] lg:px-8">
                 {/* 1 — tipo */}
                 {passo === 1 && (
-                  <div className="space-y-2">
-                    {TIPOS.map((t, i) => {
-                      const Icon = TIPO_ICON[t];
-                      return (
-                        <motion.button
-                          key={t}
-                          initial={{ opacity: 0, y: 12 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: Math.min(i * 0.025, 0.25), duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}
-                          onClick={() => {
-                            haptic.selection();
-                            if (onEscolherTipo) onEscolherTipo(t); else setTipo(t);
-                          }}
-                          className="w-full flex items-center gap-4 px-4 h-[84px] rounded-2xl bg-secondary/40 border border-border/50 active:scale-[0.99] transition"
-                        >
-                          <div className="relative overflow-hidden rounded-xl shrink-0">
-                            <Icon
-                              className="w-8 h-8 relative"
-                              style={{
-                                color: TIPO_COR[t],
-                                filter: 'saturate(1.5) brightness(1.2) drop-shadow(0 2px 8px rgba(0,0,0,0.5))',
-                              }}
-                              strokeWidth={1.3}
-                            />
-                            <span aria-hidden className="pointer-events-none absolute inset-0 icon-shine" />
-                          </div>
-                          <div className="flex-1 min-w-0 text-left">
-                            <p className="font-display text-foreground text-[16px] font-bold leading-tight line-clamp-1 uppercase tracking-[0.08em]">
-                              {TIPO_INFO[t].label}
-                            </p>
-                            <p className="font-body text-muted-foreground text-[12.5px] leading-snug mt-1 line-clamp-2">
-                              {TIPO_INFO[t].desc}
-                            </p>
-                          </div>
-                          <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
-                        </motion.button>
-                      );
-                    })}
-                  </div>
+                  <VisuaisPassoTipos
+                    onSelectTipo={setTipo}
+                    onEscolherTipo={onEscolherTipo}
+                  />
                 )}
 
                 {/* 2 — categoria */}
                 {passo === 2 && (
-                  <div className="space-y-2">
-                    {CATEGORIAS.map((c, i) => {
-                      const Icon = CATEGORIA_ICON[c];
-                      return (
-                        <motion.button
-                          key={c}
-                          initial={{ opacity: 0, y: 12 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: Math.min(i * 0.025, 0.25), duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}
-                          onClick={() => { haptic.selection(); setCategoria(c); }}
-                          className="w-full flex items-center gap-4 px-4 h-[84px] rounded-2xl bg-secondary/40 border border-border/50 active:scale-[0.99] transition"
-                        >
-                          <div className="relative overflow-hidden rounded-xl shrink-0">
-                            <Icon
-                              className="w-8 h-8 relative"
-                              style={{
-                                color: CATEGORIA_COR[c],
-                                filter: 'saturate(1.5) brightness(1.2) drop-shadow(0 2px 8px rgba(0,0,0,0.5))',
-                              }}
-                              strokeWidth={1.3}
-                            />
-                            <span aria-hidden className="pointer-events-none absolute inset-0 icon-shine" />
-                          </div>
-                          <div className="flex-1 min-w-0 text-left">
-                            <p className="font-display text-foreground text-[16px] font-bold leading-tight line-clamp-1 uppercase tracking-[0.08em]">
-                              {CATEGORIA_INFO[c].label}
-                            </p>
-                            <p className="font-body text-muted-foreground text-[12.5px] leading-snug mt-1 line-clamp-2">
-                              {CATEGORIA_INFO[c].desc}
-                            </p>
-                          </div>
-                          <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
-                        </motion.button>
-                      );
-                    })}
-                  </div>
+                  <VisuaisPassoCategorias
+                    onSelectCategoria={setCategoria}
+                  />
                 )}
 
                 {/* 3 — item */}
                 {passo === 3 && (
-                  <div className="space-y-2">
-                    <div className="sticky top-0 z-10 -mx-1 space-y-4 bg-background px-1 pb-3 pt-0.5">
-                      <AbasFiltro valor={filtro} onChange={setFiltro} />
-                      <BarraBusca valor={busca} onChange={setBusca} placeholder="Pesquisar nesta área" />
-                    </div>
-
-
-                    {(carregando || carregandoMaterias) && (
-                      <p className="flex items-center gap-2 px-1 py-2 text-xs text-muted-foreground">
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" />{' '}
-                        {carregandoMaterias ? 'Carregando matérias…' : 'Verificando o que já está pronto…'}
-                      </p>
-                    )}
-
-                    {lista.slice(0, limiteLista).map((i, idx) => {
-                      const Icon = iconeDoItem(i.key, i.label, i.sub);
-                      const cor = ITEM_CORES[idx % ITEM_CORES.length];
-                      const favorito = favoritos.includes(i.key);
-                      return (
-                        <motion.div
-                          key={i.key}
-                          initial={{ opacity: 0, y: 12 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: Math.min(idx * 0.02, 0.2), duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}
-                          className="relative"
-                        >
-                          <button
-                            disabled={gerando}
-                            onClick={() => {
-                              haptic.selection();
-                              setArtigo('');
-                              setBuscaArtigo('');
-                              setFiltro('todos');
-                              if (categoria === 'leis' || categoria === 'materias') setItem(i);
-                              else gerar(i);
-                            }}
-                            className="w-full flex items-center gap-4 px-4 h-[84px] rounded-2xl bg-secondary/40 border border-border/50 active:scale-[0.99] transition"
-                          >
-                            <div className="relative overflow-hidden rounded-xl shrink-0">
-                              <Icon
-                                className="w-8 h-8 relative"
-                                style={{
-                                  color: cor,
-                                  filter: 'saturate(1.5) brightness(1.2) drop-shadow(0 2px 8px rgba(0,0,0,0.5))',
-                                }}
-                                strokeWidth={1.3}
-                              />
-                              <span aria-hidden className="pointer-events-none absolute inset-0 icon-shine" />
-                            </div>
-                            <div className="flex-1 min-w-0 text-left">
-                              <p className="font-display text-foreground text-[16px] font-bold leading-tight line-clamp-1 uppercase tracking-[0.08em]">
-                                {i.label}
-                              </p>
-                              {i.sub && (
-                                <p className="font-body text-muted-foreground text-[12.5px] leading-snug mt-1 line-clamp-1">
-                                  {i.sub}
-                                </p>
-                              )}
-                              {favorito && (
-                                <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-amber-400/15 px-1.5 py-0.5 font-display text-[9.5px] font-bold uppercase tracking-wider text-amber-500">
-                                  <Star className="h-2.5 w-2.5 fill-amber-500" /> Favorito
-                                </span>
-                              )}
-                            </div>
-
-                            <span className="mr-7 shrink-0">
-                              {gerandoKey === i.key ? (
-                                <Loader2 className="w-5 h-5 animate-spin text-primary" />
-                              ) : prontos[i.key] ? (
-                                <span className="rounded-full bg-primary/15 px-2 py-0.5 font-display text-[10px] font-bold tracking-wider text-primary">
-                                  PRONTO
-                                </span>
-                              ) : categoria === 'jurisprudencia' ? (
-                                <Sparkles className="w-5 h-5 text-muted-foreground" />
-                              ) : (
-                                <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                              )}
-                            </span>
-                          </button>
-                          <EstrelaFavorito ativo={favorito} onToggle={() => alternarFavorito(i.key)} />
-                        </motion.div>
-                      );
-                    })}
-                    {!lista.length && !carregando && !carregandoMaterias && (
-                      <p className="py-8 text-center font-body text-sm text-muted-foreground">
-                        {filtro === 'favoritos'
-                          ? 'Nenhum favorito por aqui ainda.'
-                          : filtro === 'recentes'
-                            ? 'Você ainda não abriu nenhum visual nesta área.'
-                            : 'Nenhum tema encontrado.'}
-                      </p>
-                    )}
-
-                    {lista.length > limiteLista && (
-                      <div className="pt-2 pb-6">
-                        <button
-                          onClick={() => setLimiteLista((l) => l + 30)}
-                          className="w-full py-3.5 rounded-xl bg-secondary/50 font-display text-sm font-bold text-primary active:scale-95 transition-transform"
-                        >
-                          Mostrar mais opções...
-                        </button>
-                      </div>
-                    )}
-                  </div>
+                  <VisuaisPassoItens
+                    filtro={filtro}
+                    setFiltro={setFiltro}
+                    busca={busca}
+                    setBusca={setBusca}
+                    carregando={carregando}
+                    carregandoMaterias={carregandoMaterias}
+                    lista={lista}
+                    limiteLista={limiteLista}
+                    setLimiteLista={setLimiteLista}
+                    gerando={gerando}
+                    gerandoKey={gerandoKey}
+                    prontos={prontos}
+                    categoria={categoria!}
+                    favoritos={favoritos}
+                    onEscolherItem={(i) => {
+                      setArtigo('');
+                      setBuscaArtigo('');
+                      setFiltro('todos');
+                      if (categoria === 'leis' || categoria === 'materias') setItem(i);
+                      else gerar(i);
+                    }}
+                    alternarFavorito={alternarFavorito}
+                  />
                 )}
 
                 {/* 4 — tópicos da matéria (resumos) ou artigos da lei */}
-                {passo === 4 && (
-                  <div className="space-y-2">
-                    <div className="sticky top-0 z-10 -mx-1 space-y-4 bg-background px-1 pb-3 pt-0.5">
-                      <AbasFiltro valor={filtro} onChange={setFiltro} />
-                      <BarraBusca
-                        valor={buscaArtigo}
-                        onChange={setBuscaArtigo}
-                        placeholder={
-                          categoria === 'materias'
-                            ? tema
-                              ? 'Pesquisar subtema'
-                              : 'Pesquisar tópico'
-                            : 'Pesquisar artigo (ex.: 121)'
-                        }
-                      />
-                    </div>
-
-
-
-                    {categoria === 'materias' && !tema && (
-                      <>
-                        {carregandoTemas && (
-                          <p className="flex items-center gap-2 px-1 py-2 text-xs text-muted-foreground">
-                            <Loader2 className="h-3.5 w-3.5 animate-spin" /> Carregando tópicos…
-                          </p>
-                        )}
-
-                        {temasFiltrados.slice(0, limiteDetalhe).map((t, idx) => {
-                          const chave = chaveDe(item!, t.tema, 'tema');
-                          const pronto = prontos[chave];
-                          const cor = ITEM_CORES[idx % ITEM_CORES.length];
-                          const favorito = favoritos.includes(chave);
-                          const Icon = iconeDoItem(`materia:${t.tema}`, t.tema);
-                          return (
-                            <div key={t.tema} className="relative">
-                              <button
-                                onClick={() => {
-                                  if (t.total === 0) {
-                                    gerar(item!, t.tema, 'tema');
-                                  } else {
-                                    setTema(t);
-                                    setBuscaArtigo('');
-                                    setFiltro('todos');
-                                  }
-                                }}
-                                disabled={gerando}
-                                className="w-full flex items-center gap-4 px-4 h-[84px] rounded-2xl bg-secondary/40 border border-border/50 active:scale-[0.99] transition disabled:opacity-70"
-                              >
-                                <div className="relative overflow-hidden rounded-xl shrink-0">
-                                  <Icon
-                                    className="w-8 h-8 relative"
-                                    style={{ color: cor, filter: 'saturate(1.5) brightness(1.2) drop-shadow(0 2px 8px rgba(0,0,0,0.5))' }}
-                                    strokeWidth={1.3}
-                                  />
-                                </div>
-                                <div className="flex-1 min-w-0 text-left">
-                                  <p className="font-display text-foreground text-[16px] font-bold leading-tight line-clamp-1 uppercase tracking-[0.08em]">
-                                    {t.tema}
-                                  </p>
-                                  <p className="font-body text-muted-foreground text-[12.5px] leading-snug mt-1 line-clamp-1">
-                                    {t.total} {t.total === 1 ? 'subtema' : 'subtemas'}
-                                  </p>
-                                  {favorito && (
-                                    <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-amber-400/15 px-1.5 py-0.5 font-display text-[9.5px] font-bold uppercase tracking-wider text-amber-500">
-                                      <Star className="h-2.5 w-2.5 fill-amber-500" /> Favorito
-                                    </span>
-                                  )}
-                                </div>
-                                <span className="mr-7 shrink-0">
-                                  {gerandoKey === chave ? (
-                                    <Loader2 className="w-5 h-5 animate-spin text-primary" />
-                                  ) : pronto ? (
-                                    <span className="rounded-full bg-primary/15 px-2 py-0.5 font-display text-[10px] font-bold tracking-wider text-primary">PRONTO</span>
-                                  ) : t.total === 0 ? (
-                                    <Sparkles className="w-5 h-5 text-muted-foreground" />
-                                  ) : (
-                                    <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                                  )}
-                                </span>
-                              </button>
-                              <EstrelaFavorito ativo={favorito} onToggle={() => alternarFavorito(chave)} />
-                            </div>
-                          );
-                        })}
-
-                        {!carregandoTemas && !temasFiltrados.length && (
-                          <p className="py-8 text-center font-body text-sm text-muted-foreground">
-                            {filtro === 'favoritos'
-                              ? 'Nenhum tópico favoritado ainda.'
-                              : filtro === 'recentes'
-                                ? 'Nenhum tópico aberto recentemente.'
-                                : 'Nenhum tópico encontrado.'}
-                          </p>
-                        )}
-
-                        {temasFiltrados.length > limiteDetalhe && (
-                          <div className="pt-2 pb-6">
-                            <button
-                              onClick={() => setLimiteDetalhe((l) => l + 30)}
-                              className="w-full py-3.5 rounded-xl bg-secondary/50 font-display text-sm font-bold text-primary active:scale-95 transition-transform"
-                            >
-                              Mostrar mais tópicos...
-                            </button>
-                          </div>
-                        )}
-                      </>
-                    )}
-
-                    {categoria === 'materias' && tema && (
-                      <>
-                        {carregandoSubtemas && (
-                          <p className="flex items-center gap-2 px-1 py-2 text-xs text-muted-foreground">
-                            <Loader2 className="h-3.5 w-3.5 animate-spin" /> Carregando subtemas…
-                          </p>
-                        )}
-
-                        {subtemasFiltrados.slice(0, limiteDetalhe).map((s, idx) => {
-                          const chave = chaveDe(item!, `${tema.tema} ${s.subtema}`, 'tema');
-                          const pronto = prontos[chave];
-                          const carregandoEste = gerandoKey === chave;
-                          const cor = ITEM_CORES[idx % ITEM_CORES.length];
-                          const favorito = favoritos.includes(chave);
-                          const Icon = iconeDoItem(`materia:${s.subtema}`, s.subtema);
-                          return (
-                            <div key={s.subtema} className="relative">
-                              <button
-                                onClick={() => gerar(item!, s.subtema, 'tema', tema.tema)}
-                                disabled={gerando}
-                                className="w-full flex items-center gap-4 px-4 h-[84px] rounded-2xl bg-secondary/40 border border-border/50 active:scale-[0.99] transition disabled:opacity-70"
-                              >
-                                <div className="relative overflow-hidden rounded-xl shrink-0">
-                                  <Icon
-                                    className="w-8 h-8 relative"
-                                    style={{ color: cor, filter: 'saturate(1.5) brightness(1.2) drop-shadow(0 2px 8px rgba(0,0,0,0.5))' }}
-                                    strokeWidth={1.3}
-                                  />
-                                </div>
-                                <div className="flex-1 min-w-0 text-left">
-                                  <p className="font-display text-foreground text-[16px] font-bold leading-tight line-clamp-1 uppercase tracking-[0.08em]">
-                                    {s.subtema}
-                                  </p>
-                                  <p className="font-body text-muted-foreground text-[12.5px] leading-snug mt-1 line-clamp-1">
-                                    {tema.tema}
-                                  </p>
-                                  {favorito && (
-                                    <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-amber-400/15 px-1.5 py-0.5 font-display text-[9.5px] font-bold uppercase tracking-wider text-amber-500">
-                                      <Star className="h-2.5 w-2.5 fill-amber-500" /> Favorito
-                                    </span>
-                                  )}
-                                </div>
-                                <span className="mr-7 shrink-0">
-                                  {carregandoEste ? (
-                                    <Loader2 className="w-5 h-5 animate-spin text-primary" />
-                                  ) : pronto ? (
-                                    <span className="rounded-full bg-primary/15 px-2 py-0.5 font-display text-[10px] font-bold tracking-wider text-primary">PRONTO</span>
-                                  ) : (
-                                    <Sparkles className="w-5 h-5 text-muted-foreground" />
-                                  )}
-                                </span>
-                              </button>
-                              <EstrelaFavorito ativo={favorito} onToggle={() => alternarFavorito(chave)} />
-                            </div>
-                          );
-                        })}
-
-                        {!carregandoSubtemas && !subtemasFiltrados.length && filtro === 'todos' && (() => {
-                          const chave = chaveDe(item!, tema.tema, 'tema');
-                          const pronto = prontos[chave];
-                          const carregandoEste = gerandoKey === chave;
-                          const favorito = favoritos.includes(chave);
-                          const Icon = iconeDoItem(`materia:${tema.tema}`, tema.tema);
-                          return (
-                            <div className="relative">
-                              <button
-                                onClick={() => gerar(item!, tema.tema, 'tema')}
-                                disabled={gerando}
-                                className="w-full flex items-center gap-4 px-4 h-[84px] rounded-2xl bg-secondary/40 border border-border/50 active:scale-[0.99] transition disabled:opacity-70"
-                              >
-                                <div className="relative overflow-hidden rounded-xl shrink-0">
-                                  <Icon
-                                    className="w-8 h-8 relative"
-                                    style={{ color: CATEGORIA_COR.materias, filter: 'saturate(1.5) brightness(1.2) drop-shadow(0 2px 8px rgba(0,0,0,0.5))' }}
-                                    strokeWidth={1.3}
-                                  />
-                                </div>
-                                <div className="flex-1 min-w-0 text-left">
-                                  <p className="font-display text-foreground text-[16px] font-bold leading-tight line-clamp-1 uppercase tracking-[0.08em]">
-                                    {tema.tema}
-                                  </p>
-                                  <p className="font-body text-muted-foreground text-[12.5px] leading-snug mt-1 line-clamp-1">
-                                    Este tópico não tem subtemas — gerar direto
-                                  </p>
-                                </div>
-                                <span className="mr-7 shrink-0">
-                                  {carregandoEste ? (
-                                    <Loader2 className="w-5 h-5 animate-spin text-primary" />
-                                  ) : pronto ? (
-                                    <span className="rounded-full bg-primary/15 px-2 py-0.5 font-display text-[10px] font-bold tracking-wider text-primary">PRONTO</span>
-                                  ) : (
-                                    <Sparkles className="w-5 h-5 text-muted-foreground" />
-                                  )}
-                                </span>
-                              </button>
-                              <EstrelaFavorito ativo={favorito} onToggle={() => alternarFavorito(chave)} />
-                            </div>
-                          );
-                        })()}
-
-                        {!carregandoSubtemas && !subtemasFiltrados.length && filtro !== 'todos' && (
-                          <p className="py-8 text-center font-body text-sm text-muted-foreground">
-                            {filtro === 'favoritos' ? 'Nenhum subtema favoritado ainda.' : 'Nenhum subtema aberto recentemente.'}
-                          </p>
-                        )}
-
-                        {subtemasFiltrados.length > limiteDetalhe && (
-                          <div className="pt-2 pb-6">
-                            <button
-                              onClick={() => setLimiteDetalhe((l) => l + 30)}
-                              className="w-full py-3.5 rounded-xl bg-secondary/50 font-display text-sm font-bold text-primary active:scale-95 transition-transform"
-                            >
-                              Mostrar mais subtemas...
-                            </button>
-                          </div>
-                        )}
-                      </>
-                    )}
-
-
-                    {categoria === 'leis' && (
-                      <>
-                        {carregandoArtigos && (
-                          <p className="flex items-center gap-2 px-1 py-2 text-xs text-muted-foreground">
-                            <Loader2 className="h-3.5 w-3.5 animate-spin" /> Carregando artigos…
-                          </p>
-                        )}
-
-                        {artigosFiltrados.slice(0, limiteDetalhe).map((a, idx) => {
-                          const chave = chaveDe(item!, a.numero);
-                          const pronto = prontos[chave];
-                          const carregandoEste = gerandoKey === chave;
-                          const cor = ITEM_CORES[idx % ITEM_CORES.length];
-                          const favorito = favoritos.includes(chave);
-                          return (
-                            <div key={a.id || a.numero} className="relative">
-                              <button
-                                onClick={() => gerar(item!, a.numero)}
-                                disabled={gerando}
-                                className="w-full flex items-center gap-4 px-4 h-[84px] rounded-2xl bg-secondary/40 border border-border/50 active:scale-[0.99] transition disabled:opacity-70"
-                              >
-                                <div className="relative overflow-hidden rounded-xl shrink-0">
-                                  <BookOpen
-                                    className="w-8 h-8 relative"
-                                    style={{ color: cor, filter: 'saturate(1.5) brightness(1.2) drop-shadow(0 2px 8px rgba(0,0,0,0.5))' }}
-                                    strokeWidth={1.3}
-                                  />
-                                </div>
-                                <div className="flex-1 min-w-0 text-left">
-                                  <p className="font-display text-foreground text-[16px] font-bold leading-tight line-clamp-1 uppercase tracking-[0.08em]">
-                                    Art. {a.numero}
-                                  </p>
-                                  <p className="font-body text-muted-foreground text-[12.5px] leading-snug mt-1 line-clamp-1">
-                                    {a.caput}
-                                  </p>
-                                  {favorito && (
-                                    <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-amber-400/15 px-1.5 py-0.5 font-display text-[9.5px] font-bold uppercase tracking-wider text-amber-500">
-                                      <Star className="h-2.5 w-2.5 fill-amber-500" /> Favorito
-                                    </span>
-                                  )}
-                                </div>
-                                <span className="mr-7 shrink-0">
-                                  {carregandoEste ? (
-                                    <Loader2 className="w-5 h-5 animate-spin text-primary" />
-                                  ) : pronto ? (
-                                    <span className="rounded-full bg-primary/15 px-2 py-0.5 font-display text-[10px] font-bold tracking-wider text-primary">PRONTO</span>
-                                  ) : (
-                                    <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                                  )}
-                                </span>
-                              </button>
-                              <EstrelaFavorito ativo={favorito} onToggle={() => alternarFavorito(chave)} />
-                            </div>
-                          );
-                        })}
-
-                        {!carregandoArtigos && !artigosFiltrados.length && (
-                          <p className="py-8 text-center font-body text-sm text-muted-foreground">
-                            {filtro === 'favoritos'
-                              ? 'Nenhum artigo favoritado ainda.'
-                              : filtro === 'recentes'
-                                ? 'Nenhum artigo aberto recentemente.'
-                                : 'Nenhum artigo encontrado.'}
-                          </p>
-                        )}
-
-                        {artigosFiltrados.length > limiteDetalhe && (
-                          <div className="pt-2 pb-6">
-                            <button
-                              onClick={() => setLimiteDetalhe((l) => l + 50)}
-                              className="w-full py-3.5 rounded-xl bg-secondary/50 font-display text-sm font-bold text-primary active:scale-95 transition-transform"
-                            >
-                              Mostrar mais artigos...
-                            </button>
-                          </div>
-                        )}
-                      </>
-                    )}
-
-                  </div>
-
+                {passo === 4 && item && (
+                  <VisuaisPassoDetalhes
+                    categoria={categoria!}
+                    filtro={filtro}
+                    setFiltro={setFiltro}
+                    buscaArtigo={buscaArtigo}
+                    setBuscaArtigo={setBuscaArtigo}
+                    item={item}
+                    tema={tema}
+                    setTema={setTema}
+                    carregandoTemas={carregandoTemas}
+                    temasFiltrados={temasFiltrados}
+                    carregandoSubtemas={carregandoSubtemas}
+                    subtemasFiltrados={subtemasFiltrados}
+                    carregandoArtigos={carregandoArtigos}
+                    artigosFiltrados={artigosFiltrados}
+                    limiteDetalhe={limiteDetalhe}
+                    setLimiteDetalhe={setLimiteDetalhe}
+                    gerando={gerando}
+                    gerandoKey={gerandoKey}
+                    prontos={prontos}
+                    favoritos={favoritos}
+                    chaveDe={chaveDe}
+                    gerar={gerar}
+                    alternarFavorito={alternarFavorito}
+                  />
                 )}
               </div>
             </motion.div>
@@ -1179,13 +679,13 @@ export default function VisuaisJuridicosSheet({
       <GeracaoAnimacaoOverlay
         open={gerando}
         titulo={tipo ? TIPO_INFO[tipo].label : 'Gerando visual'}
-        steps={[
-          'Lendo o conteúdo jurídico',
-          'Estruturando com IA',
-          'Montando o visual',
-          'Pronto',
+        steps={['Lendo o conteúdo jurídico', 'Estruturando com IA', 'Montando o visual', 'Pronto']}
+        stepRanges={[
+          [0, 15],
+          [15, 85],
+          [85, 97],
+          [100, 100],
         ]}
-        stepRanges={[[0, 15], [15, 85], [85, 97], [100, 100]]}
         estTotalSec={22}
       />
 
