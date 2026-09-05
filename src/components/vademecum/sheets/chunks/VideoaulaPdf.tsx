@@ -1,8 +1,8 @@
-﻿import { Document, Page, Text, View, StyleSheet, Image as PdfImage } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Image as PdfImage } from '@react-pdf/renderer';
 import logoAsset from '@/assets/logo-direitoprime-v2.png.asset.json';
 import { srcOf } from '@/lib/assetUrl';
 
-const LOGO_URL = ${window.location.origin};
+const LOGO_URL = srcOf(logoAsset);
 
 const WINE = '#3d0f1f';
 const GOLD = '#c94c4c';
