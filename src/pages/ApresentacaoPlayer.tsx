@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { ArrowLeft, Play, Pause, ChevronLeft, ChevronRight, Heart, Star, Share2, MessageCircle, RotateCw, Loader2, Send, Grid, Subtitles, Zap } from 'lucide-react';
+import { AudioProgressBar, formatarTempo } from './chunks/apresentacao/AudioProgressBar';
+import { AudioSubtitles } from './chunks/apresentacao/AudioSubtitles';
+import { ApresentacaoModais } from './chunks/apresentacao/ApresentacaoModais';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { srcOf } from '@/lib/assetUrl';
 import { useGoBack } from '@/hooks/useGoBack';
 import { compartilharNativo, podeCompartilhar } from '@/lib/nativo/compartilhar';
@@ -14,170 +16,10 @@ import { Haptics, ImpactStyle } from '@capacitor/haptics';
 type Slide = { slide_index: number; imagem_url: string | null; audio_url: string | null; roteiro: string | null };
 type Apres = { id: string; titulo: string; descricao: string | null; total_slides: number; livro_tabela: string; livro_id: string };
 
-const formatarTempo = (seg: number): string => {
-  if (!Number.isFinite(seg) || seg < 0) return '--:--';
-  const m = Math.floor(seg / 60);
-  const s = Math.round(seg % 60);
-  return `${m}:${String(s).padStart(2, '0')}`;
-};
 
 const playHaptic = () => Haptics.impact({ style: ImpactStyle.Light }).catch(() => {});
 
-// Componente isolado para a barra de progresso do áudio (Performance/Smooth Seek)
-const AudioProgressBar = ({ 
-  audioRef, 
-  tempoAcumulado,
-  duracaoTotal,
-  onSeekGlobal
-}: { 
-  audioRef: React.MutableRefObject<HTMLAudioElement | null>;
-  tempoAcumulado: number;
-  duracaoTotal: number;
-  onSeekGlobal: (globalTime: number) => void;
-}) => {
-  const barRef = useRef<HTMLDivElement>(null);
-  const timeRef = useRef<HTMLSpanElement>(null);
-  const isDragging = useRef(false);
-  const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    let frameId: number;
-    const update = () => {
-      if (audioRef.current && duracaoTotal > 0 && !isDragging.current) {
-        const ct = audioRef.current.currentTime;
-        const globalTime = tempoAcumulado + ct;
-        const pct = Math.min(100, (globalTime / duracaoTotal) * 100);
-        if (barRef.current) barRef.current.style.width = `${pct}%`;
-        if (timeRef.current) timeRef.current.textContent = formatarTempo(globalTime);
-      }
-      frameId = requestAnimationFrame(update);
-    };
-    frameId = requestAnimationFrame(update);
-  }, [audioRef, tempoAcumulado, duracaoTotal]);
-
-  const handleSeek = (e: React.MouseEvent | React.TouchEvent) => {
-    if (!containerRef.current || duracaoTotal <= 0) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const clientX = 'touches' in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
-    const offsetX = Math.max(0, Math.min(clientX - rect.left, rect.width));
-    const pct = offsetX / rect.width;
-    const newGlobalTime = pct * duracaoTotal;
-    
-    if (barRef.current) barRef.current.style.width = `${pct * 100}%`;
-    if (timeRef.current) timeRef.current.textContent = formatarTempo(newGlobalTime);
-    onSeekGlobal(newGlobalTime);
-  };
-
-  return (
-    <div className="space-y-2">
-      <div 
-        ref={containerRef}
-        className="h-8 -my-3 flex items-center cursor-pointer"
-        onMouseDown={(e) => { isDragging.current = true; handleSeek(e); }}
-        onMouseMove={(e) => { if (isDragging.current) handleSeek(e); }}
-        onMouseUp={() => { isDragging.current = false; }}
-        onMouseLeave={() => { isDragging.current = false; }}
-        onTouchStart={(e) => { isDragging.current = true; handleSeek(e); }}
-        onTouchMove={(e) => { if (isDragging.current) handleSeek(e); }}
-        onTouchEnd={() => { isDragging.current = false; }}
-      >
-        <div className="h-1.5 w-full rounded-full bg-white/15 overflow-hidden">
-          <div ref={barRef} className="h-full bg-primary relative">
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full scale-150 shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
-          </div>
-        </div>
-      </div>
-      <div className="flex items-center justify-between text-[11px] text-white/50 font-body tabular-nums">
-        <span ref={timeRef}>0:00</span>
-        <span>{duracaoTotal > 0 ? formatarTempo(duracaoTotal) : '--:--'}</span>
-      </div>
-    </div>
-  );
-};
-
-// Componente para legendas dinâmicas (Remotion-style) sem re-render do React
-const AudioSubtitles = ({ 
-  audioRef, 
-  duration, 
-  roteiro 
-}: { 
-  audioRef: React.MutableRefObject<HTMLAudioElement | null>;
-  duration: number;
-  roteiro: string;
-}) => {
-  const containerRef = useRef<HTMLParagraphElement>(null);
-  
-  useEffect(() => {
-    if (!roteiro) return;
-    const words = roteiro.split(/\s+/).filter(Boolean);
-    if (!words.length) return;
-    
-    if (containerRef.current) {
-      containerRef.current.innerHTML = '';
-      words.forEach((w) => {
-        const span = document.createElement('span');
-        span.textContent = w + ' ';
-        span.className = 'transition-all duration-200 opacity-40 mx-0.5 inline-block';
-        containerRef.current?.appendChild(span);
-      });
-    }
-
-    let frameId: number;
-    const update = () => {
-      if (audioRef.current && duration > 0 && containerRef.current) {
-        const ct = audioRef.current.currentTime;
-        const progress = Math.min(1, Math.max(0, ct / duration));
-        const targetIndex = Math.floor(progress * words.length);
-        
-        const children = containerRef.current.children;
-        let targetEl: HTMLSpanElement | null = null;
-
-        for (let i = 0; i < children.length; i++) {
-          const el = children[i] as HTMLSpanElement;
-          if (i === targetIndex) {
-            el.style.opacity = '1';
-            el.style.color = 'hsl(var(--primary))';
-            el.style.transform = 'scale(1.15)';
-            el.style.fontWeight = 'bold';
-            targetEl = el;
-          } else if (i < targetIndex) {
-            el.style.opacity = '0.75';
-            el.style.color = '#FFF';
-            el.style.transform = 'scale(1)';
-            el.style.fontWeight = 'normal';
-          } else {
-            el.style.opacity = '0.35';
-            el.style.color = '#FFF';
-            el.style.transform = 'scale(1)';
-            el.style.fontWeight = 'normal';
-          }
-        }
-        
-        if (targetEl) {
-           const offset = targetEl.offsetTop;
-           containerRef.current.style.transform = `translateY(-${offset}px)`;
-        }
-      }
-      frameId = requestAnimationFrame(update);
-    };
-    frameId = requestAnimationFrame(update);
-    return () => cancelAnimationFrame(frameId);
-  }, [audioRef, duration, roteiro]);
-
-  if (!roteiro) return null;
-
-  return (
-    <div 
-      className="relative w-full h-20 overflow-hidden pointer-events-none mb-2" 
-      style={{ WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 30%, black 70%, transparent)' }}
-    >
-      <p 
-        ref={containerRef} 
-        className="text-center font-heading text-[18px] md:text-xl leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] w-full px-6 absolute top-8 transition-transform duration-300 ease-out" 
-      />
-    </div>
-  );
-};
 
 const ApresentacaoPlayer = () => {
   const { id } = useParams<{ id: string }>();
@@ -737,57 +579,16 @@ const ApresentacaoPlayer = () => {
         )}
       </AnimatePresence>
 
-      {/* Modais */}
-      <Sheet open={abrirComentarios} onOpenChange={setAbrirComentarios}>
-        <SheetContent side="bottom" className="h-[70vh] flex flex-col bg-[#111] border-t-zinc-800">
-          <SheetHeader><SheetTitle className="text-white">Comentários</SheetTitle></SheetHeader>
-          <div className="flex-1 overflow-y-auto space-y-3 py-3">
-            {comentarios.length === 0 && <p className="text-sm text-white/50 font-body">Seja o primeiro a comentar.</p>}
-            {comentarios.map((c) => (
-              <div key={c.id} className="rounded-xl bg-white/5 p-3">
-                <p className="text-sm font-body text-white/90">{c.texto}</p>
-                <p className="text-[11px] text-white/40 mt-1">{new Date(c.created_at).toLocaleDateString('pt-BR')}</p>
-              </div>
-            ))}
-          </div>
-          <div className="flex gap-2 pb-[calc(1rem+var(--sai-bottom))]">
-            <input
-              value={novoComentario}
-              onChange={(e) => setNovoComentario(e.target.value)}
-              placeholder="Escreva um comentário…"
-              className="flex-1 rounded-xl bg-white/10 px-4 py-3 text-sm font-body text-white outline-none focus:bg-white/15 transition-colors"
-            />
-            <button onClick={enviarComentario} className="w-12 h-12 rounded-xl bg-primary text-primary-foreground flex items-center justify-center"><Send className="w-5 h-5" /></button>
-          </div>
-        </SheetContent>
-      </Sheet>
-
-      <Sheet open={abrirSumario} onOpenChange={setAbrirSumario}>
-        <SheetContent side="bottom" className="h-[70vh] flex flex-col bg-[#111] border-t-zinc-800">
-          <SheetHeader><SheetTitle className="text-white">Todos os Slides</SheetTitle></SheetHeader>
-          <div className="flex-1 overflow-y-auto space-y-3 py-3 pb-[calc(1rem+var(--sai-bottom))] grid grid-cols-2 gap-3">
-            {slides.map((s, i) => (
-              <button 
-                key={s.slide_index} 
-                onClick={() => { irPara(i); setAbrirSumario(false); }}
-                className={`text-left rounded-xl overflow-hidden bg-white/5 border-2 ${i === idx ? 'border-primary' : 'border-transparent'}`}
-              >
-                {s.imagem_url ? <img src={s.imagem_url} alt="" className="w-full aspect-video object-cover" /> : <div className="w-full aspect-video bg-white/10" />}
-                <div className="p-2 text-xs font-medium text-white/80">Slide {i + 1}</div>
-              </button>
-            ))}
-          </div>
-        </SheetContent>
-      </Sheet>
-
-      <Sheet open={abrirRoteiro} onOpenChange={setAbrirRoteiro}>
-        <SheetContent side="bottom" className="h-[70vh] flex flex-col bg-[#111] border-t-zinc-800">
-          <SheetHeader><SheetTitle className="text-white">Roteiro da Narração</SheetTitle></SheetHeader>
-          <div className="flex-1 overflow-y-auto p-4 pb-[calc(1rem+var(--sai-bottom))] bg-white/5 rounded-xl text-sm leading-relaxed text-white/90 font-body">
-            {slide?.roteiro || <span className="text-white/40 italic">Nenhum roteiro disponível para este slide.</span>}
-          </div>
-        </SheetContent>
-      </Sheet>
+      <ApresentacaoModais
+        abrirComentarios={abrirComentarios} setAbrirComentarios={setAbrirComentarios}
+        comentarios={comentarios}
+        novoComentario={novoComentario} setNovoComentario={setNovoComentario}
+        enviarComentario={enviarComentario}
+        abrirSumario={abrirSumario} setAbrirSumario={setAbrirSumario}
+        slides={slides} idx={idx} irPara={irPara}
+        abrirRoteiro={abrirRoteiro} setAbrirRoteiro={setAbrirRoteiro}
+        roteiroAtual={slide?.roteiro || null}
+      />
     </div>
   );
 };
