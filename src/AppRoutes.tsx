@@ -971,11 +971,13 @@ function AnimatedRoutes() {
         <Route path="/jurisprudencia/teses-stf" element={<ProtectedRoute><PageTransition><TesesSTF /></PageTransition></ProtectedRoute>} />
           <Route path="/jurisprudencia" element={<ProtectedRoute><PageTransition><Jurisprudencia /></PageTransition></ProtectedRoute>} />
           <Route path="/aprender/:slug" element={<ProtectedRoute><PageTransition><ArtigoEducacional /></PageTransition></ProtectedRoute>} />
-          {/* PÃ­lulas */}
+          {/* Pílulas */}
           <Route path="/pilulas/classicos" element={<ProtectedRoute><PageTransition><Pilulas /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas/cp" element={<ProtectedRoute><PageTransition><PilulasLeiSeca slug="cp" /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas/cf" element={<ProtectedRoute><PageTransition><PilulasLeiSeca slug="cf" /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas/cc" element={<ProtectedRoute><PageTransition><PilulasLeiSeca slug="cc" /></PageTransition></ProtectedRoute>} />
+          <Route path="/pilulas/cpp" element={<ProtectedRoute><PageTransition><PilulasLeiSeca slug="cpp" /></PageTransition></ProtectedRoute>} />
+          <Route path="/pilulas/clt" element={<ProtectedRoute><PageTransition><PilulasLeiSeca slug="clt" /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas/:id" element={<ProtectedRoute><PageTransition><PilulasPlayer /></PageTransition></ProtectedRoute>} />
           {/* Lei Seca */}
           <Route path="/lei-seca" element={<ProtectedRoute><PageTransition><LeiSecaIndex /></PageTransition></ProtectedRoute>} />

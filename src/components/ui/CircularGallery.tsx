@@ -866,7 +866,11 @@ class App {
 
 import { forwardRef, useImperativeHandle } from 'react';
 
-const CircularGallery = forwardRef(({
+export interface CircularGalleryHandle {
+  scrollToIndex: (index: number) => void;
+}
+
+const CircularGallery = forwardRef<CircularGalleryHandle, any>(({
   items,
   bend = 3,
   textColor = '#ffffff',

@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useEffect, useRef, useState, useCallback } from 'react';
-import { Capacitor } from '@capacitor/core';
 import { clearMediaSession, registrarMidia } from '@/lib/mediaSession';
 import { telaAcesa } from '@/lib/nativo/telaAcordada';
 import { type LivroNormalizado } from '@/lib/bibliotecaColecoes';
@@ -54,6 +53,8 @@ export const PilulasPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
   
   const audioIntroRef = useRef<HTMLAudioElement>(null);
   const audioMainRef = useRef<HTMLAudioElement>(null);
+  const fadeIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const autoPlayTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -66,6 +67,20 @@ export const PilulasPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const introOverlap = Math.max(0, introDuration - 0.5);
   const unifiedDuration = (introDuration > 0 && mainDuration > 0) ? (introOverlap + mainDuration) : (introDuration || mainDuration || 0);
+
+  const clearFadeInterval = useCallback(() => {
+    if (fadeIntervalRef.current) {
+      clearInterval(fadeIntervalRef.current);
+      fadeIntervalRef.current = null;
+    }
+  }, []);
+
+  const clearAutoPlayTimeout = useCallback(() => {
+    if (autoPlayTimeoutRef.current) {
+      clearTimeout(autoPlayTimeoutRef.current);
+      autoPlayTimeoutRef.current = null;
+    }
+  }, []);
 
   useEffect(() => {
     void telaAcesa('pilulas', isPlaying);
@@ -88,6 +103,14 @@ export const PilulasPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   }, [livro]);
 
+  // Limpeza de intervalos e timeouts ao desmontar
+  useEffect(() => {
+    return () => {
+      clearFadeInterval();
+      clearAutoPlayTimeout();
+    };
+  }, [clearFadeInterval, clearAutoPlayTimeout]);
+
   const skipToMain = useCallback(() => {
     if (hasPlayedIntro) return;
     
@@ -98,15 +121,16 @@ export const PilulasPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
         setMainDuration(audioMainRef.current.duration);
       }
       
+      clearFadeInterval();
       audioMainRef.current.volume = 0;
       audioMainRef.current.play().then(() => {
         setIsPlaying(true);
         let vol = 0;
-        const fadeInterval = setInterval(() => {
+        fadeIntervalRef.current = setInterval(() => {
           vol += 0.05;
           if (vol >= 1) {
             vol = 1;
-            clearInterval(fadeInterval);
+            clearFadeInterval();
           }
           if (audioMainRef.current) {
             audioMainRef.current.volume = vol;
@@ -114,12 +138,15 @@ export const PilulasPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
         }, 50);
       }).catch(() => setIsPlaying(false));
     }
-  }, [hasPlayedIntro]);
+  }, [hasPlayedIntro, clearFadeInterval]);
 
   const tocar = useCallback((l: LivroNormalizado) => {
     if (livro?.id === l.id && (phase === 'main' || hasPlayedIntro)) {
       return;
     }
+
+    clearFadeInterval();
+    clearAutoPlayTimeout();
     
     React.startTransition(() => {
       setLivro(l);
@@ -143,7 +170,7 @@ export const PilulasPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     // Auto-play attempt
-    setTimeout(() => {
+    autoPlayTimeoutRef.current = setTimeout(() => {
       const introEl = audioIntroRef.current;
       if (introEl) {
         introEl.play().then(() => setIsPlaying(true)).catch(err => {
@@ -154,10 +181,7 @@ export const PilulasPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
         skipToMain();
       }
     }, 150);
-  }, [livro, phase, hasPlayedIntro, skipToMain]);
-
-
-
+  }, [livro, phase, hasPlayedIntro, skipToMain, clearFadeInterval, clearAutoPlayTimeout]);
 
   const togglePlay = useCallback(() => {
     const activeRef = phase === 'intro' ? audioIntroRef : audioMainRef;
@@ -237,6 +261,8 @@ export const PilulasPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [unifiedDuration, introOverlap, phase, isPlaying]);
 
   const fechar = useCallback(() => {
+    clearFadeInterval();
+    clearAutoPlayTimeout();
     if (audioMainRef.current) {
       audioMainRef.current.pause();
       clearMediaSession(audioMainRef.current);
@@ -246,7 +272,7 @@ export const PilulasPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
     }
     setIsPlaying(false);
     setLivro(null);
-  }, []);
+  }, [clearFadeInterval, clearAutoPlayTimeout]);
 
   const value: PilulasPlayerContextType = {
     livro,

@@ -38,7 +38,14 @@ export default function GlobalPilulasMiniPlayer() {
 
   const handleReopen = () => {
     if (livro) {
-      navigate(`/pilulas/${livro.id}${livro.isCP ? '?type=cp' : ''}`);
+      let typeParam = '';
+      if (livro.isCP || livro.autor === 'Código Penal') typeParam = '?type=cp';
+      else if (livro.autor === 'Constituição Federal') typeParam = '?type=cf';
+      else if (livro.autor === 'Código Civil') typeParam = '?type=cc';
+      else if (livro.autor === 'Código de Processo Penal') typeParam = '?type=cpp';
+      else if (livro.autor === 'Consolidação das Leis do Trabalho') typeParam = '?type=clt';
+
+      navigate(`/pilulas/${livro.id}${typeParam}`);
     }
   };
 
