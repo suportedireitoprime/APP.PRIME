@@ -13,8 +13,8 @@ import VadeMecumDesktopTabs from '@/components/vademecum/desktop/VadeMecumDeskto
 import { lazyWithRetry } from '@/utils/lazyWithRetry';
 const ShapeGrid = lazyWithRetry(() => import('@/components/ui/ShapeGrid'));
 
-// Chunks sob demanda para overlays não bloquearem a renderização inicial
-const SearchOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/SearchOverlay'));
+// Busca própria e exclusiva do Vade Mecum (Artigos, Leis e Jurisprudência)
+const BuscaLeisOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/BuscaLeisOverlay'));
 const VadeMecumTutorialOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/VadeMecumTutorialOverlay'));
 
 /**
@@ -153,7 +153,7 @@ const VadeMecum = () => {
         
         {buscaOpen && (
           <Suspense fallback={null}>
-            <SearchOverlay open={buscaOpen} onClose={() => setBuscaOpen(false)} onSelectLei={abrirLei} />
+            <BuscaLeisOverlay open={buscaOpen} onClose={() => setBuscaOpen(false)} onSelectLei={abrirLei} />
           </Suspense>
         )}
         <AnimatePresence>
@@ -188,7 +188,7 @@ const VadeMecum = () => {
         {renderContent()}
         {buscaOpen && (
           <Suspense fallback={null}>
-            <SearchOverlay open={buscaOpen} onClose={() => setBuscaOpen(false)} onSelectLei={abrirLei} />
+            <BuscaLeisOverlay open={buscaOpen} onClose={() => setBuscaOpen(false)} onSelectLei={abrirLei} />
           </Suspense>
         )}
         <VadeMecumBottomNav hidden={buscaOpen} />
