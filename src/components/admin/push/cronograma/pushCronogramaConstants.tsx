@@ -181,3 +181,6 @@ export type EventoView = EventoBase & {
 export function padHora(h: number, m: number) {
   return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 }
+
+export { CanalBadge } from "./CanalBadge";
+

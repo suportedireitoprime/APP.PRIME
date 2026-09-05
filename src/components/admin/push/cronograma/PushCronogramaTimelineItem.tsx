@@ -14,7 +14,8 @@ import {
   Flame,
   AlertCircle,
 } from "lucide-react";
-import { CanalBadge, type EventoView } from "./pushCronogramaConstants";
+import { CanalBadge } from "./CanalBadge";
+import { type EventoView } from "./pushCronogramaConstants";
 
 interface PushCronogramaTimelineItemProps {
   ev: EventoView;

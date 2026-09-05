@@ -9,8 +9,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Loader2, Send, SmartphoneNfc } from "lucide-react";
+import { CanalBadge } from "./CanalBadge";
 import {
-  CanalBadge,
   padHora,
   PUSH_DEFAULT_COVERS,
   type EventoBase,
