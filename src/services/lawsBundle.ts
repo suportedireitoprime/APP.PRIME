@@ -9,6 +9,7 @@
  */
 import type { ArtigoLei } from '@/data/mockData';
 import { setPersistedArtigosCache, getPersistedArtigosCache } from '@/services/offlineDb';
+import { fixMojibake } from '@/lib/mojibake';
 
 import { LEIS_SUPABASE_URL, LEIS_SUPABASE_ANON_KEY } from "@/lib/legislacaoBackend";
 const SUPABASE_URL = LEIS_SUPABASE_URL;
@@ -55,9 +56,9 @@ function normalizeArtigos(rows: any[]): ArtigoLei[] {
   return (rows || [])
     .map((r) => ({
       id: r.id,
-      numero: (r.numero || '').replace(/(\d)o\b/g, '$1º').replace(/°/g, 'º'),
-      caput: (r.texto || '').replace(/(\d)o\b/g, '$1º').replace(/°/g, 'º'),
-      titulo: r.epigrafe || undefined,
+      numero: fixMojibake(r.numero || '').replace(/(\d)o\b/g, '$1º').replace(/°/g, 'º'),
+      caput: fixMojibake(r.texto || '').replace(/(\d)o\b/g, '$1º').replace(/°/g, 'º'),
+      titulo: r.epigrafe ? fixMojibake(r.epigrafe) : undefined,
       capitulo: undefined,
     }))
     .filter((a) => a.caput.trim() !== '');

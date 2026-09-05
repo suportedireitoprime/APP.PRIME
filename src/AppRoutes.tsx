@@ -5,7 +5,7 @@ import { useScreenTracking } from "@/lib/screenTracking";
 import { initNavTelemetry, markRouteChange } from "@/lib/navTelemetry";
 import { prefetchNearby } from "@/lib/nearbyPrefetch";
 
-// IntroOverlay desativado: o app agora usa apenas o splash nativo estÃ¡tico.
+// IntroOverlay desativado: o app agora usa apenas o splash nativo estático.
 // import IntroOverlay from "@/components/IntroOverlay";
 import { SkipToContent } from "@/components/a11y/SkipToContent";
 const AnalyticsDebugPanel = lazy(() => import("@/components/AnalyticsDebugPanel"));
@@ -14,7 +14,7 @@ import { Capacitor } from '@capacitor/core';
 
 
 
-// Boot GA4 o mais cedo possÃ­vel (Consent Mode v2 default = denied).
+// Boot GA4 o mais cedo possível (Consent Mode v2 default = denied).
 if (typeof window !== "undefined") {
   initAnalytics();
   initNavTelemetry();
@@ -28,7 +28,7 @@ import { get as idbGet, set as idbSet, del as idbDel } from "idb-keyval";
 import { BrowserRouter, HashRouter, Route, Routes, Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 
 // Electron e GitHub Pages (subpastas como /APP.PRIME/) usam HashRouter (/#/rota)
-// para evitar erro 404 em assets e rotas estÃ¡ticas.
+// para evitar erro 404 em assets e rotas estáticas.
 const isStaticSubpath = typeof window !== "undefined" && window.location.hostname.endsWith("github.io");
 const Router = typeof window !== "undefined" && ((window as any).desktopApp?.isElectron || isStaticSubpath)
   ? HashRouter
@@ -271,7 +271,7 @@ const Oab = lazy(() => import("./pages/resumos-juridicos/cargos/Oab.tsx"));
 const MinisterioPublico = lazy(() => import("./pages/resumos-juridicos/cargos/MinisterioPublico.tsx"));
 const CarreiraPolicial = lazy(() => import("./pages/resumos-juridicos/cargos/CarreiraPolicial.tsx"));
 
-// Remonta a pÃ¡gina quando o slug/parte muda â€” evita reaproveitar o render da lei anterior.
+// Remonta a página quando o slug/parte muda — evita reaproveitar o render da lei anterior.
 function LeiSecaTrilhaRoute() {
   const { slug = "" } = useParams();
   return <LeiSecaTrilha key={slug} />;
@@ -334,7 +334,7 @@ const GeradorPost = lazy(() => import("./pages/GeradorPost.tsx"));
 const Blog = lazy(routePrefetch.blog);
 const Newsletter = lazy(() => import("./pages/Newsletter.tsx"));
 const DesktopLinkConfirm = lazy(() => import("./pages/DesktopLinkConfirm.tsx"));
-// Biblioteca â€” lazy para nÃ£o inflar o bundle de boot
+// Biblioteca — lazy para não inflar o bundle de boot
 const Bibliotecas = lazy(() => import("./pages/Bibliotecas.tsx"));
 const BibliotecaCategoria = lazy(() => import("./pages/BibliotecaCategoria.tsx"));
 const BibliotecaOffline = lazy(() => import("./pages/BibliotecaOffline.tsx"));
@@ -447,20 +447,20 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
   const { user, loading } = useAuth();
   const location = useLocation();
 
-  // Leitura sÃ­ncrona do cache â€” nÃ£o bloqueia o paint.
+  // Leitura síncrona do cache — não bloqueia o paint.
   const cacheKey = user ? `onboarding_completed:${user.id}` : null;
   const cachedDone = cacheKey && typeof window !== 'undefined'
     ? localStorage.getItem(cacheKey) === '1'
     : false;
 
-  // Otimista pÃ³s-cadastro: se acabou de criar conta nesta sessÃ£o, jÃ¡ assume
-  // que precisa passar pela triagem â€” evita query desnecessÃ¡ria de 1.2s+
-  // enquanto o Supabase ainda nÃ£o criou o perfil.
+  // Otimista pós-cadastro: se acabou de criar conta nesta sessão, já assume
+  // que precisa passar pela triagem — evita query desnecessária de 1.2s+
+  // enquanto o Supabase ainda não criou o perfil.
   const justSignedUp =
     typeof window !== 'undefined' && window.sessionStorage.getItem('just_signed_up') === '1';
 
   const [needsOnboarding, setNeedsOnboarding] = useState(justSignedUp);
-  // Se justSignedUp, jÃ¡ sabemos que precisa de triagem â€” nÃ£o travar a tela
+  // Se justSignedUp, já sabemos que precisa de triagem — não travar a tela
   // esperando a query do perfil que ainda nem existe.
   const [initialCheckDone, setInitialCheckDone] = useState(
     () => !user || cachedDone || justSignedUp || (typeof navigator !== 'undefined' && navigator.onLine === false),
@@ -481,7 +481,7 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
       return;
     }
 
-    // Acabou de criar conta â€” nÃ£o precisa consultar o Supabase para saber
+    // Acabou de criar conta — não precisa consultar o Supabase para saber
     // se a triagem foi feita (ainda nem existe o perfil). Libera a tela
     // imediatamente e deixa o Onboarding resolver o resto.
     if (justSignedUp) {
@@ -499,7 +499,7 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
     (async () => {
       try {
         // Perfil pode estar sendo criado pelo trigger (e-mail, Google, Apple).
-        // Tenta algumas vezes antes de decidir, para nÃ£o liberar o app por engano.
+        // Tenta algumas vezes antes de decidir, para não liberar o app por engano.
         let done = false;
         let ok = false;
         for (let i = 0; i < 3; i++) {
@@ -536,8 +536,8 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
   }, [user, cacheKey, cachedDone, justSignedUp]);
 
   if (loading) {
-    // Sem tela preta com spinner: sÃ³ um frame vazio enquanto o retorno de
-    // OAuth Ã© processado (caso raro).
+    // Sem tela preta com spinner: só um frame vazio enquanto o retorno de
+    // OAuth é processado (caso raro).
     return null;
   }
 
@@ -548,11 +548,11 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
 
   // Removido o bloqueio estrito `if (!initialCheckDone) return null;` para 
   // permitir que a UI principal (Home) renderize de forma otimista, eliminando a
-  // tela preta e o "engasgo" de dezenas de nÃ³s DOM sendo montados de uma vez
-  // apÃ³s o timeout do Supabase. O cache ou a flag justSignedUp jÃ¡ resolvem 99% dos casos.
+  // tela preta e o "engasgo" de dezenas de nós DOM sendo montados de uma vez
+  // após o timeout do Supabase. O cache ou a flag justSignedUp já resolvem 99% dos casos.
 
-  // Redireciona para /onboarding se a triagem estÃ¡ pendente, MAS apenas quando
-  // NÃƒO estamos jÃ¡ em /onboarding (senÃ£o o <Onboarding /> nunca renderizaria
+  // Redireciona para /onboarding se a triagem está pendente, MAS apenas quando
+  // NÃO estamos já em /onboarding (senão o <Onboarding /> nunca renderizaria
   // porque o Navigate vem antes do return children).
   if (requireOnboarding && needsOnboarding && location.pathname !== '/onboarding') {
     return <Navigate to="/onboarding" replace />;
@@ -625,7 +625,7 @@ function PresenceWrapper() {
   const [mounted, setMounted] = useState(false);
   
   useEffect(() => {
-    // Adia a inicializaÃ§Ã£o de trackers pesados para liberar a main thread no boot
+    // Adia a inicialização de trackers pesados para liberar a main thread no boot
     const t = setTimeout(() => setMounted(true), 1500);
     return () => clearTimeout(t);
   }, []);
@@ -637,7 +637,7 @@ function PresenceWrapper() {
 function NativeBootstrap() {
   useNativePermissions();
   useEffect(() => {
-    // Adia tudo para apÃ³s o primeiro paint â€” nÃ£o compete pela primeira renderizaÃ§Ã£o.
+    // Adia tudo para após o primeiro paint — não compete pela primeira renderização.
     const run = () => {
       import("@/lib/webPush").then((m) => m.trackPushLandingIfAny()).catch(() => {});
       import("@/services/noticiasService").then((m) => m.prefetchNoticias()).catch(() => {});
@@ -678,7 +678,7 @@ function PushNavListener() {
     if (typeof window !== 'undefined' && (window as any)._pendingPushUrl) {
       const pending = (window as any)._pendingPushUrl;
       (window as any)._pendingPushUrl = undefined;
-      // setTimeout pequeno para nÃ£o colidir com o render inicial do react-router
+      // setTimeout pequeno para não colidir com o render inicial do react-router
       setTimeout(() => navigate(pending), 10);
     }
 
@@ -687,7 +687,7 @@ function PushNavListener() {
       if (detail?.path) navigate(detail.path);
       (window as any)._pendingPushUrl = undefined;
     };
-    // Atalhos do Ã­cone do app (long-press / Quick Actions)
+    // Atalhos do ícone do app (long-press / Quick Actions)
     const atalhoHandler = (e: Event) => {
       const detail = (e as CustomEvent).detail as { rota?: string } | undefined;
       if (detail?.rota) navigate(detail.rota);
@@ -731,8 +731,8 @@ function AnimatedRoutes() {
     prefetchNearby(location.pathname);
   }, [location.pathname, location.search]);
 
-  // Hidrata o cache das Videoaulas (IndexedDB â†’ memÃ³ria) logo no boot, em idle:
-  // ao entrar na Ã¡rea, a lista jÃ¡ pinta sem skeleton nem rede.
+  // Hidrata o cache das Videoaulas (IndexedDB → memória) logo no boot, em idle:
+  // ao entrar na área, a lista já pinta sem skeleton nem rede.
   useEffect(() => {
     if (!user) return;
     void import('@/lib/videoaulasStore').then((m) => {
@@ -743,7 +743,7 @@ function AnimatedRoutes() {
       m.hydrateTematicaCache();
       m.warmTematicaCache();
     });
-    // Favoritos/recentes (biblioteca, leis, resumos, dicionÃ¡rio) da conta.
+    // Favoritos/recentes (biblioteca, leis, resumos, dicionário) da conta.
     void Promise.all([
       import('@/lib/leisFavoritos'),
       import('@/lib/bibliotecaTracking'),
@@ -754,8 +754,8 @@ function AnimatedRoutes() {
     ]).then(() => import('@/lib/userSync').then((m) => m.pullAllUserSync(true)));
 
 
-    // PrÃ©-carrega os chunks das telas de Videoaulas em idle: navegar
-    // (e voltar) passa a resolver do cache de mÃ³dulos, sem Suspense visÃ­vel.
+    // Pré-carrega os chunks das telas de Videoaulas em idle: navegar
+    // (e voltar) passa a resolver do cache de módulos, sem Suspense visível.
     const carregarChunks = () => {
       (['videoaulas', 'videoaulasCatalogo', 'videoaulasArea', 'videoaulaView',
         'videoaulasCategorias', 'videoaulasTrilhas', 'videoaulasCatalogoTrilha', 'videoaulasLista',
@@ -785,22 +785,22 @@ function AnimatedRoutes() {
     });
   }, [user?.id, user?.email, profile?.isPremium]);
 
-  // Sem usuÃ¡rio logado, a Home persistente nÃ£o monta.
+  // Sem usuário logado, a Home persistente não monta.
   // Renderiza a landing imediatamente na raiz para nunca deixar tela preta,
-  // mesmo enquanto a autenticaÃ§Ã£o ainda estÃ¡ resolvendo.
+  // mesmo enquanto a autenticação ainda está resolvendo.
 
 
   const HomeGate = () => {
     if (!user) return <Landing />;
-    // O PersistentHome jÃ¡ renderiza a Home para usuÃ¡rios logados.
-    // Retornamos null aqui para evitar duplicaÃ§Ã£o do Index no DOM.
+    // O PersistentHome já renderiza a Home para usuários logados.
+    // Retornamos null aqui para evitar duplicação do Index no DOM.
     return null;
   };
 
 
 
   const getRouteKey = (path: string) => {
-    // Agrupa abas do Vade Mecum para nÃ£o acionar a transiÃ§Ã£o de pÃ¡gina inteira
+    // Agrupa abas do Vade Mecum para não acionar a transição de página inteira
     if (path.match(/^\/vade-mecum(\/areas|\/categorias|\/favoritos)?$/)) {
       return '/vade-mecum-tabs';
     }
@@ -1150,5 +1150,5 @@ function AnimatedRoutes() {
   );
 }
 
-// ImportaÃ§Ã£o do AppBootSplash
+// Importação do AppBootSplash
 export default AnimatedRoutes;

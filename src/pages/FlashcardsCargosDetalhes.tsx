@@ -516,7 +516,7 @@ export default function FlashcardsCargosDetalhes() {
           </motion.div>
         )}
 
-        {/* TAB: EDITAL (InformaÃ§Ãµes, Raio-X e Disciplinas) */}
+        {/* TAB: EDITAL (Informações, Raio-X e Disciplinas) */}
         {activeTab === 'edital' && (
           <motion.div key="edital" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8 pb-32">
             <div className="flex items-center gap-3 py-4">
@@ -549,10 +549,10 @@ export default function FlashcardsCargosDetalhes() {
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-bold text-lg flex items-center gap-2">
                   <Layers className="w-5 h-5 text-primary" />
-                  ConteÃºdo ProgramÃ¡tico
+                  Conteúdo Programático
                 </h3>
                 <span className="text-xs font-bold bg-muted text-muted-foreground px-2.5 py-1 rounded-full">
-                  {cargo.edital_disciplinas?.length || 0} MatÃ©rias
+                  {cargo.edital_disciplinas?.length || 0} Matérias
                 </span>
               </div>
               
@@ -564,7 +564,7 @@ export default function FlashcardsCargosDetalhes() {
                       {disc.peso && (
                         <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
                           disc.peso.toLowerCase() === 'alta' ? 'bg-red-500/10 text-red-500' :
-                          disc.peso.toLowerCase() === 'mÃ©dia' ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-500' :
+                          disc.peso.toLowerCase() === 'média' ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-500' :
                           'bg-primary/10 text-primary'
                         }`}>
                           Peso {disc.peso}
@@ -606,19 +606,19 @@ export default function FlashcardsCargosDetalhes() {
           />
         )}
         
-        {/* TAB: REVISÃƒO (Placeholder) */}
+        {/* TAB: REVISÃO (Placeholder) */}
         {activeTab === 'revisao' && (
           <motion.div key="revisao" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 flex flex-col items-center justify-center px-6 text-center pt-24 pb-32">
             <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6">
               <Clock className="w-10 h-10 text-primary" />
             </div>
-            <h2 className="text-2xl font-black mb-3">SessÃ£o de RevisÃ£o</h2>
+            <h2 className="text-2xl font-black mb-3">Sessão de Revisão</h2>
             <p className="text-muted-foreground mb-8 max-w-sm">
-              Revise os flashcards de {cargo.orgao} que estÃ£o agendados para hoje atravÃ©s da repetiÃ§Ã£o espaÃ§ada.
+              Revise os flashcards de {cargo.orgao} que estão agendados para hoje através da repetição espaçada.
             </p>
             <button className="h-14 px-8 rounded-2xl bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20 active:scale-95 transition-transform flex items-center gap-2">
               <Play className="w-5 h-5 fill-current" />
-              Iniciar RevisÃ£o
+              Iniciar Revisão
             </button>
           </motion.div>
         )}
@@ -631,7 +631,7 @@ export default function FlashcardsCargosDetalhes() {
             </div>
             <h2 className="text-2xl font-black mb-3">Seu Desempenho</h2>
             <p className="text-muted-foreground mb-8 max-w-sm">
-              Acompanhe sua taxa de acertos e evoluÃ§Ã£o no edital {cargo.orgao}. Em breve!
+              Acompanhe sua taxa de acertos e evolução no edital {cargo.orgao}. Em breve!
             </p>
             <button 
               onClick={() => setActiveTab('livre')}

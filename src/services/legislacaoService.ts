@@ -6,6 +6,7 @@ const supabaseUrl = LEIS_SUPABASE_URL;
 const supabaseKey = LEIS_SUPABASE_ANON_KEY;
 
 import { LEIS_CATALOG, getLeisPorTipo as _getLeisPorTipo } from '@/data/leisCatalog';
+import { fixMojibake } from '@/lib/mojibake';
 
 export { LEIS_CATALOG };
 
@@ -27,7 +28,7 @@ let _leiIndexPromise: Promise<Map<string, LeiRef>> | null = null;
 const STRUCTURAL_SUFFIX_RE = /(^|[.;:)])\s+(?=(?:PARTE|LIVRO|T[ÍI]TULO|CAP[ÍI]TULO|SE[ÇC][ÃA]O|SUBSE[ÇC][ÃA]O)\s+(?:[IVXLCDM]+|[0-9]+|[ÚU]NICO|PRELIMINAR)\b)[\s\S]*$/i;
 
 function cleanArticleText(value?: string | null): string {
-  return (value || '')
+  return fixMojibake(value || '')
     .replace(/(\d)o\b/g, '$1º')
     .replace(/°/g, 'º')
     .replace(STRUCTURAL_SUFFIX_RE, '$1')
@@ -115,7 +116,7 @@ async function fetchFromVadeMecum(leiId: string, offset: number, limit: number):
         id: r.id,
         numero: normalizeArtigoLabel(r.numero),
         caput: cleanArticleText(r.texto),
-        titulo: r.epigrafe || undefined,
+        titulo: r.epigrafe ? fixMojibake(r.epigrafe) : undefined,
         capitulo: undefined,
         ordem: typeof r.ordem === 'number' ? r.ordem : undefined,
       }))
@@ -141,9 +142,9 @@ export async function getLeisPorTipo(tipo: string) {
         if (r.planalto_url) DYNAMIC_PLANALTO_URLS.set(r.slug, r.planalto_url);
         return {
           id: r.id,
-          nome: r.nome_curto || r.nome,
+          nome: fixMojibake(r.nome_curto || r.nome),
           sigla: (r.nome_curto || r.slug || '').toUpperCase(),
-          descricao: r.nome,
+          descricao: fixMojibake(r.nome),
           tipo,
           tabela_nome: r.slug,
           url_planalto: r.planalto_url || undefined,
@@ -165,7 +166,7 @@ export function getTodosOsTipos(): string[] {
 const artigosCache = new Map<string, ArtigoLei[]>();
 
 function normalizeArtigoLabel(value?: string | null): string {
-  const raw = (value || '').trim();
+  const raw = fixMojibake(value || '').trim();
   if (!raw) return '';
 
   const normalized = raw

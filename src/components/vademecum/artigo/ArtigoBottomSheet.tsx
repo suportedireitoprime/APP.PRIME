@@ -7,9 +7,9 @@ const LembretesArtigoSheet = lazyWithRetry(() => import('@/components/vademecum/
 const QuizView = lazyWithRetry(() => import('@/components/estudar/QuizView'));
 const JurisprudenciaArtigoView = lazyWithRetry(() => import('@/pages/JurisprudenciaArtigo'));
 const BaixarArtigoSheet = lazyWithRetry(() => import('@/components/vademecum/sheets/BaixarArtigoSheet'));
-// Sheets/overlays pesados sÃ£o carregados sob demanda: o chunk sÃ³ desce
-// quando o usuÃ¡rio abre o painel. Reduz o bundle inicial que o
-// ArtigoBottomSheet arrasta para toda navegaÃ§Ã£o do app.
+// Sheets/overlays pesados são carregados sob demanda: o chunk só desce
+// quando o usuário abre o painel. Reduz o bundle inicial que o
+// ArtigoBottomSheet arrasta para toda navegação do app.
 const GrifoFotoSheet = lazyWithRetry(() => import('@/components/vademecum/sheets/GrifoFotoSheet'));
 const AnotacoesSheet = lazyWithRetry(() => import('@/components/vademecum/sheets/AnotacoesSheet'));
 import ArtigoSidePanel from '@/components/vademecum/artigo/ArtigoSidePanel';
@@ -104,11 +104,21 @@ import {
   applyHighlightsToText,
   formatNarracaoTime,
 } from './artigoTextUtils';
+import { fixMojibake, sanitizeArtigo } from '@/lib/mojibake';
 
 // highlightTermos, highlightTermosOnly, classifyLine, applyHighlightsToText
-// â†’ moved to artigoTextUtils.tsx
+// → moved to artigoTextUtils.tsx
 
-const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, showNomenJuris = false, tabelaNome, forceShowRedacao, modificationInfo, breadcrumb }: ArtigoBottomSheetProps) => {
+const ArtigoBottomSheet = ({ artigo: rawArtigo, onClose, isFavorito, onToggleFavorito, showNomenJuris = false, tabelaNome, forceShowRedacao, modificationInfo, breadcrumb: rawBreadcrumb }: ArtigoBottomSheetProps) => {
+  const artigo = useMemo(() => sanitizeArtigo(rawArtigo), [rawArtigo]);
+  const breadcrumb = useMemo(() => {
+    if (!rawBreadcrumb) return undefined;
+    return {
+      parte: rawBreadcrumb.parte ? fixMojibake(rawBreadcrumb.parte) : undefined,
+      titulo: rawBreadcrumb.titulo ? fixMojibake(rawBreadcrumb.titulo) : undefined,
+      tituloDesc: rawBreadcrumb.tituloDesc ? fixMojibake(rawBreadcrumb.tituloDesc) : undefined,
+    };
+  }, [rawBreadcrumb]);
   const [showRedacao, setShowRedacao] = useState(forceShowRedacao ?? false);
 
   // Reset showRedacao when forceShowRedacao changes (e.g. opening from novidades)
@@ -124,8 +134,8 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
     ).catch(() => {});
   }, [artigo?.id, artigo?.numero, tabelaNome]);
 
-  // Prefetch de jurisprudÃªncia: comeÃ§a em background assim que o artigo abre,
-  // para a tela abrir instantaneamente quando o usuÃ¡rio clicar em "JurisprudÃªncia".
+  // Prefetch de jurisprudência: começa em background assim que o artigo abre,
+  // para a tela abrir instantaneamente quando o usuário clicar em "Jurisprudência".
   useEffect(() => {
     if (!artigo?.numero || !tabelaNome) return;
     const t = setTimeout(() => {
@@ -138,8 +148,8 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
     return () => clearTimeout(t);
   }, [artigo?.id, artigo?.numero, tabelaNome]);
 
-  // Prefetch das demais funÃ§Ãµes (chunks + dados) assim que o artigo abre,
-  // para que cada item do menu "FunÃ§Ãµes" abra instantaneamente.
+  // Prefetch das demais funções (chunks + dados) assim que o artigo abre,
+  // para que cada item do menu "Funções" abra instantaneamente.
   useEffect(() => {
     if (!artigo?.numero) return;
     prefetchArtigoFuncoesChunks();
@@ -167,7 +177,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
   const [showAnotacoesSheet, setShowAnotacoesSheet] = useState(false);
   const [showPerguntarSheet, setShowPerguntarSheet] = useState(false);
   const [activeTab, setActiveTab] = useState('artigo');
-  // Leitor em tela cheia da ExplicaÃ§Ã£o/Exemplo + trecho do artigo em foco.
+  // Leitor em tela cheia da Explicação/Exemplo + trecho do artigo em foco.
   const [iaFull, setIaFull] = useState<{ mode: 'explicacao' | 'exemplo'; sectionId: string | null } | null>(null);
   const [focusedSegment, setFocusedSegment] = useState<string | null>(null);
   const [aiContent, setAiContent] = useState<Record<string, string>>({});
@@ -181,9 +191,9 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
   const [tooltipData, setTooltipData] = useState<{ id: string; rect: DOMRect } | null>(null);
   const tooltipTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  // Container do Sheet: os menus (FunÃ§Ãµes / Grifar) sÃ£o portados para dentro
-  // dele, senÃ£o o Radix Dialog os marca como inertes no mobile e o toque
-  // simplesmente nÃ£o abre nada.
+  // Container do Sheet: os menus (Funções / Grifar) são portados para dentro
+  // dele, senão o Radix Dialog os marca como inertes no mobile e o toque
+  // simplesmente não abre nada.
   const sheetContentRef = useRef<HTMLDivElement | null>(null);
   const [sheetNode, setSheetNode] = useState<HTMLDivElement | null>(null);
   const isDesktop = useIsDesktop();
@@ -216,7 +226,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
     setShowSharePanel(false);
     setActiveActionMenu(null);
   }, [artigo?.numero, tabelaNome]);
-  // Desktop: pÃ­lula flutuante Narrar/Grifar quando hÃ¡ seleÃ§Ã£o de texto no artigo
+  // Desktop: pílula flutuante Narrar/Grifar quando há seleção de texto no artigo
   useEffect(() => {
     if (!isDesktop || !artigo) { setSelectionPill(null); return; }
     const handler = () => {
@@ -232,8 +242,8 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
     document.addEventListener('selectionchange', handler);
     return () => document.removeEventListener('selectionchange', handler);
   }, [isDesktop, artigo?.numero]);
-  // Prefetch do sheet de Lembretes assim que o menu FunÃ§Ãµes abre,
-  // para que o clique em "Lembretes" seja instantÃ¢neo.
+  // Prefetch do sheet de Lembretes assim que o menu Funções abre,
+  // para que o clique em "Lembretes" seja instantâneo.
   useEffect(() => {
     if (activeActionMenu === 'funcoes') {
       import('@/components/vademecum/sheets/LembretesArtigoSheet');
@@ -248,8 +258,8 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
   };
 
   /**
-   * Gate padrÃ£o das funÃ§Ãµes do artigo: 100% exclusivo para assinantes Prime.
-   * A Ãºnica funÃ§Ã£o gratuita Ã© 'Copiar artigo'.
+   * Gate padrão das funções do artigo: 100% exclusivo para assinantes Prime.
+   * A única função gratuita é 'Copiar artigo'.
    */
   const gateFeature = (
     _featureKey: string,
@@ -385,7 +395,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
   const voicePanelRef = useRef<GrifoVoicePanelHandle | null>(null);
   const lastCreatedHlRef = useRef<string | null>(null);
 
-  // Auto-inicia gravaÃ§Ã£o ao ativar Grifar por voz
+  // Auto-inicia gravação ao ativar Grifar por voz
   useEffect(() => {
     if (voiceGrifoActive && voicePhase === 'idle') {
       const t = setTimeout(() => { voicePanelRef.current?.start(); }, 150);
@@ -436,9 +446,9 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
 
 
 
-  // Carrega a mesma contagem Ãºnica exibida na tela de anotaÃ§Ãµes. As explicaÃ§Ãµes
-  // do Grifo MÃ¡gico existem no snapshot de grifos e podem tambÃ©m ter uma linha
-  // persistida; ambas representam uma Ãºnica anotaÃ§Ã£o para o usuÃ¡rio.
+  // Carrega a mesma contagem única exibida na tela de anotações. As explicações
+  // do Grifo Mágico existem no snapshot de grifos e podem também ter uma linha
+  // persistida; ambas representam uma única anotação para o usuário.
   useEffect(() => {
     if (!artigo?.numero || !tabelaNome) { setAnotacoesCount(0); return; }
     let cancelled = false;
@@ -486,7 +496,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
 
   const handleCopy = async () => {
     if (!artigo) return;
-    const text = `Art. ${artigo.numero}${tabelaNome ? ` â€” ${tabelaNome}` : ''}\n\n${artigo.caput}`;
+    const text = `Art. ${artigo.numero}${tabelaNome ? ` — ${tabelaNome}` : ''}\n\n${artigo.caput}`;
     try {
       const { Capacitor } = await import('@capacitor/core');
       if (Capacitor.isNativePlatform()) {
@@ -498,7 +508,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
       toast.success('Artigo copiado', { position: 'top-center' });
     } catch (e) {
       try { await copiarTexto(text); toast.success('Artigo copiado', { position: 'top-center' }); }
-      catch { toast.error('NÃ£o foi possÃ­vel copiar', { position: 'top-center' }); }
+      catch { toast.error('Não foi possível copiar', { position: 'top-center' }); }
     }
   };
 
@@ -526,8 +536,8 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
     }, 10);
   }, [highlightMode, addHighlight, isMobile, containerRef, openCreatePrompt]);
 
-  // Mobile: Grifo instantÃ¢neo ao passar o dedo (sem precisar ficar pressionando/segurando).
-  // O usuÃ¡rio apenas toca e arrasta o dedo pelo texto, e o grifo se forma imediatamente.
+  // Mobile: Grifo instantâneo ao passar o dedo (sem precisar ficar pressionando/segurando).
+  // O usuário apenas toca e arrasta o dedo pelo texto, e o grifo se forma imediatamente.
   useEffect(() => {
     if (!highlightMode || showEraseSheet) return;
     const container = containerRef.current;
@@ -658,7 +668,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
           messages: [
             {
               role: 'user',
-              content: `Aja como um professor de direito para OAB/concursos. Escreva uma anotaÃ§Ã£o de estudo rÃ¡pida, didÃ¡tica e direta (mÃ¡ximo 2 a 3 frases) explicando o significado prÃ¡tico ou pegadinha desse trecho da lei: "${trecho}". Sem cumprimentos, vÃ¡ direto Ã  anotaÃ§Ã£o.`,
+              content: `Aja como um professor de direito para OAB/concursos. Escreva uma anotação de estudo rápida, didática e direta (máximo 2 a 3 frases) explicando o significado prático ou pegadinha desse trecho da lei: "${trecho}". Sem cumprimentos, vá direto à anotação.`,
             },
           ],
         },
@@ -667,9 +677,9 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
       const reply = data?.reply || data?.text || data?.content;
       if (reply) {
         setCommentText(reply.trim());
-        toast.success('AnotaÃ§Ã£o gerada pela IA!');
+        toast.success('Anotação gerada pela IA!');
       } else {
-        toast.error('NÃ£o foi possÃ­vel gerar a anotaÃ§Ã£o.');
+        toast.error('Não foi possível gerar a anotação.');
       }
     } catch (err) {
       console.error(err);
@@ -699,13 +709,13 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
             invalidateCache(anotacoesKey(tabelaNome, String(artigo.numero), user.id));
             setAnotacoesRefreshTick(t => t + 1);
             setAnotacoesCount(c => c + 1);
-            toast.success('AnotaÃ§Ã£o salva');
+            toast.success('Anotação salva');
           } else {
-            toast.success('AnotaÃ§Ã£o salva localmente');
+            toast.success('Anotação salva localmente');
           }
         } catch (e) {
-          console.warn('Erro ao sincronizar anotaÃ§Ã£o com Supabase:', e);
-          toast.success('AnotaÃ§Ã£o salva localmente');
+          console.warn('Erro ao sincronizar anotação com Supabase:', e);
+          toast.success('Anotação salva localmente');
         }
       }
       updateHighlightTags(commentPrompt.id, commentTags);
@@ -740,7 +750,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
   }, []);
 
   const handleTapHighlight = useCallback((id: string, _rect: DOMRect) => {
-    // Abre o card flutuante em modo visualizaÃ§Ã£o/ediÃ§Ã£o
+    // Abre o card flutuante em modo visualização/edição
     const h = highlights.find(x => x.id === id);
     if (!h) return;
     setCommentPrompt({ id, show: true, mode: 'view' });
@@ -833,7 +843,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
       const titleLine = lines.find(l => l.startsWith('## ') || l.startsWith('**'));
       const title = titleLine 
         ? titleLine.replace(/^##\s*/, '').replace(/^\*\*/, '').replace(/\*\*$/, '').trim()
-        : `SeÃ§Ã£o ${i + 1}`;
+        : `Seção ${i + 1}`;
       const body = lines.filter(l => l !== titleLine).join('\n').trim();
       return { title, body: body || part.trim() };
     });
@@ -859,7 +869,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         return;
       }
       if (typeof navigator !== 'undefined' && navigator.onLine === false) {
-        setAiContent(prev => ({ ...prev, [activeTab]: 'Sem internet â€” este conteÃºdo ainda nÃ£o foi gerado. Conecte-se para gerar.' }));
+        setAiContent(prev => ({ ...prev, [activeTab]: 'Sem internet — este conteúdo ainda não foi gerado. Conecte-se para gerar.' }));
         setAiLoading(prev => ({ ...prev, [activeTab]: false }));
         return;
       }
@@ -879,7 +889,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
           return;
         }
 
-        // Generate with AI â€” mostra overlay animado
+        // Generate with AI — mostra overlay animado
         const mode = activeTab as 'explicacao' | 'exemplo';
         setAiGeneratingMode(mode);
         setAiGeneratingStep(0);
@@ -908,10 +918,10 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
               conteudo: data.reply,
             }, { onConflict: 'tabela_codigo,numero_artigo,tipo' }).then(() => {});
           } else {
-            setAiContent(prev => ({ ...prev, [activeTab]: 'NÃ£o foi possÃ­vel gerar o conteÃºdo. Tente novamente.' }));
+            setAiContent(prev => ({ ...prev, [activeTab]: 'Não foi possível gerar o conteúdo. Tente novamente.' }));
           }
           setAiLoading(prev => ({ ...prev, [activeTab]: false }));
-          // Pequeno delay para o usuÃ¡rio ver o passo "Pronto"
+          // Pequeno delay para o usuário ver o passo "Pronto"
           setTimeout(() => setAiGeneratingMode(null), 500);
         });
       });
@@ -932,7 +942,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         return;
       }
       if (typeof navigator !== 'undefined' && navigator.onLine === false) {
-        setAiContent(prev => ({ ...prev, termos: 'Sem internet â€” termos ainda nÃ£o gerados.' }));
+        setAiContent(prev => ({ ...prev, termos: 'Sem internet — termos ainda não gerados.' }));
         setAiLoading(prev => ({ ...prev, termos: false }));
         return;
       }
@@ -970,7 +980,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
               conteudo: data.reply,
             }, { onConflict: 'tabela_codigo,numero_artigo,tipo' }).then(() => {});
           } else {
-            setAiContent(prev => ({ ...prev, termos: 'NÃ£o foi possÃ­vel gerar os termos. Tente novamente.' }));
+            setAiContent(prev => ({ ...prev, termos: 'Não foi possível gerar os termos. Tente novamente.' }));
           }
           setAiLoading(prev => ({ ...prev, termos: false }));
           setTimeout(() => setAiGeneratingMode(null), 500);
@@ -986,10 +996,10 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
   const lines = fullText.split('\n').map(l => l.trim()).filter(Boolean);
   let nomenJuris: string | null = null;
   let contentLines = lines;
-  const structuralPattern = /^(LIVRO|PARTE|TÃTULO)\s+/i;
+  const structuralPattern = /^(LIVRO|PARTE|TÍTULO)\s+/i;
   contentLines = contentLines.filter(l => !structuralPattern.test(l.trim()));
 
-  // Nomen juris only for CP (CÃ³digo Penal) and CPM (CÃ³digo Penal Militar)
+  // Nomen juris only for CP (Código Penal) and CPM (Código Penal Militar)
   const isCodigoPenal = tabelaNome && /^(CP_|CPM_)/i.test(tabelaNome);
   if (isCodigoPenal && showNomenJuris && contentLines.length > 1) {
     const firstLine = contentLines[0].trim();
@@ -997,10 +1007,10 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
     const isNomen =
       firstLineClean.length > 0 &&
       firstLineClean.length <= 50 &&
-      /^[A-ZÃÃ€Ã‚ÃƒÃ‰ÃˆÃŠÃÃÃ“Ã”Ã•ÃšÃ‡]/.test(firstLineClean) &&
-      !/^(Art\.|Â§|ParÃ¡grafo|[IVXLC]+\s*[-â€“.]|[a-z]\))/i.test(firstLineClean) &&
+      /^[A-ZÁÀÂÃÉÃˆÊÍÃÓÔÕÚÇ]/.test(firstLineClean) &&
+      !/^(Art\.|§|Parágrafo|[IVXLC]+\s*[-–.]|[a-z]\))/i.test(firstLineClean) &&
       !/[.;:!?]/.test(firstLineClean) &&
-      !/\b(nÃ£o|serÃ¡|Ã©|foi|sÃ£o|tem|houver|aplica|considera)\b/i.test(firstLineClean);
+      !/\b(não|será|é|foi|são|tem|houver|aplica|considera)\b/i.test(firstLineClean);
 
     if (isNomen) {
       nomenJuris = firstLine;
@@ -1010,7 +1020,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
 
   const rawContent = contentLines.join('\n');
   const rawLines = rawContent.split('\n').filter(l => l.trim() !== '');
-  // Keep revoked lines in the display even when redaÃ§Ã£o is stripped
+  // Keep revoked lines in the display even when redação is stripped
   const processedLines = rawLines.map(l => {
     if (isLineRevogado(l)) return l; // always keep revoked lines as-is
     return showRedacao ? l : stripRedacao(l);
@@ -1025,15 +1035,15 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
       : (showRedacao ? line : stripRedacao(line));
 
     if (isFirst && !isRevogado) {
-      return displayText.replace(/^Art\s*\.\s*\d+[ÂºÂ°]?(?:-[A-Z])?\s*[â€“-]?\s*/i, '');
+      return displayText.replace(/^Art\s*\.\s*\d+[ºº]?(?:-[A-Z])?\s*[–-]?\s*/i, '');
     }
     return displayText;
   };
 
   const renderedLineTexts = displayLines.map((line, index) => getRenderedLineText(line, index, index === 0));
-  // Mapa linha â†’ seÃ§Ã£o (caput / inciso / parÃ¡grafo) para abrir a IA no ponto certo.
+  // Mapa linha → seção (caput / inciso / parágrafo) para abrir a IA no ponto certo.
   const lineSegmentMap = buildLineSegmentMap(displayLines);
-  // SeÃ§Ãµes navegÃ¡veis do conteÃºdo de IA em exibiÃ§Ã£o no leitor de tela cheia.
+  // Seções navegáveis do conteúdo de IA em exibição no leitor de tela cheia.
   const iaFullSections: AiSection[] = iaFull
     ? parseAiSections(
         aiContent[iaFull.mode] || '',
@@ -1054,13 +1064,13 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
 
   const duracaoAtual = narracaoDuration || narracaoAudioRef.current?.duration || 0;
 
-  // Alinha os timings reais da narraÃ§Ã£o com as palavras exibidas (1 timing por palavra).
+  // Alinha os timings reais da narração com as palavras exibidas (1 timing por palavra).
   const alignedTimings = (() => {
     if (!narracaoWordTimings?.length || !renderedArticleTokens.length) return null;
     return alinharTimingsComTexto(renderedArticleTokens, narracaoWordTimings as any[], duracaoAtual);
   })();
 
-  // Fallback de karaokÃª: sem timings utilizÃ¡veis, distribui as palavras proporcionalmente.
+  // Fallback de karaokê: sem timings utilizáveis, distribui as palavras proporcionalmente.
   const syntheticTimings = (() => {
     if (alignedTimings?.length) return null;
     const dur = duracaoAtual;
@@ -1081,7 +1091,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
   const startIndexAtivo = timingsAtivos ? 0 : -1;
 
 
-  // Atualiza o ref usado pelo RAF direto no render (seguro â€” ref nÃ£o dispara re-render)
+  // Atualiza o ref usado pelo RAF direto no render (seguro — ref não dispara re-render)
   narracaoTimingsRef.current = timingsAtivos;
 
 
@@ -1115,7 +1125,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
     let offsetShift = 0;
     if (isFirst && !isRevogado) {
       // Remove the article number prefix from the first line since the header already shows it
-      const cleanedText = displayText.replace(/^Art\s*\.\s*\d+[ÂºÂ°]?(?:-[A-Z])?\s*[â€“-]?\s*/i, '');
+      const cleanedText = displayText.replace(/^Art\s*\.\s*\d+[ºº]?(?:-[A-Z])?\s*[–-]?\s*/i, '');
       offsetShift = displayText.length - cleanedText.length;
       baseNodes = highlightTermos(cleanedText, modificationInfo ? isModifiedLine && showRedacao : showRedacao);
     } else {
@@ -1137,7 +1147,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
     let finalNodes = applyHighlightsToText(baseNodes, adjustedHighlights, removeHighlight, highlightMode, handleHoverHighlight, handleTapHighlight);
 
 
-    // Apply magic highlights on top â€” works on the full line text, not individual nodes
+    // Apply magic highlights on top — works on the full line text, not individual nodes
     if (magicMode && magicHighlights.length > 0) {
       // Extract all text content from finalNodes to build a flat string
       const extractText = (nodes: React.ReactNode[]): string => {
@@ -1244,7 +1254,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
       const highlightTextNode = (text: string, keyPrefix: string): React.ReactNode[] => {
         const parts: React.ReactNode[] = [];
         let lastIndex = 0;
-        const matches = Array.from(text.matchAll(/[\p{L}\p{N}]+(?:[-â€“][\p{L}\p{N}]+)*/gu));
+        const matches = Array.from(text.matchAll(/[\p{L}\p{N}]+(?:[-–][\p{L}\p{N}]+)*/gu));
 
         matches.forEach((match, matchIndex) => {
           const start = match.index ?? 0;
@@ -1319,7 +1329,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
 
     const highlightBg = isModifiedLine
       ? 'bg-violet-500/20 border-l-3 border-violet-400 pl-3 rounded-r-lg'
-      : !modificationInfo && showRedacao && /\((?:RedaÃ§Ã£o|IncluÃ­do|Acrescido|Alterado|Revogado|Vetado|VigÃªncia)[^)]*\)/i.test(line)
+      : !modificationInfo && showRedacao && /\((?:Redação|Incluído|Acrescido|Alterado|Revogado|Vetado|Vigência)[^)]*\)/i.test(line)
         ? 'bg-primary/5 border-l-2 border-primary/40 pl-2 rounded-r'
         : '';
 
@@ -1335,7 +1345,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         data-line-index={lineIndex}
         data-segment-id={lineSegmentMap[lineIndex] || 'caput'}
         onClick={() => {
-          // Memoriza o trecho tocado para abrir ExplicaÃ§Ã£o/Exemplo jÃ¡ nele.
+          // Memoriza o trecho tocado para abrir Explicação/Exemplo já nele.
           if (!highlightMode) setFocusedSegment(lineSegmentMap[lineIndex] || 'caput');
         }}
         className={`text-foreground leading-[1.8] ${extra} ${highlightBg} ${!highlightMode && focusedSegment && focusedSegment === (lineSegmentMap[lineIndex] || 'caput') ? 'rounded-md ring-1 ring-primary/25' : ''}`}
@@ -1344,7 +1354,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         {isFirst && !isRevogado && artLabel && (
           <>
             <span className="font-bold text-primary">{artLabel}</span>
-            <span className="text-foreground/60"> â€” </span>
+            <span className="text-foreground/60"> — </span>
           </>
         )}
         {finalNodes}
@@ -1357,8 +1367,8 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
 
   const handleSheetClose = () => {
     import('@/lib/nativeHaptics').then((m) => m.haptic.selection());
-    // Se a narraÃ§Ã£o estÃ¡ tocando, transfere o Ã¡udio para o player flutuante
-    // em vez de destruÃ­-lo. Assim a pessoa continua ouvindo mesmo apÃ³s fechar.
+    // Se a narração está tocando, transfere o áudio para o player flutuante
+    // em vez de destruí-lo. Assim a pessoa continua ouvindo mesmo após fechar.
     const currentAudio = narracaoAudioRef.current;
     if (narracaoPlaying && currentAudio && artigo) {
       narracaoAdoptedRef.current = true;
@@ -1440,8 +1450,8 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                   onClick={() => setShowRedacao(!showRedacao)}
                   whileTap={{ scale: 0.9 }}
                   className={`w-11 h-11 rounded-full flex items-center justify-center transition-colors ${showRedacao ? 'bg-primary/20' : 'hover:bg-secondary active:bg-secondary'}`}
-                  title={showRedacao ? 'Ocultar redaÃ§Ãµes' : 'Mostrar redaÃ§Ãµes'}
-                  aria-label={showRedacao ? 'Ocultar redaÃ§Ãµes' : 'Mostrar redaÃ§Ãµes'}
+                  title={showRedacao ? 'Ocultar redações' : 'Mostrar redações'}
+                  aria-label={showRedacao ? 'Ocultar redações' : 'Mostrar redações'}
                 >
                   {showRedacao
                     ? <Eye className="w-6 h-6 text-primary" />
@@ -1475,7 +1485,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
           </div>
         </div>
 
-        {/* Painel expansÃ­vel de ajuste de tamanho de fonte */}
+        {/* Painel expansível de ajuste de tamanho de fonte */}
         <AnimatePresence>
           {showFontControls && (
             <motion.div
@@ -1512,7 +1522,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
           )}
         </AnimatePresence>
 
-        {/* Breadcrumb: PARTE > TÃTULO / descriÃ§Ã£o */}
+        {/* Breadcrumb: PARTE > TÍTULO / descrição */}
         {(breadcrumb?.parte || breadcrumb?.titulo) && (
           <div className="px-5 pb-1">
             <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
@@ -1528,7 +1538,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
           </div>
         )}
 
-        {/* Big Art. NÂº + Ver no Planalto */}
+        {/* Big Art. Nº + Ver no Planalto */}
         <div className="px-5 pt-1 pb-3 flex items-center justify-between gap-3">
           <h3 className="font-display text-3xl font-bold text-foreground">
             {/^\d/.test(artigo.numero) ? `Art. ${artigo.numero}` : artigo.numero}
@@ -1565,9 +1575,9 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
           )}
         </AnimatePresence>
 
-        {/* TÃ­tulo (fallback if no breadcrumb prop) */}
+        {/* Título (fallback if no breadcrumb prop) */}
         {!breadcrumb && artigo.titulo && (() => {
-          const parts = artigo.titulo.match(/^(T[IÃ]TULO\s+[IVXLC\d]+)\s*[-â€“]?\s*(.*)/i);
+          const parts = artigo.titulo.match(/^(T[IÍ]TULO\s+[IVXLC\d]+)\s*[-–]?\s*(.*)/i);
           if (parts) {
             return (
               <div className="px-5 pb-1">
@@ -1583,9 +1593,9 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
           );
         })()}
 
-        {/* CapÃ­tulo (fallback if no breadcrumb prop) */}
+        {/* Capítulo (fallback if no breadcrumb prop) */}
         {!breadcrumb && artigo.capitulo && (() => {
-          const parts = artigo.capitulo.match(/^(CAP[IÃ]TULO\s+[IVXLC\d]+)\s*[-â€“]?\s*(.*)/i);
+          const parts = artigo.capitulo.match(/^(CAP[IÍ]TULO\s+[IVXLC\d]+)\s*[-–]?\s*(.*)/i);
           if (parts) {
             return (
               <div className="px-5 pb-2">
@@ -1624,7 +1634,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 {(() => {
                   const LABELS: Record<string, string> = {
                     amarelo: 'Chave',
-                    verde: 'ExceÃ§Ã£o',
+                    verde: 'Exceção',
                     azul: 'Efeito',
                     rosa: 'Termo',
                     laranja: 'Pegadinha',
@@ -1649,7 +1659,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         <Tabs value={activeTab} onValueChange={(v) => {
           if (showAnotacoesSheet || showPerguntarSheet || showPraticarSheet) return;
           const openIA = (mode: 'explicacao' | 'exemplo') => {
-            setActiveTab(mode);           // dispara a busca/cache jÃ¡ existente
+            setActiveTab(mode);           // dispara a busca/cache já existente
             setIaFull({ mode, sectionId: focusedSegment });
           };
           if (v === 'explicacao' || v === 'exemplo') {
@@ -1666,28 +1676,28 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
           {modificationInfo ? (
             <TabsList className="mx-5 bg-secondary/60 rounded-2xl h-11 grid grid-cols-2 w-auto p-1">
               <TabsTrigger value="artigo" className="rounded-xl text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-4 py-2">Artigo</TabsTrigger>
-              <TabsTrigger value="explicacao" className="rounded-xl text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-4 py-2">ExplicaÃ§Ã£o</TabsTrigger>
+              <TabsTrigger value="explicacao" className="rounded-xl text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-4 py-2">Explicação</TabsTrigger>
             </TabsList>
           ) : (
             <TabsList className="mx-5 bg-secondary/60 rounded-2xl h-11 grid grid-cols-4 w-auto p-1">
               <TabsTrigger value="artigo" className="rounded-xl text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-4 py-2">Artigo</TabsTrigger>
-              <TabsTrigger value="explicacao" className="rounded-xl text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-4 py-2">ExplicaÃ§Ã£o</TabsTrigger>
+              <TabsTrigger value="explicacao" className="rounded-xl text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-4 py-2">Explicação</TabsTrigger>
               <TabsTrigger value="exemplo" className="rounded-xl text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-4 py-2">Exemplo</TabsTrigger>
-              <TabsTrigger value="historico" className="rounded-xl text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-4 py-2">HistÃ³rico</TabsTrigger>
+              <TabsTrigger value="historico" className="rounded-xl text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-4 py-2">Histórico</TabsTrigger>
             </TabsList>
 
           )}
 
 
           <TabsContent value="artigo" className="px-5 pb-[calc(9rem+var(--sai-bottom))] pt-4 relative">
-            {/* Barra de progresso da narraÃ§Ã£o (sticky no topo) */}
+            {/* Barra de progresso da narração (sticky no topo) */}
             {narracaoPlaying && (
               <div className="sticky top-0 z-30 -mx-5 -mt-4 mb-3 bg-[#0f0f0f]/95 backdrop-blur-md border-b border-white/5 px-5 py-2.5">
                 <div className="flex items-center gap-2.5">
                   <button
                     onClick={handleNarrarButtonPress}
                     className="flex-shrink-0 w-7 h-7 rounded-full bg-primary/90 hover:bg-primary flex items-center justify-center transition-colors"
-                    aria-label="Pausar narraÃ§Ã£o"
+                    aria-label="Pausar narração"
                   >
                     <Pause className="w-3.5 h-3.5 text-primary-foreground" />
                   </button>
@@ -1718,7 +1728,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 </div>
               </div>
             )}
-            {/* BrasÃ£o watermark fixo */}
+            {/* Brasão watermark fixo */}
             <div className="sticky top-1/2 -translate-y-1/2 left-0 right-0 flex items-center justify-center pointer-events-none z-0" style={{ height: 0 }}>
               <img src={brasaoImg} alt="" className="w-48 h-48 opacity-[0.06] object-contain" />
             </div>
@@ -1741,8 +1751,8 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 </div>
               )}
 
-              {/* EpÃ­grafe do artigo (ex: "Anterioridade da Lei") */}
-              {artigo.titulo && !/^(PARTE|LIVRO|T[IÃ]TULO|CAP[IÃ]TULO|SEÃ‡[AÃƒ]O|SUBSEÃ‡[AÃƒ]O)\b/i.test(artigo.titulo) && (
+              {/* Epígrafe do artigo (ex: "Anterioridade da Lei") */}
+              {artigo.titulo && !/^(PARTE|LIVRO|T[IÍ]TULO|CAP[IÍ]TULO|SEÇ[AÃ]O|SUBSEÇ[AÃ]O)\b/i.test(artigo.titulo) && (
                 <p className="mb-3 border-l-2 border-primary/70 pl-3 text-[13px] italic text-primary/90 font-body leading-snug">
                   {artigo.titulo}
                 </p>
@@ -1806,7 +1816,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                           style={{ backgroundColor: currentHl?.color || selectedColor }}
                         />
                         <p className="text-foreground text-base sm:text-lg font-bold flex-1">
-                          {isView ? 'Sua anotaÃ§Ã£o' : 'Nova anotaÃ§Ã£o'}
+                          {isView ? 'Sua anotação' : 'Nova anotação'}
                         </p>
                         {isView && (
                           <button
@@ -1829,7 +1839,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                         )}
 
                         <div className="flex items-center justify-between gap-2 pt-1">
-                          <span className="text-xs font-semibold text-muted-foreground">AnotaÃ§Ã£o</span>
+                          <span className="text-xs font-semibold text-muted-foreground">Anotação</span>
                           <button
                             type="button"
                             disabled={isGeneratingAiNote}
@@ -1844,7 +1854,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                         <textarea
                           value={commentText}
                           onChange={(e) => setCommentText(e.target.value)}
-                          placeholder="Escreva sua anotaÃ§Ã£o ou clique em 'Gerar com IA'..."
+                          placeholder="Escreva sua anotação ou clique em 'Gerar com IA'..."
                           className="w-full flex-1 min-h-[160px] sm:min-h-[120px] bg-secondary/60 border border-border rounded-2xl px-4 py-3 text-base text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-1 focus:ring-primary"
                           rows={6}
                         />
@@ -1929,7 +1939,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
               )}
             </AnimatePresence>
 
-            {/* Magic grifo tooltip â€” blurred overlay + centered card */}
+            {/* Magic grifo tooltip — blurred overlay + centered card */}
             <AnimatePresence>
               {magicTooltip && (
                 <>
@@ -1949,7 +1959,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                   >
                     <button
                       onClick={() => setMagicTooltip(null)}
-                      aria-label="Fechar comentÃ¡rio"
+                      aria-label="Fechar comentário"
                       className="absolute top-2.5 right-2.5 min-w-11 min-h-11 flex items-center justify-center rounded-full bg-muted/60 hover:bg-muted text-foreground/70 hover:text-foreground transition-colors"
                     >
                       <X className="w-5 h-5" />
@@ -1998,18 +2008,18 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                       const parte = modificationInfo.parteModificada;
                       const tipo = modificationInfo.tipo.toLowerCase();
                       const lei = modificationInfo.leiNome;
-                      if (/incluÃ­d|acrescid/i.test(modificationInfo.tipo)) {
+                      if (/incluíd|acrescid/i.test(modificationInfo.tipo)) {
                         return parte === 'Artigo inteiro'
-                          ? `O ${artigo.numero} foi inteiramente incluÃ­do no ordenamento jurÃ­dico pela ${lei}.`
-                          : `O ${parte} do ${artigo.numero} foi incluÃ­do pela ${lei}. Na aba "Artigo", ele estÃ¡ destacado em roxo.`;
+                          ? `O ${artigo.numero} foi inteiramente incluído no ordenamento jurídico pela ${lei}.`
+                          : `O ${parte} do ${artigo.numero} foi incluído pela ${lei}. Na aba "Artigo", ele está destacado em roxo.`;
                       }
-                      if (/alterad|redaÃ§/i.test(modificationInfo.tipo)) {
+                      if (/alterad|redaç/i.test(modificationInfo.tipo)) {
                         return parte === 'Artigo inteiro'
-                          ? `Todo o ${artigo.numero} teve sua redaÃ§Ã£o alterada pela ${lei}.`
-                          : `O ${parte} do ${artigo.numero} teve sua redaÃ§Ã£o modificada pela ${lei}. Na aba "Artigo", o trecho estÃ¡ destacado em roxo.`;
+                          ? `Todo o ${artigo.numero} teve sua redação alterada pela ${lei}.`
+                          : `O ${parte} do ${artigo.numero} teve sua redação modificada pela ${lei}. Na aba "Artigo", o trecho está destacado em roxo.`;
                       }
                       if (/revogad/i.test(modificationInfo.tipo)) {
-                        return `Este dispositivo foi revogado pela ${lei} e nÃ£o produz mais efeitos jurÃ­dicos.`;
+                        return `Este dispositivo foi revogado pela ${lei} e não produz mais efeitos jurídicos.`;
                       }
                       return `O ${parte} do ${artigo.numero} foi ${tipo} pela ${lei}.`;
                     })()}
@@ -2024,7 +2034,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                   <p className="text-sm font-semibold text-foreground mb-1">{modificationInfo.leiNome}</p>
                   <p className="text-xs text-muted-foreground italic mb-3">{modificationInfo.referencia}</p>
                   {(() => {
-                    const leiMatch = modificationInfo.leiNome.match(/(?:Lei(?:\s+Complementar)?|Decreto(?:-Lei)?|Emenda\s+Constitucional)\s+n[ÂºÂ°]?\s*([\d.]+)/i);
+                    const leiMatch = modificationInfo.leiNome.match(/(?:Lei(?:\s+Complementar)?|Decreto(?:-Lei)?|Emenda\s+Constitucional)\s+n[ºº]?\s*([\d.]+)/i);
                     if (leiMatch) {
                       const num = leiMatch[1].replace(/\./g, '');
                       const isLC = /complementar/i.test(modificationInfo.leiNome);
@@ -2048,16 +2058,16 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                   <img src={horusOwl} alt="Horus" className="w-12 h-12 object-contain" />
                 </div>
                 <h4 className="font-display text-lg font-bold text-foreground mb-1.5">
-                  ExplicaÃ§Ã£o com IA Ã© Exclusivo Prime
+                  Explicação com IA é Exclusivo Prime
                 </h4>
                 <p className="text-xs text-muted-foreground max-w-xs mb-4 leading-relaxed">
-                  Destrinche dispositivos complexos com explicaÃ§Ãµes didÃ¡ticas, linguagem clara e doutrina aplicada geradas pela nossa IA jurÃ­dica.
+                  Destrinche dispositivos complexos com explicações didáticas, linguagem clara e doutrina aplicada geradas pela nossa IA jurídica.
                 </p>
                 <button
                   onClick={() => openPremiumGate('explicacao')}
                   className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-xs shadow-lg shadow-primary/30 active:scale-95 transition-all flex items-center gap-2"
                 >
-                  <Crown className="w-4 h-4 fill-current" /> ComeÃ§ar 3 dias grÃ¡tis
+                  <Crown className="w-4 h-4 fill-current" /> Começar 3 dias grátis
                 </button>
               </div>
             ) : (
@@ -2065,7 +2075,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 {aiLoading.explicacao ? (
                   <div className="flex flex-col items-center justify-center py-12 gap-3">
                     <Loader2 className="w-6 h-6 animate-spin text-primary" />
-                    <p className="text-sm text-muted-foreground font-body">Gerando explicaÃ§Ã£o com IA...</p>
+                    <p className="text-sm text-muted-foreground font-body">Gerando explicação com IA...</p>
                   </div>
                 ) : aiContent.explicacao ? (
                   (() => {
@@ -2099,7 +2109,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                     );
                   })()
                 ) : (
-                  <p className="text-muted-foreground text-sm text-center py-8">Clique para gerar a explicaÃ§Ã£o.</p>
+                  <p className="text-muted-foreground text-sm text-center py-8">Clique para gerar a explicação.</p>
                 )}
               </div>
             )}
@@ -2112,22 +2122,22 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                   <img src={horusOwl} alt="Horus" className="w-12 h-12 object-contain" />
                 </div>
                 <h4 className="font-display text-lg font-bold text-foreground mb-1.5">
-                  Exemplos PrÃ¡ticos sÃ£o Exclusivos Prime
+                  Exemplos Práticos são Exclusivos Prime
                 </h4>
                 <p className="text-xs text-muted-foreground max-w-xs mb-4 leading-relaxed">
-                  Veja a norma aplicada em casos concretos do dia a dia e situaÃ§Ãµes reais cobradas nas provas da OAB e concursos pÃºblicos.
+                  Veja a norma aplicada em casos concretos do dia a dia e situações reais cobradas nas provas da OAB e concursos públicos.
                 </p>
                 <button
                   onClick={() => openPremiumGate('exemplo')}
                   className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-xs shadow-lg shadow-primary/30 active:scale-95 transition-all flex items-center gap-2"
                 >
-                  <Crown className="w-4 h-4 fill-current" /> ComeÃ§ar 3 dias grÃ¡tis
+                  <Crown className="w-4 h-4 fill-current" /> Começar 3 dias grátis
                 </button>
               </div>
             ) : aiLoading.exemplo ? (
               <div className="flex flex-col items-center justify-center py-12 gap-3">
                 <Loader2 className="w-6 h-6 animate-spin text-primary" />
-                <p className="text-sm text-muted-foreground font-body">Gerando exemplos prÃ¡ticos com IA...</p>
+                <p className="text-sm text-muted-foreground font-body">Gerando exemplos práticos com IA...</p>
               </div>
             ) : aiContent.exemplo ? (
               (() => {
@@ -2167,7 +2177,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
 
           <TabsContent value="historico" className="px-5 pb-[calc(8rem+var(--sai-bottom))] pt-4">
             {(() => {
-              const modRegex = /\(((?:RedaÃ§Ã£o\s+dada|IncluÃ­d[oa]|Acrescid[oa]|Revogad[oa]|Alterad[oa]|Vetad[oa]|VigÃªncia|Regulamento|Renumerado|Transformado|Suprimido|Restabelecido|ProduÃ§Ã£o de efeito)[^)]*)\)/gi;
+              const modRegex = /\(((?:Redação\s+dada|Incluíd[oa]|Acrescid[oa]|Revogad[oa]|Alterad[oa]|Vetad[oa]|Vigência|Regulamento|Renumerado|Transformado|Suprimido|Restabelecido|Produção de efeito)[^)]*)\)/gi;
               const found: { texto: string; ano: number }[] = [];
               const seen = new Set<string>();
               let m: RegExpExecArray | null;
@@ -2185,11 +2195,11 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 <div className="space-y-3">
                   <div className="flex items-center gap-2 text-primary">
                     <History className="w-4 h-4" />
-                    <p className="text-sm font-semibold uppercase tracking-wider">HistÃ³rico de alteraÃ§Ãµes</p>
+                    <p className="text-sm font-semibold uppercase tracking-wider">Histórico de alterações</p>
                   </div>
                   {found.length === 0 ? (
                     <p className="text-muted-foreground text-sm py-8 text-center">
-                      Este artigo nÃ£o possui alteraÃ§Ãµes registradas em seu texto oficial.
+                      Este artigo não possui alterações registradas em seu texto oficial.
                     </p>
                   ) : (
                     <ul className="space-y-2">
@@ -2217,32 +2227,32 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
 
         </div>
 
-        {/* Bottom-up action sheet for FunÃ§Ãµes / Grifar.
-            IMPORTANTE: o createPortal fica FORA do AnimatePresence â€” um portal nÃ£o Ã©
-            um elemento React vÃ¡lido, entÃ£o o AnimatePresence o descartaria e o menu
-            nunca apareceria (bug do menu de rodapÃ© no mobile). */}
+        {/* Bottom-up action sheet for Funções / Grifar.
+            IMPORTANTE: o createPortal fica FORA do AnimatePresence — um portal não é
+            um elemento React válido, então o AnimatePresence o descartaria e o menu
+            nunca apareceria (bug do menu de rodapé no mobile). */}
         {(activeTab ?? 'artigo') === 'artigo' && createPortal(
           <AnimatePresence>
             {activeActionMenu && (() => {
               let funcoesItems = [
-                { id: 'juris', icon: Scale, label: 'JurisprudÃªncia', desc: 'SÃºmulas, temas e acÃ³rdÃ£os do STF/STJ', color: '#D4AF37', onClick: () => {
+                { id: 'juris', icon: Scale, label: 'Jurisprudência', desc: 'Súmulas, temas e acórdãos do STF/STJ', color: '#D4AF37', onClick: () => {
                   setActiveActionMenu(null);
-                  if (!requireOnline('JurisprudÃªncia')) return;
-                  if (!tabelaNome || !artigo?.numero) { toast.error('Artigo nÃ£o identificado'); return; }
-                  gateFeature('jurisprudencia', 'jurisprudencia', 'JurisprudÃªncia', () =>
+                  if (!requireOnline('Jurisprudência')) return;
+                  if (!tabelaNome || !artigo?.numero) { toast.error('Artigo não identificado'); return; }
+                  gateFeature('jurisprudencia', 'jurisprudencia', 'Jurisprudência', () =>
                     navigate(`/jurisprudencia/${tabelaNome}/${encodeURIComponent(String(artigo.numero))}`),
                   );
                 } },
-                { icon: Play, label: 'Videoaulas', desc: 'Aulas em vÃ­deo sobre este artigo', color: 'hsl(348 78% 38%)', onClick: () => {
+                { icon: Play, label: 'Videoaulas', desc: 'Aulas em vídeo sobre este artigo', color: 'hsl(348 78% 38%)', onClick: () => {
                   setActiveActionMenu(null);
                   if (!requireOnline('Videoaulas')) return;
                   gateFeature('videoaula', 'videoaula', 'Videoaulas', () => setShowVideoaulasListSheet(true));
                 } },
                 
-                { icon: BookOpen, label: 'Termos jurÃ­dicos', desc: 'VocabulÃ¡rio do artigo explicado', color: '#F97316', onClick: () => { setActiveActionMenu(null); if (!requireOnline('Termos jurÃ­dicos')) return; gateFeature('termos', 'termos', 'Termos jurÃ­dicos', () => setShowTermosSheet(true)); } },
-                { icon: MessageCircle, label: 'Perguntar', desc: 'Tire dÃºvidas com a IA', color: '#A855F7', onClick: () => { setActiveActionMenu(null); if (!requireOnline('Perguntar Ã  IA')) return; gateFeature('perguntar', 'perguntar', 'Perguntar Ã  IA', () => setShowPerguntarSheet(true)); } },
-                ...(tabelaNome ? [{ icon: Network, label: 'Grafo de conexÃµes', desc: 'Ver relaÃ§Ãµes do artigo', color: '#10B981', onClick: () => { setActiveActionMenu(null); gateFeature('grafo', 'grafo', 'Grafo de conexÃµes', () => setShowGrafo(true)); } }] : []),
-                { icon: Copy, label: 'Copiar artigo', desc: 'Texto para a Ã¡rea de transferÃªncia', color: '#8B5CF6', onClick: () => { setActiveActionMenu(null); handleCopy(); } },
+                { icon: BookOpen, label: 'Termos jurídicos', desc: 'Vocabulário do artigo explicado', color: '#F97316', onClick: () => { setActiveActionMenu(null); if (!requireOnline('Termos jurídicos')) return; gateFeature('termos', 'termos', 'Termos jurídicos', () => setShowTermosSheet(true)); } },
+                { icon: MessageCircle, label: 'Perguntar', desc: 'Tire dúvidas com a IA', color: '#A855F7', onClick: () => { setActiveActionMenu(null); if (!requireOnline('Perguntar à IA')) return; gateFeature('perguntar', 'perguntar', 'Perguntar à IA', () => setShowPerguntarSheet(true)); } },
+                ...(tabelaNome ? [{ icon: Network, label: 'Grafo de conexões', desc: 'Ver relações do artigo', color: '#10B981', onClick: () => { setActiveActionMenu(null); gateFeature('grafo', 'grafo', 'Grafo de conexões', () => setShowGrafo(true)); } }] : []),
+                { icon: Copy, label: 'Copiar artigo', desc: 'Texto para a área de transferência', color: '#8B5CF6', onClick: () => { setActiveActionMenu(null); handleCopy(); } },
                 { icon: Bell, label: 'Lembretes', desc: 'Avisar ao chegar em um local', color: '#DC2626', onClick: () => { setActiveActionMenu(null); import('@/components/vademecum/sheets/LembretesArtigoSheet'); gateFeature('lembretes', 'lembretes', 'Lembretes', () => setShowLembretesLocal(true)); } },
                 { icon: Download, label: 'Baixar artigo', desc: 'PDF ou imagem, lei seca ou comentado', color: '#0EA5E9', onClick: () => { setActiveActionMenu(null); gateFeature('baixar', 'baixar', 'Baixar artigo', () => setShowBaixarSheet(true)); } },
                 { icon: Share2, label: 'Compartilhar', desc: 'Enviar para outro app', color: '#06B6D4', onClick: () => { setActiveActionMenu(null); gateFeature('default', 'default', 'Compartilhar', () => setShowSharePanel(p => !p)); } },
@@ -2256,14 +2266,14 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 gateFeature('grifo', 'grifo', label, action);
               const grifarItems = [
                 { icon: Highlighter, label: highlightMode ? 'Desativar grifo manual' : 'Grifo manual', desc: 'Marcar com o dedo', color: '#EC4899', active: highlightMode, onClick: () => { setActiveActionMenu(null); if (highlightMode) { toggleMode(); return; } gateGrifo('Grifar', () => toggleMode()); } },
-                { icon: Sparkles, label: 'Grifo mÃ¡gico (IA)', desc: 'Destaques automÃ¡ticos', color: '#DC2626', active: magicMode, spin: magicLoading, badge: magicHighlights.length, onClick: () => { setActiveActionMenu(null); gateGrifo('Grifar', () => handleToggleMagic()); } },
+                { icon: Sparkles, label: 'Grifo mágico (IA)', desc: 'Destaques automáticos', color: '#DC2626', active: magicMode, spin: magicLoading, badge: magicHighlights.length, onClick: () => { setActiveActionMenu(null); gateGrifo('Grifar', () => handleToggleMagic()); } },
                 { icon: Mic, label: 'Grifar por voz', desc: 'Dite o trecho a destacar', color: '#DC2626', onClick: () => { setActiveActionMenu(null); gateGrifo('Grifar', () => setVoiceGrifoActive(true)); } },
                 { icon: Camera, label: 'Grifar de foto', desc: 'OCR de imagem', color: '#3B82F6', onClick: () => { setActiveActionMenu(null); gateGrifo('Grifar', () => setShowGrifoFoto(true)); } },
                 { icon: Trash2, label: 'Apagar grifos', desc: 'Escolha por cor ou apague todos', color: 'hsl(348 78% 38%)', badge: eraseSheetHighlights.length, onClick: () => { setActiveActionMenu(null); setShowEraseSheet(true); } },
               ];
               const isGrifar = activeActionMenu === 'grifar';
               const items = isGrifar ? grifarItems : funcoesItems;
-              const title = isGrifar ? 'Grifar' : 'FunÃ§Ãµes';
+              const title = isGrifar ? 'Grifar' : 'Funções';
               const HeaderIcon = isGrifar ? Feather : LayoutGrid;
               return (
                 <>
@@ -2335,7 +2345,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                       {isGrifar && (
                         <div className="mt-2 mx-5 p-3 rounded-2xl bg-secondary/40 border border-border flex items-center justify-between gap-3">
                           <div className="min-w-0">
-                            <p className="text-[13.5px] font-medium text-foreground">Mostrar grifo por padrÃ£o</p>
+                            <p className="text-[13.5px] font-medium text-foreground">Mostrar grifo por padrão</p>
                             <p className="text-[11.5px] text-foreground/60 mt-0.5">Ao abrir o artigo, exibe os grifos da IA automaticamente.</p>
                           </div>
                           <button
@@ -2361,7 +2371,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         )}
 
 
-        {/* Bottom nav bar â€” only visible on "artigo" tab; fixed as a flex item below the scrollable area */}
+        {/* Bottom nav bar — only visible on "artigo" tab; fixed as a flex item below the scrollable area */}
         {(activeTab ?? 'artigo') === 'artigo' && !isDesktop && (
         <div className="shrink-0 relative z-[55] bg-zinc-900/95 backdrop-blur-md border-t border-zinc-800/80 rounded-t-2xl shadow-[0_-8px_30px_rgba(0,0,0,0.6)] pb-[calc(0.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
           <div className="relative grid grid-cols-5 items-end px-2 py-1 max-w-lg mx-auto">
@@ -2379,7 +2389,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 className={`flex flex-col items-center justify-end gap-1 py-2 transition-colors ${activeActionMenu === 'funcoes' ? 'text-primary' : 'text-zinc-300 hover:text-white'}`}
               >
                 <LayoutGrid className="w-7 h-7 sm:w-8 sm:h-8" />
-                <span className="font-body text-[11px] sm:text-[12px] leading-tight">FunÃ§Ãµes</span>
+                <span className="font-body text-[11px] sm:text-[12px] leading-tight">Funções</span>
               </button>
             )}
             {(highlightMode || voiceGrifoActive) ? (
@@ -2400,7 +2410,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
               </button>
             )}
 
-            {/* FAB central: Narrar por padrÃ£o; vira gravador quando Grifar por voz estÃ¡ ativo */}
+            {/* FAB central: Narrar por padrão; vira gravador quando Grifar por voz está ativo */}
             {voiceGrifoActive ? (
               <button
                 onClick={() => {
@@ -2409,7 +2419,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 }}
                 disabled={voicePhase === 'processing'}
                 className="relative z-[80] flex flex-col items-center justify-end gap-1 py-2 touch-manipulation select-none"
-                aria-label={voicePhase === 'recording' ? 'Parar gravaÃ§Ã£o' : 'Gravar voz'}
+                aria-label={voicePhase === 'recording' ? 'Parar gravação' : 'Gravar voz'}
               >
                 <div className="w-7 h-7 sm:w-8 sm:h-8 invisible" aria-hidden="true" />
                 <div className="absolute bottom-[28px] sm:bottom-[32px] pointer-events-none">
@@ -2501,7 +2511,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                     </span>
                   )}
                 </span>
-                <span className="font-body text-[11px] sm:text-[12px] leading-tight">AnotaÃ§Ãµes</span>
+                <span className="font-body text-[11px] sm:text-[12px] leading-tight">Anotações</span>
               </button>
             )}
             {(highlightMode || voiceGrifoActive) ? (
@@ -2548,7 +2558,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
 
         <GrifoMagicoLoader open={magicLoading} />
 
-        {/* Floating "Fechar grifo" button + rodapÃ© de aÃ§Ãµes when highlight mode is active */}
+        {/* Floating "Fechar grifo" button + rodapé de ações when highlight mode is active */}
         <AnimatePresence>
           {(highlightMode || voiceGrifoActive) && (activeTab ?? 'artigo') === 'artigo' && (
             <>
@@ -2619,7 +2629,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
             />
           )}
 
-          {/* GrifoVoicePanel usa ref imperativo â€” mantido eager */}
+          {/* GrifoVoicePanel usa ref imperativo — mantido eager */}
           <GrifoVoicePanel
             ref={voicePanelRef}
             active={voiceGrifoActive}
@@ -2633,15 +2643,15 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
             }}
           />
 
-          {/* Overlay do gatinho + checklist enquanto gera a narraÃ§Ã£o */}
+          {/* Overlay do gatinho + checklist enquanto gera a narração */}
           {narracaoLoading && (
             <GeracaoAnimacaoOverlay
               open={narracaoLoading}
-              titulo="Gerando sua narraÃ§Ã£o"
+              titulo="Gerando sua narração"
               steps={[
                 'Preparando o texto do artigo',
-                'Gerando narraÃ§Ã£o realista em HD',
-                'Salvando narraÃ§Ã£o',
+                'Gerando narração realista em HD',
+                'Salvando narração',
                 'Pronto para ouvir',
               ]}
               stepIdx={narracaoStepIdx}
@@ -2650,20 +2660,20 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
             />
           )}
 
-          {/* Overlay animado ao gerar ExplicaÃ§Ã£o / Exemplo / Termos com IA */}
+          {/* Overlay animado ao gerar Explicação / Exemplo / Termos com IA */}
           {aiGeneratingMode !== null && (
             <GeracaoAnimacaoOverlay
               open={aiGeneratingMode !== null}
               titulo={
-                aiGeneratingMode === 'explicacao' ? 'Gerando explicaÃ§Ã£o com IA' :
-                aiGeneratingMode === 'exemplo' ? 'Gerando exemplos prÃ¡ticos' :
-                aiGeneratingMode === 'termos' ? 'Analisando termos jurÃ­dicos' :
-                'Gerando conteÃºdo'
+                aiGeneratingMode === 'explicacao' ? 'Gerando explicação com IA' :
+                aiGeneratingMode === 'exemplo' ? 'Gerando exemplos práticos' :
+                aiGeneratingMode === 'termos' ? 'Analisando termos jurídicos' :
+                'Gerando conteúdo'
               }
               steps={[
                 'Preparando o texto do artigo',
                 'Consultando a IA',
-                'Formatando conteÃºdo',
+                'Formatando conteúdo',
                 'Pronto para ler',
               ]}
               stepIdx={aiGeneratingStep}
@@ -2711,13 +2721,13 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                     <X className="w-4 h-4" />
                   </button>
                 </div>
-                <p className="px-5 pt-3 text-[12.5px] text-foreground/60">Art. {artigo?.numero} â€” Escolha o modo de estudo</p>
+                <p className="px-5 pt-3 text-[12.5px] text-foreground/60">Art. {artigo?.numero} — Escolha o modo de estudo</p>
                 <div className="flex-1 py-2">
                   {[
                     {
                       icon: Target,
-                      label: 'QuestÃµes',
-                      desc: 'MÃºltipla escolha com comentÃ¡rios e exemplos',
+                      label: 'Questões',
+                      desc: 'Múltipla escolha com comentários e exemplos',
                       color: '#DC2626',
                       onClick: () => {
                         setShowPraticarSheet(false);
@@ -2735,7 +2745,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                     {
                       icon: Layers,
                       label: 'Flashcards',
-                      desc: 'Cards com flip animado e exemplos prÃ¡ticos',
+                      desc: 'Cards com flip animado e exemplos práticos',
                       color: '#DC2626',
                       onClick: () => {
                         setShowPraticarSheet(false);
@@ -2826,12 +2836,12 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
           )}
         </Suspense>
 
-        {/* Termos jurÃ­dicos Sheet (aberto pelo menu Grifar) */}
+        {/* Termos jurídicos Sheet (aberto pelo menu Grifar) */}
         <Sheet open={showTermosSheet} onOpenChange={(open) => setShowTermosSheet(open)}>
           <SheetContent side="bottom" className="z-[10041] h-[90vh] max-w-lg mx-auto rounded-t-3xl p-0 flex flex-col md:left-auto md:right-0 md:top-0 md:bottom-0 md:h-full md:w-[min(30rem,92vw)] md:max-w-none md:rounded-none md:rounded-l-3xl md:border-l md:mx-0">
             <div className="flex items-center gap-2 px-5 py-4 border-b border-border">
               <BookOpen className="w-5 h-5 text-orange-400" />
-              <h3 className="font-heading text-base font-semibold text-foreground flex-1">Termos jurÃ­dicos</h3>
+              <h3 className="font-heading text-base font-semibold text-foreground flex-1">Termos jurídicos</h3>
               <button onClick={() => setShowTermosSheet(false)} className="w-8 h-8 rounded-full hover:bg-secondary flex items-center justify-center text-foreground/70" aria-label="Fechar">
                 <X className="w-4 h-4" />
               </button>
@@ -2840,7 +2850,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
               {aiLoading.termos ? (
                 <div className="flex flex-col items-center justify-center py-12 gap-3">
                   <Loader2 className="w-6 h-6 animate-spin text-primary" />
-                  <p className="text-sm text-muted-foreground font-body">Analisando termos jurÃ­dicos com IA...</p>
+                  <p className="text-sm text-muted-foreground font-body">Analisando termos jurídicos com IA...</p>
                 </div>
               ) : aiContent.termos ? (
                 (() => {
@@ -2900,7 +2910,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
             open={showLembretesLocal}
             onClose={() => setShowLembretesLocal(false)}
             artigoRef={`${tabelaNome || 'artigo'}::${artigo?.numero ?? 'x'}`}
-            artigoTitulo={artigo ? `Art. ${artigo.numero}${tabelaNome ? ' â€” ' + tabelaNome : ''}` : 'Artigo'}
+            artigoTitulo={artigo ? `Art. ${artigo.numero}${tabelaNome ? ' — ' + tabelaNome : ''}` : 'Artigo'}
           />
         )}
         {showBaixarSheet && (
@@ -2917,7 +2927,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
 
       </Suspense>
 
-      {/* Desktop: QuestÃµes e JurisprudÃªncia como painel lateral */}
+      {/* Desktop: Questões e Jurisprudência como painel lateral */}
       {isDesktop && artigo && (
         <>
           <ArtigoSidePanel open={showQuestoesPanel} onClose={() => setShowQuestoesPanel(false)} widthClass="w-[min(40rem,94vw)]">
@@ -2948,12 +2958,12 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         </>
       )}
 
-      {/* Desktop: barras laterais com as funÃ§Ãµes (principais Ã  esquerda) */}
+      {/* Desktop: barras laterais com as funções (principais à esquerda) */}
       {isDesktop && artigo && (activeTab ?? 'artigo') === 'artigo' && createPortal(
         (() => {
           type RailItem = { id?: string; icon: any; label: string; color?: string; active?: boolean; onClick: (e: any) => void };
           const principais: RailItem[] = [
-            { icon: Volume2, label: 'NarraÃ§Ã£o', color: '#22C55E', onClick: (e) => handleNarrarButtonPress(e) },
+            { icon: Volume2, label: 'Narração', color: '#22C55E', onClick: (e) => handleNarrarButtonPress(e) },
             { icon: Feather, label: 'Grifar', color: '#DC2626', active: activeActionMenu === 'grifar', onClick: () => {
               if (!isPremium) {
                 openPremiumGate('grifo');
@@ -2961,23 +2971,23 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
               }
               setActiveActionMenu(activeActionMenu === 'grifar' ? null : 'grifar');
             } },
-            { icon: StickyNote, label: 'AnotaÃ§Ãµes', color: '#38BDF8', onClick: () => gateFeature('anotacoes', 'anotacoes', 'AnotaÃ§Ãµes', () => setShowAnotacoesSheet(true)) },
+            { icon: StickyNote, label: 'Anotações', color: '#38BDF8', onClick: () => gateFeature('anotacoes', 'anotacoes', 'Anotações', () => setShowAnotacoesSheet(true)) },
             { icon: Target, label: 'Praticar', color: '#A855F7', onClick: () => gateFeature('praticar', 'praticar', 'Praticar', () => setShowPraticarSheet(true)) },
           ];
           let secundarias: RailItem[] = [
-            { icon: LayoutGrid, label: 'FunÃ§Ãµes', active: activeActionMenu === 'funcoes', onClick: () => setActiveActionMenu(activeActionMenu === 'funcoes' ? null : 'funcoes') },
-            { id: 'juris', icon: Scale, label: 'JurisprudÃªncia', color: '#D4AF37', onClick: () => {
-              if (!requireOnline('JurisprudÃªncia')) return;
-              if (!tabelaNome || !artigo?.numero) { toast.error('Artigo nÃ£o identificado'); return; }
-              gateFeature('jurisprudencia', 'jurisprudencia', 'JurisprudÃªncia', () => {
+            { icon: LayoutGrid, label: 'Funções', active: activeActionMenu === 'funcoes', onClick: () => setActiveActionMenu(activeActionMenu === 'funcoes' ? null : 'funcoes') },
+            { id: 'juris', icon: Scale, label: 'Jurisprudência', color: '#D4AF37', onClick: () => {
+              if (!requireOnline('Jurisprudência')) return;
+              if (!tabelaNome || !artigo?.numero) { toast.error('Artigo não identificado'); return; }
+              gateFeature('jurisprudencia', 'jurisprudencia', 'Jurisprudência', () => {
                 if (isDesktop) setShowJurisPanel(true);
                 else navigate(`/jurisprudencia/${tabelaNome}/${encodeURIComponent(String(artigo.numero))}`);
               });
             } },
             { icon: Play, label: 'Videoaulas', color: 'hsl(348 78% 38%)', onClick: () => { if (!requireOnline('Videoaulas')) return; gateFeature('videoaula', 'videoaula', 'Videoaulas', () => setShowVideoaulasListSheet(true)); } },
-            { icon: BookOpen, label: 'Termos', color: '#F97316', onClick: () => { if (!requireOnline('Termos jurÃ­dicos')) return; gateFeature('termos', 'termos', 'Termos jurÃ­dicos', () => setShowTermosSheet(true)); } },
-            { icon: MessageCircle, label: 'Perguntar Ã  IA', color: '#A855F7', onClick: () => { if (!requireOnline('Perguntar Ã  IA')) return; gateFeature('perguntar', 'perguntar', 'Perguntar Ã  IA', () => setShowPerguntarSheet(true)); } },
-            ...(tabelaNome ? [{ icon: Network, label: 'Grafo', color: '#10B981', onClick: () => gateFeature('grafo', 'grafo', 'Grafo de conexÃµes', () => setShowGrafo(true)) }] : []),
+            { icon: BookOpen, label: 'Termos', color: '#F97316', onClick: () => { if (!requireOnline('Termos jurídicos')) return; gateFeature('termos', 'termos', 'Termos jurídicos', () => setShowTermosSheet(true)); } },
+            { icon: MessageCircle, label: 'Perguntar à IA', color: '#A855F7', onClick: () => { if (!requireOnline('Perguntar à IA')) return; gateFeature('perguntar', 'perguntar', 'Perguntar à IA', () => setShowPerguntarSheet(true)); } },
+            ...(tabelaNome ? [{ icon: Network, label: 'Grafo', color: '#10B981', onClick: () => gateFeature('grafo', 'grafo', 'Grafo de conexões', () => setShowGrafo(true)) }] : []),
             { icon: Copy, label: 'Copiar', color: '#8B5CF6', onClick: () => handleCopy() },
             { icon: Bell, label: 'Lembretes', color: '#DC2626', onClick: () => { import('@/components/vademecum/sheets/LembretesArtigoSheet'); gateFeature('lembretes', 'lembretes', 'Lembretes', () => setShowLembretesLocal(true)); } },
             { icon: Download, label: 'Baixar', color: '#0EA5E9', onClick: () => gateFeature('baixar', 'baixar', 'Baixar artigo', () => setShowBaixarSheet(true)) },
@@ -3023,14 +3033,14 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
           return (
             <>
               <Rail items={principais} side="left" title="Principais" />
-              <Rail items={secundarias} side="right" title="Mais funÃ§Ãµes" />
+              <Rail items={secundarias} side="right" title="Mais funções" />
             </>
           );
         })(),
         document.body
       )}
 
-      {/* Desktop: pÃ­lula flutuante Narrar / Grifar ao selecionar trecho */}
+      {/* Desktop: pílula flutuante Narrar / Grifar ao selecionar trecho */}
       {isDesktop && artigo && selectionPill && createPortal(
         <motion.div
           initial={{ opacity: 0, y: 6, scale: 0.95 }}
@@ -3060,7 +3070,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         document.body
       )}
 
-      {/* Leitor em tela cheia da ExplicaÃ§Ã£o / Exemplo */}
+      {/* Leitor em tela cheia da Explicação / Exemplo */}
       <ArtigoIAFullscreen
         open={Boolean(iaFull && artigo)}
         mode={iaFull?.mode || 'explicacao'}
