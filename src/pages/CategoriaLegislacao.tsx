@@ -10,7 +10,6 @@ import { useTrackArea } from '@/hooks/useTrackArea';
 import LeiOrdinariaView from '@/components/vademecum/views/LeiOrdinariaView';
 import DecretoView from '@/components/vademecum/views/DecretoView';
 import SumulaView from '@/components/vademecum/views/SumulaView';
-import GenericLeiView from '@/components/vademecum/views/GenericLeiView';
 import LeiDetailView from '@/components/vademecum/views/LeiDetailView';
 
 const TIPO_CONFIG: Record<string, { label: string; icon: React.ElementType; bg: string }> = {
@@ -36,7 +35,11 @@ const CategoriaLegislacao = () => {
   const location = useLocation();
 
   const goBack = useCallback(() => {
-    navigate('/vade-mecum');
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/vade-mecum');
+    }
   }, [navigate]);
 
   useEffect(() => {
@@ -124,8 +127,12 @@ const CategoriaLegislacao = () => {
         if (artigoNumeroParam) setPendingArtigoNumero(artigoNumeroParam);
         return;
       }
+    if (!leiSlugParam) {
+      if (tipo !== 'lei-ordinaria' && tipo !== 'decreto' && tipo !== 'sumula' && tipo !== 'constituicao') {
+        navigate('/vade-mecum', { replace: true });
+      }
+      return;
     }
-    if (!leiSlugParam) return;
     const lei = findLeiBySlug(tipo, leiSlugParam);
     if (lei) {
       setSelectedLeiId(lei.id);
@@ -224,32 +231,17 @@ const CategoriaLegislacao = () => {
         selectedTabelaNome={selectedTabelaNome}
         subcat={'todas'} // Fallback for subcat prop which generic list handles internally now
         config={config}
-        goBack={() => {
-          if (tipo === 'constituicao') {
-            goBack();
-          } else {
-            setSelectedLeiId(null);
-            navigate(`/legislacao/${tipoToSlug(tipo!)}`, { replace: true });
-          }
-        }}
+        goBack={goBack}
         pendingArtigoNumero={pendingArtigoNumero}
         setPendingArtigoNumero={setPendingArtigoNumero}
       />
     );
   }
 
-  // Generic List View (Códigos, Estatutos, Especiais, etc)
   return (
-    <GenericLeiView
-      tipo={tipo}
-      leis={leis}
-      config={config}
-      goBack={goBack}
-      setSelectedLeiId={setSelectedLeiId}
-      setSelectedLeiNome={setSelectedLeiNome}
-      setSelectedLeiDescricao={setSelectedLeiDescricao}
-      setSelectedTabelaNome={setSelectedTabelaNome}
-    />
+    <div className="min-h-dvh bg-background flex flex-col items-center justify-center p-4">
+      <Loader2 className="w-8 h-8 text-primary animate-spin" />
+    </div>
   );
 };
 
