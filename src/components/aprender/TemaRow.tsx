@@ -20,7 +20,7 @@ const TemaRow = ({ numero, titulo, totalAulas, emPreparo, pct, onClick }: Props)
       whileHover={{ scale: 1.01 }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
-      className="group flex h-[104px] w-full items-center gap-3 rounded-2xl border border-border bg-card p-3 text-left transition-colors hover:bg-accent/40 focus-visible:outline-none sm:h-[112px] sm:gap-4 sm:p-4"
+      className="group flex h-[104px] w-full items-center gap-3 rounded-2xl border border-border/80 bg-card/90 backdrop-blur-md p-3 text-left transition-colors hover:bg-accent/50 focus-visible:outline-none sm:h-[112px] sm:gap-4 sm:p-4 shadow-sm"
       aria-label={`Tema ${numero}: ${titulo}. ${Math.round(pct)}% concluído.`}
     >
       <div

@@ -9,6 +9,7 @@ import { shortenAreaName } from '@/lib/areaNameShortener';
 import { prefetchAprenderAula } from '@/lib/aprenderAulaPrefetch';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
+import ShapeGrid from '@/components/ui/ShapeGrid';
 
 export type ModuloDetalhe = {
   id: string;
@@ -134,7 +135,20 @@ const AprenderModulo = () => {
 
   return (
     <DesktopPageLayout activeId="aprender" mobileHeader={mobileHeader} title={modulo?.titulo ?? 'Trilha do Tópico'}>
-      <div className="w-full max-w-4xl mx-auto space-y-6 pb-20 pt-2 px-3 sm:px-6">
+      {/* Fundo ShapeGrid (padrão oficial do app / igual Pílulas) */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <ShapeGrid
+          speed={0.5}
+          squareSize={40}
+          direction="diagonal"
+          borderColor="rgba(255, 255, 255, 0.05)"
+          hoverFillColor="rgba(255, 255, 255, 0.1)"
+          shape="square"
+          hoverTrailAmount={5}
+        />
+      </div>
+
+      <div className="relative z-10 w-full max-w-4xl mx-auto space-y-6 pb-20 pt-2 px-3 sm:px-6">
         {/* Botão de Voltar Desktop */}
         <button
           onClick={() => (modulo?.areaSlug ? navigate(`/aprender/area/${modulo.areaSlug}`) : navigate('/aprender'))}

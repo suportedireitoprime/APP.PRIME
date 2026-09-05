@@ -33,7 +33,7 @@ const MateriaRow = ({ area, icon, onOpen, onPrefetch }: Props) => {
     >
       {icon ? (
         <div className="relative flex h-12 w-12 shrink-0 items-center justify-center sm:h-14 sm:w-14">
-          <icon.Icon className="h-8 w-8 sm:h-9 sm:w-9" strokeWidth={1.25} style={{ color: icon.color }} />
+          <icon.Icon className="h-8 w-8 sm:h-9 sm:w-9" strokeWidth={1.5} style={{ color: icon.color }} />
         </div>
       ) : (
         <div

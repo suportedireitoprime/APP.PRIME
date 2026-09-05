@@ -1,5 +1,6 @@
 import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet';
 import TeoriaTab from './tema/TeoriaTab';
+import ShapeGrid from '@/components/ui/ShapeGrid';
 
 type Aula = {
   id: string;
@@ -25,8 +26,20 @@ const TemaAulasSheet = ({ open, onOpenChange, numero, titulo, aulas, progresso }
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="bottom"
-        className="flex h-[90dvh] max-h-[90dvh] flex-col gap-0 rounded-t-3xl border-t p-0"
+        className="flex h-[90dvh] max-h-[90dvh] flex-col gap-0 rounded-t-3xl border-t p-0 overflow-hidden relative"
       >
+        {/* Fundo ShapeGrid (padrão oficial do app / igual Pílulas) */}
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <ShapeGrid
+            speed={0.5}
+            squareSize={40}
+            direction="diagonal"
+            borderColor="rgba(255, 255, 255, 0.05)"
+            hoverFillColor="rgba(255, 255, 255, 0.1)"
+            shape="square"
+            hoverTrailAmount={5}
+          />
+        </div>
         {/* Handle */}
         <div className="flex justify-center pt-3">
           <span className="h-1.5 w-12 rounded-full bg-muted-foreground/30" />
