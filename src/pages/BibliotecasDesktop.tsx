@@ -1,53 +1,32 @@
-import { useEffect, useState, Suspense, useRef, memo, useCallback } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { ChevronRight, Scale, BookOpen, Gavel, Library, MessageSquare, BookOpenText, GraduationCap } from 'lucide-react';
+import { useEffect, useState, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQueryClient } from '@tanstack/react-query';
-import { lazyWithRetry } from "@/utils/lazyWithRetry";
 
 import { type LivroNormalizado } from '@/lib/bibliotecaColecoes';
 import { scheduleWarmBiblioteca } from '@/services/bibliotecaWarmup';
 import { useVisibleColecoes } from '@/hooks/useVisibleColecoes';
-import { prefetchRoute, type PrefetchKey } from '@/lib/routePrefetch';
-import { directImg } from '@/lib/cdnImg';
 
-import DesktopTopHeader from '@/components/vademecum/desktop/DesktopTopHeader';
 import DesktopOnboardingOverlay from '@/components/desktop/DesktopOnboardingOverlay';
-import DesktopBreadcrumb from '@/components/vademecum/desktop/DesktopBreadcrumb';
 import DesktopSidebar from '@/components/vademecum/desktop/DesktopSidebar';
-
 import DesktopBibliotecaHero from '@/components/desktop/DesktopBibliotecaHero';
 import DesktopBibliotecaGrid from '@/components/desktop/DesktopBibliotecaGrid';
 import ContinuarLeituraCarousel from '@/components/biblioteca/ContinuarLeituraCarousel';
 import RecomendacoesCarousel from '@/components/biblioteca/RecomendacoesCarousel';
-import LivroDetailSheet from '@/components/biblioteca/LivroDetailSheet';
 import BibliotecaAtalhosBar from '@/components/biblioteca/BibliotecaAtalhosBar';
-
-const SearchOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/SearchOverlay'));
-const AssistenteOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/AssistenteOverlayV2'));
-
-const DESKTOP_TABS: Array<{ id: string; label: string; icon: any; path: string; prefetch?: PrefetchKey }> = [
-  { id: 'legislacao', label: 'Legislação', icon: Scale, path: '/' },
-  { id: 'biblioteca', label: 'Biblioteca', icon: Library, path: '/bibliotecas' },
-  { id: 'ferramentas', label: 'Ferramentas', icon: Gavel, path: '/ferramentas', prefetch: 'ferramentas' },
-  { id: 'aprender', label: 'Aprender', icon: GraduationCap, path: '/aprender', prefetch: 'aprender' },
-  { id: 'chat', label: 'Chat', icon: MessageSquare, path: '/assistente-horus' },
-  { id: 'vademecum', label: 'Vade Mecum', icon: BookOpenText, path: '/vade-mecum' },
-];
+import { DesktopBibliotecaTabsBar, DESKTOP_TABS } from '@/components/desktop/DesktopBibliotecaTabsBar';
+import { DesktopBibliotecaModals } from '@/components/desktop/DesktopBibliotecaModals';
+import { DesktopColecaoCard } from '@/components/desktop/DesktopColecaoCard';
 
 const BibliotecasDesktop = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const queryClient = useQueryClient();
   const [livroAberto, setLivroAberto] = useState<LivroNormalizado | null>(null);
   const colecoesVisiveis = useVisibleColecoes();
   const acervoRef = useRef<HTMLDivElement>(null);
-  
+
   const [searchOpen, setSearchOpen] = useState(false);
   const [assistenteOpen, setAssistenteOpen] = useState(false);
-  
-  const handleAssistenteClose = () => setAssistenteOpen(false);
-  const handleSearchClose = () => setSearchOpen(false);
 
   useEffect(() => scheduleWarmBiblioteca(queryClient), [queryClient]);
 
@@ -58,47 +37,20 @@ const BibliotecasDesktop = () => {
   }, []);
 
   const handleTabChange = useCallback((t: string) => {
-    const tab = DESKTOP_TABS.find(x => x.id === t);
+    const tab = DESKTOP_TABS.find((x) => x.id === t);
     if (tab) navigate(tab.path);
   }, [navigate]);
 
   return (
     <div className="h-[calc(100dvh-104px)] bg-background flex flex-col">
       <DesktopOnboardingOverlay />
-      
+
       <div className="flex flex-1 min-h-0">
         <DesktopSidebar activeTab="biblioteca" onTabChange={handleTabChange} />
-        
+
         <div className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden relative contain-content overscroll-contain">
-          <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-md border-b border-border">
-            <div className="flex items-center gap-1 px-8 h-12">
-              {DESKTOP_TABS.map((tab) => {
-                const Icon = tab.icon;
-                const isActive = 'biblioteca' === tab.id;
-                return (
-                  <motion.button
-                    key={tab.id}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => navigate(tab.path)}
-                    onMouseEnter={() => { if (tab.prefetch) prefetchRoute(tab.prefetch); }}
-                    onFocus={() => { if (tab.prefetch) prefetchRoute(tab.prefetch); }}
-                    className={`relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-body font-medium transition-colors focus-visible:outline-none ${
-                      isActive
-                        ? 'text-primary bg-primary/10'
-                        : 'text-foreground/60 hover:text-foreground hover:bg-secondary/60'
-                    }`}
-                  >
-                    <Icon className="w-4 h-4" />
-                    <span>{tab.label}</span>
-                    {isActive && <motion.div layoutId="desktop-biblioteca-tab" className="absolute bottom-0 left-3 right-3 h-0.5 bg-primary rounded-full" />}
-                  </motion.button>
-                );
-              })}
-            </div>
-            {/* O Breadcrumb agora fica logo ABAIXO das abas e somente no lado direito */}
-            <DesktopBreadcrumb />
-          </div>
-          
+          <DesktopBibliotecaTabsBar />
+
           <AnimatePresence mode="wait">
             <motion.div
               key="biblioteca-desktop"
@@ -109,18 +61,13 @@ const BibliotecasDesktop = () => {
               className="px-8 py-6 2xl:px-14"
             >
               <div className="mb-6 -mx-8 -mt-6 2xl:-mx-14">
-                 <DesktopBibliotecaHero onSearchClick={() => setSearchOpen(true)} />
+                <DesktopBibliotecaHero onSearchClick={() => setSearchOpen(true)} />
               </div>
 
               <div className="mb-8">
-                {/* Aqui substituimos o BibliotecaAtalhosBar pelo Grid novo */}
-                <DesktopBibliotecaGrid 
-                  onScrollToAcervo={scrollToAcervo} 
-                  onUploadPdf={() => {
-                    // Se o usuário clicar, disparamos um evento customizado ou alert que o upload será tratado na UI correspondente
-                    // No Desktop, o ideal é despachar evento pro componente Bibliotecas (pai) ou redirecionar.
-                    // Para simplificar, vou focar apenas no scrollToAcervo para "Coleções" e navegar para "/bibliotecas?aba=acervos"
-                  }} 
+                <DesktopBibliotecaGrid
+                  onScrollToAcervo={scrollToAcervo}
+                  onUploadPdf={() => {}}
                 />
               </div>
 
@@ -147,96 +94,41 @@ const BibliotecasDesktop = () => {
                   </p>
                 </div>
 
-                <motion.div 
+                <motion.div
                   className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4"
                   variants={{
                     hidden: { opacity: 0 },
-                    show: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.1 } }
+                    show: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.1 } },
                   }}
                   initial="hidden"
                   animate="show"
                 >
                   {colecoesVisiveis.map((c) => (
-                    <ColecaoCard 
-                      key={c.id} 
-                      c={c} 
-                      onClick={() => navigate(`/bibliotecas/${c.id}`)} 
+                    <DesktopColecaoCard
+                      key={c.id}
+                      c={c}
+                      onClick={() => navigate(`/bibliotecas/${c.id}`)}
                     />
                   ))}
                 </motion.div>
               </section>
-
             </motion.div>
           </AnimatePresence>
         </div>
-        
-        <Suspense fallback={null}>
-          {searchOpen && (
-             <SearchOverlay open={searchOpen} onClose={handleSearchClose} />
-          )}
-          {assistenteOpen && (
-             <AssistenteOverlay open={assistenteOpen} onClose={handleAssistenteClose} />
-          )}
-        </Suspense>
+
+        <DesktopBibliotecaModals
+          searchOpen={searchOpen}
+          onCloseSearch={() => setSearchOpen(false)}
+          assistenteOpen={assistenteOpen}
+          onCloseAssistente={() => setAssistenteOpen(false)}
+          livroAberto={livroAberto}
+          onCloseLivro={() => setLivroAberto(null)}
+        />
       </div>
-      
-      <AnimatePresence>
-        {livroAberto && (
-          <LivroDetailSheet
-            livro={livroAberto}
-            open={!!livroAberto}
-            onOpenChange={(v) => !v && setLivroAberto(null)}
-          />
-        )}
-      </AnimatePresence>
-      
+
       <BibliotecaAtalhosBar onAbrirLivro={setLivroAberto} />
     </div>
   );
 };
-
-const ColecaoCard = memo(({ c, onClick }: { c: any; onClick: () => void }) => {
-  return (
-    <motion.button
-      variants={{
-        hidden: { opacity: 0, y: 15 },
-        show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
-      }}
-      whileHover={{ scale: 1.015, y: -2 }}
-      whileTap={{ scale: 0.98 }}
-      onClick={onClick}
-      className="group flex flex-col text-left rounded-2xl bg-card border border-border overflow-hidden hover:border-primary/40 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 relative min-h-[140px] will-change-transform focus-visible:outline-none"
-    >
-      <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -z-10 group-hover:scale-125 transition-transform duration-500 will-change-transform" />
-      
-      <div className="p-5 flex items-start gap-4 flex-1">
-        <div className="w-16 h-20 shrink-0 bg-muted rounded border border-border shadow-sm overflow-hidden relative">
-          <div className="absolute inset-0 bg-gradient-to-br from-black/20 to-transparent z-10 mix-blend-overlay" />
-          <div className="absolute left-0 top-0 bottom-0 w-[1px] bg-white/20 z-20" />
-          <div className="absolute left-1 top-0 bottom-0 w-[1px] bg-black/10 z-20" />
-          {c.cover ? (
-            <img src={directImg(c.cover, 200)} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover relative z-0" />
-          ) : (
-            <div className="w-full h-full bg-primary/10 flex items-center justify-center">
-              <Library className="w-6 h-6 text-primary/40" />
-            </div>
-          )}
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground mb-1">
-            {c.eyebrow || 'Coleção'}
-          </div>
-          <h3 className="font-display font-bold text-foreground text-lg leading-tight group-hover:text-primary transition-colors">
-            {c.label}
-          </h3>
-        </div>
-      </div>
-      <div className="px-5 py-3 border-t border-border/50 bg-secondary/30 flex items-center justify-between w-full">
-        <span className="text-xs text-muted-foreground font-medium">Ver coleção</span>
-        <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors group-hover:translate-x-1 will-change-transform" />
-      </div>
-    </motion.button>
-  );
-});
 
 export default BibliotecasDesktop;

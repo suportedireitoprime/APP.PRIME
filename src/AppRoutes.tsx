@@ -35,6 +35,7 @@ const Router = typeof window !== "undefined" && ((window as any).desktopApp?.isE
   : BrowserRouter;
 
 import PageTransition from "@/components/PageTransition";
+import { TopRouteProgress } from "@/components/TopRouteProgress";
 import { useMediaQuery } from "./hooks/useMediaQuery.ts";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { routePrefetch, prefetchRoute } from "@/lib/routePrefetch";
@@ -809,6 +810,7 @@ function AnimatedRoutes() {
 
   return (
     <div className="overflow-x-hidden">
+      <TopRouteProgress />
       <NativeBootstrap />
       <PushNavListener />
       <DeepLinkBootstrap />

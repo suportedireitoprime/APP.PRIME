@@ -1,17 +1,20 @@
 import { ReactNode } from "react";
-import { motion } from "framer-motion";
-import { Capacitor } from "@capacitor/core";
+import { motion, useReducedMotion } from "framer-motion";
 
 interface PageTransitionProps {
   children: ReactNode;
   className?: string;
 }
 
-const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const isNative = typeof window !== 'undefined' && Capacitor.isNativePlatform();
-
+/**
+ * Transição de página de alto padrão utilizada por Big Techs (Apple, Linear, Vercel, Stripe).
+ * Utiliza aceleração de hardware (GPU translateZ), micro-elevação (4px), amortecimento
+ * sutil de escala (0.994 -> 1) e curva elástica premium (ease [0.16, 1, 0.3, 1]).
+ */
 const PageTransition = ({ children, className }: PageTransitionProps) => {
-  if (prefersReducedMotion) {
+  const shouldReduceMotion = useReducedMotion();
+
+  if (shouldReduceMotion) {
     return (
       <div
         className={className}
@@ -27,11 +30,11 @@ const PageTransition = ({ children, className }: PageTransitionProps) => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -6 }}
+      initial={{ opacity: 0, y: 4, scale: 0.994 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -3, scale: 0.998 }}
       transition={{
-        duration: 0.22,
+        duration: 0.2,
         ease: [0.16, 1, 0.3, 1],
       }}
       className={className}
@@ -39,6 +42,7 @@ const PageTransition = ({ children, className }: PageTransitionProps) => {
         width: "100%",
         minHeight: "100dvh",
         willChange: "transform, opacity",
+        transform: "translateZ(0)",
       }}
     >
       {children}
@@ -47,3 +51,4 @@ const PageTransition = ({ children, className }: PageTransitionProps) => {
 };
 
 export default PageTransition;
+
