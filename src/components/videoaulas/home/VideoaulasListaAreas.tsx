@@ -81,7 +81,7 @@ export const VideoaulasListaAreas = React.memo(function VideoaulasListaAreas({
                   }}
                   className="group flex w-full items-center gap-3 rounded-2xl border border-border/80 bg-card/60 p-3 text-left transition-colors backdrop-blur-md hover:bg-card hover:border-primary/50 hover:shadow-lg focus-visible:outline-none sm:p-3.5"
                 >
-                  <div className="relative flex h-14 w-14 shrink-0 items-center justify-center sm:h-16 sm:w-16 aprender-icon-shine">
+                  <div className="relative flex h-14 w-14 shrink-0 items-center justify-center sm:h-16 sm:w-16">
                     <Icon className="h-9 w-9 sm:h-10 sm:w-10" strokeWidth={1.9} style={{ color }} />
                   </div>
 

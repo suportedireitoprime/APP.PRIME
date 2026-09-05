@@ -75,6 +75,9 @@ import {
   ArtigoPraticarModal,
   ArtigoTermosSheet,
   ArtigoOverlays,
+  GrifoCommentPrompt,
+  NarracaoProgressBar,
+  ArtigoLineRenderer,
 } from './chunks';
 
 import {
@@ -1089,270 +1092,6 @@ const ArtigoBottomSheet = ({ artigo: rawArtigo, onClose, isFavorito, onToggleFav
     ? activeNarracaoWordIndex - startIndexAtivo
     : -1;
 
-  const renderLine = (line: string, lineIndex: number, isFirst: boolean) => {
-    const classified = classifyLine(line);
-    const lineHighlights = getLineHighlights(lineIndex);
-    const lineIsRevogado = isLineRevogado(line);
-
-    // When opened from novidades, only show the specific modification reference on modified lines
-    // and strip ALL references from non-modified lines
-    const isModifiedLine = modificationInfo && modificationInfo.linhasModificadas.includes(lineIndex);
-    const displayText = modificationInfo
-      ? (isModifiedLine && showRedacao ? line : stripRedacao(line))
-      : (showRedacao ? line : stripRedacao(line));
-
-    // If this specific line is revoked (inciso/paragraph with only "(Revogado...)"), show it styled
-    if (lineIsRevogado && !isRevogado) {
-      const revogadoDisplay = showRedacao ? line : line;
-      return (
-        <p key={lineIndex} data-line-index={lineIndex} className={`italic leading-[1.8] ${classified.type === 'inciso' ? 'pl-4 border-l-2 border-purple-400/30' : classified.type === 'alinea' ? 'pl-8' : classified.type === 'paragrafo' ? 'mt-2' : ''}`} style={{ fontSize: `${Math.max(fontSize - 1, 10)}px` }}>
-          <span className="bg-purple-500/20 text-purple-300 rounded px-1 py-0.5">{revogadoDisplay}</span>
-        </p>
-      );
-    }
-
-    let baseNodes: React.ReactNode[];
-    let offsetShift = 0;
-    if (isFirst && !isRevogado) {
-      // Remove the article number prefix from the first line since the header already shows it
-      const cleanedText = displayText.replace(/^Art\s*\.\s*\d+[ºº]?(?:-[A-Z])?\s*[–-]?\s*/i, '');
-      offsetShift = displayText.length - cleanedText.length;
-      baseNodes = highlightTermos(cleanedText, modificationInfo ? isModifiedLine && showRedacao : showRedacao);
-    } else {
-      baseNodes = highlightTermos(displayText, modificationInfo ? isModifiedLine && showRedacao : showRedacao);
-    }
-
-    // Adjust highlight offsets to match rendered (prefix-stripped) text.
-    // Discard any highlight that falls entirely inside the stripped prefix.
-    const adjustedHighlights = offsetShift > 0
-      ? lineHighlights
-          .map(h => ({
-            ...h,
-            startOffset: Math.max(0, h.startOffset - offsetShift),
-            endOffset: h.endOffset - offsetShift,
-          }))
-          .filter(h => h.endOffset > 0 && h.endOffset > h.startOffset)
-      : lineHighlights;
-
-    let finalNodes = applyHighlightsToText(baseNodes, adjustedHighlights, removeHighlight, highlightMode, handleHoverHighlight, handleTapHighlight);
-
-
-    // Apply magic highlights on top — works on the full line text, not individual nodes
-    if (magicMode && magicHighlights.length > 0) {
-      // Extract all text content from finalNodes to build a flat string
-      const extractText = (nodes: React.ReactNode[]): string => {
-        return nodes.map(n => {
-          if (typeof n === 'string') return n;
-          if (n && typeof n === 'object' && 'props' in (n as any)) {
-            const props = (n as any).props;
-            if (typeof props?.children === 'string') return props.children;
-            if (Array.isArray(props?.children)) return extractText(props.children);
-          }
-          return '';
-        }).join('');
-      };
-      
-      const fullLineText = extractText(finalNodes);
-      
-      // Find magic grifo matches in the full line text
-      const magicMatches: { start: number; end: number; grifo: typeof magicHighlights[0] }[] = [];
-      for (const grifo of magicHighlights) {
-        const idx = fullLineText.indexOf(grifo.trechoExato);
-        if (idx !== -1) {
-          magicMatches.push({ start: idx, end: idx + grifo.trechoExato.length, grifo });
-        }
-      }
-      
-      if (magicMatches.length > 0) {
-        magicMatches.sort((a, b) => a.start - b.start);
-        // Remove overlaps
-        const filtered: typeof magicMatches = [];
-        for (const m of magicMatches) {
-          if (filtered.length === 0 || m.start >= filtered[filtered.length - 1].end) {
-            filtered.push(m);
-          }
-        }
-        
-        // Rebuild nodes: walk through finalNodes tracking character position
-        const newNodes: React.ReactNode[] = [];
-        let charPos = 0;
-        
-        const wrapWithMagic = (text: string, offsetInLine: number, nodeKey: string): React.ReactNode[] => {
-          const parts: React.ReactNode[] = [];
-          let localPos = 0;
-          for (const m of filtered) {
-            const relStart = m.start - offsetInLine;
-            const relEnd = m.end - offsetInLine;
-            if (relEnd <= 0 || relStart >= text.length) continue;
-            const clampStart = Math.max(0, relStart);
-            const clampEnd = Math.min(text.length, relEnd);
-            if (clampStart > localPos) parts.push(text.slice(localPos, clampStart));
-            parts.push(
-              <mark
-                key={`magic-${nodeKey}-${m.start}`}
-                style={{ backgroundColor: MAGIC_COLORS[m.grifo.cor] || MAGIC_COLORS.amarelo, color: 'white', borderRadius: '3px', padding: '1px 3px', cursor: 'pointer' }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (highlightMode) {
-                    handleRemoveSingleMagicHighlight(m.grifo);
-                  } else {
-                    const rect = (e.target as HTMLElement).getBoundingClientRect();
-                    setMagicTooltip(prev => prev?.grifo.trechoExato === m.grifo.trechoExato ? null : { grifo: m.grifo, rect });
-                  }
-                }}
-              >
-                {text.slice(clampStart, clampEnd)}
-              </mark>
-            );
-            localPos = clampEnd;
-          }
-          if (localPos < text.length) parts.push(text.slice(localPos));
-          return parts.length > 0 ? parts : [text];
-        };
-        
-        const processNode = (node: React.ReactNode, idx: number): React.ReactNode => {
-          if (typeof node === 'string') {
-            const result = wrapWithMagic(node, charPos, `s${idx}`);
-            charPos += node.length;
-            return result.length === 1 ? result[0] : result;
-          }
-          if (node && typeof node === 'object' && 'props' in (node as any)) {
-            const el = node as React.ReactElement;
-            const children = el.props?.children;
-            if (typeof children === 'string') {
-              const result = wrapWithMagic(children, charPos, `e${idx}`);
-              charPos += children.length;
-              if (result.length === 1 && typeof result[0] === 'string') return node; // unchanged
-              const { children: _, ...restProps } = el.props;
-              return <el.type {...restProps} key={el.key || `mn${idx}`}>{result}</el.type>;
-            }
-            if (Array.isArray(children)) {
-              const newChildren = children.map((c: React.ReactNode, ci: number) => processNode(c, idx * 100 + ci));
-              const { children: _, ...restProps } = el.props;
-              return <el.type {...restProps} key={el.key || `mn${idx}`}>{newChildren}</el.type>;
-            }
-          }
-          return node;
-        };
-        
-        finalNodes = finalNodes.map((n, i) => processNode(n, i)).flat();
-      }
-    }
-
-    if (narracaoPlaying && activeRenderedWordIndex >= 0) {
-      let wordIndex = lineWordStartIndexes[lineIndex] || 0;
-      const highlightTextNode = (text: string, keyPrefix: string): React.ReactNode[] => {
-        const parts: React.ReactNode[] = [];
-        let lastIndex = 0;
-        const matches = Array.from(text.matchAll(/[\p{L}\p{N}]+(?:[-–][\p{L}\p{N}]+)*/gu));
-
-        matches.forEach((match, matchIndex) => {
-          const start = match.index ?? 0;
-          const end = start + match[0].length;
-          const currentWordIndex = wordIndex++;
-          if (currentWordIndex !== activeRenderedWordIndex) return;
-
-          if (start > lastIndex) parts.push(text.slice(lastIndex, start));
-          parts.push(
-            <motion.mark
-              key={`narracao-${keyPrefix}-${matchIndex}`}
-              initial={{ backgroundSize: '0% 108%' }}
-              animate={{ backgroundSize: '100% 108%' }}
-              transition={{ duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}
-              className="rounded-[4px] bg-transparent text-inherit"
-              style={{
-                backgroundImage: 'linear-gradient(hsl(var(--primary) / 0.62), hsl(var(--primary) / 0.62))',
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'left 50%',
-                padding: '0 1px',
-                boxDecorationBreak: 'clone',
-                WebkitBoxDecorationBreak: 'clone',
-              }}
-            >
-              {match[0]}
-            </motion.mark>
-          );
-          lastIndex = end;
-        });
-
-        if (lastIndex < text.length) parts.push(text.slice(lastIndex));
-        return parts.length ? parts : [text];
-      };
-
-      const processNarracaoNode = (node: React.ReactNode, keyPrefix: string): React.ReactNode => {
-        if (typeof node === 'string') {
-          const parts = highlightTextNode(node, keyPrefix);
-          return parts.length === 1 ? parts[0] : parts;
-        }
-        if (isValidElement(node)) {
-          const children = (node.props as any)?.children;
-          if (typeof children === 'string') {
-            const parts = highlightTextNode(children, keyPrefix);
-            return cloneElement(node as React.ReactElement<any>, { key: node.key || keyPrefix }, parts.length === 1 ? parts[0] : parts);
-          }
-          if (Array.isArray(children)) {
-            return cloneElement(
-              node as React.ReactElement<any>,
-              { key: node.key || keyPrefix },
-              children.map((child, index) => processNarracaoNode(child, `${keyPrefix}-${index}`)),
-            );
-          }
-        }
-        return node;
-      };
-
-      finalNodes = finalNodes.map((node, index) => processNarracaoNode(node, `l${lineIndex}-${index}`)).flat();
-    }
-
-    if (isRevogado) {
-      return (
-        <p key={lineIndex} data-line-index={lineIndex} className="leading-[1.8]" style={{ fontSize: `${Math.max(fontSize - 2, 10)}px` }}>
-          <span className="bg-purple-500/20 text-purple-300 rounded px-1 py-0.5">{line}</span>
-        </p>
-      );
-    }
-
-    const extra =
-      classified.type === 'inciso' ? 'pl-4 border-l-2 border-primary/30' :
-      classified.type === 'alinea' ? 'pl-8' :
-      classified.type === 'paragrafo' ? 'mt-2' : '';
-
-    const highlightBg = isModifiedLine
-      ? 'bg-violet-500/20 border-l-3 border-violet-400 pl-3 rounded-r-lg'
-      : !modificationInfo && showRedacao && /\((?:Redação|Incluído|Acrescido|Alterado|Revogado|Vetado|Vigência)[^)]*\)/i.test(line)
-        ? 'bg-primary/5 border-l-2 border-primary/40 pl-2 rounded-r'
-        : '';
-
-    const artLabel = (() => {
-      const num = (artigo?.numero || '').trim();
-      if (/^\d/.test(num)) return `Art. ${num}`;
-      return num;
-    })();
-
-    return (
-      <p
-        key={lineIndex}
-        data-line-index={lineIndex}
-        data-segment-id={lineSegmentMap[lineIndex] || 'caput'}
-        onClick={() => {
-          // Memoriza o trecho tocado para abrir Explicação/Exemplo já nele.
-          if (!highlightMode) setFocusedSegment(lineSegmentMap[lineIndex] || 'caput');
-        }}
-        className={`text-foreground leading-[1.8] ${extra} ${highlightBg} ${!highlightMode && focusedSegment && focusedSegment === (lineSegmentMap[lineIndex] || 'caput') ? 'rounded-md ring-1 ring-primary/25' : ''}`}
-        style={{ fontSize: `${fontSize}px` }}
-      >
-        {isFirst && !isRevogado && artLabel && (
-          <>
-            <span className="font-bold text-primary">{artLabel}</span>
-            <span className="text-foreground/60"> — </span>
-          </>
-        )}
-        {finalNodes}
-      </p>
-    );
-  };
-
-
   const commentsWithText = highlights.filter(h => h.comment && h.comment.trim().length > 0);
 
   const handleSheetClose = () => {
@@ -1452,43 +1191,15 @@ const ArtigoBottomSheet = ({ artigo: rawArtigo, onClose, isFavorito, onToggleFav
 
           <TabsContent value="artigo" className="px-5 pb-[calc(9rem+var(--sai-bottom))] pt-4 relative">
             {/* Barra de progresso da narração (sticky no topo) */}
-            {narracaoPlaying && (
-              <div className="sticky top-0 z-30 -mx-5 -mt-4 mb-3 bg-[#0f0f0f]/95 backdrop-blur-md border-b border-white/5 px-5 py-2.5">
-                <div className="flex items-center gap-2.5">
-                  <button
-                    onClick={handleNarrarButtonPress}
-                    className="flex-shrink-0 w-7 h-7 rounded-full bg-primary/90 hover:bg-primary flex items-center justify-center transition-colors"
-                    aria-label="Pausar narração"
-                  >
-                    <Pause className="w-3.5 h-3.5 text-primary-foreground" />
-                  </button>
-                  <div className="flex-1 min-w-0">
-                    <div
-                      className="h-1.5 rounded-full bg-white/10 overflow-hidden cursor-pointer"
-                      onClick={(e) => {
-                        const audio = narracaoAudioRef.current;
-                        if (!audio || !audio.duration) return;
-                        const rect = e.currentTarget.getBoundingClientRect();
-                        const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-                        audio.currentTime = pct * audio.duration;
-                        narracaoActiveIdxRef.current = -1;
-                      }}
-                    >
-                      <div
-                        ref={narracaoProgressFillRef}
-                        className="h-full bg-gradient-to-r from-primary to-primary-light transition-[width] duration-100 ease-out"
-                        style={{ width: '0%' }}
-                      />
-                    </div>
-                  </div>
-                  <div className="flex-shrink-0 text-[10.5px] font-mono text-foreground/70 tabular-nums">
-                    <span ref={narracaoTimeRef}>0:00</span>
-                    <span className="text-foreground/40"> / </span>
-                    <span ref={narracaoTotalTimeRef}>0:00</span>
-                  </div>
-                </div>
-              </div>
-            )}
+            <NarracaoProgressBar
+              narracaoPlaying={narracaoPlaying}
+              handleNarrarButtonPress={handleNarrarButtonPress}
+              narracaoAudioRef={narracaoAudioRef}
+              narracaoProgressFillRef={narracaoProgressFillRef}
+              narracaoTimeRef={narracaoTimeRef}
+              narracaoTotalTimeRef={narracaoTotalTimeRef}
+              narracaoActiveIdxRef={narracaoActiveIdxRef}
+            />
             {/* Brasão watermark fixo */}
             <div className="sticky top-1/2 -translate-y-1/2 left-0 right-0 flex items-center justify-center pointer-events-none z-0" style={{ height: 0 }}>
               <img src={brasaoImg} alt="" className="w-48 h-48 opacity-[0.06] object-contain" />
@@ -1538,7 +1249,35 @@ const ArtigoBottomSheet = ({ artigo: rawArtigo, onClose, isFavorito, onToggleFav
                 }}
                 onMouseUp={handleTextSelection}
               >
-                {displayLines.map((line, i) => renderLine(line, i, i === 0))}
+                {displayLines.map((line, i) => (
+                  <ArtigoLineRenderer
+                    key={`line-${i}`}
+                    line={line}
+                    lineIndex={i}
+                    isFirst={i === 0}
+                    modificationInfo={modificationInfo}
+                    showRedacao={showRedacao}
+                    isRevogado={isRevogado}
+                    fontSize={fontSize}
+                    highlightMode={highlightMode}
+                    focusedSegment={focusedSegment}
+                    selectedColor={selectedColor}
+                    lineSegmentMap={lineSegmentMap}
+                    artigoNumero={artigo?.numero}
+                    magicMode={magicMode}
+                    magicHighlights={magicHighlights}
+                    handleRemoveSingleMagicHighlight={handleRemoveSingleMagicHighlight}
+                    setMagicTooltip={setMagicTooltip}
+                    narracaoPlaying={narracaoPlaying}
+                    activeRenderedWordIndex={activeRenderedWordIndex}
+                    lineWordStartIndex={lineWordStartIndexes[i] || 0}
+                    lineHighlights={getLineHighlights(i)}
+                    removeHighlight={removeHighlight}
+                    handleHoverHighlight={handleHoverHighlight}
+                    handleTapHighlight={handleTapHighlight}
+                    setFocusedSegment={setFocusedSegment}
+                  />
+                ))}
               </div>
 
             </div>
@@ -1547,132 +1286,23 @@ const ArtigoBottomSheet = ({ artigo: rawArtigo, onClose, isFavorito, onToggleFav
 
 
             {/* Floating card: create or view highlight note + tags */}
-            {createPortal(
-              <AnimatePresence>
-              {commentPrompt?.show && (() => {
-                const currentHl = highlights.find(h => h.id === commentPrompt.id);
-                const isView = commentPrompt.mode === 'view';
-                return (
-                  <>
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="fixed inset-0 z-[10050] bg-black/65 backdrop-blur-sm"
-                      onClick={handleDismissComment}
-                    />
-                    <motion.div
-                      initial={{ y: '100%', opacity: 0.8 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      exit={{ y: '100%', opacity: 0 }}
-                      transition={{ type: 'spring', damping: 28, stiffness: 320 }}
-                      className="fixed inset-x-0 bottom-0 sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:bottom-auto z-[10051] w-full sm:w-[calc(100vw-2rem)] sm:max-w-lg md:max-w-2xl h-[95dvh] sm:h-auto sm:max-h-[90vh] flex flex-col bg-card border-t sm:border border-border rounded-t-[28px] sm:rounded-3xl shadow-2xl p-5 sm:p-6 overflow-hidden"
-                    >
-                      {/* Drag handle visual para mobile */}
-                      <div className="w-12 h-1.5 rounded-full bg-muted-foreground/30 mx-auto mb-3 shrink-0 sm:hidden" />
-
-                      <div className="flex items-center gap-2.5 mb-3 shrink-0">
-                        <span
-                          className="w-4 h-4 rounded-full border border-white/20 shrink-0"
-                          style={{ backgroundColor: currentHl?.color || selectedColor }}
-                        />
-                        <p className="text-foreground text-base sm:text-lg font-bold flex-1">
-                          {isView ? 'Sua anotação' : 'Nova anotação'}
-                        </p>
-                        {isView && (
-                          <button
-                            onClick={() => { if (currentHl) { removeHighlight(currentHl.id); handleDismissComment(); } }}
-                            className="text-xs font-semibold text-red-400 hover:text-red-300 px-2.5 py-1.5 rounded-md"
-                          >
-                            Remover
-                          </button>
-                        )}
-                      </div>
-
-                      <div className="flex-1 overflow-y-auto min-h-0 space-y-4 pr-1">
-                        {currentHl?.text && (
-                          <div
-                            className="text-sm italic text-foreground/80 border-l-2 pl-3 line-clamp-4 bg-muted/20 p-2.5 rounded-r-xl"
-                            style={{ borderColor: currentHl.color }}
-                          >
-                            "{currentHl.text}"
-                          </div>
-                        )}
-
-                        <div className="flex items-center justify-between gap-2 pt-1">
-                          <span className="text-xs font-semibold text-muted-foreground">Anotação</span>
-                          <button
-                            type="button"
-                            disabled={isGeneratingAiNote}
-                            onClick={handleGerarAnotacaoIa}
-                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-primary/15 text-primary hover:bg-primary/25 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
-                          >
-                            {isGeneratingAiNote ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
-                            <span>{isGeneratingAiNote ? 'Gerando...' : 'Gerar com IA'}</span>
-                          </button>
-                        </div>
-
-                        <textarea
-                          value={commentText}
-                          onChange={(e) => setCommentText(e.target.value)}
-                          placeholder="Escreva sua anotação ou clique em 'Gerar com IA'..."
-                          className="w-full flex-1 min-h-[160px] sm:min-h-[120px] bg-secondary/60 border border-border rounded-2xl px-4 py-3 text-base text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-1 focus:ring-primary"
-                          rows={6}
-                        />
-
-                        <div>
-                          <p className="text-xs uppercase tracking-wider font-semibold text-muted-foreground mb-2">Tags</p>
-                          <div className="flex flex-wrap gap-2 mb-2.5">
-                            {commentTags.map(t => (
-                              <span key={t} className="inline-flex items-center gap-1 rounded-full bg-primary/15 text-primary text-xs font-semibold px-2.5 py-1.5">
-                                #{t}
-                                <button
-                                  onClick={() => setCommentTags(prev => prev.filter(x => x !== t))}
-                                  className="opacity-70 hover:opacity-100"
-                                  aria-label={`Remover tag ${t}`}
-                                >Ã—</button>
-                              </span>
-                            ))}
-                          </div>
-                          <div className="flex gap-2">
-                            <input
-                              value={tagDraft}
-                              onChange={(e) => setTagDraft(e.target.value)}
-                              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); addTagFromDraft(); } }}
-                              placeholder="Adicionar tag (ex: prova, importante)"
-                              className="flex-1 bg-secondary/60 border border-border rounded-xl px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-                            />
-                            <button
-                              onClick={addTagFromDraft}
-                              className="px-4 rounded-xl text-sm font-semibold bg-secondary hover:bg-secondary/80 text-foreground"
-                            >
-                              +
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="flex gap-2.5 pt-4 mt-auto border-t border-border/50 shrink-0 pb-[calc(env(safe-area-inset-bottom,0px))]">
-                        <button
-                          onClick={handleDismissComment}
-                          className="flex-1 h-12 min-h-[48px] rounded-2xl text-sm font-bold text-muted-foreground bg-secondary hover:bg-secondary/80 transition-colors"
-                        >
-                          {isView ? 'Fechar' : 'Pular'}
-                        </button>
-                        <button
-                          onClick={handleSaveComment}
-                          className="flex-1 h-12 min-h-[48px] rounded-2xl text-sm font-bold text-primary-foreground bg-primary hover:bg-primary/90 transition-colors"
-                        >
-                          Salvar
-                        </button>
-                      </div>
-                    </motion.div>
-                  </>
-                );
-              })()}
-              </AnimatePresence>,
-              document.body
-            )}
+            <GrifoCommentPrompt
+              commentPrompt={commentPrompt}
+              highlights={highlights}
+              selectedColor={selectedColor}
+              commentText={commentText}
+              setCommentText={setCommentText}
+              commentTags={commentTags}
+              setCommentTags={setCommentTags}
+              tagDraft={tagDraft}
+              setTagDraft={setTagDraft}
+              isGeneratingAiNote={isGeneratingAiNote}
+              handleGerarAnotacaoIa={handleGerarAnotacaoIa}
+              handleDismissComment={handleDismissComment}
+              handleSaveComment={handleSaveComment}
+              removeHighlight={removeHighlight}
+              addTagFromDraft={addTagFromDraft}
+            />
 
 
             {/* Tooltip for highlighted text with comment */}

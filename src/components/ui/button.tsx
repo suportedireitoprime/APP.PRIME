@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { haptic } from "@/lib/nativeHaptics";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-all duration-200 active:scale-[0.96] lg:hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
@@ -52,7 +52,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     };
 
     // Acessibilidade extrema: garantir que variant icon tenha aria-label se ausente, ou emitir um console.warn em dev
-    if (variant === 'icon' && size === 'icon' && !props['aria-label'] && process.env.NODE_ENV !== 'production') {
+    if (size === 'icon' && !props['aria-label'] && process.env.NODE_ENV !== 'production') {
       console.warn(`Acessibilidade [a11y]: Botão de ícone renderizado sem 'aria-label' descritivo. \nClasse: ${className}`);
     }
 

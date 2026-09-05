@@ -308,6 +308,8 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
         hasOnline={hasOnline}
         pdfCached={pdfCached}
         downloadProgress={downloadingPdf}
+        livroTitulo={currentLivro?.titulo}
+        livroAutor={currentLivro?.autor}
       />
 
       {/* Leitores em fullscreen */}

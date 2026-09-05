@@ -553,6 +553,7 @@ export function useArtigoNarracao({
     narracaoTotalTimeRef,
     narracaoTimingsRef,
     narracaoAdoptedRef,
+    narracaoActiveIdxRef,
 
     // Actions
     setNarracaoUrl,

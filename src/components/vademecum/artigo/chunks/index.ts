@@ -6,3 +6,6 @@ export { ArtigoActionMenuSheet } from './ArtigoActionMenuSheet';
 export { ArtigoPraticarModal } from './ArtigoPraticarModal';
 export { ArtigoTermosSheet } from './ArtigoTermosSheet';
 export { ArtigoOverlays } from './ArtigoOverlays';
+export { GrifoCommentPrompt } from './GrifoCommentPrompt';
+export { NarracaoProgressBar } from './NarracaoProgressBar';
+export { ArtigoLineRenderer } from './ArtigoLineRenderer';

@@ -14,38 +14,11 @@ interface Props {
  * e elementos jurídicos flutuantes com brilho suave nas áreas de fundo.
  */
 export default function CoverAnimatedOverlay({ className = '', leafCount = 6 }: Props) {
-  // Gerar posições determinísticas para as folhas caindo
-  const leaves = useMemo(() => {
-    return Array.from({ length: leafCount }).map((_, i) => ({
-      id: i,
-      left: `${(i * 15 + 7) % 90}%`,
-      size: 14 + (i % 3) * 6, // 14px to 26px
-      duration: 7 + (i % 4) * 2.5, // 7s to 14.5s
-      delay: (i * 1.3) % 5,
-      rotate: (i * 45) % 360,
-    }));
-  }, [leafCount]);
-
+  // O loop de folhas foi removido a pedido.
   return (
     <div className={`pointer-events-none absolute inset-0 overflow-hidden z-10 ${className}`}>
       {/* Estilos CSS Inline de Animação para leveza e performance 0ms */}
       <style>{`
-        @keyframes coverLeafFall {
-          0% {
-            transform: translateY(-20px) rotate(0deg) translateX(0px);
-            opacity: 0;
-          }
-          15% {
-            opacity: 0.85;
-          }
-          85% {
-            opacity: 0.85;
-          }
-          100% {
-            transform: translateY(220px) rotate(360deg) translateX(15px);
-            opacity: 0;
-          }
-        }
         @keyframes coverFloatRight {
           0%, 100% {
             transform: translateY(0px) rotate(-3deg) scale(1);
@@ -60,25 +33,7 @@ export default function CoverAnimatedOverlay({ className = '', leafCount = 6 }: 
         }
       `}</style>
 
-      {/* 🍃 Folhas de Louro caindo do topo (passam por toda a capa) */}
-      {leaves.map((leaf) => (
-        <img
-          key={leaf.id}
-          src={laurelLeaf}
-          alt=""
-          aria-hidden="true"
-          className="absolute top-0 select-none drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)]"
-          style={{
-            left: leaf.left,
-            width: `${leaf.size}px`,
-            height: 'auto',
-            animation: `coverLeafFall ${leaf.duration}s linear infinite`,
-            animationDelay: `${leaf.delay}s`,
-            opacity: 0,
-          }}
-        />
-      ))}
-
+      {/* As Folhas de Louro caindo foram removidas. */}
       {/* ⚖️ Elementos Jurídicos Flutuantes no Canto Superior Direito (Área de fundo/laranja) */}
       <div 
         className="absolute top-2 right-3 flex items-center gap-1.5 opacity-80"

@@ -1,6 +1,5 @@
-import { Suspense } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
-import ShapeGrid from '@/components/ui/ShapeGrid';
 import { useIsDesktop } from '@/hooks/use-desktop';
 import { useTrackArea } from "@/hooks/useTrackArea";
 import { useBibliotecasData } from '@/components/biblioteca/useBibliotecasData';
@@ -8,10 +7,17 @@ import { BibliotecaMobileContent } from '@/components/biblioteca/BibliotecaMobil
 import { BibliotecaModals } from '@/components/biblioteca/BibliotecaModals';
 
 const BibliotecasDesktop = lazyWithRetry(() => import('./BibliotecasDesktop'));
+const ShapeGrid = lazyWithRetry(() => import('@/components/ui/ShapeGrid'));
 
 const Bibliotecas = () => {
   useTrackArea("biblioteca_aberta");
   const isDesktop = useIsDesktop();
+  // Adia o ShapeGrid para não competir com o primeiro paint da tela
+  const [gridReady, setGridReady] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setGridReady(true), 300);
+    return () => clearTimeout(t);
+  }, []);
   const {
     counts,
     materiaAberta,
@@ -35,18 +41,22 @@ const Bibliotecas = () => {
 
   return (
     <main className="min-h-dvh bg-zinc-950 pb-20 relative overflow-hidden">
-      {/* Fundo ShapeGrid */}
-      <div className="absolute inset-0 z-0">
-        <ShapeGrid
-          speed={0.5}
-          squareSize={40}
-          direction="diagonal"
-          borderColor="rgba(255, 255, 255, 0.05)"
-          hoverFillColor="rgba(255, 255, 255, 0.1)"
-          shape="square"
-          hoverTrailAmount={5}
-        />
-      </div>
+      {/* Fundo ShapeGrid — adiado para não bloquear a montagem */}
+      {gridReady && (
+        <div className="absolute inset-0 z-0">
+          <Suspense fallback={null}>
+            <ShapeGrid
+              speed={0.5}
+              squareSize={40}
+              direction="diagonal"
+              borderColor="rgba(255, 255, 255, 0.05)"
+              hoverFillColor="rgba(255, 255, 255, 0.1)"
+              shape="square"
+              hoverTrailAmount={5}
+            />
+          </Suspense>
+        </div>
+      )}
 
       <div className="relative z-10">
         <BibliotecaMobileContent

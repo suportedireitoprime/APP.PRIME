@@ -25,23 +25,38 @@ export function useBibliotecasData() {
   const [livroAberto, setLivroAberto] = useState<LivroNormalizado | null>(null);
   const [customPdfUrl, setCustomPdfUrl] = useState<string | null>(null);
   const [customPdfTitle, setCustomPdfTitle] = useState<string>('');
-  const [counts, setCounts] = useState<Record<string, number>>({});
-
-  useEffect(() => {
-    const fetchCounts = async () => {
-      const newCounts = { ...counts };
-      await Promise.all(
-        COLECOES.map(async (c) => {
-          if (!newCounts[c.id]) {
-            const { count } = await supabase.from(c.table).select('id', { count: 'exact', head: true });
-            newCounts[c.id] = count || 0;
-          }
-        }),
-      );
-      setCounts(newCounts);
-    };
-    fetchCounts();
-  }, []);
+  // Counts derivados do cache do React Query ou rede — nunca bloqueia render.
+  const { data: counts = {} } = useQuery({
+    queryKey: ['biblioteca-counts'],
+    staleTime: 60 * 60 * 1000, // 1h — quase nunca muda
+    gcTime: 24 * 60 * 60 * 1000,
+    placeholderData: (prev: Record<string, number> | undefined) => prev ?? {},
+    queryFn: async (): Promise<Record<string, number>> => {
+      const result: Record<string, number> = {};
+      // Tenta derivar dos dados já cacheados pelo warmup
+      for (const c of COLECOES) {
+        const cached = queryClient.getQueryData<LivroNormalizado[]>(['biblioteca-colecao', c.id]);
+        if (cached?.length) {
+          result[c.id] = cached.length;
+        }
+      }
+      // Só busca contagem via rede para coleções sem cache
+      const missing = COLECOES.filter((c) => !result[c.id]);
+      if (missing.length > 0) {
+        await Promise.all(
+          missing.map(async (c) => {
+            try {
+              const { count } = await supabase.from(c.table).select('id', { count: 'exact', head: true });
+              result[c.id] = count || 0;
+            } catch {
+              result[c.id] = 0;
+            }
+          }),
+        );
+      }
+      return result;
+    },
+  });
 
   const location = useLocation();
 
