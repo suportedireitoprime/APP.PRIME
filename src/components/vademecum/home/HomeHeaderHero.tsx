@@ -5,7 +5,6 @@ import {pickAsset, assetUrl, srcOf } from '@/lib/assetUrl';
 import { Menu as MenuIcon, Search, Scale, BookOpen, Clock, Eye, Quote, Lightbulb, ScrollText, History, ChevronLeft, User as UserIcon, Mic, Radar, MapPin, Monitor, Library, Bell, GraduationCap, Target, CloudOff, ListChecks, Camera } from 'lucide-react';
 import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
 import { VintageClockIcon } from '@/components/icons/VintageClockIcon';
-import ShapeGrid from '@/components/ui/ShapeGrid';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfileSummary } from '@/hooks/useProfileSummary';
@@ -67,7 +66,6 @@ import NotificationsSheet, { useUnreadNotifCount } from '@/components/vademecum/
 import { pushRecente } from '@/lib/leisRecentes';
 import { useShortcutBadges } from '@/hooks/useShortcutBadges';
 import { prefetchHeroRoutesIdle, prefetchRoute, type PrefetchKey } from '@/lib/routePrefetch';
-import scales from '@/assets/landing-tribunal/scales.png';
 import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
 import HeroCoverCarousel from '@/components/vademecum/home/HeroCoverCarousel';
 
@@ -167,70 +165,24 @@ const HomeHeaderHero = ({ onSearchOpenChange }: { onSearchOpenChange?: (open: bo
 
   return (
     <>
-      {/* Unified yellow shell — hero cover as full background; gray profile card floats inset with side margins */}
+      {/* Painel Hero idêntico ao Vade Mecum: sólido, opaco e sem cintilação */}
       <div
-        className="relative overflow-hidden rounded-b-[36px] border-b border-white/10 shadow-2xl shadow-black/60 pt-[var(--sai-top)]"
+        className="relative overflow-hidden rounded-b-[36px] border-b border-white/10 shadow-2xl shadow-black/60 pt-[var(--sai-top)] flex flex-col z-20"
         style={{
           transform: 'translateZ(0)',
           isolation: 'isolate',
           contain: 'paint',
-          WebkitMaskImage: '-webkit-radial-gradient(white, black)',
-          maskImage: 'radial-gradient(white, black)'
         }}
       >
         <div className="absolute inset-0 bg-hero-panel -z-10" />
-        
-        {/* ShapeGrid Padronizado (Fundo de Pílulas) */}
-        <div className="absolute inset-0 z-[-9] opacity-40 mix-blend-overlay overflow-hidden rounded-b-[36px]" style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}>
-          <ShapeGrid 
-            className="rounded-b-[36px]"
-            speed={0.5} 
-            squareSize={40}
-            direction='diagonal'
-            borderColor='rgba(255, 255, 255, 0.2)'
-            hoverFillColor='rgba(255, 255, 255, 0.1)'
-            shape='square'
-            hoverTrailAmount={5}
-          />
-        </div>
 
-        {/* Overlays radiais idênticos ao painel do DIREITO PRIME */}
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,180,180,0.22),transparent_60%)] z-[-8]" />
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.5),transparent_65%)] z-[-8]" />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent z-[-8]" />
+        {/* Overlays radiais idênticos ao painel do Vade Mecum */}
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,180,180,0.22),transparent_60%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.5),transparent_65%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
 
         {/* Decorative legal motifs isolados */}
         <HeroMotifs />
-        {/* Balanças flutuantes de forma elegante */}
-        <div className="pointer-events-none absolute inset-0 overflow-hidden z-[2]">
-          <img
-            src={scales}
-            alt=""
-            aria-hidden="true"
-            className="absolute right-[8%] top-[18%] w-10 md:w-14 lp-float"
-            style={{
-              animationDirection: 'reverse',
-              animationDuration: '7s',
-              opacity: 0.6,
-              filter: 'drop-shadow(0 0 12px hsl(var(--primary) / 0.4))',
-            }}
-          />
-          <img
-            src={scales}
-            alt=""
-            aria-hidden="true"
-            className="absolute bottom-[20%] left-[10%] w-8 md:w-12 lp-float"
-            style={{
-              animationDelay: '1.5s',
-              animationDuration: '6.5s',
-              opacity: 0.4,
-            }}
-          />
-        </div>
-
-        {/* Reflexo horizontal passando sobre os ícones esmaecidos */}
-        
-
 
         {/* Cover art — isolado */}
         <HeroCoverCarousel covers={HERO_COVERS} />
