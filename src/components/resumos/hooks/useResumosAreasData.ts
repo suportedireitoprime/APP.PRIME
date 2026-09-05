@@ -5,8 +5,21 @@ import { normalizeAreaText, type AreaRow } from "../resumosStyles";
 let areasThemesCache: AreaRow[] | null = null;
 
 export function useResumosAreasData() {
-  const [rows, setRows] = useState<AreaRow[]>(() => areasThemesCache || []);
-  const [loading, setLoading] = useState(!areasThemesCache);
+  const [rows, setRows] = useState<AreaRow[]>(() => {
+    if (areasThemesCache && areasThemesCache.length > 0) return areasThemesCache;
+    try {
+      const stored = localStorage.getItem("resumos_areas_temas_cache");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].temas) {
+          areasThemesCache = parsed;
+          return parsed;
+        }
+      }
+    } catch {}
+    return [];
+  });
+  const [loading, setLoading] = useState(() => !areasThemesCache || areasThemesCache.length === 0);
   const [q, setQ] = useState("");
   const [activeTab, setActiveTab] = useState("Todos");
 

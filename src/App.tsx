@@ -73,6 +73,7 @@ const InAppPushPopup = lazy(() => import("@/components/ui/InAppPushPopup"));
 const HorusTakeoverNoticeDialog = lazy(() => import("@/components/horus/HorusTakeoverNoticeDialog"));
 const ForceUpdateScreen = lazy(() => import("@/components/ForceUpdateScreen"));
 import { useAppUpdateStore } from "@/lib/appUpdateStore";
+import { scheduleAppWarmup } from "@/services/appWarmupService";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -142,6 +143,14 @@ function AppBootSplash() {
   );
 }
 
+function AppWarmupInitializer() {
+  const qc = useQueryClient();
+  useEffect(() => {
+    scheduleAppWarmup(qc);
+  }, [qc]);
+  return null;
+}
+
 const LazyMediaPlayers = () => (
   <>
     <GlobalLeisCantadasMiniPlayer />
@@ -202,6 +211,7 @@ const App = () => (
 
                           <OfflineStatusBadge />
                           <OfflineWatcher />
+                          <AppWarmupInitializer />
                           
                           <Suspense fallback={null}>
                             <GeofencePresenceBanner />

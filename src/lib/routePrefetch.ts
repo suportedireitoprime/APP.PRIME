@@ -62,12 +62,21 @@ export const routePrefetch = {
   pilulas: () => import("@/pages/pilulas/PilulasHome"),
   pilulasLista: () => import("@/pages/pilulas/PilulasLista"),
   vademecum: () => import("@/pages/CategoriaLegislacao.tsx"),
+  vadeMecum: () => import("@/pages/VadeMecum.tsx"),
+  vadeMecumCodigos: () => import("@/pages/VadeMecumCodigos.tsx"),
+  vadeMecumSumulas: () => import("@/pages/VadeMecumSumulas.tsx"),
+  vadeMecumFavoritos: () => import("@/pages/VadeMecumFavoritos.tsx"),
+  vadeMecumRecentes: () => import("@/pages/VadeMecumRecentes.tsx"),
   meExplique: () => import("@/pages/MeExplique.tsx"),
 } as const;
 
 export type PrefetchKey = keyof typeof routePrefetch;
 
 const MAIN_TAB_KEYS: PrefetchKey[] = [
+  'vadeMecum',
+  'biblioteca',
+  'resumosJuridicos',
+  'videoaulas',
   'vademecum',
   'pilulas',
   'ferramentas',

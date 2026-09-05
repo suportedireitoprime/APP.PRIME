@@ -175,11 +175,11 @@ const PraticarSessao = lazy(() => import("./pages/PraticarSessao.tsx"));
 const Estudar = lazy(routePrefetch.estudos);
 const EstudosHub = lazy(() => import("./pages/EstudosHub.tsx"));
 const Aprender = lazy(routePrefetch.aprender);
-const VadeMecum = lazy(() => import("./pages/VadeMecum.tsx"));
-const VadeMecumCodigos = lazy(() => import("./pages/VadeMecumCodigos.tsx"));
-const VadeMecumSumulas = lazy(() => import("./pages/VadeMecumSumulas.tsx"));
-const VadeMecumFavoritos = lazy(() => import("./pages/VadeMecumFavoritos.tsx"));
-const VadeMecumRecentes = lazy(() => import("./pages/VadeMecumRecentes.tsx"));
+const VadeMecum = lazy(routePrefetch.vadeMecum);
+const VadeMecumCodigos = lazy(routePrefetch.vadeMecumCodigos);
+const VadeMecumSumulas = lazy(routePrefetch.vadeMecumSumulas);
+const VadeMecumFavoritos = lazy(routePrefetch.vadeMecumFavoritos);
+const VadeMecumRecentes = lazy(routePrefetch.vadeMecumRecentes);
 
 const ArtigoEducacional = lazy(() => import("./pages/ArtigoEducacional.tsx"));
 const ForcaPage = lazy(() => import("./pages/gamificacao/Forca.tsx"));

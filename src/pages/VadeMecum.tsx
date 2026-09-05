@@ -1,31 +1,26 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import VadeMecumHero from '@/components/vademecum/home/VadeMecumHero';
-import BuscaLeisOverlay, { type LeiSelecionada } from '@/components/vademecum/overlays/BuscaLeisOverlay';
 import MobileHomeSections from '@/components/vademecum/home/MobileHomeSections';
 import VadeMecumBottomNav from '@/components/vademecum/navigation/VadeMecumBottomNav';
 import VadeMecumFavoritos from './VadeMecumFavoritos';
-import VadeMecumTutorialOverlay from '@/components/vademecum/overlays/VadeMecumTutorialOverlay';
 import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
 import { pushRecente } from '@/lib/leisRecentes';
 import { useIsDesktop } from '@/hooks/use-desktop';
 import DesktopSidebar from '@/components/vademecum/desktop/DesktopSidebar';
-import { Scale, BookOpen, Gavel, Library, MessageSquare, BookOpenText, GraduationCap } from 'lucide-react';
+import VadeMecumDesktopTabs from '@/components/vademecum/desktop/VadeMecumDesktopTabs';
 import ShapeGrid from '@/components/ui/ShapeGrid';
+import { lazyWithRetry } from '@/utils/lazyWithRetry';
+import type { LeiSelecionada } from '@/components/vademecum/overlays/BuscaLeisOverlay';
 
-const DESKTOP_TABS: { id: string; label: string; icon: any }[] = [
-  { id: 'legislacao', label: 'Legislação', icon: Scale },
-  { id: 'biblioteca', label: 'Biblioteca', icon: Library },
-  { id: 'ferramentas', label: 'Ferramentas', icon: Gavel },
-  { id: 'aprender', label: 'Aprender', icon: GraduationCap },
-  { id: 'chat', label: 'Chat', icon: MessageSquare },
-  { id: 'vademecum', label: 'Vade Mecum', icon: BookOpenText },
-];
+// Chunks sob demanda para overlays não bloquearem a renderização inicial
+const BuscaLeisOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/BuscaLeisOverlay'));
+const VadeMecumTutorialOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/VadeMecumTutorialOverlay'));
 
 /**
- * Hub do Vade Mecum — mesmo painel do início do app, em verde,
- * com brasão da República e busca restrita a leis.
+ * Hub do Vade Mecum — painel de legislação completa em verde,
+ * com brasão da República, carrossel de capas, ações rápidas e busca de leis.
  */
 const VadeMecum = () => {
   const navigate = useNavigate();
@@ -113,10 +108,10 @@ const VadeMecum = () => {
           <ShapeGrid 
             speed={0.5} 
             squareSize={40}
-            direction='diagonal'
-            borderColor='rgba(255, 255, 255, 0.05)'
-            hoverFillColor='rgba(255, 255, 255, 0.1)'
-            shape='square'
+            direction="diagonal"
+            borderColor="rgba(255, 255, 255, 0.05)"
+            hoverFillColor="rgba(255, 255, 255, 0.1)"
+            shape="square"
             hoverTrailAmount={5}
           />
         </div>
@@ -137,40 +132,7 @@ const VadeMecum = () => {
             }} 
           />
           <div className="flex-1 min-w-0 overflow-y-auto">
-            <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-md border-b border-border">
-              <div className="flex items-center gap-1 px-8 h-12">
-                {DESKTOP_TABS.map((tab) => {
-                  const Icon = tab.icon;
-                  const isActive = tab.id === 'vademecum';
-                  return (
-                    <button
-                      key={tab.id}
-                      onClick={() => {
-                        const routes: Record<string, string> = {
-                          legislacao: '/',
-                          noticias: '/noticias',
-                          ferramentas: '/ferramentas',
-                          biblioteca: '/bibliotecas',
-                          aprender: '/aprender',
-                          chat: '/assistente-horus',
-                          vademecum: '/vade-mecum',
-                        };
-                        if (routes[tab.id]) navigate(routes[tab.id]);
-                      }}
-                      className={`relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-body font-medium transition-colors ${
-                        isActive
-                          ? 'text-primary bg-primary/10'
-                          : 'text-foreground/60 hover:text-foreground hover:bg-secondary/60'
-                      }`}
-                    >
-                      <Icon className="w-4 h-4" />
-                      <span>{tab.label}</span>
-                      {isActive && <div className="absolute bottom-0 left-3 right-3 h-0.5 bg-primary rounded-full" />}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+            <VadeMecumDesktopTabs activeTabId="vademecum" />
             
             <div className="px-8 py-6 2xl:px-14">
               {renderContent()}
@@ -178,9 +140,17 @@ const VadeMecum = () => {
           </div>
         </div>
         
-        <BuscaLeisOverlay open={buscaOpen} onClose={() => setBuscaOpen(false)} onSelectLei={abrirLei} />
+        {buscaOpen && (
+          <Suspense fallback={null}>
+            <BuscaLeisOverlay open={buscaOpen} onClose={() => setBuscaOpen(false)} onSelectLei={abrirLei} />
+          </Suspense>
+        )}
         <AnimatePresence>
-          {tutorialOpen && <VadeMecumTutorialOverlay onClose={fecharTutorial} />}
+          {tutorialOpen && (
+            <Suspense fallback={null}>
+              <VadeMecumTutorialOverlay onClose={fecharTutorial} />
+            </Suspense>
+          )}
         </AnimatePresence>
       </div>
     );
@@ -192,20 +162,28 @@ const VadeMecum = () => {
         <ShapeGrid 
           speed={0.5} 
           squareSize={40}
-          direction='diagonal'
-          borderColor='rgba(255, 255, 255, 0.05)'
-          hoverFillColor='rgba(255, 255, 255, 0.1)'
-          shape='square'
+          direction="diagonal"
+          borderColor="rgba(255, 255, 255, 0.05)"
+          hoverFillColor="rgba(255, 255, 255, 0.1)"
+          shape="square"
           hoverTrailAmount={5}
         />
       </div>
       <div className="relative z-10">
         {renderContent()}
-        <BuscaLeisOverlay open={buscaOpen} onClose={() => setBuscaOpen(false)} onSelectLei={abrirLei} />
+        {buscaOpen && (
+          <Suspense fallback={null}>
+            <BuscaLeisOverlay open={buscaOpen} onClose={() => setBuscaOpen(false)} onSelectLei={abrirLei} />
+          </Suspense>
+        )}
         <VadeMecumBottomNav hidden={buscaOpen} />
 
         <AnimatePresence>
-          {tutorialOpen && <VadeMecumTutorialOverlay onClose={fecharTutorial} />}
+          {tutorialOpen && (
+            <Suspense fallback={null}>
+              <VadeMecumTutorialOverlay onClose={fecharTutorial} />
+            </Suspense>
+          )}
         </AnimatePresence>
       </div>
     </div>
