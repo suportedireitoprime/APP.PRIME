@@ -11,12 +11,10 @@ import { useIsDesktop } from '@/hooks/use-desktop';
 import DesktopSidebar from '@/components/vademecum/desktop/DesktopSidebar';
 import VadeMecumDesktopTabs from '@/components/vademecum/desktop/VadeMecumDesktopTabs';
 import { lazyWithRetry } from '@/utils/lazyWithRetry';
-import type { LeiSelecionada } from '@/components/vademecum/overlays/BuscaLeisOverlay';
-
 const ShapeGrid = lazyWithRetry(() => import('@/components/ui/ShapeGrid'));
 
 // Chunks sob demanda para overlays não bloquearem a renderização inicial
-const BuscaLeisOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/BuscaLeisOverlay'));
+const SearchOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/SearchOverlay'));
 const VadeMecumTutorialOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/VadeMecumTutorialOverlay'));
 
 /**
@@ -48,10 +46,12 @@ const VadeMecum = () => {
     setTutorialOpen(false);
   };
 
-  const abrirLei = (lei: LeiSelecionada) => {
+  const abrirLei = (lei: { tipo: string; leiId: string; nome: string; descricao: string; tabela_nome: string; artigoNumero?: string }) => {
     setBuscaOpen(false);
-    pushRecente(lei);
-    navigate(`/legislacao/${tipoToSlug(lei.tipo)}/${leiToSlug({ id: lei.leiId, nome: lei.nome })}`);
+    pushRecente({ tipo: lei.tipo, leiId: lei.leiId, nome: lei.nome, descricao: lei.descricao, tabela_nome: lei.tabela_nome });
+    const slug = leiToSlug({ id: lei.leiId, nome: lei.nome });
+    const base = `/legislacao/${tipoToSlug(lei.tipo)}/${slug}`;
+    navigate(lei.artigoNumero ? `${base}/${encodeURIComponent(lei.artigoNumero)}` : base);
   };
 
   const getActiveTab = () => {
@@ -153,7 +153,7 @@ const VadeMecum = () => {
         
         {buscaOpen && (
           <Suspense fallback={null}>
-            <BuscaLeisOverlay open={buscaOpen} onClose={() => setBuscaOpen(false)} onSelectLei={abrirLei} />
+            <SearchOverlay open={buscaOpen} onClose={() => setBuscaOpen(false)} onSelectLei={abrirLei} />
           </Suspense>
         )}
         <AnimatePresence>
@@ -188,7 +188,7 @@ const VadeMecum = () => {
         {renderContent()}
         {buscaOpen && (
           <Suspense fallback={null}>
-            <BuscaLeisOverlay open={buscaOpen} onClose={() => setBuscaOpen(false)} onSelectLei={abrirLei} />
+            <SearchOverlay open={buscaOpen} onClose={() => setBuscaOpen(false)} onSelectLei={abrirLei} />
           </Suspense>
         )}
         <VadeMecumBottomNav hidden={buscaOpen} />
