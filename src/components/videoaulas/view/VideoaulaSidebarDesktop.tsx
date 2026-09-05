@@ -2,7 +2,8 @@ import React from 'react';
 import { Play } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { haptic } from '@/lib/nativeHaptics';
-import { limparTitulo, ytThumb } from '@/lib/videoaulasCatalogos';
+import { getCatalogo, limparTitulo, ytThumb } from '@/lib/videoaulasCatalogos';
+import { prefetchVideoaulaDetail, preaquecerImagem } from '@/lib/videoaulaPrefetch';
 import { cn } from '@/lib/utils';
 import { Aula } from '@/types/videoaula';
 
@@ -17,9 +18,17 @@ export const VideoaulaSidebarDesktop = React.memo(function VideoaulaSidebarDeskt
   aulasDaArea,
   videoId,
   catalogoId,
-  areaSlug
+  areaSlug,
 }: VideoaulaSidebarDesktopProps) {
   const navigate = useNavigate();
+  const catalogo = getCatalogo(catalogoId);
+
+  const handleWarmup = (targetVideoId: string, thumbUrl?: string | null) => {
+    if (thumbUrl) preaquecerImagem(thumbUrl);
+    if (catalogo && targetVideoId) {
+      void prefetchVideoaulaDetail(catalogo.tabela, targetVideoId, catalogo, null);
+    }
+  };
 
   return (
     <aside className="hidden lg:block space-y-3 bg-card/40 border border-border/60 rounded-2xl p-4 shadow-sm max-h-[85vh] overflow-y-auto">
@@ -33,9 +42,12 @@ export const VideoaulaSidebarDesktop = React.memo(function VideoaulaSidebarDeskt
         {aulasDaArea.map((item) => {
           const eAtivo = item.video_id === videoId;
           const tLimpo = limparTitulo(item.titulo);
+          const thumbUrl = item.thumb ?? item.thumbnail ?? ytThumb(item.video_id, 'mq');
           return (
             <button
               key={item.id}
+              onMouseEnter={() => handleWarmup(item.video_id, thumbUrl)}
+              onPointerDown={() => handleWarmup(item.video_id, thumbUrl)}
               onClick={() => {
                 haptic.selection();
                 navigate(`/videoaulas/${catalogoId}/${areaSlug ?? 'todas'}/${item.video_id}`);
@@ -49,7 +61,7 @@ export const VideoaulaSidebarDesktop = React.memo(function VideoaulaSidebarDeskt
             >
               <div className="relative w-16 h-10 shrink-0 rounded-lg overflow-hidden bg-black/60 border border-white/10">
                 <img
-                  src={item.thumb ?? item.thumbnail ?? ytThumb(item.video_id, 'mq')}
+                  src={thumbUrl}
                   alt=""
                   loading="eager"
                   decoding="async"
@@ -63,7 +75,12 @@ export const VideoaulaSidebarDesktop = React.memo(function VideoaulaSidebarDeskt
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <p className={cn('text-xs font-medium line-clamp-2 leading-tight', eAtivo ? 'text-primary font-bold' : 'text-foreground group-hover:text-primary')}>
+                <p
+                  className={cn(
+                    'text-xs font-medium line-clamp-2 leading-tight',
+                    eAtivo ? 'text-primary font-bold' : 'text-foreground group-hover:text-primary',
+                  )}
+                >
                   {tLimpo}
                 </p>
               </div>

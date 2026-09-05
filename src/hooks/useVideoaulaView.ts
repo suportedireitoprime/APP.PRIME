@@ -1,7 +1,12 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { getCatalogo } from '@/lib/videoaulasCatalogos';
-import { getCachedAula, invalidarFavoritos } from '@/lib/videoaulasStore';
+import { getCachedAula } from '@/lib/videoaulasStore';
+import {
+  getCachedVideoaulaBundle,
+  setCachedVideoaulaBundle,
+  prefetchProximasAulas,
+} from '@/lib/videoaulaPrefetch';
 import { preaquecerYoutubeApi } from '@/hooks/useYoutubePlayer';
 import { toast } from 'sonner';
 import { Aula } from '@/types/videoaula';
@@ -15,23 +20,37 @@ interface UseVideoaulaViewProps {
 
 export function useVideoaulaView({ catalogoId, videoId, userId, setTocandoState }: UseVideoaulaViewProps) {
   const catalogo = getCatalogo(catalogoId);
+
+  const cachedBundle = catalogo && videoId ? getCachedVideoaulaBundle(catalogo.tabela, videoId) : undefined;
   
   const [aula, setAula] = useState<Aula | null>(() =>
-    catalogo && videoId ? (getCachedAula(catalogo.id, videoId) as Aula | null) : null,
+    cachedBundle?.aula ?? (catalogo && videoId ? (getCachedAula(catalogo.id, videoId) as Aula | null) : null),
   );
   const [aulasDaArea, setAulasDaArea] = useState<Aula[]>([]);
-  const [favorito, setFavorito] = useState(false);
-  const [concluida, setConcluida] = useState(false);
-  const [carregado, setCarregado] = useState(false);
+  const [favorito, setFavorito] = useState(() => cachedBundle?.favorito ?? false);
+  const [concluida, setConcluida] = useState(() => cachedBundle?.progresso?.concluida ?? false);
+  const [carregado, setCarregado] = useState(() => !!cachedBundle?.aula);
   
-  const [inicio, setInicio] = useState(0);
+  const [inicio, setInicio] = useState(() => cachedBundle?.progresso?.tempo_atual ?? 0);
   const [showResumePrompt, setShowResumePrompt] = useState<{ show: boolean; tempo: number }>({ show: false, tempo: 0 });
 
   useEffect(() => {
     if (!catalogo || !videoId) return;
     let alive = true;
-    
-    setAula(getCachedAula(catalogo.id, videoId) as Aula | null);
+
+    const bundle = getCachedVideoaulaBundle(catalogo.tabela, videoId);
+    if (bundle?.aula) {
+      setAula(bundle.aula);
+      setFavorito(!!bundle.favorito);
+      if (bundle.progresso) {
+        setConcluida(!!bundle.progresso.concluida);
+        setInicio(bundle.progresso.tempo_atual || 0);
+      }
+      setCarregado(true);
+    } else {
+      setAula(getCachedAula(catalogo.id, videoId) as Aula | null);
+    }
+
     setShowResumePrompt({ show: false, tempo: 0 });
     preaquecerYoutubeApi();
 
@@ -70,7 +89,19 @@ export function useVideoaulaView({ catalogoId, videoId, userId, setTocandoState 
         if (!alive) return;
         
         const aulaData = aulaRes.data as Aula | null;
-        if (aulaData) setAula(aulaData);
+        if (aulaData) {
+          setAula(aulaData);
+          setCachedVideoaulaBundle(catalogo.tabela, videoId, {
+            aula: aulaData,
+            progresso: progRes?.data
+              ? {
+                  tempo_atual: Number(progRes.data.tempo_atual) || 0,
+                  concluida: !!progRes.data.concluida,
+                }
+              : null,
+            favorito: !!favRes?.data,
+          });
+        }
         setCarregado(true);
         
         const prog = progRes?.data;
@@ -96,7 +127,10 @@ export function useVideoaulaView({ catalogoId, videoId, userId, setTocandoState 
         if (areaRes.error) throw areaRes.error;
         
         if (alive && areaRes.data) {
-          setAulasDaArea(areaRes.data as Aula[]);
+          const listaArea = areaRes.data as Aula[];
+          setAulasDaArea(listaArea);
+          // Pré-carrega metadados e capas das próximas aulas da trilha
+          prefetchProximasAulas(listaArea, videoId, catalogo, userId, 3);
         }
       } catch (error) {
         console.error("Erro ao carregar dados da aula:", error);
@@ -110,6 +144,12 @@ export function useVideoaulaView({ catalogoId, videoId, userId, setTocandoState 
       alive = false;
     };
   }, [catalogo, videoId, userId, setTocandoState]);
+
+  // Sempre que a lista de aulas da área estiver disponível, garante o prefetch das próximas
+  useEffect(() => {
+    if (!aulasDaArea.length || !videoId || !catalogo) return;
+    prefetchProximasAulas(aulasDaArea, videoId, catalogo, userId, 2);
+  }, [aulasDaArea, videoId, catalogo, userId]);
 
   return {
     catalogo,
