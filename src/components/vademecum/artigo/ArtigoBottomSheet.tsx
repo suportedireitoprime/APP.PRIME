@@ -7,9 +7,9 @@ const LembretesArtigoSheet = lazyWithRetry(() => import('@/components/vademecum/
 const QuizView = lazyWithRetry(() => import('@/components/estudar/QuizView'));
 const JurisprudenciaArtigoView = lazyWithRetry(() => import('@/pages/JurisprudenciaArtigo'));
 const BaixarArtigoSheet = lazyWithRetry(() => import('@/components/vademecum/sheets/BaixarArtigoSheet'));
-// Sheets/overlays pesados são carregados sob demanda: o chunk só desce
-// quando o usuário abre o painel. Reduz o bundle inicial que o
-// ArtigoBottomSheet arrasta para toda navegação do app.
+// Sheets/overlays pesados sÃ£o carregados sob demanda: o chunk sÃ³ desce
+// quando o usuÃ¡rio abre o painel. Reduz o bundle inicial que o
+// ArtigoBottomSheet arrasta para toda navegaÃ§Ã£o do app.
 const GrifoFotoSheet = lazyWithRetry(() => import('@/components/vademecum/sheets/GrifoFotoSheet'));
 const AnotacoesSheet = lazyWithRetry(() => import('@/components/vademecum/sheets/AnotacoesSheet'));
 import ArtigoSidePanel from '@/components/vademecum/artigo/ArtigoSidePanel';
@@ -59,7 +59,6 @@ import { pickAsset, srcOf } from '@/lib/assetUrl';
 
 const horusOwl = pickAsset(horusOwlBundled, srcOf(horusOwlAsset));
 
-import { setupMediaSession, clearMediaSession } from '@/lib/mediaSession';
 import GrifoMagicoLoader from '@/components/vademecum/grifos_ocr/GrifoMagicoLoader';
 import {
   prefetchArtigoFuncoesChunks,
@@ -70,15 +69,14 @@ import {
   loadTermosExistentes,
   termosKey,
 } from '@/lib/artigoFuncoesPrefetch';
-import { useNarracaoFlutuante } from '@/stores/useNarracaoFlutuante';
-import { useLocation } from 'react-router-dom';
-import { speakNative, stopNativeSpeech } from '@/lib/nativeTts';
+import { stopNativeSpeech } from '@/lib/nativeTts';
 
 import { LEIS_SUPABASE_URL, LEIS_SUPABASE_ANON_KEY, LEIS_SUPABASE_PROJECT_ID } from "@/lib/legislacaoBackend";
 import { copiarTexto } from '@/lib/nativo/copiar';
 const SB_URL = LEIS_SUPABASE_URL;
 const SB_KEY = LEIS_SUPABASE_ANON_KEY;
 const SB_PROJECT_ID = LEIS_SUPABASE_PROJECT_ID;
+import { useArtigoNarracao, RING_CIRCUMFERENCE } from './useArtigoNarracao';
 
 import {
   type ModificationInfo,
@@ -109,75 +107,8 @@ import {
   formatNarracaoTime,
 } from './artigoTextUtils';
 
-async function saveGeneratedAudioToSupabase(
-  tabelaNome: string,
-  artigoNumero: string,
-  leiNome: string,
-  tituloArtigo: string | null,
-  audioUrlOrData: string,
-  wordTimings: any[] | null
-): Promise<string> {
-  let finalAudioUrl = audioUrlOrData;
-  try {
-    if (audioUrlOrData.startsWith('data:audio/')) {
-      const base64Data = audioUrlOrData.split(',')[1];
-      if (base64Data) {
-        const binaryStr = atob(base64Data);
-        const bytes = new Uint8Array(binaryStr.length);
-        for (let i = 0; i < binaryStr.length; i++) {
-          bytes[i] = binaryStr.charCodeAt(i);
-        }
-        const blob = new Blob([bytes], { type: 'audio/wav' });
-        const safeNum = String(artigoNumero).replace(/[^a-zA-Z0-9]/g, '_');
-        const filePath = `narracoes/${tabelaNome}/${safeNum}.wav`;
-
-        const { error: uploadErr } = await supabase.storage
-          .from('audios')
-          .upload(filePath, blob, { contentType: 'audio/wav', upsert: true });
-
-        if (!uploadErr) {
-          const { data: signed } = await supabase.storage
-            .from('audios')
-            .createSignedUrl(filePath, 60 * 60 * 24 * 365 * 5);
-          if (signed?.signedUrl) {
-            finalAudioUrl = signed.signedUrl;
-          }
-        } else {
-          console.warn('[ArtigoBottomSheet] Upload de áudio para Supabase falhou:', uploadErr);
-        }
-      }
-    }
-
-    const { error: dbErr } = await supabase
-      .from('narracoes_artigos')
-      .upsert(
-        {
-          tabela_nome: tabelaNome,
-          artigo_numero: artigoNumero,
-          lei_nome: leiNome,
-          titulo_artigo: tituloArtigo,
-          audio_url: finalAudioUrl,
-          word_timings: wordTimings || null,
-        },
-        { onConflict: 'tabela_nome,artigo_numero' }
-      );
-
-    if (dbErr) {
-      console.warn('[ArtigoBottomSheet] Salvar narração no Supabase DB falhou:', dbErr);
-    } else {
-      console.log('✅ Narração salva no Supabase (Storage + DB):', finalAudioUrl);
-    }
-  } catch (err) {
-    console.error('[ArtigoBottomSheet] Erro em saveGeneratedAudioToSupabase:', err);
-  }
-  return finalAudioUrl;
-}
-
-
-
-
 // highlightTermos, highlightTermosOnly, classifyLine, applyHighlightsToText
-// → moved to artigoTextUtils.tsx
+// â†’ moved to artigoTextUtils.tsx
 
 const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, showNomenJuris = false, tabelaNome, forceShowRedacao, modificationInfo, breadcrumb }: ArtigoBottomSheetProps) => {
   const [showRedacao, setShowRedacao] = useState(forceShowRedacao ?? false);
@@ -195,8 +126,8 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
     ).catch(() => {});
   }, [artigo?.id, artigo?.numero, tabelaNome]);
 
-  // Prefetch de jurisprudência: começa em background assim que o artigo abre,
-  // para a tela abrir instantaneamente quando o usuário clicar em "Jurisprudência".
+  // Prefetch de jurisprudÃªncia: comeÃ§a em background assim que o artigo abre,
+  // para a tela abrir instantaneamente quando o usuÃ¡rio clicar em "JurisprudÃªncia".
   useEffect(() => {
     if (!artigo?.numero || !tabelaNome) return;
     const t = setTimeout(() => {
@@ -209,8 +140,8 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
     return () => clearTimeout(t);
   }, [artigo?.id, artigo?.numero, tabelaNome]);
 
-  // Prefetch das demais funções (chunks + dados) assim que o artigo abre,
-  // para que cada item do menu "Funções" abra instantaneamente.
+  // Prefetch das demais funÃ§Ãµes (chunks + dados) assim que o artigo abre,
+  // para que cada item do menu "FunÃ§Ãµes" abra instantaneamente.
   useEffect(() => {
     if (!artigo?.numero) return;
     prefetchArtigoFuncoesChunks();
@@ -238,7 +169,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
   const [showAnotacoesSheet, setShowAnotacoesSheet] = useState(false);
   const [showPerguntarSheet, setShowPerguntarSheet] = useState(false);
   const [activeTab, setActiveTab] = useState('artigo');
-  // Leitor em tela cheia da Explicação/Exemplo + trecho do artigo em foco.
+  // Leitor em tela cheia da ExplicaÃ§Ã£o/Exemplo + trecho do artigo em foco.
   const [iaFull, setIaFull] = useState<{ mode: 'explicacao' | 'exemplo'; sectionId: string | null } | null>(null);
   const [focusedSegment, setFocusedSegment] = useState<string | null>(null);
   const [aiContent, setAiContent] = useState<Record<string, string>>({});
@@ -252,9 +183,9 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
   const [tooltipData, setTooltipData] = useState<{ id: string; rect: DOMRect } | null>(null);
   const tooltipTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  // Container do Sheet: os menus (Funções / Grifar) são portados para dentro
-  // dele, senão o Radix Dialog os marca como inertes no mobile e o toque
-  // simplesmente não abre nada.
+  // Container do Sheet: os menus (FunÃ§Ãµes / Grifar) sÃ£o portados para dentro
+  // dele, senÃ£o o Radix Dialog os marca como inertes no mobile e o toque
+  // simplesmente nÃ£o abre nada.
   const sheetContentRef = useRef<HTMLDivElement | null>(null);
   const [sheetNode, setSheetNode] = useState<HTMLDivElement | null>(null);
   const isDesktop = useIsDesktop();
@@ -287,7 +218,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
     setShowSharePanel(false);
     setActiveActionMenu(null);
   }, [artigo?.numero, tabelaNome]);
-  // Desktop: pílula flutuante Narrar/Grifar quando há seleção de texto no artigo
+  // Desktop: pÃ­lula flutuante Narrar/Grifar quando hÃ¡ seleÃ§Ã£o de texto no artigo
   useEffect(() => {
     if (!isDesktop || !artigo) { setSelectionPill(null); return; }
     const handler = () => {
@@ -303,8 +234,8 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
     document.addEventListener('selectionchange', handler);
     return () => document.removeEventListener('selectionchange', handler);
   }, [isDesktop, artigo?.numero]);
-  // Prefetch do sheet de Lembretes assim que o menu Funções abre,
-  // para que o clique em "Lembretes" seja instantâneo.
+  // Prefetch do sheet de Lembretes assim que o menu FunÃ§Ãµes abre,
+  // para que o clique em "Lembretes" seja instantÃ¢neo.
   useEffect(() => {
     if (activeActionMenu === 'funcoes') {
       import('@/components/vademecum/sheets/LembretesArtigoSheet');
@@ -319,8 +250,8 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
   };
 
   /**
-   * Gate padrão das funções do artigo: 100% exclusivo para assinantes Prime.
-   * A única função gratuita é 'Copiar artigo'.
+   * Gate padrÃ£o das funÃ§Ãµes do artigo: 100% exclusivo para assinantes Prime.
+   * A Ãºnica funÃ§Ã£o gratuita Ã© 'Copiar artigo'.
    */
   const gateFeature = (
     _featureKey: string,
@@ -333,7 +264,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
   };
 
 
-  // ─── Grifo Mágico state ─── (MagicGrifo type imported from artigoConstants)
+  // â”€â”€â”€ Grifo MÃ¡gico state â”€â”€â”€ (MagicGrifo type imported from artigoConstants)
   const [magicMode, setMagicMode] = useState(false);
   const [showGrifoFoto, setShowGrifoFoto] = useState(false);
   const [magicHighlights, setMagicHighlights] = useState<MagicGrifo[]>([]);
@@ -349,16 +280,16 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
     setGrifoIaDefaultOn(on);
     try { localStorage.setItem(GRIFO_IA_DEFAULT_KEY, on ? '1' : '0'); } catch { /* ignore */ }
   }, []);
-  // Contador de anotações persistidas para o badge do rodapé.
+  // Contador de anotaÃ§Ãµes persistidas para o badge do rodapÃ©.
   const [anotacoesCount, setAnotacoesCount] = useState<number>(0);
-  // Bump manual para forçar releitura da contagem depois de gravar anotações
-  // (o efeito abaixo roda antes das inserções do grifo mágico terminarem).
+  // Bump manual para forÃ§ar releitura da contagem depois de gravar anotaÃ§Ãµes
+  // (o efeito abaixo roda antes das inserÃ§Ãµes do grifo mÃ¡gico terminarem).
   const [anotacoesRefreshTick, setAnotacoesRefreshTick] = useState(0);
 
   // Persiste grifos IA em `artigos_grifos` (1 linha/artigo) e cria uma
-  // anotação por grifo em `artigos_anotacoes`, com dedupe por texto.
-  // Chamado tanto quando o usuário clica em "Grifo mágico" quanto quando
-  // os grifos são reidratados do cache ao abrir o artigo.
+  // anotaÃ§Ã£o por grifo em `artigos_anotacoes`, com dedupe por texto.
+  // Chamado tanto quando o usuÃ¡rio clica em "Grifo mÃ¡gico" quanto quando
+  // os grifos sÃ£o reidratados do cache ao abrir o artigo.
   const persistMagicHighlights = useCallback(async (grifos: MagicGrifo[]) => {
     if (!artigo?.numero || !tabelaNome || !grifos?.length) return;
     try {
@@ -445,470 +376,47 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
       });
     return () => { supabase.removeChannel(channel); };
   }, [tabelaNome, artigo?.numero]);
-
-  // Narration state
-  const [narracaoUrl, setNarracaoUrl] = useState<string | null>(null);
-  const [narracaoWordTimings, setNarracaoWordTimings] = useState<Array<{ word: string; start: number; end: number }> | null>(null);
-  const [narracaoLoading, setNarracaoLoading] = useState(false);
-  const [narracaoStepIdx, setNarracaoStepIdx] = useState(0);
-  const [narracaoPlaying, setNarracaoPlaying] = useState(false);
-  // Índice da palavra ativa — só re-renderiza o texto quando MUDA (não a 60fps)
-  const [narracaoActiveWordIndex, setNarracaoActiveWordIndex] = useState(-1);
-  // Duração do áudio atual — usada para gerar karaokê aproximado quando o TTS não devolve word_timings
-  const [narracaoDuration, setNarracaoDuration] = useState(0);
-  const narracaoAudioRef = useRef<HTMLAudioElement | null>(null);
-  const narracaoAnimRef = useRef<number | null>(null);
-  // Refs imperativos para UI contínua (barra de progresso, tempo, anel) sem re-render
-  const narracaoProgressFillRef = useRef<HTMLDivElement | null>(null);
-  const narracaoRingRef = useRef<SVGCircleElement | null>(null);
-  const narracaoTimeRef = useRef<HTMLSpanElement | null>(null);
-  const narracaoTotalTimeRef = useRef<HTMLSpanElement | null>(null);
-  const narracaoTimingsRef = useRef<Array<{ word: string; start: number; end: number }> | null>(null);
-  const narracaoActiveIdxRef = useRef<number>(-1);
-  const narrarPressGuardRef = useRef(0);
-  const narrarActionInFlightRef = useRef(false);
-  const narracaoAdoptedRef = useRef(false);
-
-  // Floating mini-player integration
-  const location = useLocation();
-  const adoptNarracao = useNarracaoFlutuante((s) => s.adopt);
-  const reclaimNarracao = useNarracaoFlutuante((s) => s.reclaim);
-  const closeFlutuante = useNarracaoFlutuante((s) => s.close);
-
-  // Check for existing narration when artigo changes
-  useEffect(() => {
-    // Se este artigo é o que está tocando no player flutuante, retoma o áudio.
-    const reclaimed = artigo?.id ? reclaimNarracao(artigo.id) : null;
-
-    setNarracaoUrl(null);
-    setNarracaoWordTimings(null);
-    setNarracaoActiveWordIndex(-1);
-    narracaoActiveIdxRef.current = -1;
-
-    if (narracaoAdoptedRef.current) {
-      // Áudio foi transferido para o player flutuante: não tocar/pausar aqui.
-      narracaoAdoptedRef.current = false;
-      narracaoAudioRef.current = null;
-      setNarracaoPlaying(false);
-    } else if (reclaimed) {
-      // Reassume o áudio que estava no flutuante
-      narracaoAudioRef.current = reclaimed;
-      reclaimed.onended = () => {
-        setNarracaoPlaying(false);
-        setNarracaoActiveWordIndex(-1);
-        narracaoActiveIdxRef.current = -1;
-        narracaoAudioRef.current = null;
-        clearMediaSession();
-      };
-      reclaimed.onerror = null;
-      setNarracaoPlaying(!reclaimed.paused);
-      startProgressTracking(reclaimed);
-    } else {
-      setNarracaoPlaying(false);
-      if (narracaoAudioRef.current) {
-        narracaoAudioRef.current.pause();
-        narracaoAudioRef.current = null;
-      }
-    }
-    if (!tabelaNome || !artigo?.numero) return;
-
-    (async () => {
-      try {
-        const aliases = Array.from(new Set([
-          tabelaNome,
-          tabelaNome.toLowerCase(),
-          tabelaNome.toUpperCase(),
-          tabelaNome.replace(/^[A-Z0-9]+_/, '').toLowerCase(),
-          tabelaNome.replace(/^[A-Z0-9]+_/, '').toUpperCase(),
-        ]));
-
-        const { data: rows } = await supabase
-          .from('narracoes_artigos')
-          .select('audio_url, word_timings')
-          .in('tabela_nome', aliases)
-          .eq('artigo_numero', artigo.numero)
-          .limit(1);
-
-        const row = rows?.[0];
-        if (row?.audio_url) {
-          setNarracaoUrl(row.audio_url);
-          if (Array.isArray(row.word_timings) && row.word_timings.length > 0) {
-            setNarracaoWordTimings(row.word_timings as any[]);
-          }
-        }
-      } catch (e) {
-        console.error('Erro ao verificar narração no banco principal:', e);
-      }
-    })();
-  }, [tabelaNome, artigo?.id, artigo?.numero]);
-
-  // formatNarracaoTime imported from artigoTextUtils
-
-  const RING_CIRCUMFERENCE = 2 * Math.PI * 26;
-
-  const startProgressTracking = useCallback((audio: HTMLAudioElement) => {
-    const update = () => {
-      const t = audio.currentTime || 0;
-      const dur = audio.duration || 0;
-
-      // Barra de progresso (imperativo — sem re-render)
-      if (dur > 0) {
-        const pct = Math.min(100, (t / dur) * 100);
-        if (narracaoProgressFillRef.current) {
-          narracaoProgressFillRef.current.style.width = `${pct}%`;
-        }
-        if (narracaoRingRef.current) {
-          narracaoRingRef.current.style.strokeDashoffset = `${RING_CIRCUMFERENCE * (1 - pct / 100)}`;
-        }
-      }
-      if (narracaoTimeRef.current) {
-        narracaoTimeRef.current.textContent = formatNarracaoTime(t);
-      }
-      if (narracaoTotalTimeRef.current && dur > 0 && narracaoTotalTimeRef.current.textContent !== formatNarracaoTime(dur)) {
-        narracaoTotalTimeRef.current.textContent = formatNarracaoTime(dur);
-      }
-
-      // Palavra ativa: só setState quando muda
-      const timings = narracaoTimingsRef.current;
-      if (timings && timings.length) {
-        let idx = -1;
-        // Busca a partir da última posição conhecida (otimização — texto sempre avança)
-        const start = Math.max(0, narracaoActiveIdxRef.current);
-        for (let i = start; i < timings.length; i++) {
-          if (t >= timings[i].start && t < timings[i].end) { idx = i; break; }
-          if (timings[i].start > t) break;
-        }
-        // Se não achou pra frente (usuário voltou), busca do zero
-        if (idx === -1) {
-          for (let i = 0; i < timings.length; i++) {
-            if (t >= timings[i].start && t < timings[i].end) { idx = i; break; }
-          }
-        }
-        // Passou de tudo: mantém a última
-        if (idx === -1 && t >= (timings[timings.length - 1]?.end ?? 0)) {
-          idx = timings.length - 1;
-        }
-        if (idx !== narracaoActiveIdxRef.current) {
-          narracaoActiveIdxRef.current = idx;
-          setNarracaoActiveWordIndex(idx);
-        }
-      }
-
-      if (!audio.paused && !audio.ended) {
-        narracaoAnimRef.current = requestAnimationFrame(update);
-      }
-    };
-    narracaoAnimRef.current = requestAnimationFrame(update);
-  }, []);
-
-  const stopProgressTracking = useCallback(() => {
-    if (narracaoAnimRef.current) {
-      cancelAnimationFrame(narracaoAnimRef.current);
-      narracaoAnimRef.current = null;
-    }
-  }, []);
-
-  const playNarracao = useCallback(async (audioUrl: string, options?: { onRecover?: () => void }) => {
-    // Se havia outro artigo tocando no player flutuante, encerra
-    closeFlutuante();
-    if (narracaoAudioRef.current) {
-      narracaoAudioRef.current.pause();
-      stopProgressTracking();
-    }
-
-    const audio = new Audio(audioUrl);
-    audio.preload = 'auto';
-    setNarracaoDuration(0);
-    const syncDuration = () => {
-      const d = audio.duration;
-      if (Number.isFinite(d) && d > 0) setNarracaoDuration(d);
-    };
-    audio.addEventListener('loadedmetadata', syncDuration);
-    audio.addEventListener('durationchange', syncDuration);
+  // â”€â”€â”€ Narration engine (extracted to useArtigoNarracao) â”€â”€â”€
+  const {
+    narracaoUrl,
+    narracaoWordTimings,
+    narracaoLoading,
+    narracaoStepIdx,
+    narracaoPlaying,
+    narracaoDuration,
+    activeNarracaoWordIndex,
+    narracaoAudioRef,
+    narracaoProgressFillRef,
+    narracaoRingRef,
+    narracaoTimeRef,
+    narracaoTotalTimeRef,
+    narracaoTimingsRef,
+    narracaoAdoptedRef,
+    setNarracaoUrl,
+    setNarracaoWordTimings,
+    setNarracaoPlaying,
+    setNarracaoActiveWordIndex,
+    handleNarrarButtonPress,
+    gerarNarracao,
+    playNarracao,
+    stopProgressTracking,
+    startProgressTracking,
+    adoptNarracao,
+    closeFlutuante,
+  } = useArtigoNarracao({
+    artigo,
+    tabelaNome,
+    breadcrumb,
+    isPremium,
+    openPremiumGate,
+  });
 
 
 
-    const clearAudioState = () => {
-      setNarracaoPlaying(false);
-      setNarracaoActiveWordIndex(-1);
-      narracaoActiveIdxRef.current = -1;
-      if (narracaoProgressFillRef.current) narracaoProgressFillRef.current.style.width = '0%';
-      if (narracaoRingRef.current) narracaoRingRef.current.style.strokeDashoffset = `${RING_CIRCUMFERENCE}`;
-      if (narracaoTimeRef.current) narracaoTimeRef.current.textContent = '0:00';
-      stopProgressTracking();
-      narracaoAudioRef.current = null;
-      clearMediaSession();
-    };
-
-    audio.onended = clearAudioState;
-    audio.onerror = () => {
-      clearAudioState();
-      setNarracaoUrl(null);
-      if (options?.onRecover) {
-        toast('Atualizando a narração salva...');
-        options.onRecover();
-      } else {
-        toast.error('Não consegui tocar esta narração. Toque em Narrar para gerar novamente.');
-      }
-    };
-
-    narracaoAudioRef.current = audio;
-    setNarracaoPlaying(true);
-    try {
-      await audio.play();
-      setupMediaSession({
-        title: `Art. ${artigo?.numero || ''}`,
-        album: tabelaNome || '',
-        audio,
-      });
-      startProgressTracking(audio);
-      return true;
-    } catch (e) {
-      console.error('Erro ao tocar narração:', e);
-      clearAudioState();
-      if (e instanceof DOMException && e.name === 'NotAllowedError') {
-        toast('Narração pronta. Toque em Ouvir para reproduzir.');
-      } else if (options?.onRecover) {
-        setNarracaoUrl(null);
-        toast('Atualizando a narração salva...');
-        options.onRecover();
-      } else {
-        toast.error('Não consegui tocar esta narração. Toque em Ouvir para tentar novamente.');
-      }
-      return false;
-    }
-  }, [artigo?.numero, tabelaNome, startProgressTracking, stopProgressTracking]);
-
-  const gerarNarracao = useCallback(async (options?: { autoplay?: boolean; silent?: boolean; forceRegenerate?: boolean }) => {
-    if (!artigo || !tabelaNome) return;
-
-    const autoplay = options?.autoplay ?? true;
-    const silent = options?.silent ?? false;
-
-    if (!silent) {
-      setNarracaoLoading(true);
-      setNarracaoStepIdx(0);
-    }
-    try {
-      const leiCatalog = (await import('@/services/legislacaoService')).getLeisCatalog();
-      const lei = leiCatalog.find((l: any) => l.tabela_nome === tabelaNome);
-
-      // Etapa 1: preparando → etapa 2: gerando (imediatamente antes do fetch)
-      if (!silent) {
-        await new Promise((r) => setTimeout(r, 350));
-        setNarracaoStepIdx(1);
-      }
-
-      const STRUCT_RE = /^(PARTE|LIVRO|T[IÍ]TULO|CAP[IÍ]TULO|SEÇ[AÃ]O|SUBSEÇ[AÃ]O)\b/i;
-      const tituloIsEpig = artigo.titulo && !STRUCT_RE.test(artigo.titulo);
-      const epig = tituloIsEpig ? artigo.titulo : null;
-      const breadcrumbParts = [breadcrumb?.parte, breadcrumb?.titulo, breadcrumb?.tituloDesc].filter(Boolean);
-      const hier = breadcrumbParts.length > 0
-        ? breadcrumbParts.join('. ')
-        : (artigo.capitulo || (!tituloIsEpig ? artigo.titulo : null) || null);
-
-      const payload = {
-        tabela_nome: tabelaNome,
-        artigo_numero: artigo.numero,
-        artigo_texto: artigo.caput,
-        lei_nome: lei?.nome || tabelaNome,
-        hierarquia: hier,
-        titulo_artigo: hier,
-        epigrafe: epig,
-        force_regenerate: options?.forceRegenerate ?? false,
-      };
-
-      let audio_url: string | null = null;
-      let word_timings: any[] | null = null;
-
-      // 1ª Tentativa: cache de áudio no banco (só reaproveita narrações da versão atual,
-      // que já leem hierarquia + epígrafe + número do artigo e trazem word_timings).
-      try {
-        const aliases = Array.from(new Set([
-          tabelaNome,
-          tabelaNome.toLowerCase(),
-          tabelaNome.toUpperCase(),
-          tabelaNome.replace(/^[A-Z0-9]+_/, '').toLowerCase(),
-          tabelaNome.replace(/^[A-Z0-9]+_/, '').toUpperCase(),
-        ]));
-
-        const { data: rows } = await supabase
-          .from('narracoes_artigos')
-          .select('audio_url, word_timings')
-          .in('tabela_nome', aliases)
-          .eq('artigo_numero', artigo.numero)
-          .limit(1);
-
-        const cachedUrl = rows?.[0]?.audio_url || null;
-        const cachedTimings = Array.isArray(rows?.[0]?.word_timings) ? (rows![0].word_timings as any[]) : null;
-        if (cachedUrl) {
-          audio_url = cachedUrl;
-          word_timings = cachedTimings;
-        }
-      } catch (errDb) {
-        console.warn('[ArtigoBottomSheet] Erro ao consultar narracoes_artigos:', errDb);
-      }
-
-      // 2ª Tentativa: backend de legislação (narracao?fn=artigo) — é o único que devolve
-      // word_timings alinhados por segmento, necessários para o grifo acompanhar a fala.
-      if (!audio_url) {
-        try {
-          const { data: sessionData } = await supabase.auth.getSession();
-          const userJwt = sessionData.session?.access_token || null;
-          const res = await fetch(`${SB_URL}/functions/v1/narracao?fn=artigo`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              apikey: SB_KEY,
-              Authorization: `Bearer ${SB_KEY}`,
-              ...(userJwt ? { 'x-user-jwt': userJwt } : {}),
-            },
-            body: JSON.stringify({ ...payload, fn: 'artigo' }),
-          });
-
-          if (res.ok) {
-            const json = await res.json();
-            audio_url = json.audio_url || null;
-            word_timings = json.word_timings || null;
-          } else {
-            console.warn('[ArtigoBottomSheet] narracao?fn=artigo falhou:', res.status, await res.text().catch(() => ''));
-          }
-        } catch (fetchErr) {
-          console.warn('[ArtigoBottomSheet] Fetch direto narracao?fn=artigo falhou:', fetchErr);
-        }
-      }
 
 
-      // 3ª Tentativa: Gemini 2.5 Flash TTS direto (voz Kore), sem karaokê preciso
-      if (!audio_url) {
-        try {
-          const textoFormatado = formatTextoArtigoParaNarracao(artigo, breadcrumb);
-          const { data: fnData, error: fnErr } = await supabase.functions.invoke('narracao', {
-            body: {
-              fn: 'blog_preview',
-              voz: 'Kore',
-              texto: textoFormatado,
-              estilo: 'Diga em português brasileiro com tom vibrante, animado e muito empolgante, como uma professora jovem apaixonada por Direito explicando aos seus alunos',
-            },
-          });
-
-          if (!fnErr && fnData?.audio_data_url) {
-            const savedUrl = await saveGeneratedAudioToSupabase(
-              tabelaNome,
-              String(artigo.numero),
-              lei?.nome || tabelaNome,
-              hier,
-              fnData.audio_data_url,
-              null
-            );
-            audio_url = savedUrl || fnData.audio_data_url;
-          } else if (fnErr) {
-            console.warn('[ArtigoBottomSheet] Edge function narracao error:', fnErr);
-          }
-        } catch (errFn) {
-          console.warn('[ArtigoBottomSheet] Chamada Gemini 2.5 Flash TTS falhou:', errFn);
-        }
-      }
 
 
-      // Se obtivemos o áudio gerado pelo Gemini 2.5 Flash TTS (Kore)
-      if (audio_url) {
-        if (!silent) setNarracaoStepIdx(2);
-        setNarracaoUrl(audio_url);
-        if (Array.isArray(word_timings)) setNarracaoWordTimings(word_timings);
-
-        if (!silent) setNarracaoLoading(false);
-        await playNarracao(audio_url);
-        return;
-      }
-
-      // Fallback para síntese de voz nativa caso o Gemini TTS esteja temporariamente indisponível
-      console.warn('[ArtigoBottomSheet] Narração em áudio via Gemini indisponível. Acionando síntese nativa...');
-      const textoFormatadoFallback = formatTextoArtigoParaNarracao(artigo, breadcrumb);
-      const ok = await speakNative(textoFormatadoFallback);
-      setNarracaoLoading(false);
-      setNarracaoStepIdx(0);
-      if (ok) {
-        setNarracaoPlaying(true);
-        toast.success('Reproduzindo narração nativa do artigo.');
-      } else if (!silent) {
-        toast.error('Não consegui gerar a narração agora. Tente novamente.');
-      }
-    } catch (e) {
-      console.error('Erro ao gerar narração via Gemini. Tentando narração nativa...', e);
-      if (artigo) {
-        const textoFormatadoFallback = formatTextoArtigoParaNarracao(artigo, breadcrumb);
-        const ok = await speakNative(textoFormatadoFallback);
-        setNarracaoLoading(false);
-        setNarracaoStepIdx(0);
-        if (ok) {
-          setNarracaoPlaying(true);
-          toast.success('Reproduzindo narração nativa do artigo.');
-          return;
-        }
-      }
-      if (!silent) toast.error('Não consegui gerar a narração agora. Tente novamente.');
-    }
-    if (!silent) setNarracaoLoading(false);
-  }, [artigo, tabelaNome, breadcrumb?.tituloDesc, breadcrumb?.titulo, playNarracao, openPremiumGate, isPremium]);
-
-  const handleNarrar = async () => {
-    if (!artigo || !tabelaNome) {
-      toast.error('Não encontrei os dados deste artigo para narrar.');
-      return;
-    }
-
-    if (narracaoPlaying) {
-      if (narracaoAudioRef.current) {
-        narracaoAudioRef.current.pause();
-        stopProgressTracking();
-      }
-      stopNativeSpeech();
-      setNarracaoPlaying(false);
-      return;
-    }
-
-    if (narracaoUrl) {
-      const played = await playNarracao(narracaoUrl, {
-        onRecover: () => { gerarNarracao({ autoplay: true, forceRegenerate: false }).catch(() => {}); },
-      });
-      if (played) return;
-    }
-
-    await gerarNarracao();
-  };
-
-  // Índice ativo agora vem direto do state (atualizado só quando muda)
-  const activeNarracaoWordIndex = narracaoPlaying ? narracaoActiveWordIndex : -1;
-
-  const handleNarrarButtonPress = useCallback(async (event?: React.SyntheticEvent<HTMLButtonElement>) => {
-    event?.preventDefault();
-    event?.stopPropagation();
-    const now = Date.now();
-    if (now - narrarPressGuardRef.current < 650) return;
-    narrarPressGuardRef.current = now;
-    if (narrarActionInFlightRef.current) return;
-    if (narracaoLoading) return;
-    narrarActionInFlightRef.current = true;
-
-    try {
-      // Gate premium: narração de artigos com voz humana é 100% exclusiva para assinantes Prime
-      if (!narracaoPlaying && !isPremium) {
-        openPremiumGate('narracao');
-        return;
-      }
-      await handleNarrar();
-    } catch (e) {
-      console.error('Erro ao acionar narração:', e);
-      if (isPremium) {
-        toast.error('Não consegui iniciar a narração agora. Tente novamente.');
-      } else {
-        openPremiumGate('narracao');
-      }
-    } finally {
-      narrarActionInFlightRef.current = false;
-    }
-  }, [handleNarrar, isPremium, narracaoLoading, narracaoPlaying]);
 
   const planaltoUrl = useMemo(() => {
     if (!tabelaNome || !artigo?.numero) return null;
@@ -938,7 +446,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
   const voicePanelRef = useRef<GrifoVoicePanelHandle | null>(null);
   const lastCreatedHlRef = useRef<string | null>(null);
 
-  // Auto-inicia gravação ao ativar Grifar por voz
+  // Auto-inicia gravaÃ§Ã£o ao ativar Grifar por voz
   useEffect(() => {
     if (voiceGrifoActive && voicePhase === 'idle') {
       const t = setTimeout(() => { voicePanelRef.current?.start(); }, 150);
@@ -983,10 +491,10 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
   }, [artigo?.id, artigo?.numero, tabelaNome, onClose]);
 
 
-  // Reset magic highlights when artigo changes; se a preferência "mostrar
-  // grifo por padrão" estiver ligada, o snapshot local é lido de forma
-  // SÍNCRONA (sem esperar rede) para o artigo já abrir grifado. A revalidação
-  // no servidor acontece em paralelo, atrás.
+  // Reset magic highlights when artigo changes; se a preferÃªncia "mostrar
+  // grifo por padrÃ£o" estiver ligada, o snapshot local Ã© lido de forma
+  // SÃNCRONA (sem esperar rede) para o artigo jÃ¡ abrir grifado. A revalidaÃ§Ã£o
+  // no servidor acontece em paralelo, atrÃ¡s.
   useEffect(() => {
     setMagicTooltip(null);
     setFocusedSegment(null);
@@ -1072,7 +580,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         const parsed = parseGrifos(cachedRaw);
         if (!parsed) return;
 
-        // Só re-renderiza se realmente mudou em relação ao snapshot já pintado.
+        // SÃ³ re-renderiza se realmente mudou em relaÃ§Ã£o ao snapshot jÃ¡ pintado.
         const mudou = JSON.stringify(parsed) !== JSON.stringify(snap ?? []);
         writeArtigoGrifos(tabelaNome, artigo.numero, parsed as any);
         if (mudou) {
@@ -1086,9 +594,9 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
   }, [artigo?.id, tabelaNome, grifoIaDefaultOn]);
 
 
-  // Carrega a mesma contagem única exibida na tela de anotações. As explicações
-  // do Grifo Mágico existem no snapshot de grifos e podem também ter uma linha
-  // persistida; ambas representam uma única anotação para o usuário.
+  // Carrega a mesma contagem Ãºnica exibida na tela de anotaÃ§Ãµes. As explicaÃ§Ãµes
+  // do Grifo MÃ¡gico existem no snapshot de grifos e podem tambÃ©m ter uma linha
+  // persistida; ambas representam uma Ãºnica anotaÃ§Ã£o para o usuÃ¡rio.
   useEffect(() => {
     if (!artigo?.numero || !tabelaNome) { setAnotacoesCount(0); return; }
     let cancelled = false;
@@ -1140,7 +648,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
     setMagicTooltip(null);
     setAnotacoesCount((count) => Math.max(0, count - removed.length));
 
-    // Garante que o snapshot local síncrono seja limpo ou atualizado
+    // Garante que o snapshot local sÃ­ncrono seja limpo ou atualizado
     writeArtigoGrifos(tabelaNome, String(artigo.numero), next.length > 0 ? (next as any) : []);
 
     const { setLocalAiCache, deleteLocalAiCache } = await import('@/lib/aiCacheLocal');
@@ -1160,7 +668,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
       }).map((row) => row.id);
       if (ids.length > 0) await db.highlights.bulkDelete(ids);
     } catch (error) {
-      console.warn('Não foi possível limpar o espelho local dos grifos', error);
+      console.warn('NÃ£o foi possÃ­vel limpar o espelho local dos grifos', error);
     }
 
     try {
@@ -1201,8 +709,8 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         if (notesError) throw notesError;
       }
     } catch (error) {
-      console.error('Erro ao sincronizar exclusão de grifos:', error);
-      toast.error('Os grifos foram apagados neste aparelho, mas a sincronização falhou');
+      console.error('Erro ao sincronizar exclusÃ£o de grifos:', error);
+      toast.error('Os grifos foram apagados neste aparelho, mas a sincronizaÃ§Ã£o falhou');
     }
   }, [artigo?.numero, tabelaNome]);
 
@@ -1290,7 +798,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
     }
     if (magicHighlights.length > 0) {
       setMagicMode(true);
-      // Garante que anotações existam mesmo quando os grifos vieram do cache.
+      // Garante que anotaÃ§Ãµes existam mesmo quando os grifos vieram do cache.
       persistMagicHighlights(magicHighlights);
       return;
     }
@@ -1371,12 +879,12 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
               leiNome: tabelaNome,
             },
           });
-          if (error) { console.error('Grifo mágico invoke error:', error); continue; }
+          if (error) { console.error('Grifo mÃ¡gico invoke error:', error); continue; }
           const rawReply = data?.reply ?? data?.response ?? data?.text ?? data?.content ?? '';
           const rawStr = typeof rawReply === 'string' ? rawReply : JSON.stringify(rawReply);
           grifos = parseGrifos(rawStr);
           if (grifos) break;
-          console.warn(`Grifo mágico: parse failed attempt ${attempt + 1}, retrying...`);
+          console.warn(`Grifo mÃ¡gico: parse failed attempt ${attempt + 1}, retrying...`);
         }
 
         if (grifos) {
@@ -1396,11 +904,11 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         setMagicHighlights(grifos);
         setMagicMode(true);
         // Persiste os N grifos IA:
-        // 1) Mirror local (Dexie) para leitura offline instantânea.
+        // 1) Mirror local (Dexie) para leitura offline instantÃ¢nea.
         // 2) `artigos_grifos` no Supabase (1 linha por artigo com N highlights no JSON)
-        //    → alimenta o badge "grifado" na lista e a página "Meus grifos".
+        //    â†’ alimenta o badge "grifado" na lista e a pÃ¡gina "Meus grifos".
         // 3) `artigos_anotacoes` no Supabase (N linhas, uma por grifo, com a
-        //    explicação da IA) → alimenta o badge "anotado" e "Minhas anotações".
+        //    explicaÃ§Ã£o da IA) â†’ alimenta o badge "anotado" e "Minhas anotaÃ§Ãµes".
         try {
           const { db } = await import('@/services/offlineDb');
           const artigoId = `${tabelaNome}::${artigo.numero}`;
@@ -1414,7 +922,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
           }
           const LABELS: Record<string, string> = {
             amarelo: 'Chave',
-            verde: 'Exceção',
+            verde: 'ExceÃ§Ã£o',
             azul: 'Efeito',
             rosa: 'Termo',
             laranja: 'Pegadinha',
@@ -1451,8 +959,8 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
             });
           if (toInsert.length > 0) await db.highlights.bulkPut(toInsert);
 
-          // Sincronia com Supabase (best-effort — se offline ou sem sessão, o
-          // mirror local acima já garante a UX).
+          // Sincronia com Supabase (best-effort â€” se offline ou sem sessÃ£o, o
+          // mirror local acima jÃ¡ garante a UX).
           try {
             const { data: { user } } = await supabase.auth.getUser();
             if (user && (typeof navigator === 'undefined' || navigator.onLine !== false)) {
@@ -1484,7 +992,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 { onConflict: 'user_id,tabela_codigo,numero_artigo' },
               );
 
-              // N linhas em anotações — uma por grifo — com dedupe por texto.
+              // N linhas em anotaÃ§Ãµes â€” uma por grifo â€” com dedupe por texto.
               const { data: existingNotas } = await supabase
                 .from('artigos_anotacoes')
                 .select('anotacao')
@@ -1506,30 +1014,30 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 const { error: notesInsertError } = await supabase.from('artigos_anotacoes').insert(notasRows);
                 if (notesInsertError && notesInsertError.code !== '23505') throw notesInsertError;
               }
-              // Só agora as linhas existem no banco: invalida o cache do sheet de
-              // anotações (senão ele abre com o snapshot antigo, zerado) e recarrega a contagem.
+              // SÃ³ agora as linhas existem no banco: invalida o cache do sheet de
+              // anotaÃ§Ãµes (senÃ£o ele abre com o snapshot antigo, zerado) e recarrega a contagem.
               invalidateCache(anotacoesKey(tabelaNome, artigo.numero, user.id));
               setAnotacoesRefreshTick((t) => t + 1);
             }
           } catch (syncErr) {
-            console.warn('grifo mágico: sync supabase falhou', syncErr);
+            console.warn('grifo mÃ¡gico: sync supabase falhou', syncErr);
             setAnotacoesRefreshTick((t) => t + 1);
           }
 
           toast.success(
             grifos.length === 1
-              ? '1 grifo salvo com anotação'
-              : `${grifos.length} grifos salvos com anotações`,
+              ? '1 grifo salvo com anotaÃ§Ã£o'
+              : `${grifos.length} grifos salvos com anotaÃ§Ãµes`,
             { position: 'top-center' },
           );
         } catch (err) {
-          console.warn('grifo mágico: falha ao salvar em anotações', err);
+          console.warn('grifo mÃ¡gico: falha ao salvar em anotaÃ§Ãµes', err);
         }
       } else {
-        console.warn('Grifo mágico: no valid highlights generated');
+        console.warn('Grifo mÃ¡gico: no valid highlights generated');
       }
     } catch (e) {
-      console.error('Grifo mágico error:', e);
+      console.error('Grifo mÃ¡gico error:', e);
     } finally {
       setMagicLoading(false);
     }
@@ -1537,7 +1045,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
 
   const handleCopy = async () => {
     if (!artigo) return;
-    const text = `Art. ${artigo.numero}${tabelaNome ? ` — ${tabelaNome}` : ''}\n\n${artigo.caput}`;
+    const text = `Art. ${artigo.numero}${tabelaNome ? ` â€” ${tabelaNome}` : ''}\n\n${artigo.caput}`;
     try {
       const { Capacitor } = await import('@capacitor/core');
       if (Capacitor.isNativePlatform()) {
@@ -1549,7 +1057,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
       toast.success('Artigo copiado', { position: 'top-center' });
     } catch (e) {
       try { await copiarTexto(text); toast.success('Artigo copiado', { position: 'top-center' }); }
-      catch { toast.error('Não foi possível copiar', { position: 'top-center' }); }
+      catch { toast.error('NÃ£o foi possÃ­vel copiar', { position: 'top-center' }); }
     }
   };
 
@@ -1577,8 +1085,8 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
     }, 10);
   }, [highlightMode, addHighlight, isMobile, containerRef, openCreatePrompt]);
 
-  // Mobile: Grifo instantâneo ao passar o dedo (sem precisar ficar pressionando/segurando).
-  // O usuário apenas toca e arrasta o dedo pelo texto, e o grifo se forma imediatamente.
+  // Mobile: Grifo instantÃ¢neo ao passar o dedo (sem precisar ficar pressionando/segurando).
+  // O usuÃ¡rio apenas toca e arrasta o dedo pelo texto, e o grifo se forma imediatamente.
   useEffect(() => {
     if (!highlightMode || showEraseSheet) return;
     const container = containerRef.current;
@@ -1709,7 +1217,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
           messages: [
             {
               role: 'user',
-              content: `Aja como um professor de direito para OAB/concursos. Escreva uma anotação de estudo rápida, didática e direta (máximo 2 a 3 frases) explicando o significado prático ou pegadinha desse trecho da lei: "${trecho}". Sem cumprimentos, vá direto à anotação.`,
+              content: `Aja como um professor de direito para OAB/concursos. Escreva uma anotaÃ§Ã£o de estudo rÃ¡pida, didÃ¡tica e direta (mÃ¡ximo 2 a 3 frases) explicando o significado prÃ¡tico ou pegadinha desse trecho da lei: "${trecho}". Sem cumprimentos, vÃ¡ direto Ã  anotaÃ§Ã£o.`,
             },
           ],
         },
@@ -1718,9 +1226,9 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
       const reply = data?.reply || data?.text || data?.content;
       if (reply) {
         setCommentText(reply.trim());
-        toast.success('Anotação gerada pela IA!');
+        toast.success('AnotaÃ§Ã£o gerada pela IA!');
       } else {
-        toast.error('Não foi possível gerar a anotação.');
+        toast.error('NÃ£o foi possÃ­vel gerar a anotaÃ§Ã£o.');
       }
     } catch (err) {
       console.error(err);
@@ -1750,13 +1258,13 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
             invalidateCache(anotacoesKey(tabelaNome, String(artigo.numero), user.id));
             setAnotacoesRefreshTick(t => t + 1);
             setAnotacoesCount(c => c + 1);
-            toast.success('Anotação salva');
+            toast.success('AnotaÃ§Ã£o salva');
           } else {
-            toast.success('Anotação salva localmente');
+            toast.success('AnotaÃ§Ã£o salva localmente');
           }
         } catch (e) {
-          console.warn('Erro ao sincronizar anotação com Supabase:', e);
-          toast.success('Anotação salva localmente');
+          console.warn('Erro ao sincronizar anotaÃ§Ã£o com Supabase:', e);
+          toast.success('AnotaÃ§Ã£o salva localmente');
         }
       }
       updateHighlightTags(commentPrompt.id, commentTags);
@@ -1791,7 +1299,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
   }, []);
 
   const handleTapHighlight = useCallback((id: string, _rect: DOMRect) => {
-    // Abre o card flutuante em modo visualização/edição
+    // Abre o card flutuante em modo visualizaÃ§Ã£o/ediÃ§Ã£o
     const h = highlights.find(x => x.id === id);
     if (!h) return;
     setCommentPrompt({ id, show: true, mode: 'view' });
@@ -1884,7 +1392,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
       const titleLine = lines.find(l => l.startsWith('## ') || l.startsWith('**'));
       const title = titleLine 
         ? titleLine.replace(/^##\s*/, '').replace(/^\*\*/, '').replace(/\*\*$/, '').trim()
-        : `Seção ${i + 1}`;
+        : `SeÃ§Ã£o ${i + 1}`;
       const body = lines.filter(l => l !== titleLine).join('\n').trim();
       return { title, body: body || part.trim() };
     });
@@ -1910,7 +1418,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         return;
       }
       if (typeof navigator !== 'undefined' && navigator.onLine === false) {
-        setAiContent(prev => ({ ...prev, [activeTab]: 'Sem internet — este conteúdo ainda não foi gerado. Conecte-se para gerar.' }));
+        setAiContent(prev => ({ ...prev, [activeTab]: 'Sem internet â€” este conteÃºdo ainda nÃ£o foi gerado. Conecte-se para gerar.' }));
         setAiLoading(prev => ({ ...prev, [activeTab]: false }));
         return;
       }
@@ -1930,7 +1438,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
           return;
         }
 
-        // Generate with AI — mostra overlay animado
+        // Generate with AI â€” mostra overlay animado
         const mode = activeTab as 'explicacao' | 'exemplo';
         setAiGeneratingMode(mode);
         setAiGeneratingStep(0);
@@ -1959,10 +1467,10 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
               conteudo: data.reply,
             }, { onConflict: 'tabela_codigo,numero_artigo,tipo' }).then(() => {});
           } else {
-            setAiContent(prev => ({ ...prev, [activeTab]: 'Não foi possível gerar o conteúdo. Tente novamente.' }));
+            setAiContent(prev => ({ ...prev, [activeTab]: 'NÃ£o foi possÃ­vel gerar o conteÃºdo. Tente novamente.' }));
           }
           setAiLoading(prev => ({ ...prev, [activeTab]: false }));
-          // Pequeno delay para o usuário ver o passo "Pronto"
+          // Pequeno delay para o usuÃ¡rio ver o passo "Pronto"
           setTimeout(() => setAiGeneratingMode(null), 500);
         });
       });
@@ -1983,7 +1491,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         return;
       }
       if (typeof navigator !== 'undefined' && navigator.onLine === false) {
-        setAiContent(prev => ({ ...prev, termos: 'Sem internet — termos ainda não gerados.' }));
+        setAiContent(prev => ({ ...prev, termos: 'Sem internet â€” termos ainda nÃ£o gerados.' }));
         setAiLoading(prev => ({ ...prev, termos: false }));
         return;
       }
@@ -2021,7 +1529,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
               conteudo: data.reply,
             }, { onConflict: 'tabela_codigo,numero_artigo,tipo' }).then(() => {});
           } else {
-            setAiContent(prev => ({ ...prev, termos: 'Não foi possível gerar os termos. Tente novamente.' }));
+            setAiContent(prev => ({ ...prev, termos: 'NÃ£o foi possÃ­vel gerar os termos. Tente novamente.' }));
           }
           setAiLoading(prev => ({ ...prev, termos: false }));
           setTimeout(() => setAiGeneratingMode(null), 500);
@@ -2037,10 +1545,10 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
   const lines = fullText.split('\n').map(l => l.trim()).filter(Boolean);
   let nomenJuris: string | null = null;
   let contentLines = lines;
-  const structuralPattern = /^(LIVRO|PARTE|TÍTULO)\s+/i;
+  const structuralPattern = /^(LIVRO|PARTE|TÃTULO)\s+/i;
   contentLines = contentLines.filter(l => !structuralPattern.test(l.trim()));
 
-  // Nomen juris only for CP (Código Penal) and CPM (Código Penal Militar)
+  // Nomen juris only for CP (CÃ³digo Penal) and CPM (CÃ³digo Penal Militar)
   const isCodigoPenal = tabelaNome && /^(CP_|CPM_)/i.test(tabelaNome);
   if (isCodigoPenal && showNomenJuris && contentLines.length > 1) {
     const firstLine = contentLines[0].trim();
@@ -2048,10 +1556,10 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
     const isNomen =
       firstLineClean.length > 0 &&
       firstLineClean.length <= 50 &&
-      /^[A-ZÁÀÂÃÉÈÊÍÏÓÔÕÚÇ]/.test(firstLineClean) &&
-      !/^(Art\.|§|Parágrafo|[IVXLC]+\s*[-–.]|[a-z]\))/i.test(firstLineClean) &&
+      /^[A-ZÃÃ€Ã‚ÃƒÃ‰ÃˆÃŠÃÃÃ“Ã”Ã•ÃšÃ‡]/.test(firstLineClean) &&
+      !/^(Art\.|Â§|ParÃ¡grafo|[IVXLC]+\s*[-â€“.]|[a-z]\))/i.test(firstLineClean) &&
       !/[.;:!?]/.test(firstLineClean) &&
-      !/\b(não|será|é|foi|são|tem|houver|aplica|considera)\b/i.test(firstLineClean);
+      !/\b(nÃ£o|serÃ¡|Ã©|foi|sÃ£o|tem|houver|aplica|considera)\b/i.test(firstLineClean);
 
     if (isNomen) {
       nomenJuris = firstLine;
@@ -2061,7 +1569,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
 
   const rawContent = contentLines.join('\n');
   const rawLines = rawContent.split('\n').filter(l => l.trim() !== '');
-  // Keep revoked lines in the display even when redação is stripped
+  // Keep revoked lines in the display even when redaÃ§Ã£o is stripped
   const processedLines = rawLines.map(l => {
     if (isLineRevogado(l)) return l; // always keep revoked lines as-is
     return showRedacao ? l : stripRedacao(l);
@@ -2076,15 +1584,15 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
       : (showRedacao ? line : stripRedacao(line));
 
     if (isFirst && !isRevogado) {
-      return displayText.replace(/^Art\s*\.\s*\d+[º°]?(?:-[A-Z])?\s*[–-]?\s*/i, '');
+      return displayText.replace(/^Art\s*\.\s*\d+[ÂºÂ°]?(?:-[A-Z])?\s*[â€“-]?\s*/i, '');
     }
     return displayText;
   };
 
   const renderedLineTexts = displayLines.map((line, index) => getRenderedLineText(line, index, index === 0));
-  // Mapa linha → seção (caput / inciso / parágrafo) para abrir a IA no ponto certo.
+  // Mapa linha â†’ seÃ§Ã£o (caput / inciso / parÃ¡grafo) para abrir a IA no ponto certo.
   const lineSegmentMap = buildLineSegmentMap(displayLines);
-  // Seções navegáveis do conteúdo de IA em exibição no leitor de tela cheia.
+  // SeÃ§Ãµes navegÃ¡veis do conteÃºdo de IA em exibiÃ§Ã£o no leitor de tela cheia.
   const iaFullSections: AiSection[] = iaFull
     ? parseAiSections(
         aiContent[iaFull.mode] || '',
@@ -2105,13 +1613,13 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
 
   const duracaoAtual = narracaoDuration || narracaoAudioRef.current?.duration || 0;
 
-  // Alinha os timings reais da narração com as palavras exibidas (1 timing por palavra).
+  // Alinha os timings reais da narraÃ§Ã£o com as palavras exibidas (1 timing por palavra).
   const alignedTimings = (() => {
     if (!narracaoWordTimings?.length || !renderedArticleTokens.length) return null;
     return alinharTimingsComTexto(renderedArticleTokens, narracaoWordTimings as any[], duracaoAtual);
   })();
 
-  // Fallback de karaokê: sem timings utilizáveis, distribui as palavras proporcionalmente.
+  // Fallback de karaokÃª: sem timings utilizÃ¡veis, distribui as palavras proporcionalmente.
   const syntheticTimings = (() => {
     if (alignedTimings?.length) return null;
     const dur = duracaoAtual;
@@ -2132,7 +1640,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
   const startIndexAtivo = timingsAtivos ? 0 : -1;
 
 
-  // Atualiza o ref usado pelo RAF direto no render (seguro — ref não dispara re-render)
+  // Atualiza o ref usado pelo RAF direto no render (seguro â€” ref nÃ£o dispara re-render)
   narracaoTimingsRef.current = timingsAtivos;
 
 
@@ -2166,7 +1674,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
     let offsetShift = 0;
     if (isFirst && !isRevogado) {
       // Remove the article number prefix from the first line since the header already shows it
-      const cleanedText = displayText.replace(/^Art\s*\.\s*\d+[º°]?(?:-[A-Z])?\s*[–-]?\s*/i, '');
+      const cleanedText = displayText.replace(/^Art\s*\.\s*\d+[ÂºÂ°]?(?:-[A-Z])?\s*[â€“-]?\s*/i, '');
       offsetShift = displayText.length - cleanedText.length;
       baseNodes = highlightTermos(cleanedText, modificationInfo ? isModifiedLine && showRedacao : showRedacao);
     } else {
@@ -2188,7 +1696,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
     let finalNodes = applyHighlightsToText(baseNodes, adjustedHighlights, removeHighlight, highlightMode, handleHoverHighlight, handleTapHighlight);
 
 
-    // Apply magic highlights on top — works on the full line text, not individual nodes
+    // Apply magic highlights on top â€” works on the full line text, not individual nodes
     if (magicMode && magicHighlights.length > 0) {
       // Extract all text content from finalNodes to build a flat string
       const extractText = (nodes: React.ReactNode[]): string => {
@@ -2301,7 +1809,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
       const highlightTextNode = (text: string, keyPrefix: string): React.ReactNode[] => {
         const parts: React.ReactNode[] = [];
         let lastIndex = 0;
-        const matches = Array.from(text.matchAll(/[\p{L}\p{N}]+(?:[-–][\p{L}\p{N}]+)*/gu));
+        const matches = Array.from(text.matchAll(/[\p{L}\p{N}]+(?:[-â€“][\p{L}\p{N}]+)*/gu));
 
         matches.forEach((match, matchIndex) => {
           const start = match.index ?? 0;
@@ -2376,7 +1884,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
 
     const highlightBg = isModifiedLine
       ? 'bg-violet-500/20 border-l-3 border-violet-400 pl-3 rounded-r-lg'
-      : !modificationInfo && showRedacao && /\((?:Redação|Incluído|Acrescido|Alterado|Revogado|Vetado|Vigência)[^)]*\)/i.test(line)
+      : !modificationInfo && showRedacao && /\((?:RedaÃ§Ã£o|IncluÃ­do|Acrescido|Alterado|Revogado|Vetado|VigÃªncia)[^)]*\)/i.test(line)
         ? 'bg-primary/5 border-l-2 border-primary/40 pl-2 rounded-r'
         : '';
 
@@ -2392,7 +1900,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         data-line-index={lineIndex}
         data-segment-id={lineSegmentMap[lineIndex] || 'caput'}
         onClick={() => {
-          // Memoriza o trecho tocado para abrir Explicação/Exemplo já nele.
+          // Memoriza o trecho tocado para abrir ExplicaÃ§Ã£o/Exemplo jÃ¡ nele.
           if (!highlightMode) setFocusedSegment(lineSegmentMap[lineIndex] || 'caput');
         }}
         className={`text-foreground leading-[1.8] ${extra} ${highlightBg} ${!highlightMode && focusedSegment && focusedSegment === (lineSegmentMap[lineIndex] || 'caput') ? 'rounded-md ring-1 ring-primary/25' : ''}`}
@@ -2401,7 +1909,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         {isFirst && !isRevogado && artLabel && (
           <>
             <span className="font-bold text-primary">{artLabel}</span>
-            <span className="text-foreground/60"> — </span>
+            <span className="text-foreground/60"> â€” </span>
           </>
         )}
         {finalNodes}
@@ -2414,8 +1922,8 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
 
   const handleSheetClose = () => {
     import('@/lib/nativeHaptics').then((m) => m.haptic.selection());
-    // Se a narração está tocando, transfere o áudio para o player flutuante
-    // em vez de destruí-lo. Assim a pessoa continua ouvindo mesmo após fechar.
+    // Se a narraÃ§Ã£o estÃ¡ tocando, transfere o Ã¡udio para o player flutuante
+    // em vez de destruÃ­-lo. Assim a pessoa continua ouvindo mesmo apÃ³s fechar.
     const currentAudio = narracaoAudioRef.current;
     if (narracaoPlaying && currentAudio && artigo) {
       narracaoAdoptedRef.current = true;
@@ -2497,8 +2005,8 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                   onClick={() => setShowRedacao(!showRedacao)}
                   whileTap={{ scale: 0.9 }}
                   className={`w-11 h-11 rounded-full flex items-center justify-center transition-colors ${showRedacao ? 'bg-primary/20' : 'hover:bg-secondary active:bg-secondary'}`}
-                  title={showRedacao ? 'Ocultar redações' : 'Mostrar redações'}
-                  aria-label={showRedacao ? 'Ocultar redações' : 'Mostrar redações'}
+                  title={showRedacao ? 'Ocultar redaÃ§Ãµes' : 'Mostrar redaÃ§Ãµes'}
+                  aria-label={showRedacao ? 'Ocultar redaÃ§Ãµes' : 'Mostrar redaÃ§Ãµes'}
                 >
                   {showRedacao
                     ? <Eye className="w-6 h-6 text-primary" />
@@ -2532,7 +2040,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
           </div>
         </div>
 
-        {/* Painel expansível de ajuste de tamanho de fonte */}
+        {/* Painel expansÃ­vel de ajuste de tamanho de fonte */}
         <AnimatePresence>
           {showFontControls && (
             <motion.div
@@ -2569,7 +2077,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
           )}
         </AnimatePresence>
 
-        {/* Breadcrumb: PARTE > TÍTULO / descrição */}
+        {/* Breadcrumb: PARTE > TÃTULO / descriÃ§Ã£o */}
         {(breadcrumb?.parte || breadcrumb?.titulo) && (
           <div className="px-5 pb-1">
             <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
@@ -2585,7 +2093,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
           </div>
         )}
 
-        {/* Big Art. Nº + Ver no Planalto */}
+        {/* Big Art. NÂº + Ver no Planalto */}
         <div className="px-5 pt-1 pb-3 flex items-center justify-between gap-3">
           <h3 className="font-display text-3xl font-bold text-foreground">
             {/^\d/.test(artigo.numero) ? `Art. ${artigo.numero}` : artigo.numero}
@@ -2622,9 +2130,9 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
           )}
         </AnimatePresence>
 
-        {/* Título (fallback if no breadcrumb prop) */}
+        {/* TÃ­tulo (fallback if no breadcrumb prop) */}
         {!breadcrumb && artigo.titulo && (() => {
-          const parts = artigo.titulo.match(/^(T[IÍ]TULO\s+[IVXLC\d]+)\s*[-–]?\s*(.*)/i);
+          const parts = artigo.titulo.match(/^(T[IÃ]TULO\s+[IVXLC\d]+)\s*[-â€“]?\s*(.*)/i);
           if (parts) {
             return (
               <div className="px-5 pb-1">
@@ -2640,9 +2148,9 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
           );
         })()}
 
-        {/* Capítulo (fallback if no breadcrumb prop) */}
+        {/* CapÃ­tulo (fallback if no breadcrumb prop) */}
         {!breadcrumb && artigo.capitulo && (() => {
-          const parts = artigo.capitulo.match(/^(CAP[IÍ]TULO\s+[IVXLC\d]+)\s*[-–]?\s*(.*)/i);
+          const parts = artigo.capitulo.match(/^(CAP[IÃ]TULO\s+[IVXLC\d]+)\s*[-â€“]?\s*(.*)/i);
           if (parts) {
             return (
               <div className="px-5 pb-2">
@@ -2681,7 +2189,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 {(() => {
                   const LABELS: Record<string, string> = {
                     amarelo: 'Chave',
-                    verde: 'Exceção',
+                    verde: 'ExceÃ§Ã£o',
                     azul: 'Efeito',
                     rosa: 'Termo',
                     laranja: 'Pegadinha',
@@ -2706,7 +2214,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         <Tabs value={activeTab} onValueChange={(v) => {
           if (showAnotacoesSheet || showPerguntarSheet || showPraticarSheet) return;
           const openIA = (mode: 'explicacao' | 'exemplo') => {
-            setActiveTab(mode);           // dispara a busca/cache já existente
+            setActiveTab(mode);           // dispara a busca/cache jÃ¡ existente
             setIaFull({ mode, sectionId: focusedSegment });
           };
           if (v === 'explicacao' || v === 'exemplo') {
@@ -2723,28 +2231,28 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
           {modificationInfo ? (
             <TabsList className="mx-5 bg-secondary/60 rounded-2xl h-11 grid grid-cols-2 w-auto p-1">
               <TabsTrigger value="artigo" className="rounded-xl text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-4 py-2">Artigo</TabsTrigger>
-              <TabsTrigger value="explicacao" className="rounded-xl text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-4 py-2">Explicação</TabsTrigger>
+              <TabsTrigger value="explicacao" className="rounded-xl text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-4 py-2">ExplicaÃ§Ã£o</TabsTrigger>
             </TabsList>
           ) : (
             <TabsList className="mx-5 bg-secondary/60 rounded-2xl h-11 grid grid-cols-4 w-auto p-1">
               <TabsTrigger value="artigo" className="rounded-xl text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-4 py-2">Artigo</TabsTrigger>
-              <TabsTrigger value="explicacao" className="rounded-xl text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-4 py-2">Explicação</TabsTrigger>
+              <TabsTrigger value="explicacao" className="rounded-xl text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-4 py-2">ExplicaÃ§Ã£o</TabsTrigger>
               <TabsTrigger value="exemplo" className="rounded-xl text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-4 py-2">Exemplo</TabsTrigger>
-              <TabsTrigger value="historico" className="rounded-xl text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-4 py-2">Histórico</TabsTrigger>
+              <TabsTrigger value="historico" className="rounded-xl text-sm font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-4 py-2">HistÃ³rico</TabsTrigger>
             </TabsList>
 
           )}
 
 
           <TabsContent value="artigo" className="px-5 pb-[calc(9rem+var(--sai-bottom))] pt-4 relative">
-            {/* Barra de progresso da narração (sticky no topo) */}
+            {/* Barra de progresso da narraÃ§Ã£o (sticky no topo) */}
             {narracaoPlaying && (
               <div className="sticky top-0 z-30 -mx-5 -mt-4 mb-3 bg-[#0f0f0f]/95 backdrop-blur-md border-b border-white/5 px-5 py-2.5">
                 <div className="flex items-center gap-2.5">
                   <button
                     onClick={handleNarrarButtonPress}
                     className="flex-shrink-0 w-7 h-7 rounded-full bg-primary/90 hover:bg-primary flex items-center justify-center transition-colors"
-                    aria-label="Pausar narração"
+                    aria-label="Pausar narraÃ§Ã£o"
                   >
                     <Pause className="w-3.5 h-3.5 text-primary-foreground" />
                   </button>
@@ -2775,7 +2283,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 </div>
               </div>
             )}
-            {/* Brasão watermark fixo */}
+            {/* BrasÃ£o watermark fixo */}
             <div className="sticky top-1/2 -translate-y-1/2 left-0 right-0 flex items-center justify-center pointer-events-none z-0" style={{ height: 0 }}>
               <img src={brasaoImg} alt="" className="w-48 h-48 opacity-[0.06] object-contain" />
             </div>
@@ -2798,8 +2306,8 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 </div>
               )}
 
-              {/* Epígrafe do artigo (ex: "Anterioridade da Lei") */}
-              {artigo.titulo && !/^(PARTE|LIVRO|T[IÍ]TULO|CAP[IÍ]TULO|SEÇ[AÃ]O|SUBSEÇ[AÃ]O)\b/i.test(artigo.titulo) && (
+              {/* EpÃ­grafe do artigo (ex: "Anterioridade da Lei") */}
+              {artigo.titulo && !/^(PARTE|LIVRO|T[IÃ]TULO|CAP[IÃ]TULO|SEÃ‡[AÃƒ]O|SUBSEÃ‡[AÃƒ]O)\b/i.test(artigo.titulo) && (
                 <p className="mb-3 border-l-2 border-primary/70 pl-3 text-[13px] italic text-primary/90 font-body leading-snug">
                   {artigo.titulo}
                 </p>
@@ -2863,7 +2371,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                           style={{ backgroundColor: currentHl?.color || selectedColor }}
                         />
                         <p className="text-foreground text-base sm:text-lg font-bold flex-1">
-                          {isView ? 'Sua anotação' : 'Nova anotação'}
+                          {isView ? 'Sua anotaÃ§Ã£o' : 'Nova anotaÃ§Ã£o'}
                         </p>
                         {isView && (
                           <button
@@ -2886,7 +2394,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                         )}
 
                         <div className="flex items-center justify-between gap-2 pt-1">
-                          <span className="text-xs font-semibold text-muted-foreground">Anotação</span>
+                          <span className="text-xs font-semibold text-muted-foreground">AnotaÃ§Ã£o</span>
                           <button
                             type="button"
                             disabled={isGeneratingAiNote}
@@ -2901,7 +2409,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                         <textarea
                           value={commentText}
                           onChange={(e) => setCommentText(e.target.value)}
-                          placeholder="Escreva sua anotação ou clique em 'Gerar com IA'..."
+                          placeholder="Escreva sua anotaÃ§Ã£o ou clique em 'Gerar com IA'..."
                           className="w-full flex-1 min-h-[160px] sm:min-h-[120px] bg-secondary/60 border border-border rounded-2xl px-4 py-3 text-base text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-1 focus:ring-primary"
                           rows={6}
                         />
@@ -2916,7 +2424,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                                   onClick={() => setCommentTags(prev => prev.filter(x => x !== t))}
                                   className="opacity-70 hover:opacity-100"
                                   aria-label={`Remover tag ${t}`}
-                                >×</button>
+                                >Ã—</button>
                               </span>
                             ))}
                           </div>
@@ -2986,7 +2494,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
               )}
             </AnimatePresence>
 
-            {/* Magic grifo tooltip — blurred overlay + centered card */}
+            {/* Magic grifo tooltip â€” blurred overlay + centered card */}
             <AnimatePresence>
               {magicTooltip && (
                 <>
@@ -3006,7 +2514,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                   >
                     <button
                       onClick={() => setMagicTooltip(null)}
-                      aria-label="Fechar comentário"
+                      aria-label="Fechar comentÃ¡rio"
                       className="absolute top-2.5 right-2.5 min-w-11 min-h-11 flex items-center justify-center rounded-full bg-muted/60 hover:bg-muted text-foreground/70 hover:text-foreground transition-colors"
                     >
                       <X className="w-5 h-5" />
@@ -3063,18 +2571,18 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                       const parte = modificationInfo.parteModificada;
                       const tipo = modificationInfo.tipo.toLowerCase();
                       const lei = modificationInfo.leiNome;
-                      if (/incluíd|acrescid/i.test(modificationInfo.tipo)) {
+                      if (/incluÃ­d|acrescid/i.test(modificationInfo.tipo)) {
                         return parte === 'Artigo inteiro'
-                          ? `O ${artigo.numero} foi inteiramente incluído no ordenamento jurídico pela ${lei}.`
-                          : `O ${parte} do ${artigo.numero} foi incluído pela ${lei}. Na aba "Artigo", ele está destacado em roxo.`;
+                          ? `O ${artigo.numero} foi inteiramente incluÃ­do no ordenamento jurÃ­dico pela ${lei}.`
+                          : `O ${parte} do ${artigo.numero} foi incluÃ­do pela ${lei}. Na aba "Artigo", ele estÃ¡ destacado em roxo.`;
                       }
-                      if (/alterad|redaç/i.test(modificationInfo.tipo)) {
+                      if (/alterad|redaÃ§/i.test(modificationInfo.tipo)) {
                         return parte === 'Artigo inteiro'
-                          ? `Todo o ${artigo.numero} teve sua redação alterada pela ${lei}.`
-                          : `O ${parte} do ${artigo.numero} teve sua redação modificada pela ${lei}. Na aba "Artigo", o trecho está destacado em roxo.`;
+                          ? `Todo o ${artigo.numero} teve sua redaÃ§Ã£o alterada pela ${lei}.`
+                          : `O ${parte} do ${artigo.numero} teve sua redaÃ§Ã£o modificada pela ${lei}. Na aba "Artigo", o trecho estÃ¡ destacado em roxo.`;
                       }
                       if (/revogad/i.test(modificationInfo.tipo)) {
-                        return `Este dispositivo foi revogado pela ${lei} e não produz mais efeitos jurídicos.`;
+                        return `Este dispositivo foi revogado pela ${lei} e nÃ£o produz mais efeitos jurÃ­dicos.`;
                       }
                       return `O ${parte} do ${artigo.numero} foi ${tipo} pela ${lei}.`;
                     })()}
@@ -3089,7 +2597,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                   <p className="text-sm font-semibold text-foreground mb-1">{modificationInfo.leiNome}</p>
                   <p className="text-xs text-muted-foreground italic mb-3">{modificationInfo.referencia}</p>
                   {(() => {
-                    const leiMatch = modificationInfo.leiNome.match(/(?:Lei(?:\s+Complementar)?|Decreto(?:-Lei)?|Emenda\s+Constitucional)\s+n[º°]?\s*([\d.]+)/i);
+                    const leiMatch = modificationInfo.leiNome.match(/(?:Lei(?:\s+Complementar)?|Decreto(?:-Lei)?|Emenda\s+Constitucional)\s+n[ÂºÂ°]?\s*([\d.]+)/i);
                     if (leiMatch) {
                       const num = leiMatch[1].replace(/\./g, '');
                       const isLC = /complementar/i.test(modificationInfo.leiNome);
@@ -3113,16 +2621,16 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                   <img src={horusOwl} alt="Horus" className="w-12 h-12 object-contain" />
                 </div>
                 <h4 className="font-display text-lg font-bold text-foreground mb-1.5">
-                  Explicação com IA é Exclusivo Prime
+                  ExplicaÃ§Ã£o com IA Ã© Exclusivo Prime
                 </h4>
                 <p className="text-xs text-muted-foreground max-w-xs mb-4 leading-relaxed">
-                  Destrinche dispositivos complexos com explicações didáticas, linguagem clara e doutrina aplicada geradas pela nossa IA jurídica.
+                  Destrinche dispositivos complexos com explicaÃ§Ãµes didÃ¡ticas, linguagem clara e doutrina aplicada geradas pela nossa IA jurÃ­dica.
                 </p>
                 <button
                   onClick={() => openPremiumGate('explicacao')}
                   className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-xs shadow-lg shadow-primary/30 active:scale-95 transition-all flex items-center gap-2"
                 >
-                  <Crown className="w-4 h-4 fill-current" /> Começar 3 dias grátis
+                  <Crown className="w-4 h-4 fill-current" /> ComeÃ§ar 3 dias grÃ¡tis
                 </button>
               </div>
             ) : (
@@ -3130,7 +2638,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 {aiLoading.explicacao ? (
                   <div className="flex flex-col items-center justify-center py-12 gap-3">
                     <Loader2 className="w-6 h-6 animate-spin text-primary" />
-                    <p className="text-sm text-muted-foreground font-body">Gerando explicação com IA...</p>
+                    <p className="text-sm text-muted-foreground font-body">Gerando explicaÃ§Ã£o com IA...</p>
                   </div>
                 ) : aiContent.explicacao ? (
                   (() => {
@@ -3164,7 +2672,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                     );
                   })()
                 ) : (
-                  <p className="text-muted-foreground text-sm text-center py-8">Clique para gerar a explicação.</p>
+                  <p className="text-muted-foreground text-sm text-center py-8">Clique para gerar a explicaÃ§Ã£o.</p>
                 )}
               </div>
             )}
@@ -3177,22 +2685,22 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                   <img src={horusOwl} alt="Horus" className="w-12 h-12 object-contain" />
                 </div>
                 <h4 className="font-display text-lg font-bold text-foreground mb-1.5">
-                  Exemplos Práticos são Exclusivos Prime
+                  Exemplos PrÃ¡ticos sÃ£o Exclusivos Prime
                 </h4>
                 <p className="text-xs text-muted-foreground max-w-xs mb-4 leading-relaxed">
-                  Veja a norma aplicada em casos concretos do dia a dia e situações reais cobradas nas provas da OAB e concursos públicos.
+                  Veja a norma aplicada em casos concretos do dia a dia e situaÃ§Ãµes reais cobradas nas provas da OAB e concursos pÃºblicos.
                 </p>
                 <button
                   onClick={() => openPremiumGate('exemplo')}
                   className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-xs shadow-lg shadow-primary/30 active:scale-95 transition-all flex items-center gap-2"
                 >
-                  <Crown className="w-4 h-4 fill-current" /> Começar 3 dias grátis
+                  <Crown className="w-4 h-4 fill-current" /> ComeÃ§ar 3 dias grÃ¡tis
                 </button>
               </div>
             ) : aiLoading.exemplo ? (
               <div className="flex flex-col items-center justify-center py-12 gap-3">
                 <Loader2 className="w-6 h-6 animate-spin text-primary" />
-                <p className="text-sm text-muted-foreground font-body">Gerando exemplos práticos com IA...</p>
+                <p className="text-sm text-muted-foreground font-body">Gerando exemplos prÃ¡ticos com IA...</p>
               </div>
             ) : aiContent.exemplo ? (
               (() => {
@@ -3232,7 +2740,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
 
           <TabsContent value="historico" className="px-5 pb-[calc(8rem+var(--sai-bottom))] pt-4">
             {(() => {
-              const modRegex = /\(((?:Redação\s+dada|Incluíd[oa]|Acrescid[oa]|Revogad[oa]|Alterad[oa]|Vetad[oa]|Vigência|Regulamento|Renumerado|Transformado|Suprimido|Restabelecido|Produção de efeito)[^)]*)\)/gi;
+              const modRegex = /\(((?:RedaÃ§Ã£o\s+dada|IncluÃ­d[oa]|Acrescid[oa]|Revogad[oa]|Alterad[oa]|Vetad[oa]|VigÃªncia|Regulamento|Renumerado|Transformado|Suprimido|Restabelecido|ProduÃ§Ã£o de efeito)[^)]*)\)/gi;
               const found: { texto: string; ano: number }[] = [];
               const seen = new Set<string>();
               let m: RegExpExecArray | null;
@@ -3250,11 +2758,11 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 <div className="space-y-3">
                   <div className="flex items-center gap-2 text-primary">
                     <History className="w-4 h-4" />
-                    <p className="text-sm font-semibold uppercase tracking-wider">Histórico de alterações</p>
+                    <p className="text-sm font-semibold uppercase tracking-wider">HistÃ³rico de alteraÃ§Ãµes</p>
                   </div>
                   {found.length === 0 ? (
                     <p className="text-muted-foreground text-sm py-8 text-center">
-                      Este artigo não possui alterações registradas em seu texto oficial.
+                      Este artigo nÃ£o possui alteraÃ§Ãµes registradas em seu texto oficial.
                     </p>
                   ) : (
                     <ul className="space-y-2">
@@ -3282,32 +2790,32 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
 
         </div>
 
-        {/* Bottom-up action sheet for Funções / Grifar.
-            IMPORTANTE: o createPortal fica FORA do AnimatePresence — um portal não é
-            um elemento React válido, então o AnimatePresence o descartaria e o menu
-            nunca apareceria (bug do menu de rodapé no mobile). */}
+        {/* Bottom-up action sheet for FunÃ§Ãµes / Grifar.
+            IMPORTANTE: o createPortal fica FORA do AnimatePresence â€” um portal nÃ£o Ã©
+            um elemento React vÃ¡lido, entÃ£o o AnimatePresence o descartaria e o menu
+            nunca apareceria (bug do menu de rodapÃ© no mobile). */}
         {(activeTab ?? 'artigo') === 'artigo' && createPortal(
           <AnimatePresence>
             {activeActionMenu && (() => {
               let funcoesItems = [
-                { id: 'juris', icon: Scale, label: 'Jurisprudência', desc: 'Súmulas, temas e acórdãos do STF/STJ', color: '#D4AF37', onClick: () => {
+                { id: 'juris', icon: Scale, label: 'JurisprudÃªncia', desc: 'SÃºmulas, temas e acÃ³rdÃ£os do STF/STJ', color: '#D4AF37', onClick: () => {
                   setActiveActionMenu(null);
-                  if (!requireOnline('Jurisprudência')) return;
-                  if (!tabelaNome || !artigo?.numero) { toast.error('Artigo não identificado'); return; }
-                  gateFeature('jurisprudencia', 'jurisprudencia', 'Jurisprudência', () =>
+                  if (!requireOnline('JurisprudÃªncia')) return;
+                  if (!tabelaNome || !artigo?.numero) { toast.error('Artigo nÃ£o identificado'); return; }
+                  gateFeature('jurisprudencia', 'jurisprudencia', 'JurisprudÃªncia', () =>
                     navigate(`/jurisprudencia/${tabelaNome}/${encodeURIComponent(String(artigo.numero))}`),
                   );
                 } },
-                { icon: Play, label: 'Videoaulas', desc: 'Aulas em vídeo sobre este artigo', color: 'hsl(348 78% 38%)', onClick: () => {
+                { icon: Play, label: 'Videoaulas', desc: 'Aulas em vÃ­deo sobre este artigo', color: 'hsl(348 78% 38%)', onClick: () => {
                   setActiveActionMenu(null);
                   if (!requireOnline('Videoaulas')) return;
                   gateFeature('videoaula', 'videoaula', 'Videoaulas', () => setShowVideoaulasListSheet(true));
                 } },
                 
-                { icon: BookOpen, label: 'Termos jurídicos', desc: 'Vocabulário do artigo explicado', color: '#F97316', onClick: () => { setActiveActionMenu(null); if (!requireOnline('Termos jurídicos')) return; gateFeature('termos', 'termos', 'Termos jurídicos', () => setShowTermosSheet(true)); } },
-                { icon: MessageCircle, label: 'Perguntar', desc: 'Tire dúvidas com a IA', color: '#A855F7', onClick: () => { setActiveActionMenu(null); if (!requireOnline('Perguntar à IA')) return; gateFeature('perguntar', 'perguntar', 'Perguntar à IA', () => setShowPerguntarSheet(true)); } },
-                ...(tabelaNome ? [{ icon: Network, label: 'Grafo de conexões', desc: 'Ver relações do artigo', color: '#10B981', onClick: () => { setActiveActionMenu(null); gateFeature('grafo', 'grafo', 'Grafo de conexões', () => setShowGrafo(true)); } }] : []),
-                { icon: Copy, label: 'Copiar artigo', desc: 'Texto para a área de transferência', color: '#8B5CF6', onClick: () => { setActiveActionMenu(null); handleCopy(); } },
+                { icon: BookOpen, label: 'Termos jurÃ­dicos', desc: 'VocabulÃ¡rio do artigo explicado', color: '#F97316', onClick: () => { setActiveActionMenu(null); if (!requireOnline('Termos jurÃ­dicos')) return; gateFeature('termos', 'termos', 'Termos jurÃ­dicos', () => setShowTermosSheet(true)); } },
+                { icon: MessageCircle, label: 'Perguntar', desc: 'Tire dÃºvidas com a IA', color: '#A855F7', onClick: () => { setActiveActionMenu(null); if (!requireOnline('Perguntar Ã  IA')) return; gateFeature('perguntar', 'perguntar', 'Perguntar Ã  IA', () => setShowPerguntarSheet(true)); } },
+                ...(tabelaNome ? [{ icon: Network, label: 'Grafo de conexÃµes', desc: 'Ver relaÃ§Ãµes do artigo', color: '#10B981', onClick: () => { setActiveActionMenu(null); gateFeature('grafo', 'grafo', 'Grafo de conexÃµes', () => setShowGrafo(true)); } }] : []),
+                { icon: Copy, label: 'Copiar artigo', desc: 'Texto para a Ã¡rea de transferÃªncia', color: '#8B5CF6', onClick: () => { setActiveActionMenu(null); handleCopy(); } },
                 { icon: Bell, label: 'Lembretes', desc: 'Avisar ao chegar em um local', color: '#DC2626', onClick: () => { setActiveActionMenu(null); import('@/components/vademecum/sheets/LembretesArtigoSheet'); gateFeature('lembretes', 'lembretes', 'Lembretes', () => setShowLembretesLocal(true)); } },
                 { icon: Download, label: 'Baixar artigo', desc: 'PDF ou imagem, lei seca ou comentado', color: '#0EA5E9', onClick: () => { setActiveActionMenu(null); gateFeature('baixar', 'baixar', 'Baixar artigo', () => setShowBaixarSheet(true)); } },
                 { icon: Share2, label: 'Compartilhar', desc: 'Enviar para outro app', color: '#06B6D4', onClick: () => { setActiveActionMenu(null); gateFeature('default', 'default', 'Compartilhar', () => setShowSharePanel(p => !p)); } },
@@ -3321,14 +2829,14 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 gateFeature('grifo', 'grifo', label, action);
               const grifarItems = [
                 { icon: Highlighter, label: highlightMode ? 'Desativar grifo manual' : 'Grifo manual', desc: 'Marcar com o dedo', color: '#EC4899', active: highlightMode, onClick: () => { setActiveActionMenu(null); if (highlightMode) { toggleMode(); return; } gateGrifo('Grifar', () => toggleMode()); } },
-                { icon: Sparkles, label: 'Grifo mágico (IA)', desc: 'Destaques automáticos', color: '#DC2626', active: magicMode, spin: magicLoading, badge: magicHighlights.length, onClick: () => { setActiveActionMenu(null); gateGrifo('Grifar', () => handleToggleMagic()); } },
+                { icon: Sparkles, label: 'Grifo mÃ¡gico (IA)', desc: 'Destaques automÃ¡ticos', color: '#DC2626', active: magicMode, spin: magicLoading, badge: magicHighlights.length, onClick: () => { setActiveActionMenu(null); gateGrifo('Grifar', () => handleToggleMagic()); } },
                 { icon: Mic, label: 'Grifar por voz', desc: 'Dite o trecho a destacar', color: '#DC2626', onClick: () => { setActiveActionMenu(null); gateGrifo('Grifar', () => setVoiceGrifoActive(true)); } },
                 { icon: Camera, label: 'Grifar de foto', desc: 'OCR de imagem', color: '#3B82F6', onClick: () => { setActiveActionMenu(null); gateGrifo('Grifar', () => setShowGrifoFoto(true)); } },
                 { icon: Trash2, label: 'Apagar grifos', desc: 'Escolha por cor ou apague todos', color: 'hsl(348 78% 38%)', badge: eraseSheetHighlights.length, onClick: () => { setActiveActionMenu(null); setShowEraseSheet(true); } },
               ];
               const isGrifar = activeActionMenu === 'grifar';
               const items = isGrifar ? grifarItems : funcoesItems;
-              const title = isGrifar ? 'Grifar' : 'Funções';
+              const title = isGrifar ? 'Grifar' : 'FunÃ§Ãµes';
               const HeaderIcon = isGrifar ? Feather : LayoutGrid;
               return (
                 <>
@@ -3400,7 +2908,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                       {isGrifar && (
                         <div className="mt-2 mx-5 p-3 rounded-2xl bg-secondary/40 border border-border flex items-center justify-between gap-3">
                           <div className="min-w-0">
-                            <p className="text-[13.5px] font-medium text-foreground">Mostrar grifo por padrão</p>
+                            <p className="text-[13.5px] font-medium text-foreground">Mostrar grifo por padrÃ£o</p>
                             <p className="text-[11.5px] text-foreground/60 mt-0.5">Ao abrir o artigo, exibe os grifos da IA automaticamente.</p>
                           </div>
                           <button
@@ -3426,7 +2934,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         )}
 
 
-        {/* Bottom nav bar — only visible on "artigo" tab; fixed as a flex item below the scrollable area */}
+        {/* Bottom nav bar â€” only visible on "artigo" tab; fixed as a flex item below the scrollable area */}
         {(activeTab ?? 'artigo') === 'artigo' && !isDesktop && (
         <div className="shrink-0 relative z-[55] bg-zinc-900/95 backdrop-blur-md border-t border-zinc-800/80 rounded-t-2xl shadow-[0_-8px_30px_rgba(0,0,0,0.6)] pb-[calc(0.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
           <div className="relative grid grid-cols-5 items-end px-2 py-1 max-w-lg mx-auto">
@@ -3444,7 +2952,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 className={`flex flex-col items-center justify-end gap-1 py-2 transition-colors ${activeActionMenu === 'funcoes' ? 'text-primary' : 'text-zinc-300 hover:text-white'}`}
               >
                 <LayoutGrid className="w-7 h-7 sm:w-8 sm:h-8" />
-                <span className="font-body text-[11px] sm:text-[12px] leading-tight">Funções</span>
+                <span className="font-body text-[11px] sm:text-[12px] leading-tight">FunÃ§Ãµes</span>
               </button>
             )}
             {(highlightMode || voiceGrifoActive) ? (
@@ -3465,7 +2973,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
               </button>
             )}
 
-            {/* FAB central: Narrar por padrão; vira gravador quando Grifar por voz está ativo */}
+            {/* FAB central: Narrar por padrÃ£o; vira gravador quando Grifar por voz estÃ¡ ativo */}
             {voiceGrifoActive ? (
               <button
                 onClick={() => {
@@ -3474,7 +2982,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                 }}
                 disabled={voicePhase === 'processing'}
                 className="relative z-[80] flex flex-col items-center justify-end gap-1 py-2 touch-manipulation select-none"
-                aria-label={voicePhase === 'recording' ? 'Parar gravação' : 'Gravar voz'}
+                aria-label={voicePhase === 'recording' ? 'Parar gravaÃ§Ã£o' : 'Gravar voz'}
               >
                 <div className="w-7 h-7 sm:w-8 sm:h-8 invisible" aria-hidden="true" />
                 <div className="absolute bottom-[28px] sm:bottom-[32px] pointer-events-none">
@@ -3566,7 +3074,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                     </span>
                   )}
                 </span>
-                <span className="font-body text-[11px] sm:text-[12px] leading-tight">Anotações</span>
+                <span className="font-body text-[11px] sm:text-[12px] leading-tight">AnotaÃ§Ãµes</span>
               </button>
             )}
             {(highlightMode || voiceGrifoActive) ? (
@@ -3613,7 +3121,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
 
         <GrifoMagicoLoader open={magicLoading} />
 
-        {/* Floating "Fechar grifo" button + rodapé de ações when highlight mode is active */}
+        {/* Floating "Fechar grifo" button + rodapÃ© de aÃ§Ãµes when highlight mode is active */}
         <AnimatePresence>
           {(highlightMode || voiceGrifoActive) && (activeTab ?? 'artigo') === 'artigo' && (
             <>
@@ -3684,7 +3192,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
             />
           )}
 
-          {/* GrifoVoicePanel usa ref imperativo — mantido eager */}
+          {/* GrifoVoicePanel usa ref imperativo â€” mantido eager */}
           <GrifoVoicePanel
             ref={voicePanelRef}
             active={voiceGrifoActive}
@@ -3698,15 +3206,15 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
             }}
           />
 
-          {/* Overlay do gatinho + checklist enquanto gera a narração */}
+          {/* Overlay do gatinho + checklist enquanto gera a narraÃ§Ã£o */}
           {narracaoLoading && (
             <GeracaoAnimacaoOverlay
               open={narracaoLoading}
-              titulo="Gerando sua narração"
+              titulo="Gerando sua narraÃ§Ã£o"
               steps={[
                 'Preparando o texto do artigo',
-                'Gerando narração realista em HD',
-                'Salvando narração',
+                'Gerando narraÃ§Ã£o realista em HD',
+                'Salvando narraÃ§Ã£o',
                 'Pronto para ouvir',
               ]}
               stepIdx={narracaoStepIdx}
@@ -3715,20 +3223,20 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
             />
           )}
 
-          {/* Overlay animado ao gerar Explicação / Exemplo / Termos com IA */}
+          {/* Overlay animado ao gerar ExplicaÃ§Ã£o / Exemplo / Termos com IA */}
           {aiGeneratingMode !== null && (
             <GeracaoAnimacaoOverlay
               open={aiGeneratingMode !== null}
               titulo={
-                aiGeneratingMode === 'explicacao' ? 'Gerando explicação com IA' :
-                aiGeneratingMode === 'exemplo' ? 'Gerando exemplos práticos' :
-                aiGeneratingMode === 'termos' ? 'Analisando termos jurídicos' :
-                'Gerando conteúdo'
+                aiGeneratingMode === 'explicacao' ? 'Gerando explicaÃ§Ã£o com IA' :
+                aiGeneratingMode === 'exemplo' ? 'Gerando exemplos prÃ¡ticos' :
+                aiGeneratingMode === 'termos' ? 'Analisando termos jurÃ­dicos' :
+                'Gerando conteÃºdo'
               }
               steps={[
                 'Preparando o texto do artigo',
                 'Consultando a IA',
-                'Formatando conteúdo',
+                'Formatando conteÃºdo',
                 'Pronto para ler',
               ]}
               stepIdx={aiGeneratingStep}
@@ -3776,13 +3284,13 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                     <X className="w-4 h-4" />
                   </button>
                 </div>
-                <p className="px-5 pt-3 text-[12.5px] text-foreground/60">Art. {artigo?.numero} — Escolha o modo de estudo</p>
+                <p className="px-5 pt-3 text-[12.5px] text-foreground/60">Art. {artigo?.numero} â€” Escolha o modo de estudo</p>
                 <div className="flex-1 py-2">
                   {[
                     {
                       icon: Target,
-                      label: 'Questões',
-                      desc: 'Múltipla escolha com comentários e exemplos',
+                      label: 'QuestÃµes',
+                      desc: 'MÃºltipla escolha com comentÃ¡rios e exemplos',
                       color: '#DC2626',
                       onClick: () => {
                         setShowPraticarSheet(false);
@@ -3800,7 +3308,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
                     {
                       icon: Layers,
                       label: 'Flashcards',
-                      desc: 'Cards com flip animado e exemplos práticos',
+                      desc: 'Cards com flip animado e exemplos prÃ¡ticos',
                       color: '#DC2626',
                       onClick: () => {
                         setShowPraticarSheet(false);
@@ -3891,12 +3399,12 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
           )}
         </Suspense>
 
-        {/* Termos jurídicos Sheet (aberto pelo menu Grifar) */}
+        {/* Termos jurÃ­dicos Sheet (aberto pelo menu Grifar) */}
         <Sheet open={showTermosSheet} onOpenChange={(open) => setShowTermosSheet(open)}>
           <SheetContent side="bottom" className="z-[10041] h-[90vh] max-w-lg mx-auto rounded-t-3xl p-0 flex flex-col md:left-auto md:right-0 md:top-0 md:bottom-0 md:h-full md:w-[min(30rem,92vw)] md:max-w-none md:rounded-none md:rounded-l-3xl md:border-l md:mx-0">
             <div className="flex items-center gap-2 px-5 py-4 border-b border-border">
               <BookOpen className="w-5 h-5 text-orange-400" />
-              <h3 className="font-heading text-base font-semibold text-foreground flex-1">Termos jurídicos</h3>
+              <h3 className="font-heading text-base font-semibold text-foreground flex-1">Termos jurÃ­dicos</h3>
               <button onClick={() => setShowTermosSheet(false)} className="w-8 h-8 rounded-full hover:bg-secondary flex items-center justify-center text-foreground/70" aria-label="Fechar">
                 <X className="w-4 h-4" />
               </button>
@@ -3905,7 +3413,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
               {aiLoading.termos ? (
                 <div className="flex flex-col items-center justify-center py-12 gap-3">
                   <Loader2 className="w-6 h-6 animate-spin text-primary" />
-                  <p className="text-sm text-muted-foreground font-body">Analisando termos jurídicos com IA...</p>
+                  <p className="text-sm text-muted-foreground font-body">Analisando termos jurÃ­dicos com IA...</p>
                 </div>
               ) : aiContent.termos ? (
                 (() => {
@@ -3965,7 +3473,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
             open={showLembretesLocal}
             onClose={() => setShowLembretesLocal(false)}
             artigoRef={`${tabelaNome || 'artigo'}::${artigo?.numero ?? 'x'}`}
-            artigoTitulo={artigo ? `Art. ${artigo.numero}${tabelaNome ? ' — ' + tabelaNome : ''}` : 'Artigo'}
+            artigoTitulo={artigo ? `Art. ${artigo.numero}${tabelaNome ? ' â€” ' + tabelaNome : ''}` : 'Artigo'}
           />
         )}
         {showBaixarSheet && (
@@ -3982,7 +3490,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
 
       </Suspense>
 
-      {/* Desktop: Questões e Jurisprudência como painel lateral */}
+      {/* Desktop: QuestÃµes e JurisprudÃªncia como painel lateral */}
       {isDesktop && artigo && (
         <>
           <ArtigoSidePanel open={showQuestoesPanel} onClose={() => setShowQuestoesPanel(false)} widthClass="w-[min(40rem,94vw)]">
@@ -4013,12 +3521,12 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         </>
       )}
 
-      {/* Desktop: barras laterais com as funções (principais à esquerda) */}
+      {/* Desktop: barras laterais com as funÃ§Ãµes (principais Ã  esquerda) */}
       {isDesktop && artigo && (activeTab ?? 'artigo') === 'artigo' && createPortal(
         (() => {
           type RailItem = { id?: string; icon: any; label: string; color?: string; active?: boolean; onClick: (e: any) => void };
           const principais: RailItem[] = [
-            { icon: Volume2, label: 'Narração', color: '#22C55E', onClick: (e) => handleNarrarButtonPress(e) },
+            { icon: Volume2, label: 'NarraÃ§Ã£o', color: '#22C55E', onClick: (e) => handleNarrarButtonPress(e) },
             { icon: Feather, label: 'Grifar', color: '#DC2626', active: activeActionMenu === 'grifar', onClick: () => {
               if (!isPremium) {
                 openPremiumGate('grifo');
@@ -4026,23 +3534,23 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
               }
               setActiveActionMenu(activeActionMenu === 'grifar' ? null : 'grifar');
             } },
-            { icon: StickyNote, label: 'Anotações', color: '#38BDF8', onClick: () => gateFeature('anotacoes', 'anotacoes', 'Anotações', () => setShowAnotacoesSheet(true)) },
+            { icon: StickyNote, label: 'AnotaÃ§Ãµes', color: '#38BDF8', onClick: () => gateFeature('anotacoes', 'anotacoes', 'AnotaÃ§Ãµes', () => setShowAnotacoesSheet(true)) },
             { icon: Target, label: 'Praticar', color: '#A855F7', onClick: () => gateFeature('praticar', 'praticar', 'Praticar', () => setShowPraticarSheet(true)) },
           ];
           let secundarias: RailItem[] = [
-            { icon: LayoutGrid, label: 'Funções', active: activeActionMenu === 'funcoes', onClick: () => setActiveActionMenu(activeActionMenu === 'funcoes' ? null : 'funcoes') },
-            { id: 'juris', icon: Scale, label: 'Jurisprudência', color: '#D4AF37', onClick: () => {
-              if (!requireOnline('Jurisprudência')) return;
-              if (!tabelaNome || !artigo?.numero) { toast.error('Artigo não identificado'); return; }
-              gateFeature('jurisprudencia', 'jurisprudencia', 'Jurisprudência', () => {
+            { icon: LayoutGrid, label: 'FunÃ§Ãµes', active: activeActionMenu === 'funcoes', onClick: () => setActiveActionMenu(activeActionMenu === 'funcoes' ? null : 'funcoes') },
+            { id: 'juris', icon: Scale, label: 'JurisprudÃªncia', color: '#D4AF37', onClick: () => {
+              if (!requireOnline('JurisprudÃªncia')) return;
+              if (!tabelaNome || !artigo?.numero) { toast.error('Artigo nÃ£o identificado'); return; }
+              gateFeature('jurisprudencia', 'jurisprudencia', 'JurisprudÃªncia', () => {
                 if (isDesktop) setShowJurisPanel(true);
                 else navigate(`/jurisprudencia/${tabelaNome}/${encodeURIComponent(String(artigo.numero))}`);
               });
             } },
             { icon: Play, label: 'Videoaulas', color: 'hsl(348 78% 38%)', onClick: () => { if (!requireOnline('Videoaulas')) return; gateFeature('videoaula', 'videoaula', 'Videoaulas', () => setShowVideoaulasListSheet(true)); } },
-            { icon: BookOpen, label: 'Termos', color: '#F97316', onClick: () => { if (!requireOnline('Termos jurídicos')) return; gateFeature('termos', 'termos', 'Termos jurídicos', () => setShowTermosSheet(true)); } },
-            { icon: MessageCircle, label: 'Perguntar à IA', color: '#A855F7', onClick: () => { if (!requireOnline('Perguntar à IA')) return; gateFeature('perguntar', 'perguntar', 'Perguntar à IA', () => setShowPerguntarSheet(true)); } },
-            ...(tabelaNome ? [{ icon: Network, label: 'Grafo', color: '#10B981', onClick: () => gateFeature('grafo', 'grafo', 'Grafo de conexões', () => setShowGrafo(true)) }] : []),
+            { icon: BookOpen, label: 'Termos', color: '#F97316', onClick: () => { if (!requireOnline('Termos jurÃ­dicos')) return; gateFeature('termos', 'termos', 'Termos jurÃ­dicos', () => setShowTermosSheet(true)); } },
+            { icon: MessageCircle, label: 'Perguntar Ã  IA', color: '#A855F7', onClick: () => { if (!requireOnline('Perguntar Ã  IA')) return; gateFeature('perguntar', 'perguntar', 'Perguntar Ã  IA', () => setShowPerguntarSheet(true)); } },
+            ...(tabelaNome ? [{ icon: Network, label: 'Grafo', color: '#10B981', onClick: () => gateFeature('grafo', 'grafo', 'Grafo de conexÃµes', () => setShowGrafo(true)) }] : []),
             { icon: Copy, label: 'Copiar', color: '#8B5CF6', onClick: () => handleCopy() },
             { icon: Bell, label: 'Lembretes', color: '#DC2626', onClick: () => { import('@/components/vademecum/sheets/LembretesArtigoSheet'); gateFeature('lembretes', 'lembretes', 'Lembretes', () => setShowLembretesLocal(true)); } },
             { icon: Download, label: 'Baixar', color: '#0EA5E9', onClick: () => gateFeature('baixar', 'baixar', 'Baixar artigo', () => setShowBaixarSheet(true)) },
@@ -4088,14 +3596,14 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
           return (
             <>
               <Rail items={principais} side="left" title="Principais" />
-              <Rail items={secundarias} side="right" title="Mais funções" />
+              <Rail items={secundarias} side="right" title="Mais funÃ§Ãµes" />
             </>
           );
         })(),
         document.body
       )}
 
-      {/* Desktop: pílula flutuante Narrar / Grifar ao selecionar trecho */}
+      {/* Desktop: pÃ­lula flutuante Narrar / Grifar ao selecionar trecho */}
       {isDesktop && artigo && selectionPill && createPortal(
         <motion.div
           initial={{ opacity: 0, y: 6, scale: 0.95 }}
@@ -4125,7 +3633,7 @@ const ArtigoBottomSheet = ({ artigo, onClose, isFavorito, onToggleFavorito, show
         document.body
       )}
 
-      {/* Leitor em tela cheia da Explicação / Exemplo */}
+      {/* Leitor em tela cheia da ExplicaÃ§Ã£o / Exemplo */}
       <ArtigoIAFullscreen
         open={Boolean(iaFull && artigo)}
         mode={iaFull?.mode || 'explicacao'}
